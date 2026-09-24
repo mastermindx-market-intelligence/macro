@@ -1,108 +1,90 @@
 {
   "schema": "china_intel.analogs.v1",
   "is_context_only": true,
-  "generated_utc": "2026-08-27T23:41:01Z",
-  "as_of": "2026-08-26",
+  "generated_utc": "2026-09-23T15:25:56Z",
+  "as_of": "2026-09-23",
   "coverage": {
     "start": "2006-03-30",
-    "end": "2026-08-26",
-    "n_candidate_days": 5325
+    "end": "2026-09-23",
+    "n_candidate_days": 5345
   },
   "query": {
-    "date": "2026-08-26",
+    "date": "2026-09-23",
     "quad": "Q4",
     "quad_name": "Growth-scare",
     "liquidity": "contracting",
-    "cycle": "mid",
-    "growth_z": -1.155,
-    "inflation_z": -1.1783
+    "cycle": "late",
+    "growth_z": -1.1543,
+    "inflation_z": -1.1733
   },
   "analogs": [
     {
-      "date": "2023-05-16",
-      "distance": 0.115,
+      "date": "2023-05-04",
+      "distance": 0.1149,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
-      "cycle": "mid",
+      "cycle": "late",
       "fwd_shcomp": {
-        "h20": -0.016963,
-        "h60": -0.029346,
-        "h120": -0.075128
+        "h20": -0.031819,
+        "h60": -0.013147,
+        "h120": -0.098048
       },
       "fwd_csi300": {
-        "h20": -0.018907,
-        "h60": -0.000253,
-        "h120": -0.079242
+        "h20": -0.037098,
+        "h60": 0.014118,
+        "h120": -0.096009
       }
     },
     {
-      "date": "2011-11-21",
-      "distance": 0.1247,
+      "date": "2008-11-18",
+      "distance": 1.0077,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.085043,
-        "h60": -0.001274,
-        "h120": -0.025886
+        "h20": -0.020357,
+        "h60": 0.114172,
+        "h120": 0.282732
       },
       "fwd_csi300": null
     },
     {
-      "date": "2008-10-09",
-      "distance": 0.1247,
+      "date": "2011-11-29",
+      "distance": 1.0077,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.135125,
-        "h60": -0.032218,
-        "h120": 0.159869
+        "h20": -0.072599,
+        "h60": 0.053111,
+        "h120": 0.017006
       },
       "fwd_csi300": null
     },
     {
-      "date": "2022-12-20",
-      "distance": 0.1443,
+      "date": "2022-12-02",
+      "distance": 1.0104,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.0545,
-        "h60": 0.068709,
-        "h120": 0.041335
+        "h20": -0.030121,
+        "h60": 0.022562,
+        "h120": 0.006403
       },
       "fwd_csi300": {
-        "h20": 0.081419,
-        "h60": 0.050399,
-        "h120": 0.014022
-      }
-    },
-    {
-      "date": "2023-12-21",
-      "distance": 0.1846,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": -0.055889,
-        "h60": 0.039259,
-        "h120": 0.019619
-      },
-      "fwd_csi300": {
-        "h20": -0.039332,
-        "h60": 0.057225,
-        "h120": 0.048121
+        "h20": -0.013832,
+        "h60": 0.02501,
+        "h120": -0.024956
       }
     },
     {
       "date": "2018-12-12",
-      "distance": 0.1846,
+      "distance": 1.0169,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
@@ -119,26 +101,104 @@
       }
     },
     {
-      "date": "2018-02-09",
-      "distance": 0.9086,
+      "date": "2023-12-21",
+      "distance": 1.0169,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.038904,
-        "h60": 0.012345,
-        "h120": -0.12415
+        "h20": -0.055889,
+        "h60": 0.039259,
+        "h120": 0.019619
       },
       "fwd_csi300": {
-        "h20": 0.047784,
-        "h60": 0.00437,
-        "h120": -0.118266
+        "h20": -0.039332,
+        "h60": 0.057225,
+        "h120": 0.048121
+      }
+    },
+    {
+      "date": "2007-06-19",
+      "distance": 1.239,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "unknown",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": -0.061973,
+        "h60": 0.212753,
+        "h120": 0.197738
+      },
+      "fwd_csi300": null
+    },
+    {
+      "date": "2007-02-19",
+      "distance": 1.239,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "unknown",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": 0.026679,
+        "h60": 0.340053,
+        "h120": 0.478171
+      },
+      "fwd_csi300": null
+    },
+    {
+      "date": "2006-11-03",
+      "distance": 1.239,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "unknown",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": 0.13625,
+        "h60": 0.389782,
+        "h120": 0.764022
+      },
+      "fwd_csi300": null
+    },
+    {
+      "date": "2017-04-18",
+      "distance": 1.239,
+      "quad": "Q1",
+      "quad_name": "Goldilocks",
+      "liquidity": "contracting",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": -0.025732,
+        "h60": 0.001821,
+        "h120": 0.063475
+      },
+      "fwd_csi300": {
+        "h20": -0.012292,
+        "h60": 0.074523,
+        "h120": 0.144883
+      }
+    },
+    {
+      "date": "2018-02-05",
+      "distance": 1.3508,
+      "quad": "Q1",
+      "quad_name": "Goldilocks",
+      "liquidity": "contracting",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": -0.018086,
+        "h60": -0.060104,
+        "h120": -0.19288
+      },
+      "fwd_csi300": {
+        "h20": -0.015568,
+        "h60": -0.05865,
+        "h120": -0.189735
       }
     },
     {
       "date": "2018-10-12",
-      "distance": 0.9086,
+      "distance": 1.3508,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
@@ -153,93 +213,25 @@
         "h60": -0.017733,
         "h120": 0.245208
       }
-    },
-    {
-      "date": "2019-08-26",
-      "distance": 0.92,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.018179,
-        "h60": 0.000345,
-        "h120": -0.00757
-      },
-      "fwd_csi300": {
-        "h20": 0.015369,
-        "h60": 0.015877,
-        "h120": 0.030911
-      }
-    },
-    {
-      "date": "2024-08-15",
-      "distance": 0.9643,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": -0.062827,
-        "h60": 0.150176,
-        "h120": 0.151602
-      },
-      "fwd_csi300": {
-        "h20": -0.05485,
-        "h60": 0.173978,
-        "h120": 0.164818
-      }
-    },
-    {
-      "date": "2012-08-07",
-      "distance": 1.0077,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "expanding",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": -0.058754,
-        "h60": -0.025904,
-        "h120": 0.116565
-      },
-      "fwd_csi300": {
-        "h20": -0.081283,
-        "h60": -0.041752,
-        "h120": 0.1256
-      }
-    },
-    {
-      "date": "2009-01-06",
-      "distance": 1.0077,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "expanding",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.161315,
-        "h60": 0.212636,
-        "h120": 0.47358
-      },
-      "fwd_csi300": null
     }
   ],
   "fan": {
     "h20": {
-      "p25": -0.059772,
-      "median": -0.027495,
-      "p75": 0.027738,
+      "p25": -0.042493,
+      "median": -0.027926,
+      "p75": -0.007561,
       "n": 12
     },
     "h60": {
-      "p25": -0.013445,
-      "median": 0.006345,
-      "p75": 0.089076,
+      "p25": -0.000957,
+      "median": 0.046185,
+      "p75": 0.174481,
       "n": 12
     },
     "h120": {
-      "p25": -0.012149,
-      "median": 0.071822,
-      "p75": 0.153669,
+      "p25": 0.014355,
+      "median": 0.082892,
+      "p75": 0.233315,
       "n": 12
     }
   },

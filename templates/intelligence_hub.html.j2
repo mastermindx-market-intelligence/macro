@@ -2,6 +2,40 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
 {%- endmacro %}
+{#- R1A-M Market Pulse quote cluster (reactive-projection freeze §8/§9). ONE
+    visible price per eligible roster row. `region_for()` gates non-US
+    symbols out entirely — they carry no cluster and never enter the request
+    set (freeze §4/§6). Deliberately NOT .nb-px/.nb-chg: that selector is the
+    GENERIC templates/live.js owner, and this route's whole point is that its
+    roster rows are owned by ONE route-scoped controller
+    (site/assets/js/intelligence-hub-market-pulse.js) instead — the generic
+    class is removed from these rows entirely, not merely left unused, so the
+    rendered page carries zero `.nb-px[data-sym]` quote nodes (freeze §10).
+    `data-ihmp-price/-abs/-pct` start baked with the nightly close (price) and
+    empty/hidden (abs/pct — no baked move exists for these rows today); the
+    controller fills all three from one accepted quote tuple, together,
+    inside one requestAnimationFrame.
+
+    ROSTER LAW (freeze review BLOCKER d1): a cluster is emitted ONLY for a
+    ticker that is a member of `market_pulse_roster` (the exact set
+    `compute_market_pulse_roster(hub)` computed — scripts/build_intel_hub.py).
+    The three loops below iterate their FULL panel lists (not roster-capped
+    slices), so region_for() alone was never a sufficient gate — a US-routable
+    name past the 30/14/14 per-panel cap, or a US-routable name the roster's
+    own cross-panel de-dupe already counted from an earlier panel, must still
+    render NOTHING here: the client controller's request set is the roster,
+    and a rendered `data-ihmp-symbol` outside that set is a target the
+    controller can never honestly fill. `market_pulse_roster` is read from
+    this template's own render context (same-template macros share it — no
+    explicit parameter needed) and defaults to empty so a caller that omits
+    it (a unit test rendering the macro in isolation) fails CLOSED to no
+    clusters, never open to an unfiltered one. -#}
+{% macro ihmp(ticker, price) -%}
+{%- set roster = market_pulse_roster|default([]) -%}
+{%- if ticker and (ticker|upper in roster) and region_for(ticker) == 'us' -%}
+<span class="ihmp-px" data-ihmp-symbol="{{ ticker }}"><span class="f" data-ihmp-price>{% if price is not none %}${{ '%.2f'|format(price) }}{% else %}—{% endif %}</span><span class="ihmp-delta ihmp-abs f" data-ihmp-abs hidden></span><span class="ihmp-delta ihmp-pct f" data-ihmp-pct hidden></span></span>
+{%- endif -%}
+{%- endmacro %}
 {#- inline SVG icons (Lucide-style, currentColor). Icons carry exactly ONE meaning on
     this page — "a desk" — plus the two inline markers (a dated event, a data channel).
     Section marks use the accent tick instead, so an icon always means something. -#}
@@ -46,10 +80,15 @@
   <span class="v">{{ ((e or 0)*100)|round|int }}%</span>
 </div>
 {%- endmacro %}
-{#- ⚡ prime-entry badge — the owner's T1-T4 confluence verdict. i18n via the
-    data-tip-en/zh popover pattern (NEVER translated text in a title= attribute). -#}
+{#- Entry-readiness is useful at a glance; the engine's technical tier stays in the
+    hover receipt rather than becoming a machine badge on the primary reading path. -#}
 {% macro entrybadge(eg) -%}
-{% if eg %}{% if eg.get('buyable') %}<span class="chip en-buy" data-tip-en="Validated confluence buy · tier {{ eg.get('tier') or '—' }}" data-tip-zh="已验证共振买入 · 层级 {{ eg.get('tier') or '—' }}">⚡ <span class="l-en">entry</span><span class="l-zh">入场</span>{% if eg.get('tier') %} {{ eg.tier }}{% endif %}</span>{% endif %}{% endif %}
+{% if eg %}{% if eg.get('buyable') %}<span class="chip en-buy" data-tip-en="Multiple entry checks agree. Review the setup before acting.{% if eg.get('tier') %} Technical tier: {{ eg.tier }}.{% endif %}" data-tip-zh="多项入场条件一致。采取行动前请先复核该设置。{% if eg.get('tier') %}技术层级：{{ eg.tier }}。{% endif %}"><span class="l-en">ready to review</span><span class="l-zh">可复核</span></span>{% endif %}{% endif %}
+{%- endmacro %}
+{% macro watchcopy(value) -%}
+{%- set en = value.get('text', '') if value is mapping else value if value is string else '' -%}
+{%- set zh = value.get('text_zh', '') if value is mapping else '' -%}
+<div class="watch">{% if en is string and en|trim %}<span class="l-en">Watching: <b>{{ en|e }}</b></span><span class="l-zh">关注: <b>{{ (zh if zh is string and zh|trim else en)|e }}</b></span>{% else %}<span class="l-en">Review condition unavailable</span><span class="l-zh">复核条件暂缺</span>{% endif %}</div>
 {%- endmacro %}
 {#- price-trajectory state. Only the shape words live here — the off-high and
     relative-strength figures already arrive inside edge_drivers, so printing them
@@ -69,13 +108,21 @@
 {% set keep = [] %}{% for f in (fs or []) %}{% if f not in FLAG_SKIP %}{% set _ = keep.append(f) %}{% endif %}{% endfor %}
 {%- for f in keep[:2] %}<span class="chip {{ 'crowd' if f=='crowded_top' else 'good' if f in ['confirmed_trend','theme_wide','stealth_accumulation','policy_aligned'] else 'bad' if f=='policy_conflict' else 'cat' if f=='catalyst' else 'info' if f in ['early_edge','velocity_spike'] else 'mut' }}"><span class="l-en">{{ f.replace('_',' ') }}</span><span class="l-zh">{{ FLAG_ZH.get(f, f.replace('_',' ')) }}</span></span>{% endfor %}
 {%- endmacro %}
-{#- desk track-record state. The chip's own label is machine-generated (qledger D10,
-    never hand-written) so it rides the hover as the receipt; Tier 1 shows only the
-    translated state word, the STAGE_ZH slug-to-label pattern the doctrine ratifies. -#}
-{% set QL_ZH = {'UNGRADED':'未评分','ACCRUING':'评分中','GRADED':'已评分'} %}
+{#- Desk track record is a user-facing maturity cue, not a place to expose the
+    qledger enum. Exact grading statistics remain in the dedicated Track record panel. -#}
+{% set QL_EN = {'UNGRADED':'no history','ACCRUING':'building record','GRADED':'measured'} %}
+{% set QL_ZH = {'UNGRADED':'暂无记录','ACCRUING':'记录积累中','GRADED':'已有记录'} %}
 {% macro qlword(chip) -%}
-{% set c = chip or {'state':'UNGRADED','css_class':'ql-ungraded','label':'UNGRADED · n=0','label_zh':'未评级 · n=0'} %}
-<span class="gw {{ c.css_class }}"><span class="l-en">{{ (c.state or 'UNGRADED')|lower }}</span><span class="l-zh">{{ QL_ZH.get(c.state, '未评分') }}</span></span>
+{% set c = chip or {'state':'UNGRADED','css_class':'ql-ungraded'} %}
+<span class="gw {{ c.css_class }}"><span class="l-en">{{ QL_EN.get(c.state, 'no history') }}</span><span class="l-zh">{{ QL_ZH.get(c.state, '暂无记录') }}</span></span>
+{%- endmacro %}
+{% macro qlreceipt(chip, lang='en') -%}
+{% set state = (chip or {}).get('state', 'UNGRADED') %}
+{%- if lang == 'zh' -%}
+{{ {'UNGRADED':'暂无评分记录','ACCRUING':'评分记录积累中','GRADED':'已有评分记录'}.get(state, '暂无评分记录') }}
+{%- else -%}
+{{ {'UNGRADED':'no scored history yet','ACCRUING':'building a scored history','GRADED':'measured history available'}.get(state, 'no scored history yet') }}
+{%- endif -%}
 {%- endmacro %}
 {% set _ql = qledger_chips or {} %}
 {% set MC = hub.macro_context or {} %}
@@ -124,7 +171,7 @@
     letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
   .eyebrow time{ font-family:var(--fig); letter-spacing:.04em; }
   .live{ width:6px; height:6px; border-radius:50%; background:var(--ok); position:relative; flex:none; }
-  .live::after{ content:""; position:absolute; inset:-4px; border-radius:50%;
+  .live::after{ content:""; position:absolute; inset:-4px; border-radius:var(--r-pill, 999px);
     border:1.5px solid var(--ok); opacity:.5; animation:hp 2.6s ease-out infinite; }
   @keyframes hp{ 0%{ transform:scale(.55); opacity:.55 } 100%{ transform:scale(1.75); opacity:0 } }
   .hh h1{ font-size:clamp(29px,3.7vw,41px); font-weight:800; letter-spacing:-.033em; line-height:1.03;
@@ -146,7 +193,7 @@
 
   /* ── desk rail: six links, one container, hairline cells ── */
   .rail{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); margin:18px 0 2px;
-    border:1px solid var(--hair); border-radius:var(--r); background:var(--card); overflow:hidden; }
+    border:1px solid var(--hair); border-radius:var(--r-ctl, var(--r)); background:var(--card); overflow:hidden; }
   .rl{ display:flex; align-items:center; gap:8px; min-width:0; padding:11px 13px;
     text-decoration:none; color:var(--text); font-size:12.5px; font-weight:600;
     border-left:1px solid var(--hair-soft); transition:background .16s ease, color .16s ease; }
@@ -178,6 +225,138 @@
     .rl .gw{ display:none; }
   }
 
+  /* ── R1A-M Market Pulse instrument (reactive-projection freeze §8/§12) ──
+     Dark = graphite command instrument: hairline card, restrained semantic
+     luminance, a pulse ONLY for the live+regular state (same idiom as the
+     existing hero `.live::after` dot above — no new glow language). Light =
+     white research material on the page's cool canvas: the identical
+     hairline/card tokens read as a flat, shadow-quiet strip once theme.css
+     swaps `--card`/`--hair`/`--text` for their light values — no dark-only
+     glow value is hardcoded here, so light never inherits the pulse's box-
+     shadow bloom. Semantic tokens only: --ink-up/--ink-down keep Chinese
+     direction-color correct; no new token root, no literal palette, no
+     runtime stylesheet. */
+  .ihmp-bar{ display:flex; align-items:center; gap:9px; margin:14px 0 0; padding:9px 14px;
+    border:1px solid var(--hair); border-radius:var(--r-ctl, var(--r)); background:var(--card);
+    font-size:11.5px; color:var(--muted); }
+  .ihmp-dot{ width:6px; height:6px; border-radius:var(--r-pill, 999px); flex:none; background:var(--muted); }
+  .ihmp-bar[data-ihmp-availability="available"][data-ihmp-freshness="live"][data-ihmp-session="regular"] .ihmp-dot{
+    background:var(--ok); position:relative; }
+  .ihmp-bar[data-ihmp-availability="available"][data-ihmp-freshness="live"][data-ihmp-session="regular"] .ihmp-dot::after{
+    content:""; position:absolute; inset:-4px; border-radius:var(--r-pill, 999px);
+    border:1.5px solid var(--ok); opacity:.5; animation:hp 2.6s ease-out infinite; }
+  .ihmp-bar[data-ihmp-freshness="delayed"] .ihmp-dot{ background:var(--warn); }
+  /* --act, not --down — that one is a market-direction token that flips to GREEN
+     under zh 红涨绿跌 — a health state must stay direction-neutral */
+  .ihmp-bar[data-ihmp-availability="unavailable"] .ihmp-dot,
+  .ihmp-bar[data-ihmp-freshness="stale"] .ihmp-dot{ background:var(--act); }
+  .ihmp-bar time{ font-family:var(--fig); margin-left:auto; font-size:10px; }
+  /* per-row quote cluster — the ONE visible price on a roster row */
+  .ihmp-px{ font-family:var(--fig); font-variant-numeric:tabular-nums; font-size:11px;
+    color:var(--muted); white-space:nowrap; display:inline-flex; align-items:baseline; gap:4px; }
+  .ihmp-delta{ font-size:10px; }
+  .ihmp-delta.pos{ color:var(--ink-up, var(--up)); }
+  .ihmp-delta.neg{ color:var(--ink-down, var(--down)); }
+  @media (prefers-reduced-motion:reduce){
+    .ihmp-bar .ihmp-dot::after{ animation:none; }
+    /* restated at the live rule's own specificity — media queries add none, and
+       the (0,2,1) rule above loses to the (0,5,1) live rule */
+    .ihmp-bar[data-ihmp-availability="available"][data-ihmp-freshness="live"][data-ihmp-session="regular"] .ihmp-dot::after{
+      animation:none; opacity:.5; }
+  }
+
+  /* ── R1A-M Market Pulse — LIGHT art direction ──────────────────────────────
+     Dark is a command center: depth by luminance, a green LED emitting an
+     expanding ring. Light is a research workspace: depth by material, and the
+     instrument is a bead SEATED on paper — white strip, full-weight hairline,
+     one soft card shadow, and a ring drawn as shadow spread rather than a bloom.
+     Four mechanisms differ on purpose: (1) material — dark leans on --card's
+     translucency over a dark field, light takes the full --panel white + --line
+     + --card-shadow (panel≈bg is the flatness bug, doctrine §5.8); (2) liveness
+     — dark's ring EXPANDS and fades out, light's ring holds a fixed radius and
+     breathes opacity in place, so nothing blooms on white; (3) degraded states —
+     light carries them in the BAR's own material (4–5% wash + a hue-warmed
+     hairline), a channel dark cannot use because a 4% tint on a near-black panel
+     is invisible; dark can only tint the dot; (4) resting states — light draws
+     settled as a HOLLOW bead (pale fill + grey ring), a distinction white ground
+     can hold and a 6px disc on dark cannot. Colour is spent only where something
+     is wrong: a healthy bar stays white, and live is carried by the LED, not by
+     paint. Tokens only, no new custom properties, no page-local palette. */
+
+  /* material: white research card on the cooler canvas (design system §12 E1) */
+  html[data-theme="light"] .ihmp-bar{
+    background:var(--panel); border-color:var(--line); box-shadow:var(--card-shadow); }
+
+  /* the readout itself — the sentence stops being the quietest ink on the page.
+     No letter-spacing, deliberately: the same rule sets the ZH sentence. */
+  html[data-theme="light"] .ihmp-bar [data-ihmp-status]{
+    color:var(--text); font-weight:600; }
+
+  /* the as-of stamp stays a fact, not a verdict: secondary in every state, and
+     deliberately NOT taking the state ink the sentence beside it takes */
+  html[data-theme="light"] .ihmp-bar time{ color:var(--muted); }
+
+  /* resting bead — settled build, loading, and any out-of-hours live print.
+     7px, not dark's 6px: a dark mark on white reads optically smaller than the
+     same mark glowing on a dark field. */
+  html[data-theme="light"] .ihmp-bar .ihmp-dot{
+    width:7px; height:7px;
+    background:color-mix(in srgb,var(--muted) 26%,var(--panel));
+    box-shadow:0 0 0 1.5px color-mix(in srgb,var(--muted) 55%,transparent); }
+
+  /* live + regular session — solid LED, ring breathing in place.
+     Ring geometry is FIXED (no scale, no fade-out): light seats, dark emits.
+     `dtp-pulse` is the estate's shipped live cadence (theme.css), the house
+     live idiom — not a second motion vocabulary. */
+  html[data-theme="light"] .ihmp-bar[data-ihmp-availability="available"][data-ihmp-freshness="live"][data-ihmp-session="regular"] .ihmp-dot{
+    background:var(--ok); box-shadow:none; }
+  html[data-theme="light"] .ihmp-bar[data-ihmp-availability="available"][data-ihmp-freshness="live"][data-ihmp-session="regular"] .ihmp-dot::after{
+    inset:-3px; border:1.5px solid color-mix(in srgb,var(--ok) 70%,transparent);
+    opacity:1; animation:dtp-pulse 1.4s ease-in-out infinite; }
+
+  /* delayed — the whole strip warms by 4%: readable peripherally, silent up close */
+  html[data-theme="light"] .ihmp-bar[data-ihmp-freshness="delayed"]{
+    background:color-mix(in srgb,var(--warn) 4%,var(--panel));
+    border-color:color-mix(in srgb,var(--warn) 42%,var(--line)); }
+  html[data-theme="light"] .ihmp-bar[data-ihmp-freshness="delayed"] .ihmp-dot{
+    background:var(--warn);
+    box-shadow:0 0 0 2.5px color-mix(in srgb,var(--warn) 20%,transparent); }
+  html[data-theme="light"] .ihmp-bar[data-ihmp-freshness="delayed"] [data-ihmp-status]{
+    color:var(--ink-warn); }
+
+  /* stale / unavailable — same mechanism, one step firmer.
+     --act, NOT --down — this is a data-health state, and --down flips to GREEN
+     under zh 红涨绿跌. --act/--ok/--warn are the tokens theme.css keeps
+     direction-neutral for exactly this reason. */
+  html[data-theme="light"] .ihmp-bar[data-ihmp-freshness="stale"],
+  html[data-theme="light"] .ihmp-bar[data-ihmp-availability="unavailable"]{
+    background:color-mix(in srgb,var(--act) 5%,var(--panel));
+    border-color:color-mix(in srgb,var(--act) 42%,var(--line)); }
+  html[data-theme="light"] .ihmp-bar[data-ihmp-freshness="stale"] .ihmp-dot,
+  html[data-theme="light"] .ihmp-bar[data-ihmp-availability="unavailable"] .ihmp-dot{
+    background:var(--act);
+    box-shadow:0 0 0 2.5px color-mix(in srgb,var(--act) 20%,transparent); }
+  html[data-theme="light"] .ihmp-bar[data-ihmp-freshness="stale"] [data-ihmp-status],
+  html[data-theme="light"] .ihmp-bar[data-ihmp-availability="unavailable"] [data-ihmp-status]{
+    color:var(--ink-act); }
+
+  /* per-row cluster — on paper, rank is weight, not luminance.
+     Dark separates level from move with raw hue saturation; light deepens those
+     inks toward --text and loses that separation, so light restores the ladder
+     with weight: the level at 600, the move — the only figure that changes
+     intraday — at 700. .pos/.neg keep --ink-up/--ink-down untouched: those are
+     the measured light rungs and the only route that survives the zh flip. */
+  html[data-theme="light"] .ihmp-px{ font-weight:600; }
+  html[data-theme="light"] .ihmp-delta.pos,
+  html[data-theme="light"] .ihmp-delta.neg{ font-weight:700; }
+
+  /* reduced motion — stated at the light live rule's own specificity, so it
+     actually lands over the (0,5,1) live rule above. */
+  @media (prefers-reduced-motion:reduce){
+    html[data-theme="light"] .ihmp-bar[data-ihmp-availability="available"][data-ihmp-freshness="live"][data-ihmp-session="regular"] .ihmp-dot::after{
+      animation:none; opacity:1; }
+  }
+
   /* ── section mark: an accent tick, a label, a rule, a count ── */
   .band{ display:flex; align-items:center; gap:11px; margin:34px 0 12px; }
   .band .tick{ width:3px; height:14px; border-radius:2px; flex:none;
@@ -195,7 +374,7 @@
   @media(max-width:620px){ .band .legend{ display:none } }
 
   /* ── one card system ── */
-  .card{ border:1px solid var(--hair); border-radius:var(--r); background:var(--card); }
+  .card{ border:1px solid var(--hair); border-radius:var(--r-ctl, var(--r)); background:var(--card); }
   .empty{ font-size:12.5px; color:var(--muted); padding:11px 0; }
   /* Stance line — every signal band answers "so what do I do" ONCE, here, in plain
      words (DESIGN_DOCTRINE Law 1 + Law 4). This is what the stage-templated sentence
@@ -320,7 +499,7 @@
      move is still ahead — so scrolling the ledger shows the edge draining away.
      The bar is the shape; the mono figure beside the score keeps the precision.
      ─────────────────────────────────────────────────────────────────────────── */
-  .led{ border:1px solid var(--hair); border-radius:var(--r); background:var(--card); overflow:hidden; }
+  .led{ border:1px solid var(--hair); border-radius:var(--r-ctl, var(--r)); background:var(--card); overflow:hidden; }
   .led-row{ display:grid; grid-template-columns:26px 150px 52px 55px minmax(0,1fr);
     align-items:center; gap:0 14px; padding:10px 15px 10px 0; min-height:58px; }
   .led > .led-row + .led-row{ border-top:1px solid var(--hair-soft); }
@@ -336,6 +515,14 @@
     .led-row{ grid-template-columns:22px 118px 46px minmax(0,1fr); gap:0 11px; }
     .led-row .mtxc{ display:none; }
     .sp::before{ left:9px; }
+  }
+
+  @media(max-width:620px){
+    .led-row{grid-template-columns:22px minmax(0,1fr) auto;gap:8px 11px;align-items:start;}
+    .led-row > .sp{grid-column:1;grid-row:1 / span 2;}
+    .led-row > .id{grid-column:2;grid-row:1;}
+    .led-row > .led-metrics{grid-column:3;grid-row:1;}
+    .led-row > .led-analysis{grid-column:2 / -1;grid-row:2;min-width:0;overflow-wrap:anywhere;}
   }
 
   /* ── track record: the plain read, with the study panel folded beneath ── */
@@ -403,8 +590,8 @@
       <p class="deck">{{ t('What still has room to run — surfaced before the crowd arrives.',
                           '仍有上行空间的机会 —— 抢在人群之前浮出水面。') }}
         <button class="lens-q" type="button" aria-label="How this page ranks names"
-          data-tip-en="Ranked by genuine signal × how much of the move is still ahead × whether a leading desk fired before the crowd. Deliberately NOT ranked by how many desks agree — agreement is a lagging condition, so a crowd favourite that has already run is demoted. Four evidence desks carry a direction: news flow, alt-data, divergence radar, buy-board; conviction only breaks ties. Policy intent is shown as context and never moves a name's rank. A desk with a proven weak track record can only pull a name down, never lift it. Context only, never a trade trigger."
-          data-tip-zh="排序依据：真实信号 × 行情尚未走完的幅度 × 领先信号台是否抢在人群之前发动。刻意不按「多少台一致」排序 —— 一致性是滞后条件，因此已经跑完的人群宠儿会被下调。四个证据台给出方向：新闻流、另类数据、背离雷达、买入榜；信念度仅用于并列时分先后。政策意图仅作背景展示，绝不影响排名。历史表现经证实偏弱的台只能下调排名，绝不能上调。仅供参考，绝非交易触发。">?</button></p>
+          data-tip-en="Four desks vote: news flow, alt-data, divergence radar and buy-board. Names rise when a real signal appears early and there is room for the move; conviction only breaks ties. Policy intent is shown as context, never moves a name's rank, and never votes. A desk with a weak measured history can only pull a name down, never lift it. Use this to prioritize research — it is never a trade trigger."
+          data-tip-zh="四个证据台参与投票：新闻流、另类数据、背离雷达、买入榜。真实信号越早、剩余空间越大，排名越靠前；信念度仅用于并列时打破平局。政策意图仅作背景展示，绝不影响排名，也从不参与投票。历史表现偏弱的台只能下调排名，绝不会拉高。这里只用于安排研究优先级，绝非交易触发。">?</button></p>
     </div>
     <div class="state">
       {% if MC.regime %}<i class="hot">{{ t('Regime', '格局') }} <b>{{ MC.regime }}{% if MC.quad %} {{ MC.quad }}{% endif %}</b></i>{% endif %}
@@ -413,6 +600,25 @@
       {% if MC.fed_stance %}<i>{{ t('Fed', '美联储') }} <b>{{ MC.fed_stance }}</b></i>{% endif %}
     </div>
   </header>
+
+  {# ── R1A-M Market Pulse — one compact page-level instrument (freeze §8/§11).
+        Baked by default (nightly build); the route-scoped controller
+        (site/assets/js/intelligence-hub-market-pulse.js) is the only writer
+        of the four state-axis attributes below and of `.l-en`/`.l-zh` inside
+        `[data-ihmp-status]`. `aria-live="polite"` on the ROOT, not a spammy
+        per-row announcement — one status line for the whole roster. ── #}
+  <div class="ihmp-bar" data-ihmp-root data-ihmp-availability="" data-ihmp-freshness=""
+       data-ihmp-session="" data-ihmp-coverage="" data-ihmp-baseline-at="{{ hub.as_of or '' }}"
+       aria-live="polite">
+    <span class="ihmp-dot" aria-hidden="true"></span>
+    <span data-ihmp-status>{{ t('Prices from the latest settled build', '价格来自最近一次结算构建') }}</span>
+    {#- d3: a visible baseline as-of — baked with the nightly build time; the
+        controller repaints it to the accepted projection's own as-of on a
+        successful refresh (site/assets/js/intelligence-hub-market-pulse.js).
+        The CSS already styles `.ihmp-bar time`; this creates the element it
+        was styling nothing for. -#}
+    <time data-ihmp-asof datetime="{{ built or '' }}">{{ (built or '')|replace('T',' ')|truncate(19, True, '') }}{% if built %} UTC{% endif %}</time>
+  </div>
 
   {# ── desk rail. Purpose + grading receipt ride the hover; Tier 1 keeps the
         name, the live lamp and the translated grading state. ── #}
@@ -428,8 +634,8 @@
     {% set live = (hub.desks.get(key) or {}).get('live') %}
     {% set qc = _ql.get(key) %}
     <a class="rl" href="{{ href }}"
-       data-tip-en="{{ desc }} · {{ 'live' if live else 'offline' }} · track record: {{ (qc.label if qc else 'UNGRADED · n=0') }}"
-       data-tip-zh="{{ desc_zh }} · {{ '在线' if live else '离线' }} · track record: {{ (qc.label_zh if qc else '未评级 · n=0') }}">
+       data-tip-en="{{ desc }} · {{ 'live' if live else 'offline' }} · track record: {{ qlreceipt(qc) }}"
+       data-tip-zh="{{ desc_zh }} · {{ '在线' if live else '离线' }} · 历史记录：{{ qlreceipt(qc, 'zh') }}">
       {{ ic(DICON.get(key,'news')) }}<span class="rn">{{ t(label, label_zh) }}</span>{{ qlword(qc) }}<span class="lamp {{ 'on' if live else '' }}"></span>
     </a>{% endfor %}
   </div>
@@ -444,7 +650,7 @@
   <div class="ecards">
     {% for d in EM %}
     <div class="card ecard lead" style="--accent:{{ 'var(--info)' if d.stage=='emerging' else 'var(--up)' }}">
-      <div class="et"><span class="tk">{{ d.ticker }}</span>{% if d.price is not none %}<span class="nb-px px" data-sym="{{ d.ticker }}" data-mkt="us">${{ '%.2f'|format(d.price) }}</span>{% endif %}
+      <div class="et"><span class="tk">{{ d.ticker }}</span>{{ ihmp(d.ticker, d.price) }}
         {{ stage(d.stage) }}{{ entrybadge(d.entry_gate) }}{{ tstate(d.trajectory) }}
         <span class="score">{{ d.opportunity_score|round|int }}</span></div>
       {% if d.name and d.name != d.ticker %}<div class="nm">{{ d.name|e }}</div>{% endif %}
@@ -468,7 +674,7 @@
   <div class="ecards lst-collapse lst-cap4 is-collapsed">
     {% for d in hub.discovery %}{% set dd = d.discovery or {} %}
     <div class="card ecard dcard">
-      <div class="et"><span class="tk">{{ d.ticker }}</span>{% if d.price is not none %}<span class="nb-px px" data-sym="{{ d.ticker }}" data-mkt="us">${{ '%.2f'|format(d.price) }}</span>{% endif %}
+      <div class="et"><span class="tk">{{ d.ticker }}</span>{{ ihmp(d.ticker, d.price) }}
         <span class="chip src">{{ (dd.source or '')|replace('_',' ')|e }}</span>
         {% if dd.off_desk %}<span class="chip good">{{ t('off-desk','非台内') }}</span>{% endif %}
         <span class="dscore">{{ ((dd.disc_score or 0)*100)|round|int }}</span></div>
@@ -522,8 +728,8 @@
     <h2>{{ t('Command', '指挥榜') }}</h2><span class="ln"></span>
     <span class="legend" data-tip-en="{{ ROOM_EN }}" data-tip-zh="{{ ROOM_ZH }}"><span class="lg"></span>{{ t('room left', '剩余空间') }}</span>
     <span class="n">{{ hub.command|length }}</span></div>
-  <div class="stance">{{ t('Most room left first. <b>Nothing here is an entry unless it carries ⚡.</b>',
-                          '剩余空间最大者居前。<b>未带 ⚡ 者均非入场信号。</b>') }}</div>
+  <div class="stance">{{ t('Most room left first. <b>A ready-to-review badge means the entry checks agree; review before acting.</b>',
+                          '剩余空间最大者居前。<b>「可复核」表示入场条件一致；行动前仍需复核。</b>') }}</div>
   <div class="lst-wrap" data-ovl-title-en="Command — ranked by opportunity" data-ovl-title-zh="指挥榜 —— 按机会值排序" data-ovl-accent="var(--up)">
   <div class="led lst-collapse is-collapsed">
     {% for d in hub.command %}
@@ -531,17 +737,17 @@
     <div class="led-row">
       <span class="sp" style="--sp-c:{{ acc }};--sp-p:{{ ((d.edge_remaining or 0)*100)|round|int }}%"></span>
       <div class="id">
-        <div class="tkline"><span class="tk">{{ d.ticker }}</span>{% if d.price is not none %}<span class="nb-px px" data-sym="{{ d.ticker }}" data-mkt="us">${{ '%.2f'|format(d.price) }}</span>{% endif %}</div>
+        <div class="tkline"><span class="tk">{{ d.ticker }}</span>{{ ihmp(d.ticker, d.price) }}</div>
         {% if d.name and d.name != d.ticker %}<div class="nm">{{ d.name|e }}</div>{% endif %}
       </div>
-      <div><div class="score">{{ d.opportunity_score|round|int }}</div>
+      <div class="led-metrics"><div class="score">{{ d.opportunity_score|round|int }}</div>
         <div class="rmv">{{ ((d.edge_remaining or 0)*100)|round|int }}%</div></div>
       <div class="mtxc">{{ matrix(d.directions, d.composite_conviction, d.n_confirm) }}</div>
-      <div>
+      <div class="led-analysis">
         <div class="cline">{{ stage(d.stage) }}{{ entrybadge(d.entry_gate) }}{{ tstate(d.trajectory) }}{{ flags(d.flags) }}
           {%- if d.leading_gap and d.leading_gap>0 %}<span class="chip info">{{ t('leads by','领先') }} +{{ d.leading_gap }}</span>{% endif %}</div>
         {{ drivers(d.edge_drivers) }}
-        {% if d.falsifier %}<div class="watch">{{ t('Watching', '关注') }}: <b>{{ d.falsifier|e }}</b></div>{% endif %}
+        {% if d.falsifier %}{{ watchcopy(d.falsifier) }}{% endif %}
       </div>
     </div>{% endfor %}
   </div>
@@ -567,7 +773,7 @@
     {% set stg = e.get('by_stage') or {} %}
     <div class="card trc">
       <div class="th"><span class="h">{{ h }}{{ t('d', '天') }}</span>
-        {% if TR.proven.get(h) %}<span class="chip good" data-tip-en="Cleared the pre-registered significance bar at this horizon" data-tip-zh="该周期已通过预登记的显著性检验">{{ t('proven', '已验证') }}</span>
+        {% if TR.proven.get(h) %}<span class="chip good" data-tip-en="This horizon cleared the page's preset evidence threshold" data-tip-zh="该周期已达到本页预设的证据阈值">{{ t('supported', '有证据') }}</span>
         {% else %}<span class="chip" data-tip-en="Still accruing scored calls at this horizon — shown, not yet trusted" data-tip-zh="该周期样本仍在累积 —— 仅展示，尚未采信">{{ t('measuring', '测量中') }}</span>{% endif %}</div>
       <div class="trg">
         <div class="trcell" data-tip-en="Does a higher rank from this page actually go with a better return {{ h }} trading days later, measured against SPY? Above zero = yes.{% if ic_pooled %} Thin sample here, so the value is pooled across horizons (~).{% endif %}" data-tip-zh="本页排名越高，{{ h }} 个交易日后相对标普的收益是否真的越好？大于零 = 是。{% if ic_pooled %}该周期样本较少，取跨周期合并值（~）。{% endif %}">
@@ -624,7 +830,10 @@
   </footer>
 </div>
 <script src="theme.js"></script>
-{# intraday progressive enhancement: live (~15-min) prices on the surfaced names.
-   No-ops if not configured/served — the slow-brain scores stay nightly. #}
+{# R1A-M: the ONE route-scoped controller for every [data-ihmp-symbol] node on
+   this page (reactive-projection freeze §9/§10). No-ops if the page rendered
+   no roster targets or the live-prices setting is off — the baked page stays
+   fully usable either way. #}
+<script defer src="assets/js/intelligence-hub-market-pulse.js?v=20260902a"></script>
 </body>
 </html>

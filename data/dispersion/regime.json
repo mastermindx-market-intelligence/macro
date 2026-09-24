@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-08-27",
-  "state": "lean_in",
-  "dispersion_pctile": 0.94,
+  "as_of": "2026-09-23",
+  "state": "lean_out",
+  "dispersion_pctile": 0.3,
   "avg_corr": 0.06,
-  "shadow_gross_mult": 1.2,
+  "shadow_gross_mult": 0.75,
   "gross_mult_live": 1.0,
   "passport": {
     "basis": "prior",
@@ -259,19 +259,127 @@
     {
       "as_of": "2026-08-27",
       "state": "lean_in",
-      "dispersion_pctile": 0.94,
+      "dispersion_pctile": 0.91,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-08-28",
+      "state": "lean_in",
+      "dispersion_pctile": 0.91,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-08-29",
+      "state": "lean_in",
+      "dispersion_pctile": 0.81,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-08-30",
+      "state": "lean_in",
+      "dispersion_pctile": 0.81,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-08-31",
+      "state": "lean_in",
+      "dispersion_pctile": 0.73,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-04",
+      "state": "neutral",
+      "dispersion_pctile": 0.46,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-05",
+      "state": "neutral",
+      "dispersion_pctile": 0.45,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-06",
+      "state": "neutral",
+      "dispersion_pctile": 0.45,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-09",
+      "state": "neutral",
+      "dispersion_pctile": 0.41,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-10",
+      "state": "neutral",
+      "dispersion_pctile": 0.41,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-11",
+      "state": "neutral",
+      "dispersion_pctile": 0.34,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-12",
+      "state": "neutral",
+      "dispersion_pctile": 0.35,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-13",
+      "state": "neutral",
+      "dispersion_pctile": 0.36,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-14",
+      "state": "neutral",
+      "dispersion_pctile": 0.36,
+      "avg_corr": 0.07
+    },
+    {
+      "as_of": "2026-09-15",
+      "state": "neutral",
+      "dispersion_pctile": 0.39,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-17",
+      "state": "neutral",
+      "dispersion_pctile": 0.35,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-18",
+      "state": "neutral",
+      "dispersion_pctile": 0.4,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-22",
+      "state": "lean_out",
+      "dispersion_pctile": 0.31,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-23",
+      "state": "lean_out",
+      "dispersion_pctile": 0.3,
       "avg_corr": 0.06
     }
   ],
-  "label": "Selection pays \u2014 high dispersion",
-  "label_zh": "\u9009\u80a1\u6709\u6548 \u2014 \u9ad8\u79bb\u6563\u5ea6",
+  "label": "Macro tape \u2014 selection muted",
+  "label_zh": "\u5b8f\u89c2\u4e3b\u5bfc \u2014 \u9009\u80a1\u5f31\u5316",
   "eigen": {
     "basis": "trailing_252d_fixed",
-    "n_names_used": 1500,
+    "n_names_used": 1477,
     "n_days_used": 252,
-    "dominant_equity_pc_share": 0.1718,
-    "effective_universe_bets_pr": 23.59,
-    "idio_dispersion_share": 0.7671,
+    "dominant_equity_pc_share": 0.1707,
+    "effective_universe_bets_pr": 23.53,
+    "idio_dispersion_share": 0.704,
     "sector_pc_loadings": null,
     "note": "sector map not wired (deferred); display-only \u2014 DISP-EIGEN-1 registered, activation DEFERRED pending DISP-GATE-1 non-stationarity resolution",
     "display_only": true

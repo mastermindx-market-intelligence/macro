@@ -1,33 +1,14 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-08-27T11:58:32+00:00",
-  "summary": "Context-only shadow deliberation: the blackboard remains risk-on while the US regime is low-confidence Q2/Reflation and transitioning. Risk Radar is calm and receding: its measured 21-day pullback rate is 13.0% versus a 17.8% base rate, so it is not an adverse edge. Breadth is healthy and volatility is normalizing, but market confirmation has no fresh internal chips. The principal restraint is orderly liquidity contraction, alongside restrictive real yields and an in-progress August inflation proxy indicating upward price pressure; that proxy is not an official CPI observation. Factor evidence is immature: only 10 panel dates, no Pair G records, no factor-attention track record, and no tradeable composite. No new hypothesis was staked because the available observations do not yet justify spending the weekly metabolism budget.",
-  "what_fired": [
-    "Risk-on world-state display verdict, score 76.",
-    "Risk Radar de-escalation eligibility: internals, growth, and rates scares have receded; h21 drawdown rate is flat at 13%.",
-    "One confluence tension: 27 ticker-level demand-versus-supply divergences conflict with the briefing aggregation.",
-    "Options contradiction context for existing buy-lane names KDP and NBIS: five-day OTM-put skew is rising; de-escalation context only.",
-    "Three shadow attention items were recorded: briefing divergence persistence, KDP options contradiction, and stale master-brain thesis hygiene."
-  ],
-  "contradictions_review": "The current graph contains two display-only tensions. First, ticker-level demand/tape evidence conflicts with briefing aggregation across 27 names, including IBM, FTNT, VSAT, and IRDM. Second, rising five-day OTM-put skew contradicts existing buy-lane context for KDP and NBIS; this may only de-escalate and cannot imply a short. Pair G is dormant because the factor panel has fewer than 60 distinct dates. Open master-brain theses are also operationally conflicted with current evidence: repeated underweight semiconductors theses face recent positive XLK/SMH short-horizon momentum, while growth-over-value underweights face IWF/IWD +3.17% and QQQ/SPY +2.48% over 20 days. These disagreements are attention matters, not new directional claims. Several thesis check-by dates have passed, and duplicate thesis IDs reduce audit clarity.",
-  "decaying_families": [
-    "Master-brain open theses past their check-by dates remain unscored or unretired, including semiconductors, Bitcoin, China equities, long Treasuries, high-yield credit, and US equities.",
-    "Policy engine outcomes are negative across available 5-day and 21-day Q1/Q2 samples and remain unarmed.",
-    "Desk thematic, stock, and AI families show negative 63-day signed excess and remain unarmed.",
-    "Radar signed-excess rows are negative across 5-day, 21-day, and 63-day horizons; its present calm reading is therefore retained only as measured risk context.",
-    "Factor composite, investment, low-volatility, and low-beta legs are non-tradeable or negative-IC; the panel history floor is not met."
-  ],
-  "deserves_operator": [
-    "Review whether the 27 briefing-versus-ticker divergences persist: clear only if the next two nightly builds fall below 10 names and no name persists for three consecutive sessions.",
-    "Review KDP's existing buy-lane context while put skew is rising: clear after two consecutive observations without rising skew or if KDP exits the lane. Do not infer a short.",
-    "Repair thesis-ledger hygiene within five trading sessions: score, retire, or explicitly extend all overdue open theses and resolve duplicate IDs.",
-    "Review semiconductor underweight theses against current counterevidence before their next use: recent tech momentum is positive, although 60-day SMH performance remains weak and leadership breadth is strained.",
-    "Review growth-over-value underweight theses against the current +3.17% 20-day IWF/IWD pulse; this is a contradiction to an existing thesis, not an originated overweight.",
-    "Treat liquidity contraction as a missing confirmation for the risk-on tape: orderly drain is a headwind context, but funding and credit stress remain calm."
-  ],
+  "as_of": "2026-09-23T22:57:48+00:00",
+  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
+  "what_fired": [],
+  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
+  "decaying_families": [],
+  "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-08-26",
+    "as_of": "2026-09-23",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -39,74 +20,72 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 9,
-      "total_rows": 17
+      "ungradeable": 88,
+      "total_rows": 96
     },
     "is_context_only": true
   },
-  "tool_call_census": {
-    "read_world_state": 1,
-    "read_factor_state": 1,
-    "query_spine": 1,
-    "read_contradictions": 1,
-    "list_factor_contradictions": 1,
-    "read_kernel": 1,
-    "read_master_brain_theses": 1,
-    "flag_attention": 1,
-    "write_memo": 1
-  },
+  "tool_call_census": {},
   "is_context_only": true,
   "run_status": {
-    "status": "ok",
-    "degraded": false,
-    "degradation_reason": null,
-    "model_used": "claude-opus-4-8",
+    "status": "degraded",
+    "degraded": true,
+    "degradation_reason": "model_unavailable",
+    "model_used": "claude-sonnet-4-6",
     "provider_attempts": [
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCV5y9ieVGXBYS9acAr'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCWN8XgZpVYKJEXWyYa'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCayEmCmVR9VFfpqoEf'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfMCpRyxVdzABCgg2RpFy'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-sonnet-4-6",
+        "attempted": true,
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
       }
     ],
-    "tool_call_batches": 4,
-    "individual_tool_calls": 9,
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-08-27T10:18:38Z"
+    "context_as_of": "2026-09-23T21:21:56Z"
   }
 }

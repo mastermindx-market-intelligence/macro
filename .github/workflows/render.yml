@@ -88,6 +88,7 @@ on:
       - "scripts/build_aibrief.py"
       - "scripts/build_allocation.py"
       - "scripts/build_alt_data.py"
+      - "scripts/build_am_edition.py"
       - "scripts/build_anticipation.py"
       - "scripts/build_baskets.py"
       - "scripts/build_biocatalyst.py"
@@ -96,6 +97,8 @@ on:
       - "scripts/check_government_revenue_projection.py"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
       - "contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json"
+      - "config/market_reference.yml"
+      - "scripts/build_market_reference.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
       - "scripts/build_baskets_china_ths.py"
@@ -107,6 +110,10 @@ on:
       - "scripts/build_calibration.py"
       - "scripts/build_canada.py"
       - "scripts/build_canada_library.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. A module-only edit
+      # must still re-bake the capital-structure page that cites the projection.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_china.py"
@@ -147,6 +154,7 @@ on:
       - "scripts/build_leader_radar.py"
       - "scripts/build_live_overlay.py"
       - "scripts/build_macro_context.py"
+      - "scripts/build_macro_suite_pages.py"
       - "scripts/build_market_heatmap.py"
       - "scripts/build_market_memory_page.py"
       - "scripts/build_market_structure_page.py"
@@ -172,6 +180,7 @@ on:
       - "scripts/build_reports.py"
       - "scripts/build_research_pages.py"
       - "scripts/build_research_vault.py"
+      - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_seasonality.py"
       - "scripts/build_stock_seasonality_page.py"
@@ -182,6 +191,7 @@ on:
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_special_situations.py"
       - "scripts/build_spr.py"
+      - "scripts/build_sanctions_map.py"
       - "scripts/build_spvector.py"
       - "scripts/build_stage_analysis_page.py"
       # TOP ANATOMY W1 (Winner Health) — beside its stage-analysis sibling: both
@@ -454,28 +464,11 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
-      # Restore the gitignored breadth close caches (the stock-search libraries +
-      # build_site's per-name analyze read constituent closes) and the intraday cache
-      # (chart data). Restore-only — the nightly `collect` job produces/saves them; we
-      # fall back via restore-keys to the most recent daily's cache.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-render-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-render-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-render-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # The US S&P 500/600/400 panels are Git-tracked committed inputs and are
+      # read directly from checkout; reader jobs must never overlay them from
+      # Actions cache. Only daily.collect may seed those panels. Russell, China,
+      # HK and intraday stores below are separate gitignored/cache-backed inputs
+      # and keep their existing restores.
       - name: restore Russell 2000 breadth close cache
         uses: actions/cache@v4
         with:
@@ -536,11 +529,11 @@ jobs:
               templates/international_macro.html.j2|scripts/build_international_macro.py|engine/international_macro_dashboard.py|collectors/intl_macro.py|data/intl_risk/cb_calendar.yml|docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md) echo intl;;
               templates/hk.html.j2|scripts/build_hk.py) echo hk;;
               templates/canada.html.j2|templates/canada_stock.html.j2|templates/canada_history.html.j2|templates/canada_sector.html.j2|scripts/build_canada.py|scripts/build_canada_library.py) echo canada;;
-              templates/commodities.html.j2|templates/spr.html.j2|templates/forex.html.j2|templates/bonds.html.j2|templates/crossasset.html.j2|templates/transmission.html.j2|templates/discovery.html.j2|templates/macro_context.html.j2|scripts/build_commodities.py|scripts/build_spr.py|scripts/build_forex.py|scripts/build_bonds.py|scripts/build_crossasset.py|scripts/build_transmission.py|scripts/build_discovery.py|scripts/build_macro_context.py) echo markets;;
+              templates/commodities.html.j2|templates/spr.html.j2|templates/sanctions_map.html.j2|templates/forex.html.j2|templates/bonds.html.j2|templates/crossasset.html.j2|templates/transmission.html.j2|templates/discovery.html.j2|templates/macro_context.html.j2|scripts/build_commodities.py|scripts/build_spr.py|scripts/build_sanctions_map.py|scripts/build_forex.py|scripts/build_bonds.py|scripts/build_crossasset.py|scripts/build_transmission.py|scripts/build_discovery.py|scripts/build_macro_context.py) echo markets;;
               templates/gex.html.j2|scripts/build_gex_board.py|scripts/build_options_flow.py|scripts/build_options_skew.py|scripts/build_vol_regime.py) echo gex;;
               # OIP E8 leaf-page narrowing — rationale in the step's YAML comment block.
               templates/options.html.j2|templates/options_screener.html.j2|scripts/build_options_command.py|scripts/build_options_screener.py) echo gex;;
-              templates/baskets.html.j2|templates/methodology.html.j2|templates/government_revenue.html.j2|scripts/build_baskets.py|scripts/build_methodology.py|scripts/build_government_revenue.py|scripts/build_government_revenue_candidates.py|scripts/check_government_revenue_projection.py|config/government_revenue/candidate_issuance_corrections.v1.json|contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json) echo baskets;;
+              templates/baskets.html.j2|templates/methodology.html.j2|templates/government_revenue.html.j2|scripts/build_baskets.py|scripts/build_methodology.py|scripts/build_government_revenue.py|scripts/build_government_revenue_candidates.py|scripts/check_government_revenue_projection.py|config/government_revenue/candidate_issuance_corrections.v1.json|contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json|config/market_reference.yml|scripts/build_market_reference.py) echo baskets;;
               templates/dashboard.html.j2|templates/stock.html.j2|templates/news.html.j2|templates/ticker.html.j2|templates/ticker_index.html.j2|templates/fundamental_forensics.*|templates/biocatalyst.*|scripts/build_site.py|scripts/build_ticker_pages.py|scripts/build_fundamental_forensics.py|scripts/build_biocatalyst.py) echo macro;;
               templates/special_situations.html.j2|templates/_special_situations_*.html.j2|scripts/build_special_situations.py) echo sits;;
               templates/*|scripts/build_*.py|config.yml|lib/*) echo all;;
@@ -749,6 +742,16 @@ jobs:
       #   serial post-band step.)
       # (This block was collateral damage in #3834's stale-base clobber; restored
       #  2026-07-30 — daily.yml's build_odds comment had been pointing at nothing.)
+      - name: restore options_skew ledger from R2 (W2-2 store-host accrual)
+        # The store host publishes the skew ledger to R2. This step copies it down
+        # before emit. If the copy fails, emit still renders the committed ledger
+        # and reports that ledger's as-of time. The failure is a warning, not a crash.
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
@@ -803,6 +806,7 @@ jobs:
             run_py "13F smart-money tracker (build_smart_money)"   scripts.build_smart_money
             run_py "policy-lever card (build_policy_lever)"        scripts.build_policy_lever
             run_py "macro dashboard + US stocks (build_site)"      scripts.build_site
+            run_py "research screener (build_research_screener)"   scripts.build_research_screener
             run_py "congressional trades desk (build_congress)"    scripts.build_congress
           }
 
@@ -817,6 +821,7 @@ jobs:
             run_py "demand desk page (build_demand)"    scripts.build_demand
             run_py "calibration hub (build_calibration)" scripts.build_calibration
             run_py "AI daily brief page (build_aibrief)" scripts.build_aibrief
+            run_py "AM edition producer (build_am_edition)" scripts.build_am_edition
             run_py "mastermind snapshot page (build_mastermind)" scripts.build_mastermind
             run_py "AI desk page (build_ai_desk_page)"  scripts.build_ai_desk_page
           }
@@ -897,6 +902,7 @@ jobs:
             cl_markets() {
               brun commodities  "build commodity vector (build_commodities)"         scripts.build_commodities
               brun spr          "build strategic reserves (build_spr)"               scripts.build_spr
+              brun sanctions_map "sanctions map (build_sanctions_map)"                 scripts.build_sanctions_map
               brun forex        "build forex vector (build_forex)"                   scripts.build_forex
               brun bonds        "build bonds & bond-health (build_bonds)"            scripts.build_bonds
               brun crossasset   "cross-asset vector (build_crossasset)"              scripts.build_crossasset
@@ -911,10 +917,10 @@ jobs:
               brun vol_regime   "index vol-regime (build_vol_regime)"        scripts.build_vol_regime
               brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
               brun flow_desk    "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
-              brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+              brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew --emit
               brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               # OIP E8: AFTER skew/ivspread so it reads this run's snapshots; inside cl_gex
-              # because build_options_skew rewrites snapshots.parquet non-atomically.
+              # because build_options_skew upserts snapshots.parquet atomically (temp file + rename).
               brun options_screener "US options screener page (build_options_screener)" scripts.build_options_screener
               brun options_entry "options entry state fusion table (build_options_entry_state)" scripts.build_options_entry_state
             }
@@ -927,6 +933,7 @@ jobs:
               # accrued calibration.json with an all-insufficient artifact on every push-to-main render.
               # grade_news_events belongs only in daily.yml where the accrued event_log lives.
               brun methodology "methodology page (build_methodology)"    scripts.build_methodology
+              brun reference   "market reference page (build_market_reference)" scripts.build_market_reference
             }
             cl_misc() {
               brun seasonality   "factor seasonality (build_seasonality)"      scripts.build_seasonality
@@ -976,7 +983,7 @@ jobs:
             # fail silently in the very lanes it added (its own /research/ SEO pages
             # going dark again with no annotation). Band membership without ORDER
             # membership is a builder that runs unwatched.
-            local ORDER="china cn_policy hk commodities spr forex bonds crossasset transmission discovery macro_context gex_board vol_regime options_flow flow_desk options_skew options_ivspread options_screener options_entry baskets news methodology seasonality stock_seasonality_page reports research_vault sectorcyc countrycyc cycle measurement markets policy_intent policy_watch index_changes stage_analysis_page winner_health_page tech_lab impulse"
+            local ORDER="china cn_policy hk commodities spr sanctions_map forex bonds crossasset transmission discovery macro_context gex_board vol_regime options_flow flow_desk options_skew options_ivspread options_screener options_entry baskets news methodology reference seasonality stock_seasonality_page reports research_vault sectorcyc countrycyc cycle measurement markets policy_intent policy_watch index_changes stage_analysis_page winner_health_page tech_lab impulse"
             echo "### ⏱ parallel band — per-builder wall-time" >> "$GITHUB_STEP_SUMMARY"
             for slug in $ORDER; do
               [ -f "$ART/$slug.log" ] || continue
@@ -1040,6 +1047,7 @@ jobs:
             markets)
               run_py "build commodity vector (build_commodities)"         scripts.build_commodities
               run_py "build strategic reserves (build_spr)"               scripts.build_spr
+              run_py "sanctions map (build_sanctions_map)"                scripts.build_sanctions_map
               run_py "build forex vector (build_forex)"                   scripts.build_forex
               run_py "build bonds & bond-health (build_bonds)"            scripts.build_bonds
               run_py "cross-asset vector (build_crossasset)"              scripts.build_crossasset
@@ -1052,7 +1060,7 @@ jobs:
               run_py "index vol-regime (build_vol_regime)"      scripts.build_vol_regime
               run_py "options flow desk (build_options_flow)"   scripts.build_options_flow
               run_py "group flow heatmap & market tide (build_flow_desk)" scripts.build_flow_desk
-              run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew
+              run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew --emit
               run_py "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               run_py "US options screener page (build_options_screener)" scripts.build_options_screener
               # flowleaders BEFORE optionscmd: options.html re-serialises
@@ -1063,6 +1071,7 @@ jobs:
               run_py "thematic baskets (build_baskets)"     scripts.build_baskets
               run_py "news suite (build_news)"              scripts.build_news
               run_py "methodology page (build_methodology)" scripts.build_methodology
+              run_py "market reference page (build_market_reference)" scripts.build_market_reference
               run_py "radar upgrade (build_radar_plus)"     scripts.build_radar_plus
               run_py "radar IC ledger (build_radar_ic)"     scripts.build_radar_ic
               run_py "radar page (build_radar_page)"        scripts.build_radar_page

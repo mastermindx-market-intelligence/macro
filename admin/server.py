@@ -112,6 +112,14 @@ _API_CACHE_TTL_S = 15.0
 # (/fp/realtime, the "N active" pill) is on _API_CACHE_BYPASS_PATHS below and is not
 # cached at all, so nothing being watched for freshness is affected by this.
 _API_CACHE_TTL_OVERRIDES: tuple[tuple[str, float], ...] = (
+    # Match Intelligence OS's own five-minute derived-estate cache.  Re-sending
+    # and re-serializing the same 100+ KB census every 15s buys no freshness:
+    # the underlying derivation itself is intentionally stable for five minutes.
+    ("/api/intelligence_os", 300.0),
+    # Metabolism's live run strip is a separate no-cache endpoint; the panel
+    # snapshot (repo variables + recent-run summary) does not need a full GitHub
+    # round trip every time the operator tabs away and back.
+    ("/api/metabolism", 60.0),
     ("/api/analytics/fp/", 60.0),
 )
 _API_CACHE_MAX_ENTRIES = 256
@@ -208,6 +216,7 @@ _CSP = ("default-src 'none'; "
         "base-uri 'none'; "
         "form-action 'self'; "
         "object-src 'none'; "
+        "frame-src https://control.mastermind-x.com; "
         "frame-ancestors 'none'")
 
 
@@ -482,7 +491,11 @@ class Handler(BaseHTTPRequestHandler):
         body = json.dumps(obj, default=str).encode()
         cache_key = getattr(self, "_response_cache_key", None)
         cache_status = None
-        if code == 200 and cache_key:
+        semantic_failure = (
+            isinstance(obj, dict)
+            and (obj.get("ok") is False or bool(obj.get("error")))
+        )
+        if code == 200 and cache_key and not semantic_failure:
             key, generation, ttl = cache_key
             _store_api_body(key, body, generation, ttl)
             cache_status = "MISS"
@@ -510,7 +523,8 @@ class Handler(BaseHTTPRequestHandler):
         for c in (cookies or []):
             self.send_header("Set-Cookie", c)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _csv(self, filename: str, body: bytes) -> None:
         """A real file download, not a JSON envelope the client re-wraps.
@@ -536,7 +550,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _file(self, name: str) -> None:
         p = (STATIC / name).resolve()
@@ -567,7 +582,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _body(self) -> dict:
         try:
@@ -686,9 +702,26 @@ class Handler(BaseHTTPRequestHandler):
             attrs += "; Secure"
         age = 0 if clear else settings.session_ttl_hours() * 3600
         sv, cv = ("" if clear else session), ("" if clear else csrf)
-        return [
+        cookies = [
             f"{auth.SESSION_COOKIE}={sv}; HttpOnly{attrs}; Max-Age={age}",
-            f"{auth.CSRF_COOKIE}={cv}{attrs}; Max-Age={age}",   # readable by JS (double-submit)
+        ]
+        if clear and settings.deployed():
+            cookies.append(
+                f"{auth.SESSION_COOKIE}=; HttpOnly; Domain=mastermind-x.com"
+                f"{attrs}; Max-Age=0"
+            )
+        cookies.append(
+            f"{auth.CSRF_COOKIE}={cv}{attrs}; Max-Age={age}"  # readable by JS (double-submit)
+        )
+        return cookies
+
+    def _promote_session_cookie(self, session: str) -> list[str]:
+        attrs = "; Path=/; SameSite=Strict; Secure"
+        age = settings.session_ttl_hours() * 3600
+        return [
+            f"{auth.SESSION_COOKIE}={session}; HttpOnly; Domain=mastermind-x.com"
+            f"{attrs}; Max-Age={age}",
+            f"{auth.SESSION_COOKIE}=; HttpOnly{attrs}; Max-Age=0",
         ]
 
     def _host_ok(self) -> bool:
@@ -722,6 +755,15 @@ class Handler(BaseHTTPRequestHandler):
                 return ("cross-origin request rejected", 403)
         return None
 
+    def do_HEAD(self):
+        """Mirror GET status and headers without writing a response body.
+
+        External monitors and HTTP clients routinely probe web surfaces with HEAD.
+        BaseHTTPRequestHandler otherwise answers 501, which made a healthy admin
+        console look unavailable even though GET / was 200.
+        """
+        return self.do_GET()
+
     # ---- GET ----------------------------------------------------------------
     _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/favicon.ico",
                    "/healthz", "/api/session"}
@@ -746,13 +788,20 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"ok": True, "service": "macro-admin",
                                    "deployed": settings.deployed()})
             if path == "/api/session":
+                auth_enabled = settings.auth_enabled()
+                authenticated = (not auth_enabled) or self._authed()
+                cookies = None
+                if settings.deployed() and auth_enabled and authenticated:
+                    cookies = self._promote_session_cookie(
+                        self._cookie_val(auth.SESSION_COOKIE) or ""
+                    )
                 return self._json({
-                    "auth_enabled": settings.auth_enabled(),
-                    "authenticated": (not settings.auth_enabled()) or self._authed(),
+                    "auth_enabled": auth_enabled,
+                    "authenticated": authenticated,
                     "deployed": settings.deployed(),
                     "public_url": settings.public_url(),
                     "integrations": _integrations(),
-                })
+                }, cookies=cookies)
 
             # everything else under /api requires a session when auth is on
             if settings.auth_enabled() and not self._authed():
@@ -840,7 +889,19 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/marketing/lobes":
                 return self._json(marketing.lobes())
             if path == "/api/marketing/content":
-                return self._json(marketing.content())
+                charts = (q.get("charts") or ["inline"])[0]
+                if charts not in {"inline", "metadata"}:
+                    return self._json({"ok": False, "error": "Unknown chart representation."}, 400)
+                return self._json(marketing.content(chart_mode="metadata")
+                                  if charts == "metadata" else marketing.content())
+            if path == "/api/marketing/content/chart":
+                result = marketing.content_chart(
+                    (q.get("id") or [None])[0], (q.get("revision") or [None])[0])
+                status = 200 if result.get("ok") else {
+                    "invalid_request": 400, "plan_changed": 409,
+                    "chart_ambiguous": 409, "chart_not_found": 404,
+                }.get(result.get("reason"), 503)
+                return self._json(result, status)
             if path == "/api/marketing/lab":
                 return self._json(marketing.lab())
             if path == "/api/marketing/sentinel":
@@ -902,7 +963,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-Security-Policy",
                                  "default-src 'none'; style-src 'unsafe-inline'; sandbox")
                 self.end_headers()
-                self.wfile.write(body)
+                if getattr(self, "command", None) != "HEAD":
+                    self.wfile.write(body)
                 return
             # Allies (ecosystem) cockpit — MKT-D11. Read-only; the page never
             # contacts anyone. Status is folded from the operator ledger.

@@ -15,7 +15,7 @@ status: active
 program: prophet-us
 p0: US_PROPHET_ENTRY_TIMING
 repos: [macro]
-owner: fable
+owner: sol
 class: build
 blast_radius: user_facing
 ambiguity: scoped
@@ -38,6 +38,9 @@ owns_paths:
   - tests/test_us_candidate_episode_intake.py
   - tests/test_us_candidate_episode_reconciler.py
   - tests/test_us_candidate_episode_wiring.py
+  - engine/prophet_b2_disposition.py
+  - tests/test_prophet_b2_disposition.py
+  - research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md
 depends_on:
   - WS:PROPHET-US-AVAILABILITY
   - WS:LIVE-ENTRY-RADAR
@@ -48,11 +51,27 @@ depends_on:
   - WS:PROPHET-US-ENTRY-TIMING
   - WS:EVAL-OS-MEASUREMENT-LAW
 decisions:
+  - DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE
   - DEC:PROPHET-V4-THEIA-SOURCE-RIGHTS
   - DEC:PROPHET-LAB-B5A-RECUT
   - DEC:PROPHET-B1-CANONICAL-EPISODE-BINDINGS
   - DEC:PROPHET-D5-PRESERVES-CONTEXT-VECTOR-AND-SEPARATES-EVIDENCE-AUTHORITY
+  - DEC:PROPHET-US-FABLE-META-CEO-DELEGATION
+  - DEC:PROPHET-US-D01-CONFLUENCE-VALIDITY-CONTRACT
+  - DEC:PROPHET-US-D02-EPISODE-ADMISSION-GATED
+  - DEC:PROPHET-US-D05-ENTRY-WATCH-PERSISTENCE
+  - DEC:PROPHET-US-D11-RELEASE-PATH-INCUMBENT-CONTROLS
+  - DEC:PROPHET-US-C-01-EARNINGS-SEQUENCING
 landmines:
+  - "R6 (2026-09-23): program judgment, D01-D12, B00-B28 and Q01-Q24 are delegated
+    to the Fable Meta-CEO seat (DEC:PROPHET-US-FABLE-META-CEO-DELEGATION; operation
+    prophet-us-fable-meta-ceo-20260923-001, #6805 comment 5793406610, PICKUP_ACK
+    5793983971). No Astra/Sol return is a prerequisite; existing technical owners,
+    independent review, source custody, rights, budget and release gates are unchanged.
+    Labor runs on the external fabric only; Fable/Opus children are permitted solely as
+    sub-orchestrators or adversarial auditors (Chairman live instruction, same day).
+    Incumbent carriers #7581/#7180/#7572 stay on their original writers until a
+    same-carrier custody statement is read."
   - "THE OUTAGE was LIVE at 0A (2026-08-17) and still unresolved at the 0B pin
     (2026-08-18T00Z: source_asof=2026-08-13, 206 plans). That historical fact is
     preserved. A1 is now RESOLVED by adoption of A1R #6320 plus the ordinary scheduled
@@ -149,6 +168,9 @@ artifacts:
   - research/prophet_v4/V4_A1_AVAILABILITY_RECOVERY_HANDOFF.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-a1-acceptance.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-b1-built.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FABLE_META_CEO_EXECUTION_HANDOFF.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/effective/PROPHET_US_MASTER_PLAN_R6.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FIRST_WAVE_RUNBOOK.md
 waves:
   - id: 0a
     title: "V4-0A — estate archaeology + architecture freeze. Merged #5832
@@ -194,21 +216,26 @@ waves:
   - id: b1
     depends_on: [a1]
     title: "V4-B1 — canonical candidate episode registry (prophet.candidate_episode/v1)"
-    status: in_progress
+    status: done
     next_action: >
-      BUILT_PENDING_NATURAL_ACCEPTANCE. Merge the reviewed B1 code/wiring, then wait
-      for the first ordinary scheduled nightly descendant. Accept only from its exact
-      HEAD-referenced immutable generation, receipt/source hashes, workflow ancestry,
-      and read-only canonical-reader proof. The B1 step itself is schedule-only and is
-      skipped by daily workflow_dispatch; a manual dispatch, rerun, replay, report mode,
-      or CI fixture is not natural acceptance. The Radar lineage input remains
-      PROPOSED/STAGED_NOT_ARMED: only WS:LIVE-ENTRY-RADAR may freeze and validate its
-      forward-projection contract and require exact immutable event_id before PRODUCED.
-      Do not arm or manufacture that store here. D5 remains blocked until then.
+      ACCEPTED / PROVEN_LIVE for the canonical episode data plane. Natural scheduled
+      run 33147282433 at descendant head 24ccea3fe482 published generation
+      peg:c025bb50c45f319f989a4848249b8a85b65354143e3262f2ad09d07841311b08;
+      commit a8ee11ba0e48 pushed the exact HEAD-selected bytes to main. The shared
+      validator and sole canonical loader read 467 lawful episodes / 915 events / 5,435
+      suppressions with zero duplicate episode, event, or source identities. The
+      unrelated standout_audit_us timed out before us_prophet_ledgers began; the workflow
+      continued, B1 then succeeded and pushed its durable generation, while the final run
+      conclusion remained cancelled solely because of that earlier unrelated timeout. Radar forward lineage
+      remains PROPOSED/STAGED_NOT_ARMED and is not widened by this acceptance.
   - id: b2
     depends_on: [b1]
     title: "V4-B2 — entry-event correction hardening (B-15..B-19)"
-    status: todo
+    status: in_progress
+    next_action: >
+      B2-0 records packet frozen: the B-15..B-19 disposition matrix + correction/
+      supersession/PIT-replay/mutation law — see
+      research/prophet_v4/B2_0_DISPOSITION_AND_MUTATION_PACKET_2026-09-04.md.
   - id: b3
     depends_on: [b1]
     title: "V4-B3 — orthogonal lifecycle contract (4 independent state fields)"
@@ -584,9 +611,32 @@ waves:
       A7 binds Earnings decision-time reads to the revision-chain reader and FORBIDS
       read_event_workspace there; A8 binds decision_cut to B1-owned opened_at/opened_session
       and sets tradable_at NOT_ASSERTED until B4; A9 requires episode_ref to pin the B1
-      generation_id. Runtime D5 stays gated on B1 natural-production acceptance (B1 is
-      MERGED / BUILT_NOT_PROVEN as 878930b3b2f9)."
-    status: todo
+      generation_id. B1 DEPENDENCY CLEARED 2026-08-28: natural run 33147282433 and
+      durable main commit a8ee11ba0e48 prove the canonical episode generation. This
+      clears only D5's B1 dependency. POST-RECONCILIATION LOCAL ACCEPTANCE 2026-08-31:
+      independent whole-branch hostile re-review 4 passed exact final reviewed head
+      f48c8d1598c49aa0f3b1eba85922c9e633dd114d with no P0/P1/P2/P3 findings. Merge head
+      bb34c575f58879f4944ca353e17ca6a6fa4512ca has that reviewed head and fresh-main
+      b7b3938aec35372dc32229981b4f3159f2b5faf2 as its exact parents. At the merge head,
+      focused D5 is 444 passed, hostile lineage/PIT 22 passed, complete
+      tests/test_ci_pack.py 117 passed, exact route/closure selectors 3 passed, the exact
+      Prophet Lab six-suite manifest line 453 passed, the clean declared-dependency Python
+      3.12 five-suite 435 passed, path-isolated routing 3/133 with prophet-lab selected
+      (plan hash 179a8fde50a3647cba6779dbdf781379dcbc9a6ea8b1c19214f312d4198bf896),
+      whole 14-file range 133/133 (plan hash
+      8740f42f6b48b70142dc044eebf6c8ea16771a893c98aa34cb6d5890a5e86bd9), and Agent OS
+      is 967 records / 0 errors / 40 warnings. The reconciled Caddyfile and boundary test
+      are byte-identical to fresh main. This is local proof only: hosted CI, PR, squash
+      merge to main, deploy, and authenticated covered plus typed-unresolved live receipts
+      remain pending. D6 and every other downstream wave remain gated."
+    status: in_progress
+    next_action: >
+      Complete D5 delivery from exact post-reconciliation proof without widening scope:
+      push the records-only child of merge head bb34c575f58879f4944ca353e17ca6a6fa4512ca,
+      open one PR, wait for concluded hosted CI, squash-merge, verify main and the normal
+      deploy, and collect authenticated covered plus typed-unresolved production receipts.
+      Fill the PR/merge/CI/deploy/live placeholders in the 2026-08-30 D5 pre-delivery
+      handoff before any `PROVEN_LIVE` claim.
   - id: d6
     depends_on: [d5]
     title: "V4-D6 — earnings adapter. Premise updated 0B: EIOS E1P is LIVE for the
@@ -625,14 +675,19 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  B1 is BUILT_PENDING_NATURAL_ACCEPTANCE on its single reviewed carrier. Merge it,
-  then wait for the first ordinary scheduled nightly descendant and validate the exact
-  HEAD-selected immutable generation, receipt/source hashes, ancestry, and canonical
-  read path. The B1 workflow step is schedule-only; do not dispatch, rerun, or replay as
-  a substitute. Radar forward lineage remains PROPOSED/STAGED_NOT_ARMED until its owner
-  freezes and validates an exact immutable-event relationship contract. D5 remains blocked;
-  PR #6275 stays a contract-only carrier to reconcile only after B1 acceptance without
-  losing its frozen D5 evidence terms. A2/A3/A4 and all other V4 waves remain separate.
+  R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent
+  #6805, PICKUP_ACK 5793983971): wave 2 closed 2026-09-23 (handoff
+  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave2-close.md; decisions
+  DEC:PROPHET-US-D03-SOURCE-READINESS-SCOPE, DEC:PROPHET-US-B16-CYCLE-INTERNAL-DIAGNOSTIC-ERA,
+  DEC:PROPHET-US-B04-EVIDENCE-DOSSIER-CONTRACT, DEC:PROPHET-US-D10-SOURCE-CUSTODY-ADMISSION).
+  Wave 3: merge DS-PR-0a (#7849) on concluded green and live-verify theme.css; adjudicate the
+  B20-1 component spec (#7851) after its repair lane and an Opus read-only audit; consume the
+  pre-registered Cycle (a) diagnostic run and B04-A from the m1 window (internal-only evidence,
+  never a pilot); rule R6-D07-01 on the D07 evidence-class register draft, then B04-B/C and
+  DS-PR-0c on 7849's merge sha. B01 stays with the #7180 writer; B03 merged by the #7572 writer
+  (177146dd) awaits production proof. The 2026-09-18 rotation mandate and the masterplan §21
+  wave graph remain in force beneath this program; never replay an old next action without
+  reconciling the R6 records.
 ---
 
 ## Context

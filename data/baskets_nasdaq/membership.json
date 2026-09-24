@@ -4,7 +4,7 @@
  "index": "Nasdaq-100",
  "benchmark": "QQQ",
  "benchmark_label": "Nasdaq-100 (QQQ)",
- "as_of": "2026-08-27",
+ "as_of": "2026-09-24",
  "source": "finviz idx_ndx + QQQ holdings; curated tech subsectors + amalgamations",
  "subsectors": {
   "semiconductors": {
@@ -44,24 +44,24 @@
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "ADI",
-     "name": "Analog Devices Inc"
-    },
-    {
      "ticker": "QCOM",
      "name": "Qualcomm Inc"
+    },
+    {
+     "ticker": "ADI",
+     "name": "Analog Devices Inc"
     },
     {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "ALAB",
      "name": "Astera Labs Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "MCHP",
@@ -86,20 +86,16 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
+     "ticker": "DDOG",
+     "name": "Datadog Inc"
     },
     {
      "ticker": "CDNS",
      "name": "Cadence Design Systems Inc"
     },
     {
-     "ticker": "DDOG",
-     "name": "Datadog Inc"
-    },
-    {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
@@ -108,6 +104,10 @@
     {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -200,12 +200,12 @@
      "name": "PDD Holdings Inc ADR"
     },
     {
-     "ticker": "DASH",
-     "name": "DoorDash Inc"
-    },
-    {
      "ticker": "MELI",
      "name": "MercadoLibre Inc"
+    },
+    {
+     "ticker": "DASH",
+     "name": "DoorDash Inc"
     }
    ]
   },
@@ -334,16 +334,20 @@
    "sector": "Software & Cloud",
    "members": [
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
     },
     {
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
+    },
+    {
      "ticker": "KTOS",
      "name": "KTOS"
+    },
+    {
+     "ticker": "AVAV",
+     "name": "AVAV"
     },
     {
      "ticker": "LUNR",
@@ -398,24 +402,24 @@
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "ADI",
-     "name": "Analog Devices Inc"
-    },
-    {
      "ticker": "QCOM",
      "name": "Qualcomm Inc"
+    },
+    {
+     "ticker": "ADI",
+     "name": "Analog Devices Inc"
     },
     {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "ALAB",
      "name": "Astera Labs Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "MCHP",
@@ -528,20 +532,16 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
+     "ticker": "DDOG",
+     "name": "Datadog Inc"
     },
     {
      "ticker": "CDNS",
      "name": "Cadence Design Systems Inc"
     },
     {
-     "ticker": "DDOG",
-     "name": "Datadog Inc"
-    },
-    {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
@@ -550,6 +550,10 @@
     {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -572,16 +576,20 @@
      "name": "Copart Inc"
     },
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
     },
     {
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
+    },
+    {
      "ticker": "KTOS",
      "name": "KTOS"
+    },
+    {
+     "ticker": "AVAV",
+     "name": "AVAV"
     },
     {
      "ticker": "LUNR",
@@ -630,12 +638,12 @@
      "name": "PDD Holdings Inc ADR"
     },
     {
-     "ticker": "DASH",
-     "name": "DoorDash Inc"
-    },
-    {
      "ticker": "MELI",
      "name": "MercadoLibre Inc"
+    },
+    {
+     "ticker": "DASH",
+     "name": "DoorDash Inc"
     },
     {
      "ticker": "TMUS",
@@ -853,7 +861,7 @@
     },
     {
      "ticker": "KHC",
-     "name": "Kraft Heinz Co"
+     "name": "KHC"
     },
     {
      "ticker": "AEP",

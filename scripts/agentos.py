@@ -64,11 +64,14 @@ from __future__ import annotations
 import argparse
 import datetime as _dt
 import fnmatch
+import hashlib
 import json
 import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
+from itertools import islice
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -96,6 +99,8 @@ _BRIEF_MARK = _ROOT / "data" / "governance" / ".ceo_brief_last"
 STATE_SCHEMA = "agent_os_state.v1"
 BRIEF_SCHEMA = "ceo_brief.v1"
 READINESS_SCHEMA = "agentos.readiness.v1"
+PROGRAM_REGISTRY_SCHEMA = "agentos.program_registry.v1"
+SOURCE_RECORDS_DIGEST_SCHEMA = "agentos.source_records_digest.v1"
 
 # Sibling checkouts, resolved by walking up from this repo.  Macro is this checkout; the
 # other two are separate clones under the shared project home.  Absent is NORMAL (I4).
@@ -116,6 +121,10 @@ WAVE_STATUS = {"todo", "in_progress", "awaiting_ci", "done", "dropped"}
 CLASSES = {"research", "build", "design", "adjudication", "mechanical"}
 BLAST = {"reversible", "user_facing", "irreversible"}
 AMBIGUITY = {"specified", "scoped", "open"}
+# A typed intentional wait (R8-B1).  CLOSED on purpose: an open vocabulary would let
+# each author mint a private reason, and "why is this still" would need a parser again.
+WAIT_KINDS = {"natural_evidence", "external_dependency", "calendar_window", "external_action"}
+WAIT_FIELDS = {"kind", "review_after", "condition"}
 CONFIDENCE_DEC = {"high", "medium", "low"}
 CONFIDENCE_DSC = {"verified", "probable", "suspected"}
 REVERSIBILITY = {"easy", "costly", "one_way"}
@@ -143,6 +152,12 @@ VERIFIED_FLOOR = "tests pass"
 STALE_DISCOVERY_DAYS = 90
 STALE_WORKSTREAM_DAYS = 30
 DEFAULT_CLAIM_HOURS = 12
+
+# A default CEO read should close cheap local truth gaps without reviving the 276-worktree
+# >120s failure mode that made the original scan opt-in.  Four bounded status calls cost at
+# most 20s at the timeout ceiling; larger hosts retain the explicit force flag.
+STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT = 4
+UNCOMMITTED_STATUS_TIMEOUT_SECONDS = 5.0
 
 
 class Problem:
@@ -204,6 +219,68 @@ def _load_programs() -> set[str] | None:
     return None
 
 
+def _load_program_registry(path: Path = _PROGRAMS) -> dict[str, Any]:
+    """Return the bounded semantic-program projection without changing legacy joins."""
+    source = "config/mastermind_programs.yml"
+
+    def unavailable(reason: str) -> dict[str, Any]:
+        return {
+            "schema": PROGRAM_REGISTRY_SCHEMA,
+            "available": False,
+            "reason": reason,
+            "source": source,
+            "programs": [],
+        }
+
+    if not path.exists():
+        return unavailable("program_registry_unavailable")
+    try:
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except UnicodeDecodeError:
+        return unavailable("program_registry_malformed")
+    except OSError:
+        return unavailable("program_registry_unavailable")
+    except yaml.YAMLError:
+        return unavailable("program_registry_malformed")
+
+    if not isinstance(doc, dict) or doc.get("schema") != "mastermind_programs.v1":
+        return unavailable("program_registry_malformed")
+    ontology = doc.get("ontology")
+    programs = doc.get("programs")
+    if not isinstance(ontology, dict) or not isinstance(programs, dict):
+        return unavailable("program_registry_malformed")
+    if any(not isinstance(key, str) or not key.strip() or key != key.strip() for key in programs):
+        return unavailable("program_registry_malformed")
+    lifecycle_values = ontology.get("lifecycle_states")
+    if not isinstance(lifecycle_values, list) or not lifecycle_values:
+        return unavailable("program_registry_malformed")
+    if any(not isinstance(value, str) or not value.strip() for value in lifecycle_values):
+        return unavailable("program_registry_malformed")
+    lifecycle = set(lifecycle_values)
+
+    rows: list[dict[str, str]] = []
+    for key in sorted(programs):
+        row = programs[key]
+        if not isinstance(row, dict):
+            return unavailable("program_registry_malformed")
+        projected: dict[str, str] = {}
+        for field in ("name", "lifecycle_state", "scope", "kind", "category"):
+            value = row.get(field)
+            if not isinstance(value, str) or not value.strip():
+                return unavailable("program_registry_malformed")
+            projected[field] = value
+        if projected["lifecycle_state"] not in lifecycle:
+            return unavailable("program_registry_malformed")
+        rows.append({"key": key, **projected})
+
+    return {
+        "schema": PROGRAM_REGISTRY_SCHEMA,
+        "available": True,
+        "source": source,
+        "programs": rows,
+    }
+
+
 # ---------------------------------------------------------------- helpers
 
 
@@ -248,6 +325,103 @@ def _date(rec: dict[str, Any], field: str, path: Path, out: list[Problem]) -> No
                 hard=True,
             )
         )
+
+
+def _is_review_date(value: Any) -> bool:
+    """``review_after`` is date-ONLY.  A timestamp reads as an instant something fires;
+    this is the date a HUMAN looks again, so the finer resolution would be a lie."""
+    if isinstance(value, _dt.datetime):
+        return False
+    if isinstance(value, _dt.date):
+        return True
+    if not isinstance(value, str) or not ISO_DATE_RE.match(value):
+        return False
+    try:
+        # Shape is not enough: '2026-13-45' matches the pattern and is not a day.
+        _dt.date.fromisoformat(value)
+    except ValueError:
+        return False
+    return True
+
+
+def _check_wait(rec: dict[str, Any], where: str, path: Path, out: list[Problem]) -> None:
+    """Validate one authored ``wait`` — the same contract at workstream and wave scope.
+
+    A wait says inactivity here is DELIBERATE and names the date its author will look
+    again.  It is testimony, not machinery: nothing in this file schedules, wakes, gates
+    or completes on it (I1), and ``condition`` is never parsed — it is opaque human
+    context, read only by a reader.  Absence is never inferred to mean anything.
+    """
+    wait = rec.get("wait")
+    if wait is None:
+        return
+    if not isinstance(wait, dict):
+        out.append(Problem(path, "bad-wait", f"{where}'wait' must be a mapping", hard=True))
+        return
+    unknown = sorted(set(wait) - WAIT_FIELDS, key=str)
+    if unknown:
+        out.append(
+            Problem(
+                path,
+                "bad-wait",
+                f"{where}'wait' carries unknown field(s) "
+                f"{', '.join(repr(name) for name in unknown)}; the contract is closed to "
+                f"{', '.join(sorted(WAIT_FIELDS))}",
+                hard=True,
+            )
+        )
+    kind = wait.get("kind")
+    if not isinstance(kind, str) or kind not in WAIT_KINDS:
+        out.append(
+            Problem(
+                path,
+                "bad-wait",
+                f"{where}'wait.kind' is {kind!r}; allowed: {', '.join(sorted(WAIT_KINDS))}",
+                hard=True,
+            )
+        )
+    review_after = wait.get("review_after")
+    if not _is_review_date(review_after):
+        out.append(
+            Problem(
+                path,
+                "bad-wait",
+                f"{where}'wait.review_after' must be a date-only YYYY-MM-DD next-review "
+                f"date, got {review_after!r}",
+                hard=True,
+            )
+        )
+    condition = wait.get("condition")
+    if not isinstance(condition, str) or not condition.strip():
+        out.append(
+            Problem(
+                path,
+                "bad-wait",
+                f"{where}'wait.condition' must be a non-empty string saying what the "
+                f"author will look at",
+                hard=True,
+            )
+        )
+
+
+def _wait_row(rec: dict[str, Any]) -> dict[str, Any] | None:
+    """Project an authored wait for JSON, or None when absent.
+
+    YAML hands back ``review_after`` as a ``date`` OBJECT, which ``json.dumps`` refuses;
+    normalizing to ISO text here is the whole transformation — no clock is read, no
+    remaining time is computed, and nothing is re-derived from the condition.
+    """
+    wait = rec.get("wait")
+    if not isinstance(wait, dict):
+        return None
+    review_after = wait.get("review_after")
+    if isinstance(review_after, _dt.date):
+        review_after = review_after.isoformat()
+    return {
+        "kind": str(wait.get("kind") or ""),
+        "review_after": str(review_after or ""),
+        "condition": str(wait.get("condition") or "").strip(),
+    }
 
 
 def _as_date(value: Any) -> _dt.date | None:
@@ -448,6 +622,29 @@ def git_dates(path: Path) -> tuple[str | None, str | None]:
     return (first[-1] if first else None), (last[0] if last else None)
 
 
+_GIT_DATE_BATCH_SIZE = 4
+
+
+def git_dates_batch(paths: Iterable[Path]) -> dict[Path, tuple[str | None, str | None]]:
+    """Read canonical per-path dates with a bounded, invocation-local I/O fan-out.
+
+    Keep git_dates semantics, input order and None results unchanged. Submit only
+    one small batch at a time, and join every thread before return or failure.
+    There is no persisted cache, new history policy or cross-call executor.
+    """
+    iterator = iter(paths)
+    batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    if not batch:
+        return {}
+    result: dict[Path, tuple[str | None, str | None]] = {}
+    with ThreadPoolExecutor(max_workers=_GIT_DATE_BATCH_SIZE,
+                            thread_name_prefix="agentos-git-dates") as executor:
+        while batch:
+            result.update(zip(batch, executor.map(git_dates, batch)))
+            batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    return result
+
+
 def _cycle(graph: dict[str, list[str]]) -> list[str] | None:
     """Return one cycle as a node list, or None.  Iterative DFS with an explicit stack."""
     WHITE, GREY, BLACK = 0, 1, 2
@@ -508,6 +705,7 @@ def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None)
     _enum(rec, "ambiguity", AMBIGUITY, path, out)
     _date(rec, "created", path, out)
     _date(rec, "updated", path, out)
+    _check_wait(rec, "", path, out)
 
     repos = rec.get("repos")
     if isinstance(repos, list):
@@ -578,6 +776,7 @@ def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None)
                             f"{where} ({wid}) status {wstatus!r}; allowed: "
                             f"{', '.join(sorted(WAVE_STATUS))}", hard=True)
                 )
+            _check_wait(wave, f"{where} ({wid}) ", path, out)
             deps = wave.get("depends_on") or []
             wave_graph[wid] = [d for d in deps if isinstance(d, str)]
         for wid, deps in wave_graph.items():
@@ -976,6 +1175,56 @@ class Store:
         return {k[len(marker):]: v for k, v in self.records.items() if k.startswith(marker)}
 
 
+def _record_repository_root(record_root: Path) -> Path:
+    """Repository root used for stable source-path identity.
+
+    The canonical store is ``<repo>/agentos``.  Tests and explicit ``--root`` callers
+    may use an equivalent isolated tree outside this checkout; its parent is then the
+    only honest repository-relative anchor.
+    """
+    resolved = record_root.resolve()
+    try:
+        resolved.relative_to(_ROOT)
+    except ValueError:
+        return resolved.parent
+    return _ROOT
+
+
+def _direct_record_paths(root: Path) -> list[Path]:
+    """Every direct authored record path the canonical store loader can inspect."""
+    return [
+        path
+        for folder, _prefix, _fileprefix, _checker in SPECS
+        for path in sorted((root / folder).glob("*.md"))
+    ]
+
+
+def _source_records_digest(
+    paths: Iterable[Path], *, repository_root: Path = _ROOT
+) -> str:
+    """Content identity of exact direct-record paths and bytes.
+
+    Each source contributes ``repository-relative UTF-8 path + NUL + SHA-256(bytes)``
+    inside one canonical compact JSON envelope.  Acquisition clocks, git metadata,
+    generated views and live joins never enter this function.
+    """
+    root = repository_root.resolve()
+    sources: dict[str, Path] = {}
+    for raw_path in paths:
+        path = Path(raw_path).resolve()
+        relative = path.relative_to(root).as_posix()
+        sources[relative] = path
+    rows = [
+        relative + "\0" + hashlib.sha256(sources[relative].read_bytes()).hexdigest()
+        for relative in sorted(sources)
+    ]
+    envelope = {"schema": SOURCE_RECORDS_DIGEST_SCHEMA, "sources": rows}
+    payload = json.dumps(
+        envelope, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
 def load_store(root: Path, programs: set[str] | None) -> Store:
     """Parse and check every record under ``root``.  Never raises; never writes."""
     store = Store(root)
@@ -1204,7 +1453,9 @@ def load_p0(degraded: Degraded) -> dict[str, str] | None:
     return out
 
 
-def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
+def scan_worktrees(
+    degraded: Degraded, *, deep: bool = False, auto_small: bool = False
+) -> dict[str, Any]:
     """Live checkout occupancy, via ``scripts/audit_stranded_work.py``.
 
     REUSED, not reimplemented: that module already knows how to read
@@ -1212,11 +1463,12 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
     status, and it had zero callers.  Only its pure local-git helpers are used — its
     ``main()`` does a ``git fetch``, which is a network call and is never invoked here.
 
-    ``deep`` adds the per-worktree uncommitted-source scan and is OFF by default because
-    it costs one ``git status`` per checkout: measured 276 live worktrees on this host,
-    most carrying a multi-GB ``data/`` tree, which put a plain ``brief`` past 120s. A CEO
-    command nobody waits for is a CEO command nobody runs, so the expensive half is
-    opt-in and its absence is stated rather than silently skipped.
+    ``deep`` forces the per-worktree uncommitted-source scan.  ``auto_small`` lets the
+    nightly status compiler perform that scan automatically only when the live set is small
+    enough to stay bounded.  The CEO brief deliberately leaves ``auto_small`` false so this
+    truth repair cannot consume its frozen 30-second read budget.  Each status call also has
+    its own timeout; a failed observation degrades loudly rather than becoming indistinguishable
+    from a clean tree.
     """
     try:
         # The repo-root pin is at module scope (see `_ROOT`), so `scripts` resolves here.
@@ -1232,19 +1484,33 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
                      "worktree occupancy unknown")
         return {"count": 0, "branches": [], "uncommitted": []}
     uncommitted: list[dict[str, Any]] = []
-    if deep:
+    scan_uncommitted = deep or (auto_small and len(branches) <= STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT)
+    if scan_uncommitted:
         for branch in sorted(branches):
             try:
-                dirty = stranded.dirty_source_paths(branches[branch])
-            except Exception:
+                dirty = stranded.dirty_source_paths(
+                    branches[branch], timeout=UNCOMMITTED_STATUS_TIMEOUT_SECONDS
+                )
+            except Exception as exc:
+                degraded.add(
+                    f"uncommitted-work scan failed for {branch!r} "
+                    f"({exc.__class__.__name__}) — source status unknown"
+                )
                 continue
             if dirty:
                 uncommitted.append({"branch": branch, "source_files": len(dirty)})
     else:
-        degraded.add(
-            f"uncommitted-work scan skipped over {len(branches)} worktrees "
-            "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
-        )
+        if auto_small:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                f"(nightly auto limit {STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT}; "
+                "one bounded `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
+        else:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
     return {
         "count": len(branches),
         "branches": sorted(branches),
@@ -1354,11 +1620,12 @@ def build_records(
     merged_truncated = bool((builds or {}).get("merged_truncated"))
     live_branches = set(worktrees.get("branches") or [])
 
+    dates = git_dates_batch(store.paths[f"WS/{key}"] for key in sorted(ws))
     out: list[dict[str, Any]] = []
     for key in sorted(ws):
         rec = ws[key]
         path = store.paths[f"WS/{key}"]
-        created, updated = git_dates(path)
+        created, updated = dates[path]
         status = rec.get("status")
         waves = [w for w in (rec.get("waves") or []) if isinstance(w, dict)]
         rollup = {name: 0 for name in sorted(WAVE_STATUS)}
@@ -1414,6 +1681,7 @@ def build_records(
                 "next_action": wave.get("next_action"),
                 "prs": wave_prs,
                 "done_at": done_at,
+                "wait": _wait_row(wave),
             })
 
         if status == "active" and waves and all(
@@ -1500,6 +1768,7 @@ def build_records(
             "depends_on": _refs(rec.get("depends_on"), "WS"),
             "blocked_by": blocked_by,
             "waves": rollup,
+            "wait": _wait_row(rec),
             "wave_detail": wave_detail,
             "prs": pr_rows,
             "claim": claim_row,
@@ -1762,6 +2031,8 @@ def build_state(
         if not problem.hard:
             warnings.append(problem.render(_ROOT))
 
+    program_registry = _load_program_registry(_PROGRAMS)
+
     age_hours: float | None = None
     stamp: str | None = None
     if builds:
@@ -1778,6 +2049,10 @@ def build_state(
     return {
         "schema": STATE_SCHEMA,
         "generator": "scripts/agentos.py status",
+        "source_records_digest": _source_records_digest(
+            _direct_record_paths(store.root),
+            repository_root=_record_repository_root(store.root),
+        ),
         # ---- envelope: volatile, excluded from the byte-identity comparison ----
         "generated_at": _iso_z(now),
         "inputs": {
@@ -1792,6 +2067,7 @@ def build_state(
             "degraded": degraded.items,
         },
         # ---- pure function of the authored records + join inputs ----
+        "program_registry": program_registry,
         "workstreams": records,
         "needs_ceo": [
             # `workstream`, matching blocked/finished/readiness and the documented
@@ -1811,7 +2087,10 @@ def build_state(
     }
 
 
-PURE_SECTIONS = ("schema", "generator", "workstreams", "needs_ceo", "warnings")
+PURE_SECTIONS = (
+    "schema", "generator", "source_records_digest", "program_registry", "workstreams",
+    "needs_ceo", "warnings"
+)
 
 
 def pure_section(state: dict[str, Any]) -> dict[str, Any]:
@@ -1936,7 +2215,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 
     builds = load_active_builds(degraded, Path(args.active_builds) if args.active_builds else None)
     p0_status = load_p0(degraded)
-    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted)
+    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted, auto_small=True)
 
     state = build_state(store, now=now, degraded=degraded, builds=builds,
                         p0_status=p0_status, worktrees=worktrees)
@@ -3090,6 +3369,12 @@ def _wave_line(wave: dict[str, Any], prs: dict[int, dict[str, Any]]) -> str:
         # Fail-OPEN on the PR join: "unknown" is an honest answer, and it is the normal
         # one in a sparse worktree where data/governance/ was never checked out.
         bits.append(f"PR #{number} {joined['state'].upper() if joined else 'unknown'}")
+    wait = _wait_row(wave)
+    if wait:
+        bits.append(
+            f"wait: {wait['kind']} · review_after: {wait['review_after']} · "
+            f"condition: {_flat(wait['condition'])}"
+        )
     if wave.get("next_action"):
         bits.append("next: " + _flat(wave["next_action"]))
     return " · ".join(bits)
@@ -3115,6 +3400,16 @@ def _workstream_excerpt(
         lines.extend(f"  {_wave_line(wave, prs)}" for wave in waves)
     if rec.get("blocked_by"):
         lines.append(f"blocked_by: {_flat(rec.get('blocked_by'))}")
+    wait = _wait_row(rec)
+    if wait:
+        # DECLARED, never inferred, and never executed: the reader is told this quiet is
+        # deliberate and when its author looks again.  `condition` is reproduced as
+        # authored (flattened to one line, never parsed) — reading it is a human's job.
+        lines.append(
+            f"wait (DECLARED INTENTIONAL INACTIVITY — schedules nothing, gates nothing): "
+            f"{wait['kind']} · review_after: {wait['review_after']} · "
+            f"condition: {_flat(wait['condition'])}"
+        )
     needs = rec.get("needs_ceo")
     if isinstance(needs, dict):
         lines.append(f"needs_ceo: {_flat(needs.get('question'))}")
@@ -3166,13 +3461,39 @@ def compile_bundle(
         store, workstream=workstream, task=task, search_fn=search_fn, degraded=degraded
     )
 
+    # Digest membership is entered where the walk RESOLVES a direct record, never read
+    # back from the emitted envelope.  An output-shaped enumeration silently loses every
+    # record the walk USES without emitting a row for it — a resolved `superseded_by`
+    # target is exactly that: it decides whether the superseded record is evicted or
+    # rendered, and appears in no section, no `excluded` row and no budget omission.  It
+    # also silently GAINS artifact pointers that merely name a record path the walk never
+    # opened.  Registering at the store-table door makes the two sets the same set by
+    # construction, so a later pack, section or tail cannot move one without the other.
+    # The BOUNDARY is the store table, not the store: a record the walk OPENS as a source
+    # is bound; the whole-store eligibility scans (`affects`/`scope` matching) and the
+    # citation-count join are read but never opened, and the amendment excludes auxiliary
+    # join results by name — binding them would be the whole-store hash it forbids.
+    sources: dict[str, Path] = {}
+
+    def source(table_key: str) -> Path:
+        """Resolve one direct record through the store table and bind it to identity."""
+        path = store.paths[table_key]
+        sources.setdefault(str(path.resolve()), path)
+        return path
+
     envelope: dict[str, Any] = {
         "schema": BUNDLE_SCHEMA,
+        "source_records_digest": _source_records_digest(
+            sources.values(), repository_root=_record_repository_root(store.root)
+        ),
         "target": {
             "workstream": f"WS:{target['key']}" if target["key"] else None,
             "task": task,
             "resolution": target["resolution"],
             "candidates": target["candidates"],
+            # Additive, and null when the target declares none — absence of a wait is
+            # never read as a claim that the work is unattended.
+            "wait": None,
         },
         "generated_at": _iso_z(now),
         "repo_sha": _repo_sha(),
@@ -3195,7 +3516,8 @@ def compile_bundle(
     dsc_all = store.of_type("DSC")
     hnd_all = store.of_type("HND")
     rec = ws_all[key]
-    ws_path = store.paths[f"WS/{key}"]
+    envelope["target"]["wait"] = _wait_row(rec)
+    ws_path = source(f"WS/{key}")
     program = rec.get("program") if isinstance(rec.get("program"), str) else None
     prs = _pr_index(builds)
     # Record-LOCAL hard problems only.  A sibling whose own frontmatter is wrong is a lie
@@ -3272,7 +3594,7 @@ def compile_bundle(
         if dep_rec is None:
             drop("dependency", f"WS:{dep}", "—", "dangling depends_on — no such record")
             continue
-        dep_path = store.paths[f"WS/{dep}"]
+        dep_path = source(f"WS/{dep}")
         if malformed("dependency", f"WS:{dep}", dep_path):
             continue
         _, dep_updated = git_dates(dep_path)
@@ -3321,11 +3643,14 @@ def compile_bundle(
         if dec_rec is None:
             drop("decision", f"DEC:{dec_key}", "—", "dangling citation — no such record")
             continue
-        dec_path = store.paths[f"DEC/{dec_key}"]
+        dec_path = source(f"DEC/{dec_key}")
         if malformed("decision", f"DEC:{dec_key}", dec_path):
             continue
         replacement, raw = _supersession(dec_rec, "DEC", dec_all)
         if replacement is not None:
+            # The replacement is READ, not rendered: eviction happens only because that
+            # record resolves, so its authored bytes are part of this bundle's identity.
+            source(f"DEC/{replacement}")
             # NEVER co-equal.  Supersession is the whole reason both records survive; a
             # bundle that listed them side by side would undo it.
             drop("decision", f"DEC:{dec_key}", dec_path, f"superseded_by DEC:{replacement}")
@@ -3390,11 +3715,12 @@ def compile_bundle(
         if dsc_rec is None:
             drop("discovery", f"DSC:{dsc_key}", "—", "dangling citation — no such record")
             continue
-        dsc_path = store.paths[f"DSC/{dsc_key}"]
+        dsc_path = source(f"DSC/{dsc_key}")
         if malformed("discovery", f"DSC:{dsc_key}", dsc_path):
             continue
         replacement, raw = _supersession(dsc_rec, "DSC", dsc_all)
         if replacement is not None:
+            source(f"DSC/{replacement}")
             drop("discovery", f"DSC:{dsc_key}", dsc_path, f"superseded_by DSC:{replacement}")
             continue
         if raw is not None:
@@ -3446,10 +3772,24 @@ def compile_bundle(
         emit("discoveries", row["item"])
 
     # ---- handoff: the LATEST only ------------------------------------------
-    mine: list[str] = [
-        stem for stem in sorted(hnd_all)
+    handoff_paths = {stem: store.paths[f"HND/{stem}"] for stem in sorted(hnd_all)}
+    mine = {
+        stem: path for stem, path in handoff_paths.items()
         if key in _refs(hnd_all[stem].get("workstream"), "WS")
-    ]
+    }
+    # The loader retains parsed records even when their association is invalid,
+    # and reports unparseable paths separately. Both are selection evidence.
+    for problem in store.problems:
+        if problem.rule == "unparseable" and problem.path.parent == store.root / "handoffs":
+            handoff_paths.setdefault(problem.path.stem, problem.path)
+    unassociated: set[str] = set()
+    for stem, path in handoff_paths.items():
+        date_match = HANDOFF_DATE_RE.search(stem)
+        if date_match and stem[:date_match.start()] == key and stem not in mine:
+            # Exact canonical filenames provide negative evidence only. They
+            # never rewrite a valid authored association to another workstream.
+            mine[stem] = path
+            unassociated.add(stem)
 
     def handoff_rank(stem: str) -> tuple[str, str]:
         match = HANDOFF_DATE_RE.search(stem)
@@ -3457,10 +3797,17 @@ def compile_bundle(
 
     if mine:
         latest = max(mine, key=handoff_rank)
-        for stem in mine:
-            hnd_path = store.paths[f"HND/{stem}"]
+        for stem, hnd_path in sorted(mine.items()):
+            # Bind malformed bytes too: they affect selection despite yielding
+            # no parsed record or emitted handoff.
+            sources.setdefault(str(hnd_path.resolve()), hnd_path)
             if stem != latest:
                 drop("handoff", stem, hnd_path, f"older_handoff (latest: {latest})")
+                continue
+            if stem in unassociated:
+                drop("handoff", stem, hnd_path,
+                     "malformed or inconsistent latest handoff association — no stale fallback")
+                degraded.add(f"record excluded (malformed association): {_rel(hnd_path)} — {stem}")
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
@@ -3602,6 +3949,9 @@ def compile_bundle(
     ]
     envelope["excluded"] = excluded
     envelope["omitted_due_to_budget"] = omitted
+    envelope["source_records_digest"] = _source_records_digest(
+        sources.values(), repository_root=_record_repository_root(store.root)
+    )
     # Re-read at the end: the walk itself degrades (an unresolvable DNR row, an absent
     # sibling), and a snapshot taken at envelope time would drop exactly those.
     envelope["degraded"] = list(degraded.items)
@@ -3788,7 +4138,7 @@ def main(argv: list[str] | None = None) -> int:
     p_status.add_argument("--md-out", help="AGENT_OS_STATE.md path override")
     p_status.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_status.add_argument("--scan-uncommitted", action="store_true",
-                          help="also scan every worktree for uncommitted source work")
+                          help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_status.add_argument("--dry-run", action="store_true",
                           help="print the JSON, write nothing")
     p_status.set_defaults(func=cmd_status)
@@ -3801,7 +4151,7 @@ def main(argv: list[str] | None = None) -> int:
     p_brief.add_argument("--json", action="store_true", help="emit ceo_brief.v1")
     p_brief.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_brief.add_argument("--scan-uncommitted", action="store_true",
-                         help="also scan every worktree for uncommitted source work")
+                         help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_brief.add_argument("--no-remember", action="store_true",
                          help="do not record this invocation as the last check-in")
     p_brief.set_defaults(func=cmd_brief)

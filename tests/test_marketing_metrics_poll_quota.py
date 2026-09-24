@@ -43,7 +43,7 @@ class _Pub:
         self._fail_from = fail_from
         self._error = error
 
-    def fetch_post_metrics(self, remote_id, *, now=None):
+    def fetch_post_metrics(self, remote_id, *, expected_channel_id=None, now=None):
         self.calls += 1
         if self._fail_from is not None and self.calls >= self._fail_from:
             return _Res(False, self._error)
@@ -110,15 +110,15 @@ class TestARateLimitStopsTheRun:
 class TestTheWorkflowPollsOnceADayNotOncePerSweep:
     WF = Path(__file__).resolve().parents[1] / ".github/workflows/marketing-publish.yml"
 
-    def test_the_poll_step_is_clock_gated(self):
+    def test_the_poll_step_is_due_since_success_gated(self):
         import yaml
         steps = yaml.safe_load(self.WF.read_text())["jobs"]["publish"]["steps"]
         step = [s for s in steps if "poll post metrics" in str(s.get("name", ""))][0]
         run = step["run"]
-        assert 'date -u +%H' in run and '"13"' in run, (
-            "the poller must be gated to one hour a day")
-        assert 'github.event_name' in run and 'schedule' in run, (
-            "a manual dispatch must still poll")
+        assert "--if-due" in run, (
+            "each sweep may check the local ledger, but only due provider ids may spend calls")
+        assert "date -u +%H" not in run and "date -u +%M" not in run, (
+            "a wall-clock slot turns Actions delay into a full-day telemetry gap")
 
     def test_the_gate_is_not_keyed_on_event_schedule(self):
         """The first version of this gate compared `github.event.schedule` to a

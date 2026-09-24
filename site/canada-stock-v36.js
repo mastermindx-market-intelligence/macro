@@ -14,9 +14,9 @@
    Terminal routes, the two artifact fetches.
 
    This file owns no ranking, signal, quote, lifecycle, entitlement, or persistence
-   semantics. It re-composes already-published Canada stock surfaces and reads the
-   existing Canada thematic-basket and sector-pulse artifacts. If anything required
-   is unavailable, the legacy page remains visible and functional. */
+   semantics. The server-rendered page owns the canonical shell and every owner
+   surface; this file binds interactions in place and reads the existing Canada
+   thematic-basket and sector-pulse artifacts as optional enhancement only. */
 (function () {
   "use strict";
 
@@ -24,17 +24,19 @@
   if (!PATH_RE.test(location.pathname) || window.__mmCanadaStockV36) return;
   window.__mmCanadaStockV36 = true;
 
-  var FONT_UI = "var(--font-ui,-apple-system,BlinkMacSystemFont,Inter,\"Segoe UI\",Roboto,sans-serif)";
   var state = { source: "top", view: "grid", filter: null, themes: [], sectors: [], cards: [], rows: [],
     /* V3.8 Act-Now panel presentation state (same contract as the HK
-       composer): anLane = visible lane on the mobile segmented selector;
-       anOpen = per-lane View-all expansion. Neither ever touches
-       source/filter. hasThemeRank gates all theme-rank language (missing
-       owner -> no number, no basis chip). Membership knowledge is PER
-       GROUP (each item's members is a Set or null), never a global flag. */
-    anLane: null, anOpen: {}, hasThemeRank: false };
+       composer): anLane is the visible lane on the mobile segmented selector.
+       Native details owns disclosure state; the composer never mirrors it.
+       Lane selection never touches source/filter. hasThemeRank gates all
+       theme-rank language (missing owner -> no number, no basis chip).
+       Membership knowledge is PER GROUP (each item's members is a Set or
+       null), never a global flag. */
+    anLane: null, anDefault: null, anMedia: null,
+    anHistoryBound: false, hasThemeRank: false };
   var rowsByTicker = Object.create(null);
   var tableObserver = null;
+  var quoteObserver = null;
 
   /* Owner-native Act-Now lane vocabulary (templates/canada.html.j2:854-996,
      `_ca_anlane(...)` title_en/title_zh). This is the single source for both
@@ -68,9 +70,54 @@
     var p = raw.split("-").map(Number), d = new Date(Date.UTC(p[0], p[1] - 1, p[2], 12));
     return { en: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(d), zh: p[0] + "年" + p[1] + "月" + p[2] + "日" };
   }
-  function liveDate() {
-    var d = new Date();
-    return { en: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(d), zh: d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日" };
+  function quotePlaneState(nodes) {
+    var list = Array.prototype.slice.call(nodes || []);
+    if (!list.length) return { state: "unavailable", detail: "" };
+    var accepted = { "1": "live", delayed: "delayed", stale: "stale", closed: "closed" };
+    var prefix = {
+      live: /^live · /,
+      delayed: /^≥\d+-min delayed · /,
+      stale: /^stale · /,
+      closed: /^market closed · /
+    };
+    var first = null;
+    for (var i = 0; i < list.length; i++) {
+      var raw = list[i] && list[i].getAttribute ? list[i].getAttribute("data-live") : null;
+      var stateName = accepted[raw];
+      var detail = list[i] && list[i].getAttribute ? String(list[i].getAttribute("title") || "").trim() : "";
+      if (!stateName || !prefix[stateName].test(detail)) return { state: "unavailable", detail: "" };
+      if (first && first.state !== stateName) return { state: "unavailable", detail: "" };
+      if (!first) first = { state: stateName, detail: detail };
+    }
+    return first || { state: "unavailable", detail: "" };
+  }
+  function quoteStatusCopy(receipt) {
+    if (!receipt || receipt.state === "unavailable") {
+      return { en: "Quotes unavailable · awaiting confirmation", zh: "报价暂不可用 · 等待确认" };
+    }
+    var bits = receipt.detail.split(" · "), basis = bits.slice(1).join(" · ");
+    var lead = receipt.state === "live" ? { en: "LIVE", zh: "实时" }
+      : receipt.state === "delayed" ? { en: bits[0].toUpperCase(), zh: bits[0] + " · 延迟" }
+      : receipt.state === "stale" ? { en: "STALE", zh: "陈旧" }
+      : { en: "MARKET CLOSED", zh: "市场已收盘" };
+    return { en: lead.en + (basis ? " · " + basis : ""), zh: lead.zh + (basis ? " · " + basis : "") };
+  }
+  function renderQuoteStatus() {
+    var host = qs("#ca-v36-quote-status");
+    if (!host) return;
+    var receipt = quotePlaneState(qsa('#ca-v36-card-grid .nb-px[data-sym][data-mkt="ca"]'));
+    var copy = quoteStatusCopy(receipt);
+    host.setAttribute("data-quote-state", receipt.state);
+    host.innerHTML = '<span class="ca-v36-quote-dot" aria-hidden="true"></span><b>' + bi(copy.en, copy.zh) + '</b>';
+  }
+  function observeQuoteStatus() {
+    var owner = qs("#ca-v36-card-grid");
+    renderQuoteStatus();
+    if (!owner || quoteObserver || !window.MutationObserver) return;
+    quoteObserver = new MutationObserver(function (mutations) {
+      if (mutations.some(function (mutation) { return mutation.type === "attributes"; })) renderQuoteStatus();
+    });
+    quoteObserver.observe(owner, { subtree: true, attributes: true, attributeFilter: ["data-live", "title"] });
   }
 
   function parseRows() {
@@ -89,10 +136,7 @@
     if (!host) return [];
     var cards = qsa(".pvcard", host);
     cards.forEach(function (card, i) {
-      /* V3 owns inventory visibility; legacy show-more state must not survive the move. */
-      card.classList.remove("sm-hidden");
-      card.hidden = false;
-      card.style.removeProperty("display");
+      /* Presentation markers only: owner order and membership stay untouched. */
       card.classList.toggle("ca-v36-top-pick", i < 5);
       card.setAttribute("data-ca-v36-order", String(i + 1));
     });
@@ -179,63 +223,6 @@
     return themes;
   }
 
-  function injectCss() {
-    if (qs("#ca-v36-css")) return;
-    var css = document.createElement("style");
-    css.id = "ca-v36-css";
-    css.textContent = [
-      "body.page-canada.ca-v36-mounted{font-family:" + FONT_UI + ";background:var(--bg);color:var(--text)}",
-      "body.page-canada.ca-v36-mounted>.panel{display:none!important}",
-      ".ca-v36{width:min(1480px,calc(100% - 32px));margin:22px auto 44px;font-family:" + FONT_UI + ";font-size:16.2px;line-height:1.48}",
-      ".ca-v36 *{box-sizing:border-box}.ca-v36 button,.ca-v36 input,.ca-v36 select{font-family:inherit}",
-      ".ca-v36-head{display:flex;align-items:center;gap:12px;min-height:66px;margin-bottom:14px}.ca-v36-head h1{margin:0;font-size:31.5px;line-height:1.05;font-weight:650;letter-spacing:-.03em}.ca-v36-head-spacer{flex:1}",
-      ".ca-v36-chip,.ca-v36-live{height:37px;display:inline-flex;align-items:center;gap:7px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--muted);font-size:12px;font-weight:600;white-space:nowrap}.ca-v36-live-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 9px color-mix(in srgb,var(--ok) 55%,transparent)}.ca-v36-live b{color:var(--ok)}",
-      /* V3.8: the standalone Leading Now strip is absorbed (§4). The fresh-
-         Prophet-signals cue (owner .pv-mk-new markers) rides compactly in
-         the Prophet header; the rank story lives in the labelled Leadership
-         rows themselves. */
-      ".ca-v36-fresh{color:var(--muted);font-size:12.2px;white-space:nowrap}",
-      ".ca-v36-lead-basis{height:26px;display:inline-flex;align-items:center;padding:0 9px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);color:var(--muted);font-size:11px;font-weight:650;white-space:nowrap}",
-      /* What to Act On Now — compact at-rest action map (V3.8 §5), same
-         grammar as the HK composer: four owner-native lanes, ≤3 rows per
-         lane before View all, name-first rows with an optional Prophet
-         count and the owner's group-research route only. */
-      ".ca-v36-an-body{padding:10px 12px 11px}",
-      ".ca-v36-an-seg{display:none;gap:6px;margin-bottom:10px}.ca-v36-an-seg button{flex:1;min-width:0;height:34px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 7px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer}.ca-v36-an-seg-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ca-v36-an-seg b{flex:none;font-variant-numeric:tabular-nums;font-weight:700}.ca-v36-an-seg button[aria-selected=true]{color:var(--text);border-color:color-mix(in srgb,var(--text) 30%,var(--line));background:var(--panel)}",
-      ".ca-v36-an-lanes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}",
-      ".ca-v36-an-lane{border:1px solid var(--line);border-radius:11px;background:var(--panel2);overflow:hidden}",
-      ".ca-v36-an-hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);border-top:2px solid currentColor;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.02em}.ca-v36-an-hd.buy{color:var(--ink-up,var(--up))}.ca-v36-an-hd.near{color:var(--ink-link,var(--link))}.ca-v36-an-hd.wait{color:var(--ink-warn,var(--warn))}.ca-v36-an-hd.avoid{color:var(--ink-down,var(--down))}.ca-v36-an-hd b{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}",
-      ".ca-v36-an-row-w{display:flex;align-items:stretch;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}.ca-v36-an-hd+.ca-v36-an-row-w{border-top:0}",
-      ".ca-v36-an-row{flex:1;display:flex;min-width:0;align-items:center;justify-content:space-between;gap:8px;min-height:32px;padding:5px 10px;border:0;background:transparent;color:inherit;font-size:12.6px;font-weight:650;text-align:left;cursor:pointer}.ca-v36-an-row:hover:not(:disabled),.ca-v36-an-row.is-active{background:color-mix(in srgb,var(--link) 6%,transparent)}.ca-v36-an-row:disabled{cursor:default}.ca-v36-an-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ca-v36-an-n{flex:none;color:var(--muted);font-size:10.6px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}",
-      ".ca-v36-an-go{flex:none;display:inline-flex;align-items:center;padding:0 9px;border-left:1px dashed color-mix(in srgb,var(--line) 80%,transparent);color:var(--muted);font-size:12px;text-decoration:none}.ca-v36-an-go:hover{color:var(--text);background:color-mix(in srgb,var(--link) 6%,transparent)}",
-      ".ca-v36-an-empty{padding:12px 10px;color:var(--muted);font-size:12px;text-align:center}",
-      ".ca-v36-an-more{display:block;width:100%;padding:7px 10px;border:0;border-top:1px dashed color-mix(in srgb,var(--line) 80%,transparent);background:transparent;color:var(--muted);font-size:11px;font-weight:650;cursor:pointer}.ca-v36-an-more:hover{color:var(--text)}",
-      ".ca-v36-empty-go{display:inline-block;margin-top:10px;color:var(--ink-link,var(--link));font-size:12px;font-weight:600;text-decoration:none}.ca-v36-empty-go:hover{text-decoration:underline}",
-      ".ca-v36-panel{margin-bottom:14px;border:1px solid var(--line);border-radius:13px;background:var(--panel);box-shadow:var(--card-shadow);overflow:hidden}.ca-v36-sec-hd{min-height:54px;display:flex;align-items:center;gap:10px;padding:0 15px;border-bottom:1px solid var(--line)}.ca-v36-sec-hd h2{margin:0;font-size:18px;font-weight:650;letter-spacing:-.012em}.ca-v36-sec-spacer{flex:1}.ca-v36-link{color:var(--ink-link,var(--link));font-size:13px;font-weight:600;text-decoration:none}.ca-v36-link:hover{text-decoration:underline}",
-      ".ca-v36-lead-cols{display:block}.ca-v36-lead-col-h{display:flex;justify-content:space-between;padding:11px 14px 10px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}",
-      ".ca-v36-lead-row{position:relative;width:100%;min-height:58px;display:grid;grid-template-columns:30px minmax(0,1fr) auto 34px;align-items:center;gap:9px;padding:10px 14px;border:0;border-top:1px solid color-mix(in srgb,var(--line) 72%,transparent);background:transparent;color:inherit;text-align:left;cursor:pointer;overflow:hidden;transition:.15s ease}.ca-v36-lead-row:after{content:\"\";position:absolute;left:0;bottom:0;width:var(--breadth,8%);height:1px;background:color-mix(in srgb,var(--link) 44%,transparent);opacity:.5}.ca-v36-lead-row:hover:not(:disabled),.ca-v36-lead-row.is-active{background:color-mix(in srgb,var(--link) 6%,transparent)}.ca-v36-lead-row:disabled{cursor:default}.ca-v36-rank{font-variant-numeric:tabular-nums;color:var(--muted);font-size:11.5px}.ca-v36-lead-name{display:block;font-size:14.7px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ca-v36-leaders{display:block;margin-top:3px;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ca-v36-count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:11.7px;text-align:right}",
-      ".ca-v36-stance{height:24px;display:inline-flex;align-items:center;padding:0 9px;border:1px solid currentColor;border-radius:6px;font-size:10px;font-weight:750;text-transform:uppercase;white-space:nowrap}.ca-v36-stance.buy{color:var(--ink-up,var(--up))}.ca-v36-stance.near{color:var(--ink-link,var(--link))}.ca-v36-stance.wait{color:var(--ink-warn,var(--warn))}.ca-v36-stance.avoid{color:var(--ink-down,var(--down))}",
-      ".ca-v36-expand-wrap{display:flex;justify-content:center;padding:9px 12px 11px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--panel2) 32%,transparent)}.ca-v36-expand{height:35px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font-size:12.5px;font-weight:650;cursor:pointer}.ca-v36-expand:hover{border-color:color-mix(in srgb,var(--text) 30%,var(--line));transform:translateY(-1px)}",
-      ".ca-v36-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.ca-v36-seg{display:inline-flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}.ca-v36-seg button{height:36px;padding:0 14px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--muted);font-size:13.1px;font-weight:650;cursor:pointer}.ca-v36-seg button[aria-selected=true]{background:var(--panel);border-color:var(--line);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.12)}.ca-v36-result{color:var(--muted);font-size:12px;white-space:nowrap}.ca-v36-filter{display:none;height:32px;align-items:center;padding:0 10px;border:1px solid color-mix(in srgb,var(--link) 35%,var(--line));border-radius:999px;background:color-mix(in srgb,var(--link) 7%,transparent);color:var(--text);font-size:12px;cursor:pointer}.ca-v36-filter.is-on{display:inline-flex}",
-      ".ca-v36-card-grid[hidden]{display:none!important}.ca-v36-card-grid .pvcard[hidden]{display:none!important}" +
-      ".ca-v36-card-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;padding:14px}.ca-v36-card-grid .pvcard{min-width:0;height:100%;font-family:" + FONT_UI + ";transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.ca-v36-card-grid .pvcard:hover{transform:translateY(-2px)}.ca-v36-card-grid .sm-hidden{display:flex!important}.ca-v36-card-grid .pv-chart svg{height:82px!important}.ca-v36-card-grid .pv-bd{padding:14px 14px 12px!important}.ca-v36-card-grid .pv-tk{font-family:" + FONT_UI + "!important;font-size:16.7px!important;font-weight:700!important;letter-spacing:-.012em!important}.ca-v36-card-grid .pv-nm{font-family:" + FONT_UI + "!important;font-size:12.5px!important}.ca-v36-card-grid .pv-ind{font-size:11.1px!important}.ca-v36-card-grid .pv-edge{font-family:" + FONT_UI + "!important}.ca-v36-card-grid .pv-edn{font-size:16px!important}.ca-v36-card-grid .nb-px.pv-px{font-family:" + FONT_UI + "!important;font-size:15.8px!important;font-weight:750!important}.ca-v36-card-grid .nb-chg.pv-chg{font-family:" + FONT_UI + "!important;font-size:13.4px!important;font-weight:750!important}.ca-v36 .nb-chg.up,.ca-v36-table .nb-chg.up{color:var(--ok)!important}.ca-v36 .nb-chg.down,.ca-v36-table .nb-chg.down{color:var(--act)!important}.ca-v36-card-grid .pv-chip{font-size:10.8px!important}.ca-v36-card-grid .pv-life-w,.ca-v36-card-grid .pv-stl{font-size:11.1px!important}.ca-v36-card-grid .pv-zn{min-height:42px!important;font-size:11.6px!important}.ca-v36-card-grid .pv-znr,.ca-v36-card-grid .pv-znm{font-family:" + FONT_UI + "!important;font-size:11.8px!important}",
-      ".ca-v36-card-grid .ca-v36-top-pick{border-color:color-mix(in srgb,var(--link) 20%,var(--line));box-shadow:0 0 0 1px color-mix(in srgb,var(--link) 8%,transparent),0 0 24px -16px color-mix(in srgb,var(--link) 42%,transparent),0 8px 24px -20px rgba(0,0,0,.55)}html[data-theme=light] .ca-v36-card-grid .ca-v36-top-pick{background:#fff;border-color:color-mix(in srgb,var(--link) 18%,var(--line));box-shadow:0 0 0 1px color-mix(in srgb,var(--link) 7%,transparent),0 10px 26px -22px color-mix(in srgb,var(--link) 30%,transparent)}.ca-v36-empty{grid-column:1/-1;padding:36px 16px;text-align:center;color:var(--muted);font-size:13px}.ca-v36-empty-switch{display:block;margin:10px auto 0;height:31px;padding:0 13px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);font-size:11.8px;font-weight:650;cursor:pointer}.ca-v36-empty-switch:hover{border-color:color-mix(in srgb,var(--text) 30%,var(--line));transform:translateY(-1px)}",
-      ".ca-v36-table{padding:12px 14px 15px}.ca-v36-table[hidden]{display:none!important}.ca-v36-table #stocktable-wrap{display:block!important}.ca-v36-table .stf-row,.ca-v36-table .stf-controls{font-family:" + FONT_UI + "!important}.ca-v36-table :is(input,select,button){min-height:38px;font-size:12.8px!important}.ca-v36-table .st-table{font-family:" + FONT_UI + "!important;font-size:13.3px!important}.ca-v36-table .st-table th{font-size:11px!important;padding:11px 10px!important}.ca-v36-table .st-table td{padding:11px 10px!important}.ca-v36-table .st-table td:nth-child(2) b{font-family:" + FONT_UI + "!important;font-size:13.8px}.ca-v36-table-live{display:inline-flex;align-items:baseline;gap:8px;white-space:nowrap;font-family:" + FONT_UI + "}.ca-v36-table-live .nb-px{font-size:14.8px;font-weight:700}.ca-v36-table-live .nb-chg{font-size:12.7px;font-weight:750}.ca-v36-table tr.ca-v36-hidden{display:none!important}",
-      ".ca-v36-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 14px}.ca-v36-tools b{font-size:12.8px;margin-right:2px}.ca-v36-tool{height:37px;display:inline-flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--muted);font-size:12.1px;font-weight:600;text-decoration:none}.ca-v36-tool:hover{color:var(--text);border-color:color-mix(in srgb,var(--text) 28%,var(--line));transform:translateY(-1px)}",
-      /* Evidence & Record — the moved `.trk` chip keeps its own box (border/
-         background/padding) from its page-level stylesheet; this only trims
-         the outer wrapping and matches the ca-v36 font stack. */
-      ".ca-v36-evidence-body{display:flex;justify-content:center;padding:13px 14px 15px;font-family:" + FONT_UI + "}.ca-v36-evidence-body .trk{margin:0;padding:9px 12px;font-family:" + FONT_UI + "}",
-      /* V3.8: the modal group-action band is gone — the at-rest What to Act
-         On Now panel above Prophet is the one home for group action. */
-      ".ca-v36-modal{position:fixed;inset:0;z-index:2147481000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,7,12,.62);backdrop-filter:blur(8px)}.ca-v36-modal.is-open{display:flex}.ca-v36-modal-card{width:min(1180px,calc(100vw - 32px));max-height:min(820px,calc(100vh - 36px));display:flex;flex-direction:column;border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:0 30px 90px rgba(0,0,0,.5);overflow:hidden}html[data-theme=light] .ca-v36-modal{background:rgba(50,64,90,.22)}html[data-theme=light] .ca-v36-modal-card{box-shadow:0 24px 70px rgba(20,32,64,.2)}.ca-v36-modal-hd{min-height:56px;display:flex;align-items:center;padding:0 15px;border-bottom:1px solid var(--line)}.ca-v36-modal-hd h3{margin:0;font-size:19px;font-weight:650}.ca-v36-modal-x{margin-left:auto;width:36px;height:36px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);font-size:21px;cursor:pointer}.ca-v36-modal-body{overflow:auto;padding:14px}.ca-v36-modal-pane{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel2)}.ca-v36-modal-pane h4{margin:0;padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px}.ca-v36-modal-table{width:100%;border-collapse:collapse;font-size:12.8px}.ca-v36-modal-table th{padding:9px 10px;color:var(--muted);font-size:10.8px;text-align:left;border-bottom:1px solid var(--line)}.ca-v36-modal-table td{padding:10px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}.ca-v36-modal-table tbody tr{cursor:pointer}.ca-v36-modal-table tbody tr:hover{background:color-mix(in srgb,var(--link) 6%,transparent)}.ca-v36-modal-table .num,.ca-v36-modal-table .leaders{color:var(--muted)}",
-      /* Mobile Act-Now grammar (§5.5): one segmented lane selector, one lane
-         body at a time, no stacked giant lane cards, no horizontal overflow. */
-      "@media(max-width:1200px){.ca-v36-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ca-v36-an-lanes{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:900px){.ca-v36-head{flex-wrap:wrap}.ca-v36-head-spacer{display:none}.ca-v36-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.ca-v36{width:min(100% - 20px,680px);margin-top:12px;font-size:15.8px}.ca-v36-head{gap:8px}.ca-v36-head h1{width:100%;font-size:27.5px}.ca-v36-fresh{white-space:normal}.ca-v36-sec-hd{align-items:flex-start;flex-wrap:wrap;padding:11px 12px}.ca-v36-sec-hd h2{font-size:17px}.ca-v36-controls{width:100%}.ca-v36-an-seg{display:flex}.ca-v36-an-lanes{grid-template-columns:1fr}.ca-v36-an-lane{display:none}.ca-v36-an-lane.is-current{display:block}.ca-v36-card-grid{grid-template-columns:1fr;padding:10px;gap:10px}.ca-v36-card-grid .pv-tk{font-size:16.3px!important}.ca-v36-card-grid .nb-px.pv-px{font-size:15.5px!important}.ca-v36-card-grid .nb-chg.pv-chg{font-size:13.1px!important}.ca-v36-modal{padding:8px}.ca-v36-modal-card{width:100%;max-height:calc(100vh - 16px)}.ca-v36-evidence-body{padding:11px 10px 13px}}"
-    ].join("\n");
-    document.head.appendChild(css);
-  }
-
   /* Leadership & Rotation (V3.8 §6 + §8.2.4, corrected per adversarial
      review 2026-08-27 finding 2): Canada's ONLY canonical leadership axis
      is the owner-published theme rank, so this surface renders THEMES ONLY
@@ -271,63 +258,113 @@
     host.hidden = !fresh;
   }
 
-  /* What to Act On Now (V3.8 §5) — at-rest action map above Prophet, same
-     grammar as the HK composer. Rows carry the same data-ca-lead-kind/-id
-     the leadership rows use (one activation path; population never touched)
-     plus the owner's group-research route. Lane order is the ACTION owner's
-     own DOM order via laneIdx — the theme/leadership axis never orders or
-     gates the action surface. */
-  var AN_AT_REST = 3;
-  function anLaneItems(tone) {
-    return state.sectors.filter(function (x) { return x.tone === tone; })
-      .sort(function (a, b) { return (a.laneIdx || 0) - (b.laneIdx || 0); });
+  /* What to Act On Now is server-owned. The enhancer may change only the
+     selector state, lane visibility, focus, and action-local history. Native
+     details owns expansion. The composer never creates, moves, clones,
+     filters, or reorders rows. */
+  function actionHost() { return qs("#ca-v36-an-body"); }
+  function actionTabs() {
+    var host = actionHost();
+    return host ? qsa("[data-ca-an-lane]", host) : [];
   }
-  function anRowHtml(x) {
-    var countHtml = x.count != null ? '<span class="ca-v36-an-n">' + x.count + ' · ' + bi("Prophet", "候选") + '</span>' : '';
-    var go = x.href ? '<a class="ca-v36-an-go" href="' + esc(x.href) + '" aria-label="' + esc(x.name.en) + ' sector research">↗</a>' : '';
-    /* Filter affordance ONLY under canonical membership (§10: membership
-       missing → omit count/filter, keep the group-detail route) — an
-       unknown-membership row is a research destination, not a filter that
-       would no-op and paint the whole board as matching. */
-    var act = x.members != null ? ' data-ca-lead-kind="sector" data-ca-lead-id="' + esc(x.id) + '"' : ' disabled';
-    return '<div class="ca-v36-an-row-w"><button class="ca-v36-an-row" type="button"' + act + '><span class="ca-v36-an-name">' + bi(x.name.en, x.name.zh) + '</span>' + countHtml + '</button>' + go + '</div>';
+  function actionLanes() {
+    var host = actionHost();
+    return host ? qsa("[data-ca-an-lane-body]", host) : [];
   }
-  function anLaneHtml(lane) {
-    var items = anLaneItems(lane.tone), open = !!state.anOpen[lane.tone];
-    var shown = open ? items : items.slice(0, AN_AT_REST);
-    var body = shown.length ? shown.map(anRowHtml).join("") : '<div class="ca-v36-an-empty">—</div>';
-    var more = items.length > AN_AT_REST
-      ? '<button class="ca-v36-an-more" type="button" data-ca-an-view="' + esc(lane.tone) + '" aria-expanded="' + open + '">' +
-        (open ? bi("Show fewer", "收起") : bi("View all " + items.length, "查看全部 " + items.length)) + '</button>'
-      : '';
-    var current = state.anLane === lane.tone ? " is-current" : "";
-    return '<div class="ca-v36-an-lane' + current + '" data-ca-an-lane-body="' + esc(lane.tone) + '"><div class="ca-v36-an-hd ' + lane.tone + '"><span>' + bi(lane.en, lane.zh) + '</span><b>' + items.length + '</b></div>' + body + more + '</div>';
+  function toneFromActionHash() {
+    var id = location.hash ? location.hash.slice(1) : "";
+    var lane = actionLanes().find(function (node) { return node.id === id; });
+    return lane ? lane.getAttribute("data-ca-an-lane-body") : null;
   }
-  function renderActNow() {
-    var host = qs("#ca-v36-an-body"); if (!host) return;
-    if (state.anLane == null) {
-      /* Elected ONLY while no lane has been chosen — a user who taps an
-         empty lane keeps it and sees its truthful "—" body (HK adversarial
-         review 2026-08-27, finding 1, baked in here from the start). */
-      for (var i = 0; i < LANE_DEFS.length; i++) {
-        if (anLaneItems(LANE_DEFS[i].tone).length) { state.anLane = LANE_DEFS[i].tone; break; }
-      }
-      if (state.anLane == null) state.anLane = LANE_DEFS[0].tone;
+  function laneIdForTone(tone) {
+    var tab = actionTabs().find(function (node) { return node.getAttribute("data-ca-an-lane") === tone; });
+    var href = tab && tab.getAttribute("href");
+    return href && /^#[A-Za-z][A-Za-z0-9_.:-]*$/.test(href) ? href.slice(1) : null;
+  }
+  function writeActionHash(tone, mode) {
+    var laneId = laneIdForTone(tone), next = laneId ? "#" + laneId : "";
+    if (!next || location.hash === next) return;
+    if (mode === "replace") history.replaceState(null, "", next);
+    else history.pushState(null, "", next);
+  }
+  function syncActNow(focusTone) {
+    var host = actionHost(); if (!host) return;
+    var mobile = window.matchMedia("(max-width: 680px)").matches;
+    host.setAttribute("data-active-lane", state.anLane || "");
+    var seg = qs(".ca-v36-an-seg", host);
+    if (seg) {
+      if (mobile) { seg.setAttribute("role", "tablist"); seg.setAttribute("aria-label", "What to Act On Now lanes"); }
+      else { seg.removeAttribute("role"); seg.removeAttribute("aria-label"); }
     }
-    var seg = '<div class="ca-v36-an-seg" role="tablist">' + LANE_DEFS.map(function (lane) {
-      return '<button type="button" role="tab" data-ca-an-lane="' + esc(lane.tone) + '" aria-selected="' + (state.anLane === lane.tone) + '"><span class="ca-v36-an-seg-t">' + bi(lane.en, lane.zh) + '</span><b>' + anLaneItems(lane.tone).length + '</b></button>';
-    }).join("") + '</div>';
-    host.innerHTML = seg + '<div class="ca-v36-an-lanes">' + LANE_DEFS.map(anLaneHtml).join("") + '</div>';
-    markLeadership();
+    actionTabs().forEach(function (tab) {
+      var tone = tab.getAttribute("data-ca-an-lane"), active = tone === state.anLane;
+      var laneId = laneIdForTone(tone);
+      if (mobile) {
+        tab.id = "ca-v36-an-tab-" + tone;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-controls", laneId);
+        tab.setAttribute("aria-selected", active ? "true" : "false");
+        tab.setAttribute("tabindex", active ? "0" : "-1");
+      } else {
+        tab.removeAttribute("id");
+        tab.removeAttribute("role");
+        tab.removeAttribute("aria-controls");
+        tab.removeAttribute("aria-selected");
+        tab.removeAttribute("tabindex");
+      }
+      if (active && focusTone === tone) tab.focus();
+    });
+    actionLanes().forEach(function (lane) {
+      var tone = lane.getAttribute("data-ca-an-lane-body"), active = tone === state.anLane;
+      lane.classList.toggle("is-current", active);
+      if (mobile) {
+        lane.setAttribute("role", "tabpanel");
+        lane.setAttribute("aria-labelledby", "ca-v36-an-tab-" + tone);
+        lane.hidden = !active;
+      } else {
+        lane.removeAttribute("role");
+        lane.removeAttribute("aria-labelledby");
+        lane.hidden = false;
+      }
+    });
   }
-  function setAnLane(tone) {
+  function adoptActNow() {
+    var host = actionHost(), tabs = actionTabs();
+    var selected = tabs.find(function (tab) { return tab.getAttribute("data-ca-an-default") === "true"; });
+    if (!host || !tabs.length) return;
+    state.anDefault = selected ? selected.getAttribute("data-ca-an-lane") : tabs[0].getAttribute("data-ca-an-lane");
+    state.anLane = toneFromActionHash() || state.anDefault;
+    host.classList.add("is-enhanced");
+    if (/^#anv2-/.test(location.hash) && !toneFromActionHash()) writeActionHash(state.anDefault, "replace");
+    if (!state.anMedia) {
+      state.anMedia = window.matchMedia("(max-width: 680px)");
+      var resizeActionMode = function () { syncActNow(); };
+      if (state.anMedia.addEventListener) state.anMedia.addEventListener("change", resizeActionMode);
+      else if (state.anMedia.addListener) state.anMedia.addListener(resizeActionMode);
+    }
+    if (!state.anHistoryBound) {
+      window.addEventListener("hashchange", reconcileActionLocation);
+      window.addEventListener("popstate", reconcileActionLocation);
+      state.anHistoryBound = true;
+    }
+    syncActNow();
+  }
+  function reconcileActionLocation() {
+    var tone = toneFromActionHash() || state.anDefault;
+    if (!tone) return;
+    if (/^#anv2-/.test(location.hash) && !toneFromActionHash()) writeActionHash(tone, "replace");
+    state.anLane = tone;
+    var focused = document.activeElement && document.activeElement.closest &&
+      document.activeElement.closest("[data-ca-an-lane]");
+    syncActNow(focused || /^#anv2-/.test(location.hash) ? tone : null);
+  }
+  function setAnLane(tone, focus, historyMode) {
     /* Presentation-only: never mutates the Prophet selection/filter. */
-    state.anLane = tone; renderActNow();
+    if (!actionTabs().some(function (tab) { return tab.getAttribute("data-ca-an-lane") === tone; })) return;
+    state.anLane = tone;
+    syncActNow(focus ? tone : null);
+    if (historyMode !== false) writeActionHash(tone, historyMode === "replace" ? "replace" : "push");
   }
-  function toggleAnLane(tone) {
-    state.anOpen[tone] = !state.anOpen[tone]; renderActNow();
-  }
-
   function itemForFilter() {
     if (!state.filter) return null;
     return (state.filter.kind === "theme" ? state.themes : state.sectors).find(function (x) { return x.id === state.filter.id; }) || null;
@@ -349,6 +386,9 @@
      leaves zero Top Picks but All Candidates DOES have matches, invite the
      reader to switch deliberately instead of doing it for them. */
   function emptyStateHtml() {
+    if (state.source === "top" && state.cards.length === 0) {
+      return bi("No Top Picks right now.", "当前暂无首选。");
+    }
     var item = itemForFilter();
     if (state.source === "top" && item && item.members) {
       var wouldAllShowMore = state.cards.some(function (card) { return item.members.has(ticker(card.getAttribute("data-ticker"))); });
@@ -364,16 +404,56 @@
       return bi("No current Prophet names in this group.", "该组别暂无 Prophet 候选。") +
         (item.href ? ' <a class="ca-v36-empty-go" href="' + esc(item.href) + '">' + bi("Open sector research ↗", "查看板块研究 ↗") + '</a>' : '');
     }
-    return bi("No names match this leadership filter.", "当前领先筛选下暂无匹配个股。");
+    return bi("No actionable cards match this leadership filter; matching watch/stage names remain below.", "当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。");
+  }
+  function boardPopulation() {
+    var owner = qs("#ca-v36-card-grid");
+    if (!owner) return null;
+    var raw = owner.getAttribute("data-owner-population");
+    raw = raw === null ? "" : String(raw).trim();
+    return /^\d+$/.test(raw) ? Number(raw) : null;
+  }
+  function watchPopulation() {
+    var owner = qs("#ca-v36-card-grid");
+    if (!owner) return null;
+    var raw = owner.getAttribute("data-owner-watch-population");
+    raw = raw === null ? "" : String(raw).trim();
+    return /^\d+$/.test(raw) ? Number(raw) : null;
+  }
+  function uniquePopulation() {
+    var owner = qs("#ca-v36-card-grid");
+    if (!owner) return null;
+    var raw = owner.getAttribute("data-owner-unique-population");
+    raw = raw === null ? "" : String(raw).trim();
+    return /^\d+$/.test(raw) ? Number(raw) : null;
+  }
+  function populationCopy(shown, board, watch, unique) {
+    if (board === null) {
+      return watch === null
+        ? bi(shown + " actionable cards shown · stage board unavailable · watch unavailable", "显示 " + shown + " 张可操作卡片 · 阶段榜单暂不可用 · 观察名单暂不可用")
+        : bi(shown + " actionable cards shown · stage board unavailable · " + watch + " watch names", "显示 " + shown + " 张可操作卡片 · 阶段榜单暂不可用 · 观察 " + watch + " 只");
+    }
+    if (watch === null) return bi(shown + " actionable cards shown · " + board + " stage-board names · watch unavailable", "显示 " + shown + " 张可操作卡片 · 阶段榜单 " + board + " 只 · 观察名单暂不可用");
+    return unique === null
+      ? bi(shown + " actionable cards shown · " + board + " stage-board names · " + watch + " watch names · unique total unavailable", "显示 " + shown + " 张可操作卡片 · 阶段榜单 " + board + " 只 · 观察 " + watch + " 只 · 去重总数暂不可用")
+      : bi(shown + " actionable cards shown · " + unique + " current names (" + board + " stage board + " + watch + " watch)", "显示 " + shown + " 张可操作卡片 · 当前共 " + unique + " 只（阶段榜单 " + board + " + 观察 " + watch + "）");
   }
   function applyFilter() {
     var shown = 0;
-    state.cards.forEach(function (card) { var show = allowed(ticker(card.getAttribute("data-ticker"))); card.hidden = !show; if (show) shown++; });
-    var empty = qs("#ca-v36-grid-empty");
-    if (empty) { empty.hidden = shown !== 0; if (shown === 0) empty.innerHTML = emptyStateHtml(); }
-    var result = qs("#ca-v36-result"); if (result) result.innerHTML = bi(shown + " shown · " + state.cards.length + " on board", "显示 " + shown + " 只 · 榜单共 " + state.cards.length + " 只");
-    var pill = qs("#ca-v36-filter"), item = itemForFilter();
-    if (pill) { pill.classList.toggle("is-on", !!item); pill.innerHTML = item ? bi(item.kind === "theme" ? "Theme" : "Sector", item.kind === "theme" ? "主题" : "板块") + ': ' + bi(item.name.en, item.name.zh) + ' ×' : ""; }
+    state.cards.forEach(function (card) {
+      var show = allowed(ticker(card.getAttribute("data-ticker")));
+      card.classList.remove("sm-hidden", "sm-reveal");
+      card.style.animationDelay = "";
+      card.hidden = !show;
+      if (show) shown++;
+    });
+    var empty = qs("#ca-v36-grid-empty"), item = itemForFilter();
+    var emptyProjection = shown === 0 && (state.source === "top" || !!(item && item.members));
+    if (empty) { empty.hidden = !emptyProjection; if (emptyProjection) empty.innerHTML = emptyStateHtml(); }
+    var board = boardPopulation(), result = qs("#ca-v36-result"), watch = watchPopulation(), unique = uniquePopulation();
+    if (result) result.innerHTML = populationCopy(shown, board, watch, unique);
+    var pill = qs("#ca-v36-filter");
+    if (pill) { pill.hidden = !item; pill.classList.toggle("is-on", !!item); pill.innerHTML = item ? bi(item.kind === "theme" ? "Theme" : "Sector", item.kind === "theme" ? "主题" : "板块") + ': ' + bi(item.name.en, item.name.zh) + ' ×' : ""; }
     markLeadership(); applyTableFilter();
   }
 
@@ -413,15 +493,23 @@
 
   function setSource(value) {
     state.source = value === "all" ? "all" : "top";
+    var prophet = qs("#ca-v36-prophet");
+    if (prophet) prophet.setAttribute("data-active-source", state.source);
     qsa("[data-ca-source]").forEach(function (b) { b.setAttribute("aria-selected", String(b.getAttribute("data-ca-source") === state.source)); });
     applyFilter();
   }
-  function setView(value) {
+  function adoptView(value) {
     state.view = value === "table" ? "table" : "grid";
+    if (state.view === "table") { enhanceTableQuotes(); applyTableFilter(); }
+  }
+  function setView(value) {
+    value = value === "table" ? "table" : "grid";
+    if (window.StockTable && typeof window.StockTable._setView === "function") return window.StockTable._setView(value);
+    adoptView(value);
     try { localStorage.setItem("mdx_stocktable_ca_view", state.view); } catch (e) {}
     qsa("[data-ca-view]").forEach(function (b) { b.setAttribute("aria-selected", String(b.getAttribute("data-ca-view") === state.view)); });
-    var grid = qs("#ca-v36-card-grid"), table = qs("#ca-v36-table"); if (grid) grid.hidden = state.view !== "grid"; if (table) table.hidden = state.view !== "table";
-    if (state.view === "table") { enhanceTableQuotes(); applyTableFilter(); }
+    var board = qs("#standouts");
+    if (board) board.classList.toggle("st-table-mode", state.view === "table");
   }
   /* Sol adversarial gate: leadership activation sets the filter only — it
      must never force-switch the Top Picks / All Candidates population.
@@ -453,71 +541,50 @@
   function closeModal() { var modal = qs("#ca-v36-modal"); if (!modal) return; modal.classList.remove("is-open"); modal.setAttribute("aria-hidden", "true"); document.documentElement.style.overflow = ""; }
 
   function bind(root) {
+    root.addEventListener("stocktable:ca-view", function (e) {
+      adoptView(e.detail && e.detail.view);
+    });
     root.addEventListener("click", function (e) {
       var b = e.target.closest("[data-ca-source]"); if (b) return setSource(b.getAttribute("data-ca-source"));
-      b = e.target.closest("[data-ca-view]"); if (b) return setView(b.getAttribute("data-ca-view"));
-      /* Act-Now presentation controls: distinct targets, never carry the
-         lead-kind/-id pair, never touch source/filter. */
-      b = e.target.closest("[data-ca-an-lane]"); if (b) return setAnLane(b.getAttribute("data-ca-an-lane"));
-      b = e.target.closest("[data-ca-an-view]"); if (b) return toggleAnLane(b.getAttribute("data-ca-an-view"));
+      /* Act-Now lane controls are distinct from lead-kind/-id rows and never
+         touch source/filter. Native summary activation is intentionally left
+         to the browser. */
+      b = e.target.closest("[data-ca-an-lane]"); if (b) { e.preventDefault(); return setAnLane(b.getAttribute("data-ca-an-lane")); }
       b = e.target.closest("[data-ca-lead-kind][data-ca-lead-id]"); if (b) return activate(b.getAttribute("data-ca-lead-kind"), b.getAttribute("data-ca-lead-id"));
       if (e.target.closest("#ca-v36-filter")) { state.filter = null; return applyFilter(); }
       if (e.target.closest("#ca-v36-expand")) return openModal();
       if (e.target.closest(".ca-v36-empty-switch")) return setSource("all");
     });
-  }
-
-  /* Evidence & Record (change 3, restores Track Record). The legacy `.trk`
-     wrapper (server-rendered by _track_record_dlg.html.j2, `#trd-btn` +
-     `#trd-dlg`) is owner DOM the composer relocates — never rebuilt, never
-     computed, never fetched. board_track is a conditional include, so `.trk`
-     (or its `#trd-btn` button) can legitimately be absent; that degrades
-     quietly to no section rather than a placeholder. */
-  function evidenceTrk() {
-    var trk = qs(".trk");
-    return (trk && qs("#trd-btn", trk)) ? trk : null;
-  }
-  function evidenceSectionHtml() {
-    return '<section class="ca-v36-panel" id="ca-v36-evidence"><div class="ca-v36-sec-hd"><h2>' + bi("Evidence & Record", "证据与往绩") + '</h2><span class="ca-v36-sec-spacer"></span><a class="ca-v36-link" href="measurement.html">' + bi("Methodology →", "方法论 →") + '</a></div><div class="ca-v36-evidence-body" id="ca-v36-evidence-body"></div></section>';
+    root.addEventListener("keydown", function (e) {
+      var tab = e.target.closest("[data-ca-an-lane]");
+      if (!tab) return;
+      var tabs = actionTabs(), index = tabs.indexOf(tab), next = index;
+      if (e.key === "ArrowRight") next = (index + 1) % tabs.length;
+      else if (e.key === "ArrowLeft") next = (index - 1 + tabs.length) % tabs.length;
+      else if (e.key === "Home") next = 0;
+      else if (e.key === "End") next = tabs.length - 1;
+      else if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      setAnLane(tabs[next].getAttribute("data-ca-an-lane"), true);
+    });
   }
 
   function buildShell(payload) {
-    var nav = qs(".site-nav"), standouts = qs("#standouts"), tableWrap = qs("#stocktable-wrap");
-    if (!nav || !standouts || !tableWrap || !state.cards.length) return false;
-    injectCss();
-    var trk = evidenceTrk();
-    var bd = boardDate(payload.as_of || ""), ld = liveDate(), main = document.createElement("main");
-    main.className = "ca-v36"; main.id = "ca-v36";
-    /* V3.8 page grammar (§4): Market Header → What to Act On Now → Prophet →
-       Leadership & Rotation → Evidence & Record → Research Tools. The
-       Act-Now panel renders only when the owner's action lanes populated at
-       least one sector (action owner missing → omit; never synthesize
-       action from leadership rank). */
-    var hasActNow = state.sectors.some(function (x) {
-      return LANE_DEFS.some(function (lane) { return lane.tone === x.tone; });
-    });
-    main.innerHTML = '<header class="ca-v36-head"><h1>' + bi("Canada Stocks", "加拿大股票") + '</h1><span class="ca-v36-head-spacer"></span><span class="ca-v36-chip">' + bi("Screen · evidence accruing", "筛选 · 证据积累中") + '</span><span class="ca-v36-chip">' + bi("Board " + bd.en, "榜单 " + bd.zh) + '</span><span class="ca-v36-live"><span class="ca-v36-live-dot"></span><b>LIVE</b><span>·</span>' + bi(ld.en, ld.zh) + '</span></header>' +
-      (hasActNow ? '<section class="ca-v36-panel" id="ca-v36-actnow"><div class="ca-v36-sec-hd"><h2>' + bi("What to Act On Now", "现在行动") + '</h2></div><div class="ca-v36-an-body" id="ca-v36-an-body"></div></section>' : '') +
-      '<section class="ca-v36-panel" id="ca-v36-prophet"><div class="ca-v36-sec-hd"><h2>Prophet</h2><span class="ca-v36-result" id="ca-v36-result"></span><span class="ca-v36-fresh" id="ca-v36-fresh" hidden></span><span class="ca-v36-sec-spacer"></span><div class="ca-v36-controls"><button class="ca-v36-filter" id="ca-v36-filter" type="button"></button><span class="ca-v36-seg"><button type="button" data-ca-source="top" aria-selected="true">' + bi("Top Picks", "首选") + '</button><button type="button" data-ca-source="all" aria-selected="false">' + bi("All Candidates", "全部候选") + '</button></span><span class="ca-v36-seg"><button type="button" data-ca-view="grid" aria-selected="true">' + bi("Grid", "卡片") + '</button><button type="button" data-ca-view="table" aria-selected="false">' + bi("Table", "表格") + '</button></span></div></div><div class="ca-v36-card-grid" id="ca-v36-card-grid"><div class="ca-v36-empty" id="ca-v36-grid-empty" hidden>' + bi("No names match this leadership filter.", "当前领先筛选下暂无匹配个股。") + '</div></div><div class="ca-v36-table" id="ca-v36-table" hidden></div></section>' +
-      '<section class="ca-v36-panel" id="ca-v36-leadership"><div class="ca-v36-sec-hd"><h2>' + bi("Leadership & Rotation", "领先与轮动") + '</h2><span class="ca-v36-sec-spacer"></span><a class="ca-v36-link" href="baskets_canada.html">' + bi("Thematic Baskets", "主题篮子") + ' ↗</a></div><div class="ca-v36-lead-cols" id="ca-v36-lead-cols"></div><div class="ca-v36-expand-wrap"><button class="ca-v36-expand" id="ca-v36-expand" type="button">' + bi("Expand leadership", "展开领先排名") + ' ↗</button></div></section>' +
-      (trk ? evidenceSectionHtml() : '') +
-      '<section class="ca-v36-panel"><div class="ca-v36-tools"><b>' + bi("Research tools", "研究工具") + '</b><a class="ca-v36-tool" href="baskets_canada.html">' + bi("Thematic Baskets", "主题篮子") + ' ↗</a><a class="ca-v36-tool" href="canada.html">' + bi("Canada Macro", "加拿大宏观") + ' ↗</a></div></section>';
-    nav.insertAdjacentElement("afterend", main);
-    var grid = qs("#ca-v36-card-grid", main), empty = qs("#ca-v36-grid-empty", grid);
-    state.cards.forEach(function (card) { grid.insertBefore(card, empty); });
-    qs("#ca-v36-table", main).appendChild(tableWrap);
-    if (trk) qs("#ca-v36-evidence-body", main).appendChild(trk);
-
-    var modal = document.createElement("div"); modal.className = "ca-v36-modal"; modal.id = "ca-v36-modal"; modal.setAttribute("aria-hidden", "true");
-    modal.innerHTML = '<div class="ca-v36-modal-card" role="dialog" aria-modal="true" aria-labelledby="ca-v36-modal-title"><div class="ca-v36-modal-hd"><h3 id="ca-v36-modal-title">' + bi("Leadership & Rotation", "领先与轮动") + '</h3><button class="ca-v36-modal-x" type="button" data-ca-modal-close aria-label="Close">×</button></div><div class="ca-v36-modal-body" id="ca-v36-modal-body"></div></div>';
-    document.body.appendChild(modal);
-    modal.addEventListener("click", function (e) { if (e.target === modal || e.target.closest("[data-ca-modal-close]")) return closeModal(); var r = e.target.closest("[data-ca-modal-kind][data-ca-modal-id]"); if (r) activate(r.getAttribute("data-ca-modal-kind"), r.getAttribute("data-ca-modal-id")); });
-    modal.addEventListener("keydown", function (e) { var r = e.target.closest("[data-ca-modal-kind][data-ca-modal-id]"); if (r && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); activate(r.getAttribute("data-ca-modal-kind"), r.getAttribute("data-ca-modal-id")); } });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
-
-    bind(main); document.body.classList.add("ca-v36-mounted"); renderActNow(); renderLeadership(); renderFresh(); applyFilter();
-    try { state.view = localStorage.getItem("mdx_stocktable_ca_view") === "table" ? "table" : "grid"; } catch (e) { state.view = "grid"; }
-    setView(state.view); observeTable(); return true;
+    var main = qs("#ca-v36"), modal = qs("#ca-v36-modal");
+    if (!main) return false;
+    if (main.getAttribute("data-ca-enhanced") !== "true") {
+      main.setAttribute("data-ca-enhanced", "true");
+      bind(main);
+      if (modal) {
+        modal.addEventListener("click", function (e) { if (e.target === modal || e.target.closest("[data-ca-modal-close]")) return closeModal(); var r = e.target.closest("[data-ca-modal-kind][data-ca-modal-id]"); if (r) activate(r.getAttribute("data-ca-modal-kind"), r.getAttribute("data-ca-modal-id")); });
+        modal.addEventListener("keydown", function (e) { var r = e.target.closest("[data-ca-modal-kind][data-ca-modal-id]"); if (r && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); activate(r.getAttribute("data-ca-modal-kind"), r.getAttribute("data-ca-modal-id")); } });
+      }
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+    }
+    adoptActNow(); renderLeadership(); renderFresh(); applyFilter(); observeQuoteStatus();
+    var selectedView = qs("[data-ca-view][aria-selected='true']", main);
+    adoptView(selectedView && selectedView.getAttribute("data-ca-view"));
+    observeTable(); return true;
   }
 
   function getJson(url) {
@@ -525,24 +592,23 @@
   }
   function start() {
     if (!document.body.classList.contains("page-canada")) return;
-    var payload = parseRows(); if (!payload || !state.rows.length) return;
-    state.cards = collectCards(); if (!state.cards.length) return;
+    var payload = parseRows() || { rows: [], as_of: "" };
+    state.cards = collectCards();
+    var prophet = qs("#ca-v36-prophet");
+    var initialSource = prophet && prophet.getAttribute("data-initial-source");
+    state.source = initialSource === "all" ? "all" : "top";
     state.sectors = collectSectors();
+    buildShell(payload);
 
-    /* The old page stays visible during this bounded read. `sector_pulse_canada`
+    /* The canonical product is already painted and bound. `sector_pulse_canada`
        is the current published theme rank/reco owner; baskets.json owns members.
-       No client-side score or rank is computed. */
-    var done = false, timer = setTimeout(function () { if (!done) { done = true; buildShell(payload); } }, 2500);
+       Either optional source may fail without changing shell admission. */
     Promise.all([
-      getJson("canadabasketdata/baskets.json"),
+      getJson("canadabasketdata/baskets.json").catch(function () { return null; }),
       getJson("canadabasketdata/sector_pulse_canada.json").catch(function () { return null; })
     ]).then(function (parts) {
-      if (done) return;
-      done = true; clearTimeout(timer);
       state.themes = collectThemes(parts[0], parts[1]);
-      buildShell(payload);
-    }).catch(function () {
-      if (!done) { done = true; clearTimeout(timer); buildShell(payload); }
+      renderLeadership();
     });
   }
 
