@@ -69,6 +69,16 @@ unresolved:
     CRG-02 imported Macro generation identity, CRG-03 reverse publication ownership, Prophet proof,
     Terminal washout authority, older Terminal formal contract gaps and the final production dossier
     remain open after CRG-01 in the bounded wave order.
+danger_areas:
+  - >-
+    R0 durability is organizational evidence only. Never infer that CRG-01 or any later production
+    seam is repaired merely because the architecture/workstream carrier merged.
+  - >-
+    A Fable placement census is a point-in-time capacity observation, not a receiver assignment or
+    START receipt. Do not double-book an occupied/exact-session seat or treat silence as availability.
+  - >-
+    Main movement after this closeout can invalidate source or owner assumptions; every implementation
+    child must re-pin current owners, collisions, authority and proof rather than replay this snapshot.
 next_actions:
   - >-
     Sol: watch for material Fable-capacity movement and perform a fresh bounded placement census only
