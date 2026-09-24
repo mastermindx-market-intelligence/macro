@@ -124,6 +124,26 @@ sec_acceptance_raw = "2026-08-06 06:30:44"   # UNLABELED — never attach Z,
                                              # never treat as first public availability
 ```
 
+## 4a. Native admission is NOT achievable today — and must not be faked
+
+Tested: `grep -rl "0001637207-26-000042" data/ config/ engine/` returns nothing. PLNT's **identity** is
+native on `main` (`data/edgar/ticker_cik_ledger.json` -> `1637207`), but the **Q2 2026 8-K exhibit
+`plntq22026pressreleaseex991.htm` is not retained anywhere**.
+
+Consequences, all binding on the build:
+
+- Every fact in V1-CORE carries `native_admitted = false` and `native_ref = null`. This is not a placeholder
+  to be "improved" later by flipping a flag — it is the honest state, and R15 requires it: "Research values
+  are expected oracles, never substitute receipts."
+- V1-CORE is therefore **source-coordinate-bound, not natively admitted**. It carries and validates the real
+  CIK, accession, exhibit, locator and the raw unlabeled acceptance string, and it refuses to present any of
+  that as a retained native receipt.
+- **Do not collect the filing to close this gap.** Fetching it here would create the source plane R15
+  prohibits and would re-home the sticky R8 native-staging denial. Retention belongs to the incumbent source
+  owner under R15 step 4. This gap returns to Sol; it is not worked around.
+- `engine/fundamental_forensics/sec_companyfacts.py` ingests XBRL Company Facts, not 8-K press-release
+  exhibits, so it is not a shortcut to admission for the advertising lines either.
+
 ## 5. FROZEN GOLDEN ORACLE — R6 §7.1 (acceptance, not a formula service)
 
 All values USD **thousands** (`unit="USD"`, `scale_power10=3`), exact decimal text, signed.
