@@ -205,3 +205,21 @@ scope one payload can see: a `contains` relation whose `src == dst` (a single
 assertion carries at most ONE relation object, so a multi-edge cycle among local
 objects cannot be expressed within one payload); cross-assertion containment cycles
 need the reference resolver T04 owns.
+
+**Mint protocol and nullability (independent review of T02, 2026-09-24).**
+`encode_assertion` is the MINT path the frozen Robotics reference defines: an
+unstamped payload (`curation_revision` null) is content-validated, stamped and
+serialized; a pre-stamped payload must match its content hash and encodes to the
+same bytes. Strict `validate_assertion` (the decode path) refuses an unstamped
+payload (`unstamped_not_allowed`) because every STORED cell is stamped.
+`curation_revision` content-validates before hashing, so invalid garbage never
+receives a well-formed stamp. `review.review_due_at` and `source.native_digest`
+are nullable — an unknown due date or digest stays null and is never fabricated
+(the Robotics reference payload carries both as null); null → value is a new
+revision. `decode_assertion` treats a parquet `NaN` cell as null (a mixed
+legacy + curated column reads its nulls back as `float('nan')`).
+`published_at_grain_mismatch` is the ONE semantic rule beyond the frozen Robotics
+list: grain `unknown` requires a null `published_at`, `date` a plain `YYYY-MM-DD`,
+`instant` a full date-time. It strengthens the clock law (the Robotics pinned
+unknown+null case passes); it is recorded here as a shared-contract addition
+pending the Robotics owner's acknowledgement on its carrier.

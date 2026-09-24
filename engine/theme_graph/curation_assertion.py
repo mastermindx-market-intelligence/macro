@@ -20,6 +20,15 @@ named codes for the semantic rules (``authority_not_all_false``,
 ``duplicate_local_selector``, ``relation_endpoint_missing``,
 ``containment_cycle``, ``purchase_boundary_double_count``,
 ``unstamped_not_allowed``, ``curation_revision_mismatch``).
+``published_at_grain_mismatch`` is the one rule beyond the frozen Robotics
+list (a grain/date consistency strengthening; the Robotics pinned
+unknown+null case passes it) — recorded in the contracts README.
+
+Mint protocol: ``encode_assertion`` stamps an unstamped payload; strict
+``validate_assertion`` (the decode path) refuses one, because every STORED
+cell is stamped. Nullable-by-contract: ``review.review_due_at`` and
+``source.native_digest`` (an unknown due date / digest stays null, never
+fabricated — the frozen Robotics reference payload carries both as null).
 """
 from __future__ import annotations
 
@@ -85,13 +94,23 @@ def _canonical_bytes(payload: Mapping[str, Any]) -> bytes:
                       separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
+def _revision_of(data: Mapping[str, Any]) -> str:
+    """The stamp of an already content-validated payload (no validation here)."""
+    body = {k: v for k, v in dict(data).items() if k != "curation_revision"}
+    digest = hashlib.sha256(_canonical_bytes(body)).hexdigest()[:32]
+    return REVISION_PREFIX + digest
+
+
 def curation_revision(payload: Mapping[str, Any]) -> str:
     """``gmirca_`` + sha256 of the canonical bytes of the payload WITHOUT the
     ``curation_revision`` field — a pure function of content, so the same
-    statement is always the same revision and any retained edit is a new one."""
-    body = {k: v for k, v in dict(payload).items() if k != "curation_revision"}
-    digest = hashlib.sha256(_canonical_bytes(body)).hexdigest()[:32]
-    return REVISION_PREFIX + digest
+    statement is always the same revision and any retained edit is a new one.
+
+    The payload is content-validated first (semantic rules + schema; any
+    existing stamp is ignored here — the frozen Robotics reference calls
+    ``validate_assertion(candidate, allow_unstamped=True)`` before hashing), so
+    structurally invalid garbage never receives a well-formed stamp."""
+    return _revision_of(_validated_content(payload))
 
 
 # ---------------------------------------------------------------------------
@@ -218,15 +237,10 @@ def _check_industrial_context(data: dict[str, Any]) -> None:
 # Public API
 # ---------------------------------------------------------------------------
 
-def validate_assertion(payload: Mapping[str, Any],
-                       *, allow_unstamped: bool = False) -> dict[str, Any]:
-    """Validate one assertion and return it as a deep-copied plain dict.
-
-    Raises :class:`CurationAssertionError` (message starts with a snake_case
-    code) on any breach. With ``allow_unstamped=True`` a null
-    ``curation_revision`` is accepted — the unstamped working state BEFORE the
-    author stamps it; every encoded assertion is stamped.
-    """
+def _validated_content(payload: Mapping[str, Any]) -> dict[str, Any]:
+    """Semantic rules + schema over a deep copy; the stamp is NOT checked here
+    (``validate_assertion`` layers that on). Shared by the validator and the
+    revision function so neither can recurse into the other."""
     if not isinstance(payload, Mapping):
         raise CurationAssertionError(
             f"not_a_mapping: an assertion is a JSON object (got {type(payload).__name__})")
@@ -243,7 +257,20 @@ def validate_assertion(payload: Mapping[str, Any],
     errs = sorted(_VALIDATOR.iter_errors(data), key=lambda e: str(e.path))
     if errs:
         raise CurationAssertionError(f"schema_violation: {errs[0].message}")
+    return data
 
+
+def validate_assertion(payload: Mapping[str, Any],
+                       *, allow_unstamped: bool = False) -> dict[str, Any]:
+    """Validate one assertion and return it as a deep-copied plain dict.
+
+    Raises :class:`CurationAssertionError` (message starts with a snake_case
+    code) on any breach. With ``allow_unstamped=True`` a null
+    ``curation_revision`` is accepted — the unstamped working state BEFORE the
+    author stamps it; every encoded assertion is stamped (``encode_assertion``
+    is the mint path that stamps it).
+    """
+    data = _validated_content(payload)
     stamp = data.get("curation_revision")
     if stamp is None:
         if not allow_unstamped:
@@ -251,28 +278,41 @@ def validate_assertion(payload: Mapping[str, Any],
                 "unstamped_not_allowed: curation_revision is null — stamp the "
                 "payload (curation_revision(payload)) or pass allow_unstamped=True "
                 "for the working state")
-    elif stamp != curation_revision(data):
+    elif stamp != _revision_of(data):
         raise CurationAssertionError(
             f"curation_revision_mismatch: stamped {stamp!r} but the payload's "
-            f"content hashes to {curation_revision(data)!r}")
+            f"content hashes to {_revision_of(data)!r}")
     return data
 
 
 def encode_assertion(payload: Mapping[str, Any]) -> str:
     """Canonical JSON text of the STAMPED, VALIDATED payload — the exact string
-    an evidence row's ``curation_assertion`` cell carries. Refuses unstamped or
-    wrongly-stamped payloads: the cell must be tamper-evident at write time."""
-    return _canonical_bytes(validate_assertion(payload)).decode("utf-8")
+    an evidence row's ``curation_assertion`` cell carries.
+
+    This is the MINT path (frozen Robotics reference, Task 1 Step 4): an
+    unstamped payload (``curation_revision`` null) is content-validated,
+    stamped with its :func:`curation_revision` and serialized. An
+    already-stamped payload must carry the stamp its content hashes to
+    (``curation_revision_mismatch`` otherwise) and encodes byte-identically to
+    the mint of its unstamped form — so the cell is tamper-evident at write
+    time either way, and no caller needs to hand-roll the stamp."""
+    data = validate_assertion(payload, allow_unstamped=True)
+    if data.get("curation_revision") is None:
+        data["curation_revision"] = _revision_of(data)
+    return _canonical_bytes(data).decode("utf-8")
 
 
 def decode_assertion(value: object) -> dict[str, Any] | None:
     """Parse and fully validate an encoded assertion.
 
-    ``None``/``""`` → ``None`` (a null cell is not a breach). Malformed JSON,
-    schema breaches, unknown keys and stamp mismatches all raise
-    :class:`CurationAssertionError`.
+    ``None``/``""``/``NaN`` → ``None`` (a null cell is not a breach; a parquet
+    column that mixes legacy null cells with curated rows reads its nulls
+    back as ``float('nan')``). Malformed JSON, schema breaches, unknown keys
+    and stamp mismatches all raise :class:`CurationAssertionError`.
     """
     if value is None or value == "":
+        return None
+    if isinstance(value, float) and math.isnan(value):
         return None
     if not isinstance(value, str):
         raise CurationAssertionError(
@@ -289,7 +329,9 @@ def source_ref_for(payload: Mapping[str, Any]) -> str:
     """``gmi-curation://<scope.canonical_theme_id>/<curation_revision>`` — the
     evidence-row ``source_ref`` for a stamped assertion. The theme id comes
     from the payload (shared decision R1: generalized from the Robotics literal
-    so every vertical shares ONE resolver)."""
-    stamped = validate_assertion(payload)
-    return (f"gmi-curation://{stamped['scope']['canonical_theme_id']}"
-            f"/{stamped['curation_revision']}")
+    so every vertical shares ONE resolver). Accepts the unstamped working
+    state too (the frozen reference is ``decode_assertion(encode_assertion(
+    payload))`` over an unstamped payload) — the ref is the mint's ref."""
+    data = validate_assertion(payload, allow_unstamped=True)
+    revision = data.get("curation_revision") or _revision_of(data)
+    return f"gmi-curation://{data['scope']['canonical_theme_id']}/{revision}"

@@ -44,7 +44,10 @@
         },
         "reviewed_at": {"$ref": "#/$defs/clock"},
         "reviewer": {"type": "string", "minLength": 1},
-        "review_due_at": {"$ref": "#/$defs/clock"}
+        "review_due_at": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/clock"}],
+          "description": "When the retention is due for re-review; null when no due date was set (the frozen Robotics reference payload carries null). Null is never a fabricated date."
+        }
       }
     },
     "source": {
@@ -76,8 +79,8 @@
           "description": "Pointer at the retained artifact (archive path, bucket key); null when retention_ref is carried elsewhere."
         },
         "native_digest": {
-          "type": "string", "minLength": 1,
-          "description": "Digest of the retained native artifact (e.g. sha256 hex). Changing the digest changes the revision."
+          "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
+          "description": "Digest of the retained native artifact (e.g. sha256 hex); null when no digest could be computed for the retained artifact — an unknown digest stays unknown and is never fabricated (frozen Robotics reference: unknown date/digest stays unknown). Changing the digest (including null -> value) changes the revision."
         },
         "available_at": {
           "anyOf": [

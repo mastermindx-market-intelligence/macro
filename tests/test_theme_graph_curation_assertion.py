@@ -26,8 +26,10 @@ SCHEMA_FILE = CONTRACTS / "curation_assertion.v1.schema.json"
 
 
 # ---------------------------------------------------------------------------
-# The smallest valid payload (the Robotics fixture shape) — unstamped, so tests
-# can stamp it, mutate it, or validate it with allow_unstamped=True.
+# The smallest valid SEMICONDUCTOR-shaped payload (non-null review_due_at and
+# native_digest) — unstamped, so tests can stamp it, mutate it, or validate it
+# with allow_unstamped=True. The frozen Robotics reference payload (null
+# review_due_at / native_digest) is `_robotics_reference_payload` below.
 # ---------------------------------------------------------------------------
 
 _TEMPLATE: dict = {
@@ -113,8 +115,151 @@ def _stamped(payload: dict) -> dict:
     return out
 
 
-def _encode(payload: dict) -> str:
-    return ca.encode_assertion(_stamped(payload))
+def _robotics_reference_payload() -> dict:
+    """The frozen Robotics smallest-valid assertion (Robotics plan Task 1
+    Step 1, `valid_assertion()`), verbatim. The ONE shared contract must
+    represent its own owner's reference payload — nulls included."""
+    return {
+        "schema": "theme_graph.curation_assertion.v1",
+        "curation_revision": None,
+        "review": {
+            "disposition": "accepted",
+            "reviewed_at": "2026-09-23T07:00:00Z",
+            "reviewer": "sol",
+            "review_due_at": None,
+        },
+        "source": {
+            "publisher": "Orbbec",
+            "source_uri": "https://www.orbbec.com/case-studies/example",
+            "locator": "NarGo configuration paragraph",
+            "published_at": None,
+            "published_at_grain": "unknown",
+            "observed_at": "2026-09-23T06:00:00Z",
+            "retained_at": "2026-09-23T06:05:00Z",
+            "retention_ref": "research-vault://source/orbbec-nargo",
+            "native_digest": None,
+        },
+        "subject": {
+            "company_node_id": "co:us:ORBBEC_PRIVATE_EXAMPLE",
+            "source_business_label": "Orbbec",
+            "source_product_label": "Gemini 335",
+            "source_platform_label": None,
+            "configuration": None,
+        },
+        "object": {
+            "source_product_label": "NarGo order-picking robot",
+            "configuration": "described case-study configuration",
+        },
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "statement_mode": "REPORTED_FACT",
+        "scope": {
+            "canonical_theme_id": "robotics_automation",
+            "application": "warehouse_robotics",
+            "technology_facet": "perception",
+            "region": None,
+            "period": None,
+            "denominator": None,
+        },
+        "observation": {
+            "value": 2,
+            "value_high": None,
+            "unit": "camera",
+            "quantity_basis": "per_robot",
+            "gross_net_basis": None,
+            "stock_flow": None,
+            "estimate_status": "reported",
+            "precision": "integer",
+        },
+        "temporal": {
+            "business_valid_from": None,
+            "business_valid_to": None,
+        },
+        "limitations": {
+            "establishes": ["two cameras in the described configuration"],
+            "does_not_establish": ["price", "annual shipments", "all generations"],
+            "coverage": "single described configuration",
+            "source_dependence": "publisher_statement",
+            "expiry_trigger": "new configuration or corrected source",
+        },
+        "correction": {
+            "predecessor_revision": None,
+            "reason": None,
+        },
+        "authority": {
+            "can_rank": False,
+            "can_gate": False,
+            "can_size": False,
+            "can_originate": False,
+            "can_open_entry": False,
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# The frozen Robotics reference payload is representable — nulls included —
+# and encode_assertion is the mint path the reference defines.
+# ---------------------------------------------------------------------------
+
+def test_the_frozen_robotics_reference_payload_validates_with_its_nulls():
+    payload = _robotics_reference_payload()
+    out = ca.validate_assertion(payload, allow_unstamped=True)
+    assert out["review"]["review_due_at"] is None
+    assert out["source"]["native_digest"] is None
+    assert out["source"]["published_at"] is None
+    assert out["curation_revision"] is None
+
+
+def test_encode_assertion_mints_an_unstamped_payload_and_matches_the_prestamped_bytes():
+    payload = _robotics_reference_payload()
+    text = ca.encode_assertion(payload)          # mint: stamp + serialize
+    decoded = ca.decode_assertion(text)
+    assert decoded["curation_revision"] == ca.curation_revision(payload)
+    assert ca.REVISION_RE.match(decoded["curation_revision"])
+    # minting the unstamped form and encoding the pre-stamped form are the same bytes
+    assert text == ca.encode_assertion(_stamped(payload))
+    # the reference's source_ref: decode(encode(unstamped)) → gmi-curation://<theme>/<rev>
+    assert ca.source_ref_for(payload) == (
+        f"gmi-curation://robotics_automation/{decoded['curation_revision']}")
+    assert ca.source_ref_for(payload) == ca.source_ref_for(_stamped(payload))
+    # the mint never mutates the caller's payload
+    assert payload["curation_revision"] is None
+
+
+def test_encode_assertion_still_refuses_a_wrong_stamp():
+    payload = _stamped(_base_payload())
+    payload["curation_revision"] = "gmirca_" + "0" * 32
+    with pytest.raises(ca.CurationAssertionError, match="curation_revision_mismatch"):
+        ca.encode_assertion(payload)
+
+
+def test_null_review_due_and_null_native_digest_are_content_of_the_revision():
+    base = _robotics_reference_payload()
+    dated = _robotics_reference_payload()
+    dated["review"]["review_due_at"] = "2026-12-31T00:00:00Z"
+    digested = _robotics_reference_payload()
+    digested["source"]["native_digest"] = "sha256:" + "a" * 64
+    revs = {ca.curation_revision(base), ca.curation_revision(dated),
+            ca.curation_revision(digested)}
+    assert len(revs) == 3
+
+
+def test_curation_revision_refuses_structurally_invalid_payloads():
+    with pytest.raises(ca.CurationAssertionError, match="schema_violation"):
+        ca.curation_revision({"schema": ca.SCHEMA_ID})
+    bad = _base_payload()
+    bad["authority"]["can_rank"] = True
+    with pytest.raises(ca.CurationAssertionError, match="authority_not_all_false"):
+        ca.curation_revision(bad)
+    with pytest.raises(ca.CurationAssertionError, match="not_a_mapping"):
+        ca.curation_revision("gmirca_" + "0" * 32)  # type: ignore[arg-type]
+
+
+def test_decode_assertion_treats_a_parquet_nan_as_null_but_not_other_numbers():
+    assert ca.decode_assertion(float("nan")) is None
+    with pytest.raises(ca.CurationAssertionError, match="not_a_string"):
+        ca.decode_assertion(1.5)
+    with pytest.raises(ca.CurationAssertionError, match="not_a_string"):
+        ca.decode_assertion(0)
 
 
 # ---------------------------------------------------------------------------
@@ -211,8 +356,11 @@ def test_a_resolved_company_node_id_is_also_valid():
 def test_authority_must_be_literal_all_false(key):
     payload = _base_payload()
     payload["authority"][key] = True
-    with pytest.raises(ca.CurationAssertionError):
-        ca.validate_assertion(_stamped(payload))
+    # `match` pins the CODE check (named rule), not merely the schema const:false
+    with pytest.raises(ca.CurationAssertionError, match="authority_not_all_false"):
+        ca.validate_assertion(payload, allow_unstamped=True)
+    with pytest.raises(ca.CurationAssertionError, match="authority_not_all_false"):
+        ca.curation_revision(payload)
 
 
 # ---------------------------------------------------------------------------

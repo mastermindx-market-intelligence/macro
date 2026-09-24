@@ -26,6 +26,33 @@ def _all_fixture_paths() -> list[Path]:
     return sorted(FIXTURE_ROOT.glob('*.json'))
 
 
+# The fixture roster is pinned by name: T01's 24 input fixtures plus T02's 4
+# contract fixtures. Adding, dropping or renaming a fixture is a deliberate
+# contract change that must edit this list in the same commit.
+PINNED_FIXTURE_ROSTER = (
+    'abf_substrate', 'corrected_interpretation', 'cowos_variants',
+    'date_only_same_day', 'empty_financial_success', 'guidance_basis_change',
+    'guidance_midpoint_unowned', 'guidance_next_period',
+    'guidance_perimeter_change', 'hbm_12h_16h', 'identity_namespace_or_epoch',
+    'integrated_purchase_boundary', 'jv_physical_vs_economics',
+    'legacy_same_inputs', 'logout_delayed_response', 'long_label_modes',
+    'mixed_wafer_units', 'page2_new_generation', 'recorded_later',
+    'revoked_rights_warm', 'same_url_different_statements',
+    'source_authority_injection', 'source_only_business',
+    'st_target_then_operations', 'umc_output_utilization',
+    'unauthorized_missing_or_hidden', 'witness_hbm_packaging', 'witness_sic_gan',
+)
+
+
+def test_fixture_roster_is_pinned_to_exactly_twenty_eight_named_cases():
+    names = tuple(p.stem for p in _all_fixture_paths())
+    assert len(PINNED_FIXTURE_ROSTER) == 28
+    assert names == PINNED_FIXTURE_ROSTER
+    # no stray non-JSON files ride along in the corpus directory
+    assert sorted(p.name for p in FIXTURE_ROOT.iterdir() if p.is_file()) == \
+        sorted(p.name for p in _all_fixture_paths())
+
+
 def test_two_positive_witnesses_have_three_distinct_economic_roles():
     for name in WITNESS_NAMES:
         case = load_case(name)
@@ -71,6 +98,12 @@ def test_stub_fixtures_carry_no_invented_data():
         )
 
 
+# The ONLY URL host a fixture may name: RFC 2606 reserves `.invalid`, so such a
+# URL can never resolve to a real issuer artifact. T02's curation-assertion
+# fixtures need a non-empty `source.source_uri`; anything else is a leak.
+ALLOWED_FIXTURE_URL_PREFIX = 'https://example.invalid/'
+
+
 def test_fixture_corpus_contains_no_real_issuer_identity():
     forbidden = (
         'tsmc', 'taiwan semiconductor', 'onsemi', 'on semiconductor',
@@ -80,8 +113,15 @@ def test_fixture_corpus_contains_no_real_issuer_identity():
     for path in _all_fixture_paths():
         blob_parts.append(path.read_text().lower())
     blob = '\n'.join(blob_parts)
+    # every URL present must be the reserved, non-resolvable host — checked
+    # BEFORE the blanket http(s) refusal so the refusal stays blanket for all else
+    for url in re.findall(r'https?://[^"\s]*', blob):
+        assert url.startswith(ALLOWED_FIXTURE_URL_PREFIX), (
+            f'fixture corpus names a URL outside {ALLOWED_FIXTURE_URL_PREFIX!r}: {url!r}'
+        )
+    scrubbed = blob.replace(ALLOWED_FIXTURE_URL_PREFIX, '')
     for needle in forbidden:
-        assert needle not in blob, f'fixture corpus contains forbidden token {needle!r}'
+        assert needle not in scrubbed, f'fixture corpus contains forbidden token {needle!r}'
 
 
 def test_loader_refuses_invalid_names_and_non_synthetic(tmp_path, monkeypatch):

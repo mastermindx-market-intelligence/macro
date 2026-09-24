@@ -415,8 +415,8 @@ def test_instruction_like_source_text_is_data_and_authority_stays_false():
     # and the same payload with authority true is refused, text or no text
     bad = copy.deepcopy(payload)
     bad["authority"]["can_rank"] = True
-    with pytest.raises(ca.CurationAssertionError):
-        ca.validate_assertion(_stamped(bad))
+    with pytest.raises(ca.CurationAssertionError, match="authority_not_all_false"):
+        ca.validate_assertion(bad, allow_unstamped=True)
 
 
 # ---------------------------------------------------------------------------
@@ -483,5 +483,5 @@ def test_source_authority_injection_fixture_text_is_data_authority_true_is_not()
     injected = doc["assertions"]["injected_text_valid"]
     out = ca.validate_assertion(injected)
     assert all(v is False for v in out["authority"].values())
-    with pytest.raises(ca.CurationAssertionError):
+    with pytest.raises(ca.CurationAssertionError, match="authority_not_all_false"):
         ca.validate_assertion(doc["assertions"]["authority_true_invalid"])
