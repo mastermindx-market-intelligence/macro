@@ -1,0 +1,242 @@
+{
+  "basket_membership": {
+    "nuclear_power": {
+      "members": [
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "BWXT"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "CEG"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "GEV"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "NNE"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "NRG"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "OKLO"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "SMR"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "TLN"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "VST"
+        }
+      ],
+      "weighting": "equal",
+      "weights": null
+    },
+    "uranium_miners": {
+      "members": [
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "ASPI"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "CCJ"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "DNN"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "EU"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "LEU"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "NXE"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "UEC"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "URG"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "UROY"
+        },
+        {
+          "added": "2023-05-09",
+          "curated_added": "2026-06-19",
+          "removed": null,
+          "ticker": "UUUU"
+        }
+      ],
+      "weighting": "equal",
+      "weights": null
+    }
+  },
+  "frozen_at_main": "14587e506d3e03c6064086abd417a87d2cafc0da",
+  "owners": {
+    "basket_membership": {
+      "artifact": "data/baskets/membership.json"
+    },
+    "theme_state": {
+      "reader": "engine.neuralweb.thematic_state.compose"
+    },
+    "theme_tracker": {
+      "reader": "scripts.build_state_of_themes.compose"
+    }
+  },
+  "public_pages": {
+    "canaries": []
+  },
+  "schema": "energy.nuclear_non_regression.v1",
+  "section_sha256": {
+    "basket_membership": "210b19ac93d3e3a175d548f7ddc1a5a41468a07a147562a716e0b52199e8a542",
+    "public_pages": "baab67284af3efee35b70c98f45245828c624744b76dfc6b8d1f9c299edfb912",
+    "theme_state": "4fb7a3623a5e09ae919ab26e23a6e76d6b4222ca3e085059146926479e49f56e",
+    "theme_tracker": "89ffac8c20a48b7e3dd07577d5ddf39ca055b4de6b1e59d4d350284b666be26c"
+  },
+  "theme_state": {
+    "basket_ids": [
+      "nuclear_power",
+      "uranium_miners"
+    ],
+    "basket_intel": [
+      {
+        "basket_id": "nuclear_power",
+        "crowding": 0.0,
+        "label": "deteriorating",
+        "label_en": "DETERIORATING",
+        "label_zh": "走弱",
+        "name_en": "Nuclear & SMR Power",
+        "name_zh": "核电与小型模块化反应堆",
+        "reco": "avoid",
+        "score": 33,
+        "source": "site/basketdata/baskets.json"
+      },
+      {
+        "basket_id": "uranium_miners",
+        "crowding": 0.0,
+        "label": "deteriorating",
+        "label_en": "DETERIORATING",
+        "label_zh": "走弱",
+        "name_en": "Uranium & Nuclear Fuel",
+        "name_zh": "铀矿与核燃料",
+        "reco": "avoid",
+        "score": 31,
+        "source": "site/basketdata/baskets.json"
+      }
+    ],
+    "foresight": {
+      "bottleneck_band": "TIGHT (text)",
+      "entry_ready": false,
+      "score": 50.0,
+      "source": "site/basketdata/foresight_cascade.json",
+      "stage": "PRECIPICE (text)",
+      "tier": "P"
+    },
+    "name_en": "Nuclear & SMR Power",
+    "name_zh": "核能与小型模块堆",
+    "narrative": null,
+    "radar": [
+      {
+        "basket_id": "nuclear_power",
+        "divergence": 1.26,
+        "lifecycle": "quiet",
+        "salience": 1.26,
+        "source": "site/basketdata/radar_enriched.json",
+        "state": "QUIET"
+      },
+      {
+        "basket_id": "uranium_miners",
+        "divergence": -0.032,
+        "lifecycle": "quiet",
+        "salience": 0.032,
+        "source": "site/basketdata/radar_enriched.json",
+        "state": "QUIET"
+      }
+    ],
+    "theme_id": "nuclear_power"
+  },
+  "theme_tracker": {
+    "caut_count": 3,
+    "entry_context": null,
+    "falsifier_any_fired": true,
+    "falsifier_label": "1/3 fired",
+    "fav_count": 3,
+    "filter_flags": "secular_at_cyclical,bottleneck_tight,thesis_review",
+    "lane": "review",
+    "lane_rank": [
+      1,
+      0,
+      5
+    ],
+    "leadership_context": null,
+    "name_en": "Nuclear & SMR Power",
+    "name_zh": "核能与小型模块堆",
+    "present_count": 7,
+    "stage_key": "PRECIPICE",
+    "stage_label_en": "Early thesis",
+    "stage_label_zh": "早期论点",
+    "stage_raw": "PRECIPICE (text)",
+    "stage_sort": 5,
+    "stance_en": "A break-rule tripped — stand aside",
+    "stance_zh": "触发否定条件——暂避观望",
+    "story_en": "Consensus treats nuclear as a multi-decade, government-dependent build story unsuitable for investment horizons under 10 years.",
+    "story_zh": "市场将核电视为不适合10年以下投资周期的多十年期、政府依赖型建设故事。",
+    "theme_id": "nuclear_power"
+  }
+}
