@@ -114,9 +114,9 @@ This supports November 2024 go-live, productive tonnage, staffed-machine product
 ## 6. Deliberately visible thin areas
 
 Three leaves remain `INVENTORY_ONLY` in this bounded pass:
-- `evsbatteries`: incumbent Materials/Mining/Semiconductor work must be consumed before C creates any new battery/material interpretation.
-- `automationdprinting`: no qualifying production-utilization/consumables/customer-payback case was located in the bounded incumbent sweep.
-- `autonomousdefense`: source-local membership is preserved, but no funded-program/accepted-system/sustainment economics dossier was added here. C remains strictly at industry/product economics and does not provide tactical, targeting or weapons-operation guidance.
+- **EV batteries:** incumbent Materials/Mining/Semiconductor work must be consumed before C creates any new battery/material interpretation.
+- **Additive manufacturing:** no qualifying production-utilization/consumables/customer-payback case was located in the bounded incumbent sweep.
+- **Defense autonomy:** source-local membership is preserved, but no funded-program/accepted-system/sustainment economics dossier was added here. C remains strictly at industry/product economics and does not provide tactical, targeting or weapons-operation guidance.
 
 These gaps are useful output. They prevent the system from treating broad source-local labels as equally researched.
 
