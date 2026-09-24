@@ -97,6 +97,20 @@ waves:
       TXI/incorporation/dislocation stay with native owners; downstream Transmission Gap,
       second-order/opportunity and explanation product composition stays with canonical
       MarketOntology F04 operation marketontology-f04-ontology-transmission-20260826-fable-001.
+  - id: ENE-1
+    title: "Energy — Nuclear Value Capture first vertical (gmi-energy-fable-ceo-e2e-20260923-chairman-001)"
+    status: active
+    pr: 7881
+    next_action: >
+      Fable CEO seat 8955bbc3 (Chairman delegation 2026-09-24). Wave 1 on the fabric against the
+      freeze-v2 carrier commit: T3 registers the ONE shared contracts/market_ontology/
+      economic_change_dossier.v1.schema.json + pure Energy adapter, T4 nuclear witness profiles with
+      synthetic fixtures, T9 membership/ThemeState non-regression freeze; seat integrates by
+      cherry-pick, independent review, slice-1 merge (R-ENE-03). Then Task 2 consumes Semiconductor B's
+      shared curation assertion (#7870), Tasks 5-10 (compose, private economic_changes role in the
+      incumbent Earnings publication family, shared route, UI inside B's generic mount, privacy,
+      real source-to-browser proof), then Power-Demand Value Capture. Working checkpoint:
+      agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.
 landmines:
   - >-
     The old next_action waiting for the 2026-08-15 scrape is superseded permanently.
