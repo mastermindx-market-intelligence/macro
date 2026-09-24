@@ -3,8 +3,8 @@
  "is_context_only": true,
  "display_only": true,
  "authority_tier": "display",
- "as_of": "2026-09-22",
- "generated_utc": "2026-09-22T16:32:45.914043+00:00",
+ "as_of": "2026-09-23",
+ "generated_utc": "2026-09-23T17:03:01.785039+00:00",
  "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
  "gate_open": true,
  "uniform_rung": "2W",
@@ -21,15 +21,15 @@
   "classes": {
    "both": 0,
    "fired_uniform_only": 0,
-   "fired_tailored_only": 43,
-   "neither": 1586
+   "fired_tailored_only": 45,
+   "neither": 1584
   },
-  "disagreements": 43,
+  "disagreements": 45,
   "agree_by_construction": 0
  },
  "ledger": {
-  "fire_rows": 4024,
-  "appended_today": 43,
+  "fire_rows": 4069,
+  "appended_today": 2,
   "graded": 0,
   "grades_advanced_today": 0
  },
