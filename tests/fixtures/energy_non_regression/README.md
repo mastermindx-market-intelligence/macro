@@ -9,8 +9,12 @@ rewritten repeatedly and changed for 9 of 18 themes across the last 29 regime up
 ThemeState `narrative` is shape-only because
 `engine/neuralweb/thematic_state.py:382-395` derives it from
 `site/basketdata/narrative_emergence.json`; it is `null` today only while that reader is
-dead. Nullable shape fields accept a live `null`; a baseline `null` accepts a live value
-only for the fields declared by `NULLABLE_SHAPE_FIELDS` in the test.
+dead. Shapes are stored concretely (`null` included). Comparison follows the nullable law:
+a field's live shape must equal its baseline shape, except that a field in
+`NULLABLE_SHAPE_FIELDS` tolerates a live `null` (the nightly omitted the block) and a
+baseline `null` (a dead reader came back); any other difference is a change.
+`frozen_at_main` must be a commit on `origin/main` (the regeneration CLI refuses a lane
+merge commit).
 Regenerate it from a full checkout with:
 
 ```bash

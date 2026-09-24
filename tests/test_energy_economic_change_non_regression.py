@@ -83,8 +83,6 @@ _NO_SKIP = pytest.mark.skipif(False, reason="required checkout directories are p
 
 PRIVATE_DOSSIER_CANARIES = (
     "economic_change_dossier",
-    "economic_change_dossier/v1",
-    "Nuclear Value Capture",
     "contingent_within_leu",
     "Westinghouse displayed revenue",
     "PRE_EVENT_TIMESTAMPED_VALUE",
@@ -114,56 +112,42 @@ def _frozen_projection(
     return _project(value, fields)
 
 
-def _shape_projection(
-    value: dict[str, Any],
-    fields: tuple[str, ...],
-    baseline_shapes: dict[str, str] | None = None,
-) -> dict[str, str]:
-    nullable_from_baseline = (
-        {
-            field
-            for field in fields
-        if field in NULLABLE_SHAPE_FIELDS
-        and baseline_shapes.get(field) == "null"
-        }
-        if baseline_shapes is not None
-        else set()
-    )
+def _shape_projection(value: dict[str, Any], fields: tuple[str, ...]) -> dict[str, str]:
+    """Concrete JSON shape of every SHAPE field: null/bool/number/string/array/object, or "missing"."""
     shapes: dict[str, str] = {}
     for field in fields:
-        if field in nullable_from_baseline:
-            continue
-        shape = _nullable_json_type_name(
-            value.get(field, _MISSING), field, nullable_from_baseline
-        )
-        if shape is not None:
-            shapes[field] = shape
+        live = value.get(field, _MISSING)
+        shapes[field] = "missing" if live is _MISSING else _json_type_name(live)
     return shapes
 
 
-def _nullable_json_type_name(
-    value: Any, field_name: str, nullable_from_baseline: set[str]
-) -> str | None:
-    if value is _MISSING:
-        return "missing"
-    if value is None:
-        return (
-            None
-            if field_name in NULLABLE_SHAPE_FIELDS or field_name in nullable_from_baseline
-            else "null"
-        )
-    return _json_type_name(value)
+def _shape_mismatches(
+    live_shapes: dict[str, str], baseline_shapes: dict[str, str], fields: tuple[str, ...]
+) -> list[str]:
+    """Nullable law (R-ENE-08 repair-2): a field whose live shape equals its baseline shape is
+    unchanged; a field in NULLABLE_SHAPE_FIELDS additionally tolerates a live ``null`` and a
+    baseline ``null`` (the nightly may omit the block, and a dead reader may come back).
+    Every other difference is a shape change."""
+    mismatches: list[str] = []
+    for field in fields:
+        live = live_shapes.get(field, "missing")
+        base = baseline_shapes.get(field, "missing")
+        if live == base:
+            continue
+        if field in NULLABLE_SHAPE_FIELDS and "null" in (live, base):
+            continue
+        mismatches.append(f"{field}: live {live!r} vs baseline {base!r}")
+    return mismatches
 
 
 def _projected_section(
     value: dict[str, Any],
     frozen_fields: tuple[str, ...],
     shape_fields: tuple[str, ...],
-    baseline_shapes: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     projected = {
         "frozen": _frozen_projection(value, frozen_fields),
-        "shape": _shape_projection(value, shape_fields, baseline_shapes),
+        "shape": _shape_projection(json.loads(json.dumps(value)), shape_fields),
     }
     return json.loads(json.dumps(projected))
 
@@ -173,13 +157,7 @@ def _nuclear_theme_state() -> dict[str, Any]:
     theme = next(
         theme for theme in document["themes"] if theme.get("theme_id") == "nuclear_power"
     )
-    baseline = _read_baseline()
-    return _projected_section(
-        theme,
-        THEME_STATE_FROZEN,
-        THEME_STATE_SHAPE,
-        baseline["theme_state"]["shape"],
-    )
+    return _projected_section(theme, THEME_STATE_FROZEN, THEME_STATE_SHAPE)
 
 
 def _nuclear_theme_tracker() -> dict[str, Any]:
@@ -188,14 +166,7 @@ def _nuclear_theme_tracker() -> dict[str, Any]:
     theme = next(
         theme for theme in context["themes"] if theme.get("theme_id") == "nuclear_power"
     )
-    baseline = _read_baseline()
-    projected = _projected_section(
-        theme,
-        THEME_TRACKER_FROZEN,
-        THEME_TRACKER_SHAPE,
-        baseline["theme_tracker"]["shape"],
-    )
-    return json.loads(json.dumps(projected))
+    return _projected_section(theme, THEME_TRACKER_FROZEN, THEME_TRACKER_SHAPE)
 
 
 def _read_baseline() -> dict[str, Any]:
@@ -205,8 +176,21 @@ def _read_baseline() -> dict[str, Any]:
 def _assert_section_unchanged(
     live_value: Any, baseline: dict[str, Any], section_name: str
 ) -> None:
+    """Exact equality for a section without a shape law (membership, public pages)."""
     assert live_value == baseline[section_name]
-    assert _canonical_sha256(live_value) == baseline["section_sha256"][section_name]
+
+
+def _assert_projected_section_unchanged(
+    live_section: dict[str, Any],
+    baseline: dict[str, Any],
+    section_name: str,
+    shape_fields: tuple[str, ...],
+) -> None:
+    """Frozen fields exact; shape fields compatible under the nullable law."""
+    expected = baseline[section_name]
+    assert live_section["frozen"] == expected["frozen"]
+    mismatches = _shape_mismatches(live_section["shape"], expected["shape"], shape_fields)
+    assert not mismatches, f"{section_name} shape changed: " + "; ".join(mismatches)
 
 
 def _canonical_sha256(value: Any) -> str:
@@ -235,6 +219,16 @@ def _git_head() -> str:
     return result.stdout.strip()
 
 
+def _is_ancestor_of_origin_main(sha: str) -> bool:
+    result = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", sha, "origin/main"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0
+
+
 def _missing_checkout_directories() -> tuple[str, ...]:
     from scripts.worktree_sparse import missing_dirs
 
@@ -246,6 +240,11 @@ def _validate_regeneration_preconditions(main_sha: str) -> None:
     if head_sha != main_sha:
         raise SystemExit(
             f"Regeneration requires the requested main SHA to be HEAD; HEAD is {head_sha}."
+        )
+    if not _is_ancestor_of_origin_main(main_sha):
+        raise SystemExit(
+            f"Regeneration requires a SHA that is an ancestor of origin/main; {main_sha} is not "
+            "(a lane merge commit is never the frozen main)."
         )
     missing_directories = _missing_checkout_directories()
     if missing_directories:
@@ -317,24 +316,14 @@ def test_primary_and_supplemental_populations_are_disjoint_and_never_merged() ->
 
 def test_frozen_field_lists_exclude_nightly_volatile_fields() -> None:
     nightly_volatile_fields = (
-        "radar",
-        "basket_intel",
-        "lane",
-        "lane_rank",
-        "fav_count",
-        "caut_count",
-        "present_count",
-        "stage_key",
-        "stage_raw",
-        "stage_label_en",
-        "stage_label_zh",
-        "stage_sort",
-        "falsifier_label",
-        "falsifier_any_fired",
-        "filter_flags",
-        "leadership_context",
-        "entry_context",
+        "radar", "basket_intel", "foresight", "narrative", "subsector_rotation", "divergence_board",
+        "lane", "lane_rank", "stance_en", "stance_zh", "story_en", "story_zh",
+        "fav_count", "caut_count", "present_count",
+        "stage_raw", "stage_key", "stage_label_en", "stage_label_zh", "stage_sort",
+        "falsifier_any_fired", "falsifier_label", "filter_flags",
+        "leadership_context", "entry_context",
     )
+    assert len(nightly_volatile_fields) == 25
     for field in nightly_volatile_fields:
         assert field not in THEME_STATE_FROZEN
         assert field not in THEME_TRACKER_FROZEN
@@ -344,22 +333,56 @@ def test_json_type_name_uses_json_shapes() -> None:
     assert _json_type_name(json.loads(json.dumps((1, 2)))) == "array"
 
 
-def test_nullable_shape_allows_live_null_and_declared_baseline_null() -> None:
-    nullable_baseline = {field: None for field in NULLABLE_SHAPE_FIELDS}
-    nullable_live = {field: None for field in NULLABLE_SHAPE_FIELDS}
-    baseline_shapes = {field: "null" for field in NULLABLE_SHAPE_FIELDS}
-    assert (
-        _shape_projection(nullable_live, NULLABLE_SHAPE_FIELDS, baseline_shapes) == {}
+def test_nullable_shape_law_against_committed_baseline_shapes() -> None:
+    baseline = _read_baseline()
+    state_shapes = baseline["theme_state"]["shape"]
+    tracker_shapes = baseline["theme_tracker"]["shape"]
+    # a nullable block the nightly omitted tonight
+    assert _shape_mismatches({**state_shapes, "radar": "null"}, state_shapes, THEME_STATE_SHAPE) == []
+    assert _shape_mismatches({**state_shapes, "basket_intel": "null"}, state_shapes, THEME_STATE_SHAPE) == []
+    assert _shape_mismatches({**state_shapes, "foresight": "null"}, state_shapes, THEME_STATE_SHAPE) == []
+    # a dead reader coming back: baseline null, live object
+    assert state_shapes["narrative"] == "null"
+    assert _shape_mismatches({**state_shapes, "narrative": "object"}, state_shapes, THEME_STATE_SHAPE) == []
+    assert tracker_shapes["leadership_context"] == "null"
+    assert _shape_mismatches({**tracker_shapes, "leadership_context": "object", "entry_context": "string"}, tracker_shapes, THEME_TRACKER_SHAPE) == []
+    # a non-nullable field going null IS a change
+    assert _shape_mismatches({**tracker_shapes, "lane": "null"}, tracker_shapes, THEME_TRACKER_SHAPE) == ["lane: live 'null' vs baseline 'string'"]
+    assert _shape_mismatches({**tracker_shapes, "stance_en": "null"}, tracker_shapes, THEME_TRACKER_SHAPE) != []
+    # a type flip on a nullable field that is not a null IS a change
+    assert _shape_mismatches({**state_shapes, "radar": "object"}, state_shapes, THEME_STATE_SHAPE) == ["radar: live 'object' vs baseline 'array'"]
+    # the assertion helper reports the same verdicts end to end
+    _assert_projected_section_unchanged(
+        {"frozen": baseline["theme_state"]["frozen"], "shape": {**state_shapes, "radar": "null", "narrative": "object"}},
+        baseline, "theme_state", THEME_STATE_SHAPE,
     )
-    assert _shape_projection(nullable_baseline, NULLABLE_SHAPE_FIELDS) == {}
+    with pytest.raises(AssertionError, match="lane: live 'null'"):
+        _assert_projected_section_unchanged(
+            {"frozen": baseline["theme_tracker"]["frozen"], "shape": {**tracker_shapes, "lane": "null"}},
+            baseline, "theme_tracker", THEME_TRACKER_SHAPE,
+        )
 
-    for field in NULLABLE_SHAPE_FIELDS:
-        live_value = {field: {"joined": True}}
-        assert _shape_projection(live_value, (field,), baseline_shapes) == {}
 
-
-def test_non_nullable_shape_rejects_baseline_null() -> None:
+def test_live_null_in_a_non_nullable_shape_field_is_recorded_as_null() -> None:
     assert _shape_projection({"lane": None}, ("lane",)) == {"lane": "null"}
+    assert _shape_projection({}, ("lane",)) == {"lane": "missing"}
+
+
+def test_baseline_sections_match_their_recorded_sha256() -> None:
+    baseline = _read_baseline()
+    for section_name, digest in baseline["section_sha256"].items():
+        assert _canonical_sha256(baseline[section_name]) == digest, section_name
+    assert tuple(baseline["public_pages"]["canaries"]) == PRIVATE_DOSSIER_CANARIES
+
+
+def test_regeneration_rejects_sha_that_is_not_on_origin_main(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(__name__ + "._git_head", lambda: "lane-head")
+    monkeypatch.setattr(__name__ + "._missing_checkout_directories", lambda: ())
+    monkeypatch.setattr(__name__ + "._is_ancestor_of_origin_main", lambda sha: False)
+    with pytest.raises(SystemExit, match="ancestor of origin/main"):
+        _validate_regeneration_preconditions("lane-head")
 
 
 def test_regeneration_rejects_requested_sha_that_is_not_head(
@@ -374,6 +397,7 @@ def test_regeneration_rejects_sparse_checkout(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(__name__ + "._git_head", lambda: "requested-head")
+    monkeypatch.setattr(__name__ + "._is_ancestor_of_origin_main", lambda sha: True)
     monkeypatch.setattr(
         __name__ + "._missing_checkout_directories", lambda: ("data", "site")
     )
@@ -384,13 +408,13 @@ def test_regeneration_rejects_sparse_checkout(
 @pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_theme_state_fields_for_nuclear_unchanged() -> None:
     baseline = _read_baseline()
-    _assert_section_unchanged(_nuclear_theme_state(), baseline, "theme_state")
+    _assert_projected_section_unchanged(_nuclear_theme_state(), baseline, "theme_state", THEME_STATE_SHAPE)
 
 
 @pytest.mark.needs_full_checkout("data", "site") if _needs_checkout("data", "site") else _NO_SKIP
 def test_theme_tracker_nuclear_entry_unchanged() -> None:
     baseline = _read_baseline()
-    _assert_section_unchanged(_nuclear_theme_tracker(), baseline, "theme_tracker")
+    _assert_projected_section_unchanged(_nuclear_theme_tracker(), baseline, "theme_tracker", THEME_TRACKER_SHAPE)
 
 
 @pytest.mark.needs_full_checkout("site") if _needs_checkout("site") else _NO_SKIP

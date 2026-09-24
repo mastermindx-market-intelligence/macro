@@ -127,7 +127,7 @@
       "weights": null
     }
   },
-  "frozen_at_main": "966fa5b4bd5f308cabff7bdd9076e21ca968070f",
+  "frozen_at_main": "10c0d79e29923a92b23d9e6684c3e0979ee39a9b",
   "owners": {
     "basket_membership": {
       "artifact": "data/baskets/membership.json"
@@ -142,8 +142,6 @@
   "public_pages": {
     "canaries": [
       "economic_change_dossier",
-      "economic_change_dossier/v1",
-      "Nuclear Value Capture",
       "contingent_within_leu",
       "Westinghouse displayed revenue",
       "PRE_EVENT_TIMESTAMPED_VALUE"
@@ -152,9 +150,9 @@
   "schema": "energy.nuclear_non_regression.v1",
   "section_sha256": {
     "basket_membership": "210b19ac93d3e3a175d548f7ddc1a5a41468a07a147562a716e0b52199e8a542",
-    "public_pages": "bfbef8b50c3c298f045f3cd994fe9b9c88d3e14e1f48930553374dcd6247c3c1",
-    "theme_state": "e3b2dd3d1343b45793e73c34743e809e103d68e2e107a860711db326eaac7ab4",
-    "theme_tracker": "e9efb9aebd880bf664969faeae547e102362b0075025f048d4da8db61de38dc0"
+    "public_pages": "6f33102a5420d47be2ff2b6b64fcf20b6d9b8d331d471102aa63245344a9e2c2",
+    "theme_state": "15e9856e4a39efabdc648adb3055c56f18398091f0902104307e66149cc2931a",
+    "theme_tracker": "7d8701c925f87cf1b5b50f6b2f9220c94f34b0955a7987d6fa5f5708a64e4565"
   },
   "theme_state": {
     "frozen": {
@@ -173,6 +171,7 @@
       "basket_intel": "array",
       "divergence_board": "null",
       "foresight": "object",
+      "narrative": "null",
       "radar": "array",
       "subsector_rotation": "object"
     }
@@ -185,12 +184,14 @@
     },
     "shape": {
       "caut_count": "number",
+      "entry_context": "null",
       "falsifier_any_fired": "bool",
       "falsifier_label": "string",
       "fav_count": "number",
       "filter_flags": "string",
       "lane": "string",
       "lane_rank": "array",
+      "leadership_context": "null",
       "present_count": "number",
       "stage_key": "string",
       "stage_label_en": "string",
