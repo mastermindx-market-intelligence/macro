@@ -41,9 +41,28 @@ import pytest
 # Reuse the sibling seam suite's synthetic-root + env helpers — the env
 # construction (FileSystemLoader + autoescape + jinja2.Undefined) stays in ONE
 # place rather than being re-invented here.
-from tests.test_basket_intelligence_mounts import (
-    _make_basket_root,
-    _render_basket_detail,
+try:  # the sibling suite lives on the shared foundation (#7870); this carrier
+    # must stay collectable on main alone (RR9), so the import is guarded and the
+    # three tests that need the shared seam/client are strict-xfailed until it lands.
+    from tests.test_basket_intelligence_mounts import (
+        _make_basket_root,
+        _render_basket_detail,
+    )
+    HAS_SHARED = True
+except ImportError:  # pragma: no cover — main without the T10b seam
+    HAS_SHARED = False
+
+    def _make_basket_root(*_a, **_k):  # type: ignore[misc]
+        raise ImportError("tests.test_basket_intelligence_mounts is not on this base")
+
+    def _render_basket_detail(*_a, **_k):  # type: ignore[misc]
+        raise ImportError("tests.test_basket_intelligence_mounts is not on this base")
+
+_SHARED_XFAIL = pytest.mark.xfail(
+    condition=not HAS_SHARED,
+    strict=True,
+    reason="shared T10b seam, semiconductor partial and theme-research client (#7870) "
+           "are not on this base; flips loudly the day they land",
 )
 
 REPO_ROOT = Path(__file__).parent.parent
@@ -195,6 +214,33 @@ def test_no_payload_or_json_in_partial():
         f"query; got {digit_runs}"
     )
 
+    # The two API paths AND the two asset hrefs are the ONLY URLs in the
+    # partial (mirrors the sibling seam suite's pin), and no http(s):// at all.
+    allowed = {
+        "../assets/css/theme-research.css",
+        "../assets/js/theme-research.js?v=20260924a",
+        "/api/themes/v1/research/query",
+        "/api/themes/v1/research/evidence",
+    }
+    urls = re.findall(r'(?:href|src)="([^"]+)"|/api/[^"\s]+', html)
+    offending = [u for u in urls if u and u not in allowed]
+    assert not offending, f"unexpected URL(s) in the partial: {offending}"
+    assert not re.search(r"https?://", html), (
+        "the partial must not embed any http(s):// URL — display-tier only"
+    )
+
+
+def test_no_raw_slug_as_visible_text():
+    """Internal slugs and schema ids live only in data attributes; the visible
+    text of the mount never shows them (bilingual toggle rule: labels, never
+    scorer/slice slugs)."""
+    html = _render_partial({"theme_research_anchor": ANCHOR})
+    section = _section_block(html)
+    visible = re.sub(r"<[^>]+>", " ", section)
+    for slug in ("precision_motion", "perception", "robotics_automation",
+                 "robotics_theme_research", "theme_research"):
+        assert slug not in visible, f"raw slug {slug!r} rendered as visible text"
+
 
 # ---------------------------------------------------------------------------
 # 4 — L6: bilingual strings toggle, never dual
@@ -255,6 +301,7 @@ def test_bilingual_strings_toggle_not_dual():
 # 5 — the aggregator line is the shell writer's; zero robotics mounts TODAY
 # ---------------------------------------------------------------------------
 
+@_SHARED_XFAIL
 def test_aggregator_untouched_and_would_include_us(tmp_path):
     """Two facts, both deliberate:
 
@@ -302,6 +349,7 @@ def test_aggregator_untouched_and_would_include_us(tmp_path):
 # 6 — KNOWN SHARED DEFECT: semiconductor partial gates on grammar, not identity
 # ---------------------------------------------------------------------------
 
+@_SHARED_XFAIL
 def test_semiconductor_partial_also_renders_for_robotics_anchor_today():
     """KNOWN SHARED DEFECT — documented, NOT fixed here (the semiconductor
     partial is not this lane's file).
@@ -352,6 +400,7 @@ def test_semiconductor_partial_also_renders_for_robotics_anchor_today():
 # 7 — the two extra identity attributes are inert to the current client
 # ---------------------------------------------------------------------------
 
+@_SHARED_XFAIL
 def test_client_reads_only_declared_mount_attributes():
     """site/assets/js/theme-research.js reads exactly the four declared mount
     attributes off the MOUNT element (anchor id, slices, the two API paths)
