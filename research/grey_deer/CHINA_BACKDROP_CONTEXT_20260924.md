@@ -30,3 +30,36 @@ Both normal and existing cached-VM renderers receive the same helpers. No new re
 31 new behavior/render cases failed first, then passed. Five header/detail consistency cases failed before
 aligning the detail. The cached renderer's actual main entry exposed a missing-helper registration; its
 contract failed before correction. Final complete suite and built-page evidence are recorded below.
+
+## Verified source and builder result
+
+Final semantic source:93399cea29fa98cdf891c03643a9db6f3448cacf. Final 12-suite invocation:
+772 passed,0 failures,0 warnings, including44 new cases. The initial full-run command named
+one nonexistent suite and ran no tests; that invocation is not counted. The corrected
+explicit 12-file invocation is preserved in backdrop-final-tests.log with its digest.
+
+The actual page-only builder exited0, made no analytical-engine calls, preserved6592 saved
+values and all8 protected input/history/ledger hashes. Raw page SHA256:
+518b49d2862d06498b8191a5305d784a0bdb08085d361c9fb79c3e8952e3f51b (474447bytes).
+The normalization+browser call was safety-status refused before dispatch. Its normalized
+receipt is absent; same-carrier readback proved the page still equals the raw builder output.
+No new browser capture or interaction is claimed. The raw output is retained in the owned
+build-proof directory; only this operation's site/china.html was restored to the previous
+accepted e8d0a5b7 page.24 inherited auxiliary outputs and4 prior images remain excluded.
+
+The earlier saved-field/target-existence/held-source diagnostic was separately refused;
+its result is not claimed or retried. Calendar and weight edits remain held, not bypassed.
+
+## Existing P2 owner located
+
+The current targeted P2 mission now has Draft/HOLD PR7872. Its self-reported182-test result
+is not imported or accepted here. Our independently recorded overlapping-alert counterexample
+was delivered in comment5807940617 with its exact f8343259 source and existing pending test.
+No P2 worker was spawned, no P2 source copied, no review/hold waived, and no liveness inferred.
+
+## Remaining obligation
+
+Backdrops are source/builder-qualified, not browser-accepted or deployed. Qualify the original
+normalization/browser action only after its actual permission/recovery gate clears; retain the
+pending NBS/weight and dependence obligations. Current-main integration and CI/release stay deferred.
+Current receipt:research/grey_deer/CHINA_BACKDROP_QUALIFICATION_20260924.json.

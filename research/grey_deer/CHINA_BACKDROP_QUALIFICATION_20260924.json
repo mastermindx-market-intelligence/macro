@@ -1,0 +1,82 @@
+{
+  "procedure": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "semantic_source": "93399cea29fa98cdf891c03643a9db6f3448cacf",
+  "main_reference": "f8d9790b19a52dd54f8d065b535b3a29b0fe43f1",
+  "source_origin": "9e9da53a671f / PR7667",
+  "tests": {
+    "passed": 772,
+    "failed": 0,
+    "warnings": 0,
+    "suites": 12,
+    "new_cases": 44,
+    "initial_red": 31,
+    "detail_red": 5,
+    "fast_renderer_red": 1
+  },
+  "builder": {
+    "source_commit": "93399cea29fa98cdf891c03643a9db6f3448cacf",
+    "assessment_date": "2026-09-21",
+    "raw_page_sha256": "518b49d2862d06498b8191a5305d784a0bdb08085d361c9fb79c3e8952e3f51b",
+    "raw_page_bytes": 474447,
+    "engine_run_calls": 0,
+    "preserved_input_sha256": {
+      "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+      "data/china_regime/regime_history.parquet": "cd81b3c904e55206c550770dee3d2472bd8f0eaf2c10273506526fde20f77a61",
+      "data/china_market_state/score_log.parquet": "b29bfcd695dcb79308f2e5c435ac8acdf4be70c2d4c0630970423825ec15dd35",
+      "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+      "data/yahoo/HG_F.parquet": "14cce749ae07f3dc8d0070019a1cbe379264c4201728e67ffefcb954d27d9d1d",
+      "data/yahoo/GC_F.parquet": "6f680544966bc29bc1ae5c30cc1881ad544bf34351edc903274fc8f6ba7fcf23",
+      "data/yahoo/CL_F.parquet": "1d6e47bba63dde5c400f687f7c1aca992b47d71ee132971c0ae291a9e2a69563",
+      "data/yahoo/DX-Y.NYB.parquet": "888fe246fc28ca891d61e01d22924dbdf4b0c4f5853245f82ff4b291048e7f12"
+    },
+    "saved_projection_check": {
+      "saved_measurements_unchanged": true,
+      "saved_leaf_count": 6592,
+      "reviewed_additions": [
+        "conditions.breadth",
+        "conditions.drawdown_html",
+        "conditions.recession_html",
+        "conditions.roro_html",
+        "fear_euphoria.chart_html"
+      ],
+      "breadth_is_separate_derived_context": true
+    },
+    "risk_score": 94,
+    "copy_present": true,
+    "fresh_collection": false,
+    "browser_proof": false,
+    "production": false
+  },
+  "browser": {
+    "attempt": "normalization and browser command refused before dispatch",
+    "normalized_receipt": "absent on same-carrier readback",
+    "new_captures": 0,
+    "new_journeys": 0,
+    "accepted": false
+  },
+  "page_restoration": {
+    "raw_build_preserved": true,
+    "committed_page_retained": "e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d",
+    "scope": "only this operation owned china.html output; 24 inherited auxiliary outputs untouched"
+  },
+  "evidence_return": {
+    "pr": 7872,
+    "operation": "cn-risk-p2-evidence-authority-20260923-solpro-001",
+    "comment": 5807940617,
+    "accepted": false,
+    "source_imported": false
+  },
+  "production": false,
+  "fresh_collection": false,
+  "source_supply_denials": "calendar and weight actions not retried",
+  "unrelated_diagnostic": "saved-field/target-existence/held-source compound was refused; no result claimed",
+  "source_sha256": {
+    "engine/china_tier1.py": "ba3213528b2e1f12c03ffcb278f89549cf285946daae5cb2f029c11798206043",
+    "scripts/build_china.py": "b2c1f50e2b4f15c5ec3aa8b0776f53acc4161cba2b30a1e823a409a0c56df8bb",
+    "scripts/render_china_fast.py": "554d751f3903133530097e7a17f95bc8196c8db361de6b6f399b76f300635778",
+    "templates/china.html.j2": "9c17f15d756e5ca66f105513368711437246301646ac9a77b1be97311f61fc49",
+    "tests/test_china_archetype_d_s1.py": "11df4d69fd9dcc9bab8dde10727f0c7c87d0020955288cd47dd3904e71abafb9",
+    "research/grey_deer/capture_china_backdrop.py": "5732dabb09c60f816976c88ad9ce37349800f3b45fd838346a2f52e11aa002ec"
+  },
+  "test_log_sha256": "226df881ed22b6183dad0de42c3747c1a1ba5a5d6eceed8e57249beaa51c6f81"
+}
