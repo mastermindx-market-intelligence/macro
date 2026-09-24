@@ -868,12 +868,28 @@ def _prior_brief_ref_block(site: Path, data_dir: Path, generated_at: str) -> dic
 # ---------------------------------------------------------------------------
 
 
-def _row_state(source_as_of: str | None, generated_at: str, *, covered: bool = True, precision: str | None = None) -> tuple[str, int | None]:
+def _row_state(
+    source_as_of: str | None,
+    generated_at: str,
+    *,
+    covered: bool = True,
+    precision: str | None = None,
+    max_age_minutes: int | None = None,
+) -> tuple[str, int | None]:
     """One-row state decision: CURRENT/STALE_WITH_LAST_KNOWN/UNAVAILABLE/NOT_COVERED.
-    Same budget as the legacy _classify but inlined here so a row can be
-    classified independently of the legacy _block() helper. When `precision`
-    is "day", freshness is judged in whole days (MAJOR 5) so a yesterday-
-    stamped source IS CURRENT today."""
+    Pure, no legacy coupling. `max_age_minutes` is the budget THIS row/block
+    advertises (passed in so the new blocks each set their own — context_planes
+    uses _CONTEXT_PLANE_MAX_AGE = 1440, research_watch uses
+    _RESEARCH_WATCH_MAX_AGE = 14400 per §A3). When `precision` is "day",
+    freshness is judged in whole days (MAJOR 5) so a yesterday-stamped source
+    IS CURRENT today.
+
+    R2 (BLOCKER 2, 2026-09-24): `_row_state` previously hardcoded
+    _CONTEXT_PLANE_MAX_AGE inside this helper, so research_watch rows were
+    aged on a 1440-minute budget while the block advertised 14400 — that
+    contradiction meant the block could never read CURRENT on real theses.
+    The budget now lives in the parameter and the call sites pass the
+    block's own max_age_minutes through."""
     if not covered:
         return "NOT_COVERED", None
     if source_as_of is None:
@@ -892,13 +908,15 @@ def _row_state(source_as_of: str | None, generated_at: str, *, covered: bool = T
             gen_date = gen_dt.astimezone(timezone.utc).date()
             src_date = src_dt.astimezone(timezone.utc).date()
             age_days = (gen_date - src_date).days
-            max_age_days = -(-_CONTEXT_PLANE_MAX_AGE // 1440) if _CONTEXT_PLANE_MAX_AGE > 0 else 0
+            budget = max_age_minutes if max_age_minutes is not None else _CONTEXT_PLANE_MAX_AGE
+            max_age_days = -(-budget // 1440) if budget > 0 else 0
             if age_days <= max_age_days:
                 return "CURRENT", age_minutes
             return "STALE_WITH_LAST_KNOWN", age_minutes
         except Exception:  # noqa: BLE001
             pass
-    if age_minutes <= _CONTEXT_PLANE_MAX_AGE:
+    budget = max_age_minutes if max_age_minutes is not None else _CONTEXT_PLANE_MAX_AGE
+    if age_minutes <= budget:
         return "CURRENT", age_minutes
     return "STALE_WITH_LAST_KNOWN", age_minutes
 
@@ -1415,29 +1433,37 @@ def _WorstOf(states):
 def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict:
     """Read the track-record / theses artifacts and surface at most 5 OPEN
     conditions. Words only — no direction, size, order, target or buy/sell.
-    If the newest source row is older than 10 US sessions, the whole block
-    is STALE_WITH_LAST_KNOWN with a plain reason.
+    If the newest row is older than _RESEARCH_WATCH_MAX_AGE (10 US sessions
+    ≈ 14 calendar days = 14400 minutes), the whole block is
+    STALE_WITH_LAST_KNOWN with the dated reason
+    "Last updated <YYYY-MM-DD> — showing the last known conditions."
+
+    R2 (BLOCKER 2, 2026-09-24): source_as_of comes from the DISPLAYED ROWS
+    only. The previous code mixed in `track_record.json`'s top-level `as_of`
+    and used that mix as the block clock — with real artifacts that mix
+    reads "1 day ago" while the rows are months old. track_record.json is a
+    CALIBRATION summary; its `as_of` is no longer a clock here (it may only
+    feed `calibration_note` display, which we surface as a plain sentence
+    when present). Staleness budget for the BLOCK and its ROWS is
+    _RESEARCH_WATCH_MAX_AGE; `_row_state` takes the budget as a parameter
+    so the row age and the block budget agree.
 
     OPEN conditions live in `data/master_brain/theses.jsonl`. The sibling
-    `track_record.json` is a CALIBRATION summary (top-level keys are
-    schema/as_of/scored_total/open/unscored_soft/expired/overall/by_conviction/
-    by_kind/by_regime/calibration_note/recent/calibration_note_zh) — its
-    `recent` list is closed-thesis outcomes, not OPEN conditions, so we read
-    its `as_of` field as a NEWEST-ASOF CALIBRATION clue but never claim
-    `conditions` / `open_conditions` keys (BLOCKER 5 — never invent a key)."""
+    `track_record.json` is a CALIBRATION summary — never an open-condition
+    list, so we never claim `conditions` / `open_conditions` keys
+    (BLOCKER 5 — never invent a key)."""
     rows: list[dict] = []
     source_ref = "data/master_brain/theses.jsonl + data/master_brain/track_record.json"
-    # Source timestamps: theses.jsonl is JSON-Lines; each row carries
-    # state_asof and logged_at distinctly. We use `state_asof` for `since`
-    # (when the condition was set) and `logged_at` for `as_of` (when the
-    # row was committed) so the two timestamps stay separate (MINOR 1).
     newest_asof: str | None = None
     newest_asof_raw: str | None = None  # pre-normalisation so we can derive "day" precision (MAJOR 6)
     theses_path = data_dir / "master_brain" / "theses.jsonl"
     track_path = data_dir / "master_brain" / "track_record.json"
-    seen_ids: set[str] = set()
+    calibration_note_en: str | None = None
+    calibration_note_zh: str | None = None
     try:
-        # 1. theses.jsonl — primary OPEN-condition source.
+        # 1. theses.jsonl — primary OPEN-condition source. The row set
+        # drives the block clock (newest_asof is the max of these rows'
+        # as_of, NEVER mixed with track_record.json's top-level as_of).
         if theses_path.exists():
             for line in theses_path.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
@@ -1479,24 +1505,23 @@ def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict
                     "as_of": as_of_iso,
                     "source_ref": "data/master_brain/theses.jsonl",
                 })
-                seen_ids.add(obj.get("id") or cond_text)
-                # Track newest as_of AND keep the raw string for precision.
+                # Track newest as_of AMONG THE ROWS ONLY (R2).
                 if as_of_iso and (newest_asof is None or as_of_iso > newest_asof):
                     newest_asof = as_of_iso
                     newest_asof_raw = logged_raw or since_raw
-        # 2. track_record.json — calibration summary, not an open-condition
-        # list. We use its `as_of` field as a calibration clock but never
-        # claim `conditions`/`open_conditions` keys (the artifact has none;
-        # BLOCKER 5). The recent[] list contains CLOSED-thesis outcomes
-        # and is not surfaced here.
+        # 2. track_record.json — calibration summary. Its `as_of` is NOT a
+        # block clock here (R2); we only surface the calibration_note pair
+        # as plain display copy when present.
         if track_path.exists():
             try:
                 track = json.loads(track_path.read_text(encoding="utf-8"))
-                track_as_of_raw = track.get("as_of")
-                track_as_of_iso, _ = _norm_clock(track_as_of_raw)
-                if track_as_of_iso and (newest_asof is None or track_as_of_iso > newest_asof):
-                    newest_asof = track_as_of_iso
-                    newest_asof_raw = track_as_of_raw
+                if isinstance(track, dict):
+                    note_en = track.get("calibration_note")
+                    note_zh = track.get("calibration_note_zh")
+                    if isinstance(note_en, str) and note_en:
+                        calibration_note_en = note_en
+                    if isinstance(note_zh, str) and note_zh:
+                        calibration_note_zh = note_zh
             except Exception as exc:  # noqa: BLE001
                 log.debug("am_edition: track_record read failed (%s)", exc)
         # Cap at 5 most-recent conditions (newest first).
@@ -1529,30 +1554,39 @@ def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict
             "max_age_minutes": _RESEARCH_WATCH_MAX_AGE,
             "classification": "owner_research_watch",
             "rows": [],
-            "state_reason_en": "Research watch is not available yet.",
-            "state_reason_zh": "研究观察暂不可用。",
+            "state_reason_en": "Not available this morning.",
+            "state_reason_zh": "今晨暂不可用。",
         }
-    # Decide block-level state via per-row age.
+    # Decide block-level state via per-row age (R2: budget = research_watch's
+    # own budget, not the legacy context-plane budget).
     row_states = []
     for r in rows:
-        s, _ = _row_state(r.get("as_of"), generated_at)
+        s, _ = _row_state(
+            r.get("as_of"),
+            generated_at,
+            max_age_minutes=_RESEARCH_WATCH_MAX_AGE,
+        )
         row_states.append(s)
     block_state = _WorstOf(row_states) if row_states else "UNAVAILABLE"
-    # Spec: if the newest row is older than 10 US sessions, the whole block
-    # is STALE_WITH_LAST_KNOWN with a plain reason. We pass precision so a
-    # day-only newest source is judged in days (MAJOR 5).
+    # Spec: if the newest row is older than _RESEARCH_WATCH_MAX_AGE, the
+    # whole block is STALE_WITH_LAST_KNOWN with the dated reason.
     newest_precision = (
         "day"
         if (newest_asof_raw and "T" not in str(newest_asof_raw) and ":" not in str(newest_asof_raw))
         else "second"
     )
-    newest_state, newest_age = _row_state(newest_asof, generated_at, precision=newest_precision)
+    newest_state, newest_age = _row_state(
+        newest_asof,
+        generated_at,
+        precision=newest_precision,
+        max_age_minutes=_RESEARCH_WATCH_MAX_AGE,
+    )
     if newest_age is not None and newest_age > _RESEARCH_WATCH_MAX_AGE:
         block_state = "STALE_WITH_LAST_KNOWN"
-    # Precision: derive from the RAW newest_asof string (before normalisation).
-    # _norm_clock always pads to "...T00:00:00+00:00" so post-norm precision
-    # is always "second" — checking the raw string is the only way a date-only
-    # source reports "day" (MAJOR 6).
+    # Plain-word YYYY-MM-DD prefix for the dated reasons. `newest_asof[:10]`
+    # is the canonical ISO date — never an age in hours (R2: "Last updated
+    # <YYYY-MM-DD>" with a date, not a duration).
+    newest_date = newest_asof[:10] if newest_asof else "—"
     block = {
         "key": "research_watch",
         "title_en": "Research watch",
@@ -1567,20 +1601,19 @@ def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict
         "classification": "owner_research_watch",
         "rows": rows,
     }
+    if calibration_note_en is not None:
+        block["calibration_note_en"] = calibration_note_en
+    if calibration_note_zh is not None:
+        block["calibration_note_zh"] = calibration_note_zh
     if block_state == "STALE_WITH_LAST_KNOWN":
-        if newest_age is not None and newest_age > _RESEARCH_WATCH_MAX_AGE:
-            block["state_reason_en"] = f"Research watch last updated {newest_asof[:10] if newest_asof else '—'}."
-            block["state_reason_zh"] = f"研究观察最近更新于 {newest_asof[:10] if newest_asof else '—'}。"
-        else:
-            age_en, age_zh = _humanize_age(newest_age or 0)
-            block["state_reason_en"] = f"Last updated {age_en} ago — showing the last known conditions."
-            block["state_reason_zh"] = f"最近更新于{age_zh}前——展示的是最新已知条件。"
+        block["state_reason_en"] = f"Last updated {newest_date} — showing the last known conditions."
+        block["state_reason_zh"] = f"最近更新于 {newest_date}，显示最近已知的观察条件。"
     elif block_state == "CURRENT":
-        block["state_reason_en"] = "Research watch is within its 10-session freshness budget."
-        block["state_reason_zh"] = "研究观察处于10个交易日时效预算内。"
+        block["state_reason_en"] = f"Watch conditions updated {newest_date}."
+        block["state_reason_zh"] = f"观察条件更新于 {newest_date}。"
     elif block_state == "UNAVAILABLE":
-        block["state_reason_en"] = "Research watch is not available yet."
-        block["state_reason_zh"] = "研究观察暂不可用。"
+        block["state_reason_en"] = "Not available this morning."
+        block["state_reason_zh"] = "今晨暂不可用。"
     return block
 
 
