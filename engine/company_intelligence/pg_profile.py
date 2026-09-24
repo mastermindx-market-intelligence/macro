@@ -114,7 +114,7 @@ def pg_profile(*, fiscal_scope: tuple[str, str, str, str]) -> IssuerProfile:
 
 
 _NUMBER = r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?"
-_PERCENT_PATTERN = rf"^(?:\(?\+?({_NUMBER})%\)?|\(?\+?({_NUMBER})\)?%)$"
+_PERCENT_PATTERN = rf"^(?:\+?({_NUMBER})%|\(\+?({_NUMBER})\)%|\(\+?({_NUMBER})\))%$"
 _CURRENCY_PATTERN = rf"^(?:\$?({_NUMBER})|\(\$?({_NUMBER})\))$"
 
 
@@ -289,7 +289,7 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequ
                 document_id=document_id,
                 event_id=event_id,
                 detail="The cell literal does not match the definition unit.",
-                reason="missing_units",
+                reason="unit_mismatch",
             )
         receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
     if value is None or not math.isfinite(value) or receipt is None:
