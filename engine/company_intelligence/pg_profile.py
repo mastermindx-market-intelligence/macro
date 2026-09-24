@@ -242,7 +242,7 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], heading: str, 
         if neutral is None or _normal(neutral[0][neutral[1]].text) != "dash means zero":
             return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
         value = 0.0
-        receipt = _receipt(bound, neutral[0][neutral[1]].source_span.char_start, neutral[0][neutral[1]].source_span.char_end, "dash means zero")
+        receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
     elif literal:
         value = parse_pg_literal(literal, unit=definition.unit)
         if value is None:

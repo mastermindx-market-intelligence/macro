@@ -207,18 +207,23 @@ def test_blank_is_absent_and_dash_is_neutral_zero() -> None:
     assert "value" not in by_metric["pg_organic_volume_growth_pct"]
     assert "typed_absence" in by_metric["pg_organic_volume_growth_pct"]
     assert by_metric["pg_total_volume_growth_pct"]["value"] == 0.0
-    assert by_metric["pg_total_volume_growth_pct"]["source_span"]["display_excerpt"] == "dash means zero"
+    assert by_metric["pg_total_volume_growth_pct"]["source_span"]["display_excerpt"] == "—"
 
 
 def test_combined_volume_mix_never_passes_pure_volume() -> None:
-    _workspace, rows = _selected()
-    assert rows
-    definitions = profile_for_ticker("PG", publication="private", fiscal_scope=FISCAL_SCOPE)
-    assert definitions is not None
-    for row in rows:
-        assert row["metric"] != "combined_volume_mix"
-    assert {row["metric"] for row in rows} == set(PG_METRIC_KEYS)
-    assert "pg_total_volume_growth_pct" in {row["metric"] for row in rows}
+    rows = validate_selected_facts(
+        pg_workspace_case("combined_volume_only"),
+        source_texts=pg_source_texts("combined_volume_only"),
+        fiscal_scope=FISCAL_SCOPE,
+    )
+    by_metric = {row["metric"]: row for row in rows}
+    for metric in ("pg_total_volume_growth_pct", "pg_organic_volume_growth_pct"):
+        assert "value" not in by_metric[metric]
+        assert by_metric[metric]["typed_absence"]["subject"] == metric
+        assert (
+            by_metric[metric]["typed_absence"]["detail"]
+            == "No unique heading, row label, and column header identifies this observation."
+        )
 
 
 @pytest.mark.parametrize(
@@ -286,6 +291,80 @@ def test_profile_lookup_public_dispatch_is_unchanged() -> None:
     assert profile_for_ticker("NVR") is None
     with pytest.raises(ValueError):
         profile_for_ticker("PG", publication="unknown")
+
+
+def test_scope_quarter_matches_workspace_quarter() -> None:
+    scope = ("2026-01-01", "2026-03-31", "2025-01-01", "2025-03-31")
+    workspace = pg_workspace_case("annual_first", fiscal_scope=scope)
+    rows = validate_selected_facts(
+        workspace,
+        source_texts=pg_source_texts("annual_first", fiscal_scope=scope),
+        fiscal_scope=scope,
+    )
+    assert len(rows) == 20
+
+
+def test_none_fiscal_period_is_typed_error() -> None:
+    workspace, _rows = _selected()
+    workspace = copy.deepcopy(workspace)
+    workspace["fiscal_period"] = None
+    with pytest.raises(EconomicObservationError, match="fiscal period is missing"):
+        validate_selected_facts(
+            workspace, source_texts=pg_source_texts("annual_first"), fiscal_scope=FISCAL_SCOPE
+        )
+
+
+def test_absence_rows_are_fully_bound() -> None:
+    def mutate(rows):
+        row = next(row for row in rows if "typed_absence" in row)
+        row["typed_absence"]["authority"] = "can_rank"
+        return rows
+
+    def mutate_subject(rows):
+        row = next(row for row in rows if "typed_absence" in row)
+        row["typed_absence"]["subject"] = "pg_wrong_subject"
+        return rows
+
+    def mutate_document(rows):
+        row = next(row for row in rows if "typed_absence" in row)
+        row["typed_absence"]["document_id"] = "doc_wrong"
+        return rows
+
+    for mutation in (mutate, mutate_subject, mutate_document):
+        _invalid(mutation)
+
+
+def test_fact_id_identity_and_duplicate_refused() -> None:
+    def mutate(rows):
+        row = next(row for row in rows if row["metric"] == "pg_diluted_eps")
+        row["fact_id"] = "fact_pg_core_eps"
+        return rows
+
+    _invalid(mutate)
+    _workspace, baseline = _selected()
+    assert all(row["fact_id"] == f"fact_{row['metric']}" for row in baseline)
+
+
+def test_span_must_use_registered_private_rights_profile() -> None:
+    def mutate(rows):
+        row = next(row for row in rows if "source_span" in row)
+        row["source_span"]["rights_profile"] = "rp_public_primary_v1"
+        return rows
+
+    _invalid(mutate)
+
+
+def test_dash_span_points_at_the_dash_cell() -> None:
+    rows = validate_selected_facts(
+        pg_workspace_case("blank_dash"),
+        source_texts=pg_source_texts("blank_dash"),
+        fiscal_scope=FISCAL_SCOPE,
+    )
+    row = next(row for row in rows if row["metric"] == "pg_total_volume_growth_pct")
+    source = next(iter(pg_source_texts("blank_dash").values()))
+    start = row["source_span"]["receipt"]["span_start_byte"]
+    end = row["source_span"]["receipt"]["span_end_byte"]
+    assert source.encode("utf-8")[start:end].decode("utf-8") == "—"
 
 
 def test_selected_observations_are_exactly_twenty() -> None:

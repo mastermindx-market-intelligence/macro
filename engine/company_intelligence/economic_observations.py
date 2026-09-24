@@ -72,20 +72,18 @@ def validate_selected_facts(
     if not isinstance(source_texts, Mapping):
         raise EconomicObservationError("source_texts must be a mapping")
     current_start, current_end, prior_start, prior_end = _fiscal_scope(fiscal_scope)
-    if workspace.get("fiscal_period", {}).get("calendar_end") != current_end.isoformat():
+    fiscal_period = workspace.get("fiscal_period")
+    if not isinstance(fiscal_period, Mapping):
+        raise EconomicObservationError("workspace fiscal period is missing")
+    if fiscal_period.get("calendar_end") != current_end.isoformat():
         raise EconomicObservationError("workspace fiscal period does not match fiscal_scope")
-    if str(workspace.get("fiscal_period", {}).get("quarter")) != "4":
-        raise EconomicObservationError("workspace is not a fourth-quarter event")
+    expected_quarter = (current_end.month + 2) // 3
+    if str(fiscal_period.get("quarter")) != str(expected_quarter):
+        raise EconomicObservationError("workspace quarter does not match fiscal_scope")
 
     facts = workspace.get("facts")
     if not isinstance(facts, list):
         raise EconomicObservationError("workspace facts must be a list")
-    selected_count = sum(
-        1 for row in facts
-        if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")
-    )
-    if selected_count > 24:
-        raise EconomicObservationError("selected observations exceed 24")
     rows = [
         row for row in facts
         if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")
@@ -120,8 +118,10 @@ def validate_selected_facts(
             raise EconomicObservationError("fact_id is missing or duplicate")
         fact_ids.add(fact_id)
         metric = row.get("metric")
+        if fact_id != f"fact_{metric}":
+            raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
         definition = _definition(metric)
-        scope_key = (metric, definition.scope, row.get("period"))
+        scope_key = (event_id, metric, definition.scope, row.get("period"), definition.basis)
         if scope_key in metric_scope_periods:
             raise EconomicObservationError("metric, scope, and period duplicate")
         metric_scope_periods.add(scope_key)
@@ -143,8 +143,14 @@ def validate_selected_facts(
                 })
             except ValueError as exc:
                 raise EconomicObservationError(str(exc)) from exc
+            if absence_payload.get("authority") != "context_only":
+                raise EconomicObservationError("typed_absence authority is not display context")
+            if absence_payload.get("subject") != metric:
+                raise EconomicObservationError("typed_absence subject does not match its metric")
             if absence_payload.get("event_id") != event_id:
                 raise EconomicObservationError("typed_absence belongs to another event")
+            if absence_payload.get("document_id") not in source_texts:
+                raise EconomicObservationError("typed_absence belongs to another document")
             checked.append(dict(row))
             continue
 
@@ -170,6 +176,8 @@ def validate_selected_facts(
         span = row.get("source_span")
         if not isinstance(span, Mapping):
             raise EconomicObservationError("present observation has no source span")
+        if span.get("rights_profile") != PG_PRIVATE_RIGHTS_PROFILE:
+            raise EconomicObservationError("observation span rights profile is not private")
         document_id = span.get("document_id")
         source = source_texts.get(document_id)
         if not isinstance(document_id, str) or not document_id or source is None:
@@ -205,7 +213,7 @@ def validate_selected_facts(
             raise EconomicObservationError("display excerpt does not replay")
         if definition.value_kind == "bounded_text":
             replayed_value: Any = replayed_text
-        elif replayed_text == "dash means zero":
+        elif replayed_text in {"-", "—", "–"}:
             replayed_value = 0.0
         else:
             replayed_value = parse_pg_literal(replayed_text, unit=definition.unit)

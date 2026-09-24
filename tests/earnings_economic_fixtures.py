@@ -173,7 +173,7 @@ def pg_workspace_case(
         asof=date(2026, 7, 29),
         fiscal_period=FiscalPeriod(
             year=period,
-            quarter=4,
+            quarter=(date.fromisoformat(fiscal_scope[1]).month + 2) // 3,
             calendar_end=date.fromisoformat(fiscal_scope[1]),
         ),
         exhibit_body=bound.source,
