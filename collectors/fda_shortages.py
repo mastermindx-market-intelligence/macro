@@ -346,6 +346,16 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         }
 
     capture = result.get("capture") or {}
+    if result.get("qualified") and (
+        not isinstance(capture.get("source_generation"), str)
+        or not capture.get("source_generation")
+    ):
+        result = {
+            **result,
+            "qualified": False,
+            "failure_code": "NO_SOURCE_GENERATION",
+            "rows": [],
+        }
     state = _selected_state(path)
     selected = state.get("capture") or {}
     if result.get("qualified"):
