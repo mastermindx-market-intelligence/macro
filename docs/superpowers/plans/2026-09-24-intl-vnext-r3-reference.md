@@ -95,27 +95,27 @@ Run: `git add mockups/refs/institutionalize/intl/reference-r3.html && git commit
 - Consumes: the exact committed R3 HTML and the current committed `site/intl_stocks.html` projection.
 - Produces: visual evidence bound to the R3 candidate and a separate stocks-mode preservation receipt.
 
-- [ ] **Step 1: Capture the default matrix**
+- [x] **Step 1: Capture the default matrix**
 
 Use Playwright to capture desktop 1440×900 and mobile 390×844 across dark/light × EN/ZH. Assert `document.scrollWidth == viewport width` and zero console errors for every cell.
 
-- [ ] **Step 2: Capture hidden inspector panels and horizon states**
+- [x] **Step 2: Capture hidden inspector panels and horizon states**
 
 Capture Japan and United Kingdom inspector states in dark/light and EN/ZH, plus at least two non-default horizon selections. Assert the selected tab/button state is visible and keyboard reachable.
 
-- [ ] **Step 3: Capture organ-local loading, empty, stale, and error states**
+- [x] **Step 3: Capture organ-local loading, empty, stale, and error states**
 
 Capture both dark and light. Assert unrelated acts remain visible in every degraded state and that stale treatment does not dim the whole page.
 
-- [ ] **Step 4: Capture stocks-mode preservation evidence**
+- [x] **Step 4: Capture stocks-mode preservation evidence**
 
 Capture `site/intl_stocks.html` at desktop/mobile × dark/light × EN/ZH. Record it as current-production preservation evidence, not as a redesigned R3 surface.
 
-- [ ] **Step 5: Run interaction and accessibility probes**
+- [x] **Step 5: Run interaction and accessibility probes**
 
 Verify theme/language changes, horizon controls, country tabs, ArrowLeft/ArrowRight keyboard navigation, focus visibility, real destination links, reduced-motion behavior, no external network dependency, and no horizontal page overflow.
 
-- [ ] **Step 6: Commit the exact evidence set**
+- [x] **Step 6: Commit the exact evidence set**
 
 Run: `git add mockups/refs/reference_integrity/intl-vnext-20260924 && git commit -m "docs(evidence): freeze international R3 browser matrix"`
 
