@@ -220,12 +220,12 @@ def load_skew_source(root: Path) -> dict | None:
 # scripts/build_options_catalyst_links.py::_macro_calendar) is the SAME
 # calendar the binder reads; the chip is purely a comparison between two
 # dates that artifact hands the page (the calendar's `fomc[].date` vs the
-# card's `expiration`).  This loader is DELIBERATELY SEPARATE from
-# load_stores() for the same pinned-workspace-scope reason as
+# card's `expiration`).  This loader is DELIBERATELY SEPARATE from the
+# pinned workspace loader for the same reason as
 # load_intel_brief / load_payoff_lab / load_skew_source above (the
-# tests/test_render_options_workspace_scope.py suite pins load_stores()'s
-# literal source — adding the chip store to load_stores would mutate that
-# pinned set).
+# tests/test_render_options_workspace_scope.py suite pins the pinned
+# workspace loader's literal source — adding the chip store to that
+# pinned set would mutate the byte-equal expectation).
 # ─────────────────────────────────────────────────────────────────────────────
 _CATALYST_LINKS_SCHEMA = "mastermind.options_catalyst_links/v1"
 
@@ -1384,9 +1384,11 @@ def _payoff_lab_catalyst(expiration: str | None, card_asof: str | None,
 
     Returns a dict with `state`, `chip_en`, `chip_zh`, `tip_en`, `tip_zh`,
     `calendar_asof`.  The chip's word "FOMC" never reaches user copy
-    (the doctrinally plain form is "Fed decision"); the calendar's asof
-    is part of the tooltip so the reader sees which nightly's calendar the
-    chip is reading (see the producer docstring's lag note).
+    (the doctrinally plain form is "Fed decision"); the calendar's asof is
+    part of the tooltip so the reader sees which nightly's calendar the
+    chip is reading (see the producer docstring's lag note) — formatted as
+    a human-readable date word via the same fold formatters the chip uses
+    for its expiry text, never the raw ISO string (plain-language polish).
     """
     if not isinstance(calendar, dict):
         return None
@@ -1403,6 +1405,9 @@ def _payoff_lab_catalyst(expiration: str | None, card_asof: str | None,
     if _days_between(cal_asof_text, card_text) > 7:
         return None
 
+    # Filter to dates strictly inside the window, then sort — the chip names
+    # the SOONEST such date; producer output is already sorted but a hand-
+    # written unsorted `fomc` list must still pick the right "first".
     fomc_dates: list[str] = []
     for entry in calendar.get("fomc") or []:
         if not isinstance(entry, dict):
@@ -1410,59 +1415,81 @@ def _payoff_lab_catalyst(expiration: str | None, card_asof: str | None,
         d = _parse_iso_date(entry.get("date"))
         if d and card_text < d <= expiry_text:
             fomc_dates.append(d)
+    fomc_dates.sort()
 
-    calendar_asof = cal_asof_text
+    # The calendar's as-of date in the fold's own human date-word form.
+    # Reusing the existing `expiry` formatters keeps ZH paragraph polish:
+    # `日历截至10月23日。` lands as a single Chinese sentence rather than
+    # an ISO string stuck into a Chinese one.
+    calendar_asof_en = _payoff_lab_expiry_en(cal_asof_text)
+    calendar_asof_zh = _payoff_lab_expiry_zh(cal_asof_text)
+
     if fomc_dates:
         # Chip names the FIRST such date (the soonest Fed decision inside the
-        # window); the tooltip lists every date.  Three or more dates use the
-        # ZH comma "、" — two dates stay on the EN-style ", " / ZH "，" join.
+        # window); the tooltip lists every date.  Two-date form uses
+        # "and so does <other>"; three-or-more dates switch the EN verb to
+        # "do" + comma list (the window can hold at most 2 FOMC dates at
+        # 63 d, but the helper must remain correct on hand-injected
+        # test fixtures).
         first = fomc_dates[0]
         first_en = _payoff_lab_expiry_en(first)
         first_zh = _payoff_lab_expiry_zh(first)
         expiry_en = _payoff_lab_expiry_en(expiration)
         expiry_zh = _payoff_lab_expiry_zh(expiration)
-        if len(fomc_dates) >= 2:
-            others_en_dates = fomc_dates[1:]
-            others_zh_dates = fomc_dates[1:]
-            join_en = ", " if len(others_en_dates) <= 2 else ", "
-            join_zh = "、" if len(others_zh_dates) >= 3 else "、"
-            # Always a single conjunction sentence — comma for both halves:
-            # EN serialises "and so does Dec 9" (named in the spec);
-            # ZH serialises "12月9日亦然" — same shape, fewer characters.
-            others_en = ", ".join(_payoff_lab_expiry_en(d) for d in others_en_dates)
-            others_zh = "、".join(_payoff_lab_expiry_zh(d) for d in others_zh_dates)
-            chip_en = f"Fed decision {first_en} lands before this expiry"
-            chip_zh = f"美联储{first_zh}议息在到期前"
-            tip_en = (
-                f"The Federal Reserve's rate decision on {first_en} falls inside "
-                f"the {expiry_en} expiry these structures use, and so does {others_en}. "
-                f"Prices here were set at this close; a scheduled decision inside "
-                f"the window is context, not a signal. Calendar as of {calendar_asof}."
-            )
-            tip_zh = (
-                f"美联储{first_zh}的利率决定落在这些结构所用的{expiry_zh}到期日之前，{others_zh}亦然。"
-                f"此处价格以本次收盘计算；窗口内的既定议息只是背景信息，不是信号。"
-                f"日历截至{calendar_asof}。"
-            )
+        others_dates = fomc_dates[1:]
+        chip_en = f"Fed decision {first_en} lands before this expiry"
+        chip_zh = f"美联储{first_zh}议息在到期前"
+        if len(fomc_dates) == 2:
+            # Spec named the two-date form: "and so does <other>".
+            other_en = _payoff_lab_expiry_en(others_dates[0])
+            other_zh = _payoff_lab_expiry_zh(others_dates[0])
+            tail_en = f", and so does {other_en}"
+            tail_zh = f"，{other_zh}亦然"
+            others_en_text = None  # not used in the two-date form
+            others_zh_text = None
+        elif len(fomc_dates) >= 3:
+            # Verb agreement fix (MINOR 2): ≥ 3 dates switch the EN verb
+            # from "does" (singular) to "do" (plural of "Fed decisions").
+            others_en_text = ", ".join(_payoff_lab_expiry_en(d) for d in others_dates)
+            others_zh_text = "、".join(_payoff_lab_expiry_zh(d) for d in others_dates)
+            tail_en = f", and so do {others_en_text}"
+            tail_zh = f"，{others_zh_text}亦然"
+            other_en = other_zh = None
         else:
-            chip_en = f"Fed decision {first_en} lands before this expiry"
-            chip_zh = f"美联储{first_zh}议息在到期前"
+            # One date — no tail.
+            tail_en = ""
+            tail_zh = ""
+            others_en_text = others_zh_text = None
+            other_en = other_zh = None
+        if len(fomc_dates) == 1:
             tip_en = (
                 f"The Federal Reserve's rate decision on {first_en} falls inside "
                 f"the {expiry_en} expiry these structures use. "
                 f"Prices here were set at this close; a scheduled decision inside "
-                f"the window is context, not a signal. Calendar as of {calendar_asof}."
+                f"the window is context, not a signal. Calendar as of {calendar_asof_en}."
             )
             tip_zh = (
                 f"美联储{first_zh}的利率决定落在这些结构所用的{expiry_zh}到期日之前。"
                 f"此处价格以本次收盘计算；窗口内的既定议息只是背景信息，不是信号。"
-                f"日历截至{calendar_asof}。"
+                f"日历截至{calendar_asof_zh}。"
+            )
+        else:
+            tip_en = (
+                f"The Federal Reserve's rate decision on {first_en} falls inside "
+                f"the {expiry_en} expiry these structures use{tail_en}. "
+                f"Prices here were set at this close; a scheduled decision inside "
+                f"the window is context, not a signal. Calendar as of {calendar_asof_en}."
+            )
+            tip_zh = (
+                f"美联储{first_zh}的利率决定落在这些结构所用的{expiry_zh}到期日之前{tail_zh}。"
+                f"此处价格以本次收盘计算；窗口内的既定议息只是背景信息，不是信号。"
+                f"日历截至{calendar_asof_zh}。"
             )
         return {
             "state": "before-expiry",
             "chip_en": chip_en, "chip_zh": chip_zh,
             "tip_en": tip_en, "tip_zh": tip_zh,
-            "calendar_asof": calendar_asof,
+            "calendar_asof": cal_asof_text,
         }
 
     expiry_en = _payoff_lab_expiry_en(expiration)
@@ -1473,13 +1500,13 @@ def _payoff_lab_catalyst(expiration: str | None, card_asof: str | None,
         "chip_zh": "到期前无美联储议息",
         "tip_en": (
             f"No Federal Reserve rate decision is scheduled between this close "
-            f"and the {expiry_en} expiry. Calendar as of {calendar_asof}."
+            f"and the {expiry_en} expiry. Calendar as of {calendar_asof_en}."
         ),
         "tip_zh": (
             f"本次收盘至{expiry_zh}到期之间没有既定的美联储利率决定。"
-            f"日历截至{calendar_asof}。"
+            f"日历截至{calendar_asof_zh}。"
         ),
-        "calendar_asof": calendar_asof,
+        "calendar_asof": cal_asof_text,
     }
 
 
@@ -2380,11 +2407,12 @@ def build_context(root: Path, stores: dict | None = None, intel_brief: dict | No
 
     `catalyst_links` is the F03-W3-2 catalyst-links envelope
     (site/options_catalyst_links/latest.json), kept OUT of `stores`/
-    load_stores() for the same pinned-workspace-scope reason as
-    `intel_brief` / `payoff_lab` / `skew_source`.  Default None → every
-    card renders the fold WITHOUT a catalyst chip; pre-F03-W3-2 callers
-    see no behaviour change.  See load_catalyst_links() above for the
-    loader and _payoff_lab_catalyst() for the per-card chip builder.
+    the pinned workspace loader for the same pinned-workspace-scope
+    reason as `intel_brief` / `payoff_lab` / `skew_source`.  Default
+    None → every card renders the fold WITHOUT a catalyst chip;
+    pre-F03-W3-2 callers see no behaviour change.  See
+    load_catalyst_links() above for the loader and
+    _payoff_lab_catalyst() for the per-card chip builder.
     """
     stores = load_stores(root) if stores is None else stores
 

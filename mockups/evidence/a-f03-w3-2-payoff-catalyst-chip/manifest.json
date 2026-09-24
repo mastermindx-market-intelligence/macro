@@ -20,10 +20,6 @@
       "mobile": [
         390,
         844
-      ],
-      "tablet": [
-        820,
-        1180
       ]
     }
   },
@@ -95,11 +91,6 @@
             "document_height_px": 6590,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
-          },
-          "tablet": {
-            "document_height_px": 4383,
-            "elements_wider_than_viewport": 0,
-            "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
@@ -145,7 +136,7 @@
           "applied_theme": "light",
           "bytes": 637245,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/561b5a4b02196897.png",
+          "file": "561b5a4b02196897.png",
           "force_state": null,
           "height": 3356,
           "locale": "en",
@@ -162,7 +153,7 @@
           "applied_theme": "dark",
           "bytes": 636436,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/544c1a021f80b3bd.png",
+          "file": "544c1a021f80b3bd.png",
           "force_state": null,
           "height": 3355,
           "locale": "en",
@@ -179,7 +170,7 @@
           "applied_theme": "light",
           "bytes": 657377,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/05b8270b067c7298.png",
+          "file": "05b8270b067c7298.png",
           "force_state": null,
           "height": 3201,
           "locale": "zh",
@@ -196,7 +187,7 @@
           "applied_theme": "dark",
           "bytes": 651125,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/2e681656bdb218c5.png",
+          "file": "2e681656bdb218c5.png",
           "force_state": null,
           "height": 3200,
           "locale": "zh",
@@ -211,77 +202,9 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 625797,
-          "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/7f857bcf0280ae72.png",
-          "force_state": null,
-          "height": 4383,
-          "locale": "en",
-          "sha256": "7f857bcf0280ae7273424ab2114b791146d2ae8e4c3b89123d386bf96d1e71be",
-          "theme": "light",
-          "viewport": "tablet",
-          "viewport_height": 1180,
-          "viewport_width": 820,
-          "width": 820
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "en",
-          "applied_theme": "dark",
-          "bytes": 621783,
-          "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/e49397daf6e644f0.png",
-          "force_state": null,
-          "height": 4382,
-          "locale": "en",
-          "sha256": "e49397daf6e644f0a36c98ecd8995f6522ee175c4f643693a1d9518c0baaa385",
-          "theme": "dark",
-          "viewport": "tablet",
-          "viewport_height": 1180,
-          "viewport_width": 820,
-          "width": 820
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "zh",
-          "applied_theme": "light",
-          "bytes": 612823,
-          "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/c1d67f340fe15b92.png",
-          "force_state": null,
-          "height": 4122,
-          "locale": "zh",
-          "sha256": "c1d67f340fe15b9273022f09cb206cdbd36669b2d2b0cd3bbc302451227e61f8",
-          "theme": "light",
-          "viewport": "tablet",
-          "viewport_height": 1180,
-          "viewport_width": 820,
-          "width": 820
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "zh",
-          "applied_theme": "dark",
-          "bytes": 604392,
-          "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/ebe283fd2f733182.png",
-          "force_state": null,
-          "height": 4121,
-          "locale": "zh",
-          "sha256": "ebe283fd2f7331821708147b35682fc1437cd07519f8fa55e5381ff6e0bbed66",
-          "theme": "dark",
-          "viewport": "tablet",
-          "viewport_height": 1180,
-          "viewport_width": 820,
-          "width": 820
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "en",
-          "applied_theme": "light",
           "bytes": 647722,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/25b3175d9b1a24d1.png",
+          "file": "25b3175d9b1a24d1.png",
           "force_state": null,
           "height": 6590,
           "locale": "en",
@@ -298,7 +221,7 @@
           "applied_theme": "dark",
           "bytes": 639137,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/75ba4d6c35b75613.png",
+          "file": "75ba4d6c35b75613.png",
           "force_state": null,
           "height": 6589,
           "locale": "en",
@@ -315,7 +238,7 @@
           "applied_theme": "light",
           "bytes": 633437,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/46979f3b8950a504.png",
+          "file": "46979f3b8950a504.png",
           "force_state": null,
           "height": 5958,
           "locale": "zh",
@@ -332,7 +255,7 @@
           "applied_theme": "dark",
           "bytes": 620514,
           "captured": true,
-          "file": "../../mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/96e7428056bd73a3.png",
+          "file": "96e7428056bd73a3.png",
           "force_state": null,
           "height": 5957,
           "locale": "zh",
@@ -365,7 +288,7 @@
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Volumes/STORAGE/Offloaded/m1-20260917/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w3_2_chip",
     "resolved_sha_or_none": "f84d9c882b7fabf87835e6c630ad9b4ab1f69fca",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Volumes/STORAGE/Offloaded/m1-20260917/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w3_2_chip (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir at capture time (predecessor of the W3-2 commit 311ace97, which is what the receipts name for the surface bytes)",
     "site_dir": "/Volumes/STORAGE/Offloaded/m1-20260917/lanes/wt/mo-ext-fix-mo_a3_w3_2_chip/site"
   },
   "tool": {
@@ -376,7 +299,7 @@
   },
   "totals": {
     "pages": 1,
-    "states_attempted": 12,
-    "states_captured": 12
+    "states_attempted": 8,
+    "states_captured": 8
   }
 }

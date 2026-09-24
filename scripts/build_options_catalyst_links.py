@@ -261,7 +261,8 @@ def _macro_candidates(asof: date, horizon_days: int) -> list[CatalystCandidate]:
     return candidates
 
 
-def _macro_calendar(asof: date, horizon_days: int) -> dict[str, Any]:
+def _macro_calendar(asof: date, horizon_days: int,
+                     candidates: list[CatalystCandidate] | None = None) -> dict[str, Any]:
     """A-F03-W3-2 — the envelope's `macro_calendar` key.
 
     Built from the SAME `_macro_candidates(asof, horizon_days)` list the
@@ -270,6 +271,14 @@ def _macro_calendar(asof: date, horizon_days: int) -> dict[str, Any]:
     payoff-lab card's expiry, so the dict is intentionally flat and
     date-only (no `known_as_of`, no `as_of_age_td`, no `locator` — none of
     those fields change the chip's answer and none belong on the page).
+
+    `candidates` accepts the SAME `_macro_candidates(asof, horizon_days)`
+    list the binder already built (computed once per call site, shared by
+    the binder AND this calendar writer) so the envelope and the JSONL
+    links agree byte-for-byte and the producer only opens
+    `engine.event_calendar` once per nightly. When omitted, the helper
+    rebuilds the list itself — used by `_emit_no_stage` on the
+    events-outage path where no binder call exists to share with.
 
     Shape:
       {
@@ -282,7 +291,8 @@ def _macro_calendar(asof: date, horizon_days: int) -> dict[str, Any]:
         ],                                     # sorted by date, possibly empty
       }
     """
-    candidates = _macro_candidates(asof, horizon_days)
+    if candidates is None:
+        candidates = _macro_candidates(asof, horizon_days)
     horizon_end = asof + timedelta(days=horizon_days)
     return {
         "asof": asof.isoformat(),
@@ -383,6 +393,10 @@ def _envelope(
             if macro_calendar is not None
             else _macro_calendar(asof, horizon_days)
         ),
+        # _macro_calendar is appended below on the events-present path —
+        # the binder's already-built `macros` list is shared with the
+        # calendar writer so the producer opens engine.event_calendar
+        # exactly once per nightly.
     }
     if include_empty_links:
         payload["links"] = []
@@ -501,11 +515,10 @@ def main(argv: list[str] | None = None) -> int:
         states=_states_for_run(identity_absent=identity_absent, store_missing=store_missing),
         links_path=jsonl.name,
         include_empty_links=False,
-        # Pass the SAME calendar list the binder already built so the envelope
-        # and the JSONL links agree byte-for-byte (rebuilding via the default
-        # would re-iterate fomc_decision_dates with the same window — same
-        # output, but two reads of the same source).
-        macro_calendar=_macro_calendar(asof, horizon),
+        # Pass the SAME candidate list the binder already built so the
+        # envelope and the JSONL links agree byte-for-byte AND the
+        # producer opens engine.event_calendar exactly once per nightly.
+        macro_calendar=_macro_calendar(asof, horizon, candidates=macros),
     )
     _write_envelope(out_dir, envelope)
     if identity_absent:
