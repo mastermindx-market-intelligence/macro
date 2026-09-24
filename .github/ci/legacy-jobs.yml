@@ -10658,6 +10658,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_semiconductor_research_inputs.py -q
       - name: theme graph — shared curation_assertion v1 contract + semiconductor industrial-context semantics (Semiconductor B T02)
         run: TZ=UTC python -m pytest tests/test_theme_graph_curation_assertion.py tests/test_semiconductor_assertion_semantics.py -q
+      - name: market ontology — semiconductor theme research composition (industrial views, response contract, temporal modes; Semiconductor B T07/T08)
+        run: COLLECT_LANE=nightly TZ=UTC python -m pytest tests/test_semiconductor_industrial_views.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
       - name: CN limit-rule registry — schema, continuity, parity vs china_microstructure
