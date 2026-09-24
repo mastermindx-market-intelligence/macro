@@ -20,7 +20,13 @@ Two-writer custody is workflow-level, not a distributed CAS protocol. The incumb
 
 ## Q2 — Live private store state
 
-PENDING
+A conformant `current.json` is the strict object `earnings.private_pointer/v1` with exactly `schema`, `generation_id`, `manifest_key`, `manifest_sha256`, `manifest_bytes`, and `published_at` (`engine/earnings_narrative/private_publication.py:483-525`). `generation_id` must match `earnpriv_[a-f0-9]{32}`, `manifest_key` must equal `earnings_wire_private/v1/manifests/<generation_id>.json`, the SHA must be 64 lowercase hex characters, and bytes must be 1–8 MiB (`engine/earnings_narrative/private_publication.py:42-61,509-523`). Reading the pointer resolves the manifest only after exact length/hash validation and binds generation plus `published_at` (`engine/earnings_narrative/private_publication.py:748-772`).
+
+The manifest itself is `earnings.private_manifest/v1` with exactly `schema`, `generation_id`, `published_at`, `source`, `record_count`, `ticker_count`, `records`, and `context` (`engine/earnings_narrative/private_publication.py:250-315`). `published_at` is derived from the context catalog's `knowledge_cutoff`, while `source` binds `wire_manifest_id`, source generation, and source manifest SHA (`engine/earnings_narrative/private_publication.py:422-440`; `engine/earnings_narrative/context_packets.py:380-394`). The record catalog is slug-keyed receipt entries (`object_key`, `sha256`, `bytes`), bounded to 10,000 records (`engine/earnings_narrative/private_publication.py:230-247,286-297,47`).
+
+Without credentials or contacting R2, the exact live generation/counts cannot be determined. The newest evidence visible in repo wire-output history is commit `57210b3a1f1ae7b1d01963e218e9f9d326ad539f`, at `2026-09-24 07:03:29 +0000`, `earnings-wire: publish current verified records [skip ci]` (`git log -5 --format='%h %ad %s' --date=iso -- site/stocks/earnings`). Its only changed artifact is `site/stocks/earnings/route-catalog.json` (`git show --numstat --format='%H %cI' 57210b3a1f1`), whose committed values include `as_of=2026-09-23T23:40:27Z`, `verified_at=2026-09-24T06:55:45Z`, `source_generation_id=b119ac17635bd813f7a1696486ee4931`, and `article_count=5616`.
+
+No repo-committed artifact reveals a private record. `scripts/build_earnings_public_wire.py` rejects a private output directory inside the checkout (`scripts/build_earnings_public_wire.py:991-999`), stages only member records and context off-repo (`scripts/build_earnings_public_wire.py:1002-1048`), and the latest wire commit contains only the redacted route catalog. The tree scan at `57210b3a1f1 -- site/stocks/earnings` found no `earnings_wire_private`, `earnpriv`, or `private_manifest` path. The prior four listed commits also match the required subject; this census did not infer their private payloads, which remain outside Git.
 
 ## Q3 — Real PG source admission
 
