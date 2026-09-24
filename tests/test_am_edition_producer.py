@@ -108,6 +108,12 @@ def test_generated_at_may_not_launder_a_stale_source(tmp_path):
     assert tape["age_minutes"] > tape["max_age_minutes"]
     for b in payload["blocks"]:
         if b["state"] == "CURRENT" and b["key"] != "session_clock":
+            # owner_links has no freshness clock (R7, 2026-09-24) — its age
+            # is None even though its state is CURRENT. Skip the age check
+            # for that block; the per-row CURRENT/stale contract lives on
+            # the rows that have a clock.
+            if b["key"] == "owner_links":
+                continue
             assert 0 <= b["age_minutes"] <= b["max_age_minutes"]
 
     # Future-stamped source (negative age) must never be CURRENT.
@@ -124,7 +130,12 @@ def test_every_block_carries_its_own_source_clock(tmp_path):
     gen_at = payload["generated_at"]
     for b in payload["blocks"]:
         if b["state"] in ("CURRENT", "STALE_WITH_LAST_KNOWN"):
-            assert b["source_as_of"] is not None
+            # owner_links has no freshness clock — its state is CURRENT when
+            # the registry resolves, but the source_as_of stays None. R7
+            # (2026-09-24) changed the typed state from NOT_COVERED to
+            # CURRENT, so the exception lives here instead of the else branch.
+            if b["key"] != "owner_links":
+                assert b["source_as_of"] is not None
             if b["key"] != "session_clock":
                 # session_clock is a self-computed calendar fact: its "source"
                 # IS the current instant, so equality is not laundering.
@@ -164,9 +175,12 @@ def test_missing_source_prints_a_null_it_does_not_drop_the_block(tmp_path):
     for b in payload["blocks"]:
         if b["key"] == "session_clock":
             continue
-        # owner_links has no freshness clock (registry is the source of truth)
-        # so it is NOT_COVERED, not UNAVAILABLE — both are accepted null states.
-        assert b["state"] in ("UNAVAILABLE", "NOT_COVERED")
+        # owner_links has no freshness clock — R7 (2026-09-24) changed its
+        # typed state from NOT_COVERED to CURRENT (the registry resolves
+        # rows; there is no clock to disclose). The other null-typed states
+        # UNAVAILABLE / NOT_COVERED still apply to context_planes /
+        # research_watch when the source is missing.
+        assert b["state"] in ("CURRENT", "UNAVAILABLE", "NOT_COVERED")
         assert b["state_reason_en"]
         assert b["state_reason_zh"]
         observed_null += 1
@@ -1073,12 +1087,13 @@ def test_research_watch_states(tmp_path):
 
 
 def test_owner_links_states_and_resolution(tmp_path):
-    """owner_links is NOT_COVERED (no freshness clock) when registry resolves;
-    UNAVAILABLE when nothing resolves. Every href must point to an existing
-    template route OR a known generated page (kind=owner) or a registry-
-    resolved anchor (kind=reference); an unresolvable row is DROPPED, never
-    guessed. Every kind=owner row resolves via the producer's own resolve
-    helper so generated pages (no .j2 template) are recognised."""
+    """owner_links is CURRENT when the registry resolves at least one row;
+    NOT_COVERED when nothing resolves (R7, 2026-09-24). Every href must
+    point to an existing template route OR a known generated page
+    (kind=owner) or a registry-resolved anchor (kind=reference); an
+    unresolvable row is DROPPED, never guessed. Every kind=owner row
+    resolves via the producer's own resolve helper so generated pages
+    (no .j2 template) are recognised."""
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
     site, data = _full_tree(
         tmp_path / "ok", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
@@ -1086,8 +1101,10 @@ def test_owner_links_states_and_resolution(tmp_path):
     )
     p = build_payload(site, data, now=now)
     ol = _new_block(p, "owner_links")
-    # State is NOT_COVERED (registry-derived, no freshness clock).
-    assert ol["state"] == "NOT_COVERED"
+    # R7: state is CURRENT when ≥1 row resolves; NOT_COVERED otherwise.
+    # The fixture always resolves at least one row (the templates exist
+    # in this repo), so the state here is CURRENT.
+    assert ol["state"] == "CURRENT"
     assert ol["state_reason_en"] and "registry" in ol["state_reason_en"].lower()
     # Every href must resolve via the producer's own resolve function so the
     # contract — owner rows resolve to an existing template OR a known
@@ -1649,11 +1666,13 @@ def test_context_planes_current_for_yesterday_stamped_premarket_read(tmp_path):
 
 
 def test_owner_links_state_includes_resolved_count(tmp_path):
-    """RED-first test for MAJOR 8: when owner_links rows resolve, the
-    state_reason_en must name the resolved count so a Lane-B consumer
-    doesn't mistake the block for an empty/null disclosure. The block
-    state stays NOT_COVERED per spec (no freshness clock) but the reason
-    copy is informative."""
+    """RED-first test for MAJOR 8 + R7 (2026-09-24): when owner_links rows
+    resolve, the state_reason_en must name the resolved count so a Lane-B
+    consumer doesn't mistake the block for an empty/null disclosure. The
+    block state is CURRENT (≥1 row resolved; the registry is the source of
+    truth and lives in the repo — there is no freshness clock to disclose).
+    NOT_COVERED is reserved for the case nothing resolves (verified in the
+    next test)."""
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
     site, data = _full_tree(
         tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
@@ -1661,7 +1680,7 @@ def test_owner_links_state_includes_resolved_count(tmp_path):
     )
     payload = build_payload(site, data, now=now)
     ol = _new_block(payload, "owner_links")
-    assert ol["state"] == "NOT_COVERED"
+    assert ol["state"] == "CURRENT"
     # The state_reason_en names the resolved count so the consumer knows
     # rows exist (not a null disclosure).
     assert "resolved" in ol["state_reason_en"].lower()
@@ -1895,14 +1914,14 @@ def test_five_typed_states_for_new_blocks(tmp_path):
     )
     p = build_payload(site, data, now=now)
     assert _new_block(p, "research_watch")["state"] == "UNAVAILABLE"
-    # owner_links: NOT_COVERED (registry resolves, no freshness clock)
+    # owner_links: CURRENT (registry resolves, no freshness clock — R7)
     site, data = _full_tree(
         tmp_path / "ol_ok", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
         transmission_asof=fresh, commodity_asof=fresh, intl_asof=fresh,
     )
     p = build_payload(site, data, now=now)
-    assert _new_block(p, "owner_links")["state"] == "NOT_COVERED"
-    # owner_links: UNAVAILABLE — patch the resolve helper to fail.
+    assert _new_block(p, "owner_links")["state"] == "CURRENT"
+    # owner_links: NOT_COVERED — patch the resolve helper to fail.
     from scripts import build_am_edition as mod
     orig = mod._resolve_owner_page
 
@@ -1926,7 +1945,11 @@ def test_five_typed_states_for_new_blocks(tmp_path):
         bmr.load_registry = _empty
         try:
             p = build_payload(site, data, now=now)
-            assert _new_block(p, "owner_links")["state"] == "UNAVAILABLE"
+            # R7 (2026-09-24): state is NOT_COVERED when nothing resolves.
+            # UNAVAILABLE is reserved for the gather-itself-fails path,
+            # which the producer does not exercise here (it returns []
+            # cleanly).
+            assert _new_block(p, "owner_links")["state"] == "NOT_COVERED"
         finally:
             bmr.load_registry = orig_load
     finally:
@@ -1935,7 +1958,7 @@ def test_five_typed_states_for_new_blocks(tmp_path):
     reachable_states = {
         "context_planes": {"CURRENT", "STALE_WITH_LAST_KNOWN", "UNAVAILABLE", "NOT_COVERED"},
         "research_watch": {"CURRENT", "STALE_WITH_LAST_KNOWN", "UNAVAILABLE"},
-        "owner_links": {"NOT_COVERED", "UNAVAILABLE"},
+        "owner_links": {"CURRENT", "NOT_COVERED"},
     }
     # Sanity: NOT_YET_OPEN and CLOSED are reserved for session_clock and
     # are NOT in any new block's reachable set.

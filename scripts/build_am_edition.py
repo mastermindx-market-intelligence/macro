@@ -1741,14 +1741,17 @@ def _owner_links_block(site: Path, data_dir: Path) -> dict:
             "href": href,
             "kind": "reference",
         })
-    # State: NOT_COVERED per spec — owner_links has no freshness clock
-    # (the registry is the source of truth and lives in the repo). When
-    # the registry resolves, the state stays NOT_COVERED with a
-    # state_reason_en that names the resolved count so consumers don't
-    # mistake it for a null disclosure (MAJOR 8). When nothing resolves
-    # we collapse to UNAVAILABLE so the consumer can tell "registry
-    # broken" from "registry resolved, just static".
-    state = "NOT_COVERED" if rows else "UNAVAILABLE"
+    # State: CURRENT when the registry resolves at least one row, NOT_COVERED
+    # when nothing resolves. R7 (2026-09-24): the prior code pinned NOT_COVERED
+    # on a resolved registry — collapsing the truthful "registry is the
+    # source of truth, freshness is not tracked here" reading into a typed
+    # null was misleading. CURRENT means "the registry resolved, the rows
+    # are present, there is nothing stale to disclose". NOT_COVERED means
+    # "the registry returned nothing" — same typed state the owner_pages
+    # tier uses when its source is missing. UNAVAILABLE is reserved for the
+    # case the loader itself fails (the producer never reaches this code
+    # path on a load failure; the owner_links gather returns []).
+    state = "CURRENT" if rows else "NOT_COVERED"
     state_reason_en = (
         f"Owner links are resolved from the registry ({len(rows)} resolved, freshness is not tracked here)."
         if rows else "Owner links could not be resolved."
