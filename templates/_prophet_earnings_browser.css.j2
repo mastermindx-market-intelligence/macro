@@ -1,0 +1,40 @@
+
+.plab-evidence{color:var(--text);font-family:var(--font-ui);font-size:var(--fs-body);line-height:1.55;min-width:0}
+.plab-evidence *{box-sizing:border-box}.plab-evidence header{margin-bottom:var(--sp-6,24px)}
+.plab-evidence h2{font-size:var(--fs-h1);line-height:1.15;margin:0 0 var(--sp-2,8px);font-weight:800}
+.plab-evidence h3{font-size:var(--fs-h2);margin:0 0 var(--sp-3,12px)}.plab-evidence p{margin:0 0 var(--sp-3,12px)}
+.plab-evidence .pe-muted{color:var(--muted)}
+.plab-evidence .pe-state{padding:var(--sp-4,16px);border:1px solid var(--line);border-left:3px solid var(--info);border-radius:var(--r-ctl,8px);background:var(--panel2);margin-bottom:var(--sp-5,20px)}
+.plab-evidence .pe-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4,16px);margin:var(--sp-4,16px) 0 var(--sp-6,24px)}
+.plab-evidence .pe-card{min-width:0;padding:var(--sp-5,20px);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);box-shadow:var(--card-shadow)}
+.plab-evidence .pe-value{font-size:var(--fs-num-lg);font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;margin:var(--sp-2,8px) 0 var(--sp-3,12px)}
+.plab-evidence .pe-label{font-size:var(--fs-sm);font-weight:700}.plab-evidence .pe-section{margin-top:var(--sp-6,24px)}
+.plab-evidence .pe-row{display:grid;grid-template-columns:minmax(8rem,1fr) minmax(0,3fr);gap:var(--sp-4,16px);padding:var(--sp-3,12px) 0;border-top:1px solid var(--line)}
+.plab-evidence details{margin-top:var(--sp-5,20px);border-top:1px solid var(--line);padding-top:var(--sp-4,16px)}
+.plab-evidence summary{cursor:pointer;font-weight:700;min-height:44px;display:list-item;padding:var(--sp-2,8px) 0}
+.plab-evidence summary:focus-visible{outline:2px solid var(--info);outline-offset:4px}
+.plab-evidence pre{font-family:var(--font-mono);font-size:var(--fs-sm);white-space:pre-wrap;overflow-wrap:anywhere;padding:var(--sp-4,16px);background:var(--panel2);border-radius:var(--r-ctl,8px);max-width:100%}
+.plab-evidence .pe-foot{border-top:1px solid var(--line);padding-top:var(--sp-4,16px);margin-top:var(--sp-6,24px);font-size:var(--fs-sm);color:var(--muted)}
+html[data-theme="light"] .plab-evidence .pe-state{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .plab-evidence .pe-card{box-shadow:var(--card-shadow);border-color:var(--line)}
+@media(max-width:600px){.plab-evidence .pe-grid{grid-template-columns:1fr}.plab-evidence .pe-row{grid-template-columns:1fr;gap:var(--sp-1,4px)}}
+
+.pe-browser{margin:var(--sp-4,16px) 0;border-top:1px solid var(--line);padding-top:var(--sp-3,12px);color:var(--text)}
+.pe-browser>summary{cursor:pointer;font-weight:700;min-height:44px;padding:var(--sp-3,12px) 0}
+.pe-browser [hidden]{display:none!important}.pe-browser button,.pe-browser input{font:inherit;color:var(--text)}
+.pe-browser button{min-height:44px;padding:var(--sp-2,8px) var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);cursor:pointer}
+.pe-browser button:hover{background:var(--panel2)}.pe-browser button:disabled{cursor:default;opacity:.55}
+.pe-browser button:focus-visible,.pe-browser input:focus-visible,.pe-browser>summary:focus-visible{outline:2px solid var(--info);outline-offset:3px}
+.pe-browser .pe-tools{display:flex;gap:var(--sp-2,8px);flex-wrap:wrap;align-items:end;margin:var(--sp-3,12px) 0}
+.pe-browser label{flex:1;min-width:12rem;display:grid;gap:var(--sp-1,4px);font-size:var(--fs-sm)}
+.pe-browser input{min-height:44px;width:100%;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:var(--sp-2,8px)}
+.pe-browser .pe-layout{display:grid;grid-template-columns:minmax(14rem,1fr) minmax(0,3fr);gap:var(--sp-5,20px)}
+.pe-browser .pe-results{list-style:none;margin:0;padding:0;max-height:35rem;overflow-y:auto}.pe-browser .pe-results li{margin-bottom:var(--sp-2,8px)}
+.pe-browser .pe-results button{width:100%;text-align:left;overflow-wrap:anywhere;display:grid;gap:var(--sp-1,4px)}
+.pe-browser .pe-results [aria-pressed="true"]{border-color:var(--info);background:var(--panel2)}
+.pe-browser .pe-results small,.pe-browser .pe-help,.pe-browser .pe-status{font-size:var(--fs-sm);color:var(--muted)}
+.pe-browser .pe-status{min-height:1.6em}.pe-browser .pe-detail{min-width:0}.pe-browser .pe-detail-heading{margin-bottom:var(--sp-3,12px);font-weight:700;overflow-wrap:anywhere}
+.pe-browser .pe-results:empty{display:none}.pe-browser .pe-pager{display:flex;gap:var(--sp-2,8px);margin-top:var(--sp-3,12px);flex-wrap:wrap}
+html[data-theme="light"] .pe-browser button,html[data-theme="light"] .pe-browser input{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .pe-browser .pe-results [aria-pressed="true"]{border-color:var(--info);box-shadow:none}
+@media(max-width:820px){.pe-browser .pe-layout{grid-template-columns:1fr}.pe-browser .pe-results{max-height:18rem}.pe-browser .pe-tools label{flex-basis:100%}.pe-browser .plab-evidence h2{font-size:var(--fs-h2)}}

@@ -80,6 +80,10 @@ def _d5_episode() -> dict:
         "security_id": "SEC:US-XNAS-AAPL",
         "identity_epoch": "epoch_0",
         "state": "CANDIDATE",
+        "episode_state": "ACTIVE",
+        "terminal_reason": None,
+        "superseded_by": None,
+        "correction_state": "current",
         "opened_at": _D5_EPISODE_KNOWN_AT,
         "opened_session": "2026-07-30",
         "structural_anchor": deepcopy(_D5_ANCHOR),
@@ -100,7 +104,11 @@ def _d5_snapshot(*, episodes: tuple[dict, ...] | None = None) -> CandidateEpisod
             },),
             suppressions=(),
             episodes=episode_rows,
-            receipt={},
+            receipt={
+                "schema": "prophet.candidate_episode_reconcile_receipt/v1",
+                "recorded_at": "2026-07-31T23:00:00Z",
+                "source_counts": {"turn_watch": {"mapped": 0}},
+            },
         ),
     )
 

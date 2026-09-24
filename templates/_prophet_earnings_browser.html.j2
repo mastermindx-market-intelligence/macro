@@ -1,0 +1,21 @@
+{# Data-free SSR shell. Native B1/D5 and MDXAuth retain identity, evidence and access ownership. #}
+<style>{% include '_prophet_earnings_browser.css.j2' %}</style>
+<details class="pe-browser" id="prophet-earnings-evidence" data-prophet-earnings-browser>
+  <summary><span class="l-en">Explore earnings evidence</span><span class="l-zh">查看财报证据</span></summary>
+  <p class="pe-help"><span class="l-en">Review a recorded opportunity. Earnings evidence is not a new-entry or hold instruction.</span><span class="l-zh">查看已记录的机会；财报证据不是开仓或持有指令。</span></p>
+  <noscript><p><span class="l-en">Enable JavaScript to open private earnings evidence. No evidence has been loaded.</span><span class="l-zh">请启用 JavaScript 以读取私有财报证据；当前未加载任何证据。</span></p></noscript>
+  <div data-pe-controls hidden>
+    <form class="pe-tools" data-pe-search autocomplete="off">
+      <label><span class="l-en">Find a recorded security</span><span class="l-zh">查找已记录的证券</span><input data-pe-query type="search" maxlength="80" autocomplete="off"></label>
+      <button type="submit"><span class="l-en">Search</span><span class="l-zh">搜索</span></button>
+      <button type="button" data-pe-refresh><span class="l-en">Reload evidence</span><span class="l-zh">重新读取</span></button>
+      <button type="button" data-pe-signin hidden><span class="l-en">Sign in</span><span class="l-zh">登录</span></button>
+    </form>
+    <p class="pe-status" data-pe-status role="status" aria-live="polite"></p>
+    <div class="pe-layout">
+      <div><ul class="pe-results" data-pe-results aria-label="Recorded opportunities"></ul><div class="pe-pager"><button type="button" data-pe-first hidden><span class="l-en">First page</span><span class="l-zh">首页</span></button><button type="button" data-pe-next hidden><span class="l-en">Next page</span><span class="l-zh">下一页</span></button></div></div>
+      <div class="pe-detail" data-pe-detail aria-live="polite"></div>
+    </div>
+  </div>
+</details>
+<script>{% include '_prophet_earnings_browser.js.j2' %}</script>
