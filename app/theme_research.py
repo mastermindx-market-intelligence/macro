@@ -14,8 +14,12 @@ T09 of operation gmi-semiconductors-fable-cee-20260923-chairman-001
   ``main.py`` honest: a :class:`RequestValidationError` handler would need a
   third touchpoint;
 * no reader, bundle, locator or filesystem path is constructed or read before
-  auth resolves. The default :func:`load_authorized_owner_bundle` raises
-  :class:`PrivateStoreUnavailable`; tests inject a bundle via the seam;
+  auth resolves. The default :func:`load_authorized_owner_bundle` dispatches to
+  the registration's ``load_bundle`` (T08c-2: the semiconductor owner-bundle
+  loader — public half through the Company Intelligence reader, private half
+  declared absent) and names no vertical; a loader that cannot serve raises
+  :class:`BundleUnavailable` → the private 503; tests inject a bundle via the
+  seam;
 * rights filtering is done against a FRESH :func:`load_registry_snapshot` — no
   process cache, so a rights decision that moves between two same-process
   requests reaches the route without a watcher or a restart (the
@@ -153,7 +157,10 @@ _RESEARCH_REFUSAL_MAP: dict[str, tuple[int, dict[str, str]]] = {
     # A registered loader refuses a research mode it cannot serve (Sol
     # 5813801605: system_replay without a supported as-known identity). The
     # existing not_available refusal, with the mode named so the caller can
-    # request `latest`; no new status code or error family.
+    # request `latest`; no new status code or error family. Because the loader
+    # runs before the composer, `replay_cutoffs_required` above is unreachable
+    # for a vertical whose loader refuses system_replay outright (today: the
+    # only registered one); it stays for verticals that serve replay.
     "identity_vintage_unsupported": (
         404, {"code": "not_available", "action": "none",
               "detail": "identity_vintage_unsupported"},

@@ -35,6 +35,7 @@ from engine.market_ontology.semiconductor_owner_bundle import (
     IDENTITY_VINTAGE_UNSUPPORTED,
     PRIVATE_ASSERTIONS_UNBOUND,
     WORKSPACE_UNAVAILABLE,
+    WORKSPACE_UNVERIFIED,
     WORKSPACE_UNPROJECTABLE,
     load_semiconductor_owner_bundle,
     scope_filter,
@@ -199,12 +200,102 @@ def test_empty_cohort_empties_data_and_evidence_never_falls_through() -> None:
     assert filtered.omissions == ("x",) and filtered.rights_revision == "r"
 
 
+_PUBLIC_ONLY = dict(assertions=(), identity_results=(), financial_packets=(),
+                    interpretation_blocks=(), native_refs=())
+
+
 def test_non_empty_cohort_keeps_only_verified_cik_workspaces() -> None:
     scope = WitnessScope(slice_key="hbm_packaging", identities=(_TSM,), omissions=(SLICE_SCOPE_UNOWNED,))
-    filtered = scope_filter(_bundle(), scope)
+    filtered = scope_filter(_bundle(**_PUBLIC_ONLY), scope)
     assert [w["event_id"] for w in filtered.event_workspaces] == ["e1"]
-    filtered = scope_filter(_bundle(event_workspaces=("not-a-mapping",)), scope)
+    filtered = scope_filter(_bundle(event_workspaces=("not-a-mapping",), **_PUBLIC_ONLY), scope)
     assert filtered.event_workspaces == ()
+
+
+class _TruthyEq(str):
+    """A CIK-shaped str whose ``__eq__`` lies — the seam must go through the
+    hardened comparator, not set membership on the workspace value."""
+    __slots__ = ()
+
+    def __eq__(self, other):  # noqa: D105
+        return True
+
+    __hash__ = str.__hash__
+
+
+def test_non_empty_cohort_compares_ciks_with_the_hardened_comparator() -> None:
+    scope = WitnessScope(slice_key="hbm_packaging", identities=(_TSM,), omissions=(SLICE_SCOPE_UNOWNED,))
+    bundle = _bundle(event_workspaces=({"event_id": "e9", "cik": _TruthyEq("0009999999")},
+                                       {"event_id": "e1", "cik": "0001046179"},
+                                       {"event_id": "e0", "cik": 1046179}), **_PUBLIC_ONLY)
+    filtered = scope_filter(bundle, scope)
+    assert [w["event_id"] for w in filtered.event_workspaces] == ["e1"]
+
+
+@pytest.mark.parametrize("private", ["assertions", "identity_results", "financial_packets",
+                                     "interpretation_blocks", "native_refs"])
+def test_non_empty_cohort_fails_closed_when_a_private_input_reaches_the_seam(private) -> None:
+    """R4 is open: no cohort rule for the private tuples has been accepted, so
+    a non-empty one is a 503, never an unscoped pass-through."""
+    scope = WitnessScope(slice_key="hbm_packaging", identities=(_TSM,), omissions=(SLICE_SCOPE_UNOWNED,))
+    fields = dict(_PUBLIC_ONLY)
+    fields[private] = ({"id": "leak"},)
+    with pytest.raises(BundleUnavailable):
+        scope_filter(_bundle(**fields), scope)
+    # the EMPTY cohort still empties everything rather than raising (the
+    # declared-empty case is a legitimate served answer)
+    empty = WitnessScope(slice_key="hbm_packaging", identities=(), omissions=(SLICE_SCOPE_UNOWNED,))
+    emptied = scope_filter(_bundle(**fields), empty)
+    assert getattr(emptied, private) == () and emptied.event_workspaces == ()
+
+
+@pytest.mark.parametrize("note, expected", [
+    ("event workspace failed immutable receipt verification", "workspace_unverified.TSM-2026Q1"),
+    ("Company Intelligence public source unavailable", "workspace_unverified.TSM-2026Q1"),
+    ("", "workspace_unverified.TSM-2026Q1"),
+    (None, "workspace_unverified.TSM-2026Q1"),
+    ("event workspace alias could not be resolved", "workspace_unavailable.TSM-2026Q1"),
+    ("event workspace does not cover this event", "workspace_unavailable.TSM-2026Q1"),
+])
+def test_preceding_read_failure_on_an_advertised_object_is_workspace_unverified(
+        monkeypatch, served_nest, note, expected) -> None:
+    """The preceding-period read is a single-alias read whose envelope reports
+    every refusal as ``available: False`` + note. Only the reader's two
+    coverage-absence literals mean 'not published' (``workspace_unavailable``);
+    a receipt / validation / transport failure on an object the manifest
+    advertises is ``workspace_unverified`` — distinct, never a 503, and the
+    economics pane degrades exactly as for a single-period issuer."""
+    _pin_scope(monkeypatch, _TSM)
+    envelope = {"available": False} if note is None else {"available": False, "note": note}
+    monkeypatch.setattr(reader, "read_event_workspace", lambda params: dict(envelope))
+    bundle = load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
+    assert [w["event_id"] for w in bundle.event_workspaces] == ["evt_cik0001046179_2026q2_results"]
+    assert expected in bundle.omissions, bundle.omissions
+    other = ("workspace_unavailable" if expected.startswith("workspace_unverified")
+             else "workspace_unverified") + ".TSM-2026Q1"
+    assert other not in bundle.omissions
+    response = compose_semiconductor_research(_query(), bundle)
+    assert response["economics"]["status"] == "unavailable"
+    assert "witness_economics_missing" in response["limitations"]
+    assert f"omitted:{expected}" in response["limitations"]
+    assert all(_matches_grammar(item) for item in response["limitations"]), response["limitations"]
+
+
+def test_tampered_preceding_object_through_the_real_reader_is_workspace_unverified(monkeypatch, tmp_path) -> None:
+    """Real chain: the preceding workspace object's bytes are tampered under
+    the manifest's sha256 receipt. The production reader refuses the object
+    (its note is not a coverage literal) → ``workspace_unverified``; the
+    current period is still served."""
+    files = build_witness_nest(tmp_path)
+    targets = [url for url in files if "0001046179_2026q1" in url and "/workspaces/" in url]
+    assert len(targets) == 1, targets
+    files[targets[0]] = files[targets[0]] + b" "  # still JSON; not the receipted bytes
+    wire_witness_nest(monkeypatch, files)
+    _pin_scope(monkeypatch, _TSM)
+    bundle = load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
+    assert [w["event_id"] for w in bundle.event_workspaces] == ["evt_cik0001046179_2026q2_results"]
+    assert f"{WORKSPACE_UNVERIFIED}.TSM-2026Q1" in bundle.omissions, bundle.omissions
+    assert f"{WORKSPACE_UNAVAILABLE}.TSM-2026Q1" not in bundle.omissions
 
 
 # ─────────────────────────────────────────────────────────────────────────────

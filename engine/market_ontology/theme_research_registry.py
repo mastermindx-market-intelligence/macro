@@ -47,9 +47,6 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
 
-from engine.market_ontology.semiconductor_owner_bundle import (
-    load_semiconductor_owner_bundle,
-)
 from engine.market_ontology.semiconductor_theme_research import (
     DEFINITION_VERSION as _SEMICONDUCTOR_DEFINITION_VERSION,
     compose_semiconductor_research,
@@ -146,6 +143,19 @@ class VerticalRegistration:
 # The closed registry — one entry today
 # ---------------------------------------------------------------------------
 
+def _load_semiconductor_owner_bundle(query: Any, *, rights_snapshot: Any = None) -> Any:
+    """The semiconductor entry's loader, bound LAZILY: the loader module pulls
+    the Company Intelligence reader (requests, pandas, pyarrow) which this
+    registry must not drag into ``scripts/`` / ``templates/`` producers that
+    import it for the mount (module law: no web framework, no template engine,
+    and — measured — a 149-module closure, not 800). Resolved on the first
+    served request, never at import."""
+    from engine.market_ontology.semiconductor_owner_bundle import (  # noqa: PLC0415 — lazy by design
+        load_semiconductor_owner_bundle,
+    )
+    return load_semiconductor_owner_bundle(query, rights_snapshot=rights_snapshot)
+
+
 _SEMICONDUCTOR = VerticalRegistration(
     anchor_theme_id="ai_semiconductors",
     slice_keys=("hbm_packaging", "sic_gan_specialty"),
@@ -156,7 +166,7 @@ _SEMICONDUCTOR = VerticalRegistration(
     select_evidence=select_authorized_evidence,
     # T08c-2: public half through the Company Intelligence reader, private
     # half declared absent (R4 pending).
-    load_bundle=load_semiconductor_owner_bundle,
+    load_bundle=_load_semiconductor_owner_bundle,
     # Bilingual copy pinned verbatim from the reviewed T10b mount
     # (templates/_theme_research_mount.html.j2, law L5).
     title_en="Semiconductor industry research",

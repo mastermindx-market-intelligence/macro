@@ -133,14 +133,35 @@ def test_dataclass_field_names_are_the_accepted_contract():
     ]
 
 
-def test_semiconductor_entry_binds_the_public_half_loader():
-    """T08c-2: the ONE entry's loader is the semiconductor owner-bundle loader
-    (public half through the reader, private half declared absent) — the
-    shell dispatches to it and names no vertical itself."""
-    from engine.market_ontology.semiconductor_owner_bundle import (
-        load_semiconductor_owner_bundle,
+def test_semiconductor_entry_binds_the_public_half_loader(monkeypatch):
+    """T08c-2: the ONE entry's loader dispatches to the semiconductor
+    owner-bundle loader (public half through the reader, private half
+    declared absent) — bound lazily so the registry's import closure stays
+    light for producers; the shell dispatches to it and names no vertical."""
+    import engine.market_ontology.semiconductor_owner_bundle as loader_module
+    seen: list = []
+    monkeypatch.setattr(loader_module, "load_semiconductor_owner_bundle",
+                        lambda query, *, rights_snapshot=None: seen.append((query, rights_snapshot)) or "bundle")
+    assert REGISTRY["ai_semiconductors"].load_bundle("q", rights_snapshot=("r", {})) == "bundle"
+    assert seen == [("q", ("r", {}))]
+
+
+def test_registry_import_closure_stays_light():
+    """Importing the registry alone must not load the reader's network / data
+    stack (requests, pandas, pyarrow, numpy) nor a web framework or template
+    engine — producers import it for the mount copy."""
+    import subprocess
+    import sys
+    code = (
+        "import sys; import engine.market_ontology.theme_research_registry; "
+        "print(sorted(m for m in ('requests', 'pandas', 'pyarrow', 'numpy', 'fastapi', 'jinja2', "
+        "'engine.neuralweb.company_intelligence_reader', 'engine.market_ontology.semiconductor_owner_bundle') "
+        "if m in sys.modules))"
     )
-    assert REGISTRY["ai_semiconductors"].load_bundle is load_semiconductor_owner_bundle
+    result = subprocess.run([sys.executable, "-B", "-c", code], capture_output=True, text=True,
+                            cwd=str(ROOT), timeout=120)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "[]", result.stdout
 
 
 @pytest.mark.parametrize("bad", [None, "load", 7, object()])

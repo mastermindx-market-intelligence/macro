@@ -58,7 +58,16 @@ Refusals
   typed omission (``workspace_unavailable.<TICKER>`` when the reader's
   documented coverage-absence note is returned for the current period;
   ``workspace_unavailable.<TICKER>-<YYYYQn>`` when the preceding alias is not
-  served).
+  published). The preceding read is a single-alias read whose envelope
+  reports every refusal as ``available: False`` + note; when that note is
+  NOT one of the reader's two coverage-absence literals (alias unresolved /
+  event not covered) the period is recorded as ``workspace_unverified.<alias>``
+  instead — a receipt, validation or transport failure on an object the
+  manifest advertises — and the economics pane still degrades to
+  ``witness_economics_missing`` rather than failing a request that a
+  single-period issuer would legitimately produce. The current read fails the
+  request on the same failures because the reader itself documents them as a
+  503 class.
 
 Authority
 ---------
@@ -97,6 +106,7 @@ __all__ = [
     "PRIVATE_ASSERTIONS_UNBOUND",
     "WORKSPACE_UNAVAILABLE",
     "WORKSPACE_UNPROJECTABLE",
+    "WORKSPACE_UNVERIFIED",
     "load_semiconductor_owner_bundle",
     "scope_filter",
     "wire_omission",
@@ -106,12 +116,24 @@ __all__ = [
 # and then wire-normalised alongside these).
 PRIVATE_ASSERTIONS_UNBOUND = "private_assertions_unbound"
 WORKSPACE_UNAVAILABLE = "workspace_unavailable"
+WORKSPACE_UNVERIFIED = "workspace_unverified"
 WORKSPACE_UNPROJECTABLE = "workspace_unprojectable"
 IDENTITY_MISMATCH = "identity_mismatch"
 PERIOD_UNSTEPPABLE = "period_unsteppable"
 OMISSIONS_TRUNCATED = "omissions_truncated"
 # Refusal code for a research mode this surface cannot serve (see module doc).
 IDENTITY_VINTAGE_UNSUPPORTED = "identity_vintage_unsupported"
+
+# The reader's two coverage-absence notes for a single-alias read
+# (engine/neuralweb/company_intelligence_reader.py::_load_event_workspace:
+# "event workspace alias could not be resolved" when the alias is not in the
+# manifest, "event workspace does not cover this event" when the manifest has
+# no receipt for it). Every other note on a preceding read is a failure on an
+# advertised object and is recorded as ``workspace_unverified``.
+_PRECEDING_ABSENT_NOTES = frozenset({
+    "event workspace alias could not be resolved",
+    "event workspace does not cover this event",
+})
 
 _NAME_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_")
 _DETAIL_CHARS = frozenset(
@@ -276,7 +298,8 @@ def _serve_witness(
         return rows, revisions, tokens
     prior = _read(reader.read_event_workspace, {"event_id": alias})
     if prior.get("available") is not True:
-        tokens.append(f"{WORKSPACE_UNAVAILABLE}:{alias}")
+        absent = prior.get("note") in _PRECEDING_ABSENT_NOTES
+        tokens.append(f"{WORKSPACE_UNAVAILABLE if absent else WORKSPACE_UNVERIFIED}:{alias}")
         return rows, revisions, tokens
     prior_row = _admit(identity, prior, tokens, revisions)
     if prior_row is not None:
@@ -293,16 +316,18 @@ def scope_filter(bundle: OwnerBundle, scope: WitnessScope) -> OwnerBundle:
     "consistently filtering data AND evidence").
 
     An empty cohort empties every input — never a fall-through to an unscoped
-    bundle. A non-empty cohort keeps only event workspaces whose CIK is a
-    verified witness CIK. The private half is unbound today, so the
-    assertion / native-reference tuples reaching this seam are always empty;
-    when R4 binds them, THIS seam keeps an assertion or native reference only
-    when its native subject's CIK is in the same verified set — one scope,
-    no second filter. The seam grants no membership, breadth or rank
-    authority.
+    bundle. A non-empty cohort keeps only event workspaces whose CIK the
+    hardened comparator :func:`verify_workspace_cik` accepts for a witness.
+    The private half is unbound today (R4 open), so the five private tuples
+    reaching this seam are always empty — and this seam FAILS CLOSED
+    (:class:`BundleUnavailable`) the moment any of them is non-empty, because
+    no cohort rule for assertions, identity results, financial packets,
+    interpretation blocks or native references has been accepted yet. The R4
+    commit that binds them must extend this function with the native-subject
+    CIK rule before anything passes; it cannot slip through unscoped. The
+    seam grants no membership, breadth or rank authority.
     """
-    allowed = {identity.cik for identity in scope.identities}
-    if not allowed:
+    if not scope.identities:
         return replace(
             bundle,
             assertions=(),
@@ -312,9 +337,13 @@ def scope_filter(bundle: OwnerBundle, scope: WitnessScope) -> OwnerBundle:
             interpretation_blocks=(),
             native_refs=(),
         )
+    if (bundle.assertions or bundle.identity_results or bundle.financial_packets
+            or bundle.interpretation_blocks or bundle.native_refs):
+        raise BundleUnavailable("private inputs reached the scope seam before R4 keyed them")
     workspaces = tuple(
         workspace for workspace in bundle.event_workspaces
-        if isinstance(workspace, Mapping) and workspace.get("cik") in allowed
+        if isinstance(workspace, Mapping)
+        and any(verify_workspace_cik(identity, workspace.get("cik")) for identity in scope.identities)
     )
     return replace(bundle, event_workspaces=workspaces)
 
