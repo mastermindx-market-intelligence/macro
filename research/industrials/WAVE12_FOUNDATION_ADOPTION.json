@@ -1,0 +1,194 @@
+{
+  "artifact_kind": "research_dependency_crosswalk",
+  "research_only": true,
+  "not_a_native_schema": true,
+  "not_a_runtime_queue": true,
+  "operation": "gmi-industrials-sector-research-20260923-sol-001",
+  "research_carrier": 7789,
+  "foundation_carrier": 7870,
+  "inspected_foundation_head": "45eb37bbf832e007e67ce2594674d6bfeeb3b880",
+  "source_document": "INDUSTRIALS_WAVE12_SEMICONDUCTOR_FOUNDATION_ALIGNMENT_2026-09-24.md",
+  "source_designs": [
+    {
+      "filename": "2026-09-23-industrials-result-cash-dossier-design.md",
+      "git_blob": "40fd1e3783102c28fe748fe35b927484d4f3dddb"
+    },
+    {
+      "filename": "2026-09-23-industrials-result-cash-dossier-design-r2.md",
+      "git_blob": "9c98e106b954d0a48610afad418de2a9eeb1e58b"
+    }
+  ],
+  "groups": [
+    {
+      "group": "G01",
+      "requirements": [
+        "IND-D01",
+        "IND-D03"
+      ],
+      "shared_tasks": [
+        "T05",
+        "T08",
+        "T09"
+      ],
+      "industrials_obligation": "Release/filing meaning and owner-reviewed financial content role",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G02",
+      "requirements": [
+        "IND-D02",
+        "IND-D06"
+      ],
+      "shared_tasks": [
+        "T02",
+        "T04"
+      ],
+      "industrials_obligation": "Consume shared assertion persistence and truthful K1 behavior",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G03",
+      "requirements": [
+        "IND-D04",
+        "IND-D05",
+        "IND-R210"
+      ],
+      "shared_tasks": [
+        "T04",
+        "T05"
+      ],
+      "industrials_obligation": "Case-specific issuer/event and historical return bindings",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G04",
+      "requirements": [
+        "IND-D07",
+        "IND-D08",
+        "IND-D09",
+        "IND-D10",
+        "IND-D11",
+        "IND-D12",
+        "IND-D13",
+        "IND-D14",
+        "IND-D15",
+        "IND-D16",
+        "IND-R205",
+        "IND-R206",
+        "IND-R207",
+        "IND-R208",
+        "IND-R209"
+      ],
+      "shared_tasks": [
+        "T05",
+        "T08"
+      ],
+      "industrials_obligation": "Native financial derivations: periods, units, net/gross, paired adjustments, cash, segments and recasts",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G05",
+      "requirements": [
+        "IND-D17",
+        "IND-D18",
+        "IND-D19",
+        "IND-D20",
+        "IND-D21",
+        "IND-D24",
+        "IND-R203",
+        "IND-R204"
+      ],
+      "shared_tasks": [
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "industrials_obligation": "Preliminary/final/filing editions, valid comparison purpose and source time",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G06",
+      "requirements": [
+        "IND-D22",
+        "IND-R213",
+        "IND-R214"
+      ],
+      "shared_tasks": [
+        "T02",
+        "T08",
+        "T09"
+      ],
+      "industrials_obligation": "Numbers and material narrative share correction dependencies",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G07",
+      "requirements": [
+        "IND-D23",
+        "IND-R201",
+        "IND-R215",
+        "IND-R218"
+      ],
+      "shared_tasks": [
+        "T08"
+      ],
+      "industrials_obligation": "Required refusal versus optional limitation; no fabricated valuation verdict",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G08",
+      "requirements": [
+        "IND-D25",
+        "IND-D26",
+        "IND-D27",
+        "IND-D28",
+        "IND-R211",
+        "IND-R212",
+        "IND-R216",
+        "IND-R217"
+      ],
+      "shared_tasks": [
+        "T03",
+        "T09",
+        "T10"
+      ],
+      "industrials_obligation": "Shared current-rights, private access and sector-specific failure proof",
+      "product_tests_executed": false
+    },
+    {
+      "group": "G09",
+      "requirements": [
+        "IND-D29",
+        "IND-D30",
+        "IND-R202"
+      ],
+      "shared_tasks": [
+        "T10",
+        "T11",
+        "T12"
+      ],
+      "industrials_obligation": "Two real Industrials user paths and unchanged legacy behavior",
+      "product_tests_executed": false
+    }
+  ],
+  "additional_cases": [
+    "IND-SF01",
+    "IND-SF02",
+    "IND-SF03",
+    "IND-SF04",
+    "IND-SF05",
+    "IND-SF06",
+    "IND-SF07",
+    "IND-SF08"
+  ],
+  "accepted_shared_release": null,
+  "live_private_binding_proven": false,
+  "fable_industrials_dispatched": false,
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  }
+}
