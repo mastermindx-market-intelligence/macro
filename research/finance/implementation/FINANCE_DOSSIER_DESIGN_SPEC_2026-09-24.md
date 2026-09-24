@@ -49,14 +49,14 @@ The dossier is the read-only Finance Intelligence surface that lives AFTER the e
 | `degraded_sections[].{section, state, reason}` | `section ∈ {what_changed, rerating_map, system_map, subtheme_atlas, company_exposure, macro_matrix, constraint_map, evidence_drawer}`; `state ∈ {AVAILABLE, UNAVAILABLE, PARTIAL}` | a `mx-empty` + `mx-empty-why` notice at the section (telemetry at §G) |
 | `authority_caps.{rank, gate, size, trade, create_theme, change_membership, write_graph, admit_source}` | const-false | not displayed (read-only dossier; authority remains zero) |
 
-**Anything the page would like but the schema does not supply** (a binding the audit found but the schema lacks): the slice-level display headline, guardrail, and user-action fields; the material-changes-level display label and evidence-horizon label; the coverage-level coverage-state / coverage-label readouts; the freshness-level freshness-label readout; the per-dossier entry-href; the curated top-domains facet; the populated-slices count and the selected-slices slice of the schema; and a user-facing conflict-resolution string (the schema carries a literal `"UNRESOLVED_BY_DESIGN"` enum — surfaced only as the footer copy "Left unresolved by design — both statements stand." / "有意不作裁决 — 两种陈述同时成立。"). None of these are bound in this spec; they live under **GAPS** as proposed contract amendments.
+**Anything the page would like but the schema does not supply** (a binding the audit found but the schema lacks): the slice-level display headline, guardrail, and user-action fields; the material-changes-level display label and evidence-horizon label; the coverage-level coverage-state / coverage-label readouts; the freshness-level freshness-label readout; the per-dossier entry-href; the curated top-domains facet; the populated-slices count and the selected-slices slice of the schema; and a user-facing conflict-resolution string (the schema carries a literal `"UNRESOLVED_BY_DESIGN"` enum — surfaced only as the footer copy "Left unresolved by design — both statements stand." / "有意不作裁决 — 两项陈述并存。"). None of these are bound in this spec; they live under **GAPS** as proposed contract amendments.
 
 ### A.1 `what-changed` (Tier 1)
 
 | Visible surface | Schema path | Schema enums |
 |---|---|---|
 | one row per entry; freshness chip on each | `material_changes[].{change_id, event_clock{published_at, observed_at}, domain_ids, slice_ids, operating_implication, evidence_refs, conflict_ids, freshness_state}` | `freshness_state ∈ {FRESH, AGING, SOURCE_STALE, NO_EVIDENCE}` |
-| conflict pip on the row when `conflict_ids` is non-empty | `material_changes[].conflict_ids[]` | (consumed by reference into `conflicts[]`) |
+| conflict reference (consumed by `#rerating-map`; the D3 row anatomy carries NO conflict pip) | `material_changes[].conflict_ids[]` | (consumed by reference into `conflicts[]`) |
 | per-row evidence button | `material_changes[].evidence_refs[]` | — |
 
 ### A.2 `rerating-map` (Tier 2 — primary visual)
@@ -151,9 +151,9 @@ One instance, the aside at §B.0 with the dialog role + `aria-modal="true"` + `a
 
 | Visible surface | Schema path | Schema enums |
 |---|---|---|
-| card label (plain words, from §D.12 map) | `conflicts[].label` (literal enum token; surfaced only as the label map) | `label ∈ {EARNINGS_UP_P_E_DOWN, BOOK_UP_P_B_DOWN, NII_UP_CREDIT_WORSE, POLICY_SUPPORT_NIM_PRESSURE, REGULATORY_RATIO_DOWN_REGIME_BREAK, PLAN_DISCLOSED_EXECUTION_PENDING, TAIL_RISK_DOWN_CURRENT_EARNINGS_WEAK, PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN, CAPITAL_COST_UP_GROWTH_STILL_STRONG, VOLUME_UP_REVENUE_MATERIALITY_UNPROVEN}` |
+| card label (plain words, from §D.37 map) | `conflicts[].label` (literal enum token; surfaced only as the label map) | `label ∈ {EARNINGS_UP_P_E_DOWN, BOOK_UP_P_B_DOWN, NII_UP_CREDIT_WORSE, POLICY_SUPPORT_NIM_PRESSURE, REGULATORY_RATIO_DOWN_REGIME_BREAK, PLAN_DISCLOSED_EXECUTION_PENDING, TAIL_RISK_DOWN_CURRENT_EARNINGS_WEAK, PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN, CAPITAL_COST_UP_GROWTH_STILL_STRONG, VOLUME_UP_REVENUE_MATERIALITY_UNPROVEN}` |
 | left statement + plane word + evidence button | `conflicts[].left.{plane, statement, evidence_refs}` | `plane ∈ {operating, expectations, valuation, price, regime, policy}` |
-| right statement + plane word + evidence button | `conflicts[].right.{plane, statement, evidence_refs}` | `plane ∈ {plane_state}` |
+| right statement + plane word + evidence button | `conflicts[].right.{plane, statement, evidence_refs}` | `plane ∈ {operating, expectations, valuation, price, regime, policy}` |
 | footer copy | `conflicts[].resolution` (literal enum token; surfaced only as the footer copy) | literal `UNRESOLVED_BY_DESIGN` (plain-word footer copy only) |
 
 A per-conflict lookup map (`conflict_text` indexed by `conflict_id`) and a per-side plane-state discriminator on the left statement are NOT in the schema and NOT bound; the spec reads `conflicts[].label` and `conflicts[].{left,right}.plane` (as a plane word, not a state).
@@ -162,7 +162,7 @@ A per-conflict lookup map (`conflict_text` indexed by `conflict_id`) and a per-s
 
 - **R11 §3 card counts/freshness removed.** R11 §3 expected the Theme Tracker card to carry `material_changes` slice counts and freshness chips. This spec removes those bindings — the shell carries no payload values (per E9); there is no public projection of card counts or freshness on the entry modules. The card is eyebrow + title + one static plain sentence + CTA.
 - **R11 §9 sortable/filterable tables deferred to hydration v2.** R11 §9 expected sortable/filterable behaviour on the exposure and macro tables. This spec renders static tables with the schema-bound cell chip and the §B markup; sortability/filterability is owned by the hydration layer's v2 (not by this spec's shell).
-- **L1 budget 7 > archetype default 5 — frozen R11 seven-tier order.** The C-company `instrument_analyzer` archetype default is 5 L1 sections; this spec renders 7 L1 sections because R11 §5 freezes a seven-tier order (`what-changed` → `rerating-map` → `system-map` → `subtheme-atlas` → `company-exposure` → `macro-matrix` → `constraint-map`). The seventh section is the evidence-drawer aside, not a separate L1. The seven-tier order supersedes the archetype default per the R11 freeze (PR #7896).
+- **L1 budget 7 > archetype default 5 — frozen R11 seven-tier order.** The C-company `instrument_analyzer` archetype default is 5 L1 sections; this spec renders 7 L1 sections because R11 §5 freezes a seven-tier order (`what-changed` → `rerating-map` → `system-map` → `subtheme-atlas` → `company-exposure` → `macro-matrix` → `constraint-map`). The evidence drawer is an `<aside>` opened from the TOC and never an L1 section (the seven L1 ids are listed above). The seven-tier order supersedes the archetype default per the R11 freeze (PR #7896).
 
 ---
 
@@ -172,7 +172,7 @@ All class names use the `fi-` prefix. All copy uses the repo's bilingual idiom (
 
 ### B.0 Page shell + evidence-drawer aside (one instance each)
 
-The seven L1 sections sit in frozen order (what-changed, rerating-map, system-map, subtheme-atlas, company-exposure, macro-matrix, constraint-map); each is a tier-1 surface: `<section class="fi-section fi-panel">`. Hydration populates the `.fi-evidence-fields` `<dl>` with `<dt>`/`<dd>` children; the suppression rule (A.8) hides value/excerpt/native_digest when `rights_state` is SOURCE_RIGHTS_HELD or INTERNAL_ONLY; the identity field is bound via `<dd class="fi-evidence-identity" data-identity="…">` and the rights field via the B.8 `<dd>` markup below.
+The seven L1 sections sit in frozen order (what-changed, rerating-map, system-map, subtheme-atlas, company-exposure, macro-matrix, constraint-map); each is a tier-1 surface: `<section class="fi-section fi-panel">`. Hydration populates the `.fi-evidence-fields` `<dl>` with `<dt>`/`<dd>` children; the suppression rule (A.8) hides value/excerpt/native_digest when `rights_state` is SOURCE_RIGHTS_HELD or INTERNAL_ONLY; the identity field is bound via `<dd class="fi-evidence-identity" data-identity="…">` and the rights field via the B.0 `<dd>` markup below.
 
 ```html
 <main id="fi-main" class="fi-shell" data-fi-mount="shell">
@@ -235,7 +235,7 @@ The seven L1 sections sit in frozen order (what-changed, rerating-map, system-ma
 <div class="fi-scrim" id="fi-scrim" hidden></div>
 ```
 
-The TOC entry "Evidence" is a `<button>` opening the drawer (R-H). The duplicate drawer markup that lived in B.0/B.8 is removed; the §B.0 aside is the single instance. The TOC carries `class="fi-toc"` only (no `fi-panel`); §C.5 paints it as a tier-1 elevation surface — not a tier-2 nested card. `<main>` itself carries no `fi-panel` — its background is the `var(--fi-canvas)` token (the site canvas), and the seven L1 sections are the tier-1 elevation surfaces. The evidence-fields DOM mount in this B.0 aside is bound per E.6: `<dd class="fi-evidence-identity" data-identity="{source_records[].identity_state}">` carries the data-identity attribute (the literal enum token, never the label word in the attribute), and the visible text inside the `<dd>` is the plain-word row from §D.21.
+The TOC entry "Evidence" is a `<button>` opening the drawer (R-H). The duplicate drawer markup that lived in B.0/B.8 is removed; the §B.0 aside is the single instance. The TOC carries `class="fi-toc"` only (no `fi-panel`); §C.5 paints it as a tier-1 elevation surface — not a tier-2 nested card. `<main>` itself carries no `fi-panel` — its background is the `var(--fi-canvas)` token (the site canvas), and the seven L1 sections are the tier-1 elevation surfaces. The evidence-fields DOM mount in this B.0 aside is bound per §E: `<dd class="fi-evidence-identity" data-identity="{source_records[].identity_state}">` carries the data-identity attribute (the literal enum token, never the label word in the attribute), and the visible text inside the `<dd>` is the plain-word row from §D.21.
 
 ### B.1 `what-changed` — material changes
 
@@ -407,7 +407,7 @@ The atlas renders only the slices the payload carries (R-F). The atlas header re
 
 ### B.5 `company-exposure` — sticky matrix / mobile cards
 
-The exposure surface is the L1 table for the company-coverage leg of the dossier (R4 / MPDS §5 item 10). The first 8 rows of `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive) live in `.fi-exposure-table-wrap`; the remaining rows live behind a sibling `<details class="fi-disc fi-exposure-more">` disclosure whose summary reads "See all N / 查看全部 N 家" (the `N` is the total row count; hidden when `N ≤ 8`). The mobile cards are a sibling `<ul class="fi-exposure-cards" data-fi-mount="exposure-cards" hidden>` holding one `<li class="fi-exposure-card fi-panel2">` per row (first 8) plus its own `<details class="fi-disc">` for the rest. Each mobile card carries `fi-panel2` (tier-2 nested surface). Per E8, the per-row identity chip is `.fi-evidence-trigger` (opens the evidence drawer) — that class is referenced in §E.4 and must exist in §B (it does, on the row identity chip and on the constraint evidence button). `.fi-disc` gets its own scoped CSS in §C.7 (summary styled as a quiet `.gbtn-quiet`-like button at `--fs-sm`, chevron rotates when open, `--fs-*` only) — `theme.css` has no `.mx-disc`, so the rule is scoped to `.fi-disc` here.
+The exposure surface is the L1 table for the company-coverage leg of the dossier (R4 / MPDS §5 item 10). The first 8 rows of `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive) live in `.fi-exposure-table-wrap`; the remaining rows live behind a sibling `<details class="fi-disc fi-exposure-more">` disclosure whose summary reads "See all N / 查看全部 N 家" (the `N` is the total row count; hidden when `N ≤ 8`). The mobile cards are a sibling `<ul class="fi-exposure-cards" data-fi-mount="exposure-cards" hidden>` holding one `<li class="fi-exposure-card fi-panel2">` per row (first 8) plus its own `<details class="fi-disc">` for the rest. Each mobile card carries `fi-panel2` (tier-2 nested surface). Per E8, the per-row identity chip is `.fi-evidence-trigger` (opens the evidence drawer) — that class is referenced in §E.4 and must exist in §B (it does, on the row identity chip and on the constraint evidence button). `.fi-disc` gets its own scoped CSS in §C.6 (summary styled as a quiet `.gbtn-quiet`-like button at `--fs-sm`, chevron rotates when open, `--fs-*` only) — `theme.css` has no `.mx-disc`, so the rule is scoped to `.fi-disc` here.
 
 ```html
 <section id="company-exposure" class="fi-section fi-panel fi-exposure" aria-labelledby="fi-exposure-title"
@@ -424,7 +424,7 @@ The exposure surface is the L1 table for the company-coverage leg of the dossier
   </header>
 
   <div class="fi-exposure-table-wrap">
-    <table class="fi-exposure-table mx-tbl" aria-describedby="fi-exposure-desc">
+    <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
       <caption id="fi-exposure-desc" class="visually-hidden">
         <span class="l-en">Company exposure matrix. Rows are companies. Columns are slices.</span>
         <span class="l-zh">公司敞口矩阵。行为公司，列为切片。</span>
@@ -446,16 +446,25 @@ The exposure surface is the L1 table for the company-coverage leg of the dossier
   </div>
   <details class="fi-disc fi-exposure-more" data-fi-mount="exposure-more" hidden>
     <summary>
-      <span class="l-en">See all {N}</span>
+      <span class="l-en">See all {N} companies</span>
       <span class="l-zh">查看全部 {N} 家</span>
     </summary>
-    <table class="fi-exposure-table mx-tbl" aria-describedby="fi-exposure-desc">
-      [Hydration renders one <tr> per company_exposures[] entry rows 9..N sorted by issuer_label (EN, case-insensitive).]
+    <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
+      [Hydration renders the same <thead> as the first table, then one <tr> per company_exposures[] entry rows 9..N sorted by issuer_label (EN, case-insensitive).]
     </table>
   </details>
   <ul class="fi-exposure-cards" data-fi-mount="exposure-cards" hidden>
     [Hydration renders one <li class="fi-exposure-card fi-panel2"> per the first 8 company_exposures[] entries (the table's first 8 rows). For rows 9..N a sibling <details class="fi-disc"> wraps the remaining cards.]
   </ul>
+  <details class="fi-disc fi-exposure-cards-more" data-fi-mount="exposure-cards-more" hidden>
+    <summary>
+      <span class="l-en">See all {N} companies</span>
+      <span class="l-zh">查看全部 {N} 家</span>
+    </summary>
+    <ul class="fi-exposure-cards">
+      [Hydration renders one <li class="fi-exposure-card fi-panel2"> per company_exposures[] entry rows 9..N (≤767 only; C.10 hides this disclosure at ≥768).]
+    </ul>
+  </details>
 </section>
 ```
 
@@ -495,6 +504,15 @@ The macro-matrix surface is the L1 table for the macro leg of the dossier (R4 / 
       </tbody>
     </table>
   </div>
+  <details class="fi-disc fi-macro-more" data-fi-mount="macro-more" hidden>
+    <summary>
+      <span class="l-en">See all {N} slices</span>
+      <span class="l-zh">查看全部 {N} 个切片</span>
+    </summary>
+    <table class="fi-macro-table" aria-describedby="fi-macro-desc">
+      [Hydration renders the same <thead> as the first table, then one <tr data-slice-id> per coverage.first_vertical.slice_ids entry 9..N.]
+    </table>
+  </details>
   [Mobile cards (≤767): one <li class="fi-macro-card fi-panel2"> per first-vertical slice listing only present driver cells with mechanism + lag chip + state chip. C.10 shows cards and hides the table at ≤767; the table wrapper keeps overflow-x:auto for 768–1199. See §H cell 11 "macro cards at 390".]
   <ul class="fi-macro-cards" data-fi-mount="macro-cards" hidden></ul>
 </section>
@@ -628,7 +646,6 @@ The five mechanisms below are the load-bearing art-direction differences; each i
 .fi-exposure-card,
 .fi-falsifier,
 .fi-constraint-row,
-.fi-rerating-step,
 .fi-conflict-side {
   background: var(--fi-panel2);
   border: 1px solid var(--fi-line);
@@ -652,7 +669,6 @@ html[data-theme="light"] .fi-macro-card,
 html[data-theme="light"] .fi-exposure-card,
 html[data-theme="light"] .fi-falsifier,
 html[data-theme="light"] .fi-constraint-row,
-html[data-theme="light"] .fi-rerating-step,
 html[data-theme="light"] .fi-conflict-side {
   background: color-mix(in srgb, var(--panel) 92%, var(--bg));
   border: 1px solid var(--fi-line);
@@ -664,9 +680,11 @@ html[data-theme="light"] .fi-conflict-side {
 
 ```css
 /* Common colour map — dark = real pip (::before) */
-.fi-section-head[data-state-freshness]::before {
-  content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-  margin-right: 8px; background: var(--fi-fresh-colour);
+/* float keeps the pip on the title's first line (the header's children are block-level);
+   the :not() guard leaves the pre-hydration shell (data-state-freshness="") and the 401/402/503 shells pip-free */
+.fi-section-head[data-state-freshness]:not([data-state-freshness=""])::before {
+  content: ""; float: left; width: 8px; height: 8px; border-radius: 50%;
+  margin: .5em 8px 0 0; background: var(--fi-fresh-colour);
 }
 .fi-section-head[data-state-freshness="FRESH"] { --fi-fresh-colour: var(--fresh-ok); }
 .fi-section-head[data-state-freshness="FRESH"]::before {
@@ -761,7 +779,7 @@ html[data-theme="light"] .fi-scrim { background: color-mix(in srgb, var(--text) 
   border-radius: 2px; z-index: 0;
 }
 html[data-theme="light"] .fi-rerating-step[data-active="true"] .fi-step-dot {
-  box-shadow: 0 0 0 4px var(--link);
+  box-shadow: 0 0 0 2px var(--fi-step-ring);
   background: var(--fi-step-fill);
   border-color: var(--fi-link);
 }
@@ -813,6 +831,15 @@ html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 .fi-section-eyebrow { display: block; font-size: var(--fs-sm); color: var(--fi-muted); font-weight: 400; margin-top: 2px; }
 .fi-section-foot { font-size: var(--fs-sm); color: var(--fi-muted); margin: 12px 0 0; max-width: 75ch; }
 .fi-section-head { padding: 4px 0; }
+/* D1 — L1 table disclosure ("See all N"): a sibling of the table wrapper, never inside it; stays [hidden] until hydration removes it when N > 8 */
+.fi-disc { margin: 12px 0 0; padding-top: 8px; border-top: 1px solid var(--fi-line); }
+.fi-disc > summary { list-style: none; cursor: pointer; padding: 4px 0; font-size: var(--fs-sm); color: var(--fi-link); }
+.fi-disc > summary::-webkit-details-marker { display: none; }
+.fi-disc > summary::before { content: "+"; display: inline-block; width: 1em; margin-right: 6px; color: var(--fi-muted); }
+.fi-disc[open] > summary::before { content: "\2013"; }
+.fi-disc > summary:focus-visible { outline: 2px solid var(--fi-link); outline-offset: 2px; }
+.fi-disc > table, .fi-disc > ul { margin-top: 8px; }
+.fi-exposure-cards-more { display: none; } /* phone-only (C.10) */
 ```
 
 ### C.7 Rerating stepper — primary visual
@@ -1018,10 +1045,13 @@ One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep o
   .fi-step-dot { margin: 0 6px 0 0; }
   .fi-domain-grid { grid-template-columns: 1fr; }
   .fi-exposure-table-wrap { display: none; }
+  .fi-exposure-more { display: none; }
   .fi-exposure-cards { display: grid; }
+  .fi-exposure-cards-more { display: block; }
   .fi-section { padding: 16px; }
   /* Macro: ≤767 hides the table and shows the cards; 768–1199 keeps overflow-x:auto on the table wrapper. */
   .fi-macro-table-wrap { display: none; }
+  .fi-macro-more { display: none; }
   .fi-macro-cards { display: grid; gap: 10px; list-style: none; margin: 16px 0 0; padding: 0; }
   .fi-conflict-pair { grid-template-columns: 1fr; }
   .fi-toc ol { flex-direction: column; gap: 4px; }
@@ -1576,7 +1606,7 @@ The card carries `data-conflict-label="{conflicts[].label}"` (the literal enum t
 | System view: expand | `Expand` | `展开` |
 | System view: collapse | `Collapse` | `收起` |
 | Section foot (generic) | `Read the underlying receipts before acting on any line.` | `请先查阅原始凭据再行判断。` |
-| Conflict card footer (every card under `.fi-conflicts`) | `Left unresolved by design — both statements stand.` | `有意不作裁决 — 两种陈述同时成立。` |
+| Conflict card footer (every card under `.fi-conflicts`) | `Left unresolved by design — both statements stand.` | `有意不作裁决 — 两项陈述并存。` |
 | Falsifier list heading (§B.3) | `What we're watching` | `我们正在观察` |
 | Atlas footer chip (§B.4) | `<n> slices not yet mapped` | `<n> 个切片尚未映射` |
 
@@ -1697,14 +1727,14 @@ The drawer is the only modal surface. Tab order follows DOM order. No keyboard s
 | `rerating-steps` | B.2 | exactly four `<li class="fi-rerating-step fi-node-{name}">` in the order operating, expectations, valuation, price |
 | `rerating-bridge` | B.2 | text node = `slices[].rerating.bridge` (fallback static copy from §B.2) |
 | `falsifiers` | B.2 | one `<li class="fi-falsifier" data-state-falsifier>` per `slices[].falsifiers[]` |
-| `conflicts` (`.fi-conflict-list`) | B.2 | one `<li class="fi-conflict-card fi-panel2" data-conflict-label="…" data-state-marker="…">` per `conflicts[]` entry whose `slice_ids` contains the selected slice; each card carries a visible `<footer class="fi-conflict-foot">` rendering the §D.38 footer copy ("Left unresolved by design — both statements stand." / "有意不作裁决 — 两种陈述同时成立。"); conflicts matching no first-vertical slice render in one consistent line: "N more conflicts on other slices" / "其他切片另有 N 项冲突" (E12 — conflict scope is consistent across B.2 / E.5) |
+| `conflicts` (`.fi-conflict-list`) | B.2 | one `<li class="fi-conflict-card fi-panel2" data-conflict-label="…" data-state-marker="…">` per `conflicts[]` entry whose `slice_ids` contains the selected slice; each card carries a visible `<p class="fi-conflict-foot">` rendering the §D.38 footer copy ("Left unresolved by design — both statements stand." / "有意不作裁决 — 两项陈述并存。"); conflicts matching no first-vertical slice render in one consistent line: "N more conflicts on other slices" / "其他切片另有 N 项冲突" (E12 — conflict scope is consistent across B.2 / E.5) |
 | `domain-grid` | B.4 | one `<section class="fi-domain">` per `domains[]` in payload order; inside, one `<li class="fi-slice">` per `slices[]` entry whose `domain_id` matches |
 | `coverage eyebrow` | B.4 | text node from `coverage.{domains_populated, domains_total, slices_populated, slices_total}` |
 | `atlas-gap` | B.4 | text node from `coverage.slices_total − sum(rendered)` |
 | `exposure-rows` | B.5 | one `<tr>` per the first 8 `company_exposures[]` sorted by `issuer_label` (EN, case-insensitive); `<td>` per `cells[]` cell (absent slice column → "No role recorded / 未记录角色") |
 | `exposure-more` | B.5 | sibling `<details>` over rows 9..N; hidden when N ≤ 8 |
 | `exposure-cards` | B.5 | one `<li class="fi-exposure-card">` per the first 8 `company_exposures[]` entries (phone only; hidden ≥768) |
-| `macro-rows` | B.6 | one `<tr data-slice-id>` per unique `slice_id` in `macro_matrix[]` in payload order; cell for each (slice, driver) pair; absent → "Not mapped / 未映射" |
+| `macro-rows` | B.6 | one `<tr data-slice-id>` per `coverage.first_vertical.slice_ids` entry in atlas order (first 8; rows 9..N behind the sibling `.fi-macro-more` disclosure); cell for each (slice, driver) pair; absent → "Not mapped / 未映射" |
 | `constraint-list` | B.7 | one `<li class="fi-constraint-row">` per `constraints[]` |
 | `view-tabs` / `view-panels` | B.3 | one `<button role="tab">` and one `<div role="tabpanel">` per `system_views[]` in payload order |
 | `evidence-body` | B.0 aside | `dl.fi-evidence-fields` populated from `source_records[]`; suppression rule applied (D.23) |
@@ -1801,7 +1831,7 @@ The dossier must never expose a private payload. Every degraded state shows a ty
 
 The evidence drawer never opens in any degraded state — the trigger buttons get `aria-disabled="true"` and a visible chip `Evidence unavailable` / `证据暂不可用`. No private payload leaks via static, source maps, or alternate routes (per the carrier packet §15.1 / §15.4 and the §E FORBIDDEN list).
 
-**Conflict pip + card rule (R-H):** the `.fi-conflict-pip` chip and the `.fi-conflict-card` both carry a visible line + an `Open evidence` button; no hover-only meaning anywhere.
+**Conflict card rule (R-H):** the `.fi-conflict-card` carries a visible line + an `Open evidence` button; no hover-only meaning anywhere.
 
 **Materiality colour rule (R-J):** all four values paint with `--fi-text`; MATERIAL differs by `font-weight: 700` and the word "Material" / "重要" only; PARTIAL / IMMATERIAL / UNMEASURED paint with `--fi-text` and their plain-word chip. NEVER the directional-ink tokens anywhere on the exposure surface (or anywhere else in the dossier).
 
@@ -1872,13 +1902,14 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 
 ## RETURN
 
-**STATUS:** ROUND-3 REPAIR DELIVERED — this branch is the seat's third read-only audit closed. Round-1 audit (audit #1) findings closed; round-2 audit (audit #2) findings closed; round-3 audit (audit #3) — sixteen residuals — closed by THIS run. The binding ruling on this branch (R1 surface tiers, R2 freshness rail/pip state-scoped, R3 answer-outweighs-support, R4 L1 tables, E1-E12 mechanical edits) is fully reflected in §B / §C / §D / §E / §F.
+**STATUS:** FROZEN — round-4 head + seat freeze repair (audit #5 = FAIL-BUILD-CLASS-ONLY, no design-class defect); formerly ROUND-3 REPAIR DELIVERED — this branch is the seat's third read-only audit closed. Round-1 audit (audit #1) findings closed; round-2 audit (audit #2) findings closed; round-3 audit (audit #3) — sixteen residuals — closed by THIS run. The binding ruling on this branch (R1 surface tiers, R2 freshness rail/pip state-scoped, R3 answer-outweighs-support, R4 L1 tables, E1-E12 mechanical edits) is fully reflected in §B / §C / §D / §E / §F.
 
 **AUDIT STATE (truthful):**
 
 - **Round 1 (audit #1)** — closed at the head before this branch started. The schema-binding prose, the seven-L1-section render plan, the §D label map, and the §E hydration contract were stamped.
 - **Round 2 (audit #2)** — closed at the head before this branch started. The §C two-art-direction rule, the §G degraded-state copy fixes, the §H 8-shot matrix, and the §F static-modules rule were stamped.
-- **Round 3 (audit #3 — THIS RUN)** — closed at the head this branch lands. The residuals are: R1 (two-tier CSS elevation), R2 (attribute-only freshness), R3 (fi-section-title-answer on §B.2 / §B.6 title), R4 (L1 tables for company exposure + macro matrix), E1 (sections inside `<main>`), E2 (no nested HTML comments — `data-state-marker` is the canonical anchor), E3 (ARIA swapper == house pattern verbatim), E4 (drawer open state CSS), E5 (stepper spine visible), E6 (no raw tokens in accessible names), E7 (step row wraps), E8 (atlas selectors match markup + `.fi-chip` base rule + delete `.fi-freshness` / `.fi-chip-fresh` / `.fi-slice-fresh`), E9 (one label per token + conflict footer copy unified + D.40 deleted + orphan D.39 rows moved into D.38), E10 (stale references cleanup — `.fi-freshness` rules deleted, `.fi-slice-no-basket` reference deleted, "Domains mapped" copy deleted, H.1 cell 2 / H.1 cell 4 prose fixed), E11 (shell content — main carries NO `.fi-panel`, h1 is static, atlas eyebrow mounts are empty placeholders, hero copy templates, etc.), E12 (conflict scope consistent across B.2 / E.5 — "N more conflicts on other slices" line is the consistent render point).
+- **Round 3 (audit #3)** — closed at the head this branch lands. The residuals are: R1 (two-tier CSS elevation), R2 (attribute-only freshness), R3 (fi-section-title-answer on §B.2 / §B.6 title), R4 (L1 tables for company exposure + macro matrix), E1 (sections inside `<main>`), E2 (no nested HTML comments — `data-state-marker` is the canonical anchor), E3 (ARIA swapper == house pattern verbatim), E4 (drawer open state CSS), E5 (stepper spine visible), E6 (no raw tokens in accessible names), E7 (step row wraps), E8 (atlas selectors match markup + `.fi-chip` base rule + delete `.fi-freshness` / `.fi-chip-fresh` / `.fi-slice-fresh`), E9 (one label per token + conflict footer copy unified + D.40 deleted + orphan D.39 rows moved into D.38), E10 (stale references cleanup — `.fi-freshness` rules deleted, `.fi-slice-no-basket` reference deleted, "Domains mapped" copy deleted, H.1 cell 2 / H.1 cell 4 prose fixed), E11 (shell content — main carries NO `.fi-panel`, h1 is static, atlas eyebrow mounts are empty placeholders, hero copy templates, etc.), E12 (conflict scope consistent across B.2 / E.5 — "N more conflicts on other slices" line is the consistent render point).
+- **Round 4 (audit #4) + seat freeze repair (audit #5)** — round 4 (7ec8fa6a) applied D1–D3 + B2–B13; audit #5 returned FAIL-BUILD-CLASS-ONLY. The seat applied its prescribed fixes in one commit: F1 stepper spine regression (steps are not tier-2 at ≥1200), F2 `.fi-disc` CSS + phone-card and macro disclosures + rows 9..N thead, F4 light 2px ring via `--fi-step-ring`, F5 pip floats beside the title and is guarded against the empty pre-hydration attribute, F6 macro row source, F7 no conflict pip on what-changed rows, F8 no `mx-tbl`, F9 cross-reference nits. Remaining build-class residuals (F3 missing-state table drift incl. INTERNAL_ONLY row, `.fi-chip[data-state-freshness]` colour-map claim, F9 leftovers, F10 nested tier-2) ride the T8 packet appendix. THE SPEC IS FROZEN AT THIS HEAD; a later change needs a new DEC, not a lane round.
 - A future round-4 audit may still find residuals in code that this spec cannot defend (e.g. CSS that uses raw tokens where the spec rules out token-only layers; code that hard-codes colors instead of using the §C.5 / §C.7 selectors). This spec only governs its own contract surface.
 
 **RESULT:**
@@ -1888,7 +1919,7 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 - §A binds ONLY to paths in the live `finance_intelligence_read_model.v1.schema.json` (on `origin/main` since `b4c6e4bd`); the prior "schema is not yet on the main branch" observation is removed; every field the page would like but the schema lacks is moved to **GAPS** as a proposed contract amendment.
 - §B renders seven L1 sections + one evidence-drawer aside inside `<main id="fi-main" class="fi-shell">` (main carries NO `.fi-panel` — R1); B.2 is exactly four data-bound nodes; the R11 chain questions are static node captions ≤14 words EN+ZH; `rerating.bridge` is the connective sentence; falsifiers[] render as a separate list (NOT a node); conflicts nested inside `rerating-map` as `.fi-conflicts`; each conflict card carries a visible `<footer class="fi-conflict-foot">` rendering the §D.38 footer copy; the slice selector is a native `<select>` driving URL hash `#slice=<id>`; **zero document-data loops, zero payload-bound Jinja bindings, zero HTML-comment markers** anywhere in §B or §F; `.fi-system-expand` (B.3), `.fi-evidence-trigger` (B.5), `.fi-constraint-evidence` (B.7), `.fi-domain` + `.fi-slice` (B.4), `.fi-constraint-chip` + `.fi-constraint-row` (B.7) all exist in §B markup.
 - §C declares two art directions as full rules; two-tier elevation (`.fi-panel` tier 1 vs `.fi-panel2` tier 2); `data-state-freshness` attribute on `<header class="fi-section-head">` is the only freshness binding (no `.fi-chip-fresh` / `.fi-slice-fresh` rules); zero hex / rgb / rgba literals in §C, dark block included; all five differing mechanisms written as real CSS; only `767px` / `768px` / `1199px` / `1200px` appear in `max-width`/`min-width`; font sizes only via `--fs-*` tokens.
-- §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH (every row's DOM location uses the `data-state-marker="<TOKEN>"` attribute on the chip element per E2 — no HTML-comment markers); closes the label map across every enum the live schema can deliver; one label per token (VALUATION_ANCHOR_UNAVAILABLE → "No valuation anchor on file / 暂无估值锚"; CAUSAL_EFFECT_UNMEASURED → "Causal effect not measured / 因果影响未测量" — unified across D.1 / D.11b / D.17 / D.36); conflict footer "Left unresolved by design — both statements stand. / 有意不作裁决 — 两种陈述同时成立。" everywhere in §D.38 (the orphan "Falsifier list heading" + "Atlas footer chip" rows moved from D.39 into D.38); D.40 deleted (its five tokens were not in schema); bilingual ARIA rule (plain EN in `aria-label`, EN/ZH pair in `data-aria-en` + `data-aria-zh`, no `t()` inside attributes).
+- §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH (every row's DOM location uses the `data-state-marker="<TOKEN>"` attribute on the chip element per E2 — no HTML-comment markers); closes the label map across every enum the live schema can deliver; one label per token (VALUATION_ANCHOR_UNAVAILABLE → "No valuation anchor on file / 暂无估值锚"; CAUSAL_EFFECT_UNMEASURED → "Causal effect not measured / 因果影响未测量" — unified across D.1 / D.11b / D.17 / D.36); conflict footer "Left unresolved by design — both statements stand. / 有意不作裁决 — 两项陈述并存。" everywhere in §D.38 (the orphan "Falsifier list heading" + "Atlas footer chip" rows moved from D.39 into D.38); D.40 deleted (its five tokens were not in schema); bilingual ARIA rule (plain EN in `aria-label`, EN/ZH pair in `data-aria-en` + `data-aria-zh`, no `t()` inside attributes).
 - §E hydration contract: single `FI_READ_URL` placeholder; `credentials:'include'`, `cache:'no-store'`; in-memory closure variable only; explicit FORBIDDEN list; ARIA swapper pattern matches house verbatim; every conflict's footer copy comes from §D.38; the section-head `data-state-freshness` attribute is hydrated from the top-level `freshness.state` (B.1) and from `slices[].freshness.state` for the selected slice (B.2); the hero freshness chip `.fi-chip[data-fi-mount="hero-freshness"]` and the B.1 row chip both carry the freshness state via `data-state-freshness` attribute; response status table covers 200 / 401 / 402 / 403 / 503 (typed by JSON `error`: PRIVATE_STORE_UNAVAILABLE / NO_GENERATION / GENERATION_TORN / CONTRACT_INVALID) / network failure / unknown; every state uses `.mx-empty` + `.mx-empty-why`; the prior "slice grid chips + cohort posture chips" claim for 402 is removed.
 - §F entry modules are static markup only (eyebrow + title + one static plain sentence + CTA); the prior counts, top-domains facet, evidence-horizon label, coverage-state readout, and populated-slices count bindings are removed; CTA href is `{{ fi_dossier_href }}` placeholder; no top-domains facet is rendered.
 - §G degraded-state copy fixed per R-K; "Outer dossier not accepted" rebinds to `outer_dossier_ref.state` (not 503); "refresh in a moment" copy removed; new degraded_sections per-section rows added.
