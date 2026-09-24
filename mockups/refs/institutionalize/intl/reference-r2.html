@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<!--
+  International Markets vNext — Reference R2 (corrected standalone design reference)
+  reference id: intl-vnext-20260924 · contract: mockups/refs/institutionalize/intl/reference-contract.md
+
+  This file is a REFERENCE FIXTURE, not a live page and not a build artifact. Every
+  visible number below is copied verbatim from committed site/intl.html (baked
+  2026-09-23) or from the field catalogues published by scripts/build_intl.py,
+  engine/intl_rotation.py and engine/intl_market_state.py. Nothing here is fetched,
+  computed, randomised or invented — see the "Fixture provenance" note in the footer.
+
+  Composition grammar preserved from the rejected R1 proposal (commit f3873dcb,
+  PNGs alongside this file): dark command-deck canvas, three-lane hero (call /
+  signal stack / posture), accent-rail section headers, sparkline leaderboard
+  cards, two-column rotation + transmission decks, a country inspector with a
+  posture rail. What changed from R1: every invented number, second scoring
+  system, causal arrow, historical-rank column and account/live affordance named
+  in the RIG pass-1 BLOCK (research/reference_integrity/intl-vnext-20260924/) is
+  removed or replaced with the real engine field it should have shown.
+-->
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>International Markets vNext — Reference R2 · REFERENCE FIXTURE · NOT LIVE</title>
+<style>
+  /* ============================================================
+     0. RESET + TOKENS
+     Dark values ported from templates/intl.html.j2's local page tokens
+     (--bg/--panel/--panel2) plus site/theme.css :root (state/ink tokens).
+     Light values are the CURRENT canonical site/theme.css light block —
+     NOT the intl.html.j2 line-43 override, which predates the 2026-08-03
+     doctrine note that superseded #e8ebf1 in favour of #f7f8fa (see
+     docs/DESIGN_DOCTRINE.md §5.8). zh swap mirrors theme.css's 红涨绿跌
+     block exactly (--up/--down and --q1/--q3 swap, nothing else).
+     ============================================================ */
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  :root {
+    --font-ui: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto,
+      "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+      "Noto Sans CJK SC", sans-serif;
+    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+      Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --bg:#0a0c11; --panel:#14171e; --panel2:#1b1f28; --text:#d7dce3; --muted:#8b93a1;
+    --line:#3a4150;
+    --up:#45b873; --down:#e06464; --warn:#e0a030; --ok:#3da564; --act:#e05555;
+    --orange:#e08b45; --info:#5b9bf0; --link:#7aa7e0;
+    --q1:#2e9e4f; --q2:#d4a017; --q3:#d04545; --q4:#3f78d8;
+    --shadow: inset 0 1px 0 0 color-mix(in srgb, var(--text) 8%, transparent),
+      0 1px 1px rgba(0,0,0,.28), 0 14px 30px -18px rgba(0,0,0,.55);
+    --aurora-a: color-mix(in srgb, #416aec 18%, transparent);
+    --aurora-b: color-mix(in srgb, #0ea5e9 12%, transparent);
+  }
+  html[data-theme="light"] {
+    --bg:#f7f8fa; --panel:#ffffff; --panel2:#eef1f6; --text:#1c2430; --muted:#5d6b7e;
+    --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+    --up:#1f9a55; --down:#cf4040; --warn:#b9791a; --ok:#2f8a52; --act:#c43d3d;
+    --orange:#c4781f; --info:#285fff; --link:#285fff;
+    --q1:#1f8b41; --q2:#b07d05; --q3:#c12f2f; --q4:#2f63c4;
+    --shadow: 0 1px 3px rgba(20,30,50,.07), 0 18px 40px -26px rgba(20,30,50,.20);
+    --aurora-a: color-mix(in srgb, #416aec 7%, transparent);
+    --aurora-b: color-mix(in srgb, #0ea5e9 5%, transparent);
+  }
+  /* Asia convention (红涨绿跌): swap direction ink only, never state/severity ink. */
+  html[data-lang="zh"] { --up:#e06464; --down:#45b873; --q1:#d04545; --q3:#2e9e4f; }
+  html[data-theme="light"][data-lang="zh"] { --up:#cf4040; --down:#1f9a55; --q1:#c12f2f; --q3:#1f8b41; }
+
+  html:not([data-lang="zh"]) .l-zh { display: none; }
+  html[data-lang="zh"] .l-en { display: none; }
+  html[data-lang="zh"] body { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Microsoft JhengHei", "Heiti SC", -apple-system, BlinkMacSystemFont, Inter, sans-serif; }
+  /* Latin-only uppercase+tracking device degrades gracefully for CJK, but tracking on
+     Hanzi looks wrong (VTC-003) — zero it under zh, matching theme.css's own h2 rule. */
+  html[data-lang="zh"] .eyebrow, html[data-lang="zh"] .act-eyebrow, html[data-lang="zh"] h2 { letter-spacing: 0; }
+
+  body {
+    background: var(--bg); color: var(--text);
+    font: 14px/1.55 var(--font-ui);
+    margin: 0; padding: 0 0 64px;
+    min-width: 0;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(680px 440px at 10% -8%, var(--aurora-a), transparent 68%),
+      radial-gradient(620px 440px at 96% 4%, var(--aurora-b), transparent 70%);
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1,h2,h3 { margin: 0; }
+  .num, .tnum, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1; }
+  .muted { color: var(--muted); }
+  .pos { color: var(--up); } .neg { color: var(--down); }
+  .skip-link { position:absolute; left:-999px; top:0; background:var(--panel); color:var(--text);
+    padding:8px 14px; border-radius:0 0 8px 0; z-index:200; }
+  .skip-link:focus { left:0; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  }
+
+  /* ============================================================
+     1. HARNESS CHROME (design-reference controls only — never product UI)
+     ============================================================ */
+  .harness {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+    padding: 8px 14px; background: color-mix(in srgb, var(--panel) 92%, transparent);
+    border-bottom: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  .harness-badge {
+    font: 700 11px/1.2 var(--font-mono); letter-spacing: .04em; text-transform: uppercase;
+    color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 45%, var(--line));
+    background: color-mix(in srgb, var(--warn) 12%, var(--panel2));
+    padding: 4px 9px; border-radius: 7px; white-space: nowrap;
+  }
+  .hctl-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .hctl-group { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .hctl-label { font: 600 10px/1 var(--font-ui); text-transform: uppercase; letter-spacing: .05em;
+    color: var(--muted); margin-right: 2px; align-self: center; }
+  .hctl-btn {
+    font: 600 11.5px/1 var(--font-ui); color: var(--muted); background: var(--panel2);
+    border: 0; border-right: 1px solid var(--line); padding: 7px 10px; cursor: pointer;
+  }
+  .hctl-btn:last-child { border-right: 0; }
+  .hctl-btn[aria-pressed="true"] { background: var(--link); color: #fff; }
+  .hctl-btn:hover:not([aria-pressed="true"]) { color: var(--text); }
+
+  /* ============================================================
+     2. LAYOUT SHELL + FIXTURE BANNER
+     ============================================================ */
+  .stage { max-width: 1360px; margin: 0 auto; padding: 0 22px; transition: max-width .2s ease; }
+  .stage.mobile-preview { max-width: 390px; padding: 0 10px; border-left: 1px dashed var(--line);
+    border-right: 1px dashed var(--line); }
+  .fixture-banner {
+    margin: 16px 0 6px; padding: 10px 14px; border-radius: 10px;
+    background: color-mix(in srgb, var(--warn) 10%, var(--panel));
+    border: 1px solid color-mix(in srgb, var(--warn) 34%, var(--line));
+    color: var(--text); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+  }
+  .fixture-banner b { color: var(--warn); font-family: var(--font-mono); letter-spacing: .03em; }
+  .page-head { padding: 18px 0 6px; }
+  .page-head h1 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+  .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; max-width: 62ch; }
+
+  /* six-act rhythm: accent bar + title + one-line purpose + right scope note */
+  .act { margin-top: 30px; }
+  .act-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .act-num { font: 800 11px/1 var(--font-mono); color: var(--bg); background: var(--link);
+    border-radius: 6px; padding: 3px 7px; }
+  .act-h h2 { font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+  .act-eyebrow { font: 600 11px/1 var(--font-ui); text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); flex-basis: 100%; order: 3; margin-top: -4px; }
+  .act::before { content:""; display:block; height:3px; width:44px; border-radius:2px; margin-bottom:10px;
+    background: linear-gradient(90deg, var(--link), color-mix(in srgb, var(--link) 20%, transparent)); }
+
+  .panel { position: relative; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .panel + .panel { margin-top: 14px; }
+  .panel-accent { border-color: color-mix(in srgb, var(--link) 28%, var(--line)); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .sub { font-size: 12px; color: var(--muted); }
+  .sec-title { display:flex; align-items:center; gap: 8px; font-size: 14.5px; font-weight: 700; margin-bottom: 8px; }
+  .sec-title::before { content:""; width:3px; align-self:stretch; border-radius:2px;
+    background: linear-gradient(180deg, var(--link), color-mix(in srgb, var(--link) 25%, transparent)); }
+  .help-tip { font-size: 11.5px; color: var(--muted); line-height: 1.5; margin: 4px 0 10px; }
+  .caveat { font-size: 11px; color: var(--muted); line-height: 1.6; margin-top: 8px; }
+
+  .chip { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:8px;
+    font-size:11px; font-weight:700; background:var(--panel2); border:1px solid var(--line); white-space:nowrap; }
+  .chip.warn { background:color-mix(in srgb,var(--down) 14%,transparent); color:var(--down); border-color:color-mix(in srgb,var(--down) 36%,transparent); }
+  .chip.caut { background:color-mix(in srgb,var(--warn) 16%,transparent); color:var(--warn); border-color:color-mix(in srgb,var(--warn) 38%,transparent); }
+  .chip.ok { background:color-mix(in srgb,var(--up) 14%,transparent); color:var(--up); border-color:color-mix(in srgb,var(--up) 34%,transparent); }
+  .chip.elev { background:color-mix(in srgb,var(--act) 16%,transparent); color:var(--act); border-color:color-mix(in srgb,var(--act) 38%,transparent); }
+  .chip.calm { background:color-mix(in srgb,var(--info) 14%,transparent); color:var(--info); border-color:color-mix(in srgb,var(--info) 34%,transparent); }
+
+  /* ---------- ACT 1: Global Call ---------- */
+  .wc { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; }
+  .wc-gauge-wrap { display: flex; gap: 16px; align-items: center; }
+  .wc-gauge svg { width: 150px; height: 84px; overflow: visible; }
+  .wc-gauge-track { stroke: var(--line); }
+  .wc-gauge-fill { stroke: var(--gc, var(--up)); stroke-linecap: round; transition: stroke-dashoffset .5s ease; }
+  .wc-gnum { font: 800 34px var(--font-mono); fill: var(--gc, var(--up)); }
+  .wc-gnum-sub { font: 700 11px var(--font-ui); fill: var(--muted); }
+  .wc-verdict { font-size: 20px; font-weight: 800; }
+  .wc-verdict.v-up { color: var(--up); } .wc-verdict.v-down { color: var(--down); } .wc-verdict.v-warn { color: var(--warn); }
+  .wc-gauge-cap { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+  .wc-receipt { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; max-width: 30ch; }
+  .wc-substance { font-size: 12.5px; margin-top: 8px; }
+  .wc-read { font-size: 13.5px; line-height: 1.6; margin: 6px 0 0; }
+  .tug { margin-top: 14px; }
+  .tug-head { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); margin-bottom: 5px; }
+  .tug-beam { position: relative; height: 8px; border-radius: 5px; background: linear-gradient(90deg,
+    color-mix(in srgb, var(--info) 40%, var(--panel2)), var(--panel2) 50%, color-mix(in srgb, var(--up) 40%, var(--panel2))); }
+  .tug-marker { position: absolute; top: -3px; left: var(--pos, 50%); width: 14px; height: 14px; margin-left: -7px;
+    border-radius: 50%; background: var(--text); border: 2px solid var(--bg); }
+  .tug-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .wc-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px;
+    padding-top: 14px; border-top: 1px solid var(--line); }
+  .vk { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .vv { font-size: 15px; font-weight: 700; margin: 2px 0 1px; }
+  .vv.warn { color: var(--warn); }
+  .vs { font-size: 11px; color: var(--muted); }
+
+  /* ---------- ACT 2: Global Pulse + Material Risk Radar ---------- */
+  .pulse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .pcard { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; }
+  .pcard-hd { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; }
+  .pcard-rank { font: 800 10px var(--font-mono); color: var(--bg); background: var(--muted);
+    border-radius: 5px; padding: 1px 5px; }
+  .pcard-idx { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+  .pcard-decomp { display: flex; justify-content: space-between; gap: 4px; margin-top: 8px; font-size: 12px; }
+  .pcard-decomp div { text-align: center; flex: 1; min-width: 0; }
+  .pcard-decomp .k { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .pcard-decomp .v { font-family: var(--font-mono); font-weight: 700; }
+  .pcard-state { margin-top: 8px; }
+
+  .radar-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .radar-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .03em;
+    color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  .radar-table td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .radar-table tr:last-child td { border-bottom: 0; }
+  .radar-reason { color: var(--muted); font-size: 11.5px; }
+  .radar-odds { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+  /* ---------- ACT 3: Rotation & Turns ---------- */
+  .rot-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 560px; }
+  .rot-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .03em;
+    color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); position: sticky; top:0; background:var(--panel); }
+  .rot-table td { padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  .rot-table td.num, .rot-table th.num { text-align: right; font-family: var(--font-mono); }
+  .rot-rank { font-weight: 800; }
+  .table-scroll { overflow-x: auto; border-radius: 10px; }
+  .rrg-pill { display:inline-flex; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; color:#fff; }
+  .rrg-lag { background: var(--muted); } .rrg-weak { background: var(--orange); }
+  .rrg-lead { background: var(--up); } .rrg-improv { background: var(--info); }
+  .te-log { display: flex; flex-direction: column; gap: 8px; }
+  .te-row { display: flex; gap: 10px; font-size: 12.5px; align-items: baseline; }
+  .te-date { font-family: var(--font-mono); color: var(--muted); font-size: 11px; min-width: 76px; }
+
+  /* ---------- ACT 4: Transmission & Fragility ---------- */
+  .tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+  .tier-box { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .tier-label { font: 700 10.5px var(--font-ui); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .sender-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 8px; }
+  .sender-bar-wrap { flex: 1; height: 6px; background: var(--line); border-radius: 4px; overflow: hidden; min-width: 30px; }
+  .sender-bar { height: 100%; background: var(--warn); }
+  .channel-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .press-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 12px; flex-wrap: wrap; }
+  .press-row:last-child { border-bottom: 0; }
+  .press-name { min-width: 96px; font-weight: 600; }
+  .press-bar-wrap { flex: 1; min-width: 40px; max-width: 110px; height: 6px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .press-bar { height: 100%; background: var(--info); }
+  .press-exp { display: flex; flex-wrap: wrap; gap: 4px; }
+  .frag-row { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .frag-row:last-child { border-bottom: 0; }
+  .frag-flag { font-size: 20px; }
+  .frag-country { font-weight: 700; font-size: 13px; }
+  .frag-desc { font-size: 11.5px; color: var(--muted); }
+  .frag-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+
+  /* ---------- ACT 5: Country Inspector ---------- */
+  .insp-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .insp-tab { font: 700 12px var(--font-ui); padding: 7px 13px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--panel2); color: var(--muted); cursor: pointer; }
+  .insp-tab[aria-selected="true"] { background: var(--link); color: #fff; border-color: var(--link); }
+  .insp-panel { display: none; }
+  .insp-panel.is-active { display: block; }
+  .insp-hd { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .insp-hd .flag { font-size: 26px; }
+  .insp-hd h3 { font-size: 18px; font-weight: 800; }
+  .insp-hd .idx { font-size: 12px; color: var(--muted); }
+  .insp-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+  .insp-metric { background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; }
+  .insp-metric .k { font-size: 10px; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+  .insp-metric .v { font-family: var(--font-mono); font-size: 16px; font-weight: 800; margin-top: 2px; }
+  .insp-metric .v.small { font-size: 13px; }
+  .insp-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .kv-list { font-size: 12.5px; }
+  .kv-list .kv { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  .kv-list .kv:last-child { border-bottom: 0; }
+  .kv-list .kv b { font-family: var(--font-mono); }
+
+  /* ---------- ACT 6: Desk Posture + Deep Desks ---------- */
+  .posture-list { display: flex; flex-direction: column; gap: 8px; }
+  .posture-row { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .posture-row:last-child { border-bottom: 0; }
+  .posture-cc { font-weight: 700; min-width: 130px; }
+  .desk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .cb-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 420px; }
+  .cb-table th { text-align: left; font-size: 10px; text-transform: uppercase; color: var(--muted); padding: 5px 6px; border-bottom: 1px solid var(--line); }
+  .cb-table td { padding: 6px; border-bottom: 1px solid var(--line); }
+  .spread-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .spread-card { background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; }
+  .spread-card .lbl { font-size: 10.5px; color: var(--muted); }
+  .spread-card .val { font-family: var(--font-mono); font-size: 15px; font-weight: 800; }
+  .deep-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; font-size: 12px; }
+  .deep-links a { font-weight: 700; }
+  .null-note { font-size: 12.5px; color: var(--muted); padding: 10px 0; line-height:1.6; }
+
+  .ref-footer { margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--line);
+    font-size: 11px; color: var(--muted); line-height: 1.7; }
+
+  /* ============================================================
+     3. FORCED STATE PRESENTATIONS (doctrine §Law 12: designed states)
+     ============================================================ */
+  .state-view { display: none; }
+  body.is-loading .real-content { display: none; }
+  body.is-loading .state-loading { display: block; }
+  .state-loading .sk { background: linear-gradient(90deg, var(--panel2) 25%, var(--line) 37%, var(--panel2) 63%);
+    background-size: 400% 100%; animation: sk 1.4s ease infinite; border-radius: 8px; }
+  @keyframes sk { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+  body.is-empty .real-content { display: none; }
+  body.is-empty .state-empty { display: block; }
+  body.is-error .real-content { display: none; }
+  body.is-error .state-error { display: block; }
+  body.is-stale .stale-flag { display: flex; }
+  body:not(.is-stale) .stale-flag { display: none; }
+  .state-empty, .state-error { max-width: 640px; margin: 60px auto; text-align: center; padding: 30px 24px; }
+  .state-empty h3, .state-error h3 { font-size: 17px; margin-bottom: 8px; }
+  .state-empty p, .state-error p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .state-error { border: 1px solid color-mix(in srgb, var(--act) 40%, var(--line)); border-radius: 14px; background: var(--panel); }
+  .state-error .err-still { text-align:left; margin-top:14px; font-size:12.5px; background:var(--panel2);
+    border-radius:9px; padding:10px 12px; }
+  .retry-btn { margin-top: 14px; font: 700 12.5px var(--font-ui); padding: 8px 16px; border-radius: 8px;
+    border: 1px solid var(--link); background: transparent; color: var(--link); cursor: pointer; }
+  .stale-flag { align-items: center; gap: 8px; font-size: 12px; padding: 8px 12px; border-radius: 9px;
+    background: color-mix(in srgb, var(--warn) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--warn) 34%, var(--line));
+    margin-bottom: 14px; color: var(--text); }
+  body.is-stale .real-content { opacity: .82; }
+
+  /* ============================================================
+     4. RESPONSIVE — recompose at 390px, never page-scroll horizontally
+     ============================================================ */
+  @media (max-width: 900px) {
+    .wc { grid-template-columns: 1fr; }
+    .wc-vitals { grid-template-columns: repeat(2, 1fr); }
+    .grid2, .desk-grid, .tier-grid, .insp-row2 { grid-template-columns: 1fr; }
+    .pulse-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid3 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px), (max-width: 390px) {
+    .stage { padding: 0 10px; }
+    .pulse-grid { grid-template-columns: 1fr; }
+    .insp-metrics { grid-template-columns: repeat(2, 1fr); }
+    .wc-gauge-wrap { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .harness { flex-direction: column; align-items: stretch; }
+    .hctl-row { justify-content: flex-start; }
+    .page-head h1 { font-size: 19px; }
+    .act-h h2 { font-size: 16px; }
+    table.rot-table, table.cb-table { min-width: 0; width: max-content; }
+  }
+  .grid2 > *, .desk-grid > *, .tier-grid > *, .insp-row2 > * { min-width: 0; }
+  .table-scroll { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main"><span class="l-en">Skip to content</span><span class="l-zh">跳至主要内容</span></a>
+
+<header class="harness" role="toolbar" aria-label="Design harness controls — not product features / 设计参考控件，非产品功能">
+  <span class="harness-badge">REFERENCE FIXTURE · NOT LIVE</span>
+  <div class="hctl-row">
+    <div class="hctl-group" role="group" aria-label="Theme / 主题">
+      <button type="button" class="hctl-btn" data-action="theme" data-value="dark" aria-pressed="true">Dark</button>
+      <button type="button" class="hctl-btn" data-action="theme" data-value="light" aria-pressed="false">Light</button>
+    </div>
+    <div class="hctl-group" role="group" aria-label="Language / 语言">
+      <button type="button" class="hctl-btn" data-action="lang" data-value="en" aria-pressed="true">EN</button>
+      <button type="button" class="hctl-btn" data-action="lang" data-value="zh" aria-pressed="false">中文</button>
+    </div>
+    <div class="hctl-group" role="group" aria-label="Viewport preview / 视窗预览">
+      <button type="button" class="hctl-btn" data-action="viewport" data-value="desktop" aria-pressed="true">Desktop</button>
+      <button type="button" class="hctl-btn" data-action="viewport" data-value="mobile" aria-pressed="false">390px</button>
+    </div>
+    <div class="hctl-group" role="group" aria-label="Forced state preview / 强制状态预览">
+      <button type="button" class="hctl-btn" data-action="state" data-value="default" aria-pressed="true">Default</button>
+      <button type="button" class="hctl-btn" data-action="state" data-value="loading" aria-pressed="false">Loading</button>
+      <button type="button" class="hctl-btn" data-action="state" data-value="empty" aria-pressed="false">Empty</button>
+      <button type="button" class="hctl-btn" data-action="state" data-value="stale" aria-pressed="false">Stale</button>
+      <button type="button" class="hctl-btn" data-action="state" data-value="error" aria-pressed="false">Error</button>
+    </div>
+  </div>
+</header>
+
+<div class="stage" id="stage">
+<main id="main">
+
+  <div class="fixture-banner">
+    <b>REFERENCE FIXTURE · NOT LIVE</b>
+    <span class="l-en">Every number on this page is copied from committed site/intl.html (baked 2026-09-23) or a field scripts/build_intl.py already publishes. Design harness controls above are not product capabilities.</span>
+    <span class="l-zh">本页所有数字均取自已提交的 site/intl.html（生成于 2026-09-23）或 scripts/build_intl.py 已发布的字段。上方控件为设计参考工具，非产品功能。</span>
+  </div>
+
+  <div class="page-head">
+    <h1><span class="l-en">International Markets — vNext reference (R2)</span><span class="l-zh">国际市场 — vNext 参考稿（R2）</span></h1>
+    <p><span class="l-en">What is changing across world markets, why it matters, and what stance the accepted engines already warrant. Data as of 2026-09-23.</span><span class="l-zh">全球市场正在发生什么变化、为何重要，以及已获认可的引擎已经给出的立场。数据截至 2026-09-23。</span></p>
+  </div>
+
+  <!-- ============ FORCED STATE PRESENTATIONS ============ -->
+  <div class="state-view state-loading" aria-hidden="true">
+    <div class="panel" style="margin-top:18px">
+      <div class="sk" style="height:26px;width:40%;margin-bottom:14px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="sk" style="height:120px"></div>
+        <div class="sk" style="height:120px"></div>
+      </div>
+      <div class="sk" style="height:14px;width:70%;margin-top:16px"></div>
+      <div class="sk" style="height:14px;width:55%;margin-top:8px"></div>
+    </div>
+    <p class="muted" style="text-align:center;margin-top:14px;font-size:12px">
+      <span class="l-en">Loading — skeleton shown at true content geometry, no placeholder words.</span>
+      <span class="l-zh">加载中 — 骨架屏按真实内容尺寸呈现，不显示占位文字。</span>
+    </p>
+  </div>
+
+  <div class="state-view state-empty panel" aria-hidden="true">
+    <h3><span class="l-en">No engine reads available for this session</span><span class="l-zh">本次会话暂无引擎判读</span></h3>
+    <p><span class="l-en">The World Risk Appetite engine and the per-market turn-state engine both returned zero rows for 2026-09-23. This is a designed empty state, not a loading stall — why: the upstream close-price feed for all 10 tracked markets was withheld pending vendor confirmation. Retry once the next session's feed lands.</span>
+    <span class="l-zh">全球风险偏好引擎与各市场拐点状态引擎在 2026-09-23 均未返回数据。这是设计好的空状态，而非加载卡顿 — 原因：全部10个受监测市场的收盘价数据源因待供应商确认而被暂扣。下一交易日数据到位后可重试。</span></p>
+  </div>
+
+  <div class="state-view state-error" aria-hidden="true">
+    <h3><span class="l-en">World Risk Appetite failed to load</span><span class="l-zh">全球风险偏好加载失败</span></h3>
+    <p><span class="l-en">The engine-owned score and its coverage receipts could not be read for 2026-09-23.</span>
+    <span class="l-zh">未能读取 2026-09-23 的引擎评分及其覆盖率数据。</span></p>
+    <div class="err-still">
+      <b><span class="l-en">Still working:</span><span class="l-zh">仍可正常使用：</span></b>
+      <span class="l-en"> rotation ranks, the turn-state board, and the country inspector — all read from a separately cached feed.</span>
+      <span class="l-zh"> 轮动排名、拐点状态看板与国别透视——均读取自另一个独立缓存的数据源。</span>
+    </div>
+    <button type="button" class="retry-btn" data-action="state" data-value="default">
+      <span class="l-en">Retry</span><span class="l-zh">重试</span>
+    </button>
+  </div>
+
+  <!-- ============ REAL CONTENT ============ -->
+  <div class="real-content">
+    <div class="stale-flag">
+      <span class="l-en"><b>Stale:</b> this fixture is showing the 2026-09-23 session — no newer session has been baked.</span>
+      <span class="l-zh"><b>数据滞后：</b>本参考稿展示的是 2026-09-23 交易日的数据——尚无更新的交易日生成结果。</span>
+    </div>
+
+    <!-- ================= ACT 1 — GLOBAL CALL ================= -->
+    <section class="act" aria-labelledby="act1-h">
+      <div class="act-h">
+        <span class="act-num">1</span>
+        <h2 id="act1-h"><span class="l-en">Global Call</span><span class="l-zh">全球总判断</span></h2>
+        <span class="act-eyebrow"><span class="l-en">The engine-owned World Risk Appetite verdict and what it is weighing right now</span><span class="l-zh">引擎自有的全球风险偏好判定，以及它当下权衡的依据</span></span>
+      </div>
+      <div class="panel panel-accent wc">
+        <div>
+          <div class="eyebrow" style="font:600 10.5px var(--font-ui);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">
+            <span class="l-en">Global Macro Compass</span><span class="l-zh">全球宏观罗盘</span> · <span class="num">2026-09-23</span>
+          </div>
+          <div class="wc-gauge-wrap">
+            <div class="wc-gauge">
+              <svg viewBox="0 0 200 112" role="img" aria-label="World risk appetite 66 of 100 / 全球风险偏好 66/100">
+                <path class="wc-gauge-track" d="M 18 98 A 82 82 0 0 1 182 98" fill="none" stroke-width="12"/>
+                <path class="wc-gauge-fill" d="M 18 98 A 82 82 0 0 1 182 98" fill="none" stroke-width="12"
+                  style="--gc:var(--up);stroke-dasharray:257.6;stroke-dashoffset:87.6"/>
+                <text class="wc-gnum" x="100" y="84" text-anchor="middle" style="--gc:var(--up)">66</text>
+                <text class="wc-gnum-sub" x="100" y="102" text-anchor="middle">/ 100</text>
+              </svg>
+            </div>
+            <div>
+              <div class="wc-verdict v-up"><span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span></div>
+              <div class="wc-gauge-cap"><span class="l-en">World risk appetite</span><span class="l-zh">全球风险偏好</span></div>
+              <div class="wc-receipt">
+                <span class="l-en">Weighs 10 markets by size — the US counts most. Covers ~100% of world market value. 6/10 above their 200-day line · median 3-mo move +2.8%.</span>
+                <span class="l-zh">按市值加权覆盖10个市场（美国权重最大），约占全球市值100%。6/10 站上200日线 · 3个月中位涨跌 +2.8%。</span>
+              </div>
+              <div class="wc-substance">
+                <span class="l-en">Dragged by 🇯🇵 Japan · 🇮🇳 India · 🇪🇺 Eurozone</span>
+                <span class="l-zh">拖累：日本 · 印度 · 欧元区</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="eyebrow" style="font:600 10.5px var(--font-ui);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">
+            <span class="l-en">The world right now</span><span class="l-zh">当下全球</span>
+          </div>
+          <p class="wc-read">
+            <span class="l-en">7 economies; most read growth down, inflation up. In USD, South Korea leads (+93% 12m) and India lags (-17% 12m). US still leading the world. World risk appetite risk-on (66/100) — dragged by Japan, India.</span>
+            <span class="l-zh">7 个经济体，多数为增长走弱、通胀走高。以美元计，韩国领先（+93% 12m），印度落后（-17% 12m）。美国仍领跑全球。全球风险偏好为风险偏好（66/100）——受日本、印度拖累。</span>
+          </p>
+          <div class="tug">
+            <div class="tug-head">
+              <span><span class="l-en">US vs the World</span><span class="l-zh">美国 vs 全球</span></span>
+              <span class="num">0/7 <span class="l-en">ex-US markets ahead</span><span class="l-zh">非美市场领先</span></span>
+            </div>
+            <div class="tug-beam"><div class="tug-marker" style="--pos:0%"></div></div>
+            <div class="tug-ends">
+              <span>🇺🇸 <span class="l-en">US leads</span><span class="l-zh">美国领先</span></span>
+              <span><span class="l-en">World leads</span><span class="l-zh">全球领先</span> 🌍</span>
+            </div>
+          </div>
+        </div>
+        <div class="wc-vitals" style="grid-column:1 / -1">
+          <div>
+            <div class="vk"><span class="l-en">Dominant regime</span><span class="l-zh">主导周期</span></div>
+            <div class="vv"><span class="l-en">Growth down, inflation up</span><span class="l-zh">增长走弱、通胀走高</span></div>
+            <div class="vs">7 <span class="l-en">economies</span><span class="l-zh">经济体</span></div>
+          </div>
+          <div>
+            <div class="vk"><span class="l-en">USD leader</span><span class="l-zh">美元领涨</span></div>
+            <div class="vv">🇰🇷 KR</div>
+            <div class="vs">+93% <span class="l-en">in USD, 12m</span><span class="l-zh">美元计，12个月</span></div>
+          </div>
+          <div>
+            <div class="vk"><span class="l-en">Recession-watch</span><span class="l-zh">衰退观察</span></div>
+            <div class="vv">0</div>
+            <div class="vs"><span class="l-en">of 7 economies</span><span class="l-zh">共7个经济体</span></div>
+          </div>
+          <div>
+            <div class="vk"><span class="l-en">Avg correlation</span><span class="l-zh">平均相关性</span></div>
+            <div class="vv">0.49</div>
+            <div class="vs"><span class="l-en">cross-market, lower = safer</span><span class="l-zh">跨市场，越低越分散</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACT 2 — GLOBAL PULSE + MATERIAL RISK RADAR ================= -->
+    <section class="act" aria-labelledby="act2-h">
+      <div class="act-h">
+        <span class="act-num">2</span>
+        <h2 id="act2-h"><span class="l-en">Global Pulse + Material Risk Radar</span><span class="l-zh">全球脉搏 + 重大风险雷达</span></h2>
+        <span class="act-eyebrow"><span class="l-en">One horizon, USD + local + FX together — plus each market's own pullback-risk read</span><span class="l-zh">统一周期，美元、本币与汇率并列展示 — 附各市场自身的回撤风险读数</span></span>
+      </div>
+
+      <div class="panel">
+        <div class="sec-title"><span class="l-en">Performance in US dollars — 3 month</span><span class="l-zh">以美元计的表现 — 3个月</span></div>
+        <p class="help-tip"><span class="l-en">Every card uses the same 3-month window. local equity + currency = USD return. Rank badge is current rotation rank (fast 20-day momentum, state-gated) — not a historical position.</span>
+        <span class="l-zh">每张卡使用同一3个月周期。本币股票 + 货币 = 美元收益。角标为当前轮动排名（20日快速动能，受状态约束）——非历史排位。</span></p>
+        <div class="pulse-grid">
+          <div class="pcard">
+            <div class="pcard-hd"><span class="pcard-rank">#1</span> 🇰🇷 <span class="l-en">South Korea</span><span class="l-zh">韩国</span></div>
+            <div class="pcard-idx">KOSPI</div>
+            <div class="pcard-decomp">
+              <div><div class="k">USD</div><div class="v pos">+4.5%</div></div>
+              <div><div class="k"><span class="l-en">Local</span><span class="l-zh">本币</span></div><div class="v neg">-5.3%</div></div>
+              <div><div class="k">FX</div><div class="v pos">+9.8%</div></div>
+            </div>
+            <div class="pcard-state"><span class="chip warn"><span class="l-en">Crash damage unresolved</span><span class="l-zh">崩跌损伤未修复</span></span></div>
+          </div>
+          <div class="pcard">
+            <div class="pcard-hd"><span class="pcard-rank">#2</span> 🇹🇼 <span class="l-en">Taiwan</span><span class="l-zh">台湾</span></div>
+            <div class="pcard-idx">TAIEX</div>
+            <div class="pcard-decomp">
+              <div><div class="k">USD</div><div class="v pos">+4.2%</div></div>
+              <div><div class="k"><span class="l-en">Local</span><span class="l-zh">本币</span></div><div class="v pos">+3.4%</div></div>
+              <div><div class="k">FX</div><div class="v pos">+0.8%</div></div>
+            </div>
+            <div class="pcard-state"><span class="chip caut"><span class="l-en">Turn risk</span><span class="l-zh">拐点风险</span></span></div>
+          </div>
+          <div class="pcard">
+            <div class="pcard-hd"><span class="pcard-rank">#3</span> 🇯🇵 <span class="l-en">Japan</span><span class="l-zh">日本</span></div>
+            <div class="pcard-idx">Nikkei 225</div>
+            <div class="pcard-decomp">
+              <div><div class="k">USD</div><div class="v neg">-4.8%</div></div>
+              <div><div class="k"><span class="l-en">Local</span><span class="l-zh">本币</span></div><div class="v neg">-7.2%</div></div>
+              <div><div class="k">FX</div><div class="v pos">+2.4%</div></div>
+            </div>
+            <div class="pcard-state"><span class="chip warn"><span class="l-en">Breaking down</span><span class="l-zh">正在破位</span></span></div>
+          </div>
+          <div class="pcard">
+            <div class="pcard-hd"><span class="pcard-rank">#4</span> 🇪🇺 <span class="l-en">Eurozone</span><span class="l-zh">欧元区</span></div>
+            <div class="pcard-idx">STOXX Europe 600</div>
+            <div class="pcard-decomp">
+              <div><div class="k">USD</div><div class="v pos">+1.2%</div></div>
+              <div><div class="k"><span class="l-en">Local</span><span class="l-zh">本币</span></div><div class="v pos">+0.7%</div></div>
+              <div><div class="k">FX</div><div class="v pos">+0.5%</div></div>
+            </div>
+            <div class="pcard-state"><span class="chip caut"><span class="l-en">Turn risk</span><span class="l-zh">拐点风险</span></span></div>
+          </div>
+          <div class="pcard">
+            <div class="pcard-hd"><span class="pcard-rank">#5</span> 🇬🇧 <span class="l-en">United Kingdom</span><span class="l-zh">英国</span></div>
+            <div class="pcard-idx">FTSE 100</div>
+            <div class="pcard-decomp">
+              <div><div class="k">USD</div><div class="v pos">+1.3%</div></div>
+              <div><div class="k"><span class="l-en">Local</span><span class="l-zh">本币</span></div><div class="v pos">+2.2%</div></div>
+              <div><div class="k">FX</div><div class="v neg">-0.9%</div></div>
+            </div>
+            <div class="pcard-state"><span class="chip calm"><span class="l-en">Quiet</span><span class="l-zh">平静</span></span></div>
+          </div>
+          <div class="pcard">
+            <div class="pcard-hd"><span class="pcard-rank">#6</span> 🇮🇳 <span class="l-en">India</span><span class="l-zh">印度</span></div>
+            <div class="pcard-idx">Nifty 50</div>
+            <div class="pcard-decomp">
+              <div><div class="k">USD</div><div class="v neg">-1.9%</div></div>
+              <div><div class="k"><span class="l-en">Local</span><span class="l-zh">本币</span></div><div class="v neg">-2.6%</div></div>
+              <div><div class="k">FX</div><div class="v pos">+0.7%</div></div>
+            </div>
+            <div class="pcard-state"><span class="chip warn"><span class="l-en">Downtrend</span><span class="l-zh">下行趋势</span></span></div>
+          </div>
+          <div class="pcard">
+            <div class="pcard-hd"><span class="pcard-rank">#7</span> 🇦🇺 <span class="l-en">Australia</span><span class="l-zh">澳大利亚</span></div>
+            <div class="pcard-idx">ASX 200</div>
+            <div class="pcard-decomp">
+              <div><div class="k">USD</div><div class="v pos">+0.4%</div></div>
+              <div><div class="k"><span class="l-en">Local</span><span class="l-zh">本币</span></div><div class="v neg">-0.9%</div></div>
+              <div><div class="k">FX</div><div class="v pos">+1.2%</div></div>
+            </div>
+            <div class="pcard-state"><span class="chip caut"><span class="l-en">Turn risk</span><span class="l-zh">拐点风险</span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="sec-title"><span class="l-en">Material Risk Radar</span><span class="l-zh">重大风险雷达</span></div>
+        <p class="help-tip"><span class="l-en">Pullback-risk context, never a ranking. The dip-odds figure is this market's own ≥5% drawdown frequency within 21 trading days, disclosed against its own historical base rate and its source — never an unsourced certainty figure.</span>
+        <span class="l-zh">回撤风险背景信息，绝非排名。「回撤概率」为该市场自身21个交易日内≥5%回撤的历史频率，并同时披露其自身历史基准率与数据来源——绝非臆造的置信度数字。</span></p>
+        <div class="table-scroll">
+        <table class="radar-table">
+          <thead><tr>
+            <th><span class="l-en">Market</span><span class="l-zh">市场</span></th>
+            <th><span class="l-en">State</span><span class="l-zh">状态</span></th>
+            <th><span class="l-en">Reason shown</span><span class="l-zh">显示原因</span></th>
+            <th><span class="l-en">≥5% dip odds (21d)</span><span class="l-zh">≥5%回撤概率（21日）</span></th>
+          </tr></thead>
+          <tbody>
+            <tr><td>🇰🇷 KR</td><td><span class="chip caut"><span class="l-en">Caution</span><span class="l-zh">谨慎</span></span></td>
+              <td class="radar-reason"><span class="l-en">US rate shock — get ready to protect gains</span><span class="l-zh">美债利率冲击——准备保护收益</span></td>
+              <td class="radar-odds">~29% <span class="muted">vs ~29% <span class="l-en">base</span><span class="l-zh">基准</span></span></td></tr>
+            <tr><td>🇯🇵 JP</td><td><span class="chip"><span class="l-en">Watch</span><span class="l-zh">留意</span></span></td>
+              <td class="radar-reason"><span class="l-en">US rate shock — watch, don't chase</span><span class="l-zh">美债利率冲击——观察，勿追高</span></td>
+              <td class="radar-odds">~31% <span class="muted">vs ~31% <span class="l-en">base</span><span class="l-zh">基准</span></span></td></tr>
+            <tr><td>🇹🇼 TW</td><td><span class="chip elev"><span class="l-en">Elevated</span><span class="l-zh">偏高</span></span></td>
+              <td class="radar-reason"><span class="l-en">US rate shock — protect gains</span><span class="l-zh">美债利率冲击——保护收益</span></td>
+              <td class="radar-odds">~27% <span class="muted">vs ~27% <span class="l-en">base</span><span class="l-zh">基准</span></span></td></tr>
+            <tr><td>🇪🇺 EZ</td><td><span class="chip caut"><span class="l-en">Caution</span><span class="l-zh">谨慎</span></span></td>
+              <td class="radar-reason"><span class="l-en">US rate shock — get ready to protect gains</span><span class="l-zh">美债利率冲击——准备保护收益</span></td>
+              <td class="radar-odds">~20% <span class="muted">vs ~20% <span class="l-en">base</span><span class="l-zh">基准</span></span></td></tr>
+            <tr><td>🇬🇧 GB</td><td><span class="chip caut"><span class="l-en">Caution</span><span class="l-zh">谨慎</span></span></td>
+              <td class="radar-reason"><span class="l-en">Sterling depreciation / outflows — get ready to protect gains</span><span class="l-zh">英镑贬值／资金外流——准备保护收益</span></td>
+              <td class="radar-odds">~19% <span class="muted">vs ~19% <span class="l-en">base</span><span class="l-zh">基准</span></span></td></tr>
+            <tr><td>🇮🇳 IN</td><td><span class="chip calm"><span class="l-en">Calm</span><span class="l-zh">平静</span></span></td>
+              <td class="radar-reason"><span class="l-en">nothing to do</span><span class="l-zh">无需操作</span></td>
+              <td class="radar-odds">~18% <span class="muted">vs ~18% <span class="l-en">base</span><span class="l-zh">基准</span></span></td></tr>
+            <tr><td>🇦🇺 AU</td><td><span class="chip caut"><span class="l-en">Caution</span><span class="l-zh">谨慎</span></span></td>
+              <td class="radar-reason"><span class="l-en">US rate shock — get ready to protect gains</span><span class="l-zh">美债利率冲击——准备保护收益</span></td>
+              <td class="radar-odds">~15% <span class="muted">vs ~15% <span class="l-en">base</span><span class="l-zh">基准</span></span></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="caveat"><span class="l-en">Odds source: own history only for every row above — this radar's live record is still building. Risk tags are context, never a ranking.</span>
+        <span class="l-zh">以上各行概率来源均仅为自身历史——该雷达的实时记录仍在累积中。风险标签仅供参考，绝非排名。</span></p>
+      </div>
+    </section>
+
+    <!-- ================= ACT 3 — ROTATION & TURNS ================= -->
+    <section class="act" aria-labelledby="act3-h">
+      <div class="act-h">
+        <span class="act-num">3</span>
+        <h2 id="act3-h"><span class="l-en">Rotation & Turns</span><span class="l-zh">轮动与拐点</span></h2>
+        <span class="act-eyebrow"><span class="l-en">Current rank plus accepted rs20/rs5, state and stance — never a historical-rank column</span><span class="l-zh">当前排名加已认可的 rs20／rs5、状态与立场——绝不显示历史排名列</span></span>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <div class="sec-title"><span class="l-en">Rotation ranks</span><span class="l-zh">轮动排名</span></div>
+          <p class="help-tip"><span class="l-en">20-day fast momentum, state-governed (a topping/parabolic market is capped even with strong momentum — see note). rs20/rs5 = relative strength vs the US over 20 and 5 trading days.</span>
+          <span class="l-zh">20日快速动能，受状态约束（即便动能强劲，处于拐点／抛物线状态的市场排名也会受限——见备注）。rs20／rs5 = 相对美国20日与5日的相对强弱。</span></p>
+          <div class="table-scroll">
+          <table class="rot-table">
+            <thead><tr>
+              <th>#</th><th><span class="l-en">Market</span><span class="l-zh">市场</span></th>
+              <th class="num">rs20</th><th class="num">rs5</th>
+              <th><span class="l-en">State</span><span class="l-zh">状态</span></th>
+              <th><span class="l-en">Accepted stance</span><span class="l-zh">已认可立场</span></th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="rot-rank">1</td><td>🇰🇷 KR</td><td class="num pos">+5.03</td><td class="num pos">+5.20</td>
+                <td><span class="chip warn"><span class="l-en">Crash</span><span class="l-zh">崩跌</span></span></td>
+                <td><span class="l-en">Risk remains high — wait for repair</span><span class="l-zh">风险仍高 — 等待修复确认</span>
+                  <div class="muted" style="font-size:10.5px"><span class="l-en">held back — crash in progress</span><span class="l-zh">受压制 — 崩跌进行中</span></div></td></tr>
+              <tr><td class="rot-rank">2</td><td>🇹🇼 TW</td><td class="num pos">+6.87</td><td class="num pos">+4.19</td>
+                <td><span class="chip caut"><span class="l-en">Turn risk</span><span class="l-zh">拐点风险</span></span></td>
+                <td><span class="l-en">Early breakdown signs — tighten stops</span><span class="l-zh">出现早期破位迹象 — 收紧止损</span>
+                  <div class="muted" style="font-size:10.5px"><span class="l-en">overheated — rank capped</span><span class="l-zh">过热 — 排名受限</span></div></td></tr>
+              <tr><td class="rot-rank">3</td><td>🇯🇵 JP</td><td class="num neg">-1.93</td><td class="num pos">+1.66</td>
+                <td><span class="chip warn"><span class="l-en">Breaking</span><span class="l-zh">破位</span></span></td>
+                <td><span class="l-en">Reduce risk now</span><span class="l-zh">立即降低风险</span>
+                  <div class="muted" style="font-size:10.5px"><span class="l-en">held back — breaking down</span><span class="l-zh">受压制 — 正在破位</span></div></td></tr>
+              <tr><td class="rot-rank">4</td><td>🇪🇺 EZ</td><td class="num neg">-2.77</td><td class="num neg">-0.58</td>
+                <td><span class="chip caut"><span class="l-en">Turn risk</span><span class="l-zh">拐点风险</span></span></td>
+                <td><span class="l-en">Early breakdown signs — tighten stops</span><span class="l-zh">出现早期破位迹象 — 收紧止损</span>
+                  <div class="muted" style="font-size:10.5px"><span class="l-en">held back — turn risk</span><span class="l-zh">受压制 — 拐点风险</span></div></td></tr>
+              <tr><td class="rot-rank">5</td><td>🇬🇧 GB</td><td class="num neg">-1.45</td><td class="num neg">-1.14</td>
+                <td><span class="chip calm"><span class="l-en">Quiet</span><span class="l-zh">平静</span></span></td>
+                <td><span class="l-en">Nothing to do</span><span class="l-zh">无需操作</span></td></tr>
+              <tr><td class="rot-rank">6</td><td>🇮🇳 IN</td><td class="num neg">-3.69</td><td class="num neg">-0.14</td>
+                <td><span class="chip warn"><span class="l-en">Downtrend</span><span class="l-zh">下行趋势</span></span></td>
+                <td><span class="l-en">Stand aside</span><span class="l-zh">观望</span>
+                  <div class="muted" style="font-size:10.5px"><span class="l-en">held back — downtrend</span><span class="l-zh">受压制 — 下行趋势</span></div></td></tr>
+              <tr><td class="rot-rank">7</td><td>🇦🇺 AU</td><td class="num neg">-4.35</td><td class="num neg">-0.48</td>
+                <td><span class="chip caut"><span class="l-en">Turn risk</span><span class="l-zh">拐点风险</span></span></td>
+                <td><span class="l-en">Early breakdown signs — tighten stops</span><span class="l-zh">出现早期破位迹象 — 收紧止损</span>
+                  <div class="muted" style="font-size:10.5px"><span class="l-en">held back — turn risk</span><span class="l-zh">受压制 — 拐点风险</span></div></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="caveat"><span class="l-en">Turn state and the RRG quadrant table (right) are separate vocabularies — a market's turn state never determines its quadrant label, and the two are never merged into one column.</span>
+          <span class="l-zh">拐点状态与右侧RRG象限表是两套独立词汇——市场的拐点状态从不决定其象限标签，二者也从不合并为同一列。</span></p>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="sec-title"><span class="l-en">US-vs-world quadrant (RRG)</span><span class="l-zh">美国对比全球象限（RRG）</span></div>
+            <p class="help-tip"><span class="l-en">Relative strength vs the S&P 500. Positive = beat the US. A separate vocabulary from turn state above — leading/improving/weakening/lagging, never crash/breaking/topping.</span>
+            <span class="l-zh">相对标普500的相对强弱。正值 = 跑赢美国。与上方拐点状态是独立词汇——领先／改善／走弱／落后，绝非崩跌／破位／拐点。</span></p>
+            <div class="table-scroll">
+            <table class="rot-table">
+              <thead><tr><th><span class="l-en">Market</span><span class="l-zh">市场</span></th><th><span class="l-en">Quadrant</span><span class="l-zh">象限</span></th>
+                <th class="num">3m</th><th class="num">6m</th><th class="num">12m</th></tr></thead>
+              <tbody>
+                <tr><td>🇹🇼 TW</td><td><span class="rrg-pill rrg-weak"><span class="l-en">Weakening</span><span class="l-zh">走弱</span></span></td><td class="num neg">-2.3%</td><td class="num pos">+27.0%</td><td class="num pos">+54.7%</td></tr>
+                <tr><td>🇰🇷 KR</td><td><span class="rrg-pill rrg-weak"><span class="l-en">Weakening</span><span class="l-zh">走弱</span></span></td><td class="num neg">-6.9%</td><td class="num pos">+23.3%</td><td class="num pos">+80.7%</td></tr>
+                <tr><td>🇯🇵 JP</td><td><span class="rrg-pill rrg-weak"><span class="l-en">Weakening</span><span class="l-zh">走弱</span></span></td><td class="num neg">-8.8%</td><td class="num pos">+8.8%</td><td class="num pos">+17.0%</td></tr>
+                <tr><td>🇬🇧 GB</td><td><span class="rrg-pill rrg-lag"><span class="l-en">Lagging</span><span class="l-zh">落后</span></span></td><td class="num neg">-1.6%</td><td class="num neg">-8.0%</td><td class="num neg">-1.6%</td></tr>
+                <tr><td>🇪🇺 EZ</td><td><span class="rrg-pill rrg-lag"><span class="l-en">Lagging</span><span class="l-zh">落后</span></span></td><td class="num neg">-3.6%</td><td class="num neg">-6.3%</td><td class="num neg">-3.2%</td></tr>
+                <tr><td>🇦🇺 AU</td><td><span class="rrg-pill rrg-lag"><span class="l-en">Lagging</span><span class="l-zh">落后</span></span></td><td class="num neg">-3.7%</td><td class="num neg">-9.8%</td><td class="num neg">-7.8%</td></tr>
+                <tr><td>🇮🇳 IN</td><td><span class="rrg-pill rrg-lag"><span class="l-en">Lagging</span><span class="l-zh">落后</span></span></td><td class="num neg">-6.9%</td><td class="num neg">-12.7%</td><td class="num neg">-26.2%</td></tr>
+              </tbody>
+            </table>
+            </div>
+            <p class="caveat"><span class="l-en">0/7 ex-US markets ahead of the US on this read — "US still leading the world."</span>
+            <span class="l-zh">按此读数，7个非美市场中0个跑赢美国——"美国仍领跑全球"。</span></p>
+          </div>
+
+          <div class="panel">
+            <div class="sec-title"><span class="l-en">What changed</span><span class="l-zh">近期变化</span></div>
+            <div class="te-log">
+              <div class="te-row"><span class="te-date">2026-09-23</span><span>🇪🇺</span>
+                <span><b><span class="l-en">Eurozone</span><span class="l-zh">欧元区</span></b> — <span class="l-en">Momentum turned up</span><span class="l-zh">动能转强</span></span></div>
+              <div class="te-row"><span class="te-date">2026-09-23</span><span>🇪🇺</span>
+                <span><b><span class="l-en">Eurozone</span><span class="l-zh">欧元区</span></b> — <span class="l-en">Lost its 20-day average</span><span class="l-zh">跌破20日均线</span></span></div>
+              <div class="te-row"><span class="te-date">2026-09-23</span><span>🇪🇺</span>
+                <span><b><span class="l-en">Eurozone</span><span class="l-zh">欧元区</span></b> — <span class="l-en">State changed: Quiet → Turn risk</span><span class="l-zh">状态变化：平静 → 拐点风险</span></span></div>
+              <div class="te-row"><span class="te-date">2026-09-22</span><span>🇪🇺</span>
+                <span><b><span class="l-en">Eurozone</span><span class="l-zh">欧元区</span></b> — <span class="l-en">Reclaimed its 20-day average</span><span class="l-zh">收复20日均线</span></span></div>
+              <div class="te-row"><span class="te-date">2026-09-22</span><span>🇪🇺</span>
+                <span><b><span class="l-en">Eurozone</span><span class="l-zh">欧元区</span></b> — <span class="l-en">State changed: Turn risk → Quiet</span><span class="l-zh">状态变化：拐点风险 → 平静</span></span></div>
+              <div class="te-row"><span class="te-date">2026-09-22</span><span>🇨🇳</span>
+                <span><b><span class="l-en">China</span><span class="l-zh">中国</span></b> — <span class="l-en">Momentum turned up</span><span class="l-zh">动能转强</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACT 4 — TRANSMISSION & FRAGILITY ================= -->
+    <section class="act" aria-labelledby="act4-h">
+      <div class="act-h">
+        <span class="act-num">4</span>
+        <h2 id="act4-h"><span class="l-en">Transmission & Fragility</span><span class="l-zh">传导与脆弱性</span></h2>
+        <span class="act-eyebrow"><span class="l-en">Conditional, non-causal language — fast market stress vs slow structural vulnerability</span><span class="l-zh">条件性、非因果语言 — 快速市场压力与缓慢结构性脆弱因素</span></span>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <div class="sec-title"><span class="l-en">Contagion board</span><span class="l-zh">传导看板</span></div>
+          <p class="help-tip"><span class="l-en">Score (0-100) measures how far a shock in one market is observed travelling to others over a rolling 150-day window — a transmission read, not a causal share.</span>
+          <span class="l-zh">得分（0-100）衡量某市场冲击在150日滚动窗口内被观测到向其他市场传导的程度——是传导读数，非因果占比。</span></p>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="font:800 34px var(--font-mono);color:var(--warn)">81<span style="font-size:13px;color:var(--muted);font-family:var(--font-ui)"> / 100</span></div>
+            <div style="font-size:12.5px;color:var(--muted)"><span class="l-en">Above 80: stress in any market can quickly reach others.</span><span class="l-zh">超过80：任意市场的压力可快速蔓延。</span></div>
+          </div>
+          <div class="tier-grid">
+            <div class="tier-box">
+              <div class="tier-label"><span class="l-en">Tier 1 · Top shock senders</span><span class="l-zh">第一层 · 主要冲击输出方</span></div>
+              <div class="sender-row">#1 🇦🇺 <span class="l-en">Australia</span><span class="l-zh">澳大利亚</span><div class="sender-bar-wrap"><div class="sender-bar" style="width:100%"></div></div></div>
+              <div class="sender-row">#2 🇩🇪 <span class="l-en">Germany</span><span class="l-zh">德国</span><div class="sender-bar-wrap"><div class="sender-bar" style="width:95%"></div></div></div>
+              <div class="sender-row">#3 🇨🇦 <span class="l-en">Canada</span><span class="l-zh">加拿大</span><div class="sender-bar-wrap"><div class="sender-bar" style="width:90%"></div></div></div>
+              <p class="caveat"><span class="l-en">150-day rolling window; own-market moves excluded. Rank and bar carry the read — no raw spillover unit printed at rest.</span><span class="l-zh">150日滚动窗口，已剔除自身市场波动。排名与柱状图承载读数——静态展示时不打印原始溢出单位。</span></p>
+            </div>
+            <div class="tier-box">
+              <div class="tier-label"><span class="l-en">Tier 2 · US transmission</span><span class="l-zh">第二层 · 美国传导</span></div>
+              <div style="font:800 26px var(--font-mono);margin-top:4px">82.5%</div>
+              <div class="sub"><span class="l-en">US receiving share — what fraction of global shock variance is associated with the US index. This is a transmission read, not a statement of cause.</span>
+              <span class="l-zh">美国接收份额——全球冲击方差中与美国指数相关联的比例。这是传导读数，并非因果陈述。</span></div>
+              <div class="channel-list">
+                <span class="chip"><span class="l-en">US credit spreads</span><span class="l-zh">美国信用利差</span></span>
+                <span class="chip"><span class="l-en">Bank shares</span><span class="l-zh">银行股</span></span>
+                <span class="chip"><span class="l-en">Bond-market volatility</span><span class="l-zh">债市波动</span></span>
+                <span class="chip"><span class="l-en">Money-market plumbing</span><span class="l-zh">货币市场管道</span></span>
+                <span class="chip"><span class="l-en">Dollar safety bid</span><span class="l-zh">美元避险需求</span></span>
+              </div>
+              <p class="caveat"><span class="l-en">5 channels monitored, observed with the receiving share above — never read as a causal chain.</span><span class="l-zh">共监测5个渠道，与上方接收份额一并观测——绝不作因果链解读。</span></p>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <div class="sec-title" style="margin-bottom:6px"><span class="l-en">Where crash pressure is observed flowing</span><span class="l-zh">观测到的冲击压力流向</span></div>
+            <div class="press-row">
+              <span class="press-name">🇬🇧 <span class="l-en">United Kingdom</span><span class="l-zh">英国</span></span>
+              <span class="chip ok"><span class="l-en">Low</span><span class="l-zh">低</span></span>
+              <div class="press-bar-wrap"><div class="press-bar" style="width:61%"></div></div>
+              <span class="press-exp">
+                <span class="chip">🇦🇺 15%</span><span class="chip">🇪🇺 16%</span><span class="chip">🇯🇵 15%</span>
+              </span>
+            </div>
+            <div class="press-row">
+              <span class="press-name">🇮🇳 <span class="l-en">India</span><span class="l-zh">印度</span></span>
+              <span class="chip ok"><span class="l-en">Low</span><span class="l-zh">低</span></span>
+              <div class="press-bar-wrap"><div class="press-bar" style="width:58%"></div></div>
+              <span class="press-exp">
+                <span class="chip">🇦🇺 14%</span><span class="chip">🇬🇧 15%</span><span class="chip">🇯🇵 11%</span>
+              </span>
+            </div>
+            <div class="press-row">
+              <span class="press-name">🇺🇸 <span class="l-en">United States</span><span class="l-zh">美国</span></span>
+              <span class="chip ok"><span class="l-en">Low</span><span class="l-zh">低</span></span>
+              <div class="press-bar-wrap"><div class="press-bar" style="width:57%"></div></div>
+              <span class="press-exp"><span class="chip">🇦🇺 12%</span></span>
+            </div>
+            <p class="caveat"><span class="l-en">Measured from trade/financial/supply-chain linkages combined with who is actually falling. Display only — not a signal to trade, and never a causal claim.</span>
+            <span class="l-zh">由贸易、金融与供应链联系结合实际下跌方共同衡量。仅作展示，非交易信号，也绝非因果论断。</span></p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="sec-title"><span class="l-en">Fragility map</span><span class="l-zh">脆弱性地图</span></div>
+          <p class="help-tip"><span class="l-en">Threshold: debt-to-GDP above 70% and rising, fiscal deficit below −5% of GDP, or current-account deficit below −3% of GDP. Source: IMF WEO 2025. Cadence: annual — updates only with IMF WEO releases. Berg &amp; Pattillo (1999) criterion, adapted. Base rate: a flag means vulnerabilities exist, not that a crisis is imminent — most historically flagged countries did not experience one.</span>
+          <span class="l-zh">阈值：债务/GDP超过70%且上升、财政赤字低于GDP的−5%，或经常账户赤字低于GDP的−3%。来源：IMF WEO 2025。更新频率：年度——仅随IMF WEO发布更新。改编自 Berg &amp; Pattillo（1999）标准。基准率：有标记代表脆弱性存在，不代表危机即将发生——历史上大多数预警国家并未发生危机。</span></p>
+          <div class="frag-row">
+            <span class="frag-flag">🇬🇧</span>
+            <div>
+              <div class="frag-country"><span class="l-en">United Kingdom</span><span class="l-zh">英国</span></div>
+              <span class="frag-desc"><span class="l-en">3 of 4 structural warnings concurrent</span><span class="l-zh">4项结构性预警中3项并发</span></span>
+              <div class="frag-tags">
+                <span class="chip warn"><span class="l-en">Debt 102% of GDP &amp; rising</span><span class="l-zh">债务占GDP 102% 且上升</span></span>
+                <span class="chip warn"><span class="l-en">Current account -3.1% of GDP</span><span class="l-zh">经常账户 -3.1% GDP</span></span>
+                <span class="chip warn"><span class="l-en">Fiscal balance -5.4% of GDP</span><span class="l-zh">财政余额 -5.4% GDP</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="frag-row">
+            <span class="frag-flag">🇺🇸</span>
+            <div>
+              <div class="frag-country"><span class="l-en">United States</span><span class="l-zh">美国</span></div>
+              <span class="frag-desc"><span class="l-en">3 of 4 structural warnings concurrent</span><span class="l-zh">4项结构性预警中3项并发</span></span>
+              <div class="frag-tags">
+                <span class="chip warn"><span class="l-en">Debt 124% of GDP &amp; rising</span><span class="l-zh">债务占GDP 124% 且上升</span></span>
+                <span class="chip warn"><span class="l-en">Current account -3.6% of GDP</span><span class="l-zh">经常账户 -3.6% GDP</span></span>
+                <span class="chip warn"><span class="l-en">Fiscal balance -6.8% of GDP</span><span class="l-zh">财政余额 -6.8% GDP</span></span>
+              </div>
+            </div>
+          </div>
+          <p class="null-note"><span class="l-en"><b>Honest null:</b> the other 5 tracked economies (Japan, South Korea, Taiwan, India, Eurozone) show no concurrent structural warning under this criterion in the 2025 WEO vintage — absence is disclosed, not hidden.</span>
+          <span class="l-zh"><b>诚实缺失说明：</b>其余5个受监测经济体（日本、韩国、台湾、印度、欧元区）在2025年WEO版本下未出现并发结构性预警——缺失予以披露，而非隐藏。</span></p>
+          <p class="caveat"><span class="l-en">Slow-moving fundamentals — flags fragility, not timing. Data as of IMF WEO 2025 (where available).</span>
+          <span class="l-zh">缓慢变化的基本面指标——揭示脆弱性，非择时信号。数据来源：IMF WEO 2025（可用时）。</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACT 5 — COUNTRY INSPECTOR ================= -->
+    <section class="act" aria-labelledby="act5-h">
+      <div class="act-h">
+        <span class="act-num">5</span>
+        <h2 id="act5-h"><span class="l-en">Country Inspector</span><span class="l-zh">国别透视</span></h2>
+        <span class="act-eyebrow"><span class="l-en">Open one market deep without forcing every diagnostic onto the page</span><span class="l-zh">可深入查看单一市场，而无需将全部诊断信息都塞进页面</span></span>
+      </div>
+      <div class="panel">
+        <div class="insp-tabs" role="tablist" aria-label="Select market / 选择市场">
+          <button type="button" class="insp-tab" role="tab" id="tab-kr" aria-controls="panel-kr" aria-selected="true" data-tab="kr">🇰🇷 <span class="l-en">South Korea</span><span class="l-zh">韩国</span></button>
+          <button type="button" class="insp-tab" role="tab" id="tab-jp" aria-controls="panel-jp" aria-selected="false" data-tab="jp" tabindex="-1">🇯🇵 <span class="l-en">Japan</span><span class="l-zh">日本</span></button>
+          <button type="button" class="insp-tab" role="tab" id="tab-gb" aria-controls="panel-gb" aria-selected="false" data-tab="gb" tabindex="-1">🇬🇧 <span class="l-en">United Kingdom</span><span class="l-zh">英国</span></button>
+        </div>
+
+        <div class="insp-panel is-active" id="panel-kr" role="tabpanel" aria-labelledby="tab-kr">
+          <div class="insp-hd">
+            <span class="flag">🇰🇷</span>
+            <div><h3><span class="l-en">South Korea</span><span class="l-zh">韩国</span></h3>
+              <div class="idx">KOSPI · <span class="chip warn"><span class="l-en">Crash damage unresolved</span><span class="l-zh">崩跌损伤未修复</span></span></div></div>
+          </div>
+          <div class="insp-metrics">
+            <div class="insp-metric"><div class="k"><span class="l-en">Rotation rank</span><span class="l-zh">轮动排名</span></div><div class="v">#1</div></div>
+            <div class="insp-metric"><div class="k">rs20 / rs5</div><div class="v small pos">+5.03 / +5.20</div></div>
+            <div class="insp-metric"><div class="k">3m <span class="l-en">USD return</span><span class="l-zh">美元收益</span></div><div class="v pos">+4.5%</div></div>
+            <div class="insp-metric"><div class="k">12m <span class="l-en">USD return</span><span class="l-zh">美元收益</span></div><div class="v pos">+93.1%</div></div>
+          </div>
+          <div class="insp-row2">
+            <div class="kv-list">
+              <div class="sec-title" style="font-size:12.5px"><span class="l-en">Accepted stance</span><span class="l-zh">已认可立场</span></div>
+              <div class="kv"><span><span class="l-en">Stance</span><span class="l-zh">立场</span></span><b><span class="l-en">Risk remains high — wait for repair</span><span class="l-zh">风险仍高 — 等待修复确认</span></b></div>
+              <div class="kv"><span><span class="l-en">Rotation note</span><span class="l-zh">轮动备注</span></span><b><span class="l-en">held back — crash in progress</span><span class="l-zh">受压制 — 崩跌进行中</span></b></div>
+              <div class="kv"><span><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span></span><b><span class="chip caut"><span class="l-en">Caution</span><span class="l-zh">谨慎</span></span></b></div>
+              <div class="kv"><span><span class="l-en">Reason shown</span><span class="l-zh">显示原因</span></span><b style="font-weight:600"><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></b></div>
+              <div class="kv"><span><span class="l-en">≥5% dip odds (21d)</span><span class="l-zh">≥5%回撤概率（21日）</span></span><b>~29% <span class="muted">vs ~29%</span></b></div>
+            </div>
+            <div class="kv-list">
+              <div class="sec-title" style="font-size:12.5px"><span class="l-en">Macro comparison row</span><span class="l-zh">宏观对比行</span></div>
+              <div class="kv"><span><span class="l-en">Regime</span><span class="l-zh">周期</span></span><b><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span> (h 0.04)</b></div>
+              <div class="kv"><span><span class="l-en">Policy rate</span><span class="l-zh">政策利率</span></span><b>2.97%</b></div>
+              <div class="kv"><span>10y</span><b>4.29%</b></div>
+              <div class="kv"><span><span class="l-en">Curve 10y−3m</span><span class="l-zh">曲线 10年−3月</span></span><b>1.32</b></div>
+              <div class="kv"><span><span class="l-en">Real 10y</span><span class="l-zh">实际10年</span></span><b>0.79</b></div>
+              <div class="kv"><span>CPI <span class="muted" style="font-size:10px">(2025-04)</span></span><b>2.0%</b></div>
+              <div class="kv"><span>GDP</span><b>3.8%</b></div>
+              <div class="kv"><span><span class="l-en">Unemployment</span><span class="l-zh">失业率</span></span><b>2.8%</b></div>
+              <div class="kv"><span><span class="l-en">FX 3m</span><span class="l-zh">汇率3月</span></span><b class="pos">+8.2%</b></div>
+              <div class="kv"><span><span class="l-en">Off high</span><span class="l-zh">距高点</span></span><b class="neg">-22.3%</b></div>
+              <div class="kv"><span><span class="l-en">Equity stretch</span><span class="l-zh">股市拉伸度</span></span><b>36/100</b></div>
+            </div>
+          </div>
+          <p class="caveat"><span class="l-en">Bank of Korea is not in this session's central bank desk sample (Act 6 shows 4 of 7 tracked banks) — honest gap, not hidden.</span>
+          <span class="l-zh">韩国央行未纳入本次央行动态台样本（第六幕展示7家受监测央行中的4家）——诚实披露缺失，而非隐藏。</span></p>
+        </div>
+
+        <div class="insp-panel" id="panel-jp" role="tabpanel" aria-labelledby="tab-jp" hidden>
+          <div class="insp-hd">
+            <span class="flag">🇯🇵</span>
+            <div><h3><span class="l-en">Japan</span><span class="l-zh">日本</span></h3>
+              <div class="idx">Nikkei 225 · <span class="chip warn"><span class="l-en">Breaking down</span><span class="l-zh">正在破位</span></span></div></div>
+          </div>
+          <div class="insp-metrics">
+            <div class="insp-metric"><div class="k"><span class="l-en">Rotation rank</span><span class="l-zh">轮动排名</span></div><div class="v">#3</div></div>
+            <div class="insp-metric"><div class="k">rs20 / rs5</div><div class="v small"><span class="neg">-1.93</span> / <span class="pos">+1.66</span></div></div>
+            <div class="insp-metric"><div class="k">3m <span class="l-en">USD return</span><span class="l-zh">美元收益</span></div><div class="v neg">-4.8%</div></div>
+            <div class="insp-metric"><div class="k">12m <span class="l-en">USD return</span><span class="l-zh">美元收益</span></div><div class="v pos">+30.2%</div></div>
+          </div>
+          <div class="insp-row2">
+            <div class="kv-list">
+              <div class="sec-title" style="font-size:12.5px"><span class="l-en">Accepted stance</span><span class="l-zh">已认可立场</span></div>
+              <div class="kv"><span><span class="l-en">Stance</span><span class="l-zh">立场</span></span><b><span class="l-en">Reduce risk now</span><span class="l-zh">立即降低风险</span></b></div>
+              <div class="kv"><span><span class="l-en">Rotation note</span><span class="l-zh">轮动备注</span></span><b><span class="l-en">held back — breaking down</span><span class="l-zh">受压制 — 正在破位</span></b></div>
+              <div class="kv"><span><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span></span><b><span class="chip"><span class="l-en">Watch</span><span class="l-zh">留意</span></span></b></div>
+              <div class="kv"><span><span class="l-en">Reason shown</span><span class="l-zh">显示原因</span></span><b style="font-weight:600"><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></b></div>
+              <div class="kv"><span><span class="l-en">≥5% dip odds (21d)</span><span class="l-zh">≥5%回撤概率（21日）</span></span><b>~31% <span class="muted">vs ~31%</span></b></div>
+            </div>
+            <div class="kv-list">
+              <div class="sec-title" style="font-size:12.5px"><span class="l-en">Macro comparison row</span><span class="l-zh">宏观对比行</span></div>
+              <div class="kv"><span><span class="l-en">Regime</span><span class="l-zh">周期</span></span><b><span class="l-en">Reflation</span><span class="l-zh">再通胀</span> (h 0.46)</b></div>
+              <div class="kv"><span><span class="l-en">Policy rate</span><span class="l-zh">政策利率</span></span><b>1.46%</b></div>
+              <div class="kv"><span>10y</span><b>2.94%</b></div>
+              <div class="kv"><span><span class="l-en">Curve 10y−3m</span><span class="l-zh">曲线 10年−3月</span></span><b>1.48</b></div>
+              <div class="kv"><span><span class="l-en">Real 10y</span><span class="l-zh">实际10年</span></span><b class="muted">—</b></div>
+              <div class="kv"><span>CPI <span class="muted" style="font-size:10px">(2021-06)</span></span><b class="neg">-0.5%</b></div>
+              <div class="kv"><span>GDP</span><b>0.7%</b></div>
+              <div class="kv"><span><span class="l-en">Unemployment</span><span class="l-zh">失业率</span></span><b>2.4%</b></div>
+              <div class="kv"><span><span class="l-en">FX 3m</span><span class="l-zh">汇率3月</span></span><b class="pos">+4.4%</b></div>
+              <div class="kv"><span><span class="l-en">Off high</span><span class="l-zh">距高点</span></span><b class="neg">-10.2%</b></div>
+              <div class="kv"><span><span class="l-en">Equity stretch</span><span class="l-zh">股市拉伸度</span></span><b>14/100</b></div>
+            </div>
+          </div>
+          <p class="caveat"><span class="l-en">Bank of Japan: 0.98%, raising, draining balance sheet, next meeting 10-30 (37d) — see the compact central bank desk in Act 6.</span>
+          <span class="l-zh">日本银行：0.98%，加息，缩表，下次会议10-30（37天后）——详见第六幕的央行动态台精简版。</span></p>
+        </div>
+
+        <div class="insp-panel" id="panel-gb" role="tabpanel" aria-labelledby="tab-gb" hidden>
+          <div class="insp-hd">
+            <span class="flag">🇬🇧</span>
+            <div><h3><span class="l-en">United Kingdom</span><span class="l-zh">英国</span></h3>
+              <div class="idx">FTSE 100 · <span class="chip calm"><span class="l-en">Quiet</span><span class="l-zh">平静</span></span></div></div>
+          </div>
+          <div class="insp-metrics">
+            <div class="insp-metric"><div class="k"><span class="l-en">Rotation rank</span><span class="l-zh">轮动排名</span></div><div class="v">#5</div></div>
+            <div class="insp-metric"><div class="k">rs20 / rs5</div><div class="v small neg">-1.45 / -1.14</div></div>
+            <div class="insp-metric"><div class="k">3m <span class="l-en">USD return</span><span class="l-zh">美元收益</span></div><div class="v pos">+1.3%</div></div>
+            <div class="insp-metric"><div class="k">12m <span class="l-en">USD return</span><span class="l-zh">美元收益</span></div><div class="v pos">+12.6%</div></div>
+          </div>
+          <div class="insp-row2">
+            <div class="kv-list">
+              <div class="sec-title" style="font-size:12.5px"><span class="l-en">Accepted stance</span><span class="l-zh">已认可立场</span></div>
+              <div class="kv"><span><span class="l-en">Stance</span><span class="l-zh">立场</span></span><b><span class="l-en">Nothing to do</span><span class="l-zh">无需操作</span></b></div>
+              <div class="kv"><span><span class="l-en">Rotation note</span><span class="l-zh">轮动备注</span></span><b class="muted">—</b></div>
+              <div class="kv"><span><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span></span><b><span class="chip caut"><span class="l-en">Caution</span><span class="l-zh">谨慎</span></span></b></div>
+              <div class="kv"><span><span class="l-en">Reason shown</span><span class="l-zh">显示原因</span></span><b style="font-weight:600"><span class="l-en">Sterling depreciation / outflows</span><span class="l-zh">英镑贬值／资金外流</span></b></div>
+              <div class="kv"><span><span class="l-en">≥5% dip odds (21d)</span><span class="l-zh">≥5%回撤概率（21日）</span></span><b>~19% <span class="muted">vs ~19%</span></b></div>
+            </div>
+            <div class="kv-list">
+              <div class="sec-title" style="font-size:12.5px"><span class="l-en">Macro comparison row</span><span class="l-zh">宏观对比行</span></div>
+              <div class="kv"><span><span class="l-en">Regime</span><span class="l-zh">周期</span></span><b><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span> (h 0.30)</b></div>
+              <div class="kv"><span><span class="l-en">Policy rate</span><span class="l-zh">政策利率</span></span><b>3.71%</b></div>
+              <div class="kv"><span>10y</span><b>4.99%</b></div>
+              <div class="kv"><span><span class="l-en">Curve 10y−3m</span><span class="l-zh">曲线 10年−3月</span></span><b>1.23</b></div>
+              <div class="kv"><span><span class="l-en">Real 10y</span><span class="l-zh">实际10年</span></span><b>1.12</b></div>
+              <div class="kv"><span>CPI <span class="muted" style="font-size:10px">(2025-03)</span></span><b>3.4%</b></div>
+              <div class="kv"><span>GDP</span><b>1.2%</b></div>
+              <div class="kv"><span><span class="l-en">Unemployment</span><span class="l-zh">失业率</span></span><b>4.9%</b></div>
+              <div class="kv"><span><span class="l-en">FX 3m</span><span class="l-zh">汇率3月</span></span><b class="neg">-1.9%</b></div>
+              <div class="kv"><span><span class="l-en">Off high</span><span class="l-zh">距高点</span></span><b class="neg">-1.9%</b></div>
+              <div class="kv"><span><span class="l-en">Equity stretch</span><span class="l-zh">股市拉伸度</span></span><b>4/100</b></div>
+            </div>
+          </div>
+          <p class="caveat"><span class="l-en">Bank of England: 3.71%, cutting, next meeting 11-05 (43d) — balance-sheet data is an honest null (available for Fed/ECB/BoJ only).</span>
+          <span class="l-zh">英格兰银行：3.71%，降息，下次会议11-05（43天后）——资产负债表数据为诚实缺失（仅覆盖美联储、欧央行、日本银行）。</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACT 6 — DESK POSTURE + DEEP DESKS ================= -->
+    <section class="act" aria-labelledby="act6-h">
+      <div class="act-h">
+        <span class="act-num">6</span>
+        <h2 id="act6-h"><span class="l-en">Desk Posture + Deep Desks</span><span class="l-zh">台面姿态与深度看台</span></h2>
+        <span class="act-eyebrow"><span class="l-en">Stance is a projection of existing fields only — and every remaining job stays reachable</span><span class="l-zh">立场仅为既有字段的投影 — 且其余全部任务均可继续访问</span></span>
+      </div>
+
+      <div class="panel">
+        <div class="sec-title"><span class="l-en">Desk posture — from accepted stances only</span><span class="l-zh">台面姿态 — 仅来自已认可立场</span></div>
+        <p class="help-tip"><span class="l-en">This list restates the stance field already shown per market above. It never originates, sizes or recommends a trade, and carries no OWN/AVOID/HEDGE verb that the engine did not publish.</span>
+        <span class="l-zh">本列表仅重述上文各市场已展示的立场字段。绝不主动生成、量化或推荐交易，也不带有引擎未发布的"持有／回避／对冲"等动词。</span></p>
+        <div class="posture-list">
+          <div class="posture-row"><span class="posture-cc">🇰🇷 <span class="l-en">South Korea</span><span class="l-zh">韩国</span></span><span><span class="l-en">Risk remains high — wait for repair</span><span class="l-zh">风险仍高 — 等待修复确认</span></span></div>
+          <div class="posture-row"><span class="posture-cc">🇯🇵 <span class="l-en">Japan</span><span class="l-zh">日本</span></span><span><span class="l-en">Reduce risk now</span><span class="l-zh">立即降低风险</span></span></div>
+          <div class="posture-row"><span class="posture-cc">🇹🇼 <span class="l-en">Taiwan</span><span class="l-zh">台湾</span></span><span><span class="l-en">Early breakdown signs — tighten stops</span><span class="l-zh">出现早期破位迹象 — 收紧止损</span></span></div>
+          <div class="posture-row"><span class="posture-cc">🇪🇺 <span class="l-en">Eurozone</span><span class="l-zh">欧元区</span></span><span><span class="l-en">Early breakdown signs — tighten stops</span><span class="l-zh">出现早期破位迹象 — 收紧止损</span></span></div>
+          <div class="posture-row"><span class="posture-cc">🇬🇧 <span class="l-en">United Kingdom</span><span class="l-zh">英国</span></span><span><span class="l-en">Nothing to do</span><span class="l-zh">无需操作</span></span></div>
+          <div class="posture-row"><span class="posture-cc">🇮🇳 <span class="l-en">India</span><span class="l-zh">印度</span></span><span><span class="l-en">Stand aside</span><span class="l-zh">观望</span></span></div>
+          <div class="posture-row"><span class="posture-cc">🇦🇺 <span class="l-en">Australia</span><span class="l-zh">澳大利亚</span></span><span><span class="l-en">Early breakdown signs — tighten stops</span><span class="l-zh">出现早期破位迹象 — 收紧止损</span></span></div>
+        </div>
+      </div>
+
+      <div class="desk-grid" style="margin-top:14px">
+        <div class="panel">
+          <div class="sec-title"><span class="l-en">Central bank desk</span><span class="l-zh">央行动态台</span></div>
+          <p class="help-tip"><span class="l-en">Stance = realized rate change over the trailing 3 months — not forward guidance or market pricing.</span><span class="l-zh">立场 = 过去3个月已实现的利率变动——非前瞻指引或市场定价。</span></p>
+          <div class="table-scroll">
+          <table class="cb-table">
+            <thead><tr><th><span class="l-en">Bank</span><span class="l-zh">央行</span></th><th><span class="l-en">Rate</span><span class="l-zh">利率</span></th><th><span class="l-en">Stance</span><span class="l-zh">立场</span></th><th><span class="l-en">Next</span><span class="l-zh">下次</span></th></tr></thead>
+            <tbody>
+              <tr><td>🇺🇸 Fed</td><td>3.88%</td><td><span class="chip warn"><span class="l-en">Raising</span><span class="l-zh">加息</span></span></td><td>10-28 · 35d</td></tr>
+              <tr><td>🇪🇺 ECB</td><td>2.50%</td><td><span class="chip warn"><span class="l-en">Raising</span><span class="l-zh">加息</span></span></td><td>10-29 · 36d</td></tr>
+              <tr><td>🇯🇵 BoJ</td><td>0.98%</td><td><span class="chip warn"><span class="l-en">Raising</span><span class="l-zh">加息</span></span></td><td>10-30 · 37d</td></tr>
+              <tr><td>🇬🇧 BoE</td><td>3.71%</td><td><span class="chip ok"><span class="l-en">Cutting</span><span class="l-zh">降息</span></span></td><td>11-05 · 43d</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="deep-links"><a href="intl.html">+3 <span class="l-en">more (SNB · BoC · RBA) — open full central bank desk</span><span class="l-zh">家（瑞士央行·加拿大央行·澳大利亚储备银行）— 打开完整央行动态台</span> →</a></div>
+        </div>
+
+        <div class="panel">
+          <div class="sec-title"><span class="l-en">Credit &amp; bond stress</span><span class="l-zh">信用与债券压力</span></div>
+          <div class="spread-grid">
+            <div class="spread-card"><div class="lbl"><span class="l-en">EM high-yield</span><span class="l-zh">新兴市场高收益</span></div><div class="val">2.82%</div><div class="sub"><span class="l-en">Steady (20d)</span><span class="l-zh">持平（20日）</span></div></div>
+            <div class="spread-card"><div class="lbl"><span class="l-en">Asia credit</span><span class="l-zh">亚洲信用</span></div><div class="val">0.81%</div><div class="sub"><span class="l-en">Steady (20d)</span><span class="l-zh">持平（20日）</span></div></div>
+            <div class="spread-card"><div class="lbl"><span class="l-en">LatAm credit</span><span class="l-zh">拉美信用</span></div><div class="val">1.92%</div><div class="sub pos">↓ <span class="l-en">Tightening (20d)</span><span class="l-zh">收窄（20日）</span></div></div>
+            <div class="spread-card"><div class="lbl"><span class="l-en">EMEA credit</span><span class="l-zh">欧非中东信用</span></div><div class="val">1.47%</div><div class="sub neg">↑ <span class="l-en">Widening (20d)</span><span class="l-zh">走阔（20日）</span></div></div>
+          </div>
+          <p class="caveat"><span class="l-en">Curve inversion board: 0 / 6 major curves inverted. EM spread history collected since Jul 2023 (data-vendor cap).</span>
+          <span class="l-zh">收益率曲线倒挂看板：6条主要曲线中0条倒挂。新兴市场利差数据自2023年7月起收集（数据供应商限制）。</span></p>
+          <div class="deep-links"><a href="intl.html"><span class="l-en">Open full credit &amp; bond desk</span><span class="l-zh">打开完整信用与债券看台</span> →</a></div>
+        </div>
+
+        <div class="panel">
+          <div class="sec-title"><span class="l-en">Rates &amp; curve desk</span><span class="l-zh">利率与曲线室</span></div>
+          <div class="kv-list">
+            <div class="kv"><span><span class="l-en">US anchor</span><span class="l-zh">美国锚</span></span><b>10y 4.96% · 2y 4.76% · <span class="l-en">curve</span><span class="l-zh">曲线</span> +0.20</b></div>
+            <div class="kv"><span>🇯🇵 <span class="l-en">Japan curve 10y−3m</span><span class="l-zh">日本曲线10年−3月</span></span><b>1.48</b></div>
+            <div class="kv"><span>🇯🇵 <span class="l-en">Carry vs US</span><span class="l-zh">对美套息</span></span><b class="neg">-2.02</b></div>
+            <div class="kv"><span>🇯🇵 10y <span class="l-en">vel 20d</span><span class="l-zh">20日速度</span></span><b class="neg">↑ +185bp <span class="muted">(z+2.8)</span></b></div>
+            <div class="kv"><span>🇰🇷 <span class="l-en">South Korea curve 10y−3m</span><span class="l-zh">韩国曲线10年−3月</span></span><b>1.32</b></div>
+          </div>
+          <div class="deep-links"><a href="intl.html"><span class="l-en">Open full rates &amp; curve desk</span><span class="l-zh">打开完整利率与曲线室</span> →</a></div>
+        </div>
+
+        <div class="panel">
+          <div class="sec-title"><span class="l-en">Correlation, regime &amp; ranks</span><span class="l-zh">相关性、周期与排名</span></div>
+          <div class="kv-list">
+            <div class="kv"><span><span class="l-en">Avg cross-market correlation (252d)</span><span class="l-zh">平均跨市场相关性（252日）</span></span><b>0.49</b></div>
+            <div class="kv"><span><span class="l-en">Read</span><span class="l-zh">读数</span></span><b style="font-weight:600"><span class="l-en">Moderately correlated — some diversification on offer</span><span class="l-zh">中度相关 — 有一定分散空间</span></b></div>
+            <div class="kv"><span><span class="l-en">Dominant growth×inflation regime</span><span class="l-zh">主导增长×通胀周期</span></span><b><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span> (5/7)</b></div>
+          </div>
+          <div class="deep-links">
+            <a href="intl.html"><span class="l-en">Open full correlation matrix</span><span class="l-zh">打开完整相关性矩阵</span> →</a>
+            <a href="intl.html"><span class="l-en">Open regime map</span><span class="l-zh">打开周期图</span> →</a>
+            <a href="intl.html"><span class="l-en">Open ranked reference views</span><span class="l-zh">打开排名参考视图</span> →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <div class="sec-title"><span class="l-en">Sector intelligence &amp; international stocks</span><span class="l-zh">板块情报与国际股票</span></div>
+        <p class="null-note"><span class="l-en"><b>Honest null:</b> the regional sector-rotation board (display-only, ranks by 3-month relative strength) carried zero rows in this session's bake — not hidden, not fabricated.</span>
+        <span class="l-zh"><b>诚实缺失说明：</b>区域板块轮动看板（仅展示，按3个月相对强弱排名）在本次会话生成结果中没有数据行——不隐藏，也不臆造。</span></p>
+        <div class="deep-links">
+          <a href="sector_cycles.html"><span class="l-en">U.S. Sector Cycles</span><span class="l-zh">美国行业周期</span> →</a>
+          <a href="sector_cycles_china.html"><span class="l-en">China Sector Cycles</span><span class="l-zh">中国行业周期</span> →</a>
+          <a href="intl_stocks.html"><span class="l-en">International stock boards (Prophet)</span><span class="l-zh">国际股票看板（Prophet）</span> →</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="ref-footer">
+      <p><b>REFERENCE FIXTURE · NOT LIVE</b> — <span class="l-en">reference id intl-vnext-20260924, built against site/intl.html baked 2026-09-23. Every figure traces to a committed field; see the provenance comment at the top of this file's source.</span>
+      <span class="l-zh">参考编号 intl-vnext-20260924，基于 2026-09-23 生成的 site/intl.html 构建。每个数字均可追溯至已提交字段；详见本文件源码顶部的溯源注释。</span></p>
+      <p><span class="l-en">Methodology receipts (source, cadence, base rate) are inlined next to each figure above rather than behind a single "Methodology" link, matching production's per-section help pattern.</span>
+      <span class="l-zh">方法论说明（数据来源、更新频率、基准率）均内嵌于上方各数字旁，而非收纳于单一"方法论"链接之后，与生产环境的分区帮助说明模式保持一致。</span></p>
+    </footer>
+  </div><!-- /real-content -->
+</main>
+</div><!-- /stage -->
+
+<script>
+(function () {
+  'use strict';
+  var html = document.documentElement;
+  var body = document.body;
+  var stage = document.getElementById('stage');
+
+  function setPressed(group, value) {
+    var btns = document.querySelectorAll('.hctl-btn[data-action="' + group + '"]');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-value') === value ? 'true' : 'false');
+    }
+  }
+
+  document.querySelectorAll('[data-action]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var action = btn.getAttribute('data-action');
+      var value = btn.getAttribute('data-value');
+      if (action === 'theme') { html.setAttribute('data-theme', value); setPressed('theme', value); }
+      if (action === 'lang') { html.setAttribute('data-lang', value); setPressed('lang', value); }
+      if (action === 'viewport') {
+        stage.classList.toggle('mobile-preview', value === 'mobile');
+        setPressed('viewport', value);
+      }
+      if (action === 'state') {
+        body.classList.remove('is-loading', 'is-empty', 'is-stale', 'is-error');
+        if (value !== 'default') { body.classList.add('is-' + value); }
+        setPressed('state', value);
+      }
+    });
+  });
+
+  // Country Inspector tabs (local design-harness control — real buttons, keyboard operable)
+  var tabs = document.querySelectorAll('.insp-tab');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () { activateTab(tab); });
+    tab.addEventListener('keydown', function (e) {
+      var list = Array.prototype.slice.call(tabs);
+      var i = list.indexOf(tab);
+      if (e.key === 'ArrowRight') { activateTab(list[(i + 1) % list.length]); list[(i + 1) % list.length].focus(); }
+      if (e.key === 'ArrowLeft') { activateTab(list[(i - 1 + list.length) % list.length]); list[(i - 1 + list.length) % list.length].focus(); }
+    });
+  });
+  function activateTab(tab) {
+    tabs.forEach(function (t) {
+      var selected = t === tab;
+      t.setAttribute('aria-selected', selected ? 'true' : 'false');
+      t.tabIndex = selected ? 0 : -1;
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      if (panel) {
+        panel.hidden = !selected;
+        panel.classList.toggle('is-active', selected);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
