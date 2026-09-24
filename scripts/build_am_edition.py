@@ -30,7 +30,34 @@ R14 partiality: "each new block in all five typed states" was the spec's
 language; the three new blocks reach 4 / 3 / 2 of 5 respectively. The
 unreachable pair (NOT_YET_OPEN / CLOSED) is documented here as a HARD
 constraint (session_clock owns these states; the new blocks have no
-calendar clock to gate them).
+calendar clock to gate them). The TEST MODULE docstring at the top of
+tests/test_am_edition_producer.py mirrors this surface so the
+unreachability lives in BOTH the producer and the test layer; the
+test_five_typed_states_per_block_unreachability_in_test_docstring pin
+asserts both layers stay in sync.
+
+Cross-lane row-key contract (MINOR 12 round 4): the three new blocks
+emit row keys BEYOND §A2/§A3/§A4's minimum surface so that lanes B and C
+can pin their consumers against the exact set. Anyone adding a new
+row key MUST update both the docstring and the
+`test_emitted_row_key_set_matches_docstring` pin in the same commit;
+the test goes RED on any undocumented new key. The exact emitted key
+set per block:
+
+- `context_planes.rows[i]` keys:
+  plane, label_en, label_zh, read_en, read_zh, as_of,
+  source_as_of_precision, source_ref, state, [state_reason_en,
+  state_reason_zh] (only when state != CURRENT). Missing fields are
+  None, NOT absent from the dict.
+- `research_watch.rows[i]` keys:
+  condition_en, condition_zh, condition_zh_disclosed_why, since,
+  as_of, source_ref. (Rows carry no per-row state — the block-level
+  state derives from the worst row's age; R2.)
+- `owner_links.rows[i]` keys:
+  plane, label_en, label_zh, href, kind. (Static-link block has no
+  per-row state — R7.) `kind ∈ {"owner", "reference"}`; reference
+  rows carry `plane=None` because a registry anchor does not own a
+  logical plane mapping.
 """
 from __future__ import annotations
 
@@ -1475,6 +1502,18 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         # artifact: the committed china_market_state ships label =
         # "Risk-off" and posture = "Risk-off" verbatim, making the row
         # redundant).
+        #
+        # ZH composition rules (MINOR 6 residue round 4):
+        #   (a) No ASCII spaces around the "——" em-dash inside a ZH
+        #       sentence. The buggy prior form was the ZH copy of "China
+        #       — {label}; posture {posture}." with ASCII spaces around
+        #       the em-dash ("中国——避险 — 压力升高"); the fix keeps
+        #       em-dash clause boundaries dash-tight.
+        #   (b) Where the producer composes LABEL + READING, use the ZH
+        #       full-width colon "：" between them (e.g. country label
+        #       "中国" / "香港" + the owner's headline, or "姿态" +
+        #       posture value). Owner text inside the reading is NEVER
+        #       rewritten — the producer only swaps the separator token.
         cn_phrase_en = (
             f"China — {cn.get('label_en') or '—'}; posture {cn.get('posture_en') or '—'}."
             if (cn_present and cn.get("label_en")) else None
@@ -1484,11 +1523,11 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             if (hk_present and hk.get("label_en")) else None
         )
         cn_phrase_zh = (
-            f"中国——{cn.get('label_zh') or '—'}；姿态 {cn.get('posture_zh') or '—'}。"
+            f"中国：{cn.get('label_zh') or '—'}；姿态：{cn.get('posture_zh') or '—'}。"
             if (cn_present and cn.get("label_zh")) else None
         )
         hk_phrase_zh = (
-            f"香港——{hk.get('label_zh') or '—'}；姿态 {hk.get('posture_zh') or '—'}。"
+            f"香港：{hk.get('label_zh') or '—'}；姿态：{hk.get('posture_zh') or '—'}。"
             if (hk_present and hk.get("label_zh")) else None
         )
         cn_headline_en = (
@@ -1500,11 +1539,11 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             if (hk_present and hk.get("headline_en")) else hk_phrase_en
         )
         cn_headline_zh = (
-            f"中国——{cn.get('headline_zh')}"
+            f"中国：{cn.get('headline_zh')}"
             if (cn_present and cn.get("headline_zh")) else cn_phrase_zh
         )
         hk_headline_zh = (
-            f"香港——{hk.get('headline_zh')}"
+            f"香港：{hk.get('headline_zh')}"
             if (hk_present and hk.get("headline_zh")) else hk_phrase_zh
         )
         # R5 missing-owner disclosure: when one of the two files is

@@ -309,10 +309,17 @@ jobs:
     # 2026-09-22 integration-baseline main-red repair: exact owner closure.
     # Exclusive replaces opaque fallback inference; the curated-closure gate
     # fails if a future import is not covered by this declaration.
+    #
+    # 2026-09-24 lane A3 (round-4 MINOR 10): the real-artifact byte-identity
+    # test detects sparse omission via `scripts.worktree_sparse.missing_dirs()`
+    # (the husk-aware helper, public). The contract-delta gate follows that
+    # import edge, so the producer's `paths:` now declares the helper too.
+    # Widen the producer's `paths:` — never narrow — to keep the gate honest.
     scope: exclusive
     paths:
       - "config.yml"
       - "config/market_reference.yml"
+      - "config/sparse_worktree.json"
       - "data/market_state/latest.json"
       - "data/neuralweb/market_plane.json"
       - "data/regime/latest.json"
@@ -324,6 +331,7 @@ jobs:
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_am_edition.py"
+      - "scripts/worktree_sparse.py"
       - "site/am_edition.html"
       - "site/am_edition.json"
       - "site/live/quotes.json"
