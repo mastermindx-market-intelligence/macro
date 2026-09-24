@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T00:26:10.175176+00:00",
-  "count": 2743,
+  "generated_at": "2026-09-24T00:56:09.033701+00:00",
+  "count": 2744,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -684,6 +684,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cyjn3uxfdth-71560b",
+      "title": "National Bank of Kuwait (NBKK.KW) Mortgage draft law approved; sentiment positive but largely priced in, finer details unclear",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:05Z",
+      "summary_points": [
+        "Mortgage Law Approval: Limited Upside Due to Pricing-In Market has priced in 10% CAGR 2026-29E vs. 5% 5Y; finer details (LTVs, CBK parameters) unclear, limiting incremental upside despite approval.",
+        "Affordability Constraint Impact Draft law’s KWD 200k mortgage (KWD 70k subsidy) yields KWD 1K monthly EMI, exceeding average borrower’s DBR limit (KWD 500), severely restricting loan uptake and bank profitability.",
+        "Mortgage Backlog & Execution Risk 100k+ application backlog could take >10 years to clear due to infrastructure gaps and affordability constraints (EMI > DBR), delaying growth despite law.",
+        "Margin/Earnings Uncertainty Subsidized mortgages (lower rates) may neutralize/drag NIMs; bank lobbying for exemptions (e.g., reserve requirements) adds policy risk to volume upside."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
