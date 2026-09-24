@@ -16412,8 +16412,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
-      # The seven suites the step runs, plus helper suites they import.
+      # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      # #7798: source-dated Hottest Desk leadership/recommendation contract.
+      - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
       # engine-render-guards, which PR packs do not execute. This code-gate
       # owner already owns dashboard.html.j2 and the committed macro projection.
