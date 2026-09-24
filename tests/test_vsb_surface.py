@@ -406,66 +406,6 @@ class TestVSBSurfaceBothPayloads:
         assert "lower than" not in html
         assert "data-vsb-chip=" not in html
 
-ZH twins). The OLD phrases ('Volatility is
-        calm', 'higher than N% of days', 'lower than N% of days') are banned
-        from the glance tier — they belonged to the dialog's scoreboard row
-        and have been demoted/removed entirely.
-
-        R-W1-A-AMENDED: the strip renders inside the mx5 scorecard's
-        left column (.mx5-sc-vw host). Slice that host to inspect the
-        strip's glance tier.
-        """
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        html = _render(ctx)
-        # Round-3: slice the mx5-sc-vw host (the vol-weather's new home).
-        host_start = html.find('<div class="mx5-sc-vw"')
-        assert host_start >= 0, (
-            "mx5-sc-vw host must exist when mode=macro + vol_weather set "
-            "(DEV-VW-LOCATION)"
-        )
-        depth = 0
-        i = host_start
-        n = len(html)
-        while i < n:
-            if html.startswith("<div ", i) or html.startswith("<div>", i):
-                depth += 1
-                i += 5
-            elif html.startswith("</div>", i):
-                depth -= 1
-                i += 6
-                if depth == 0:
-                    break
-            else:
-                i += 1
-        isle = html[host_start:i]
-        # Every tier word family must be reachable from a chip in the fixture.
-        # The fixture uses bands: normal/calm/quiet/low/elevated/extreme. The
-        # template's _vw_band_word map covers every one of them — at least one
-        # of the tier words below must appear on the rendered row.
-        tier_words_en = ("calm", "breeze", "gust", "storm")
-        tier_words_zh = ("平静", "微风", "疾风", "风暴")
-        any_en = [w for w in tier_words_en if f'>{w}</span>' in isle or f'>{w}<' in isle]
-        any_zh = [w for w in tier_words_zh if f'>{w}</span>' in isle or f'>{w}<' in isle]
-        assert any_en, (
-            f"At least one tier word EN {tier_words_en} must appear on the "
-            f"rendered strip (R-W1-B)"
-        )
-        assert any_zh, (
-            f"At least one tier word ZH {tier_words_zh} must appear on the "
-            f"rendered strip (R-W1-B)"
-        )
-        # pctile scoreboard phrases must NOT appear on the page at all
-        # (one-integer law: removed entirely, not demoted)
-        assert "higher than" not in html, (
-            "Pctile 'higher than N% of days' must not appear (one-integer law retirement)"
-        )
-        assert "lower than" not in html, (
-            "Pctile 'lower than N% of days' must not appear (one-integer law retirement)"
-        )
-        # The old dialog-row marker is gone too
-        assert "data-vsb-chip=" not in html
-
     def test_breadth_split_section_present(self):
         """UD-B2-W3 R6: the module lives on advanced.html, not the macro dialog."""
         html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
