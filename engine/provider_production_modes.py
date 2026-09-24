@@ -1348,6 +1348,12 @@ def run_minimax_canary(
     accepted = bool(
         receipt.ok and response_match and identity_ok and fallback_ok and pricing_ok
     )
+    if receipt.ok:
+        effect_state = "EFFECT_CONFIRMED"
+    elif receipt.error_class in {"disabled", "unconfigured", "unsupported", "auth", "usage_limit"}:
+        effect_state = "NO_EFFECT"
+    else:
+        effect_state = "EFFECT_UNKNOWN"
     if not receipt.ok:
         reason = "provider_refused"
     elif not identity_ok:
@@ -1384,6 +1390,9 @@ def run_minimax_canary(
         "source_config_sha256": source_sha,
         "source_mode_enabled": False,
         "production_activation": False,
+        "effect_state": effect_state,
+        "automatic_retry_allowed": False,
+        "same_operation_replay_allowed": False,
     }
 
 
