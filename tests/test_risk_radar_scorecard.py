@@ -886,3 +886,109 @@ def test_prospective_real_issue_receipt_roundtrips_into_scorecard(tmp_path):
     assert p["awaiting_maturity"] == 1
     assert p["latest_source_bundle_sha256"] == receipt["source_bundle_sha256"]
     assert p["current_model_validated"] is False
+
+
+
+def _readiness_fixture(*, n_issued=300, n_graded=250, candidate=.10, baseline=.60,
+                       event_positions=None):
+    event_positions = set(event_positions or [
+        *range(10, 15), *range(60, 65), *range(110, 115),
+        *range(160, 165), *range(210, 215),
+    ])
+    start = date(2025, 1, 1)
+    cohort = [
+        (start + timedelta(days=2 * i), {}, {})
+        for i in range(n_issued)
+    ]
+    sample = []
+    for i in range(n_graded):
+        y = 1 if i in event_positions else 0
+        sample.append((
+            (start + timedelta(days=2 * i)).isoformat(),
+            candidate, y, baseline,
+        ))
+    samples = {h: list(sample) for h in ("h5", "h10", "h21")}
+    horizons = {
+        h: {
+            "paired_n": len(sample),
+            "missing_baseline_n": 0,
+            "excluded_n": 0,
+        }
+        for h in ("h5", "h10", "h21")
+    }
+    return cohort, samples, horizons
+
+
+def test_prospective_validation_event_clusters_do_not_count_overlapping_days_as_episodes():
+    sample = [
+        ("d0", .1, 1, .2), ("d1", .1, 1, .2),
+        ("d2", .1, 0, .2), ("d3", .1, 0, .2),
+        ("d4", .1, 0, .2), ("d5", .1, 1, .2),
+        ("d6", .1, 0, .2), ("d7", .1, 0, .2),
+        ("d8", .1, 0, .2), ("d9", .1, 0, .2),
+        ("d10", .1, 0, .2), ("d11", .1, 1, .2),
+        ("d12", .1, 1, .2),
+    ]
+    assert sc._event_cluster_count(sample, 5) == 2
+
+
+def test_prospective_validation_is_not_mature_before_frozen_sample_floor():
+    cohort, samples, horizons = _readiness_fixture(n_issued=100, n_graded=80)
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "not_mature"
+    assert out["promotion_review_eligible"] is False
+    assert out["current_model_validated"] is False
+    assert out["public_validation_ready"] is False
+    assert all(not h["mature"] for h in out["horizons"].values())
+
+
+def test_prospective_validation_supportive_sample_only_earns_review_eligibility():
+    cohort, samples, horizons = _readiness_fixture()
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "mature_supportive"
+    assert out["promotion_review_eligible"] is True
+    assert out["full_surface_supportive"] is True
+    assert out["authority_h21_supportive"] is True
+    assert out["current_model_validated"] is False
+    assert out["public_validation_ready"] is False
+    for h in ("h5", "h10", "h21"):
+        row = out["horizons"][h]
+        assert row["mature"] is True
+        assert row["event_clusters"] == 5
+        assert row["brier_supportive"] is True
+        assert row["calibration_supportive"] is True
+        assert row["paired_brier_delta_ci90"][1] < 0
+        assert row["calibration_gap_ci90"][0] <= 0 <= row["calibration_gap_ci90"][1]
+
+
+def test_prospective_validation_mature_bad_probabilities_are_refuted():
+    cohort, samples, horizons = _readiness_fixture(candidate=.60, baseline=.10)
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "mature_refuting"
+    assert out["promotion_review_eligible"] is False
+    assert out["full_surface_supportive"] is False
+    assert out["current_model_validated"] is False
+    for h in ("h5", "h10", "h21"):
+        assert out["horizons"][h]["mature"] is True
+        assert out["horizons"][h]["brier_supportive"] is False
+
+
+def test_prospective_validation_requires_complete_paired_baseline():
+    cohort, samples, horizons = _readiness_fixture()
+    horizons["h21"]["paired_n"] -= 1
+    horizons["h21"]["missing_baseline_n"] = 1
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "not_mature"
+    assert out["horizons"]["h21"]["baseline_complete"] is False
+    assert out["horizons"]["h21"]["mature"] is False
+
+
+def test_prospective_audit_publishes_frozen_readiness_without_validating_legacy_rows():
+    p = _audit(_prob_rows())["prospective"]
+    r = p["validation_readiness"]
+    assert r["definition"] == sc._PROSPECTIVE_VALIDATION_PROTOCOL
+    assert r["protocol_commit"] == sc._PROSPECTIVE_VALIDATION_PROTOCOL_COMMIT
+    assert r["status"] == "not_started"
+    assert r["promotion_review_eligible"] is False
+    assert r["current_model_validated"] is False
+    assert r["public_validation_ready"] is False
