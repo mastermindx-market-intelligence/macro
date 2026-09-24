@@ -278,7 +278,7 @@ def test_main_writes_both_json_and_html(tmp_path):
         # pages.config.ROOT must be a Path (not str) for the / operator.
         import pathlib
         pages_mod.config.ROOT = pathlib.Path(str(tmp_path))
-        rc = mod.main()
+        rc = mod.main([])
         assert rc == 0
         json_path = site / "am_edition.json"
         html_path = site / "am_edition.html"
@@ -317,7 +317,7 @@ def test_html_written_via_write_page_contains_dbase_shim(tmp_path):
         # pages.config.ROOT must be a Path (not str) for the / operator.
         import pathlib
         pages_mod.config.ROOT = pathlib.Path(str(tmp_path))
-        mod.main()
+        mod.main([])
         html_path = site / "am_edition.html"
         content = html_path.read_text(encoding="utf-8")
         marker_pattern = re.compile(r"<script[^>]+\bdata-dbase\b[^>]*>")
