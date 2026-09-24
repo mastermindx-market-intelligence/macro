@@ -868,3 +868,133 @@ Exact continuation:
 5. PASS on #836 unlocks incumbent-custody release and the frozen R1 typed transport vertical.
 
 Mission remains incomplete; no browser/provider/production canary exists.
+
+
+## Continuation update — R1-P0 contract, duplicate-review reconciliation, and #890 owner seam
+
+This is the current cumulative frontier for the active Sol session. It supersedes older statements in
+this handoff where exact heads/reviewer carriers conflict.
+
+### Protected procedure/source pin
+- Mastermind protected master: `294b4c00ed668b497edb834be8108f14bc1bee8a`.
+- Skillpack: `mastermind.sol_skillpack.v1` 1.0.1 / bootstrap major 1.
+- Required INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/REVIEW_RETURN/RECONCILE_STATE and
+  dialogue-close law were reloaded from this exact SHA before the current modifying effects.
+- Protected move from `4fe4d25e...` is #942, changing only
+  `ops/executive_os/provider_readiness.py`, `ops/executive_os/provision-worker-auth.sh`,
+  and `tests/test_provider_readiness_refresh.py`. Fresh comparison shows zero overlap with
+  #953/#836/#651/#933/#936 and no cognition-transport interface invalidator.
+
+### #836 review collision reconciled
+Fresh Agent OS recovery exposed an earlier valid independent #836 review child that was not present in
+the active chat context:
+- canonical child: `web-sol-r7-independent-review-r5-20260924-claude6-001`
+- receiver: Claude6 / Opus
+- carrier: `D0BT2125KHQ/1790231581.990109`
+- subject: #836 `e8d54e6423b3d8a8f450740a9db0c7eff92828ae`
+- latest fresh read in this session: DELIVERY_SENT / no PICKUP_ACK / no START / no RESULT.
+
+The later ChatGPT3 child created by this session,
+`web-sol-r7-independent-review-r5-20260924-chatgpt3-001` on
+`D0BREV7RDCN/1790232665.618079`, was therefore a duplicate PRE_START wave. Fresh read proved zero
+pickup/effect; this session sent terminal `SOL STOP` at reply `1790233576.149499`.
+Do not revive or count that ChatGPT3 child. Claude6 is the sole canonical #836 review carrier.
+
+### #953 — R1-P0 closed cognition transport contract
+Rather than idling on reviewer pickup, this session opened one path-disjoint stacked source slice on top
+of immutable green #836 without touching any live #836 transport file:
+
+- PR: #953 `[WEB-SOL][R1-P0][DRAFT] Add closed cognition transport contract`
+- branch: `sol/web-sol-cognition-r1-contract-20260924-sol-001`
+- base: #836 exact head `e8d54e6423b3d8a8f450740a9db0c7eff92828ae`
+- current exact head: `9c8ded7b8d2a0847532676bfb3451e06af182088`
+- delta relative to #836: exactly two new files:
+  - `integrations/chairman_surfaces/web_sol_cognition_transport.py`
+  - `tests/test_web_sol_cognition_transport.py`
+- hosted CI: `35967748511` RUNNING in the full repository test gate at this checkpoint.
+
+R1-P0 defines production-inert closed **inner payloads only**; it does not extend `SurfaceAction`,
+native host/client, background/content script, Runtime, browser, retry, persistence or provider action.
+
+Contract schemas:
+- `mastermind.web_sol_cognition_submit_payload/v1`
+- `mastermind.web_sol_cognition_result_observe_payload/v1`
+- `mastermind.web_sol_cognition_result_observation/v1`
+
+Current invariants include:
+- assignment object, never arbitrary prompt/message/text;
+- exact assignment/result-schema canonical digests;
+- exact Job/Attempt/Worker/root/role + RuntimeBinding identity;
+- canonical `CommissionRef` validation through the existing owner;
+- Executive entity IDs constrained to the same bounded browser/result identity class;
+- #651 continuation producer identity: exact schema/workstream/source SHA, workstream matches immutable
+  dialogue source, and original 8 KiB continuation ceiling;
+- complete plan lineage for cognition roles;
+- work: repair_round 0 and no reviews_job_id;
+- review: nonrecursive review_required=false + exact reviews_job_id;
+- effect-free authority only: work READ or READ+RESEARCH, review READ;
+- 22 KiB assignment, 24 KiB result, 48 KiB inner payload ceiling leaving >=16 KiB for incumbent 64 KiB
+  outer native frame/correlation;
+- no transcript/DOM/cookie/storage/clipboard/selector/script/shell/account/private-coordinate fields;
+- READY result carries one canonical result + digest/size + exact terminal provider-turn/artifact identity;
+  PENDING/REFUSED carry no provider/result content.
+
+Commit lineage on #953:
+- RED `2eaeb8482791e505a2de5b1e296893fcd6322898`
+- implementation `c03d719508de2c6359569529b3ac20e4cb4c2e55`
+- canonical continuation fixture correction `1d4a7b2672ad5c2b0e08cbb0ce0fbd32c17e6cd2`
+- commission/ID RED `669682bbabd77c583631bf2ccb681371dd2e1569`
+- commission/ID GREEN `bbd4cdb9b52a689f7833b329b82e6910898357c6`
+- real #651 continuation-shape RED `85b308703ffceb73d813af55f75515c4dde56e83`
+- continuation identity/budget GREEN `23fa5fb8ba98aa7c7220c476f2c8cddfcee4eeda`
+- Executive lineage RED `f6ac42a21b89b65762cc7d829fe7ef9ae2a66956`
+- Executive lineage GREEN/current `9c8ded7b8d2a0847532676bfb3451e06af182088`.
+
+Do not merge/retarget #953 before #836/#933/#936 are accepted/current. It is a tested risk-reduction
+contract slice, not live transport wiring.
+
+### #890 action-bearing capability gate — owner seam adjudication
+Durable prior checkpoint reported #890 exact head
+`dc15d22a6cbc07058d4f3555c680e2c54057f1cf` with CI `35965287774` running. The return is now known:
+CI FAILED with two assertions inside `tests/test_web_ceo_session_capabilities.py`.
+
+A newer support audit (#890 comment `5809381979`) identified the more material semantic blocker:
+`CurrentActionSurfaceFacts(SourceRef(SURFACE_BINDINGS,CURRENT,...))` is still caller-constructible and
+therefore proves self-consistency, not actual issuance by the live message-scoped Surface owner.
+
+Fresh protected owner tracing in this session establishes:
+- `control_plane/surface_bindings.py` is explicitly **navigation-only**;
+- its recursive forbidden-semantics belt rejects authority/permission/message/prompt/transcript/state
+  semantics;
+- its durable binding rows contain navigation address identity, not a message-scoped effective-action
+  generation;
+- protected code has no production `action_scope_ref` producer/verifier outside #890's unmerged candidate.
+
+Therefore do NOT “repair” #890 by placing action-scope authority into surface_bindings, by inventing a
+self-signed local receipt/digest/boolean, or merely by changing the two CI expectations. Until an existing
+Surface/platform integration can emit or synchronously verify the exact message-scoped action surface,
+live action-bearing state remains `UNKNOWN / CAPABILITY_PROOF_REQUIRED` and C2 must remain unreachable
+from caller-constructed provenance.
+
+This ruling is recorded on #890 comment `5809479023`. #890 remains DRAFT/HOLD; no source change was
+made by this session. This does not block the first actionless Web cognition canary.
+
+### Current review gates
+Latest fresh reads in this session:
+- #836 Claude6 canonical review: `D0BT2125KHQ/1790231581.990109` — no PICKUP_ACK/START/RESULT.
+- #651 ChatGPT2 review: `D0BRLGE0BBN/1790155189.800099` — no PICKUP_ACK/START/RESULT.
+- #933 ChatGPT1 review: `D0BSB763FRN/1790226451.766309` — no PICKUP_ACK/START/RESULT.
+- #936 previous ChatGPT3 review child remains terminal STOP and must be recommissioned fresh later.
+
+### Exact next actions
+1. Consume #953 exact-head CI `35967748511`; repair only #953 on concrete failure.
+2. Consume Claude6 #836 carrier only after PICKUP_ACK + START; adjudicate RESULT on that exact carrier.
+3. Consume #651/#933 review returns when they actually start/return; do not call delivery execution.
+4. PASS/acceptance on #836 unlocks live R1 wiring of the already-frozen closed submit/observe actions;
+   #953 is then reconciled against accepted #836/#933/#936 owners.
+5. Implement the Web-Sol OHF adapter only after accepted R1 actions exist; do not build a proxy with no
+   real producer/consumer path.
+6. Keep #890 fail-closed until the real message-scoped Surface owner/verifier exists; it is not a first
+   actionless-canary dependency.
+
+Parent mission remains incomplete; no browser/provider/production canary exists.
