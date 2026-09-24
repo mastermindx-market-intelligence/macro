@@ -1,0 +1,94 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "OFFLINE_PLAN_TRACE_SYNTAX_AND_RESEARCH_ARITHMETIC_ONLY",
+  "run_utc": "2026-09-24T07:37:12.464918+00:00",
+  "command": "python check_mining_plan.py",
+  "documents": {
+    "2026-09-24-mining-shared-foundation-economic-dossier-design.md": {
+      "bytes": 41539,
+      "words": 5618,
+      "sha256": "0925e376bc7504aa5e191cfc1795415ecbfe2b7128d6d2bc06ecd5d6d361530e",
+      "git_blob_sha1": "33d9448142d1ce922201b9938ae755b6239ea1e2"
+    },
+    "2026-09-24-mining-economic-dossier-implementation.md": {
+      "bytes": 46805,
+      "words": 5694,
+      "sha256": "900559afd62db3781f71310262a294a7830f196ef6913525ac38744cd8d1b71d",
+      "git_blob_sha1": "a2fca1c561b799b7e49d69c9095e5ffa7dd094cc"
+    },
+    "MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md": {
+      "bytes": 16277,
+      "words": 2059,
+      "sha256": "53cca0633bd355141e007b8517d1845e4df76b1ac53b107938c74690e4b68f1d",
+      "git_blob_sha1": "34548e6b874148e017ec9b4efb7566c3e94123c8"
+    },
+    "MINING_IMPLEMENTATION_TRACE_2026-09-24.json": {
+      "bytes": 17190,
+      "words": 1325,
+      "sha256": "04b9635fe62ebb5cf7c2a6a713f01a4cfcbdb44235c4bd0cc0f1773070ada4ca",
+      "git_blob_sha1": "37ccaa92c301667b176be80c3fa6fbdcece72665"
+    }
+  },
+  "checker": {
+    "bytes": 9041,
+    "words": 672,
+    "sha256": "9b40f31d498393649fb143cdc86ddd2cdb903bad58e380910a16a163650a482d",
+    "git_blob_sha1": "e8b6c17bf00b1de47d37b21b62624c89d875998e"
+  },
+  "checks": {
+    "preserved_spec_hash": true,
+    "forty_verbatim_obligations": true,
+    "eight_sequential_tasks": true,
+    "every_obligation_has_real_plan_task": true,
+    "every_trace_test_listed_in_plan": true,
+    "future_tests_not_claimed_run": true,
+    "all_admission_gates_remain_unclosed": true,
+    "python_plan_examples_parse": true,
+    "no_unresolved_placeholder_tokens": true,
+    "two_correct_source_filers": true,
+    "same_quarter_comparison_scope": true,
+    "fcx_selected_arithmetic": true,
+    "mp_segment_reconciliation": true,
+    "mp_ppa_not_gaap_revenue": true,
+    "signed_gaap_loss_preserved": true,
+    "native_receipts_not_fabricated": true,
+    "shared_economic_gate_acknowledged": true,
+    "no_fixture_task_cycle": true,
+    "source_retention_limit_disclosed": true,
+    "release_and_mission_held": true
+  },
+  "total": 20,
+  "passed": 20,
+  "failed": 0,
+  "changed_artifact_traps": {
+    "missing_obligation": true,
+    "wrong_reporting_period": true,
+    "lost_financial_sign": true,
+    "ppa_laundered_into_revenue": true,
+    "fabricated_native_receipt": true,
+    "false_live_admission": true
+  },
+  "self_review": [
+    "Initial checker expected six Python examples; AST inspection found seven valid blocks (one interface block and six tests). Corrected the count to seven without changing the plan or weakening syntax validation.",
+    "Shared response has a closed Semiconductor slice enum; exact owner-controlled generic extraction is a gated proposal, not an already-callable Mining API.",
+    "Shared economics currently needs a guidance triple; the plan specifies a separate closed reported-context policy and preserves legacy witness requirements.",
+    "Initial draft placed the shared case helper under T02 while T01 consumed it; moved helper creation to T01 and made T02 a consumer before publication.",
+    "Primary section locators and source values are confirmed; exact retained original bodies, native spans and live identity/financial objects remain unearned.",
+    "Native extraction profiles do not imply safe public discovery enrollment; public defaults remain unchanged without their separate owner admission.",
+    "Optional derived percentages are withheld without native receipts; both required real economic tasks must still be populated.",
+    "All forty spec conditions retain exact text and future-test identity; the old domain corpus remains evidence with explicit later capability obligations."
+  ],
+  "not_claimed": [
+    "executed product tests",
+    "upstream module execution",
+    "native source or identity admission",
+    "actual formula receipts",
+    "current CI",
+    "independent review",
+    "browser proof",
+    "design or plan acceptance",
+    "worker dispatch",
+    "deployment",
+    "investment validation"
+  ]
+}
