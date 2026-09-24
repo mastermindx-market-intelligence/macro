@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T00:56:09.033701+00:00",
-  "count": 2744,
+  "generated_at": "2026-09-24T01:11:23.353870+00:00",
+  "count": 2745,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -101,6 +101,21 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-q5tuzr2c9vh-6157db",
+      "title": "Trading Catalysts Watch Fedspeak; two more hikes remain in view",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:58:03Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-f8nhnxlth6e-84709a",
       "title": "TPL Sept 23 26",
