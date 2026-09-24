@@ -445,4 +445,5 @@ def test_every_qualified_capture_disclaims_snapshot_proof():
     empty = _sweep("2026-09-23", [])
     for result in (single, multiple, empty):
         assert result["qualified"] is True
+        assert type(result["capture"]["atomic_snapshot_proven"]) is bool
         assert result["capture"]["atomic_snapshot_proven"] is False
