@@ -77,8 +77,17 @@ def validate_selected_facts(
     if str(workspace.get("fiscal_period", {}).get("quarter")) != "4":
         raise EconomicObservationError("workspace is not a fourth-quarter event")
 
+    facts = workspace.get("facts")
+    if not isinstance(facts, list):
+        raise EconomicObservationError("workspace facts must be a list")
+    selected_count = sum(
+        1 for row in facts
+        if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")
+    )
+    if selected_count > 24:
+        raise EconomicObservationError("selected observations exceed 24")
     rows = [
-        row for row in workspace.get("facts") or []
+        row for row in facts
         if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")
     ]
     if len(rows) > 24:

@@ -10,6 +10,7 @@ from engine.company_intelligence.economic_observations import (
     validate_selected_facts,
 )
 from engine.company_intelligence.issuer_profiles import profile_for_ticker
+from engine.company_intelligence.pg_profile import PG_METRIC_KEYS
 from tests.earnings_economic_fixtures import (
     FISCAL_SCOPE,
     pg_bound_case,
@@ -105,6 +106,7 @@ def test_wrong_event_body_period_basis_or_unit_refused() -> None:
         lambda rows: rows,
         texts={document_id: "wrong body"},
     )
+    _invalid(lambda rows: rows, texts={})
 
 
 def test_value_and_typed_absence_mutually_exclusive() -> None:
@@ -159,6 +161,8 @@ def test_combined_volume_mix_never_passes_pure_volume() -> None:
     assert definitions is not None
     for row in rows:
         assert row["metric"] != "combined_volume_mix"
+    assert {row["metric"] for row in rows} == set(PG_METRIC_KEYS)
+    assert "pg_total_volume_growth_pct" in {row["metric"] for row in rows}
 
 
 def test_hostile_markup_is_inert() -> None:
@@ -177,10 +181,11 @@ def test_multibyte_byte_offsets_are_correct() -> None:
     source = next(iter(pg_source_texts("annual_first").values()))
     row = next(row for row in rows if row["metric"] == "pg_diluted_eps")
     receipt = row["source_span"]["receipt"]
-    replayed = source.encode("utf-8")[receipt["span_start_byte"]:receipt["span_end_byte"]]
-    assert replayed.decode("utf-8") == source.encode("utf-8")[
-        receipt["span_start_byte"]:receipt["span_end_byte"]
-    ].decode("utf-8")
+    replayed = source.encode("utf-8")[receipt["span_start_byte"]:receipt["span_end_byte"]].decode("utf-8")
+    assert replayed == row["source_span"]["display_excerpt"]
+    byte_prefix = source.encode("utf-8")[:receipt["span_start_byte"]].decode("utf-8")
+    assert "全球品牌" in byte_prefix
+    assert len(byte_prefix.encode("utf-8")) == receipt["span_start_byte"]
     assert row["value"] == 1.25
 
 
@@ -190,3 +195,10 @@ def test_profile_lookup_public_dispatch_is_unchanged() -> None:
     assert profile_for_ticker("NVR") is None
     with pytest.raises(ValueError):
         profile_for_ticker("PG", publication="unknown")
+
+
+def test_selected_observations_are_exactly_twenty() -> None:
+    _workspace, rows = _selected()
+    assert len(rows) == 20
+    assert {row["metric"] for row in rows} == set(PG_METRIC_KEYS)
+    assert all(row["fact_id"] == f"fact_{row['metric']}" for row in rows)
