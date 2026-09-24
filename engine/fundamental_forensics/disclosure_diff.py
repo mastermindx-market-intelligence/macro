@@ -316,6 +316,9 @@ class NormalizedTable:
     # Every row group the markup OPENED, in source order, including one that holds no row: (row-group ordinal,
     # kind).  An empty first ``<thead>`` is still the header group (CSS 2.1 §17.2).  A layout fact.
     group_layout: tuple[tuple[int, str], ...] = ()
+    # True when the table was written inside another table's markup: it is emitted as its own block ahead of
+    # the outer table and carries none of the outer caption or band, so consumers treat it as unreadable (R83).
+    nested: bool = False
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -640,6 +643,7 @@ class _RawTable:
     # Every HTML row in source order, including rows that emit no cell: (ordinal, group ordinal, group kind).
     row_layout: list[tuple[int, int, str]] = field(default_factory=list)
     group_layout: list[tuple[int, str]] = field(default_factory=list)
+    nested: bool = False
 
 
 @dataclass
@@ -653,6 +657,7 @@ class _RawBlock:
     heading_level: int = 0
     table_layout: tuple[tuple[int, int, str], ...] = ()
     table_groups: tuple[tuple[int, str], ...] = ()
+    table_nested: bool = False
 
 
 @dataclass
@@ -753,7 +758,7 @@ class _HtmlBlockExtractor(HTMLParser):
             return
         if tag == "table":
             self._mark_block_child()
-            self.tables.append(_RawTable(start=start))
+            self.tables.append(_RawTable(start=start, nested=bool(self.tables)))
             return
         if self.tables:
             table = self.tables[-1]
@@ -772,6 +777,14 @@ class _HtmlBlockExtractor(HTMLParser):
                 table.group_kind = tag
                 table.group_layout.append((table.row_group, tag))
             elif tag == "caption":
+                # HTML's "in cell" / "in row" insertion modes close an open cell and row before a caption starts
+                # (R83): a caption written inside an unclosed td is the table's caption, not cell text.
+                if table.current_cell is not None:
+                    table.current_cell.end = start
+                    table.current_cell = None
+                if table.current_row is not None and table.current_row:
+                    table.rows.append(table.current_row)
+                table.current_row = None
                 table.in_caption = True
             elif tag in {"td", "th"}:
                 if table.current_row is None:
@@ -852,7 +865,7 @@ class _HtmlBlockExtractor(HTMLParser):
                     " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
                 )
                 if _compact_text(text):
-                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout)))
+                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested))
                 return
             return
         matching_index = next(
@@ -881,7 +894,7 @@ class _HtmlBlockExtractor(HTMLParser):
                 " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
             )
             if _compact_text(text):
-                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout)))
+                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested))
         for capture in self.captures:
             text = _compact_text("".join(capture.text_parts))
             if text and not (capture.tag == "div" and capture.has_block_child):
@@ -1169,7 +1182,7 @@ def normalize_filing(
                     rows.append(tuple(cells))
             table = NormalizedTable(
                 table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption, row_layout=raw_block.table_layout,
-                group_layout=raw_block.table_groups,
+                group_layout=raw_block.table_groups, nested=raw_block.table_nested,
             )
             text = table.text()
         block_id = stable_id(
