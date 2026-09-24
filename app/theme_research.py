@@ -33,8 +33,9 @@ T09 of operation gmi-semiconductors-fable-cee-20260923-chairman-001
   outside the registration's closed slice set is the same private 400
   ``invalid_request`` the body model gives a malformed field. No wildcard, no
   regex, no default vertical — the composer and evidence selector are the
-  registration's own callables, and a composed payload whose ``schema`` is
-  not the registration's exact schema id is refused (503) rather than served.
+  registration's own callables, and a composed payload whose ``schema`` (or,
+  for the query envelope, ``definition_version``) is not the registration's
+  exact value is refused (503) rather than served.
 
 The composition module does NOT see rights: this route strips assertions whose
 family is known-and-refused BEFORE handing the bundle to the registered
@@ -94,6 +95,15 @@ class PrivateStoreUnavailable(Exception):
     Tests inject a bundle via :func:`load_authorized_owner_bundle`; production
     must never reach a real reader until that ruling lands. The body shape is
     fixed by the route's ``service_unavailable`` envelope.
+    """
+
+
+class RegisteredContractMismatch(Exception):
+    """A registered vertical's composer returned a payload that is not the
+    registration's accepted contract (wrong ``schema`` / ``definition_version``
+    or not a mapping). Same fixed 503 envelope on the wire as
+    :class:`PrivateStoreUnavailable`; a distinct class so logs can tell a
+    composer/registration drift from an unbound reader.
     """
 
 
@@ -357,7 +367,13 @@ def _resolve_registration(body: _QueryBody) -> VerticalRegistration:
     with a slice outside its closed slice set → the private 400
     ``invalid_request`` the body model gives a malformed field. Nothing here
     reads a bundle, a file or the environment."""
-    registration = registration_for(body.anchor_theme_id)
+    try:
+        registration = registration_for(body.anchor_theme_id)
+    except Exception:  # noqa: BLE001 — a registry fault is a private 503, never a bare 500
+        raise _private_error(
+            503,
+            {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        ) from None
     if registration is None:
         raise _private_error(404, {"error": {"code": "not_available", "action": "none"}})
     if body.slice_key not in registration.slice_keys:
@@ -369,14 +385,23 @@ def _resolve_registration(body: _QueryBody) -> VerticalRegistration:
     return registration
 
 
-def _require_registered_schema(
-    payload: Any, expected_schema_id: str
+def _require_registered_contract(
+    payload: Any,
+    expected_schema_id: str,
+    expected_definition_version: str | None = None,
 ) -> dict[str, Any]:
     """A composed payload is served only when it is a mapping whose ``schema``
-    is the registration's exact schema id; anything else is a composer /
-    registration mismatch and fails closed (the caller maps it to 503)."""
+    is the registration's exact schema id and — for the query envelope, which
+    carries one — whose ``definition_version`` is the registration's exact
+    version; anything else is a composer / registration mismatch and fails
+    closed (the caller maps it to the fixed 503 envelope)."""
     if not isinstance(payload, Mapping) or payload.get("schema") != expected_schema_id:
-        raise PrivateStoreUnavailable("composed payload does not carry the registered schema")
+        raise RegisteredContractMismatch("composed payload does not carry the registered schema")
+    if expected_definition_version is not None and \
+            payload.get("definition_version") != expected_definition_version:
+        raise RegisteredContractMismatch(
+            "composed payload does not carry the registered definition_version"
+        )
     return dict(payload)
 
 
@@ -386,8 +411,10 @@ def _call_compose(
     query = _body_to_query(body)
     bundle = load_authorized_owner_bundle(query, principal=principal)
     bundle, dropped = _filter_bundle_for_rights(bundle)
-    payload = _require_registered_schema(
-        registration.compose(query, bundle), registration.schema_id,
+    payload = _require_registered_contract(
+        registration.compose(query, bundle),
+        registration.schema_id,
+        registration.definition_version,
     )
     payload = _post_process_rights_limitation(payload, dropped)
     return _private_json(200, payload)
@@ -399,7 +426,7 @@ def _call_evidence(
     query = _body_to_query(body)
     bundle = load_authorized_owner_bundle(query, principal=principal)
     bundle, dropped = _filter_bundle_for_rights(bundle)
-    payload = _require_registered_schema(
+    payload = _require_registered_contract(
         registration.select_evidence(query, bundle, body.assertion_ref),
         registration.evidence_schema_id,
     )
@@ -436,7 +463,7 @@ async def research_query(
         return _call_compose(body, user, registration)
     except ResearchRefusal as exc:
         raise _map_research_refusal(exc) from None
-    except PrivateStoreUnavailable:
+    except (PrivateStoreUnavailable, RegisteredContractMismatch):
         raise _private_error(
             503,
             {"error": {"code": "service_unavailable", "action": "retry_later"}},
@@ -469,7 +496,7 @@ async def research_evidence(
         return _call_evidence(body, user, registration)
     except ResearchRefusal as exc:
         raise _map_research_refusal(exc) from None
-    except PrivateStoreUnavailable:
+    except (PrivateStoreUnavailable, RegisteredContractMismatch):
         raise _private_error(
             503,
             {"error": {"code": "service_unavailable", "action": "retry_later"}},

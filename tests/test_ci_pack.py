@@ -3578,7 +3578,7 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
-    # 2026-09-24 Semiconductor B (#7870): the eleven B suites on the merge gate;
+    # 2026-09-24 Semiconductor B (#7870): the twelve B suites on the merge gate;
     # the transport suites import app.main, whose closure smears whole-tree
     # scan roots onto all three packing probes (+1 job each) when inferred.
     "semiconductor-b-boundary",

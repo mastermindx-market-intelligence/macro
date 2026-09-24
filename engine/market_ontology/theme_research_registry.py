@@ -15,8 +15,11 @@ their own carriers or via a later additive commit here) adds ONE
 accepted composer, evidence selector, exact schema ids and definition
 version, and the bilingual title/note the mount renders. Nothing else changes:
 ``app/theme_research.py`` resolves the registration by exact anchor after auth
-and body parsing and dispatches to it; the mount/build scripts read the same
-registration for their render context.
+and body parsing and dispatches to it. The mount partial and build scripts
+are bound to the same registration by shared hook 2 (a separate additive
+commit); until it lands they carry their own copy of the bilingual title/note
+and slice list, and this module pins those strings so the two cannot drift
+unnoticed once wired.
 
 Closure laws
 ------------
@@ -151,12 +154,15 @@ _SEMICONDUCTOR = VerticalRegistration(
 
 _ENTRIES: tuple[VerticalRegistration, ...] = (_SEMICONDUCTOR,)
 
-for _entry in _ENTRIES:
-    # Load-time closure: a registration is keyed by its own anchor, once.
-    if sum(1 for _other in _ENTRIES if _other.anchor_theme_id == _entry.anchor_theme_id) != 1:
-        raise RuntimeError(
-            f"theme_research_registry: anchor registered twice: {_entry.anchor_theme_id!r}"
-        )
+def _assert_unique_anchors(entries: tuple[VerticalRegistration, ...]) -> None:
+    """Load-time closure: a registration is keyed by its own anchor, once."""
+    anchors = [entry.anchor_theme_id for entry in entries]
+    for anchor in anchors:
+        if anchors.count(anchor) != 1:
+            raise RuntimeError(f"theme_research_registry: anchor registered twice: {anchor!r}")
+
+
+_assert_unique_anchors(_ENTRIES)
 
 #: Closed, read-only mapping ``anchor_theme_id -> VerticalRegistration``.
 REGISTRY: Mapping[str, VerticalRegistration] = MappingProxyType(

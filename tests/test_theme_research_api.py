@@ -1244,3 +1244,44 @@ def test_route_source_carries_no_hard_pinned_vertical():
     assert "registration.select_evidence(" in source
     for forbidden in ("import re\n", "re.compile", "re.match", "fnmatch", "os.environ"):
         assert forbidden not in source, forbidden
+
+
+def test_composer_payload_with_drifted_definition_version_fails_closed_as_503(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    """Sol binds 'exact schema/version': a query envelope whose
+    definition_version is not the registration's exact value is refused."""
+    def drifted_compose(query, bundle):
+        return {
+            "schema": _SYNTHETIC_SCHEMA, "definition_version": "2026-09-24.drifted",
+            "generation": "gen_" + "b" * 32, "request": {}, "limitations": [],
+            "authority": dict(_SYNTHETIC_AUTHORITY),
+        }
+
+    _install_synthetic_registration(monkeypatch, compose=drifted_compose)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key=_SYNTHETIC_SLICE),
+    )
+    assert response.status_code == 503, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"]["error"]["code"] == "service_unavailable"
+    assert "drifted" not in response.text
+
+
+def test_registry_fault_during_resolution_is_a_private_503_not_a_bare_500(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    """The registration lookup sits before the dispatch try-block; a fault in
+    it must still leave the wire inside the private envelope."""
+    def boom(anchor):
+        raise RuntimeError("registry fault: /secret/path")
+
+    monkeypatch.setattr(theme_research, "registration_for", boom)
+    response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body())
+    assert response.status_code == 503, response.text
+    _assert_private_headers(response)
+    assert response.json() == {
+        "detail": {"error": {"code": "service_unavailable", "action": "retry_later"}},
+    }
+    assert "secret" not in response.text and bundle_loader == []
