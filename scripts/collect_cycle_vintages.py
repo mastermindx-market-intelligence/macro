@@ -26,6 +26,7 @@ def collect_cycle_vintages(
     api_key: str | None = None,
     dry_run: bool = False,
     fetcher: Callable[..., Any] | None = None,
+    publisher: Callable[[Path, Path], None] | None = None,
 ) -> dict[str, Any]:
     return collect_release_target_vintages(
         repo_root=repo_root,
@@ -37,6 +38,10 @@ def collect_cycle_vintages(
         api_key=api_key,
         dry_run=dry_run,
         fetcher=fetcher,
+        publisher=publisher,
+        missing_key_warning=(
+            "[cycle_vintages] The FRED API key is absent, so the cycle vintage stores are untouched."
+        ),
     )
 
 

@@ -23,7 +23,7 @@ import os
 import sys
 import tempfile
 from collections.abc import Callable, Sequence
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +34,7 @@ sys.path.insert(0, str(_REPO))
 
 from collectors.fred import fetch_all_vintages
 from engine.release_target_truth import (
+    REQUIRED_VINTAGE_COLUMNS,
     SOURCE_OUTPUT_TYPE,
     SUPPORTED_SERIES,
     normalize_full_vintage_frame,
@@ -57,6 +58,9 @@ def collect_release_target_vintages(
     dry_run: bool = False,
     fetcher: Callable[..., pd.DataFrame] | None = None,
     publisher: Callable[[Path, Path], None] | None = None,
+    missing_key_warning: str = (
+        "[release_target_vintages] FRED_API_KEY absent; leaving stores untouched"
+    ),
 ) -> dict[str, Any]:
     """Fetch and persist bounded full-vintage matrices.
 
@@ -89,9 +93,7 @@ def collect_release_target_vintages(
         receipt["status"] = "skipped"
         receipt["reason"] = "missing_fred_api_key"
         receipt["completed_at"] = _utc_now()
-        log.warning(
-            "[release_target_vintages] FRED_API_KEY absent; leaving stores untouched"
-        )
+        log.warning(missing_key_warning)
         return receipt
 
     run_fetcher = fetcher or fetch_all_vintages
@@ -100,6 +102,8 @@ def collect_release_target_vintages(
     manifest = target_dir / "manifest.json"
     downstream_completion = (
         root / "data" / "release_forecast" / "cpi_truth" / "build_completion.json"
+        if target_subdir == "release_targets"
+        else None
     )
     successful = 0
     failed = 0
@@ -212,7 +216,8 @@ def collect_release_target_vintages(
         # but never under an old manifest or downstream CPI completion receipt.
         # The CPI completion receipt binds the exact shared manifest bytes, so
         # even a PAYEMS/PCE/PPI-only subset publication invalidates it.
-        _invalidate_file(downstream_completion)
+        if downstream_completion is not None:
+            _invalidate_file(downstream_completion)
         _invalidate_file(manifest)
 
         published: set[str] = set()
@@ -336,7 +341,8 @@ def seal_existing_release_target_vintages(
 
 
 def _normalize_series_ids(
-    series_ids: Sequence[str], supported_series: Sequence[str] = SUPPORTED_SERIES
+    series_ids: Sequence[str],
+    supported_series: Sequence[str] = SUPPORTED_SERIES,
 ) -> tuple[str, ...]:
     requested: list[str] = []
     for raw in series_ids:
@@ -346,7 +352,7 @@ def _normalize_series_ids(
                 continue
             if series not in supported_series:
                 raise ValueError(
-                    f"unsupported release-target series {series!r}; "
+                    f"unsupported collector series {series!r}; "
                     f"supported={list(supported_series)}"
                 )
             if series not in requested:
@@ -356,21 +362,81 @@ def _normalize_series_ids(
     return tuple(requested)
 
 
+def _coerce_end_date(value: object) -> date:
+    if value is None or (not isinstance(value, str) and pd.isna(value)):
+        return date.max
+    if isinstance(value, pd.Timestamp):
+        return value.date()
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    text = str(value).strip()[:10]
+    if text in {"", "NaT", "nan", "None"}:
+        return date.max
+    try:
+        return date.fromisoformat(text)
+    except ValueError:
+        raise ValueError(f"realtime_end is not a valid date: {value!r}") from None
+
+
 def _normalize_collector_frame(
     frame: pd.DataFrame,
     *,
     series_id: str,
     supported_series: Sequence[str],
 ) -> pd.DataFrame:
+    if series_id not in supported_series:
+        raise ValueError(
+            f"unsupported series {series_id!r}; supported={list(supported_series)}"
+        )
     if series_id in SUPPORTED_SERIES:
         return normalize_full_vintage_frame(frame, series_id=series_id)
 
-    engine_alias = SUPPORTED_SERIES[0]
-    normalized = normalize_full_vintage_frame(
-        frame.assign(series=engine_alias),
-        series_id=engine_alias,
+    frame = frame.copy()
+    frame["series"] = series_id
+    if not isinstance(frame, pd.DataFrame):
+        raise ValueError("vintages must be a pandas DataFrame")
+    missing = REQUIRED_VINTAGE_COLUMNS - set(frame.columns)
+    if missing:
+        raise ValueError(
+            f"full-vintage frame is missing required columns: {sorted(missing)}"
+        )
+    if "source_output_type" in frame.columns:
+        output_types = pd.to_numeric(frame["source_output_type"], errors="coerce")
+        if len(frame) and (
+            output_types.isna().any()
+            or not output_types.eq(SOURCE_OUTPUT_TYPE).all()
+        ):
+            raise ValueError("source_output_type must be exactly 2")
+    keys = ["series", "period", "realtime_start"]
+    if frame.duplicated(keys, keep=False).any():
+        conflicting = frame.loc[frame.duplicated(keys, keep=False), keys]
+        raise ValueError(
+            "conflicting or repeated values for one series/period/vintage: "
+            f"{conflicting.to_dict(orient='records')}"
+        )
+    frame["period"] = pd.to_datetime(frame["period"], errors="coerce")
+    frame["realtime_start"] = pd.to_datetime(
+        frame["realtime_start"], errors="coerce"
     )
-    return normalized.assign(series=series_id)
+    frame["value"] = pd.to_numeric(frame["value"], errors="coerce")
+    frame["realtime_end"] = frame["realtime_end"].map(_coerce_end_date)
+    frame = frame.dropna(subset=["period", "realtime_start", "value"])
+    frame["period"] = frame["period"].dt.to_period("M").dt.to_timestamp()
+    frame["realtime_start"] = frame["realtime_start"].dt.normalize()
+    conflicts = frame.groupby(keys, dropna=False)["value"].nunique(dropna=False)
+    if (conflicts > 1).any():
+        raise ValueError("conflicting values for one series/period/vintage")
+    frame = (
+        frame.sort_values(keys)
+        .drop_duplicates(keys, keep="last")
+        .reset_index(drop=True)
+    )
+    ordered = ["series", "period", "realtime_start", "realtime_end", "value"]
+    if "source_output_type" in frame.columns:
+        ordered.append("source_output_type")
+    return frame[ordered]
 
 
 def _sealed_manifest_equivalent(
