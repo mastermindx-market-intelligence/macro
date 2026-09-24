@@ -958,7 +958,24 @@ def test_stale_radar_without_name_does_not_claim_not_detected():
     assert ctx["live_entry_radar"]["state"] is None
 
 
-def test_group_context_rebuilds_owner_context_instead_of_trusting_embedded_authority(tmp_path):
+def test_group_context_rebuilds_owner_context_instead_of_trusting_embedded_authority(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+
+    class ObservationDate(date):
+        @classmethod
+        def today(cls):
+            return NOW
+
+    class ObservationClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = datetime(2026, 9, 19, tzinfo=timezone.utc)
+            return value.astimezone(tz) if tz else value.replace(tzinfo=None)
+
+    # Exercise both real readers at the fixture's date; old inputs stay stale.
+    monkeypatch.setattr(gcmod, "date", ObservationDate)
+    monkeypatch.setattr(gcmod, "datetime", ObservationClock)
+    assert gcmod._artifact_age_days("2026-09-01") > gcmod.GroupContext.STALE_DAYS
     site = tmp_path / "site"
     (site / "marketdata").mkdir(parents=True)
     (site / "factordata").mkdir(parents=True)

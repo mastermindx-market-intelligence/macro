@@ -69,7 +69,18 @@ def _count_equal(value: object, target: dict) -> int:
     return count
 
 
-def test_subsector_reader_exposes_private_payload_and_public_reference(tmp_path):
+def test_subsector_reader_exposes_private_payload_and_public_reference(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+
+    class ObservationClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = datetime(2026, 9, 19, tzinfo=timezone.utc)
+            return value.astimezone(tz) if tz else value.replace(tzinfo=None)
+
+    # This is a dated fixture, not permission to disable production staleness.
+    monkeypatch.setattr(ts, "datetime", ObservationClock)
+    assert ts._is_stale("2026-09-01")
     observation = _observation()
     _write_rotation(tmp_path, observation)
 
