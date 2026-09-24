@@ -10,90 +10,63 @@ implementation_authority: none
 
 # Basic Materials Economics — current Fable integration packet
 
-**Updated:** 2026-09-24, through R15. Prepared for bounded principal integration, not an unblocked production build. This updates the existing packet; it creates no parallel handoff or lifecycle owner.
+Updated 2026-09-24 through R16. This compacts the existing packet; it does not create another handoff or discard the referenced specifications. The prior R15 packet remains at `4a26348c628809631652249c12245ca9ecb0e456`, blob `453427b72b01013e67d2e3620619bb541c1c7ae6`.
 
-**Preferred avenue:** Fable for cross-owner integration and final acceptance, with routine implementation assigned to the least-scarce capable workers. **Binding:** CAPACITY_SELECTABLE / WAITING_CAPACITY / needs_placement. No Materials receiver, ACK, START, Executive Attempt or autonomous wake is established. The Semiconductor Fable assignment is not a Materials assignment.
+**Prepared for principal integration and independent review, not an unblocked production build.** Preferred avenue Fable for consequential shared-owner integration and acceptance; routine implementation uses the least-scarce capable avenue. CAPACITY_SELECTABLE / WAITING_CAPACITY / needs_placement. No Materials receiver, ACK, START, Executive Attempt or autonomous wake is established. The Semiconductor Fable assignment does not assign Materials.
 
-## 1. Outcome and authority
+## Mission and preserved scope
 
-The Chairman commissioned principal-led Basic Materials research and masterplanning, eventual Fable-led build integration, reuse of the Semiconductor GMI foundation, and independent forward progress even without its reply. Sol retains the Materials principal responsibility until a lawful bounded handoff.
+Deliver Materials Economics inside the existing Themes/sector-to-company workflow: what changed, which operating business or financial right captures it, what can reach retained cash/per-share economics, what was expected, and what evidence matters next. The five selected originals across Nutrien, NOVONIX (two), Wheaton/Antamina and Weyerhaeuser must each retain their correct scope. Full acceptance includes lawful company navigation and actual source-to-private-browser proof, not source-only fallback.
 
-Deliver a paid, read-only economic explanation in the existing Themes-to-stock workflow: what changed; which operating business or financial right captures it; what reaches cash and per-share economics; what was expected; and what evidence matters next. This is not another commodity dashboard or a request to redo the research.
+Sol retains Materials principal responsibility. Macro #7796 / `sol/basic-materials-research-20260923` remains research-only Draft/HOLD; no merge, rebase, replacement or product code on this carrier. Re-pin protected procedure and actual shared source/custody before effects. This packet creates no worker or authority grant. The current user must deliberately deliver a bounded implementation assignment before a receiver acts.
 
-Preserve all44 requirements, the eight-task implementation plan, five original documents/four company journeys and V0–V4 ambition. Context, forecasts, research priority and trading authority remain separate. No research summary originates, ranks or sizes a trade.
+Preserve all44 core requirements, eight tasks, seven open/partial gates, ten research navigation families, eight economic lenses and V0–V4 ambition: explanation, comparable changes, conditional economics, evaluated discovery, broader global coverage/learning. Research context does not rank, gate, originate, size or open trades. No new evidence/identity/correction/permissions/store/publisher/client/evaluation/queue control system.
 
-#7796 / `sol/basic-materials-research-20260923` remains the research carrier, Draft/HOLD with Sol release. No merge, rebase, replacement, product code or automatic implementation admission on this branch. A later implementation assignment must reconcile the actual accepted shared base and source custody before effects.
+## Read only the necessary exact sources
 
-## 2. Minimal reading order
+1. Current cumulative frontier: `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md`. It owns last effects, denials, source pins and exact next action.
+2. R16 consumer decisions: `research/basic_materials/BASIC_MATERIALS_R16_ECONOMIC_CHANGE_TO_EXISTING_CONSUMERS_2026-09-24.md`, with its38 synthetic-case exercise/tests/verification. No native permission or model performance is implied.
+3. R11 foundation-adoption amendment and `R11_FOUNDATION_ADOPTION_MATRIX_2026-09-24.json` (blob `443a29e64069c029e48aed14a2ea11f51e705257`) BEFORE the older implementation steps. They supersede the standalone Materials API/client and shared-code duplication.
+4. Saved plan: `docs/superpowers/plans/2026-09-23-basic-materials-economics-v0-implementation.md`, blob `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R9 matrix blob `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9` preserves all44 core requirements.
+5. R15 complete selected-source index `R15_REMAINING_SOURCE_REVIEW_AND_PROOF_SET_2026-09-24.json`, blob `200fd463cf7f902022dcf14cde7dc24583110737`; references unchanged R14 worksheet `4da2e39f6ffae09cb25e3cb1a6a15feebdc9d221` rather than duplicating it.
+6. R13 native identity observations blob `3f54410ae6a0caeb36a0698f76a4beb4f48e3e63`; R12 economic reference set for expected answers, not an independent holdout.
+7. R8 integrated specification blob `354ac7e305d43be8e4fe2b21dab54cbe2cf60736` and manifest `7aabc80d34278609e717fcbdfef56c080bfc9dce` locate the full family research/source registers. Read a family annex only when its economic interpretation is disputed; do not repeat R1–R15 surveys.
 
-1. Current cumulative owner: `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md`. It preserves current effects, holds and exact next action; this packet is not a second current-state authority.
-2. R15 completes the selected five-document preparation: `research/basic_materials/BASIC_MATERIALS_R15_COMPLETE_SELECTED_SOURCE_PROOF_SET_2026-09-24.md` and `R15_REMAINING_SOURCE_REVIEW_AND_PROOF_SET_2026-09-24.json`. The latter indexes unchanged R14 inputs rather than replacing them. Read the new customer-testing/MOU distinctions and the explicitly synthetic threshold cases. Existing R14 inputs: `research/basic_materials/BASIC_MATERIALS_R14_SELECTED_SOURCE_REVIEW_AND_DOSSIER_READINESS_2026-09-24.md` and `R14_SELECTED_SOURCE_BINDING_REVIEW_2026-09-24.json`. These retain the two earlier source-bound dossier drafts and the exact unfilled native review/retention fields. All five selected sources now have preparation drafts; native admission remains unproved.
-3. R11 foundation adoption and `R11_FOUNDATION_ADOPTION_MATRIX_2026-09-24.json`, blob `443a29e64069c029e48aed14a2ea11f51e705257`. Read this before the saved R9 plan; it supersedes the duplicated API/client and foundation-build instructions.
-4. Saved plan `docs/superpowers/plans/2026-09-23-basic-materials-economics-v0-implementation.md`, unchanged blob `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R9 matrix blob `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9`. All32 BM-R8 plus12 R9 requirements retain their task mappings.
-5. R8 integrated specification blob `354ac7e305d43be8e4fe2b21dab54cbe2cf60736` and manifest `7aabc80d34278609e717fcbdfef56c080bfc9dce` index the family studies. R12 supplies the 48 economic reference cases/evaluation boundaries. R13 supplies actual identity observations. Read individual family studies only for the mechanism being implemented or disputed.
+All research filenames not otherwise qualified are under `research/basic_materials/`. Exact committed versions remain on this one carrier.
 
-The R11 packet remains in history at `87e3e5502118debaa4ae59ffcff3ddc84796d5a2`, blob `76e510fe6e7c4afa398d2a42e2ab7df4952daf20`. This consolidation changes reading order and current evidence, not economic scope or acceptance.
+## Shared foundation and revised eight tasks
 
-## 3. Shared foundation: consume, do not rebuild
+Consume #7870, not another Materials base. Last R16 inspection: `3e3a7956d014b8c50be7b197fdbea847cecfa641`, open/draft/unmerged. Schema `ff3928f0c54aa164ef8283d9da45af67e6a0d971` remains unchanged. Owner checkpoint reports R4 architecture accepted with qualifications; private-publication/projection review blockers and current-rights mapping qualification remain. These are candidate reports, not deployed acceptance or independently reproduced leaks. AM1–AM4 acceptance is unestablished; original same-discussion request5809093547 remains, not a new dispatch.
 
-The actual shared implementation is #7870, operation `gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001`. The R14 inspected head is `70fde3c79956bba5b9c4e2365a97b4e4b3b1c3ef`, observed open/draft/unmerged. Its common client/CSS/mount, F04 composer and K1 vocabulary changes supersede the older observation that those files were absent. No deployed Materials profile is thereby established.
+| Task | Required action |
+|---|---|
+| T1 | Consume one shared curation contract; close exact/signed/fractional measurement and original-input rights mapping through its owner. |
+| T2 | Consume accepted private publication and fresh rights snapshot; prove strict failure states, complete source dependencies and current permission at emission. |
+| T3 | Consume the same K1 subtype without losing source/recorded clocks or inventing a unified security recipe. |
+| T4 | Implement only the Materials F04 explanation/comparison consumer under accepted contracts; preserve company/financial-right and economic scope. |
+| T5 | Extend the accepted shared POST research query/evidence interface with a closed Materials profile; no standalone Materials endpoint or auth path. |
+| T6 | Extend the shared theme-research client and accepted mounts; no duplicated network client, template or global theme identity. |
+| T7 | Rehearse all five real sources/four company journeys, including missing-data cases, native review and actual identity/route evidence. |
+| T8 | Obtain independent exact-head review/release, actual private-browser proof and unchanged decision-output evidence. |
 
-Actual curation schema remains blob `ff3928f0c54aa164ef8283d9da45af67e6a0d971`. R11 AM1–AM4 remain unaccepted in the observed discussion. Shared-owner reply5808307684 was consumed; amendment5809093547 remains on #7773. No duplicate request or new shared worker.
+AM1 preserves legacy bytes when optional measurement is absent; exact values cannot pass through floats or dual populated branches. AM2 must not treat unresolved source families as an empty allowed set. AM3 must not force Materials into the two Semiconductor slices. AM4 must not turn contractual participation into ownership/additional physical supply or an MOU into qualification.
 
-- **AM1:** one compatible exact/signed measurement representation; preserve fractional physical quantities and legacy absent-extension hashes. No sign hidden in prose, float coercion or dual numeric truth.
-- **AM2:** actual original-source/representation policy binding. Empty unresolved dependencies do not grant access; house curation does not erase upstream restrictions.
-- **AM3:** closed Materials profile/adapter in the accepted shared POST query/evidence API and generic client. Do not force HBM/SiC fields onto Materials or create another fetch/auth client.
-- **AM4:** financial participation is not ownership/extra physical supply; an unrelated MOU is not customer qualification.
+H1 shared compatibility, H2 store custody, H3 accepted private profile/proof, H5 detail custody, H6 independent release and H7 actual source retention/rights/review stay open. H4 is partial from two NYSE identities, not four completed journeys. R13 Canadian Nutrien remains unresolved. Source declarations, native identity, collection coverage and published routes are separate evidence. Preserve the existing #7462/#7669 custody unless their current owners explicitly reconcile it.
 
-R14 inspected candidate registry blob `1073ca1e9841dc95084a57b4577d159e74f9d211` contains limited `sec_edgar` representation policy. It is a candidate qualification input for the WY exhibit, not permission for Nutrien's corporate-hosted original or a live retention/publication receipt.
+## R16 consumer constraints
 
-Private profile/R4, export and entitlement behavior remain with their existing owners. No global data-root move, new private bucket/store/current pointer, spoofed Earnings/RIO object or source-custody transfer. Current policy snapshots must cover every admitted input and be rechecked before response release; old snapshots do not observe future changes.
+Current source pin `ee908cb8f0b591a693d6de18fdf6e7ad314f1108` identifies `engine/master_brain.py`, `scripts/build_aibrief.py`, `_aibrief_body.html.j2`, `desk_ledger.py` and the closed Company Theme Exposure contract. AI Brief has shared static outputs. Do not send full private assertions, private links, holdings or decision snapshots there. Public summary approval and external-processor permission are independent from private viewing. No provider/credential call is authorized here.
 
-## 4. Updated task allocation
+Source novelty is not a fresh build ID. Old evidence found late is background; corrections target exact predecessors; unrelated propositions and common-source repeats remain separate. A consensus-surprise claim needs actual earlier comparable consensus. A target window passing is not completion. Date-only actual source calendars need qualification; the synthetic exercise's UTC dates do not supply it.
 
-| Task | Execute through | Required result |
-|---|---|---|
-| T1 | Shared #7870 contract owner | Consume/qualify accepted signed/exact fields and review inputs; no assertion clone |
-| T2 | Existing GMI/private publication/rights owners | Actual private reader/publisher and coherent current rights; no legacy-cache workaround |
-| T3 | Existing K1 owner | Lossless native evidence references and separate clocks; no forged security recipe |
-| T4 | Materials-only F04 consumer | Correct economic scope/comparison and lawful company navigation |
-| T5 | Shared theme-research API | Materials profile, authorization before private reads, generation/error/race tests |
-| T6 | Shared theme-research client and accepted mounts | Useful bilingual/accessibility/missingness behavior; no duplicate shell |
-| T7 | Existing source/review/identity/publication owners | All five originals/four company journeys through real native input |
-| T8 | Integration principal plus independent reviewer/release | Exact-head release, private-path denial, real browser proof and unchanged stock decisions |
+Keep global stance, Prophet selection/rank/entry/weights and membership projection unchanged. The16 mapped R16 requirements refine T3–T8; later brief/notification adoption is not an excuse to withhold the V0 private dossier. The offline helper is a development oracle, not production code or another permissions gate.
 
-R9's standalone `app/materials_economics.py`, GET `/api/themes/materials/economics/v1`, `materials-economics.js`/`.css` and second mount are superseded by R11. Materials composer paths remain the bounded sector-specific implementation. Shared code existence or tests do not mark Materials T1–T8 complete.
+## Acceptance and current limits
 
-## 5. Complete selected-source preparation now available
+Actual completion requires retained originals, native review/admission, correct measurement/identity generations, current permitted representations, paid authorization before private reads, working sources/company pages and desktop/mobile, EN/ZH, dark/light and keyboard proof. Denied/public/cache/alternate-path cases must not expose private bodies or source existence. CI, a shared merge or a screenshot alone is insufficient.
 
-R15 adds three source-specific records: NOVONIX September 9 customer testing, September 16 nonbinding MOU, and Wheaton April 1 BHP/Antamina closing. Nineteen atomic observations retain attribution, future conditions, missing identities and agreement scope. All native review/retention/rights/identity/route fields stay null for these new subjects. Do not infer the unnamed customer from related links, count an MOU as qualification, or treat a stream as mine ownership.
+R12/R15/R16 tests are research exercises, not independent semantic review or predicted returns. All new native source/retention/current-rights/production/route receipts remain absent until supplied by their owners. R13 browser and additional identity/delivery actions were platform-denied before dispatch and must not be retried/reframed/rerouted absent actual permitted recovery. No full original reports or protected production payloads are in this packet.
 
-Six explicitly synthetic contract scenarios distinguish pre-threshold, post-threshold and mid-period crossing; already-payable quantities are not discounted twice. Unknown actual cumulative deliveries refuse an actual-phase calculation. The 100-million-ounce threshold applies to the named BHP agreement, not every Antamina interest. None of these scenarios values the upfront investment or establishes current receipts. The source summary does not settle undisclosed legal allocation rules.
+## Exact next action
 
-R14's Nutrien and Weyerhaeuser worksheets specify ten original measurements, seven arithmetic reconciliations, exact source locators and eighteen future review conditions. Values remain separate from original interpretation; source publication dates remain separate from comparative periods and later system recording. These are non-native drafts: retention, native review, current rights, curation revisions, production generations and emitted hrefs are deliberately null.
-
-R13 qualified two actual NYSE chains: `co:us:NTR` -> `ISS:US-XNYS-NTR` / `SEC:US-XNYS-NTR` / `US-XNYS-NTR`; `co:us:WY` -> `ISS:US-XNYS-WY` / `SEC:US-XNYS-WY` / `US-XNYS-WY`. Native data/source pin `3c93f8194f6c2cb19dad21c1347d8b3b8474aa31`, observation blob `3f54410ae6a0caeb36a0698f76a4beb4f48e3e63`. September21 master and September23 bridge dates remain unchanged. Do not rerun discovery merely to make the retrieval date newer.
-
-The Canadian Nutrien node remains unresolved. The R13 August20 historical-name versus as-recorded contrast remains a real evaluation control; an old query date over a new master is not system-known-at replay. No hand-built ticker/CIK/route map is authorized.
-
-The positive proof set remains Nutrien, two NOVONIX documents, Wheaton/Antamina and Weyerhaeuser. Preserve product versus issuer scope; testing versus acceptance versus shipment; contractual participation versus ownership; and actual cash spending versus issuer-adjusted cash measures. AMS/China missing cases remain explicit. R14 plus R15 prepares all five selected documents; preparation is not independent review, native admission, current full-contract coverage or a full global census.
-
-## 6. Holds, boundaries and proof
-
-H1 shared compatibility, H2 store custody, H3 actual private profile/proof, H4 complete identity/source/navigation, H5 detail-template custody, H6 independent live release, H7 retained original rights/review remain. H4 is PARTIAL because two native NYSE identities are qualified; it is not closed. #7462/#7669 custody must be reconciled rather than inferred expired.
-
-The R13 denied browser action and additional alias/other-subject/delivery batch were not retried. They require actual platform-permitted recovery, not a new chat/model/tool. This does not freeze unrelated research work.
-
-No source text, reviewer string, identity-shaped field, content digest or worksheet can approve itself. No paid payloads in public Git/static artifacts, unsafe browser caches, source maps or alternative public routes. Failed reads remain failures, not empty ready data. A later unrelated source cannot overwrite a different proposition; corrections and rights withdrawals remain distinct.
-
-Acceptance requires original source -> actual retention/review -> native evidence/identity -> current permitted representation -> paid shared API -> existing emitted page -> correct source/company navigation -> stock workflow. Prove desktop/mobile, EN/ZH, dark/light, keyboard use, logout/delayed-request handling and generation consistency. Source-only fallback, CI green, a shared merge or one screenshot alone is not acceptance.
-
-## 7. Next action and completion boundary
-
-After accepted shared measurement/private interfaces and lawful implementation assignment, perform one full selected-case rehearsal using all five prepared originals through the actual source/review owners. For Nutrien/Weyerhaeuser, consume exact R13 identity evidence; for NOVONIX/Wheaton, require actual native identity evidence rather than filling the remaining nulls. Compare generated explanations against R14/R15 scopes and R12 reference expectations, then complete the T7/T8 private source-to-browser proof. Do not fill admission fields merely to make a schema validate. R13 denied browser/other-subject queries still require actual platform-permitted recovery; this packet does not authorize a workaround.
-
-Before native gates clear, advance only a concrete independent source/economic/evaluation question. Do not restart R1–R7, repeat the unanswered Fable request or create another generic platform plan. V0 explanations, V1 comparable changes, V2 conditional economics, V3 evaluated proactive discovery and V4 broader global learning all remain in scope.
-
-R15 executed 12 named offline scenario tests and 43 worksheet checks, including six synthetic scenarios and the seven unchanged R14 reconciliations. Two deliberately incorrect research-helper variants were detected. These are development/reference checks, not native product tests or an independent audit of the sources or agreement. Twenty-four R15 review obligations are future acceptance conditions. No native admission, model evaluation, browser proof or independent semantic acceptance occurred. R14 checks remain historical evidence rather than a new product pass. Preparation procedure was pinned to Mastermind `1a7d400294b0d37c460b963b8865b40a23173b58`, Skillpack1.0.1/bootstrap1. Re-pin current procedure and action-specific source custody before effects.
-
-Mission complete remains false. No Materials receiver assignment, START or background execution is conveyed by this packet.
+Obtain the accepted shared exact-measure/private/profile signatures and a bounded independent review of this packet; resolve concrete findings and then execute the real selected-case rehearsal. When that lane is held, progress must be an actual independent review finding or accepted interface decision, not another equivalent source worksheet or fixture rerun. No response grants takeover of the shared writer. Materials still requires its own deliberate bounded assignment and separate START; this packet does not create either.
