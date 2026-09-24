@@ -447,14 +447,15 @@ def _fact_present(
     }
 
 
-def _fact_absent(*, fact_id: str, event_id: str, metric: str, detail: str, document_id: str) -> dict[str, Any]:
+def _fact_absent(*, fact_id: str, event_id: str, metric: str, detail: str, document_id: str,
+                 reason: str = "no_span_addressable_evidence") -> dict[str, Any]:
     return {
         "schema": "event_fact.v1",
         "fact_id": fact_id,
         "event_id": event_id,
         "metric": metric,
         "typed_absence": _absence(
-            reason="no_span_addressable_evidence",
+            reason=reason,
             subject=metric,
             detail=detail,
             event_id=event_id,
@@ -1398,13 +1399,140 @@ def tol_profile() -> IssuerProfile:
 # ─────────────────────────────────────────────────────────────────────────────
 
 _TSM_NT_REVENUE_RE = re.compile(r"NT\$[\d,]+(?:\.\d+)?\s*million")
-_TSM_USD_REVENUE_RE = re.compile(r"US\$[\d.,]+\s*billion")
+_TSM_USD_REVENUE_RE = re.compile(r"US\$([\d.,]+)\s*billion")
 _TSM_GUIDANCE_RANGE_RE = re.compile(
     r"between\s+US\$([\d.]+)\s+billion\s+and\s+US\$([\d.]+)\s+billion"
 )
 _TSM_GUIDANCE_FX_RE = re.compile(
-    r"assuming\s+an\s+exchange\s+rate\s+of\s+(\d+(?:\.\d+)?\s+NTD\s+per\s+USD)\."
+    r"assuming\s+an\s+exchange\s+rate\s+of\s+(\d+(?:\.\d+)?\s+NTD\s+per\s+USD)\b\.?"
 )
+
+# ── Period binding for release text (T05a review fixes) ─────────────────────
+# A release names MANY figures: the reported quarter's, the year-ago
+# comparative, last quarter's, the range management guided to previously.
+# Nothing below chooses "the first match": a figure is bound to the reported
+# period only when its own clause carries no comparative marker AND the block
+# it sits in names the reported quarter; a guidance range is emitted only
+# from a forward-looking sentence that names the horizon quarter AND year
+# explicitly.  Anything ambiguous is a typed absence / no item — never a guess.
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+_CLAUSE_SPLIT_RE = re.compile(r",|;|\bcompared\s+(?:with|to)\b|\bversus\b|\bvs\.?\b|\bfrom\b|\bup\s+from\b|\bdown\s+from\b", re.I)
+_COMPARATIVE_MARKER_RE = re.compile(
+    r"\b(a\s+year\s+ago|year[- ]ago|year\s+earlier|prior[- ]year|previous\s+year|last\s+year|"
+    r"last\s+quarter|prior\s+quarter|previous\s+quarter|sequentially|year[- ]over[- ]year)\b", re.I)
+_RECAP_MARKER_RE = re.compile(
+    r"\b(guided|previously|prior\s+guidance|earlier\s+guidance|last\s+quarter|prior\s+quarter|"
+    r"earlier\s+this\s+year|had\s+expected|originally)\b", re.I)
+_FORWARD_MARKER_RE = re.compile(
+    r"\b(looking\s+ahead|we\s+expect|expects?|anticipates?|guidance|outlook|forecasts?|projects?|is\s+expected)\b", re.I)
+_ORDINAL_QUARTERS = {"first": 1, "1st": 1, "second": 2, "2nd": 2, "third": 3, "3rd": 3, "fourth": 4, "4th": 4}
+_QUARTER_WORDS = {1: "first", 2: "second", 3: "third", 4: "fourth"}
+_QUARTER_PHRASE_RE = re.compile(
+    r"\b(first|second|third|fourth|1st|2nd|3rd|4th)[\s-]+quarter(?:\s+of)?(?:\s+fiscal(?:\s+year)?)?\s+(20\d{2})\b", re.I)
+_QUARTER_CODE_RE = re.compile(r"\b(?:Q([1-4])\s*(20\d{2})|([1-4])Q(\d{2}|20\d{2})|(20\d{2})\s*Q([1-4]))\b")
+_MONTH_DATE_RE = re.compile(
+    r"\b(January|February|March|April|May|June|July|August|September|October|November|December)"
+    r"\s+(\d{1,2}),?\s+(\d{4})\b")
+_MONTHS = {name: index for index, name in enumerate(
+    ("January", "February", "March", "April", "May", "June", "July", "August", "September",
+     "October", "November", "December"), start=1)}
+
+
+def _sentence_at(text: str, index: int) -> tuple[int, str]:
+    """The (start, sentence) of ``text`` containing character ``index``."""
+    start = 0
+    for m in _SENTENCE_SPLIT_RE.finditer(text):
+        if start <= index < m.start():
+            return start, text[start:m.start()]
+        start = m.end()
+    return start, text[start:]
+
+
+def _clause_at(sentence: str, index: int) -> str:
+    """The comma/comparative-delimited clause of ``sentence`` containing ``index``."""
+    start = 0
+    for m in _CLAUSE_SPLIT_RE.finditer(sentence):
+        if start <= index < m.start():
+            return sentence[start:m.start()]
+        start = m.end()
+    return sentence[start:]
+
+
+def _quarters_named(text: str) -> set[tuple[int, int]]:
+    """Every (year, quarter) the text names, as words or as Q-codes."""
+    found: set[tuple[int, int]] = set()
+    for m in _QUARTER_PHRASE_RE.finditer(text):
+        found.add((int(m.group(2)), _ORDINAL_QUARTERS[m.group(1).lower()]))
+    for m in _QUARTER_CODE_RE.finditer(text):
+        if m.group(1):
+            found.add((int(m.group(2)), int(m.group(1))))
+        elif m.group(3):
+            year = int(m.group(4)); year = year + 2000 if year < 100 else year
+            found.add((year, int(m.group(3))))
+        else:
+            found.add((int(m.group(5)), int(m.group(6))))
+    return found
+
+
+def _horizon_named(sentence: str) -> str | None:
+    """The ONE horizon a forward sentence names, ``YYYYQn``; None when the
+    sentence names no quarter+year or more than one (never inferred)."""
+    named = _quarters_named(sentence)
+    if len(named) != 1:
+        return None
+    (year, quarter), = named
+    return f"{year}Q{quarter}"
+
+
+def _parse_month_date(text: str) -> date | None:
+    m = _MONTH_DATE_RE.search(text)
+    if m is None:
+        return None
+    try:
+        return date(int(m.group(3)), _MONTHS[m.group(1)], int(m.group(2)))
+    except ValueError:
+        return None
+
+
+def _period_bound_literals(
+    blocks: Sequence[DisclosureBlock], pattern: re.Pattern[str], fiscal_period: Any,
+) -> list[tuple[DisclosureBlock, re.Match[str]]]:
+    """Matches of ``pattern`` that are bound to the reported period: the block
+    names the reported (year, quarter) and the match's own clause carries no
+    comparative marker. Order preserved; the caller decides what >1 means."""
+    year = getattr(fiscal_period, "year", None)
+    quarter = getattr(fiscal_period, "quarter", None)
+    if year is None or quarter is None:
+        return []
+    bound: list[tuple[DisclosureBlock, re.Match[str]]] = []
+    for block in blocks:
+        if (int(year), int(quarter)) not in _quarters_named(block.text):
+            continue
+        for m in pattern.finditer(block.text):
+            sentence_start, sentence = _sentence_at(block.text, m.start())
+            clause = _clause_at(sentence, m.start() - sentence_start)
+            if _COMPARATIVE_MARKER_RE.search(clause):
+                continue
+            bound.append((block, m))
+    return bound
+
+
+def _forward_ranges(
+    blocks: Sequence[DisclosureBlock], pattern: re.Pattern[str],
+) -> list[tuple[DisclosureBlock, re.Match[str], str]]:
+    """(block, match, horizon) for every range that sits in a forward-looking
+    sentence (forward marker, no recap marker) naming exactly one quarter+year."""
+    found: list[tuple[DisclosureBlock, re.Match[str], str]] = []
+    for block in blocks:
+        for m in pattern.finditer(block.text):
+            _, sentence = _sentence_at(block.text, m.start())
+            if _RECAP_MARKER_RE.search(sentence) or not _FORWARD_MARKER_RE.search(sentence):
+                continue
+            horizon = _horizon_named(sentence)
+            if horizon is None:
+                continue
+            found.append((block, m, horizon))
+    return found
 
 
 def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, **kwargs: Any) -> list[dict[str, Any]]:
@@ -1413,71 +1541,52 @@ def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_i
     blocks = bound.document.blocks
     facts: list[dict[str, Any]] = []
 
-    # (i) NT$ net revenue — typed absence because the unit vocabulary has
-    # no TWD unit.  The receipt_for_literal call STILL runs first so a
-    # later widening of the unit vocabulary can flip this fact from typed
-    # absence to present without touching this function's structure; we
-    # capture the receipt existence here only to prove the literal IS in
-    # the document, not to invent a unit (C4).
+    # (i) NT$ net revenue.  The unit vocabulary has no TWD scale, so this fact
+    # is a typed absence either way — but the two states are DIFFERENT and
+    # countable: the literal is present and receipted (``missing_units``), or
+    # no NT$ figure is bound to the reported period (``no_span_addressable_evidence``).
     twd_receipt = None
-    for block in blocks:
-        m = _TSM_NT_REVENUE_RE.search(block.text)
-        if m is not None:
-            twd_receipt = _literal_receipt(
-                bound,
-                search_start=block.source_span.char_start,
-                search_end=block.source_span.char_end,
-                literal=m.group(0),
-            )
-            if twd_receipt is not None:
-                break
+    for block, m in _period_bound_literals(blocks, _TSM_NT_REVENUE_RE, fiscal_period):
+        twd_receipt = _literal_receipt(
+            bound, search_start=block.source_span.char_start,
+            search_end=block.source_span.char_end, literal=m.group(0),
+        )
+        if twd_receipt is not None:
+            break
     if twd_receipt is None:
         facts.append(_fact_absent(
             fact_id="fact_revenue_twd", event_id=event_id, metric="revenue",
-            detail=(
-                "NT$ net revenue is not present or not uniquely addressable in "
-                "Exhibit 99.1"
-            ),
+            detail="NT$ net revenue for the reported quarter is not present or not uniquely addressable in Exhibit 99.1",
             document_id=document_id,
         ))
     else:
-        # Receipt exists for the NT$ literal, but the unit vocabulary has
-        # no TWD scale — emit typed absence with the documented sentinel
-        # detail instead of inventing one (C4).
         facts.append(_fact_absent(
             fact_id="fact_revenue_twd", event_id=event_id, metric="revenue",
+            reason="missing_units",
             detail=(
                 "reporting_currency_twd_not_in_unit_vocabulary: NT$ net revenue "
-                "literal is present in Exhibit 99.1 but the existing unit vocabulary "
-                "is USD-prefixed and no TWD scale exists to attach"
+                "literal is present and receipted in Exhibit 99.1 but the existing unit "
+                "vocabulary is USD-prefixed and no TWD scale exists to attach"
             ),
             document_id=document_id,
         ))
 
-    # (ii) USD-restated revenue — present with unit ``usd_billions``.
-    usd_receipt = None
-    usd_literal = None
-    for block in blocks:
-        m = _TSM_USD_REVENUE_RE.search(block.text)
-        if m is not None:
-            usd_literal = m.group(0)
+    # (ii) USD-restated revenue — present only when exactly ONE distinct USD
+    # figure is bound to the reported period; a year-ago comparative in its
+    # own clause is never it, and two competing figures are an absence.
+    candidates = _period_bound_literals(blocks, _TSM_USD_REVENUE_RE, fiscal_period)
+    distinct = {m.group(1).replace(",", "") for _, m in candidates}
+    if len(distinct) == 1:
+        for block, m in candidates:
             usd_receipt = _literal_receipt(
-                bound,
-                search_start=block.source_span.char_start,
-                search_end=block.source_span.char_end,
-                literal=usd_literal,
+                bound, search_start=block.source_span.char_start,
+                search_end=block.source_span.char_end, literal=m.group(0),
             )
-            if usd_receipt is not None:
-                break
-    if usd_receipt is not None and usd_literal is not None:
-        # Parse the dollar amount as a float from the receipted literal's
-        # number — no arithmetic conversion, the number IS what the
-        # document states.
-        amount_match = re.search(r"([\d.]+)", usd_literal)
-        if amount_match is not None:
+            if usd_receipt is None:
+                continue
             facts.append(_fact_present(
                 fact_id="fact_revenue_usd", event_id=event_id, metric="revenue_usd",
-                value=float(amount_match.group(1)), unit="usd_billions",
+                value=float(m.group(1).replace(",", "")), unit="usd_billions",
                 period=period,
                 basis="TSMC USD-restated revenue, as stated in Exhibit 99.1",
                 document_id=document_id, bound=bound, receipt=usd_receipt,
@@ -1485,7 +1594,10 @@ def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_i
             return facts
     facts.append(_fact_absent(
         fact_id="fact_revenue_usd", event_id=event_id, metric="revenue_usd",
-        detail="USD-restated revenue is not present or not uniquely addressable in Exhibit 99.1",
+        detail=(
+            "USD-restated revenue for the reported quarter is not present or not uniquely "
+            f"addressable in Exhibit 99.1 ({len(distinct)} period-bound candidate figures)"
+        ),
         document_id=document_id,
     ))
     return facts
@@ -1500,29 +1612,24 @@ def _tsm_extract_guidance(
 ) -> list[dict[str, Any]]:
     """TSM guidance — USD revenue range with an explicit FX assumption.
 
-    Reads the NEXT-quarter revenue range out of the release body, with the
-    ``fx_assumption`` carried as a SEPARATE field (verbatim phrase from the
-    release) — TSM guidance is in USD only because the release states an
-    explicit exchange-rate assumption; the assumption itself is a primary
-    input, not a derived annotation.
+    Emits the ONE range that sits in a forward-looking sentence naming its
+    horizon quarter and year (``horizon`` is read, never assumed); a recap of
+    prior guidance, a range without a forward marker, or two competing
+    forward ranges yield no item.  ``fx_assumption`` is the verbatim phrase
+    from the release when the release states one and ``None`` when it does
+    not — the key is always present, so None IS the typed "not stated" state
+    (guidance_item.v1 has a closed key set; no extra key is invented).
     """
     blocks = bound.document.blocks
-    range_match: re.Match[str] | None = None
-    range_para: DisclosureBlock | None = None
-    for block in blocks:
-        m = _TSM_GUIDANCE_RANGE_RE.search(block.text)
-        if m is not None:
-            range_match = m
-            range_para = block
-            break
-    if range_match is None or range_para is None:
+    forward = _forward_ranges(blocks, _TSM_GUIDANCE_RANGE_RE)
+    if len(forward) != 1:
         return []
-    range_literal = range_match.group(0)
+    range_para, range_match, horizon = forward[0]
     range_receipt = _literal_receipt(
         bound,
         search_start=range_para.source_span.char_start,
         search_end=range_para.source_span.char_end,
-        literal=range_literal,
+        literal=range_match.group(0),
     )
     if range_receipt is None:
         return []
@@ -1545,7 +1652,7 @@ def _tsm_extract_guidance(
         "low": float(range_match.group(1)),
         "high": float(range_match.group(2)),
         "unit": "usd_billions",
-        "horizon": "2026Q3",  # synthetic exhibit says "second quarter" reporting → "third quarter" guidance
+        "horizon": horizon,
         "status": "introduced",
         "currency": "USD",
         "basis": "reported_ifrs",
@@ -1568,65 +1675,85 @@ def tsm_profile() -> IssuerProfile:
 # ─────────────────────────────────────────────────────────────────────────────
 # ON — ON Semiconductor Corporation (T05a witness).
 #
-# Single release fact — GAAP revenue read out of the
-# "Quarters Ended <Month D, YYYY>" paragraph/table — and a NEXT-quarter
-# revenue range emitted by extract_guidance (USD, no FX assumption).
+# Single release fact — GAAP revenue read out of the "Quarters Ended" table
+# in the COLUMN whose header date equals the reported period end — and a
+# forward revenue range (USD, no FX assumption) whose horizon is read from
+# the sentence that states it.
 # ─────────────────────────────────────────────────────────────────────────────
 
-_ON_REVENUE_RE = re.compile(r"\$[\d,]+(?:\.\d+)?\s*million")
+_ON_REVENUE_RE = re.compile(r"\$([\d,]+(?:\.\d+)?)\s*(million|billion)")
 _ON_GUIDANCE_RANGE_RE = re.compile(
-    r"range\s+of\s+\$([\d,]+)\s+million\s+to\s+\$([\d,]+)\s+million"
+    r"(?:range\s+of|between)\s+\$([\d,]+(?:\.\d+)?)\s*(million|billion)\s+(?:to|and)\s+\$([\d,]+(?:\.\d+)?)\s*(million|billion)",
+    re.I,
 )
+_USD_UNIT_BY_WORD = {"million": "usd_millions", "billion": "usd_billions"}
 
 
 def _on_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, **kwargs: Any) -> list[dict[str, Any]]:
     fiscal_period = kwargs.get("fiscal_period")
     period = _period_label(fiscal_period)
+    period_end = getattr(fiscal_period, "calendar_end", None)
     blocks = bound.document.blocks
-    # Find the "Quarters Ended ..." table — the GAAP revenue row sits in
-    # the SAME block as that header.
+
+    def absent(detail: str) -> list[dict[str, Any]]:
+        return [_fact_absent(
+            fact_id="fact_revenue", event_id=event_id, metric="revenue",
+            detail=detail, document_id=document_id,
+        )]
+
+    if period_end is None:
+        return absent("no reported period end to bind a Quarters Ended column to")
     target_block: DisclosureBlock | None = None
     for block in blocks:
-        if block.kind is BlockKind.TABLE and "Quarters Ended" in block.text:
+        if block.kind is BlockKind.TABLE and block.table is not None and "Quarters Ended" in block.text:
             target_block = block
             break
-    if target_block is not None:
-        for row in target_block.table.rows:
-            if row and row[0].text.strip().lower() == "revenue":
-                cells = [cell for cell in row[1:] if cell.text.strip() not in ("", "$")]
-                if not cells:
-                    break
-                cell = cells[0]
-                m = _ON_REVENUE_RE.search(cell.text)
-                if m is None:
-                    break
-                literal = m.group(0)
-                receipt = _literal_receipt(
-                    bound,
-                    search_start=cell.source_span.char_start,
-                    search_end=cell.source_span.char_end,
-                    literal=literal,
-                )
-                if receipt is None:
-                    break
-                amount_match = re.search(r"([\d,]+(?:\.\d+)?)", literal)
-                if amount_match is None:
-                    break
-                value = float(amount_match.group(1).replace(",", ""))
-                return [_fact_present(
-                    fact_id="fact_revenue", event_id=event_id, metric="revenue",
-                    value=value, unit="usd_millions", period=period,
-                    basis="onsemi GAAP quarterly revenue, as stated in Exhibit 99.1",
-                    document_id=document_id, bound=bound, receipt=receipt,
-                )]
-    return [_fact_absent(
-        fact_id="fact_revenue", event_id=event_id, metric="revenue",
-        detail=(
-            "Quarters Ended table or its Revenue row is not present or not uniquely "
-            "addressable in Exhibit 99.1"
-        ),
-        document_id=document_id,
-    )]
+    if target_block is None or target_block.table is None:
+        return absent("Quarters Ended table is not present in Exhibit 99.1")
+
+    # The header row is the first row carrying month-day-year dates; each
+    # date owns one value column. The Revenue row's non-separator cells must
+    # line up one-to-one with those dates, else the table is not addressable.
+    header_dates: list[date] = []
+    for row in target_block.table.rows[:4]:
+        parsed = [_parse_month_date(cell.text) for cell in row]
+        if any(parsed):
+            header_dates = [d for d in parsed if d is not None]
+            break
+    if not header_dates:
+        return absent("Quarters Ended table names no period-end dates")
+    if period_end not in header_dates:
+        return absent(
+            f"no Quarters Ended column is dated {period_end.isoformat()} "
+            f"(columns: {', '.join(d.isoformat() for d in header_dates)})"
+        )
+    column = header_dates.index(period_end)
+    for row in target_block.table.rows:
+        if not row or row[0].text.strip().lower() != "revenue":
+            continue
+        values = [cell for cell in row[1:] if cell.text.strip() not in ("", "$")]
+        if len(values) != len(header_dates):
+            return absent(
+                f"Revenue row has {len(values)} value cells for {len(header_dates)} dated columns"
+            )
+        cell = values[column]
+        m = _ON_REVENUE_RE.search(cell.text)
+        if m is None:
+            return absent("Revenue cell bound to the reported period carries no $-million/billion figure")
+        receipt = _literal_receipt(
+            bound, search_start=cell.source_span.char_start,
+            search_end=cell.source_span.char_end, literal=m.group(0),
+        )
+        if receipt is None:
+            return absent("Revenue cell bound to the reported period is not receiptable")
+        return [_fact_present(
+            fact_id="fact_revenue", event_id=event_id, metric="revenue",
+            value=float(m.group(1).replace(",", "")), unit=_USD_UNIT_BY_WORD[m.group(2).lower()],
+            period=period,
+            basis="onsemi GAAP quarterly revenue, as stated in Exhibit 99.1",
+            document_id=document_id, bound=bound, receipt=receipt,
+        )]
+    return absent("Quarters Ended table has no Revenue row")
 
 
 def _on_extract_guidance(
@@ -1636,24 +1763,21 @@ def _on_extract_guidance(
     event_id: str,
     **_kwargs: Any,
 ) -> list[dict[str, Any]]:
-    """ON guidance — USD revenue range, no FX assumption (domestic filer)."""
+    """ON guidance — USD revenue range, no FX assumption (domestic filer).
+    The horizon is read from the forward sentence; both ends must share one
+    magnitude word (million/billion) or the range is not emitted."""
     blocks = bound.document.blocks
-    range_match: re.Match[str] | None = None
-    range_para: DisclosureBlock | None = None
-    for block in blocks:
-        m = _ON_GUIDANCE_RANGE_RE.search(block.text)
-        if m is not None:
-            range_match = m
-            range_para = block
-            break
-    if range_match is None or range_para is None:
+    forward = _forward_ranges(blocks, _ON_GUIDANCE_RANGE_RE)
+    if len(forward) != 1:
         return []
-    range_literal = range_match.group(0)
+    range_para, range_match, horizon = forward[0]
+    if range_match.group(2).lower() != range_match.group(4).lower():
+        return []
     range_receipt = _literal_receipt(
         bound,
         search_start=range_para.source_span.char_start,
         search_end=range_para.source_span.char_end,
-        literal=range_literal,
+        literal=range_match.group(0),
     )
     if range_receipt is None:
         return []
@@ -1661,9 +1785,9 @@ def _on_extract_guidance(
         "schema": "guidance_item.v1",
         "metric": "revenue",
         "low": float(range_match.group(1).replace(",", "")),
-        "high": float(range_match.group(2).replace(",", "")),
-        "unit": "usd_millions",
-        "horizon": "2026Q3",  # synthetic exhibit says "third quarter of 2026"
+        "high": float(range_match.group(3).replace(",", "")),
+        "unit": _USD_UNIT_BY_WORD[range_match.group(2).lower()],
+        "horizon": horizon,
         "status": "introduced",
         "currency": "USD",
         "basis": "reported_gaap",

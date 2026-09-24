@@ -68,14 +68,15 @@ from engine.fundamental_forensics.metric_registry import (
 # Synthetic (look-alike) exhibit bodies.  No real Exhibit 99.1 is committed.
 TSM_SYNTHETIC_EXHIBIT = (
     "<html><body>"
-    "<p>TSMC today announced consolidated revenue for the first quarter of 2026. "
-    "First quarter net revenue was NT$1,234,567 million. "
-    "In U.S. dollars, revenue was US$12.34 billion.</p>"
+    "<p>TSMC today announced consolidated revenue for the second quarter of 2026. "
+    "Second quarter net revenue was NT$1,234,567 million, an increase from NT$999,999 million a year ago. "
+    "In U.S. dollars, second quarter revenue was US$12.34 billion, compared with US$8.00 billion a year ago.</p>"
     "<table>"
-    "<tr><td>Quarters Ended March 31,</td></tr>"
+    "<tr><td>Quarters Ended June 30,</td></tr>"
     "<tr><td>2026</td><td>2025</td></tr>"
     "</table>"
-    "<p>Looking ahead to the second quarter of 2026, we expect revenue between "
+    "<p>In the first quarter of 2026 we had guided between US$11.0 billion and US$11.5 billion. "
+    "Looking ahead to the third quarter of 2026, we expect revenue between "
     "US$13.0 billion and US$13.5 billion, assuming an exchange rate of 31.5 NTD per USD.</p>"
     "</body></html>"
 )
@@ -85,8 +86,8 @@ ON_SYNTHETIC_EXHIBIT = (
     "<p>onsemi today announced first quarter 2026 results.</p>"
     "<table>"
     "<tr><td>Quarters Ended</td></tr>"
-    "<tr><td>April 3, 2026</td><td>April 4, 2025</td></tr>"
-    "<tr><td>Revenue</td><td>$1,234.5 million</td><td>$1,500.0 million</td></tr>"
+    "<tr><td></td><td>April 3, 2026</td><td>April 4, 2025</td></tr>"
+    "<tr><td>Revenue</td><td>$</td><td>$1,234.5 million</td><td>$</td><td>$1,500.0 million</td></tr>"
     "</table>"
     "<p>For the third quarter of 2026, we expect revenue in the range of "
     "$1,400 million to $1,500 million.</p>"
@@ -328,115 +329,207 @@ def _verify_all_spans(facts: list[dict], *, bound) -> None:
         verify_span(span, segment_text=bound.source, body_sha256=bound.revision.source_sha256)
 
 
-def test_tsm_release_facts_on_synthetic_exhibit() -> None:
-    bound = _bind_tsm()
-    fiscal_period = FiscalPeriod(year=2026, quarter=2, calendar_end=date(2026, 6, 30))
+TSM_Q2 = FiscalPeriod(year=2026, quarter=2, calendar_end=date(2026, 6, 30))
+ON_Q1 = FiscalPeriod(year=2026, quarter=1, calendar_end=date(2026, 4, 3))
+
+
+def _tsm_facts(body: str = TSM_SYNTHETIC_EXHIBIT, *, fiscal_period=TSM_Q2):
+    bound = _bind_tsm(body)
     facts = tsm_profile().extract_release_facts(
         bound=bound, document_id="doc:tsm-synthetic", event_id="evt_cik0001046179_2026q2_results",
         fiscal_period=fiscal_period,
     )
-    by_id = {fact["fact_id"]: fact for fact in facts}
-    # TSM emits at minimum: NT$ net revenue (typed absence — TWD unit missing
-    # from vocabulary) AND a USD-restated revenue (present, unit usd_billions).
-    assert "fact_revenue_twd" in by_id
-    assert "fact_revenue_usd" in by_id
-
-    # TWD fact: typed absence with the documented detail string; no value.
-    twd_fact = by_id["fact_revenue_twd"]
-    assert "typed_absence" in twd_fact
-    assert "value" not in twd_fact
-    assert twd_fact["typed_absence"]["reason"] == "no_span_addressable_evidence"
-    assert twd_fact["metric"] == "revenue"
-    assert "reporting_currency_twd_not_in_unit_vocabulary" in twd_fact["typed_absence"]["detail"]
-
-    # USD fact: present, unit usd_billions, receipted against the
-    # "US$12.34 billion" literal.
-    usd_fact = by_id["fact_revenue_usd"]
-    assert "typed_absence" not in usd_fact
-    assert usd_fact["metric"] == "revenue_usd"
-    assert usd_fact["unit"] == "usd_billions"
-    assert "12.34" in usd_fact["source_span"]["display_excerpt"]
     _verify_all_spans(facts, bound=bound)
+    return {fact["fact_id"]: fact for fact in facts}
 
 
-def test_on_release_facts_on_synthetic_exhibit() -> None:
-    bound = _bind_on()
-    fiscal_period = FiscalPeriod(year=2026, quarter=1, calendar_end=date(2026, 4, 3))
+def _on_facts(body: str = ON_SYNTHETIC_EXHIBIT, *, fiscal_period=ON_Q1):
+    bound = _bind_on(body)
     facts = on_profile().extract_release_facts(
         bound=bound, document_id="doc:on-synthetic", event_id="evt_cik0001097864_2026q1_results",
         fiscal_period=fiscal_period,
     )
-    by_id = {fact["fact_id"]: fact for fact in facts}
-    assert "fact_revenue" in by_id
-    revenue = by_id["fact_revenue"]
-    assert "typed_absence" not in revenue
-    assert revenue["metric"] == "revenue"
-    assert revenue["unit"] == "usd_millions"
-    assert "1,234.5" in revenue["source_span"]["display_excerpt"]
     _verify_all_spans(facts, bound=bound)
+    return {fact["fact_id"]: fact for fact in facts}
 
 
-def test_tsm_release_facts_absence_when_no_twd_unit_in_vocabulary_is_not_an_arithmetic_substitute() -> None:
-    """C4: zero arithmetic — a missing TWD unit must NOT be substituted by
-    an inferred USD conversion.  The TWD fact must be typed absence, never
-    a present fact with a converted value."""
-    bound = _bind_tsm()
-    fiscal_period = FiscalPeriod(year=2026, quarter=2, calendar_end=date(2026, 6, 30))
-    facts = tsm_profile().extract_release_facts(
-        bound=bound, document_id="doc:tsm-synthetic", event_id="evt:x", fiscal_period=fiscal_period,
-    )
-    by_id = {fact["fact_id"]: fact for fact in facts}
-    twd_fact = by_id["fact_revenue_twd"]
-    # Never an inferred/converted present fact.
-    assert "value" not in twd_fact
-    assert twd_fact["typed_absence"]["reason"] == "no_span_addressable_evidence"
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# (e) Guidance: NEXT-quarter revenue range, with explicit currency/basis/
-# fx_assumption keys; horizon different from the reported quarter.
-# ─────────────────────────────────────────────────────────────────────────────
-
-def test_tsm_guidance_extracts_next_quarter_revenue_with_fx_assumption() -> None:
-    bound = _bind_tsm()
-    fiscal_period = FiscalPeriod(year=2026, quarter=2, calendar_end=date(2026, 6, 30))
-    guidance = tsm_profile().extract_guidance(
+def _tsm_guidance(body: str = TSM_SYNTHETIC_EXHIBIT):
+    bound = _bind_tsm(body)
+    items = tsm_profile().extract_guidance(
         bound=bound, release_document_id="doc:tsm-synthetic",
         segments=[], document_id="doc:tx", body_sha256="", event_id="evt_cik0001046179_2026q2_results",
     )
-    assert len(guidance) == 1
-    item = guidance[0]
-    assert item["schema"] == "guidance_item.v1"
-    assert item["metric"] == "revenue"
-    assert item["currency"] == "USD"
-    assert item["basis"] == "reported_ifrs"
-    # Horizon differs from reported quarter (Q2 reported → Q3 next).
-    assert item["horizon"] == "2026Q3"
-    # fx_assumption is a verbatim phrase from the release body.
-    assert isinstance(item["fx_assumption"], str)
-    assert "exchange rate" in item["fx_assumption"].lower() or "NTD per USD" in item["fx_assumption"]
-    # Source span replays.
-    assert "source_span" in item
+    for item in items:
+        _verify_all_spans([item], bound=bound)
+    return items
 
 
-def test_on_guidance_extracts_next_quarter_revenue_with_no_fx_assumption() -> None:
-    bound = _bind_on()
-    fiscal_period = FiscalPeriod(year=2026, quarter=1, calendar_end=date(2026, 4, 3))
-    guidance = on_profile().extract_guidance(
+def _on_guidance(body: str = ON_SYNTHETIC_EXHIBIT):
+    bound = _bind_on(body)
+    items = on_profile().extract_guidance(
         bound=bound, release_document_id="doc:on-synthetic",
         segments=[], document_id="doc:tx", body_sha256="", event_id="evt_cik0001097864_2026q1_results",
     )
-    assert len(guidance) == 1
-    item = guidance[0]
+    for item in items:
+        _verify_all_spans([item], bound=bound)
+    return items
+
+
+def test_tsm_release_facts_bind_the_reported_quarter_figure_not_the_comparative() -> None:
+    by_id = _tsm_facts()
+    twd = by_id["fact_revenue_twd"]
+    assert "value" not in twd
+    assert twd["typed_absence"]["reason"] == "missing_units"          # literal present, receipted, no TWD unit
+    assert "reporting_currency_twd_not_in_unit_vocabulary" in twd["typed_absence"]["detail"]
+    usd = by_id["fact_revenue_usd"]
+    assert "typed_absence" not in usd
+    assert usd["metric"] == "revenue_usd"
+    assert usd["unit"] == "usd_billions"
+    assert usd["value"] == 12.34                                        # never the US$8.00 billion a year ago
+    assert usd["period"] == "2026-06-30"
+    assert "12.34" in usd["source_span"]["display_excerpt"]
+
+
+def test_tsm_usd_year_ago_comparative_stated_first_is_still_not_the_fact() -> None:
+    body = TSM_SYNTHETIC_EXHIBIT.replace(
+        "In U.S. dollars, second quarter revenue was US$12.34 billion, compared with US$8.00 billion a year ago.",
+        "In U.S. dollars, revenue was US$8.00 billion a year ago, compared with US$12.34 billion in the second quarter of 2026.",
+    )
+    usd = _tsm_facts(body)["fact_revenue_usd"]
+    assert usd["value"] == 12.34
+
+
+def test_tsm_usd_fact_is_absent_when_the_release_names_a_different_quarter() -> None:
+    """A release whose narrative reports the FIRST quarter bound to a Q2 event
+    (the shape the first fixture had) yields a typed absence, never a figure
+    stamped with the wrong period."""
+    body = TSM_SYNTHETIC_EXHIBIT.replace("second quarter", "first quarter").replace("Second quarter", "First quarter")
+    by_id = _tsm_facts(body)
+    assert "typed_absence" in by_id["fact_revenue_usd"]
+    assert by_id["fact_revenue_usd"]["typed_absence"]["reason"] == "no_span_addressable_evidence"
+    assert by_id["fact_revenue_twd"]["typed_absence"]["reason"] == "no_span_addressable_evidence"
+
+
+def test_tsm_two_competing_period_bound_usd_figures_are_an_absence_not_a_pick() -> None:
+    body = TSM_SYNTHETIC_EXHIBIT.replace(
+        "compared with US$8.00 billion a year ago.",
+        "compared with US$8.00 billion a year ago. Second quarter 2026 revenue was also stated as US$12.40 billion.",
+    )
+    usd = _tsm_facts(body)["fact_revenue_usd"]
+    assert "typed_absence" in usd
+    assert "2 period-bound candidate figures" in usd["typed_absence"]["detail"]
+
+
+def test_tsm_twd_absence_reason_distinguishes_missing_literal_from_missing_unit() -> None:
+    """C4: no NT$ figure → no_span_addressable_evidence; NT$ figure present →
+    missing_units. Never a converted USD substitute in either state."""
+    body = TSM_SYNTHETIC_EXHIBIT.replace(
+        "Second quarter net revenue was NT$1,234,567 million, an increase from NT$999,999 million a year ago. ", "")
+    twd = _tsm_facts(body)["fact_revenue_twd"]
+    assert "value" not in twd
+    assert twd["typed_absence"]["reason"] == "no_span_addressable_evidence"
+    assert _tsm_facts()["fact_revenue_twd"]["typed_absence"]["reason"] == "missing_units"
+
+
+def test_on_release_fact_reads_the_column_dated_with_the_reported_period_end() -> None:
+    revenue = _on_facts()["fact_revenue"]
+    assert "typed_absence" not in revenue
+    assert revenue["metric"] == "revenue"
+    assert revenue["unit"] == "usd_millions"
+    assert revenue["value"] == 1234.5
+    assert revenue["period"] == "2026-04-03"
+    assert "1,234.5" in revenue["source_span"]["display_excerpt"]
+
+
+def test_on_prior_year_column_listed_first_is_not_read_positionally() -> None:
+    body = ON_SYNTHETIC_EXHIBIT.replace(
+        "<tr><td></td><td>April 3, 2026</td><td>April 4, 2025</td></tr>"
+        "<tr><td>Revenue</td><td>$</td><td>$1,234.5 million</td><td>$</td><td>$1,500.0 million</td></tr>",
+        "<tr><td></td><td>April 4, 2025</td><td>April 3, 2026</td></tr>"
+        "<tr><td>Revenue</td><td>$</td><td>$1,500.0 million</td><td>$</td><td>$1,234.5 million</td></tr>",
+    )
+    assert _on_facts(body)["fact_revenue"]["value"] == 1234.5
+
+
+def test_on_release_fact_is_absent_when_no_column_matches_the_reported_period_end() -> None:
+    body = ON_SYNTHETIC_EXHIBIT.replace("April 3, 2026", "July 3, 2026")
+    revenue = _on_facts(body)["fact_revenue"]
+    assert "typed_absence" in revenue
+    assert "2026-04-03" in revenue["typed_absence"]["detail"]
+    misaligned = ON_SYNTHETIC_EXHIBIT.replace("<td>$</td><td>$1,500.0 million</td>", "")
+    assert "typed_absence" in _on_facts(misaligned)["fact_revenue"]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# (e) Guidance: the forward range only, horizon READ from the sentence,
+# explicit currency/basis/fx_assumption keys; every number asserted.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_tsm_guidance_is_the_forward_range_with_its_stated_horizon_and_fx() -> None:
+    items = _tsm_guidance()
+    assert len(items) == 1
+    item = items[0]
     assert item["schema"] == "guidance_item.v1"
     assert item["metric"] == "revenue"
+    assert (item["low"], item["high"]) == (13.0, 13.5)                 # never the recap 11.0/11.5
+    assert item["unit"] == "usd_billions"
+    assert item["horizon"] == "2026Q3"
+    assert item["status"] == "introduced"
+    assert item["currency"] == "USD"
+    assert item["basis"] == "reported_ifrs"
+    assert item["fx_assumption"] == "31.5 NTD per USD"
+    assert "13.0" in item["source_span"]["display_excerpt"]
+
+
+def test_tsm_guidance_horizon_is_read_from_the_text_not_assumed() -> None:
+    body = TSM_SYNTHETIC_EXHIBIT.replace("Looking ahead to the third quarter of 2026", "Looking ahead to the fourth quarter of 2026")
+    assert _tsm_guidance(body)[0]["horizon"] == "2026Q4"
+    no_year = TSM_SYNTHETIC_EXHIBIT.replace("third quarter of 2026", "third quarter")
+    assert _tsm_guidance(no_year) == []                                  # no year stated → no horizon → no item
+
+
+def test_tsm_recap_only_or_ambiguous_forward_ranges_emit_nothing() -> None:
+    recap_only = TSM_SYNTHETIC_EXHIBIT.replace(
+        "Looking ahead to the third quarter of 2026, we expect revenue between US$13.0 billion and US$13.5 billion, ", "")
+    assert _tsm_guidance(recap_only) == []
+    two_forward = TSM_SYNTHETIC_EXHIBIT.replace(
+        "</p></body>", " We expect fourth quarter of 2026 revenue between US$14.0 billion and US$14.5 billion.</p></body>")
+    assert _tsm_guidance(two_forward) == []
+
+
+def test_tsm_fx_assumption_is_none_when_the_release_states_none() -> None:
+    body = TSM_SYNTHETIC_EXHIBIT.replace(", assuming an exchange rate of 31.5 NTD per USD", "")
+    item = _tsm_guidance(body)[0]
+    assert item["fx_assumption"] is None and "fx_assumption" in item
+    assert (item["low"], item["high"], item["horizon"]) == (13.0, 13.5, "2026Q3")
+
+
+def test_on_guidance_is_the_forward_range_with_its_stated_horizon() -> None:
+    items = _on_guidance()
+    assert len(items) == 1
+    item = items[0]
+    assert item["schema"] == "guidance_item.v1"
+    assert item["metric"] == "revenue"
+    assert (item["low"], item["high"]) == (1400.0, 1500.0)
+    assert item["unit"] == "usd_millions"
+    assert item["horizon"] == "2026Q3"
+    assert item["status"] == "introduced"
     assert item["currency"] == "USD"
     assert item["basis"] == "reported_gaap"
-    # ON reports USD; no FX assumption.
     assert item["fx_assumption"] is None
-    # Horizon differs from reported quarter (Q1 reported → Q3 next, per the
-    # synthetic exhibit guidance sentence).
-    assert item["horizon"] == "2026Q3"
+
+
+def test_on_guidance_reads_decimals_billions_and_the_stated_quarter() -> None:
+    body = ON_SYNTHETIC_EXHIBIT.replace(
+        "For the third quarter of 2026, we expect revenue in the range of $1,400 million to $1,500 million.",
+        "For the fourth quarter of 2026, we expect revenue between $1.40 billion and $1.50 billion.",
+    )
+    item = _on_guidance(body)[0]
+    assert (item["low"], item["high"], item["unit"], item["horizon"]) == (1.4, 1.5, "usd_billions", "2026Q4")
+    mixed = ON_SYNTHETIC_EXHIBIT.replace("$1,400 million to $1,500 million", "$1,400 million to $1.5 billion")
+    assert _on_guidance(mixed) == []
+    recap = ON_SYNTHETIC_EXHIBIT.replace("For the third quarter of 2026, we expect", "Last quarter we guided")
+    assert _on_guidance(recap) == []
 
 
 # ─────────────────────────────────────────────────────────────────────────────
