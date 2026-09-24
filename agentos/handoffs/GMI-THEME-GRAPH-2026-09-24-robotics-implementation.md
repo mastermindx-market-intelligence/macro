@@ -73,7 +73,9 @@ PROCEDURE PIN: Mastermind `294b4c00ed668b497edb834be8108f14bc1bee8a` (Skillpack 
 CARRIER BASE: Macro `main` `3c93f8194f6c2cb19dad21c1347d8b3b8474aa31`; branch `claude/ssd-gmi-robotics-impl-17c9f82c-d191559b616f5c67`.
 SHARED FOUNDATION PIN: #7870 `c6c67c878b86ebb02782e1dfd394809d8f724426`.
 
-STATE AT THIS COMMIT: `PRE_START` (PICKUP_ACK only); `ROBOTICS_FIRST_VERTICAL: NOT_BUILT`; `MISSION_COMPLETE: false`; `EFFECT_UNKNOWN: none`.
+START: #7773 issuecomment-5810224304 (2026-09-24T08:02Z). STATE AT THIS COMMIT: `STARTED / WAVE_1_DISPATCHING`; `ROBOTICS_FIRST_VERTICAL: NOT_BUILT`; `MISSION_COMPLETE: false`; `EFFECT_UNKNOWN: none`.
+SHARED FOUNDATION REFRESH (08:30Z): #7870 head `70fde3c79956bba5b9c4e2365a97b4e4b3b1c3ef` — T10 generic client (`site/assets/js/theme-research.js`, css, Theme Tracker mount in `state_of_themes.html.j2`, `tests/test_semiconductor_theme_research_ui.py`) integrated with CI wiring; T09/T10b/T11 still in flight. Contract/module/evidence blobs unchanged from `c6c67c87`.
+REQUESTS POSTED ON #7870 (shared owner; no reply yet at this commit): issuecomment-5810227724 (1 T09 anchor-theme dispatch registry; 2 config-driven mount slices; 3 per-anchor Theme Tracker entry) and issuecomment-5810595339 (4 client envelope identity per mount — `TR_SCHEMA`/`TR_SLICE_KEYS` are hard-pinned to semiconductor; 5 public export of time-mode/generation helpers).
 
 ## Fable custody rulings inside the approved architecture (RR = Robotics ruling)
 
@@ -85,15 +87,16 @@ STATE AT THIS COMMIT: `PRE_START` (PICKUP_ACK only); `ROBOTICS_FIRST_VERTICAL: N
 - **RR6 — UI consumes the generic client and the #7669-ruled seam.** `basket_detail.html.j2` and `state_of_themes.html.j2` stay frozen to #7870's accepted hunks. Robotics ships at most one separately owned partial whose aggregator entry is serialized through the shell writer, and requested config-driven slices per anchor plus a per-anchor Theme Tracker research entry on the generic client. No Robotics-only JS/CSS framework; no owner intelligence in browser JS.
 - **RR7 — private publication = R4.** Robotics is a registered dependent of `SOL-R4-PRIVATE-BINDING-20260924-HEALTHCARE-R11`. Real Robotics bodies (Orbbec/Twinny, Parker, Schaeffler/Hexagon, Zebra/Skild, PTC/TPG, Sanhua, HDS) are curated as payloads outside the public repo and admitted only through the shared adapter after the nonce proof; fixtures on this carrier use the frozen reference shape.
 - **RR8 — non-regression is Robotics-owned and starts now.** `tests/test_robotics_theme_non_regression.py` freezes `robotics_automation` basket members/weights, Theme Tracker lane/stage/recommendation, entry fields and member ordering from committed inputs, plus public-leak guards over `site/state_of_themes.html`, `site/basket/robotics_automation.html`, `site/**/*.json` and the tracked evidence parquet.
+- **RR10 — fixtures are contract doubles, never the live product.** Public fixtures model the approved real cases (Orbbec/Twinny, Parker, Schaeffler/Hexagon, Zebra/Skild, PTC/TPG, Sanhua, HDS, Stabilus/Synapticon) with `synthetic: true`, reviewer `fixture`, placeholder `research-vault://fixture/<slug>` retention refs, null digests and public URLs already cited in the public research foundation; facts are public, the product (reviewed, clocked, retained, maintained assertions and their composition) is not. Live bodies are curated separately under RR7 and differ in bytes, so `curation_revision` never collides with a public fixture (RBV-28 no public twin).
 - **RR9 — development base vs carrier.** Lane worktrees are minted at the #7870 head so workers can import the shared foundation; the carrier receives only Robotics-owned files on top of main. The seat proves every integration on a throwaway merge of this carrier with the #7870 head before cherry-picking, and CI on this carrier must stay green on main alone (lazy imports + strict xfail).
 
 ## Lane plan
 
 | Lane | Scope | Depends on | Host/model | State |
 |---|---|---|---|---|
-| R1 | Robotics evidence fixtures: real-case payloads as valid `theme_graph.curation_assertion.v1`, hostile variants (newer generation, per-hand, integrated+contained, syndicated copy, unresolved identity, forward target, announced vs completed ownership, undisclosed revenue, backlog≠lead time) + roster test | RR1 | remote lane | queued |
-| R3 | Legacy decision non-regression + public-leak freeze | none | remote lane | queued |
-| R2 | Robotics F04 composer + contract + tests | R1 accepted | remote lane | held |
-| R4 | Robotics partial + facet rendering on the generic client | T10/T10b accepted | remote lane | held |
+| R1 | Robotics evidence fixtures: 21 cases as valid `theme_graph.curation_assertion.v1` payloads + helpers + input-contract tests (packet R1_fixtures) | RR1, RR10 | glm-5.3 via `pool remote` on first free of m1/mb/mini2 (self-healing dispatcher) | dispatching |
+| R3 | Legacy decision non-regression + public-leak freeze mirroring Energy #7895 (packet R3_nonregression) | none | glm-5.3 via `pool remote`, after R1 admits | dispatching |
+| R2 | Robotics F04 composer + contract + tests over the shared envelope (packet R2_composer written) | R1 accepted; requests 1/5 answered or private helpers reused | remote lane | held |
+| R4 | Robotics partial + facet rendering on the generic client | T10 landed (70fde3c7); T10b + requests 2/3/4 answered | remote lane | held |
 | R5 | Real evidence qualification through the shared admission/private adapter | R4 ruling live proof | seat + helper | held |
 | R6 | Browser/deployed proof, EN/ZH, dark/light, mobile, mirror probes | R2/R4/R5 + deploy | seat + helper | held |
