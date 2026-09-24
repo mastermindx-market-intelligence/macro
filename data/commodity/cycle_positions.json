@@ -26,8 +26,8 @@
   "copper": {
     "cycle_ref": "copper",
     "pos": 47.8,
-    "phase": "Downturn",
-    "phase_v2": "Downturn",
+    "phase": "Expansion",
+    "phase_v2": "Peak",
     "overdue": true,
     "overdue_frac": 2.965,
     "hazard_1m": null,
@@ -37,27 +37,27 @@
   },
   "oil": {
     "cycle_ref": "oil",
-    "pos": 42.9,
+    "pos": 50.0,
     "phase": "Expansion",
     "phase_v2": "Expansion",
     "overdue": false,
-    "overdue_frac": 0.388,
+    "overdue_frac": 0.398,
     "hazard_1m": null,
     "hazard_3m": null,
     "hazard_6m": null,
-    "asof": "2026-09-15"
+    "asof": "2026-09-22"
   },
   "natgas": {
     "cycle_ref": "natural-gas",
-    "pos": 4.7,
+    "pos": 5.3,
     "phase": "Recovery",
     "phase_v2": "Expansion",
-    "overdue": false,
-    "overdue_frac": 0.995,
+    "overdue": true,
+    "overdue_frac": 1.026,
     "hazard_1m": null,
     "hazard_3m": null,
     "hazard_6m": null,
-    "asof": "2026-09-15"
+    "asof": "2026-09-22"
   },
   "platinum": {
     "cycle_ref": "pgms",

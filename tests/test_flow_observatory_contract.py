@@ -358,14 +358,28 @@ def test_order_size_copy_carries_proxy_disclosure():
         assert bad not in out, f"banned unqualified vocabulary {bad!r} in the rendered page"
 
 
-def test_real_build_output_carries_v2_vocabulary_and_no_old_vocab_or_banned_terms():
+def test_real_build_output_carries_v2_vocabulary_and_no_old_vocab_or_banned_terms(
+    tmp_path, monkeypatch,
+):
     """Integration proof through the REAL engine (not a synthetic fixture): builds off
     committed `data/`, so this is the test that actually EXERCISES `flow_velocity._classify`
     end to end — the fixture-based tests above pin the CONTRACT logic but hardcode their own
     state strings and would not notice `_classify` itself reverting to the old vocabulary.
     Mutation check M1 (PR body): reverting `_classify` to the pre-W1 strings must fail this
     test (and test_flow_velocity.py's demeaning test) via the real data path.
+
+    Sparse session worktrees omit ``data/``. In that mode redirect every fallback writer
+    through the shared config seam before calling the real snapshot: otherwise the missing
+    southbound store makes ``latest_holdings()`` fetch live and persist into the omitted
+    repo tree, replacing the committed parquet with a truncated artifact. Full checkouts
+    keep using committed data, so the integration proof remains unchanged there.
     """
+    from lib import config
+    from scripts.worktree_sparse import missing_dirs
+
+    if "data" in missing_dirs(ROOT):
+        monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+
     from engine.flow_velocity import snapshot as real_snapshot
     snap = real_snapshot()
     if not snap or not (snap.get("ashare_sectors") or {}).get("rows"):
