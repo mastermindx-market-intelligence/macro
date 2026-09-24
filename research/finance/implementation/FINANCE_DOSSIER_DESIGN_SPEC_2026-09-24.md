@@ -424,16 +424,18 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
 ### B.7 `constraint-map` — economic effect per constraint
 
 ```html
-<section id="constraint-map" class="fi-section fi-constraint" aria-labelledby="fi-constraint-title"
+<section id="constraint-map" class="fi-section fi-constraint fi-panel" aria-labelledby="fi-constraint-title"
          data-fi-mount="constraint-map">
   <h2 id="fi-constraint-title" class="fi-section-title">
-    <span data-en="Constraint map" data-zh="约束图">Constraint map</span>
-    <span class="fi-section-eyebrow" data-en="Every constraint links to its economic effect" data-zh="每条约束都对应一个经济效应">Every constraint links to its economic effect</span>
+    <span class="l-en" data-en="Constraint map">Constraint map</span>
+    <span class="l-zh" data-zh="约束图">约束图</span>
+    <span class="fi-section-eyebrow"><span class="l-en" data-en="Every constraint links to its economic effect">Every constraint links to its economic effect</span><span class="l-zh" data-zh="每条约束都对应一个经济效应">每条约束都对应一个经济效应</span></span>
   </h2>
   <ul class="fi-constraint-list" role="list" data-fi-mount="constraint-list">
-    <!-- Hydration appends one <li class="fi-constraint-row" data-constraint data-slice-id> per constraints[] entry. -->
+    <!-- Hydration appends one <li class="fi-constraint-row fi-domain" data-constraint data-slice-id> per constraints[] entry. -->
   </ul>
 </section>
+```
 
 ---
 
@@ -846,6 +848,7 @@ One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep o
   word-break: break-word;
 }
 .fi-slice-name { overflow-wrap: anywhere; }
+```
 
 ---
 
@@ -1657,5 +1660,3 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 - **Mockup deferred to `fin_d1b_mockup` by seat instruction.** This run ships the spec only. The static mockup is delivered by a second lane onto the same PR after this head lands. The spec still binds every mockup obligation (eight sections in the seven + aside count, four data-bound nodes, two art directions, eleven missing states, ten conflicts, ≥1 `SEMANTIC_ONLY` slice, witness rows, mechanism-by-mechanism proof) — the build lane for `fin_d1b_mockup` reads §A–§H of THIS spec as the binding contract.
 - §H keeps the "PNG paths are the seat's responsibility" line because the spec author cannot run a browser environment; the eight base shots + per-cell close-ups + mechanism proof shots are the seat's obligation, not this spec's deliverable.
 - No other deviations.
-```
-```
