@@ -3837,3 +3837,77 @@ def test_cd_6_fresh_until_reverts_to_family_life_when_c1_leg_vanishes():
 ## C1_XS_MIN_PRESENT_SHARE coverage predicate) is an ENGINE-level law, already
 ## covered store-independently by ``test_cd_1``..``test_cd_6`` above and by the
 ## AD-1T0 pair-selection/identity tests below — nothing here was AD-1T0-specific.
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AD-1T2 — `--require-store`, the production-required mode for the ONE lane that
+# is supposed to be store-bearing.
+#
+# The bug this closes: the producer's off-host self-skip (exit 0) is correct for
+# the many runners that legitimately have no store, but it was ALSO what the
+# nightly's only scheduled invocation did — on a store-less M2 runner, every
+# night, behind a green step, while site/options_intel_brief.json stayed frozen
+# at built_at_utc=2026-08-22 for 23+ trading sessions. `--require-store` gives
+# the designated producer a mode where that silence is a loud failure, WITHOUT
+# changing the default for anyone else.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def test_ad1t2_require_store_fails_loudly_when_store_absent(tmp_path, monkeypatch, capsys):
+    """Store unresolved + --require-store -> non-zero, and the last valid artifact
+    is left byte-identical (a failed required build never blanks the brief)."""
+    monkeypatch.setattr(producer, "resolve_thetadata_store", lambda **kw: None)
+    out_path = tmp_path / "options_intel_brief.json"
+    out_path.write_text('{"sentinel": true}')
+    original_bytes = out_path.read_bytes()
+
+    rc = producer.main(["--out", str(out_path), "--require-store"])
+    assert rc != 0, "a store-less REQUIRED lane must not report success"
+    assert out_path.read_bytes() == original_bytes, "the last valid brief must survive"
+
+    captured = capsys.readouterr()
+    assert [ln for ln in captured.out.splitlines() if ln.startswith("::error")], \
+        "expected a ::error at line start when the required store is absent"
+
+
+def test_ad1t2_default_mode_still_self_skips_off_host(tmp_path, monkeypatch):
+    """Regression guard for every OTHER runner: without the flag the off-host
+    self-skip contract is untouched — exit 0, artifact bytes preserved."""
+    monkeypatch.setattr(producer, "resolve_thetadata_store", lambda **kw: None)
+    out_path = tmp_path / "options_intel_brief.json"
+    out_path.write_text('{"sentinel": true}')
+    original_bytes = out_path.read_bytes()
+
+    assert producer.main(["--out", str(out_path)]) == 0
+    assert out_path.read_bytes() == original_bytes
+
+
+def test_ad1t2_require_store_succeeds_and_writes_on_a_store_bearing_lane(tmp_path, monkeypatch):
+    """Store present + --require-store -> exit 0 and a real artifact on disk whose
+    receipt_id is the one this run built."""
+    sessions, _S, _D = _fake_repo_sessions()
+    symbols = [f"SYM{chr(65 + i)}" for i in range(6)]
+    _write_fake_thetadata_store(tmp_path, monkeypatch, symbols=symbols, sessions=sessions)
+    out_path = tmp_path / "options_intel_brief.json"
+
+    rc = producer.main(["--out", str(out_path), "--require-store", "--ignore-staleness"])
+    assert rc == 0
+    written = json.loads(out_path.read_text())
+    assert written.get("receipt_id"), "the required lane must leave a readable brief"
+
+
+def test_ad1t2_require_store_treats_a_semantic_no_op_as_success(tmp_path, monkeypatch):
+    """A no-op is legitimate (same session, weekend, holiday). Contract §7 ignores
+    `built_at_utc`/`_run`, so an unmoved timestamp is NOT a failure and
+    --require-store must not invent one. Second run: exit 0, bytes unchanged."""
+    sessions, _S, _D = _fake_repo_sessions()
+    symbols = [f"SYM{chr(65 + i)}" for i in range(6)]
+    _write_fake_thetadata_store(tmp_path, monkeypatch, symbols=symbols, sessions=sessions)
+    out_path = tmp_path / "options_intel_brief.json"
+
+    assert producer.main(["--out", str(out_path), "--require-store", "--ignore-staleness"]) == 0
+    first_bytes = out_path.read_bytes()
+
+    rc = producer.main(["--out", str(out_path), "--require-store", "--ignore-staleness"])
+    assert rc == 0, "a semantic no-op must stay a success under --require-store"
+    assert out_path.read_bytes() == first_bytes, "a no-op must not churn the artifact"
