@@ -3,7 +3,7 @@
 Operation: `gmi-theme-research-automation-mobility-deployment-20260924-001`  
 Parent: Macro #7886  
 Child: Draft/HOLD #7893  
-Status: RESEARCH/DESIGN PROPOSAL — no observation is enrolled, no interface is live, and no new ingestion/evidence/graph/store/scheduler is authorized.
+Status: RESEARCH/DESIGN PROPOSAL — complete for review with C-R1–C-R4 corrections; no observation is enrolled, no interface is live, and no new ingestion/evidence/graph/store/scheduler is authorized. C-O4/C-O5 are supplemental preliminary profiles, not fully qualified acquisition/cadence contracts.
 
 ## 1. User and machine job
 
@@ -32,6 +32,8 @@ Every admitted future observation should preserve, through existing owners:
 
 A later corrected stall count, operational-system count or tonnage total must not overwrite the as-known earlier value in historical evaluation. A contractual target is not an achieved operating observation. A date-only source cannot establish intraday ordering. A deterministic ratio derived from one source is dependent on that source and must not be counted as a second confirmation.
 
+C-R1–C-R3 additionally require the measured-versus-prospective status, scheduled-versus-available rate denominator, integrated exposure interval, recognition-versus-collection basis, and accounting-profit-versus-cash-investment perimeter. Correcting any of these invalidates affected derived numbers AND prose; it does not invalidate unaffected source observations.
+
 ## 3. Observation profile C-O1 — warehouse productive utilization and buyer payback
 
 **User question.** Has a warehouse-automation installation progressed from deployment revenue into reliable productive work that creates customer value and recurring supplier economics?
@@ -56,7 +58,7 @@ A later corrected stall count, operational-system count or tonnage total must no
 - intervention intensity = human intervention-hours / accepted workload or system-hour;
 - customer labor intensity = customer labor-hours / accepted workload;
 - operating-cost intensity = matched operating cost / accepted workload;
-- buyer cash return requires attributable avoided/additional cash against the SAME installation/cohort divided by full attributable investment. Do not use corporate capex or consolidated savings as a site denominator.
+- buyer cash return requires attributable avoided/additional cash against the SAME installation/cohort divided by full attributable investment. Do not use corporate capex or consolidated savings as a site denominator. State whether the cash numerator is before or after investment/financing, retain the horizon and investment basis, and do not treat one period's ratio as lifetime ROI. In a cash bridge, add back included noncash depreciation before subtracting cash capex once; keep taxes, working capital and financing on their declared basis rather than subtracting depreciation and investment twice.
 
 **Existing evidence.** Symbotic provides system-in-deployment, operational-system and revenue-category cohorts; Walmart provides broad network automation/productivity evidence. The inspected public sources do not provide a matched Symbotic site payback cohort.
 
@@ -85,53 +87,63 @@ A later corrected stall count, operational-system count or tonnage total must no
 
 **User question.** Is charger-network growth producing reliably available, paid energy throughput and acceptable site economics, rather than merely more installed ports?
 
-**Population.** Same network ownership model, site vintage, geography/utility territory, charger class/power and operating period. Separate owned public network, eXtend/third-party assets, fleet/private assets and OEM-funded cohorts.
+**Population.** Same network ownership model, site vintage, geography/utility territory, charger class/power and operating period. Separate owned public network, eXtend/third-party assets, fleet/private assets and OEM-funded cohorts. The retained 99 GWh source metric is PUBLIC-network throughput; C-R2 concerns exposure timing/averaging, not a public-versus-AV/eXtend population error.
 
 **Exact observables.**
-- operational stalls/ports and commissioning date;
+- operational stalls/ports, commissioning/retirement dates and integrated eligible stall-hours/days;
 - actual availability, not contractual threshold;
-- sessions and delivered kWh;
-- realized charging revenue separated from credits/OEM/network items;
+- sessions and observed delivered kWh;
+- realized direct charging revenue and recognition/collection period, separated from regulatory credits and non-energy network/OEM fees;
 - energy commodity and demand charges;
 - host rent/revenue share and network/site fees;
 - maintenance/repair/field-service cost;
-- site capital, OEM/grant/funding offsets and depreciation;
-- debt/subsidy attribution and financing cash cost;
-- retirement/replacement events.
+- separately scoped cash capital expenditures, OEM/grant/funding offsets and accounting depreciation;
+- operating working-capital/timing changes, cash taxes and other noncash adjustments when required by the selected cash measure;
+- debt/subsidy attribution, cash interest, principal repayment and new borrowing on a separately named financing view;
+- retirement/replacement events and the issuer's averaging/eligibility definition.
 
-**Numerators / denominators.**
-- energy utilization = delivered kWh / operational stall-day or available stall-hour;
-- session utilization = sessions / operational stall-day;
-- realized charging yield = matched direct charging revenue / delivered kWh;
-- energy/site cost intensity = matched energy + site operating cost / delivered kWh;
-- contribution intensity = matching charging contribution / delivered kWh;
-- site cash return = attributable site net cash / full sponsor capital at the SAME site/vintage. Portfolio gross margin is not a site return.
+**Numerators / denominators and C-R1–C-R2 measurement logic.**
+- measured direct charging revenue: `R_charge = sum(E_i * p_i)`, where E_i is observed kWh and p_i compatible realized net currency/kWh for the same contract/customer/period cell. No additional stall count or availability factor is applied. Recognition/timing and non-energy adjustments require an explicit reconciliation; this is not automatically cash collected;
+- prospective energy: `E_hat = sum(H_i * a_i * q_i)` where H_i is scheduled eligible stall-hours, a_i available/scheduled fraction and q_i kWh per AVAILABLE stall-hour; all cells and periods must match;
+- a rate q_sched_i per ALL scheduled eligible stall-hours already incorporates availability: `E_hat = sum(H_i * q_sched_i)`, without a_i;
+- energy per scheduled eligible stall-day = observed kWh / integrated eligible stall-days. Energy per available stall-hour = observed kWh / available stall-hours. These are different rate bases, not interchangeable denominators;
+- session utilization = sessions / integrated eligible stall-days;
+- realized charging yield = matched direct charging revenue / matched delivered kWh. An aggregate quotient is not a measured site tariff, and a yield derived from revenue supplies no independent confirmation of the same revenue;
+- energy/site cost intensity = matched energy + site operating cost / matched delivered kWh;
+- contribution intensity = matching charging contribution / matched delivered kWh, with included costs and accounting/cash status explicit;
+- an end-quarter count times all quarter days is not integrated exposure. `3930 * 276 * 91 = 98,705,880 kWh` remains a hypothetical endpoint approximation, not a reconciliation to 99 GWh. Actual comparable exposure and averaging definition remain unmeasured here. No causal expansion attribution or mature-site return follows from numerical closeness.
 
-**Existing evidence.** EVgo Q2 2026 reports 3,930 public-network stalls, 276 kWh/day average daily public-stall throughput, 99 GWh throughput, charging-network revenue/cost, capex offsets and DOE financing. Its GM contract defines 97%/95% availability thresholds, but the inspected filing does not establish achieved availability.
+**C-R3 profit and cash scopes.** Preserve reported accounting categories rather than subtracting group depreciation or group capex from a network margin without reconciliation. On a matched explanatory perimeter, operating profit = recognized revenue − accrued operating costs excluding D&A − D&A. Cash capex does not appear as a second depreciation charge. A separate post-tax/post-investment/pre-financing bridge adds back included D&A and other identified noncash items, reconciles operating working capital/timing, and deducts cash taxes and cash capex once. Starting from a cash measure that already includes a cost/tax/interest or working-capital adjustment does not permit deducting it again. Financing and restricted cash remain separate; a capital cash offset appears only once, using either gross capex plus a separately qualified receipt or the matching net-investment definition. Unknown inputs stay unknown.
+
+A site cash-return measure must name its numerator (before/after investment and financing), sponsor-capital denominator, horizon and matching site/vintage; it is not interchangeable with accounting gross margin or automatically a lifetime return. The SYNTHESIS C-R3 example is a synthetic reconciliation, not an estimate of undisclosed EVgo cash flows.
+
+**Existing evidence.** EVgo Q2 2026 reports 3,930 public-network stalls at quarter end, 276 kWh/day average daily public-stall throughput, 99 GWh public-network throughput, charging-network revenue/cost, capex offsets and DOE financing. Its GM contract defines 97%/95% availability thresholds, but the inspected filing does not establish achieved availability. These existing reported observations are preserved; the current repair does not acquire a new operating series or validate the issuer's average denominator.
 
 **Source/acquisition feasibility.**
 - public filings/releases: feasible for portfolio throughput, revenue/cost, capex/funding and contractual terms;
 - charger status/actual uptime: potentially public/entitled network data, but source definition and history must be qualified;
 - utility tariff/demand charges: generally public by tariff but site mapping can be difficult;
-- host economics/site capex: often private or aggregated.
+- host economics/site capex: often private or aggregated;
+- integrated historical stall exposure and averaging/eligibility rules: not qualified in this repair; do not derive them from endpoint closeness.
 
 **Cadence.**
 - charging activity/availability: event or operational cadence where entitled;
+- commissioning/retirement and eligibility changes: retain event intervals for the period denominator;
 - tariff/funding/contract changes: event-driven;
 - financial reconciliation: quarterly;
 - structural site-vintage review: quarterly or semiannual.
 
 **Business horizon.** Site ramp through mature utilization and asset replacement; financing horizon should match debt/subsidy obligations.
 
-**Retention/correction.** Preserve station/stall identity, site vintage, commissioning/retirement, availability-definition version, tariff vintage, funding attribution and corrected energy/session data.
+**Retention/correction.** Preserve station/stall identity, site vintage, commissioning/retirement intervals, denominator/rate basis, availability-definition version, tariff vintage, funding attribution and corrected energy/session data. A correction to exposure may change a derived intensity without changing the independently observed energy total.
 
-**Strongest alternative.** New sites dilute aggregate per-stall utilization during ramp even while mature-site economics remain sound; portfolio-level decline therefore does not prove deterioration.
+**Strongest alternative.** New sites may dilute aggregate per-stall utilization during ramp even while mature-site economics remain sound; portfolio-level decline therefore does not prove deterioration. Cohort weighting, availability and mature demand can also differ. Their contributions are not identified by the endpoint calculation.
 
-**Falsifier of a scale-to-return thesis.** Mature matched cohorts fail to raise/hold delivered-energy utilization or site contribution after availability, power, rent, maintenance and capital costs are included.
+**Falsifier of a scale-to-return thesis.** Mature matched cohorts fail to raise/hold delivered-energy utilization or site contribution after availability, power, rent and maintenance are measured, and after accounting profit and cash investment are evaluated on separate complete bases.
 
 **Existing intended owners.** Energy for power/tariff/grid semantics; financial owner for revenue/cost/capex/debt; GMI for source-local relation and thesis; identity for station/operator/company bindings; existing evaluation owner for any future prospective study.
 
-**Currently unmeasurable.** Publicly matched EVgo site-level uptime, tariff, host economics and full site return.
+**Currently unmeasurable.** Publicly matched EVgo site-level uptime, integrated eligible exposure/average definition, tariff, host economics, selected site cash-flow adjustments and full site return. No missing input is replaced by zero or by a synthetic fixture.
 
 ## 5. Observation profile C-O3 — autonomous quarry cost per accepted ton
 
@@ -156,7 +168,7 @@ A later corrected stall count, operational-system count or tonnage total must no
 - productive rate = accepted tons / available truck-hour;
 - availability = available scheduled truck-hours / scheduled truck-hours;
 - intervention intensity = intervention/supervision hours / operating truck-hour or accepted ton;
-- full cost per accepted ton = matched labor + fuel + maintenance + software/support + depreciation/capital charge + other attributable cost / accepted tons.
+- full cost per accepted ton = matched labor + fuel + maintenance + software/support + depreciation/capital charge + other attributable cost / accepted tons. Declare an accounting-cost or explicitly modelled lifecycle-cost basis; do not add cash asset purchases on top of a depreciation/capital charge for the same investment. A cash-investment view is separate and follows C-R3, with tax, working-capital and financing scope explicit where included.
 
 **Existing evidence.** Caterpillar reports Bull Run go-live in November 2024, productivity matching staffed machines shortly after go-live, more than 2m tons in the first year and more than 3.5m tons after 18+ months, followed by expansion to two additional Virginia sites. Caterpillar/Carter Machinery also report embedded implementation/support and training.
 
@@ -184,6 +196,8 @@ A later corrected stall count, operational-system count or tonnage total must no
 
 ## 6. Observation profile C-O4 — machine-vision task economics
 
+**Qualification: SUPPLEMENTAL PRELIMINARY.** Exact acquisition feasibility, information/review cadence, retention horizon and complete source binding remain unqualified. This is a research prompt, not an enrolled observation contract.
+
 **User question.** Does a qualified vision installation improve a specific inspection/guidance task enough to justify installed hardware/software and integration cost?
 
 **Population.** Same production cell/line, task, product mix, camera/sensor/lighting/software version and measurement window.
@@ -208,6 +222,8 @@ A later corrected stall count, operational-system count or tonnage total must no
 **Existing owners / missing.** Semiconductor/Robotics owners retain device facts. C needs a customer task + seller economic bridge. Exact candidate application and source feasibility remain UNSELECTED.
 
 ## 7. Observation profile C-O5 — medical robotics comparable operating cohort
+
+**Qualification: SUPPLEMENTAL PRELIMINARY.** Complete acquisition, information/review cadence and retention details remain unqualified. Reuse of Healthcare/B does not by itself supply an observed comparable operating cohort or enroll a native contract.
 
 **User question.** Does a placed medical robotic system become sustainably utilized under its commercial arrangement without conflating clinical access with physical placement?
 
@@ -236,7 +252,7 @@ A useful future existing-owner dossier should answer, in order:
 3. **Is it merely announced/installed, or actually productive?** accepted output, utilization, availability and intervention.
 4. **Who pays and how?** capex, lease, per-use, subscription, service, energy/transaction, public funding.
 5. **Who carries the support/capital burden?** integration, training, maintenance, spares, remote assistance, replacement, financing.
-6. **What economics are retained?** customer avoided/added cash and supplier/operator contribution/cash.
+6. **What economics are retained?** customer avoided/added cash and supplier/operator contribution/cash, with accounting profit, cash investment and financing kept as distinct scopes.
 7. **What remains unknown?** visible gap with next discriminating observation and strongest alternative explanation.
 
 No new universal score is proposed. A user should be able to see “installed but utilization unavailable” or “productive work proven but payback private” without a false completeness color.
@@ -245,7 +261,7 @@ No new universal score is proposed. A user should be able to see “installed bu
 
 **Workflow A — distinguish deployment from adoption.** Start from a theme leaf such as roboticslogistics, open a named deployment, inspect system/site scope, productive-unit evidence and support obligations, then see which economic link is still missing.
 
-**Workflow B — challenge an installed-base narrative.** For EV charging, compare operational-stall growth with availability and delivered-energy utilization before examining revenue/capital. The workflow should explicitly allow “more stalls, lower per-stall throughput” without forcing a positive/negative verdict.
+**Workflow B — challenge an installed-base narrative.** For EV charging, inspect reported energy and compatible realized revenue separately from a prospective capacity/availability model. Compare utilization only with integrated eligible exposure and a declared rate basis. The workflow should allow “more stalls, lower reported per-stall throughput” without forcing a verdict about mature sites or attributing energy growth to expansion from aggregate closeness. Then inspect separate accounting-profit and cash-investment/financing views.
 
 **Workflow C — compare different monetization models without mixing them.** Contrast Symbotic deployment + support, EVgo usage/energy + network revenue, and Caterpillar equipment/autonomy/dealer support using their native units rather than forcing a universal revenue multiple.
 
@@ -258,16 +274,20 @@ A future accepted implementation should, at minimum, demonstrate:
 - a contract target and an achieved uptime observation render as different facts;
 - 77 systems in deployment and 56 operational systems are not summed into 133 installations;
 - usage-based leases remain nested within operating leases;
-- 99 GWh and 276 kWh/day per stall use compatible population/period before reconciliation;
+- fixed observed kWh and compatible realized yield produce unchanged measured charging revenue when unrelated stall/availability metadata changes;
+- a kWh/available-hour rate receives the compatible availability factor once; a kWh/all-scheduled-hours rate receives no additional availability factor;
+- 99 GWh retains its PUBLIC-network source population; the 3,930 end-quarter count cannot establish quarter stall-days or validate reconciliation merely because 3930 × 276 × 91 is close;
+- staggered commissioning distinguishes 137 integrated stall-days from 182 endpoint-derived stall-days in the declared synthetic fixture;
 - regulatory credits/OEM-network revenue are not silently treated as charging tariff;
+- identical hypothetical cash flows reconcile through accounting profit plus included D&A addback minus cash capex once; interest and capital offsets cannot be counted twice;
 - cumulative autonomous tons do not become tons/hour without operating-hour denominator;
-- a source correction preserves predecessor and historical applicability;
+- a source correction preserves predecessor and historical applicability, invalidating dependent calculations AND prose but not unrelated observed totals;
 - one source/event reused across multiple leaves remains one source lineage;
-- missing site capex or intervention labor yields a bounded limitation, not zero;
+- missing site capex, working capital, taxes or intervention labor yields a bounded limitation, not zero;
 - private/current full-fidelity research is never emitted through an unapproved public path;
 - the research view changes no basket membership, rank, entry, size or trade output.
 
-These are proposed acceptance examples for the Meta-CEO/Fable integration package, not executed product tests.
+These remain proposed product acceptance examples for the Meta-CEO/Fable integration package, NOT_EXECUTED as product tests. The separate offline `test_measurement_repair.py` runs synthetic arithmetic/counterexamples for C-R1–C-R3 only; those results do not execute or validate any native interface or issuer disclosure.
 
 ## 11. Integration constraints
 
@@ -281,5 +301,7 @@ Use current source owners; do not create:
 - a parallel publisher.
 
 GMI contributes source-local research and evidence-qualified interpretation. Existing identity, financial/Earnings, source-rights, Research Vault/private publication, K1/relationship, F04/shared detail, forecast/evaluation and market owners keep their authority.
+
+C-R1–C-R4 correction authority: parent #7886/comment5810356948 and detailed review section 4 at `30cca9d7a216f94580104444c405fc31064c7e48`. Original research and source evidence are retained; no new broad study, private-ROI acquisition or implementation is performed.
 
 MISSION_COMPLETE: false
