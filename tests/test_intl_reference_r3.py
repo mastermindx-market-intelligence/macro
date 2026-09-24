@@ -62,6 +62,12 @@ def test_r3_uses_real_destinations_and_preserves_stocks_mode():
     fragment_links = re.findall(r'href="#([^"]+)"', html)
     for fragment in fragment_links:
         assert f'id="{fragment}"' in html, fragment
+    for href in re.findall(r'href="([^"]+)"', html):
+        if href.startswith("#"):
+            assert f'id="{href[1:]}"' in html, href
+            continue
+        assert "://" not in href, href
+        assert (ROOT / "site" / href).is_file(), href
 
 
 def test_r3_covers_full_market_and_economy_universes():
@@ -83,6 +89,10 @@ def test_r3_covers_full_market_and_economy_universes():
 def test_r3_restores_horizons_and_change_shape_without_fake_rank_history():
     html = _html()
     assert _attr_values(html, "data-horizon") == {"1m", "3m", "6m", "12m", "ytd"}
+    assert _attr_values(html, "data-label-en") == {"1M", "3M", "6M", "12M", "YTD"}
+    assert _attr_values(html, "data-label-zh") == {"1月", "3月", "6月", "12月", "年初至今"}
+    assert "button.textContent.trim()" not in html
+    assert "button.dataset.labelZh" in html and "button.dataset.labelEn" in html
     assert 'data-rotation-source="engine-result"' in html
     assert "20D ago" not in html
     assert "historical rank" not in html.lower()

@@ -287,7 +287,7 @@ tr:last-child td { border-bottom:0; }
 <section class="act" id="global-pulse" data-demo-organ="global-pulse"><div class="act-header"><div><div class="act-title"><span class="act-num">2</span>
       <h2><span class="l-en">Global Pulse + Material Risk Radar</span><span class="l-zh">全球脉搏 + 重大风险雷达</span></h2></div><p class="act-sub"><span class="l-en">One selected horizon; USD, local equity, FX contribution, turn state, and stance stay together.</span><span class="l-zh">统一周期；美元、本币、汇率贡献、拐点状态与姿态并列。</span></p></div></div>
   <div class="panel organ" data-organ="global-pulse" data-state="default">
-    <div class="section-head"><div><div class="act-eyebrow"><span class="l-en">Performance in US dollars</span><span class="l-zh">美元计价表现</span></div><h3><span class="l-en">Seven-market performance and change shape</span><span class="l-zh">七市场表现与变化形态</span></h3></div><div class="horizon-row" role="group" aria-label="Performance horizon"><button class="horizon-btn" type="button" data-horizon="1m" aria-pressed="false"><span class="l-en">1M</span><span class="l-zh">1月</span></button><button class="horizon-btn" type="button" data-horizon="3m" aria-pressed="true"><span class="l-en">3M</span><span class="l-zh">3月</span></button><button class="horizon-btn" type="button" data-horizon="6m" aria-pressed="false"><span class="l-en">6M</span><span class="l-zh">6月</span></button><button class="horizon-btn" type="button" data-horizon="12m" aria-pressed="false"><span class="l-en">12M</span><span class="l-zh">12月</span></button><button class="horizon-btn" type="button" data-horizon="ytd" aria-pressed="false"><span class="l-en">YTD</span><span class="l-zh">年初至今</span></button></div></div>
+    <div class="section-head"><div><div class="act-eyebrow"><span class="l-en">Performance in US dollars</span><span class="l-zh">美元计价表现</span></div><h3><span class="l-en">Seven-market performance and change shape</span><span class="l-zh">七市场表现与变化形态</span></h3></div><div class="horizon-row" role="group" aria-label="Performance horizon"><button class="horizon-btn" type="button" data-horizon="1m" data-label-en="1M" data-label-zh="1月" aria-pressed="false"><span class="l-en">1M</span><span class="l-zh">1月</span></button><button class="horizon-btn" type="button" data-horizon="3m" data-label-en="3M" data-label-zh="3月" aria-pressed="true"><span class="l-en">3M</span><span class="l-zh">3月</span></button><button class="horizon-btn" type="button" data-horizon="6m" data-label-en="6M" data-label-zh="6月" aria-pressed="false"><span class="l-en">6M</span><span class="l-zh">6月</span></button><button class="horizon-btn" type="button" data-horizon="12m" data-label-en="12M" data-label-zh="12月" aria-pressed="false"><span class="l-en">12M</span><span class="l-zh">12月</span></button><button class="horizon-btn" type="button" data-horizon="ytd" data-label-en="YTD" data-label-zh="年初至今" aria-pressed="false"><span class="l-en">YTD</span><span class="l-zh">年初至今</span></button></div></div>
     <p class="help-note"><span class="l-en">Every card uses the selected horizon. Local equity + FX contribution = displayed USD return. Net is recomputed from the displayed rounded components, so it may differ by 0.1 percentage point from the engine’s unrounded published total.</span><span class="l-zh">每张卡使用所选周期。本币股市 + 汇率贡献 = 显示的美元收益。净值由显示的四舍五入分项重新计算，因此可能与引擎未四舍五入的发布总值相差0.1个百分点。</span></p>
     <div class="organ-state" data-organ-state="loading"><div class="skeleton" style="width:42%"></div><div class="skeleton"></div><div class="skeleton" style="width:76%"></div><p><span class="l-en">This organ is loading; the remaining five acts stay available.</span><span class="l-zh">此模块正在加载；其余五个部分保持可用。</span></p></div>
     <div class="organ-state" data-organ-state="empty"><b><span class="l-en">No performance rows qualified for this session.</span><span class="l-zh">本次构建没有符合条件的表现行。</span></b><p><span class="l-en">Turn states, transmission, macro comparison, and deep desks remain available.</span><span class="l-zh">拐点状态、传导、宏观对比与深度看台仍可使用。</span></p></div>
@@ -731,11 +731,18 @@ tr:last-child td { border-bottom:0; }
 <script>
 (() => {
   const root = document.documentElement;
+  const horizonLabel = button => root.dataset.lang === 'zh' ? button.dataset.labelZh : button.dataset.labelEn;
+  const syncHorizonLabels = button => {
+    const label = horizonLabel(button);
+    document.querySelectorAll('[data-horizon-label]').forEach(node => { node.textContent = label; });
+  };
   document.querySelectorAll('[data-theme-button]').forEach(button => button.addEventListener('click', () => {
     root.dataset.theme = button.dataset.themeButton; document.querySelectorAll('[data-theme-button]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
   }));
   document.querySelectorAll('[data-lang-button]').forEach(button => button.addEventListener('click', () => {
     root.dataset.lang = button.dataset.langButton; root.lang = button.dataset.langButton === 'zh' ? 'zh-CN' : 'en'; document.querySelectorAll('[data-lang-button]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+    const selectedHorizon = document.querySelector('[data-horizon][aria-pressed="true"]');
+    if (selectedHorizon) syncHorizonLabels(selectedHorizon);
   }));
   const format = value => `${value > 0 ? '+' : ''}${Number(value).toFixed(1)}%`;
   const tone = (node, value) => { node.classList.remove('dir-up','dir-down','dir-flat'); node.classList.add(value > 0 ? 'dir-up' : value < 0 ? 'dir-down' : 'dir-flat'); };
@@ -744,8 +751,8 @@ tr:last-child td { border-bottom:0; }
     document.querySelectorAll('[data-performance-market]').forEach(card => {
       const values = JSON.parse(card.dataset.returns)[horizon]; card.dataset.usd = values.usd; card.dataset.local = values.local; card.dataset.fxContribution = values.fx;
       ['usd','local','fx'].forEach(key => { const node = card.querySelector(`[data-value="${key}"]`); node.textContent = format(values[key]); tone(node, values[key]); });
-      card.querySelector('[data-horizon-label]').textContent = button.textContent.trim();
     });
+    syncHorizonLabels(button);
   }));
   const organ = document.querySelector('[data-organ="global-pulse"]');
   document.querySelectorAll('[data-organ-control]').forEach(button => button.addEventListener('click', () => {
