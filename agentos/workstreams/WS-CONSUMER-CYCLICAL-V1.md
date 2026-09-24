@@ -9,7 +9,7 @@ objective: >
   with anonymous users receiving no paid closure. V1-CORE (the deterministic
   composition) is the merged first wave; the entitled/browser legs stay frozen
   behind external owners.
-status: active
+status: blocked
 program: earnings-intelligence
 repos: [macro]
 owner: fable-integration-principal
@@ -25,15 +25,18 @@ owns_paths:
   - research/consumer_cyclical/v1/**
 decisions:
   - "DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
+discoveries:
+  - "DSC:A-UNIVERSAL-FALLBACK-BRANCH-IS-INVISIBLE-TO-A-VALUE-ONLY-SUITE"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
-    status: awaiting_ci
+    status: done
     next_action: >
-      Carry PR #7942 to squash-merge on concluded-green. Contract + fixture +
-      contract tests + pure projection + tests + exclusive CI gate, under the
-      merged contracts/sector_intelligence family, carrying no transport mount
-      identity.
+      Merged as PR #7942 (squash 6e3e8987c5c6, 2026-09-24T13:07:49Z) and verified
+      live from main: all six R6 7.1 golden values exact from native_admitted
+      false facts, 0 schema errors, 61 tests green on the merged tree. That live
+      verification then found the economic lead unreachable on every input (see
+      landmines); repaired plus a same-class hardening pass on PR #7945, 65 tests.
   - id: CC-V1-ENTITLED
     title: "V1 entitled + browser legs"
     status: todo
@@ -57,6 +60,15 @@ landmines:
     it makes the projection structurally incapable of its own golden case,
     because PLNT's exhibit is retained nowhere.
   - >
+    Fact keys and result keys are DISJOINT vocabularies that read alike. The
+    lead was unreachable on every input because _build_explanation tested
+    FACT_KEY_* constants for membership in the set of RESULT keys, and 61 tests
+    stayed green because every asserted NUMBER was still exact - only the
+    sentence explaining them was missing. Never spell a result key by
+    concatenating onto a FACT_KEY_*; the spellings coincide today, so drift
+    would be silent. Pinned by test_result_keys_and_fact_keys_are_never_
+    interchangeable.
+  - >
     A new contracts/sector_intelligence/*.schema.json must expose
     properties.contract_id.const or the shared registry enumeration reds; a new
     exclusive CI job name must be added to CURATED_EXCLUSIVE in
@@ -66,8 +78,13 @@ do_not_redo:
   - "The R8 native-staging denial: never retry, rephrase, re-home or delegate around it"
   - "The V1 boundary adjudication itself - see DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
 next_action: >
-  Carry PR #7942 to squash-merge on concluded-green, then return the four
-  external blockers above to Sol. Do not widen into V2/V3/V4.
+  Returned to Sol on carrier #7804 (comment 5814888647, 2026-09-24) naming the
+  four blockers below and correcting that carrier's standing
+  RECEIVER_ASSIGNMENT NONE, which would otherwise have licensed a second Fable
+  receiver onto the same operation. Nothing further is executable at this seat:
+  the remaining V1 legs are all owner-gated. Do not widen into V2 LTH / V3 LULU
+  / V4 theme journey - R15 forbids self-authorizing them on a V1 pass, and the
+  next modifying wave takes its own continuation edge.
 ---
 
 ## Scope
