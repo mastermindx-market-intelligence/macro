@@ -28,7 +28,7 @@ so_what: >
   harness trap: the namespace capability compares the exact database path, so on macOS a /var
   temporary directory must be resolved to /private/var or the bound read refuses and the acquirer
   swallows it into a runtime_observation_not_same refusal.
-kind: fact
+kind: runtime
 verified_at: 2026-09-24
 verified_by: >
   Fable delivery principal, 2026-09-24 06:10Z, scratch reproduction over

@@ -12,9 +12,11 @@ claim: >
   worker_eligible false with the real provider model id, which the router refuses at
   resolve_model_alias and at tier load.
 falsifier: >
-  _load_coo_execution_binding refusing an alias whose provider is not the proven harness binding
-  without a routes-policy change; or a worker_eligible true alias on an enabled autonomous
-  provider that the router still refuses to place.
+  control_plane/executive_service.py:2028-2060 (_load_coo_execution_binding) refusing an alias
+  whose provider is not the proven harness binding without a routes-policy change; or a
+  worker_eligible true alias on an enabled autonomous provider that
+  control_plane/model_router.py:697-709 still refuses to place (run
+  `pytest tests/test_executive_model_router.py` at Mastermind #947 head 8b59fb43).
 so_what: >
   Never add a provider to the routes policy as enabled/autonomous/eligible before the six E2
   gates (see DSC:EXECUTIVE-E2-MINIMAX-NEEDS-SIX-GATES-NOT-A-CONFIG-FLIP) are proven; declare it
