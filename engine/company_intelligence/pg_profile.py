@@ -114,7 +114,7 @@ def pg_profile(*, fiscal_scope: tuple[str, str, str, str]) -> IssuerProfile:
 
 
 _NUMBER = r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?"
-_PERCENT_PATTERN = rf"^(?:\+?({_NUMBER})%|\(\+?({_NUMBER})\)%|\(\+?({_NUMBER})\))%$"
+_PERCENT_PATTERN = rf"^(?:\+?({_NUMBER})%|\(\+?({_NUMBER})\)%|\(\+?({_NUMBER})%\))$"
 _CURRENCY_PATTERN = rf"^(?:\$?({_NUMBER})|\(\$?({_NUMBER})\))$"
 
 
