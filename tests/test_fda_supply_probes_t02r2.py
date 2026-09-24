@@ -246,12 +246,12 @@ def test_t02r2_capture_without_a_source_generation_cannot_hide_an_absence(tmp_pa
     """M4. Law: absence != resolution; source generation != acquisition time;
     retention keys on distinct generations.
 
-    collect_shortage_sweep never type-checks meta.last_updated, so a page that
-    omits it still qualifies with source_generation=None. save_shortage_
-    observation then stamps a disappeared row with absent_since_generation=None
-    — byte-identical to the None a PRESENT row carries — so the persisted
-    observation cannot distinguish 'gone' from 'here', and the retention clock
-    (generations_seen filters None) can never expire it.
+    SEAT AMENDMENT (2026-09-24, ruling R-T02R4-02): the original precondition
+    asserted the DEFECT state (a page without meta.last_updated "still
+    qualifies"). Under R-T02R3-06/R-T02R4-02 such a sweep is UNQUALIFIED with
+    NO_SOURCE_GENERATION at the public seam, so it can never promote and never
+    stamps a disappeared row. The intent of the probe is unchanged: a
+    generation-less page cannot hide an absence.
     """
     from collectors.fda_shortages import (
         read_shortage_observation, save_shortage_observation,
@@ -261,7 +261,7 @@ def test_t02r2_capture_without_a_source_generation_cannot_hide_an_absence(tmp_pa
     both = [_t02r2_record(),
             _t02r2_record(ndc="T02R2-B", name="Synthetic Beta")]
     first = _t02r2_sweep(
-        None, both,
+        "2026-09-23", both,
         start=datetime(2026, 9, 23, 12, tzinfo=UTC),
         finish=datetime(2026, 9, 23, 12, 0, 6, tzinfo=UTC),
     )
@@ -274,15 +274,21 @@ def test_t02r2_capture_without_a_source_generation_cannot_hide_an_absence(tmp_pa
         start=datetime(2026, 9, 24, 12, tzinfo=UTC),
         finish=datetime(2026, 9, 24, 12, 0, 6, tzinfo=UTC),
     )
+    assert second["qualified"] is False, second
+    assert second["failure_code"] == "NO_SOURCE_GENERATION", second["failure_code"]
     outcome = save_shortage_observation(
         second, path=path, expected_predecessor=_t02r2_digest(sidecar))
+    assert outcome["promoted"] is False, outcome
 
-    rows = read_shortage_observation(path=path)["rows"]
+    state = read_shortage_observation(path=path)
+    rows = state["rows"]
     assert rows is not None
     marks = {row["package_ndc"]: row["absent_since_generation"]
              for _, row in rows.iterrows()}
     assert "T02R2-B" in marks
-    assert not (outcome["promoted"] and marks["T02R2-B"] == marks["T02R2-A"]), (
-        "a generation-less capture was promoted and marked the disappeared row "
-        f"exactly like the present one: {marks}"
+    assert marks["T02R2-B"] is None or marks["T02R2-B"] != marks["T02R2-A"], (
+        "a generation-less capture marked the disappeared row exactly like the "
+        f"present one: {marks}"
     )
+    assert json.loads(sidecar.read_text())["last_refresh"]["failure_code"] \
+        == "NO_SOURCE_GENERATION"
