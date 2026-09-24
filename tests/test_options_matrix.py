@@ -1528,3 +1528,28 @@ def test_matrix_default_publisher_covers_the_motivating_mu_symbol():
     from scripts.build_options_matrix import DEFAULT_ROOTS
     assert {"MU", "ARM"}.issubset(DEFAULT_ROOTS)
     assert len(DEFAULT_ROOTS) == len(set(DEFAULT_ROOTS))
+
+
+@pytest.mark.parametrize("upload_ok", [True, False])
+def test_matrix_publisher_all_healthy_roots_distinguishes_delivery_success(tmp_path, monkeypatch, upload_ok):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "_r2_client", lambda: object())
+    monkeypatch.setenv("R2_BUCKET", "fixture-bucket")
+    doc = {"root": "MU", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
+    monkeypatch.setattr(builder, "build_matrix", lambda root, **kwargs: doc)
+    uploads = []
+    def deliver(client, bucket, path, key):
+        uploads.append(key)
+        return upload_ok
+    monkeypatch.setattr(builder, "_upload_r2", deliver)
+    monkeypatch.setattr(sys, "argv", ["builder", "--publish", "--roots", "MU", "--out", str(tmp_path)])
+    if upload_ok:
+        assert builder.main() is None
+    else:
+        with pytest.raises(SystemExit) as error:
+            builder.main()
+        assert error.value.code == 1
+    assert uploads == ["options_structure/matrix/MU.json"]
+    assert json.loads((tmp_path / "MU.json").read_text()) == doc
