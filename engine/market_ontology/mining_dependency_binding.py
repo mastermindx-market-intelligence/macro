@@ -29,6 +29,7 @@ Every authority flag stays literal ``False`` at every layer that echoes it.
 
 from __future__ import annotations
 
+import importlib
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping
 
@@ -295,8 +296,13 @@ class Harness:
     def shared_contract(self) -> Callable[..., Any]:
         """Lazily probe the shared assertion contract; degrade to a typed refusal when absent."""
 
+        # A string import, not a static ``from engine.theme_graph import ...``: the shared
+        # module is absent on main until #7870 lands, and the first-party import checker
+        # rightly treats a static import of an absent name as an ImportError waiting to be
+        # swallowed. ``import_module`` raises ImportError for an absent module AND for a module
+        # that resolves and then fails to import, so the degrade is exception-safe (R-MIN-26).
         try:
-            from engine.theme_graph import curation_assertion as shared  # lazy by design (R-MIN-26)
+            shared = importlib.import_module(_SHARED_CONTRACT_MODULE)
         except ImportError as exc:
             raise MiningResearchRefusal(
                 "shared_contract_unavailable",
