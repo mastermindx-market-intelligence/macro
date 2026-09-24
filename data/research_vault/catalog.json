@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T10:27:31.810501+00:00",
-  "count": 2772,
+  "generated_at": "2026-09-24T10:42:34.049175+00:00",
+  "count": 2773,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -101,6 +101,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-d38vixq3uta-27670a",
+      "title": "PUTTING MONEY BACK INTO MONETARY POLICY",
+      "institution": "TS Lombard",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-24T09:28:05Z",
+      "summary_points": [
+        "Monetarist Revival Superficiality: Central banks (e.g., Fed via Warsh) cite monetary aggregates for inflation signals but maintain interest rate focus; historical monetarist failures (Goodhart’s law, 1970s deregulation) render this revival ineffective for policy shifts.",
+        "Weak Money-Inflation Correlation: Chart 19 shows low R² (0.3226) between excess broad money and inflation (2020Q4-2022Q3), undermining monetarist forecasting and policy relevance.",
+        "Fiscal Policy as Primary Inflation Driver: Post-COVID inflation stemmed from combined fiscal expansion + QE (not money supply alone), per BIS analysis, exposing monetarism’s incompleteness.",
+        "Monetarist Forecasting Failure: Errors in predicting money supply contraction (e.g., Steve Hank’s 2023 recession call) and velocity rebound prove models lack macro forecasting utility.",
+        "Central Banks’ Lip Service to Monetarism: Revival is opportunistic (e.g., IMF/Warsh citing aggregates) but policy remains anchored to interest rates; no targeting of monetary aggregates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-sjipdfd8qxk-a400d2",
       "title": "JPM Flows Liquidity",
