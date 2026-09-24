@@ -123,7 +123,7 @@ against 100cf1ed at the retained capture's evaluation cut, with strict JSON and
 four unchanged Parquet hashes. No fresh vendor fetch or model trial ran.
 
 Latest evidence is appended as post_review_repair in the existing proof JSON;
-its current SHA256 is 53efbd255363d15b6545afaf7e5e451ffecd3a09dc171364099444197edfeb69.
+its current SHA256 is 6c64875d8dacc679f3a0b7c95c4ea615ea0755654d90e8dd3c541ca460b80ad2.
 The former proof digest above remains historical evidence, not the repaired file.
 Cross-check/replay source and logs:
 /Volumes/Mastermind/evidence/rates-direction-rd2-adversarial-20260924-sol-003/.
