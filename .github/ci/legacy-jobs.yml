@@ -14551,6 +14551,9 @@ jobs:
       - "templates/chat.html"
       - "templates/state_of_themes.html.j2"
       - "tests/test_state_of_themes.py"
+      - "site/assets/css/theme-research.css"
+      - "site/assets/js/theme-research.js"
+      - "tests/test_semiconductor_theme_research_ui.py"
       - "tests/test_subsector_confluence.py"
       - "tests/test_subsector_rotation.py"
       - "tests/test_subsector_rotation_alerts.py"
@@ -14570,6 +14573,16 @@ jobs:
         run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
         run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
+      # Semiconductor B T10 (2026-09-24): the generic paid theme-research client
+      # mounted hidden on the Theme Tracker page — node-shelled contract cases
+      # (same-origin fetch, typed refusals, closed bilingual error codes, no
+      # arithmetic on paid figures) plus the template mount tests that reuse
+      # tests/test_state_of_themes.py's render root. Needs node on PATH like the
+      # dossier JS contract; the guard makes its absence loud, not a vacuous pass.
+      - name: node must be on PATH — theme research client contract skips without it
+        run: node --version
+      - name: theme research paid client — node-shelled contract + Theme Tracker mount (Semiconductor B T10)
+        run: python -m pytest tests/test_semiconductor_theme_research_ui.py -q
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across

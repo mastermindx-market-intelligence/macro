@@ -1852,6 +1852,9 @@ on:
       - "tests/test_portfolio_ctx_chains.py"   # TXI W4 per-ticker chains merge
       - "scripts/build_state_of_themes.py"
       - "tests/test_state_of_themes.py"
+      - "site/assets/css/theme-research.css"
+      - "site/assets/js/theme-research.js"
+      - "tests/test_semiconductor_theme_research_ui.py"
       - "engine/portfolio_brief.py"
       - "tests/test_portfolio_brief.py"
       # unrun-subsector-themes — subsector rotation/turn engines + the Theme
