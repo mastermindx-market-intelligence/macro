@@ -67,7 +67,7 @@ danger_areas:
   - Overlapping forecast dates are not independent episodes; 249 non-overlapping primary windows do not prove independence.
   - Rolling policy horizons can move without repricing; NYSE session receipts are not Treasury-session receipts.
   - Research probabilities and confidence never imply rank, gate, size or trade authority.
-decisions: [DEC:RIC-RATES-DIRECTION-PROGRAM, DEC:RIC-RD1-NO-PROMOTION]
+decisions: [DEC:RIC-RATES-DIRECTION-PROGRAM, DEC:RIC-RD1-NO-PROMOTION, DEC:RIC-WAVE-PHASE-IS-A-SEPARATE-TARGET]
 ---
 
 # Cumulative continuation checkpoint
@@ -146,3 +146,34 @@ to the original freeze commit, not this post-outcome maintenance head.
 Next independent source slice remains RD2 constituent preservation and roll
 attribution in the incumbent collector and RIC consumer. It must keep separate
 source custody from this frozen research carrier and preserve held sibling PRs.
+
+## Continuation: Chairman's two-hour yield-swing clarification
+
+The September 24 chart clarifies a path-dependent swing/phase hypothesis, not a
+request to relabel RD1's endpoint forecast as successful. See
+research/rates_direction/WAVE_PHASE_SCOPE_2026-09-24.md and
+DEC:RIC-WAVE-PHASE-IS-A-SEPARATE-TARGET. Current procedure was repinned to
+Mastermind 5060527c1d52639eb1bfd84413ab7419e7470cbd, compatible 1.0.1/bootstrap1.
+
+Fresh source inspection at Macro b076a4004599215ef21765c437aaade48f40388d found
+legacy HS1 differs from this chart in timeframe and MACD formula. Actual-source
+synthetic probes on original Studio process 99660 passed four assertions:
+112/112 synthetic events were dated before their aggregation bucket's last input;
+a monotone rising series gave the old up-base 1.0 versus correct down-base 0.0;
+ordinary MACD scaled with positive price scaling while canonical RSI-MACD did not.
+This is source-contract evidence, NOT 112 market episodes or forecasting efficacy.
+The exact source digest, example dates, interpretation and repair are in the note.
+
+This turn's source effects are records only. No HS1 report or code was overwritten,
+no RD1 fit/outcome/trial was rerun, no RD2 candidate was silently applied, and no
+worker, watcher, live forecast or deployment was started. Tools now expose writes
+and Studio terminal execution; do not inherit the earlier read-only-surface claim.
+Keep PR 7909 Draft/HOLD and the original freeze/results/ledger unchanged.
+
+Next: reconcile separate source custody for the demonstrated HS1 timing/baseline
+repair and qualify the two-hour source plus exact indicator golden vector. Then
+register a bounded first-passage/conditional-equity experiment through existing
+TrialLedger/Evaluation owners. Do not fabricate two-hour data from daily FRED,
+backdate signal confirmation, assume rate declines always mean risk-on, or reset
+seen-history status. RD2 remains independently useful policy-source work and
+retains its separate custody/integration obligations. Parent mission is incomplete.
