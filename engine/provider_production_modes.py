@@ -1042,7 +1042,11 @@ def _minimax_transport(
         # the caller handed the transport an empty value.
         return TransportOutcome(reason="unconfigured", error_class="unconfigured")
     try:
-        client = anthropic.Anthropic(api_key=credential, base_url=mode.base_url)
+        client = anthropic.Anthropic(
+            api_key=credential,
+            base_url=mode.base_url,
+            max_retries=0,
+        )
         message = client.messages.create(
             model=mode.default_model,
             max_tokens=int(max_tokens),

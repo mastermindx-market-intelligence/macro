@@ -1253,7 +1253,7 @@ def test_minimax_default_path_uses_the_anthropic_sdk_at_the_mode_base_url(receip
     assert receipt.ok is True
     assert receipt.text == "mm answer"
     assert (receipt.input_tokens, receipt.output_tokens) == (3, 4)
-    assert captured["client"] == {"api_key": SECRET_VALUE, "base_url": "https://api.minimax.io/anthropic"}
+    assert captured["client"] == {"api_key": SECRET_VALUE, "base_url": "https://api.minimax.io/anthropic", "max_retries": 0}
     assert captured["create"]["model"] == "MiniMax-M3"
     assert captured["create"]["max_tokens"] == 9
     assert captured["create"]["system"] == "SYS"
