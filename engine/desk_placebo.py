@@ -365,7 +365,9 @@ def _decided_mix(root: Path, slug: str, today) -> tuple[list, str, int, str]:
     """
     ledger = {}
     for row in _load_jsonl(root / "data" / slug / "theses.jsonl"):
-        if row.get("id"):
+        # The thematic ledger may also carry context-only emerging watches.  They have
+        # no directional predicate and must never enlarge the graded/placebo population.
+        if row.get("id") and (row.get("record_type") or "thesis") == "thesis":
             ledger[row["id"]] = row
     if not ledger:
         return [], "none", 0, "no thesis ledger to reconstruct the graded predicates from"
