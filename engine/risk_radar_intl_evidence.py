@@ -8,7 +8,7 @@ buffer (for base windows); gaps alone never manufacture an alert reset.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from engine.neuralweb.constitution import wilson_lower
@@ -19,9 +19,34 @@ CALENDAR_FALLBACK_DAYS = 42
 WILSON_Z_ONE_SIDED_90 = 1.645
 
 
-def _asof_date(value: Any) -> date | None:
+def parse_asof_date(value: Any) -> date | None:
+    """Parse one canonical ISO session date, rejecting truncated junk."""
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if not isinstance(value, str):
+        return None
+
+    text = value.strip()
+    if (
+        len(text) < 10
+        or text[4] != "-"
+        or text[7] != "-"
+        or not (text[:4] + text[5:7] + text[8:10]).isdigit()
+    ):
+        return None
+
     try:
-        return date.fromisoformat(str(value)[:10])
+        parsed = date.fromisoformat(text[:10])
+        if len(text) == 10:
+            return parsed
+        if text[10] not in {"T", " "}:
+            return None
+        datetime.fromisoformat(
+            text[:-1] + "+00:00" if text.endswith("Z") else text
+        )
+        return parsed
     except (TypeError, ValueError):
         return None
 
@@ -33,7 +58,7 @@ def _ordered_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for index, row in enumerate(rows):
         if not isinstance(row, dict):
             continue
-        parsed = _asof_date(row.get("asof"))
+        parsed = parse_asof_date(row.get("asof"))
         if parsed is None:
             continue
         session = parsed.isoformat()
@@ -47,8 +72,8 @@ def _ordered_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def _calendar_days(left_asof: str, right_asof: str) -> int | None:
     """Return elapsed calendar days for valid ISO dates, otherwise fail closed."""
-    left = _asof_date(left_asof)
-    right = _asof_date(right_asof)
+    left = parse_asof_date(left_asof)
+    right = parse_asof_date(right_asof)
     if left is None or right is None:
         return None
     return (right - left).days
@@ -65,7 +90,8 @@ def _is_loud(row: dict[str, Any]) -> bool:
 
 
 def _is_graded(row: dict[str, Any]) -> bool:
-    return isinstance(row.get("graded"), dict)
+    graded = row.get("graded")
+    return isinstance(graded, dict) and bool(graded)
 
 
 def _is_hit(row: dict[str, Any]) -> bool:

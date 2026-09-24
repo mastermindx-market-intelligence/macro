@@ -38,7 +38,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from engine.risk_radar_intl_evidence import derive_evidence
+from engine.risk_radar_intl_evidence import derive_evidence, parse_asof_date
 from lib import config, store
 
 log = logging.getLogger(__name__)
@@ -231,12 +231,7 @@ def realized_odds(market: str, root=None) -> dict:
 
 
 def _evidence_day(value: object):
-    if value is None or not str(value).strip():
-        return None
-    try:
-        return datetime.fromisoformat(str(value)[:10]).date()
-    except (TypeError, ValueError):
-        return None
+    return parse_asof_date(value)
 
 
 def _valid_evidence_asof(value: object) -> bool:
@@ -367,6 +362,7 @@ def _evaluate_authority_contract(
     n_episode_hits = int(metrics.get("n_episode_hits") or 0)
     base_upper_raw = metrics.get("episode_base_rate_upper_90")
     episode_asof = metrics.get("episode_evidence_asof")
+    canonical_row_asof = metrics.get("row_evidence_asof")
 
     episode_gate_granted = False
     episode_gate_reason: str
@@ -413,6 +409,21 @@ def _evaluate_authority_contract(
         episode_gate_reason = (
             "episode-gate-refused: future-episode-evidence-asof="
             f"{_evidence_day(episode_asof).isoformat()} "
+            f"> now={evaluation_now.date().isoformat()}"
+        )
+    elif not canonical_row_asof:
+        episode_gate_reason = (
+            "episode-gate-refused: missing-canonical-row-evidence-asof"
+        )
+    elif not _valid_evidence_asof(canonical_row_asof):
+        episode_gate_reason = (
+            "episode-gate-refused: invalid-canonical-row-evidence-asof="
+            f"{canonical_row_asof!r}"
+        )
+    elif _evidence_day(canonical_row_asof) > evaluation_now.date():
+        episode_gate_reason = (
+            "episode-gate-refused: future-canonical-row-evidence-asof="
+            f"{_evidence_day(canonical_row_asof).isoformat()} "
             f"> now={evaluation_now.date().isoformat()}"
         )
     elif base_upper_raw is None or not (0.0 < float(base_upper_raw) <= 1.0):
@@ -626,6 +637,7 @@ def scorecard(market: str, root=None, log_governance: bool = True) -> dict:
             for row in all_rows
             if isinstance(row, dict)
             and isinstance(row.get("graded"), dict)
+            and bool(row.get("graded"))
             and row.get("asof")
         ),
         key=lambda row: str(row["asof"]),

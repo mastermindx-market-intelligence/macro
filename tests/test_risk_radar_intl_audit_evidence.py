@@ -326,6 +326,55 @@ def test_new_authority_never_grants_when_legacy_row_gate_refuses() -> None:
                             assert not result["can_force"] or result["row_gate_granted"]
 
 
+def test_incomplete_grade_dicts_cannot_manufacture_authority(tmp_path: Path) -> None:
+    from engine.risk_radar_intl_evidence import derive_evidence
+
+    start = date(2024, 12, 1)
+    rows: list[dict] = []
+    offset = 0
+    for _ in range(29):
+        rows.append(
+            _graded_row(
+                (start + timedelta(days=offset)).isoformat(),
+                "risk-off",
+                True,
+            )
+        )
+        offset += 1
+        for _ in range(21):
+            incomplete = _graded_row(
+                (start + timedelta(days=offset)).isoformat(),
+                "calm",
+                False,
+            )
+            incomplete["graded"] = {}
+            rows.append(incomplete)
+            offset += 1
+
+    incomplete_loud = _graded_row(
+        (start + timedelta(days=offset)).isoformat(),
+        "risk-off",
+        False,
+    )
+    incomplete_loud["graded"] = {}
+    rows.append(incomplete_loud)
+    _write_rows(tmp_path, "cn", rows)
+
+    metrics = derive_evidence(rows)
+    authority = audit._evaluate_authority_contract(metrics, now=AUTHORITY_NOW)
+    score = audit.scorecard("cn", root=str(tmp_path), log_governance=False)
+
+    assert metrics["legacy_n_total_graded_rows"] == 29
+    assert metrics["legacy_n_alert_rows"] == 29
+    assert metrics["n_total_graded_rows"] == 29
+    assert metrics["n_loud_rows"] == 29
+    assert authority["row_gate_granted"] is False
+    assert authority["episode_gate_granted"] is False
+    assert authority["can_force"] is False
+    assert score["n_graded"] == 29
+    assert score["can_force"] is False
+
+
 def test_legacy_row_grant_is_revoked_when_episode_gate_is_weak() -> None:
     result = audit._evaluate_authority_contract(
         _strong_authority_metrics(
@@ -494,6 +543,77 @@ def test_invalid_and_duplicate_rows_cannot_inflate_evidence() -> None:
     assert metrics["n_loud_rows"] == 0
     assert metrics["n_independent_episodes"] == 1
     assert metrics["independent_episode_anchors"] == ["2026-01-01"]
+
+
+def test_malformed_iso_suffix_is_not_canonical_evidence() -> None:
+    from engine.risk_radar_intl_evidence import derive_evidence
+
+    valid = _graded_row("2026-01-01", "calm", False)
+    malformed = _graded_row("2026-02-12junk", "risk-off", True)
+
+    metrics = derive_evidence([valid, malformed])
+
+    assert metrics["legacy_n_total_graded_rows"] == 2
+    assert metrics["n_total_graded_rows"] == 1
+    assert metrics["n_loud_rows"] == 0
+    assert metrics["n_independent_episodes"] == 1
+    assert metrics["independent_episode_anchors"] == ["2026-01-01"]
+    assert metrics["n_loud_episodes"] == 0
+
+
+def test_malformed_suffix_authority_dates_fail_closed() -> None:
+    malformed_legacy = audit._evaluate_authority_contract(
+        _strong_authority_metrics(
+            legacy_row_evidence_asof="2026-09-01junk",
+        ),
+        now=AUTHORITY_NOW,
+    )
+    malformed_canonical = audit._evaluate_authority_contract(
+        _strong_authority_metrics(
+            legacy_row_evidence_asof="2026-09-01",
+            row_evidence_asof="2026-09-01junk",
+            episode_evidence_asof="2026-09-01",
+        ),
+        now=AUTHORITY_NOW,
+    )
+
+    assert malformed_legacy["row_gate_granted"] is False
+    assert malformed_legacy["can_force"] is False
+    assert malformed_legacy["row_gate_reason"] == (
+        "legacy-row-gate-refused: invalid-row-evidence-asof='2026-09-01junk'"
+    )
+    assert malformed_canonical["row_gate_granted"] is True
+    assert malformed_canonical["episode_gate_granted"] is False
+    assert malformed_canonical["can_force"] is False
+    assert malformed_canonical["episode_gate_reason"] == (
+        "episode-gate-refused: invalid-canonical-row-evidence-asof="
+        "'2026-09-01junk'"
+    )
+
+
+def test_future_canonical_rows_cannot_hide_behind_past_episode_asof() -> None:
+    result = audit._evaluate_authority_contract(
+        _strong_authority_metrics(
+            legacy_n_total_graded_rows=100,
+            legacy_n_alert_rows=40,
+            legacy_n_alert_hits=35,
+            legacy_row_base_rate_dd5_h21=0.10,
+            legacy_row_evidence_asof="2026-09-01",
+            row_evidence_asof="2026-09-24",
+            independent_evidence_asof="2026-09-24",
+            loud_episode_evidence_asof="2026-09-01",
+            episode_evidence_asof="2026-09-01",
+        ),
+        now=AUTHORITY_NOW,
+    )
+
+    assert result["row_gate_granted"] is True
+    assert result["episode_gate_granted"] is False
+    assert result["can_force"] is False
+    assert result["episode_gate_reason"] == (
+        "episode-gate-refused: future-canonical-row-evidence-asof=2026-09-24 "
+        "> now=2026-09-23"
+    )
 
 
 def test_invalid_authority_evidence_dates_fail_closed() -> None:
