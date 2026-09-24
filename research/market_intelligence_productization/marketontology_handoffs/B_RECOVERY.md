@@ -1,88 +1,137 @@
-# B: recover the work before replacing the worker
+# CEO B — definitive recovery + continuation handoff
 
-Recovery unit: `marketontology-b-continuity-recovery-20260924-sol-001`.
-Parent: macro#6819. Accountable recovery owner: Sol Meta-CEO.
-Preferred specialist avenue if delegated: CTO Sol; Fable is justified only for
-cross-repository continuity/integration decisions that cannot be safely frozen.
-Placement: prepared; no successor receiver or START claimed.
+**Paste this into the Fable/Claude session that will resume CEO B. Use it instead of every earlier B recovery/amendment packet from this restart.**
+It supersedes those *instructions*, not valid B work, accepted effects, current source leases, or the parent program.
 
-## Mission and authority ceiling
+Parent: macro#6819 / `marketontology-complete-parity-fanout-20260826-sol-001`  
+Recovery operation: `marketontology-b-continuity-recovery-20260924-sol-001`  
+Meta-CEO: Sol under Chairman Chris's current directive.  
+Chairman reports B has been offline for several days. That is an attention signal, not proof that every old worker/effect is gone.  
+Procedure pin for this rewrite: Mastermind `1a7d400294b0d37c460b963b8865b40a23173b58`, Skillpack 1.0.1/bootstrap1.
 
-Recover the smallest accurate inventory needed to continue the existing half-B
-research/portfolio/platform work, preserve all effects and select one next real
-signed-in product acceptance. This packet initially authorizes read-only recovery
-and publication of the recovery report. It does NOT authorize takeover of a source
-lease, production database mutation, credential change or new worker duplication.
+## Mission
 
-Chris reports B offline for several days. Treat that as an attention signal, not
-proof that every worker stopped, every local change was pushed, or every effect
-is absent. Historical role, account, author and last-comment timestamp are not a
-current execution lease.
+Recover B's existing MarketOntology responsibilities **once**, preserve everything useful, then resume shipping. Do not turn recovery into a multi-day archaeology project.
 
-## Minimum sources
+Your first product target is a real signed-in **security → saved/revised thesis → monitoring/reopen** journey using existing owners. Do not rebuild Thesis/RMS/Portfolio/Alerts/API systems that already exist.
 
-1. Current #6819 leadership and assessment records.
-2. `agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-13.md` and only a genuinely
-   newer current B checkpoint if found; don't replay the full handoff chain.
-3. Relevant F00C rows and exact GitHub source/production evidence.
-4. Current incumbent runtime/worktree/source/effect status for any carrier selected
-   for continuation. Unknown observation stays unknown, never expired by assumption.
+## Phase 0 — bounded recovery before writes
 
-Recovery read anchors:
-- Terminal #520 RMS lenses over existing thesis_objects: merged, source head
-  f6e93358bdddaf2642ef8f0c9dd4a8d30e4398aa. Seven views are not seven new models.
-- Terminal #522 event-to-owned-position panel: merged, source head
-  06236fdfae534b48c2d74cf0b250c60cc115d650. Do not rebuild its event-impact owner.
-- Terminal #581 public read-only API: merged, source head
-  9ee83889039c3f0ae8b314513a5501fae9dbd98c. Actual issued-key/request/revocation proof
-  is different from migration and unit-test proof.
-- Terminal #662 Briefs redesign: open at
-  bc539d62f68ddea1aff748786396ee78f754f062. Keep its central Alerts -> Briefs
-  destination, pause/resume and non-destructive history contract. Existing production
-  subscriptions must not be unpaused or edited for a convenient demonstration.
-- Macro #7100 Research Mode: open at
-  18d9ca11cb9f934e85323efea9aa08af17892a60. Preserve its current mode/grounding owner.
-- Macro #7357/#7358: stale records sweeps, not proof that product code is absent.
+Recover only the state needed to choose the next safe B-side product unit.
 
-## Recovery classification
+Read:
+1. current macro#6819 parent rulings;
+2. the latest valid B cumulative handoff, including `agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-13.md` if still current;
+3. current GitHub/default-branch/open-PR truth for the candidate B unit;
+4. the incumbent runtime/worktree/effect owner only where a write could collide.
 
-For each selected carrier report: actual operation, branch/PR/head, accepted work,
-current writer/lease evidence, last known effect, local/remote uncertainty, required
-next acceptance and lawful resolver. Classify separately:
+For each candidate carrier classify it as one of:
 
-- active writer exists: do not duplicate;
-- effect unknown: reconcile on the original carrier;
-- remote artifact complete with no live lease: use the existing maintenance/recovery
-  path, not a replacement feature PR;
-- unpublished known source: preserve it through its owner before transferring;
-- merged and accepted: DO_NOT_REDO;
-- no actual execution began: a new eligible placement may be possible under current law.
+- **DO_NOT_REDO** — accepted/merged capability already exists;
+- **ACTIVE_WRITER** — a real current writer/lease exists;
+- **EFFECT_UNKNOWN** — reconcile on that same carrier before any replacement;
+- **READY_FOR_ACCEPTANCE** — implementation exists and the missing step is proof/release;
+- **READY_TO_CONTINUE** — no conflicting writer/effect and bounded implementation remains;
+- **BLOCKED** — exact blocker and resolver.
 
-Do not close open PRs as stale without proving their semantic contents were absorbed
-or explicitly rejecting the residual. Do not spend days proving unrelated old history.
+An offline chat, old author name, elapsed time, or missing heartbeat does not expire a writer or prove no effect. Conversely, do not wait forever for a dead conversation when current source/effect reconciliation proves the next unit is free.
 
-## First product selection
+Once one useful unit is safely recoverable, **start executing it**. Do not finish a census of all B history first.
 
-Prefer the smallest complete signed-in security -> saved thesis/revision journey
-using the current ThesisWorkspace, then join an already-supported monitoring result.
-Inspect the real route and feature availability; do not invent a new /research page.
-A useful save/reopen milestone may ship independently of an unaccepted delivery
-activation, but it cannot be called the full monitored-thesis journey.
+## Existing B-side anchors — navigation, not automatic instructions
 
-Required proof includes positive identity/tenant case, one wrong-user/role case,
-revision/correction, real persistence/reopen, empty/unavailable state and the ordinary
-navigation path. Use an approved test principal and bounded reversible test records;
-no export/delete/key-issue/mail-send actions without their actual effect authority.
-An anonymous 401 is only an access-boundary result, not full product acceptance.
+Known prior implementation includes RMS/thesis lenses, event-to-position impact, the public read-only API, Briefs/Alerts work, Research Mode, Portfolio and thesis/monitoring infrastructure. Re-read current heads before effect.
 
-## Return and next admission
+Use the existing systems and data owners. The recovery goal is not another workspace landing page or another state store.
 
-Return `RECOVERY_REPORT.md` plus one `NEXT_UNIT.md` under
-`marketontology_handoffs/returns/B_RECOVERY/<revision>/`, through one existing-owner
-GitHub publication path. Include exact uncertainty and the smallest proposed paths,
-real consumer, tests, deployment/proof boundary, owner and stop condition.
+## First customer outcome
 
-Sol consumes this report, reconciles custody, and only then delegates one bounded
-implementation/proof unit. No research worker can promote itself to B principal.
-A returning B session consumes the current parent ruling and this recovery before
-resuming writes; the role survives the chat but pending effects do not disappear.
+Prefer the smallest complete signed-in journey that can be proven now:
+
+```
+ordinary security/research entry
+→ create or revise the canonical thesis/research object
+→ preserve evidence/source identity and revision lineage
+→ reopen it through the intended product lens
+→ attach/use an already-supported monitor or condition
+→ later show the actual supported change/delta
+```
+
+A useful save/reopen milestone may ship before external delivery is accepted. Do not block the core retained-research product on email/push activation unless the capability being claimed specifically promises external delivery.
+
+Required acceptance for the bounded unit:
+- real permitted signed-in user;
+- correct personal/team/tenant authorization;
+- wrong-user/role negative case;
+- persistence and reopen;
+- revision/correction behavior;
+- useful empty/unavailable state;
+- ordinary navigation route;
+- no mutation of real user subscriptions or destructive production data merely to manufacture proof.
+
+## Fable economics — integrated amendment
+
+Use **Fable for B-level integration, consequential exceptions, and final acceptance**, not routine worker supervision.
+
+Where the incumbent Fabric permits it, route a medium bounded unit through one qualified lower-cost **UNIT LEAD** that owns:
+
+```
+inspect → builders → independent review → ordinary repair → integration → compact return
+```
+
+Prefer actual admitted economical capacity: Opus, Grok, GLM, Cursor-backed or other qualified routes. The lead may only spend/scope/delegate inside the parent envelope; descendants do not get fresh budgets by pretending to be new roots.
+
+If current protected COO depth/fanout prevents that graph, use existing flat workers and let the incumbent Fabric owner (#600) handle the narrow admission/policy improvement. **Do not make B product recovery wait for complete Fabric autonomy.**
+
+Fable should see:
+- a material product/architecture decision;
+- custody/effect conflict;
+- exceptional repair beyond the envelope;
+- or the integrated proof return.
+
+Do not feed it routine logs, unchanged CI, or every worker question.
+
+## Research split
+
+Push difficult research, benchmark study, causal/transmission methods, and extensive source discovery to the prepared Astra/Sol Web research lanes. Do not rerun that work in Fable.
+
+If a research result is needed for a product decision, ask for one decision-ready packet with sources, falsifier, tested/unrun labels, current owner mapping, and smallest implementation consequence. Keep independent product work moving while research runs.
+
+## First parent return
+
+As soon as one recoverable product unit is identified, post:
+
+```
+MO_PARENT_TRANSITION_20260924
+role: CEO_B
+recovery_state: COMPLETE_FOR_NEXT_UNIT
+actual_session: <observable identity or UNKNOWN>
+do_not_redo:
+active_or_unknown_effects:
+selected_product_unit:
+repo_branch_pr_head:
+current_writer:
+next_visible_acceptance:
+material_blocker_or_none:
+```
+
+Then continue the selected unit without waiting for an ACK-of-ACK, unless the blocker is genuinely reserved to Sol/Chairman or the current source law requires another gate.
+
+## Return to Sol only for
+
+- unresolved EFFECT_UNKNOWN or source custody;
+- cross-half contract decision with A;
+- rights/data-authority issue;
+- material architecture or scope expansion;
+- consequential production/human authorization;
+- a true gap in the admitted worker/fabric path that cannot be handled by its existing owner.
+
+## Do not redo
+
+- accepted merged B capabilities;
+- accepted current owner stores or identity/tenant planes;
+- old correction/ledger archaeology unrelated to the chosen next unit;
+- research delegated to Astra/Sol;
+- active workers whose effects are not reconciled.
+
+**The objective is recovery into delivery, not perfect reconstruction of history.**
