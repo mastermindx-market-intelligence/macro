@@ -269,3 +269,117 @@ def test_chronological_split_half_is_deterministic_and_exhaustive():
     assert list(first) == list(idx[:4])
     assert list(second) == list(idx[4:])
     assert set(first).isdisjoint(set(second))
+
+
+def test_verify_frozen_sources_accepts_exact_hash_and_rejects_drift(tmp_path):
+    source = tmp_path / "engine" / "model.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("frozen\n")
+    expected = {"engine/model.py": _fn("sha256_file")(source)}
+
+    manifest = _fn("verify_frozen_sources")(tmp_path, expected)
+    assert manifest["engine/model.py"]["sha256"] == expected["engine/model.py"]
+
+    source.write_text("drifted\n")
+    with pytest.raises(RuntimeError, match="source hash drift"):
+        _fn("verify_frozen_sources")(tmp_path, expected)
+
+
+def test_verify_no_cn_overlay_rejects_unexpected_probability_override(tmp_path):
+    overlay = tmp_path / "data" / "risk_radar_intl" / "cn_calibration.json"
+    overlay.parent.mkdir(parents=True)
+    overlay.write_text('{"prob_cal": {}}')
+
+    with pytest.raises(RuntimeError, match="CN calibration overlay"):
+        _fn("verify_no_cn_overlay")(tmp_path)
+
+    overlay.unlink()
+    assert _fn("verify_no_cn_overlay")(tmp_path) is None
+
+
+def test_dataframe_file_manifest_records_hash_shape_dates_columns_and_role(tmp_path):
+    path = tmp_path / "series.parquet"
+    idx = pd.bdate_range("2020-01-02", periods=3)
+    frame = pd.DataFrame({"close": [100.0, 101.0, 99.0], "volume": [1, 2, 3]}, index=idx)
+    frame.to_parquet(path)
+
+    result = _fn("dataframe_file_manifest")(path, role="canonical_benchmark", provider="repo_store")
+
+    assert result["role"] == "canonical_benchmark"
+    assert result["provider"] == "repo_store"
+    assert result["rows"] == 3
+    assert result["first_date"] == "2020-01-02"
+    assert result["last_date"] == "2020-01-06"
+    assert result["columns"] == ["close", "volume"]
+    assert len(result["sha256"]) == 64
+
+
+def test_delayed_expanding_base_uses_only_fully_matured_prior_outcomes():
+    idx = pd.bdate_range("2024-01-02", periods=6)
+    outcome = pd.Series([1.0, 0.0, 1.0, 0.0, 1.0, np.nan], index=idx)
+
+    result = _fn("delayed_expanding_base")(outcome, horizon=2, min_history=2)
+
+    assert result.iloc[:3].isna().all()
+    assert result.iloc[3] == pytest.approx(0.5)   # y0/y1 only
+    assert result.iloc[4] == pytest.approx(0.625) # y0/y1/y2, Jeffreys prior
+    assert result.iloc[5] == pytest.approx(0.5)   # y0..y3, Jeffreys prior
+
+
+def test_build_baseline_scores_uses_fixed_exact_sublegs_and_causal_rate_percentile():
+    idx = pd.bdate_range("2024-01-02", periods=8)
+    sublegs = {
+        "cn_breadth": pd.Series(np.linspace(0.1, 0.8, 8), index=idx),
+        "us_rate_2y": pd.Series(np.arange(8, dtype=float), index=idx),
+        "us_real_rate": pd.Series(np.arange(8, dtype=float) + 1.0, index=idx),
+        "us_rate_10y": pd.Series(np.arange(8, dtype=float) + 2.0, index=idx),
+    }
+    composite = pd.Series(np.linspace(0.2, 0.9, 8), index=idx)
+    gate = pd.Series([False, False, True, True, False, True, True, True], index=idx)
+
+    result = _fn("build_baseline_scores")(
+        sublegs=sublegs,
+        composite=composite,
+        gate=gate,
+        percentile_window=4,
+    )
+
+    assert result.columns.tolist() == ["breadth_only", "rates_only", "trend_context", "ungated_composite"]
+    assert result["breadth_only"].equals(sublegs["cn_breadth"])
+    assert result["trend_context"].tolist() == [0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
+    assert result["ungated_composite"].equals(composite)
+    assert result["rates_only"].iloc[-1] == pytest.approx(1.0)
+    assert result["rates_only"].isna().sum() == 1
+
+
+def test_align_replication_outcome_reuses_canonical_signal_columns_unchanged():
+    idx = pd.bdate_range("2024-01-02", periods=6)
+    signal = pd.DataFrame(
+        {
+            "score": [60.0, 70.0, 80.0, 90.0, 95.0, 50.0],
+            "state": ["watch", "watch", "caution", "risk-off", "risk-off", "calm"],
+            "gate": [True, True, True, True, True, False],
+        },
+        index=idx,
+    )
+    replication_close = pd.Series([100.0, 99.0, 94.0, 98.0, 97.0, 96.0], index=idx)
+
+    result = _fn("align_replication_outcome")(
+        signal,
+        replication_close,
+        horizon=2,
+        threshold=0.05,
+        outcome_name="y_5_2",
+    )
+
+    assert result.loc[idx[:4], ["score", "state", "gate"]].equals(signal.loc[idx[:4]])
+    assert result["y_5_2"].iloc[0] == 1.0
+    assert result["y_5_2"].iloc[-2:].isna().all()
+
+
+def test_fixed_threshold_condition_never_estimates_cut_from_outcomes():
+    score = pd.Series([0.82, 0.83, 0.90, 0.91])
+    elevated, risk_off = _fn("fixed_threshold_conditions")(score)
+
+    assert elevated.tolist() == [False, True, True, True]
+    assert risk_off.tolist() == [False, False, False, True]

@@ -457,3 +457,152 @@ def chronological_split_half(index: pd.DatetimeIndex) -> tuple[pd.DatetimeIndex,
     dates = pd.DatetimeIndex(index).sort_values()
     split = len(dates) // 2
     return dates[:split], dates[split:]
+
+
+def sha256_file(path) -> str:
+    import hashlib
+    from pathlib import Path
+
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def verify_frozen_sources(repo_root, expected: Mapping[str, str]) -> dict[str, dict[str, object]]:
+    from pathlib import Path
+
+    root = Path(repo_root)
+    manifest: dict[str, dict[str, object]] = {}
+    for relative, expected_hash in expected.items():
+        path = root / relative
+        if not path.is_file():
+            raise RuntimeError(f"frozen source missing: {relative}")
+        actual = sha256_file(path)
+        if actual != expected_hash:
+            raise RuntimeError(
+                f"source hash drift for {relative}: expected {expected_hash}, got {actual}"
+            )
+        manifest[relative] = {
+            "sha256": actual,
+            "bytes": int(path.stat().st_size),
+        }
+    return manifest
+
+
+def verify_no_cn_overlay(repo_root) -> None:
+    from pathlib import Path
+
+    overlay = Path(repo_root) / "data" / "risk_radar_intl" / "cn_calibration.json"
+    if overlay.exists():
+        raise RuntimeError(f"unexpected CN calibration overlay: {overlay}")
+
+
+def dataframe_file_manifest(path, *, role: str, provider: str) -> dict[str, object]:
+    from pathlib import Path
+
+    source = Path(path)
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    suffix = source.suffix.lower()
+    if suffix == ".parquet":
+        frame = pd.read_parquet(source)
+    elif suffix in {".csv", ".txt"}:
+        frame = pd.read_csv(source, index_col=0, parse_dates=True)
+    else:
+        raise ValueError(f"unsupported tabular source: {source}")
+    dates = pd.to_datetime(frame.index)
+    return {
+        "path": str(source),
+        "role": role,
+        "provider": provider,
+        "sha256": sha256_file(source),
+        "bytes": int(source.stat().st_size),
+        "rows": int(len(frame)),
+        "first_date": str(dates.min().date()) if len(dates) else None,
+        "last_date": str(dates.max().date()) if len(dates) else None,
+        "columns": [str(column) for column in frame.columns],
+    }
+
+
+def delayed_expanding_base(
+    outcome: pd.Series,
+    *,
+    horizon: int,
+    min_history: int = 252,
+) -> pd.Series:
+    if horizon <= 0:
+        raise ValueError("horizon must be positive")
+    values = pd.to_numeric(outcome, errors="coerce")
+    result = pd.Series(np.nan, index=values.index, dtype=float, name="delayed_expanding_base")
+    for position in range(len(values)):
+        cutoff = position - horizon
+        if cutoff < 0:
+            continue
+        history = values.iloc[: cutoff + 1].dropna()
+        if len(history) < min_history:
+            continue
+        result.iloc[position] = float((history.sum() + 0.5) / (len(history) + 1.0))
+    return result
+
+
+def build_baseline_scores(
+    *,
+    sublegs: Mapping[str, pd.Series],
+    composite: pd.Series,
+    gate: pd.Series,
+    percentile_window: int = 504,
+) -> pd.DataFrame:
+    if percentile_window <= 1:
+        raise ValueError("percentile_window must exceed one")
+    rate_names = ("us_rate_2y", "us_real_rate", "us_rate_10y")
+    rate_members = [pd.to_numeric(sublegs[name], errors="coerce") for name in rate_names if name in sublegs]
+    if not rate_members:
+        rates_only = pd.Series(np.nan, index=composite.index, dtype=float)
+    else:
+        rates_raw = pd.concat(rate_members, axis=1).mean(axis=1)
+        rates_only = rates_raw.rolling(
+            percentile_window,
+            min_periods=percentile_window // 2,
+        ).rank(pct=True)
+    breadth = pd.to_numeric(
+        sublegs.get("cn_breadth", pd.Series(np.nan, index=composite.index)),
+        errors="coerce",
+    )
+    return pd.concat(
+        [
+            breadth.rename("breadth_only"),
+            rates_only.rename("rates_only"),
+            gate.fillna(False).astype(float).rename("trend_context"),
+            pd.to_numeric(composite, errors="coerce").rename("ungated_composite"),
+        ],
+        axis=1,
+        join="outer",
+    ).sort_index()
+
+
+def align_replication_outcome(
+    canonical_signal: pd.DataFrame,
+    replication_close: pd.Series,
+    *,
+    horizon: int,
+    threshold: float,
+    outcome_name: str,
+) -> pd.DataFrame:
+    close = pd.to_numeric(replication_close, errors="coerce").sort_index()
+    drawdown = forward_max_drawdown(close, horizon=horizon)
+    outcome = binary_outcome(drawdown, threshold=threshold).rename(outcome_name)
+    return canonical_signal.join(outcome, how="inner")
+
+
+def fixed_threshold_conditions(
+    score: pd.Series,
+    *,
+    elevated_threshold: float = 0.83,
+    risk_off_threshold: float = 0.91,
+) -> tuple[pd.Series, pd.Series]:
+    numeric = pd.to_numeric(score, errors="coerce")
+    elevated = (numeric >= elevated_threshold).fillna(False)
+    risk_off = (numeric >= risk_off_threshold).fillna(False)
+    return elevated.astype(bool), risk_off.astype(bool)
