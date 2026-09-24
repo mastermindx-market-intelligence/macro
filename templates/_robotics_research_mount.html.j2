@@ -1,0 +1,40 @@
+{# templates/_robotics_research_mount.html.j2 — R4a robotics vertical partial.
+
+  THE ROBOTICS mount. Wraps the generic theme-research client (CSS + JS +
+  DOM hook) and renders it ONLY when the render context provides
+  `theme_research_anchor == "robotics_automation"` — exact identity equality,
+  NOT the ^[a-z0-9_]+$ grammar check the semiconductor partial uses, so two
+  verticals can never both mount on one page. Any other value, absent or
+  empty → emits nothing at all.
+
+  Operation gmi-robotics-fable-ceo-e2e-20260923-chairman-001 (carrier #7908).
+  Per the #7669 ruling (issuecomment-5808986207) the aggregator include line
+  in templates/_basket_intelligence_mounts.html.j2 that would pull this
+  partial in is OWNED BY THE SHELL WRITER and serialized — this file does not
+  add, edit or presume it.
+
+  Laws (mirrors the T10b semiconductor partial,
+  templates/_theme_research_mount.html.j2):
+    L4 — `theme_research_anchor` absent/empty/other → silent (no mount, no
+         assets).
+    L5 — Mount shape, asset URLs, slice list, API paths, hidden attribute and
+         bilingual title/note pinned to the same reviewed lane; adds only the
+         per-mount identity attributes `data-schema-id` and `data-slice-labels`
+         requested by the seat for the shared client — inert to the current
+         client, which reads only the four declared mount attributes.
+    L6 — Every visible string flows through `t('en','zh')`; no raw slug.
+    L7 — No analytical data, payload, figure, token or URL beyond the two
+         declared asset paths and the two API paths.
+#}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% if theme_research_anchor == "robotics_automation" %}
+{# — L5 mount shape: hidden, bilingual, no payload, no fetch at render time — #}
+<link rel="stylesheet" href="../assets/css/theme-research.css">
+<section class="theme-research" id="theme-research" data-theme-research-mount data-anchor-theme-id="robotics_automation" data-slices="precision_motion,perception" data-api-query="/api/themes/v1/research/query" data-api-evidence="/api/themes/v1/research/evidence" data-schema-id="robotics_theme_research.v1" data-slice-labels='{"precision_motion":["Precision Motion","精密运动"],"perception":["Perception","感知"]}' hidden aria-labelledby="theme-research-title">
+  <h2 id="theme-research-title" class="theme-research-title">{{ t('Robotics industry research', '机器人产业研究') }}</h2>
+  <p class="theme-research-note">{{ t('Paid research context for members. Nothing here ranks, gates, sizes or times anything.', '会员研究内容。此处内容不构成排序、准入、仓位或时机判断。') }}</p>
+</section>
+<script defer src="../assets/js/theme-research.js?v=20260924a"></script>
+{% endif %}
