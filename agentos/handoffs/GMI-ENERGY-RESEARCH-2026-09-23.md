@@ -327,3 +327,47 @@ Do not replay R1–R5 research, rebuild generic Energy taxonomy, copy Robotics i
 Do not implement product code on PR #7791.
 
 **HOLD FOR SOL — DO NOT MERGE, MARK READY, ARM AUTO-MERGE OR DEPLOY.**
+
+
+## 11. Fable packet verified and placement transport opened
+
+The durable master Fable CEO packet is now present and independently qualified:
+
+- packet: `agentos/handoffs/GMI-ENERGY-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md`
+- packet blob: `f628167227613175cc3ede088f40423add7252fb`
+- packet operation: `gmi-energy-fable-ceo-e2e-20260923-chairman-001`
+- packet verification: `research/energy/ENERGY_FABLE_HANDOFF_VERIFICATION_2026-09-23.json`
+- verification blob: `81457f0c784eb35fa194877411b9b8eaddb3a5f6`
+- verification result: 53 passed / 0 failed
+- packet truth at verification: receiver_assigned=false; PICKUP_ACK=false; START=false; implementation_started=false.
+
+The packet uses:
+- `PREFERRED_AVENUE: Fable`
+- `RECEIVER_BINDING_MODE: CAPACITY_SELECTABLE`
+- `PLACEMENT_STATE: WAITING_CAPACITY`
+- `needs_placement: true`.
+
+A fresh exact-operation Slack search found no prior placement/delivery/ACK/START for this operation. Sol then opened one top-level placement request on the accepted dispatch carrier:
+
+- Slack workspace/channel: `#agent-dispatch` / `C0BSBM78V1N`
+- placement root: `1790224206.039539`
+- message link: https://mastermindxgroup.slack.com/archives/C0BSBM78V1N/p1790224206039539
+- semantic edge: `SOL PLACEMENT REQUEST / WAITING_CAPACITY / needs_placement`
+- preferred avenue: Fable
+- effect before placement: NONE.
+
+The first send attempt was rejected by local tool-schema validation before dispatch because the wrong argument field was used. It is `TOOL_DEGRADED / EFFECT_NONE`, not EFFECT_UNKNOWN. One corrected same-carrier send succeeded.
+
+**Current implementation-handoff truth:** packet prepared and placement request delivered to the placement carrier; no concrete Fable receiver has been assigned; no Fable PICKUP_ACK or START is observed. Repository packet existence and placement-request delivery are not receiver assignment.
+
+### Exact next edge
+
+Placement owner either:
+1. assigns/delivers this exact operation to one eligible concrete Fable session, creating the receiver-assignment edge; or
+2. returns a typed capacity/addressability blocker on the exact placement root.
+
+On concrete delivery, the receiver follows the packet pickup contract: PICKUP_ACK, minimum canonical read, continuation/watch arming, current gate reconciliation, fresh implementation carrier under current source-writer law, then separate truthful START only when the first modifying slice is clear.
+
+Do not create another placement root, choose a numbered Claude/Fable account by guess, or treat Slack user-name similarity as receiver eligibility. Do not implement product code on PR #7791.
+
+Research/design phase status: **READY_FOR_FABLE_PLACEMENT**. Overall product mission remains incomplete.
