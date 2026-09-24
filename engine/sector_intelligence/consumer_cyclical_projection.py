@@ -221,11 +221,26 @@ def _envelope_scale(fact: Any) -> int:
 
 
 def _envelope_sign_convention(fact: Any) -> str:
+    """Return the schema-valid sign convention of a fact.
+
+    Defaults to ``"signed_as_reported"`` (the schema-valid enum
+    literal that handles a sign-bearing nominal fact); falls
+    through to the fact's own value when present.
+    """
     if isinstance(fact, Mapping):
         sign = fact.get("sign_convention")
-        if isinstance(sign, str) and sign:
+        if isinstance(sign, str) and sign in _SIGN_CONVENTION_ENUM:
             return sign
-    return "SIGNED"
+    return "signed_as_reported"
+
+
+_SIGN_CONVENTION_ENUM = frozenset(
+    {
+        "signed_as_reported",
+        "signed_difference",
+        "unsigned_magnitude",
+    }
+)
 
 
 def _envelope_period_kind(fact: Any) -> str:
@@ -239,9 +254,55 @@ def _envelope_period_kind(fact: Any) -> str:
 def _envelope_period_end(fact: Any) -> str:
     if isinstance(fact, Mapping):
         period_end = fact.get("period_end")
+        if isinstance(period_end, str) and period_end:
+            return period_end
+    return ""
+
+
+def _envelope_period_start(fact: Any) -> str:
+    """Period start; prefers explicit field, falls back to derived."""
+    if isinstance(fact, Mapping):
+        raw = fact.get("period_start")
+        if isinstance(raw, str) and raw:
+            return raw
+    period_end = _envelope_period_end(fact)
+    kind = _envelope_period_kind(fact)
+    if not period_end or not kind:
+        return ""
+    parts = period_end.split("-")
+    if len(parts) != 3:
+        return ""
+    try:
+        year = int(parts[0])
+        month = int(parts[1])
+    except ValueError:
+        return ""
+    if kind == "quarter":
+        start_month = ((month - 1) // 3) * 3 + 1
+    elif kind == "half_year":
+        start_month = 1 if month <= 6 else 7
+    elif kind == "year":
+        start_month = 1
+    else:
+        return ""
+    return f"{year:04d}-{start_month:02d}-01"
+
+
+def _envelope_period_end_internal(fact: Any) -> str:
+    if isinstance(fact, Mapping):
+        period_end = fact.get("period_end")
         if isinstance(period_end, str):
             return period_end
     return ""
+
+
+def _envelope_kind(fact: Any) -> str:
+    """Read the fact's ``kind`` — contract-required, section 7 envelope."""
+    if isinstance(fact, Mapping):
+        kind = fact.get("kind")
+        if isinstance(kind, str) and kind:
+            return kind
+    return "financial"
 
 
 def _envelope_native_ref(fact: Any) -> str:
@@ -348,6 +409,15 @@ def _rounding_envelope(fact: Any) -> Mapping[str, Any] | None:
     return None
 
 
+def _fact_ref(fact: Any, role: str) -> str:
+    """The contract identifier a result's ``input_refs`` names: the fact ``key``."""
+    if isinstance(fact, Mapping):
+        key = fact.get("key")
+        if isinstance(key, str) and key:
+            return key
+    return ""
+
+
 def _fact_native_ref_or_default(fact: Mapping[str, Any], role: str) -> str:
     """Build a fallback ``native_ref`` for facts that omit one.
 
@@ -401,18 +471,30 @@ def _validate_case_shape(case: Mapping[str, Any]) -> None:
 def _index_facts_by_key(
     facts: Sequence[Mapping[str, Any]],
 ) -> dict[str, list[tuple[int, Mapping[str, Any]]]]:
-    """Group facts by ``key`` preserving input order.
+    """Group facts for pairing, preserving input order.
 
-    Returns ``{key: [(index_in_input, fact), ...]}``.
+    Prefers the contract's explicit ``metric`` field (the
+    ``<metric>_current`` / ``<metric>_prior`` pairing key from
+    section 7). Falls back to ``key`` when ``metric`` is absent or
+    blank, which is the synthetic-fixture shape used in tests where
+    two facts with the same ``key`` (e.g. two ``total_revenue`` rows)
+    still need to pair.
+
+    Returns ``{group: [(index_in_input, fact), ...]}``.
     """
     out: dict[str, list[tuple[int, Mapping[str, Any]]]] = {}
     for index, fact in enumerate(facts or ()):
         if not isinstance(fact, Mapping):
             continue
-        key = fact.get("key")
-        if not isinstance(key, str) or not key:
-            continue
-        out.setdefault(key, []).append((index, fact))
+        metric = fact.get("metric")
+        if isinstance(metric, str) and metric:
+            group: str = metric
+        else:
+            key = fact.get("key")
+            group = str(key) if isinstance(key, str) and key else ""
+            if not group:
+                continue
+        out.setdefault(group, []).append((index, fact))
     return out
 
 
@@ -480,6 +562,7 @@ def _fact_to_envelope(fact: Mapping[str, Any]) -> dict[str, Any]:
         "key": str(fact.get("key")),
         "period_end": _envelope_period_end(fact),
         "period_kind": _envelope_period_kind(fact),
+        "period_start": _envelope_period_start(fact),
         "value_text": str(fact.get("value_text")),
         "unit": _envelope_unit(fact),
         "scale_power10": _envelope_scale(fact),
@@ -500,6 +583,97 @@ def _fact_to_envelope(fact: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+_CONTRACT_RESULT_KEYS: frozenset[str] = frozenset(
+    {
+        "basis",
+        "definition",
+        "display_quantum",
+        "event",
+        "input_refs",
+        "key",
+        "period_end",
+        "period_kind",
+        "period_start",
+        "scale_power10",
+        "sign_convention",
+        "unit",
+        "value_text",
+        "withheld_reason",
+    }
+)
+
+
+def _result_provenance(
+    result: Mapping[str, Any],
+    *,
+    basis: str,
+    definition: str,
+    display_quantum: str,
+) -> dict[str, Any]:
+    """Fill the contract-required provenance fields on a result envelope.
+
+    ``$defs/result`` requires basis / definition / display_quantum / event
+    and the three period fields. Period and event are inherited from the
+    current-period fact the result was computed from; basis, definition and
+    display_quantum describe the derivation itself.
+    """
+    current = result.get("current_period_fact")
+    if not isinstance(current, Mapping) or not current.get("period_end"):
+        fallback = result.get("prior_period_fact")
+        current = fallback if isinstance(fallback, Mapping) else (
+            current if isinstance(current, Mapping) else {}
+        )
+    out = dict(result)
+    out.setdefault("basis", basis)
+    out.setdefault("definition", definition)
+    out.setdefault("display_quantum", display_quantum)
+    out["event"] = current.get("event") or ""
+    out["period_end"] = current.get("period_end") or ""
+    out["period_kind"] = current.get("period_kind") or "quarter"
+    out["period_start"] = current.get("period_start") or ""
+    return out
+
+
+def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
+    """Project an internal result envelope onto the contract's closed shape.
+
+    ``$defs/result`` sets ``additionalProperties: false``, so internal
+    carriers (``value_decimal`` — a ``Decimal``, which is not even JSON
+    serialisable — plus ``state``, ``comparison_basis`` and the two
+    per-period fact envelopes) must not reach the document. Frozen-spec
+    ruling B.
+    """
+    key = str(result.get("key") or "")
+    if key.endswith("_pct"):
+        basis, quantum = "share_of_change_ratio", "0.01_percent"
+        definition = (
+            "advertising_revenue_change divided by total_revenue_change, "
+            "as a percentage at two decimal places."
+        )
+    elif key in {"advertising_net_change"}:
+        basis, quantum = "difference_of_change_values", "1_thousand"
+        definition = (
+            "advertising_revenue_change minus advertising_expense_change, "
+            "in USD thousands."
+        )
+    elif key in {"advertising_current_period_net"}:
+        basis, quantum = "same_period_difference", "1_thousand"
+        definition = (
+            "advertising_revenue minus advertising_expense within the "
+            "current period, in USD thousands."
+        )
+    else:
+        basis, quantum = "same_quarter_prior_year_change", "1_thousand"
+        definition = (
+            "current-period value minus the same-quarter prior-year value, "
+            "in USD thousands."
+        )
+    filled = _result_provenance(
+        result, basis=basis, definition=definition, display_quantum=quantum
+    )
+    return {k: v for k, v in filled.items() if k in _CONTRACT_RESULT_KEYS}
+
+
 def _make_change_result(
     *,
     key: str,
@@ -515,15 +689,21 @@ def _make_change_result(
     unit = denominator_unit if denominator_unit is not None else _envelope_unit(new_fact)
     scale = denominator_scale if denominator_scale is not None else _envelope_scale(new_fact)
     sign = denominator_sign if denominator_sign is not None else _envelope_sign_convention(new_fact)
-    new_ref = _fact_native_ref_or_default(new_fact, "current_period")
-    prior_ref = _fact_native_ref_or_default(prior_fact, "prior_period")
+    new_ref = _fact_ref(new_fact, "current_period")
+    prior_ref = _fact_ref(prior_fact, "prior_period")
     return {
         "key": key,
+        # Ruling A marker: both contributing facts existed. Stripped by
+        # _emit_result before the document is built.
+        "inputs_present": True,
         "value_text": _format_decimal(change_value),
         "value_decimal": change_value,
         "unit": unit,
         "scale_power10": scale,
-        "sign_convention": sign,
+        # Frozen-spec section 6 rule 1: derived results emit the
+        # schema-valid ``signed_difference`` literal, not the source
+        # fact's sign convention.
+        "sign_convention": "signed_difference",
         "comparison_basis": comparison_basis,
         "state": "READY",
         "input_refs": [new_ref, prior_ref],
@@ -558,11 +738,13 @@ def _withheld_result(
     )
     refs: list[str] = []
     if isinstance(new_fact, Mapping):
-        refs.append(_fact_native_ref_or_default(new_fact, "current_period"))
+        refs.append(_fact_ref(new_fact, "current_period"))
     if isinstance(prior_fact, Mapping):
-        refs.append(_fact_native_ref_or_default(prior_fact, "prior_period"))
+        refs.append(_fact_ref(prior_fact, "prior_period"))
     return {
         "key": key,
+        "inputs_present": isinstance(new_fact, Mapping)
+        and isinstance(prior_fact, Mapping),
         "value_text": None,
         "value_decimal": None,
         "unit": unit,
@@ -598,20 +780,34 @@ def _make_ratio_result(
     unit = _envelope_unit(denominator_fact_like)
     scale = _envelope_scale(denominator_fact_like)
     if _envelope_includes_zero(_rounding_envelope(denominator_fact_like)):
-        return _withheld_result(
+        _refused = _withheld_result(
             key=key,
             new_fact=denominator_fact_like,
             prior_fact=None,
             reason="denominator_rounding_envelope_includes_zero",
         )
+        # Ruling A: the inputs EXIST here — the withholding law refused the
+        # computation. That is an answer about present inputs, so it is
+        # emitted with a real withheld_reason and the numerator's refs,
+        # never silently omitted.
+        _refused["inputs_present"] = True
+        _refused["input_refs"] = list(numerator_result.get("input_refs") or [])
+        return _refused
     denom = _coerce_decimal_text(denominator_text)
     if denom is None or denom <= 0:
-        return _withheld_result(
+        _refused = _withheld_result(
             key=key,
             new_fact=denominator_fact_like,
             prior_fact=None,
             reason="denominator_nonpositive",
         )
+        # Ruling A: the inputs EXIST here — the withholding law refused the
+        # computation. That is an answer about present inputs, so it is
+        # emitted with a real withheld_reason and the numerator's refs,
+        # never silently omitted.
+        _refused["inputs_present"] = True
+        _refused["input_refs"] = list(numerator_result.get("input_refs") or [])
+        return _refused
     numer = numerator_result.get("value_decimal")
     if not isinstance(numer, Decimal):
         return _withheld_result(
@@ -624,15 +820,25 @@ def _make_ratio_result(
     quantized = _quantize_two_places(ratio)
     return {
         "key": key,
+        "inputs_present": True,
+        # the ratio's period/event provenance is the denominator's
+        # current-period fact (total revenue), which is what it is a share of
+        # denominator_fact_like is already a fact-shaped envelope (the
+        # total-revenue current-period fact), so carry it through directly —
+        # re-enveloping an envelope drops its period/event fields.
+        "current_period_fact": dict(denominator_fact_like)
+        if isinstance(denominator_fact_like, Mapping)
+        else None,
         "value_text": _format_decimal(quantized),
         "value_decimal": quantized,
-        "unit": "PERCENT",
-        "scale_power10": scale,
-        "sign_convention": sign,
+        "unit": "percent",
+        "scale_power10": 0,
+        # Frozen-spec section 6 rule 1: derived results carry
+        # ``signed_difference`` regardless of the source fact.
+        "sign_convention": "signed_difference",
         "comparison_basis": numerator_result.get("comparison_basis"),
         "state": "READY",
         "input_refs": list(numerator_result.get("input_refs") or []),
-        "current_period_fact": None,
         "prior_period_fact": None,
         "withheld_reason": None,
     }
@@ -666,6 +872,41 @@ _DOES_NOT_PROVE = (
 )
 
 
+def _as_list(value: Any) -> list[str]:
+    """Coerce an explanation field to the contract's array-of-string shape."""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value] if value else []
+    return [str(v) for v in value if str(v)]
+
+
+def _nullable(value: Any) -> Any:
+    """Emit ``None`` where the contract types a field ``["string", "null"]``.
+
+    Those fields also carry ``minLength: 1``, so an empty string is a
+    validation error, not a benign blank. The envelope readers return
+    ``""`` for "absent"; this converts that to the contract's null.
+    """
+    if value is None:
+        return None
+    text = str(value)
+    return text if text else None
+
+
+def _degraded(dependency: str, reason: str, state: str = "unavailable") -> dict[str, Any]:
+    """Build a contract-shaped degraded dependency entry.
+
+    ``$defs/degraded_dependency`` is closed and requires exactly
+    ``dependency`` (snake_case), ``reason`` and
+    ``state`` in {available, partial, unavailable}.
+    """
+    slug = re.sub(r"[^a-z0-9_]", "_", str(dependency or "").lower()).strip("_")
+    if not slug or not slug[0].isalpha():
+        slug = "unknown_dependency" if not slug else "d_" + slug
+    return {"dependency": slug, "reason": reason or None, "state": state}
+
+
 def _build_explanation(selected_results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Generate the explanation envelope from the SELECTED (READY) result envelopes only.
 
@@ -687,10 +928,9 @@ def _build_explanation(selected_results: Sequence[Mapping[str, Any]]) -> dict[st
         lead = _LEAD_GENERIC
     return {
         "lead": lead,
-        "counterevidence": _COUNTEREVIDENCE,
-        "next_observation": _NEXT_OBSERVATION,
-        "does_not_prove": _DOES_NOT_PROVE,
-        "selected_result_keys": sorted(keys_set),
+        "counterevidence": _as_list(_COUNTEREVIDENCE),
+        "next_observation": _as_list(_NEXT_OBSERVATION),
+        "does_not_prove": _as_list(_DOES_NOT_PROVE),
     }
 
 
@@ -786,69 +1026,27 @@ def _compose_changes(
     degraded_facts: list[dict[str, Any]] = []
     for key, candidates in by_key.items():
         if len(candidates) < 2:
-            degraded_facts.append(
-                {
-                    "fact_key": key,
-                    "reason": "no_compatible_pair_for_comparison_basis",
-                    "candidate_count": len(candidates),
-                }
-            )
+            degraded_facts.append(_degraded(key, "no_compatible_pair_for_comparison_basis"))
             continue
         new_fact, prior_fact = _select_pair(candidates, comparison_basis)
         if new_fact is None or prior_fact is None:
-            degraded_facts.append(
-                {
-                    "fact_key": key,
-                    "reason": "no_compatible_pair_for_comparison_basis",
-                    "candidate_count": len(candidates),
-                }
-            )
+            degraded_facts.append(_degraded(key, "no_compatible_pair_for_comparison_basis"))
             continue
-        # Frozen-spec section 7: research values are expected oracles,
-        # never substitute receipts — facts whose ``native_admitted`` is
-        # False are recorded as research oracles and cannot be used as
-        # retained receipts.
-        if not _envelope_native_admitted(new_fact):
-            degraded_facts.append(
-                {
-                    "fact_key": key,
-                    "period_role": "current_period",
-                    "reason": "fact_native_admitted_false",
-                    "native_ref": _envelope_native_ref(new_fact),
-                }
-            )
-            continue
-        if not _envelope_native_admitted(prior_fact):
-            degraded_facts.append(
-                {
-                    "fact_key": key,
-                    "period_role": "prior_period",
-                    "reason": "fact_native_admitted_false",
-                    "native_ref": _envelope_native_ref(prior_fact),
-                }
-            )
-            continue
+        # Frozen-spec section 4a: ``native_admitted`` is a PROVENANCE LABEL,
+        # not a suppression gate. R15's "research values are expected oracles,
+        # never substitute receipts" forbids presenting a non-admitted value AS
+        # a retained receipt; it does not forbid computing from it. PLNT's Q2
+        # 2026 exhibit is retained nowhere, so every real fact carries
+        # ``native_admitted: False`` — a gate here would make this module
+        # structurally incapable of its own golden case. The flag is carried
+        # through to the emitted facts so a consumer can render it honestly.
         new_decimal = _coerce_decimal_text(new_fact.get("value_text"))
         if new_decimal is None:
-            degraded_facts.append(
-                {
-                    "fact_key": key,
-                    "period_role": "current_period",
-                    "reason": "fact_value_text_unparseable",
-                    "native_ref": _envelope_native_ref(new_fact),
-                }
-            )
+            degraded_facts.append(_degraded(key, "fact_value_text_unparseable"))
             continue
         prior_decimal = _coerce_decimal_text(prior_fact.get("value_text"))
         if prior_decimal is None:
-            degraded_facts.append(
-                {
-                    "fact_key": key,
-                    "period_role": "prior_period",
-                    "reason": "fact_value_text_unparseable",
-                    "native_ref": _envelope_native_ref(prior_fact),
-                }
-            )
+            degraded_facts.append(_degraded(key, "fact_value_text_unparseable"))
             continue
         change = new_decimal - prior_decimal
         ready_results[str(key) + "_change"] = _make_change_result(
@@ -982,10 +1180,9 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
 
     advertising_current_net: dict[str, Any]
     if (
+        # frozen-spec 4a: native_admitted is provenance, never a gate
         isinstance(ar_current, Mapping)
         and isinstance(ae_current, Mapping)
-        and _envelope_native_admitted(ar_current)
-        and _envelope_native_admitted(ae_current)
     ):
         ar_dec = _coerce_decimal_text(ar_current.get("value_text"))
         ae_dec = _coerce_decimal_text(ae_current.get("value_text"))
@@ -1078,23 +1275,61 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
                 "key": str(fact.get("key")),
                 "period_end": _envelope_period_end(fact),
                 "period_kind": _envelope_period_kind(fact),
+                "period_start": _envelope_period_start(fact),
+                "kind": _envelope_kind(fact),
                 "value_text": str(fact.get("value_text")),
                 "unit": _envelope_unit(fact),
                 "scale_power10": _envelope_scale(fact),
                 "sign_convention": _envelope_sign_convention(fact),
                 "native_admitted": _envelope_native_admitted(fact),
-                "native_ref": _envelope_native_ref(fact),
+                "native_ref": _nullable(_envelope_native_ref(fact)),
                 "definition": _envelope_definition(fact),
                 "metric": _envelope_metric(fact),
                 "basis": _envelope_basis(fact),
                 "role": _envelope_role(fact),
-                "target": _envelope_target(fact),
+                "target": _nullable(_envelope_target(fact)),
                 "perimeter": _envelope_perimeter(fact),
                 "event": _envelope_event(fact),
                 "published_at": _envelope_published_at(fact),
                 "display_quantum": _envelope_display_quantum(fact),
                 "evidence": _envelope_evidence(fact),
             }
+        )
+
+    _omitted_keys = [
+        r.get("key") for r in all_results if not r.get("inputs_present")
+    ]
+    _already_degraded = {
+        d.get("fact_key") for d in degraded_facts if isinstance(d, Mapping)
+    }
+    for _key in _omitted_keys:
+        if _key and _key not in _already_degraded:
+            degraded_facts.append(_degraded(_key, "inputs_absent_result_omitted"))
+
+    # Ruling A: every emittable result key whose inputs were never
+    # present (whether the entry survived the ``_omitted_keys`` filter
+    # above OR was never created in ``_compose_changes``) must show up
+    # in ``degraded_dependencies`` so downstream consumers can see the
+    # full unmet-result set.
+    _emittable_keys = [
+        "total_revenue_change",
+        "advertising_revenue_change",
+        "advertising_expense_change",
+        "advertising_net_change",
+        "advertising_current_period_net",
+        "advertising_share_of_revenue_change_pct",
+    ]
+    _present_result_keys = {
+        r.get("key") for r in all_results if r.get("inputs_present")
+    }
+    for _rk in _emittable_keys:
+        if _rk in _present_result_keys:
+            continue
+        # Skip the keys the loop above already covered.
+        if _rk in _omitted_keys:
+            continue
+        degraded_facts.append(
+            _degraded(_rk, "ready_result_unavailable_for_" + _rk)
         )
 
     document: dict[str, Any] = {
@@ -1104,7 +1339,14 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
         "subject": subject,
         "comparison_basis": comparison_basis,
         "facts": facts_out,
-        "results": all_results,
+        # Ruling A: a result is emitted only when its inputs exist, so a
+        # result with empty ``input_refs`` is an absence, not an answer — it
+        # belongs in ``degraded_dependencies``, never in ``results`` (where
+        # the contract requires ``input_refs`` minItems 1). Ruling B: project
+        # every survivor onto the contract's closed key set.
+        "results": [
+            _emit_result(r) for r in all_results if r.get("inputs_present")
+        ],
         "explanation": explanation,
         "degraded_dependencies": degraded_facts,
         "source_records": list(source_records) if isinstance(source_records, list) else list(source_records or ()),

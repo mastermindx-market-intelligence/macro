@@ -15,6 +15,9 @@ import socket as _socket
 import time as _time
 from typing import Any
 
+import re
+from decimal import Decimal
+
 import pytest
 
 from engine.sector_intelligence.consumer_cyclical_projection import (
@@ -54,10 +57,16 @@ def _plnt_fact(
     scale_power10: int = 3,
     sign_convention: str = "SIGNED",
     period_kind: str = "quarter",
-    native_admitted: bool = True,
+    # frozen-spec 4a: PLNT's exhibit is retained nowhere, so False is the only
+    # state that can occur for a real fact here. native_admitted is a
+    # provenance label, never a suppression gate.
+    native_admitted: bool = False,
     rounding_envelope: dict[str, Any] | None = None,
     evidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    # Facts pair on ``metric`` (the contract keys them <metric>_current /
+    # <metric>_prior); derive it from the key when a test does not say.
+    metric = metric or re.sub(r"_(current|prior|new|old)$", "", key)
     return {
         "key": key,
         "metric": metric,
@@ -189,7 +198,7 @@ def test_plnt_golden_oracle_value_texts() -> None:
 def test_plnt_golden_oracle_states() -> None:
     document = project_economic_change(_plnt_case())
     assert document["availability"] == "ready"
-    ready_keys = {r["key"] for r in document["results"] if r["state"] == "READY"}
+    ready_keys = {r["key"] for r in document["results"] if r["withheld_reason"] is None}
     assert ready_keys == {
         RESULT_KEY_TOTAL_REVENUE_CHANGE,
         RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
@@ -215,7 +224,7 @@ def test_plnt_minus_four_residual_survives() -> None:
     document = project_economic_change(_plnt_case())
     net = _result_by_key(document, RESULT_KEY_ADVERTISING_NET_CHANGE)
     assert net["value_text"] == "-4"
-    assert str(net["value_decimal"]) == "-4"
+    assert Decimal(net["value_text"]) == Decimal("-4")
 
 
 def test_plnt_percentage_uses_quantize_two_places_half_up() -> None:
@@ -223,26 +232,28 @@ def test_plnt_percentage_uses_quantize_two_places_half_up() -> None:
     document = project_economic_change(_plnt_case())
     pct = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
     assert pct["value_text"] == "41.66"
-    assert pct["unit"] == "PERCENT"
+    assert pct["unit"] == "percent"
+    assert pct["sign_convention"] == "signed_difference"
 
 
 def test_plnt_input_refs_are_bound_per_result() -> None:
     """Frozen-spec section 6 rule 2: every ready result binds its input refs."""
     document = project_economic_change(_plnt_case())
     for r in document["results"]:
-        if r["state"] != "READY":
+        if r["withheld_reason"] is not None:
             continue
         assert isinstance(r["input_refs"], list)
         assert r["input_refs"], "input_refs must be non-empty for ready results"
 
 
 def test_plnt_unit_scale_sign_preserved() -> None:
-    """Frozen-spec section 6 rule 1: unit / scale_power10 / sign_convention preserved."""
+    """Frozen-spec section 6 rule 1: derived results carry ``signed_difference``
+    and preserve the source fact's ``scale_power10`` and ``unit``."""
     document = project_economic_change(_plnt_case())
     total = _result_by_key(document, RESULT_KEY_TOTAL_REVENUE_CHANGE)
     assert total["unit"] == "USD"
     assert total["scale_power10"] == 3
-    assert total["sign_convention"] == "SIGNED"
+    assert total["sign_convention"] == "signed_difference"
 
 
 def test_plnt_explanation_has_four_fields() -> None:
@@ -350,7 +361,11 @@ def test_malformed_case_refuses_facts_wrong_type() -> None:
 
 
 def test_dependency_local_degradation_missing_total_revenue_prior() -> None:
-    """Missing one fact value suppresses only the results that depend on it."""
+    """Missing one fact value OMITS the results that depend on it (Ruling A).
+
+    Ruling A: inputs absent -> no result, recorded in
+    ``degraded_dependencies``; NOT a phantom WITHHELD result.
+    """
     facts = _plnt_facts()
     facts = [f for f in facts if not (
         f["key"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2025-06-30"
@@ -358,22 +373,22 @@ def test_dependency_local_degradation_missing_total_revenue_prior() -> None:
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
     # Advertising results stay READY (no dependency on total_revenue).
-    assert _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)["state"] == "READY"
-    assert _result_by_key(document, RESULT_KEY_ADVERTISING_EXPENSE_CHANGE)["state"] == "READY"
-    assert _result_by_key(document, RESULT_KEY_ADVERTISING_NET_CHANGE)["state"] == "READY"
-    # total_revenue_change is suppressed; the share-of-revenue ratio is withheld.
-    total_keys = {r["key"] for r in document["results"]}
-    assert RESULT_KEY_TOTAL_REVENUE_CHANGE not in total_keys
-    share = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
-    assert share["state"] == "WITHHELD"
-    assert share["value_text"] is None
-    # Degradation is recorded.
-    degraded_reasons = [d["reason"] for d in document["degraded_dependencies"]]
-    assert "no_compatible_pair_for_comparison_basis" in degraded_reasons
+    assert _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)["value_text"] == "10141"
+    assert _result_by_key(document, RESULT_KEY_ADVERTISING_EXPENSE_CHANGE)["value_text"] == "10145"
+    assert _result_by_key(document, RESULT_KEY_ADVERTISING_NET_CHANGE)["value_text"] == "-4"
+    # total_revenue_change and share ratio are OMITTED — they have no
+    # inputs and never reach ``results``.
+    emitted_keys = {r["key"] for r in document["results"]}
+    assert RESULT_KEY_TOTAL_REVENUE_CHANGE not in emitted_keys
+    assert RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT not in emitted_keys
+    # Omission is recorded in ``degraded_dependencies``.
+    deps = [d.get("dependency") or d.get("fact_key") for d in document["degraded_dependencies"]]
+    assert RESULT_KEY_TOTAL_REVENUE_CHANGE in deps
+    assert RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT in deps
 
 
 def test_dependency_local_degradation_unparseable_value_text() -> None:
-    """A fact with unparseable value_text suppresses its result only."""
+    """A fact with unparseable ``value_text`` OMITS the result (Ruling A)."""
     facts = _plnt_facts()
     for f in facts:
         if f["key"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2025-06-30":
@@ -382,30 +397,33 @@ def test_dependency_local_degradation_unparseable_value_text() -> None:
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
     # Advertising change results stay READY.
-    assert _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)["state"] == "READY"
-    # Total revenue change is suppressed.
-    total_keys = {r["key"] for r in document["results"]}
-    assert RESULT_KEY_TOTAL_REVENUE_CHANGE not in total_keys
-    # Share-of-revenue withheld (dependency).
-    share = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
-    assert share["state"] == "WITHHELD"
-    reasons = [d["reason"] for d in document["degraded_dependencies"]]
-    assert "fact_value_text_unparseable" in reasons
+    assert _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)["value_text"] == "10141"
+    # Total revenue change and share ratio are OMITTED.
+    emitted_keys = {r["key"] for r in document["results"]}
+    assert RESULT_KEY_TOTAL_REVENUE_CHANGE not in emitted_keys
+    assert RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT not in emitted_keys
+    # Degraded dependencies explain why.
+    deps = [d for d in document["degraded_dependencies"]]
+    join = " ".join(
+        (str(d.get("reason") or "") + " " + str(d.get("dependency") or ""))
+        for d in deps
+    )
+    assert "fact_value_text_unparseable" in join or "ready_result_unavailable" in join
 
 
 def test_dependency_local_degradation_research_oracle_native_admitted_false() -> None:
-    """Frozen-spec section 7: research values with native_admitted=False are not retained receipts."""
+    """R15 section 4a: ``native_admitted`` is a provenance label, NOT a
+    suppression gate. Research-oracle facts still produce results.
+    """
     facts = _plnt_facts()
     for f in facts:
-        if f["key"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2025-06-30":
-            f["native_admitted"] = False
-            break
+        f["native_admitted"] = False
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
-    total_keys = {r["key"] for r in document["results"]}
-    assert RESULT_KEY_TOTAL_REVENUE_CHANGE not in total_keys
-    reasons = [d["reason"] for d in document["degraded_dependencies"]]
-    assert "fact_native_admitted_false" in reasons
+    # The full golden set is still emitted.
+    assert document["availability"] == "ready"
+    assert _result_by_key(document, RESULT_KEY_TOTAL_REVENUE_CHANGE)["value_text"] == "24344"
+    assert _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)["value_text"] == "10141"
 
 
 def test_dependency_local_degradation_keeps_ready_results_distinct() -> None:
@@ -417,14 +435,15 @@ def test_dependency_local_degradation_keeps_ready_results_distinct() -> None:
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
     # total_revenue_change and advertising_revenue_change stay READY.
-    assert _result_by_key(document, RESULT_KEY_TOTAL_REVENUE_CHANGE)["state"] == "READY"
-    assert _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)["state"] == "READY"
-    # advertising_expense_change is suppressed.
-    keys = {r["key"] for r in document["results"]}
-    assert RESULT_KEY_ADVERTISING_EXPENSE_CHANGE not in keys
-    # advertising_net_change is withheld (depends on advertising_expense_change).
-    net = _result_by_key(document, RESULT_KEY_ADVERTISING_NET_CHANGE)
-    assert net["state"] == "WITHHELD"
+    assert _result_by_key(document, RESULT_KEY_TOTAL_REVENUE_CHANGE)["value_text"] == "24344"
+    assert _result_by_key(document, RESULT_KEY_ADVERTISING_REVENUE_CHANGE)["value_text"] == "10141"
+    # advertising_expense_change is OMITTED; advertising_net_change
+    # depends on it and is OMITTED too; advertising_share depends on
+    # advertising_revenue + total (both present) and stays READY.
+    emitted_keys = {r["key"] for r in document["results"]}
+    assert RESULT_KEY_ADVERTISING_EXPENSE_CHANGE not in emitted_keys
+    assert RESULT_KEY_ADVERTISING_NET_CHANGE not in emitted_keys
+    assert RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT in emitted_keys
 
 
 # ---------------------------------------------------------------------------
@@ -433,15 +452,22 @@ def test_dependency_local_degradation_keeps_ready_results_distinct() -> None:
 
 
 def test_availability_unavailable_when_no_facts() -> None:
+    """Ruling A: zero facts -> ``results == []``, ``unavailable``,
+    ``degraded_dependencies`` lists every unmet result key."""
     case = _plnt_case(facts=[])
     document = project_economic_change(case)
     assert document["availability"] == "unavailable"
-    # Zero READY results — the 3 derived WITHHELD envelopes are still
-    # emitted so the explanation and downstream callers can see why
-    # each one was suppressed; none of them is READY.
-    assert all(r["state"] != "READY" for r in document["results"])
-    assert all(r["value_text"] is None for r in document["results"])
-    assert document["degraded_dependencies"] == []
+    assert document["results"] == []
+    # Degraded dependencies are non-empty and explain every unmet result.
+    deps = {d.get("dependency") for d in document["degraded_dependencies"]}
+    assert deps == {
+        RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        RESULT_KEY_ADVERTISING_NET_CHANGE,
+        RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+        RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+    }
 
 
 def test_availability_unavailable_when_only_malformed_facts() -> None:
@@ -463,18 +489,31 @@ def test_availability_unavailable_when_only_malformed_facts() -> None:
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
     assert document["availability"] == "unavailable"
-    assert all(r["state"] == "WITHHELD" for r in document["results"]) or document["results"] == []
+    assert all(r["withheld_reason"] is not None for r in document["results"]) or document["results"] == []
     reasons = [d["reason"] for d in document["degraded_dependencies"]]
     assert "fact_value_text_unparseable" in reasons
 
 
-def test_availability_unavailable_when_research_oracles_only() -> None:
+def test_availability_ready_when_research_oracles_only() -> None:
+    """Defect 1 / R15: ``native_admitted=False`` is a PROVENANCE LABEL,
+    never a suppression gate. The Q2 2026 PLNT exhibit is research
+    oracles, so every fact carries ``native_admitted: False`` and the
+    projection must still produce the full ready set."""
     facts = _plnt_facts()
     for f in facts:
         f["native_admitted"] = False
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
-    assert document["availability"] == "unavailable"
+    assert document["availability"] == "ready"
+    # The provenance label propagates to the emitted facts; nothing is
+    # silently downgraded to withheld.
+    assert all(f["native_admitted"] is False for f in document["facts"])
+    assert _result_by_key(
+        document, RESULT_KEY_TOTAL_REVENUE_CHANGE
+    )["withheld_reason"] is None
+    assert _result_by_key(
+        document, RESULT_KEY_ADVERTISING_NET_CHANGE
+    )["withheld_reason"] is None
 
 
 def test_unavailable_never_renders_as_ready() -> None:
@@ -519,9 +558,8 @@ def test_ratio_withheld_on_nonpositive_denominator_zero() -> None:
     ]
     document = project_economic_change(_plnt_case(facts=facts))
     share = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
-    assert share["state"] == "WITHHELD"
+    assert share["withheld_reason"] is not None
     assert share["value_text"] is None
-    assert share["value_decimal"] is None
     assert share["withheld_reason"] == "denominator_nonpositive"
 
 
@@ -555,7 +593,7 @@ def test_ratio_withheld_on_negative_denominator() -> None:
     ]
     document = project_economic_change(_plnt_case(facts=facts))
     share = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
-    assert share["state"] == "WITHHELD"
+    assert share["withheld_reason"] is not None
     assert share["withheld_reason"] == "denominator_nonpositive"
 
 
@@ -593,7 +631,7 @@ def test_ratio_withheld_when_denominator_envelope_includes_zero() -> None:
     ]
     document = project_economic_change(_plnt_case(facts=facts))
     share = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
-    assert share["state"] == "WITHHELD"
+    assert share["withheld_reason"] is not None
     assert share["withheld_reason"] == "denominator_rounding_envelope_includes_zero"
 
 
@@ -632,7 +670,7 @@ def test_ratio_greater_than_100_passes_through() -> None:
     ]
     document = project_economic_change(_plnt_case(facts=facts))
     share = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
-    assert share["state"] == "READY"
+    assert share["withheld_reason"] is None
     # advertising_revenue_change = 200 - 40 = 160; total_revenue_change = 50;
     # 160 / 50 = 3.2 -> 320.00%.
     assert share["value_text"] == "320.00"
@@ -673,9 +711,8 @@ def test_withheld_is_never_zero_and_never_bearish() -> None:
     ]
     document = project_economic_change(_plnt_case(facts=facts))
     share = _result_by_key(document, RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT)
-    assert share["state"] == "WITHHELD"
+    assert share["withheld_reason"] is not None
     assert share["value_text"] is None
-    assert share["value_decimal"] is None
     assert share["withheld_reason"]
     assert share["value_text"] != "0"
 
@@ -771,3 +808,133 @@ def test_results_sorted_deterministically_by_key() -> None:
     document = project_economic_change(_plnt_case())
     keys = [r["key"] for r in document["results"]]
     assert keys == sorted(keys)
+
+
+# ---------------------------------------------------------------------------
+# Real-path end-to-end gate
+#
+# The synthetic tests above can all pass while the module is unusable on the
+# only inputs that can actually occur, so this gate drives the projection from
+# the COMMITTED fixture — real PLNT facts, every one carrying
+# ``native_admitted: false`` because the Q2 2026 exhibit is retained nowhere
+# (frozen spec 4a) — and validates the emitted document against the contract
+# itself rather than against this file's expectations.
+# ---------------------------------------------------------------------------
+
+import json as _json
+from pathlib import Path as _Path
+
+import pytest as _pytest
+
+_ROOT = _Path(__file__).resolve().parents[1]
+_SCHEMA = (
+    _ROOT
+    / "contracts"
+    / "sector_intelligence"
+    / "consumer_cyclical_intelligence_read_model.v1.schema.json"
+)
+_FIXTURE = (
+    _ROOT
+    / "data"
+    / "sector_intelligence"
+    / "fixtures"
+    / "consumer_cyclical_intelligence_read_model.v1.valid.json"
+)
+
+# R6 section 7.1, USD thousands. The two advertising changes are NOT equal at
+# displayed table precision — the -4 residual must survive.
+_GOLDEN = {
+    "total_revenue_change": "24344",
+    "advertising_revenue_change": "10141",
+    "advertising_expense_change": "10145",
+    "advertising_net_change": "-4",
+    "advertising_current_period_net": "0",
+    "advertising_share_of_revenue_change_pct": "41.66",
+}
+
+
+def _fixture_case() -> dict[str, Any]:
+    fixture = _json.loads(_FIXTURE.read_text())
+    return {
+        "subject": fixture["subject"],
+        "comparison_basis": fixture["comparison_basis"],
+        "facts": fixture["facts"],
+        "generated_at": fixture["generated_at"],
+        "source_records": fixture["source_records"],
+    }
+
+
+def _validator():
+    jsonschema = _pytest.importorskip("jsonschema")
+    return jsonschema.Draft202012Validator(_json.loads(_SCHEMA.read_text()))
+
+
+def test_real_fixture_facts_are_all_research_oracles() -> None:
+    """native_admitted must be False on every real fact (frozen spec 4a)."""
+    facts = _fixture_case()["facts"]
+    assert facts
+    assert all(f["native_admitted"] is False for f in facts)
+    assert all(f["native_ref"] is None for f in facts)
+
+
+def test_real_path_reproduces_the_golden_oracle() -> None:
+    """Non-admitted facts must still compute — provenance is not a gate."""
+    document = project_economic_change(_fixture_case())
+    emitted = {r["key"]: r["value_text"] for r in document["results"]}
+    assert emitted == _GOLDEN
+    assert document["availability"] == "ready"
+    assert document["degraded_dependencies"] == []
+
+
+def test_real_path_document_validates_against_the_contract() -> None:
+    document = project_economic_change(_fixture_case())
+    errors = sorted(_validator().iter_errors(document), key=lambda e: list(e.path))
+    assert errors == [], [
+        (list(e.path), e.message) for e in errors[:5]
+    ]
+
+
+def test_emitted_document_is_json_serialisable() -> None:
+    """Ruling B: Decimal is an internal carrier and must never be emitted."""
+    document = project_economic_change(_fixture_case())
+    _json.dumps(document)
+    for result in document["results"]:
+        assert "value_decimal" not in result
+        assert "state" not in result
+
+
+def test_zero_facts_is_an_unavailable_document_not_phantom_results() -> None:
+    """Ruling A: absent inputs are omitted and named, never emitted as nulls."""
+    case = _fixture_case()
+    case["facts"] = []
+    document = project_economic_change(case)
+    assert document["results"] == []
+    assert document["availability"] == "unavailable"
+    assert document["degraded_dependencies"]
+    assert _validator().is_valid(document)
+
+
+def test_every_emitted_result_binds_real_input_refs() -> None:
+    document = project_economic_change(_fixture_case())
+    fact_keys = {f["key"] for f in _fixture_case()["facts"]}
+    for result in document["results"]:
+        assert result["input_refs"], result["key"]
+        assert set(result["input_refs"]) <= fact_keys, result["key"]
+
+
+def test_explanation_carries_no_ranking_or_sizing_authority() -> None:
+    explanation = project_economic_change(_fixture_case())["explanation"]
+    forbidden = {
+        "ranking",
+        "rank",
+        "position_size",
+        "sizing",
+        "entry",
+        "gate",
+        "score",
+    }
+    assert not (forbidden & set(explanation))
+    assert explanation["lead"]
+    assert explanation["counterevidence"]
+    assert explanation["next_observation"]
+    assert explanation["does_not_prove"]
