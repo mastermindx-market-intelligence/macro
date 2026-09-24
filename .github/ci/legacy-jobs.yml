@@ -16863,6 +16863,15 @@ jobs:
       - "tests/test_mining_shared_contract.py"
       - "tests/test_mining_shared_contract_probes.py"
       - "tests/test_mining_composition.py"
+      - "tests/test_mining_composition_probes.py"
+      - "research/mining/m1_integration_program/domain/MINING_DOMAIN_DEFINITIONS_M1_2026-09-24.md"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
       - "tests/fixtures/mining_economic_dossier/**"
       - "engine/market_ontology/mining_dependency_binding.py"
       - "engine/market_ontology/mining_theme_research.py"
@@ -16884,4 +16893,4 @@ jobs:
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
-        run: TZ=UTC python -m pytest tests/test_mining_composition.py -q
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py -q
