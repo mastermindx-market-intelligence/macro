@@ -1198,7 +1198,6 @@ def test_legacy_dataframe_path_has_unknown_capture(monkeypatch):
 
 def test_observation_attrs_can_report_failed_or_inconsistent_refresh(monkeypatch):
     import engine.fda_scarcity as fda_module
-    from engine.fda_scarcity import compute_fda_scarcity
 
     monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
     now = datetime(2026, 9, 23, 12, tzinfo=UTC)
@@ -1516,13 +1515,9 @@ def test_iso_datetime_generation_parses_to_its_date():
 
 def test_resolved_and_discontinued_mixture_names_both_counts(monkeypatch):
     import engine.fda_scarcity as fda_module
-    from engine.fda_scarcity import compute_fda_scarcity, format_theme_feed_chip
+    from engine.fda_scarcity import format_theme_feed_chip
 
     monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
-    frame = pd.DataFrame([
-        _summary_row("Resolved"),
-        _summary_row("To Be Discontinued", ndc="TEST-B"),
-    ])
     now = datetime(2026, 9, 23, 12, tzinfo=UTC)
     row = {"band": fda_module.BAND_NONE}
     row["summary"] = fda_module.summarize_supply(
@@ -1545,6 +1540,111 @@ def test_resolved_and_discontinued_mixture_names_both_counts(monkeypatch):
         "FDA: resolved 1 / discontinued 1 — supply status only · captured 0 d ago · "
         "source generation 2026-09-23"
     )
+
+
+def _observation_sweep(collector, generation, record, start, finish, *, outage=False):
+    def fetch_page(skip, limit):
+        if outage:
+            raise OSError("synthetic outage")
+        return {
+            "meta": {"last_updated": generation, "results": {"total": 1}},
+            "results": [] if skip else [record],
+        }
+
+    return collector.collect_shortage_sweep(
+        fetch_page, clock=_observation_clock(start, finish), page_size=100, max_pages=3,
+    )
+
+
+def _observation_clock(start, finish):
+    calls = iter((start, finish))
+    return lambda: next(calls)
+
+
+def _observation_digest(path):
+    import hashlib
+
+    sidecar = path.with_suffix(".observation.json")
+    return hashlib.sha256(sidecar.read_bytes()).hexdigest() if sidecar.exists() else None
+
+
+def _render_observation(tmp_path, monkeypatch, state_name):
+    import collectors.fda_shortages as collector
+    import engine.fda_scarcity as scarcity
+
+    path = tmp_path / state_name / "shortages.parquet"
+    path.parent.mkdir()
+    monkeypatch.setattr(collector, "_shortages_path", lambda: path)
+    monkeypatch.setattr(scarcity, "MOLECULE_THEME_MAP", {"Synthetic A": ["synthetic_theme"]})
+    record = {
+        "package_ndc": "TEST-A", "generic_name": "Synthetic A", "status": "Current",
+        "availability": "Available", "initial_posting_date": "2026-03-02",
+    }
+    start = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    finish = start.replace(second=6)
+
+    if state_name == "REFRESH_FAILED":
+        first = _observation_sweep(collector, None, record, start, finish, outage=True)
+        assert first["qualified"] is False
+        collector.save_shortage_observation(first, path=path, expected_predecessor=None)
+    elif state_name != "NOT_OBSERVED":
+        first = _observation_sweep(collector, "2026-09-23", record, start, finish)
+        assert first["qualified"] is True
+        assert collector.save_shortage_observation(
+            first, path=path, expected_predecessor=None
+        )["promoted"] is True
+
+    if state_name == "UNREADABLE":
+        path.write_bytes(b"synthetic unreadable parquet")
+    elif state_name == "LEGACY":
+        path.with_suffix(".observation.json").unlink()
+
+    row = scarcity.compute_fda_scarcity().get("synthetic_theme")
+    return scarcity.format_theme_feed_chip(row, "synthetic_theme")
+
+
+def test_observation_states_render_distinct_unavailable_truths(tmp_path, monkeypatch):
+    from engine.foresight_cascade import _compute_tier
+
+    expected = {
+        "NOT_OBSERVED": (
+            "FDA source not yet observed — no qualified generation on file",
+            "FDA来源尚未观测——无合格来源生成日期",
+        ),
+        "UNREADABLE": (
+            "FDA source unavailable — last observation unreadable",
+            "FDA来源不可用——上次观测无法读取",
+        ),
+        "REFRESH_FAILED": (
+            "FDA source unavailable — no qualified generation on file, refresh failed",
+            "FDA来源不可用——无合格来源生成日期，刷新失败",
+        ),
+        "LEGACY": (
+            "FDA shortage: current (1) · capture time unknown",
+            "FDA短缺：当前（1） · 采集时间未知",
+        ),
+    }
+    baseline = None
+    for state_name, (english, chinese) in expected.items():
+        chip = _render_observation(tmp_path, monkeypatch, state_name)
+        assert chip is not None
+        if state_name == "LEGACY":
+            assert chip["source_status"] == "CURRENT_REPORTED"
+            assert chip["tone"] == "warn"
+            assert chip["freshness"]["capture_qualified"] is None
+            assert "capture time unknown" in chip["label"]
+        else:
+            assert chip["source_status"] == "UNAVAILABLE"
+            assert chip["tone"] == "mute"
+            assert chip["freshness"]["capture_qualified"] is False
+            assert "capture time unknown" not in chip["label"]
+        assert chip["label"] == english
+        assert chip["label_zh"] == chinese
+        assert chip["band"] == "NONE" if state_name != "LEGACY" else chip["band"] == "SHORTAGE_ACTIVE"
+        tier = _compute_tier(None, chip)
+        if baseline is None:
+            baseline = tier
+        assert tier == baseline
 
 
 def test_non_ascii_chip_rationale_is_rejected(monkeypatch):
