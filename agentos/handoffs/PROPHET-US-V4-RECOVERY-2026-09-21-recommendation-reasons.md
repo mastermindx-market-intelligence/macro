@@ -451,3 +451,28 @@ Next: commit/push this repair on the original carrier, consume an exact-source
 independent repair return, and complete actual CI/release. Verify deployed
 source/input/result only through the existing publisher. Parent MISSION_COMPLETE
 remains false; #7749's held source and denied publication are not imported.
+
+
+## September 24 same-carrier integration result
+
+Protected procedure: Mastermind0497e28864752e3ab70fa5aa2f1567bc3c9c6aca.
+Coverage76cb5371 was pushed after the failed checkout's eight asset deletions
+were restored exactly. The original Git/finite continuation are terminal, not
+running. The recorded native auto-tree was resolved without re-running that
+failed merge: 121 current-main pages, 1,917 member rows, 1,878 assessments, all
+price/score/rating/status/buy/coverage and original dates preserved. Exact main
+inputd7711a0; native merge commit ef10b39a9e56cf912e6ae2be98ad0937c4716616
+has parents76cb5371 andd7711a0. Native fast-forward adoption succeeded. No branch
+replacement, force-push, model/entry threshold change or new publisher.
+
+Integrated qualification:269passed;40compiled-page browser states accepted for
+keyboard navigation, full diagnostic content, links, refresh focus and no page
+errors/whole-page overflow. Internal mobile table scroll is retained as a limit.
+Evidence: research/sector_pulse/recommendation_reasons_20260921/integration_20260924/.
+New source remains Draft/HOLD until current hosted checks and independent review.
+No deployment or broader Prophet-model acceptance. The latest PR comment binds
+the documentation/evidence successor's exact head and remote effect.
+
+The separate generic guarded basket-intelligence include seam is permitted to
+the existing #7870 source writer by #7669 comment5808986207; all #7669 JS and
+source custody remain protected. Do not add separate global controllers/planes.

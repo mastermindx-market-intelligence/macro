@@ -1,0 +1,774 @@
+{
+  "source_head": "ef10b39a9e56cf912e6ae2be98ad0937c4716616",
+  "main_input": "d7711a0a08db8008ffe5975bfb3e6b242e4c70bd",
+  "captures": 40,
+  "records": [
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-dark-en-1440.png",
+      "sha256": "e2ad4c39aa242e1a1f116cf4f251150b62d6e98bc83b2975ee14c360e9743ea7",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-dark-en-390.png",
+      "sha256": "946267ada93092ade2794de1c319ce8dcd0594e24258cfeb8f22aa35b67a6a73",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-dark-zh-1440.png",
+      "sha256": "ef3eea01a129e52e544f8ac913ff1a99b3791d26dc915b93748170a48bc35d48",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-dark-zh-390.png",
+      "sha256": "a71f19ebe7dbbfb073d5c57c32f2c65e9cc563c1bbc6ab7e22be00386fb06559",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-light-en-1440.png",
+      "sha256": "c1606ac15bbc099f67a91ed017197ecabf4d1c9e1a5125790022864054d1c5a8",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-light-en-390.png",
+      "sha256": "487d5427e3372a5c466898fb6f0598f8de40b14be7a7e9c8dd9728072f261fc6",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-light-zh-1440.png",
+      "sha256": "ab0fcbba013222ca45363feb90fab0632222e70949c18cf2dd58bc5677aaea12",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket/ai_semiconductors.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-21",
+      "members": 12,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_ai_semiconductors-light-zh-390.png",
+      "sha256": "5495632fa3337d3c9dfdb4ed97319a390c1da147877ed7e3803b6a266cb0f8fa",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-dark-en-1440.png",
+      "sha256": "f954dfffc41d04facfc0b37deb3b8f43873c10758b77163ae8b484cf89e50619",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-dark-en-390.png",
+      "sha256": "59ce45f50a3f27c4d61670fc15c1ce6c9717c4500f68d79b8d32557e28c9aa62",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-dark-zh-1440.png",
+      "sha256": "0385533fcf298912dd2bfa3422ec28a86b5beef302d8bb0c467c2e8d9f9ee6f9",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-dark-zh-390.png",
+      "sha256": "642daf23fe469d46534269e9bc1e28984e2e94a9c03347f15cd997d15373a5b4",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-light-en-1440.png",
+      "sha256": "fb73646bf9c019c7180c69b3fb4d40d44666d24b1e21eff5b8d64060a0a2123d",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-light-en-390.png",
+      "sha256": "b30faf9f294da1176364121fac0a12ac13799eedca0365db9ab5f3ac777f1c82",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-light-zh-1440.png",
+      "sha256": "63a5e921cfde8f116df0875c3c7905938ff6e2ed8e149a181f4f540635625d0e",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_china/cn_semis.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 22,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_china_cn_semis-light-zh-390.png",
+      "sha256": "d96a60845a06db75969fe5bb49f01274db6b6199ff508c10f890077b9278246c",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-dark-en-1440.png",
+      "sha256": "9174909c40422d987803ef404bd39dbd05fa4a7c7f7dc4cc9d868740d5352f32",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-dark-en-390.png",
+      "sha256": "4fece7f5cfb453d78a8cf105551f7f208d3de009c26c6f6bc432a04c461970ee",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-dark-zh-1440.png",
+      "sha256": "07301105a1725aa76da3b0a7cb1665d04b4ff05bf2d2d41481d9c0280e803148",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-dark-zh-390.png",
+      "sha256": "e9032d8013733dad09e60feacdd305b5b8e5b2884f83fbc0aa121a12470bc190",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-light-en-1440.png",
+      "sha256": "5ab862057edb12f042b88b225b496e73973e7951bffd3cd42dade3d254206070",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-light-en-390.png",
+      "sha256": "8ba8534576aaa09e07b215b4d3a5aa61b0c3acdf8df8c8b87152ee98d539e820",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-light-zh-1440.png",
+      "sha256": "ce071b016e0530ec69c5dd6a1d71c22be0b38185c242d0861899b241729d8aa2",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_hk/hk_tech_hardware.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 6,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_hk_hk_tech_hardware-light-zh-390.png",
+      "sha256": "6b4824b5be7ff7658932e18bab3d37f606ae5b4046f4fdc23568d23132b26d84",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-dark-en-1440.png",
+      "sha256": "aa71aeb0aa2e570f7ba2aa34c3f93f052b168d222e19460bdb4ca0d00e614092",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-dark-en-390.png",
+      "sha256": "8d5fac6fefe730dc0d9bab4b7215efc9714ff40bc430623ddefe2b192d326a72",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-dark-zh-1440.png",
+      "sha256": "f38365051b55318be0f52ce4aa400f0db2df2a6906c92d8f6fb138b1d7e0eb92",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-dark-zh-390.png",
+      "sha256": "ae8f42185f1ccd922963d601721aebc6c8b7725068af4e9561032a11c137e5e3",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-light-en-1440.png",
+      "sha256": "3594afd55376da16f3273aac74d7b2d738574eb5ae0ee03dfc725bce9abb1a98",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-light-en-390.png",
+      "sha256": "0c381af78080ffd71c775061ea49088d1a034c32bdad3dd5b82b3d84db0a2b89",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-light-zh-1440.png",
+      "sha256": "2fa9da53d215f37a98ab756a25b5435ca4d96e546c3338f5de3c820f582e1ecf",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_canada/ca_tech.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 10,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_canada_ca_tech-light-zh-390.png",
+      "sha256": "75ab24484fc253e5db96c3a5c06a6934c72ae179caddb7676b39677d2565a39d",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-dark-en-1440.png",
+      "sha256": "c9e226365ad834b2a77b703bad213605f27aa14f3ff52a4b1098ccd659593600",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-dark-en-390.png",
+      "sha256": "cc98d6b6dd070f149c61d8d307ffc448506bc63c325938cd35355f047d3960da",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-dark-zh-1440.png",
+      "sha256": "558d6e4bccc9666c5fd261ea074ae6b79fc6d0241ed876e9aea19650305c2add",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-dark-zh-390.png",
+      "sha256": "7dbdae90941235d69ce56e2552ce074f65a5312c6d615a6b958ca4becd2a39d6",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-light-en-1440.png",
+      "sha256": "60959ec2da127eedd6c6e7d8e1853f2123055f7a237fe267a19e918d087622f4",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-light-en-390.png",
+      "sha256": "723c1fb5bc120528258d397a95b4b101b7869802bd2c49105bef38648016e3c9",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-light-zh-1440.png",
+      "sha256": "5c2aef840a64463dae50ca07e7e1791e271bcbaaeb860e1c8baeb39b69ff95d0",
+      "all_reasons_present_in_dom": true
+    },
+    {
+      "path": "site/basket_intl/intl_semis.html",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "as_of": "2026-09-23",
+      "members": 19,
+      "keyboard_open_and_refresh_focus": true,
+      "stock_links_checked": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "site_basket_intl_intl_semis-light-zh-390.png",
+      "sha256": "419a4e86bbffd01bc778bee93e3c1b9e854605beea9833a16177e80236dc5886",
+      "all_reasons_present_in_dom": true
+    }
+  ],
+  "production": false,
+  "limitations": [
+    "Dated main-branch input, not new quotes or decisions.",
+    "Local Chromium, not Safari/iOS or authenticated production acceptance.",
+    "Optional live/protected requests explicitly unavailable; no credential or alias used.",
+    "Mobile entry tables can scroll internally; zero page-wide overflow does not mean every long sentence fits without horizontal table scrolling."
+  ]
+}
