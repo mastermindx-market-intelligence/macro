@@ -2,7 +2,7 @@
 
 A PURE composer: ``compose_technology_economic_change`` folds one already-validated
 ``management_outlook_comparison.v1`` dict and already-accepted shared GMI curation
-assertions into the closed ``economic_change_dossier.v1`` display projection. It
+assertions into the closed ``technology_economic_change.v1`` display projection. It
 fetches nothing, calls no model, reads no columnar or private storage, writes
 nothing, and consults no clock — every date is injected. It never computes a
 second financial answer: the comparison's decimal STRINGS are copied verbatim and
@@ -82,13 +82,13 @@ __all__ = [
     "validate_dossier",
 ]
 
-SCHEMA_ID = "economic_change_dossier.v1"
+SCHEMA_ID = "technology_economic_change.v1"
 ENGINE_VERSION = "market_ontology.technology_economic_change.v1"
 AUTHORITY_CEILING = "research_display_only"
 
 CONTRACT_PATH = (
     Path(__file__).resolve().parents[2]
-    / "contracts/market_ontology/economic_change_dossier.v1.schema.json"
+    / "contracts/market_ontology/technology_economic_change.v1.schema.json"
 )
 
 # --- first-unit bounds (ECD-44 + saved-plan scope); exceeding any REFUSES ------
@@ -303,7 +303,7 @@ def _contract_validator() -> Any:
 
 
 def validate_dossier(payload: Mapping[str, Any]) -> None:
-    """Validate an ``economic_change_dossier.v1`` payload against the contract.
+    """Validate an ``technology_economic_change.v1`` payload against the contract.
 
     Raises :class:`EconomicChangeDossierError` (code ``dossier_schema_violation``)
     naming the first violating path. Pure; reads the contract file only.
@@ -1033,7 +1033,7 @@ def compose_technology_economic_change(
     input_vector: Mapping[str, Any],
     coverage: CoverageSpec | Mapping[str, Any],
 ) -> dict[str, Any]:
-    """Compose the closed ``economic_change_dossier.v1`` projection. Pure.
+    """Compose the closed ``technology_economic_change.v1`` projection. Pure.
 
     Every input is sealed: the comparison dict is consumed exactly as the
     producer validated it (structural checks only, arithmetic never re-derived),

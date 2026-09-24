@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mastermind-x.com/contracts/market_ontology/economic_change_dossier.v1.schema.json",
-  "title": "economic_change_dossier.v1",
+  "$id": "https://mastermind-x.com/contracts/market_ontology/technology_economic_change.v1.schema.json",
+  "title": "GMI technology economic-change dossier v1 (technology_economic_change.v1)",
   "description": "Closed first-unit projection of the Technology economic-change dossier (GMI Technology ex-Semis vertical, F04 Task 5). Pure composition over sealed inputs: an already-validated management_outlook_comparison.v1 dict and already-accepted shared curation assertions. Authority ceiling research_display_only: no rank/gate/size/veto/originate/open_entry flag may ever be true (ECD-48), no magnitude ordering, no market-data enrichment. ECD-44: pagination_supported is false and oversized requests are refused, never truncated.",
   "type": "object",
   "additionalProperties": false,
@@ -29,7 +29,7 @@
     "bounds"
   ],
   "properties": {
-    "schema": {"const": "economic_change_dossier.v1"},
+    "schema": {"const": "technology_economic_change.v1"},
     "dossier_id": {"type": "string", "pattern": "^tecd_[0-9a-f]{32}$"},
     "kind": {"const": "TECHNOLOGY_ECONOMIC_CHANGE"},
     "engine_version": {"const": "market_ontology.technology_economic_change.v1"},
