@@ -31,10 +31,12 @@ language; the three new blocks reach 4 / 3 / 2 of 5 respectively. The
 unreachable pair (NOT_YET_OPEN / CLOSED) is documented here as a HARD
 constraint (session_clock owns these states; the new blocks have no
 calendar clock to gate them). The TEST MODULE docstring at the top of
-tests/test_am_edition_producer.py mirrors this surface so the
-unreachability lives in BOTH the producer and the test layer; the
+the contract-test module mirrors this surface so the unreachability
+lives in BOTH the producer and the test layer; the
 test_five_typed_states_per_block_unreachability_in_test_docstring pin
-asserts both layers stay in sync.
+reads both docstrings and cross-checks the unreachable pair AND the
+per-block reachable counts (4 / 3 / 2) — a drift on either side fails
+the test (round-5 MAJOR 4 fix).
 
 Cross-lane row-key contract (MINOR 12 round 4): the three new blocks
 emit row keys BEYOND §A2/§A3/§A4's minimum surface so that lanes B and C
@@ -65,6 +67,7 @@ import argparse
 import json
 import logging
 import sys
+from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta, date
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -302,8 +305,9 @@ _RELEASE_TITLES = {
     "gdp": ("GDP (BEA estimate)", "GDP 数据"),
 }
 
-# Regime quad code -> plain-word EN/ZH label (engine/regime.py:25-26 is the
-# authoritative code->name map; this is display copy only, never re-derived).
+# Regime quad code -> plain-word EN/ZH label (the regime module's quad
+# labels section is the authoritative code->name map; this is display
+# copy only, never re-derived).
 _QUAD_LABELS = {
     "Q1": ("Goldilocks", "金发姑娘（低通胀增长）"),
     "Q2": ("Reflation", "再通胀"),
@@ -1292,10 +1296,16 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             credit_label_zh = credit_label_obj.get("zh") if isinstance(credit_label_obj, dict) else None
             credit_regime = credit_obj.get("regime")
             credit_asof, credit_precision = _norm_clock(credit_obj.get("asof"))
+            # MINOR 3 (round 5): the prior `label_zh=credit_label_zh or
+            # credit_regime` could leak an EN regime slug (e.g. "tightening")
+            # into a *_zh field. The EN field already carries the regime
+            # fallback; the ZH field falls back to a disclosed null
+            # rather than copying the EN slug. If the owner wants ZH
+            # coverage, the owner supplies `label.zh`.
             credit_state = _context_planes_row(
                 "credit",
                 label_en=credit_label_en or credit_regime,
-                label_zh=credit_label_zh or credit_regime,
+                label_zh=credit_label_zh,
                 read_en=credit_label_en,
                 read_zh=credit_label_zh,
                 as_of=credit_asof,
@@ -1555,7 +1565,12 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         missing_en = missing_zh = None
         if not cn_present:
             missing_en = "Mainland read not available this morning."
-            missing_zh = "今晨暂无A股读数。"
+            # R9 / MAJOR 1 (round 5): the prior "今晨暂无Ａ股读数。" carried
+            # the ASCII letter `A` from the asset-class slug "A股"; the ZH
+            # field is therefore phrased against "大陆" (mainland) instead —
+            # no ASCII letters leak into a *_zh field, no slug is borrowed,
+            # and the disclosure still names which half is absent.
+            missing_zh = "今晨暂无大陆读数。"
         elif not hk_present:
             missing_en = "Hong Kong read not available this morning."
             missing_zh = "今晨暂无港股读数。"
@@ -2021,9 +2036,14 @@ def _owner_links_block() -> dict:
     # Reference registry — load once; a missing/invalid registry means every
     # reference row is dropped (never silently truncated to bare hrefs). The
     # registry's own label_en/label_zh are surfaced (the raw `id` is a slug
-    # §0 gate 8 — "no raw slugs in a new block").
+    # §0 gate 8 — "no raw slugs in a new block"). MINOR 2 (round 5): the
+    # fallback to the raw `eid` slug is REMOVED — if a whitelisted anchor
+    # lacks label_en or label_zh in the registry, the row is DROPPED
+    # instead of being emitted with a bare slug in a *_zh field. The
+    # whitelist's anchors all carry label_zh on origin/main's
+    # config/market_reference.yml today; this guard prevents the silent
+    # regression the prior code allowed.
     registry_raw = _load_reference_registry(repo_root)
-    # Build id -> (label_en, label_zh) for the whitelisted anchors only.
     label_by_id: dict[str, tuple[str, str]] = {}
     if isinstance(registry_raw, dict):
         for entry in registry_raw.get("entries") or []:
@@ -2031,12 +2051,25 @@ def _owner_links_block() -> dict:
                 continue
             eid = entry.get("id")
             if eid in _REFERENCE_ANCHORS:
-                label_by_id[eid] = (entry.get("label_en") or eid, entry.get("label_zh") or eid)
+                label_en = entry.get("label_en")
+                label_zh = entry.get("label_zh")
+                # Round-5 MINOR 2: drop the row if either label is absent
+                # rather than leaking the raw id slug into *_zh. Bare-id
+                # fallbacks violate the cross-lane key contract.
+                if not (isinstance(label_en, str) and label_en and
+                        isinstance(label_zh, str) and label_zh):
+                    continue
+                label_by_id[eid] = (label_en, label_zh)
     for anchor in _REFERENCE_ANCHORS:
         href = _resolve_reference_anchor(anchor, registry_raw)
         if href is None:
             continue
-        label_en, label_zh = label_by_id.get(anchor, (anchor, anchor))
+        # Anchor not in label_by_id means the registry did not carry a
+        # label_en + label_zh pair for it — drop the row, never emit
+        # the raw slug.
+        if anchor not in label_by_id:
+            continue
+        label_en, label_zh = label_by_id[anchor]
         rows.append({
             "plane": None,
             "label_en": label_en,
@@ -2235,6 +2268,38 @@ def render_html(payload: dict) -> str:
     return tmpl.render(payload=payload, as_of=payload.get("generated_at", ""))
 
 
+@dataclass(frozen=True)
+class RenderResult:
+    """Typed outcome of `render_html_with_reason` — lets callers
+    distinguish jinja2-missing from template-missing without changing
+    the `render_html` public contract."""
+    text: str
+    reason: str  # "ok" | "jinja2_missing" | "template_missing"
+
+
+def render_html_with_reason(payload: dict) -> RenderResult:
+    """Same render contract as `render_html` but typed — returns a
+    RenderResult carrying the rendered text and a reason code. Used by
+    `main()` to log the actual cause when the HTML page is skipped.
+    Production callers that only need the rendered string continue to
+    use `render_html`.
+    """
+    try:
+        import jinja2
+    except ImportError:
+        return RenderResult(text="", reason="jinja2_missing")
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(Path(__file__).resolve().parent.parent / "templates")),
+        autoescape=jinja2.select_autoescape(["html", "xml"]),
+    )
+    try:
+        tmpl = env.get_template("am_edition.html.j2")
+    except jinja2.TemplateNotFound:
+        return RenderResult(text="", reason="template_missing")
+    text = tmpl.render(payload=payload, as_of=payload.get("generated_at", ""))
+    return RenderResult(text=text, reason="ok")
+
+
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse --out-dir / --live-dir CLI flags. Defaults preserve the historical
     behaviour exactly: out-dir defaults to cfg["storage"]["site_dir"], live-dir
@@ -2289,13 +2354,22 @@ def main(argv: list[str] | None = None) -> int:
             encoding="utf-8",
         )
         # HTML page through lib.pages.write_page (injects data-base shim).
-        html = render_html(payload)
-        if html:
+        # MINOR 8 (round 5): render_html returns '' for BOTH the
+        # jinja2-unimportable branch AND the template-not-found branch,
+        # so we distinguish the cause here — the prior message always
+        # blamed the template, which mis-attributed the cause when
+        # jinja2 was simply missing from the env.
+        html = render_html_with_reason(payload)
+        if html.text:
             html_out_path = out_dir / "am_edition.html"
-            write_page(html_out_path, html)
+            write_page(html_out_path, html.text)
             log.info("wrote %s (%d bytes)", html_out_path, html_out_path.stat().st_size)
+        elif html.reason == "jinja2_missing":
+            log.warning("jinja2 is not importable in this env; skipping HTML page render")
+        elif html.reason == "template_missing":
+            log.warning("am_edition.html.j2 not found under templates/; skipping HTML page render")
         else:
-            log.warning("am_edition.html.j2 not found; skipping HTML page")
+            log.warning("render_html returned empty (reason=%s); skipping HTML page", html.reason)
 
         log.info("wrote %s (%d bytes)", out_path, out_path.stat().st_size)
     except Exception as e:  # noqa: BLE001 — additive, must never break the site build

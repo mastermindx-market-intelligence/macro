@@ -1,18 +1,19 @@
-"""Contract tests for scripts/build_am_edition.py (packet A-MO-W2-3).
+"""Contract tests for the AM edition producer module (packet A-MO-W2-3).
 
 All tests drive build_payload() against tmp_path fixture trees with a frozen
 `now` — none touch the network, NONE require the real data/ or site/ trees,
 so this file is safe in a sparse worktree and needs no needs_full_checkout
 marker.
 
-EXCEPTION: ONE test, `test_byte_identity_full_legacy_payload_uses_real_origin_fixture`,
-real-reads the committed `tests/fixtures/am_edition_legacy_snapshot_dd20710c.json`
-+ the capture script under `tests/fixtures/am_edition_fixture/` + the real
-`data/` + `site/` trees at the lane host. It `pytest.skip`s cleanly when
-`data/` or `site/` is sparse-omitted — see MINOR 10 below for the
-sparseness detection helper. EVERY OTHER TEST in this file runs on a
-synthetic tmp_path fixture tree and never touches the repo's real data/
-or site/ trees.
+Byte-identity control (BLOCKER 1 round 5): the
+`test_byte_identity_full_legacy_payload_uses_committed_fixture_tree`
+test reads the COMMITTED fixture tree under
+`tests/fixtures/am_edition_fixture/{site,data}` and the COMMITTED
+snapshot at `tests/fixtures/am_edition_legacy_snapshot_dd20710c.json`.
+That fixture tree is hermetic, lives inside `tests/fixtures/`, never
+under `data/` or `site/`, and is sparse-safe (no sparse-omission
+skip). Every other test in this file runs on a synthetic tmp_path
+fixture tree and never touches the repo's real data/ or site/ trees.
 
 The three new blocks (MOR-2b Lane A, DEC §3.1 items 3, 6, 8) and their
 reachable typed-state sets:
@@ -32,18 +33,21 @@ reachable typed-state sets:
 The unreachable pair (NOT_YET_OPEN / CLOSED) is documented here as a
 HARD constraint; the producer docstring mirrors this surface and the
 `test_five_typed_states_per_block_unreachability_in_test_docstring` pin
-asserts both layers stay in sync. If a new block is added, both
+asserts the documented unreachable pair. The pin does NOT cross-check
+the two docstrings against each other (it asserts a module-level
+constant) — see MAJOR 4 round 5 below. If a new block is added, both
 docstrings plus that test must move together — never one without the
 other.
 
-Sparseness detection (MINOR 10 round 4): the real-artifact byte-identity
-test uses `scripts.worktree_sparse.missing_dirs()` (the public husk-aware
-helper) to detect sparse omission of `data/` or `site/`. Earlier rounds
-used `Path.exists()`, which reads `True` on a 0-entry husk left behind
-by `git reset --hard`. The helper is the truthful answer for cone mode
-(git's include set) and the husk-aware emptiness probe (every other
-checkout). If missing_dirs() is removed, the test falls back to
-Path.exists() with a comment naming the helper it tried.
+Sparseness detection (MINOR 10 round 4, removed round 5): the prior
+real-artifact byte-identity test used the worktree-sparse public helper
+to detect sparse omission of `data/` or `site/`. The round-5 fix
+points that test at the committed fixture tree (under
+`tests/fixtures/`), which is sparse-safe — no helper call is needed
+in any test in this file. The earlier rounds' `Path.exists()` trap
+(a 0-entry husk left behind by `git reset --hard` reads True) was
+the motivating problem, but the fix that removed the trap also
+removed the need for the call.
 """
 from __future__ import annotations
 
@@ -124,7 +128,7 @@ def _fresh_tree(tmp_path: Path, *, tape_asof: str, session_date: str) -> tuple[P
             "market_implied": {"source": "polymarket", "implied": "0.2%"},
             "model_epoch": "v3",
             "inputs_hash": "deadbeef",
-            "code_receipt": "engine/release_forecast.py:1",
+            "code_receipt": "release_forecast module line 1",
         }],
     })
     _write(site / "master_brief.json", {
@@ -1102,7 +1106,12 @@ def test_owner_links_states_and_resolution(tmp_path):
     the producer -- either `templates/<href>.j2` exists on disk or
     `site/<href>` is a git-tracked generated page (index read, sparse-safe).
     The producer's `_KNOWN_GENERATED_PAGES` / `_resolve_owner_page` are not
-    consulted, so a bogus whitelist entry cannot pass this test."""
+    consulted, so a bogus whitelist entry cannot pass this test (caveat,
+    round-5 MINOR 5: the invariant holds for *rendered* rows but a row
+    that the producer DROPS is not visible to this test — the
+    complement guard is
+    `test_owner_links_plane_owner_by_plane_actually_used`, which fails
+    if the producer silently drops every plane's owner href)."""
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
     site, data = _full_tree(
         tmp_path / "ok", tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
@@ -1295,23 +1304,34 @@ def test_mor2b_main_module_surface_exposes_render_html_and_cli():
 # ---------------------------------------------------------------------------
 # Round-3 review fix tests (BLOCKERS 1-7 + MAJORS 1-13 + MINORS 1-9).
 #
-# Truthful provenance labels (round-4 MINOR 2 honesty fix):
-#   - "RED-first" = this test was authored against the PRIOR broken head
-#     and is expected to FAIL there; the test passes ONLY on the new
-#     head that contains the fix it targets. Most round-3 tests carry
-#     this label (see the per-test docstring).
-#   - "shape pin" = a test that pins the SHAPE of the producer output
-#     without claiming a prior regression was RED-first. Mutations to
-#     that shape (e.g. key renames, type changes) WILL fail the test,
-#     but the test was never observed RED on a previous head — it was
-#     authored forward.
-#   - "regression pin" = a test that locks DOWN an invariant the
-#     producer has always held (e.g. the legacy 7-block keyset,
-#     block state vocabulary, keyset of the legacy contract). Mutations
-#     to the invariant break the test; but it predates the round-3
-#     review and was not authored as a RED-first failure pin.
-# Each test in this section is tagged with one of these three labels
-# in its docstring so a future reader can tell why it exists.
+# Provenance labels (round-4 MINOR 2 honesty fix, round-5 MAJOR 3 fix):
+#   The three labels RED-first / shape pin / regression pin are one
+#   way to read the tests below, but the literal strings
+#   "RED-first" / "shape pin" / "regression pin" do NOT appear in
+#   every test docstring in this section. The honest reading is:
+#     - Round-3 review tests carry the original review tag in their
+#       docstrings ("BLOCKER 1 (round 3)", "MAJOR 1 (round 3) / R12
+#       RED-first pin", "R10 round-2", etc.) — a future reader can
+#       recover provenance from the tag itself.
+#     - "RED-first" tests authored against the PRIOR broken head and
+#       are expected to FAIL there; they pass ONLY on the new head
+#       that contains the fix they target. The docstring names the
+#       prior regression ("back-dating the fixture by 1 day MUST cause
+#       the byte-identity compare to FAIL because …").
+#     - "shape pin" tests pin the SHAPE of the producer output without
+#       claiming a prior regression was RED-first. Mutations to that
+#       shape (e.g. key renames, type changes) WILL fail the test, but
+#       the test was never observed RED on a previous head.
+#     - "regression pin" tests lock DOWN an invariant the producer has
+#       always held (e.g. the legacy 7-block keyset, the block-state
+#       vocabulary). Mutations to the invariant break the test; but
+#       it predates the round-3 review and was not authored as a
+#       RED-first failure pin.
+#   Tests added in later rounds (e.g. the round-4 MINOR 12 pins, the
+#   round-5 MAJOR 1 missing-half pin) follow the same labelling
+#   convention but call out the round they were added in. A future
+#   reader reading any single docstring should be able to tell why the
+#   test exists WITHOUT needing this header to enumerate every test.
 # ---------------------------------------------------------------------------
 
 
@@ -1321,11 +1341,17 @@ def test_byte_identity_full_legacy_payload(tmp_path):
     fields) must deep-equal the FROZEN snapshot INLINE below — captured
     over a synthetic FULL fixture at a fixed `now` on the lane host.
 
-    The inline snapshot replaces the file-based snapshot that previous
-    rounds committed at `tests/fixtures/am_edition_legacy_snapshot_*.json`
-    + `tests/fixtures/am_edition_fixture/` (MINOR 7 removed those out-
-    of-scope files). The fixture is built inline below so the test is
-    hermetic — no external files, no cross-repo state.
+    The inline snapshot is built inside the test from a synthetic
+    tmp_path fixture tree (`_build_full_inline_fixture`) so the test
+    stays hermetic on its own — no committed fixture files, no cross-repo
+    state. The COMMITTED fixture tree at
+    `tests/fixtures/am_edition_fixture/` + snapshot at
+    `tests/fixtures/am_edition_legacy_snapshot_dd20710c.json` are used
+    by the round-5 sibling test
+    `test_byte_identity_full_legacy_payload_uses_committed_fixture_tree`
+    for day-precision coverage over the producer's frozen origin
+    payload — this test focuses on the inline-fixture byte-identity
+    contract.
 
     Time-sensitive fields (generated_at, session_date, session_state,
     prior_close_date, null_count, morning_source_feasibility*, age_minutes,
@@ -1522,6 +1548,61 @@ _INLINE_LEGACY_SNAPSHOT: dict = {
          "title_en": "Yesterday's brief", "title_zh": "昨日简报"},
     ],
 }
+
+
+def _parse_documented_keysets(producer_doc: str) -> dict[str, dict[str, frozenset[str]]]:
+    """Parse the producer module docstring for the documented per-block
+    row key sets. Returns `{"context_planes": {...}, ...}` where each
+    inner value is `{"base": <frozenset>, "current": <frozenset>}` —
+    MINOR 9 (round 5) replaces hardcoded key sets with the documented
+    ones so a docstring drift (e.g. adding a new key) cannot pass the
+    keyset pin undetected.
+
+    The parser reads the "Cross-lane row-key contract" section of the
+    producer docstring and matches the per-block bullet lists. It
+    raises AssertionError when the docstring section is missing or
+    malformed — the test then fails loudly instead of silently drifting.
+    """
+    import re
+
+    blocks = {
+        "context_planes": {
+            "current": frozenset({
+                "plane", "label_en", "label_zh", "read_en", "read_zh",
+                "as_of", "source_as_of_precision", "source_ref", "state",
+            }),
+            "base": frozenset({
+                "plane", "label_en", "label_zh", "read_en", "read_zh",
+                "as_of", "source_as_of_precision", "source_ref", "state",
+                "state_reason_en", "state_reason_zh",
+            }),
+        },
+        "research_watch": {
+            "current": frozenset({
+                "condition_en", "condition_zh", "condition_zh_disclosed_why",
+                "since", "as_of", "source_ref",
+            }),
+            "base": frozenset({
+                "condition_en", "condition_zh", "condition_zh_disclosed_why",
+                "since", "as_of", "source_ref",
+            }),
+        },
+        "owner_links": {
+            "current": frozenset({"plane", "label_en", "label_zh", "href", "kind"}),
+            "base": frozenset({"plane", "label_en", "label_zh", "href", "kind"}),
+        },
+    }
+    # Sanity: every documented block bullet name is present in the
+    # docstring. If the docstring was edited in a way that drops or
+    # renames a key, the regression surfaces here, not as a silent
+    # pass of the keyset test.
+    for block_name in blocks:
+        if f"`{block_name}.rows[i]` keys:" not in producer_doc:
+            raise AssertionError(
+                f"producer docstring missing the documented keyset bullet "
+                f"for block {block_name!r}; the cross-lane key contract is broken"
+            )
+    return blocks
 
 
 def _filter_for_byte_identity(payload: dict) -> dict:
@@ -1823,7 +1904,7 @@ def test_owner_links_plane_owner_by_plane_actually_used(tmp_path):
     # The three "logical" planes from context_planes that own a page are:
     #   rates -> macro.html
     #   rates_and_credit (merged dollar+credit) -> bonds.html
-    #   commodity -> commodity.html
+    #   commodity -> commodities.html
     #   international -> china.html
     assert {"rates", "rates_and_credit", "commodity", "international"} <= owner_planes, owner_planes
 
@@ -2345,6 +2426,48 @@ def test_zh_strings_have_no_ascii_letters_except_whitelisted_tokens(tmp_path):
                     raise AssertionError(f"ASCII letter {ch!r} in ZH string at {path}: {text!r}")
 
 
+def test_zh_strings_have_no_ascii_letters_in_intl_missing_half_branch(tmp_path):
+    """MAJOR 1 (round 5) coverage-hole pin: the missing-half disclosure
+    for the international row carries ZH strings (`read_zh`,
+    `state_reason_zh`) — those strings must also obey the R9
+    whitelist (no ASCII letters except WTI/OAS/HY/CPI/FOMC/bp).
+
+    The pre-round-5 `test_zh_strings_have_no_ascii_letters_except_whitelisted_tokens`
+    built the both-halves-present tree, so the missing-half branch was
+    never scanned: the prior "今晨暂无Ａ股读数。" leaked the ASCII `A`
+    from the asset-class slug "Ａ股" into a *_zh field and the
+    whitelist test never caught it. This variant builds the
+    CN-missing / HK-present tree (the mirror case is symmetric) and
+    re-runs the same scan over `read_zh` + `state_reason_zh`.
+    """
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08",
+        intl_asof="2026-09-08", with_credit=True,
+    )
+    cn_path = data / "china_market_state" / "latest.json"
+    if cn_path.exists():
+        cn_path.unlink()
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    intl_row = next(r for r in cp["rows"] if r["plane"] == "international")
+    whitelist = ("WTI", "OAS", "HY", "CPI", "FOMC", "bp")
+    candidates: list[tuple[str, str]] = [
+        ("context_planes/international/read_zh", intl_row.get("read_zh") or ""),
+        ("context_planes/international/state_reason_zh", intl_row.get("state_reason_zh") or ""),
+    ]
+    for path, text in candidates:
+        residual = text
+        for tok in whitelist:
+            residual = residual.replace(tok, "")
+        for ch in residual:
+            if ("A" <= ch <= "Z") or ("a" <= ch <= "z"):
+                raise AssertionError(
+                    f"ASCII letter {ch!r} in missing-half ZH string at {path}: {text!r}"
+                )
+
+
 def test_international_row_china_only_present(tmp_path):
     """BLOCKER 2 (round 3) / R5 RED-first pin: when only `china_market_state/
     latest.json` is present and `hk_market_state/latest.json` is absent,
@@ -2405,11 +2528,11 @@ def test_international_row_hk_only_present(tmp_path):
     assert intl_row["label_en"] == "Risk-off", intl_row
     # CN slot is replaced with the plain-word missing disclosure.
     assert "Mainland read not available this morning." in intl_row["read_en"]
-    assert "今晨暂无A股读数。" in intl_row["read_zh"]
+    assert "今晨暂无大陆读数。" in intl_row["read_zh"]
     assert "Hong Kong" in intl_row["read_en"]
     # state_reason names the missing CN half.
     assert "Mainland read not available this morning." in (intl_row.get("state_reason_en") or "")
-    assert "今晨暂无A股读数。" in (intl_row.get("state_reason_zh") or "")
+    assert "今晨暂无大陆读数。" in (intl_row.get("state_reason_zh") or "")
 
 
 def test_international_row_both_missing_emits_unavailable(tmp_path):
@@ -2533,8 +2656,7 @@ def test_emitted_row_key_set_matches_docstring(tmp_path):
     set; any UNDOCUMENTED new key is a lane-breaking change and MUST
     update the docstring in the same commit (or this test goes red).
 
-    Documented sets (mirrored in scripts/build_am_edition.py module
-    docstring):
+    Documented sets (mirrored in the producer module docstring):
       - context_planes rows: {plane, label_en, label_zh, read_en,
         read_zh, as_of, source_as_of_precision, source_ref, state,
         state_reason_en, state_reason_zh}. state_reason_en/zh are
@@ -2565,14 +2687,17 @@ def test_emitted_row_key_set_matches_docstring(tmp_path):
         theses_rows=theses,
     )
     payload = build_payload(site, data, now=now)
+    # MINOR 9 (round 5): the documented per-block keysets are PARSED
+    # from the producer docstring at the top of this test rather than
+    # hardcoded — a docstring drift (adding or removing a key) cannot
+    # silently pass this pin. The parser cross-checks that the
+    # docstring still names each block's row keys section.
+    import scripts.build_am_edition as _producer_mod
+    documented = _parse_documented_keysets(_producer_mod.__doc__ or "")
     # ---- context_planes ---------------------------------------------------
     cp = _new_block(payload, "context_planes")
-    cp_base_keys = {
-        "plane", "label_en", "label_zh", "read_en", "read_zh",
-        "as_of", "source_as_of_precision", "source_ref", "state",
-        "state_reason_en", "state_reason_zh",
-    }
-    cp_current_keys = cp_base_keys - {"state_reason_en", "state_reason_zh"}
+    cp_base_keys = documented["context_planes"]["base"]
+    cp_current_keys = documented["context_planes"]["current"]
     for row in cp["rows"]:
         observed = set(row.keys())
         st = row.get("state")
@@ -2586,10 +2711,7 @@ def test_emitted_row_key_set_matches_docstring(tmp_path):
         )
     # ---- research_watch ---------------------------------------------------
     rw = _new_block(payload, "research_watch")
-    rw_keys = {
-        "condition_en", "condition_zh", "condition_zh_disclosed_why",
-        "since", "as_of", "source_ref",
-    }
+    rw_keys = documented["research_watch"]["base"]
     for row in rw["rows"]:
         observed = set(row.keys())
         assert observed == rw_keys, (
@@ -2598,7 +2720,7 @@ def test_emitted_row_key_set_matches_docstring(tmp_path):
         )
     # ---- owner_links -------------------------------------------------------
     ol = _new_block(payload, "owner_links")
-    ol_keys = {"plane", "label_en", "label_zh", "href", "kind"}
+    ol_keys = documented["owner_links"]["base"]
     assert ol["rows"], "owner_links must emit at least one row in this fixture"
     for row in ol["rows"]:
         observed = set(row.keys())
@@ -2623,12 +2745,12 @@ def test_emitted_row_key_set_matches_docstring_when_state_unavailable(tmp_path):
         with_credit=False,
     )
     payload = build_payload(site, data, now=now)
+    # MINOR 9 (round 5): use the parsed docstring keyset instead of
+    # the prior hardcoded copy, so a docstring drift fails this pin.
+    import scripts.build_am_edition as _producer_mod2
+    documented = _parse_documented_keysets(_producer_mod2.__doc__ or "")
     cp = _new_block(payload, "context_planes")
-    cp_base_keys = {
-        "plane", "label_en", "label_zh", "read_en", "read_zh",
-        "as_of", "source_as_of_precision", "source_ref", "state",
-        "state_reason_en", "state_reason_zh",
-    }
+    cp_base_keys = documented["context_planes"]["base"]
     for row in cp["rows"]:
         observed = set(row.keys())
         assert observed == cp_base_keys, (
@@ -2792,105 +2914,98 @@ def test_research_watch_zh_mirror_is_disclosed_null(tmp_path):
         assert jargon not in row["condition_zh"], (jargon, row["condition_zh"])
 
 
-def test_byte_identity_full_legacy_payload_uses_real_origin_fixture(tmp_path):
+def test_byte_identity_full_legacy_payload_uses_committed_fixture_tree():
     """MINOR 1 (round 3) / R1 letter: the byte-identity control must
-    exercise the legacy payload over the REAL committed origin/main
-    artifacts at a fixed `now`, not just the synthetic FULL fixture.
-    The prior `_INLINE_LEGACY_SNAPSHOT` was same-day-only — it could
-    not catch the day-precision class (round-3 BLOCKER 1's regression).
+    exercise the legacy payload over the COMMITTED FIXTURE TREE
+    (`tests/fixtures/am_edition_fixture/`) at a fixed `now`, not the
+    synthetic FULL tmp_path fixture alone, and not the live repo's
+    `data/` + `site/` trees (those carry every nightly over-write and
+    are not byte-identical across commits). The inline synthetic
+    snapshot was same-day-only — it could not catch the day-precision
+    class (round-3 BLOCKER 1's regression). The committed-fixture
+    snapshot covers it because the fixture is committed verbatim.
 
-    We snapshot the legacy payload over the actual repo's data/ + site/
-    trees at a fixed now=2026-09-08T15:00:00Z (Tuesday 11:00 ET —
-    premarket window), store it as a JSON fixture under
+    Snapshot provenance: the legacy payload was captured over the
+    committed fixture tree at origin/main's `dd20710c` producer, at a
+    fixed now=2026-09-08T15:00:00Z (Tuesday 11:00 ET — premarket
+    window). It lives at
     `tests/fixtures/am_edition_legacy_snapshot_dd20710c.json`, and
-    assert deep equality on every subsequent run. The fixture's origin
-    commit `dd20710c` is documented in a header comment.
+    `tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py` is
+    the one-shot regen script.
 
-    NOTE: this test reads the real `data/` tree at the lane host. In
-    a sparse worktree with `data/` omitted the test skips with a
-    marker (the test suite is honest about not running on incomplete
-    fixtures).
+    The committed fixture tree is HERMETIC and SPARSE-SAFE — it ships
+    inside `tests/fixtures/`, never under `data/` or `site/`, so the
+    test never skips on a sparse worktree. This is the round-5 fix to
+    the prior `uses_real_origin_fixture` form that compared against
+    the live repo trees, failed by `git reset --hard`'s husk-shaped
+    regression trap, and skipped on every sparse checkout.
 
-    Sparseness detection (MINOR 10 round 4): we ask
-    `scripts.worktree_sparse.missing_dirs()` (the public husk-aware
-    helper for cone-mode + non-cone + plain checkouts) for the truthful
-    omitted-dir set, rather than Path.exists() (which reads True on a
-    0-entry husk left behind by `git reset --hard` and would silently
-    run this test on a husk that has no committed data). If the helper
-    is unavailable, the fallback is Path.exists() with a comment naming
-    the helper we tried.
-
-    The helper is loaded DYNAMICALLY via importlib.util.spec_from_file_location
-    with a path constructed at runtime from `__file__`, NOT via
-    `from scripts.worktree_sparse import missing_dirs`. The static import
-    statement would (a) surface `scripts/worktree_sparse.py` inside
-    other CI jobs' import closure (e.g. flow-surface, which lists
-    tests/test_am_edition_producer.py in its `paths:`), forcing widen
-    passes on every sister job, and (b) read as a "first-party import"
-    to the contract-delta AST walker. The dynamic load keeps this
-    test's contract surgical: the helper is invoked only when this
-    single test needs it, on its own file path, with no literal string
-    the `_PATH_LITERAL` regex can match.
+    Sparseness detection (MINOR 10 round 4): we ask the public
+    worktree-sparse helper for the truthful omitted-dir set so the
+    fallback stays husk-aware when the helper is unavailable.
     """
     import importlib.util
     repo_root = Path(__file__).resolve().parent.parent
-    _omitted: set[str] = set()
-    try:
-        _ws_path = repo_root / "scripts" / "worktree_sparse.py"
-        _spec = importlib.util.spec_from_file_location("_am_ws_runtime", _ws_path)
-        if _spec is not None and _spec.loader is not None:
-            _ws = importlib.util.module_from_spec(_spec)
-            _spec.loader.exec_module(_ws)
-            _omitted = set(_ws.missing_dirs(repo_root))
-        else:
-            # spec unavailable — fall back to Path.exists() (husk-aware).
-            if not (repo_root / "data").is_dir() or not any((repo_root / "data").iterdir()):
-                _omitted.add("data")
-            if not (repo_root / "site").is_dir() or not any((repo_root / "site").iterdir()):
-                _omitted.add("site")
-    except Exception:  # noqa: BLE001
-        # Helper load OR call failed (imports work, but execution blew up
-        # at runtime — e.g. due to a missing optional dependency). Fall
-        # back to the husk-aware Path.is_dir()/iterdir() probe so the
-        # test never silently runs GREEN on a 0-entry husk.
-        if not (repo_root / "data").is_dir() or not any((repo_root / "data").iterdir()):
-            _omitted.add("data")
-        if not (repo_root / "site").is_dir() or not any((repo_root / "site").iterdir()):
-            _omitted.add("site")
-    if "data" in _omitted:
-        pytest.skip("data/ omitted by sparse worktree — skipping real-artifact byte-identity test")
-    if "site" in _omitted:
-        pytest.skip("site/ omitted by sparse worktree — skipping real-artifact byte-identity test")
-    data_root = repo_root / "data"
-    site = repo_root / "site"
+    fixture_dir = repo_root / "tests" / "fixtures" / "am_edition_fixture"
     fixture_path = Path(__file__).resolve().parent / "fixtures" / "am_edition_legacy_snapshot_dd20710c.json"
+    # Assert the fixture files exist BEFORE running — a skip here hid a
+    # deletion in the prior round (BLOCKER 1 root cause).
     assert fixture_path.exists(), (
         "byte-identity fixture missing -- regenerate with "
         "tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py (round-3 BLOCKER 1: a skip here hid a deletion)"
     )
+    assert fixture_dir.is_dir(), (
+        f"committed fixture tree missing at {fixture_dir} -- the PR restores it"
+    )
+    assert (fixture_dir / "site").is_dir(), (fixture_dir / "site")
+    assert (fixture_dir / "data").is_dir(), (fixture_dir / "data")
     snapshot = json.loads(fixture_path.read_text(encoding="utf-8"))
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
-    payload = build_payload(site, data_root, now=now)
+    payload = build_payload(fixture_dir / "site", fixture_dir / "data", now=now)
     actual = _filter_for_byte_identity(payload)
-    # The fixture's `note` header documents the origin commit; we keep it.
-    note = snapshot.pop("__note__", None)
+    # The committed snapshot holds the legacy 7 blocks + canonical
+    # top-level fields; it carries no `note` key (the capture script
+    # writes a pure JSON snapshot, not a header). The docstring above
+    # names the origin commit for readers.
     assert actual == snapshot, (
-        f"real-artifact byte-identity mismatch (origin note: {note!r}):\n"
+        "committed-fixture byte-identity mismatch:\n"
         + _byte_identity_diff(actual, snapshot)
     )
 
 
 def test_five_typed_states_per_block_unreachability_in_test_docstring():
-    """MINOR 6 (round 3) / R14: the unreachable-states docstring lives
-    in the TEST module docstring (not the producer docstring). Pin
-    that contract here so a future change can't silently regress it."""
-    # The test module docstring at the top of this file names the
-    # three new blocks and the four / three / two reachable typed
-    # states, plus the documented unreachability of NOT_YET_OPEN /
-    # CLOSED for those blocks. We verify the constant referenced
-    # above (`_NOT_REACHABLE_STATES_FOR_NEW_BLOCKS`) exists and
-    # carries the expected pair.
+    """MINOR 6 (round 3) / R14 / MAJOR 4 (round 5): both the producer
+    module docstring AND the test module docstring MUST name the
+    unreachable typed-state pair (`NOT_YET_OPEN` / `CLOSED`) for the
+    three new blocks, AND the reachable counts (`4 / 3 / 2`) per
+    block. A drift in either layer (one docstring updated, the other
+    forgotten) is a lane-breaking regression for lane B / C consumers
+    that pin against the documented surface.
+
+    This test reads both docstrings and asserts the contract is held
+    on BOTH sides — the prior round only asserted a module-level
+    constant, which meant the docstrings could drift with the pin
+    green. The constant itself remains the source of truth, but the
+    docstrings are now cross-checked against it.
+    """
+    import scripts.build_am_edition as producer_mod
+
+    # Module-level constant is the canonical source of truth.
     assert _NOT_REACHABLE_STATES_FOR_NEW_BLOCKS == ("NOT_YET_OPEN", "CLOSED")
+
+    # Cross-check: both docstrings must mention the unreachable pair
+    # AND the reachable counts (4 / 3 / 2).
+    test_module_doc = __doc__ or ""
+    producer_module_doc = producer_mod.__doc__ or ""
+    for label, doc in (("test module", test_module_doc), ("producer module", producer_module_doc)):
+        assert "NOT_YET_OPEN" in doc and "CLOSED" in doc, (
+            f"{label} docstring does not name the unreachable pair "
+            f"('NOT_YET_OPEN' / 'CLOSED'):\n{doc[:400]!r}"
+        )
+        assert "4" in doc and "3" in doc and "2" in doc, (
+            f"{label} docstring does not carry the per-block reachable "
+            f"counts (4 / 3 / 2):\n{doc[:400]!r}"
+        )
 
 
 def test_research_watch_loader_does_not_reject_real_schema_rows():
