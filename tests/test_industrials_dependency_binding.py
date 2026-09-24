@@ -120,3 +120,78 @@ def test_unregistered_realistic_cik_is_not_identity() -> None:
     result = validate_delivery_inputs(payload)
     assert result["live_admission"] == "refused"
     assert "identity_unresolved" in result["reasons"]
+
+
+def test_realistic_cik_with_unknown_pair_is_identity_not_registered() -> None:
+    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
+    from tests.industrials_result_cash_helpers import issuer_registry
+
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "0000320193"},
+    }
+    result = validate_delivery_inputs(payload, registry=issuer_registry())
+    assert result["live_admission"] == "refused"
+    identity = result["bindings"]["identity"]
+    assert identity["status"] == "unresolved"
+    assert identity["reason"] == "identity_not_registered"
+
+
+def test_missing_registry_resolves_no_identity() -> None:
+    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
+
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "0000987654"},
+    }
+    result = validate_delivery_inputs(payload)
+    assert result["bindings"]["identity"]["status"] == "unresolved"
+    assert result["bindings"]["identity"]["reason"] == "identity_not_registered"
+
+
+def test_owner_ref_with_foreign_namespace_is_refused() -> None:
+    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
+
+    payload = case("source_only")
+    payload["release_binding"] = {
+        "status": "accepted",
+        "owner_ref": "foreign:thing:registered",
+        "revision": "r1",
+        "digest": "0" * 64,
+    }
+    payload["private_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:private:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+    }
+    result = validate_delivery_inputs(payload)
+    assert result["live_admission"] == "refused"
+    release = result["bindings"]["release_binding"]
+    assert release["status"] == "unavailable"
+    assert release["reason"] == "owner_namespace_unregistered"
+
+
+def test_uppercase_digest_is_digest_malformed() -> None:
+    from engine.company_intelligence.financial_dossier import validate_delivery_inputs
+
+    payload = case("source_only")
+    payload["release_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:release:candidate",
+        "revision": "r1",
+        "digest": "A" * 64,
+    }
+    payload["private_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:private:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+    }
+    result = validate_delivery_inputs(payload)
+    assert result["live_admission"] == "refused"
+    release = result["bindings"]["release_binding"]
+    assert release["status"] == "unavailable"
+    assert release["reason"] == "digest_malformed"

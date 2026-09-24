@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 import re
 from urllib.parse import urlparse
 
@@ -26,10 +26,22 @@ _ALLOWED_INPUT_KEYS = frozenset(
 _TYPED_ABSENCE_REASONS = ABSENCE_REASONS
 _CIK_SHAPE = re.compile(r"\d{10}")
 _NINE_M_OR_LATER = 90_000_000
+_DIGEST_HEX = re.compile(r"[0-9a-f]{64}")
+_OWNER_NAMESPACES: frozenset[str] = frozenset({"synthetic"})
 
 
-def validate_delivery_inputs(inputs: Mapping[str, object]) -> dict[str, object]:
-    """Classify inert research inputs without issuing any delivery permission."""
+def validate_delivery_inputs(
+    inputs: Mapping[str, object],
+    *,
+    registry: Iterable[tuple[str, str]] | None = None,
+) -> dict[str, object]:
+    """Classify inert research inputs without issuing any delivery permission.
+
+    A well-formed 10-digit CIK is necessary but not sufficient identity proof.
+    ``identity`` is resolved only when ``company_id`` carries the corpus
+    namespace and ``(company_id, external_ids.cik)`` is a registered pair in
+    ``registry``. A missing/empty ``registry`` resolves nothing.
+    """
     if not isinstance(inputs, Mapping):
         raise TypeError("delivery inputs must be a mapping")
 
@@ -44,8 +56,9 @@ def validate_delivery_inputs(inputs: Mapping[str, object]) -> dict[str, object]:
         reasons.append("accepted_binding_missing")
 
     identity = inputs.get("identity")
-    if not _resolved_identity(identity):
-        reasons.append("identity_unresolved")
+    identity_status, identity_reason = _check_identity(identity, registry)
+    if identity_status != "resolved":
+        reasons.append(identity_reason)
 
     join = inputs.get("cross_subject_join")
     if join is not None:
@@ -62,7 +75,7 @@ def validate_delivery_inputs(inputs: Mapping[str, object]) -> dict[str, object]:
     bindings: dict[str, object] = {
         "release_binding": _checked_binding(release_binding),
         "private_binding": _checked_binding(private_binding),
-        "identity": _checked_identity(identity),
+        "identity": _checked_identity_value(identity, registry),
     }
     return {
         "live_admission": "admissible" if not reasons else "refused",
@@ -92,61 +105,103 @@ def _research_usable(inputs: Mapping[str, object]) -> bool:
 
 
 def _accepted_binding(value: object) -> bool:
-    return (
-        isinstance(value, Mapping)
-        and value.get("status") == "accepted"
-        and isinstance(value.get("owner_ref"), str)
-        and bool(value.get("owner_ref"))
-        and isinstance(value.get("revision"), str)
-        and bool(value.get("revision"))
-        and isinstance(value.get("digest"), str)
-        and len(str(value.get("digest"))) == 64
-        and not isinstance(value.get("digest"), bool)
-    )
+    return _inspect_binding(value)[0] == "accepted"
+
+
+def _inspect_binding(value: object) -> tuple[str, str]:
+    """Return ``(status, reason)`` for a release/private binding.
+
+    ``status`` is ``"accepted"`` iff ``owner_ref`` carries a registered
+    namespace and ``digest`` is a 64-character lowercase hex string. Any
+    malformed field returns the most specific reason code first.
+    """
+    if not isinstance(value, Mapping):
+        return ("unavailable", "missing")
+    status = value.get("status")
+    if status != "accepted":
+        return ("unavailable", "binding_not_accepted")
+    owner_ref = value.get("owner_ref")
+    if not isinstance(owner_ref, str) or not owner_ref:
+        return ("unavailable", "owner_ref_missing")
+    namespace = owner_ref.split(":", 1)[0]
+    if namespace not in _OWNER_NAMESPACES:
+        return ("unavailable", "owner_namespace_unregistered")
+    revision = value.get("revision")
+    if not isinstance(revision, str) or not revision:
+        return ("unavailable", "revision_missing")
+    digest = value.get("digest")
+    if not isinstance(digest, str) or isinstance(digest, bool):
+        return ("unavailable", "digest_malformed")
+    if not _DIGEST_HEX.fullmatch(digest):
+        return ("unavailable", "digest_malformed")
+    return ("accepted", "")
 
 
 def _valid_typed_absence(value: object) -> bool:
     return isinstance(value, str) and value in _TYPED_ABSENCE_REASONS
 
 
-def _resolved_identity(value: object) -> bool:
+def _check_identity(
+    value: object,
+    registry: Iterable[tuple[str, str]] | None,
+) -> tuple[str, str]:
+    """Return ``(status, reason)`` for the identity block.
+
+    Reason codes:
+    - ``identity_unresolved``: malformed/missing fields, cik fails 10-digit shape.
+    - ``identity_not_registered``: well-formed but pair not in ``registry``
+      (or registry not supplied).
+    """
     if not isinstance(value, Mapping):
-        return False
+        return ("unresolved", "identity_unresolved")
     company_id = value.get("company_id")
     external_ids = value.get("external_ids")
     if not isinstance(company_id, str) or not company_id:
-        return False
+        return ("unresolved", "identity_unresolved")
     if not isinstance(external_ids, Mapping) or "cik" not in external_ids:
-        return False
+        return ("unresolved", "identity_unresolved")
     cik = external_ids.get("cik")
     if not isinstance(cik, str) or not _CIK_SHAPE.fullmatch(cik):
-        return False
-    return int(cik) < _NINE_M_OR_LATER
+        return ("unresolved", "identity_unresolved")
+    if int(cik) >= _NINE_M_OR_LATER:
+        return ("unresolved", "identity_unresolved")
+    if not company_id.startswith("synthetic:"):
+        return ("unresolved", "identity_not_registered")
+    if registry is None:
+        return ("unresolved", "identity_not_registered")
+    if (company_id, cik) not in frozenset(registry):
+        return ("unresolved", "identity_not_registered")
+    return ("resolved", "")
 
 
 def _checked_binding(value: object) -> dict[str, object]:
+    status, reason = _inspect_binding(value)
     if not isinstance(value, Mapping):
-        return {"status": "unavailable", "reason": "missing"}
+        return {"status": status, "reason": reason}
     result: dict[str, object] = {
         "owner_ref": value.get("owner_ref"),
         "revision": value.get("revision"),
         "digest": value.get("digest"),
     }
-    result["status"] = "accepted" if _accepted_binding(value) else "unavailable"
-    if result["status"] == "unavailable":
-        result["reason"] = "binding_not_accepted"
+    result["status"] = status
+    if reason:
+        result["reason"] = reason
     return result
 
 
-def _checked_identity(value: object) -> dict[str, object]:
+def _checked_identity_value(
+    value: object,
+    registry: Iterable[tuple[str, str]] | None,
+) -> dict[str, object]:
     if not isinstance(value, Mapping):
         return {"status": "unresolved", "reason": "missing"}
-    resolved = _resolved_identity(value)
+    status, reason = _check_identity(value, registry)
+    external_ids = value.get("external_ids")
     result = {
         "company_id": value.get("company_id"),
-        "external_ids": value.get("external_ids") if isinstance(value.get("external_ids"), Mapping) else {},
+        "external_ids": external_ids if isinstance(external_ids, Mapping) else {},
     }
-    result["status"] = "resolved" if resolved else "unresolved"
-    if not resolved:
-        result["reason"] = "identity_unresolved"
+    result["status"] = status
+    if reason:
+        result["reason"] = reason
     return result

@@ -124,6 +124,32 @@ def publication_harness() -> Any:
     return _PublicationHarness()
 
 
+def issuer_registry() -> frozenset[tuple[str, str]]:
+    """Closed (company_id, cik) pairs registered by the synthetic corpus.
+
+    Built from the 17 fixtures' ``issuer`` blocks; fixtures whose issuer block
+    is null/missing contribute no pair. The validator refuses any well-formed
+    10-digit CIK not in this set.
+    """
+    pairs: set[tuple[str, str]] = set()
+    for name in FIXTURE_NAMES:
+        value = json.loads((FIXTURE_DIR / f"{name}.json").read_text(encoding="utf-8"))
+        if not isinstance(value, Mapping):
+            continue
+        issuer = value.get("issuer")
+        if not isinstance(issuer, Mapping):
+            continue
+        company_id = issuer.get("company_id")
+        external_ids = issuer.get("external_ids")
+        if not isinstance(external_ids, Mapping):
+            continue
+        cik = external_ids.get("cik")
+        if not isinstance(company_id, str) or not isinstance(cik, str):
+            continue
+        pairs.add((company_id, cik))
+    return frozenset(pairs)
+
+
 def shared_identity() -> dict[str, Any]:
     return {
         "company_id": "synthetic:northgate",
