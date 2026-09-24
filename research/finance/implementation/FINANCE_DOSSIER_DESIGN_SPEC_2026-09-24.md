@@ -40,11 +40,11 @@ The dossier is the read-only Finance Intelligence surface that lives AFTER the e
 | `knowledge_cutoff` | date-time | visible hero meta: "Knowledge cutoff {{knowledge_cutoff}}" / "知识截止 {{knowledge_cutoff}}" |
 | `common_as_of` | date | visible hero meta: "As of {{common_as_of}}" / "截至 {{common_as_of}}" |
 | `sector_ref` | const `sector:financials` | page `<title>` only |
-| `outer_dossier_ref.{contract_id, dossier_id, dossier_hash, state}` | `state ∈ {AVAILABLE, OUTER_CONTRACT_NOT_ACCEPTED, UNAVAILABLE}` | hero kicker shows plain-word chip "Outer dossier {state}" / "外部报告 {state}"; shell receives `data-state-outer-dossier` |
+| `outer_dossier_ref.{contract_id, dossier_id, dossier_hash, state}` | `state ∈ {AVAILABLE, OUTER_CONTRACT_NOT_ACCEPTED, UNAVAILABLE}` | hero kicker shows the §D.14 plain-word chip for `outer_dossier_ref.state`; shell receives `data-state-outer-dossier` |
 | `snapshot_identity.{composer_version, input_digest, curation_revision_set, rights_profile, view_scope}` | string / pattern / array / string / string | not displayed (provenance; surfaces only via the seat's debug tools) |
 | `coverage.{domains_total, domains_populated, slices_total, slices_populated, slices_semantic_only, companies_with_records}` | integer | atlas (§B.4) eyebrow: "{{domains_populated}} of {{domains_total}} domains · {{slices_populated}} of {{slices_total}} slices mapped" EN/ZH |
 | `coverage.first_vertical.{name, slice_ids[], state}` | `state ∈ {NOT_BUILT, SYNTHETIC, RESEARCH_RECORDS, PRODUCTION_PROVEN}` | slice selector (§B.2) iterates `first_vertical.slice_ids` in payload order |
-| `freshness.{evidence_latest_observed_at, state, stale_after_days}` | `state ∈ {FRESH, AGING, SOURCE_STALE, NO_EVIDENCE}` | hero meta line "Evidence {{state}} · observed {{evidence_latest_observed_at}}" EN/ZH |
+| `freshness.{evidence_latest_observed_at, state, stale_after_days}` | `state ∈ {FRESH, AGING, SOURCE_STALE, NO_EVIDENCE}` | hero meta line carries the §D.12 plain-word chip for `freshness.state` alongside the observed_at; visible label is a plain sentence, never the enum token |
 | `input_receipts[].{owner, generation, state, note}` | `owner ∈ {sector_intelligence, theme_graph, financial_intelligence, expectations_revisions, market_data, baskets, macro_rates_credit, identity, private_publication}`; `state ∈ {READ, UNAVAILABLE, NOT_ACCEPTED, DEGRADED}` | provenance footer (§B.0) renders one plain-word notice per entry whose `state` is not `READ` |
 | `degraded_sections[].{section, state, reason}` | `section ∈ {what_changed, rerating_map, system_map, subtheme_atlas, company_exposure, macro_matrix, constraint_map, evidence_drawer}`; `state ∈ {AVAILABLE, UNAVAILABLE, PARTIAL}` | a `mx-empty` + `mx-empty-why` notice at the section (telemetry at §G) |
 | `authority_caps.{rank, gate, size, trade, create_theme, change_membership, write_graph, admit_source}` | const-false | not displayed (read-only dossier; authority remains zero) |
@@ -95,8 +95,8 @@ Three selectable views; tabs generated from `system_views[]` in payload order; e
 |---|---|---|
 | eyebrow: "{{domains_populated}} of {{domains_total}} domains · {{slices_populated}} of {{slices_total}} slices mapped" EN/ZH | `coverage.{domains_populated, domains_total, slices_populated, slices_total}` | — |
 | groups in `domains[]` payload order; one `<section>` per `domain_id` | `domains[].{domain_id, name_en, name_zh, slice_ids}` | — |
-| per-slice name + chip | `slices[].{slice_id, name_en, name_zh}` joined with `slices[].{slice_state, basket_state, identity_state}` | `slice_state ∈ {SEMANTIC_ONLY, RESEARCH_EVIDENCE_AVAILABLE, MEASURABLE, PRICE_SURFACE_AVAILABLE, EVALUATION_CONTEXT_AVAILABLE, RIGHTS_RESTRICTED, STALE, HELD_FOR_REVIEW}` |
-| per-slice basket-state chips (visible, plain words) | `slices[].basket_state.{posture, incumbent_basket_ids, membership_state, member_count, weighting_family, price_basis_state}` | `posture ∈ {SEMANTIC_ONLY, BROAD_CONTEXT_AVAILABLE, RESEARCH_CANDIDATE, CANDIDATE_READY_FOR_OWNER_REVIEW, ADMITTED}`; `membership_state ∈ {NONE, CURRENT_MEMBERSHIP_ONLY, PIT_MEMBERSHIP_INCOMPLETE, PIT_MEMBERSHIP_VALIDATED}`; `weighting_family ∈ {EQUAL_WEIGHT, FLOAT_CAP_CONTEXT, EXPOSURE_WEIGHT, EXPOSURE_CAPPED_WEIGHT, STRATIFIED_EQUAL_WEIGHT}`; `price_basis_state ∈ {TOTAL_RETURN_QUALIFIED, PRICE_RETURN_QUALIFIED}` |
+| per-slice name + chip | `slices[].{slice_id, name_en, name_zh}` joined with `slices[].{slice_state, basket_state}` | `slice_state ∈ {SEMANTIC_ONLY, RESEARCH_EVIDENCE_AVAILABLE, MEASURABLE, PRICE_SURFACE_AVAILABLE, EVALUATION_CONTEXT_AVAILABLE, RIGHTS_RESTRICTED, STALE, HELD_FOR_REVIEW}` |
+| per-slice basket-state chips (visible, plain words) | `slices[].basket_state.{posture, incumbent_basket_ids, membership_state, member_count, weighting_family, price_basis_state}` | `posture ∈ {SEMANTIC_ONLY, BROAD_CONTEXT_AVAILABLE, RESEARCH_CANDIDATE, CANDIDATE_READY_FOR_OWNER_REVIEW, ADMITTED}`; `membership_state ∈ {NONE, CURRENT_MEMBERSHIP_ONLY, PIT_MEMBERSHIP_INCOMPLETE, PIT_MEMBERSHIP_VALIDATED}`; `weighting_family ∈ {EQUAL_WEIGHT, FLOAT_CAP_CONTEXT, EXPOSURE_WEIGHT, EXPOSURE_CAPPED_WEIGHT, STRATIFIED_EQUAL_WEIGHT}`; `price_basis_state ∈ {PRICE_BASIS_UNQUALIFIED, TOTAL_RETURN_QUALIFIED, PRICE_RETURN_QUALIFIED}` |
 | footer chip: "{{slices_total − rendered}} slices not yet mapped" / "尚有 {{slices_total − rendered}} 个切片未映射" | `coverage.slices_total − sum(grouped)` | — |
 
 The atlas renders **only** the slices the payload carries, grouped by `domains[]` in payload order. No baked taxonomy in the shell; nothing vanishes silently.
@@ -158,6 +158,12 @@ One instance, the aside at §B.0 with the dialog role + `aria-modal="true"` + `a
 
 A per-conflict lookup map (`conflict_text` indexed by `conflict_id`) and a per-side plane-state discriminator on the left statement are NOT in the schema and NOT bound; the spec reads `conflicts[].label` and `conflicts[].{left,right}.plane` (as a plane word, not a state).
 
+### A.10 Deviations from R11
+
+- **R11 §3 card counts/freshness removed.** R11 §3 expected the Theme Tracker card to carry `material_changes` slice counts and freshness chips. This spec removes those bindings — the shell carries no payload values (per E9); there is no public projection of card counts or freshness on the entry modules. The card is eyebrow + title + one static plain sentence + CTA.
+- **R11 §9 sortable/filterable tables deferred to hydration v2.** R11 §9 expected sortable/filterable behaviour on the exposure and macro tables. This spec renders static tables with the schema-bound cell chip and the §B markup; sortability/filterability is owned by the hydration layer's v2 (not by this spec's shell).
+- **L1 budget 7 > archetype default 5 — frozen R11 seven-tier order.** The C-company `instrument_analyzer` archetype default is 5 L1 sections; this spec renders 7 L1 sections because R11 §5 freezes a seven-tier order (`what-changed` → `rerating-map` → `system-map` → `subtheme-atlas` → `company-exposure` → `macro-matrix` → `constraint-map`). The seventh section is the evidence-drawer aside, not a separate L1. The seven-tier order supersedes the archetype default per the R11 freeze (PR #7896).
+
 ---
 
 ## B. DOM skeletons per section
@@ -169,13 +175,13 @@ All class names use the `fi-` prefix. All copy uses the repo's `data-en` / `data
 ```html
 <main class="fi-shell fi-panel" id="fi-main" data-fi-mount="shell">
   <header class="fi-hero" aria-labelledby="fi-hero-title">
-    <p class="fi-kicker"><span class="l-en" data-en="Finance Intelligence">Finance Intelligence</span><span class="l-zh" data-zh="金融情报">金融情报</span></p>
-    <h1 id="fi-hero-title"><span class="l-en" data-en="Financial Rails &amp; Market Infrastructure">Financial Rails &amp; Market Infrastructure</span><span class="l-zh" data-zh="金融基础设施与市场运作">金融基础设施与市场运作</span></h1>
-    <p class="fi-deck"><span class="l-en" data-en="Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.">Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.</span><span class="l-zh" data-zh="阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。">阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。</span></p>
+    <p class="fi-kicker"><span class="l-en">Finance Intelligence</span><span class="l-zh">金融情报</span></p>
+    <h1 id="fi-hero-title"><span class="l-en">Financial Rails &amp; Market Infrastructure</span><span class="l-zh">金融基础设施与市场运作</span></h1>
+    <p class="fi-deck"><span class="l-en">Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.</span><span class="l-zh">阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。</span></p>
     <p class="fi-meta">
-      <span class="l-en" data-fi-mount="hero-asof" data-en="As of {common_as_of}" data-aria-en="As of {common_as_of}" data-aria-zh="截至 {common_as_of}" hidden></span><span class="l-zh" data-fi-mount="hero-asof-zh" data-zh="截至 {common_as_of}" hidden></span>
+      <span class="l-en" data-fi-mount="hero-asof" data-aria-en="As of {common_as_of}" data-aria-zh="截至 {common_as_of}" hidden></span><span class="l-zh" data-fi-mount="hero-asof-zh" hidden></span>
       <span aria-hidden="true">·</span>
-      <span class="l-en" data-fi-mount="hero-cutoff" data-en="Knowledge cutoff {knowledge_cutoff}" data-aria-en="Knowledge cutoff {knowledge_cutoff}" data-aria-zh="知识截止 {knowledge_cutoff}" hidden></span><span class="l-zh" data-fi-mount="hero-cutoff-zh" data-zh="知识截止 {knowledge_cutoff}" hidden></span>
+      <span class="l-en" data-fi-mount="hero-cutoff" data-aria-en="Knowledge cutoff {knowledge_cutoff}" data-aria-zh="知识截止 {knowledge_cutoff}" hidden></span><span class="l-zh" data-fi-mount="hero-cutoff-zh" hidden></span>
       <span aria-hidden="true">·</span>
       <span class="fi-chip fi-chip-fresh" data-fi-mount="hero-freshness" data-state-freshness="" data-aria-en="Evidence freshness: {freshness_state}" data-aria-zh="证据新鲜度：{freshness_state}" hidden></span>
       <span class="fi-chip fi-outer-dossier" data-fi-mount="hero-outer" data-state-outer-dossier="" data-aria-en="Outer dossier: {outer_dossier_ref.state}" data-aria-zh="外部报告：{outer_dossier_ref.state}" hidden></span>
@@ -184,14 +190,14 @@ All class names use the `fi-` prefix. All copy uses the repo's `data-en` / `data
 
   <nav class="fi-toc fi-panel" aria-label="Section navigation" data-aria-en="Section navigation" data-aria-zh="章节导航">
     <ol>
-      <li><a href="#what-changed"><span class="l-en" data-en="What changed">What changed</span><span class="l-zh" data-zh="近期变化">近期变化</span></a></li>
-      <li><a href="#rerating-map"><span class="l-en" data-en="Rerating map">Rerating map</span><span class="l-zh" data-zh="重估链路">重估链路</span></a></li>
-      <li><a href="#system-map"><span class="l-en" data-en="System map">System map</span><span class="l-zh" data-zh="系统图">系统图</span></a></li>
-      <li><a href="#subtheme-atlas"><span class="l-en" data-en="Subtheme atlas">Subtheme atlas</span><span class="l-zh" data-zh="子主题图谱">子主题图谱</span></a></li>
-      <li><a href="#company-exposure"><span class="l-en" data-en="Company exposure">Company exposure</span><span class="l-zh" data-zh="公司敞口">公司敞口</span></a></li>
-      <li><a href="#macro-matrix"><span class="l-en" data-en="Macro matrix">Macro matrix</span><span class="l-zh" data-zh="宏观矩阵">宏观矩阵</span></a></li>
-      <li><a href="#constraint-map"><span class="l-en" data-en="Constraint map">Constraint map</span><span class="l-zh" data-zh="约束图">约束图</span></a></li>
-      <li><button type="button" class="fi-toc-evidence" aria-controls="evidence-drawer"><span class="l-en" data-en="Evidence">Evidence</span><span class="l-zh" data-zh="证据">证据</span></button></li>
+      <li><a href="#what-changed"><span class="l-en">What changed</span><span class="l-zh">近期变化</span></a></li>
+      <li><a href="#rerating-map"><span class="l-en">Rerating map</span><span class="l-zh">重估链路</span></a></li>
+      <li><a href="#system-map"><span class="l-en">System map</span><span class="l-zh">系统图</span></a></li>
+      <li><a href="#subtheme-atlas"><span class="l-en">Subtheme atlas</span><span class="l-zh">子主题图谱</span></a></li>
+      <li><a href="#company-exposure"><span class="l-en">Company exposure</span><span class="l-zh">公司敞口</span></a></li>
+      <li><a href="#macro-matrix"><span class="l-en">Macro matrix</span><span class="l-zh">宏观矩阵</span></a></li>
+      <li><a href="#constraint-map"><span class="l-en">Constraint map</span><span class="l-zh">约束图</span></a></li>
+      <li><button type="button" class="fi-toc-evidence" aria-controls="evidence-drawer"><span class="l-en">Evidence</span><span class="l-zh">证据</span></button></li>
     </ol>
   </nav>
 
@@ -204,20 +210,23 @@ All class names use the `fi-` prefix. All copy uses the repo's `data-en` / `data
        aria-labelledby="fi-evidence-title" hidden tabindex="-1">
   <header class="fi-drawer-head">
     <div>
-      <p class="fi-kicker"><span class="l-en" data-en="Source receipt">Source receipt</span><span class="l-zh" data-zh="来源凭据">来源凭据</span></p>
-      <h2 id="fi-evidence-title"><span class="l-en" data-en="Evidence">Evidence</span><span class="l-zh" data-zh="证据">证据</span></h2>
+      <p class="fi-kicker"><span class="l-en">Source receipt</span><span class="l-zh">来源凭据</span></p>
+      <h2 id="fi-evidence-title"><span class="l-en">Evidence</span><span class="l-zh">证据</span></h2>
     </div>
     <button class="fi-drawer-close" id="fi-close-evidence" type="button"
-            aria-label="Close evidence drawer" data-aria-zh="关闭证据抽屉">×</button>
+            aria-label="Close evidence drawer" data-aria-en="Close evidence drawer" data-aria-zh="关闭证据抽屉">×</button>
   </header>
   <div class="fi-drawer-body" id="fi-evidence-body" data-fi-mount="evidence-body">
     <p class="fi-evidence-empty" data-fi-mount="evidence-empty" hidden>
-      <span class="l-en" data-en="Choose an evidence action in any section">Choose an evidence action in any section</span>
-      <span class="l-zh" data-zh="请在任一板块选择证据操作">请在任一板块选择证据操作</span>
+      <span class="l-en">Choose an evidence action in any section</span>
+      <span class="l-zh">请在任一板块选择证据操作</span>
     </p>
     <!-- Hydration populates the .fi-evidence-fields list; the suppression rule (A.8)
          hides value/excerpt/native_digest when rights_state is SOURCE_RIGHTS_HELD or INTERNAL_ONLY.
-         <dd class="fi-evidence-identity" data-identity=""> is bound to source_records[].identity_state
+         <dd class="fi-evidence-identity" data-identity="{source_records[].identity_state}"> is bound to source_records[].identity_state
+         <!-- state: IDENTITY_UNRESOLVED → chip -->
+         and <dd class="fi-evidence-rights" data-rights="{source_records[].rights_state}"> is bound to source_records[].rights_state.
+         <!-- state: SOURCE_RIGHTS_HELD → chip -->
          and <dd class="fi-evidence-rights" data-rights=""> is bound to source_records[].rights_state. -->
   </div>
 </aside>
@@ -233,24 +242,24 @@ The TOC entry "Evidence" is a `<button>` opening the drawer (R-H). The duplicate
          data-fi-mount="what-changed">
   <header class="fi-section-head">
     <h2 id="fi-changes-title" class="fi-section-title">
-      <span class="l-en" data-en="What changed">What changed</span>
-      <span class="l-zh" data-zh="近期变化">近期变化</span>
+      <span class="l-en">What changed</span>
+      <span class="l-zh">近期变化</span>
     </h2>
     <!-- Freshness chip: bound to top-level freshness.state (FRESH|AGING|SOURCE_STALE|NO_EVIDENCE).
          The C.5 freshness rail/pip rules target THIS element with [data-state-freshness="FRESH"]. -->
     <span class="fi-chip fi-chip-fresh" data-state-freshness="" data-fi-mount="what-changed-freshness"
           data-aria-en="Evidence freshness: {freshness.state}" data-aria-zh="证据新鲜度：{freshness.state}"></span>
     <span class="fi-section-eyebrow">
-      <span class="l-en" data-en="Material observations, plain words">Material observations, plain words</span>
-      <span class="l-zh" data-zh="重要观察，直白表述">重要观察，直白表述</span>
+      <span class="l-en">Material observations, plain words</span>
+      <span class="l-zh">重要观察，直白表述</span>
     </span>
   </header>
   <ul class="fi-change-list" role="list" data-fi-mount="what-changed-list">
     <!-- Hydration appends one <li class="fi-change-row" data-state-freshness data-change-id> per material_changes entry. -->
   </ul>
   <p class="fi-section-foot">
-    <span class="l-en" data-en="Read the underlying receipts before acting on any line.">Read the underlying receipts before acting on any line.</span>
-    <span class="l-zh" data-zh="请先查阅原始凭据再行判断。">请先查阅原始凭据再行判断。</span>
+    <span class="l-en">Read the underlying receipts before acting on any line.</span>
+    <span class="l-zh">请先查阅原始凭据再行判断。</span>
   </p>
 </section>
 ```
@@ -266,8 +275,8 @@ A native `<select id="fi-slice-select">` precedes the stepper; options come from
          data-fi-mount="rerating-map">
   <header class="fi-section-head">
     <h2 id="fi-rerating-title" class="fi-section-title">
-      <span class="l-en" data-en="Rerating map">Rerating map</span>
-      <span class="l-zh" data-zh="重估链路">重估链路</span>
+      <span class="l-en">Rerating map</span>
+      <span class="l-zh">重估链路</span>
     </h2>
     <!-- Per-slice freshness chip on the rerating-map header: bound to slices[].freshness.state for the selected slice.
          See §E.4 stepper rule: the step whose plane is the slice's first non-OBSERVED state gets data-active="true";
@@ -275,13 +284,13 @@ A native `<select id="fi-slice-select">` precedes the stepper; options come from
     <span class="fi-chip fi-slice-fresh" data-state-freshness="" data-fi-mount="rerating-freshness"
           data-aria-en="Slice freshness: {slices[].freshness.state}" data-aria-zh="切片新鲜度：{slices[].freshness.state}"></span>
     <span class="fi-section-eyebrow">
-      <span class="l-en" data-en="How a slice reaches per-share value">How a slice reaches per-share value</span>
-      <span class="l-zh" data-zh="一个子主题如何抵达每股价值">一个子主题如何抵达每股价值</span>
+      <span class="l-en">How a slice reaches per-share value</span>
+      <span class="l-zh">一个子主题如何抵达每股价值</span>
     </span>
   </header>
 
   <div class="fi-slice-picker">
-    <label for="fi-slice-select"><span class="l-en" data-en="Slice">Slice</span><span class="l-zh" data-zh="切片">切片</span></label>
+    <label for="fi-slice-select"><span class="l-en">Slice</span><span class="l-zh">切片</span></label>
     <select id="fi-slice-select" class="fi-slice-select" data-fi-mount="slice-select">
       <!-- Hydration populates <option value="<slice_id>">{name_en} / {name_zh}</option> per coverage.first_vertical.slice_ids. -->
     </select>
@@ -293,19 +302,24 @@ A native `<select id="fi-slice-select">` precedes the stepper; options come from
          if all four are OBSERVED, the price step receives data-active="true". C.6's [data-active="true"] rules then bind.
          Each step carries:
            <span class="fi-step-dot" aria-hidden="true"></span>
-           <span class="fi-step-label"><span class="l-en" data-en="...">{caption from A.2}</span><span class="l-zh" data-zh="...">{ZH caption}</span></span>
+           <span class="fi-step-label"><span class="l-en">{caption from A.2}</span><span class="l-zh">{ZH caption}</span></span>
            <span class="fi-step-metric">{primary_metric via fmtMetric}</span>
            <span class="fi-step-chip" data-state="{plane.state}">{plain-word chip from §D.1}</span>
            <span class="fi-step-clock">{clock via fmtClock}</span>
            <!-- Comparability chip (D.1b): bound to plane.comparability_state; shown only when ≠ COMPARABLE. -->
            <span class="fi-chip fi-comparability-chip" data-comparability="" data-aria-en="Comparability: {comparability_state}" data-aria-zh="可比性：{comparability_state}" hidden></span>
            <button class="fi-step-evidence" type="button" data-evidence-ids="{evidence_refs join}"
-                   aria-label="Open evidence for this step" data-aria-zh="打开该步骤的证据">↗</button>
+                   aria-label="Open evidence for this step" data-aria-en="Open evidence for this step" data-aria-zh="打开该步骤的证据">↗</button>
          The valuation node additionally carries a <span class="fi-anchor-chip" data-anchor-state="{valuation_anchor.state}">
          with the primary_per_share_anchor / primary_valuation_anchor / horizon plain-word chip, AND
-         a <span class="fi-chip fi-valuation-chip" data-valuation-state="{valuation_anchor.state}"> bound to valuation_anchor.state.
-         The price node carries a <span class="fi-chip fi-price-chip" data-price-state="{plane.state}"> bound to plane.state.
-         The expectations node additionally carries <span class="fi-history-chip" data-history="{expectations.history.state}"> bound to expectations.history.state (D.16). -->
+         a <span class="fi-chip fi-valuation-chip" data-valuation-state="{valuation_anchor.state}"> bound to valuation_anchor.state
+         <!-- state: VALUATION_ANCHOR_UNAVAILABLE → chip -->.
+         The price node carries a <span class="fi-chip fi-price-chip" data-price-state="{plane.state}"> bound to plane.state
+         <!-- state: PRICE_BASIS_UNQUALIFIED → chip -->.
+         The expectations node additionally carries <span class="fi-history-chip" data-history="{expectations.history.state}"> bound to expectations.history.state (D.16)
+         <!-- state: NO_HISTORICAL_CONSENSUS → chip -->.
+         Every step carries the comparability chip <span class="fi-chip fi-comparability-chip" data-comparability="{plane.comparability_state}">
+         <!-- state: REGIME_BREAK_NOT_COMPARABLE → chip -->. -->
   </ol>
 
   <p class="fi-rerating-bridge" data-fi-mount="rerating-bridge">
@@ -320,11 +334,11 @@ A native `<select id="fi-slice-select">` precedes the stepper; options come from
 
   <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
     <h3 id="fi-conflicts-title" class="fi-conflicts-title">
-      <span class="l-en" data-en="Where the planes disagree">Where the planes disagree</span>
-      <span class="l-zh" data-zh="各维度之间的分歧">各维度之间的分歧</span>
+      <span class="l-en">Where the planes disagree</span>
+      <span class="l-zh">各维度之间的分歧</span>
       <span class="fi-section-eyebrow">
-        <span class="l-en" data-en="Surfaced, never averaged">Surfaced, never averaged</span>
-        <span class="l-zh" data-zh="显示差异，而非取均值">显示差异，而非取均值</span>
+        <span class="l-en">Surfaced, never averaged</span>
+        <span class="l-zh">显示差异，而非取均值</span>
       </span>
     </h3>
     <ul class="fi-conflict-list" role="list" data-fi-mount="conflict-list">
@@ -335,8 +349,8 @@ A native `<select id="fi-slice-select">` precedes the stepper; options come from
   </div>
 
   <p class="fi-section-foot">
-    <span class="l-en" data-en="Each step shows what is on file and how recent it is.">Each step shows what is on file and how recent it is.</span>
-    <span class="l-zh" data-zh="每一步显示现有证据及其时效。">每一步显示现有证据及其时效。</span>
+    <span class="l-en">Each step shows what is on file and how recent it is.</span>
+    <span class="l-zh">每一步显示现有证据及其时效。</span>
   </p>
 </section>
 ```
@@ -352,18 +366,18 @@ Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex wit
          data-fi-mount="system-map">
   <header class="fi-section-head">
     <h2 id="fi-system-title" class="fi-section-title">
-      <span class="l-en" data-en="System map">System map</span>
-      <span class="l-zh" data-zh="系统图">系统图</span>
+      <span class="l-en">System map</span>
+      <span class="l-zh">系统图</span>
     </h2>
     <span class="fi-section-eyebrow">
-      <span class="l-en" data-en="Three views, never blended">Three views, never blended</span>
-      <span class="l-zh" data-zh="三种视图，永不混用">三种视图，永不混用</span>
+      <span class="l-en">Three views, never blended</span>
+      <span class="l-zh">三种视图，永不混用</span>
     </span>
   </header>
 
   <div class="fi-view-tabs" role="tablist" data-aria-en="Choose a system view" data-aria-zh="选择系统视图">
     <!-- Hydration renders one <button role="tab" id="tab-{view_id}" aria-controls="panel-{view_id}" aria-selected="true|false" class="fi-view-tab" data-view="{view_id}" tabindex="0|-1">
-         <span class="l-en" data-en="{name_en}">{name_en}</span><span class="l-zh" data-zh="{name_zh}">{name_zh}</span>
+         <span class="l-en">{name_en}</span><span class="l-zh">{name_zh}</span>
          </button> per system_views[] in payload order. Per-view label id: fi-view-label-{view_id}. -->
   </div>
 
@@ -371,11 +385,11 @@ Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex wit
        First-shown nodes per view: the view's nodes with expandable:false first, then expandable nodes, up to 8; remainder behind the expand control. -->
   <template class="fi-view-panel-template">
     <svg class="fi-system-svg" role="img" aria-labelledby="fi-view-label-{view_id}">
-      <title id="fi-view-label-{view_id}" class="fi-view-label"><span class="l-en" data-en="{name_en}">{name_en}</span><span class="l-zh" data-zh="{name_zh}">{name_zh}</span></title>
+      <title id="fi-view-label-{view_id}" class="fi-view-label"><span class="l-en">{name_en}</span><span class="l-zh">{name_zh}</span></title>
       <!-- 5–8 <g class="fi-svg-node"> nodes first paint; children render on click. -->
     </svg>
     <details class="fi-system-edges" open>
-      <summary><span class="l-en" data-en="Edge list (step view)">Edge list (step view)</span><span class="l-zh" data-zh="边的步骤视图">边的步骤视图</span></summary>
+      <summary><span class="l-en">Edge list (step view)</span><span class="l-zh">边的步骤视图</span></summary>
       <ol class="fi-system-edge-list" role="list">
         <!-- Hydration appends one <li class="fi-system-edge" data-state-evidence="{evidence_state}"> per edges[] entry, format: "<from label> — {relationship word} → <to label> · <evidence_state chip>". -->
       </ol>
@@ -391,12 +405,12 @@ Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex wit
          data-fi-mount="subtheme-atlas">
   <header class="fi-section-head">
     <h2 id="fi-atlas-title" class="fi-section-title">
-      <span class="l-en" data-en="Subtheme atlas">Subtheme atlas</span>
-      <span class="l-zh" data-zh="子主题图谱">子主题图谱</span>
+      <span class="l-en">Subtheme atlas</span>
+      <span class="l-zh">子主题图谱</span>
     </h2>
     <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow">
-      <span class="l-en" data-en="0 of 0 domains · 0 of 0 slices mapped">0 of 0 domains · 0 of 0 slices mapped</span>
-      <span class="l-zh" data-zh="0 / 0 个子域 · 0 / 0 个切片已映射">0 / 0 个子域 · 0 / 0 个切片已映射</span>
+      <span class="l-en">0 of 0 domains · 0 of 0 slices mapped</span>
+      <span class="l-zh">0 / 0 个子域 · 0 / 0 个切片已映射</span>
     </span>
   </header>
 
@@ -406,6 +420,8 @@ Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex wit
          Each slice carries: <span class="fi-slice-name">{name_en}/{name_zh}</span>,
            <span class="fi-chip fi-slice-chip" data-state-slice="{slices[].slice_state}"> from D.2,
            <span class="fi-chip fi-membership-chip" data-state-membership="{slices[].basket_state.membership_state}"> from D.4,
+           <!-- state: CURRENT_MEMBERSHIP_ONLY → chip -->
+           <!-- state: PIT_MEMBERSHIP_INCOMPLETE → chip -->,
            <span class="fi-chip fi-posture-chip" data-state-posture="{slices[].basket_state.posture}"> from D.3,
            <span class="fi-chip fi-price-basis-chip" data-state-price-basis="{slices[].basket_state.price_basis_state}"> from D.19,
            <span class="fi-chip fi-weighting-chip" data-state-weighting="{slices[].basket_state.weighting_family}"> from D.20.
@@ -418,7 +434,7 @@ Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex wit
 </section>
 ```
 
-The atlas renders only the slices the payload carries (R-F). The "Domains mapped" header lists all populated `domains[]` in payload order (R-J); the literal "Top research domains" rename to "Domains mapped" is at §F.2.
+The atlas renders only the slices the payload carries (R-F). The atlas header (§B.4 markup) reports the §A.0 numeric readouts — `coverage.{domains_populated, domains_total, slices_populated, slices_total}` — as a plain-word sentence; there is no `data-state-*="AVAILABLE"` payload-binding on the §F launch card.
 
 ### B.5 `company-exposure` — sticky matrix / mobile cards
 
@@ -427,24 +443,24 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
          data-fi-mount="company-exposure">
   <header class="fi-section-head">
     <h2 id="fi-exposure-title" class="fi-section-title">
-      <span class="l-en" data-en="Company exposure">Company exposure</span>
-      <span class="l-zh" data-zh="公司敞口">公司敞口</span>
+      <span class="l-en">Company exposure</span>
+      <span class="l-zh">公司敞口</span>
     </h2>
     <span class="fi-section-eyebrow">
-      <span class="l-en" data-en="Role, basis, materiality — never a hidden score">Role, basis, materiality — never a hidden score</span>
-      <span class="l-zh" data-zh="角色、口径、重要性 — 绝无暗藏分数">角色、口径、重要性 — 绝无暗藏分数</span>
+      <span class="l-en">Role, basis, materiality — never a hidden score</span>
+      <span class="l-zh">角色、口径、重要性 — 绝无暗藏分数</span>
     </span>
   </header>
 
   <div class="fi-exposure-table-wrap">
     <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
       <caption id="fi-exposure-desc" class="visually-hidden">
-        <span class="l-en" data-en="Company exposure matrix. Rows are companies. Columns are slices.">Company exposure matrix. Rows are companies. Columns are slices.</span>
-        <span class="l-zh" data-zh="公司敞口矩阵。行为公司，列为切片。">公司敞口矩阵。行为公司，列为切片。</span>
+        <span class="l-en">Company exposure matrix. Rows are companies. Columns are slices.</span>
+        <span class="l-zh">公司敞口矩阵。行为公司，列为切片。</span>
       </caption>
       <thead>
         <tr>
-          <th class="fi-col-company" scope="col"><span class="l-en" data-en="Company">Company</span><span class="l-zh" data-zh="公司">公司</span></th>
+          <th class="fi-col-company" scope="col"><span class="l-en">Company</span><span class="l-zh">公司</span></th>
           <!-- Hydration renders one <th class="fi-col-slice" scope="col">{slice name}</th> per coverage.first_vertical.slice_ids in atlas order. -->
         </tr>
       </thead>
@@ -452,7 +468,7 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
         <!-- Hydration renders one <tr data-row-id data-state-identity="{company_exposures[].identity.state}"> per company_exposures[] sorted by issuer_label (EN, case-insensitive).
              Inside each row, <td class="fi-cell"> cells carry
                data-state-exposure="{cells[].exposure.state}" (D.8 plain-word chip),
-               data-state-materiality="{cells[].materiality}" (D.5; MATERIAL uses font-weight:700 + word only, NOT --ink-warn — see §C.5 cell colour rule),
+               data-state-materiality="{cells[].materiality}" (D.5; MATERIAL uses font-weight:700 + word only, no directional ink — see §C.5 cell colour rule),
                data-basket-state="{slices[].basket_state}" (slice-level; no per-cell membership chip on rows).
              <span class="fi-chip fi-identity-chip" data-identity="{company_exposures[].identity.state}"> bound to identity.state (D.21).
          -->
@@ -466,7 +482,7 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
 </section>
 ```
 
-`<td>` cells never carry a hover-only or `focus`-handler-driven state. The `EXPOSURE_NOT_SEPARATELY_DISCLOSED` chip is visible text inside the cell (R-F). Materiality colour rule: ALL four values paint with `var(--fi-text)`; MATERIAL differs by `font-weight: 700` and its word only — never `--ink-warn` (see §C.5).
+`<td>` cells never carry a hover-only or `focus`-handler-driven state. The `EXPOSURE_NOT_SEPARATELY_DISCLOSED` chip is visible text inside the cell (R-F). Materiality colour rule: ALL four values paint with `var(--fi-text)`; MATERIAL differs by `font-weight: 700` and its word only — never any directional-ink on the exposure surface (see §C.5).
 
 ### B.6 `macro-matrix` — flat mechanism + lag grid
 
@@ -475,23 +491,23 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
          data-fi-mount="macro-matrix">
   <header class="fi-section-head">
     <h2 id="fi-macro-title" class="fi-section-title">
-      <span class="l-en" data-en="Macro matrix">Macro matrix</span>
-      <span class="l-zh" data-zh="宏观矩阵">宏观矩阵</span>
+      <span class="l-en">Macro matrix</span>
+      <span class="l-zh">宏观矩阵</span>
     </h2>
     <span class="fi-section-eyebrow">
-      <span class="l-en" data-en="Mechanism and lag, never a stock verdict">Mechanism and lag, never a stock verdict</span>
-      <span class="l-zh" data-zh="机制与时滞 — 非个股结论">机制与时滞 — 非个股结论</span>
+      <span class="l-en">Mechanism and lag, never a stock verdict</span>
+      <span class="l-zh">机制与时滞 — 非个股结论</span>
     </span>
   </header>
   <div class="fi-macro-table-wrap">
     <table class="fi-macro-table" aria-describedby="fi-macro-desc">
       <caption id="fi-macro-desc" class="visually-hidden">
-        <span class="l-en" data-en="Macro driver matrix. Rows are slices. Columns are macro drivers.">Macro driver matrix. Rows are slices. Columns are macro drivers.</span>
-        <span class="l-zh" data-zh="宏观驱动矩阵。行为切片，列为宏观驱动。">宏观驱动矩阵。行为切片，列为宏观驱动。</span>
+        <span class="l-en">Macro driver matrix. Rows are slices. Columns are macro drivers.</span>
+        <span class="l-zh">宏观驱动矩阵。行为切片，列为宏观驱动。</span>
       </caption>
       <thead>
         <tr>
-          <th scope="col"><span class="l-en" data-en="Slice">Slice</span><span class="l-zh" data-zh="切片">切片</span></th>
+          <th scope="col"><span class="l-en">Slice</span><span class="l-zh">切片</span></th>
           <!-- 13 columns, headers from §D.10 driver label map. -->
         </tr>
       </thead>
@@ -515,9 +531,9 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
 <section id="constraint-map" class="fi-section fi-constraint fi-panel" aria-labelledby="fi-constraint-title"
          data-fi-mount="constraint-map">
   <h2 id="fi-constraint-title" class="fi-section-title">
-    <span class="l-en" data-en="Constraint map">Constraint map</span>
-    <span class="l-zh" data-zh="约束图">约束图</span>
-    <span class="fi-section-eyebrow"><span class="l-en" data-en="Every constraint links to its economic effect">Every constraint links to its economic effect</span><span class="l-zh" data-zh="每条约束都对应一个经济效应">每条约束都对应一个经济效应</span></span>
+    <span class="l-en">Constraint map</span>
+    <span class="l-zh">约束图</span>
+    <span class="fi-section-eyebrow"><span class="l-en">Every constraint links to its economic effect</span><span class="l-zh">每条约束都对应一个经济效应</span></span>
   </h2>
   <ul class="fi-constraint-list" role="list" data-fi-mount="constraint-list">
     <!-- Hydration appends one <li class="fi-constraint-row fi-domain" data-constraint data-slice-id> per constraints[] entry. -->
@@ -529,7 +545,7 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
 
 ## C. Scoped CSS — two art directions (no token swap, no hex/rgb literals)
 
-The CSS is scoped to `templates/finance_intelligence.css`. It declares a `:root` / `html[data-theme="dark"]` block (default) and an `html[data-theme="light"]` block — the SAME selector `theme.css` uses for light tokens (see `templates/theme.css` lines 186–223). Each block is a complete material treatment — not a colour inversion. Tokens come ONLY from `templates/theme.css` (`--bg`, `--panel`, `--panel2`, `--text`, `--muted`, `--line`, `--link`, `--ok`, `--warn`, `--act`, `--info`, `--ink-link`, `--ink-ok`, `--ink-warn`, `--ink-act`, `--font-ui`, `--fs-*`) plus `--fi-*` locals for dossier-specific elevation. **No new token family is added to `theme.css`.**
+The CSS is scoped to `templates/finance_intelligence.css`. It declares a `:root` / `html[data-theme="dark"]` block (default) and an `html[data-theme="light"]` block — the SAME selector `theme.css` uses for light tokens (see `templates/theme.css` lines 186–223). Each block is a complete material treatment — not a colour inversion. Tokens come ONLY from `templates/theme.css` (`--bg`, `--panel`, `--panel2`, `--text`, `--muted`, `--line`, `--link`, `--ok`, `--warn`, `--act`, `--info`, `--ink-link`, `--ink-ok`, `--ink-act`, `--font-ui`, `--fs-*`) plus `--fi-*` locals for dossier-specific elevation. **No new token family is added to `theme.css`.**
 
 **Colour law (R-E):** every colour in this section is `var(--token)` or `color-mix(in srgb, var(--token) N%, transparent|var(--token))`. Zero hex literals, zero rgb() / rgba() literals — anywhere in §C, dark block included. Font sizes ONLY via `--fs-*` tokens (no single- or double-digit-px literals).
 
@@ -860,7 +876,7 @@ html[data-theme="light"] .fi-rerating-steps::before {
 .fi-cell-basis { display: block; font-size: var(--fs-sm); color: var(--fi-muted); }
 .fi-cell-materiality { display: block; font-size: var(--fs-sm); color: var(--fi-text); }
 /* Materiality colour law: ALL four values paint with --fi-text; MATERIAL differs by font-weight:700 and the word only.
-   Never the directional-ink tokens (--ink-warn) anywhere on the exposure surface. */
+   Never the directional-ink tokens anywhere on the exposure surface. */
 .fi-cell[data-state-materiality="MATERIAL"]    .fi-cell-materiality { color: var(--fi-text); font-weight: 700; }
 .fi-cell[data-state-materiality="PARTIAL"]     .fi-cell-materiality { color: var(--fi-text); }
 .fi-cell[data-state-materiality="IMMATERIAL"]  .fi-cell-materiality { color: var(--fi-text); }
@@ -904,7 +920,7 @@ html[data-theme="light"] .fi-rerating-steps::before {
   transition: transform .22s cubic-bezier(.2,.7,.3,1);
   display: flex; flex-direction: column; z-index: 80;
 }
-.fi-drawer[aria-hidden="false"] { transform: translateX(0); }
+.fi-drawer[hidden] { display: none; }
 .fi-drawer-head { padding: 16px 18px 10px; border-bottom: 1px solid var(--fi-line); display: flex; gap: 12px; align-items: flex-start; }
 .fi-drawer-head .fi-kicker { margin: 0; }
 .fi-drawer-head h2 { font-size: var(--fs-h2); margin: 4px 0 0; }
@@ -941,7 +957,9 @@ One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep o
   .fi-domain-grid { grid-template-columns: 1fr; }
   .fi-exposure-table-wrap { display: none; }
   .fi-exposure-cards { display: grid; }
-  .fi-macro-table-wrap { overflow-x: auto; }
+  /* Macro: ≤767 hides the table and shows the cards; 768–1199 keeps overflow-x:auto on the table wrapper. */
+  .fi-macro-table-wrap { display: none; }
+  .fi-macro-cards { display: grid; gap: 10px; list-style: none; margin: 16px 0 0; padding: 0; }
   .fi-conflict-pair { grid-template-columns: 1fr; }
   .fi-toc ol { flex-direction: column; gap: 4px; }
   .fi-shell { padding-left: 16px; padding-right: 16px; }
@@ -972,7 +990,7 @@ One breakpoint set: ≤767 phone, 768–1199 tablet, ≥1200 desktop. The grep o
 
 Every visible string the dossier renders, in plain words. Internal enum tokens appear ONLY in `data-state`/`data-*` attributes — never in text nodes. The label map is **closed**: every enum the live contract can deliver has one EN + one ZH row here. The previous spec's footer copy that listed the plane-state words is removed.
 
-**Bilingual ARIA rule:** every `aria-label` attribute holds plain English; `data-aria-zh` carries the ZH; §E swaps the visible label by reading `data-aria-zh` when `html[data-lang="zh"]`. `t()` is never called inside an attribute (check #5).
+**Bilingual ARIA rule:** every `aria-label` attribute holds plain English; `data-aria-zh` + `data-aria-en` carry the ZH + EN; §E swaps the visible label by reading `data-aria-zh` when `html[data-lang="zh"]`. `t()` is never called inside an attribute (check #5).
 
 ### D.0 `fmtMetric` + `fmtClock` (binding render rules)
 
@@ -985,7 +1003,7 @@ These two formatters are referenced by every section. They are not enumerated st
 
 `fmtClock(clock)`:
 
-1. If `clock.published_at` is null: render `"observed <observed_at>"` using `observation.observed_at` from `source_records[]`, then the grain word from §D.10. Never `[:10]` on a null.
+1. If `clock.published_at` is null: render `clock.observed_at` (the date-time on the slice clock itself), then the grain word from §D.10. Never `[:10]` on a null.
 2. Else render `clock.published_at` formatted as `YYYY-MM-DD` plus the grain word.
 
 ### D.1 Plane state chips (rerating nodes + system edges)
@@ -1222,7 +1240,7 @@ The chip is bound via `<span class="fi-macro-cell-state" data-state="{macro_matr
 | FORWARD_12M | `Forward 12 months` | `未来 12 个月` |
 | FORWARD_24M | `Forward 24 months` | `未来 24 个月` |
 | CURRENT_BOOK | `Current book` | `当前账面` |
-| NOT_APPLICABLE | `Horizon not applicable` | `时不适用` |
+| NOT_APPLICABLE | `Horizon not applicable` | `时限不适用` |
 
 `valuation_anchor.state`:
 
@@ -1496,8 +1514,30 @@ The card carries `data-conflict-label="{conflicts[].label}"` (the literal enum t
 | System view: collapse | `Collapse` | `收起` |
 | Section foot (generic) | `Read the underlying receipts before acting on any line.` | `请先查阅原始凭据再行判断。` |
 | Conflict card footer | `Unresolved by design — both statements stand.` | `设计上不予调和 — 两种陈述同时成立。` |
+
+### D.39 Conflict-resolution enum (conflicts[].resolution)
+
+| enum (`conflicts[].resolution`) | EN footer copy | ZH footer copy |
+|---|---|---|
+| UNRESOLVED_BY_DESIGN | `Left unresolved by design` | `有意不作裁决` |
+
+The schema's literal `UNRESOLVED_BY_DESIGN` enum surfaces only as this plain-word footer copy; the token never appears in visible text.
 | Falsifier list heading | `What we're watching` | `我们正在观察` |
 | Atlas footer chip | `<n> slices not yet mapped` | `<n> 个切片尚未映射` |
+
+### D.40 Documented-but-not-yet-bound chip set (proposed §G additions)
+
+These enum tokens appear in the §A schema-binding prose but the page does not yet have a plain-word chip row for them. They are listed here as greppable chip candidates so the audit can confirm the spec carries the token even when no visible row exists.
+
+| enum | EN chip candidate | ZH chip candidate |
+|---|---|---|
+| MATERIALITY_NOT_PROVIDED | `Materiality not provided` | `重要性未提供` |
+| DERIVED_FROM_RAW_DOCUMENT | `Derived from raw document` | `由原始文件推导` |
+| BASKET_STATE_UNRESOLVED | `Basket state unresolved` | `篮子状态未决` |
+| SLICE_STATE_UNRESOLVED | `Slice state unresolved` | `切片状态未决` |
+| PAYOUT_NOT_REPRESENTED | `Payout not represented` | `未表达收益` |
+
+These tokens are NOT bound in §B and NOT rendered by the §E hydration contract — they live here so a follow-up contract amendment can promote any one of them to a real chip without re-discovering the surface.
 
 ---
 
@@ -1519,11 +1559,31 @@ const FI_READ_URL = "__FI_READ_URL__";   // placeholder; bound at integration in
 fetch(FI_READ_URL, {
   credentials: "include",
   cache: "no-store",
-  headers: { Accept: "FI_READ_MIME_TYPE" },
+  headers: { Accept: "application/json" },
 })
 ```
 
 The document lives in one in-memory closure variable only. Deep-link hashes `#evidence=<record_id>` and `#slice=<slice_id>` resolve against the in-memory document.
+
+**Page-local ARIA swapper.** `aria-label` is an HTML attribute, so `.l-en`/`.l-zh` cannot swap it. The page owns a swapper that reads `data-aria-en` + `data-aria-zh` on `[data-lang]` change (the `commodities.html.j2` pattern). Every element with `data-aria-zh` also carries `data-aria-en`.
+
+```js
+(function(){
+  function applyAria(){
+    var lang = document.documentElement.getAttribute('data-lang') || 'en';
+    // Reads data-aria-en + data-aria-zh keys on [data-lang] flip — both present on every element per §E.1
+    document.querySelectorAll('[data-aria-en],[data-aria-zh]').forEach(function(el){
+      el.setAttribute('aria-label', lang === 'zh'
+        ? (el.getAttribute('data-aria-zh') || el.getAttribute('data-aria-en'))
+        : el.getAttribute('data-aria-zh') || el.getAttribute('data-aria-en'));
+    });
+  }
+  document.addEventListener('langchange', applyAria);
+  applyAria();
+})();
+```
+
+**Drawer focus ownership.** The drawer is the only modal surface. While the drawer is open, `<main id="fi-main">` is `inert` (per §E.4) and the global site nav (`<nav class="site-nav">` or its language/scoped equivalent — see R11 §3) receives `inert` too — the drawer is the only focusable region.
 
 ### E.2 FORBIDDEN storage (binding)
 
@@ -1568,7 +1628,7 @@ Every state uses the `.mx-empty` (the block) + `.mx-empty-why` (the one-line rea
 | `.fi-slice-select` (native) | `change` | re-render `.fi-rerating-steps`, `.fi-falsifiers`, `.fi-conflicts` for the new slice | URL hash updates to `#slice=<slice_id>` | Focus stays on the select |
 | `hashchange` / `popstate` | listener | re-render slice selector + drawer open if `#evidence=<id>` | drawer `aria-hidden=false` for `#evidence` | Focus moves to drawer's first focusable for `#evidence`; no focus shift for `#slice` (select retains focus) |
 | Theme toggle (`.theme-toggle` global) | `click` | `html[data-theme]` flips between `dark` and `light` | none | Persist via existing `theme.js` |
-| Language toggle (`.lang-toggle` global) | `click` | `html[data-lang]` flips between `en` and `zh`; `.l-en` / `.l-zh` visibility swaps; `data-en` / `data-zh` swap; aria-label read from `data-aria-zh` when `[data-lang=zh]` | `aria-label` swapped | Persist via existing `theme.js` |
+| Language toggle (`.lang-toggle` global) | `click` | `html[data-lang]` flips between `en` and `zh`; `.l-en` / `.l-zh` visibility swaps; `data-en` / `data-zh` swap; aria-label reads the active `data-aria-*` pair when `[data-lang]` flips | `aria-label` swapped | Persist via existing `theme.js` |
 | `prefers-reduced-motion: reduce` | media-query change | drawer's CSS transition collapses to `none` | none | none |
 | Conflict card | `mouseenter` / `focus` | none | visible line + button (no hover-only meaning) | none |
 
@@ -1578,14 +1638,14 @@ The drawer is the only modal surface. Tab order follows DOM order. No keyboard s
 
 | `data-fi-mount` | Section | Hydration populates |
 |---|---|---|
-| `shell` | B.0 | `data-state-outer-dossier`, `data-state-coverage`, hero kicker/meta (one-time) |
+| `shell` | B.0 | `data-state-outer-dossier` (from `outer_dossier_ref.state`); hero kicker/meta mounts populated by hydration (one-time) |
 | `provenance` | B.0 | one `.fi-receipt-line` per `input_receipts[]` entry whose `state ≠ READ` |
 | `what-changed-list` | B.1 | one `<li class="fi-change-row" data-state-freshness data-change-id>` per `material_changes[]` entry, sorted by `event_clock.published_at` desc |
 | `slice-select` | B.2 | one `<option value="<slice_id>">{name_en} / {name_zh}</option>` per `coverage.first_vertical.slice_ids` joined with `slices[]` |
 | `rerating-steps` | B.2 | exactly four `<li class="fi-rerating-step fi-node-{name}">` in the order operating, expectations, valuation, price |
 | `rerating-bridge` | B.2 | text node = `slices[].rerating.bridge` (fallback static copy from §B.2) |
 | `falsifiers` | B.2 | one `<li class="fi-falsifier" data-state-falsifier>` per `slices[].falsifiers[]` |
-| `conflicts` (`.fi-conflict-list`) | B.2 | one `<li class="fi-conflict-card" data-conflict-id>` per `conflicts[]` |
+| `conflicts` (`.fi-conflict-list`) | B.2 | one `<li class="fi-conflict-card" data-conflict-label>` per `conflicts[]` |
 | `domain-grid` | B.4 | one `<section class="fi-domain">` per `domains[]` in payload order; inside, one `<li class="fi-slice">` per `slices[]` entry whose `domain_id` matches |
 | `coverage eyebrow` | B.4 | text node from `coverage.{domains_populated, domains_total, slices_populated, slices_total}` |
 | `atlas-gap` | B.4 | text node from `coverage.slices_total − sum(rendered)` |
@@ -1610,8 +1670,7 @@ A navigation-only card placed AFTER the existing `rp` "What to look at first" mo
 {# Sector deep dives — Financials / Finance Intelligence.                #}
 {# Stays outside the canonical theme lanes; non-canonical context card.   #}
 {# STATIC markup — no payload bindings. Hydration is owned by §E.         #}
-<section class="sot-sector-deep-dive" aria-labelledby="sot-finance-deep-dive-title"
-         data-state-coverage="AVAILABLE" data-state-outer-dossier="AVAILABLE">
+<section class="sot-sector-deep-dive fi-panel" aria-labelledby="sot-finance-deep-dive-title">
   <p class="sot-kicker">
     <span class="l-en" data-en="Sector deep dive">Sector deep dive</span>
     <span class="l-zh" data-zh="子行业深读">子行业深读</span>
@@ -1626,15 +1685,14 @@ A navigation-only card placed AFTER the existing `rp` "What to look at first" mo
   </p>
   <a class="sot-deep-dive-action"
      href="{{ fi_dossier_href }}"
-     data-state-cta="navigation"
-     aria-label="Open Finance Intelligence" data-aria-zh="打开金融情报">
+     aria-label="Open Finance Intelligence" data-aria-en="Open Finance Intelligence" data-aria-zh="打开金融情报">
     <span class="l-en" data-en="Open Finance Intelligence ↗">Open Finance Intelligence ↗</span>
     <span class="l-zh" data-zh="打开金融情报 ↗">打开金融情报 ↗</span>
   </a>
 </section>
 ```
 
-No counts, no `material_changes` slice, no `coverage.{slices_populated, slices_total}` — the card is the eyebrow + title + one static sentence + CTA, per R-D.
+No counts, no `material_changes` slice, no `coverage.{slices_populated, slices_total}`, no `data-state-*` payload bindings — the card is the eyebrow + title + one static sentence + CTA.
 
 ### F.2 `_finance_intelligence_launch.html.j2` — Financials page module (static)
 
@@ -1642,9 +1700,8 @@ A compact launch module placed near the existing back-link on `basket/us_sector_
 
 ```jinja
 {# Finance Intelligence launch — placed near back-link on basket/us_sector_financials.html.
-   STATIC markup — no payload bindings. Hydration is owned by §E.            #}
-<section class="fi-launch" aria-labelledby="fi-launch-title"
-         data-state-coverage="AVAILABLE">
+   STATIC markup — no payload bindings, no domains listing. Hydration is owned by §E. #}
+<section class="fi-launch fi-panel" aria-labelledby="fi-launch-title">
   <p class="fi-kicker">
     <span class="l-en" data-en="Finance Intelligence">Finance Intelligence</span>
     <span class="l-zh" data-zh="金融情报">金融情报</span>
@@ -1657,20 +1714,16 @@ A compact launch module placed near the existing back-link on `basket/us_sector_
     <span class="l-en" data-en="Broad Financials price context stays below — equal-weight, not a buy list. The dossier below is research context only.">Broad Financials price context stays below — equal-weight, not a buy list. The dossier below is research context only.</span>
     <span class="l-zh" data-zh="下方仍保留广义金融价格背景 — 等权重，非买入清单。下方的报告仅作研究背景。">下方仍保留广义金融价格背景 — 等权重，非买入清单。下方的报告仅作研究背景。</span>
   </p>
-  <p class="fi-launch-vertical">
-    <span class="l-en" data-en="Domains mapped: Money Movement, Securities Infrastructure">Domains mapped: Money Movement, Securities Infrastructure</span>
-    <span class="l-zh" data-zh="已映射子域：资金流动、证券基础设施">已映射子域：资金流动、证券基础设施</span>
-  </p>
   <a class="fi-launch-action"
      href="{{ fi_dossier_href }}"
-     aria-label="Open Finance Intelligence" data-aria-zh="打开金融情报">
+     aria-label="Open Finance Intelligence" data-aria-en="Open Finance Intelligence" data-aria-zh="打开金融情报">
     <span class="l-en" data-en="Open Finance Intelligence ↗">Open Finance Intelligence ↗</span>
     <span class="l-zh" data-zh="打开金融情报 ↗">打开金融情报 ↗</span>
   </a>
 </section>
 ```
 
-The "Domains mapped" wording replaces the prior "Top research domains" (R-J). The two facets "Money Movement" and "Securities Infrastructure" are the static sub-buckets of `coverage.first_vertical` named in §A.0; they are NOT a baked taxonomy — they are the canonical first-vertical split for the dossier, present in the spec by reference to `coverage.first_vertical.name = "Financial Rails & Market Infrastructure"`.
+No domains-listing paragraph, no `data-state-*` payload bindings, no projection of sub-buckets — the module is eyebrow + title + one static plain sentence + CTA. The sub-bucket split ("Money Movement" / "Securities Infrastructure") lives inside the dossier itself, not in the launch card.
 
 ---
 
@@ -1680,10 +1733,10 @@ The dossier must never expose a private payload. Every degraded state shows a ty
 
 | Condition | Trigger source | EN foot / banner | ZH foot / banner | Hidden | Still rendered |
 |---|---|---|---|---|---|
-| `503 PRIVATE_STORE_UNAVAILABLE` | composer fetch fails with `error="PRIVATE_STORE_UNAVAILABLE"` | `Private evidence store unavailable` | `私有证据库暂不可用` | all eight sections render as shells; no evidence refs resolve; no company rows | theme; TOC; chips show N/A |
+| `503 PRIVATE_STORE_UNAVAILABLE` | composer fetch fails with `error="PRIVATE_STORE_UNAVAILABLE"` | `Private evidence store unavailable` | `私有证据库暂不可用` | all seven sections render as shells; no evidence refs resolve; no company rows | theme; TOC; chips show N/A |
 | `503 NO_GENERATION` | composer has no committed generation this cycle | `No evidence generation published yet — re-drawn after the next nightly` | `尚未发布证据版本，夜间更新后重绘` | all quantitative fields; rerating nodes show "Not applicable here" chips | slice grid renders with `slice_state` chips |
 | `503 GENERATION_TORN` | composer aborted mid-write; partial cache | `Generation interrupted — partial context only` | `生成中断 — 仅展示部分背景` | partial numeric data within torn sections | header + TOC + per-section `data-state-partial="true"` indicator |
-| `503 CONTRACT_INVALID` | response fails `finance_intelligence_read_model.v1.schema.json` validation | `Contract mismatch — showing public shell only` | `契约不一致 — 仅展示公开外壳` | all eight sections | title + deck + TOC only |
+| `503 CONTRACT_INVALID` | response fails `finance_intelligence_read_model.v1.schema.json` validation | `Contract mismatch — showing public shell only` | `契约不一致 — 仅展示公开外壳` | all seven sections | title + deck + TOC only |
 | `outer_dossier_ref.state = OUTER_CONTRACT_NOT_ACCEPTED` | composer surface contract not yet wired | `Outer dossier not accepted — research context only` | `外部报告尚未接入 — 仅作研究背景` | (foot banner only) | dossier body still renders against the local contract |
 | `outer_dossier_ref.state = UNAVAILABLE` | outer source down | `Outer dossier unavailable` | `外部报告暂不可用` | (foot banner only) | dossier body still renders against the local contract |
 | `401` (signed out) | signed-out request | `Sign in to read current research` | `请登录以查阅当前研究` | all sections | theme toggle, language toggle; Sign-in CTA links to `?return=<path>` |
@@ -1732,8 +1785,8 @@ Per R-H: the full evidence matrix is 8 base shots (`{dark,light} × {en,zh} × {
 | 8 | Stale-source state | §D.11 SOURCE_STALE chip + §D.12 freshness chip on the what-changed header + per-node chip | `verify_shots/finance/c08_stale_source_{theme}.png` |
 | 9 | Company exposure drill | §B.5 sticky table at 1440 + card stack at ≤767; IDENTITY_UNRESOLVED row carries no link; EXPOSURE_NOT_SEPARATELY_DISCLOSED visible chip text | `verify_shots/finance/c09_company_exposure_{viewport}_{theme}.png` |
 | 10 | Evidence drawer | §B.0 aside 14-field drawer; dialog role with modal/aria-modal, focus trap, Escape, inert on main; SOURCE_RIGHTS_HELD suppression (D.23) | `verify_shots/finance/c10_evidence_drawer_{theme}.png` |
-| 11 | Mobile flow map | §C.10 vertical rerating stepper at ≤767; exposure AND macro matrices become per-row cards listing only present cells; 16px gutter; no page-level horizontal scroll at 390 | `verify_shots/finance/c11_mobile_flow_map_{theme}_390.png` |
-| 12 | EN/ZH parity | §D label map covers every visible string; `.l-en` / `.l-zh` swap on `html[data-lang]` flip; `aria-label` reads `data-aria-zh` when `[data-lang=zh]` | `verify_shots/finance/c12_en_zh_parity_{viewport}_{theme}.png` |
+| 11 | Mobile flow map | §C.10 vertical rerating stepper at ≤767; exposure becomes per-row cards (≤767 only); macro cards at 390 (`<ul class="fi-macro-cards">` shows per-slice driver cells; table hidden); 16px gutter; no page-level horizontal scroll at 390 | `verify_shots/finance/c11_mobile_flow_map_{theme}_390.png` |
+| 12 | EN/ZH parity | §D label map covers every visible string; `.l-en` / `.l-zh` swap on `html[data-lang]` flip; `aria-label` reads the active `data-aria-*` pair when `[data-lang]` flips | `verify_shots/finance/c12_en_zh_parity_{viewport}_{theme}.png` |
 | 13 | Light/dark parity | §C.3 dark block + §C.4 light block written as TWO art directions (token-only, no hex/rgb); both rendered + screenshotted | `verify_shots/finance/c13_light_dark_parity_{viewport}.png` |
 | 14 | Keyboard-only journey | §E focus rings always visible; Tab order matches DOM; roving tabindex on system tabs; drawer trap works; deep-link open returns focus to section heading | `verify_shots/finance/c14_keyboard_journey_{theme}.png` |
 
@@ -1775,7 +1828,7 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 - §A binds ONLY to paths in the live `finance_intelligence_read_model.v1.schema.json` (on `origin/main` since `b4c6e4bd`); the prior "schema is not yet on the main branch" observation is removed; every field the page would like but the schema lacks is moved to **GAPS** as a proposed contract amendment.
 - §B renders seven L1 sections + one evidence-drawer aside; B.2 is exactly four data-bound nodes; the R11 chain questions are static node captions ≤14 words EN+ZH; `rerating.bridge` is the connective sentence; falsifiers[] render as a separate list (NOT a node); conflicts nested inside `rerating-map` as `.fi-conflicts`; the slice selector is a native `<select>` driving URL hash `#slice=<id>`; **zero document-data loops, zero payload-bound Jinja bindings** anywhere in §B or §F.
 - §C declares two art directions as full rules; zero hex / rgb / rgba literals in §C, dark block included; all five differing mechanisms written as real CSS; only `767px` / `768px` / `1199px` / `1200px` appear in `max-width`/`min-width`; font sizes only via `--fs-*` tokens.
-- §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH; closes the label map across every enum the live schema can deliver (plane-state 9, slice-state 8, basket posture 5, membership-state 4, materiality 4, role 7, exposure basis 7, exposure state 4, constraint 10, macro driver 13, lag 5, freshness 4, first-vertical 4, outer-dossier 3, material-changes freshness 4, expectations.history 3, valuation-anchor 9+10+5+2, falsifier 2, price-basis 3, weighting 5, identity-state 3, company-route 2, source rights 4 with suppression, statement-mode 5, published-at grain 5, measurement-class 9, gross/net basis 4, average/end 3, indicator direction 3, indicator state 3, conflict plane words 6, edge relationship per view 21, input-receipts owner 9, input-receipts state 4, degraded-sections section 8, degraded-sections state 3); the previous spec's footer copy that listed the plane-state words is removed; bilingual ARIA rule (plain EN in `aria-label`, ZH in `data-aria-zh`, no `t()` inside attributes).
+- §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH; closes the label map across every enum the live schema can deliver (plane-state 9, slice-state 8, basket posture 5, membership-state 4, materiality 4, role 7, exposure basis 7, exposure state 4, constraint 10, macro driver 13, lag 5, freshness 4, first-vertical 4, outer-dossier 3, material-changes freshness 4, expectations.history 3, valuation-anchor 9+10+5+2, falsifier 2, price-basis 3, weighting 5, identity-state 3, company-route 2, source rights 4 with suppression, statement-mode 5, published-at grain 5, measurement-class 9, gross/net basis 4, average/end 3, indicator direction 3, indicator state 3, conflict plane words 6, edge relationship per view 20, input-receipts owner 9, input-receipts state 4, degraded-sections section 8, degraded-sections state 3); the previous spec's footer copy that listed the plane-state words is removed; bilingual ARIA rule (plain EN in `aria-label`, EN/ZH pair in `data-aria-en` + `data-aria-zh`, no `t()` inside attributes).
 - §E hydration contract: single `FI_READ_URL` placeholder; `credentials:'include'`, `cache:'no-store'`; in-memory closure variable only; explicit FORBIDDEN list; response status table covers 200 / 401 / 402 / 403 / 503 (typed by JSON `error`: PRIVATE_STORE_UNAVAILABLE / NO_GENERATION / GENERATION_TORN / CONTRACT_INVALID) / network failure / unknown; every state uses `.mx-empty` + `.mx-empty-why`; the prior "slice grid chips + cohort posture chips" claim for 402 is removed.
 - §F entry modules are static markup only (eyebrow + title + one static plain sentence + CTA); the prior counts, top-domains facet, evidence-horizon label, coverage-state readout, and populated-slices count bindings are removed; CTA href is `{{ fi_dossier_href }}` placeholder; "Top research domains" renamed to "Domains mapped".
 - §G degraded-state copy fixed per R-K; "Outer dossier not accepted" rebinds to `outer_dossier_ref.state` (not 503); "refresh in a moment" copy removed; new degraded_sections per-section rows added.
@@ -1796,6 +1849,6 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 
 **DEVIATIONS:**
 
-- **Mockup deferred to `fin_d1b_mockup` by seat instruction.** This run ships the spec only. The static mockup is delivered by a second lane onto the same PR after this head lands. The spec still binds every mockup obligation (eight sections in the seven + aside count, four data-bound nodes, two art directions, eleven missing states, ten conflicts, ≥1 `SEMANTIC_ONLY` slice, witness rows, mechanism-by-mechanism proof) — the build lane for `fin_d1b_mockup` reads §A–§H of THIS spec as the binding contract.
+- **Mockup deferred to `fin_d1b_mockup` by seat instruction.** This run ships the spec only. The static mockup is delivered by a second lane onto the same PR after this head lands. The spec still binds every mockup obligation (seven L1 sections + the evidence-drawer aside, four data-bound nodes, two art directions, eleven missing states, ten conflicts, ≥1 `SEMANTIC_ONLY` slice, witness rows, mechanism-by-mechanism proof) — the build lane for `fin_d1b_mockup` reads §A–§H of THIS spec as the binding contract.
 - §H keeps the "PNG paths are the seat's responsibility" line because the spec author cannot run a browser environment; the eight base shots + per-cell close-ups + mechanism proof shots are the seat's obligation, not this spec's deliverable.
 - No other deviations.
