@@ -184,6 +184,18 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         }
 
     closed = _closed_rows(rows)
+    if (
+        qualified is False
+        and observation.get("failure_code")
+        and observation.get("source_generation")
+        and closed
+    ):
+        qualified = True
+        failed_refresh = {
+            "reason": str(observation.get("failure_code")),
+            "failure_code": observation.get("failure_code"),
+            "attempted_at": observation.get("refresh_at"),
+        }
     counts = {
         "current": sum(row["regulator_status"] == "current" for row in closed),
         "resolved": sum(row["regulator_status"] == "resolved" for row in closed),
