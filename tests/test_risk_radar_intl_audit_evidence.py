@@ -375,6 +375,56 @@ def test_incomplete_grade_dicts_cannot_manufacture_authority(tmp_path: Path) -> 
     assert score["can_force"] is False
 
 
+
+def test_nonempty_incomplete_grades_cannot_dilute_episode_base_into_authority(
+    tmp_path: Path,
+) -> None:
+    """Rows lacking the binary authority outcome are not independent base trials.
+
+    The raw legacy fence may still see the historical truthy grade payload, but
+    the episode gate must not turn incomplete calm payloads into zero-hit base
+    observations that manufacture lift.
+    """
+    from engine.risk_radar_intl_evidence import derive_evidence
+
+    start = date(2024, 12, 1)
+    rows: list[dict] = []
+    offset = 0
+    for _ in range(30):
+        rows.append(
+            _graded_row(
+                (start + timedelta(days=offset)).isoformat(),
+                "risk-off",
+                True,
+            )
+        )
+        offset += 1
+        for _ in range(21):
+            incomplete = _graded_row(
+                (start + timedelta(days=offset)).isoformat(),
+                "calm",
+                False,
+            )
+            incomplete["graded"] = {"outcome": "calm_quiet"}
+            rows.append(incomplete)
+            offset += 1
+
+    _write_rows(tmp_path, "cn", rows)
+    metrics = derive_evidence(rows)
+    authority = audit._evaluate_authority_contract(metrics, now=AUTHORITY_NOW)
+
+    assert metrics["legacy_n_total_graded_rows"] == 660
+    assert metrics["legacy_n_alert_rows"] == 30
+    assert metrics["n_total_graded_rows"] == 30
+    assert metrics["n_loud_rows"] == 30
+    assert metrics["n_independent_episodes"] == 30
+    assert metrics["n_independent_episode_hits"] == 30
+    assert metrics["n_loud_episodes"] == 30
+    assert metrics["n_episode_hits"] == 30
+    assert authority["row_gate_granted"] is True
+    assert authority["episode_gate_granted"] is False
+    assert authority["can_force"] is False
+
 def test_legacy_row_grant_is_revoked_when_episode_gate_is_weak() -> None:
     result = audit._evaluate_authority_contract(
         _strong_authority_metrics(
