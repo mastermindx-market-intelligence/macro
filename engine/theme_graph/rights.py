@@ -26,7 +26,9 @@ gate is about emitting the mapping, not about naming the concept.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
+from collections.abc import Iterable
 from functools import lru_cache
 from pathlib import Path
 
@@ -87,6 +89,18 @@ def registry_path() -> Path:
     return _repo_root() / REGISTRY_FILE
 
 
+def _families_of(doc: dict) -> dict[str, dict]:
+    """Normalize a parsed registry document to ``{family: row}`` — the one shape both
+    read disciplines hand back. The shared pure parse step behind the cached
+    :func:`_load` and the fresh :func:`load_registry_snapshot`, so the two can never
+    normalize the same file differently."""
+    out: dict[str, dict] = {}
+    for name, row in (doc.get("families") or {}).items():
+        if isinstance(row, dict):
+            out[str(name)] = row
+    return out
+
+
 @lru_cache(maxsize=8)
 def _load(path: str) -> dict[str, dict]:
     p = Path(path)
@@ -97,11 +111,7 @@ def _load(path: str) -> dict[str, dict]:
                     "emission gate will refuse", p)
         return {}
     doc = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-    out: dict[str, dict] = {}
-    for name, row in (doc.get("families") or {}).items():
-        if isinstance(row, dict):
-            out[str(name)] = row
-    return out
+    return _families_of(doc)
 
 
 def load_registry(path: str | Path | None = None) -> dict[str, dict]:
@@ -111,6 +121,39 @@ def load_registry(path: str | Path | None = None) -> dict[str, dict]:
 
 def known_families(path: str | Path | None = None) -> frozenset[str]:
     return frozenset(load_registry(path))
+
+
+def load_registry_snapshot(path: str | Path | None = None) -> tuple[str, dict[str, dict]]:
+    """Re-read the registry bytes FRESH and return ``(revision, families)``.
+
+    The cached :func:`load_registry` answers "what did this process last see"; this
+    answers "what does the file say right now", so a rights decision that moves after
+    an evidence row was minted can reach an emission gate without a process restart
+    (T03). ``revision`` stamps the sha256 of the bytes actually read, so a caller can
+    tell two reads apart without diffing families. Fail-closed both ways: a missing
+    registry raises ``registry_missing`` and an unparseable one raises
+    ``registry_corrupt`` — an unreadable registry never reads as a default all-clear.
+    """
+    p = Path(path) if path is not None else registry_path()
+    if not p.exists():
+        raise RightsRefusal(
+            f"registry_missing: {p} does not exist — a missing registry refuses rather "
+            f"than reading as all-clear")
+    try:
+        data = p.read_bytes()
+    except OSError as exc:
+        raise RightsRefusal(f"registry_corrupt: {p} could not be read ({exc})") from exc
+    revision = "rights_" + hashlib.sha256(data).hexdigest()[:32]
+    try:
+        doc = yaml.safe_load(data.decode("utf-8")) or {}
+    except (UnicodeDecodeError, yaml.YAMLError) as exc:
+        raise RightsRefusal(
+            f"registry_corrupt: {p} is not parseable YAML ({exc})") from exc
+    if not isinstance(doc, dict) or not isinstance(doc.get("families"), dict):
+        raise RightsRefusal(
+            f"registry_corrupt: {p} carries no top-level `families` mapping — an "
+            f"unreadable registry refuses rather than defaults")
+    return (revision, _families_of(doc))
 
 
 def rights_class(family: str, *, path: str | Path | None = None) -> str:
@@ -163,6 +206,39 @@ def assert_public_emission_allowed(family: str, *,
             f"(permitted: {sorted(EMISSION_OK)}). Internal computation is unaffected — "
             f"this gate governs what leaves the house, and 'unresolved' means the "
             f"question is open, not that the answer is yes")
+
+
+def assert_current_emission_allowed(families: Iterable[str], *,
+                                    snapshot: tuple[str, dict[str, dict]]) -> None:
+    """Gate a whole emission against a rights SNAPSHOT, never the process cache.
+
+    The companion to :func:`load_registry_snapshot` (T03): the caller decides WHEN to
+    read the registry, this decides WHAT the read permits. The per-family decision is
+    exactly the one :func:`assert_public_emission_allowed` applies against the cache —
+    same enum, same ``EMISSION_OK`` — so a snapshot gate can never be more permissive
+    than the legacy one. An unknown family fails closed. An empty ``families`` is a
+    no-op: an emission citing nothing from the registry has nothing to refuse.
+    """
+    revision, registry = snapshot
+    for family in families:
+        name = str(family or "").strip()
+        row = registry.get(name)
+        if row is None:
+            raise RightsRefusal(
+                f"unknown_family:{name} — source family {name!r} has no row in rights "
+                f"snapshot {revision} — rights are STATED, never assumed")
+        cls = str(row.get("rights_class", "")).strip()
+        if cls not in RIGHTS_CLASSES:
+            raise RightsRefusal(
+                f"public emission refused for source family {name!r}: rights_class="
+                f"{cls!r}, outside {sorted(RIGHTS_CLASSES)} (snapshot {revision}) — an "
+                f"unreadable class refuses rather than defaults")
+        if cls not in EMISSION_OK:
+            raise RightsRefusal(
+                f"public emission refused for source family {name!r}: rights_class="
+                f"{cls!r} (snapshot {revision}; permitted: {sorted(EMISSION_OK)}). "
+                f"Internal computation is unaffected — this gate governs what leaves "
+                f"the house")
 
 
 def licensing_for_family(family: str, *,
