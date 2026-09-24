@@ -544,7 +544,7 @@ def test_generationless_sweep_is_unqualified_at_the_public_seam(tmp_path):
     assert state["history_coverage"] == {}
 
 
-def test_first_generationless_capture_never_promotes_or_stamps_absence(tmp_path):
+def test_save_path_still_demotes_a_legacy_generationless_capture(tmp_path):
     from collectors.fda_shortages import (
         read_shortage_observation, save_shortage_observation,
     )
