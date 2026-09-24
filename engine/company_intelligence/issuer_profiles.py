@@ -1415,11 +1415,24 @@ _TSM_GUIDANCE_FX_RE = re.compile(
 # it sits in names the reported quarter; a guidance range is emitted only
 # from a forward-looking sentence that names the horizon quarter AND year
 # explicitly.  Anything ambiguous is a typed absence / no item — never a guess.
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
-_CLAUSE_SPLIT_RE = re.compile(r",|;|\bcompared\s+(?:with|to)\b|\bversus\b|\bvs\.?\b|\bfrom\b|\bup\s+from\b|\bdown\s+from\b", re.I)
+# Sentence ends: terminal punctuation + whitespace + a capital/quote/paren, EXCEPT
+# after an abbreviation ("U.S.", "Inc.", "Ltd.", "No.", "vs.", initials) — the
+# issuer's own prose says "In U.S. dollars, …" and a naive splitter would sever a
+# recap marker from the range it qualifies.
+_SENTENCE_END_RE = re.compile(r"[.!?]+\s+(?=[A-Z\"'(\[])")
+_ABBREVIATION_TAIL_RE = re.compile(
+    r"(?:\b(?:U\.S|U\.K|E\.U|Inc|Ltd|Co|Corp|No|Nos|vs|approx|est|Mr|Mrs|Ms|Dr|Jr|Sr|St|Fig|et\s+al)|\b[A-Z])\.$")
+# A comma followed by a digit is a thousands separator ("NT$1,234,567"), never a
+# clause boundary.
+_CLAUSE_SPLIT_RE = re.compile(r",(?!\d)|;|\bcompared\s+(?:with|to)\b|\bversus\b|\bvs\.?\b|\bfrom\b|\bup\s+from\b|\bdown\s+from\b", re.I)
+# Period-REDIRECTING markers only: they say the figure belongs to another period.
+# Growth qualifiers ("rose year-over-year to US$X") describe the current figure and
+# are deliberately absent — excluding them suppressed the true figure and let a
+# comparative stand alone as the single candidate.
 _COMPARATIVE_MARKER_RE = re.compile(
-    r"\b(a\s+year\s+ago|year[- ]ago|year\s+earlier|prior[- ]year|previous\s+year|last\s+year|"
-    r"last\s+quarter|prior\s+quarter|previous\s+quarter|sequentially|year[- ]over[- ]year)\b", re.I)
+    r"\b(a\s+year\s+ago|year[- ]ago|year\s+earlier|(?:in\s+the\s+)?prior[- ]year|(?:in\s+the\s+)?previous\s+year|"
+    r"last\s+year|last\s+quarter|prior\s+quarter|previous\s+quarter|(?:in\s+the\s+)?same\s+(?:quarter|period)\s+(?:of\s+)?(?:last|the\s+prior|the\s+previous)\s+year|"
+    r"sequentially|quarter[- ]on[- ]quarter|on\s+a\s+sequential\s+basis)\b", re.I)
 _RECAP_MARKER_RE = re.compile(
     r"\b(guided|previously|prior\s+guidance|earlier\s+guidance|last\s+quarter|prior\s+quarter|"
     r"earlier\s+this\s+year|had\s+expected|originally)\b", re.I)
@@ -1438,24 +1451,54 @@ _MONTHS = {name: index for index, name in enumerate(
      "October", "November", "December"), start=1)}
 
 
+def _sentence_bounds(text: str) -> list[tuple[int, int]]:
+    """(start, end) of every sentence, abbreviation-safe: a candidate break after
+    "U.S." / "Inc." / an initial is not a sentence end."""
+    bounds: list[tuple[int, int]] = []
+    start = 0
+    for m in _SENTENCE_END_RE.finditer(text):
+        if _ABBREVIATION_TAIL_RE.search(text[start:m.start() + 1].rstrip()):
+            continue
+        bounds.append((start, m.start()))
+        start = m.end()
+    bounds.append((start, len(text)))
+    return bounds
+
+
 def _sentence_at(text: str, index: int) -> tuple[int, str]:
     """The (start, sentence) of ``text`` containing character ``index``."""
-    start = 0
-    for m in _SENTENCE_SPLIT_RE.finditer(text):
-        if start <= index < m.start():
-            return start, text[start:m.start()]
-        start = m.end()
-    return start, text[start:]
+    for start, end in _sentence_bounds(text):
+        if start <= index < end:
+            return start, text[start:end]
+    start, end = _sentence_bounds(text)[-1]
+    return start, text[start:end]
 
 
-def _clause_at(sentence: str, index: int) -> str:
-    """The comma/comparative-delimited clause of ``sentence`` containing ``index``."""
+def _clauses(sentence: str) -> list[tuple[int, int]]:
+    """(start, end) of every comma/comparative-delimited clause of ``sentence``."""
+    out: list[tuple[int, int]] = []
     start = 0
     for m in _CLAUSE_SPLIT_RE.finditer(sentence):
-        if start <= index < m.start():
-            return sentence[start:m.start()]
+        out.append((start, m.start()))
         start = m.end()
-    return sentence[start:]
+    out.append((start, len(sentence)))
+    return out
+
+
+def _figure_redirected(sentence: str, index: int, pattern: re.Pattern[str]) -> bool:
+    """True when the figure at ``index`` is redirected to another period: its own
+    clause carries a comparative marker, OR a clause of the same sentence that
+    carries NO figure of this kind does (a leading/trailing adverbial such as
+    "A year ago, …" or "…, up from last year" qualifies the whole sentence)."""
+    for start, end in _clauses(sentence):
+        clause = sentence[start:end]
+        if not _COMPARATIVE_MARKER_RE.search(clause):
+            continue
+        if start <= index < end:
+            return True
+        if pattern.search(clause) is None:
+            return True
+    return False
 
 
 def _quarters_named(text: str) -> set[tuple[int, int]]:
@@ -1510,19 +1553,24 @@ def _period_bound_literals(
             continue
         for m in pattern.finditer(block.text):
             sentence_start, sentence = _sentence_at(block.text, m.start())
-            clause = _clause_at(sentence, m.start() - sentence_start)
-            if _COMPARATIVE_MARKER_RE.search(clause):
+            if _figure_redirected(sentence, m.start() - sentence_start, pattern):
                 continue
             bound.append((block, m))
     return bound
 
 
 def _forward_ranges(
-    blocks: Sequence[DisclosureBlock], pattern: re.Pattern[str],
-) -> list[tuple[DisclosureBlock, re.Match[str], str]]:
-    """(block, match, horizon) for every range that sits in a forward-looking
-    sentence (forward marker, no recap marker) naming exactly one quarter+year."""
-    found: list[tuple[DisclosureBlock, re.Match[str], str]] = []
+    blocks: Sequence[DisclosureBlock], pattern: re.Pattern[str], fiscal_period: Any = None,
+) -> list[tuple[DisclosureBlock, re.Match[str], str, str]]:
+    """(block, match, horizon, sentence) for every range that sits in a
+    forward-looking sentence (forward marker, no recap marker) naming exactly
+    one quarter+year. When the reported ``fiscal_period`` is known, a horizon
+    that is not strictly after it is not guidance and is dropped."""
+    reported = None
+    year, quarter = getattr(fiscal_period, "year", None), getattr(fiscal_period, "quarter", None)
+    if year is not None and quarter is not None:
+        reported = (int(year), int(quarter))
+    found: list[tuple[DisclosureBlock, re.Match[str], str, str]] = []
     for block in blocks:
         for m in pattern.finditer(block.text):
             _, sentence = _sentence_at(block.text, m.start())
@@ -1531,7 +1579,11 @@ def _forward_ranges(
             horizon = _horizon_named(sentence)
             if horizon is None:
                 continue
-            found.append((block, m, horizon))
+            if reported is not None:
+                h_year, h_quarter = int(horizon[:4]), int(horizon[-1])
+                if (h_year, h_quarter) <= reported:
+                    continue
+            found.append((block, m, horizon, sentence))
     return found
 
 
@@ -1613,18 +1665,19 @@ def _tsm_extract_guidance(
     """TSM guidance — USD revenue range with an explicit FX assumption.
 
     Emits the ONE range that sits in a forward-looking sentence naming its
-    horizon quarter and year (``horizon`` is read, never assumed); a recap of
-    prior guidance, a range without a forward marker, or two competing
-    forward ranges yield no item.  ``fx_assumption`` is the verbatim phrase
-    from the release when the release states one and ``None`` when it does
-    not — the key is always present, so None IS the typed "not stated" state
+    horizon quarter and year (``horizon`` is read, never assumed, and must be
+    after the reported period when the builder passes ``fiscal_period``); a
+    recap of prior guidance, a range without a forward marker, or two
+    competing forward ranges yield no item.  ``fx_assumption`` is the verbatim
+    rate stated in THAT forward sentence and ``None`` when it states none —
+    the key is always present, so None IS the typed "not stated" state
     (guidance_item.v1 has a closed key set; no extra key is invented).
     """
     blocks = bound.document.blocks
-    forward = _forward_ranges(blocks, _TSM_GUIDANCE_RANGE_RE)
+    forward = _forward_ranges(blocks, _TSM_GUIDANCE_RANGE_RE, _kwargs.get("fiscal_period"))
     if len(forward) != 1:
         return []
-    range_para, range_match, horizon = forward[0]
+    range_para, range_match, horizon, forward_sentence = forward[0]
     range_receipt = _literal_receipt(
         bound,
         search_start=range_para.source_span.char_start,
@@ -1633,19 +1686,20 @@ def _tsm_extract_guidance(
     )
     if range_receipt is None:
         return []
+    # The FX assumption is the one stated IN the forward sentence that carries
+    # the range — a rate stated for a recap or elsewhere in the release is not
+    # this range's rate. None when the forward sentence states none.
     fx_assumption: str | None = None
-    for block in blocks:
-        fx_match = _TSM_GUIDANCE_FX_RE.search(block.text)
-        if fx_match is not None:
-            fx_receipt = _literal_receipt(
-                bound,
-                search_start=block.source_span.char_start,
-                search_end=block.source_span.char_end,
-                literal=fx_match.group(0),
-            )
-            if fx_receipt is not None:
-                fx_assumption = fx_match.group(1).strip()
-                break
+    fx_match = _TSM_GUIDANCE_FX_RE.search(forward_sentence)
+    if fx_match is not None:
+        fx_receipt = _literal_receipt(
+            bound,
+            search_start=range_para.source_span.char_start,
+            search_end=range_para.source_span.char_end,
+            literal=fx_match.group(0),
+        )
+        if fx_receipt is not None:
+            fx_assumption = fx_match.group(1).strip()
     return [{
         "schema": "guidance_item.v1",
         "metric": "revenue",
@@ -1722,10 +1776,10 @@ def _on_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id
             break
     if not header_dates:
         return absent("Quarters Ended table names no period-end dates")
-    if period_end not in header_dates:
+    if header_dates.count(period_end) != 1:
         return absent(
-            f"no Quarters Ended column is dated {period_end.isoformat()} "
-            f"(columns: {', '.join(d.isoformat() for d in header_dates)})"
+            f"{header_dates.count(period_end)} Quarters Ended columns are dated {period_end.isoformat()} "
+            f"(columns: {', '.join(d.isoformat() for d in header_dates)}); exactly one is required"
         )
     column = header_dates.index(period_end)
     for row in target_block.table.rows:
@@ -1767,10 +1821,10 @@ def _on_extract_guidance(
     The horizon is read from the forward sentence; both ends must share one
     magnitude word (million/billion) or the range is not emitted."""
     blocks = bound.document.blocks
-    forward = _forward_ranges(blocks, _ON_GUIDANCE_RANGE_RE)
+    forward = _forward_ranges(blocks, _ON_GUIDANCE_RANGE_RE, _kwargs.get("fiscal_period"))
     if len(forward) != 1:
         return []
-    range_para, range_match, horizon = forward[0]
+    range_para, range_match, horizon, _sentence = forward[0]
     if range_match.group(2).lower() != range_match.group(4).lower():
         return []
     range_receipt = _literal_receipt(

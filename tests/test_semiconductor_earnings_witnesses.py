@@ -358,6 +358,7 @@ def _tsm_guidance(body: str = TSM_SYNTHETIC_EXHIBIT):
     items = tsm_profile().extract_guidance(
         bound=bound, release_document_id="doc:tsm-synthetic",
         segments=[], document_id="doc:tx", body_sha256="", event_id="evt_cik0001046179_2026q2_results",
+        fiscal_period=TSM_Q2,
     )
     for item in items:
         _verify_all_spans([item], bound=bound)
@@ -369,6 +370,7 @@ def _on_guidance(body: str = ON_SYNTHETIC_EXHIBIT):
     items = on_profile().extract_guidance(
         bound=bound, release_document_id="doc:on-synthetic",
         segments=[], document_id="doc:tx", body_sha256="", event_id="evt_cik0001097864_2026q1_results",
+        fiscal_period=ON_Q1,
     )
     for item in items:
         _verify_all_spans([item], bound=bound)
@@ -458,6 +460,74 @@ def test_on_release_fact_is_absent_when_no_column_matches_the_reported_period_en
     assert "2026-04-03" in revenue["typed_absence"]["detail"]
     misaligned = ON_SYNTHETIC_EXHIBIT.replace("<td>$</td><td>$1,500.0 million</td>", "")
     assert "typed_absence" in _on_facts(misaligned)["fact_revenue"]
+
+
+def test_tsm_leading_comparative_adverbial_qualifies_its_whole_sentence() -> None:
+    """'A year ago, revenue was US$8.00 billion.' — the marker sits in a figure-less
+    leading clause; it still redirects the figure that follows the comma."""
+    body = TSM_SYNTHETIC_EXHIBIT.replace(
+        "In U.S. dollars, second quarter revenue was US$12.34 billion, compared with US$8.00 billion a year ago.",
+        "In U.S. dollars, second quarter 2026 revenue rose year-over-year to US$12.34 billion. A year ago, revenue was US$8.00 billion.",
+    )
+    usd = _tsm_facts(body)["fact_revenue_usd"]
+    assert "typed_absence" not in usd and usd["value"] == 12.34
+    for lead in ("In the prior year, ", "Last year, ", "Sequentially, "):
+        variant = body.replace("A year ago, ", lead)
+        assert _tsm_facts(variant)["fact_revenue_usd"]["value"] == 12.34, lead
+
+
+def test_tsm_growth_qualifier_in_the_figure_clause_does_not_suppress_the_fact() -> None:
+    body = TSM_SYNTHETIC_EXHIBIT.replace(
+        "In U.S. dollars, second quarter revenue was US$12.34 billion, compared with US$8.00 billion a year ago.",
+        "In U.S. dollars, second quarter 2026 revenue rose year-over-year to US$12.34 billion.",
+    )
+    assert _tsm_facts(body)["fact_revenue_usd"]["value"] == 12.34
+
+
+def test_abbreviations_do_not_split_sentences_so_recap_markers_keep_their_range() -> None:
+    recap = ("We previously guided that, in U.S. dollars, we expect revenue between "
+             "US$11.0 billion and US$11.5 billion for the third quarter of 2026.")
+    only_recap = TSM_SYNTHETIC_EXHIBIT.replace(
+        "In the first quarter of 2026 we had guided between US$11.0 billion and US$11.5 billion. "
+        "Looking ahead to the third quarter of 2026, we expect revenue between "
+        "US$13.0 billion and US$13.5 billion, assuming an exchange rate of 31.5 NTD per USD.",
+        recap,
+    )
+    assert _tsm_guidance(only_recap) == []
+    inc = only_recap.replace("We previously guided that, in U.S. dollars,", "Prior guidance from TSMC Inc. was that")
+    assert _tsm_guidance(inc) == []
+    with_forward = TSM_SYNTHETIC_EXHIBIT.replace(
+        "In the first quarter of 2026 we had guided between US$11.0 billion and US$11.5 billion. ", recap + " ")
+    item = _tsm_guidance(with_forward)[0]
+    assert (item["low"], item["high"]) == (13.0, 13.5)
+
+
+def test_tsm_fx_assumption_is_the_rate_stated_in_the_forward_sentence_only() -> None:
+    recap_rate = TSM_SYNTHETIC_EXHIBIT.replace(
+        "In the first quarter of 2026 we had guided between US$11.0 billion and US$11.5 billion. ",
+        "In the first quarter of 2026 we had guided between US$11.0 billion and US$11.5 billion, "
+        "assuming an exchange rate of 28.0 NTD per USD. ",
+    )
+    assert _tsm_guidance(recap_rate)[0]["fx_assumption"] == "31.5 NTD per USD"
+    forward_without_rate = recap_rate.replace(", assuming an exchange rate of 31.5 NTD per USD", "")
+    item = _tsm_guidance(forward_without_rate)[0]
+    assert item["fx_assumption"] is None and (item["low"], item["high"]) == (13.0, 13.5)
+
+
+def test_a_horizon_not_after_the_reported_period_is_not_guidance() -> None:
+    same_quarter = TSM_SYNTHETIC_EXHIBIT.replace("Looking ahead to the third quarter of 2026", "Looking ahead to the second quarter of 2026")
+    assert _tsm_guidance(same_quarter) == []
+    earlier = TSM_SYNTHETIC_EXHIBIT.replace("Looking ahead to the third quarter of 2026", "Looking ahead to the first quarter of 2026")
+    assert _tsm_guidance(earlier) == []
+    on_same = ON_SYNTHETIC_EXHIBIT.replace("For the third quarter of 2026", "For the first quarter of 2026")
+    assert _on_guidance(on_same) == []
+
+
+def test_on_duplicate_period_end_columns_are_refused_not_first_taken() -> None:
+    body = ON_SYNTHETIC_EXHIBIT.replace("April 4, 2025", "April 3, 2026")
+    revenue = _on_facts(body)["fact_revenue"]
+    assert "typed_absence" in revenue
+    assert "2 Quarters Ended columns" in revenue["typed_absence"]["detail"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

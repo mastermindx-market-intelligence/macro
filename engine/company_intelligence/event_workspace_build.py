@@ -406,7 +406,7 @@ def build_event_workspace(
     guidance: list[dict[str, Any]] = list(
         active_profile.extract_guidance(
             segments=segments, document_id=tx_doc_id, body_sha256=transcript_sha256 or "", event_id=event_id,
-            bound=bound, release_document_id=release_doc_id,
+            bound=bound, release_document_id=release_doc_id, fiscal_period=fiscal_period,
         )
     )
 
