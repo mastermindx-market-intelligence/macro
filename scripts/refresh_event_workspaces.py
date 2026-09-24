@@ -65,6 +65,7 @@ from engine.company_intelligence.events import FiscalPeriod, canonical_event_id,
 from engine.company_intelligence.identity import IssuerIdentity
 from engine.company_intelligence.issuer_profiles import (
     HOMEBUILDER_TICKERS,
+    IssuerProfile,
     issuer_for_ticker,
     profile_for_ticker,
 )
@@ -120,17 +121,26 @@ DISCOVERY_TICKERS: tuple[str, ...] = tuple(HOMEBUILDER_TICKERS) + ("TSM", "ON")
 # tolerance.  Zero for every calendar-quarter issuer (DHI/PHM/KBH/TOL/TSM).
 FIFTY_TWO_FIFTY_THREE_WEEK_TOLERANCE_DAYS = 6
 
-# T05b — the narrow quarterly-results filename pattern for a 6-K EX-99.1
-# (or the bare-EX-99 filename-hint rescue).  A TSMC results 6-K's EX-99.1
-# is named for an earnings release / press release / quarterly results
-# (a monthly-revenue 6-K is named for monthly sales; a dividend/board-
-# resolution 6-K is named for the announcement), so the keyword set is
-# tight on purpose — it is the discriminator, not a permissive catch-all.
-_QUARTERLY_RESULTS_FILENAME_RE = re.compile(
-    r"(?:earnings|results|quarterly|press[_-]?release|financial[_-]?results"
-    r"|earnings[_-]?release|results[_-]?press)",
+# T05b — the results-6-K manifest discriminator's two narrow patterns.
+# A foreign private issuer's quarterly-results 6-K carries an EX-99.1
+# earnings release whose SGML <DESCRIPTION> names earnings / quarterly
+# results / financial statements (TSMC's real filer description is
+# "Earnings report with guidance"), or whose filer-agent FILENAME follows
+# the a<q>q<yy>e… earnings-release convention.  A monthly-revenue 6-K
+# carries no EX-99 at all or one described as a revenue report; a
+# dividend / board-resolution 6-K is described as an announcement.  The
+# patterns are tight on purpose — they are the discriminator, never a
+# permissive catch-all; "revenue" alone never admits.
+_RESULTS_DESCRIPTION_RE = re.compile(
+    r"(?:\bearnings\b|quarterly\s+results|financial\s+results|results\s+of\s+operations"
+    r"|(?:quarterly|interim)\s+financial\s+statements|press\s+release)",
     re.I,
 )
+_RESULTS_FILENAME_RE = re.compile(
+    r"(?:^a[1-4]q\d{2}e|earnings|quarterly[_-]?results|financial[_-]?results|press[_-]?release)",
+    re.I,
+)
+_TEXT_EXHIBIT_SUFFIXES = (".htm", ".html", ".txt")
 
 
 class RefreshError(RuntimeError):
@@ -173,22 +183,38 @@ def _http_get(url: str) -> tuple[int, bytes]:
     raise RefreshError(f"SEC request failed: {url}: {last}")
 
 
-def _parse_sgml_manifest(text: str) -> list[tuple[str, str]]:
-    """[(TYPE, FILENAME)] from a filing's SGML ``-index-headers.html``.
+def _parse_sgml_manifest_entries(text: str) -> list[dict[str, str]]:
+    """``[{"type", "filename", "description"}]`` from a filing's SGML
+    ``-index-headers.html`` — the full per-document header, DESCRIPTION
+    included (T05b: the results-6-K discriminator reads it; the legacy
+    tuple form below discards it).
 
     Same seam as ``collectors.edgar_8k._parse_sgml_manifest``: unescape first,
     then split on ``<DOCUMENT>``. The live EDGAR page is HTML-escaped SGML
     (``&lt;DOCUMENT&gt;``); splitting the raw bytes reports every exhibit as
     absent. ``index.json`` ``type`` is the directory-listing icon name and is
-    not a document map.
+    not a document map. A document without TYPE and FILENAME is dropped, as
+    before; a missing DESCRIPTION is the empty string.
     """
-    out: list[tuple[str, str]] = []
+    out: list[dict[str, str]] = []
     for block in html_unescape(text or "").split("<DOCUMENT>")[1:]:
         kind = re.search(r"<TYPE>([^<\r\n]+)", block)
         name = re.search(r"<FILENAME>([^<\r\n]+)", block)
+        desc = re.search(r"<DESCRIPTION>([^<\r\n]+)", block)
         if kind and name:
-            out.append((kind.group(1).strip().upper(), name.group(1).strip()))
+            out.append({
+                "type": kind.group(1).strip().upper(),
+                "filename": name.group(1).strip(),
+                "description": desc.group(1).strip() if desc else "",
+            })
     return out
+
+
+def _parse_sgml_manifest(text: str) -> list[tuple[str, str]]:
+    """[(TYPE, FILENAME)] from a filing's SGML ``-index-headers.html`` —
+    the legacy shape every existing caller consumes, byte-identical to
+    before T05b (built on ``_parse_sgml_manifest_entries``)."""
+    return [(entry["type"], entry["filename"]) for entry in _parse_sgml_manifest_entries(text)]
 
 
 def _select_exhibit_99_1(manifest: list[tuple[str, str]]) -> str | None:
@@ -207,14 +233,17 @@ def _select_exhibit_99_1(manifest: list[tuple[str, str]]) -> str | None:
     return hinted[0] if hinted else None
 
 
-# T05b — calendar-quarter-end anchor for the 6-K discriminator.  An 8-K
+# T05b — calendar-quarter-end PRE-FILTER for 6-K candidate rows.  An 8-K
 # Item 2.02 row carries an ``items`` string that anchors the quarter
 # ("2.02" → Results of Operations); a 6-K row's ``items`` is always empty,
-# so the discriminator keys on ``reportDate`` instead.  Mar 31 / Jun 30 /
-# Sep 30 / Dec 31 are the only dates on which a results 6-K can have
-# ``reportDate`` AND be a quarterly-results filing — every other date is
-# either an intra-quarter month-end (monthly-revenue 6-K) or a non-quarter
-# announcement (dividend/board-resolution 6-K).
+# so candidate selection keys on ``reportDate``: a quarterly-results 6-K
+# reports the quarter end it covers (Mar 31 / Jun 30 / Sep 30 / Dec 31).
+# This is NECESSARY, never SUFFICIENT: the quarter-closing month's
+# monthly-revenue 6-K also carries a quarter-end period of report (the
+# real filer's June revenue 6-K reports 06-30), so a quarter-end reportDate
+# admits nothing by itself — the manifest discriminator
+# (``_results_six_k_manifest_admits``) is what separates a results filing
+# from a revenue report or an announcement.
 def _is_calendar_quarter_end(report_date: str) -> bool:
     try:
         day = date.fromisoformat(str(report_date or "").strip())
@@ -223,21 +252,31 @@ def _is_calendar_quarter_end(report_date: str) -> bool:
     return day.month in {3, 6, 9, 12} and day.day == {3: 31, 6: 30, 9: 30, 12: 31}[day.month]
 
 
-# T05b — manifest-level discriminator for a 6-K results filing.  Admitted
-# only when the manifest's EX-99.1 (or the bare-EX-99 filename-hint rescue
-# of ``_select_exhibit_99_1``) carries a filename matching the narrow
-# quarterly-results keyword pattern.  A monthly-revenue 6-K's EX-99.1 is
-# named for monthly sales (no match); a dividend/board-resolution 6-K's
-# EX-99.1 is named for the announcement (no match); both fail closed.
-def _results_six_k_filename_matches(manifest: list[tuple[str, str]]) -> bool:
-    for kind, name in manifest:
-        if not name:
+def _results_six_k_manifest_admits(entries: list[Mapping[str, str]]) -> bool:
+    """The results-6-K manifest discriminator (T05b). EXACT RULE: admit when
+    the SGML manifest carries at least one TEXT document (.htm/.html/.txt)
+    that is an EX-99.1 exhibit — TYPE exactly ``EX-99.1``, TYPE matching
+    ``^EX-99\\.1\\b``, or a filename carrying the ``ex99-1`` hint — AND
+    whose <DESCRIPTION> matches ``_RESULTS_DESCRIPTION_RE`` (earnings /
+    quarterly results / financial results / results of operations /
+    quarterly or interim financial statements / press release) OR whose
+    FILENAME matches ``_RESULTS_FILENAME_RE`` (the ``a<q>q<yy>e…``
+    earnings-release convention, or earnings / quarterly-results /
+    financial-results / press-release keywords). Everything else is refused:
+    a manifest with no EX-99 document (the monthly-revenue 6-K shape), an
+    EX-99.1 described as a revenue report, a dividend or board-resolution
+    announcement, a non-text attachment. It never reads ``reportDate`` and
+    never reads a document body — it decides before any exhibit download."""
+    for entry in entries:
+        kind = str(entry.get("type") or "").strip().upper()
+        name = str(entry.get("filename") or "").strip()
+        desc = str(entry.get("description") or "").strip()
+        if not name or not name.lower().endswith(_TEXT_EXHIBIT_SUFFIXES):
             continue
-        if (
-            kind == "EX-99.1"
-            or _EX99_TYPE.match(kind)
-            or _EX99_NAME.search(name)
-        ) and _QUARTERLY_RESULTS_FILENAME_RE.search(name):
+        is_ex991 = kind == "EX-99.1" or bool(_EX99_TYPE.match(kind)) or bool(_EX99_NAME.search(name))
+        if not is_ex991:
+            continue
+        if _RESULTS_DESCRIPTION_RE.search(desc) or _RESULTS_FILENAME_RE.search(name):
             return True
     return False
 
@@ -259,7 +298,7 @@ def _fiscal_period_tolerance_days(issuer: IssuerIdentity) -> int:
 #
 #   * "6-K"  → admit ONLY rows whose form is "6-K" AND whose reportDate
 #              sits on a calendar-quarter end.  Per-row manifest check
-#              (``_results_six_k_filename_matches``) runs in the row
+#              (``_results_six_k_manifest_admits``) runs in the row
 #              loop below, since it requires the manifest — that is
 #              where monthly-revenue / dividend / board-resolution 6-Ks
 #              are refused.  This is the narrow rule the contract names
@@ -753,12 +792,13 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
 
 
 _STATED_PERIOD_END_RE = re.compile(
-    # T05b — added ``Quarters\s+Ended`` (plural, capital E) so an onsemi
-    # results 6-K or 8-K phrasing of "For the Quarters Ended April 3, 2026"
-    # matches.  The two existing alternations ("Three Months Ended" for
-    # DHI/KBH, "[Qq]uarter ended" for PHM/TOL) are preserved byte-identical
-    # (C1) — every calendar-issuer code path stays byte-identical.
-    r"(?:Three\s+Months\s+Ended|[Qq]uarter\s+ended|Quarters\s+Ended)"
+    # T05b — the quarter alternation is ``(?i:quarters?\s+ended)`` (the
+    # contract's form): singular or plural, any case, so "quarter ended",
+    # "Quarters Ended" and an all-caps table header "QUARTERS ENDED" all
+    # locate the stated period. It is a strict superset of the previous
+    # ``[Qq]uarter\s+ended``; "Three Months Ended" (DHI/KBH) is unchanged
+    # and first-match semantics are unchanged.
+    r"(?:Three\s+Months\s+Ended|(?i:quarters?\s+ended))"
     r"\s+([A-Za-z]+\s+\d{1,2},?\s*\d{4})"
 )
 
@@ -879,7 +919,7 @@ def _fetch_submissions_candidates(
     (the 8-K/2.02 rule, C1); for a 6-K filer (TSMC-style) the call
     additionally requires ``form == "6-K"`` AND ``reportDate`` on a
     calendar-quarter end.  The manifest-level quarterly-results filename
-    check (``_results_six_k_filename_matches``) is applied per-row below,
+    check (``_results_six_k_manifest_admits``) is applied per-row below,
     since it requires the SGML header.
     """
     cik_int = int(cik)
@@ -908,11 +948,11 @@ def _resolve_exhibit_for_row(
     simply continues to the next candidate.
 
     T05b: when *issuer* declares ``external_ids["results_form"] == "6-K"``,
-    the manifest's EX-99.1 (or filename-hint rescue) must additionally match
-    the narrow quarterly-results filename pattern
-    (``_results_six_k_filename_matches``) — a monthly-revenue 6-K or a
-    dividend/board-resolution 6-K has a non-matching filename and is
-    refused here (skip-with-warning, never a substitution)."""
+    the SGML manifest must additionally pass the results-6-K discriminator
+    (``_results_six_k_manifest_admits``: an EX-99.1 text exhibit described or
+    named as an earnings release) — a monthly-revenue 6-K or a dividend /
+    board-resolution 6-K is refused here with its own ``::warning``, before
+    any exhibit download (skip, never a substitution)."""
     row_accession = str(row.get("accessionNumber") or "")
     if not row_accession:
         return None
@@ -923,20 +963,24 @@ def _resolve_exhibit_for_row(
     header_status, header_body = http_get(f"{archive_base}/{row_accession}-index-headers.html")
     if header_status != 200:
         return None
-    manifest = _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
+    entries = _parse_sgml_manifest_entries(header_body.decode("utf-8", errors="replace"))
+    manifest = [(entry["type"], entry["filename"]) for entry in entries]
     filename = _select_exhibit_99_1(manifest)
     if not filename:
         return None
-    # T05b — 6-K manifest discriminator.  An issuer declaring
-    # ``external_ids["results_form"] == "6-K"`` only has its quarterly-
-    # results 6-K admitted; a monthly-revenue or dividend/board-resolution
-    # 6-K typically has an EX-99.1 (or filename-hint rescue) whose filename
-    # is NOT a quarterly-results keyword (e.g. ``monthly_sales.htm``,
-    # ``dividend.htm``).  That refusal happens HERE, before any exhibit
-    # download — a skip-with-warning, never a substitution.  Non-6-K
-    # issuers (default 8-K path) skip this check entirely.
+    # T05b — results-6-K manifest discriminator, ONLY for an issuer whose
+    # identity declares ``external_ids["results_form"] == "6-K"``. Refusal
+    # happens HERE, before any exhibit download, with its own warning so
+    # the ops log never confuses it with "no EX-99.1 exhibit". Non-6-K
+    # issuers (the 8-K path) skip this check entirely.
     if issuer is not None and str(issuer.external_ids.get("results_form") or "").strip().upper() == "6-K":
-        if not _results_six_k_filename_matches(manifest):
+        if not _results_six_k_manifest_admits(entries):
+            print(
+                "::warning title=event-workspaces-discovery-skip::"
+                f"{row_accession}: 6-K manifest refused by the results discriminator "
+                f"(no EX-99.1 text exhibit described or named as an earnings release); skipped",
+                flush=True,
+            )
             return None
     exhibit_url = f"{archive_base}/{filename}"
     time.sleep(_PACE_S)
@@ -1079,6 +1123,12 @@ def discover_new_homebuilder_revisions(
     # module-level global; the default keeps the production call path
     # byte-identical.
     issuer: IssuerIdentity | None = None,
+    # T05b — the symmetric test seam for the issuer's :class:`IssuerProfile`.
+    # Production callers pass nothing and the function resolves
+    # ``profile_for_ticker(ticker)``; a missing profile is REFUSED (fail
+    # closed — ``build_event_workspace`` would otherwise substitute Apple's
+    # span readers, which is the mis-enrollment this guard exists to stop).
+    profile: IssuerProfile | None = None,
 ) -> list[tuple[str, dict[str, Any]]]:
     """Every not-yet-represented qualifying source revision for *ticker*,
     resolved and bound to its OWN ``event_workspace`` payload, ASCENDING by
@@ -1110,32 +1160,25 @@ def discover_new_homebuilder_revisions(
 
     T05b: rows whose issuer declares ``external_ids["results_form"] ==
     "6-K"`` are admitted through the 6-K candidate selector (calendar-
-    quarter-end reportDate + manifest EX-99.1 quarterly-results filename
-    pattern); rows whose issuer declares ``external_ids["fiscal_calendar"]
+    quarter-end reportDate pre-filter + the results-6-K manifest
+    discriminator on the EX-99.1 description/filename); rows whose issuer declares ``external_ids["fiscal_calendar"]
     == "52_53_week"`` get the named 6-day stated-vs-derived tolerance.
     Both extensions key ONLY on issuer external_ids strings, never on
     ticker literals.
     """
     if issuer is None:
         issuer = issuer_for_ticker(ticker)
-    profile = profile_for_ticker(ticker)
-    if issuer is None:
-        raise RefreshError(f"{ticker} has no registered A5A homebuilder identity")
-    # profile_for_ticker may legitimately return None for tickers whose
-    # IssuerIdentity was injected via the T05b seam (TSM, ON — their
-    # profiles are owned by the sibling T05a lane).  ``build_event_
-    # workspace`` accepts a None and falls back to ``apple_profile()``;
-    # the caller-supplied identity's own external_ids still drive the
-    # identity-aware selectors (results_form, fiscal_calendar).  A
-    # genuine "issuer registered, profile missing" combination is the
-    # caller's problem to wire up; we do not refuse it here.
     if profile is None:
-        log.info(
-            "%s: profile_for_ticker returned None; identity was accepted via injection",
-            ticker,
-        )
+        profile = profile_for_ticker(ticker)
+    if issuer is None or profile is None:
+        # Fail closed, exactly as before T05b: an identity without its own
+        # profile must never be built (``build_event_workspace`` defaults a
+        # None profile to Apple's span readers — a real release would be
+        # extracted through the wrong issuer's rules and published).
+        raise RefreshError(f"{ticker} has no registered issuer identity/profile")
 
     loader = chain_state_loader or (lambda event_id: _event_known_revisions(event_id, base_url=base_url))
+    six_k_issuer = str(issuer.external_ids.get("results_form") or "").strip().upper() == "6-K"
     candidates = _fetch_submissions_candidates(issuer.cik, issuer=issuer, http_get=http_get)
 
     resolved_today = today if today is not None else datetime.now(timezone.utc).date()
@@ -1174,8 +1217,20 @@ def discover_new_homebuilder_revisions(
             if row_accepted_normalized <= discovery_boundary:
                 continue  # outside the discovery window BY LAW -- not a fail, no warning
 
+        # T05b — period anchor. An 8-K's ``reportDate`` is the press-release
+        # date (F1), so the quarter that "just closed" is derived strictly
+        # before it — unchanged. A results 6-K's ``reportDate`` IS the period
+        # end it covers (a foreign private issuer furnishes the quarter's
+        # results with period-of-report == quarter end), so anchoring on it
+        # would derive the PREVIOUS quarter; for an issuer declaring
+        # ``results_form == "6-K"`` the anchor is the filing date instead
+        # (the furnishing date, weeks after the quarter closed), and the
+        # exhibit's own stated period still has to agree below.
+        anchor_date = report_date
+        if six_k_issuer:
+            anchor_date = str(row.get("filingDate") or "") or report_date
         try:
-            fiscal_period = fiscal_period_for_report_date(report_date, issuer.fiscal_year_end_month)
+            fiscal_period = fiscal_period_for_report_date(anchor_date, issuer.fiscal_year_end_month)
         except Exception as exc:  # noqa: BLE001 - an unresolvable period is a per-row skip, not a refusal
             print(
                 "::warning title=event-workspaces-discovery-skip::"

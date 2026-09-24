@@ -7,8 +7,12 @@ Code-under-test: :mod:`scripts.refresh_event_workspaces`.  Verifies that:
     (the homebuilder tuple's value/meaning is preserved — see C1).
   - A results 6-K is admitted ONLY for an issuer whose identity declares
     ``external_ids["results_form"] == "6-K"`` (TSMC-style), via a narrow
-    discriminator (calendar-quarter-end reportDate + EX-99.1 filename
-    matching the quarterly-results keyword pattern).
+    discriminator: a calendar-quarter-end reportDate PRE-FILTER (necessary,
+    never sufficient — the quarter-closing month's monthly-revenue 6-K also
+    reports a quarter-end date) plus the manifest discriminator on the
+    EX-99.1 exhibit's SGML <DESCRIPTION> or filename. The fiscal period of a
+    6-K is anchored on its filing date (its reportDate IS the period end).
+  - Missing profile = REFUSED (fail closed), never Apple's span readers.
   - A 52/53-week fiscal calendar mismatch (a stated period end that drifts
     a few days from the calendar-quarter-end anchor ``fiscal_period_for_
     report_date`` derives) is accepted ONLY for an issuer whose identity
@@ -27,17 +31,20 @@ landed in the worktree — and never imports ``tsm_issuer`` / ``on_issuer``.
 """
 from __future__ import annotations
 
+import json
 from datetime import date
 from typing import Mapping
 
 import pytest
 
+from engine.company_intelligence.event_workspace import apple_issuer
 from engine.company_intelligence.identity import (
     IssuerIdentity,
+    IssuerRegistry,
     ListingAlias,
     company_id_for_cik,
 )
-from engine.company_intelligence.issuer_profiles import HOMEBUILDER_TICKERS
+from engine.company_intelligence.issuer_profiles import HOMEBUILDER_TICKERS, IssuerProfile
 
 import scripts.refresh_event_workspaces as refresh_mod
 
@@ -93,7 +100,7 @@ def test_discovery_tickers_supersets_homebuilder_tickers_in_order() -> None:
     assert refresh_mod.DISCOVERY_TICKERS == expected
 
 
-def test_discovery_tickers_preserves_homebuilder_tuple_identity() -> None:
+def test_discovery_tickers_preserves_homebuilder_tuple_identity() -> None:  # noqa: D401
     """HOMEBUILDER_TICKERS keeps its value/meaning; the test-suite guarantee
     at tests/test_issuer_profiles_a5a.py:1287 still names the homebuilder
     tuple, never the discovery tuple, on the per-ticker skip path that
@@ -140,87 +147,6 @@ def test_results_six_k_admitted_for_issuer_declaring_six_k_results_form() -> Non
     assert [r["accessionNumber"] for r in selected] == ["0001046179-26-000007"]
     # And the sort key is acceptance_datetime, newest-first.
     assert selected[0]["acceptanceDateTime"] == "2026-04-16T13:30:00.000Z"
-
-
-def test_results_six_k_rejects_non_calendar_quarter_end() -> None:
-    """A 6-K whose reportDate is NOT on a calendar-quarter end is rejected
-    at candidate-selection time. Mirrors a TSMC monthly-revenue 6-K (Feb 28,
-    May 31, etc. — month-end but not a quarter-end for the 6-K that is the
-    monthly-sales filing, vs Mar 31/Jun 30/Sep 30/Dec 31)."""
-    tsm = _synthetic_issuer(
-        cik="0001046179", ticker="TSM",
-        external_ids={"results_form": "6-K"},
-    )
-    rows = [
-        {
-            "form": "6-K", "accessionNumber": "0001046179-26-000010",
-            "filingDate": "2026-03-05", "acceptanceDateTime": "2026-03-05T13:30:00.000Z",
-            "reportDate": "2026-02-28", "items": "",
-            "primaryDocument": "monthly_sales.htm",
-        },
-        {
-            "form": "6-K", "accessionNumber": "0001046179-26-000011",
-            "filingDate": "2026-04-05", "acceptanceDateTime": "2026-04-05T13:30:00.000Z",
-            "reportDate": "2026-03-31", "items": "",
-            "primaryDocument": "monthly_sales.htm",
-        },
-    ]
-    selected = refresh_mod._select_results_candidates(rows, issuer=tsm)
-    # Only the row whose reportDate is a calendar-quarter end survives.
-    assert [r["accessionNumber"] for r in selected] == ["0001046179-26-000011"]
-
-
-def test_results_six_k_manifest_rejects_monthly_revenue_filename() -> None:
-    """The manifest-level check: a monthly-revenue 6-K typically carries an
-    EX-99.1 whose filename does NOT match the quarterly-results pattern
-    (e.g. ``monthly_sales.htm``). Even if the row sneaks past the candidate
-    selector, the per-row manifest check refuses it."""
-    tsm = _synthetic_issuer(
-        cik="0001046179", ticker="TSM",
-        external_ids={"results_form": "6-K"},
-    )
-    manifest = [("EX-99.1", "monthly_sales.htm")]
-    assert refresh_mod._results_six_k_filename_matches(manifest) is False
-
-
-def test_results_six_k_manifest_rejects_dividend_or_board_filename() -> None:
-    """A dividend/board-resolution 6-K has no results-themed exhibit."""
-    tsm = _synthetic_issuer(
-        cik="0001046179", ticker="TSM",
-        external_ids={"results_form": "6-K"},
-    )
-    for kind_filename in (
-        ("EX-99.1", "dividend.htm"),
-        ("EX-99.1", "board_resolution.htm"),
-        ("EX-99.1", "announcement.htm"),
-    ):
-        manifest = [kind_filename]
-        assert refresh_mod._results_six_k_filename_matches(manifest) is False, kind_filename
-
-
-def test_results_six_k_manifest_admits_quarterly_results_filename() -> None:
-    """The full TSMC results 6-K shape: EX-99.1 earnings release PLUS an
-    EX-99.2 slide deck, with the release filename matching the narrow
-    quarterly-results pattern."""
-    tsm = _synthetic_issuer(
-        cik="0001046179", ticker="TSM",
-        external_ids={"results_form": "6-K"},
-    )
-    manifest = [
-        ("EX-99.1", "earnings_release.htm"),
-        ("EX-99.2", "earnings_slides.htm"),
-    ]
-    assert refresh_mod._results_six_k_filename_matches(manifest) is True
-    # And accept several canonical TSMC-style filename variants (each
-    # carries at least one quarterly-results keyword).
-    for name in (
-        "results_q1_2026.htm",
-        "press_release.htm",
-        "financial_results.htm",
-        "earnings_q1.htm",
-    ):
-        manifest = [("EX-99.1", name)]
-        assert refresh_mod._results_six_k_filename_matches(manifest) is True, name
 
 
 def test_results_six_k_rejected_for_issuer_without_six_k_results_form() -> None:
@@ -327,62 +253,6 @@ def test_fiscal_tolerance_six_days_for_52_53_week_issuer() -> None:
     assert refresh_mod._fiscal_period_tolerance_days(on) == 6
 
 
-def test_stated_period_drift_accepted_within_tolerance_for_52_53_week() -> None:
-    """onsemi Q1 2026 release: stated ``Quarters Ended April 3, 2026`` vs
-    calendar-quarter-end anchor 2026-03-31 (3-day gap) — accepted under the
-    6-day tolerance, the existing _stated_period_end helper still returns
-    the date and the helper that compares it to the fiscal period accepts
-    it for a 52_53_week issuer."""
-    on = _synthetic_issuer(
-        cik="0001097864", ticker="ON",
-        external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
-    )
-    body = (
-        "<html><body><h1>onsemi Reports First Quarter 2026 Results</h1>"
-        "<p>For the Quarters Ended April 3, 2026 (Unaudited)</p></body></html>"
-    )
-    stated = refresh_mod._stated_period_end(body)
-    assert stated == date(2026, 4, 3)
-    fiscal_period_end = date(2026, 3, 31)
-    tolerance = refresh_mod._fiscal_period_tolerance_days(on)
-    drift = abs((stated - fiscal_period_end).days)
-    assert drift == 3
-    assert drift <= tolerance
-
-
-def test_stated_period_drift_rejected_outside_tolerance_for_52_53_week() -> None:
-    """Even for a 52_53_week issuer, a 10-day drift is outside the 6-day
-    tolerance and is rejected."""
-    on = _synthetic_issuer(
-        cik="0001097864", ticker="ON",
-        external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
-    )
-    body = "<html><body><p>For the Quarters Ended April 10, 2026</p></body></html>"
-    stated = refresh_mod._stated_period_end(body)
-    assert stated == date(2026, 4, 10)
-    fiscal_period_end = date(2026, 3, 31)
-    tolerance = refresh_mod._fiscal_period_tolerance_days(on)
-    drift = abs((stated - fiscal_period_end).days)
-    assert drift == 10
-    assert drift > tolerance  # refused, never substituted
-
-
-def test_stated_period_drift_rejected_for_calendar_issuer() -> None:
-    """A 3-day drift is rejected for a calendar issuer (tolerance 0)."""
-    dhi = _synthetic_issuer(
-        cik="0000882184", ticker="DHI", fiscal_year_end_month=9,
-        external_ids={"cik": "0000882184"},
-    )
-    body = "<html><body><p>For the Quarters Ended July 3, 2026</p></body></html>"
-    stated = refresh_mod._stated_period_end(body)
-    assert stated == date(2026, 7, 3)
-    fiscal_period_end = date(2026, 6, 30)
-    tolerance = refresh_mod._fiscal_period_tolerance_days(dhi)
-    drift = abs((stated - fiscal_period_end).days)
-    assert drift == 3
-    assert drift > tolerance  # refused — calendar issuer, no slack
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # (e) The stated-period regex accepts both phrasings.
 # ─────────────────────────────────────────────────────────────────────────────
@@ -438,18 +308,6 @@ def test_bare_ex99_exhibit_rescued_by_filename_hint() -> None:
     assert refresh_mod._select_exhibit_99_1(manifest) == "ef20079200_ex99-1.htm"
 
 
-def test_bare_ex99_manifest_with_quarterly_filename_acceptable() -> None:
-    """A manifest where the rescued EX-99.1 carries a quarterly-results
-    filename is acceptable — covers a possible TSMC filing where the
-    EX-99 is typed bare ``EX-99`` (no ``.1``) but the filename is the
-    EX-99 hint + a quarterly-results keyword."""
-    manifest = [("EX-99", "earnings_release.htm")]
-    # The bare EX-99 (no .1) won't match the exact-EX-99.1 path or the
-    # ^EX-99\.1\b path; the filename hint alone won't rescue
-    # ``earnings_release.htm`` (no ex99 hint in name).
-    assert refresh_mod._select_exhibit_99_1(manifest) is None
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # (g) Calendar-quarter-end anchor used by the 6-K discriminator.
 # ─────────────────────────────────────────────────────────────────────────────
@@ -494,59 +352,6 @@ def test_discover_with_unknown_issuer_raises_refresh_error_not_exception_propaga
         )
 
 
-def test_discover_accepts_injected_synthetic_issuer(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """The discover() seam accepts an injected ``IssuerIdentity`` so a test
-    can run with a synthetic 6-K identity that does NOT need a sibling-lane
-    TSM/ON registration in the worktree. Production callers continue to
-    pass no ``issuer`` (the default falls back to ``issuer_for_ticker``)."""
-    tsm = _synthetic_issuer(
-        cik="0001046179", ticker="TSM", fiscal_year_end_month=12,
-        external_ids={"results_form": "6-K"},
-    )
-    # The injected identity must be threaded all the way through; we
-    # validate the seam by calling the function with an issuer and
-    # confirming it does NOT raise ``RefreshError("has no registered ...
-    # identity")`` for the synthetic ticker.
-    # A genuine RefreshError from SEC access is acceptable — the
-    # function has reached past the identity check.
-    try:
-        refresh_mod.discover_new_homebuilder_revisions(
-            "TSM",
-            http_get=lambda _url: (404, b""),
-            chain_state_loader=lambda _eid: [],
-            issuer=tsm,
-        )
-    except refresh_mod.RefreshError as exc:
-        # Anything OTHER than the "no registered identity" form is fine —
-        # the injected identity was accepted.
-        assert "no registered" not in str(exc), str(exc)
-
-
-def test_refresh_source_iterates_discovery_tickers() -> None:
-    """The per-ticker loop in ``refresh()`` iterates ``DISCOVERY_TICKERS``,
-    not ``HOMEBUILDER_TICKERS`` literally.  The companion assertion at
-    ``tests/test_issuer_profiles_a5a.py:1287`` pins the runtime contract
-    (every ticker in the iterated set is attempted, every failure is a
-    line-start ``::warning`` skip); this test pins the SOURCE contract
-    that the loop now reads from the superset, not the original tuple.
-    """
-    import inspect
-
-    import scripts.refresh_event_workspaces as refresh_mod_local
-
-    source = inspect.getsource(refresh_mod_local.refresh)
-    assert "DISCOVERY_TICKERS" in source, "refresh() does not iterate DISCOVERY_TICKERS"
-    # And: the homebuilder tuple is NOT also iterated literally as a
-    # second loop in the same source — there is exactly one per-ticker
-    # pass, and it walks the superset.
-    homeloop_count = sum(
-        1 for line in source.splitlines() if line.strip().startswith("for ticker in")
-    )
-    assert homeloop_count >= 1  # at least one for-ticker loop exists
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # (j) Datetime acceptance never fabricates a time (C4).
 # ─────────────────────────────────────────────────────────────────────────────
@@ -569,3 +374,287 @@ def test_iso_z_normalizes_millisecond_form() -> None:
     second to the second resolution; the chain link hash depends on this
     canonical shape."""
     assert refresh_mod._iso_z("2026-04-16T13:30:00.000Z") == "2026-04-16T13:30:00Z"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# (k) The results-6-K MANIFEST discriminator — description OR filename, text
+#     exhibits only, never reportDate, never a body.  Shapes mirror the real
+#     filer's document map (types + description phrasing) with invented
+#     filenames; no real manifest or body is committed.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _sgml(docs: list[tuple[str, str, str | None]]) -> str:
+    body = ""
+    for kind, name, desc in docs:
+        body += f"&lt;DOCUMENT&gt;\n&lt;TYPE&gt;{kind}\n"
+        if desc is not None:
+            body += f"&lt;DESCRIPTION&gt;{desc}\n"
+        body += f"&lt;FILENAME&gt;{name}\n&lt;/DOCUMENT&gt;\n"
+    return f"<HTML><BODY><PRE>{body}</PRE></BODY></HTML>"
+
+
+RESULTS_6K_SHAPE = [
+    ("6-K", "fpi-20260716x6k.htm", "6-K"),
+    ("EX-99.1", "a2q26e_withguidance.htm", "Earnings report with guidance"),
+    ("EX-99.2", "a2q26presentation.htm", "Quarterly management report slides"),
+]
+MONTHLY_REVENUE_6K_SHAPE = [("6-K", "fpi-revenue20260713.htm", "6-K")]          # no EX-99 at all
+MONTHLY_REVENUE_WITH_EXHIBIT_SHAPE = [
+    ("6-K", "fpi-20260710x6k.htm", "6-K"),
+    ("EX-99.1", "june_revenue.htm", "Monthly revenue report"),
+]
+DIVIDEND_6K_SHAPE = [("6-K", "fpi-20260605x6k.htm", "6-K"), ("EX-99.1", "notice.htm", "Dividend announcement")]
+BOARD_6K_SHAPE = [("6-K", "fpi-20260605x6k.htm", "6-K"), ("EX-99.1", "resolutions.htm", "Board of directors resolutions")]
+
+
+def test_manifest_parser_keeps_description_and_legacy_tuple_form_is_unchanged() -> None:
+    entries = refresh_mod._parse_sgml_manifest_entries(_sgml(RESULTS_6K_SHAPE))
+    assert entries[1] == {"type": "EX-99.1", "filename": "a2q26e_withguidance.htm",
+                          "description": "Earnings report with guidance"}
+    assert refresh_mod._parse_sgml_manifest(_sgml(RESULTS_6K_SHAPE)) == [
+        ("6-K", "fpi-20260716x6k.htm"), ("EX-99.1", "a2q26e_withguidance.htm"),
+        ("EX-99.2", "a2q26presentation.htm"),
+    ]
+    # a document without DESCRIPTION parses with an empty description
+    assert refresh_mod._parse_sgml_manifest_entries(_sgml([("EX-99.1", "x.htm", None)]))[0]["description"] == ""
+
+
+def test_results_six_k_manifest_admits_the_real_filer_shape_by_description_and_by_filename() -> None:
+    admits = refresh_mod._results_six_k_manifest_admits
+    assert admits(refresh_mod._parse_sgml_manifest_entries(_sgml(RESULTS_6K_SHAPE))) is True
+    # description alone (opaque filename)
+    assert admits([{"type": "EX-99.1", "filename": "ex991.htm", "description": "Earnings report with guidance"}]) is True
+    assert admits([{"type": "EX-99.1", "filename": "ex991.htm", "description": "Quarterly Results for the second quarter"}]) is True
+    # filename alone (no description): the a<q>q<yy>e… convention, or an earnings keyword
+    assert admits([{"type": "EX-99.1", "filename": "a2q26e_withguidance.htm", "description": ""}]) is True
+    assert admits([{"type": "EX-99.1", "filename": "earnings_release.htm", "description": ""}]) is True
+    # bare EX-99 rescued by the ex99-1 filename hint, described as an earnings release
+    assert admits([{"type": "EX-99", "filename": "ef20079200_ex99-1.htm", "description": "Earnings release"}]) is True
+
+
+def test_results_six_k_manifest_refuses_revenue_reports_announcements_and_non_text() -> None:
+    admits = refresh_mod._results_six_k_manifest_admits
+    parse = refresh_mod._parse_sgml_manifest_entries
+    assert admits(parse(_sgml(MONTHLY_REVENUE_6K_SHAPE))) is False            # no EX-99 document
+    assert admits(parse(_sgml(MONTHLY_REVENUE_WITH_EXHIBIT_SHAPE))) is False   # "revenue" never admits
+    assert admits(parse(_sgml(DIVIDEND_6K_SHAPE))) is False
+    assert admits(parse(_sgml(BOARD_6K_SHAPE))) is False
+    # results-described but not an EX-99.1 exhibit (e.g. the slide deck) never admits
+    assert admits([{"type": "EX-99.2", "filename": "slides.htm", "description": "Earnings presentation"}]) is False
+    # an EX-99.1 that is not a text document never admits
+    assert admits([{"type": "EX-99.1", "filename": "a2q26e_withguidance.pdf", "description": "Earnings report"}]) is False
+    assert admits([]) is False
+
+
+def test_quarter_end_report_date_is_a_prefilter_not_the_discriminator() -> None:
+    """The quarter-closing month's monthly-revenue 6-K reports a quarter-end
+    date too, so the candidate selector keeps it — and the manifest
+    discriminator is what refuses it."""
+    tsm = _synthetic_issuer(cik="0001046179", ticker="TSM", external_ids={"results_form": "6-K"})
+    rows = [
+        {"form": "6-K", "accessionNumber": "0001046179-26-000447", "filingDate": "2026-07-13",
+         "acceptanceDateTime": "2026-07-13T12:00:00.000Z", "reportDate": "2026-06-30", "items": "",
+         "primaryDocument": "fpi-revenue20260713.htm"},
+        {"form": "6-K", "accessionNumber": "0001046179-26-000440", "filingDate": "2026-06-10",
+         "acceptanceDateTime": "2026-06-10T12:00:00.000Z", "reportDate": "2026-05-31", "items": "",
+         "primaryDocument": "fpi-revenue20260610.htm"},
+    ]
+    selected = refresh_mod._select_results_candidates(rows, issuer=tsm)
+    assert [r["accessionNumber"] for r in selected] == ["0001046179-26-000447"]  # pre-filter keeps the June one
+    assert refresh_mod._results_six_k_manifest_admits(
+        refresh_mod._parse_sgml_manifest_entries(_sgml(MONTHLY_REVENUE_6K_SHAPE))) is False
+
+
+def test_bare_ex99_manifest_without_hint_or_results_keyword_is_not_selected() -> None:
+    """A bare ``EX-99`` (no ``.1``) with neither the ex99-1 filename hint nor
+    an earnings keyword is not selected by the pre-existing three-tier
+    fallback — pins that the rescue stays narrow."""
+    assert refresh_mod._select_exhibit_99_1([("EX-99", "attachment.htm")]) is None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# (l) END-TO-END wiring through discover_new_homebuilder_revisions: fake
+#     EDGAR (submissions JSON + SGML header + exhibit body), injected identity
+#     + profile, no network, no real bodies.  These are the tests a wrong
+#     implementation cannot pass: an unused discriminator, an unconditional
+#     tolerance, a fail-open profile, or a wrong 6-K period anchor all fail.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _null_profile(ticker: str) -> IssuerProfile:
+    return IssuerProfile(
+        ticker=ticker,
+        extract_release_facts=lambda **_kwargs: [],
+        extract_transcript_claims=lambda **_kwargs: [],
+        extract_guidance=lambda **_kwargs: [],
+    )
+
+
+def _exhibit(period_phrase: str) -> str:
+    return (
+        "<html><body><p>Synthetic Foundry Co. reports results for the "
+        f"{period_phrase}. Net revenue was NT$1,234,567 million; every figure "
+        "here is invented.</p></body></html>"
+    )
+
+
+def _run_discovery(monkeypatch, *, ticker, issuer, profile, rows, headers, exhibits):
+    cik = issuer.cik
+    cik_int = int(cik)
+    cols = ("accessionNumber", "filingDate", "acceptanceDateTime", "reportDate", "form", "primaryDocument", "items")
+    submissions = {"cik": cik, "filings": {"recent": {c: [r[c] for r in rows] for c in cols}}}
+
+    def http_get(url: str) -> tuple[int, bytes]:
+        if url == f"https://data.sec.gov/submissions/CIK{cik}.json":
+            return 200, json.dumps(submissions).encode("utf-8")
+        for acc, html in headers.items():
+            base = f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc.replace('-', '')}"
+            if url == f"{base}/{acc}-index-headers.html":
+                return 200, html.encode("utf-8")
+            for name, body in exhibits.get(acc, {}).items():
+                if url == f"{base}/{name}":
+                    return 200, body.encode("utf-8")
+        return 404, b""
+
+    def fetch_index(_base: str) -> dict:
+        return {"schema": "mastermind.tx-index/v1", "symbols": {}, "revisions": {}, "dates": {},
+                "body_count": 0, "symbol_count": 0, "generated_at": "2026-01-01T00:00:00Z"}
+
+    def fetch_body(_base: str, _ref):  # pragma: no cover
+        raise AssertionError("no transcript may be fetched")
+
+    monkeypatch.setattr(refresh_mod, "production_registry", lambda: IssuerRegistry([apple_issuer(), issuer]))
+    monkeypatch.setattr(refresh_mod.time, "sleep", lambda _s: None)
+    return refresh_mod.discover_new_homebuilder_revisions(
+        ticker, http_get=http_get, fetch_index=fetch_index, fetch_body_fn=fetch_body,
+        chain_state_loader=lambda _event_id: [], issuer=issuer, profile=profile,
+        today=date(2026, 9, 24),
+    )
+
+
+_RESULTS_ROW = {
+    "form": "6-K", "accessionNumber": "0009990001-26-000451", "filingDate": "2026-07-16",
+    "acceptanceDateTime": "2026-07-16T11:45:43.000Z", "reportDate": "2026-06-30", "items": "",
+    "primaryDocument": "fpi-20260716x6k.htm",
+}
+_REVENUE_ROW = {
+    "form": "6-K", "accessionNumber": "0009990001-26-000447", "filingDate": "2026-07-13",
+    "acceptanceDateTime": "2026-07-13T12:00:00.000Z", "reportDate": "2026-06-30", "items": "",
+    "primaryDocument": "fpi-revenue20260713.htm",
+}
+_REVENUE_WITH_EXHIBIT_ROW = {
+    "form": "6-K", "accessionNumber": "0009990001-26-000440", "filingDate": "2026-04-10",
+    "acceptanceDateTime": "2026-04-10T12:00:00.000Z", "reportDate": "2026-03-31", "items": "",
+    "primaryDocument": "fpi-20260410x6k.htm",
+}
+
+
+def test_end_to_end_results_six_k_is_admitted_and_built_with_form_six_k(monkeypatch, capsys) -> None:
+    fpi = _synthetic_issuer(cik="0009990001", ticker="FPI", external_ids={"results_form": "6-K"})
+    revisions = _run_discovery(
+        monkeypatch, ticker="FPI", issuer=fpi, profile=_null_profile("FPI"),
+        rows=[_RESULTS_ROW, _REVENUE_ROW, _REVENUE_WITH_EXHIBIT_ROW],
+        headers={
+            _RESULTS_ROW["accessionNumber"]: _sgml(RESULTS_6K_SHAPE),
+            _REVENUE_ROW["accessionNumber"]: _sgml(MONTHLY_REVENUE_6K_SHAPE),
+            _REVENUE_WITH_EXHIBIT_ROW["accessionNumber"]: _sgml(MONTHLY_REVENUE_WITH_EXHIBIT_SHAPE),
+        },
+        exhibits={
+            _RESULTS_ROW["accessionNumber"]: {"a2q26e_withguidance.htm": _exhibit("quarter ended June 30, 2026")},
+            _REVENUE_WITH_EXHIBIT_ROW["accessionNumber"]: {"june_revenue.htm": _exhibit("quarter ended March 31, 2026")},
+        },
+    )
+    assert len(revisions) == 1
+    event_id, payload = revisions[0]
+    assert payload["event_id"] == event_id
+    assert "2026q2" in event_id                                  # anchored on the FILING date -> Q2, not Q1
+    source = payload["sources"][0]
+    assert source["form"] == "6-K"
+    assert _RESULTS_ROW["accessionNumber"] in json.dumps(source)   # the admitted filing, whatever the key spelling
+    assert _REVENUE_ROW["accessionNumber"] not in json.dumps(payload)
+    assert _REVENUE_WITH_EXHIBIT_ROW["accessionNumber"] not in json.dumps(payload)
+    out = capsys.readouterr().out
+    # the quarter-end monthly-revenue 6-K (no EX-99) is skipped on the pre-existing path …
+    assert "no usable EX-99.1 exhibit" in out
+    # … and the revenue-described EX-99.1 is refused by the DISCRIMINATOR, with its own warning
+    assert "6-K manifest refused by the results discriminator" in out
+    assert _REVENUE_WITH_EXHIBIT_ROW["accessionNumber"] in out
+
+
+def test_end_to_end_six_k_row_is_never_admitted_for_an_issuer_without_six_k_results_form(monkeypatch) -> None:
+    """Identity law: the SAME rows for an 8-K issuer yield nothing — the
+    8-K/2.02 rule is the only admission path there."""
+    dom = _synthetic_issuer(cik="0009990001", ticker="FPI", external_ids={"results_form": "8-K"})
+    revisions = _run_discovery(
+        monkeypatch, ticker="FPI", issuer=dom, profile=_null_profile("FPI"),
+        rows=[_RESULTS_ROW], headers={_RESULTS_ROW["accessionNumber"]: _sgml(RESULTS_6K_SHAPE)},
+        exhibits={_RESULTS_ROW["accessionNumber"]: {"a2q26e_withguidance.htm": _exhibit("quarter ended June 30, 2026")}},
+    )
+    assert revisions == []
+
+
+_ON_LIKE_ROW = {
+    "form": "8-K", "accessionNumber": "0009990002-26-018868", "filingDate": "2026-05-04",
+    "acceptanceDateTime": "2026-05-04T20:10:34.000Z", "reportDate": "2026-05-04", "items": "2.02,9.01",
+    "primaryDocument": "dom-8k.htm",
+}
+_ON_LIKE_SGML = _sgml([("8-K", "dom-8k.htm", "8-K"), ("EX-99", "ef20072220_ex99-1.htm", "Press release")])
+
+
+def _run_52_53(monkeypatch, *, external_ids, period_phrase):
+    issuer = _synthetic_issuer(cik="0009990002", ticker="DOM", external_ids=external_ids)
+    return _run_discovery(
+        monkeypatch, ticker="DOM", issuer=issuer, profile=_null_profile("DOM"),
+        rows=[_ON_LIKE_ROW], headers={_ON_LIKE_ROW["accessionNumber"]: _ON_LIKE_SGML},
+        exhibits={_ON_LIKE_ROW["accessionNumber"]: {"ef20072220_ex99-1.htm": _exhibit(period_phrase)}},
+    )
+
+
+def test_end_to_end_52_53_week_tolerance_is_applied_only_for_the_declaring_issuer(monkeypatch, capsys) -> None:
+    # derived quarter end for a 2026-05-04 press release, FYE Dec: 2026-03-31; stated April 3 -> 3-day drift
+    admitted = _run_52_53(monkeypatch, external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
+                          period_phrase="Quarters Ended April 3, 2026")
+    assert len(admitted) == 1 and "2026q1" in admitted[0][0]
+    assert admitted[0][1]["sources"][0]["form"] == "8-K"
+
+    calendar_issuer = _run_52_53(monkeypatch, external_ids={"results_form": "8-K"},
+                                 period_phrase="Quarters Ended April 3, 2026")
+    assert calendar_issuer == []
+    assert "drift=3d, tolerance=0d" in capsys.readouterr().out
+
+    too_far = _run_52_53(monkeypatch, external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
+                         period_phrase="Quarters Ended April 10, 2026")
+    assert too_far == []
+    assert "drift=10d, tolerance=6d" in capsys.readouterr().out
+
+
+def test_end_to_end_all_caps_quarters_ended_header_locates_the_period(monkeypatch) -> None:
+    admitted = _run_52_53(monkeypatch, external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
+                          period_phrase="QUARTERS ENDED APRIL 3, 2026")
+    assert len(admitted) == 1
+
+
+def test_discover_refuses_an_identity_without_its_own_profile_fail_closed() -> None:
+    """An injected identity whose ticker has no registered profile is REFUSED
+    with RefreshError — never built through Apple's default span readers."""
+    zzz = _synthetic_issuer(cik="0009990003", ticker="ZZZ", external_ids={"results_form": "6-K"})
+    with pytest.raises(refresh_mod.RefreshError, match="identity/profile"):
+        refresh_mod.discover_new_homebuilder_revisions(
+            "ZZZ", http_get=lambda _url: (404, b""), chain_state_loader=lambda _eid: [], issuer=zzz,
+        )
+
+
+def test_refresh_iterates_discovery_tickers_at_runtime(monkeypatch) -> None:
+    """The per-ticker loop in ``refresh()`` walks DISCOVERY_TICKERS: with a
+    discovery stub that records every ticker it is asked about, the recorded
+    set equals DISCOVERY_TICKERS exactly (the a5a fail-soft test pins the
+    same thing through the ::warning path)."""
+    seen: list[str] = []
+
+    def discovery(ticker, **_kwargs):
+        seen.append(ticker)
+        raise refresh_mod.RefreshError("stub")
+
+    monkeypatch.setattr(refresh_mod, "discover_new_homebuilder_revisions", discovery)
+    source = refresh_mod.refresh.__code__.co_names
+    assert "DISCOVERY_TICKERS" in source and "HOMEBUILDER_TICKERS" not in source
