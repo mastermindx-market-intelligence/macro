@@ -272,12 +272,39 @@ def _all_themes():
 
 def _observation_capture(observation):
     if not observation:
-        return None, None
+        return {"qualified": False, "observation_state": "NOT_OBSERVED"}, None
     capture = dict(observation.get("capture") or {})
     last_refresh = observation.get("last_refresh") or {}
+    qualified = (
+        bool(capture)
+        and not observation.get("inconsistent")
+        and not observation.get("legacy")
+        and isinstance(capture.get("source_generation"), str)
+        and bool(capture.get("source_generation"))
+    )
+    refresh_failed = (
+        observation.get("failed_refresh")
+        or last_refresh.get("qualified") is False
+    )
+    if observation.get("inconsistent"):
+        observation_state = "UNREADABLE"
+    elif observation.get("legacy"):
+        observation_state = "LEGACY"
+    elif not last_refresh:
+        observation_state = "NOT_OBSERVED"
+    elif refresh_failed and not qualified:
+        observation_state = "REFRESH_FAILED"
+    elif qualified:
+        observation_state = "QUALIFIED" if not refresh_failed else "REFRESH_FAILED"
+    else:
+        observation_state = "UNREADABLE"
+    capture["qualified"] = qualified
+    capture["observation_state"] = observation_state
     if observation.get("inconsistent"):
         capture["failure_code"] = capture.get("failure_code") or "inconsistent observation"
-    if observation.get("failed_refresh") or last_refresh.get("qualified") is False:
+    if observation.get("read_error"):
+        capture["failure_code"] = capture.get("failure_code") or str(observation["read_error"])
+    if refresh_failed:
         capture["refresh_failed"] = True
         capture["refresh_failure_code"] = last_refresh.get("failure_code")
         capture["refresh_at"] = last_refresh.get("attempted_at")
@@ -304,7 +331,11 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
             capture, last_refresh = _observation_capture(observation)
         except Exception as error:
             frame = None
-            capture = {"qualified": False, "failure_code": str(error)}
+            capture = {
+                "qualified": False,
+                "observation_state": "UNREADABLE",
+                "failure_code": str(error),
+            }
     else:
         frame = df
         capture, last_refresh = _observation_capture(df.attrs.get("fda_observation"))
