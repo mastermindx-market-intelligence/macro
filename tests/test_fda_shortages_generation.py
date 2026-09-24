@@ -550,8 +550,9 @@ def test_save_path_still_demotes_a_legacy_generationless_capture(tmp_path):
     )
 
     path = tmp_path / "shortages.parquet"
-    result = _sweep(None, [_record(), _record(ndc="TEST-B", name="Synthetic B")])
-    result = {**result, "qualified": True}
+    legacy_rows = [_record(), _record(ndc="TEST-B", name="Synthetic B")]
+    result = _sweep(None, legacy_rows)
+    result = {**result, "qualified": True, "rows": legacy_rows}
 
     outcome = save_shortage_observation(
         result, path=path, expected_predecessor=None,
