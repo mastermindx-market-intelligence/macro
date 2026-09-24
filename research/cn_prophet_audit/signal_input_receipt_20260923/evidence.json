@@ -38,7 +38,7 @@
   },
   "state": "BUILT_NOT_PROVEN",
   "current_source_sha256": {
-    "engine/signal_gate.py": "6e055a8ace0b59fe178e4a31d81cf2aee40d508c9ae4a32d104807f23f31ccff",
+    "engine/signal_gate.py": "f833f2ae12f5bb8ae505d892b1eb445ea037717257114241399fb7781f9e5b8a",
     "tests/test_signal_gate.py": "83f15ec7e766945217c2d03b48077b8e2becde5184c5a1eddb586a887b0573b0",
     "tests/test_china_board_rank.py": "6e4b178fc63db0cbd86705acbda41d3a3baf3c5f7bdbcf9c718da7fe7724b217"
   },
@@ -49,7 +49,7 @@
     "sha256": "a184c0ec5c8638e839cbe2789b2cd41b274971cf30db73a8ec0fc70fa76699f1"
   },
   "current_main": "f84d9c882b7fabf87835e6c630ad9b4ab1f69fca",
-  "compatibility": "Main #7825 adds validity_block and NYSE imports; serializers unchanged there. Our bounded repair preserves that function; integrated proof pending.",
+  "compatibility": "Resolved the actual signal_gate.py end-of-file conflict on the original branch with main f84d9c8. Upstream validity_block AST is identical; 21 new validity tests pass alongside 200 receipt/China tests.",
   "metadata_write_reconciliation": "Earlier timeout: unchanged file and no matching process proved no completed/active metadata mutation; same-carrier update only.",
   "runtime_source_changed": true,
   "trading_policy_changed": false,
@@ -57,5 +57,16 @@
     "passed": 70,
     "warnings": "six unrelated pytest temporary-directory cleanup warnings; subsequent run uses task-local basetemp",
     "log_sha256": "61f90de70273d7a2530af01ce588876848aae1f18ebdcaf4387d6da4e42237bf"
+  },
+  "integrated_tests": {
+    "passed": 221,
+    "failed": 0,
+    "log": "integrated-tests.txt",
+    "sha256": "9406de36960b3453751623b391deb3ae462f024533614fa4431f4675e016f429"
+  },
+  "crossmarket_fixture_preflight": {
+    "result": "15 failed, 551 passed, 16 skipped, 28 errors",
+    "cause": "missing sparse site/factordata, site/basketdata, site/chart.js and collectors; qualification after opt-in remains owed",
+    "log_sha256": "285b71bdb791a774fb3e0d34475efeb6de073e216b700da4397f410adce7ea55"
   }
 }

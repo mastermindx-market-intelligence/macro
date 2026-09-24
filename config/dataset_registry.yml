@@ -730,9 +730,12 @@ datasets:
   # ── Prophet US V4-B1 canonical candidate episodes ─────────────────────────
   # BUILT_PENDING_NATURAL_ACCEPTANCE: these contracts are PROPOSED until the first
   # ordinary scheduled nightly creates and validates the production generation.
+  # NATURALLY_ACCEPTED_2026-08-28: scheduled run 33147282433 produced generation
+  # `peg:c025bb50c45f…` in durable main commit `a8ee11ba0e48`; see
+  # agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-28-b1-acceptance.md:37-46.
   - dataset_id: prophet.us.candidate_episode.turn_watch_input
     layer: L1
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/build_turn_watch.py
     storage: data/us_prophet_rank/episode_inputs/turn_watch/{session}.json
@@ -761,7 +764,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.events
     layer: L2
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/events/{month}.jsonl
@@ -792,7 +795,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.suppressions
     layer: L2
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/suppressions/{month}.jsonl
@@ -821,7 +824,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.current
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/current.parquet
@@ -851,7 +854,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.all_candidates
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/all_candidates.json
@@ -879,7 +882,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.reconciliation_receipt
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/latest_receipt.json

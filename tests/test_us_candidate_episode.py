@@ -11,6 +11,7 @@ import pytest
 from engine.stock_identity import fingerprint
 from engine.us_candidate_episode import (
     EpisodeContractError,
+    ANCHOR_KINDS,
     anchor_token,
     apply_commands,
     build_all_candidates,
@@ -21,6 +22,7 @@ from engine.us_candidate_episode import (
     make_event,
     project_events,
     reconcile_observations,
+    SUPPRESSION_REASONS,
     validate_events,
 )
 
@@ -97,6 +99,40 @@ def test_canonical_anchor_ignores_receipt_but_preserves_exact_anchor_identity():
     assert episode_id(SECURITY_ID, "epoch_0", ANCHOR, 1).startswith(
         "pe:SEC:US-XNAS-XYZ:epoch_0:sa:"
     )
+
+
+def test_anchor_vocabulary_is_closed_to_the_registered_species():
+    assert ANCHOR_KINDS == frozenset({"turn_watch_reset_low"})
+    assert "ANCHOR_KIND_NOT_REGISTERED" in SUPPRESSION_REASONS
+
+
+@pytest.mark.parametrize("kind", ["future_low", "entry_radar_expert_fire"])
+def test_canonical_anchor_refuses_unregistered_species_fail_closed(kind):
+    with pytest.raises(EpisodeContractError, match="kind is not registered"):
+        canonical_anchor({**ANCHOR, "kind": kind})
+
+
+def test_b1_dataset_registry_rows_are_accepted():
+    import yaml
+
+    registry_path = Path(__file__).parents[1] / "config" / "dataset_registry.yml"
+    contracts = {row["dataset_id"]: row for row in yaml.safe_load(registry_path.read_text())["datasets"]}
+    dataset_ids = {
+        "prophet.us.candidate_episode.turn_watch_input",
+        "prophet.us.candidate_episode.events",
+        "prophet.us.candidate_episode.suppressions",
+        "prophet.us.candidate_episode.current",
+        "prophet.us.candidate_episode.all_candidates",
+        "prophet.us.candidate_episode.reconciliation_receipt",
+    }
+    assert dataset_ids <= contracts.keys()
+    assert all(contracts[dataset_id]["status"] == "PRODUCED" for dataset_id in dataset_ids)
+    registry_text = registry_path.read_text()
+    assert "NATURALLY_ACCEPTED_2026-08-28" in registry_text
+    assert "scheduled run 33147282433" in registry_text
+    assert "peg:c025bb50c45f" in registry_text
+    assert "a8ee11ba0e48" in registry_text
+    assert "agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-28-b1-acceptance.md:37-46" in registry_text
 
 
 @pytest.mark.parametrize(

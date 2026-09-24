@@ -1,6 +1,6 @@
 {
   "appended": 0,
-  "asof": "2026-09-21",
+  "asof": "2026-09-22",
   "candidates": {
     "R": 0,
     "T": 8,
@@ -86,39 +86,39 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-23 10:49:05",
-  "runtime_s": 131.8,
+  "run_utc": "2026-09-23 22:05:42",
+  "runtime_s": 101.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-09-22",
-    "n_members": 126,
+    "asof": "2026-09-23",
+    "n_members": 127,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 5.214,
+        "emerging_score": 5.189,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.02,
+        "emerging_score": 2.236,
         "rank": 2,
         "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 1.659,
+        "emerging_score": 1.962,
         "rank": 3,
-        "theme": "Space Tech"
-      },
-      {
-        "emerging_score": 1.644,
-        "rank": 4,
         "theme": "Crypto & Blockchain"
       },
       {
-        "emerging_score": 1.415,
+        "emerging_score": 1.396,
+        "rank": 4,
+        "theme": "Space Tech"
+      },
+      {
+        "emerging_score": 1.384,
         "rank": 5,
         "theme": "Nanotechnology"
       }
@@ -130,15 +130,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-22",
+    "asof_max": "2026-09-23",
     "asof_mismatch": 4,
-    "asof_run": "2026-09-21",
+    "asof_run": "2026-09-22",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 35.6,
+    "runtime_s": 20.5,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 76,

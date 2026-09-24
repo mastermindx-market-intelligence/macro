@@ -56,7 +56,22 @@ decisions:
   - DEC:PROPHET-LAB-B5A-RECUT
   - DEC:PROPHET-B1-CANONICAL-EPISODE-BINDINGS
   - DEC:PROPHET-D5-PRESERVES-CONTEXT-VECTOR-AND-SEPARATES-EVIDENCE-AUTHORITY
+  - DEC:PROPHET-US-FABLE-META-CEO-DELEGATION
+  - DEC:PROPHET-US-D01-CONFLUENCE-VALIDITY-CONTRACT
+  - DEC:PROPHET-US-D02-EPISODE-ADMISSION-GATED
+  - DEC:PROPHET-US-D05-ENTRY-WATCH-PERSISTENCE
+  - DEC:PROPHET-US-D11-RELEASE-PATH-INCUMBENT-CONTROLS
+  - DEC:PROPHET-US-C-01-EARNINGS-SEQUENCING
 landmines:
+  - "R6 (2026-09-23): program judgment, D01-D12, B00-B28 and Q01-Q24 are delegated
+    to the Fable Meta-CEO seat (DEC:PROPHET-US-FABLE-META-CEO-DELEGATION; operation
+    prophet-us-fable-meta-ceo-20260923-001, #6805 comment 5793406610, PICKUP_ACK
+    5793983971). No Astra/Sol return is a prerequisite; existing technical owners,
+    independent review, source custody, rights, budget and release gates are unchanged.
+    Labor runs on the external fabric only; Fable/Opus children are permitted solely as
+    sub-orchestrators or adversarial auditors (Chairman live instruction, same day).
+    Incumbent carriers #7581/#7180/#7572 stay on their original writers until a
+    same-carrier custody statement is read."
   - "THE OUTAGE was LIVE at 0A (2026-08-17) and still unresolved at the 0B pin
     (2026-08-18T00Z: source_asof=2026-08-13, 206 plans). That historical fact is
     preserved. A1 is now RESOLVED by adoption of A1R #6320 plus the ordinary scheduled
@@ -153,6 +168,9 @@ artifacts:
   - research/prophet_v4/V4_A1_AVAILABILITY_RECOVERY_HANDOFF.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-a1-acceptance.md
   - agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-25-b1-built.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FABLE_META_CEO_EXECUTION_HANDOFF.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/effective/PROPHET_US_MASTER_PLAN_R6.md
+  - research/prophet_v4/r6_fable_meta_ceo_handoff/FIRST_WAVE_RUNBOOK.md
 waves:
   - id: 0a
     title: "V4-0A — estate archaeology + architecture freeze. Merged #5832
@@ -657,16 +675,16 @@ waves:
     title: "V4-E6 — promotion gauntlet + V3 retirement ruling"
     status: todo
 next_action: >
-  Chairman 2026-09-18 assigns Sol Meta-CEO accountability for the existing rotation
-  participation outcome; DEC:PROPHET-ROTATION-PARTICIPATION-META-CEO-MANDATE records
-  the scope without transferring incumbent source writers or runtime assignments.
-  Resume from agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-18-meta-ceo-rotation.md.
-  First close the current availability recovery's actual review/CI/publication gates
-  through its existing carriers and integration owner, not another recovery branch.
-  Then advance the already-frozen B3/B4/B5, GMI and Fusion dependency graph to a real
-  leadership-to-entry-to-thesis-management journey. Current-price publication alone
-  is not completion. Retain historical D5 evidence and independent owner boundaries;
-  do not replay its old next action without reconciling newer implementation/evidence.
+  R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent
+  #6805, PICKUP_ACK 5793983971): wave 1 closed 2026-09-23 (handoff
+  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave1-close.md). Wave 2: merge B20 v2 (#7839),
+  the D03 censuses (#7836/#7837) and the D05 watchlist fix (#7840) on concluded green;
+  commission B16-a (read-only allowlisted closure matrix per
+  research/prophet_v4/r6_program/rulings/R6-D03-01_SOURCE_READINESS_SCOPE_2026-09-23.md
+  §3) and the rights register under research/licenses/; B18 stays blocked until B16-b
+  admits a domain; D09 closes on B16 captures. The 2026-09-18 rotation mandate and the
+  masterplan §21 wave graph remain in force beneath this program; never replay an old
+  next action without reconciling the R6 records.
 ---
 
 ## Context

@@ -11,13 +11,13 @@
     {
       "clusters": [
         {
-          "n_events": 150,
+          "n_events": 191,
           "source": "research_vault",
           "theme": null,
           "top_events": []
         },
         {
-          "n_events": 41,
+          "n_events": 42,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []
@@ -164,7 +164,7 @@
           "top_events": []
         },
         {
-          "n_events": 2,
+          "n_events": 3,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -217,7 +217,7 @@
           "top_events": []
         },
         {
-          "n_events": 7,
+          "n_events": 10,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -264,7 +264,7 @@
           "top_events": []
         },
         {
-          "n_events": 18,
+          "n_events": 25,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -323,7 +323,7 @@
           "top_events": []
         },
         {
-          "n_events": 176,
+          "n_events": 178,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -382,7 +382,7 @@
           "top_events": []
         },
         {
-          "n_events": 762,
+          "n_events": 767,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -429,7 +429,7 @@
     {
       "clusters": [
         {
-          "n_events": 593,
+          "n_events": 594,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
