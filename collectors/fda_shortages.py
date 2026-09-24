@@ -33,12 +33,9 @@ from lib import config
 
 log = logging.getLogger(__name__)
 
-_LEGACY_PARSE_CLOCK = object()
-
 
 def _legacy_parse_clock():
     return datetime.now(timezone.utc)
-
 
 
 class _MalformedRecord(TypeError):
@@ -184,7 +181,7 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
                 failure_code = "MALFORMED_ROW"
                 break
             try:
-                parsed = _parse_record(raw_row)
+                parsed = _parse_record(raw_row, started)
             except (TypeError, ValueError):
                 failure_code = "MALFORMED_ROW"
                 break
