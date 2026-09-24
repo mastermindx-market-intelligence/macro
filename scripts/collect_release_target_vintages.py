@@ -36,8 +36,6 @@ from collectors.fred import fetch_all_vintages
 from engine.release_target_truth import (
     SOURCE_OUTPUT_TYPE,
     SUPPORTED_SERIES,
-    default_vintage_path,
-    load_full_vintage_parquets,
     normalize_full_vintage_frame,
 )
 from lib import config
@@ -51,6 +49,9 @@ def collect_release_target_vintages(
     *,
     repo_root: str | Path = _REPO,
     series_ids: Sequence[str] = SUPPORTED_SERIES,
+    target_subdir: str = "release_targets",
+    supported_series: Sequence[str] = SUPPORTED_SERIES,
+    manifest_schema: str = "release_target_vintage_collection.v1",
     realtime_start: str = _REALTIME_START,
     api_key: str | None = None,
     dry_run: bool = False,
@@ -69,11 +70,11 @@ def collect_release_target_vintages(
     requests ``output_type=2``, and publishes only a fully validated cohort.
     """
     root = Path(repo_root)
-    requested = _normalize_series_ids(series_ids)
+    requested = _normalize_series_ids(series_ids, supported_series)
     key = api_key if api_key is not None else config.secret("FRED_API_KEY")
     collected_at = _utc_now()
     receipt: dict[str, Any] = {
-        "schema": "release_target_vintage_collection.v1",
+        "schema": manifest_schema,
         "integrity_profile": _INTEGRITY_PROFILE,
         "status": "pending",
         "source": "FRED/ALFRED",
@@ -95,7 +96,7 @@ def collect_release_target_vintages(
 
     run_fetcher = fetcher or fetch_all_vintages
     publish_staged = publisher or _publish_staged_parquet
-    target_dir = root / "data" / "fred_vintage" / "release_targets"
+    target_dir = root / "data" / "fred_vintage" / target_subdir
     manifest = target_dir / "manifest.json"
     downstream_completion = (
         root / "data" / "release_forecast" / "cpi_truth" / "build_completion.json"
@@ -113,7 +114,7 @@ def collect_release_target_vintages(
     stage_root = Path(stage_context.name) if stage_context is not None else None
     try:
         for series_id in requested:
-            output_path = default_vintage_path(root, series_id)
+            output_path = target_dir / f"{series_id}_all_vintages.parquet"
             receipt_path = output_path.relative_to(root).as_posix()
             try:
                 raw = run_fetcher(
@@ -138,7 +139,11 @@ def collect_release_target_vintages(
                 tagged = raw.copy()
                 tagged["series"] = series_id
                 tagged["source_output_type"] = SOURCE_OUTPUT_TYPE
-                normalized = normalize_full_vintage_frame(tagged, series_id=series_id)
+                normalized = _normalize_collector_frame(
+                    tagged,
+                    series_id=series_id,
+                    supported_series=supported_series,
+                )
                 if normalized.empty:
                     failed += 1
                     receipt["series"][series_id] = {
@@ -252,6 +257,9 @@ def seal_existing_release_target_vintages(
     *,
     repo_root: str | Path = _REPO,
     series_ids: Sequence[str] = SUPPORTED_SERIES,
+    target_subdir: str = "release_targets",
+    supported_series: Sequence[str] = SUPPORTED_SERIES,
+    manifest_schema: str = "release_target_vintage_collection.v1",
 ) -> dict[str, Any]:
     """Hash-bind already persisted full-vintage stores without refetching them.
 
@@ -262,8 +270,9 @@ def seal_existing_release_target_vintages(
     """
 
     root = Path(repo_root)
-    requested = _normalize_series_ids(series_ids)
-    manifest = root / "data" / "fred_vintage" / "release_targets" / "manifest.json"
+    requested = _normalize_series_ids(series_ids, supported_series)
+    target_dir = root / "data" / "fred_vintage" / target_subdir
+    manifest = target_dir / "manifest.json"
     prior: dict[str, Any] = {}
     if manifest.exists():
         try:
@@ -276,7 +285,7 @@ def seal_existing_release_target_vintages(
     collected_at = str(prior.get("collected_at") or "").strip() or None
     sealed_at = _utc_now()
     receipt: dict[str, Any] = {
-        "schema": "release_target_vintage_collection.v1",
+        "schema": manifest_schema,
         "integrity_profile": _INTEGRITY_PROFILE,
         "status": "pending",
         "mode": "seal_existing",
@@ -291,10 +300,17 @@ def seal_existing_release_target_vintages(
     }
 
     for series_id in requested:
-        output_path = default_vintage_path(root, series_id)
+        output_path = target_dir / f"{series_id}_all_vintages.parquet"
         if not output_path.is_file():
             raise FileNotFoundError(f"missing release-target store: {output_path}")
-        normalized = load_full_vintage_parquets(output_path, series_id=series_id)
+        raw = pd.read_parquet(output_path)
+        if "source_output_type" not in raw.columns:
+            raise ValueError(f"ambiguous release-target store: {output_path}")
+        normalized = _normalize_collector_frame(
+            raw,
+            series_id=series_id,
+            supported_series=supported_series,
+        )
         if normalized.empty:
             raise ValueError(f"release-target store is empty: {output_path}")
         receipt["series"][series_id] = {
@@ -319,23 +335,42 @@ def seal_existing_release_target_vintages(
     return receipt
 
 
-def _normalize_series_ids(series_ids: Sequence[str]) -> tuple[str, ...]:
+def _normalize_series_ids(
+    series_ids: Sequence[str], supported_series: Sequence[str] = SUPPORTED_SERIES
+) -> tuple[str, ...]:
     requested: list[str] = []
     for raw in series_ids:
         for part in str(raw).split(","):
             series = part.upper().strip()
             if not series:
                 continue
-            if series not in SUPPORTED_SERIES:
+            if series not in supported_series:
                 raise ValueError(
                     f"unsupported release-target series {series!r}; "
-                    f"supported={list(SUPPORTED_SERIES)}"
+                    f"supported={list(supported_series)}"
                 )
             if series not in requested:
                 requested.append(series)
     if not requested:
         raise ValueError("at least one supported series is required")
     return tuple(requested)
+
+
+def _normalize_collector_frame(
+    frame: pd.DataFrame,
+    *,
+    series_id: str,
+    supported_series: Sequence[str],
+) -> pd.DataFrame:
+    if series_id in SUPPORTED_SERIES:
+        return normalize_full_vintage_frame(frame, series_id=series_id)
+
+    engine_alias = SUPPORTED_SERIES[0]
+    normalized = normalize_full_vintage_frame(
+        frame.assign(series=engine_alias),
+        series_id=engine_alias,
+    )
+    return normalized.assign(series=series_id)
 
 
 def _sealed_manifest_equivalent(
