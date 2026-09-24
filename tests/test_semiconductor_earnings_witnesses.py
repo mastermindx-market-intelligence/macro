@@ -629,6 +629,8 @@ def test_on_release_fact_binds_the_cells_under_the_reported_label_never_a_positi
     (lambda b: b.replace(ON_SUMMARY_REVENUE_ROW, ON_SUMMARY_REVENUE_ROW.replace("1,234.5", "$1,234.5 million", 1)), "not plain figures"),
     (lambda b: b.replace(ON_IS_DATE_ROW, ON_IS_DATE_ROW.replace("April 3, 2026", "April 4, 2026")), "no Quarters Ended table dates"),  # document never names the period end
     (lambda b: b.replace(ON_SUMMARY_REVENUE_ROW, ""), "0 Revenue rows"),
+    (lambda b: b.replace(ON_SUMMARY_REVENUE_ROW, ON_SUMMARY_REVENUE_ROW.replace("1,234.5", "(1,234.5)")), "not plain figures"),  # parenthesised cell: typed absence, never a parsed or sign-blind value
+    (lambda b: b.replace(ON_SUMMARY_REVENUE_ROW, ON_SUMMARY_REVENUE_ROW.replace("1,234.5", "(1,234.5)", 1)), "not plain figures"),  # GAAP negative vs non-GAAP positive never agree
 ])
 def test_on_release_fact_is_absent_for_every_non_template_table(mutation, detail: str) -> None:
     fact = _on_rev(mutation(ON_SYNTHETIC_EXHIBIT))
@@ -661,6 +663,8 @@ def test_on_guidance_is_the_gaap_range_under_the_one_outlook_lead() -> None:
     lambda b: b.replace("projected second quarter of 2026", "projected first quarter of 2026"),           # horizon == reported
     lambda b: b.replace("Total onsemi GAAP", "Total onsemi"),                                              # no GAAP header label
     lambda b: b.replace(ON_OUTLOOK_REVENUE_ROW, ON_OUTLOOK_REVENUE_ROW.replace("$1,400 to $1,500 million", "$1,400 to $1,500", 1)),  # malformed cell
+    lambda b: b.replace(ON_OUTLOOK_REVENUE_ROW, ON_OUTLOOK_REVENUE_ROW.replace("$1,400 to $1,500 million", "$1,400 to $1,500 million*", 1)),  # valid prefix + footnote marker: fullmatch only
+    lambda b: b.replace(ON_OUTLOOK_REVENUE_ROW, ON_OUTLOOK_REVENUE_ROW.replace("$1,400 to $1,500 million", "$1,400 to $1,500 million excluding the 53rd week", 1)),  # valid prefix + trailing qualifier
     lambda b: b.replace(ON_OUTLOOK_REVENUE_ROW, ""),                                                       # no revenue row
     lambda b: b.replace(f"<p>{ON_OUTLOOK_LEAD}</p><table>", f"<p>{ON_OUTLOOK_LEAD}</p><p>x</p><p>y</p><table>"),  # table not adjacent
 ])

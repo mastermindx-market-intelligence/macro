@@ -1422,6 +1422,10 @@ _TSM_HEADLINE_RE = re.compile(
 )
 # TSMC USD restatement (sentence-initial; ordinal must match the reported quarter):
 #   "In US dollars, second quarter revenue was $40.20 billion, which increased …"
+# The USD template carries an ordinal but no year: its year is inherited from the
+# headline gate (ordinal AND quarter-end date equal the reported period). A
+# prior-year recap written in this exact house form would be indistinguishable;
+# TSMC states prior years as percentages, and two matches are a typed absence.
 _TSM_USD_TEMPLATE_RE = re.compile(
     r"In U\.?S\.? dollars, (first|second|third|fourth) quarter revenue was ((?:US)?\$\d+(?:\.\d+)?\s+billion)\b"
 )
@@ -1661,7 +1665,9 @@ def tsm_profile() -> IssuerProfile:
 #   outlook." then a table whose header row has "Total onsemi GAAP" and whose
 #   "Revenue" row carries "$1,650 to $1,750 million" in that column.
 _ON_CAPTION_UNIT_RE = re.compile(r"\bin (millions|billions)\b", re.I)
-_ON_CELL_VALUE_RE = re.compile(r"^\(?([\d,]+(?:\.\d+)?)\)?$")
+# Plain positive figure only. A parenthesised (negative) or otherwise decorated
+# cell is a typed absence, never a parsed value (review #5 nit 1).
+_ON_CELL_VALUE_RE = re.compile(r"^([\d,]+(?:\.\d+)?)$")
 _ON_OUTLOOK_LEAD_RE = re.compile(
     r"projected (first|second|third|fourth) quarter of (20\d{2}) (?:GAAP and non-GAAP )?outlook", re.I)
 _ON_OUTLOOK_GAAP_HEADER = "total onsemi gaap"
@@ -1745,7 +1751,7 @@ def _on_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id
         return absent("Revenue cell bound to the reported label is not receiptable")
     return [_fact_present(
         fact_id="fact_revenue", event_id=event_id, metric="revenue",
-        value=float(literal.replace(",", "")), unit=unit, period=period,
+        value=float(parsed[0].group(1).replace(",", "")), unit=unit, period=period,
         basis="onsemi GAAP quarterly revenue, as stated in the Exhibit 99.1 summary table",
         document_id=document_id, bound=bound, receipt=receipt,
     )]
