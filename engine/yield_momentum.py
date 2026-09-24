@@ -11,12 +11,28 @@ import json
 from typing import Any
 import numpy as np
 import pandas as pd
+from pandas.tseries.holiday import USFederalHolidayCalendar
 
 SERIES = {'2y': 'us2y', '5y': 'us5y', '10y': 'us10y',
           '20y': 'us20y', '30y': 'us30y'}  # Existing DGS20 -> CCW us20y alias.
 HORIZONS = (5, 22, 63)
 TURN_LOOKBACK = 1260
 ORIGIN_ATTR = 'rate_observations'
+HOLIDAY_BASIS = 'us_federal_holidays_v1'
+
+
+def expected_absent_grid(index: pd.DatetimeIndex) -> list[bool]:
+    """Mark each grid date that is an observed US federal holiday.
+
+    Pure helper: no network, clock or I/O; an empty index returns ``[]``. The
+    fixed weekday grid itself never carries weekends (``pd.bdate_range``).
+    """
+    if len(index) == 0:
+        return []
+    holidays = USFederalHolidayCalendar().holidays(
+        start=index[0], end=index[-1])
+    holiday_set = set(pd.Timestamp(d).date() for d in holidays)
+    return [pd.Timestamp(t).date() in holiday_set for t in index]
 
 
 def _date(value: Any) -> str | None:
@@ -142,6 +158,9 @@ def _series_read(frame: pd.DataFrame, column: str,
            'availability_status': 'provided' if source_available else 'not_provided_by_feature_frame',
            'historical_availability_qualified': False, 'observation_origin': 'unverified',
            'origin_status': 'not_provided', 'path_qualified': False,
+           'holiday_basis': HOLIDAY_BASIS,
+           'expected_absent_grid_rows': 0, 'unexpected_carried_grid_rows': 0,
+           'path_qualification_basis': 'captured_source_rows_or_expected_absent',
            'horizon_basis': 'fixed_weekday_grid_intervals',
            'level': None, 'carried_level': None, 'last_observed': None,
            'velocity_bp': {f'{h}d': None for h in HORIZONS},
@@ -165,11 +184,16 @@ def _series_read(frame: pd.DataFrame, column: str,
     if dates is not None:
         observed = [o == _date(t) for o, t in zip(dates, index)]
         measured = numeric.where(observed)
+        expected = expected_absent_grid(index)
+        qualified_rows = [o or e for o, e in zip(observed, expected)]
         out.update(source_id=item.get('source_id'), source_basis=item['source_basis'],
                    source_digest=item.get('source_digest'))
         out['observation_origin'] = ('captured_source_row' if observed[-1]
                                      else 'carried' if dates[-1] else 'missing')
-        out['path_qualified'] = (all(observed) and numeric.notna().all()
+        out['expected_absent_grid_rows'] = sum(1 for e in expected if e)
+        out['unexpected_carried_grid_rows'] = sum(
+            1 for o, e in zip(observed, expected) if not o and not e)
+        out['path_qualified'] = (all(qualified_rows) and numeric.notna().all()
                                  and item['source_basis'] == 'captured_source_rows')
         out['path_qualified'] = bool(out['path_qualified'])
         if item['source_basis'] == 'caller_override' and observed[-1]:
@@ -216,12 +240,13 @@ def build_yield_momentum(frame: pd.DataFrame, *,
     """
     evidence = (frame.attrs.get(ORIGIN_ATTR) if observation_evidence is None
                 else observation_evidence)
-    return {'schema': 'yield_momentum.v1', 'calculation_version': 'fixed_grid_origin.v2',
+    return {'schema': 'yield_momentum.v1', 'calculation_version': 'fixed_grid_origin.v3',
             'asof': _date(frame.index[-1]) if len(frame.index) else None,
             'display_only': True, 'authority': False, 'can_score': False,
             'can_size': False, 'can_trade': False,
             'caveats': ['Weekday grid intervals are not verified Treasury trading sessions.',
                         'Captured source rows do not certify historical availability.',
-                        'Endpoint changes do not prove continuous deceleration or a market turn.'],
+                        'Endpoint changes do not prove continuous deceleration or a market turn.',
+                        'Expected absences are US federal holidays only; a carried print on any other weekday still withholds path qualification.'],
             'series': {label: _series_read(frame, column, available_at, evidence)
                        for label, column in SERIES.items()}}

@@ -384,3 +384,67 @@ def test_no_observed_samples_in_retained_window_means_no_history():
     f = _origin_frame(1400); f['us10y'] = np.nan; f.iloc[0, 0] = 4.0
     out = _origin_read(_attach_origin(f, f.us10y.dropna()))
     assert out['last_observed'] is None
+
+
+# A-RIC-F3-W1 — Expected-absence path qualification for US federal holidays.
+# The fixed weekday grid is not a verified Treasury-session calendar; carried
+# prints on US federal holidays are expected and do NOT withhold path
+# qualification. Carried prints on any other weekday still do. A holiday row
+# remains unmeasured, so an endpoint landing on a holiday is not promoted to
+# a measurement.
+def test_expected_holiday_absence_keeps_path_qualified():
+    f = _origin_frame(100)
+    holidays = [pd.Timestamp(d) for d in ('2025-01-20', '2025-02-17')
+                if pd.Timestamp(d) in f.index]
+    assert len(holidays) == 2  # Both fall on weekdays inside this grid.
+    raw = f.us10y.drop([d for d in holidays])
+    out = _origin_read(_attach_origin(f.copy(), raw))
+    assert out['path_qualified'] is True
+    assert out['holiday_basis'] == 'us_federal_holidays_v1'
+    assert out['path_qualification_basis'] == 'captured_source_rows_or_expected_absent'
+    assert out['expected_absent_grid_rows'] == 2
+    assert out['unexpected_carried_grid_rows'] == 0
+    assert out['observation_origin'] == 'captured_source_row'
+    # Monotonic +1 bp/day fixture → trailing percentile == 1.0; the 22d/44d
+    # endpoints (index[-23] and index[-45]) do not land on the two holidays.
+    assert out['velocity_bp']['22d'] == 22.0
+    assert out['turn_watch'] == 'extreme_high_watch'
+
+
+def test_unexpected_weekday_absence_still_withholds_path_qualification():
+    f = _origin_frame(100)
+    # 2025-03-05 is an ordinary Wednesday — a carried print here is unexpected.
+    unexpected = pd.Timestamp('2025-03-05')
+    assert unexpected in f.index
+    raw = f.us10y.drop([unexpected])
+    out = _origin_read(_attach_origin(f.copy(), raw))
+    assert out['path_qualified'] is False
+    assert out['expected_absent_grid_rows'] == 2  # Holidays still counted.
+    assert out['unexpected_carried_grid_rows'] == 1
+    assert out['turn_watch'] is None
+    assert (out['null_reason']
+            == 'endpoint comparisons only; complete observed path not qualified')
+
+
+def test_holiday_endpoint_is_still_not_a_measurement():
+    # 100 bdays ending 2025-02-24; index[-6] = 2025-02-17 (Presidents' Day).
+    idx = pd.bdate_range(end='2025-02-24', periods=100)
+    assert idx[-6] == pd.Timestamp('2025-02-17')
+    f = pd.DataFrame({'us10y': 4.0 + np.arange(100) / 100}, index=idx)
+    raw = f.us10y.drop([idx[-6]])
+    out = _origin_read(_attach_origin(f.copy(), raw))
+    assert out['path_qualified'] is True
+    assert out['velocity_bp']['5d'] is None  # Holiday endpoint is unmeasured.
+    assert isinstance(out['velocity_bp']['22d'], float)
+    assert out['velocity_bp']['22d'] == 22.0
+
+
+def test_expected_absent_grid_is_pure_and_bounded():
+    # Pure helper: empty index returns an empty list.
+    assert yield_momentum.expected_absent_grid(pd.DatetimeIndex([])) == []
+    # 2025 has 11 US federal holidays, every one of them a weekday.
+    idx = pd.bdate_range('2025-01-02', periods=100)
+    flags = yield_momentum.expected_absent_grid(idx)
+    assert len(flags) == len(idx)
+    assert sum(flags) == 2  # MLK Day (Jan 20) + Presidents' Day (Feb 17).
+    assert yield_momentum.HOLIDAY_BASIS == 'us_federal_holidays_v1'
