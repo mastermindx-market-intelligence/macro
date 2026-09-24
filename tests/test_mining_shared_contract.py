@@ -144,9 +144,11 @@ def test_mining_owns_typed_query_refusals(override, code):
 
 def test_shared_contract_is_probed_lazily_and_degrades_to_a_typed_refusal():
     case = synthetic_case("copper_complete")
+    harness = publication_harness()
     with pytest.raises(MiningResearchRefusal) as raised:
-        publication_harness().client(entitled=True)
+        harness.shared_contract()
     assert raised.value.code == "shared_contract_unavailable"
+    assert harness.read_count == 0
 
 
 def test_route_unbound_refusal_is_identical_for_entitled_and_unentitled_callers():
