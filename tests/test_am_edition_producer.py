@@ -4,6 +4,25 @@ All tests drive build_payload() against tmp_path fixture trees with a frozen
 `now` — none touch the network, none require the real data/ or site/ trees,
 so this file is safe in a sparse worktree and needs no needs_full_checkout
 marker.
+
+States covered: CURRENT, STALE_WITH_LAST_KNOWN, UNAVAILABLE, NOT_COVERED.
+The STATES tuple also names NOT_YET_OPEN and CLOSED, but neither is
+reachable on this producer:
+
+  - NOT_YET_OPEN is reserved for owner facts that publish before the
+    observation window opens (e.g. a daily snapshot stamped with today's
+    date that does not exist yet at 06:00 ET). The am_edition producer
+    NEVER invents that state — a missing owner file falls through to
+    UNAVAILABLE per the gather's try/except wrapper.
+  - CLOSED is reserved for owner facts whose window has definitively
+    ended (a session that already finalised). The am_edition producer
+    runs once at premarket and is never invoked post-close, so the
+    observation window is always "open" or "future" — CLOSED is a
+    state the producer never has to compute.
+
+A future change that adds either state to a block MUST add a
+red-first test that proves the producer actually emits it; the absence
+of a NOT_YET_OPEN / CLOSED test here is intentional, not an oversight.
 """
 from __future__ import annotations
 
@@ -1668,6 +1687,135 @@ def test_context_planes_current_for_yesterday_stamped_premarket_read(tmp_path):
     }
 
 
+def test_rates_row_follows_clean_sentence_pattern(tmp_path):
+    """R11 (2026-09-24): the rates row's read_en / read_zh follows a clean
+    2-3 sentence pattern — the owner-rendered level sentence (when present),
+    the yield-curve sentence (when present), and the watch phrase (when
+    `turn_watch` is set). Each part ends with the appropriate sentence
+    terminator (EN `.`, ZH `。`). The join is a single space; no trailing
+    conjunction. ZH mirrors the same shape with full-width punctuation.
+    """
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        with_credit=True,
+    )
+    # Override transmission to include yield_curve + turn_watch so the
+    # three-sentence case fires.
+    tx_path = data / "transmission" / "latest.json"
+    tx = json.loads(tx_path.read_text(encoding="utf-8"))
+    tx["state"]["rates"]["label"] = {
+        "en": "Real 10y 2.63% (restrictive, rising — at a 5y extreme)",
+        "zh": "实际10年期 2.63%（偏紧，正在上升——5年极值）",
+    }
+    tx["state"]["rates"]["turn_watch"] = "extreme_watch"
+    tx["yield_curve"] = {
+        "asof": "2026-09-08",
+        "regime": {"label": {"en": "bear flattener", "zh": "熊市平坦"}},
+    }
+    tx_path.write_text(json.dumps(tx), encoding="utf-8")
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    rates_row = next(r for r in cp["rows"] if r["plane"] == "rates")
+    assert rates_row["state"] == "CURRENT"
+    # EN: three sentences, each ending with a period, joined by spaces.
+    assert rates_row["read_en"] == (
+        "Real 10y 2.63% (restrictive, rising — at a 5y extreme). "
+        "Yield curve: bear flattener. "
+        "Under watch — fresh extremes being tracked."
+    )
+    # ZH: three sentences, each ending with full-width period (。),
+    # joined by spaces (the visual boundary is the full-width period).
+    assert rates_row["read_zh"] == (
+        "实际10年期 2.63%（偏紧，正在上升——5年极值）。 "
+        "收益率曲线：熊市平坦。 "
+        "正在观察——正在跟踪新的极值。"
+    )
+    # No trailing conjunction (the parts are full sentences).
+    assert not rates_row["read_en"].endswith(",")
+    assert not rates_row["read_en"].endswith(";")
+    assert not rates_row["read_zh"].endswith("，")
+    assert not rates_row["read_zh"].endswith("；")
+
+
+def test_context_planes_block_clock_is_newest_among_rows_regardless_of_state(tmp_path):
+    """R12 (2026-09-24, BLOCKER): the block-level source_as_of /
+    source_as_of_precision / age_minutes MUST be the NEWEST as_of among
+    rows that carry one, REGARDLESS of the block state. The previous code
+    picked the FIRST row matching the worst block state and broke on
+    match — which (a) inspected only one row, (b) returned that row's
+    as_of, and (c) returned None whenever the worst state was
+    UNAVAILABLE/NOT_COVERED (rows in those states carry as_of=None per
+    _context_planes_row, so the worst-state lookup missed every real-clock
+    row). Here transmission is missing so rates/dollar/credit rows are
+    UNAVAILABLE; commodity + intl are CURRENT with distinct as_ofs. The
+    block state is UNAVAILABLE, but the block clock MUST name the newest
+    of the two real readings."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    # transmission_asof=None drops transmission entirely (rates/dollar/
+    # credit become UNAVAILABLE). commodity + intl ship with distinct as_ofs
+    # so the "newest among rows" pick is unambiguous.
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof=None, commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        with_credit=False,
+    )
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    # Block state is UNAVAILABLE (worst-of: rates/dollar/credit are
+    # UNAVAILABLE).
+    assert cp["state"] == "UNAVAILABLE", cp
+    # R12: source_as_of is surfaced REGARDLESS of block state — it names
+    # the freshest reading actually shipped in the rows. With commodity
+    # and intl both stamped 2026-09-08 and no further precision detail,
+    # either ISO 2026-09-08T00:00:00+00:00 (commodity default) or the intl
+    # 2026-09-08T00:00:00+00:00 is acceptable; what matters is the field
+    # is NOT None and matches one of the rows.
+    assert cp["source_as_of"] is not None, cp
+    row_as_ofs = {r.get("as_of") for r in cp["rows"] if r.get("as_of")}
+    assert cp["source_as_of"] in row_as_ofs, cp
+    # age_minutes is computed for that row.
+    assert cp["age_minutes"] is not None and cp["age_minutes"] >= 0, cp
+    # Precision is one of "day"/"second" — propagated from the row helper,
+    # never recomputed from the normalised ISO.
+    assert cp["source_as_of_precision"] in ("day", "second"), cp
+
+
+def test_context_planes_block_clock_picks_newest_iso_among_rows(tmp_path):
+    """R12 (2026-09-24): with multiple CURRENT rows carrying distinct
+    as_ofs, the block clock MUST pick the MAX ISO string — never the
+    first row, never the worst-state row. We seed transmission +
+    commodity + intl with staggered as_ofs so the "newest among rows"
+    pick is unambiguous: commodity ships 2026-09-08, intl ships
+    2026-09-08T00:00:00+00:00, transmission ships 2026-09-06 (2 days
+    back — needed to force STALE at day precision; 1-day-ago is CURRENT
+    per MAJOR 5). The newest ISO is the intl row's; the block clock MUST
+    surface that, NOT the transmission row's stale as_of."""
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        # transmission stamped 2 days ago -> STALE row; rates/dollar/credit
+        # rows are STALE_WITH_LAST_KNOWN.
+        transmission_asof="2026-09-06",
+        commodity_asof="2026-09-08", intl_asof="2026-09-08",
+        with_credit=True,
+    )
+    payload = build_payload(site, data, now=now)
+    cp = _new_block(payload, "context_planes")
+    # Every row carries an as_of; the block state is STALE_WITH_LAST_KNOWN
+    # because the transmission row is stale.
+    assert cp["state"] == "STALE_WITH_LAST_KNOWN", cp
+    # R12: the block clock is the NEWEST ISO among rows. The intl as_of
+    # (2026-09-08) > commodity as_of (2026-09-08) at the day level — but
+    # both are day-precision. The transmission row's as_of (2026-09-07) is
+    # older. The block source_as_of MUST NOT be 2026-09-07.
+    assert cp["source_as_of"] != "2026-09-07", cp
+    # It must be one of the rows' as_ofs (not a synthetic value).
+    row_as_ofs = {r.get("as_of") for r in cp["rows"] if r.get("as_of")}
+    assert cp["source_as_of"] in row_as_ofs, cp
+
+
 def test_owner_links_state_includes_resolved_count(tmp_path):
     """RED-first test for MAJOR 8 + R7 (2026-09-24): when owner_links rows
     resolve, the state_reason_en must name the resolved count so a Lane-B
@@ -1722,11 +1870,14 @@ def test_owner_links_plane_owner_by_plane_actually_used(tmp_path):
 
 
 def test_a7_word_boundary_does_not_match_benign_substrings(tmp_path):
-    """RED-first test for MAJOR 10: the A7 matcher must use a word-boundary
-    regex for EN so 'along'/'longer'/'short-term'/'sized' never trigger.
-    The previous code matched bare substrings and silently redacted
-    benign prose. We seed a thesis with 'along' / 'longer' and verify
-    the row surfaces the original text."""
+    """Static regression pin for the deleted A7 matcher (R6, 2026-09-24):
+    the A7 runtime redaction was deleted entirely in R6 — the producer
+    never reads lean/entry_levels/conviction/outcome/realized from any
+    owner artifact (A7 contract), so a regex redactor cannot run at all.
+    The original MAJOR 10 concern (substring matches like 'along'/'longer'/
+    'short-term'/'sized' silently rewriting benign prose) is now moot,
+    but we still pin the surface: a thesis whose text contains those
+    words MUST surface verbatim in the row."""
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
     theses = [{
         "id": "mb-2026-09-08-bb",

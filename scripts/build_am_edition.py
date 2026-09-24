@@ -20,6 +20,7 @@ Usage: python -m scripts.build_am_edition   (run anytime; safe pre-open or post)
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import re
@@ -988,7 +989,6 @@ def _safe_zh_mirror(cond_text: str) -> str:
     plain-language law). The framing is picked deterministically by the
     hash of the condition string so the same row always reads the same ZH
     frame, but the framing itself is ZH only."""
-    import hashlib
     if not cond_text:
         return ""
     pick = int(hashlib.sha256(cond_text.encode("utf-8")).hexdigest(), 16) % len(_RESEARCH_WATCH_ZH_FRAMES)
@@ -1089,21 +1089,51 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         # owner label itself may carry extremeness copy ("at a 5y extreme"),
         # which we pass through unchanged (the producer never invents the
         # extremeness phrase — it surfaces the owner's own plain words).
+        #
+        # R11 (2026-09-24): the read follows a clean 2-3 sentence pattern
+        # — the owner-rendered level sentence (when present), the
+        # yield-curve sentence (when present), and the watch phrase (when
+        # the owner flagged `turn_watch`). ZH mirrors the same shape with
+        # full-width punctuation throughout. Example output:
+        #
+        #   EN: "Real 10y 2.63% (restrictive, rising — at a 5y extreme).
+        #        Yield curve: bear flattener.
+        #        Under watch — fresh extremes being tracked."
+        #   ZH: "实际10年期 2.63%（偏紧，正在上升——5年极值）。
+        #        收益率曲线：熊市平坦。
+        #        正在观察——正在跟踪新的极值。"
+        #
+        # Each part ends with the appropriate sentence terminator (EN `.`,
+        # ZH `。`). No trailing conjunction — the three parts are joined
+        # with a single space, never a comma or semicolon (the visual
+        # boundary is the period/full-width period that ends each
+        # sentence).
+        def _en_part(s: str) -> str:
+            s = s.rstrip()
+            return s if s.endswith((".", "!", "?")) else s + "."
+
+        def _zh_part(s: str) -> str:
+            s = s.rstrip()
+            return s if s.endswith(("。", "！", "？")) else s + "。"
+
         read_en_parts: list[str] = []
         read_zh_parts: list[str] = []
         if rates_label.get("en"):
-            read_en_parts.append(str(rates_label["en"]))
+            read_en_parts.append(_en_part(str(rates_label["en"])))
         if rates_label.get("zh"):
-            read_zh_parts.append(str(rates_label["zh"]))
+            read_zh_parts.append(_zh_part(str(rates_label["zh"])))
         if yc_label_en_str:
             # Owner-rendered plain words; no percentiles, no slope numbers.
-            read_en_parts.append(f"Yield curve: {yc_label_en_str}.")
+            read_en_parts.append(_en_part(f"Yield curve: {yc_label_en_str}"))
             if yc_label_zh_str:
-                read_zh_parts.append(f"收益率曲线：{yc_label_zh_str}。")
+                read_zh_parts.append(_zh_part(f"收益率曲线：{yc_label_zh_str}"))
             else:
                 read_zh_parts.append("收益率曲线：参见英文标注。")
         if rates_turn_watch and rates_turn_watch != "none":
             # Plain-word "watch" phrase; never the percentile itself.
+            # R11 (2026-09-24): the watch phrase ends with a period (EN) /
+            # full-width period (ZH) so the joiner can rely on each part
+            # being a complete sentence.
             read_en_parts.append("Under watch — fresh extremes being tracked.")
             read_zh_parts.append("正在观察——正在跟踪新的极值。")
         rates_state = _context_planes_row(
@@ -1469,38 +1499,46 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
 
     # Block state: worst row state across all rows.
     block_state = _WorstOf([r["state"] for r in rows]) if rows else "UNAVAILABLE"
-    # WORST per-row as_of (the row that drove the worst block state). The
-    # block is a multi-owner summary; the truthful disclosure is the OLDEST
-    # reading in the block, never the build instant itself. We pick the as_of
-    # that drove the worst row state, then propagate its precision verbatim
-    # from the caller's _norm_clock result — never recompute precision from
-    # the already-normalised ISO string (the legacy _block() docstring warns
-    # this reads "minute" because the ...T00:00:00+00:00 padding looks
-    # second-exact). `worst_age` is computed for the same row so the
-    # block-level disclosure matches what the row already reported (MAJOR 4:
-    # the prior code shipped `worst_age = None` while every row carried its
-    # own age_minutes — block age was permanently null).
+    # R12 (2026-09-24, BLOCKER): block clock = NEWEST as_of AMONG ALL ROWS,
+    # REGARDLESS OF STATE. The prior code picked the FIRST row matching the
+    # worst block state — which (a) only inspected one row, (b) broke on the
+    # first match rather than the newest, and (c) left the block's
+    # source_as_of permanently null whenever the worst state was
+    # UNAVAILABLE/NOT_COVERED (rows in those states carry as_of=None per
+    # _context_planes_row, so the worst-state lookup missed every
+    # real-clock row). The truthful disclosure for a multi-owner block is
+    # the FRESHEST reading actually shipped in the rows — never the build
+    # instant, never a worst-of pick. We scan every row's `as_of` (which is
+    # already None for unavailable/not-covered rows per the row helper), pick
+    # the max ISO string, and propagate its precision verbatim from the row
+    # helper's output (the row helper never recomputes precision from the
+    # already-normalised ISO — the legacy _block() docstring warns that path
+    # reads "minute" because ...T00:00:00+00:00 padding looks second-exact).
+    # `worst_age` is computed for the same row so the block-level disclosure
+    # matches what the row already reported (MAJOR 4: the prior code shipped
+    # `worst_age = None` while every row carried its own age_minutes —
+    # block age was permanently null).
     worst_as_of = None
     worst_precision = None
     worst_age: int | None = None
     for r in rows:
-        if r["state"] == block_state:
-            worst_as_of = r.get("as_of")
+        a = r.get("as_of")
+        if not a:
+            continue
+        if worst_as_of is None or a > worst_as_of:
+            worst_as_of = a
             worst_precision = r.get("source_as_of_precision") or (
-                _norm_clock(r.get("as_of"))[1] if r.get("as_of") else "day"
+                _norm_clock(a)[1] if a else "day"
             )
-            # Re-derive the age for THIS row from its as_of so the block
-            # age_minutes is consistent with the row's own age_minutes.
-            if worst_as_of:
-                try:
-                    src_dt = datetime.fromisoformat(worst_as_of)
-                    gen_dt = datetime.fromisoformat(generated_at)
-                    secs = (gen_dt - src_dt).total_seconds()
-                    if secs >= 0:
-                        worst_age = int(secs // 60)
-                except Exception:  # noqa: BLE001
-                    worst_age = None
-            break
+    if worst_as_of:
+        try:
+            src_dt = datetime.fromisoformat(worst_as_of)
+            gen_dt = datetime.fromisoformat(generated_at)
+            secs = (gen_dt - src_dt).total_seconds()
+            if secs >= 0:
+                worst_age = int(secs // 60)
+        except Exception:  # noqa: BLE001
+            worst_age = None
     block = {
         "key": "context_planes",
         "title_en": "Context planes",
@@ -1508,9 +1546,17 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         "state": block_state,
         "source_ref": "see per-row source_ref",
         "source_owner": "multi-owner",
-        "source_as_of": worst_as_of if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
-        "source_as_of_precision": worst_precision if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
-        "age_minutes": worst_age if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
+        # R12 (2026-09-24): source_as_of / source_as_of_precision / age_minutes
+        # are surfaced REGARDLESS OF BLOCK STATE — the clock names the
+        # freshest reading actually shipped in the rows, even when one or
+        # more rows are UNAVAILABLE/NOT_COVERED. The previous gate that hid
+        # these when block_state was UNAVAILABLE/NOT_COVERED collapsed
+        # "every plane failed" into "we have no idea how fresh anything
+        # was", which is exactly the opposite of what a glance-tier block
+        # needs to disclose.
+        "source_as_of": worst_as_of,
+        "source_as_of_precision": worst_precision,
+        "age_minutes": worst_age,
         "max_age_minutes": _CONTEXT_PLANE_MAX_AGE,
         "classification": "owner_context_summary",
         "rows": rows,
