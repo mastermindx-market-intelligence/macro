@@ -6,9 +6,9 @@ descriptive question: which producer-declared heating desk has the strongest
 verified five-session rank acceleration? Entry/recommendation state is carried
 alongside that leadership read and must never suppress it.
 
-A separate ``positive_rating_leader`` preserves the strongest Enter/Accumulate candidate
-for consumers that explicitly need entry suitability. Neither read is a fund-flow
-measure, a forecast, or a buy instruction.
+A separate ``positive_rating_leader`` preserves the strongest Enter/Accumulate
+comparison for consumers that need positive-recommendation context. It is not an
+entry decision. Neither read is a fund-flow measure, a forecast, or a buy instruction.
 """
 from __future__ import annotations
 
@@ -68,8 +68,8 @@ def opportunity_desk(
 
     The public function name is retained for compatibility with the existing
     dashboard adapter. ``leader`` is the hottest verified heating desk regardless
-    of recommendation verb. ``positive_rating_leader`` is separately constrained to the
-    incumbent Enter/Accumulate verbs.
+    of recommendation verb. ``positive_rating_leader`` is separately constrained
+    to incumbent Enter/Accumulate verbs without claiming executable entry.
 
     Reuse the NYSE calendar, including weekends/holidays and the settlement buffer.
     A dated one-session lag accommodates the daily publication lane. Two missing
@@ -148,7 +148,7 @@ def opportunity_desk(
             name = key.replace("_", " ").replace("-", " ").title()
         zh = row.get("name_zh")
         reco = row.get("reco") if isinstance(row.get("reco"), str) else None
-        rating_en, rating_zh, actionable = _RATING_COPY.get(
+        rating_en, rating_zh, positive_rating = _RATING_COPY.get(
             reco or "", ("Unavailable", "不可用", False)
         )
         candidates.append({
@@ -174,7 +174,7 @@ def opportunity_desk(
     positive_candidates = [row for row in candidates if row["positive_rating"]]
     positive_leader, positive_status = _pick_unique_velocity(positive_candidates)
     out["positive_rating_status"] = positive_status
-    if positive_rating_leader is not None:
-        out["positive_rating_leader"] = positive_rating_leader
-        out["positive_rating_href"] = f"basket/{positive_rating_leader['id']}.html"
+    if positive_leader is not None:
+        out["positive_rating_leader"] = positive_leader
+        out["positive_rating_href"] = f"basket/{positive_leader['id']}.html"
     return out
