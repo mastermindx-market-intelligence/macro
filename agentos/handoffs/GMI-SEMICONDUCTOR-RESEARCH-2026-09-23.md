@@ -5,71 +5,107 @@ model: sol
 ended_because: checkpoint
 mission: >
   Preserve principal-owned semiconductor research and B-first/C-compatible design;
-  prepare a reviewed executable B plan before Fable implementation orchestration.
+  finish a reviewed executable B plan before Fable implementation orchestration.
 state_before: >
-  Five research installments and the written specification were presented for review.
-  Chairman then said: "Continuing on pro mode."
+  Five research installments and the written specification existed. Chairman's
+  "Continuing on pro mode." advanced the presented implementation-planning stage.
 changed:
+  - path: docs/superpowers/plans/2026-09-23-semiconductor-theme-intelligence-implementation.md
+    what: "Proposed 12-task B plan with exact native interfaces, 28 fixture cases, all 48 B requirements mapped to test/proof nodes, and eight C1 cases deferred."
+  - path: research/semiconductors/IMPLEMENTATION_PLAN_SELF_REVIEW_2026-09-23.md
+    what: "Author review, scoped implementation clarifications and actual offline verification limits."
   - path: agentos/handoffs/GMI-SEMICONDUCTOR-RESEARCH-2026-09-23.md
-    what: "Current continuation authorizes the next presented planning stage; plan in progress, no execution or Fable commission."
+    what: "Cumulative plan-review frontier; no product implementation or Fable assignment."
 verified:
-  - claim: "The original research carrier and written specification remain unchanged at pickup."
-    command: "Current PR metadata, exact-commit specification/header and local full-file Git-blob calculation"
-    result: "PR #7780 draft/open; pickup 1b0c4d4270d004509c32173e99d4d742be54a249; specification blob 65590f430362e0d9942f56f8cf8b358d9fb07d19."
-  - claim: "Current compatible procedure is pinned; previously loaded companion bodies remain byte-identical."
-    command: "Protected master/INDEX and same-pin ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT blob readbacks"
-    result: "Mastermind 4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2; Skillpack 1.0.1/bootstrap 1."
+  - claim: "The plan exists on the original research carrier and matches the portable content fingerprint."
+    command: "GitHub create_file, exact-commit fetch_file and local full-file Git-blob calculation"
+    result: "Commit e9050b5982135ce1b597085697b00a8e597de60c; blob 9145923019fdde5d37a5151e1a18b6f2c94f67b9; SHA256 df67f2bfc651f71305bcc2f70939d52a04a0f13e6aa9202c5f1e442723c20a58."
+  - claim: "Author review and remaining execution gates are durably recorded."
+    command: "GitHub create_file and exact-commit readback; local full-file Git-blob equality"
+    result: "Commit ae07110c2bfdf05c536299ce71048a23ac13bd32; blob 9b5f7cdebf725332e3ccf8cd29fa1515a8ae4b1d."
+  - claim: "The plan's structural coverage is reproducible from its bundled inputs."
+    command: "python build_plan_matrix.py; python verify_plan.py; repeat in a fresh temporary directory"
+    result: "15/15 document checks; four corrupted variants rejected; matrix JSON, rendered matrix and check-result JSON byte-identical; zero product tests."
 unverified:
-  - claim: "An executable implementation plan is complete or accepted."
-    what_would_verify: "Produce exact-path tasks, requirement/test mapping and current dependency gates; self-review and obtain plan review."
-  - claim: "B is implemented, production-proven, or a worker has STARTed."
-    what_would_verify: "Later accepted plan, lawful worker placement/execution and real source-to-visible-result proof for both witnesses."
+  - claim: "The implementation plan is accepted or Fable has consumed its handoff."
+    what_would_verify: "Chairman plan review, final exact-revision orchestration packet, lawful live delivery/assignment and separate execution receipts."
+  - claim: "Semiconductor B is implemented or production-proven."
+    what_would_verify: "Accepted plan, native-owner implementation/custody/private-data gates, real inputs and both complete production browser witnesses."
 unresolved:
-  - "Shared industrial assertion persistence, private GMI binding, identity joins and real guidance coverage require bounded current-interface reconciliation."
-  - "No C implementation before accepted B and a later scoped C gate."
+  - "Shared curation schema/client with Robotics and #7462 store/#7669 template custody require current acceptance or source-writer release at execution."
+  - "Actual private GMI storage/publication/source-rights binding, native issuer witness enrollment and identity/financial joins remain execution prerequisites."
+  - "No historical consensus or market-incorporation result is assumed; optional unavailable outputs remain explicit."
 next_actions:
-  - "Write the executable B implementation plan against the exact written spec; inspect only task-relevant current interfaces and source custody."
-  - "Map all 48 B requirements and retained domain regressions to named tests and real-proof owners; retain eight C1 requirements as deferred."
-  - "Persist and self-review the plan, then present plan review with the already selected Fable orchestration method; do not commission now."
+  - "Present the complete implementation plan and author clarifications for Chairman review; do not reopen A/B/C choice."
+  - "After plan acceptance, prepare the final Fable orchestration packet from exact design/research/plan refs, then use the lawful delivery and assignment procedure."
+  - "Do not start product code, native data admission, C, merge or deployment in this planning turn."
 do_not_redo:
-  - "Do not repeat the five research sweeps or reopen A/B/C selection."
-  - "Do not modify the written spec merely to make implementation easier. Material spec changes return to design review."
-  - "Do not create a second graph, identity, financial/consensus store, correction, queue, rights, publication or watcher owner."
-  - "Do not infer runtime START, historical consensus, historical issuer identity or private-data permission from source prose."
+  - "Five research sweeps and the B-first/C-compatible choice remain preserved; no broad rediscovery."
+  - "The 48 B obligations are unchanged; the eight C1 mapping/migration obligations remain deferred."
+  - "Do not create a second graph, identity, consensus/financial store, curation/correction queue, rights registry, publisher or watcher."
+  - "Do not treat intended Fable route, documentation commits, source contracts or document checks as runtime/product acceptance."
 danger_areas:
-  - "Macro is public: only plans, synthetic examples and bounded editorial research belong here; current full-fidelity paid native data must not be committed."
-  - "Current user continuation is permission to advance the presented planning stage, not approval of a plan not yet written or authority to implement."
+  - "Macro is public; no live full-fidelity paid native evidence, credentials or private production screenshots in Git."
+  - "Current source lookup or a parser is not a physical reader/admission receipt; source-only businesses never receive fabricated identities."
+  - "A successful request must not mix generations or expose restricted relationship existence; current emission rights still govern history."
 ---
 
-# Semiconductor B implementation-plan working frontier
+# Semiconductor B plan-review frontier
 
+FINALIZATION_CLASSIFICATION: EXACT_HUMAN_GATE
 MISSION_COMPLETE: false
 CAPABILITY_STATE: SPEC_ONLY
-This is an intra-turn checkpoint; useful authorized planning continues. It is not finalization, source-custody transfer or an autonomous wake.
+PLAN_STATUS: PROPOSED_FOR_REVIEW
+Gate: review of the newly produced implementation plan, not another approval of the B-first approach or a request to select Fable again.
 
 Operation: `gmi-semiconductors-research-20260923-sol-001`.
-Carrier: Macro PR #7780, branch `sol/semiconductors-research-20260923`.
-Pickup: `1b0c4d4270d004509c32173e99d4d742be54a249`.
-Governing procedure: Mastermind `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`.
-Direct-work rationale: PRINCIPAL_JUDGMENT. Chairman retained research and planning here; Fable is the later orchestrator. User reports Pro mode; hidden platform budgets and runtime attestation are unknown. Current GitHub write actions are exposed and repository permission preflight reports push=true.
+Carrier: Macro draft/HOLD PR #7780, `sol/semiconductors-research-20260923`.
+Turn pickup: `1b0c4d4270d004509c32173e99d4d742be54a249`.
+Intra-turn authority/planning checkpoint: `97ddce755672ec4ff7235e50a57f7248fa178469`.
+Governing procedure: Mastermind `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, Skillpack 1.0.1/bootstrap 1.
+Planning interface pin: Macro `2b2cae6a148f920b5c4e7ebd8df19ed14b159f5a`; no research-branch rebase.
+Direct-work rationale: PRINCIPAL_JUDGMENT. Current user continuation after the written spec permits this planning stage; no approval of an unproduced plan or product execution was inferred. User reports Pro mode; documentation writes succeeded. Hidden limits/runtime model attestation remain unknown.
 
-## Authority and stage
+## Material result
 
-The current outer Chairman message, "Continuing on pro mode.", follows the presented written specification and its next planning step. Continue to implementation-plan authoring against that exact artifact without repeating the approach/spec question. This is continuation consent to planning, not independent review, acceptance of unproduced plan content, product implementation, C initiation, merge or deployment. Plan review remains necessary before worker execution.
+Before: a written B-first design with release obligations and broad native dependencies.
+After: twelve ordered implementation tasks define files, data shapes, reader/validator distinctions, shared-owner changes, concrete negative tests, two selected real witness routes and release proof. All 48 B requirements have future task/test/proof mappings; eight C1 requirements have no B execution task. The implementation plan and review are durable, but no live capability is claimed.
 
-## Exact preserved design/research
+Critical path: shared contract/private binding -> actual industrial and issuer inputs -> management/economic composition -> coherent paid shared UI -> both real proofs -> independent review/acceptance. Pure fixture/contract work can advance while live admission remains gated; no second source system is a permitted workaround.
 
-Specification: `docs/superpowers/specs/2026-09-23-semiconductor-theme-intelligence-design.md`; original commit `f9402fddf8f6c853ea0368ad47795db591b8f85e`; blob `65590f430362e0d9942f56f8cf8b358d9fb07d19`; SHA-256 `6cfc1f6f84ab259ff89bdf4f0eefff55220ccb0d432238df534714589cd16dcd`.
-Author review: `research/semiconductors/DESIGN_SELF_REVIEW_2026-09-23.md`; commit `6551e2aacfb7ab66ebadd6df09b8c614c5152c6e`; blob `06a0f0286716e98cdc939244889aa9f32f2a31bc`.
-Five research installments/nine R01-R09 artifacts: exact paths are preserved in specification section17 at research revision `f69026264debb265877076a442c7d9211d251fdc`. No research is discarded; use this index rather than replaying past tool calls.
-The prior design's native interface pin is `56c8ef2fce6f740dd853f4ffb29574ae5b729c17`, not a current production receipt or a required rebase. Current planning will refresh only implementation-relevant interfaces.
+TSMC management history is the W-A HBM/packaging witness; onsemi is W-B non-AI manufacturing. A supported industrial mechanism, valid company navigation and real prior-outlook/actual/new-outlook sequence are mandatory for each. Broad company guidance is not asserted to be subtheme-only guidance. Optional consensus, yield-dependent calculations and market attribution may be unavailable; an empty economic path cannot pass.
 
-B requires populated HBM/advanced-packaging and SiC/GaN/specialty-manufacturing journeys with validated company navigation and real management-outlook/actual/new-outlook context. Optional consensus/yield/market-incorporation may degrade; an empty economic journey is not acceptance. Map/table/explanation/evidence use one selected tuple of native revisions. No current mapping masquerades as historical identity. B preserves source-local selectors, scoped predicates/measurements, native clocks, correction lineage and rights for later C without shipping a C registry or resolver.
+## Exact durable artifacts
 
-Historical verification remains historical: 20 prior document checks and nine author walkthroughs, zero product tests. No fresh tests, independent source audit, native admission, CI acceptance, merge, deployment or browser proof is claimed by this working record.
+Plan: `docs/superpowers/plans/2026-09-23-semiconductor-theme-intelligence-implementation.md`.
+Commit `e9050b5982135ce1b597085697b00a8e597de60c`; blob `9145923019fdde5d37a5151e1a18b6f2c94f67b9`; SHA256 `df67f2bfc651f71305bcc2f70939d52a04a0f13e6aa9202c5f1e442723c20a58`.
+
+Author review/implementation clarifications: `research/semiconductors/IMPLEMENTATION_PLAN_SELF_REVIEW_2026-09-23.md`.
+Commit `ae07110c2bfdf05c536299ce71048a23ac13bd32`; blob `9b5f7cdebf725332e3ccf8cd29fa1515a8ae4b1d`.
+
+Preserved specification: `docs/superpowers/specs/2026-09-23-semiconductor-theme-intelligence-design.md`.
+Original commit `f9402fddf8f6c853ea0368ad47795db591b8f85e`; blob `65590f430362e0d9942f56f8cf8b358d9fb07d19`; SHA256 `6cfc1f6f84ab259ff89bdf4f0eefff55220ccb0d432238df534714589cd16dcd`.
+Prior design review: `research/semiconductors/DESIGN_SELF_REVIEW_2026-09-23.md`, commit `6551e2aacfb7ab66ebadd6df09b8c614c5152c6e`, blob `06a0f0286716e98cdc939244889aa9f32f2a31bc`.
+Five research installments/nine R01–R09 artifacts remain at `f69026264debb265877076a442c7d9211d251fdc`, indexed by exact path in specification section17. Use that index; do not replay old tool history or overwrite prior results.
+
+## Planning findings and held source dependencies
+
+#7773 Robotics remains draft/open at `f10211657c6c31df3c9af73cd4b9484e2dd7690a`, plan blob `d0a04e96c874395ae51cf44281039c99527dcd86`. Its shared curation assertion and hydration are not assumed merged; no runtime START was established. Coordinate shared schema and client once.
+#7462 remains draft/open at `31706d7322af55696dc7b2e746ec511b08bd51d7`, with store custody.
+#7669 metadata head `2c28d950aa9448fc878bb64d92b228a8f1952bde` differs from body head `79c291a40684869facb160a20341ba7340d96b04`; draft=false conflicts with hold wording. Preserve, do not infer release. No `scripts/build_state_of_themes.py` write is planned, avoiding the known #7664 builder lane; template custody remains a separate gate.
+
+Current source functions at the planning pin establish: data root comes from config.yml, not an invented DATA_DIR override; GMI fixed columns drop unknown fields; rights registry caches by path; Earnings production_registry includes Apple/four homebuilders; the workspace validator returns None; venue:symbol identities differ from Data OS SEC IDs; default1970 aliases are not historical evidence. These are source-function findings, not a fresh company-wide runtime census.
+
+Plan routes are proposed read-only POSTs under the existing paid API, not mutation endpoints. Current approved crosswalk anchors remain distinct from broad research slices. The UI and evidence drawer use one authorized input-generation selection, current rights and principal/request-epoch checks. Source-history differs from actual system replay. The review clarifies that restricted URLs/content must not leak through errors; legitimate entitled source traversal remains available under rights.
+
+## Verification and limitations
+
+15/15 checks validate document structure, exact spec coverage, syntax and explicit stage constraints. Four malformed document/matrix cases were rejected. Fresh-directory commands exited zero and reproduced three outputs byte-for-byte. Zero product tests; no new source verification, predictive validation, independent review, Agent OS validator, CI acceptance, merge, deployment or browser proof.
+
+Portable full-content Git fingerprints match canonical plan/review readbacks. The raw-download attempt returned no file because its URL-view prerequisite was unmet; no download success claimed or unchanged retry made. The bundle contains the local scripts/requirements/results for reproducibility; the canonical plan itself contains every requirement mapping and fixture specification, so continuity does not depend on that attachment.
 
 ## Effects and next action
 
-Effects through pickup: research/design/checkpoint documents only. This update advances the same owner file. EFFECT_UNKNOWN: none observed. Active children, Executive Jobs/Attempts and reciprocal watchers: none created by this operation. No product/schema/source-template/native-data/live-basket/rank/entry/size/trade effect. Preserve incumbents #7773 shared assertion, #7462 store, #7669 shared template and #7664 board-builder custody until task-relevant current reconciliation.
+All current-turn effects are original-carrier planning/review/checkpoint documents only. EFFECT_UNKNOWN: none observed. Active children, jobs, attempts and watchers: none created by this operation. No counterpart is awaiting an invented ACK/START/STOP. No product/schema/source-template/native-data/live-basket/rank/entry/size/trade effect or custody transfer.
 
-Exact next action: freeze task-relevant current source pins and author the B implementation plan with concrete native interfaces, tests, release evidence and narrow gate-dependent scope. The intended later Fable method is already selected; do not ask the Chairman to select a worker/provider again.
+This checkpoint's revision is established by its write receipt and exact readback. PR metadata should project that resulting head and the implementation-plan review gate. The next action is Chairman plan review, followed by the final exact-revision Fable orchestration packet and lawful delivery/assignment; no background execution is claimed. Keep PR #7780 draft/HOLD, and do not auto-merge.
