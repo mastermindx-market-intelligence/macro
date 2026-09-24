@@ -611,3 +611,55 @@ export provider snapshots/transcripts, or create another transport/result/lifecy
    the actionless disposable canary.
 
 Parent mission remains incomplete; no install/browser/provider/production acceptance exists.
+
+
+## Continuation update — #836 exact-head green and independent review released
+
+Current protected Mastermind is `bab1291ba7163bf091354181066ab26cf8a0c0ea`.
+Skillpack remains `mastermind.sol_skillpack.v1` 1.0.1 / bootstrap 1 and the required
+INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/REVIEW_RETURN/RECONCILE_STATE/dialogue-close
+procedure was reloaded from this exact revision.
+
+Protected movement from prior pin `e03eacbf...` is two commits / eleven paths:
+Paper/Studio Direct compatibility plus provider-capacity observation. Fresh comparison shows zero
+direct overlap with #651/#933/#936/#836 and no Web-Sol/Wake/RuntimeBinding/cognition-result interface
+movement. No ancestry-only branch refresh is required by this movement.
+
+### #836 current gate
+- current exact head: `e8d54e6423b3d8a8f450740a9db0c7eff92828ae`
+- hosted CI: `35959500341` = SUCCESS
+- last generated merge ref:
+  `56f4a7846ec20a4dc25d16caf6b1e95b6889a374 = merge(e8d54e64..., e03eacbf...)`
+- PR remains Draft; CI green is source evidence only.
+- exact-head/current-protected release comment: #836 comment `5808622536`.
+
+The existing independent review child was released from PRE_START hold after fresh-reading the exact
+Slack carrier:
+- operation: `web-sol-r7-independent-review-r4-20260921-sol-001`
+- receiver: ChatGPT3 / GitHub `mastermindx-3`
+- carrier: `D0BREV7RDCN/1790226208.084549`
+- release edge timestamp: thread reply `1790229689.665239`
+- state after release: DELIVERY_SENT / PICKUP_ALLOWED, but **not** PICKUP_ACK / START / RESULT until those
+  edges actually appear.
+
+Required next #836 edge:
+`PICKUP_ACK -> START -> one exact-head GitHub APPROVE or bounded REQUEST_CHANGES -> RESULT -> STOP`.
+Do not create another review child while this carrier remains valid.
+
+### Other source gates unchanged
+- #651 `afc4e21e...`: exact-head CI SUCCESS; independent repaired-head re-review still owed.
+- #933 `073646db...`: exact-head CI SUCCESS; independent review still owed.
+- #936 `86fa8b52...`: dependency-integrated CI SUCCESS; review remains held behind #836 on ChatGPT3
+  unless a lawful independent receiver is rebound before START.
+
+### R1/R2 next capability edge
+If #836 receives independent semantic/current-base acceptance, the next modifying source action is
+the already-frozen R1 vertical on the incumbent Web-Sol transport:
+`SUBMIT_COGNITION_ASSIGNMENT` + `OBSERVE_COGNITION_RESULT`, both closed typed actions, no generic
+prompt/text API and no transcript/provider-snapshot export.
+
+R2 remains the existing `OPERATOR_HARNESS` owner via a managed local Web-Sol adapter process.
+The first real proof remains an actionless self-contained cognition canary before any #890 tool-bearing
+research expansion.
+
+Parent mission remains incomplete; no install/browser/provider/production acceptance exists.
