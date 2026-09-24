@@ -663,3 +663,81 @@ The first real proof remains an actionless self-contained cognition canary befor
 research expansion.
 
 Parent mission remains incomplete; no install/browser/provider/production acceptance exists.
+
+
+## Continuation update — reviewer-pickup gate and R1 custody proof
+
+This section records the current hard boundary after #836 exact-head CI turned green and the existing
+independent review carrier was released.
+
+### Protected source / transport reality
+- current protected Mastermind: `bab1291ba7163bf091354181066ab26cf8a0c0ea`
+- protected Web-Sol package is still **0.2.0**
+- protected `SurfaceAction` contains only `INSPECT / FOREGROUND / TYPED_REENTRY`
+- protected extension manifest is version `0.2.0`
+- protected source has **no** `SUBMIT_CONTINUATION` or semantic result-observe action
+
+Therefore the currently accepted/protected Web-Sol runtime cannot lawfully wake an exact ChatGPT
+reviewer session by submitting a continuation. The newer continuation/semantic-ACK path exists only on
+the unaccepted #836 candidate and may not be used as production authority.
+
+The connected Studio/Remote Desktop surface can run generic host commands, but using shell/AppleScript/
+generic UI automation to type into a reviewer chat would bypass the exact RuntimeBinding/session-target
+transport guarantees under review. That shortcut is explicitly not used.
+
+Slack's available connector surface exposes user/profile lookup but no actual reviewer-session
+presence/wake primitive. DELIVERY_SENT remains DELIVERY_UNCONSUMED until the receiver emits
+PICKUP_ACK/START.
+
+### Current reviewer gates
+All three current review carriers were freshly read after the latest evidence-producing actions:
+- #836 / ChatGPT3 / `mastermindx-3`:
+  `D0BREV7RDCN/1790226208.084549`; exact head `e8d54e64...`; CI SUCCESS; review released for pickup;
+  **no PICKUP_ACK / START / RESULT**.
+- #651 / ChatGPT2 / `mastermindx-2`:
+  `D0BRLGE0BBN/1790155189.800099`; exact head `afc4e21e...`; CI SUCCESS; current-protected update sent;
+  **no PICKUP_ACK / START / RESULT**.
+- #933 / ChatGPT1 / `MastermindX1`:
+  `D0BSB763FRN/1790226451.766309`; exact head `073646db...`; CI SUCCESS; current-protected update sent;
+  **no PICKUP_ACK / START / RESULT**.
+- #936 remains green but its ChatGPT3 review child is PRE_START HOLD behind #836.
+
+GitHub requested-reviewer census:
+- #836: `MastermindX1`, `mastermindx-3`; exact commit-author set includes MastermindX1, so
+  `mastermindx-3` is the requested independent reviewer.
+- #651: `MastermindX1`, `mastermindx-2`, `mastermindx-3`; candidate authors are
+  `chriswong6031-creator` / `Sol`.
+- #933: `MastermindX1`, `mastermindx-3`; candidate author is `chriswong6031-creator`.
+- #936: `mastermindx-3`; candidate author is `chriswong6031-creator`.
+
+Do not manufacture approval from the current GitHub seat `chriswong6031-creator`.
+
+### R1 source custody preflight
+Fresh open-PR census found:
+- #836 is the only live open PR owning the Web-Sol protocol source family relevant to the next transport
+  extension.
+- plausible open Web/Operator PRs (#847/#364/#473/#839/#706 and sampled #647/#504/#608/#838/#600) do
+  not own the R1 protocol/native-host/background/content/client seam.
+- no open competing carrier was found for
+  `_web_sol_native_host_impl.py`, `web_sol_extension/background.js`,
+  `web_sol_extension/content.js`, or `web_sol_client.py`.
+
+Thus after #836 independent acceptance + proper writer release, R1 can lawfully open one bounded writer
+for the already-frozen typed assignment-submit/result-observe vertical without source collision. Do not
+open that writer before #836 acceptance.
+
+### Exact blocking edge
+The highest-leverage next machine action is unavailable because the required independent reviewer
+sessions have not consumed their already-valid deliveries, and the protected exact-session wake path
+does not yet exist.
+
+The minimum external edge that unblocks the critical path is:
+`ChatGPT3 reviewer session consumes D0BREV7RDCN/1790226208.084549 -> PICKUP_ACK -> START -> exact-head
+#836 GitHub verdict -> RESULT -> STOP`.
+
+After that:
+- APPROVE => adjudicate/release #836 and start bounded R1 source implementation.
+- REQUEST_CHANGES => repair only #836 incumbent carrier and rerun exact-head CI/review.
+- once ChatGPT3 is terminal on #836, its held #936 review may resume or be lawfully rebound before START.
+
+Parent mission remains incomplete.
