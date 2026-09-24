@@ -1,44 +1,46 @@
 {
   "operation": "reference-rethink-20260921",
-  "mission": "A beautiful, intuitive Market Guide and contextual Macro explanations, powered by the existing bilingual registry",
+  "mission": "Replace the confusing text-first reference/glossary experience with an intuitive Market Guide plus in-context explanations on Macro",
   "mission_complete": false,
   "production_changed": false,
-  "finalization_classification": "ALL_SCOPED_LANES_BLOCKED",
-  "boundary": "R8 context-host mutation repaired and browser-proven; real Macro composition and production migration still held",
-  "protected_authority_pin": "a0b31114d5d645e73da1333f7258092034a54c34",
-  "source_subject": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
-  "view_subject": "a7b5827dad123a69f963fceec4dfad89d41dd891",
-  "integrated_main": "259477158b3363aee5a704946b9b46a1309708dc",
+  "finalization_classification": "MORE_WORK_EXISTS",
+  "boundary": "R13 user-ready source isolated and fully standalone-qualified; real Macro consumer projection remains action-blocked and independent acceptance absent",
+  "protected_authority_pin": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "source_subject": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+  "view_subject": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+  "integrated_main": "6db3af31f12259acd0ea8d6286c0bbbcff6c99ef",
   "carrier": "claude/reference-rethink-20260921",
   "pr": 7647,
   "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
   "candidate_artboards": 20,
-  "last_material_delta": "Context mode no longer changes the supplied host class or clears host content on dispose; RED-first unit coverage plus real Chromium synthetic-host proof passed.",
+  "last_material_delta": "Retained explicit Market Guide landing + contextual current-reading card + validated caller interpretation alignment; reverted noisy natural-language search experiment on same carrier.",
   "local_tests": {
     "python": 68,
-    "node": 56,
-    "total": 124,
+    "node": 60,
+    "total": 128,
     "python_cleanup_warnings": 6,
-    "fresh_this_turn": true,
-    "note": "Fresh at R8 implementation bytes; the separate ci_pack -k probe selected no tests and is not counted as a pass/failure of guide behavior."
+    "fresh_this_turn": true
   },
   "focused_browser_proof": "Superseded by full current-source standalone qualifier at 0ece90fc7b3d17b48cb7252327f03fae680ab4d5",
-  "proof_ceiling": "Shared context-component host invariance, not actual Macro embedding, independent acceptance or deployment",
+  "proof_ceiling": "Exact-head standalone/source-backed guide qualification; not actual Macro embedding, independent acceptance, merge, deployment or production proof",
   "preview": "r7-evidence/guide.html",
   "original_r3_proof": "r3-realpath/remaining-routes.json remains historical at 49f462dc67f6ea850a77d261a8a1a6a8f810b6df; do not claim 184 R3 cases as freshly run on R4",
-  "context_mode": "Built and hardened: context mount/open/dispose leaves caller-owned host content/class unchanged. Synthetic real-browser DOM proof passes; actual Macro composition remains unproven.",
+  "context_mode": "Built and hardened: host/title/URL/language ownership preserved; current-reading text/as-of plus allowed interpretation state can be supplied by the caller. Full Macro mount remains unproven.",
   "blocked_lanes": {
-    "macro_integration": "Fresh real site/macro composition read/diagnostic explicitly refused by OpenAI safety-status check in the new tool generation; lane frozen without reroute. Synthetic host-browser proof does not clear it.",
-    "reference_migration": "Independent Reference Integrity/design approval remains absent; incumbent #6792 stays OPEN/DRAFT at 7853ffeaca41d4d8f33995b1453db2be134ce8a3 with independent REQUEST_CHANGES evidence. No production template custody taken.",
-    "independent_acceptance": "GitHub reviewer mastermindx-2 remains requested on #7647; no returned review/START/acceptance observed.",
+    "macro_integration": "Production canonical-registry -> Lens consumer projection write was explicitly refused before dispatch in the current tool generation. EFFECT_NONE; do not retry/rephrase/failover. Actual Macro browser embedding remains unproven.",
+    "reference_migration": "#6792 remains OPEN/DRAFT at 7853ffeaca41d4d8f33995b1453db2be134ce8a3 with independent REQUEST_CHANGES evidence. No reference template/builder/evidence custody taken.",
+    "independent_acceptance": "Reviewers mastermindx-2 and mastermindx-3 are requested on #7647; no submitted review/START/acceptance observed.",
     "hosted_ci_detail": "Exact prior download destination absent and no process; reconciled same-carrier artifact-download attempt now explicitly refused. No bypass or hosted-green claim.",
-    "release": "Requires accepted design/reference, real integration and concluded current-base CI; Draft/Hold remains.",
-    "current_base": "Observed origin/main 2b2cae6a148f920b5c4e7ebd8df19ed14b159f5a moved dashboard/theme since the integrated base. Open #7859 touches dashboard risk-detail region, not the LOOK UP block in the consumed patch; current-base composition proof still owed."
+    "release": "Requires real Macro integration, independent design/reference acceptance, current-head hosted CI, merge/deploy and live proof.",
+    "current_base": "Observed origin/main 2b2cae6a148f920b5c4e7ebd8df19ed14b159f5a moved dashboard/theme since the integrated base. Open #7859 touches dashboard risk-detail region, not the LOOK UP block in the consumed patch; current-base composition proof still owed.",
+    "dashboard_same_file": "#7859 remains OPEN/DRAFT and touches templates/dashboard.html.j2 in Risk Detail/volatility. Consumed patch is disjoint from Look up, but current-base same-file composition remains owed before production acceptance.",
+    "risk_watch_copy": "Engine says watch is an early flag with 21d 13% vs 17.8% base. Registry wording collapses Calm + Watch. RED proved wording gap; exact registry edit was explicitly refused before dispatch, so no source mutation occurred.",
+    "current_reading_fresh_visual": "Fresh post-cleanup synthetic current-reading browser evidence generation was explicitly refused before dispatch. Do not rebind earlier screenshots to the cleaned subject."
   },
-  "effects": "R8 implementation da3c09d30e212fa0a82179cd31528b1ef8164a15 and evidence head d6ff03d8e105c5832ff13eb07602abe998b75dd6 were pushed once on the original carrier and remote readback matched. No production mutation or unresolved source/push/worker effect.",
+  "effects": "Unready search experiment reverted on same carrier; retained UX source is 4ca095c5eef1d790f42c5ed60445425c96d60281. Full exact-head standalone browser qualifier passed. Production consumer/registry/Paper/current-reading evidence refused actions were pre-dispatch EFFECT_NONE; no effect uncertainty.",
   "active_children": [],
   "autonomous_return_path": null,
-  "principal_judgment": "CRITICAL_PATH_SHORTCUT: directly remove the concrete host-mutation defect while the real-Macro safety lane and independent-review/source-custody lanes remain blocked.",
+  "principal_judgment": "Reject beautifying the bottom Look up rack as the end-state; move explanations beside the actual instruments and remove the rack only after verified in-context coverage is complete.",
   "do_not_redo": [
     "Do not recreate Paper artboards",
     "Do not create a second editorial store",
@@ -52,29 +54,36 @@
     "Do not claim standalone matrix proof as Macro embedding",
     "Do not label requested review as START or acceptance",
     "Do not reintroduce context-mode host class/content mutation",
-    "Do not call synthetic host-browser proof actual Macro embedding"
+    "Do not call synthetic host-browser proof actual Macro embedding",
+    "Do not reintroduce the rejected noisy natural-language search without a materially new permitted implementation path",
+    "Do not beautify the bottom Look up rack as the final UX; migrate explanations in context",
+    "Do not retry/rephrase/failover the refused production consumer-projection or registry wording actions",
+    "Do not claim earlier current-reading screenshots are bound to the cleaned R13 subject"
   ],
-  "next_action": "Consume independent reference/design review and reconcile incumbent #6792 custody; when the separate safety-status boundary changes, run the real Macro composition proof and only then wire/accept the production contextual consumer.",
+  "next_action": "When the exact production consumer-projection action is permitted, wire canonical registry copy into existing Macro Lens for Market State Score + Risk Radar with deep-link fallbacks, then real-path browser proof before expanding to the remaining four Look up entries.",
   "intended_resume_surface": "Same operation and PR; reconcile exact remote/local head and source custody before changes",
-  "proof": "r8-evidence/context-browser.json; R8_CONTEXT_HOST_HARDENING.md; preserved R7 and R5 evidence at their bound subjects.",
+  "proof": "r11-evidence/qualification.json; r13-evidence/current-base.json; R13_USABILITY_RELEASE_RECONCILIATION.md",
   "independent_review": {
-    "requested_reviewer": "mastermindx-2",
+    "requested_reviewers": [
+      "mastermindx-2",
+      "mastermindx-3"
+    ],
     "carrier": "macro#7647",
     "requested": true,
     "started": false,
     "acceptance": false
   },
-  "ci_enrollment": "SOURCE_REPAIRED and locally verified through existing census/selection; hosted latest-head proof pending",
+  "ci_enrollment": "SOURCE_REPAIRED and present in current-base merge-tree; prior hosted failure was an unrelated contract-delta path-scope defect fixed on main by 8db6896dab21. Fresh hosted exact-head result still owed after publication.",
   "recovery": {
     "device": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
-    "local_head": "d6ff03d8e105c5832ff13eb07602abe998b75dd6",
-    "last_remote_head": "d6ff03d8e105c5832ff13eb07602abe998b75dd6",
+    "local_head": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+    "last_remote_head": "93cb7f0b3f0e1d656902121495bd40ff9107cb92",
     "prior_handoff_sha": "c3b2a849f929e15043f84da2ddd89eb5efb5e4d2",
     "sha_disagreement": "Prior PR text named an incorrect local SHA; original-carrier git log and exact two-file patch establish d18ddc1e9623 as the actual fix.",
     "download_destination_exists": false,
     "matching_download_processes": 0,
     "download_reconciliation": "The exact prior hosted-plan destination is absent and no matching download runs. No source or push effect was ambiguous.",
-    "push_verified": true
+    "push_verified": false
   },
   "targeted_browser_proof": {
     "scope": "Targeted real-source Chromium proof of existing heading repair; not Macro integration or deployment",
@@ -123,5 +132,17 @@
     "guide_view_sha256": "151da3992101f7b7c0b12cd01f69b8a0116027ce76ba2f4f077bcf5226048a28"
   },
   "published_implementation": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
-  "published_evidence_head": "d6ff03d8e105c5832ff13eb07602abe998b75dd6"
+  "published_evidence_head": "d6ff03d8e105c5832ff13eb07602abe998b75dd6",
+  "r13_qualification": {
+    "source_commit": "4ca095c5eef1d790f42c5ed60445425c96d60281",
+    "checks_passed": 13,
+    "entries": 46,
+    "detail_journeys": 184,
+    "screenshots": 48,
+    "no_js_entries": 46,
+    "errors": [],
+    "external_requests": [],
+    "receipt": "r11-evidence/qualification.json"
+  },
+  "r13_product_ruling": "Use existing site Lens for Macro contextual explanations; full Market Guide keeps richer guide/detail UI. Remove Look up row only after all six entries have verified in-context replacements."
 }
