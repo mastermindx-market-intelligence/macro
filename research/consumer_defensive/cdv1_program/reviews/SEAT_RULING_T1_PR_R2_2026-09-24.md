@@ -17,3 +17,9 @@ Authority: Fable Meta-CEO seat for CDV-1. Input: `OPUS_T1_PR_REVIEW_R2_2026-09-2
 
 ## Verification the seat will apply
 Probe suite green in the clean venv (`pip install pytest pyyaml`), original suite green with the updated assertions, `grep -nE 'Fourth Quarter|Prior (Diluted|Core)|Volume Conventions|Core Reconciliation|current_year' engine/company_intelligence/pg_profile.py` empty, then a final Opus round bounded to R7–R13.
+
+## Addendum (seat, after the probe suite was frozen)
+
+- **R14 (vocabulary the probes fix).** The literal bodies in `tests/test_pg_economic_observations_probes.py` define the P&G release conventions the extractor MUST accept as definition-owned vocabulary: rows "Diluted Net Earnings per Common Share" and "Core EPS"; period columns in calendar-year / "Three Months Ended" / "{Ordinal} Quarter Fiscal Year {fy}" forms; the "Net Sales Change Drivers" table with columns "Volume with Acquisitions & Divestitures", "Volume Excluding Acquisitions & Divestitures", "Foreign Exchange", "Price", "Mix", "Other", "Net Sales Growth" and a "Total P&G" row; the combined "Volume/Mix" line. These come from P&G's public release format, not from the fixture, and may be encoded in the metric definitions.
+- **R15 (P8 subject rule).** An absence's `subject` may be the metric key plus a combined-presentation descriptor (it must contain both "volume" and "mix" for the combined line); the validator's `subject == metric` check is relaxed to `subject.startswith(metric)` or an explicit combined-subject form.
+- **R16 (probe file is frozen).** `tests/test_pg_economic_observations_probes.py` is wired into the `earnings-economic-dossier` job (`paths:` and `run:`) and is read-only for every lane; P9 may be refused by the fact-id rule rather than the dash rule after the repair — either refusal is acceptable.
