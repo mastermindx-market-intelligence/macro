@@ -93,3 +93,17 @@ def test_rights_module_reads_this_registry():
                 pass
             else:  # pragma: no cover — the gate silently passing is the defect
                 raise AssertionError(f"{fam}: emission gate passed while {klass}")
+
+
+def test_sec_edgar_family_is_display_ok_but_never_redistributable():
+    """SEC filings are public-domain federal works: display with attribution is
+    granted; redistribution as a dataset is not (auth_class is keyless_public,
+    not house). Admitted 2026-09-24 for Finance Intelligence and the
+    Semiconductor B witnesses; the rights module must read it fresh."""
+    from engine.theme_graph import rights
+    assert rights.rights_class("sec_edgar") == "direct_display_ok"
+    assert rights.auth_class("sec_edgar") == "keyless_public"
+    assert rights.licensing_for_family("sec_edgar") == (True, True, False)
+    _, families = rights.load_registry_snapshot()
+    assert families["sec_edgar"]["review"]["date"] == "2026-09-24"
+    rights.assert_current_emission_allowed(["sec_edgar"], snapshot=rights.load_registry_snapshot())

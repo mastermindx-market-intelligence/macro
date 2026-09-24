@@ -16,7 +16,7 @@
 # this registry governs GMI emissions only — it does not retro-gate owner products.
 
 version: 1
-updated: "2026-08-14"
+updated: "2026-09-24"
 
 families:
   mastermind_curated:
@@ -39,6 +39,13 @@ families:
     source_route: "同花顺 concept boards via collectors/china_ths_concepts.py (complete-or-fail receipts, weekly cadence from 2026-08-15)"
     review: { date: "2026-08-14", by: "gmi-w3a", outcome: "same posture as finviz_themes — internal-only for NEW GMI emissions; existing cn owner surfaces grandfathered; bundle the display decision with the W6 escalation" }
     notes: "Concept names are zh source labels; zh-authored copy laws apply if ever displayed."
+
+  sec_edgar:
+    rights_class: direct_display_ok
+    auth_class: keyless_public
+    source_route: "SEC EDGAR Archives + submissions JSON (www.sec.gov) fetched under the SEC fair-access policy (declared User-Agent, <=10 req/s) by the Earnings Intelligence intake (scripts/refresh_event_workspaces.py) and Filing Forensics source sync"
+    review: { date: "2026-09-24", by: "gmi-semiconductor-b", outcome: "US federal government works are public domain (17 U.S.C. §105): filing text, exhibits and receipted excerpts may be displayed with SEC EDGAR attribution and a link to the filing; redistribution as a dataset is NOT claimed (auth_class keyless_public keeps licensing_redistribution_ok false). Admitted at the Finance Intelligence registry request (#7870 issuecomment-5809192409); the Semiconductor B witnesses (TSMC 6-K, onsemi 8-K) cite the same family." }
+    notes: "Family for evidence whose original source is an SEC filing. Issuer-authored exhibit text is filed into the public record; house display is attribution, never authorship. A third-party document merely attached to a filing keeps its own family."
 
   # Reserved families — rows uncommented only when an ingestion wave actually lands
   # (the corroboration evidence class ships empty in W3A; directive §29):
