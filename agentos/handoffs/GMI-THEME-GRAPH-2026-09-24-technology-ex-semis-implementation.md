@@ -44,6 +44,12 @@ verified:
   - claim: "Five failures in pre-existing market_ontology docket/ledger suites are base-inherited, not caused by this carrier."
     command: "git diff --name-only origin/<carrier>..HEAD; grep of the failing tests' inputs"
     result: "The failing tests read only research/market_intelligence_productization/*ledger*/*docket* files and four untouched engine modules; none of those paths is changed by this carrier."
+  - claim: "The bounded technology_economic_change.v1 projection does not fit the Research Vault's strict-conditional object ceiling as one object."
+    command: "grep HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES engine/research_vault/r2_store.py; compose synthetic dossiers of 10 and 20 attributed assertions through tests/test_market_ontology_technology_economic_change._compose_happy and measure compact JSON bytes"
+    result: "Store ceiling 16 KiB (r2_store.py:45). Measured: 10 assertions → 28,150 bytes; 20 assertions → 52,230 bytes; the first-unit bounds allow 50 rows / 25 cards / 100 relationships. Consequence for the HELD private path (T6 consumption of #7870 T11a, whose adapter was itself rejected against the same 16 KiB constant): a Technology dossier cannot be published as ONE conditional object — either a smaller first-unit bound, a CAS-fenced split (index object + per-section objects each under the ceiling), or a store-owner decision; not Technology's call, raised to Sol on #7793 and to the foundation owner."
+  - claim: "The three Technology suites now run on the PR merge gate, not only in nightly gate: data jobs."
+    command: "python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate code --validate-only; python3 -m pytest tests/test_ci_pack.py -q; scripts/audit_unrun_tests.py"
+    result: "Before this correction the suites were named only in neural-web-core and unrun-intl-libraries (both gate: data, which ci.yml never packs) — the same defect the foundation owner found on #7870 (its semiconductor-b-boundary job). A gate: code job technology-ex-semis-boundary (inferred scope, no curated paths) now carries all three; nightly steps kept. See the checkpoint comment for the validator/test outcome at the exact commit."
 unverified:
   - claim: "Any G2-G6 gate is closed for a live/product path."
     what_would_verify: "Exact owner receipts named in the supplement section 3: accepted assertion revision on main, R4 private-binding ruling on #7780, DDOG issuer/source/metric/perimeter admission on #7331, private role/version + writer-fencing acceptance, delivered shared mount."
