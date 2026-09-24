@@ -5444,6 +5444,7 @@ jobs:
     scope: exclusive
     paths:
       - "tests/test_options_payoff_lab_consumer.py"
+      - "tests/test_options_skew_source_note.py"
       - "tests/test_build_options_command.py"
       - "templates/options.html.j2"
       - ".github/workflows/engine-render.yml"
