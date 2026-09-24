@@ -346,7 +346,9 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         }
 
     capture = result.get("capture") or {}
-    if result.get("qualified") and (
+    state = _selected_state(path)
+    selected = state.get("capture") or {}
+    if result.get("qualified") and selected and (
         not isinstance(capture.get("source_generation"), str)
         or not capture.get("source_generation")
     ):
@@ -356,8 +358,6 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
             "failure_code": "NO_SOURCE_GENERATION",
             "rows": [],
         }
-    state = _selected_state(path)
-    selected = state.get("capture") or {}
     if result.get("qualified"):
         if selected:
             if (capture.get("source_generation") or "") < (selected.get("source_generation") or ""):
@@ -433,8 +433,10 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
 
         def write_parquet(staged):
             frame.to_parquet(staged, engine="pyarrow")
-        _write_staged(path, write_parquet)
-        parquet_digest = _digest(path)
+
+        staged_parquet = path.with_name(f".{path.name}.{os.getpid()}.staged")
+        write_parquet(staged_parquet)
+        parquet_digest = _digest(staged_parquet)
         if state["legacy"]:
             coverage = {
                 "earliest_qualified_generation": generation,
@@ -461,10 +463,12 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         }
         previous_parquet = path.read_bytes() if path.exists() else None
         staged_backup = sidecar.with_name(f".{path.name}.{os.getpid()}.backup")
+        staged_sidecar = sidecar.with_name(f".{sidecar.name}.{os.getpid()}.tmp")
         try:
             payload = _json_dumps(receipt)
             if previous_parquet is not None:
                 staged_backup.write_bytes(previous_parquet)
+            staged_sidecar.write_bytes(payload.encode("utf-8"))
         except Exception:
             return {
                 "promoted": False, "reason": "METADATA_WRITE_FAILED",
@@ -472,11 +476,11 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
             }
 
         try:
-            _write_staged(path, write_parquet)
             _write_staged(
-                sidecar,
-                lambda staged: staged.write_bytes(payload.encode("utf-8")),
+                path,
+                lambda staged: staged.write_bytes(staged_parquet.read_bytes()),
             )
+            os.replace(staged_sidecar, sidecar)
         except Exception:
             if previous_parquet is None:
                 path.unlink(missing_ok=True)
@@ -488,6 +492,8 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
             }
         finally:
             staged_backup.unlink(missing_ok=True)
+            staged_sidecar.unlink(missing_ok=True)
+            staged_parquet.unlink(missing_ok=True)
         return {"promoted": True, "reason": None, "predecessor": _digest(sidecar)}
 
     refresh = {
