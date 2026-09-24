@@ -437,7 +437,11 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         }
         try:
             payload = _json_dumps(receipt)
-            staged_sidecar = sidecar.with_name(f".{sidecar.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+            staged_sidecar = (
+                sidecar.parent / f".{sidecar.name}.{os.getpid()}.{uuid.uuid4().hex}"
+                / sidecar.name
+            )
+            staged_sidecar.parent.mkdir(parents=True, exist_ok=True)
             staged_sidecar.write_bytes(payload.encode("utf-8"))
         except Exception:
             return {
@@ -456,6 +460,7 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         finally:
             if staged_sidecar.exists():
                 staged_sidecar.unlink()
+            staged_sidecar.parent.rmdir()
         return {"promoted": True, "reason": None, "predecessor": _digest(sidecar)}
 
     refresh = {
