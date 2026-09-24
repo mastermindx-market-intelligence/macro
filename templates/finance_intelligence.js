@@ -439,17 +439,6 @@
   // helpers
   // ──────────────────────────────────────────────────────────────────────────
   function isZh() { return document.documentElement.getAttribute('data-lang') === 'zh'; }
-
-  // data-aria-en/zh: aria-label is an attribute, so l-en/l-zh cannot swap it —
-  // page-local swapper on theme.js's document-level 'langchange' (house idiom, commodities.html.j2).
-  function applyAriaLang() {
-    var zh = isZh();
-    var els = document.querySelectorAll('[data-aria-en]');
-    for (var i = 0; i < els.length; i++) {
-      var v = zh ? (els[i].getAttribute('data-aria-zh') || els[i].getAttribute('data-aria-en')) : els[i].getAttribute('data-aria-en');
-      if (v) els[i].setAttribute('aria-label', v);
-    }
-  }
   function copyPair(pair) { return isZh() ? (pair[1] || pair[0]) : pair[0]; }
   function labelFor(map, key) {
     if (!key) return copyPair(FI_LABELS[map] && FI_LABELS[map][''] || LABEL_FALLBACKS[map] || ['—', '—']);
@@ -1418,7 +1407,6 @@
       renderConstraints();
       renderProvenance();
       if (state.drawer.source) renderDrawer(state.drawer.source.record_id);
-      applyAriaLang();
     });
 
     handleHash();
@@ -1428,8 +1416,6 @@
   // Boot — single read
   // ──────────────────────────────────────────────────────────────────────────
   function boot() {
-    applyAriaLang();
-    document.addEventListener('langchange', applyAriaLang);
     var mainEl = document.getElementById('fi-main');
     FI_READ_URL = mainEl ? (mainEl.getAttribute('data-fi-read-url') || '').trim() : '';
     if (!FI_READ_URL) {

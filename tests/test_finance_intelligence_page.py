@@ -469,8 +469,6 @@ def test_shell_ships_the_not_connected_binding_until_integration():
     assert "not_connected: ['Not yet connected to the evidence service.', '尚未接入证据服务。']" in js
     rendered = (root / "site" / "finance_intelligence.html").read_text(encoding="utf-8")
     assert 'data-fi-read-url=""' in rendered
-    # page-local ARIA swapper runs at boot (before the endpoint check) and on langchange
-    assert "function applyAriaLang()" in js
-    assert "document.addEventListener('langchange', applyAriaLang);" in js
+    # the page-local ARIA swapper stays the inline template script (asserted above)
     css = (root / "templates" / "finance_intelligence.css").read_text(encoding="utf-8")
     assert '.fi-shell[data-state="not-connected"] .fi-meta { display: none; }' in css
