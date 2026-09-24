@@ -398,6 +398,13 @@ class _Selection:
         self.assertions.sort(key=lambda a: a["curation_revision"])
         if slug_keyed:
             self.limitations.add(f"scope_slug_keyed:{slug_keyed}")
+        self.known_revisions = {
+            item.get("curation_revision") for item in bundle.assertions
+            if isinstance(item, Mapping)}
+        absent = sum(1 for block in bundle.interpretation_blocks
+                     if not self._inputs_known(block))
+        if absent:
+            self.limitations.add(f"interpretation_inputs_absent:{absent}")
         # RBV-27: partial rights show a partial state and NEVER name the
         # withheld families (deliberate divergence from the shared owner's
         # ``omitted:<name>`` limitation).
@@ -508,6 +515,14 @@ class _Selection:
     def interpretation_blocks(self) -> list[dict[str, Any]]:
         chosen = []
         for block in self.bundle.interpretation_blocks:
+            if not self._inputs_known(block):
+                # Sol #7780 5814333887 §4: refusal includes dependent prose.
+                # An input the bundle does not carry at all is what an
+                # upstream rights drop looks like from here, so the block is
+                # WITHHELD (counted once in limitations), never labelled
+                # through. Inputs that are present but not live stay the
+                # visible ``[stale interpretation]`` case.
+                continue
             if self.query.time_mode == "system_replay":
                 reviewed = block.get("reviewed_at")
                 if not isinstance(reviewed, str) \
@@ -516,6 +531,10 @@ class _Selection:
             chosen.append(dict(block))
         chosen.sort(key=lambda b: b.get("interpretation_id", ""))
         return chosen
+
+    def _inputs_known(self, block: Mapping[str, Any]) -> bool:
+        refs = block.get("input_revisions") or []
+        return all(isinstance(ref, str) and ref in self.known_revisions for ref in refs)
 
     # -- identity ------------------------------------------------------------
 
@@ -707,78 +726,127 @@ def _graph(rows: list[dict[str, Any]], selection: _Selection) -> tuple[dict, boo
 # Companies
 # ---------------------------------------------------------------------------
 
-_ACQUIRER_MARKERS = ("acquires", "acquired", "acquire", "acquisition",
-                     "purchase of", "purchases", "buys")
-_SELLER_MARKERS = ("sale to", "sale of", "sells", "sold", "divest", "transferring",
-                   "transfer of", "transfers", "change of")
-_PARTY_RUN = re.compile(r"\b[A-Z][A-Za-z0-9&.'-]*(?:\s+[A-Z][A-Za-z0-9&.'-]*)*")
-_RUN_STOPWORDS = frozenset({"the", "a", "an", "its", "in", "whose", "this", "that",
-                            "and", "it"})
-_CLAUSE_RESET = frozenset({"and", "while", "whereas", "plus", "also"})
+# Verb and noun markers; a noun marker (``sale``, ``acquisition``) carries no
+# agent of its own, so the slot rules in ``_subject_is_agent`` decide whose it is.
+_ACQUIRER_MARKERS = ("acquires", "acquired", "acquire", "acquisition", "purchase", "buys")
+_SELLER_MARKERS = ("sale", "sells", "sold", "divest", "transferring", "transfer",
+                   "change of")
+_ALL_MARKERS = _ACQUIRER_MARKERS + _SELLER_MARKERS
+_PARTY_RUN = re.compile(r"\b[A-Z][A-Za-z0-9&.-]*(?:\s+[A-Z][A-Za-z0-9&.-]*)*")
+_RUN_STOPWORDS = frozenset({
+    "the", "a", "an", "its", "in", "whose", "this", "that", "and", "it", "i",
+    # corporate suffixes are part of a name, never a party on their own
+    "inc", "ltd", "corp", "co", "se", "ag", "plc", "llc", "gmbh", "sa", "nv", "ab",
+    "kk", "limited", "corporation", "company", "holdings", "group"})
+_CLAUSE_RESET = frozenset({"and", "while", "whereas", "plus", "also", ";"})
 _RELATIVE_BINDERS = frozenset({"whose", "which", "who", "that"})
 _PASSIVE_AUX = frozenset({"was", "were", "is", "are", "been", "being"})
-_AGENT_WINDOW_TOKENS = 4
+_SEGMENT_END = re.compile(r"[;.]|\b(?:whose|which|that|and|while|whereas)\b")
+_COUNTERPARTY_SLOT = re.compile(
+    r"\b(?:of|from|to)\s+(?:(?:the|a|an|its|their|all|any|certain)\s+)?")
+_BY_AGENT = re.compile(r"\bby\s+")
 
 
 def _subject_mentions(label: object) -> frozenset[str]:
     text = str(label or "").strip()
     if not text:
         return frozenset()
-    mentions = {text.lower()}
-    first = text.split()[0]
-    if len(first) >= 4:
-        mentions.add(first.lower())
-    return frozenset(mentions)
+    mentions = {text.lower(), text.split(",")[0].strip().lower()}
+    first = text.split()[0].strip(",.").lower()
+    if len(first) >= 3 and first not in _RUN_STOPWORDS:
+        mentions.add(first)
+    return frozenset(m for m in mentions if m)
 
 
-def _agent_is_subject(sentence: str, marker_start: int, marker_end: int,
+def _party_runs(sentence: str, mentions: frozenset[str]) -> list[tuple[int, int, bool]]:
+    """Named parties in ``sentence`` as (start, end, is_subject): capitalised
+    runs (minus stop/suffix words) plus every case-insensitive subject mention."""
+    runs: list[tuple[int, int, bool]] = []
+    for match in _PARTY_RUN.finditer(sentence):
+        text = match.group(0)
+        words = [w.strip(".,").lower() for w in text.split()]
+        if all(w in _RUN_STOPWORDS for w in words):
+            continue
+        low = text.lower().strip(".,")
+        is_subject = low in mentions or any(m.startswith(low + " ") or low.startswith(m + " ")
+                                            for m in mentions)
+        runs.append((match.start(), match.start() + len(text), is_subject))
+    low_sentence = sentence.lower()
+    for mention in mentions:
+        for match in re.finditer(r"(?<![a-z])" + re.escape(mention) + r"(?![a-z])", low_sentence):
+            if not any(a <= match.start() < b for a, b, _ in runs):
+                runs.append((match.start(), match.end(), True))
+    return sorted(runs)
+
+
+def _subject_is_agent(sentence: str, marker_start: int, marker_end: int,
                       mentions: frozenset[str]) -> bool:
-    """Whether the verb at ``sentence[marker_start:marker_end]`` is anchored to
-    the assertion's SUBJECT (the role holder).
+    """Whether the verb at ``sentence[marker_start:marker_end]`` has the
+    assertion's SUBJECT as its agent — and not as its patient/counterparty.
 
-    Closed rule, no guessing: (1) an explicit agent phrase ``by <party>`` right
-    after the verb decides it; (2) otherwise the nearest party run within a
-    few tokens before the verb is the agent (a relative binder such as
-    ``whose`` keeps that party as the agent; a clause reset such as ``and``
-    hands the clause back to the subject); (3) a passive auxiliary right
-    before the verb means the preceding party is the patient, so the agent
-    is unknown; (4) no party at all = the implicit subject of the
-    ``establishes`` sentence, which is the assertion's subject by contract.
+    Closed slot rules, no guessing; every unknown resolves to *not anchored*:
+    (1) an explicit agent phrase ``by <party>`` in the verb's segment decides
+    it; (2) the subject in a counterparty slot (``of/from/to <subject>``) is
+    the patient, never the agent; (3) otherwise the nearest party before the
+    verb in the clause is the agent (relative binders keep that party; a
+    clause reset or another verb hands the clause back to the implicit
+    subject; a passive auxiliary means the agent is unnamed); (4) an implicit
+    subject is accepted only when the sentence names at least one party — a
+    sentence that names nobody cannot anchor anything.
     """
-    runs = [(m.start(), m.end(), m.group(0)) for m in _PARTY_RUN.finditer(sentence)
-            if m.group(0).lower() not in _RUN_STOPWORDS]
+    text = sentence
+    runs = _party_runs(text, mentions)
 
-    def run_at(position: int) -> str | None:
-        for run_start, run_end, run in runs:
-            if run_start <= position < run_end:
+    def run_at(position: int) -> tuple[int, int, bool] | None:
+        for run in runs:
+            if run[0] <= position < run[1]:
                 return run
         return None
 
-    # (1) explicit agent phrase after the verb, before any clause boundary
-    tail = sentence[marker_end:]
-    boundary = re.search(r"[,;.]", tail)
-    tail = tail[: boundary.start()] if boundary else tail
-    by = re.search(r"\bby\s+", tail)
-    if by:
-        agent = run_at(marker_end + by.end())
-        if agent is not None:
-            return agent.lower() in mentions
-    # (2)/(3) tokens immediately before the verb
-    head = sentence[:marker_start]
-    tokens = [(m.start(), m.group(0)) for m in re.finditer(r"\S+", head)]
-    for offset, token in reversed(tokens[-_AGENT_WINDOW_TOKENS:]):
+    # the verb's own segment: up to a boundary or the next marker
+    low = text.lower()
+    seg_end = len(text)
+    boundary = _SEGMENT_END.search(low, marker_end)
+    if boundary:
+        seg_end = boundary.start()
+    for marker in _ALL_MARKERS:
+        nxt = low.find(marker, marker_end)
+        if nxt != -1:
+            seg_end = min(seg_end, nxt)
+    segment_start = marker_start
+    # (1) explicit agent phrase
+    for by in _BY_AGENT.finditer(low, marker_end, seg_end):
+        run = run_at(by.end())
+        return run is not None and run[2]
+    # (2) subject in a counterparty slot = patient
+    for slot in _COUNTERPARTY_SLOT.finditer(low, segment_start, seg_end):
+        run = run_at(slot.end())
+        if run is not None and run[2]:
+            return False
+    # (3) nearest party before the verb, within the clause; a parenthetical
+    # right before the verb is an aside about the party that precedes it
+    depth = 0
+    for match in reversed(list(re.finditer(r"\S+", text[:marker_start]))):
+        token = match.group(0)
+        if token.endswith(")") or token.endswith("),"):
+            depth += 1
+        if depth:
+            if token.startswith("("):
+                depth -= 1
+            continue
         word = token.strip(",;:'\"()").lower()
+        run = run_at(match.start())
+        if run is not None:
+            return run[2]
         if word in _PASSIVE_AUX:
             return False
-        if word in _CLAUSE_RESET:
-            return True
-        run = run_at(offset)
-        if run is not None:
-            return run.lower() in mentions
-        if word in _RELATIVE_BINDERS:
-            continue
-    # (4) implicit subject
-    return True
+        if word in _CLAUSE_RESET or token.endswith(";"):
+            break
+        if any(word.startswith(m.split()[0]) for m in _ALL_MARKERS):
+            break
+        # relative binders and ordinary words: keep scanning back
+    # (4) implicit subject, only in a sentence that names somebody
+    return bool(runs)
 
 
 def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
@@ -792,7 +860,7 @@ def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
         for side, markers in (("acquirer", _ACQUIRER_MARKERS), ("seller", _SELLER_MARKERS)):
             for marker in markers:
                 for match in re.finditer(r"\b" + re.escape(marker), low):
-                    if _agent_is_subject(piece, match.start(), match.end(), mentions):
+                    if _subject_is_agent(piece, match.start(), match.end(), mentions):
                         sides.add(side)
     return sides
 

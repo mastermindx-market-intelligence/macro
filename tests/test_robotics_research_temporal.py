@@ -272,10 +272,12 @@ def test_replay_excludes_unreviewed_interpretation_blocks():
 
 
 def test_stale_interpretation_is_marked_not_hidden():
+    # staleness = the block's inputs are IN the bundle but the block is no
+    # longer current (freshness); it stays visible, labelled, never healed
     query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
     case = load_case("witness_perception_orbbec_twinny")
     block = {**case["bundle"]["interpretation_blocks"][0],
-             "input_revisions": ["gmirca_" + "0" * 32]}
+             "freshness": "superseded"}
     rebuilt = dataclasses.replace(bundle,
                                   interpretation_blocks=(block,))
     response = robotics.compose_robotics_research(query, rebuilt)
@@ -288,6 +290,41 @@ def test_stale_interpretation_is_marked_not_hidden():
     assert response["summary"]["status"] == "degraded"
     # the observation it leaned on stays visible in the composition view
     assert len(response["industrial_views"]["composition"]["rows"]) == 1
+
+def test_interpretation_with_an_input_absent_from_the_bundle_is_withheld():
+    # Sol #7780 5814333887 §4: refusal includes dependent prose. An input the
+    # bundle does not carry (what an upstream rights drop looks like here)
+    # withholds the whole block: no summary text, no watcher, no offset — and
+    # the limitation counts it once without naming anything.
+    query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
+    case = load_case("witness_perception_orbbec_twinny")
+    original = case["bundle"]["interpretation_blocks"][0]
+    block = {**original, "input_revisions": ["gmirca_" + "0" * 32]}
+    rebuilt = dataclasses.replace(bundle, interpretation_blocks=(block,))
+    response = robotics.compose_robotics_research(query, rebuilt)
+    texts = [item["text"] for key in ("why_it_matters", "offset", "next_evidence")
+             for item in response["summary"][key]]
+    for prose in (original.get("mechanism"), original.get("offset"),
+                  original.get("falsifier"), original.get("missing_measurement")):
+        if prose:
+            assert not any(prose in text for text in texts), prose
+    assert "interpretation_inputs_absent:1" in response["limitations"]
+    assert "interpretation_stale" not in response["limitations"]
+    assert response["summary"]["status"] == "ready"
+    # the facts the bundle does carry are untouched
+    assert len(response["industrial_views"]["composition"]["rows"]) == 1
+    # a block whose inputs are all present is still served
+    served = robotics.compose_robotics_research(query, bundle)
+    assert any(item["text"] == original["mechanism"]
+               for item in served["summary"]["why_it_matters"])
+    assert not any(l.startswith("interpretation_inputs_absent")
+                   for l in served["limitations"])
+    # evidence carries the same limitation set
+    ref = next(e["assertion_ref"] for e in response["evidence_refs"]
+               if e["kind"] == "assertion")
+    assert "interpretation_inputs_absent:1" in robotics.select_authorized_evidence(
+        query, rebuilt, ref)["limitations"]
+
 
 
 # ---------------------------------------------------------------------------

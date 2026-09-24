@@ -640,21 +640,76 @@ def test_ownership_side_comes_from_establishes_only():
 
 
 def test_ownership_side_ignores_the_counterparty_verb_inside_establishes():
-    # the counterparty is the agent of the acquire verb, in either voice: the
-    # subject's side is not established, so the neutral role is served
-    assert _zebra_role(**{"limitations.establishes": [
+    # the counterparty is the agent of the acquire verb, in either voice, or
+    # the subject sits in a counterparty slot: the subject's side is not
+    # established, so the neutral role is served
+    neutral = (
         "an announced ownership change in which Skild AI acquires the "
-        "Robotics Automation business from Zebra"]}) == "announced_party"
-    assert _zebra_role(**{"limitations.establishes": [
-        "the announced acquisition of Zebra's Robotics Automation business by Skild AI"]}) \
-        == "announced_party"
-    # a passive verb with no agent phrase anchors to nobody
-    assert _zebra_role(**{"limitations.establishes": [
-        "Zebra's Robotics Automation business was acquired"]}) == "announced_party"
-    # a relative clause binds the verb to the nearer party, not the subject
-    assert _zebra_role(**{"limitations.establishes": [
-        "Zebra announced the sale to Skild AI, whose acquisition closes later"]}) \
-        == "announced_seller"
+        "Robotics Automation business from Zebra",
+        "the announced acquisition of Zebra's Robotics Automation business by Skild AI",
+        "the announced acquisition of Zebra's Robotics Automation business",
+        "an announced acquisition, by Skild AI, of the Robotics Automation business",
+        "an announced acquisition (by Skild AI) of the Robotics Automation business",
+        "an announced purchase of Zebra's Robotics Automation business",
+        "an announced sale of the Skild AI perception unit to Zebra",
+        "an announced sale to Zebra Technologies of the Skild AI perception unit",
+        "an announced transfer of the Robotics Automation business from Skild AI to Zebra",
+        "an announced ownership change in which Skild AI (a robotics foundation-model "
+        "developer) acquires the business",
+        "an announced ownership change in which Skild AI, a foundation-model developer, "
+        "acquires the business",
+        "Zebra announced that Skild AI acquires the Robotics Automation business",
+        "Skild AI purchases the Robotics Automation business from Zebra",
+        "Skild AI buys the Robotics Automation business",
+        # passive verbs with no agent phrase anchor to nobody
+        "Zebra's Robotics Automation business was acquired",
+        "Zebra's Robotics Automation business was acquired by Skild AI",
+        "the unit was sold",
+        "the business is acquired",
+        # a sentence that names nobody cannot anchor anything (lower-case
+        # counterparties are invisible to the party grammar on purpose)
+        "skild ai acquires the robotics automation business",
+    )
+    for sentence in neutral:
+        assert _zebra_role(**{"limitations.establishes": [sentence]}) == "announced_party", sentence
+    anchored = (
+        ("Zebra announced the sale to Skild AI, whose acquisition closes later", "announced_seller"),
+        ("Zebra Technologies divests the Robotics Automation business to Skild AI", "announced_seller"),
+        ("Zebra, whose parent Skild AI acquires the remaining stake, announced the sale "
+         "to Skild AI", "announced_seller"),
+        ("the business was sold by Zebra to Skild AI", "announced_seller"),
+        ("an announced sale by Zebra of its Robotics Automation business to Skild AI",
+         "announced_seller"),
+        ("the announced divestiture of the Robotics Automation business, which Skild AI "
+         "acquires", "announced_seller"),
+        ("Zebra (Nasdaq: ZBRA) sells the Robotics Automation business to Skild AI",
+         "announced_seller"),
+        ("an announced acquisition of a perception software business by Zebra",
+         "announced_acquirer"),
+        ("Zebra acquires Skild AI's perception unit", "announced_acquirer"),
+    )
+    for sentence, role in anchored:
+        assert _zebra_role(**{"limitations.establishes": [sentence]}) == role, sentence
+
+
+def test_ownership_side_matches_comma_and_short_subject_labels():
+    assert robotics._ownership_role({
+        "predicate": "OWNERSHIP_EVENT", "statement_mode": "ANNOUNCED_ARRANGEMENT",
+        "subject": {"source_business_label": "Zebra Technologies, Inc."},
+        "limitations": {"establishes": [
+            "Zebra Technologies, Inc. sells the Robotics Automation business"]},
+    }) == "announced_seller"
+    assert robotics._ownership_role({
+        "predicate": "OWNERSHIP_EVENT", "statement_mode": "ANNOUNCED_ARRANGEMENT",
+        "subject": {"source_business_label": "ABB Ltd"},
+        "limitations": {"establishes": ["ABB acquires the robotics unit"]},
+    }) == "announced_acquirer"
+    assert robotics._ownership_role({
+        "predicate": "OWNERSHIP_EVENT", "statement_mode": "ANNOUNCED_ARRANGEMENT",
+        "subject": {"source_business_label": "PTC"},
+        "limitations": {"establishes": [
+            "the announced change of the ThingWorx and Kepware businesses to TPG"]},
+    }) == "announced_seller"
 
 
 def test_view_reasons_are_the_shared_closed_set_and_never_contradict_the_selection():
