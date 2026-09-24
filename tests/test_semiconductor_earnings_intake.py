@@ -746,3 +746,29 @@ def test_end_to_end_52_53_week_issuer_still_refuses_when_no_named_date_is_in_tol
                             body=_q2_exhibit("Quarters Ended October 3, 2025 December 31, 2025 April 3, 2026"))
     assert refused == []
     assert "drift=270d, tolerance=6d" in capsys.readouterr().out
+
+
+def test_stated_period_end_candidates_parse_comma_tight_dates_and_stop_on_prose() -> None:
+    cands = refresh_mod._stated_period_end_candidates(_q2_exhibit("Quarters Ended July 3,2026 April 3, 2026"))
+    assert cands == [date(2026, 7, 3), date(2026, 4, 3)]
+    assert refresh_mod._stated_period_end_candidates(
+        _q2_exhibit("quarter ended July 3, 2026. On July 8, 2026 the Company")) == [date(2026, 7, 3)]
+
+
+def test_end_to_end_ambiguous_refusal_names_the_ambiguity(monkeypatch, capsys) -> None:
+    ambiguous = _run_52_53_q2(monkeypatch, external_ids={"results_form": "8-K", "fiscal_calendar": "52_53_week"},
+                              body=_q2_exhibit("Quarters Ended October 3, 2025 June 30, 2026 July 3, 2026"))
+    assert ambiguous == []
+    assert "ambiguous: 2 named period ends within tolerance" in capsys.readouterr().out
+
+
+def test_end_to_end_unparseable_filing_date_is_skipped_not_raised(monkeypatch, capsys) -> None:
+    dom = _synthetic_issuer(cik="0009990002", ticker="DOM", external_ids={"results_form": "8-K"})
+    bad_row = {**_ON_LIKE_Q2_ROW, "filingDate": "2026-08-03T00:00:00Z"}
+    revisions = _run_discovery(
+        monkeypatch, ticker="DOM", issuer=dom, profile=_null_profile("DOM"),
+        rows=[bad_row], headers={bad_row["accessionNumber"]: _ON_LIKE_SGML},
+        exhibits={bad_row["accessionNumber"]: {"ef20072220_ex99-1.htm": _exhibit("quarter ended June 30, 2026")}},
+    )
+    assert revisions == []
+    assert "unparseable filingDate" in capsys.readouterr().out

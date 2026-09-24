@@ -902,7 +902,7 @@ _DATE_TOKEN_RE = re.compile(r"\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4})")
 
 
 def _parse_stated_date(raw: str) -> date | None:
-    raw = raw.replace(",", "")
+    raw = re.sub(r",\s*", " ", raw)  # "July 3,2026" (comma-tight) parses like "July 3, 2026"
     for fmt in ("%B %d %Y", "%b %d %Y"):
         try:
             return datetime.strptime(raw, fmt).date()
@@ -917,7 +917,8 @@ def _stated_period_end_candidates(exhibit_body: str) -> list[date]:
     A flattened multi-column table header names SEVERAL dates after one
     phrase — onsemi's free-cash-flow table reads "Quarters Ended October 3,
     2025 December 31, 2025 April 3, 2026 July 3, 2026", oldest first — so the
-    consecutive dates trailing each phrase are all candidates. Used ONLY by
+    consecutive dates trailing each phrase are all candidates (four quarter-end
+    dates in that header; a fifth column is a change column). Used ONLY by
     the 52/53-week tolerance path; a calendar-quarter issuer keeps the exact
     first-match rule of :func:`_stated_period_end` unchanged.
     """
@@ -1313,17 +1314,32 @@ def discover_new_homebuilder_revisions(
         # would raise ``maps to no issuer at <asof>`` for it and kill the whole
         # refresh — TSMC's first-ever discovery reached its Q1-2025 results 6-K
         # this way. Skip it here, on the raw row, before any per-accession
-        # fetch. A listing without valid_from covers every date, so the
-        # homebuilders' path is byte-identical.
+        # fetch. The check is the resolver's own question (is THIS ticker
+        # listed at that date — ``IssuerRegistry.resolve_ticker`` filters by
+        # ``ListingAlias.covers``); a listing without valid_from covers every
+        # EDGAR-era date (ALIAS_EPOCH 1970-01-01), so the homebuilders' path
+        # is byte-identical.
         row_filing_date = str(row.get("filingDate") or "")
-        if row_filing_date and not issuer.listings_at(date.fromisoformat(row_filing_date)):
-            print(
-                "::warning title=event-workspaces-discovery-skip::"
-                f"{ticker}: accession {row_accession} filed {row_filing_date} precedes the "
-                f"issuer identity's attested listing; skipped rather than minting a guessed identity",
-                flush=True,
-            )
-            continue
+        if row_filing_date:
+            try:
+                row_filed = date.fromisoformat(row_filing_date)
+            except ValueError:
+                print(
+                    "::warning title=event-workspaces-discovery-skip::"
+                    f"{ticker}: accession {row_accession} has an unparseable filingDate "
+                    f"{row_filing_date!r}; skipped rather than minting a guessed identity",
+                    flush=True,
+                )
+                continue
+            if ticker not in issuer.tickers_at(row_filed):
+                print(
+                    "::warning title=event-workspaces-discovery-skip::"
+                    f"{ticker}: accession {row_accession} filed {row_filing_date} precedes the "
+                    f"issuer identity's attested listing; skipped rather than minting a guessed identity",
+                    flush=True,
+                )
+                continue
+
         event_id = canonical_event_id(issuer.company_id, fiscal_period)
 
         if event_id not in timelines:
@@ -1356,6 +1372,7 @@ def discover_new_homebuilder_revisions(
         # "52_53_week"``.  A 10-day drift is still rejected, even for a
         # 52/53-week issuer — outside the tolerance.
         tolerance_days = _fiscal_period_tolerance_days(issuer)
+        ambiguity_note = ""
         stated_drift = (
             None if stated_end is None
             else abs((stated_end - fiscal_period.calendar_end).days)
@@ -1374,13 +1391,15 @@ def discover_new_homebuilder_revisions(
             if len(within) == 1:
                 stated_end = within[0]
                 stated_drift = abs((stated_end - fiscal_period.calendar_end).days)
+            elif len(within) > 1:
+                ambiguity_note = f"; ambiguous: {len(within)} named period ends within tolerance"
         if stated_drift is None or stated_drift > tolerance_days:
             print(
                 "::warning title=event-workspaces-discovery-skip::"
                 f"{ticker}: accession {row_accession} computed fiscal quarter end "
                 f"{fiscal_period.calendar_end} does not match the exhibit's own stated "
                 f"period end ({stated_end!r}; drift={stated_drift}d, "
-                f"tolerance={tolerance_days}d); skipped rather than minting a guessed identity",
+                f"tolerance={tolerance_days}d{ambiguity_note}); skipped rather than minting a guessed identity",
                 flush=True,
             )
             continue

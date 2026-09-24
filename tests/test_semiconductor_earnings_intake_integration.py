@@ -79,6 +79,12 @@ TSM_ROWS = [  # every 6-K TSMC filed 2026-07-01 .. 2026-08-31, newest first, as 
 
 # text documents of each filing's -index-headers.html (GRAPHIC/XBRL rows omitted; they never matter)
 TSM_MANIFESTS = {
+    # the real Q1-2025 results manifest: stubbed so the pre-identity test OWNS the regression it cites —
+    # on the parent commit discovery fetched this manifest and its exhibit, then the builder raised
+    # "TSM maps to no issuer at 2025-04-17"; now the row never reaches a fetch.
+    "0001046179-25-000035": [("6-K", "tsm-20250417x6k.htm", "6-K"),
+                             ("EX-99.1", "a1q25e_withguidancexfinal.htm", "EX-99.1"),
+                             ("EX-99.2", "a1q25presentatione.htm", "EX-99.2")],
     TSM_RESULTS_ACCESSION: [("6-K", "tsm-20260716x6k.htm", "6-K"),
                             ("EX-99.1", "a2q26e_withguidancexfinal.htm", "EX-99.1"),
                             ("EX-99.2", "a2q26presentatione.htm", "EX-99.2")],
@@ -130,7 +136,7 @@ ON_Q2_ROWS = [  # every 8-K onsemi filed 2026-08-01 .. 2026-08-31
 ON_Q2_MANIFESTS = {ON_Q2_RESULTS_ACCESSION: ON_Q2_BARE_EX99_MANIFEST}
 
 # Q2-shaped look-alike of the synthetic exhibit: labels/dates rolled one quarter, and — as in the real
-# Q2-2026 release — a free-cash-flow table whose "Quarters Ended" header runs five quarters oldest-first
+# Q2-2026 release — a free-cash-flow table whose "Quarters Ended" header names four quarter ends oldest-first
 # BEFORE the summary table, so first-match dating would read October 3, 2025.
 ON_Q2_SYNTHETIC_EXHIBIT = (
     "<table><tr><td>FREE CASH FLOW</td></tr>"
@@ -291,7 +297,8 @@ def test_tsm_results_filed_before_the_attested_listing_are_skipped_never_built(m
     before any per-accession fetch, and the 2026 results are still admitted."""
     revisions, fetched = _discover(
         monkeypatch, ticker="TSM", cik=TSM_CIK, rows=TSM_ROWS + TSM_PRE_IDENTITY_ROWS, manifests=TSM_MANIFESTS,
-        bodies={TSM_RESULTS_ACCESSION: TSM_SYNTHETIC_EXHIBIT},
+        bodies={TSM_RESULTS_ACCESSION: TSM_SYNTHETIC_EXHIBIT,
+                "0001046179-25-000035": TSM_SYNTHETIC_EXHIBIT.replace("second quarter ended June 30, 2026", "first quarter ended March 31, 2025")},
     )
     assert [payload["sources"][0]["filing_key"]["accession"] for _eid, payload in revisions] == [TSM_RESULTS_ACCESSION]
     out = capsys.readouterr().out
