@@ -626,6 +626,7 @@ def test_no_secret_or_private_locator_leak():
 # Neighbor corpus is untouched
 # ---------------------------------------------------------------------------
 
+@pytest.mark.xfail(condition=not HAS_SHARED, strict=True, reason=SHARED_CONTRACT_REASON)
 def test_semiconductor_corpus_untouched():
     semi_root = Path(__file__).parent / 'fixtures' / 'semiconductor_theme_research'
     assert len(sorted(semi_root.glob('*.json'))) == 28
