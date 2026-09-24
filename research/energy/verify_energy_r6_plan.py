@@ -94,6 +94,11 @@ result = {
     "implementation_started": False,
     "fable_handoff_issued": False,
     "claim_limit": "Planning/spec integrity only. Does not prove shared-interface acceptance, source rights/admission, product implementation, tests, deployment, browser behavior, predictive validity or Fable receipt.",
+    "check_corrections": [
+        "Initial privacy check expected private/no-store but the plan correctly specifies Cache-Control: private, no-store; check grammar corrected only.",
+        "Initial R5 check used a case-sensitive Forecast-year match; corrected to case-insensitive without changing the requirement.",
+        "Initial authority check expected all-false authority while the spec says all decision authority false; corrected to the exact equivalent semantics.",
+    ],
     "checks": checks,
 }
 OUT.write_text(json.dumps(result, indent=2) + "\n")
