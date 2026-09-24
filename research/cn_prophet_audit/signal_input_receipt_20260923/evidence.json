@@ -1,7 +1,7 @@
 {
-  "schema": "cn_signal_input_receipt.diagnostic.v1",
+  "schema": "cn_signal_input_receipt.evidence.v1",
   "mission_complete": false,
-  "implemented": false,
+  "implemented": true,
   "branch": "claude/cn-signal-input-receipt-20260923",
   "base": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
   "procedure_pin": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
@@ -15,11 +15,47 @@
     "raw_log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
     "normalization": "trailing whitespace only"
   },
-  "later_added_type_safety_tests": "NOT_YET_EXECUTED",
-  "source_write": "PLATFORM_REFUSED_BEFORE_EFFECT",
-  "source_unchanged_on_readback": true,
+  "later_added_type_safety_tests": "PASS",
+  "source_write": "SUCCEEDED_ON_ORIGINAL_CARRIER_AFTER_RECOVERY",
+  "source_unchanged_on_readback": false,
   "regression_patch_sha256": "08d8919bebac8e43549ec0860bfb394910c666180e3c0a37bbbc6962a4d8086b",
-  "runtime_or_trading_policy_changed": false,
   "new_pr": null,
-  "publication_scope": "Diagnostic and prospective test patch only; runtime engine unchanged; no PR or deployment."
+  "publication_scope": "Native serializer repair plus existing Chinese consumer tests; no deployment or trading-policy change.",
+  "historical_diagnostic": {
+    "implemented": false,
+    "source_write": "PLATFORM_REFUSED_BEFORE_EFFECT",
+    "source_unchanged_on_readback": true,
+    "red_tests": {
+      "failed": 12,
+      "passed": 7,
+      "log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+      "raw_log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+      "normalization": "trailing whitespace only"
+    },
+    "later_added_type_safety_tests": "NOT_YET_EXECUTED",
+    "publication_scope": "Diagnostic and prospective test patch only; runtime engine unchanged; no PR or deployment.",
+    "runtime_or_trading_policy_changed": false
+  },
+  "state": "BUILT_NOT_PROVEN",
+  "current_source_sha256": {
+    "engine/signal_gate.py": "6e055a8ace0b59fe178e4a31d81cf2aee40d508c9ae4a32d104807f23f31ccff",
+    "tests/test_signal_gate.py": "83f15ec7e766945217c2d03b48077b8e2becde5184c5a1eddb586a887b0573b0",
+    "tests/test_china_board_rank.py": "6e4b178fc63db0cbd86705acbda41d3a3baf3c5f7bdbcf9c718da7fe7724b217"
+  },
+  "qualified_tests": {
+    "passed": 200,
+    "failed": 0,
+    "log": "qualified-tests.txt",
+    "sha256": "a184c0ec5c8638e839cbe2789b2cd41b274971cf30db73a8ec0fc70fa76699f1"
+  },
+  "current_main": "f84d9c882b7fabf87835e6c630ad9b4ab1f69fca",
+  "compatibility": "Main #7825 adds validity_block and NYSE imports; serializers unchanged there. Our bounded repair preserves that function; integrated proof pending.",
+  "metadata_write_reconciliation": "Earlier timeout: unchanged file and no matching process proved no completed/active metadata mutation; same-carrier update only.",
+  "runtime_source_changed": true,
+  "trading_policy_changed": false,
+  "initial_green": {
+    "passed": 70,
+    "warnings": "six unrelated pytest temporary-directory cleanup warnings; subsequent run uses task-local basetemp",
+    "log_sha256": "61f90de70273d7a2530af01ce588876848aae1f18ebdcaf4387d6da4e42237bf"
+  }
 }
