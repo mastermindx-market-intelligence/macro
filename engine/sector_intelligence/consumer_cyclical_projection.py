@@ -919,9 +919,13 @@ def _build_explanation(selected_results: Sequence[Mapping[str, Any]]) -> dict[st
     """
     keys = [str(r.get("key")) for r in selected_results]
     keys_set = set(keys)
-    has_advertising_revenue = FACT_KEY_ADVERTISING_REVENUE in keys_set
-    has_advertising_expense = FACT_KEY_ADVERTISING_EXPENSE in keys_set
-    has_total_revenue = FACT_KEY_TOTAL_REVENUE in keys_set
+    # ``selected_results`` are RESULT envelopes, so they are keyed
+    # ``<metric>_change`` — comparing them against the FACT_KEY_* constants
+    # (``advertising_revenue``) never matched, so the R6 7.1 lead was
+    # unreachable and every document fell through to the neutral lead.
+    has_advertising_revenue = RESULT_KEY_ADVERTISING_REVENUE_CHANGE in keys_set
+    has_advertising_expense = RESULT_KEY_ADVERTISING_EXPENSE_CHANGE in keys_set
+    has_total_revenue = RESULT_KEY_TOTAL_REVENUE_CHANGE in keys_set
     if has_total_revenue and has_advertising_revenue and has_advertising_expense:
         lead = _LEAD_FULL
     else:

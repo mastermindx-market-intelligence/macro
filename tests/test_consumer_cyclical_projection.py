@@ -938,3 +938,27 @@ def test_explanation_carries_no_ranking_or_sizing_authority() -> None:
     assert explanation["counterevidence"]
     assert explanation["next_observation"]
     assert explanation["does_not_prove"]
+
+
+def test_full_case_emits_the_r6_economic_lead_not_the_neutral_fallback() -> None:
+    """The lead is what a user reads first, so it must carry the R6 7.1 reading.
+
+    Regression: the selector compared the FACT_KEY_* constants against RESULT
+    keys, so the economic lead was unreachable and every document silently
+    fell through to the neutral "admitted without inference" fallback.
+    """
+    explanation = project_economic_change(_fixture_case())["explanation"]
+    lead = explanation["lead"]
+    assert "nearly matching expense" in lead
+    assert "one-for-one" in lead
+    assert "admitted without inference" not in lead
+
+
+def test_a_degraded_case_falls_back_to_the_neutral_lead() -> None:
+    """The economic lead is only claimed when its three results are all ready."""
+    case = _fixture_case()
+    case["facts"] = [
+        f for f in case["facts"] if not f["key"].startswith("advertising_expense")
+    ]
+    explanation = project_economic_change(case)["explanation"]
+    assert "nearly matching expense" not in explanation["lead"]

@@ -28,12 +28,11 @@ decisions:
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
-    status: awaiting_ci
+    status: done
     next_action: >
-      Carry PR #7942 to squash-merge on concluded-green. Contract + fixture +
-      contract tests + pure projection + tests + exclusive CI gate, under the
-      merged contracts/sector_intelligence family, carrying no transport mount
-      identity.
+      Merged as PR #7942 (squash 6e3e8987c5c6, 2026-09-24T13:07:49Z) and verified
+      live from main: all six R6 7.1 golden values exact from native_admitted
+      false facts, 0 schema errors, 61 tests green on the merged tree.
   - id: CC-V1-ENTITLED
     title: "V1 entitled + browser legs"
     status: todo
@@ -66,8 +65,9 @@ do_not_redo:
   - "The R8 native-staging denial: never retry, rephrase, re-home or delegate around it"
   - "The V1 boundary adjudication itself - see DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
 next_action: >
-  Carry PR #7942 to squash-merge on concluded-green, then return the four
-  external blockers above to Sol. Do not widen into V2/V3/V4.
+  Return the four external blockers to Sol using
+  research/consumer_cyclical/v1/V1_RETURN_TO_SOL.md. Do not widen into
+  V2 LTH / V3 LULU / V4 theme journey before V1 returns.
 ---
 
 ## Scope
