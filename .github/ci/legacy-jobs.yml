@@ -5382,6 +5382,42 @@ jobs:
     gate: code
     # First production caller of engine/options_catalyst_link.py. Hermetic:
     # tmp_path and injected inputs only. No data/ or site/ bytes.
+    # CURATED SCOPE (2026-09-23, B-HEAL-CI-PACK-CEILING-2). Without this,
+    # inference resolves the ledger-lane / session-digest opaque edges in the
+    # closure into whole-tree fallback claims — engine/**, scripts/**, data/**
+    # — and this job fallback-matched scripts/build_free_content.py and
+    # engine/prophet/plan_book.py in tests/test_ci_pack.py::
+    # test_exclusive_curation_narrows_ordinary_code_prs (130 > 129 and
+    # 127 > 125). The block above is right: the suites are hermetic, so the
+    # tree claims are smear, curated away at the source. Every path below is
+    # EARNED: the 19-file import closure inference derives, plus the two
+    # workflow files test_options_catalyst_links_nightly_shape.py reads as
+    # TEXT (inference cannot see a read_text by relative path). Widening is
+    # the safe direction: a new import fails the closure-coverage audit by
+    # name — add it here.
+    scope: exclusive
+    paths:
+      - "tests/test_build_options_catalyst_links.py"
+      - "tests/test_options_catalyst_link.py"
+      - "tests/test_options_catalyst_links_nightly_shape.py"
+      - ".github/workflows/daily.yml"
+      - ".github/ci/legacy-jobs.yml"
+      - "scripts/build_options_catalyst_links.py"
+      - "scripts/build_options_signal_episode.py"
+      - "engine/__init__.py"
+      - "engine/earnings_blackout.py"
+      - "engine/earnings_catalyst.py"
+      - "engine/event_calendar.py"
+      - "engine/ledger_lane.py"
+      - "engine/options_catalyst_link.py"
+      - "engine/options_signal_episode.py"
+      - "engine/options_signal_episode_contract.py"
+      - "engine/session_digest.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/plane.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5404,6 +5440,40 @@ jobs:
     # "mastermind.options_payoff_lab/v1"); no network, no store read.  Never a
     # gate: data job (options-estate-guards, workflow-yaml, unrun-* never run in
     # PR packs); never a waiver row.
+    # CURATED SCOPE (2026-09-23, B-HEAL-CI-PACK-CEILING-2). Without this,
+    # inference resolves scripts/build_options_command.py's jinja
+    # FileSystemLoader into whole-tree fallback claims — templates/**,
+    # site/**, config/**, research/**, tools/** — and this job
+    # fallback-matched templates/index.html in tests/test_ci_pack.py::
+    # test_exclusive_curation_narrows_ordinary_code_prs (weight 5,810 >
+    # the 5,800 ceiling). The suite reads ONE template, not the tree. Every
+    # path below is EARNED: the 14-file import closure inference derives
+    # (scripts.build_options_command pulls lib/ and engine.session_digest),
+    # plus .github/workflows/engine-render.yml, which the suite reads as
+    # TEXT for its R2-restore step pins. Widening is the safe direction: a
+    # new import fails the closure-coverage audit by name — add it here.
+    scope: exclusive
+    paths:
+      - "tests/test_options_payoff_lab_consumer.py"
+      - "tests/test_options_skew_source_note.py"
+      - "tests/test_build_options_command.py"
+      - "templates/options.html.j2"
+      - ".github/workflows/engine-render.yml"
+      - "scripts/build_options_command.py"
+      - "config/site_access.yml"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      - "engine/session_digest.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/options_coverage.py"
+      - "lib/pages.py"
+      - "lib/seo.py"
+      # Literal site references inside tests/test_build_options_command.py,
+      # which the suite imports for its helpers (closure-coverage audit).
+      - "site/flow_desk.json"
+      - "site/options.html"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5422,6 +5492,38 @@ jobs:
     # never runs it. This is the gate: code home. Those two mentions stay.
     # Deps measured in a clean 3.12 venv: `pip install pytest pyyaml jinja2`
     # is sufficient. The suite imports nothing further.
+    # CURATED SCOPE (2026-09-23, B-HEAL-CI-PACK-CEILING-2). "Imports nothing
+    # further" is true of the suite file and false of its closure:
+    # engine/uk_policy_brain.py reaches 133 first-party files (policy_watch,
+    # whitehouse, marketing, neuralweb, metabolism, codex_lane, collectors,
+    # lib). Inference also resolved test_panel_renders_every_state's jinja
+    # FileSystemLoader into a templates/** fallback claim, and this job
+    # fallback-matched templates/index.html in tests/test_ci_pack.py::
+    # test_exclusive_curation_narrows_ordinary_code_prs (weight 5,810 > the
+    # 5,800 ceiling). The suite reads ONE template. Every path below is
+    # EARNED: engine/**/*.py and scripts/**/*.py are the SUBJECT of
+    # test_no_scoring_path_imports_this_desk (it rglobs both trees and
+    # asserts no file but scripts/build_whitehouse.py imports the desk), so
+    # they stay — this job still rides scripts/build_free_content.py and
+    # engine/prophet/plan_book.py on purpose; collectors/**, lib/**,
+    # config/** are the closure's trees; the fixture, the sentinel workflow
+    # and the template are read as data. Widening is the safe direction: a
+    # new import fails the closure-coverage audit by name — add it here.
+    scope: exclusive
+    paths:
+      - "tests/test_uk_policy_brain.py"
+      - "tests/fixtures/uk_policy_govuk_sample.json"
+      - ".github/workflows/whitehouse-sentinel.yml"
+      - "templates/policy_watch.html.j2"
+      - "engine/**/*.py"
+      - "scripts/**/*.py"
+      - "collectors/**"
+      - "lib/**"
+      - "config/**"
+      # Literal site artifact references in the closure (the desk's own
+      # published JSON and the liquidity-plumbing read).
+      - "site/uk_policy.json"
+      - "site/neuralwebdata/liquidity_plumbing.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15919,6 +16021,23 @@ jobs:
     # All four suites are offline and synthetic-fixture driven; the only real
     # input ever read at build time is data/regime/latest.json. This lane has
     # no trading, alerting, routing, or downstream authority.
+    #
+    # CURATED SCOPE (2026-09-23, B-HEAL-CI-PACK-CEILING-2; the follow-on
+    # B-CUR-MARKET-OS-MACRO-WORKSPACES-1 named in tests/test_ci_pack.py::
+    # test_exclusive_curation_narrows_ordinary_code_prs). The paths below
+    # were declared at birth WITHOUT `scope: exclusive`, so they were unioned
+    # under inference, and the builder's subprocess invocation
+    # (scripts/build_macro_workspaces.py:52) plus the prior-publication
+    # suite's jinja FileSystemLoader minted whole-tree fallback claims —
+    # engine/**, scripts/**, templates/**, site/**, data/** — that matched all
+    # three packing-ceiling probes this lane never reads. Same treatment as
+    # the sibling market-os-macro-suite-pages (curated at birth). Every path
+    # is EARNED: the 48-file import closure inference derives (the
+    # composers, lib/macro_suite_* and scripts/build_macro_suite_pages.py),
+    # the shell template test_macro_workspace_prior_publication.py renders
+    # by name, and its committed fixture. Widening is the safe direction: a
+    # new import fails the closure-coverage audit by name — add it here.
+    scope: exclusive
     paths:
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/**"
@@ -15943,6 +16062,20 @@ jobs:
       # Expansion 2026-09-04: Rates & Curves + Trade Flows composer suites.
       - "tests/test_macro_workspace_rates_curves.py"
       - "tests/test_macro_workspace_trade_flows.py"
+      # Curation 2026-09-23: import closure beyond the composers, the shell
+      # template the prior-publication suite renders, and its fixture.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "lib/pages.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "templates/_macro_suite_shell.html.j2"
+      - "tests/fixtures/macro_workspace_prior_publication/**"
+      # Literal site artifact reference in the closure (liquidity composer).
+      - "site/liquiditydata/global_liquidity_transmission.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:

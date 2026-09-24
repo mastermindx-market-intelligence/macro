@@ -158,7 +158,7 @@ EXPECTED = {
   ],
   "MO-PAID-023": [
     "UPGRADE_EXISTING_OWNER",
-    "BUILT_NOT_PROVEN"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-034": [
     "UPGRADE_EXISTING_OWNER",
@@ -186,7 +186,7 @@ EXPECTED = {
   ],
   "MO-PAID-013": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-014": [
     "UPGRADE_EXISTING_OWNER",
@@ -478,8 +478,8 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     r = _rows()
 
     uk = r["MO-PAID-023"]
-    assert uk["capability_state_c2"] == "BUILT_NOT_PROVEN"
-    assert "gate_off" in (uk["state_delta"] + uk["missing_contract_or_proof"])
+    assert uk["capability_state_c2"] == "PROVEN_LIVE"
+    assert "no_new" in (uk["state_delta"] + uk["missing_contract_or_proof"])
     assert "#7351" in uk["missing_contract_or_proof"]
 
     eu = r["MO-PAID-034"]
