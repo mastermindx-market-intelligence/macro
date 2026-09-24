@@ -1,4 +1,4 @@
-# Mining research: coverage and design frontier after Pass 06
+# Mining research: coverage and design frontier after Pass 07
 
 **Research cutoff:** 23 September 2026. **Status:** principal synthesis / proposed scope / HOLD. **Mission complete:** false. **Final Fable implementation handoff:** not created.
 
@@ -21,9 +21,10 @@ This is a qualitative coverage assessment, not a numerical completeness score. A
 | P03 | `MINING_BATTERY_RARE_EARTH_ECONOMICS_2026-09-23.md`, commit `e7923486007e8f98e51169636894cf045965d726` | Product conformity versus acceptance, conversion spreads, contract protection and cash definitions |
 | P04 | `MINING_URANIUM_FUEL_CYCLE_ECONOMICS_2026-09-23.md`, commit `66c77095aff61e196c0aee356ff7f0e7d08ff01b` | Commercial fuel-cycle roles, procurement horizons, inventories, backlog conditions and financing claims |
 | P05 | `MINING_BULK_FERTILIZER_ECONOMICS_2026-09-23.md`, commit `38690a0909799d5d2b80ef23ff467cd1a73006a4` | Benchmark and delivery bases, buyer value, replacement investment, input spreads and customer credit/calendar |
-| P06 | `MINING_SPECIALTY_ENABLER_ECONOMICS_2026-09-23.md`, this publication unit | Host/recovery/entitlement distinctions, finite secondary feed, selective processing and supplier value capture |
+| P06 | `MINING_SPECIALTY_ENABLER_ECONOMICS_2026-09-23.md`, commit `e2c3807f1a48f8430f9100bb019c0b66206e966e` | Host/recovery/entitlement distinctions, finite secondary feed, selective processing and supplier value capture |
+| P07 | `MINING_ALUMINIUM_ENERGY_ECONOMICS_2026-09-23.md`, this publication unit | Stage-specific net exposure, energy contract basis, collateral, conversion cash, conditional acquisitions and nonduplicative recycling |
 
-All reports sit under `research/mining/`. P06's immutable commit is supplied by the publication receipt and cumulative continuation, not invented in advance. The earlier report checks are historical; this pass does not claim to rerun them. References overlap across reports and cannot be summed into a verified unique-source census.
+All reports sit under `research/mining/`. P07's immutable commit is supplied by the publication receipt and cumulative continuation, not invented in advance. The earlier report checks are historical; this pass does not claim to rerun them. References overlap across reports and cannot be summed into a verified unique-source census.
 
 **DO_NOT_PUBLISH_DUPLICATE remains controlling for the parallel local Pass 05.** The canonical P05 blob is `42c90b4634b4b408c014b7ccb335744adb79bf48`; the parallel local report is `587ee020adec174233c42ad987f531d767b7c0ea`. They are different syntheses. The parallel file is not another canonical pass and must not inflate coverage or replace the committed work. Its source-specific leads may be investigated for a new question, but a bulk merge or an alternate-filename publication would repeat the resolved problem.
 
@@ -41,7 +42,7 @@ The entries assess what the corpus can currently support as research, not what M
 | Uranium and fuel services | P04 distinguishes procurement coverage, production, inventory, contracting, commercial services and financing | Broader asset and contract coverage remains; keep commercial economics separate from process engineering. Missing settlements limit numerical claims, not the entire domain. |
 | Iron ore and steelmaking inputs | P05 tests changing benchmark specifications, delivery bases, replacement supply and investment returns | Steel-route substitution and manganese/ferroalloy economics need targeted coverage. Do not generalize the iron-ore examples to all steel inputs. |
 | Potash, phosphate and nutrient products | P05 links product and nutrient quantities, manufacturing spreads, customer value, financing and crop calendar | Region-specific purchasing evidence is not a global elasticity model. Delivered comparisons need compatible logistics and actual product usefulness. |
-| Bauxite, alumina and aluminium | The framework recognizes separate stages, but no deep chain-specific dossier is established | This is the first next research priority: reconcile alumina/aluminium realization, electricity contracts, inventory and recycling across a vertically integrated and a less-integrated issuer. |
+| Bauxite, alumina and aluminium | P07 now compares integrated and purchased-input economics, power contracts and collateral, conversion cash, restart/tranche timing, acquisition financing and recycling stages | Representative regime coverage now exists. Actual power coefficients/profile, source-rights admission, global asset/cost coverage, customer premium and full cash/contract bridges remain incomplete. Chalco narrative is mirror-supported; its tables were not visually verified. |
 | Specialty and host-dependent metals | P06 adds gallium/germanium opportunity boundaries, primary/by-product molybdenum, tungsten and finite tailings | The host table is not company coverage for indium, tellurium, rhenium, hafnium or vanadium. Add representative routes only where they change the model or initial product scope. |
 | Mining equipment, consumables and services | P06 separates original equipment, aftermarket, acquisitions, software and customer productivity benefits | Supplier margin capture, installed-base utilization, digital recurring revenue and customer-level proof need additional evidence before quantitative claims. |
 | Thermal coal and other industrial minerals | Broad scope includes these markets, but representative end-use/contract economics remain thin | Declare limited initial coverage rather than borrowing metallurgical-coal assumptions. Select a focused contrasting case before claiming this family is researched. |
@@ -58,9 +59,9 @@ The required behavior is to keep the source facts, state the precise missing inp
 
 ### G2 — Missing economic regimes
 
-Aluminium and its energy exposure, several battery-material chains, and selected alloy/end-market distinctions could change how the model represents prices, costs, contracts and investment. These justify additional principal research before freezing the full Mining taxonomy. The purpose is to find a discriminating case, not to maximize the number of reports.
+P07 supplies representative aluminium/energy contrasts. Several battery-material chains and selected alloy/end-market distinctions still could change how the model represents prices, costs, contracts and investment. These justify additional principal research before freezing the full Mining taxonomy. The purpose is to find a discriminating case, not to maximize the number of reports.
 
-The next bounded package should address the aluminium chain first, then the most consequential battery-material gaps. It should ask whether the current model handles energy-price exposure, external feed, tolling, product substitution and customer qualification without distorting cash economics. The remaining long tail can be explicitly phased once the initial product coverage is accepted.
+The next bounded package should address the most consequential nickel/cobalt and graphite/anode gaps. It should ask whether the current model handles product/route substitution, integration versus purchased intermediates, tolling, customer qualification and funding without distorting cash economics. Do not repeat the aluminium dossiers solely to increase coverage counts. The remaining long tail can be explicitly phased once the initial product coverage is accepted.
 
 ### G3 — True design and release dependencies
 
@@ -90,7 +91,7 @@ The proposed first slice remains a small economic dossier within the existing Th
 
 The package should contain a principal-reviewed taxonomy with explicit coverage, a limited set of representative asset/company dossiers, and a source dictionary that includes observation periods, units, reporting boundaries and reuse constraints. It should specify the investor journey and the corresponding machine transformations, with counterexamples linked to the behavior they test.
 
-A requirements matrix should consolidate overlapping MN/MA/MB/fuel/MG/MS proposals into a smaller coherent set of behaviors. Repeated requirements are not independent features. For example, several cases express one rule: compare observations only when period, material, accounting scope and basis are compatible. Preserve each case as a test of the rule without creating separate control systems for it.
+A requirements matrix should consolidate overlapping MN/MA/MB/fuel/MG/MS/ME proposals into a smaller coherent set of behaviors. Repeated requirements are not independent features. For example, several cases express one rule: compare observations only when period, material, accounting scope and basis are compatible. Preserve each case as a test of the rule without creating separate control systems for it.
 
 The package must also identify what remains unknown or deliberately out of the first slice. Fable should not be asked to manufacture contracts, customer quantities or cost curves during implementation. Bounded source validation can be assigned later, but foundational domain decisions stay with the principal until resolved or explicitly scoped out.
 
@@ -98,8 +99,19 @@ Acceptance should include meaningful visible synthesis, not only a populated gra
 
 ## 7. Exact next action and held effects
 
-**Next principal action:** research a contrasting bauxite–alumina–aluminium chain with explicit energy-contract, feed, inventory and cash-flow boundaries; then close the highest-value nickel/cobalt/graphite/anode regime gaps. Use the matrix to decide which additional case changes the proposed model. Do not repeat settled dossiers or publish the parallel Pass 05.
+**Next principal action:** research contrasting nickel/cobalt and graphite/anode economics, prioritizing host dependence, product/chemistry substitution, route-specific conversion margins, qualification and funding. Aluminium/energy now has representative P07 coverage; retain its claim-specific unknowns instead of reopening the whole domain. Use the matrix to decide which additional case changes the proposed model. Do not repeat settled dossiers or publish the parallel Pass 05.
 
 After that bounded coverage work, prepare the written design against then-current native interfaces and consolidate acceptance requirements. The final Fable handoff remains held. No new principal, subagent, worker, Executive Attempt, watcher, production schema/data, basket, trade, merge or deployment is created by this document.
 
 The companion research checker verifies indexing, selected arithmetic, exact report digests and the distinction between canonical and excluded local files. It does not validate the entire corpus, rerun historical check suites, or prove a delivered capability. Publication and the current continuation revision must be established by exact GitHub receipts/readbacks. No autonomous background execution or custody transfer is implied.
+
+
+## 8. Pass 07 coverage delta and bounded design preparation
+
+P07 closes the absence of a representative aluminium/energy business-mechanism test; it does not close global coverage or native release dependencies. Its twelve dossiers and six hypothetical cases distinguish fixed/indexed electricity, delivery versus hedge basis, financial collateral, actual versus pro forma ownership, customer-specific product value and material passing through successive recycling stages. These are original principal research and proposed behavior, not an accepted contract model.
+
+The source chronology matters. Alcoa's September 23 financing completion is supported while acquisition completion is not; EGA's September 10 Eco Green closing updates an earlier pending relationship. A valid product must recognize these positive events at the correct scope without using them to invent current production or profit. The research's guidance remainder example is not independently captured consensus. Source mirrors and failed screenshot routes remain labeled.
+
+For the eventual written design, consolidate these additions into existing needs rather than new control planes: observation compatibility; conditional economic rights and time; material-flow accounting; capital/cash bridges; and a visible claim with counter-thesis and missing inputs. Their intelligence synthesis matters as much as their refusal cases. Native source rights, privacy/publication, identity, correction and actual consumer contracts still require fresh owner inspection before implementation.
+
+No earlier research checker was rerun. Historical Pass06 coverage/check evidence remains recoverable at its immutable revision; the current mutable coverage file is intentionally updated and has a new digest in the P07 receipt. Canonical Pass05 and the excluded parallel local package remain unchanged. The current research's exact source hashes and this document's new blob must be read back on the same #7795 carrier before claiming publication.
