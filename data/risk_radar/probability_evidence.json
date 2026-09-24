@@ -1,0 +1,714 @@
+{
+  "evidence_class": "reconstructed_historical",
+  "horizons": {
+    "h10": {
+      "base_rate": 0.08228980322003578,
+      "brier_skill_score": 0.07093827301748723,
+      "cells": {
+        "0.06": {
+          "composition": [
+            {
+              "hot_count": 0,
+              "n": 148,
+              "state": "calm"
+            },
+            {
+              "hot_count": 0,
+              "n": 162,
+              "state": "watch"
+            }
+          ],
+          "events": 0,
+          "n": 310,
+          "observed_minus_displayed": -0.06,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.06,
+          "thin": false
+        },
+        "0.08": {
+          "composition": [
+            {
+              "hot_count": 0,
+              "n": 97,
+              "state": "caution"
+            },
+            {
+              "hot_count": 1,
+              "n": 650,
+              "state": "caution"
+            }
+          ],
+          "events": 28,
+          "n": 747,
+          "observed_minus_displayed": -0.04251673360107095,
+          "observed_rate": 0.03748326639892905,
+          "observed_rate_ci90": [
+            0.021476,
+            0.055013
+          ],
+          "probability": 0.08,
+          "thin": false
+        },
+        "0.1": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 270,
+              "state": "caution"
+            }
+          ],
+          "events": 32,
+          "n": 270,
+          "observed_minus_displayed": 0.018518518518518517,
+          "observed_rate": 0.11851851851851852,
+          "observed_rate_ci90": [
+            0.059322,
+            0.184315
+          ],
+          "probability": 0.1,
+          "thin": false
+        },
+        "0.12": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 66,
+              "state": "caution"
+            },
+            {
+              "hot_count": 1,
+              "n": 24,
+              "state": "elevated"
+            }
+          ],
+          "events": 10,
+          "n": 90,
+          "observed_minus_displayed": -0.00888888888888889,
+          "observed_rate": 0.1111111111111111,
+          "observed_rate_ci90": [
+            0.03738,
+            0.194535
+          ],
+          "probability": 0.12,
+          "thin": true
+        },
+        "0.14": {
+          "composition": [
+            {
+              "hot_count": 4,
+              "n": 10,
+              "state": "caution"
+            },
+            {
+              "hot_count": 2,
+              "n": 8,
+              "state": "elevated"
+            }
+          ],
+          "events": 0,
+          "n": 18,
+          "observed_minus_displayed": -0.14,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.14,
+          "thin": true
+        },
+        "0.16": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 1,
+              "state": "elevated"
+            }
+          ],
+          "events": 1,
+          "n": 1,
+          "observed_minus_displayed": 0.84,
+          "observed_rate": 1.0,
+          "observed_rate_ci90": [
+            1.0,
+            1.0
+          ],
+          "probability": 0.16,
+          "thin": true
+        },
+        "0.17": {
+          "composition": [
+            {
+              "hot_count": 1,
+              "n": 46,
+              "state": "risk-off"
+            }
+          ],
+          "events": 12,
+          "n": 46,
+          "observed_minus_displayed": 0.09086956521739128,
+          "observed_rate": 0.2608695652173913,
+          "observed_rate_ci90": [
+            0.072412,
+            0.469503
+          ],
+          "probability": 0.17,
+          "thin": true
+        },
+        "0.19": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 95,
+              "state": "risk-off"
+            }
+          ],
+          "events": 25,
+          "n": 95,
+          "observed_minus_displayed": 0.07315789473684209,
+          "observed_rate": 0.2631578947368421,
+          "observed_rate_ci90": [
+            0.115312,
+            0.43044
+          ],
+          "probability": 0.19,
+          "thin": true
+        },
+        "0.21": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 100,
+              "state": "risk-off"
+            }
+          ],
+          "events": 30,
+          "n": 100,
+          "observed_minus_displayed": 0.09,
+          "observed_rate": 0.3,
+          "observed_rate_ci90": [
+            0.144928,
+            0.466157
+          ],
+          "probability": 0.21,
+          "thin": false
+        }
+      },
+      "events": 138,
+      "from": "2020-01-02T00:00:00",
+      "mean_displayed_probability": 0.0988133571854502,
+      "n": 1677,
+      "population_sha256": "e3acaa6d7d8fe7b0db8ca3c1fde3619689b663a081689ad5b3aa3c3fa29e30af",
+      "through": "2026-09-03T00:00:00",
+      "weighted_absolute_calibration_error": 0.047495527728085865
+    },
+    "h21": {
+      "base_rate": 0.17647058823529413,
+      "brier_skill_score": 0.08759769193391631,
+      "cells": {
+        "0.13": {
+          "composition": [
+            {
+              "hot_count": 0,
+              "n": 141,
+              "state": "calm"
+            },
+            {
+              "hot_count": 0,
+              "n": 159,
+              "state": "watch"
+            }
+          ],
+          "events": 4,
+          "n": 300,
+          "observed_minus_displayed": -0.11666666666666667,
+          "observed_rate": 0.013333333333333334,
+          "observed_rate_ci90": [
+            0.0,
+            0.038844
+          ],
+          "probability": 0.13,
+          "thin": false
+        },
+        "0.16": {
+          "composition": [
+            {
+              "hot_count": 0,
+              "n": 96,
+              "state": "caution"
+            },
+            {
+              "hot_count": 1,
+              "n": 650,
+              "state": "caution"
+            }
+          ],
+          "events": 91,
+          "n": 746,
+          "observed_minus_displayed": -0.038016085790884724,
+          "observed_rate": 0.12198391420911528,
+          "observed_rate_ci90": [
+            0.074072,
+            0.174791
+          ],
+          "probability": 0.16,
+          "thin": false
+        },
+        "0.19": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 270,
+              "state": "caution"
+            }
+          ],
+          "events": 67,
+          "n": 270,
+          "observed_minus_displayed": 0.05814814814814814,
+          "observed_rate": 0.24814814814814815,
+          "observed_rate_ci90": [
+            0.138377,
+            0.359869
+          ],
+          "probability": 0.19,
+          "thin": false
+        },
+        "0.22": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 66,
+              "state": "caution"
+            }
+          ],
+          "events": 16,
+          "n": 66,
+          "observed_minus_displayed": 0.02242424242424243,
+          "observed_rate": 0.24242424242424243,
+          "observed_rate_ci90": [
+            0.049919,
+            0.454545
+          ],
+          "probability": 0.22,
+          "thin": true
+        },
+        "0.25": {
+          "composition": [
+            {
+              "hot_count": 4,
+              "n": 10,
+              "state": "caution"
+            },
+            {
+              "hot_count": 1,
+              "n": 24,
+              "state": "elevated"
+            }
+          ],
+          "events": 11,
+          "n": 34,
+          "observed_minus_displayed": 0.0735294117647059,
+          "observed_rate": 0.3235294117647059,
+          "observed_rate_ci90": [
+            0.0,
+            0.615385
+          ],
+          "probability": 0.25,
+          "thin": true
+        },
+        "0.28": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 8,
+              "state": "elevated"
+            }
+          ],
+          "events": 0,
+          "n": 8,
+          "observed_minus_displayed": -0.28,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.28,
+          "thin": true
+        },
+        "0.31": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 1,
+              "state": "elevated"
+            }
+          ],
+          "events": 1,
+          "n": 1,
+          "observed_minus_displayed": 0.69,
+          "observed_rate": 1.0,
+          "observed_rate_ci90": [
+            1.0,
+            1.0
+          ],
+          "probability": 0.31,
+          "thin": true
+        },
+        "0.33": {
+          "composition": [
+            {
+              "hot_count": 1,
+              "n": 46,
+              "state": "risk-off"
+            }
+          ],
+          "events": 17,
+          "n": 46,
+          "observed_minus_displayed": 0.03956521739130431,
+          "observed_rate": 0.3695652173913043,
+          "observed_rate_ci90": [
+            0.097169,
+            0.693906
+          ],
+          "probability": 0.33,
+          "thin": true
+        },
+        "0.36": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 95,
+              "state": "risk-off"
+            }
+          ],
+          "events": 38,
+          "n": 95,
+          "observed_minus_displayed": 0.040000000000000036,
+          "observed_rate": 0.4,
+          "observed_rate_ci90": [
+            0.166667,
+            0.605144
+          ],
+          "probability": 0.36,
+          "thin": true
+        },
+        "0.39": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 100,
+              "state": "risk-off"
+            }
+          ],
+          "events": 49,
+          "n": 100,
+          "observed_minus_displayed": 0.09999999999999998,
+          "observed_rate": 0.49,
+          "observed_rate_ci90": [
+            0.239329,
+            0.690683
+          ],
+          "probability": 0.39,
+          "thin": false
+        }
+      },
+      "events": 294,
+      "from": "2020-01-02T00:00:00",
+      "mean_displayed_probability": 0.19424369747899162,
+      "n": 1666,
+      "population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+      "through": "2026-08-19T00:00:00",
+      "weighted_absolute_calibration_error": 0.060978391356542615
+    },
+    "h5": {
+      "base_rate": 0.0356718192627824,
+      "brier_skill_score": 0.04808679071105659,
+      "cells": {
+        "0.02": {
+          "composition": [
+            {
+              "hot_count": 0,
+              "n": 148,
+              "state": "calm"
+            },
+            {
+              "hot_count": 0,
+              "n": 162,
+              "state": "watch"
+            }
+          ],
+          "events": 0,
+          "n": 310,
+          "observed_minus_displayed": -0.02,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.02,
+          "thin": false
+        },
+        "0.03": {
+          "composition": [
+            {
+              "hot_count": 0,
+              "n": 101,
+              "state": "caution"
+            },
+            {
+              "hot_count": 1,
+              "n": 651,
+              "state": "caution"
+            }
+          ],
+          "events": 8,
+          "n": 752,
+          "observed_minus_displayed": -0.019361702127659572,
+          "observed_rate": 0.010638297872340425,
+          "observed_rate_ci90": [
+            0.003796,
+            0.019024
+          ],
+          "probability": 0.03,
+          "thin": false
+        },
+        "0.042": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 270,
+              "state": "caution"
+            }
+          ],
+          "events": 13,
+          "n": 270,
+          "observed_minus_displayed": 0.006148148148148146,
+          "observed_rate": 0.04814814814814815,
+          "observed_rate_ci90": [
+            0.019933,
+            0.078014
+          ],
+          "probability": 0.042,
+          "thin": false
+        },
+        "0.05": {
+          "composition": [
+            {
+              "hot_count": 1,
+              "n": 24,
+              "state": "elevated"
+            }
+          ],
+          "events": 0,
+          "n": 24,
+          "observed_minus_displayed": -0.05,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.05,
+          "thin": true
+        },
+        "0.054": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 66,
+              "state": "caution"
+            }
+          ],
+          "events": 3,
+          "n": 66,
+          "observed_minus_displayed": -0.008545454545454544,
+          "observed_rate": 0.045454545454545456,
+          "observed_rate_ci90": [
+            0.0,
+            0.095284
+          ],
+          "probability": 0.054,
+          "thin": true
+        },
+        "0.062": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 8,
+              "state": "elevated"
+            }
+          ],
+          "events": 0,
+          "n": 8,
+          "observed_minus_displayed": -0.062,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.062,
+          "thin": true
+        },
+        "0.066": {
+          "composition": [
+            {
+              "hot_count": 4,
+              "n": 10,
+              "state": "caution"
+            }
+          ],
+          "events": 0,
+          "n": 10,
+          "observed_minus_displayed": -0.066,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.066,
+          "thin": true
+        },
+        "0.074": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 1,
+              "state": "elevated"
+            }
+          ],
+          "events": 0,
+          "n": 1,
+          "observed_minus_displayed": -0.074,
+          "observed_rate": 0.0,
+          "observed_rate_ci90": [
+            0.0,
+            0.0
+          ],
+          "probability": 0.074,
+          "thin": true
+        },
+        "0.08": {
+          "composition": [
+            {
+              "hot_count": 1,
+              "n": 46,
+              "state": "risk-off"
+            }
+          ],
+          "events": 8,
+          "n": 46,
+          "observed_minus_displayed": 0.09391304347826086,
+          "observed_rate": 0.17391304347826086,
+          "observed_rate_ci90": [
+            0.048387,
+            0.333333
+          ],
+          "probability": 0.08,
+          "thin": true
+        },
+        "0.092": {
+          "composition": [
+            {
+              "hot_count": 2,
+              "n": 95,
+              "state": "risk-off"
+            }
+          ],
+          "events": 12,
+          "n": 95,
+          "observed_minus_displayed": 0.034315789473684216,
+          "observed_rate": 0.12631578947368421,
+          "observed_rate_ci90": [
+            0.039604,
+            0.224773
+          ],
+          "probability": 0.092,
+          "thin": true
+        },
+        "0.104": {
+          "composition": [
+            {
+              "hot_count": 3,
+              "n": 100,
+              "state": "risk-off"
+            }
+          ],
+          "events": 16,
+          "n": 100,
+          "observed_minus_displayed": 0.05600000000000001,
+          "observed_rate": 0.16,
+          "observed_rate_ci90": [
+            0.064914,
+            0.272816
+          ],
+          "probability": 0.104,
+          "thin": false
+        }
+      },
+      "events": 60,
+      "from": "2020-01-02T00:00:00",
+      "mean_displayed_probability": 0.040971462544589776,
+      "n": 1682,
+      "population_sha256": "ccb420875fa715f368e90a6e01618262c998207d065fca574a2aa123a8ade85e",
+      "through": "2026-09-11T00:00:00",
+      "weighted_absolute_calibration_error": 0.022945303210463733
+    }
+  },
+  "limitations": [
+    "Overlapping forward windows are not independent episodes.",
+    "Reconstructed historical states are not genuinely issued forecasts.",
+    "Exact-cell evidence supports a risk gradient, not actuarial precision."
+  ],
+  "model_surface": {
+    "conjunction_bump": {
+      "h10": 0.02,
+      "h21": 0.03,
+      "h5": 0.012
+    },
+    "state_probability_surface": {
+      "h10": {
+        "calm": 0.06,
+        "caution": 0.08,
+        "elevated": 0.12,
+        "risk-off": 0.17,
+        "watch": 0.06
+      },
+      "h21": {
+        "calm": 0.13,
+        "caution": 0.16,
+        "elevated": 0.25,
+        "risk-off": 0.33,
+        "watch": 0.13
+      },
+      "h5": {
+        "calm": 0.02,
+        "caution": 0.03,
+        "elevated": 0.05,
+        "risk-off": 0.08,
+        "watch": 0.02
+      }
+    }
+  },
+  "precision_grade": false,
+  "schema": "risk_radar_probability_evidence.v1",
+  "source": {
+    "path": "research/grey_deer/evidence/displayed-probability-audit-20260922/result.json",
+    "protocol_commit": "f520eda41e0ff5051caf4bc019e198eabd949e49",
+    "schema": "risk_radar_displayed_probability_audit.v1",
+    "sha256": "eb9d4bfd75a18199789a8306ea948aba17e84693ad24e081134feba0751c09ea",
+    "source_base": "912feaa2b13959a6cca4d3f1472188b4a4d702bb"
+  },
+  "target": {
+    "depth": 0.05,
+    "horizons": [
+      5,
+      10,
+      21
+    ],
+    "price_path": "native SPY closing observations"
+  },
+  "use": "Display evidence depth only; never calibration, gating, sizing or authority.",
+  "window": "y2020"
+}

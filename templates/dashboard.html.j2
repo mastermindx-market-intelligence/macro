@@ -224,7 +224,7 @@
    "higher/lower than N%" integers on the glance tier (one-integer law;
    the hero already owns N/100). Color is class-driven (data-tier), not
    inline style, so theme.css owns material decisions. -#}
-{% macro sx_vw_strip(scope_class) -%}
+{% macro sx_vw_strip(scope_class, show_eyebrow=true) -%}
 {% set _vw_chips_all = vol_weather.get('chips') or [] %}
 {% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
 {% set _vw_plain_name = {
@@ -249,9 +249,11 @@
 {% set _vw_map = {} %}
 {% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
 <div class="sx-vw-strip {{ scope_class }}" data-sx-vw-strip>
+  {% if show_eyebrow %}
   <div class="sx-vw-eyebrow">
-    <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
+    <span class="l-en">Volatility &amp; correlation</span><span class="l-zh">波动率与相关性</span>
   </div>
+  {% endif %}
   {% for key in _vw_order %}
   {% set _chip = _vw_map.get(key) %}
   {% if _chip %}
@@ -7402,6 +7404,121 @@ html[data-theme="light"] :is(
   body.page-macro.mx4-grid.ms-yellow-page .mx5-big-score, body.page-macro.mx4-grid .mx5-score-yellow .mx5-big-score,
   body.page-macro.mx4-grid.ms-red-page .mx5-big-score, body.page-macro.mx4-grid .mx5-score-red .mx5-big-score
 ) { text-shadow:none; }
+
+/* ══════════════════════════════════════════════════════════
+   Macro Risk Detail — volatility & correlation diagnostics
+   The eight display-only vol-weather reads live behind Risk Detail rather
+   than lengthening the primary scorecard. Same engine bands and chip keys;
+   presentation only. Desktop groups the evidence into a compact 2-column
+   grid; mobile stacks to one column. */
+
+body.page-macro .riskdlg-vw{
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+body.page-macro .riskdlg-vw-note{
+  margin:-3px 0 10px;
+  color:var(--ink-2,var(--muted));
+  font-size:11px;
+  line-height:1.5;
+}
+body.page-macro .riskdlg-vw .sx-vw-strip{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin:0;
+  padding:0;
+  background:transparent;
+}
+body.page-macro .riskdlg-vw .sx-vw-row{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) 64px;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:var(--r-ctl);
+  background:var(--panel2);
+}
+html[data-theme="light"] body.page-macro .riskdlg-vw .sx-vw-row{
+  background:var(--panel);
+  box-shadow:var(--card-shadow);
+}
+body.page-macro .riskdlg-vw .sg-wx{
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
+body.page-macro .riskdlg-vw .sg-wx svg{
+  width:18px;
+  height:18px;
+  display:block;
+}
+body.page-macro .riskdlg-vw .sx-vw-row--calm .sg-wx{color:var(--up);}
+body.page-macro .riskdlg-vw .sx-vw-row--quiet .sg-wx,
+body.page-macro .riskdlg-vw .sx-vw-row--low .sg-wx,
+body.page-macro .riskdlg-vw .sx-vw-row--normal .sg-wx{color:var(--info);}
+body.page-macro .riskdlg-vw .sx-vw-row--elevated .sg-wx{color:var(--warn);}
+body.page-macro .riskdlg-vw .sx-vw-row--extreme .sg-wx{color:var(--down);}
+body.page-macro .riskdlg-vw .sx-vw-row--young .sg-wx{color:var(--muted);opacity:.6;}
+
+body.page-macro .riskdlg-vw .sx-vw-mid{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+body.page-macro .riskdlg-vw .sx-vw-name{
+  color:var(--ink-1,var(--text));
+  font-size:11.5px;
+  font-weight:700;
+  line-height:1.3;
+  white-space:normal;
+}
+body.page-macro .riskdlg-vw .sx-vw-read{
+  color:var(--ink-2,var(--muted));
+  font-size:10.5px;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+body.page-macro .riskdlg-vw .sx-vw-tier{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:1px;
+  color:var(--ink-2,var(--muted));
+  font-size:10.5px;
+  font-weight:700;
+  line-height:1.1;
+  letter-spacing:.02em;
+  text-align:right;
+  white-space:nowrap;
+}
+body.page-macro .riskdlg-vw .sx-vw-row--calm .sx-vw-tier{color:var(--up);}
+body.page-macro .riskdlg-vw .sx-vw-row--quiet .sx-vw-tier,
+body.page-macro .riskdlg-vw .sx-vw-row--low .sx-vw-tier,
+body.page-macro .riskdlg-vw .sx-vw-row--normal .sx-vw-tier{color:var(--info);}
+body.page-macro .riskdlg-vw .sx-vw-row--elevated .sx-vw-tier{color:var(--warn);}
+body.page-macro .riskdlg-vw .sx-vw-row--extreme .sx-vw-tier{color:var(--down);}
+body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(--muted));}
+
+@media(max-width:640px){
+  body.page-macro .riskdlg-vw .sx-vw-strip{
+    grid-template-columns:minmax(0,1fr);
+  }
+  body.page-macro .riskdlg-vw .sx-vw-row{
+    grid-template-columns:22px minmax(0,1fr) 58px;
+    gap:8px;
+    padding:7px 9px;
+  }
+  body.page-macro .riskdlg-vw .sg-wx{width:22px;height:22px;}
+  body.page-macro .riskdlg-vw .sg-wx svg{width:16px;height:16px;}
+}
 </style>
 {% endif %}
     {% set _ol = {
@@ -7750,6 +7867,7 @@ html[data-theme="light"] :is(
        Needle: -90deg (leftmost at score=0) + score/100 * 180 = final rotation from vertical. #}
     {% set _mx5_arc_len = 175.93 %}
     {% set _mx5_score = MS.score | int %}
+    {% set _mx5_scope = MS.get('participation_scope') if MS else none %}
     {% set _mx5_filled = (_mx5_score / 100 * _mx5_arc_len) | round(1) %}
     {% set _mx5_gap = (_mx5_arc_len - _mx5_filled) | round(1) %}
     {% set _mx5_needle_deg = (_mx5_score / 100 * 180 - 90) | round(1) %}
@@ -7907,8 +8025,8 @@ html[data-theme="light"] :is(
             <span class="mx5-verdict-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh or MS.label_en }}</span></span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">{{ {'green':'GREEN','yellow':'YELLOW','red':'RED'}.get(MS.color,'—') }} &mdash; {{ {'green':'Trend-following supported','yellow':'Trade with caution','red':'Defend capital first'}.get(MS.color,'') }}</span>
-            <span class="l-zh">{{ {'green':'偏多 — 顺势而为受支撑','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'') }}</span>
+            <span class="l-en">{{ _mx5_scope.get('subline_en') if (_mx5_scope and _mx5_scope.get('subline_en')) else ({'green':'GREEN — Risk-on backdrop','yellow':'YELLOW — Trade with caution','red':'RED — Defend capital first'}.get(MS.color,'—')) }}</span>
+            <span class="l-zh">{{ _mx5_scope.get('subline_zh') if (_mx5_scope and _mx5_scope.get('subline_zh')) else ({'green':'偏多 — 风险偏好环境','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'')) }}</span>
             {% if _mx5_ghost and _mx5_capw %}
             {{ help('The dial is capped at ' ~ _mx5_score ~ '; the six-signal blend is ' ~ _mx5_raw ~ '. The cap can only pull the dial down, never up.',
                     '刻度盘上限为 ' ~ _mx5_score ~ '；六项信号合成为 ' ~ _mx5_raw ~ '。上限只能压低刻度盘，不会抬高。') }}
@@ -8300,15 +8418,9 @@ html[data-theme="light"] :is(
 
       </div>{# /mx5-btn-row #}
 
-      {# ── UD-B2-W1 (R-W1-A-AMENDED 2026-09-20): vol-weather sub-row sits
-         DIRECTLY BELOW the dial + scar chips, as a sub-row INSIDE the mx5
-         scorecard's left column (.mx5-sc-left). #sx-risk-v2 is an invisible
-         legacy container — do not host the strip there. #}
-      {% if vol_weather is defined and vol_weather %}
-      <div class="mx5-sc-vw" data-sx-vw-host="mx5-sc-left">
-        {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
-      </div>
-      {% endif %}
+      {# Volatility diagnostics intentionally live in Risk Detail.
+         Keep the primary scorecard glance-first; the six-factor popover already
+         carries the top-level volatility-regime contribution. #}
 
     </div>{# /mx5-sc-left #}
 
@@ -8735,6 +8847,7 @@ html[data-theme="light"] :is(
       <div class="mx5-action-list">
         {# 1. Current stance — deliberately short; the live poller patches this row. #}
         {% if market_state %}
+        {% set _wtd_scope = market_state.get('participation_scope') if market_state else none %}
         {% set _wtd_icon_col = 'mx5-ai-green' if market_state.color == 'green' else ('mx5-ai-yellow' if market_state.color == 'yellow' else 'mx5-ai-gray') %}
         {% set _wtd_stroke = '#22d97a' if market_state.color == 'green' else ('#f59e0b' if market_state.color == 'yellow' else 'rgba(255,255,255,.38)') %}
         <div class="mx5-action-item mx5-action-primary" data-wtd-primary>
@@ -8755,8 +8868,8 @@ html[data-theme="light"] :is(
           </div>
           <div class="mx5-action-text">
             <div class="mx5-action-label">
-              <span class="l-en">{{ {'green':'Follow the trend. Add on strength.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.') }}</span>
-              <span class="l-zh">{{ {'green':'顺势而为，强势中加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。') }}</span>
+              <span class="l-en">{{ _wtd_scope.get('action_en') if (_wtd_scope and _wtd_scope.get('action_en')) else ({'green':'Stay selective. Add where setups confirm.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.')) }}</span>
+              <span class="l-zh">{{ _wtd_scope.get('action_zh') if (_wtd_scope and _wtd_scope.get('action_zh')) else ({'green':'保持精选，仅在入场条件确认时加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。')) }}</span>
             </div>
             <div class="mx5-action-sub">
               <span class="l-en">{{ MS.label_en }} &middot; {{ MS.score }}/100</span>
@@ -13362,6 +13475,23 @@ html[data-theme="light"] :is(
         {% endif %}
         </div>{# /riskdlg-ladder #}
 
+        {# Macro UX follow-up 2026-09-23: detailed volatility evidence belongs
+           in Risk Detail, not the primary scorecard. Same vm['vol_weather'],
+           same engine bands, no recompute or score authority. #}
+        {% if vol_weather is defined and vol_weather %}
+        <section class="riskdlg-vw" data-sx-vw-host="risk-detail">
+          <div class="riskdlg-sec-h">
+            <span class="l-en">Volatility &amp; correlation</span><span class="l-zh">波动率与相关性</span>
+            {% if vol_weather.as_of is defined and vol_weather.as_of %}<small>{{ t('as of','截至') }} {{ vol_weather.as_of }}</small>{% endif %}
+          </div>
+          <div class="riskdlg-vw-note">
+            <span class="l-en">Detailed volatility, curve, correlation and dispersion context. Display-only — the regime read above remains primary.</span>
+            <span class="l-zh">波动率、期限结构、相关性与分散度的详细背景。仅供展示——上方状态判断仍为主读数。</span>
+          </div>
+          {{ sx_vw_strip('sx-vw-strip--risk-detail', false) }}
+        </section>
+        {% endif %}
+
 {# MX2-SENTIMENT-START #}{# slice markers are a TEST CONTRACT — test_froth_fragility /
            test_fear_euphoria / test_fear_greed render exactly this region; keep them wrapping
            the mood section + the merged footer #}
@@ -16443,6 +16573,7 @@ html[data-theme="light"] :is(
         {% endif %}
       </section>
       {% endif %}
+      {% include "_us_candidate_pool.html.j2" %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -20220,7 +20351,10 @@ if (document.readyState === 'loading') {
   }
   function dropNotes(scope){
     var notes = (scope || document).querySelectorAll('.pg-more');
-    for (var i = 0; i < notes.length; i++) notes[i].remove();
+    for (var i = 0; i < notes.length; i++) {
+      // Candidate counts are honest even when the protected row render failed.
+      if (!notes[i].classList.contains('ucp-more')) notes[i].remove();
+    }
   }
 
   function hydrateLeaderObservations(html){
@@ -20239,7 +20373,37 @@ if (document.readyState === 'loading') {
     if (window.initShowMore) window.initShowMore();
   }
 
+  function hydrateCandidatePool(html, source){
+    if (!html || !source) return;
+    var root = document.getElementById('us-candidate-pool');
+    if (!root || root.dataset.poolHydrated === 'true') return;
+    if (!root.dataset.sourceDigest || source.digest !== root.dataset.sourceDigest ||
+        source.as_of !== root.dataset.asOf || source.total !== Number(root.dataset.total)) return;
+    var list = root.querySelector('.ucp-list');
+    if (!list) return;
+    // Validate the whole remainder before mutating the visible list.
+    var fragment = document.createElement('template');
+    fragment.innerHTML = html;
+    var current = list.querySelectorAll('.ucp-row'), incoming = fragment.content.querySelectorAll('.ucp-row');
+    if (current.length + incoming.length !== source.total) return;
+    var identities = new Set();
+    for (var i = 0; i < current.length; i++) identities.add(current[i].dataset.ticker);
+    for (var j = 0; j < incoming.length; j++) {
+      var ticker = incoming[j].dataset.ticker;
+      if (!ticker || identities.has(ticker)) return;
+      identities.add(ticker);
+    }
+    list.appendChild(fragment.content);
+    root.dataset.poolHydrated = 'true';
+    if (list.querySelectorAll('.ucp-row').length === Number(root.dataset.total)) {
+      var note = root.querySelector('.ucp-more');
+      if (note) note.remove();
+    }
+    root.dispatchEvent(new Event('candidate-pool-hydrated'));
+  }
+
   function hydratePanels(payload){
+    hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);

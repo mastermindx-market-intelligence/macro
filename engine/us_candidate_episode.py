@@ -31,6 +31,7 @@ GENERATION_MANIFEST_SCHEMA = "prophet.candidate_episode_generation_manifest/v1"
 SUPPRESSION_SCHEMA = "prophet.candidate_episode_suppression/v1"
 RECONCILE_RECEIPT_SCHEMA = "prophet.candidate_episode_reconcile_receipt/v1"
 DEFAULT_DEFINITION_ERA = "candidate-episode-v1-2026-08-25"
+ANCHOR_KINDS = frozenset({"turn_watch_reset_low"})
 EVENT_TYPES = frozenset({
     "OPENED",
     "OBSERVED",
@@ -59,6 +60,7 @@ PATCHABLE_FIELDS = frozenset({
     "terminal_reason",
 })
 SUPPRESSION_REASONS = frozenset({
+    "ANCHOR_KIND_NOT_REGISTERED",
     "MISSING_STRUCTURAL_ANCHOR",
     "IDENTITY_UNRESOLVED",
     "ISSUER_UNRESOLVED",
@@ -203,6 +205,8 @@ def canonical_anchor(anchor: Mapping[str, object]) -> dict[str, object]:
     kind, basis = anchor["kind"], anchor["basis"]
     if not isinstance(kind, str) or not isinstance(basis, str):
         raise EpisodeContractError("structural anchor kind and basis must be strings")
+    if kind not in ANCHOR_KINDS:
+        raise EpisodeContractError(f"structural anchor kind is not registered: {kind}")
     return {
         "kind": kind,
         "time": _timestamp(anchor["time"], field="anchor.time"),
@@ -897,6 +901,15 @@ def reconcile_observations(
                 returned_persisted_suppressions.add(source_key)
             continue
         anchor = observation.get("anchor")
+        if (
+            isinstance(anchor, Mapping)
+            and isinstance(anchor.get("kind"), str)
+            and anchor["kind"] not in ANCHOR_KINDS
+        ):
+            suppression = _suppression(observation, "ANCHOR_KIND_NOT_REGISTERED")
+            suppressions.append(suppression)
+            suppressed_by_source_key[source_key] = suppression
+            continue
         canonical = canonical_anchor(anchor) if anchor is not None else None  # type: ignore[arg-type]
         active = next((row for row in projected if row["security_id"] == security and row["identity_epoch"] == epoch and row["episode_state"] == ACTIVE_STATE), None)
         if active is not None and canonical is not None and canonical != canonical_anchor(active["structural_anchor"]):
