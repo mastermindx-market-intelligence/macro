@@ -5532,6 +5532,8 @@ jobs:
       - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
       - "tests/test_finance_intelligence_contract.py"
+      - "engine/sector_intelligence/finance_overlap.py"
+      - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
@@ -5571,7 +5573,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
