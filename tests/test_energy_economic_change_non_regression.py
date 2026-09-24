@@ -20,20 +20,24 @@ PUBLIC_PAGE_PATHS = (
     REPO_ROOT / "site/state_of_themes.html",
 )
 MEMBERSHIP_FIELDS = ("ticker", "added", "removed", "curated_added")
-THEME_STATE_FIELDS = (
+THEME_STATE_FROZEN = (
     "theme_id",
     "name_en",
     "name_zh",
-    "foresight",
-    "basket_intel",
-    "radar",
-    "narrative",
     "basket_ids",
+    "foresight",
+    "narrative",
 )
-THEME_TRACKER_FIELDS = (
+THEME_STATE_SHAPE = (
+    "radar",
+    "basket_intel",
+)
+THEME_TRACKER_FROZEN = (
     "theme_id",
     "name_en",
     "name_zh",
+)
+THEME_TRACKER_SHAPE = (
     "lane",
     "lane_rank",
     "stance_en",
@@ -54,6 +58,10 @@ THEME_TRACKER_FIELDS = (
     "leadership_context",
     "entry_context",
 )
+THEME_TRACKER_FIELDS = THEME_TRACKER_FROZEN + THEME_TRACKER_SHAPE
+_NO_SKIP = pytest.mark.skipif(False, reason="required checkout directories are present")
+
+
 PRIVATE_DOSSIER_CANARIES = (
     "economic_change_dossier",
     "Nuclear Value Capture",
@@ -62,6 +70,65 @@ PRIVATE_DOSSIER_CANARIES = (
     "Westinghouse displayed revenue",
     "PRE_EVENT_TIMESTAMPED_VALUE",
 )
+
+
+def _json_type_name(value: Any) -> str:
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "bool"
+    if isinstance(value, (int, float)):
+        return "number"
+    if isinstance(value, str):
+        return "string"
+    if isinstance(value, list):
+        return "array"
+    if isinstance(value, dict):
+        return "object"
+    return type(value).__name__
+
+
+def _frozen_projection(
+    value: dict[str, Any], fields: tuple[str, ...]
+) -> dict[str, Any]:
+    return _project(value, fields)
+
+
+def _shape_projection(
+    value: dict[str, Any], fields: tuple[str, ...]
+) -> dict[str, str]:
+    return {field: _json_type_name(value.get(field)) for field in fields}
+
+
+def _projected_section(
+    value: dict[str, Any],
+    frozen_fields: tuple[str, ...],
+    shape_fields: tuple[str, ...],
+) -> dict[str, Any]:
+    return {
+        "frozen": _frozen_projection(value, frozen_fields),
+        "shape": _shape_projection(value, shape_fields),
+    }
+
+
+def _nuclear_theme_state() -> dict[str, Any]:
+    document = json.loads(THEME_STATE_PATH.read_text(encoding="utf-8"))
+    theme = next(
+        theme for theme in document["themes"] if theme.get("theme_id") == "nuclear_power"
+    )
+    return _projected_section(theme, THEME_STATE_FROZEN, THEME_STATE_SHAPE)
+
+
+def _nuclear_theme_tracker() -> dict[str, Any]:
+    builder = _load_state_builder()
+    context = builder.compose(REPO_ROOT)
+    theme = next(
+        theme for theme in context["themes"] if theme.get("theme_id") == "nuclear_power"
+    )
+    projected = _projected_section(
+        theme, THEME_TRACKER_FROZEN, THEME_TRACKER_SHAPE
+    )
+    return json.loads(json.dumps(projected))
 
 
 def _read_baseline() -> dict[str, Any]:
@@ -111,24 +178,6 @@ def _basket_snapshot(basket_id: str) -> dict[str, Any]:
     }
 
 
-def _nuclear_theme_state() -> dict[str, Any]:
-    document = json.loads(THEME_STATE_PATH.read_text(encoding="utf-8"))
-    theme = next(
-        theme for theme in document["themes"] if theme.get("theme_id") == "nuclear_power"
-    )
-    return _project(theme, THEME_STATE_FIELDS)
-
-
-def _nuclear_theme_tracker() -> dict[str, Any]:
-    builder = _load_state_builder()
-    context = builder.compose(REPO_ROOT)
-    theme = next(
-        theme for theme in context["themes"] if theme.get("theme_id") == "nuclear_power"
-    )
-    projected = _project(theme, THEME_TRACKER_FIELDS)
-    return json.loads(json.dumps(projected))
-
-
 def test_nuclear_power_membership_unchanged_vs_frozen_baseline() -> None:
     baseline = _read_baseline()
     assert _basket_snapshot("nuclear_power") == baseline["basket_membership"]["nuclear_power"]
@@ -161,21 +210,40 @@ def test_primary_and_supplemental_populations_are_disjoint_and_never_merged() ->
     assert all(ticker not in supplemental_tickers for ticker in ("BWXT", "SMR", "OKLO"))
 
 
-@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else pytest.mark.needs_full_checkout()
+def test_frozen_field_lists_exclude_nightly_volatile_fields() -> None:
+    nightly_volatile_fields = (
+        "radar",
+        "basket_intel",
+        "lane",
+        "lane_rank",
+        "fav_count",
+        "caut_count",
+        "present_count",
+        "stage_key",
+        "stage_sort",
+        "falsifier_any_fired",
+        "filter_flags",
+    )
+    for field in nightly_volatile_fields:
+        assert field not in THEME_STATE_FROZEN
+        assert field not in THEME_TRACKER_FROZEN
+
+
+@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
 def test_theme_state_fields_for_nuclear_unchanged() -> None:
     baseline = _read_baseline()
     assert _nuclear_theme_state() == baseline["theme_state"]
     assert _canonical_sha256(baseline["theme_state"]) == baseline["section_sha256"]["theme_state"]
 
 
-@pytest.mark.needs_full_checkout("data", "site") if _needs_checkout("data", "site") else pytest.mark.needs_full_checkout()
+@pytest.mark.needs_full_checkout("data", "site") if _needs_checkout("data", "site") else _NO_SKIP
 def test_theme_tracker_nuclear_entry_unchanged() -> None:
     baseline = _read_baseline()
     assert _nuclear_theme_tracker() == baseline["theme_tracker"]
     assert _canonical_sha256(baseline["theme_tracker"]) == baseline["section_sha256"]["theme_tracker"]
 
 
-@pytest.mark.needs_full_checkout("site") if _needs_checkout("site") else pytest.mark.needs_full_checkout()
+@pytest.mark.needs_full_checkout("site") if _needs_checkout("site") else _NO_SKIP
 def test_public_nuclear_pages_carry_no_private_dossier_canaries() -> None:
     baseline = _read_baseline()
     for path in PUBLIC_PAGE_PATHS:
