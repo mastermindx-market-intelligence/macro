@@ -1014,6 +1014,78 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
     assert "unowned path" not in reason, reason
 
 
+def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:
+    """P0B's hermetic first-frame contract must run in the merge gate.
+
+    The generated-page population receipt remains data-dependent and belongs
+    in ``engine-render-guards``.  The template/composer/CSS/loader contract is
+    source-only, so merely listing it in that ``gate: data`` job would leave
+    the PR's real ``--gate code`` execution falsely green.
+    """
+    manifest = _yaml(MANIFEST)
+    code_job = manifest["jobs"]["stock-dashboard-first-frame"]
+    code_suite = "tests/test_stock_dashboard_first_frame.py"
+    data_suite = "tests/test_stock_dashboard_first_frame_data.py"
+
+    assert code_job["gate"] == "code"
+    assert code_job["scope"] == "exclusive"
+    required_paths = {
+        "templates/hk.html.j2",
+        "templates/canada.html.j2",
+        "templates/stock-dashboard.css",
+        "templates/dashboard-icons.js",
+        "site/hk-stock-v36.js",
+        "site/canada-stock-v36.js",
+        "site/stock-dashboard.css",
+        "site/dashboard-icons.js",
+        "scripts/render_stock_dashboard_fixture.py",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/hk-js-disabled-dark-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
+        code_suite,
+    }
+    assert required_paths <= set(code_job["paths"])
+    assert any(code_suite in str(step.get("run") or "") for step in code_job["steps"])
+    assert _job_pip_packages(code_job) == {"beautifulsoup4", "jinja2", "pytest"}
+
+    data_job = manifest["jobs"]["engine-render-guards"]
+    data_runs = "\n".join(str(step.get("run") or "") for step in data_job["steps"])
+    assert data_job["gate"] == "data"
+    assert data_suite in data_runs
+    assert code_suite not in data_runs
+
+    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    code_jobs = [job for job in jobs if job.gate == "code"]
+    for changed in (
+        [code_suite],
+        ["templates/hk.html.j2"],
+        ["site/canada-stock-v36.js"],
+        ["scripts/render_stock_dashboard_fixture.py"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"],
+    ):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert "stock-dashboard-first-frame" in {job.job_id for job in selected}, reason
+        assert "unowned path" not in reason, reason
+
+
 def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     """PR #5488 shape: `.claude/hooks/gh_quota_guard.py` used to mint 187/187 jobs.
 
@@ -2987,7 +3059,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         "always() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
-        "needs.trusted-ci.result == 'success')"
+        "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
     )
     run_text = "\n".join(
         str(step.get("run", "")) for step in pack["steps"] if isinstance(step, dict)
@@ -3434,6 +3506,66 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
+    # this file's own packing-ceiling probe: templates/index.html 132 jobs /
+    # 5,810 weight > 5,800; the two code probes over their job ceilings too).
+    # Four smear-at-source curations, each an inferred opaque-fallback claim
+    # its own block never justified — see the wave note on
+    # test_exclusive_curation_narrows_ordinary_code_prs.
+    # `market-os-macro-workspaces` is the follow-on named there at the
+    # previous wave (B-CUR-MARKET-OS-MACRO-WORKSPACES-1): 21 paths declared
+    # at birth without `scope: exclusive`, so a builder subprocess and a
+    # jinja loader smeared engine/scripts/templates/site/data onto all three
+    # probes. `uk-policy-desk` (#7771) keeps engine/**/*.py + scripts/**/*.py
+    # on purpose — its no-scoring-import test rglobs both trees — and sheds
+    # only the templates/** loader smear. `options-payoff-lab-consumer`
+    # (#7763) reads one template and engine-render.yml as text.
+    # `options-catalyst-links` (#7774) is hermetic and reads daily.yml and
+    # this manifest as text. Closure-coverage audit: zero misses.
+    "market-os-macro-workspaces",
+    "uk-policy-desk",
+    "options-payoff-lab-consumer",
+    "options-catalyst-links",
+    # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
+    # the gate:code home for tests/test_b4_entry_policy_calibration_prereg.py — its
+    # thematic neighbours are `gate: data`. Curated because the measured import
+    # closure is empty (stdlib only): the scope is the suite + the registration
+    # store + the prose registration, nothing else.
+    "prophet-us-b4-prereg-registration",
+    # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
+    # home for tests/test_markets_regime_strip.py — its thematic neighbours
+    # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
+    # PR packs never plan. Curated for COVERAGE: its `paths:` are the measured
+    # 54-path import closure of the suite (scripts/build_markets.py pulls the
+    # collectors/ and engine.market_state chains), so exclusivity loses no
+    # owner and contract-delta stays at 0 introduced.
+    "markets-regime-strip",
+    # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
+    # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
+    # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
+    # + test_audit_options_skew_overlap), the W2-4 parity audit
+    # (test_audit_options_skew_parity, #7756) and the two W2-5a payoff-lab
+    # suites (test_options_payoff_lab + test_payoff_lab_launchd, #7759) —
+    # eight suite runs on one run line. The lane has no signal-contract /
+    # render subject — its subjects are the launchd plist, the sh runner,
+    # argparse helpers, and the publish_r2._DATA_DIRS options_skew
+    # registration — and it was previously parked in
+    # config/unrun_test_waivers.yml, which the waiver file's own header
+    # forbids for a new dark suite. Curated for COVERAGE: its `paths:`
+    # name exactly the eight suites plus the load-bearing scripts they
+    # actually invoke and the engine/lib chains those scripts import.
+    "skew-accrual-lane",
+    # 2026-09-22 A-F03-W2-1b (MO-PAID-013). `options-skew-engine` is the
+    # gate:code home for tests/test_options_skew.py. The suite previously
+    # lived on `flow-surface` (`gate: data`), which PR packs never plan, so
+    # the migration test was dark on every pull request. Curated for
+    # COVERAGE: paths are the measured import closure (options_skew,
+    # thetadata_store, the builder, and the validate_options_skew import
+    # the suite already reaches) plus every live caller whose legacy-source
+    # pin the suite reads: engine-render.yml, closing-bell.yml, render.yml,
+    # and scripts/ci/daily_engine_regional_desk_builders.sh. Exclusivity
+    # drops the data/** filesystem fallback and loses no owner.
+    "options-skew-engine",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
     # gate. It is curated for COVERAGE, not to narrow: the suite names its two
@@ -3567,6 +3699,51 @@ CURATED_EXCLUSIVE = {
     # hook guard moved to tests/test_render_builder_ownership.py so this
     # job's closure stays the page family rather than the whole site builder.
     "market-os-macro-suite-pages",
+    # 2026-09-05 (P0B current-head repair): the first-frame suite executes its
+    # frozen Jinja/browser recipes through subprocess boundaries. Inference
+    # therefore conservatively added scripts/**, site/**, and templates/**,
+    # making this four-second gate a fallback selector for unrelated index and
+    # free-content edits. The suite no longer imports the broad Canada/HK test
+    # helpers; its measured 30-file closure is now declared exactly (including
+    # the two moving-data path *labels* the recipe validates but never opens).
+    # Exclusivity drops only those three opaque fallback roots while retaining
+    # every executable, template, fixture, receipt, and helper input it owns.
+    "stock-dashboard-first-frame",
+    # 2026-09-22 main-red repair. Six jobs entered the broad
+    # templates/index.html probe after the 64f8c248 calibration even though
+    # none owns that page; market-ontology-f09-usgs-mcs separately entered the
+    # build_free_content probe through a bounded subprocess/git-grep edge; and
+    # unrun-government-revenue-candidate-projection entered the Prophet probe
+    # through an opaque engine/** edge despite no plan-book file in its named
+    # closure. Their declarations retain the measured full import closure plus
+    # dynamic files read by the tests/builders. This restores 131/129/125
+    # selections without raising the existing ratchet or allowing unrelated
+    # fallback smear.
+    "am-edition-producer",
+    "covenant-headroom",
+    "cycle-consistency",
+    "ftr-tape-surfaces",
+    "market-ontology-f09-usgs-mcs",
+    "research-screener",
+    "sanctions-map-page",
+    "unrun-government-revenue-candidate-projection",
+    # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
+    # hermetic PR owner for one recovered package and its root lineage test,
+    # and declared both exact path surfaces — but omitted `scope: exclusive`.
+    # Inference therefore unioned opaque package-test edges into whole-tree
+    # fallback breadth and made this job a third unscoped always-on selector
+    # for templates/index.html (133 > 132). Curate the stated owner boundary;
+    # do not fund that unrelated match by raising the packing ceiling.
+    "research-vault-source-lineage",
+    # 2026-09-23 gate:data -> PR-gate follow-up to #7712. `dashboard-render-contract`
+    # is the gate:code home for the five suites that only gate:data lanes
+    # (unrun-picks-boards, engine-render-guards) ran, so the #7503 pins in
+    # tests/test_dashboard_template_render.py and the HK/CN spine-binding
+    # contract in tests/test_unified_dashboard_b2w2.py never gated a PR.
+    # Curated for COVERAGE: its `paths:` are the measured import closure of the
+    # suites (scripts/build_site.py pulls most of engine/ and lib/), so
+    # exclusivity loses no owner and contract-delta stays at 0 introduced.
+    "dashboard-render-contract",
 }
 
 
@@ -3584,6 +3761,19 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
+    """The recovered MarketDesk owner must not become a whole-tree CI rider."""
+    manifest = _yaml(MANIFEST)
+    job = manifest["jobs"]["research-vault-source-lineage"]
+
+    assert job["gate"] == "code"
+    assert job["scope"] == "exclusive"
+    assert set(job["paths"]) == {
+        "collectors/marketdesk_extractor/**",
+        "tests/test_marketdesk_extractor_lineage.py",
+    }
 
 
 def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:
@@ -3674,6 +3864,19 @@ def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -
             )
             match = PACK._job_diff_match(job, [dependency])
             assert match and match[1] == "declared", (job_id, dependency, match)
+
+
+def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None:
+    """The risk-dialog suite reads the shipped token source, so its job owns it."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["unrun-picks-boards"]
+
+    assert job.exclusive is True
+    assert "site/theme.css" in job.paths
+    selected, reason = PACK.select_jobs([job], ["site/theme.css"])
+    assert [item.job_id for item in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, ["site/theme.css"])
+    assert match and match[1] == "declared", match
 
 
 def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
@@ -4032,12 +4235,96 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     non-cancelled runs since it was green as of this measurement — and the
     seat's finding places this step's own last green at 4b2f97f196d5
     (2026-09-09 00:20Z, 690 passed).
+
+    WAVE 2026-09-23 (B-HEAL-CI-PACK-CEILING-2): the WEIGHT ceiling reds.
+    Main's integration-baseline lane failed this nodeid alone (run
+    35923703447 at 6ffa33740a49, "1 failed, 712 passed") at
+    templates/index.html 132 jobs / 5,810 weight — the job ceiling met
+    exactly, the weight ceiling breached by 10 — and the two code probes
+    were over their JOB ceilings behind it (the loop asserts the first probe
+    first): build_free_content.py 130 > 129, plan_book.py 127 > 125. The
+    manifest had grown 212 → 227 jobs since the previous wave's baseline
+    (021b2ae3a4a6). Diffing that baseline manifest RE-MEASURED on today's
+    tree (133 / 5,713 on templates/index.html — inference drift accounts for
+    +2 jobs / +10 weight of the delta) against the current manifest, the
+    weight breach is NOT one entrant: it is +105 weight-seconds spread over
+    ~20 already-selected fallback-tier jobs whose step lists grew
+    (washout-turn-organ 31 → 52, unrun-page-guards 34 → 50, unrun-brain-gateway
+    40 → 47, self-mod-fence 46 → 53, billing-emails 16 → 22, design-governance
+    18 → 23, …), plus two 4-weight entrants on templates/index.html
+    (uk-policy-desk #7771, options-payoff-lab-consumer #7763), one 8-weight
+    entrant on both code probes (options-catalyst-links #7774), and
+    design-governance newly riding engine/prophet/plan_book.py (23). Three
+    small jobs left (am-edition-producer, ftr-tape-surfaces,
+    unrun-government-revenue-candidate-projection).
+
+    Every entrant matched on the FALLBACK tier and no block text claims
+    whole-tree breadth on purpose, so — per the standing convention — the
+    ceiling is not raised; the smear is curated at the source. FOUR jobs are
+    curated ``scope: exclusive`` in the manifest, every declared path earned
+    by the inferred import closure or by a read-as-text the suite performs
+    (closure-coverage audit: zero misses; contract-delta: 0 introduced):
+
+    ``market-os-macro-workspaces`` — the follow-on named at the previous
+    wave (B-CUR-MARKET-OS-MACRO-WORKSPACES-1), now paid: 21 ``paths:``
+    declared at birth WITHOUT ``scope: exclusive`` were unioned under
+    inference, and scripts/build_macro_workspaces.py:52 (subprocess) plus
+    test_macro_workspace_prior_publication.py:341 (jinja FileSystemLoader)
+    minted engine/scripts/templates/site/data claims on all three probes.
+    Declared: the 48-file closure (composers, lib/macro_suite_*,
+    scripts/build_macro_suite_pages.py), the shell template it renders by
+    name, and its committed fixture. Weight 39, leaves all three probes.
+
+    ``uk-policy-desk`` (#7771) — "the suite imports nothing further" was
+    true of the file and false of the closure (engine/uk_policy_brain.py
+    reaches 133 first-party files). Its ``test_no_scoring_path_imports_this_desk``
+    rglobs engine/ and scripts/ for ``*.py``, so ``engine/**/*.py`` and
+    ``scripts/**/*.py`` are EARNED and declared — this job KEEPS both code
+    probes on purpose (the cn-standout-audit shape) — and it sheds only the
+    ``templates/**`` claim its jinja loader minted. Weight 4, leaves
+    templates/index.html only.
+
+    ``options-payoff-lab-consumer`` (#7763) — hermetic per its block; the
+    ``templates/**`` claim came from scripts/build_options_command.py's
+    jinja loader. Declared: the 14-file closure, templates/options.html.j2
+    (read as text), .github/workflows/engine-render.yml (read as text for
+    its R2-restore pins). Weight 4, leaves templates/index.html.
+
+    ``options-catalyst-links`` (#7774) — hermetic per its block; the
+    engine/**, scripts/**, data/** claims came from ledger-lane /
+    session-digest opaque edges in the closure. Declared: the 19-file
+    closure plus daily.yml and this manifest, which its nightly-shape suite
+    reads as text. Weight 8, leaves both code probes.
+
+    Re-measured on the curated manifest — the four curated jobs are the
+    ONLY delta and NOTHING entered any probe:
+
+        templates/index.html          132 -> 129 jobs, 5,810 -> 5,763 weight
+        scripts/build_free_content.py 130 -> 128 jobs, 5,577 -> 5,530 weight
+        engine/prophet/plan_book.py   127 -> 125 jobs, 5,583 -> 5,536 weight
+
+    JOB ceilings re-based to measurement + 1 per the wave-3 rule
+    (130 / 129 / 126): templates/index.html comes DOWN from 132, the
+    build_free_content.py bound is unchanged, and plan_book.py goes UP by
+    one — said explicitly: its measurement sits AT the old 125 bound
+    because ``design-governance`` (w23) now fallback-matches it through
+    scripts/check_p0b_receipt_closure.py:100's ``evidence.glob`` (the p0b
+    receipt-closure step added 2026-09-23), a claim that is NOT earned
+    (the design ratchets diff user-facing trees, never engine/) but that
+    cannot be curated: ``test_deliberately_unscoped_gates_stay_always_on``
+    pins that gate unscoped by design. Its fix is at the glob source, not in
+    the manifest — follow-on: B-CUR-DESIGN-GOVERNANCE-P0B-1. Re-basing to
+    125 would restore the zero-headroom defect this wave and the last both
+    diagnosed. WEIGHT and PACK ceilings stay unmoved (5,800 / 5,600 / 5,600
+    and 10 packs; measured 5,763 / 5,530 / 5,536, packs 10 / 10 / 10) —
+    they bound the incident, and this wave's 47-weight cut on the index
+    probe is the honest size of four small smears, not a re-base.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 132, 5_800),
+        ("templates/index.html", 130, 5_800),
         ("scripts/build_free_content.py", 129, 5_600),
-        ("engine/prophet/plan_book.py", 125, 5_600),
+        ("engine/prophet/plan_book.py", 126, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
         weight = sum(job.weight for job in selected)
@@ -4500,4 +4787,109 @@ def test_no_empty_pack_in_the_code_gate_partition() -> None:
         f"pack index(es) {empty} are empty under --gate code with --pack-count "
         "12 — an empty pack's name would vanish from main's ci.yml baseline "
         "and any PR whose plan lands work there could never refresh a red"
+    )
+
+
+# ── W7A_7070_HEAL H4: regression lock for # inside folded `run: >` scalars ──
+#
+# The W11 round-1 heal moved a 4-line `#` comment INTO a folded `run: >` pytest
+# scalar at .github/ci/legacy-jobs.yml:2498-2501. YAML folds the scalar onto ONE
+# shell line where `#` starts a shell comment, so the entire w11 suite was
+# effectively dropped from the argv (effective 113 of 173 listed) without any of
+# check_contract_delta / audit_unrun_tests / run_ci_pack validate catching it
+# (those text-parse YAML rather than the folded shell). The exact fleet-hazard
+# this round closed must not recur undetected.
+
+
+_FOLDED_RUN_RE = re.compile(r"^( +)run: >-?\s*$", re.MULTILINE)
+
+
+def _iter_folded_run_scalars(text: str) -> list[tuple[int, int, str]]:
+    """Yield (indent, line_number, scalar_text) for every folded `run: >` scalar.
+
+    A folded scalar ends at the first line whose indent is `<=` the indicator
+    line's indent (or EOF). YAML folded scalars collapse newlines into spaces
+    when consumed by a shell — so a `#` token anywhere inside is a shell
+    comment, NOT a YAML comment.
+    """
+    out: list[tuple[int, int, str]] = []
+    for m in _FOLDED_RUN_RE.finditer(text):
+        indent = len(m.group(1))
+        # line_number of the `run: >` indicator (YAML is 1-indexed for grep parity)
+        line_no = text.count("\n", 0, m.start()) + 1
+        # Walk subsequent lines collecting the scalar body
+        body_lines: list[str] = []
+        cursor = m.end()
+        body_indent = indent + 1
+        while cursor < len(text):
+            nl = text.find("\n", cursor)
+            if nl == -1:
+                chunk = text[cursor:]
+                nl = len(text)
+            else:
+                chunk = text[cursor:nl]
+            stripped = chunk.lstrip(" ")
+            if chunk == "" or chunk.startswith(" " * body_indent):
+                body_lines.append(chunk)
+                cursor = nl + 1
+                continue
+            # First non-empty line at <= indicator indent ends the scalar
+            if stripped == "" or len(chunk) - len(chunk.lstrip(" ")) <= indent:
+                if stripped == "":
+                    # Blank line at <= indicator indent also ends it
+                    break
+                break
+            break
+        out.append((indent, line_no, "\n".join(body_lines)))
+    return out
+
+
+def test_no_hash_token_inside_folded_run_scalar_in_legacy_jobs_manifest() -> None:
+    """Every folded `run: >` pytest scalar must be free of `#` shell-comment tokens.
+
+    A `#` inside a folded scalar (e.g. ``run: >\\n  # W11 coverage-true\\n  python -m
+    pytest ...``) becomes a shell comment when GitHub folds it back into one argv
+    line, silently dropping every pytest token that follows. That is how
+    a95d2856e077 / de288cf6706f dropped 60 of main's own suites while every
+    contract-delta / audit_unrun_tests / run_ci_pack validate check stayed green.
+
+    RED-first: inserting a `# ...` line inside the folded scalar at
+    .github/ci/legacy-jobs.yml (e.g. at the engine-render-guards step) FAILS this
+    test; reverting that insertion restores the green.
+    """
+    text = MANIFEST.read_text(encoding="utf-8")
+    scalars = _iter_folded_run_scalars(text)
+    assert scalars, "expected at least one folded run: > scalar in legacy-jobs.yml"
+
+    # Vacuity guard: confirm at least one folded scalar is a pytest invocation,
+    # otherwise a future PR could clear this test by deleting every folded pytest
+    # step (and the harness would no longer catch the # hazard class at all).
+    pytest_folded = [
+        (indent, line_no, body)
+        for indent, line_no, body in scalars
+        if "pytest" in body
+    ]
+    assert pytest_folded, (
+        "no folded `run: >` pytest scalar found — the vacuity guard below would "
+        "be untestable; check that the manifest still carries folded pytest steps"
+    )
+
+    offenders: list[tuple[int, int, str, list[str]]] = []
+    for indent, line_no, body in scalars:
+        # A `#` token anywhere in the scalar body is the hazard; flag the lines.
+        bad_lines = [
+            ln for ln in body.splitlines() if "#" in ln
+        ]
+        if bad_lines:
+            offenders.append((indent, line_no, body, bad_lines))
+
+    assert not offenders, (
+        "folded `run: >` scalars in .github/ci/legacy-jobs.yml must not contain "
+        "# shell-comment tokens — YAML folds them onto one argv line where '#' "
+        "starts a shell comment, silently dropping every pytest token that "
+        "follows. Offenders (indicator line, offending body lines):\n"
+        + "\n".join(
+            f"  line {ln}: {bl[:120]}"
+            for _indent, ln, _body, bl in offenders
+        )
     )

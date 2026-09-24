@@ -1,18 +1,19 @@
 """Deterministic Chronicle earnings-call derivative for the X outbox.
 
-NOT WIRED TO ANYTHING TODAY (stated plainly, 2026-08-06). Nothing in
-``engine/``, ``scripts/``, ``app/`` or ``.github/`` calls :func:`enqueue_event`
-or :func:`run_ledger`; the only callers are under ``tests/``, and the two
-mentions elsewhere are inert (a comment in ``config/marketing.yml`` and an
-artifact row in ``config/synapse.yml``). Read that before spending review budget
-here, and before treating a green test in this module as evidence about the live
-timeline: three rounds of card-gate review hardened this lane, and
-``tests/test_marketing_card_earns_pixels.py::test_dispatch_does_not_blanket_drop_every_card``
-— the suite's only demonstration that a real emission can still KEEP its card —
-proves it through this lane and not through the press wire. Wiring it or
-deleting it is an open operator decision, not a builder's call; until one is
-made, the module is kept correct rather than left to rot, because a dormant lane
-that is wrong is worse than one that is right.
+RUNTIME WIRING (2026-09-18). The scheduled
+``.github/workflows/marketing-earnings-wire.yml`` checkout now invokes
+``scripts/marketing_earnings_call_projection.py``, which calls :func:`run_ledger`
+over the committed Chronicle ledger and writes only through the canonical tracked
+Marketing outbox. This wires the derivative into the review queue; it does **not**
+arm public sending. ``marketing-publish.yml``, operator approval, the publisher's
+kill switch, cadence, and Buffer channel ownership remain separate gates.
+
+The wiring deliberately loads the operator-owned ``config/marketing.yml`` earnings
+route and fails closed if that route is missing, includes ``data/chronicle`` in
+the workflow sparse checkout, and carries the existing R2 card-host credentials.
+The bounded age/event caps below remain the flood guard on first and subsequent
+runs. A green unit test is still not production proof: the scheduled/workflow
+consumer and its outbox receipt are the runtime evidence.
 
 This is a projection, not another research engine.  Its only input is the
 committed :mod:`engine.chronicle.earnings_calls` ``earnings.call_event.v1``

@@ -1,108 +1,108 @@
 {
   "schema": "china_intel.analogs.v1",
   "is_context_only": true,
-  "generated_utc": "2026-09-14T14:36:53Z",
-  "as_of": "2026-09-14",
+  "generated_utc": "2026-09-23T15:25:56Z",
+  "as_of": "2026-09-23",
   "coverage": {
     "start": "2006-03-30",
-    "end": "2026-09-14",
-    "n_candidate_days": 5338
+    "end": "2026-09-23",
+    "n_candidate_days": 5345
   },
   "query": {
-    "date": "2026-09-14",
+    "date": "2026-09-23",
     "quad": "Q4",
     "quad_name": "Growth-scare",
     "liquidity": "contracting",
-    "cycle": "mid",
-    "growth_z": -1.8779,
-    "inflation_z": -1.0601
+    "cycle": "late",
+    "growth_z": -1.1543,
+    "inflation_z": -1.1733
   },
   "analogs": [
     {
-      "date": "2022-12-19",
-      "distance": 0.115,
+      "date": "2023-05-04",
+      "distance": 0.1149,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
-      "cycle": "mid",
+      "cycle": "late",
       "fwd_shcomp": {
-        "h20": 0.047845,
-        "h60": 0.060585,
-        "h120": 0.05278
+        "h20": -0.031819,
+        "h60": -0.013147,
+        "h120": -0.098048
       },
       "fwd_csi300": {
-        "h20": 0.073892,
-        "h60": 0.040157,
-        "h120": 0.027302
+        "h20": -0.037098,
+        "h60": 0.014118,
+        "h120": -0.096009
       }
     },
     {
-      "date": "2018-12-19",
-      "distance": 0.3693,
+      "date": "2008-11-18",
+      "distance": 1.0077,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.028851,
-        "h60": 0.18216,
-        "h120": 0.159982
-      },
-      "fwd_csi300": {
-        "h20": 0.03643,
-        "h60": 0.196086,
-        "h120": 0.218333
-      }
-    },
-    {
-      "date": "2008-10-27",
-      "distance": 0.3949,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.063889,
-        "h60": 0.123612,
-        "h120": 0.323507
+        "h20": -0.020357,
+        "h60": 0.114172,
+        "h120": 0.282732
       },
       "fwd_csi300": null
     },
     {
-      "date": "2011-11-28",
-      "distance": 0.3949,
+      "date": "2011-11-29",
+      "distance": 1.0077,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.107642,
-        "h60": 0.005672,
-        "h120": -0.016787
+        "h20": -0.072599,
+        "h60": 0.053111,
+        "h120": 0.017006
       },
       "fwd_csi300": null
     },
     {
-      "date": "2023-05-12",
-      "distance": 0.578,
+      "date": "2022-12-02",
+      "distance": 1.0104,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.025052,
-        "h60": -0.020214,
-        "h120": -0.080956
+        "h20": -0.030121,
+        "h60": 0.022562,
+        "h120": 0.006403
       },
       "fwd_csi300": {
-        "h20": -0.03749,
-        "h60": 0.011201,
-        "h120": -0.081588
+        "h20": -0.013832,
+        "h60": 0.02501,
+        "h120": -0.024956
+      }
+    },
+    {
+      "date": "2018-12-12",
+      "distance": 1.0169,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.038027,
+        "h60": 0.161724,
+        "h120": 0.102309
+      },
+      "fwd_csi300": {
+        "h20": -0.048349,
+        "h60": 0.177691,
+        "h120": 0.147366
       }
     },
     {
       "date": "2023-12-21",
-      "distance": 0.578,
+      "distance": 1.0169,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
@@ -119,127 +119,119 @@
       }
     },
     {
-      "date": "2018-10-19",
-      "distance": 0.9722,
+      "date": "2007-06-19",
+      "distance": 1.239,
       "quad": "Q4",
       "quad_name": "Growth-scare",
-      "liquidity": "contracting",
-      "cycle": "mid",
+      "liquidity": "unknown",
+      "cycle": "late",
       "fwd_shcomp": {
-        "h20": 0.018154,
-        "h60": -0.032328,
-        "h120": 0.202319
-      },
-      "fwd_csi300": {
-        "h20": -0.001492,
-        "h60": -0.050462,
-        "h120": 0.210008
-      }
-    },
-    {
-      "date": "2019-08-15",
-      "distance": 0.9908,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.07072,
-        "h60": 0.029788,
-        "h120": 0.052289
-      },
-      "fwd_csi300": {
-        "h20": 0.065467,
-        "h60": 0.052208,
-        "h120": 0.085231
-      }
-    },
-    {
-      "date": "2025-04-09",
-      "distance": 1.0,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "expanding",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.045847,
-        "h60": 0.080265,
-        "h120": 0.199139
-      },
-      "fwd_csi300": {
-        "h20": 0.04219,
-        "h60": 0.077186,
-        "h120": 0.251648
-      }
-    },
-    {
-      "date": "2022-10-06",
-      "distance": 1.0104,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "neutral",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.034263,
-        "h60": 0.046756,
-        "h120": 0.107763
-      },
-      "fwd_csi300": {
-        "h20": 0.011807,
-        "h60": 0.04136,
-        "h120": 0.094449
-      }
-    },
-    {
-      "date": "2022-03-15",
-      "distance": 1.0578,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "expanding",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.012703,
-        "h60": 0.035527,
-        "h120": 0.020256
-      },
-      "fwd_csi300": {
-        "h20": 0.008407,
-        "h60": 0.026656,
-        "h120": -0.010913
-      }
-    },
-    {
-      "date": "2009-01-15",
-      "distance": 1.0752,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "expanding",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.145916,
-        "h60": 0.26891,
-        "h120": 0.487955
+        "h20": -0.061973,
+        "h60": 0.212753,
+        "h120": 0.197738
       },
       "fwd_csi300": null
+    },
+    {
+      "date": "2007-02-19",
+      "distance": 1.239,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "unknown",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": 0.026679,
+        "h60": 0.340053,
+        "h120": 0.478171
+      },
+      "fwd_csi300": null
+    },
+    {
+      "date": "2006-11-03",
+      "distance": 1.239,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "unknown",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": 0.13625,
+        "h60": 0.389782,
+        "h120": 0.764022
+      },
+      "fwd_csi300": null
+    },
+    {
+      "date": "2017-04-18",
+      "distance": 1.239,
+      "quad": "Q1",
+      "quad_name": "Goldilocks",
+      "liquidity": "contracting",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": -0.025732,
+        "h60": 0.001821,
+        "h120": 0.063475
+      },
+      "fwd_csi300": {
+        "h20": -0.012292,
+        "h60": 0.074523,
+        "h120": 0.144883
+      }
+    },
+    {
+      "date": "2018-02-05",
+      "distance": 1.3508,
+      "quad": "Q1",
+      "quad_name": "Goldilocks",
+      "liquidity": "contracting",
+      "cycle": "late",
+      "fwd_shcomp": {
+        "h20": -0.018086,
+        "h60": -0.060104,
+        "h120": -0.19288
+      },
+      "fwd_csi300": {
+        "h20": -0.015568,
+        "h60": -0.05865,
+        "h120": -0.189735
+      }
+    },
+    {
+      "date": "2018-10-12",
+      "distance": 1.3508,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.024016,
+        "h60": -0.009292,
+        "h120": 0.216843
+      },
+      "fwd_csi300": {
+        "h20": 0.024187,
+        "h60": -0.017733,
+        "h120": 0.245208
+      }
     }
   ],
   "fan": {
     "h20": {
-      "p25": 0.003264,
-      "median": 0.031557,
-      "p75": 0.051856,
+      "p25": -0.042493,
+      "median": -0.027926,
+      "p75": -0.007561,
       "n": 12
     },
     "h60": {
-      "p25": 0.023759,
-      "median": 0.043008,
-      "p75": 0.091102,
+      "p25": -0.000957,
+      "median": 0.046185,
+      "p75": 0.174481,
       "n": 12
     },
     "h120": {
-      "p25": 0.020097,
-      "median": 0.080271,
-      "p75": 0.199934,
+      "p25": 0.014355,
+      "median": 0.082892,
+      "p75": 0.233315,
       "n": 12
     }
   },

@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-09-11",
-  "built_at": "2026-09-14T07:27:35.280133+00:00",
+  "asof": "2026-09-23",
+  "built_at": "2026-09-23T17:11:44.521201+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 11.751899,
-    "net_gex_pctile": 40.4,
-    "gamma_flip": 7641.449912,
-    "spot": 7656.98,
-    "dist_to_flip_pct": 0.2,
-    "days_in_regime": 1,
-    "days_in_regime_observed": 1,
+    "net_gex_bn": 91.651732,
+    "net_gex_pctile": 90.9,
+    "gamma_flip": 7655.884679,
+    "spot": 7764.6401,
+    "dist_to_flip_pct": 1.40065,
+    "days_in_regime": 5,
+    "days_in_regime_observed": 5,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -343,15 +343,70 @@
         "regime": "long",
         "flip": 7641.449912,
         "spot": 7656.98
+      },
+      {
+        "date": "2026-09-14",
+        "net_gex_bn": -18.864378,
+        "regime": "short",
+        "flip": 7642.363126,
+        "spot": 7619.98
+      },
+      {
+        "date": "2026-09-15",
+        "net_gex_bn": -31.741908,
+        "regime": "short",
+        "flip": 7628.728527,
+        "spot": 7585.73
+      },
+      {
+        "date": "2026-09-16",
+        "net_gex_bn": -48.28411,
+        "regime": "short",
+        "flip": 7616.145981,
+        "spot": 7551.8101
+      },
+      {
+        "date": "2026-09-17",
+        "net_gex_bn": 7.981471,
+        "regime": "long",
+        "flip": 7626.305234,
+        "spot": 7637.7598
+      },
+      {
+        "date": "2026-09-18",
+        "net_gex_bn": 14.515141,
+        "regime": "long",
+        "flip": 7630.71081,
+        "spot": 7650.5
+      },
+      {
+        "date": "2026-09-21",
+        "net_gex_bn": 101.013552,
+        "regime": "long",
+        "flip": 7634.608852,
+        "spot": 7764.7002
+      },
+      {
+        "date": "2026-09-22",
+        "net_gex_bn": 96.181455,
+        "regime": "long",
+        "flip": 7652.471637,
+        "spot": 7764.7
+      },
+      {
+        "date": "2026-09-23",
+        "net_gex_bn": 91.651732,
+        "regime": "long",
+        "flip": 7655.884679,
+        "spot": 7764.6401
       }
     ],
     "coverage": {
-      "last_obs": "2026-09-11",
-      "expected_last_session": "2026-09-11",
+      "last_obs": "2026-09-23",
+      "expected_last_session": "2026-09-22",
       "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [
-        "2026-08-14",
         "2026-09-01",
         "2026-09-02"
       ],
@@ -361,80 +416,28 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 255.576709,
-      "alloc_frac": 0.851922,
-      "flow_1d_bn": 7.835411,
-      "flow_5d_bn": 33.481168,
+      "alloc_bn": 269.61561,
+      "alloc_frac": 0.898719,
+      "flow_1d_bn": 6.48046,
+      "flow_5d_bn": 4.88449,
       "state": "adding",
+      "flow_window_n": 5,
       "aum_bn": 300.0,
       "target_vol_pct": 10.0,
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 0.810076,
-      "z": -0.286391,
-      "flow_1d": 0.094649,
-      "flow_5d": -0.743292,
-      "state": "cutting"
+      "score": 0.820304,
+      "z": -0.226961,
+      "flow_1d": -0.132947,
+      "flow_5d": 0.313858,
+      "state": "adding",
+      "flow_window_n": 5,
+      "cta_near_flat": false
     },
-    "agreement": "split",
+    "agreement": "aligned_adding",
+    "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-09-13",
-        "vc_alloc_bn": 191.452128,
-        "vc_flow_bn": -0.315987,
-        "cta_score": 0.933368,
-        "cta_flow": -0.059533,
-        "spx_close": 5626.02002
-      },
-      {
-        "date": "2024-09-16",
-        "vc_alloc_bn": 191.461536,
-        "vc_flow_bn": 0.009409,
-        "cta_score": 0.941798,
-        "cta_flow": 0.008429,
-        "spx_close": 5633.089844
-      },
-      {
-        "date": "2024-09-17",
-        "vc_alloc_bn": 192.250257,
-        "vc_flow_bn": 0.788721,
-        "cta_score": 0.881053,
-        "cta_flow": -0.060744,
-        "spx_close": 5634.580078
-      },
-      {
-        "date": "2024-09-18",
-        "vc_alloc_bn": 192.138398,
-        "vc_flow_bn": -0.111859,
-        "cta_score": 0.869806,
-        "cta_flow": -0.011247,
-        "spx_close": 5618.259766
-      },
-      {
-        "date": "2024-09-19",
-        "vc_alloc_bn": 188.177605,
-        "vc_flow_bn": -3.960793,
-        "cta_score": 0.952673,
-        "cta_flow": 0.082867,
-        "spx_close": 5713.640137
-      },
-      {
-        "date": "2024-09-20",
-        "vc_alloc_bn": 188.149761,
-        "vc_flow_bn": -0.027844,
-        "cta_score": 1.017036,
-        "cta_flow": 0.064364,
-        "spx_close": 5702.549805
-      },
-      {
-        "date": "2024-09-23",
-        "vc_alloc_bn": 188.306799,
-        "vc_flow_bn": 0.157038,
-        "cta_score": 1.047077,
-        "cta_flow": 0.03004,
-        "spx_close": 5718.569824
-      },
       {
         "date": "2024-09-24",
         "vc_alloc_bn": 188.408744,
@@ -4378,84 +4381,115 @@
         "cta_score": 0.810076,
         "cta_flow": 0.094649,
         "spx_close": 7656.97998
+      },
+      {
+        "date": "2026-09-14",
+        "vc_alloc_bn": 255.279805,
+        "vc_flow_bn": -0.296904,
+        "cta_score": 0.702937,
+        "cta_flow": -0.107139,
+        "spx_close": 7619.97998
+      },
+      {
+        "date": "2026-09-15",
+        "vc_alloc_bn": 264.73112,
+        "vc_flow_bn": 9.451315,
+        "cta_score": 0.506447,
+        "cta_flow": -0.196491,
+        "spx_close": 7585.72998
+      },
+      {
+        "date": "2026-09-16",
+        "vc_alloc_bn": 265.250486,
+        "vc_flow_bn": 0.519366,
+        "cta_score": 0.490275,
+        "cta_flow": -0.016172,
+        "spx_close": 7551.810059
+      },
+      {
+        "date": "2026-09-17",
+        "vc_alloc_bn": 266.589299,
+        "vc_flow_bn": 1.338813,
+        "cta_score": 0.658287,
+        "cta_flow": 0.168012,
+        "spx_close": 7637.759766
+      },
+      {
+        "date": "2026-09-18",
+        "vc_alloc_bn": 271.225541,
+        "vc_flow_bn": 4.636241,
+        "cta_score": 0.742811,
+        "cta_flow": 0.084524,
+        "spx_close": 7650.5
+      },
+      {
+        "date": "2026-09-21",
+        "vc_alloc_bn": 263.135151,
+        "vc_flow_bn": -8.09039,
+        "cta_score": 0.953252,
+        "cta_flow": 0.210441,
+        "spx_close": 7764.700195
+      },
+      {
+        "date": "2026-09-23",
+        "vc_alloc_bn": 269.61561,
+        "vc_flow_bn": 6.48046,
+        "cta_score": 0.820304,
+        "cta_flow": -0.132947,
+        "spx_close": 7704.080078
       }
     ]
   },
   "vol": {
-    "rv21": 0.089189,
-    "rv63": 0.117382,
+    "rv21": 0.105611,
+    "rv63": 0.11127,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
         "tenor": "M1",
-        "settle": 16.6044,
-        "dte": 5
+        "settle": 17.3607,
+        "dte": 29
       },
       {
         "tenor": "M2",
-        "settle": 18.3595,
-        "dte": 40
+        "settle": 18.2032,
+        "dte": 57
       },
       {
         "tenor": "M3",
-        "settle": 19.0706,
-        "dte": 68
+        "settle": 18.5995,
+        "dte": 85
       },
       {
         "tenor": "M4",
-        "settle": 19.2846,
-        "dte": 96
+        "settle": 19.4117,
+        "dte": 120
       },
       {
         "tenor": "M5",
-        "settle": 20.15,
-        "dte": 131
+        "settle": 19.8875,
+        "dte": 148
       },
       {
         "tenor": "M6",
-        "settle": 20.5487,
-        "dte": 159
+        "settle": 20.0639,
+        "dte": 176
       }
     ],
-    "vix_curve_slope": 3.9443,
+    "vix_curve_slope": 2.7032,
     "series_start_curve": "2026-04-16"
   },
   "dispersion": {
-    "cor1m": 11.18,
-    "cor1m_regime": "normal",
-    "cor1m_1y_delta": -1.8,
-    "cor1m_pctile_2y": 36.5,
-    "cor3m": 11.21,
-    "dspx": 30.58,
+    "cor1m": 7.59,
+    "cor1m_regime": "dispersion",
+    "cor1m_1y_delta": -4.96,
+    "cor1m_pctile_2y": 7.9,
+    "cor1m_pctile_lo": 20,
+    "cor1m_pctile_hi": 80,
+    "cor1m_available": true,
+    "cor3m": 9.53,
+    "dspx": 36.38,
     "history": [
-      {
-        "date": "2024-09-13",
-        "cor1m": 17.55
-      },
-      {
-        "date": "2024-09-16",
-        "cor1m": 18.31
-      },
-      {
-        "date": "2024-09-17",
-        "cor1m": 19.07
-      },
-      {
-        "date": "2024-09-18",
-        "cor1m": 20.37
-      },
-      {
-        "date": "2024-09-19",
-        "cor1m": 15.92
-      },
-      {
-        "date": "2024-09-20",
-        "cor1m": 15.4
-      },
-      {
-        "date": "2024-09-23",
-        "cor1m": 14.41
-      },
       {
         "date": "2024-09-24",
         "cor1m": 12.47
@@ -6427,44 +6461,63 @@
       {
         "date": "2026-09-11",
         "cor1m": 11.18
+      },
+      {
+        "date": "2026-09-14",
+        "cor1m": 13.1
+      },
+      {
+        "date": "2026-09-15",
+        "cor1m": 13.59
+      },
+      {
+        "date": "2026-09-16",
+        "cor1m": 14.43
+      },
+      {
+        "date": "2026-09-17",
+        "cor1m": 10.79
+      },
+      {
+        "date": "2026-09-18",
+        "cor1m": 9.23
+      },
+      {
+        "date": "2026-09-21",
+        "cor1m": 8.56
+      },
+      {
+        "date": "2026-09-22",
+        "cor1m": 7.59
       }
     ]
   },
   "week_map": {
-    "week_start": "2026-09-14",
-    "week_end": "2026-09-18",
-    "locked_close": 7656.98,
-    "locked_at": "2026-09-11T00:00:00",
-    "band_1sigma_lo": 7523.67,
-    "band_1sigma_hi": 7790.29,
-    "band_2sigma_lo": 7390.36,
-    "band_2sigma_hi": 7923.6,
-    "gamma_flip": 7641.449912,
-    "implied_weekly_pct": 1.74,
+    "week_start": "2026-09-21",
+    "week_end": "2026-09-25",
+    "locked_close": 7650.5,
+    "locked_at": "2026-09-18T00:00:00",
+    "band_1sigma_lo": 7523.09,
+    "band_1sigma_hi": 7777.91,
+    "band_2sigma_lo": 7395.67,
+    "band_2sigma_hi": 7905.33,
+    "gamma_flip": 7655.884679,
+    "implied_weekly_pct": 1.67,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-09-10",
-    "items": [
-      {
-        "key": "gamma_regime",
-        "from": "short",
-        "to": "long",
-        "note_en": "Dealer gamma regime: Dealers short gamma (amplifying) → Dealers long gamma (absorbing)",
-        "note_zh": "庄家伽马机制：庄家净空伽马（放大波动） → 庄家净多伽马（吸收波动）",
-        "display_only": true
-      }
-    ]
+    "vs_asof": "2026-09-21",
+    "items": []
   },
   "prev_state": {
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-21",
     "state": {
-      "gamma_regime": "short",
+      "gamma_regime": "long",
       "vc_state": "adding",
-      "cta_state": "cutting",
-      "agreement": "split",
+      "cta_state": "adding",
+      "agreement": "aligned_adding",
       "rv_cross_state": "calm",
-      "cor1m_regime": "normal"
+      "cor1m_regime": "dispersion"
     }
   }
 }

@@ -1,0 +1,246 @@
+{
+  "document_kind": "REQUIRED_OPERATING_ACCEPTANCE_NOT_EXECUTED_TESTS",
+  "count": 30,
+  "cases": [
+    {
+      "id": "H01",
+      "title": "Actual live assignment, not retrieved self-assignment",
+      "expected": "Packet found in search must not claim ACK/START; deliberate execution delivery binds actual receiver.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H02",
+      "title": "No mandatory Astra dependency",
+      "expected": "Every B/Q/D has Fable accountable and can progress without a former principal approval.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H03",
+      "title": "External route enforcement",
+      "expected": "A child placed through a native built-in mechanism is refused before effect, even if its prompt says external.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H04",
+      "title": "Prohibited model examples",
+      "expected": "Native Opus/Sonnet/Haiku child agents are not used for implementation or review.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H05",
+      "title": "No nested fallback loophole",
+      "expected": "An external worker cannot delegate this work to built-in child agents.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H06",
+      "title": "Capacity loss after START",
+      "expected": "Preserve exact operation and RuntimeBinding; no silent provider/account/carrier retry.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H07",
+      "title": "No current external capacity before effect",
+      "expected": "Hold affected child and advance independent principal work; do not invent internal fallback or queue.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H08",
+      "title": "Fable hardest-problem exception",
+      "expected": "Direct work records exact principal need, bound scope, stop and independent review; routine work returns externally.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H09",
+      "title": "Scope of delegation",
+      "expected": "No self-granted credentials, unapproved spend, real-money sizing or expanded-market execution.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H10",
+      "title": "Existing writer custody",
+      "expected": "Meta-CEO role does not seize dirty/still-running/unknown source work.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H11",
+      "title": "Exact-head review",
+      "expected": "Old body tests/review are not automatically valid for a changed head.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H12",
+      "title": "Independent review of Fable-authored change",
+      "expected": "Fable cannot count its self-review as the required independent reviewer.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H13",
+      "title": "Historical board-row branch progresses",
+      "expected": "Admissible historical board-row research does not wait for live B4 or extra anchors; grain remains honest.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H14",
+      "title": "Episode-policy identity gate",
+      "expected": "A board-row branch cannot falsely claim canonical episode comparison without B1.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H15",
+      "title": "Research-to-watch before positive entry",
+      "expected": "Unavailable/experimental entry is clear; saving works without fictional positive B4.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H16",
+      "title": "Offline research versus live promotion",
+      "expected": "Offline fitting can proceed without UI; live influence still requires accepted gates.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H17",
+      "title": "Per-study economic margins",
+      "expected": "Exact numeric design is frozen through Evaluation before protected result selection, not chosen from the winner.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H18",
+      "title": "Protected study continuity",
+      "expected": "7751 alias finding and no-backfill law remain intact until lawful owner amendment.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H19",
+      "title": "Unknown outcome honesty",
+      "expected": "Missing price, no entry, censoring and delisting retain distinct meanings in actual reports.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H20",
+      "title": "No scope shrink to first release",
+      "expected": "A/B/C first-wave success does not terminate the full B/Q program.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H21",
+      "title": "Inconclusive model does not become alpha",
+      "expected": "Unqualified head stays absent/shadow, remaining promised job stays an obligation.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H22",
+      "title": "Real paid-user proof",
+      "expected": "Actual entitled and unentitled browser paths; simulated callback is never called deployed acceptance.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H23",
+      "title": "Saved-state meaning",
+      "expected": "Watch saves only intended list membership and reads back; no accidental position or fictional cloud thesis.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H24",
+      "title": "Ordinary refresh proof",
+      "expected": "Next normal source/publication refresh preserves accepted behavior, not a manual one-off substitute.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H25",
+      "title": "Safe rollback",
+      "expected": "No cached stale green entry, erased grades, destructive user-state reset or identity rewrite.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H26",
+      "title": "Continuity after failed session",
+      "expected": "Safe same-carrier reconciliation, durable frontier and fresh admitted continuation; no old transcript replay.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H27",
+      "title": "No fake durable worker",
+      "expected": "Delivery or QUEUED is not START/RUNNING; real external return mechanism required.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H28",
+      "title": "Owner-scoped source adoption",
+      "expected": "Adopt included Agent OS record and complete source packet using current schema/custody, no rival program or enum.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H29",
+      "title": "Current factual source versus historical narrative",
+      "expected": "Refresh only materially needed carrier/runtime fields; source snapshot is not production state.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    },
+    {
+      "id": "H30",
+      "title": "Final delegated acceptance",
+      "expected": "Fable adjudicates full proof without Astra; genuinely reserved human authority goes to Chairman, not routine debugging.",
+      "status": "NOT_EXECUTED",
+      "accountable_owner": "Fable Meta-CEO",
+      "evidence_required": "Actual admitted owner/worker/product path relevant to this case; not a static document assertion"
+    }
+  ]
+}
