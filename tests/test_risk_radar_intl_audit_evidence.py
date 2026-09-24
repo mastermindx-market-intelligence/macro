@@ -415,13 +415,17 @@ def test_nonempty_incomplete_grades_cannot_dilute_episode_base_into_authority(
 
     assert metrics["legacy_n_total_graded_rows"] == 660
     assert metrics["legacy_n_alert_rows"] == 30
+    assert metrics["legacy_n_incomplete_authority_rows"] == 630
     assert metrics["n_total_graded_rows"] == 30
     assert metrics["n_loud_rows"] == 30
     assert metrics["n_independent_episodes"] == 30
     assert metrics["n_independent_episode_hits"] == 30
     assert metrics["n_loud_episodes"] == 30
     assert metrics["n_episode_hits"] == 30
-    assert authority["row_gate_granted"] is True
+    assert authority["row_gate_granted"] is False
+    assert authority["row_gate_reason"] == (
+        "legacy-row-gate-refused: incomplete-authority-outcomes=630"
+    )
     assert authority["episode_gate_granted"] is False
     assert authority["can_force"] is False
 
