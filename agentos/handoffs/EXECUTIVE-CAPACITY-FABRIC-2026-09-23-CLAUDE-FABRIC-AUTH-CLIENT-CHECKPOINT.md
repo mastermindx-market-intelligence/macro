@@ -126,3 +126,67 @@ prove QUEUED / dispatched=false plus same-carrier readback.
 Do not redo the Fable default, global routing hooks, fabric-first CLAUDE.md policy, raw-control-socket
 falsification, or the ruling that proof-bearing/lifecycle-significant work belongs to canonical Executive
 child work rather than hidden Claude-native subagents, absent a material invalidator.
+
+
+## Successor update — 2026-09-23 late PT
+
+Fresh protected Mastermind/Skillpack was re-pinned twice as protected master moved. The modification
+pin for the authenticated Claude client source slice is
+`294b4c00ed668b497edb834be8108f14bc1bee8a`,
+`mastermind.sol_skillpack.v1 1.0.1 / bootstrap 1`.
+
+Installed Executive release `bf764f494b9cd0ecede6234bb472c3344c8e77cc` is behind protected
+master overall, but the reconciled movement to the earlier fresh pin changed no Executive MCP /
+business-auth transport implementation. No duplicate Executive/auth plane is required.
+
+Actual Mac Studio Claude Code `2.1.275` already had user-scope MCP
+`mastermind-executive = http://127.0.0.1:8444/mcp`, reporting `Needs authentication`.
+The local `8444` edge is a stateless loopback translator in front of the existing production
+Executive MCP on `8443`; it reads the installed Executive policy and persists no credentials,
+Jobs, Attempts, retries, placement, or lifecycle state.
+
+Claude native `mcp login` proved PKCE S256 and first-party client identity
+`https://claude.ai/oauth/claude-code-client-metadata`. A read-only authorization probe reached the
+existing Auth0 tenant but was rejected before login with
+`invalid_request: Unknown client: https://claude.ai/oauth/claude-code-client-metadata`.
+Therefore URI client metadata is not serviceable against the current Auth0 tenant.
+
+Claude Code `mcp add` natively supports `--client-id` and `--callback-port`. The smallest lawful
+path is therefore a distinct pre-registered public/native Auth0 Claude client, no client secret,
+authorization code + PKCE S256, with callback
+`http://localhost:8774/callback`. Port 8774 was observed free and is intentionally disjoint from
+PR #633's Codex callback. PR #633's DCR remains `EFFECT_UNKNOWN`; this continuation did not retry,
+clear, reuse, or infer absence for that effect.
+
+Mastermind source carrier created:
+- PR #955: `[CLAUDE-FABRIC][DRAFT/HOLD] Add authenticated Claude Code Executive MCP client edge`
+- branch: `sol/claude-executive-auth-client-20260923`
+- exact head: `62ecf0a7abdcb63b1f213922f8f43e4dde6d1537`
+- exact tree: `6053fca7fa945f1a46078d0e7f785769c791112c`
+- four files / 360 insertions
+- `node --check` pass
+- focused pytest: 4 passed
+- `git diff --check` pass
+
+The source candidate removes the false
+`client_id_metadata_document_supported=true` advertisement and documents the pre-registered
+public-client path. It is Draft/HOLD and has not been deployed or merged.
+
+Exact remaining human/IdP gate: an authorized Auth0 tenant administrator must create exactly one
+public/native Claude Code application with callback `http://localhost:8774/callback`, authorization
+code + refresh token, PKCE S256, and no client secret, then return only its public client ID.
+There is no Auth0 CLI installed on the Mac Studio, so no already-authenticated non-human admin path
+was available from this session.
+
+After that gate, same continuation must:
+1. configure the existing Claude MCP entry with that public client ID and callback port;
+2. complete interactive Auth0 sign-in/consent without copying tokens/cookies/secrets;
+3. prove harmless Executive reads from the actual Claude surface;
+4. only then submit exactly one harmless strict-v2 intent and require
+   `QUEUED`, `dispatched=false`, same-carrier intent/Job readback;
+5. keep admission distinct from Worker START;
+6. prove one bounded Fable-parent -> canonical Executive child -> Capacity/Model Router placement
+   path with Opus exceptional rather than default labor.
+
+FINALIZATION_CLASSIFICATION at this successor boundary: EXACT_HUMAN_GATE.
+MISSION_COMPLETE: false.
