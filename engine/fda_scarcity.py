@@ -109,6 +109,10 @@ def _closed_rows(rows):
     return closed
 
 
+def _record_count(count):
+    return f"{count} record" if count == 1 else f"{count} records"
+
+
 def _duration_text(seconds):
     days = int(seconds // 86400)
     if days == 1:
@@ -121,6 +125,7 @@ def _label(status, counts, generation, capture_qualified, unclassified_rows, cap
         _CURRENT_REPORTED: ("FDA shortage: current ({current})", "FDA短缺：当前（{current}）"),
         _RESOLVED_REPORTED: ("FDA shortage: resolved ({resolved}) — supply status only", "FDA短缺：已解决（{resolved}）——仅供给状态"),
         _DISCONTINUATION_REPORTED: ("FDA: formulation discontinuation reported ({discontinued})", "FDA：已报告制剂停产（{discontinued}）"),
+        _MIXED_CLOSED_REPORTED: ("FDA: resolved {resolved} / discontinued {discontinued} — supply status only", "FDA：已解决{resolved}／停产{discontinued}——仅供给状态"),
         _MIXED_REPORTED: ("FDA: mixed — current {current} / resolved {resolved}", "FDA：混合——当前{current}／已解决{resolved}"),
         _UNCLASSIFIED: ("FDA: observed, status unclassified ({unrecognized})", "FDA：已观察到，状态未分类（{unrecognized}）"),
         _NO_MATCHING_RECORDS: ("FDA: no matching records", "FDA：无匹配记录"),
@@ -202,7 +207,7 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
     elif counts["current"]:
         source_status = _CURRENT_REPORTED
     elif counts["resolved"] and counts["discontinued"]:
-        source_status = _DISCONTINUATION_REPORTED
+        source_status = _MIXED_CLOSED_REPORTED
     elif counts["resolved"]:
         source_status = _RESOLVED_REPORTED
     elif counts["discontinued"]:
@@ -322,8 +327,12 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
         counts = summary["counts"]
         rationale = {
             _CURRENT_REPORTED: f"regulator status: current ({counts['current']} records) — supply status only",
-            _RESOLVED_REPORTED: f"regulator status: resolved ({counts['resolved']} records) — supply status only",
-            _DISCONTINUATION_REPORTED: f"regulator status: discontinuation reported ({counts['discontinued']} records)",
+            _RESOLVED_REPORTED: f"regulator status: resolved ({_record_count(counts['resolved'])}) — supply status only",
+            _DISCONTINUATION_REPORTED: f"regulator status: discontinuation reported ({_record_count(counts['discontinued'])})",
+            _MIXED_CLOSED_REPORTED: (
+                f"regulator status: resolved ({_record_count(counts['resolved'])}) and "
+                f"discontinued ({_record_count(counts['discontinued'])}) — supply status only"
+            ),
             _MIXED_REPORTED: "regulator status: mixed — supply status only",
             _UNCLASSIFIED: "regulator status: observed but unclassified",
             _NO_MATCHING_RECORDS: "source status: no matching records",
@@ -411,11 +420,15 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
         _CURRENT_REPORTED: "The FDA reports a current shortage for this theme.",
         _RESOLVED_REPORTED: "The FDA reports the shortage as resolved.",
         _DISCONTINUATION_REPORTED: "The FDA reports a formulation discontinuation.",
+        _MIXED_CLOSED_REPORTED: "The FDA reports both resolved and discontinued formulations.",
         _MIXED_REPORTED: "The FDA reports both current and resolved shortages.",
         _UNCLASSIFIED: "The FDA observation is present but its status is not classified.",
         _NO_MATCHING_RECORDS: "No FDA records match this configured theme.",
         _UNAVAILABLE: "The FDA source is unavailable after a failed refresh.",
     }
+    rationale = rationales[status]
+    if not rationale.isascii():
+        raise ValueError("FDA chip rationale must contain ASCII text only because it is rendered in the title attribute.")
     return {
         "source": "fda_shortages",
         "theme": theme_key,
