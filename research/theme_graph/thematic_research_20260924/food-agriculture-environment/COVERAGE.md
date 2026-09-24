@@ -1,102 +1,70 @@
-# GMI A - coverage and source qualification, checkpoint 1
+# GMI A - coverage and source qualification after Case1
 
 Operation: `gmi-theme-research-food-agriculture-environment-20260924-001`.
-Parent: Macro #7886. Child: Draft/HOLD #7890, `sol/gmi-theme-research-a-20260924`.
-Status: PARTIAL RESEARCH QUALIFICATION. This is the initial context-ingestion unit, not the final 19-leaf assessment or a completed research return.
+Parent Macro #7886; child Draft/HOLD #7890, `sol/gmi-theme-research-a-20260924`.
+Status: PARTIAL RESEARCH. Case1 has a primary-source-supported synthesis with explicit limits; Cases2/3 and full19-leaf qualification remain open. No accepted product or native source admission.
 
-## 1. Evidence boundary
+## 1. What advanced, and what did not
 
-The Chairman delivered lane A and selected Extra High for initial context recovery. The exact canonical charter was read at `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. Protected procedure was pinned to Mastermind `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca` before effects.
+The initial four-leaf source qualification and all19 source-local identities are preserved. This continuation advances the procurement/credit/cash question through selected FMC and Nutrien primary disclosures plus distinct lender context. It does not certify complete fertilizers, seeds, biologicals or grower-level coverage. No additional leaf is counted merely because the same event appears in multiple classifications.
 
-All 19 assigned keys were located in the archived inventory. Four parent-prequalified leaves received substantive source qualification below. Other rows identify only bounded adjacent evidence or explicit unread dimensions. A pending assessment is not a finding that no prior research exists.
+The meaningful change is the distinction between a partner's future-product advance, current commercial demand, a forecast order shift and actual customer collections. The inherited broad 'licensing receipt' wording is refined by the filing's prepurchase/deferred-revenue classification, without redoing AGR5's arithmetic. Same-season financing snapshots support a measured aging comparison; they do not identify repayment by a fixed customer cohort.
 
-All external financial and operating observations in the reused studies remain ATTRIBUTED REPOSITORY REPORTS in this checkpoint. No external primary body was independently validated by this child. Prior researchers' assertions that they inspected a release, PDF or calculation are preserved as provenance, not adopted as our own validation. No current security eligibility, live observation, admitted data or product proof is established.
+All other prior research claims retain their original verification level. Repository studies are not independent validation of their cited external sources. A row marked uninspected does not assert that no prior study exists. The June27 inventory is archived source-local classification, not current vendor membership, canonical economic equivalence, security eligibility or a permitted basket.
 
-The inventory is an archived 2026-06-27 extraction, not current vendor membership. No raw constituent dataset is reproduced here. Labels describe source-local categories, not canonical economic roles or permitted trading baskets.
+## 2. Exact reusable sources and read limits
 
-## 2. Exact sources and inspected limits
+All repository references are in `mastermindx-market-intelligence/macro`.
 
-All research inputs below are in `mastermindx-market-intelligence/macro`.
-
-| Ref | Exact file and revision | Inspected substance and limitation |
+| Ref | Exact source | What was actually inspected |
 |---|---|---|
-| INV | `finviz_themes/finviz_themes_map.md` at `9573cd4d134804fb4cd8c3801ad62a697c3de6d2`; blob `51de7142f1efe36eceb64cb74a7eeb3f0ef06306` | Header and source-local sections in returned file lines 1320-1565, covering all four assigned families. Archived source only. |
-| AGR5 | `research/basic_materials/BASIC_MATERIALS_R5_FERTILIZER_AND_AGRICULTURAL_INPUTS_2026-09-23.md` at `0f52fe6397d7920a3de6a725abffacb25fbb0c96`; blob `e25267cd899671716c19fd311d4654d8a972c61e` | Sections 1-4, 5.1-5.3, 5.6-5.7, 6-8, opening of 9, and 13-15. Full sections 5.4-5.5 and 10-12 are not claimed read. Initial 1-190 response truncated; subsequent 170-290 and 350-end reads qualify the stated spans, not the missing middle. |
-| FOOD3 | `research/consumer_defensive/CONSUMER_DEFENSIVE_VALUE_CHAIN_ECONOMICS_R3_2026-09-23.md` at `88970a1a197884cc242f6d117cbf209603eccaf9`; blob `0617eaad8a4765b17b8f7a898a7f3e69dedfa3fb` | Complete file in sequential 1-120 and 121-end reads, including C12-C17 beyond the parent's earlier inspected frontier. |
-| IND9 | `research/industrials/INDUSTRIALS_WAVE9_RESEARCH_TO_PRODUCT_CATALOG_2026-09-23.md` at `8f041e6c7c93df67df19d96a464ef7946333c2f5`; blob `513335044c4032a1053ca31d339aac57360572eb` | Sections 1-5 and task table, particularly J03/J07/J12/J15/J16. Later reference dossiers not fully inspected. This is a catalog/framework pointer, not inspection of its underlying W6 water case. |
+| INV | `finviz_themes/finviz_themes_map.md` at `9573cd4d134804fb4cd8c3801ad62a697c3de6d2`; blob `51de7142f1efe36eceb64cb74a7eeb3f0ef06306` | Initial turn: header and relevant four source families, including all19 keys. No fresh vendor fetch. |
+| AGR5 | `research/basic_materials/BASIC_MATERIALS_R5_FERTILIZER_AND_AGRICULTURAL_INPUTS_2026-09-23.md` at `0f52fe6397d7920a3de6a725abffacb25fbb0c96`; blob `e25267cd899671716c19fd311d4654d8a972c61e` | Initial turn: sections1-4,5.1-5.3,5.6-5.7,6-8, opening9,13-15. Full5.4-5.5 and10-12 not claimed read; initial truncated response did not establish missing passages. Current unit reuses3-4,5.6,6D/6F,7-8 without another generic audit. |
+| FOOD3 | `research/consumer_defensive/CONSUMER_DEFENSIVE_VALUE_CHAIN_ECONOMICS_R3_2026-09-23.md` at `88970a1a197884cc242f6d117cbf209603eccaf9`; blob `0617eaad8a4765b17b8f7a898a7f3e69dedfa3fb` | Complete file read in the initial turn, including C12-C17 beyond the parent's earlier inspection. External claims still attributed repository evidence unless separately checked. |
+| IND9 | `research/industrials/INDUSTRIALS_WAVE9_RESEARCH_TO_PRODUCT_CATALOG_2026-09-23.md` at `8f041e6c7c93df67df19d96a464ef7946333c2f5`; blob `513335044c4032a1053ca31d339aac57360572eb` | Initial sections1-5/task table, especially J03/J07/J12/J15/J16. Later dossiers and underlying W6 water source not fully inspected. |
+| A-CASE1 | This root `SYNTHESIS.md`, creation `24020c459647ac86a11f927758bb11c6476ebd00`; blob `28d4f1821941666663809645624cca211e8960da` | Sections1-9; eight substantive primary documents plus one metadata index, selected passages only. Exact E01-E09 URLs, dates, populations and limitations are there. |
+| A-OBS1 | This root `OBSERVATIONS_AND_INTEGRATION.md`, creation `cf12eec45c90627a3caa44128bbf34347d9307dc`; blob `07f9863da0aea7f7909557e8daa1a38461b8f48a` | Four proposed observation profiles, two concrete journeys and14 proposed application examples. No native contract enrollment or executed product tests. |
 
-PR #7796 and #7792 metadata match AGR5 and FOOD3 pins. Their cumulative checkpoints were read: Basic Materials R10 is at shared-profile integration; Consumer Defensive R6 is at CDV-1 planning/integration. PR #7789 remains at `5b78adfd501faf2114751de7098840ebbe763713`; its current Wave11 checkpoint was read, while IND9 stays a deliberately older immutable reuse source. None of these writers is displaced. No full current-head Industrials audit is claimed.
+Basic Materials' current checkpoint at `5c5e8c9fbe4b676e08810942c6da45df09ae1d6a`, blob `3c2dc4655dd560abf73f4519b78f43debf803293`, says R1-R10 remain unchanged and concerns shared-foundation reconciliation with Semiconductor #7870. This does not displace a writer or prove that shared contract accepted/live. FOOD3 and the prior Industrials Wave11 checkpoint remain navigation for their next relevant material-change checks, not permanent runtime certifications.
 
-## 3. Exact 19-key breadth map
+## 3. All19 assigned leaves - exact scope retained
 
-Every key below has prefix `ltheme:finviz:`. Source qualifications are multidimensional; no single completeness score is assigned.
+Every source key below has prefix `ltheme:finviz:`. The table contains each assigned key exactly once. Qualification dimensions remain separate; no overall completeness score is assigned.
 
-| Source key | Source family / short label | Reuse actually located | Explicit unclosed dimensions |
-|---|---|---|---|
-| `commagrigrains` | Commodities Agriculture / Grains | FOOD3 C15-C16: worked ADM/Bunge processing and cash distinctions; adjacent reuse | Origination/storage/crushing separation, matched physical flows, realized spreads and inventory financing; leaf assessment incomplete. |
-| `commagrisofts` | Commodities Agriculture / Softs | INV only; no leaf-specific substantive study inspected | Crop-specific balances, hedges, contract repricing and producer versus customer positions. |
-| `commagrilivestock` | Commodities Agriculture / Livestock | FOOD3 C17: worked egg/segment denominator case only | Feed/biological cycles, capacity and protein-role economics beyond that example. |
-| `commagrifertilizers` | Commodities Agriculture / Fertilizers | DIRECT_RESEARCH_MATCH retained; AGR5 sections 1-4, 5.2, 6D/6F, 7-8 | Matched crop-region-season procurement, credit, sell-through and cash observations; no generic foundation redo. |
-| `commagribiofuels` | Commodities Agriculture / Biofuels | FOOD3 C15-C16 distinguish food/feed/fuel and overlapping stages; adjacent only | Feedstock/fuel/credit contracts and full plant capital; consult incumbent Energy rather than recreate it. |
-| `agriculturesmartfarming` | Agriculture & FoodTech / Smart Farming | IND9 J03/J07: channel and customer replacement/payback framework | Paid use, financing, actual saved cost and software attachment; lane C supplies deployment evidence, not a new A-owned robot BOM. |
-| `agriculturecropinputs` | Agriculture & FoodTech / Crop Inputs | DIRECT_RESEARCH_MATCH retained; AGR5 section 3 and worked FMC 5.6 | Seed, chemical and biological-specific efficacy/adoption, commercial rights, repeat orders and collections; no fertilizer-tonne transfer. |
-| `agricultureindoorfarming` | Agriculture & FoodTech / Indoor Farming | INV only | Saleable yield, realized price, energy/labor/distribution cost, utilization and invested capital. |
-| `agriculturealtprotein` | Agriculture & FoodTech / Alt Protein | FOOD3 C12-C13: adjacent contract-production/ingredient roles, not full alternative-protein coverage | Product-specific repeat purchase, price, yield and retained economics; not validated by ingredient revenue or a label. |
-| `agricultureprocessing` | Agriculture & FoodTech / Processing | Parent FRAMEWORK_MATCH extended by direct reading of worked FOOD3 C08-C10 and C12-C17 | Compatible throughput/spread/cash data, customer contract terms, acquired versus organic scope and non-additive end demand. |
-| `environmentalwater` | Environmental Sustainability / Water | IND9 J16 explicitly distinguishes volume/availability payments, obligations and capital | Actual W6 case, primary customer contract, full costs, penalties and reinvestment; utilities, equipment and service remain separate. |
-| `environmentalwaste` | Environmental Sustainability / Waste | IND9 J15 local-density framework; no actual waste contract inspected | Route population, disposal access, commodity recovery, customer terms and sustaining capital. |
-| `environmentalairquality` | Environmental Sustainability / Air Quality | INV only | Exact application/payer, replacement obligation, paid demand and product-versus-service perimeter. |
-| `environmentalclimate` | Environmental Sustainability / Climate | INV: same archived 13-member set as environmentalagriculture, different label | Economic object and payer remain unqualified; preserve source-local label and taxonomy question. |
-| `environmentalagriculture` | Environmental Sustainability / Agriculture | INV: same archived 13-member set as environmentalclimate, different label | Do not infer an agricultural mechanism, collapse keys or diagnose the extraction/vendor cause without evidence. |
-| `nutritionaltprotein` | Healthy Food & Nutrition / Alt Protein | FOOD3 C12-C13 adjacent production/ingredients; separate source-local key from agriculturealtprotein | Brands versus ingredients versus retailer demand, repeat purchase and price; shared claims count once. |
-| `nutritionretailers` | Healthy Food & Nutrition / Retailers | DIRECT_RESEARCH_MATCH retained; FOOD3 C05 and section 2 | Actual category/customer proposition, mature-store transactions/units, opening cohorts, cannibalization and full store cash returns. |
-| `nutritionsupplements` | Healthy Food & Nutrition / Supplements | INV only | Brand/distribution/customer-repeat economics; commercial demand never validates a health claim. |
-| `nutritionmealdelivery` | Healthy Food & Nutrition / Meal Delivery | INV only | Order cohorts, frequency, retention, acquisition, fulfillment and full contribution; grocery sales are not delivery unit economics. |
+| Source key | Reused or newly qualified evidence | Still missing or limited |
+|---|---|---|
+| `commagrigrains` | FOOD3 C15-C16 worked processor/cash cases, adjacent reuse | Origination/storage/crushing boundaries, matched physical flows, realized spreads and inventory financing; full leaf assessment incomplete. |
+| `commagrisofts` | INV only at this frontier | Crop-specific balances, hedges, contract repricing and producer versus customer positions; substantive incumbent passages still to qualify. |
+| `commagrilivestock` | FOOD3 C17 worked egg/segment-denominator example | Feed/biological cycles, capacity and protein-role breadth beyond that example. |
+| `commagrifertilizers` | AGR5 sections1-4,5.2,6D/6F,7-8; A-CASE1 financing and commercial cash questions directly primary-qualified in narrower scopes | Current crop/region/product application-to-procurement-to-cash cohort remains unavailable. FMC crop protection is not universal fertilizer-nutrient evidence. |
+| `commagribiofuels` | FOOD3 C15-C16 distinguishes food/feed/fuel and overlapping stages | Read relevant incumbent Energy evidence for feedstock/fuel/credit contracts and full plant capital; do not rebuild Energy research. |
+| `agriculturesmartfarming` | IND9 J03/J07 customer replacement/channel framework | Actual paid use, financing, saved costs and attachment. Lane C supplies deployment evidence; no A-owned robot BOM. |
+| `agriculturecropinputs` | AGR5 section3/5.6; A-CASE1 E01-E03: dated order commentary and named rimisoxafen future-supply arrangement; E04-E05 separate credit-book case | Current order cohort/crop, grower repeat use, full contractual cost/rights schedule, seeds and biological-specific depth are unqualified. Advance funding is not adoption. |
+| `agricultureindoorfarming` | INV only | Saleable yield, realized price, energy/labor/distribution costs, utilization and invested capital. |
+| `agriculturealtprotein` | FOOD3 C12-C13 adjacent production/ingredient roles | Product-level repeat purchase, price, yield and retained economics; ingredient revenue or label is insufficient. |
+| `agricultureprocessing` | Worked FOOD3 C08-C10 and C12-C17 directly read, extending the parent's framework qualification | Matched throughput/spread/cash, actual terms and non-additive role comparison; Case2 remains open. |
+| `environmentalwater` | IND9 J16 distinguishes volume/availability payment, obligations and capital | Actual W6 case and primary contract, full costs/penalties/reinvestment; equipment, utilities and service stay distinct. |
+| `environmentalwaste` | IND9 J15 local-density framework; no actual waste contract inspected | Route population, disposal access, commodity recovery, terms and sustaining capital. |
+| `environmentalairquality` | INV only | Exact application/payer, replacement obligation, paid demand and product/service scope. |
+| `environmentalclimate` | INV archived membership overlaps exactly with environmentalagriculture | Economic object and payer unqualified; preserve separate source-local identity and taxonomy question. |
+| `environmentalagriculture` | INV same archived13-member set as environmentalclimate under a different label | No inferred agricultural mechanism or diagnosis of vendor/extraction cause; no key collapse or source refresh. |
+| `nutritionaltprotein` | FOOD3 C12-C13 adjacent production/ingredient evidence; distinct key from agriculturealtprotein | Brands/ingredients/retail roles, repeat demand and pricing; shared claims count once. |
+| `nutritionretailers` | FOOD3 C05 and section2 separate footprint/comparables/calendar | Actual category/customer proposition, transactions/units, opening cohorts, cannibalization and full cash return. |
+| `nutritionsupplements` | INV only | Commercial brand/distribution/repeat-customer economics; sales never validate a health claim. |
+| `nutritionmealdelivery` | INV only | Ordering cohorts, frequency, retention, acquisition, fulfillment and full contribution; grocery sales are not order unit economics. |
 
-## 4. Four starting qualifications: what changed and what remains
+## 4. Case1 evidence versus measurement feasibility
 
-### Fertilizers
+A-CASE1 directly checks the FMC July29 release, its June30 Form10-Q selected notes, the June16 joint agreement, Nutrien June2026 and June2025 financing tables, a regional lender-survey account, FMC's separate equity closing and scheduled reporting notice. An SEC index provides filing metadata only. These are source assertions, not audited field outcomes. The filing refines the receipt's classification; it does not reveal undisclosed contract margin or demonstrate commercial success.
 
-AGR5 already separates field need, economically chosen application, affordability, financing, procurement, channel orders and producer shipments. Its Nutrien case also separates nutrient segments, intersegment eliminations and seasonal cash. These are substantive frameworks and worked research, not missing foundations. Retain its unchanged H-D inventory and H-F collection sensitivities as scenarios, not observations or independent confirmation.
+The same-season North America financing comparison is reproducible from the reported rows. Actual collections, original/revised maturity, write-offs/transfers and a fixed borrower cohort are not supplied by that snapshot. Region-level data do not acquire an invented crop identity. A later positive company sales number would not isolate returned deferred orders without the original cohort. These limitations are themselves useful discriminators, not a reason to manufacture a complete recovery story.
 
-The remaining question is whether observed order weakness represents purchase delay, distributor destocking, financing constraints or genuinely reduced use. A matched population must connect region, crop season, exact product, purchaser and ownership stage. National annual spending forecasts and issuer-wide shipments do not settle it. AGR5 section 8 names source candidates but leaves adapter feasibility, rights, coverage and corrections unresolved. Its AMS parsed/image-vintage discrepancy remains held; this child does not repair that or the parent's Pass2 clocks.
+`CASE1_RESEARCH_CHECKS.py` and `CASE1_VERIFICATION.json` are present at `1b237ce4f0d2072f3f62ccea379d725d6c912b02`; blobs `ab8f7b93358cbadd1b3b3d9fd19ffd1f1f61c025` and `ffb60df0a4291741687588a02385ae79b76ddfdc`. Executed42 positive checks and8 rejected corrupted variants, zero failures, then reran successfully. These check transcribed arithmetic and synthetic semantic counterexamples, not authenticity, native product code, independent review or forecast skill. Their local full-file Git hashes match the exact committed blobs.
 
-### Crop inputs
+## 5. Remaining jobs, source clocks and no-redo boundary
 
-AGR5's crop-protection roles and FMC case prevent licensing cash from being treated as recurring operating recovery. The isolated cash subtraction is existing house analysis, not a new forecast. A launch, registration, partner order and grower repeat purchase are different observations. Still missing are source-qualified crop/product/geography-specific commercial adoption, contractual retained rights, order timing and acceptable collection terms. Seed and biological coverage must be assessed directly rather than inferred from FMC or nutrient tonnes.
+Case1 is developed to its available evidence, with a narrower answer where cohorts/contract economics are not disclosed. Parent acceptance is still owed. Case2 will compare documented producer/ingredient and retail/distribution roles without inferring a commercial tie or summing intermediate transactions as extra end demand. Start from FOOD3's worked cases; obtain compatible-period evidence or expressly keep historical examples separate. Case3 starts from the underlying W6 case behind IND9 J16, then addresses the actual contract/full-cost gap, not another generic sustainability framework.
 
-### Processing
+Do not rebuild the268-key inventory,49-leaf Pass2, separate Cybersecurity sample, AGR5 grower framework or FOOD3 role-accounting foundations. Do not rerun unchanged prior arithmetic. No inherited clock fault, source membership, native contract or implementation is repaired here.
 
-The parent had not inspected all later processing examples. This child did: FOOD3 C12-C17 supplies substantive contract-production, ingredients, food/feed/fuel, acquisition/mark-to-market, cash-definition and external/intersegment cases. Thus direct worked research is now located beyond the inherited framework qualification. This does not independently validate the underlying releases, establish complete leaf breadth or prove actual customer links. Throughput denominators and conversion compensation still require primary qualification. Do not infer that two businesses in a role comparison trade with one another.
-
-### Nutrition retailers
-
-FOOD3 C05 already distinguishes Sprouts total sales, comparable sales, new stores and fiscal-week effects. Those dimensions are not proof of category-level demand quality, repeat customer adoption or store-cohort return. The precise gap is mature-location/customer economics and incremental cash after cannibalization, occupancy, labor, preopening and capital. A healthy/organic label cannot answer it. No present-day market or investment conclusion is drawn from the study's reported example.
-
-## 5. Three next case jobs, not completed case results
-
-1. Crop input: qualify an unresolved order/credit/collection question using AGR5's Nutrien or FMC evidence only after checking the actual product/region and original source. Reuse the existing numerical cash/scenario cases unchanged. Preferred discriminator: matched subsequent sell-through and cash collection, not issuer sell-in alone. Geography remains UNSELECTED until supported by the contract/crop calendar.
-2. Food chain: compare documented contract-production or ingredient economics with retail/distribution economics. FOOD3 C12 and C05 are usable role examples, but their historical periods differ and no supplier-customer relationship is established. Either retain an explicitly historical conceptual comparison or obtain matched-period primary observations; do not create a false contemporaneous pair. Test the adverse explanation that growth consumes capacity/capital or reflects exits/mix rather than durable end demand.
-3. Water/waste: first read the actual W6 source behind IND9 J16, then select one customer contract with observable obligations and capital. If a water-equipment seller lacks continuing service exposure, preserve that limitation rather than relabel sales as recurring service. Waste is an alternative only if its actual contract better supports the question.
-
-## 6. Initial observation design requirements
-
-These are research profiles awaiting refinement and existing-owner acceptance, not enrolled native contracts.
-
-**A-O1: procurement versus demand.** User question: is a selected crop-input order decline reversible timing or lost economic demand? Population: same product, region, crop season and channel cohort. Observe producer sell-in, distributor sell-through, ownership-adjusted inventory, invoice maturity and collections. Quantity numerators retain documented product units; collection ratio uses cash collected against the SAME due-invoice cohort divided by that cohort's amount due. No denominator is borrowed from consolidated revenue. Source candidates: disclosed issuer channel/receivable data, relevant official crop/credit/price series and entitled contract evidence; feasibility is untested and private cohort data may be unavailable. Event/release cadence follows source publications and crop windows; proposed review backstop is monthly during the selected purchase window, otherwise quarterly, with no automation created. Business horizon is one crop/procurement season; a market-surprise interpretation additionally requires a retained prior expectation and market clock. Retain each forward vintage, source definition, revision and cohort. A later correction must preserve original knowledge and update dependent interpretation. Alternative: credit-supported stock accumulation rather than end-use recovery. Falsifier of timing-only interpretation: missed seasonal window, persistent sell-through weakness or failed collections for the matched population. Intended owners: existing GMI evidence, financial/Earnings, Data OS and Research Vault responsibilities as appropriate; exact native bindings remain unknown. Missing sell-through/credit cannot be replaced by zero or a confident recovery verdict.
-
-**A-O2: retailer growth quality.** User question: is growth supported by established customers and economically productive new stores? Population: explicitly eligible comparable stores plus separate opening cohorts; same fiscal calendar and channel. Numerators/denominators: eligible comparable sales over prior comparable sales; transactions over comparable store-days only when disclosed; basket value per transaction is NOT physical units; cohort cash return requires attributable net cash and full cohort investment, both currently unobserved. Source: issuer releases/filings and entitled cohort/category data; financial releases are cited by FOOD3, not independently acquired here. Cadence: earnings releases and material calendar/store-definition changes, proposed quarterly review; horizon: quarterly operating evidence and multi-year store maturation. Preserve 52/53-week definitions, same-store eligibility, openings/closures, acquisitions and revisions. Alternative: footprint, prices, mix or cannibalization masks weak existing-customer economics. Falsifier: sustained same-cohort deterioration or new-store contribution failing to cover full incremental cash cost. Existing financial/Earnings owners retain measurements, GMI the source-local research relation, and F04/shared dossier composition the proposed display. Unknown category quantities and store-cohort cash stay visible; no manufactured margin or payback.
-
-Full case synthesis and final `OBSERVATIONS_AND_INTEGRATION` remain owed. No interface is claimed live because it is named. No new graph, score, evidence store, ingestion service or scheduler is proposed.
-
-## 7. Source and claim clocks
-
-Repository publications: AGR5, FOOD3 and IND9 are dated 2026-09-23; this child's foreground inspection occurred on 2026-09-24 UTC. Exact original first-public/system-observation timestamps are not independently established. Reused numerical cases retain their original fiscal periods and original study definitions; they are not stamped current by this checkpoint.
-
-Useful original-source locators, NOT independently validated here:
-- AGR5 F02: Nutrien Q2 2026 release/MD&A, study-attributed publication 2026-08-05, phosphate/cash/segment tables: https://www.nutrien.com/news/press-releases/nutrien-reports-second-quarter-2026-results-1753
-- AGR5 F06: FMC Q2 2026 release, study-attributed publication 2026-07-29, licensing/CFO/order timing: https://investors.fmc.com/news/news-details/2026/FMC-Corporation-reports-second-quarter-2026-results-with-Adjusted-EBITDA-above-high-end-of-guidance-range-and-solid-cash-generation/default.aspx
-- FOOD3 S05: Sprouts Q2 2026, study-attributed publication 2026-07-29 and thirteen weeks ended 2026-06-28: https://investors.sprouts.com/news/news-details/2026/Sprouts-Farmers-Market-Inc--Reports-Second-Quarter-2026-Results/default.aspx
-- FOOD3 S12: historical SunOpta Q2 2025, study-attributed publication 2025-08-06: https://www.nasdaq.com/press-release/sunopta-announces-second-quarter-fiscal-2025-financial-results-2025-08-06
-
-Claims reused across leaves keep one source-dependency identity. This child adds interpretation/qualification, not independent confirmation. Public accessibility is not commercial redistribution entitlement. No raw licensed source or vendor membership payload is republished. Unknown rights, source corrections, effective periods or units remain unknown and must be qualified before any later product admission.
+Repository publication, source availability, system observation and economic period remain different clocks. The current direct inspections occurred2026-09-24 UTC; exact per-source fetch time and retained raw-byte digest were not established. The source register retains date grain, original periods, unit definitions, source dependence and correction needs. Public accessibility is not commercial rights or immutable native retention. Missing remains unknown, not zero. No security ranking, trade effect or causal supplier link is inferred.
