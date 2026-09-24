@@ -210,11 +210,41 @@ def test_the_canonical_transmission_continuation_is_offered_in_every_state():
     reader with the link present solely inside <noscript>, which is exactly where
     a reader who can see the page never looks."""
     client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
-    assert "function transmissionLink()" in client
+    assert "function transmissionLink(" in client
     # called on the focus_leg branch too, not only the fallback branch
-    assert client.count("transmissionLink()") >= 2
+    assert client.count("transmissionLink(") >= 2
     assert (ROOT / "site" / "transmission.html").exists(), (
         "the continuation must point at a page that exists")
+
+
+def test_every_continuation_link_carries_path_step_source_context():
+    """M1 acceptance item 5: security/theme continuation preserves the
+    selected path / step / source context. A bare `transmission.html` href
+    loses the focused step the reader arrived from; the transmission surface
+    would then have to recover that context from somewhere it does not have.
+    Pin that every transmission.html href in the rendered DOM carries the
+    `from=<path first leg>` / `focus=<first_blocking_leg.node_id>` / `rev=
+    <source.rev>` query string the snapshot supplies."""
+    # Pin shape: there must be NO bare `transmission.html` href assignment
+    # anywhere in the client (no `a.href = "transmission.html"`, no
+    # `link.href = "transmission.html"`).
+    client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
+    bare_literal = re.findall(
+        r'(?:a|link)\.href\s*=\s*"transmission\.html"', client)
+    assert not bare_literal, (
+        "every transmission.html link must carry path/step/source context: "
+        f"found bare assignments {bare_literal!r}")
+    # And the continuation helper must read every context field the snapshot
+    # exposes (so a future rebuild of the snapshot keeps the link honest).
+    helper = re.search(
+        r"function\s+continuationHref\([^)]*\)\s*\{(.*?)^\s*\}",
+        client, re.S | re.M)
+    assert helper, "continuationHref(snapshot) helper must exist"
+    body = helper.group(1)
+    for field in ("sequence", "first_blocking_leg", "node_id", "source", "rev"):
+        assert field in body, (
+            f"continuationHref must read snapshot.{field!r} to carry context "
+            "(M1 acceptance item 5)")
 
 
 def test_every_blocking_reason_the_composer_emits_has_its_own_sentence():

@@ -466,10 +466,34 @@
      the reader who can see the page never looks. This path is a real page that
      carries every chain the owners publish, so it is a genuine continuation
      rather than a courtesy link. */
-  function transmissionLink() {
+  /* M1 acceptance item 5: every continuation link the page renders carries the
+     selected path / step / source context that the reader actually arrived
+     from. A bare `/transmission.html` loses the focused step (so a reader who
+     followed the link from a particular block lands on the page with no
+     indication of which path / step / revision they came from). The
+     transmission surface may or may not consume these today; that is the
+     surface's job, not this page's — the link carries the context regardless.
+     `focus` names the step the page last focused; `from` is the path's first
+     leg, which uniquely identifies the chain on the overview; `rev` is the
+     source revision the snapshot was read at. */
+  function continuationHref(snapshot) {
+    var seq = (snapshot && snapshot.path && snapshot.path.sequence) || [];
+    var from = seq.length ? seq[0] : "";
+    var blocking = snapshot && snapshot.first_blocking_leg
+      && snapshot.first_blocking_leg.node_id;
+    var focus = blocking || "";
+    var rev = snapshot && snapshot.source && snapshot.source.rev;
+    rev = (rev == null) ? "" : String(rev);
+    var q = [];
+    if (from) q.push("from=" + encodeURIComponent(from));
+    if (focus) q.push("focus=" + encodeURIComponent(focus));
+    if (rev)   q.push("rev="   + encodeURIComponent(rev));
+    return "transmission.html" + (q.length ? "?" + q.join("&") : "");
+  }
+  function transmissionLink(snapshot) {
     var p = el("p", "ox-more");
     var a = el("a");
-    a.href = "transmission.html";
+    a.href = continuationHref(snapshot);
     a.appendChild(say("See this path among all the owners publish",
       "在所有者发布的全部路径中查看本条"));
     p.appendChild(a);
@@ -501,12 +525,12 @@
       hint.appendChild(say("Opens the step-by-step readings below.",
         "将展开下方的逐环节读数。"));
       box.appendChild(hint);
-      box.appendChild(transmissionLink());
+      box.appendChild(transmissionLink(snapshot));
       return box;
     }
 
     var link = el("a", "ox-action");
-    link.href = "transmission.html";
+    link.href = continuationHref(snapshot);
     link.appendChild(bi(action.label));
     box.appendChild(link);
     var note = el("p", "ox-note");

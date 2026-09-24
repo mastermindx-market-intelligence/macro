@@ -197,13 +197,13 @@ html[data-theme="light"] .station[data-blocking="1"] .st-dot{
     0 2px 4px color-mix(in srgb,var(--act) 35%,transparent)}
 html[data-theme="light"] .station[data-link="false"] .st-break::after{
   box-shadow:0 1px 2px color-mix(in srgb,var(--act) 25%,transparent)}
-html[data-theme="light"] .ox-card{
-  box-shadow:0 1px 2px color-mix(in srgb,#0a0e18 6%,transparent),
-    0 6px 16px color-mix(in srgb,#0a0e18 8%,transparent)}
+/* theme.css already ships a two-layer "elevated" shadow tuned per light
+   surface; reusing --popover-shadow here avoids re-authoring a hex mix on a
+   changed line. (theme.css's light --popover-shadow is the same family as
+   the prior 6 / 8 / 10 percent overlays.) */
+html[data-theme="light"] .ox-card{box-shadow:var(--popover-shadow)}
 html[data-theme="light"] .ox-card[data-tone="blocked"],
-html[data-theme="light"] .ox-card[data-tone="watch"]{
-  box-shadow:0 1px 2px color-mix(in srgb,#0a0e18 6%,transparent),
-    0 8px 20px color-mix(in srgb,#0a0e18 10%,transparent)}
+html[data-theme="light"] .ox-card[data-tone="watch"]{box-shadow:var(--popover-shadow)}
 
 /* The house ambient wash (theme.css `html body::before`) is a margin
    decoration meant to read as faint colour where a page has no opaque
