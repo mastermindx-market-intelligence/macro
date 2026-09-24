@@ -42,6 +42,7 @@ from engine.company_intelligence.event_workspace import (
 )
 from engine.company_intelligence.event_workspace_build import build_event_workspace
 from engine.company_intelligence.events import FiscalPeriod
+from engine.company_intelligence.guidance_history import assess_management_sequence
 from engine.company_intelligence.identity import ALIAS_EPOCH
 from engine.company_intelligence.issuer_profiles import (
     HOMEBUILDER_TICKERS,
@@ -807,3 +808,33 @@ def test_build_event_workspace_passes_bound_and_release_document_id_to_extract_g
 def test_tsm_and_on_cik_constants_are_sec_attested() -> None:
     assert TSM_CIK == "0001046179"
     assert ON_CIK == "0001097864"
+
+# ── T06 alignment: release facts and guidance items state the SAME closed definition tokens ──
+
+def _composer_actual(fact: dict, fiscal_period: str) -> dict:
+    """The exact shape engine.market_ontology.semiconductor_theme_research._build_economics hands to
+    assess_management_sequence for the actual."""
+    actual = {"metric": fact["metric"], "value": fact["value"], "unit": fact["unit"], "fiscal_period": fiscal_period,
+              "source_span": {"event_id": fact["event_id"]}}
+    for optional in ("basis", "currency", "perimeter", "definition"):
+        if optional in fact:
+            actual[optional] = fact[optional]
+    return actual
+
+
+@pytest.mark.parametrize("facts_fn, guidance_fn, fact_id, reported, position", [
+    (_tsm_facts, _tsm_guidance, "fact_revenue_usd", "2026Q2", "below_range"),   # 12.34 vs a 13.0–13.5 prior range
+    (_on_facts, _on_guidance, "fact_revenue", "2026Q1", "below_range"),         # 1234.5 vs a 1400–1500 prior range
+])
+def test_release_fact_and_guidance_definitions_compare_like_for_like(facts_fn, guidance_fn, fact_id, reported, position) -> None:
+    fact = facts_fn()[fact_id]
+    (new_outlook,) = guidance_fn()
+    for field in ("metric", "unit", "basis", "currency"):
+        assert fact[field] == new_outlook[field], (field, fact[field], new_outlook[field])
+    prior = {**new_outlook, "horizon": reported}  # the previous release's outlook for the reported quarter
+    result = assess_management_sequence(prior, _composer_actual(fact, reported), new_outlook)
+    assert result["comparisons"]["prior_vs_actual"] == {"status": "comparable", "reason": None, "position": position}
+    assert result["comparisons"]["actual_vs_new_outlook"]["reason"] == "different_period"
+    assert "definition_unqualified:perimeter" in result["limitations"] and "definition_unqualified:definition" in result["limitations"]
+    assert not any(token.startswith("comparison_refused") for token in result["limitations"])
+    assert all(v is False for v in result["authority"].values())

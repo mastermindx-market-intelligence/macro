@@ -433,8 +433,14 @@ def _fact_present(
     document_id: str,
     bound: BoundRelease,
     receipt: SpanReceipt,
+    currency: str | None = None,
 ) -> dict[str, Any]:
-    return {
+    # ``currency`` is additive: a profile whose guidance items carry a
+    # currency (TSM/ON) states the same closed token on its release facts so
+    # the T06 comparison law (guidance_history._classify_prior_vs_actual,
+    # None vs non-None is a mismatch) compares like with like. Homebuilder
+    # facts pass nothing and their payload is byte-identical.
+    payload = {
         "schema": "event_fact.v1",
         "fact_id": fact_id,
         "event_id": event_id,
@@ -445,6 +451,9 @@ def _fact_present(
         "basis": basis,
         "source_span": _release_span_payload(document_id=document_id, bound=bound, receipt=receipt),
     }
+    if currency is not None:
+        payload["currency"] = currency
+    return payload
 
 
 def _fact_absent(*, fact_id: str, event_id: str, metric: str, detail: str, document_id: str,
@@ -1501,7 +1510,7 @@ def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_i
                             detail=detail, document_id=document_id)
 
     def usd_absent(detail: str) -> dict[str, Any]:
-        return _fact_absent(fact_id="fact_revenue_usd", event_id=event_id, metric="revenue_usd",
+        return _fact_absent(fact_id="fact_revenue_usd", event_id=event_id, metric="revenue",
                             detail=detail, document_id=document_id)
 
     if reported is None:
@@ -1556,10 +1565,17 @@ def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_i
         facts.append(usd_absent("USD revenue template literal is not uniquely addressable in its block"))
         return facts
     value = float(re.search(r"\d+(?:\.\d+)?", literal).group(0))
+    # TSMC's USD-restated quarterly revenue ("In US dollars, … quarter revenue
+    # was …"). The definitional tokens are the SAME closed values the guidance
+    # extractor states (metric revenue, basis reported_ifrs, currency USD):
+    # TSMC guides in US dollars on the same reported basis, so the T06
+    # prior-vs-actual comparison is a genuine like-for-like, not a refusal
+    # manufactured by two spellings of one definition (live-EDGAR proof,
+    # 2026-09-24: metric_mismatch on the real Q1→Q2 sequence).
     facts.append(_fact_present(
-        fact_id="fact_revenue_usd", event_id=event_id, metric="revenue_usd",
+        fact_id="fact_revenue_usd", event_id=event_id, metric="revenue",
         value=value, unit="usd_billions", period=period,
-        basis="TSMC USD-restated quarterly revenue, as stated in Exhibit 99.1 ('In US dollars, … quarter revenue was')",
+        basis="reported_ifrs", currency="USD",
         document_id=document_id, bound=bound, receipt=usd_receipt,
     ))
     return facts
@@ -1749,10 +1765,15 @@ def _on_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id
     )
     if receipt is None:
         return absent("Revenue cell bound to the reported label is not receiptable")
+    # onsemi GAAP quarterly revenue from the Exhibit 99.1 summary table; the
+    # definitional tokens match the outlook table's (basis reported_gaap,
+    # currency USD) so the T06 comparison is like-for-like (live-EDGAR proof,
+    # 2026-09-24: basis_change on the real Q1→Q2 sequence came from a prose
+    # basis string on the fact, not from onsemi).
     return [_fact_present(
         fact_id="fact_revenue", event_id=event_id, metric="revenue",
         value=float(parsed[0].group(1).replace(",", "")), unit=unit, period=period,
-        basis="onsemi GAAP quarterly revenue, as stated in the Exhibit 99.1 summary table",
+        basis="reported_gaap", currency="USD",
         document_id=document_id, bound=bound, receipt=receipt,
     )]
 
