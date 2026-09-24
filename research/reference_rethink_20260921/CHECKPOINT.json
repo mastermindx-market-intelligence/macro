@@ -4,40 +4,41 @@
   "mission_complete": false,
   "production_changed": false,
   "finalization_classification": "ALL_SCOPED_LANES_BLOCKED",
-  "boundary": "R7 Studio recovered; existing heading fix pushed and targeted real-browser journey verified; production integration remains held",
-  "protected_authority_pin": "89582a372aa2a57ec500868ce6d79cd156219445",
-  "source_subject": "d18ddc1e9623952374af670b36b6069298aac4a0",
+  "boundary": "R8 context-host mutation repaired and browser-proven; real Macro composition and production migration still held",
+  "protected_authority_pin": "a0b31114d5d645e73da1333f7258092034a54c34",
+  "source_subject": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
   "view_subject": "a7b5827dad123a69f963fceec4dfad89d41dd891",
   "integrated_main": "259477158b3363aee5a704946b9b46a1309708dc",
   "carrier": "claude/reference-rethink-20260921",
   "pr": 7647,
   "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
   "candidate_artboards": 20,
-  "last_material_delta": "Existing d18ddc1e9623 heading repair published on original carrier; four real-source Chromium cases verify heading, exact membership, input identity/focus, query URL, history and responsive fit.",
+  "last_material_delta": "Context mode no longer changes the supplied host class or clears host content on dispose; RED-first unit coverage plus real Chromium synthetic-host proof passed.",
   "local_tests": {
     "python": 68,
-    "node": 53,
-    "total": 121,
+    "node": 56,
+    "total": 124,
     "python_cleanup_warnings": 6,
-    "fresh_this_turn": false,
-    "note": "Historical R5 Python 68/Node53; R6 Node55 passed at heading source. This turn ran four real browser cases, not those unit suites."
+    "fresh_this_turn": true,
+    "note": "Fresh at R8 implementation bytes; the separate ci_pack -k probe selected no tests and is not counted as a pass/failure of guide behavior."
   },
   "focused_browser_proof": "Superseded by full current-source standalone qualifier at 0ece90fc7b3d17b48cb7252327f03fae680ab4d5",
-  "proof_ceiling": "Targeted real-source standalone heading journey, not full requalification, Macro embedding, independent acceptance or deployment",
+  "proof_ceiling": "Shared context-component host invariance, not actual Macro embedding, independent acceptance or deployment",
   "preview": "r7-evidence/guide.html",
   "original_r3_proof": "r3-realpath/remaining-routes.json remains historical at 49f462dc67f6ea850a77d261a8a1a6a8f810b6df; do not claim 184 R3 cases as freshly run on R4",
-  "context_mode": "Built and unit-tested. Local unchanged Macro DOM injection opened the dialog but the exact navigation-HTML comparison differed. Cause remains unresolved; no embedding PASS",
+  "context_mode": "Built and hardened: context mount/open/dispose leaves caller-owned host content/class unchanged. Synthetic real-browser DOM proof passes; actual Macro composition remains unproven.",
   "blocked_lanes": {
-    "macro_integration": "Fresh same-device real Macro navigation diagnostic explicitly refused by OpenAI safety-status check after Studio recovery; not retried through another route. Prior discrepancy remains unresolved.",
-    "reference_migration": "Independent Reference Integrity/design approval remains absent; incumbent #6792 stays OPEN/DRAFT at 7853ffeaca41d4d8f33995b1453db2be134ce8a3. No production template custody taken.",
-    "independent_acceptance": "GitHub reviewer mastermindx-2 still requested; fresh comment read found no return. No pickup, START or acceptance claimed.",
+    "macro_integration": "Fresh real site/macro composition read/diagnostic explicitly refused by OpenAI safety-status check in the new tool generation; lane frozen without reroute. Synthetic host-browser proof does not clear it.",
+    "reference_migration": "Independent Reference Integrity/design approval remains absent; incumbent #6792 stays OPEN/DRAFT at 7853ffeaca41d4d8f33995b1453db2be134ce8a3 with independent REQUEST_CHANGES evidence. No production template custody taken.",
+    "independent_acceptance": "GitHub reviewer mastermindx-2 remains requested on #7647; no returned review/START/acceptance observed.",
     "hosted_ci_detail": "Exact prior download destination absent and no process; reconciled same-carrier artifact-download attempt now explicitly refused. No bypass or hosted-green claim.",
-    "release": "Requires accepted design/reference, real integration and concluded current-base CI; Draft/Hold remains."
+    "release": "Requires accepted design/reference, real integration and concluded current-base CI; Draft/Hold remains.",
+    "current_base": "Observed origin/main 2b2cae6a148f920b5c4e7ebd8df19ed14b159f5a moved dashboard/theme since the integrated base. Open #7859 touches dashboard risk-detail region, not the LOOK UP block in the consumed patch; current-base composition proof still owed."
   },
-  "effects": "Original fix d18ddc1e9623 pushed once and exact remote readback verified. Prior download reconciled absent with no process; new same-carrier download and Macro diagnostic were explicitly refused before execution. No unresolved source/push/worker effect.",
+  "effects": "R8 source commit da3c09d30e212fa0a82179cd31528b1ef8164a15 exists locally and is unit/browser verified. No production mutation. Push/evidence publication remains the next same-carrier effect.",
   "active_children": [],
   "autonomous_return_path": null,
-  "principal_judgment": "CRITICAL_PATH_SHORTCUT: verify and publish the existing small repair without recreating it. Independent acceptance remains separate.",
+  "principal_judgment": "CRITICAL_PATH_SHORTCUT: directly remove the concrete host-mutation defect while the real-Macro safety lane and independent-review/source-custody lanes remain blocked.",
   "do_not_redo": [
     "Do not recreate Paper artboards",
     "Do not create a second editorial store",
@@ -49,11 +50,13 @@
     "Do not overwrite the incumbent reference builder/template or bypass refused operations",
     "Do not waive or repeat completed code-gate enrollment absent an invalidator",
     "Do not claim standalone matrix proof as Macro embedding",
-    "Do not label requested review as START or acceptance"
+    "Do not label requested review as START or acceptance",
+    "Do not reintroduce context-mode host class/content mutation",
+    "Do not call synthetic host-browser proof actual Macro embedding"
   ],
-  "next_action": "Consume independent reference/design review and reconcile incumbent #6792 source custody; resume the Macro navigation diagnostic only after its separate safety-status boundary clears, then integrate and release through existing current-base gates.",
+  "next_action": "Consume independent reference/design review and reconcile incumbent #6792 custody; when the separate safety-status boundary changes, run the real Macro composition proof and only then wire/accept the production contextual consumer.",
   "intended_resume_surface": "Same operation and PR; reconcile exact remote/local head and source custody before changes",
-  "proof": "r7-evidence/heading-browser.json; r7-evidence/source-binding.json; R7_STUDIO_RECOVERY.md",
+  "proof": "r8-evidence/context-browser.json; R8_CONTEXT_HOST_HARDENING.md; preserved R7 and R5 evidence at their bound subjects.",
   "independent_review": {
     "requested_reviewer": "mastermindx-2",
     "carrier": "macro#7647",
@@ -64,14 +67,14 @@
   "ci_enrollment": "SOURCE_REPAIRED and locally verified through existing census/selection; hosted latest-head proof pending",
   "recovery": {
     "device": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
-    "local_head": "d18ddc1e9623952374af670b36b6069298aac4a0",
-    "last_remote_head": "d18ddc1e9623952374af670b36b6069298aac4a0",
+    "local_head": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
+    "last_remote_head": "31d4679253147f31d6855c719b92199fe88022cb",
     "prior_handoff_sha": "c3b2a849f929e15043f84da2ddd89eb5efb5e4d2",
     "sha_disagreement": "Prior PR text named an incorrect local SHA; original-carrier git log and exact two-file patch establish d18ddc1e9623 as the actual fix.",
     "download_destination_exists": false,
     "matching_download_processes": 0,
     "download_reconciliation": "The exact prior hosted-plan destination is absent and no matching download runs. No source or push effect was ambiguous.",
-    "push_verified": true
+    "push_verified": false
   },
   "targeted_browser_proof": {
     "scope": "Targeted real-source Chromium proof of existing heading repair; not Macro integration or deployment",
@@ -103,5 +106,20 @@
     "errors": [],
     "html_sha256": "fe650d8156971d2ef4515d3a1ead158eb724332562aff363cf11ee2b57203daf",
     "view_sha256": "13b63fe47d63a3636d4e4b9b8b2a84906a3610859a2ce3fff5fa12f10cf52492"
+  },
+  "context_host_browser_proof": {
+    "scope": "Synthetic host-browser proof of non-invasive context mode; NOT actual Macro embedding or deployment",
+    "source_commit": "da3c09d30e212fa0a82179cd31528b1ef8164a15",
+    "browser": "151.0.7922.34",
+    "entries": 46,
+    "browser_checks": {
+      "host_unchanged_mount_open_dispose": true,
+      "global_nav_unchanged": true,
+      "url_title_language_unchanged": true,
+      "delegated_data_guide_entry_click_opens_risk_help": true,
+      "full_guide_link_safe_same_origin": true
+    },
+    "errors": [],
+    "guide_view_sha256": "151da3992101f7b7c0b12cd01f69b8a0116027ce76ba2f4f077bcf5226048a28"
   }
 }
