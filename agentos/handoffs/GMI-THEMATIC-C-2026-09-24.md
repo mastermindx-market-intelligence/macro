@@ -3,55 +3,78 @@ workstream: "WS:GMI-THEME-GRAPH"
 session: sol/gmi-theme-research-c-20260924
 model: unknown
 ended_because: checkpoint
-mission: "Repair only C-R1 through C-R4 on the existing GMI C research carrier."
-state_before: "Full 32-leaf and three-case research returned at 28b517561187412b8ea9b32b6001bcdb1a68b1af; Meta-CEO requested narrow measurement/documentation repair."
+mission: "Return the finite C-R1 through C-R4 measurement/documentation repair on the existing GMI C carrier."
+state_before: "Meta-CEO preserved the 32-leaf/three-case research at 28b517561187412b8ea9b32b6001bcdb1a68b1af but required four narrow corrections."
+verified:
+  - "26 local synthetic checks passed; seven deliberately wrong formula variants detected; zero failures or missed variants."
+  - "Executed script and receipt local Git blobs match native exact-ref readbacks."
+  - "Reviewed-head comparison through 7e6754b5f7c14b86fd41065c630dcbcc6812cf69 contains exactly six repair paths; coverage unchanged."
 next_actions:
-  - "Correct measured revenue versus prospective energy, endpoint versus integrated exposure, and profit versus cash; align SYNTHESIS status and qualify preliminary profiles."
-  - "Run small synthetic counterexamples, preserve unchanged coverage and nonaffected cases, and return exact revised artifacts on parent #7886."
+  - "Meta-CEO consumes revised RETURN_AND_CHECKPOINT and checks, then accepts/STOPs or specifies an exact remaining repair/CONTINUE on #7886."
 do_not_redo:
-  - "No broad research, 32-key census, ROBOT1/IND9/HEALTH4, sibling work, private-ROI search, implementation or worker dispatch."
+  - "Do not repeat broad research, the 32-key census, ROBOT1/IND9/HEALTH4, source cases, sibling work or private-ROI searches."
+  - "Do not begin implementation, change carrier, dispatch workers/Fable, enroll sources or alter trading outputs."
 ---
 
-# GMI C cumulative checkpoint — same-operation measurement repair
+# GMI C cumulative checkpoint — measurement repair returned for review
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION.
+MISSION_COMPLETE: false. Finite repair complete for review; Meta-CEO acceptance is not claimed.
 
 Operation: `gmi-theme-research-automation-mobility-deployment-20260924-001`.
 Carrier: Macro Draft/HOLD #7893, `sol/gmi-theme-research-c-20260924`.
 Parent: #7886, `gmi-thematic-research-meta-ceo-20260924-001`.
-MISSION_COMPLETE: false. This is an in-turn recovery checkpoint, not acceptance or a new execution owner.
 
-## Current authority and reconciliation
+## Authority and source pins
 
-Current live Chairman directed this same conversation to consume parent comment `5810356948` and continue only its repair. The exact comment was read. Detailed review: `research/theme_graph/thematic_research_20260924/WAVE1_META_CEO_REVIEW_2026-09-24.md`, commit `30cca9d7a216f94580104444c405fc31064c7e48`, blob `db9bfc80dcd7625d329e48d44ef9a2506b83b19a`, section 4.
+Current live Chairman explicitly directed this same conversation to consume parent ruling `5810356948`. That exact comment and detailed review section 4 were read: `research/theme_graph/thematic_research_20260924/WAVE1_META_CEO_REVIEW_2026-09-24.md` at `30cca9d7a216f94580104444c405fc31064c7e48`, blob `db9bfc80dcd7625d329e48d44ef9a2506b83b19a`.
 
-Current #7893 head matched reviewed head `28b517561187412b8ea9b32b6001bcdb1a68b1af`; open/draft. No intervening source modification or unresolved mutation was observed before this checkpoint. Repository preflight reports push permission; native update/create-file actions are exposed. Source custody stays here; no worker or alternate carrier is created.
+Fresh protected Mastermind master pin `1a7d400294b0d37c460b963b8865b40a23173b58`; INDEX blob `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`, schema `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap major 1. Same-pin reads and exact blob comparisons confirmed unchanged loaded ACTIVE_EXECUTION (`9fed10f7cc7a2f4323d039b406f7c0715445e22e`), RECONCILE_STATE (`1373b72a13fb4a084b0331eb2bcf2d4a680d9738`), WEB_CEO_DELEGATION (`2073a33f05506268b15f0b5ce292ce57d5b60ed3`) and routing addendum (`21ac0d28c3ca36d4fefdfc501453f3338636df0d`). CLOSEOUT read in full at current pin, blob `4a9ec3782da001322604e977dbe91b9cf371f0b9`.
 
-Fresh Mastermind master pin: `1a7d400294b0d37c460b963b8865b40a23173b58`. INDEX blob `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`, schema `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap major 1. Fresh same-pin file reads and exact blob comparisons against the previously loaded revision confirmed unchanged ACTIVE_EXECUTION (`9fed10f7cc7a2f4323d039b406f7c0715445e22e`), RECONCILE_STATE (`1373b72a13fb4a084b0331eb2bcf2d4a680d9738`), WEB_CEO_DELEGATION (`2073a33f05506268b15f0b5ce292ce57d5b60ed3`) and routing addendum (`21ac0d28c3ca36d4fefdfc501453f3338636df0d`). CLOSEOUT read in full at current pin, blob `4a9ec3782da001322604e977dbe91b9cf371f0b9`.
+Wave charter remains `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. Ruling changes only the four named clauses. Reviewed C head matched the live branch at pickup. Native GitHub preflight confirmed push permission; no conflicting source change or unresolved mutation was observed.
 
-Canonical wave charter remains commit `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. The later explicit repair ruling governs only the four specified corrections.
+## Exact revised artifacts
 
-## Preserved research and exact inputs
+Read the revised return first at immutable commit `7e6754b5f7c14b86fd41065c630dcbcc6812cf69`:
+`research/theme_graph/thematic_research_20260924/automation-mobility-deployment/RETURN_AND_CHECKPOINT.md`, blob `fd9a9f5454ceaa7599417513d0777fd6fdd57517`, read back at that commit.
 
-At reviewed head `28b517561187412b8ea9b32b6001bcdb1a68b1af`, under `research/theme_graph/thematic_research_20260924/automation-mobility-deployment/`:
+Under the same research root:
+- SYNTHESIS.md: `13a5d2d1fa3b3288f1fd09a481219f19a9584aab`.
+- OBSERVATIONS_AND_INTEGRATION.md: `e7b61a5a10cb7bfb0d38d8509fdb894945bde7cc`.
+- test_measurement_repair.py: `299479ccda2e5a21e10dc4c2fd63513a975f6f70`.
+- MEASUREMENT_REPAIR_CHECKS.json: `7576192123862f11d72a02b97a85b7c767f2db84`.
 
+Unchanged coverage:
 - COVERAGE.md: `5dbe7bfca0718ac3e70a19945fb1077982c6ae66`.
 - COVERAGE.json: `03d851ad54bf70c881a19a4198637864971d637c`.
-- SYNTHESIS.md: `6b3cd817106107d7ff9ebcb486ca3d606da3ae76`.
-- OBSERVATIONS_AND_INTEGRATION.md: `d6ac03ff2cfc8f71d9a42b7ac46d24be28a41d3a`.
-- RETURN_AND_CHECKPOINT.md: `680bdae8c09ace7c05c62f3d852765595bae7ba5`.
 
-The full prior return is preserved by this immutable reference. Keep its useful 32-leaf assessment, Symbotic/Walmart, EVgo and Caterpillar/Luck Stone cases. Matched site ROI, achieved charging uptime and quarry cost/ton remain unknown; no new source audit is required or claimed. The parent has not accepted C; it preserved the research subject to these repairs.
+The earlier full return is preserved at reviewed head `28b517561187412b8ea9b32b6001bcdb1a68b1af`, blob `680bdae8c09ace7c05c62f3d852765595bae7ba5`. No re-census or re-research is implied by preservation.
 
-## Finite repair
+## Material repair
 
-C-R1: measured direct revenue `sum(E_i * p_i)` has no additional stall/availability multiplier. Prospective energy `sum(H_i * a_i * q_i)` uses scheduled eligible stall-hours and kWh per available stall-hour; an all-scheduled-hours rate excludes the extra availability factor.
-C-R2: endpoint `3930 * 276 * 91` is a hypothetical approximation, not exposure reconciliation. Retain the source's public-network population; actual integrated exposure/average definition remain unmeasured here.
-C-R3: separate accounting depreciation from cash capex; explicitly scope working capital, taxes, financing and offsets. Missing inputs are not zero.
-C-R4: complete-for-review research status, not production completion; C-O4/C-O5 remain preliminary.
+C-R1: measured direct revenue `sum(E_i*p_i)` has no capacity/availability multiplier. Prospective energy uses scheduled eligible stall-hours, compatible availability and kWh per AVAILABLE hour; an ALL-scheduled-hours rate has no additional availability multiplier. Separate credits/fees, recognition, cash collection and dependent yield calculations.
 
-## Surface/effects/return
+C-R2: endpoint `3930*276*91` is only a hypothetical approximation, not a denominator reconciliation. Retain PUBLIC-network 99 GWh; actual exposure/average definition remains unmeasured. Remove the unsupported causal expansion contribution and mature-site inference.
 
-User reports Pro mode now selected. Served model/session ID, hidden budget, empirical non-Pro insufficiency and Pro-duration receipt remain unknown; no such attestation or global-law change is invented. The parent ruling permits this bounded phase on the current permitted surface.
+C-R3: separate accounting profit and cash investment; add back included noncash D&A before deducting cash capex once. Working capital, taxes, interest, borrowing, principal and offsets retain declared scopes; no double interest/offset or missing-to-zero conversion. Related profile numerators and costs have explicit grouping and units.
 
-No external worker, Executive Job, watcher or native wake is claimed. Manual Chairman relay plus the exact parent GitHub return remains the continuation path. A container raw-file read failed DNS; no credential, alternate publication effect or safety/permission denial occurred. Native GitHub remains available.
+C-R4: synthesis is complete for review, not product-complete; C-O4/C-O5 explicitly remain supplemental/preliminary.
 
-Known effect at checkpoint: updating this one cumulative handoff. Reconcile this same object if its write response is ambiguous; never retry blindly. Next: execute finite documentation repair and local synthetic checks, then update this record and return to parent comment 5810356948 on #7886.
+## Actual proof and limitations
+
+Command: `python test_measurement_repair.py --out MEASUREMENT_REPAIR_CHECKS.json`.
+Result: 26 checks PASS; 7 deliberately wrong formula variants detected; 0 failed/missed. Fixtures cover fixed observed energy/yield, alternate rate bases, staggered commissioning, profit/cash reconciliation, financing/offset double counts and unknown inputs. They are synthetic arithmetic, not issuer audits, product tests or predictive validation.
+
+Local script SHA-256 `08595c637349d837743949863c294266c4ebaff8f078d830e4a96eb3230ef57e`; receipt SHA-256 `171b3221f3eb61fe3cc6017b5bfaf9b4ffffd3e5a608a5e36a5b55c57f9f92ae`. Native exact-ref blobs match the locally executed bytes.
+
+Exact SYNTHESIS diff `dd0e878e6196feb9787ee4dd10c75a2abde59822` leaves complete warehouse/quarry case sections unchanged. Profile diff `06e570238b752ed972bdb25590d20c72411df6cd` was inspected; final C-O2 at `9f98549345e984fea4f2026a5091d8e029246a91` read back. Compare reviewed head to `7e6754b5f7c14b86fd41065c630dcbcc6812cf69`: exactly six repair paths (four documentation/handoff files, test script and receipt), zero coverage or outside-scope changes. Final parent return supplies this handoff's containing head after readback.
+
+Actual EVgo comparable exposure/averaging rules and achieved uptime, matched site cash/ROI, Walmart site payback and quarry contract/cost-per-ton remain unknown. No private-data search or fresh issuer audit occurred. All source-owner boundaries, the useful 32-leaf assessment and three cases remain preserved.
+
+## Effects, surface and continuation
+
+One existing branch/PR only. Research documents, one offline test/receipt and this cumulative handoff are the only effects. No source registry/rights/identity/membership, native schema/data/product code, basket/rank/trade, paid API, credential, worker/Fable, watcher, merge or deployment effect. EFFECT_UNKNOWN: none observed; any ambiguous later publication must be reconciled on its original carrier.
+
+The user reports Pro selected; no served-model/session, hidden budget, non-Pro insufficiency or duration attestation is fabricated. Current native permitted writes succeeded without requesting a mode change. This finite correction is permitted by the parent ruling on the current surface; no global cognition law is amended.
+
+This checkpoint is the finite repair/review boundary, not acceptance or custody transfer. The same-operation return route is a compact result on parent #7886 plus manual Chairman relay; no daemon or automatic wake exists. Exact next action: Meta-CEO consumes revised return/checks and issues acceptance/STOP or an exact residual repair/CONTINUE. No broader study or implementation should begin from this return.
