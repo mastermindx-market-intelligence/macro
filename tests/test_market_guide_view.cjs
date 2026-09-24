@@ -148,6 +148,28 @@ test('context mode never mutates or clears its host container',()=>{
  assert.equal(h.host.getAttribute('class'),'macro-slot existing');assert.equal(h.host.textContent,'Preserve host content');
  h.app.dispose();assert.equal(h.host.getAttribute('class'),'macro-slot existing');assert.equal(h.host.textContent,'Preserve host content');
 });
+test('context help surfaces a caller-supplied current reading without interpreting it',()=>{
+ const h=harness('https://review.invalid/macro.html',fixture(),{mode:'context'});
+ const opener=h.doc.getElementById('theme');
+ opener.setAttribute('data-guide-current-en','56 / 100 · Caution');
+ opener.setAttribute('data-guide-current-zh','56 / 100 · 谨慎');
+ opener.setAttribute('data-guide-asof','2026-09-23');
+ h.app.openHelp('risk-radar',opener);
+ assert.equal(h.dialog.querySelector('[data-guide-current-value]').textContent,'56 / 100 · Caution');
+ assert.equal(h.dialog.querySelector('[data-guide-current-asof]').textContent,'2026-09-23');
+ h.doc.documentElement.setAttribute('data-lang','zh');h.doc.fire('langchange');
+ assert.equal(h.dialog.querySelector('[data-guide-current-value]').textContent,'56 / 100 · 谨慎');
+ assert.match(h.dialog.textContent,/当前读数/);
+});
+test('current-reading text remains inert and is absent when the caller supplies none',()=>{
+ const h=harness('https://review.invalid/macro.html',fixture(),{mode:'context'});
+ const opener=h.doc.getElementById('theme');opener.setAttribute('data-guide-current-en','<img src=x onerror=alert(1)>');
+ h.app.openHelp('risk-radar',opener);
+ assert.equal(h.dialog.querySelector('[data-guide-current-value]').textContent,'<img src=x onerror=alert(1)>');
+ assert.equal(h.dialog.all('img').length,0);h.dialog.close();
+ const h2=harness('https://review.invalid/macro.html',fixture(),{mode:'context'});h2.app.openHelp('risk-radar',h2.doc.getElementById('theme'));
+ assert.equal(h2.dialog.querySelector('[data-guide-current]'),null);
+});
 test('context help reads the same source and links to the full guide without seizing navigation',()=>{
  const url='https://review.invalid/macro.html#regime-radar';const h=harness(url,fixture(),{mode:'context'});const opener=h.doc.getElementById('theme');
  h.app.openHelp('risk-radar',opener);assert.equal(h.dialog.open,true);assert.equal(h.dialog.querySelector('#help-title').textContent,'Risk Radar');

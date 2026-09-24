@@ -17,7 +17,7 @@
       host.replaceChildren(note);host.hidden=false;if(fallback)fallback.hidden=false;
       return {dispose(){}, error};
     }
-    let route=Guide.readRoute(location.href,model), modal=null, trigger=null, closeScroll=0;
+    let route=Guide.readRoute(location.href,model), modal=null, trigger=null, closeScroll=0, currentContext=null;
     const stateByEntry=new Map(), listeners=[];
     let restoreOnClose=true;
     if(!contextOnly)host.setAttribute('class',((host.getAttribute('class')||'')+' mx-guide').trim());
@@ -34,6 +34,14 @@
     }
     function add(parent, ...children){parent.append(...children);return parent;}
     function button(text,action,attrs={}){const b=node('button',text,{type:'button',...attrs});b.addEventListener('click',action);return b;}
+    function currentReading(opener){
+      if(!opener?.getAttribute)return null;
+      const en=(opener.getAttribute('data-guide-current-en')||'').trim();
+      const zh=(opener.getAttribute('data-guide-current-zh')||'').trim();
+      const asof=(opener.getAttribute('data-guide-asof')||'').trim();
+      if(!en&&!zh)return null;
+      return {en:en||zh,zh:zh||en,asof};
+    }
     function targetLink(id,label){
       const url=contextOnly?new URL(guidePath,ownerOrigin):null;
       if(url){url.hash=id;if(route.lang==='zh')url.searchParams.set('lang','zh');}
@@ -217,11 +225,18 @@
     function renderModal(){
       const record=model.get(modal);dialog.replaceChildren();
       const close=button('×',()=>dialog.close(),{class:'close','aria-label':t('Close explanation','关闭说明'),'data-close':''});
-      add(dialog,add(node('div','',{class:'row'}),node('span',t('QUICK EXPLANATION','快速解读'),{class:'eyebrow muted'}),close),node('h2',value(record.label),{id:'help-title'}),node('p',value(record.definition),{class:'muted'}));
+      add(dialog,add(node('div','',{class:'row'}),node('span',t('QUICK EXPLANATION','快速解读'),{class:'eyebrow muted'}),close),node('h2',value(record.label),{id:'help-title'}));
+      if(currentContext){
+        const current=node('section','',{class:'guide-current','data-guide-current':''});
+        const currentHead=add(node('div','',{class:'row'}),node('span',t('CURRENT READING','当前读数'),{class:'eyebrow'}));
+        if(currentContext.asof)currentHead.append(node('span',currentContext.asof,{class:'example-label','data-guide-current-asof':''}));
+        add(current,currentHead,node('strong',route.lang==='zh'?currentContext.zh:currentContext.en,{'data-guide-current-value':''}));dialog.append(current);
+      }
+      dialog.append(node('p',value(record.definition),{class:'muted'}));
       if(record.status==='deprecated')dialog.append(retirement(record));
       add(dialog,lesson(record,true),limitation(record),add(node('div','',{class:'dialog-actions'}),targetLink(record.id,t('Open full guide →','打开完整指南 →')),button(t('Back to where I was','返回刚才的位置'),()=>dialog.close(),{class:'pill','data-close':''})));
     }
-    function openHelp(id,opener){const record=model.get(id);if(!record?.presentation)return;if(dialog.open){modal=id;renderModal();dialog.querySelector('[data-close]').focus();return;}modal=id;trigger=opener;restoreOnClose=true;closeScroll=window.scrollY;renderModal();dialog.showModal();dialog.querySelector('[data-close]').focus();}
+    function openHelp(id,opener){const record=model.get(id);if(!record?.presentation)return;currentContext=currentReading(opener);if(dialog.open){modal=id;renderModal();dialog.querySelector('[data-close]').focus();return;}modal=id;trigger=opener;restoreOnClose=true;closeScroll=window.scrollY;renderModal();dialog.showModal();dialog.querySelector('[data-close]').focus();}
     function render(){
       if(contextOnly){if(modal)renderModal();return;}
       document.documentElement.lang=route.lang==='zh'?'zh-CN':'en';
@@ -234,7 +249,7 @@
       if(modal)renderModal();
       document.title=(resolution?.status==='found'?value(model.get(resolution.id).label)+' — ':'')+t('Market Guide','市场指南');
     }
-    remember('close',()=>{modal=null;if(restoreOnClose&&trigger?.isConnected){trigger.focus({preventScroll:true});window.scrollTo(0,closeScroll);}trigger=null;restoreOnClose=true;},dialog);
+    remember('close',()=>{modal=null;currentContext=null;if(restoreOnClose&&trigger?.isConnected){trigger.focus({preventScroll:true});window.scrollTo(0,closeScroll);}trigger=null;restoreOnClose=true;},dialog);
     // Contain both ends of the Tab sequence; native Escape/inert behavior stays native.
     remember('keydown',event=>{
       if(event.key!=='Tab'||!dialog.open)return;

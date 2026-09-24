@@ -91,6 +91,8 @@
 .mx-guide-dialog::backdrop{background:color-mix(in srgb,var(--bg) 65%,transparent);backdrop-filter:blur(3px)}
 .mx-guide-dialog>h2{margin:var(--sp-3,12px) 0;font-size:var(--fs-h1,28px)}
 .mx-guide-dialog>p{font-size:var(--fs-md,15px);line-height:1.6}
+.mx-guide-dialog .guide-current{display:flex;flex-direction:column;gap:var(--sp-2,8px);margin:var(--sp-4,16px) 0;padding:var(--sp-4,16px);border:1px solid color-mix(in srgb,var(--info) 28%,var(--line));border-radius:var(--r-card,12px);background:color-mix(in srgb,var(--info) 7%,var(--panel2))}
+.mx-guide-dialog .guide-current strong{font-size:var(--fs-num-lg,22px);line-height:1.25;letter-spacing:-.015em}
 .mx-guide-dialog .close{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);font-size:var(--fs-num-lg,22px);flex-shrink:0}
 .mx-guide-dialog .lesson{margin:var(--sp-5,20px) 0;padding:var(--sp-5,20px)}
 .mx-guide-dialog .dialog-actions{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4,16px);margin-top:var(--sp-6,24px);font-size:var(--fs-body,14px)}
