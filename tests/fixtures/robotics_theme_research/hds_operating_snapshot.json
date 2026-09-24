@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_08c989d7fe4e803aa189fbd49973c875",
+        "curation_revision": "gmirca_eeb848dbb14ce8e78b1f5026553131a8",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -52,7 +52,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -94,7 +94,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_789e5e4755f98e610cdc8f8ef9a0eaee",
+        "curation_revision": "gmirca_7fc85175ddf7e9a06d75334ec6cdc671",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -132,7 +132,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -174,7 +174,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_9f0438d5b0d0ab4a5957339952db7085",
+        "curation_revision": "gmirca_79a45c135997baf070be4f29ac46016c",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -212,7 +212,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -254,7 +254,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_9bbd9bccb54c5c4025e10612c182f2da",
+        "curation_revision": "gmirca_baeb9a63961d655e3fc7bd40c356787b",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -292,7 +292,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -334,7 +334,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_a9be526d6c377de77ff4c50e11e00d41",
+        "curation_revision": "gmirca_14302c907e1fa496c7bec6a8250211b5",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -372,7 +372,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -414,7 +414,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_030f0e40da2b1194afd55871a661f145",
+        "curation_revision": "gmirca_1bc5667c7c73ec9ce40d7ac94a212111",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -452,7 +452,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -494,7 +494,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_55c05bac415b16271c33ca9473bb4bf8",
+        "curation_revision": "gmirca_b691a731372379b0ff8361ed35bd77a2",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -532,7 +532,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -574,7 +574,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_f5ec6335d78c8c3e47390f6d9d9b1777",
+        "curation_revision": "gmirca_1f885f65186777aac3e8f756d6b981f7",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -612,7 +612,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Japan",
@@ -654,7 +654,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_f4fab96503c3bbe054638f3f4e97ab22",
+        "curation_revision": "gmirca_95975a5c89320d41fb5d632e70b23cfe",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone; the source presents a dash (unavailable/not-applicable), preserved as null, never converted to zero",
           "does_not_establish": [
@@ -692,7 +692,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -734,7 +734,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_d06214a7114e0459cf7747812c66947e",
+        "curation_revision": "gmirca_031445aba5853f9fb71469ba1f3b9437",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -772,7 +772,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -814,7 +814,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_4397100d5b8b961577c8d89a42a3df4b",
+        "curation_revision": "gmirca_ea273b44427ebf25f8ebb4653b951e7f",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -852,7 +852,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -894,7 +894,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_14291f4b4d9fb557d9626651a5358e47",
+        "curation_revision": "gmirca_7a152e2b0c7f419d40a98bfbba97b68b",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -932,7 +932,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -974,7 +974,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_d99778d0a7a2fde952a1806255fab69d",
+        "curation_revision": "gmirca_8e844b769589a86e2b5e8b467b790757",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone; the source presents a dash (unavailable/not-applicable), preserved as null, never converted to zero",
           "does_not_establish": [
@@ -1012,7 +1012,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -1054,7 +1054,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_163c1e5f6b5de03b68e5112b351ffac3",
+        "curation_revision": "gmirca_fdc5953cc71b8f07a01c9a83ab5a0955",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1092,7 +1092,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -1134,7 +1134,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_92ef3fed7ab29ba0d60b47b36034b9ac",
+        "curation_revision": "gmirca_57169fd5c4942b94f6f6236a1aa5502c",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1172,7 +1172,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -1214,7 +1214,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_0c01a49d3b2bcaaba9995fa2847c930f",
+        "curation_revision": "gmirca_3ae836a529b0ac2b7114c01ef11847c7",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1252,7 +1252,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "China",
@@ -1294,7 +1294,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_9566a61391332b40ee4d1184ef044f57",
+        "curation_revision": "gmirca_84317b75979ea14ae0f9e69fc81085a6",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1332,7 +1332,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1374,7 +1374,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_051aefddbc94e6684088ab860827b784",
+        "curation_revision": "gmirca_e829a09b266d9b4593f639774c45da76",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1412,7 +1412,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1454,7 +1454,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_bcd3ef9b04292c390bf3a50128bef666",
+        "curation_revision": "gmirca_f1c1c82521b15fad3548a366218f4a44",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1492,7 +1492,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1534,7 +1534,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_3bb4c7a41ef032b703ad9b15d3b3d944",
+        "curation_revision": "gmirca_2b59673193d4e18bace8bc9252f23fb6",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1572,7 +1572,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1614,7 +1614,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_7536477a1858ae6fd33764501601a699",
+        "curation_revision": "gmirca_a8fa775d29085249d96b7d999ae05448",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1652,7 +1652,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1694,7 +1694,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_16a85cc8c20f4689d7d3d3d8ddcd2f51",
+        "curation_revision": "gmirca_7d1a0aabc83e5fb90ba1c9cf9992622b",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1732,7 +1732,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1774,7 +1774,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_b7e3b42d0e0ae6e9b30360a284640ac5",
+        "curation_revision": "gmirca_18745f3b4ee4617811532b667e176cd0",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1812,7 +1812,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1854,7 +1854,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_43a72c3b8de50838e7c1fc8138855884",
+        "curation_revision": "gmirca_20c027ed271266b3f2c20da8f45d9bd4",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1892,7 +1892,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "North America",
@@ -1934,7 +1934,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_412f1076489fe621f10cfa190b8c5830",
+        "curation_revision": "gmirca_c86312f99d06f7a15311857490e0ba13",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -1972,7 +1972,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2014,7 +2014,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_c701ae6a5de692eb5f3b1251f40e5ac1",
+        "curation_revision": "gmirca_48402b4480e6ec4fedc790677242d99f",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -2052,7 +2052,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2094,7 +2094,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_c6b641cb8c4eecf63cf713657c56c312",
+        "curation_revision": "gmirca_ad051353a86274b97a10f8b0596d9692",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -2132,7 +2132,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2174,7 +2174,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_72d3f6d9e2b2d581f42cc563124fb620",
+        "curation_revision": "gmirca_e646fc9227f811d71bdd956989359473",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -2212,7 +2212,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2254,7 +2254,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_e16fe70eac1fb15a7697f707d5f8c0d5",
+        "curation_revision": "gmirca_6138c9eab8dd85d46cd2a1f77769cc75",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -2292,7 +2292,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2334,7 +2334,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_9da012567a684421d78386aff0de58a6",
+        "curation_revision": "gmirca_b0d7a58412ae65217c68a619bb0c71f6",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -2372,7 +2372,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2414,7 +2414,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_0a6a6bf27af216fbe79137ee54183b57",
+        "curation_revision": "gmirca_1aecfe1bdff7bf3fe8bdbc1386700de8",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -2452,7 +2452,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2494,7 +2494,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_c1edc4dfca169f3198ab609a66c05adf",
+        "curation_revision": "gmirca_cfb498b28f85a637e53c438eae2dd1d2",
         "limitations": {
           "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
           "does_not_establish": [
@@ -2532,7 +2532,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": "Europe",
@@ -2574,7 +2574,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_c69268fad223ed984b4548af3236a91a",
+        "curation_revision": "gmirca_fd3dd4860e9a7806037be0fcbe7da986",
         "limitations": {
           "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 4 JPY million preserved, no balancing rows fabricated)",
           "does_not_establish": [
@@ -2612,7 +2612,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -2654,7 +2654,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_350345b401b5d21595be3e03b0003a74",
+        "curation_revision": "gmirca_e0d41081e28369878865d41779368f88",
         "limitations": {
           "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 5 JPY million preserved, no balancing rows fabricated)",
           "does_not_establish": [
@@ -2692,7 +2692,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -2734,7 +2734,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_c18a66497b6987b9b1d853427b9e4941",
+        "curation_revision": "gmirca_6742b02a8ba891d4e8d4d93223bdeffe",
         "limitations": {
           "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 4 JPY million preserved, no balancing rows fabricated)",
           "does_not_establish": [
@@ -2772,7 +2772,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -2814,7 +2814,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_e0f71487503d2a65d8b6657a5b60eba3",
+        "curation_revision": "gmirca_f67608549fd50f70275154cbc6079a20",
         "limitations": {
           "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 4 JPY million preserved, no balancing rows fabricated)",
           "does_not_establish": [
@@ -2852,7 +2852,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -2902,147 +2902,147 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_030f0e40da2b1194afd55871a661f145"
+        "gmirca_031445aba5853f9fb71469ba1f3b9437"
       ],
       [
         "assertion",
-        "gmirca_051aefddbc94e6684088ab860827b784"
+        "gmirca_14302c907e1fa496c7bec6a8250211b5"
       ],
       [
         "assertion",
-        "gmirca_08c989d7fe4e803aa189fbd49973c875"
+        "gmirca_18745f3b4ee4617811532b667e176cd0"
       ],
       [
         "assertion",
-        "gmirca_0a6a6bf27af216fbe79137ee54183b57"
+        "gmirca_1aecfe1bdff7bf3fe8bdbc1386700de8"
       ],
       [
         "assertion",
-        "gmirca_0c01a49d3b2bcaaba9995fa2847c930f"
+        "gmirca_1bc5667c7c73ec9ce40d7ac94a212111"
       ],
       [
         "assertion",
-        "gmirca_14291f4b4d9fb557d9626651a5358e47"
+        "gmirca_1f885f65186777aac3e8f756d6b981f7"
       ],
       [
         "assertion",
-        "gmirca_163c1e5f6b5de03b68e5112b351ffac3"
+        "gmirca_20c027ed271266b3f2c20da8f45d9bd4"
       ],
       [
         "assertion",
-        "gmirca_16a85cc8c20f4689d7d3d3d8ddcd2f51"
+        "gmirca_2b59673193d4e18bace8bc9252f23fb6"
       ],
       [
         "assertion",
-        "gmirca_350345b401b5d21595be3e03b0003a74"
+        "gmirca_3ae836a529b0ac2b7114c01ef11847c7"
       ],
       [
         "assertion",
-        "gmirca_3bb4c7a41ef032b703ad9b15d3b3d944"
+        "gmirca_48402b4480e6ec4fedc790677242d99f"
       ],
       [
         "assertion",
-        "gmirca_412f1076489fe621f10cfa190b8c5830"
+        "gmirca_57169fd5c4942b94f6f6236a1aa5502c"
       ],
       [
         "assertion",
-        "gmirca_4397100d5b8b961577c8d89a42a3df4b"
+        "gmirca_6138c9eab8dd85d46cd2a1f77769cc75"
       ],
       [
         "assertion",
-        "gmirca_43a72c3b8de50838e7c1fc8138855884"
+        "gmirca_6742b02a8ba891d4e8d4d93223bdeffe"
       ],
       [
         "assertion",
-        "gmirca_55c05bac415b16271c33ca9473bb4bf8"
+        "gmirca_79a45c135997baf070be4f29ac46016c"
       ],
       [
         "assertion",
-        "gmirca_72d3f6d9e2b2d581f42cc563124fb620"
+        "gmirca_7a152e2b0c7f419d40a98bfbba97b68b"
       ],
       [
         "assertion",
-        "gmirca_7536477a1858ae6fd33764501601a699"
+        "gmirca_7d1a0aabc83e5fb90ba1c9cf9992622b"
       ],
       [
         "assertion",
-        "gmirca_789e5e4755f98e610cdc8f8ef9a0eaee"
+        "gmirca_7fc85175ddf7e9a06d75334ec6cdc671"
       ],
       [
         "assertion",
-        "gmirca_92ef3fed7ab29ba0d60b47b36034b9ac"
+        "gmirca_84317b75979ea14ae0f9e69fc81085a6"
       ],
       [
         "assertion",
-        "gmirca_9566a61391332b40ee4d1184ef044f57"
+        "gmirca_8e844b769589a86e2b5e8b467b790757"
       ],
       [
         "assertion",
-        "gmirca_9bbd9bccb54c5c4025e10612c182f2da"
+        "gmirca_95975a5c89320d41fb5d632e70b23cfe"
       ],
       [
         "assertion",
-        "gmirca_9da012567a684421d78386aff0de58a6"
+        "gmirca_a8fa775d29085249d96b7d999ae05448"
       ],
       [
         "assertion",
-        "gmirca_9f0438d5b0d0ab4a5957339952db7085"
+        "gmirca_ad051353a86274b97a10f8b0596d9692"
       ],
       [
         "assertion",
-        "gmirca_a9be526d6c377de77ff4c50e11e00d41"
+        "gmirca_b0d7a58412ae65217c68a619bb0c71f6"
       ],
       [
         "assertion",
-        "gmirca_b7e3b42d0e0ae6e9b30360a284640ac5"
+        "gmirca_b691a731372379b0ff8361ed35bd77a2"
       ],
       [
         "assertion",
-        "gmirca_bcd3ef9b04292c390bf3a50128bef666"
+        "gmirca_baeb9a63961d655e3fc7bd40c356787b"
       ],
       [
         "assertion",
-        "gmirca_c18a66497b6987b9b1d853427b9e4941"
+        "gmirca_c86312f99d06f7a15311857490e0ba13"
       ],
       [
         "assertion",
-        "gmirca_c1edc4dfca169f3198ab609a66c05adf"
+        "gmirca_cfb498b28f85a637e53c438eae2dd1d2"
       ],
       [
         "assertion",
-        "gmirca_c69268fad223ed984b4548af3236a91a"
+        "gmirca_e0d41081e28369878865d41779368f88"
       ],
       [
         "assertion",
-        "gmirca_c6b641cb8c4eecf63cf713657c56c312"
+        "gmirca_e646fc9227f811d71bdd956989359473"
       ],
       [
         "assertion",
-        "gmirca_c701ae6a5de692eb5f3b1251f40e5ac1"
+        "gmirca_e829a09b266d9b4593f639774c45da76"
       ],
       [
         "assertion",
-        "gmirca_d06214a7114e0459cf7747812c66947e"
+        "gmirca_ea273b44427ebf25f8ebb4653b951e7f"
       ],
       [
         "assertion",
-        "gmirca_d99778d0a7a2fde952a1806255fab69d"
+        "gmirca_eeb848dbb14ce8e78b1f5026553131a8"
       ],
       [
         "assertion",
-        "gmirca_e0f71487503d2a65d8b6657a5b60eba3"
+        "gmirca_f1c1c82521b15fad3548a366218f4a44"
       ],
       [
         "assertion",
-        "gmirca_e16fe70eac1fb15a7697f707d5f8c0d5"
+        "gmirca_f67608549fd50f70275154cbc6079a20"
       ],
       [
         "assertion",
-        "gmirca_f4fab96503c3bbe054638f3f4e97ab22"
+        "gmirca_fd3dd4860e9a7806037be0fcbe7da986"
       ],
       [
         "assertion",
-        "gmirca_f5ec6335d78c8c3e47390f6d9d9b1777"
+        "gmirca_fdc5953cc71b8f07a01c9a83ab5a0955"
       ],
       [
         "identity",

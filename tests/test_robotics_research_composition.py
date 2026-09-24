@@ -40,11 +40,11 @@ pytestmark = pytest.mark.xfail(
 )
 from tests.robotics_research_helpers import FIXTURE_ROOT, load_case, load_bundle_case
 
-try:
-    import engine.market_ontology.semiconductor_theme_research as semiconductor
-    HAS_SHARED_TYPES = True
-except ImportError:  # pragma: no cover - explained by the xfail-strict marker
-    HAS_SHARED_TYPES = False
+try:  # the assertion-side theme id is minted by the identity owner
+    from engine.theme_graph.identity import theme_node_id as _theme_node_id
+    REF_PREFIX = f"gmi-curation://{_theme_node_id('robotics_automation')}/"
+except ImportError:  # pragma: no cover - base without the identity owner
+    REF_PREFIX = "gmi-curation://theme:robotics_automation/"
 
 try:
     from engine.theme_graph.curation_assertion import encode_assertion
@@ -130,14 +130,13 @@ def test_top_level_envelope_keys_and_consts():
 def test_native_refs_pass_through_as_opaque_evidence():
     response, _, _ = compose("witness_perception_orbbec_twinny")
     natives = [e for e in response["evidence_refs"] if e["kind"] == "native"]
-    assert natives == [{
-        "owner_store": "theme_graph.curation_assertion",
-        "native_identity": {"curation_revision":
-                            "gmirca_e02206282f8189d337e1aad57e3f925e"},
-        "reference_id":
-            "gmi-curation://robotics_automation/gmirca_e02206282f8189d337e1aad57e3f925e",
-        "kind": "native",
-    }]
+    _, _, bundle = compose("witness_perception_orbbec_twinny")
+    expected = [{"owner_store": r["owner_store"],
+                 "native_identity": r["native_identity"],
+                 "reference_id": r["reference_id"], "kind": "native"}
+                for r in bundle.native_refs]
+    assert natives == expected
+    assert all(e["reference_id"].startswith(REF_PREFIX) for e in natives)
 
 
 # ---------------------------------------------------------------------------
@@ -269,9 +268,13 @@ def test_expected_generation_roundtrip_and_mismatch():
 def test_replay_without_cutoffs_refuses():
     query, bundle = load_bundle_case("later_retained_backdate")
     assert query.time_mode == "system_replay"
-    with pytest.raises(robotics.ResearchRefusal) as exc:
-        robotics.compose_robotics_research(query, bundle)
-    assert exc.value.code == "replay_cutoffs_required"
+    # the stored replay query carries both cutoffs and composes as-is (R2b N12)
+    robotics.compose_robotics_research(query, bundle)
+    for missing in ("source_cutoff", "recorded_cutoff"):
+        with pytest.raises(robotics.ResearchRefusal) as exc:
+            robotics.compose_robotics_research(
+                dataclasses.replace(query, **{missing: None}), bundle)
+        assert exc.value.code == "replay_cutoffs_required"
 
 
 # ---------------------------------------------------------------------------
@@ -333,7 +336,7 @@ def test_select_authorized_evidence_happy_path():
     query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
     case = load_case("witness_perception_orbbec_twinny")
     assertion = case["bundle"]["assertions"][0]
-    ref = f"gmi-curation://robotics_automation/{assertion['curation_revision']}"
+    ref = f"{REF_PREFIX}{assertion['curation_revision']}"
     evidence = robotics.select_authorized_evidence(query, bundle, ref)
     assert evidence["schema"] == robotics.EVIDENCE_SCHEMA_ID
     assert evidence["assertion_ref"] == ref
@@ -359,8 +362,8 @@ def test_select_authorized_evidence_correction_lineage():
                      if a["correction"]["predecessor_revision"])
     predecessor = next(a for a in case["bundle"]["assertions"]
                        if not a["correction"]["predecessor_revision"])
-    succ_ref = f"gmi-curation://robotics_automation/{successor['curation_revision']}"
-    pred_ref = f"gmi-curation://robotics_automation/{predecessor['curation_revision']}"
+    succ_ref = f"{REF_PREFIX}{successor['curation_revision']}"
+    pred_ref = f"{REF_PREFIX}{predecessor['curation_revision']}"
     succ = robotics.select_authorized_evidence(query, bundle, succ_ref)
     assert succ["lineage"] == [pred_ref]
     pred = robotics.select_authorized_evidence(query, bundle, pred_ref)
@@ -369,7 +372,7 @@ def test_select_authorized_evidence_correction_lineage():
 
 def test_select_authorized_evidence_unknown_and_out_of_scope_share_one_code():
     query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
-    unknown = "gmi-curation://robotics_automation/gmirca_" + "f" * 32
+    unknown = REF_PREFIX + "gmirca_" + "f" * 32
     with pytest.raises(robotics.ResearchRefusal) as exc:
         robotics.select_authorized_evidence(query, bundle, unknown)
     assert exc.value.code == "not_available"
@@ -383,14 +386,14 @@ def test_select_authorized_evidence_unknown_and_out_of_scope_share_one_code():
         with pytest.raises(robotics.ResearchRefusal) as exc:
             robotics.select_authorized_evidence(
                 query, grown,
-                f"gmi-curation://robotics_automation/{out['curation_revision']}")
+                f"{REF_PREFIX}{out['curation_revision']}")
         assert exc.value.code == "not_available"
 
 
 def test_select_authorized_evidence_generation_gate():
     query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
     case = load_case("witness_perception_orbbec_twinny")
-    ref = f"gmi-curation://robotics_automation/" \
+    ref = f"{REF_PREFIX}" \
         f"{case['bundle']['assertions'][0]['curation_revision']}"
     with pytest.raises(robotics.ResearchRefusal) as exc:
         robotics.select_authorized_evidence(
@@ -409,7 +412,7 @@ def test_held_assertion_is_still_selectable_evidence():
                 if a["review"]["disposition"] == "held")
     evidence = robotics.select_authorized_evidence(
         query, bundle,
-        f"gmi-curation://robotics_automation/{held['curation_revision']}")
+        f"{REF_PREFIX}{held['curation_revision']}")
     assert evidence["assertion"]["review"]["disposition"] == "held"
     assert "held_present" in evidence["limitations"]
 
@@ -432,3 +435,205 @@ def test_module_source_has_no_io_or_subprocess_surface():
     source = Path(robotics.__file__).read_text(encoding="utf-8")
     for token in ("urlopen", "socket", "subprocess", "os.system", "shutil"):
         assert token not in source, token
+
+
+# ---------------------------------------------------------------------------
+# R2b — canonical theme ids, closed reasons, declared cohort, ownership side
+# (shared-owner ruling #7870 5812295091; Sol #7780 5813801605; R2 review nits)
+# ---------------------------------------------------------------------------
+
+_ROOT = Path(robotics.__file__).resolve().parents[2] if robotics is not None else Path(__file__).resolve().parents[1]
+_READY = sorted(p.stem for p in FIXTURE_ROOT.glob("*.json")
+                if json.loads(p.read_text())["status"] == "ready")
+
+
+def _restamped(assertion, **changes):
+    """Deep-copy an assertion, apply nested changes, re-mint its stamp."""
+    from engine.theme_graph.curation_assertion import curation_revision
+    out = copy.deepcopy(assertion)
+    for path, value in changes.items():
+        node = out
+        keys = path.split(".")
+        for key in keys[:-1]:
+            node = node[key]
+        node[keys[-1]] = value
+    out["curation_revision"] = curation_revision(out)
+    return out
+
+
+def _walk_strings(value, under_limitations=False):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            yield from _walk_strings(item, under_limitations=(key == "limitations"))
+    elif isinstance(value, list):
+        for item in value:
+            yield from _walk_strings(item, under_limitations=under_limitations)
+    elif isinstance(value, str):
+        yield value, under_limitations
+
+
+def test_slug_keyed_assertion_is_out_of_scope_and_counted():
+    query, bundle = load_bundle_case("zebra_skild_ownership")
+    keep, drop = bundle.assertions
+    slug = _restamped(drop, **{"scope.canonical_theme_id": query.anchor_theme_id})
+    mixed = dataclasses.replace(bundle, assertions=(keep, slug))
+    response = robotics.compose_robotics_research(
+        dataclasses.replace(query, view="commercial"), mixed)
+    refs = {e["assertion_ref"] for e in response["evidence_refs"]
+            if e["kind"] == "assertion"}
+    assert REF_PREFIX + keep["curation_revision"] in refs
+    assert all(slug["curation_revision"] not in ref for ref in refs)
+    for view in robotics.VIEWS:
+        for row in response["industrial_views"][view]["rows"]:
+            assert row["curation_revision"] != slug["curation_revision"]
+    assert "scope_slug_keyed:1" in response["limitations"]
+    with pytest.raises(robotics.ResearchRefusal) as exc:
+        robotics.select_authorized_evidence(
+            dataclasses.replace(query, view="commercial"), mixed,
+            f"gmi-curation://{query.anchor_theme_id}/{slug['curation_revision']}")
+    assert exc.value.code == "not_available"
+    _RESPONSE_SCHEMA.validate(response)
+
+
+def test_identity_owner_fallback_is_declared_and_otherwise_identical(monkeypatch):
+    import sys
+    response, query, bundle = compose("witness_perception_orbbec_twinny")
+    monkeypatch.setitem(sys.modules, "engine.theme_graph.identity", None)
+    fallback = robotics.compose_robotics_research(query, bundle)
+    assert "identity_owner_fallback" in fallback["limitations"]
+    assert "identity_owner_fallback" not in response["limitations"]
+    trimmed = dict(fallback)
+    trimmed["limitations"] = [x for x in fallback["limitations"]
+                              if x != "identity_owner_fallback"]
+    assert trimmed == response
+
+
+def test_canonical_form_is_refused_at_the_api_boundary():
+    query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
+    with pytest.raises(robotics.ResearchRefusal) as exc:
+        robotics.compose_robotics_research(
+            dataclasses.replace(query, anchor_theme_id=REF_PREFIX.split("//")[1].rstrip("/")),
+            bundle)
+    assert exc.value.code == "not_available"
+
+
+def test_every_reason_is_closed_grammar_and_no_per_view_evidence_reason():
+    pattern = re.compile(r"^[a-z0-9_]+$")
+    banned = re.compile(r"^no_(composition|commercial|capacity|economics)_evidence$")
+    for name in _READY:
+        query, bundle = load_bundle_case(name)
+        for view in robotics.VIEWS:
+            response = robotics.compose_robotics_research(
+                dataclasses.replace(query, view=view), bundle)
+            for reason in _reasons(response):
+                assert reason is None or pattern.match(reason), reason
+                assert reason is None or not banned.match(reason), reason
+
+
+def _reasons(value):
+    """Section-level ``reason`` values only (a dict carrying ``status`` or a
+    ``total`` cell) — never the free prose of an assertion's ``correction``."""
+    if isinstance(value, dict):
+        if "reason" in value and ("status" in value or set(value) == {"value", "reason"}):
+            yield value["reason"]
+        for key, item in value.items():
+            if key != "reason":
+                yield from _reasons(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _reasons(item)
+
+
+def test_schema_reason_pattern_matches_the_shared_envelope():
+    ours = json.loads((_ROOT / "contracts/market_ontology/robotics_theme_research.v1.schema.json").read_text())
+    shared = json.loads((_ROOT / "contracts/market_ontology/semiconductor_theme_research.v1.schema.json").read_text())
+    assert ours["$defs"]["reason"] == shared["$defs"]["reason"]
+
+
+def test_module_source_reads_no_wall_clock():
+    source = Path(robotics.__file__).read_text(encoding="utf-8")
+    for token in ("datetime.now", "utcnow", "time.time", "date.today",
+                  "perf_counter", "monotonic"):
+        assert token not in source, token
+
+
+def test_falsifiers_are_labelled_interpretation_not_target():
+    for name in _READY:
+        query, bundle = load_bundle_case(name)
+        response = robotics.compose_robotics_research(query, bundle)
+        watchers = {b.get("falsifier") for b in bundle.interpretation_blocks} | {
+            b.get("missing_measurement") for b in bundle.interpretation_blocks}
+        by_revision = {a["curation_revision"]: a for a in bundle.assertions}
+        for item in response["summary"]["next_evidence"]:
+            if item["text"] in watchers:
+                assert item["label"] == "interpretation", (name, item)
+            if item["label"] == "target":
+                assert len(item["input_refs"]) == 1
+                source = by_revision[item["input_refs"][0]]
+                assert source["statement_mode"] in ("FORWARD_TARGET", "ANNOUNCED_ARRANGEMENT") \
+                    or source["predicate"] == "DEPLOYMENT_TARGET", (name, item)
+
+
+def test_declared_cohort_limitation_on_every_response_and_evidence():
+    for name in _READY:
+        query, bundle = load_bundle_case(name)
+        for view in robotics.VIEWS:
+            response = robotics.compose_robotics_research(
+                dataclasses.replace(query, view=view), bundle)
+            assert "slice_scope_unowned" in response["limitations"], (name, view)
+            # the string is a limitation token only, never a visible label
+            for text, under_limitations in _walk_strings(response):
+                if "slice_scope_unowned" in text:
+                    assert under_limitations and text == "slice_scope_unowned", (name, view, text)
+            # evidence follows the same cohort as composition: the evidence
+            # refs ARE the authorized selection, and every returned row
+            # comes from that same selection
+            row_refs = {row["assertion_ref"]
+                        for v in robotics.VIEWS
+                        for row in robotics.compose_robotics_research(
+                            dataclasses.replace(query, view=v), bundle)["industrial_views"][v]["rows"]}
+            evidence = {e["assertion_ref"] for e in response["evidence_refs"]
+                        if e["kind"] == "assertion"}
+            assert {ref.rsplit("/", 1)[1] for ref in evidence} == set(
+                response["authorized_coverage"]["input_refs"]), name
+            assert row_refs <= evidence, name
+        for ref in evidence:
+            assert "slice_scope_unowned" in robotics.select_authorized_evidence(
+                query, bundle, ref)["limitations"]
+
+
+def _zebra_role(**changes):
+    query, bundle = load_bundle_case("zebra_skild_ownership")
+    announced = next(a for a in bundle.assertions
+                     if a["statement_mode"] == "ANNOUNCED_ARRANGEMENT")
+    other = tuple(a for a in bundle.assertions if a is not announced)
+    mutated = _restamped(announced, **changes) if changes else announced
+    response = robotics.compose_robotics_research(
+        dataclasses.replace(query, view="commercial"),
+        dataclasses.replace(bundle, assertions=other + (mutated,)))
+    row = next(r for r in response["companies"]["rows"]
+               if r["source_business_label"] == announced["subject"]["source_business_label"])
+    ref = REF_PREFIX + mutated["curation_revision"]
+    return next(r["role"] for r in row["roles"] if r["assertion_ref"] == ref)
+
+
+def test_ownership_side_comes_from_establishes_only():
+    base = load_bundle_case("zebra_skild_ownership")[1]
+    announced = next(a for a in base.assertions
+                     if a["statement_mode"] == "ANNOUNCED_ARRANGEMENT")
+    assert _zebra_role() == "announced_seller"
+    # a denial never affirms
+    denial = list(announced["limitations"]["does_not_establish"]) + [
+        "that Zebra acquired the Skild AI equity stake"]
+    assert _zebra_role(**{"limitations.does_not_establish": denial}) == "announced_seller"
+    # the counterparty's verb in the coverage prose never flips the side
+    assert _zebra_role(**{"limitations.coverage":
+                          "issuer press release announcing a sale to Skild AI, "
+                          "whose acquisition closes later"}) == "announced_seller"
+    # the subject's own establishing verb does
+    assert _zebra_role(**{"limitations.establishes":
+                          ["an announced acquisition by Zebra of a perception software business"]}) \
+        == "announced_acquirer"
+    # both verbs established = ambiguous, never guessed
+    assert _zebra_role(**{"limitations.establishes":
+                          ["an announced sale to X and the acquisition of Y"]}) == "announced_party"

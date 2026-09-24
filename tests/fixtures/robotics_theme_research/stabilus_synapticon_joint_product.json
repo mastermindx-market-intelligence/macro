@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_ce71f78470287f6c7eb0cc303e78f815",
+        "curation_revision": "gmirca_ff302950b3d28f15bc4b67ef84c36167",
         "limitations": {
           "coverage": "issuer press release naming distinct development and manufacturing roles; quantity and date stay unknown where unreported",
           "does_not_establish": [
@@ -53,7 +53,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "humanoid",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -103,7 +103,7 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_ce71f78470287f6c7eb0cc303e78f815"
+        "gmirca_ff302950b3d28f15bc4b67ef84c36167"
       ],
       [
         "identity",

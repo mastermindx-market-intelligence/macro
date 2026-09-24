@@ -170,7 +170,16 @@ def test_every_fixture_is_explicitly_synthetic_and_self_named():
         assert query['view'] in VALID_VIEWS
         assert query['time_mode'] in VALID_TIME_MODES
         assert query['offset'] == 0 and query['limit'] == 50
-        assert query['source_cutoff'] is None and query['expected_generation'] is None
+        assert query['expected_generation'] is None
+        # the SHARED query contract: a system_replay carries BOTH cutoffs
+        # (replay_cutoffs_required otherwise); every other mode carries none
+        if query['time_mode'] == 'system_replay':
+            assert isinstance(query['source_cutoff'], str) and query['source_cutoff'], (
+                f'{path.name}: system_replay needs source_cutoff')
+            assert isinstance(query['recorded_cutoff'], str) and query['recorded_cutoff'], (
+                f'{path.name}: system_replay needs recorded_cutoff')
+        else:
+            assert query['source_cutoff'] is None and query['recorded_cutoff'] is None
         # key-set law: F1 base keys plus only the sanctioned extras
         assert BASE_FIXTURE_KEYS <= set(value.keys()), (
             f'{path.name}: missing base keys {sorted(BASE_FIXTURE_KEYS - set(value.keys()))}'
@@ -231,7 +240,10 @@ def test_every_bundle_assertion_validates_and_stamp_recomputes():
                 a, ensure_ascii=False, sort_keys=True, separators=(',', ':')), (
                 f'{name}: encode_assertion is not byte-identical to canonical JSON'
             )
-            assert a['scope']['canonical_theme_id'] == 'robotics_automation'
+            # canonical-id law (#7870 5812295091): the assertion side carries the
+            # Theme Graph node id minted by the identity owner, never the slug
+            from engine.theme_graph.identity import theme_node_id
+            assert a['scope']['canonical_theme_id'] == theme_node_id(case['anchor_theme_id'])
             assert a['scope']['technology_facet'] == case['slice_key'], (
                 f'{name}: technology_facet must equal the case slice'
             )
@@ -675,6 +687,50 @@ def test_hds_snapshot_reproduces_acceptance_table():
         assert total['subject']['source_product_label'] == 'All product groups'
         components = [v[HDS_MEASURES.index(measure)] for v in HDS_TABLE.values()]
         assert HDS_TOTALS[measure] - sum(c for c in components if c is not None) == HDS_RESIDUALS[measure]
+        # the fixture's own prose must state the same residual (R1 review nit 2)
+        assert f'residual of {HDS_RESIDUALS[measure]} JPY million' in total['limitations']['coverage'], (
+            measure, total['limitations']['coverage'])
+
+
+def test_all_groups_totals_outside_the_snapshot_carry_the_published_value():
+    """The HDS-derived totals in the two syndication/backdate fixtures pin the
+    exact published value for their measure (R1 review nit 3): a component
+    value under an all-groups label fails here."""
+    for name in ('syndicated_copy', 'later_retained_backdate'):
+        rows = [a for a in _bundle(name)['assertions']
+                if a['subject']['source_product_label'] == 'All product groups']
+        assert rows, name
+        for a in rows:
+            label = a['object']['source_product_label']
+            measure = label.split(' - ')[0]
+            assert measure in HDS_TOTALS, (name, label)
+            assert a['observation']['unit'] == 'JPY_million'
+            assert a['observation']['value'] == HDS_TOTALS[measure], (name, label)
+
+
+@pytest.mark.xfail(condition=not HAS_SHARED, strict=True, reason=SHARED_CONTRACT_REASON)
+def test_no_fixture_assertion_is_slug_keyed():
+    """Every ready assertion is keyed on the canonical theme id the identity
+    owner mints for the case anchor; a bare slug on the assertion side is the
+    pre-ruling defect (#7870 5812295091) and never returns."""
+    from engine.theme_graph.identity import theme_node_id
+    for name in _ready_names():
+        case = load_case(name)
+        canonical = theme_node_id(case['anchor_theme_id'])
+        for a in case['bundle']['assertions']:
+            theme = a['scope']['canonical_theme_id']
+            assert theme.startswith('theme:'), (name, theme)
+            assert theme == canonical, (name, theme)
+            assert theme != case['query']['anchor_theme_id']
+
+
+@pytest.mark.xfail(condition=not HAS_SHARED, strict=True, reason=SHARED_CONTRACT_REASON)
+def test_every_stored_fixture_query_is_accepted_by_the_shared_query_contract():
+    """A stored query must compose as-is (R2 review nit 12): the shared
+    ``_validate_query`` accepts every ready fixture's query verbatim."""
+    from engine.market_ontology.robotics_theme_research import ResearchQuery, _validate_query
+    for name in _ready_names():
+        _validate_query(ResearchQuery(**load_case(name)['query']))
 
 
 def test_every_fixture_is_strict_json():

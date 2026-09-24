@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_9468f75047593513b4daf31f4a62cc8c",
+        "curation_revision": "gmirca_1de3037af8ce10c4ff80c44a229c9257",
         "limitations": {
           "coverage": "annual-report segment table; the admitted sec_edgar source family covers this publication",
           "does_not_establish": [
@@ -50,7 +50,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "warehouse_robotics",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": "total company revenue",
           "period": "FY2025",
           "region": null,
@@ -92,7 +92,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_45fc5ada6acf4d91f0a836cb32c51def",
+        "curation_revision": "gmirca_9c642bef482dcaee3532723f28dd57dc",
         "limitations": {
           "coverage": "copying outlet whose source family is deliberately absent from config/theme_sources.yml; rights coverage across the pair is partial, never complete or empty",
           "does_not_establish": [
@@ -128,7 +128,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "warehouse_robotics",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": "total company revenue",
           "period": "FY2025",
           "region": null,
@@ -178,11 +178,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_45fc5ada6acf4d91f0a836cb32c51def"
+        "gmirca_1de3037af8ce10c4ff80c44a229c9257"
       ],
       [
         "assertion",
-        "gmirca_9468f75047593513b4daf31f4a62cc8c"
+        "gmirca_9c642bef482dcaee3532723f28dd57dc"
       ],
       [
         "identity",

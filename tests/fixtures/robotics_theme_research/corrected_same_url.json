@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_037d3bb808932f5c50a44271cc9a59fd",
+        "curation_revision": "gmirca_a3f596fc9d87a4e84c8bfd084838dc53",
         "limitations": {
           "coverage": "predecessor coverage later judged over-broad; kept as history",
           "does_not_establish": [
@@ -50,7 +50,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "general",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -89,10 +89,10 @@
           "can_size": false
         },
         "correction": {
-          "predecessor_revision": "gmirca_037d3bb808932f5c50a44271cc9a59fd",
+          "predecessor_revision": "gmirca_a3f596fc9d87a4e84c8bfd084838dc53",
           "reason": "coverage narrowed to the K-Series frameless motor family; the predecessor over-generalized the application category to Parker motor families at large"
         },
-        "curation_revision": "gmirca_ee38e6ad3405475f34a0e03994b8773f",
+        "curation_revision": "gmirca_93b96893bf77c7d873b20e864c7d4005",
         "limitations": {
           "coverage": "corrected reading narrowed to the K-Series page; corrected content at the same URL creates a new revision and the predecessor survives",
           "does_not_establish": [
@@ -130,7 +130,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "general",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -180,11 +180,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_037d3bb808932f5c50a44271cc9a59fd"
+        "gmirca_93b96893bf77c7d873b20e864c7d4005"
       ],
       [
         "assertion",
-        "gmirca_ee38e6ad3405475f34a0e03994b8773f"
+        "gmirca_a3f596fc9d87a4e84c8bfd084838dc53"
       ],
       [
         "identity",

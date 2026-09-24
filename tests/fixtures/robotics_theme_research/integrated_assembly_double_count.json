@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_9e117ebbfd2175139c4c9d54291df93f",
+        "curation_revision": "gmirca_cee18c89b252239db9fcc616a243c349",
         "limitations": {
           "coverage": "vendor product page for the purchased assembly; the purchased price already contains the contained motor",
           "does_not_establish": [
@@ -52,7 +52,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "general",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -94,7 +94,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_42d11ca3bd1b5b8ae405fb8adb67530e",
+        "curation_revision": "gmirca_a3c575ce098740fcfda9d14069e1c8f4",
         "limitations": {
           "coverage": "vendor product page; the contained motor is inside the integrated_assembly purchase boundary and must never be added to it",
           "does_not_establish": [
@@ -131,7 +131,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "general",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -171,11 +171,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_42d11ca3bd1b5b8ae405fb8adb67530e"
+        "gmirca_a3c575ce098740fcfda9d14069e1c8f4"
       ],
       [
         "assertion",
-        "gmirca_9e117ebbfd2175139c4c9d54291df93f"
+        "gmirca_cee18c89b252239db9fcc616a243c349"
       ]
     ],
     "rights_revision": "synthetic-rights-0"
@@ -183,14 +183,14 @@
   "case_key": "integrated_assembly_double_count",
   "cost_items": [
     {
-      "assertion_ref": "gmirca_9e117ebbfd2175139c4c9d54291df93f",
+      "assertion_ref": "gmirca_cee18c89b252239db9fcc616a243c349",
       "boundary": "integrated_assembly",
       "contained_in": null
     },
     {
-      "assertion_ref": "gmirca_42d11ca3bd1b5b8ae405fb8adb67530e",
+      "assertion_ref": "gmirca_a3c575ce098740fcfda9d14069e1c8f4",
       "boundary": "contained_component",
-      "contained_in": "gmirca_9e117ebbfd2175139c4c9d54291df93f"
+      "contained_in": "gmirca_cee18c89b252239db9fcc616a243c349"
     }
   ],
   "expected_regression": "Any total combining the integrated assembly cost with the contained motor cost refuses; the contained item points at the assembly it is contained in.",

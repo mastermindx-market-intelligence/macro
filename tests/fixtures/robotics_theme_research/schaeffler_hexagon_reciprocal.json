@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_4b6ae8a05fed094d1327f8e72c50efa5",
+        "curation_revision": "gmirca_1c78b467117892771837bae2a0739812",
         "limitations": {
           "coverage": "joint announcement page describing a development and deployment relationship",
           "does_not_establish": [
@@ -53,7 +53,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "humanoid",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -95,7 +95,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_4109899e028941843a896757c3764b28",
+        "curation_revision": "gmirca_ff172bd0fb8284fdb3a8cf5808363560",
         "limitations": {
           "coverage": "forward-looking statement in a joint announcement; the target stays a target",
           "does_not_establish": [
@@ -133,7 +133,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "humanoid",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -192,11 +192,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_4109899e028941843a896757c3764b28"
+        "gmirca_1c78b467117892771837bae2a0739812"
       ],
       [
         "assertion",
-        "gmirca_4b6ae8a05fed094d1327f8e72c50efa5"
+        "gmirca_ff172bd0fb8284fdb3a8cf5808363560"
       ],
       [
         "identity",

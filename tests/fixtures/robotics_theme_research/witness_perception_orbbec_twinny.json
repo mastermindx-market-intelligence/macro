@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_e02206282f8189d337e1aad57e3f925e",
+        "curation_revision": "gmirca_df18656b605da09b14e67e11d918ccc4",
         "limitations": {
           "coverage": "single vendor case-study page describing one robot configuration; no other generation is covered",
           "does_not_establish": [
@@ -54,7 +54,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "warehouse_robotics",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -103,7 +103,7 @@
         "falsifier": "the vendor revises the configuration listing to a different camera count or model",
         "freshness": "current",
         "input_revisions": [
-          "gmirca_e02206282f8189d337e1aad57e3f925e"
+          "gmirca_df18656b605da09b14e67e11d918ccc4"
         ],
         "interpretation_id": "interp-nargo-cameras",
         "mechanism": "the vendor documents two Gemini 335 cameras for one described configuration, so the count is configuration-bound evidence rather than a family-wide fact",
@@ -115,17 +115,17 @@
     "native_refs": [
       {
         "native_identity": {
-          "curation_revision": "gmirca_e02206282f8189d337e1aad57e3f925e"
+          "curation_revision": "gmirca_df18656b605da09b14e67e11d918ccc4"
         },
         "owner_store": "theme_graph.curation_assertion",
-        "reference_id": "gmi-curation://robotics_automation/gmirca_e02206282f8189d337e1aad57e3f925e"
+        "reference_id": "gmi-curation://theme:robotics_automation/gmirca_df18656b605da09b14e67e11d918ccc4"
       }
     ],
     "omissions": [],
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_e02206282f8189d337e1aad57e3f925e"
+        "gmirca_df18656b605da09b14e67e11d918ccc4"
       ],
       [
         "identity",

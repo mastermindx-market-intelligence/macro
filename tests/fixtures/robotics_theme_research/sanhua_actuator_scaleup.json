@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_af384b0418bb361cd6e761952ee6f106",
+        "curation_revision": "gmirca_6d12b547c07eabc38a6a1407f919a0b6",
         "limitations": {
           "coverage": "interim-results narrative; no robotics-specific customer or capacity table exists in the filing",
           "does_not_establish": [
@@ -52,7 +52,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026H1",
           "region": null,
@@ -94,7 +94,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_64a15bdf50d9d26ce3e4fd58932c5fd2",
+        "curation_revision": "gmirca_88bcde14beb2831ca79202f8e0f11fe8",
         "limitations": {
           "coverage": "product-revenue table listing refrigeration/air-conditioning and automotive categories only; robotics revenue is not separately disclosed and stays null, never zero",
           "does_not_establish": [
@@ -132,7 +132,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": "group revenue",
           "period": "2026H1",
           "region": null,
@@ -182,11 +182,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_64a15bdf50d9d26ce3e4fd58932c5fd2"
+        "gmirca_6d12b547c07eabc38a6a1407f919a0b6"
       ],
       [
         "assertion",
-        "gmirca_af384b0418bb361cd6e761952ee6f106"
+        "gmirca_88bcde14beb2831ca79202f8e0f11fe8"
       ],
       [
         "identity",

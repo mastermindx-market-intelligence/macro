@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_6c12aad5d11fa8373256f5dad91c644e",
+        "curation_revision": "gmirca_aeed6b02579080858e4be79c7deadc16",
         "limitations": {
           "coverage": "undated vendor catalog page; publication vintage unknown, observed 23 September 2026",
           "does_not_establish": [
@@ -53,7 +53,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "general",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -101,17 +101,17 @@
     "native_refs": [
       {
         "native_identity": {
-          "curation_revision": "gmirca_6c12aad5d11fa8373256f5dad91c644e"
+          "curation_revision": "gmirca_aeed6b02579080858e4be79c7deadc16"
         },
         "owner_store": "theme_graph.curation_assertion",
-        "reference_id": "gmi-curation://robotics_automation/gmirca_6c12aad5d11fa8373256f5dad91c644e"
+        "reference_id": "gmi-curation://theme:robotics_automation/gmirca_aeed6b02579080858e4be79c7deadc16"
       }
     ],
     "omissions": [],
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_6c12aad5d11fa8373256f5dad91c644e"
+        "gmirca_aeed6b02579080858e4be79c7deadc16"
       ],
       [
         "identity",

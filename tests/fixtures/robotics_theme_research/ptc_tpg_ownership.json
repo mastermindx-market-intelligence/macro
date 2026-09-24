@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_1dd6b25d5515e62f6733d96193398938",
+        "curation_revision": "gmirca_1791a4dfe825ef367d536d9a6347e642",
         "limitations": {
           "coverage": "issuer statement covering only the divested industrial-connectivity businesses; retained businesses stay with PTC",
           "does_not_establish": [
@@ -52,7 +52,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -111,7 +111,7 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_1dd6b25d5515e62f6733d96193398938"
+        "gmirca_1791a4dfe825ef367d536d9a6347e642"
       ],
       [
         "identity",

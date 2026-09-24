@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_c0b1c3a685fb423f70c8c56ca4a12356",
+        "curation_revision": "gmirca_1ac1c57e44d9f93968ae73e4d796a644",
         "limitations": {
           "coverage": "hostile derived reading over the published totals (orders 24128 / sales 16681 = 1.446436, JPY million monetary ratio); the reading is absent from the source and must stay out of operating rows",
           "does_not_establish": [
@@ -53,7 +53,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -103,7 +103,7 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_c0b1c3a685fb423f70c8c56ca4a12356"
+        "gmirca_1ac1c57e44d9f93968ae73e4d796a644"
       ],
       [
         "identity",

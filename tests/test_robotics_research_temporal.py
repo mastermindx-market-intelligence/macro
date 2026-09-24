@@ -61,13 +61,22 @@ def restamp(payload: dict, **changes) -> dict:
 # RBV-19 — later-retained evidence cannot support a claim before retention
 # ---------------------------------------------------------------------------
 
-def test_later_retained_query_as_stored_refuses():
+def test_later_retained_query_as_stored_composes_and_excludes_the_backdate():
+    """The stored replay query carries both cutoffs (R2b N12) and composes
+    as-is; the assertion retained AFTER the recorded cutoff is excluded, and
+    dropping either cutoff is the shared refusal."""
     query, bundle = load_bundle_case("later_retained_backdate")
     assert query.time_mode == "system_replay"
-    assert query.source_cutoff is None
-    with pytest.raises(robotics.ResearchRefusal) as exc:
-        robotics.compose_robotics_research(query, bundle)
-    assert exc.value.code == "replay_cutoffs_required"
+    assert query.source_cutoff == "2026-09-24T00:00:00Z"
+    assert query.recorded_cutoff == "2026-09-24T00:00:00Z"
+    response = robotics.compose_robotics_research(query, bundle)
+    assert response["authorized_coverage"]["selected"] == 0
+    assert all(response["industrial_views"][v]["rows"] == [] for v in robotics.VIEWS)
+    for missing in ("source_cutoff", "recorded_cutoff"):
+        with pytest.raises(robotics.ResearchRefusal) as exc:
+            robotics.compose_robotics_research(
+                dataclasses.replace(query, **{missing: None}), bundle)
+        assert exc.value.code == "replay_cutoffs_required"
 
 
 def test_replay_before_retention_excludes_the_backlog():
@@ -279,3 +288,79 @@ def test_stale_interpretation_is_marked_not_hidden():
     assert response["summary"]["status"] == "degraded"
     # the observation it leaned on stays visible in the composition view
     assert len(response["industrial_views"]["composition"]["rows"]) == 1
+
+
+# ---------------------------------------------------------------------------
+# R2b S1 — system_replay needs a supported as-known identity vintage
+# (Sol #7780 5813801605; shared token #7870 5813976021)
+# ---------------------------------------------------------------------------
+
+def _replay_case():
+    query, bundle = load_bundle_case("zebra_skild_ownership")
+    replay = dataclasses.replace(
+        query, time_mode="system_replay", view="commercial",
+        source_cutoff="2026-09-24T00:00:00Z", recorded_cutoff="2026-09-24T00:00:00Z")
+    return query, replay, bundle
+
+
+def _without_vintage(bundle, label):
+    rows = []
+    for result in bundle.identity_results:
+        result = dict(result)
+        if result.get("source_business_label") == label:
+            result.pop("mapping_learned_at", None)
+        rows.append(result)
+    return dataclasses.replace(bundle, identity_results=tuple(rows))
+
+
+def test_replay_without_identity_vintage_is_refused_other_modes_unchanged():
+    query, replay, bundle = _replay_case()
+    label = bundle.assertions[0]["subject"]["source_business_label"]
+    assert any(r.get("source_business_label") == label for r in bundle.identity_results)
+    before_latest = robotics.compose_robotics_research(
+        dataclasses.replace(query, view="commercial"), bundle)
+    before_history = robotics.compose_robotics_research(
+        dataclasses.replace(query, view="commercial", time_mode="source_history",
+                            source_cutoff="2026-09-24T00:00:00Z"), bundle)
+    robotics.compose_robotics_research(replay, bundle)  # supported vintage composes
+    stripped = _without_vintage(bundle, label)
+    with pytest.raises(robotics.ResearchRefusal) as exc:
+        robotics.compose_robotics_research(replay, stripped)
+    assert exc.value.code == "identity_vintage_unsupported"
+    with pytest.raises(robotics.ResearchRefusal) as exc:
+        robotics.select_authorized_evidence(
+            replay, stripped, f"gmi-curation://{bundle.assertions[0]['scope']['canonical_theme_id']}/"
+                              f"{bundle.assertions[0]['curation_revision']}")
+    assert exc.value.code == "identity_vintage_unsupported"
+    assert robotics.compose_robotics_research(
+        dataclasses.replace(query, view="commercial"), stripped) == before_latest
+    assert robotics.compose_robotics_research(
+        dataclasses.replace(query, view="commercial", time_mode="source_history",
+                            source_cutoff="2026-09-24T00:00:00Z"), stripped) == before_history
+
+
+def test_replay_with_vintage_after_cutoff_keeps_not_yet_learned_row():
+    query, replay, bundle = _replay_case()
+    label = bundle.assertions[0]["subject"]["source_business_label"]
+    rows = []
+    for result in bundle.identity_results:
+        result = dict(result)
+        if result.get("source_business_label") == label:
+            result["mapping_learned_at"] = "2027-01-01T00:00:00Z"
+        rows.append(result)
+    late = dataclasses.replace(bundle, identity_results=tuple(rows))
+    response = robotics.compose_robotics_research(replay, late)
+    row = next(r for r in response["companies"]["rows"]
+               if r["source_business_label"] == label)
+    assert row["company_node_id"] is None
+    assert row["navigation"]["reason"] == "identity_not_yet_learned"
+
+
+def test_replay_ignores_missing_vintage_of_out_of_scope_business():
+    query, replay, bundle = _replay_case()
+    extra = dict(bundle.identity_results[0])
+    extra["source_business_label"] = "Some Other Business Not In Scope"
+    extra.pop("mapping_learned_at", None)
+    widened = dataclasses.replace(bundle, identity_results=bundle.identity_results + (extra,))
+    assert robotics.compose_robotics_research(replay, widened) == \
+        robotics.compose_robotics_research(replay, bundle)

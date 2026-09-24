@@ -40,7 +40,7 @@ import json
 import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from engine.theme_graph.curation_assertion import (
     CurationAssertionError,
@@ -56,6 +56,19 @@ SCHEMA_ID = "robotics_theme_research.v1"
 EVIDENCE_SCHEMA_ID = "robotics_theme_research.evidence.v1"
 DEFINITION_VERSION = "2026-09-24.1"
 ANCHOR_THEME_ID = "robotics_automation"
+
+
+def _canonical_theme_id(slug: str) -> tuple[str, bool]:
+    """The assertion-side theme id for a mount/API slug, minted by the identity
+    owner (``engine.theme_graph.identity.theme_node_id``; shared-owner ruling
+    #7870 5812295091). Returns ``(canonical_id, owner_fallback_used)``: the
+    local ``theme:<slug>`` fallback exists only so a base without the identity
+    owner still composes, and it is always declared in limitations."""
+    try:
+        from engine.theme_graph.identity import theme_node_id
+    except ImportError:  # pragma: no cover - base without the identity owner
+        return f"theme:{slug}", True
+    return theme_node_id(slug), False
 SLICES = ("precision_motion", "perception")
 VIEWS = ("composition", "manufacturing", "commercial", "capacity", "economics")
 AUTHORITY = {
@@ -347,7 +360,15 @@ class _Selection:
         self.bundle = bundle
         self.generation = _generation(query, bundle)
         self.limitations: set[str] = set()
+        # Sol #7780 5813801605 / disposition "Slice scope": the Robotics corpus
+        # is a declared witness cohort, never slice membership; every response
+        # and every evidence object says so.
+        self.limitations.add("slice_scope_unowned")
         self.assertions: list[dict[str, Any]] = []
+        canonical_theme, owner_fallback = _canonical_theme_id(query.anchor_theme_id)
+        if owner_fallback:
+            self.limitations.add("identity_owner_fallback")
+        slug_keyed = 0
         for index, item in enumerate(bundle.assertions):
             try:
                 assertion = validate_assertion(item)
@@ -355,9 +376,14 @@ class _Selection:
                 self.limitations.add(f"assertion_invalid:{index}")
                 continue
             scope = assertion.get("scope") or {}
-            # scope gate: theme AND facet. Anything else is ignored, not
-            # counted, and never fingerprint-relevant.
-            if scope.get("canonical_theme_id") != query.anchor_theme_id:
+            # scope gate: theme AND facet. The theme is matched on the
+            # CANONICAL id only (theme:<slug>); a bare-slug scope is the
+            # pre-ruling defect and is dropped but counted, never healed.
+            theme = scope.get("canonical_theme_id")
+            if theme == query.anchor_theme_id:
+                slug_keyed += 1
+                continue
+            if theme != canonical_theme:
                 continue
             if scope.get("technology_facet") != query.slice_key:
                 continue
@@ -366,6 +392,8 @@ class _Selection:
                 continue
             self.assertions.append(assertion)
         self.assertions.sort(key=lambda a: a["curation_revision"])
+        if slug_keyed:
+            self.limitations.add(f"scope_slug_keyed:{slug_keyed}")
         # RBV-27: partial rights show a partial state and NEVER name the
         # withheld families (deliberate divergence from the shared owner's
         # ``omitted:<name>`` limitation).
@@ -690,20 +718,21 @@ def _ownership_role(assertion: Mapping[str, Any]) -> str:
             return f"owner_from:{valid_from}"
         return "owner_reported_effective_date_unknown"
     if mode == "ANNOUNCED_ARRANGEMENT":
-        obj = assertion.get("object") or {}
         limits = assertion.get("limitations") or {}
+        # The side is read ONLY from what the assertion ESTABLISHES about its
+        # own subject. ``does_not_establish`` is a list of denials and
+        # ``coverage`` may carry the counterparty's verb, so neither may
+        # decide a side (R2 review nit 1). Both verbs present = ambiguous,
+        # and an ambiguous side is never guessed.
         scanned = " ".join(
-            piece for piece in
-            [limits.get("coverage") or "", *(limits.get("establishes") or []),
-             *(limits.get("does_not_establish") or []),
-             obj.get("source_product_label") or ""]
+            piece for piece in (limits.get("establishes") or [])
             if isinstance(piece, str)
         ).lower()
-        # acquirer markers are checked first: an announcement that names both
-        # parties still pins the SUBJECT's side by its own verb
-        if any(marker in scanned for marker in _ACQUIRER_MARKERS):
+        acquirer = any(marker in scanned for marker in _ACQUIRER_MARKERS)
+        seller = any(marker in scanned for marker in _SELLER_MARKERS)
+        if acquirer and not seller:
             return "announced_acquirer"
-        if any(marker in scanned for marker in _SELLER_MARKERS):
+        if seller and not acquirer:
             return "announced_seller"
         return "announced_party"
     return "subject"
@@ -831,7 +860,7 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
     for block in blocks:
         watcher = block.get("falsifier") or block.get("missing_measurement") or ""
         if watcher:
-            next_evidence.append({"text": watcher, "label": "target",
+            next_evidence.append({"text": watcher, "label": "interpretation",
                                   "input_refs": list(
                                       block.get("input_revisions") or [])})
     next_evidence.sort(key=lambda i: (i["text"], i["input_refs"]))
@@ -904,9 +933,11 @@ def _views(selection: _Selection, response_limitations: set[str]) -> dict[str, A
             section["total"] = {"value": None, "reason": "totals_not_computed"}
         else:
             section["status"] = "unavailable"
-            section["reason"] = ("no_selected_assertions"
-                                 if not selection.assertions
-                                 else f"no_{view}_evidence")
+            # closed reason set: the shared owner's ``no_selected_assertions``
+            # plus the packet-mandated ``no_manufacturing_evidence`` only
+            section["reason"] = ("no_manufacturing_evidence"
+                                 if view == "manufacturing" and selection.assertions
+                                 else "no_selected_assertions")
             section["total"] = {"value": None, "reason": None}
         graph, truncated = _graph(live_rows, selection)
         section["graph"] = graph
@@ -931,7 +962,7 @@ def _views(selection: _Selection, response_limitations: set[str]) -> dict[str, A
 # Public helpers
 # ---------------------------------------------------------------------------
 
-def safe_quantity(value: Any, basis: Any) -> tuple[float, str] | None:
+def safe_quantity(value: object, basis: object) -> tuple[float, str] | None:
     """Accept a decoded BOM quantity EXACTLY as the source stated it.
 
     Refuses (returns ``None``) for booleans, non-numbers, non-finite floats,
@@ -966,7 +997,7 @@ def compatible_financial_basis(a: Mapping[str, Any], b: Mapping[str, Any]) -> bo
     return _basis(a) == _basis(b)
 
 
-def non_overlapping_cost_items(items: Any) -> list[dict[str, Any]]:
+def non_overlapping_cost_items(items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     """Validate a caller's cost-selection and refuse the parent/child
     double-count shape (RBV-21): an ``integrated_assembly`` item selected
     together with an item contained in it refuses with
@@ -1004,6 +1035,30 @@ def non_overlapping_cost_items(items: Any) -> list[dict[str, Any]]:
 _ECONOMICS_REASON = "no_management_sequence_in_robotics_v1"
 
 
+def _refuse_unsupported_identity_vintage(selection: "_Selection") -> None:
+    """Sol #7780 5813801605 (historical identity): a ``system_replay`` may not
+    be served on an identity whose as-known vintage is unsupported. An identity
+    row for an in-scope subject without a non-empty string
+    ``mapping_learned_at`` is exactly that; the shared route-level token is
+    ``identity_vintage_unsupported`` (#7870 5813976021). ``latest`` and
+    ``source_history`` never take this path; a subject with NO identity row
+    claims no belief and is not affected; a mapping learned after the cutoff
+    stays the row-level ``identity_not_yet_learned`` (the system knows it did
+    not know yet). No rebuild or wall-clock time is ever used as a vintage."""
+    if selection.query.time_mode != "system_replay":
+        return
+    labels = {
+        (a.get("subject") or {}).get("source_business_label")
+        for a in selection.assertions
+    }
+    for result in selection.bundle.identity_results:
+        if result.get("source_business_label") not in labels:
+            continue
+        learned = result.get("mapping_learned_at")
+        if not (isinstance(learned, str) and learned):
+            raise ResearchRefusal("identity_vintage_unsupported")
+
+
 def compose_robotics_research(query: ResearchQuery,
                               bundle: OwnerBundle) -> dict[str, Any]:
     """Compose the closed Robotics research response. Pure: the bundle is
@@ -1021,6 +1076,7 @@ def compose_robotics_research(query: ResearchQuery,
     if query.expected_generation is not None \
             and query.expected_generation != generation:
         raise ResearchRefusal("generation_changed")
+    _refuse_unsupported_identity_vintage(selection)
 
     response_limitations: set[str] = set(selection.limitations)
     summary = _summary(selection, response_limitations)
@@ -1122,6 +1178,7 @@ def select_authorized_evidence(query: ResearchQuery, bundle: OwnerBundle,
             and query.expected_generation != generation:
         raise ResearchRefusal("generation_changed")
     selection = _Selection(query, bundle)
+    _refuse_unsupported_identity_vintage(selection)
     for assertion in selection.assertions:
         if source_ref_for(assertion) == assertion_ref:
             source = assertion["source"]
@@ -1162,9 +1219,11 @@ def _correction_lineage(assertion: Mapping[str, Any],
             break
         predecessor = by_revision.get(prior)
         if predecessor is None:
-            theme = (current.get("scope") or {}).get("canonical_theme_id") \
-                or ANCHOR_THEME_ID
-            lineage.append(f"gmi-curation://{theme}/{prior}")
+            # the predecessor is not in the bundle: its ref lives in the same
+            # theme segment the shared resolver minted for the current
+            # assertion — never a locally fabricated theme id
+            prefix = source_ref_for(current).rsplit("/", 1)[0]
+            lineage.append(f"{prefix}/{prior}")
             break
         seen.add(prior)
         lineage.append(source_ref_for(predecessor))

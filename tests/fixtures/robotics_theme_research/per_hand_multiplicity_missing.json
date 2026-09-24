@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_89f59495552f829553b0ba2c0692d5a6",
+        "curation_revision": "gmirca_58dbb023b3b72984cc70002c6d45a0a7",
         "limitations": {
           "coverage": "vendor page describing tendon-driven hand architecture; no per-hand count and no hands-per-robot evidence",
           "does_not_establish": [
@@ -52,7 +52,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "humanoid",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -92,7 +92,7 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_89f59495552f829553b0ba2c0692d5a6"
+        "gmirca_58dbb023b3b72984cc70002c6d45a0a7"
       ]
     ],
     "rights_revision": "synthetic-rights-0"

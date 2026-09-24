@@ -39,9 +39,14 @@ from tests.robotics_research_helpers import load_case, load_bundle_case
 
 try:
     import engine.market_ontology.semiconductor_theme_research as semiconductor
-    HAS_SHARED_TYPES = True
 except ImportError:  # pragma: no cover - explained by the xfail-strict marker
-    HAS_SHARED_TYPES = False
+    semiconductor = None  # type: ignore[assignment]
+
+try:  # the assertion-side theme id is minted by the identity owner
+    from engine.theme_graph.identity import theme_node_id as _theme_node_id
+    REF_PREFIX = f"gmi-curation://{_theme_node_id('robotics_automation')}/"
+except ImportError:  # pragma: no cover - base without the identity owner
+    REF_PREFIX = "gmi-curation://theme:robotics_automation/"
 
 try:
     from engine.theme_graph.curation_assertion import encode_assertion
@@ -279,7 +284,7 @@ def test_rbv04_announcement_is_not_qualified_capacity():
     capacity = view_of(response, "capacity")
     assert capacity["rows"] == []
     assert capacity["status"] == "unavailable"
-    assert capacity["reason"] == "no_capacity_evidence"
+    assert capacity["reason"] == "no_selected_assertions"
     commercial_rows = view_of(response, "commercial")["rows"]
     assert len(commercial_rows) == 1
     assert commercial_rows[0]["relation_kind"] == "announced_development"
@@ -396,11 +401,14 @@ def test_rbv10_dated_completion_becomes_owner_from_and_acquirer_marker_scans():
     dated = restamp(
         assertions[1],
         temporal={"business_valid_from": "2026-04-20", "business_valid_to": None})
+    # the side is read from what the assertion ESTABLISHES about its subject
+    # (R2b, review nit 1) — never from a product label, coverage prose or a
+    # denial; a subject-anchored acquisition clause yields the acquirer side
     acquirer = restamp(
         assertions[0],
-        object={**assertions[0]["object"],
-                "source_product_label": "Robotics Automation business "
-                                        "(Zebra acquires Skild AI assets)"})
+        limitations={**assertions[0]["limitations"],
+                     "establishes": ["an announced acquisition by Zebra of "
+                                     "Skild AI perception assets"]})
     rebuilt = dataclasses.replace(
         bundle,
         assertions=(dated, acquirer),
@@ -598,7 +606,7 @@ def test_rbv23_backlog_ratio_is_interpretation_not_a_capacity_row():
     capacity = view_of(response, "capacity")
     assert capacity["rows"] == []
     assert capacity["status"] == "unavailable"
-    assert capacity["reason"] == "no_capacity_evidence"
+    assert capacity["reason"] == "no_selected_assertions"
     keys = set(walk_keys(response))
     assert not any("lead_time" in k for k in keys)
     # the reading survives verbatim as an attributed interpretation summary item
@@ -671,7 +679,7 @@ def test_rbv26_syndicated_copy_collapses_into_the_original():
     assert row["observation"]["value"] == 24128
     assert row["independent_source_count"] == 1
     assert row["corroboration_refs"] == [
-        f"gmi-curation://robotics_automation/{copy['curation_revision']}"]
+        f"{REF_PREFIX}{copy['curation_revision']}"]
     assert row["source_dependence"] == "issuer-filed exchange report"
     assert "syndicated_collapsed" in response["limitations"]
     refs = {e["curation_revision"] for e in response["evidence_refs"]

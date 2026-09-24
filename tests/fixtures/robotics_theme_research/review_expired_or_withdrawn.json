@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_6c0c72ded596bc9c5cc01958e1e0b466",
+        "curation_revision": "gmirca_fe8614a1094469e3010c3bf4bf10a744",
         "limitations": {
           "coverage": "held disposition with an overdue review window; current applicability degrades while historical retention survives",
           "does_not_establish": [
@@ -50,7 +50,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -92,7 +92,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_1e3de0311d9a9a5d061058ed15cf45a4",
+        "curation_revision": "gmirca_116ab1c508525fb423439ee0e8199e73",
         "limitations": {
           "coverage": "accepted disposition with a review_due_at in the past (2026-06-01); overdue review degrades current applicability, not historical retention",
           "does_not_establish": [
@@ -128,7 +128,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "warehouse_robotics",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -178,11 +178,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_1e3de0311d9a9a5d061058ed15cf45a4"
+        "gmirca_116ab1c508525fb423439ee0e8199e73"
       ],
       [
         "assertion",
-        "gmirca_6c0c72ded596bc9c5cc01958e1e0b466"
+        "gmirca_fe8614a1094469e3010c3bf4bf10a744"
       ],
       [
         "identity",

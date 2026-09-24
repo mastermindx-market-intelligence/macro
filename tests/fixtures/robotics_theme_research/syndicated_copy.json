@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_735f06afdae3868b6bb0277a5f3bf705",
+        "curation_revision": "gmirca_82eb462ba31db98a74e143215e3d82d5",
         "limitations": {
           "coverage": "issuer-filed exchange report (original publication of the statement)",
           "does_not_establish": [
@@ -51,7 +51,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -93,7 +93,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_3da400a890c5f8f546297681a4d1674e",
+        "curation_revision": "gmirca_45c02a63698c6f6939e1fb735429d0f8",
         "limitations": {
           "coverage": "syndicated restatement of an exchange filing; upstream dependence preserved",
           "does_not_establish": [
@@ -129,7 +129,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -179,11 +179,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_3da400a890c5f8f546297681a4d1674e"
+        "gmirca_45c02a63698c6f6939e1fb735429d0f8"
       ],
       [
         "assertion",
-        "gmirca_735f06afdae3868b6bb0277a5f3bf705"
+        "gmirca_82eb462ba31db98a74e143215e3d82d5"
       ],
       [
         "identity",

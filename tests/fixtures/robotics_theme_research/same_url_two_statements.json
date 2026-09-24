@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_941a188d3b1c47aed924ef1ddbe6ada7",
+        "curation_revision": "gmirca_dbcc000014ebdb69f1f9b3f4fac1b576",
         "limitations": {
           "coverage": "one statement of two at the same URL and publication state",
           "does_not_establish": [
@@ -50,7 +50,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "warehouse_robotics",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -92,7 +92,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_ea88d3756226ea43a0755173d1a0cdf0",
+        "curation_revision": "gmirca_3237e45f89b92b078fb0d86410aad7a0",
         "limitations": {
           "coverage": "second statement of two at the same URL and publication state; both survive as distinct evidence",
           "does_not_establish": [
@@ -128,7 +128,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "warehouse_robotics",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -178,11 +178,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_941a188d3b1c47aed924ef1ddbe6ada7"
+        "gmirca_3237e45f89b92b078fb0d86410aad7a0"
       ],
       [
         "assertion",
-        "gmirca_ea88d3756226ea43a0755173d1a0cdf0"
+        "gmirca_dbcc000014ebdb69f1f9b3f4fac1b576"
       ],
       [
         "identity",

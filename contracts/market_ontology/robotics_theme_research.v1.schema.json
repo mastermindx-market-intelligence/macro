@@ -242,7 +242,7 @@
       ]
     },
     "section_status": {"enum": ["ready", "degraded", "unavailable", "refused"]},
-    "reason": {"type": "string", "pattern": "^[a-z0-9_:]+$"},
+    "reason": {"type": "string", "pattern": "^[a-z0-9_]+$"},
     "input_refs": {
       "type": "array",
       "items": {"type": "string", "minLength": 1},

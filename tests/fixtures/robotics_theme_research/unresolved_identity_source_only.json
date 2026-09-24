@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_9327238c7cea6b757660e046b4a9bbda",
+        "curation_revision": "gmirca_e863a9340a1c00d84ec1661ba9f40e66",
         "limitations": {
           "coverage": "private company named in a vendor case study; no identity resolution exists",
           "does_not_establish": [
@@ -51,7 +51,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": "warehouse_robotics",
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -93,7 +93,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_fe1ecbbed937f9f8e9af58ba3ccc9b6c",
+        "curation_revision": "gmirca_fa81881e972605939884a2c39071e95a",
         "limitations": {
           "coverage": "listed issuer on a market the v1 master does not support; evidence stays source-only",
           "does_not_establish": [
@@ -130,7 +130,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": null,
           "region": null,
@@ -180,11 +180,11 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_9327238c7cea6b757660e046b4a9bbda"
+        "gmirca_e863a9340a1c00d84ec1661ba9f40e66"
       ],
       [
         "assertion",
-        "gmirca_fe1ecbbed937f9f8e9af58ba3ccc9b6c"
+        "gmirca_fa81881e972605939884a2c39071e95a"
       ],
       [
         "identity",

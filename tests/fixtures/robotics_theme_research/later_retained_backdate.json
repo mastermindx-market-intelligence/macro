@@ -14,7 +14,7 @@
           "predecessor_revision": null,
           "reason": null
         },
-        "curation_revision": "gmirca_e5f7cb7bca9c2775d9490ac0314719bb",
+        "curation_revision": "gmirca_b9e2ba1f68791df8c4a9a3879df64f60",
         "limitations": {
           "coverage": "retention postdates the recorded cutoff; the assertion cannot support a historically-known claim before its retention time",
           "does_not_establish": [
@@ -50,7 +50,7 @@
         "schema": "theme_graph.curation_assertion.v1",
         "scope": {
           "application": null,
-          "canonical_theme_id": "robotics_automation",
+          "canonical_theme_id": "theme:robotics_automation",
           "denominator": null,
           "period": "2026Q1-FY",
           "region": null,
@@ -100,7 +100,7 @@
     "revision_tuple": [
       [
         "assertion",
-        "gmirca_e5f7cb7bca9c2775d9490ac0314719bb"
+        "gmirca_b9e2ba1f68791df8c4a9a3879df64f60"
       ],
       [
         "identity",
@@ -118,7 +118,7 @@
     "offset": 0,
     "recorded_cutoff": "2026-09-24T00:00:00Z",
     "slice_key": "precision_motion",
-    "source_cutoff": null,
+    "source_cutoff": "2026-09-24T00:00:00Z",
     "time_mode": "system_replay",
     "view": "manufacturing"
   },
