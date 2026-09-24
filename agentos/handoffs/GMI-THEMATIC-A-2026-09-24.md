@@ -4,97 +4,120 @@ session: sol/gmi-theme-research-a-20260924
 model: unknown
 ended_because: checkpoint
 mission: >
-  Qualify the 19 assigned food, agriculture and environmental-services source-local
-  leaves, reuse incumbent research, develop three contrasting economic cases, and
-  return evidence-qualified observations and integration proposals to the GMI Meta-CEO.
+  Qualify the 19 assigned food, agriculture and environmental-services leaves,
+  develop three evidence-supported economic cases and observation proposals,
+  and return the bounded research tranche to the GMI Meta-CEO for acceptance.
 state_before: >
-  Chairman-delivered expanded lane-A packet; no matching child PR or branch found.
-  The parent prepared source qualifications, but no child execution was established.
+  Chairman-delivered lane-A packet, four parent source-span qualifications,
+  no assigned child carrier or independently inspected child research.
 changed:
+  - path: research/theme_graph/thematic_research_20260924/food-agriculture-environment/COVERAGE.md
+    what: "Exact 19-key map, four starting qualifications, processing reuse extension, explicit gaps and two initial observation profiles."
+  - path: research/theme_graph/thematic_research_20260924/food-agriculture-environment/RETURN_AND_CHECKPOINT.md
+    what: "Initial-unit return, source/validation limits, actual checks and remaining case jobs."
   - path: agentos/handoffs/GMI-THEMATIC-A-2026-09-24.md
-    what: "Records actual live assignment, separate foreground research START, source pins and recovery frontier."
+    what: "Same cumulative owner updated with all known effects and next research action."
 verified:
-  - claim: "Current protected procedure was pinned before repository effects."
-    command: "Native GitHub ref and same-commit file reads"
-    result: "Mastermind 0497e28864752e3ab70fa5aa2f1567bc3c9c6aca; schema mastermind.sol_skillpack.v1; version 1.0.1; bootstrap major 1."
-  - claim: "Canonical wave and parent checkpoint were recovered."
-    command: "Exact-commit file reads and current parent metadata/comments"
-    result: "Charter c86d015cea03b1b1552f45a71abc2ca0520242dd, blob 531bc3ba9c7f27ac79a9cb114a5f0db709ce1451; parent #7886 head 82b745b7592880a5ee79367eb4c77c071aaeac21; no parent comments at pickup."
-  - claim: "A new lane carrier does not replace an observed incumbent."
-    command: "Exact-operation PR search, candidate-branch search, exact child-handoff read at main base"
-    result: "0 matching PRs, 0 matching branches, child path absent (404); base ef43ff17b916d11db6588309889ec28f0ecc74a6."
+  - claim: "Protected procedure and canonical charter loaded before effects."
+    command: "Native GitHub exact-ref reads"
+    result: "Mastermind 0497e28864752e3ab70fa5aa2f1567bc3c9c6aca; compatible1.0.1/bootstrap1; charter c86d015cea03b1b1552f45a71abc2ca0520242dd."
+  - claim: "Both research documents persisted and read back completely."
+    command: "Native create_file and exact-commit sequential readback"
+    result: "COVERAGE d9d1f5c46dd9715bdb244d860aed785bb926f8d2, blob8fee063a5ff87a0eaed5a218804d220f290b9ead; RETURN d14d6d1ef48bf26753f31055333360fd1d18e7f6, blobc4a1cc051e4fc7a3f641b5dc963ec97b3f906921."
+  - claim: "Packet integrity checked and source-change surface bounded."
+    command: "Local verify_packet.py; native PR changed-filename inspection"
+    result: "5 checks passed,0 failed; exactly the two allowed research documents plus this cumulative handoff. Not product or independent research tests."
+  - claim: "Parent pickup and initial result references posted."
+    command: "Native add_comment_to_issue and exact comment readbacks"
+    result: "#7886 comments5808696026 and5808773878. Posting is proven; parent consumption/acceptance is not."
 unverified:
-  - claim: "Independent primary-source validation or complete leaf research."
-    what_would_verify: "Read incumbent substantive passages, identify material gaps, then validate suitable primary sources."
-  - claim: "Any product or runtime capability is live."
-    what_would_verify: "Separate native-owner admission and real consumer acceptance; not authorized in this child."
+  - claim: "Independent primary-source validation, final19-leaf research, or completed three case jobs."
+    what_would_verify: "Original-source qualification and evidence-supported synthesis, with unresolved parts explicitly held."
+  - claim: "Any source admission, native interface, implementation or product capability is live."
+    what_would_verify: "Separate native-owner admission and real consumer acceptance; outside this research child."
 next_actions:
-  - "Refresh #7796 and #7792 metadata/checkpoints once; inspect pinned AGR5 and FOOD3 substantive passages and material newer changes."
-  - "Qualify the initial four leaves and persist precise unanswered questions before substantive external research."
+  - "Qualify the original AGR5 crop-input procurement/credit/collection source for a supported product-region-season; establish observable sell-through/cash discriminators and honest missingness."
+  - "Then extend the non-additive food-role comparison and read the actual W6 water-contract case behind IND9 J16; preserve incumbent ownership."
 do_not_redo:
-  - "Do not rebuild the 268-key inventory, prior 49-leaf Pass2 or Cybersecurity sample."
-  - "Do not repeat AGR5 grower foundations or FOOD3 role accounting; reuse exact supported cases."
-  - "Do not edit parent or incumbent study branches, implementation, shared contracts, registries or live data."
+  - "Do not rebuild the268-key inventory,49-leaf Pass2, Cybersecurity sample or AGR5/FOOD3 foundations."
+  - "Do not re-run unchanged numerical cases or count shared sources as independent evidence."
+  - "Do not edit parent/incumbent branches, implement product changes, repair inherited clock faults, or dispatch workers."
 ---
 
-# GMI A cumulative checkpoint
+# GMI A - cumulative frontier after context qualification
 
 Operation: `gmi-theme-research-food-agriculture-environment-20260924-001`.
-Parent: `gmi-thematic-research-meta-ceo-20260924-001`, Macro Draft/HOLD #7886.
-Child branch: `sol/gmi-theme-research-a-20260924` from Macro main `ef43ff17b916d11db6588309889ec28f0ecc74a6`.
-Child PR: not yet created at this checkpoint.
+Parent: `gmi-thematic-research-meta-ceo-20260924-001`, Macro #7886.
+Single child: Macro Draft/HOLD #7890, `sol/gmi-theme-research-a-20260924`.
+Original branch base: `ef43ff17b916d11db6588309889ec28f0ecc74a6`.
 
-## Actual assignment and foreground START
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+CAPABILITY_STATE: PARTIAL / INITIAL_RESEARCH_QUALIFICATION
 
-The current live Chairman deliberately delivered `GMI_A_ASTRA_RESEARCH_HANDOFF(1).md` and asked this conversation to take GMI A, starting with an Extra High context-ingestion turn. The assignment was acknowledged and a separate research START was emitted in this conversation after charter, procedure, parent and collision recovery. This is manual foreground research, not an Executive Job, Attempt or native RuntimeBinding receipt.
+This disposition becomes verified only upon immutable readback of this version. Its commit/blob is supplied by its write/readback receipt and #7890, not a fabricated self-reference. It supersedes the initial checkpoint's next action, not its historical evidence.
 
-Receiver: this Chairman-addressed ChatGPT web conversation; exact provider conversation/session identifier UNKNOWN. User-reported current mode: Extra High. Platform-attested served model/mode and hidden budget UNKNOWN. Requested later work profile: concentrated Astra Pro research at user selection. No automatic mode selection or comparative-capability claim is made.
+## Assignment and scope
+
+The current Chairman deliberately delivered the expanded GMI A handoff and selected Extra High for ingestion/context gathering. Assignment was acknowledged and a separate foreground research START emitted after source and collision recovery. Exact provider conversation/session ID, served-model/mode attestation and hidden budget are UNKNOWN. Receiver is this Chairman-addressed ChatGPT web conversation. There is no Executive Job, Attempt, RuntimeBinding, worker or autonomous wake claim.
 
 COGNITION_ROUTE: CHAT_INCLUDED_DEFAULT
 CHAT_REASONING_MODE: NON_PRO_DEFAULT
-WHY: current turn is source recovery and context qualification, as expressly requested.
-WHY NOT FABLE: bounded domain research; Meta-CEO retains cross-owner architecture, acceptance and later implementation orchestration.
-DIRECT_WORK_REASON: PRINCIPAL_JUDGMENT; this assignment prohibits independent worker dispatch.
+DIRECT_WORK_REASON: PRINCIPAL_JUDGMENT
+WHY NOT FABLE: bounded domain synthesis and evidence qualification; Meta-CEO retains cross-owner integration, acceptance and later Fable orchestration.
 
-## Source authority and scope
-
-Canonical charter: `research/theme_graph/thematic_research_20260924/RESEARCH_WAVE_1.md` at `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. Expanded delivery is convenience context, not a second authority.
-
-Protected procedure: Mastermind `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`. INDEX, COLD_START, ACTIVE_EXECUTION including continuation gate, WEB_CEO_DELEGATION and CLOSEOUT read at this pin. Routing addendum relevant cognition clauses also inspected. Common GMI workstream read at Macro `ef43ff17b916d11db6588309889ec28f0ecc74a6`; its historical runtime ledger is not fresh runtime evidence.
-
-Exactly 19 keys, each prefixed `ltheme:finviz:`:
-
+Exactly19 source keys, each prefixed `ltheme:finviz:`:
 ```
 commagrigrains commagrisofts commagrilivestock commagrifertilizers commagribiofuels
 agriculturesmartfarming agriculturecropinputs agricultureindoorfarming agriculturealtprotein agricultureprocessing
 environmentalwater environmentalwaste environmentalairquality environmentalclimate environmentalagriculture
 nutritionaltprotein nutritionretailers nutritionsupplements nutritionmealdelivery
 ```
+Allowed new root: `research/theme_graph/thematic_research_20260924/food-agriculture-environment/` plus this ONE handoff. Parent and incumbent sector-study branches remain READ ONLY. No existing writer is released.
 
-Allowed new research root: `research/theme_graph/thematic_research_20260924/food-agriculture-environment/` plus this ONE cumulative Agent OS handoff. Only one Draft/HOLD child carrier is permitted. Parent and incumbent research branches are read-only.
+## Minimum recovery set and exact pins
 
-First unit: `commagrifertilizers`, `agriculturecropinputs`, `agricultureprocessing`, `nutritionretailers`.
-Three eventual case jobs: unresolved crop-input procurement/channel/credit/cash; two-role food-chain economics with non-additive end demand; specific water/waste customer contract with full costs and capital.
+Read this handoff and the two owned research documents first. Use source passages only for the next decision; do not replay prior tool history.
 
-## Evidence rules and inherited inputs
+- Charter `research/theme_graph/thematic_research_20260924/RESEARCH_WAVE_1.md` at `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`.
+- Protected Mastermind `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`; INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT loaded at that same compatible pin. Relevant routing-addendum cognition clauses also inspected.
+- Parent cumulative record at `82b745b7592880a5ee79367eb4c77c071aaeac21`, blob `fcee9bdc77293e83227d3ecb0667223fa4e7da15`. Current common workstream read at Macro branch-base pin; historical runtime figures are not fresh proof.
+- INV: `finviz_themes/finviz_themes_map.md` at `9573cd4d134804fb4cd8c3801ad62a697c3de6d2`, blob `51de7142f1efe36eceb64cb74a7eeb3f0ef06306`.
+- AGR5: `research/basic_materials/BASIC_MATERIALS_R5_FERTILIZER_AND_AGRICULTURAL_INPUTS_2026-09-23.md` at `0f52fe6397d7920a3de6a725abffacb25fbb0c96`, blob `e25267cd899671716c19fd311d4654d8a972c61e`.
+- FOOD3: `research/consumer_defensive/CONSUMER_DEFENSIVE_VALUE_CHAIN_ECONOMICS_R3_2026-09-23.md` at `88970a1a197884cc242f6d117cbf209603eccaf9`, blob `0617eaad8a4765b17b8f7a898a7f3e69dedfa3fb`.
+- IND9: `research/industrials/INDUSTRIALS_WAVE9_RESEARCH_TO_PRODUCT_CATALOG_2026-09-23.md` at `8f041e6c7c93df67df19d96a464ef7946333c2f5`, blob `513335044c4032a1053ca31d339aac57360572eb`. Current Industrials Wave11 checkpoint read at `5b78adfd501faf2114751de7098840ebbe763713`; not a claim every newer file was audited.
 
-AGR5 #7796: `research/basic_materials/BASIC_MATERIALS_R5_FERTILIZER_AND_AGRICULTURAL_INPUTS_2026-09-23.md` at `0f52fe6397d7920a3de6a725abffacb25fbb0c96`, blob `e25267cd899671716c19fd311d4654d8a972c61e`.
-FOOD3 #7792: `research/consumer_defensive/CONSUMER_DEFENSIVE_VALUE_CHAIN_ECONOMICS_R3_2026-09-23.md` at `88970a1a197884cc242f6d117cbf209603eccaf9`, blob `0617eaad8a4765b17b8f7a898a7f3e69dedfa3fb`.
-IND9 #7789: `research/industrials/INDUSTRIALS_WAVE9_RESEARCH_TO_PRODUCT_CATALOG_2026-09-23.md` at `8f041e6c7c93df67df19d96a464ef7946333c2f5`, blob `513335044c4032a1053ca31d339aac57360572eb`.
-These are inherited pointers at this checkpoint, not claims of direct child inspection yet.
+AGR5/FOOD3 current PR heads match the reused pins. Their checkpoints concern shared-profile and CDV-1 integration, not release of their writers. COVERAGE records exact inspected sections and uninspected gaps, including the AGR5 truncated middle and unread IND9 later dossiers/W6 source.
 
-Separate framework, worked research, independent primary evidence, measurement feasibility, admitted data and product proof. Preserve source/knowledge/economic clocks, units, rights, corrections, independence, alternatives and falsifiers. Missing is not zero; date-only sources do not establish intraday ordering. No causal inference from co-movement or membership.
+## Useful delta and limits
 
-## Material discrepancy for parent adjudication
+All19 leaf identities were found in the archived inventory. Four prescribed leaves now have specific source-based qualifications. For the other15, adjacent evidence or uninspected dimensions remain explicit; this is not a completed breadth audit.
 
-The current WEB_CEO_DELEGATION/addendum still requires a complete Pro exception including empirical non-Pro insufficiency and an 80-1440-minute estimate. The wave charter explicitly records Chairman-selected Astra Pro but forbids inventing those facts and says material current-law conflicts return to the Meta-CEO. No reconciliation or global-law amendment is claimed. This does not block the currently selected Extra High research/publication phase. Preserve the conflict for parent pickup; do not fabricate a receipt or change shared law.
+The processing qualification advanced beyond the parent: FOOD3 C12-C17 was actually read and contains worked cases. It is not merely an outline. This does not independently validate its cited original releases. AGR5's grower/application/credit/procurement framework and existing arithmetic are retained unchanged. Nutrition-retailer research already separates comparable stores from footprint/calendar effects; category demand and cohort cash remain unmeasured.
 
-## Tool/effect state
+The archived climate and environmental-agriculture labels share an identical13-member set. Preserve this taxonomy-quality question without collapsing the two keys, attributing an upstream bug, refreshing vendor membership, or inferring agricultural economics.
 
-Native GitHub exposes branch/file/PR/comment writes; repository preflight returned push permission. That is technical/resource evidence, not broader authority. Exact-operation search initially returned a schema 422 for missing issue-type qualifier; corrected read-only query returned zero matches. Missing child path returned 404 as expected. Neither was a safety/permission refusal.
+Two initial observation profiles were authored in COVERAGE: matched procurement/channel/collections and retailer comparable/cohort economics. They specify populations, denominators, cadence proposals, horizons, vintages, corrections, alternatives, falsifiers, existing intended owners and unmeasurable fields. They are proposals, not native contract enrollment or live interfaces.
 
-Known effects at writing: this one branch created; this checkpoint write is the current publication action. No ambiguous dispatched write observed before it. No source registry, product code/data, live admission, ranking/trading, merge/deploy, purchase, paid API, credentials, worker, Fable or automation action. No watcher or autonomous wake is claimed.
+## Verification and effects
 
-This is an in-turn safety checkpoint, not research completion or Meta-CEO acceptance. Continue to substantive source qualification; later update this same record with all verified effects and the exact next action. Read back its immutable revision before relying on persistence.
+COVERAGE commit `d9d1f5c46dd9715bdb244d860aed785bb926f8d2`, blob `8fee063a5ff87a0eaed5a218804d220f290b9ead`; complete exact-ref readback1-80/81-end.
+RETURN_AND_CHECKPOINT commit `d14d6d1ef48bf26753f31055333360fd1d18e7f6`, blob `c4a1cc051e4fc7a3f641b5dc963ec97b3f906921`; complete exact-ref readback.
 
-MISSION_COMPLETE: false
+Five local packet checks passed: supplied handoff hash, exact19 unique ordered keys, four starting keys, three case markers, and equality of the two transcribed archived13-member sets. Input SHA256 `d2ca6b62fe7d470ca7d3fca53a9396c4e16217b62b449b3e6436c65bfbf050be`; receipt SHA256 `ef4bf9826ab7a1400e3c0400bf329f6a416a17b4a42d6bf56e9c6ef740353be8`. These are structural/reproducibility checks, not independent vendor or financial validation.
+
+Before effects, exact-operation PR and candidate-branch searches found none and this handoff was absent at base. Native write schemas and repo push permission were available. All authorized writes succeeded. Changed-file census contains only COVERAGE, RETURN_AND_CHECKPOINT and this handoff. Read-only search422 was corrected once; expected missing-path404 was not a permission refusal. Optional container archive copy never started and was abandoned. No ambiguous write remains known before this update; immutable readback is required after it.
+
+Parent #7886 pickup comment5808696026 and initial result comment5808773878 were posted and exact-read back. Their creation times are2026-09-24T06:07:54Z and06:14:17Z. Posting is not parent consumption or acceptance. No waiting worker or reciprocal watcher exists for this child. No Fable/worker/automation, credentials, paid spend, product code/data, rights registry, identity/membership, ranking/trade, merge or deployment effect. Parent and sibling source custody is unchanged.
+
+## Open mode discrepancy
+
+The Chairman's requested later Astra Pro research phase is preserved. Current protected companion/addendum retains empirical non-Pro-insufficiency and80-1440-minute receipt fields, whereas this wave expressly forbids invented comparison/duration. The discrepancy was returned to the Meta-CEO in comment5808696026; no ruling is claimed. It does not block current Extra High independent research/publication. Do not fabricate a receipt or modify global law. Missing write exposure may justify a user-selected same-conversation tool phase; explicit safety/permission denial cannot be bypassed through mode, account, tool, provider or carrier changes.
+
+## Unfinished obligations and exact continuation
+
+Independent external primary validation in this child: NONE. All three contrasting case jobs remain OPEN. The complete19-leaf assessment, final SYNTHESIS and final OBSERVATIONS_AND_INTEGRATION remain owed. Prior studies' original-source claims remain attributed repository evidence, not our own independently checked facts. Preserve source/economic/knowledge clocks, rights, units, corrections and dependence. Missing is not zero. Do not infer current listings, causal supplier ties or trade effects from labels and examples.
+
+Next action: qualify the original AGR5 crop-input procurement/credit/collection source for one supported product-region-season. Establish which sell-through, inventory, receivable/cohort and collection observations can distinguish delayed purchases from genuinely lost demand; explicitly return unmeasurable parts and falsifiers. Do not preselect geography or invent private channel data. Consume material current owner changes only. Then develop the two-role food comparison without mismatched-period or supplier-link claims and inspect the actual W6 water contract behind IND9 J16 before extending Case3.
+
+Intended resume surface: this SAME Chairman-selected ChatGPT web conversation, same operation and #7890; later concentrated Pro phase only with actual user selection and honest parent-source reconciliation. No autonomous continuation or new-session custody transfer is implied. The specifically requested ingestion/context unit is complete; the bounded research mission is not. The final stop remains research-return-for-Meta-CEO-review after evidence-supported case work, not acceptance by this child.
