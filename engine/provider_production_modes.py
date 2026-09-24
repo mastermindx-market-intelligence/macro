@@ -73,7 +73,7 @@ import logging
 import os
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -91,6 +91,10 @@ DEFAULT_PATH = Path(__file__).resolve().parent.parent / "config" / "provider_pro
 
 #: Ledger lane for every row this module emits.
 LANE = "provider_production_modes"
+CANARY_LANE = "provider_production_modes_canary"
+CANARY_SCHEMA = "mastermind.provider_production_canary.v1"
+MINIMAX_CANARY_MODE_ID = "minimax_payg_api"
+CANARY_MAX_TOKENS = 64
 
 #: Matches ``earnings_qual._call_openai_compat``'s own default (120 s).
 DEFAULT_TIMEOUT_S = 120.0
@@ -383,6 +387,46 @@ class ProductionCallReceipt:
     cap_id: str
     state: str
     price_state: str = "unknown"
+
+
+@dataclass(frozen=True)
+class ProductionCanaryReceipt:
+    """Secret-free activation proof for one bounded shadow-off provider call."""
+
+    schema: str
+    mode_id: str
+    provider_id: str
+    model: str
+    ok: bool
+    error_class: str
+    latency_ms: int
+    input_tokens: int | None
+    output_tokens: int | None
+    price_state: str
+    source_enabled: bool
+    subscription_fallback_allowed: bool
+    canary_only: bool
+    qualification_effect: bool
+    activation_eligible: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schema": self.schema,
+            "mode_id": self.mode_id,
+            "provider_id": self.provider_id,
+            "model": self.model,
+            "ok": self.ok,
+            "error_class": self.error_class,
+            "latency_ms": self.latency_ms,
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "price_state": self.price_state,
+            "source_enabled": self.source_enabled,
+            "subscription_fallback_allowed": self.subscription_fallback_allowed,
+            "canary_only": self.canary_only,
+            "qualification_effect": self.qualification_effect,
+            "activation_eligible": self.activation_eligible,
+        }
 
 
 def _looks_like_secret_value(value: str) -> bool:
@@ -1047,11 +1091,12 @@ def _emit_attempt(
     latency_ms: int,
     error_class: str,
     model: str | None = None,
+    lane: str = LANE,
 ) -> None:
     """One health row per attempt, skips included.  Telemetry never raises."""
     try:
         provider_health.record_attempt(
-            lane=LANE,
+            lane=lane,
             context=status.mode_id,
             rung=status.provider_id,
             ok=ok,
@@ -1070,6 +1115,7 @@ def _emit_usage(
     input_tokens: int,
     output_tokens: int,
     model: str,
+    lane: str = LANE,
 ) -> str:
     """One cost row, only when BOTH token counts are known.  Never raises.
 
@@ -1092,14 +1138,14 @@ def _emit_usage(
     try:
         provider, cost_basis = status.cost_identity.split("/", 1)
         ai_costs.record_usage(
-            lane=LANE,
+            lane=lane,
             provider=provider,
             model=model,
             key_id=status.cap_id,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             cost_basis=cost_basis,
-            note="provider_production_modes",
+            note=lane,
             est_cost_usd=estimate,
         )
     except Exception as exc:  # noqa: BLE001 — telemetry must not cost a call
@@ -1137,43 +1183,18 @@ def _receipt(
     )
 
 
-def call_mode(
-    mode_id: str,
+def _execute_configured(
+    *,
+    mode: ProductionMode,
+    status: ModeStatus,
+    credential: str,
     system: str,
     user: str,
-    *,
     max_tokens: int,
-    env: Mapping[str, str] | None = None,
-    transport: Transport | None = None,
+    transport: Transport | None,
+    lane: str = LANE,
 ) -> ProductionCallReceipt:
-    """Call one production mode, or refuse to, and return a receipt.
-
-    ``transport`` is injected for tests; when omitted the real client path runs
-    (``earnings_qual._call_openai_compat_detailed`` for GLM, the Anthropic SDK
-    for MiniMax).  A disabled or unconfigured mode never invokes the transport
-    at all, and no path in this module falls back to a subscription rung.
-
-    ``env=None`` becomes ``os.environ`` exactly here, ONCE; the resolved
-    credential is then an argument to the transport, which never reads the
-    environment itself.  A config that disagrees with the pinned credential
-    destination raises :class:`ProductionModeConfigError` before any transport
-    exists — that is a refusal, not a provider failure.
-    """
-    mode = _mode(mode_id)
-    source: Mapping[str, str] = os.environ if env is None else env
-    status, credential = _resolve_status_and_credential(mode, source)
-    if status.state != "configured":
-        error_class = "unsupported" if status.state == "unqualified" else status.state
-        _emit_attempt(status, ok=False, latency_ms=0, error_class=error_class)
-        return _receipt(
-            status,
-            ok=False,
-            text=None,
-            input_tokens=None,
-            output_tokens=None,
-            error_class=error_class,
-            latency_ms=0,
-        )
+    """Execute one already-admitted metered mode through the incumbent transport."""
 
     call = transport if transport is not None else _default_transport
     started = time.perf_counter()
@@ -1185,7 +1206,7 @@ def call_mode(
                 user=user,
                 max_tokens=int(max_tokens),
                 timeout_s=DEFAULT_TIMEOUT_S,
-                credential=credential or "",
+                credential=credential,
             )
         )
     except Exception as exc:  # noqa: BLE001 — a provider failure is a receipt, not a raise
@@ -1213,22 +1234,18 @@ def call_mode(
     if error_class not in ERROR_CLASSES:
         error_class = "error"
     if error_class == "none" and text is None:
-        # A metered transport reports the status of a SUCCESSFUL response too,
-        # so ``_status_to_error_class`` maps a 2xx to "none" -- but the status
-        # alone is not a success.  A 2xx whose body carries no usable text
-        # (empty ``choices``, ``content == ""``, an unparseable shape) is a
-        # FAILED call, never a silent "none" with ``text=None``.
         error_class = "error"
 
     ok = error_class == "none"
     input_tokens = _int_or_none(outcome.input_tokens)
     output_tokens = _int_or_none(outcome.output_tokens)
     if not ok or input_tokens is None or output_tokens is None:
-        # Both counts or neither: a half-known token pair cannot be priced.
         input_tokens = None
         output_tokens = None
 
-    _emit_attempt(status, ok=ok, latency_ms=latency_ms, error_class=error_class)
+    _emit_attempt(
+        status, ok=ok, latency_ms=latency_ms, error_class=error_class, lane=lane
+    )
     price_state = "unknown"
     if ok and input_tokens is not None and output_tokens is not None:
         price_state = _emit_usage(
@@ -1236,6 +1253,7 @@ def call_mode(
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             model=status.model,
+            lane=lane,
         )
 
     return _receipt(
@@ -1248,3 +1266,161 @@ def call_mode(
         latency_ms=latency_ms,
         price_state=price_state,
     )
+
+
+def call_mode(
+    mode_id: str,
+    system: str,
+    user: str,
+    *,
+    max_tokens: int,
+    env: Mapping[str, str] | None = None,
+    transport: Transport | None = None,
+) -> ProductionCallReceipt:
+    """Call one enabled production mode, or refuse before transport."""
+
+    mode = _mode(mode_id)
+    source: Mapping[str, str] = os.environ if env is None else env
+    status, credential = _resolve_status_and_credential(mode, source)
+    if status.state != "configured":
+        error_class = "unsupported" if status.state == "unqualified" else status.state
+        _emit_attempt(status, ok=False, latency_ms=0, error_class=error_class)
+        return _receipt(
+            status,
+            ok=False,
+            text=None,
+            input_tokens=None,
+            output_tokens=None,
+            error_class=error_class,
+            latency_ms=0,
+        )
+    return _execute_configured(
+        mode=mode,
+        status=status,
+        credential=credential or "",
+        system=system,
+        user=user,
+        max_tokens=max_tokens,
+        transport=transport,
+    )
+
+
+def call_activation_canary(
+    mode_id: str = MINIMAX_CANARY_MODE_ID,
+    *,
+    max_tokens: int = 16,
+    env: Mapping[str, str] | None = None,
+    transport: Transport | None = None,
+) -> ProductionCanaryReceipt:
+    """Run one bounded PAYG canary without changing production admission.
+
+    The canary is intentionally MiniMax-only.  GLM remains blocked by its
+    separate request-profile qualification gate.  The shipped mode MUST remain
+    disabled, so this function can prove provider reachability/economics without
+    becoming a hidden production-enable path.
+    """
+
+    if mode_id != MINIMAX_CANARY_MODE_ID:
+        raise ProductionModeConfigError("activation canary supports minimax_payg_api only")
+    if type(max_tokens) is not int or not 1 <= max_tokens <= CANARY_MAX_TOKENS:
+        raise ProductionModeConfigError(
+            f"activation canary max_tokens must be 1..{CANARY_MAX_TOKENS}"
+        )
+
+    mode = _mode(mode_id)
+    if mode.enabled:
+        raise ProductionModeConfigError(
+            "activation canary requires the source production mode to remain disabled"
+        )
+    if mode.subscription_fallback_allowed:
+        raise ProductionModeConfigError(
+            "activation canary refuses subscription fallback"
+        )
+
+    source: Mapping[str, str] = os.environ if env is None else env
+    credential = _resolve_credential(mode, source)
+    canary_mode = replace(mode, enabled=True)
+    status = _status(canary_mode, credential)
+    if status.state != "configured":
+        _emit_attempt(
+            status,
+            ok=False,
+            latency_ms=0,
+            error_class=status.state,
+            lane=CANARY_LANE,
+        )
+        call_receipt = _receipt(
+            status,
+            ok=False,
+            text=None,
+            input_tokens=None,
+            output_tokens=None,
+            error_class=status.state,
+            latency_ms=0,
+        )
+    else:
+        call_receipt = _execute_configured(
+            mode=canary_mode,
+            status=status,
+            credential=credential or "",
+            system="You are a provider transport canary. Reply with a short acknowledgement.",
+            user="Return READY.",
+            max_tokens=max_tokens,
+            transport=transport,
+            lane=CANARY_LANE,
+        )
+
+    activation_eligible = bool(
+        call_receipt.ok
+        and call_receipt.input_tokens is not None
+        and call_receipt.output_tokens is not None
+        and call_receipt.price_state == "known"
+    )
+    return ProductionCanaryReceipt(
+        schema=CANARY_SCHEMA,
+        mode_id=mode.mode_id,
+        provider_id=mode.provider_id,
+        model=mode.default_model,
+        ok=call_receipt.ok,
+        error_class=call_receipt.error_class,
+        latency_ms=call_receipt.latency_ms,
+        input_tokens=call_receipt.input_tokens,
+        output_tokens=call_receipt.output_tokens,
+        price_state=call_receipt.price_state,
+        source_enabled=mode.enabled,
+        subscription_fallback_allowed=mode.subscription_fallback_allowed,
+        canary_only=True,
+        qualification_effect=False,
+        activation_eligible=activation_eligible,
+    )
+
+
+def _main(argv: list[str] | None = None) -> int:
+    """Operator CLI for the fixed MiniMax activation canary."""
+
+    import argparse  # noqa: PLC0415 — CLI-only dependency
+
+    parser = argparse.ArgumentParser(description="Run the bounded MiniMax PAYG activation canary")
+    parser.add_argument("--canary-minimax", action="store_true")
+    parser.add_argument("--max-tokens", type=int, default=16)
+    args = parser.parse_args(argv)
+    if not args.canary_minimax:
+        parser.error("only --canary-minimax is supported")
+
+    try:
+        receipt = call_activation_canary(max_tokens=args.max_tokens)
+    except ProductionModeConfigError as exc:
+        print(json.dumps({
+            "schema": CANARY_SCHEMA,
+            "ok": False,
+            "error_class": "config",
+            "reason": str(exc),
+        }, sort_keys=True))
+        return 2
+
+    print(json.dumps(receipt.to_dict(), sort_keys=True))
+    return 0 if receipt.activation_eligible else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main())
