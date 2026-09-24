@@ -48,31 +48,6 @@ from engine.market_ontology.mining_dependency_binding import (
 )
 
 
-class _MiningCompositionRefusal(MiningResearchRefusal):
-    """Mining composition-specific refusal that adds ``unknown_definition_version``.
-
-    R-MIN-24 lists the closed Mining query-refusal vocabulary. The composition
-    layer owns its own addition (``unknown_definition_version``) under IR-04; we
-    subclass so the CODES check in the base class accepts the new code without
-    requiring an edit to the T01' ``mining_dependency_binding`` module.
-    """
-
-    def __init__(self, code: str, detail: str = "") -> None:
-        # The base class validates ``code in self.CODES``; the composition adds
-        # ``unknown_definition_version`` (IR-04) and ``headline_uses_badge_vocabulary``
-        # (IR-01 belt-and-braces guard) on top of the T01' vocabulary.
-        _extra = {
-            "unknown_definition_version",
-            "headline_uses_badge_vocabulary",
-            "interpretation_stale",
-        }
-        if code not in MiningResearchRefusal.CODES and code not in _extra:
-            raise ValueError(f"unknown refusal code {code!r}")
-        # Bypass the base class CODES check by setting attributes directly.
-        Exception.__init__(self, f"{code}: {detail}" if detail else code)
-        self.code = code
-        self.detail = detail
-
 __all__ = [
     "AUTHORITY",
     "MINING_DEFINITIONS",
@@ -328,7 +303,7 @@ def _generation_for(query: MiningResearchQuery, bundle: MiningOwnerBundle) -> st
         if key == "account_generation":
             return f"{value}"
     # A revision tuple without an account_generation is malformed; this is a typed refusal.
-    raise _MiningCompositionRefusal(
+    raise MiningResearchRefusal(
         "expected_generation_required",
         "bundle.revision_tuple must carry an account_generation pair",
     )
@@ -421,11 +396,13 @@ def compose_mining_research(
             omissions=tuple(bundle.get("omissions", ())),
         )
 
-    # IR-04 — unknown versions refuse rather than collapse to v1.
+    # IR-04 — unknown versions refuse rather than collapse to v1. The closed-vocab
+    # refusal is "unknown_slice" (semantically: input does not match a closed
+    # Mining value); no subclass bypass is added.
     if definition_version not in VALID_DEFINITION_VERSIONS:
-        raise _MiningCompositionRefusal(
-            "unknown_definition_version",
-            f"version {definition_version!r} is not in {sorted(VALID_DEFINITION_VERSIONS)}",
+        raise MiningResearchRefusal(
+            "unknown_slice",
+            f"definition_version {definition_version!r} is not in {sorted(VALID_DEFINITION_VERSIONS)}",
         )
 
     # Refusals for slice / theme / pagination / generation (R-MIN-24). A bundle that
@@ -481,6 +458,19 @@ def compose_mining_research(
     raw_blocks: list[dict[str, Any]] = []
     if not _suppress_native_blocks:
         for packet in bundle.financial_packets:
+            value = packet.get("value")
+            # MINOR-11 / Step 8: a None / non-numeric value degrades to a typed
+            # limitation rather than a silently-coerced zero (None -> 0 -> '+') or
+            # a TypeError on `>=` for string values. The packet does not enter the
+            # native-blocks list; schema validation stays clean.
+            if (
+                value is None
+                or isinstance(value, bool)
+                or not isinstance(value, (int, float))
+            ):
+                if "definition_unqualified:value" not in limitations:
+                    limitations.append("definition_unqualified:value")
+                continue
             packet_sid = str(packet.get("stable_subject_id") or "")
             if not packet_sid or packet_sid == "subject:unknown":
                 packet_sid = identity_sid
@@ -488,8 +478,8 @@ def compose_mining_research(
                 {
                     "stable_subject_id": packet_sid,
                     "measure": str(packet.get("measure", "")),
-                    "value": _signed_value(packet),
-                    "sign": "+" if (_signed_value(packet) or 0) >= 0 else "-",
+                    "value": value,
+                    "sign": "+" if value >= 0 else "-",
                     "basis": str(packet.get("basis", "") or "fictional reported dollars"),
                     "source_label": str(
                         packet.get("source_label", packet.get("selection_label", "") or "synthetic-source")
@@ -691,14 +681,17 @@ def compose_mining_research(
     domain_label = MINING_DEFINITIONS[query.slice_key]["anchor_theme_id"]
     status = _summarize_status(limitations, has_native_blocks=bool(native_blocks))
     headline = _headline_for(status, limitations=limitations, domain_label=domain_label)
-    # Belt-and-braces: assert the headline contains no badge vocabulary.
+    # Belt-and-braces: a literal headline that contains badge vocabulary must never be
+    # constructed by the closed _headline_for table. If a future refactor accidentally
+    # synthesises one, that is a typed limitation, not a refused exception — degrade
+    # by appending a definition_unqualified:headline marker so the contract stays
+    # inspectable end-to-end.
     lowered = headline.lower()
     for word in _BADGE_VOCABULARY:
         if word in lowered:
-            raise _MiningCompositionRefusal(
-                "headline_uses_badge_vocabulary",
-                f"headline {headline!r} contains forbidden token {word!r}",
-            )
+            if "definition_unqualified:headline" not in limitations:
+                limitations.append("definition_unqualified:headline")
+            break
 
     payload: dict[str, Any] = {
         "schema": _SCHEMA_ID,
@@ -765,8 +758,12 @@ def select_mining_evidence(
     omissions = tuple(getattr(bundle, "omissions", ()) or ())
     mapped = {OMISSION_TO_LIMITATION.get(o) for o in omissions}
     if "changed_source" in mapped:
-        raise _MiningCompositionRefusal(
-            "interpretation_stale",
+        # The bound source revision changed; a refresh cannot pair changed quantities
+        # with stale causal text. The closest closed CODES code is
+        # ``generation_changed`` (semantically: the consumed source's generation no
+        # longer matches what the query expects). No subclass bypass is added.
+        raise MiningResearchRefusal(
+            "generation_changed",
             "the bound source revision changed; a refresh cannot pair changed quantities with stale causal text",
         )
 

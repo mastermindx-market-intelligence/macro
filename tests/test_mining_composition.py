@@ -374,7 +374,9 @@ def test_ir04_unknown_definition_version_refuses():
     case = synthetic_case("copper_complete")
     with pytest.raises(MiningResearchRefusal) as raised:
         composition.compose_mining_research(case.query, case.bundle, definition_version="v0.0-does-not-exist")
-    assert raised.value.code == "unknown_definition_version"
+    # Step 8 (no subclass bypass of CODES): the refusal uses the closed-vocab code
+    # that semantically matches "input doesn't match a closed Mining value".
+    assert raised.value.code == "unknown_slice"
 
 
 def test_unknown_slice_refuses():
@@ -462,7 +464,8 @@ def test_select_mining_evidence_blocks_changed_quantities_with_stale_causal_text
     case = synthetic_case("changed_source")
     with pytest.raises(MiningResearchRefusal) as raised:
         composition.select_mining_evidence(case.query, case.bundle, "assertion:synthetic")
-    assert raised.value.code == "interpretation_stale"
+    # Step 8: closed CODES; semantically the bound source revision changed.
+    assert raised.value.code == "generation_changed"
 
 
 # ---------------------------------------------------------------------------
