@@ -212,7 +212,7 @@ def _signed_value(block: Mapping[str, Any]) -> Any:
 def _summarize_expectations(
     expectations: list[Mapping[str, Any]],
     *,
-    defined_fields: set[str],
+    defined_fields: set[str] | None = None,
 ) -> dict[str, Any]:
     """Build a bounded headline + limitations fragment from the expectations list.
 
@@ -222,14 +222,21 @@ def _summarize_expectations(
     plain sentence; no model-readable ``confirmed_surprise`` or ``comparison_badge``
     field is minted; management point estimates stay point estimates.
 
+    Each field listed in an expectation's ``definition_unqualified_fields`` is
+    minted as a ``definition_unqualified:<field>`` limitation (MAJOR-5 — mint on
+    MEMBERSHIP, not skip). The ``defined_fields`` kwarg is retained for
+    production-call compatibility but is no longer the skip filter: a real test
+    of this contract would load the same production defined_fields that
+    compose_mining_research supplies, so the prior test/production divergence
+    is gone.
+
     The function returns a dict with ``headline`` and ``limitations``. The headline
     is intentionally brief — the row-level explanation lives on the response.
     """
+    del defined_fields  # no longer a skip filter — see docstring.
     limitations: list[str] = []
     for entry in expectations:
         for field in entry.get("definition_unqualified_fields", []) or []:
-            if field in defined_fields:
-                continue
             code = f"definition_unqualified:{field}"
             if code not in limitations:
                 limitations.append(code)

@@ -277,8 +277,8 @@ def test_ir01_both_null_definitions_no_badge_no_model_readable_field():
     # A model-readable confirmed-surprise field is never emitted: only the bounded fields exist.
     assert "confirmed_surprise" not in headlines
     assert "comparison_badge" not in headlines
-    # And the unqualified warning is preserved in the limitations.
-    headlines["limitations"].append("definition_unqualified:basis")
+    # And the unqualified warning is preserved in the limitations — minted by the
+    # helper itself, never appended by this test (IR-01 / MAJOR-5).
     assert "definition_unqualified:basis" in headlines["limitations"]
 
 
