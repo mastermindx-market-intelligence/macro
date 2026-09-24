@@ -174,3 +174,45 @@ cross-asset response. The next model must compare those driver states against th
 existing trend/vol baseline and only then test oscillator phase as incremental.
 Preserve RD1, crossover and phase/reset null results; no live forecast, equity-risk
 switch, alert, rank, size, gate or trade authority exists. Parent mission incomplete.
+
+
+## Continuation: driver-conditioned rate-shock transition is also null
+
+Procedure pin remains Mastermind 819abc8c23609cdded2b33f6e1bfc7854bd5c847,
+Skillpack1.0.1/bootstrap1. Same research carrier PR7909.
+
+A materially different daily driver-transition construction was frozen before its
+outcomes were opened at cc3b56c1e5c30d1a323f114d460a20315003c599
+(2026-09-24T15:14:13.304403Z). It asks whether a large five-session DGS10 impulse
+is more forecastable once its real/breakeven composition, release-basis PIT
+Kim-Wright term premium, HY/OIL/2s10s state and recent incumbent Treasury-auction
+absorption are known. The motivating September2026 event is excluded; evaluation
+ends 2025-12-31. Rolling ZQ/SOFR policy paths are explicitly held because RD2 has
+not yet separated constituent repricing from contract reweighting.
+
+Run evidence directory:
+/Volumes/Mastermind/evidence/rates-direction-20260924-sol-001/rate-shock-driver-v1/frozen-cc3b56c
+
+89 non-overlapping shock events produced59 forecasts after warm-up. The primary
+2022-2025 partition has57 scored events and meets the >=50 floor:24 continuation,
+22 reversal,11 no-hit. Impulse-direction Brier=0.665101. Decomposition=0.672208
+(-1.068% relative); PRIMARY decomposition+PIT term premium=0.682122 (-2.559%);
+crossasset=0.691956 (-4.038%); full+auction=0.700381 (-5.304%). All added driver
+layers degraded the baseline. The earlier development partition contains only two
+forecasts after warm-up, so its numerically lower driver Brier is not regime evidence.
+DEC:RIC-SHOCK-DRIVERS-NO-PROMOTION preserves the null.
+
+Same-author integrity recomputed every model/partition Brier, verified59 unique
+forecast origins, normalized finite probabilities, purged training clocks, exact
+pre-registration ledger prefix and exactly5 appended configs in family
+ric_rate_shock_driver_transition_v1. Independent review remains absent.
+
+Scientific frontier is now sharper: vulnerability/state is not the same as catalyst.
+Do not tune the rejected technical or categorical driver constructions on seen
+history. Next investigate the existing macro-release forecast + release-playbook
+owners for a genuine pre-release catalyst expectation and event response. Current
+release_forecast surprise_skew is projection-vs-naive-prior, NOT market-consensus
+surprise; expectation_read can compare to available external expectations but the
+captured history is only mid-2026 onward and often one-source. Preserve that
+distinction. RD2 constituent policy repricing remains a separate independent
+source-quality dependency. No live forecast/risk switch/trade authority.
