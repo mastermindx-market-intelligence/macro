@@ -1,0 +1,286 @@
+{
+  "scope": "R10 research packet integrity only. No native code tests, private-store/API/browser proof, source admission, independent acceptance or predictive validation.",
+  "date": "2026-09-24",
+  "operation": "gmi-basic-materials-research-20260923-sol-001",
+  "procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "selected_interface_commit": "33c73dd9f5e65936f0052cb28f4ece4880b51a43",
+  "checks_passed": 27,
+  "checks": [
+    {
+      "id": "r9_plan_unchanged",
+      "passed": true
+    },
+    {
+      "id": "r9_matrix_unchanged",
+      "passed": true
+    },
+    {
+      "id": "memo_expected_identity",
+      "passed": true
+    },
+    {
+      "id": "packet_expected_identity",
+      "passed": true
+    },
+    {
+      "id": "packet_links_exact_memo",
+      "passed": true
+    },
+    {
+      "id": "six_decisions",
+      "passed": true
+    },
+    {
+      "id": "eight_preserved_tasks",
+      "passed": true
+    },
+    {
+      "id": "seven_holds_remain_open",
+      "passed": true
+    },
+    {
+      "id": "all44_prior_requirements",
+      "passed": true
+    },
+    {
+      "id": "all_prior_requirement_task_refs_valid",
+      "passed": true
+    },
+    {
+      "id": "tasks_not_started",
+      "passed": true
+    },
+    {
+      "id": "native_bindings_still_unknown",
+      "passed": true
+    },
+    {
+      "id": "four_company_acceptance_preserved",
+      "passed": true
+    },
+    {
+      "id": "five_document_scope_preserved",
+      "passed": true
+    },
+    {
+      "id": "two_missingness_cases_preserved",
+      "passed": true
+    },
+    {
+      "id": "parent_incomplete",
+      "passed": true
+    },
+    {
+      "id": "no_implementation_authority",
+      "passed": true
+    },
+    {
+      "id": "unbound_placement_explicit",
+      "passed": true
+    },
+    {
+      "id": "no_discovery_as_assignment",
+      "passed": true
+    },
+    {
+      "id": "no_old_rights_for_historical_access",
+      "passed": true
+    },
+    {
+      "id": "authorization_boundary_explicit",
+      "passed": true
+    },
+    {
+      "id": "no_global_relocation",
+      "passed": true
+    },
+    {
+      "id": "source_custody_retained",
+      "passed": true
+    },
+    {
+      "id": "proposed_not_live_profile",
+      "passed": true
+    },
+    {
+      "id": "no_new_requirement_system",
+      "passed": true
+    },
+    {
+      "id": "no_placeholder_tokens",
+      "passed": true
+    },
+    {
+      "id": "all_decision_references_valid",
+      "passed": true
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "BASIC_MATERIALS_R10_SHARED_PROFILE_DECISION_2026-09-24.md",
+      "bytes": 17350,
+      "git_blob": "5662b104d16858dc5a37ab6bedc76bfcc630316d",
+      "sha256": "c3b315b8d359916bba5089f8c8810e27d742e365a46f02013ab6978a4a600b26"
+    },
+    {
+      "name": "GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md",
+      "bytes": 13950,
+      "git_blob": "392e297490484901750764d57acca03dd9f7f40a",
+      "sha256": "985181ab0ff1c176584ef090a89afe56457ee124bfcfed802c35bb57ea81a20e"
+    }
+  ],
+  "preserved_inputs": [
+    {
+      "name": "2026-09-23-basic-materials-economics-v0-implementation.md",
+      "bytes": 46119,
+      "git_blob": "dbd993f57fc636ab2675a2ebba3e1e2296064778",
+      "sha256": "6ad7bfd44e20cd17fccd02211d51e08babc2ee22c41e5783a6af958be133fc99"
+    },
+    {
+      "name": "R9_CONTRACT_AND_TASK_MATRIX_2026-09-23.json",
+      "bytes": 19669,
+      "git_blob": "6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9",
+      "sha256": "15814da683ccb42be1b2c83d0c2d4b4e3fcb93bba5f0722d44e2e139a30a8293"
+    }
+  ],
+  "decision_mapping": {
+    "D1": {
+      "tasks": [
+        "T1",
+        "T2",
+        "T3",
+        "T7",
+        "T8"
+      ],
+      "holds": [
+        "H1",
+        "H2",
+        "H3",
+        "H7"
+      ],
+      "r9_requirements": [
+        "R9-A06",
+        "R9-A11"
+      ]
+    },
+    "D2": {
+      "tasks": [
+        "T2",
+        "T5",
+        "T6"
+      ],
+      "holds": [
+        "H3",
+        "H6",
+        "H7"
+      ],
+      "r9_requirements": [
+        "R9-A04",
+        "R9-A05",
+        "R9-A09",
+        "R9-A10"
+      ]
+    },
+    "D3": {
+      "tasks": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T7"
+      ],
+      "holds": [
+        "H1",
+        "H3",
+        "H7"
+      ],
+      "r9_requirements": [
+        "R9-A03",
+        "R9-A06",
+        "R9-A07"
+      ]
+    },
+    "D4": {
+      "tasks": [
+        "T3",
+        "T4",
+        "T7"
+      ],
+      "holds": [
+        "H4",
+        "H7"
+      ],
+      "r9_requirements": [
+        "R9-A03",
+        "R9-A08"
+      ]
+    },
+    "D5": {
+      "tasks": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "holds": [
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "H5",
+        "H6",
+        "H7"
+      ],
+      "r9_requirements": [
+        "R9-A01",
+        "R9-A02",
+        "R9-A03",
+        "R9-A04",
+        "R9-A05",
+        "R9-A06",
+        "R9-A07",
+        "R9-A08",
+        "R9-A09",
+        "R9-A10",
+        "R9-A11",
+        "R9-A12"
+      ]
+    },
+    "D6": {
+      "tasks": [
+        "T7",
+        "T8"
+      ],
+      "holds": [
+        "H6"
+      ],
+      "r9_requirements": [
+        "R9-A12"
+      ]
+    }
+  },
+  "native_profile": {
+    "schema": null,
+    "reader": null,
+    "publisher": null,
+    "private_generation": null,
+    "rights_version": null,
+    "source_retention_receipts": [],
+    "company_route_receipts": []
+  },
+  "shared_owner_acceptance": null,
+  "receiver": null,
+  "runtime_attempt": null,
+  "all44_prior_requirements_preserved": true,
+  "product_tests_run": 0,
+  "product_code_written": false,
+  "native_admission": false,
+  "decision_authority": false,
+  "mission_complete": false,
+  "note": "Posting and exact-ref readback are recorded separately in the cumulative checkpoint; this pre-publication file makes no delivery or remote-byte claim."
+}
