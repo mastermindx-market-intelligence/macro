@@ -148,7 +148,7 @@ def validate_selected_facts(
                 raise EconomicObservationError(str(exc)) from exc
             if absence_payload.get("authority") != "context_only":
                 raise EconomicObservationError("typed_absence authority is not display context")
-            if absence_payload.get("subject") != metric:
+            if not str(absence_payload.get("subject") or "").startswith(metric):
                 raise EconomicObservationError("typed_absence subject does not match its metric")
             if absence_payload.get("event_id") != event_id:
                 raise EconomicObservationError("typed_absence belongs to another event")

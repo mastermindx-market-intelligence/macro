@@ -18,12 +18,13 @@ from .documents import TypedAbsence, text_span
 from .event_workspace import IssuerRegistry
 from .identity import IssuerIdentity, ListingAlias, company_id_for_cik
 from .issuer_profiles import IssuerProfile, _no_guidance
+from .qa_exchange import RIGHTS_PROFILES
 from ..earnings_release.binding import BoundRelease
 from ..earnings_release.receipts import ReceiptError, SpanReceipt, receipt_for_literal
 
 
 PG_CIK = "0000080424"
-PG_PRIVATE_RIGHTS_PROFILE = "rp_internal_private_v1"
+PG_PRIVATE_RIGHTS_PROFILE = next(iter(RIGHTS_PROFILES - {"rp_public_primary_v1"}))
 
 
 @dataclass(frozen=True)
@@ -38,31 +39,35 @@ class PGDefinition:
     comparison_family: str
     paired_metric: str | None = None
     segment_scope: str | None = None
+    row_label: str | None = None
+    column_label: str | None = None
 
 
 PG_DEFINITIONS: tuple[PGDefinition, ...] = (
-    PGDefinition("pg_reported_sales_growth_pct", "percent", "percent", "one", "reported_sales", "company", 91, "reported_sales"),
+    PGDefinition("pg_reported_sales_growth_pct", "percent", "percent", "one", "reported_sales", "company", 91, "reported_sales", row_label="Total P&G", column_label="Net Sales Growth"),
     PGDefinition("pg_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "company", 91, "organic_sales"),
-    PGDefinition("pg_total_volume_growth_pct", "percent", "percent", "one", "total_volume", "company", 91, "total_volume"),
-    PGDefinition("pg_organic_volume_growth_pct", "percent", "percent", "one", "organic_volume", "company", 91, "organic_volume"),
-    PGDefinition("pg_price_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
-    PGDefinition("pg_mix_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
-    PGDefinition("pg_fx_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
-    PGDefinition("pg_other_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
-    PGDefinition("pg_diluted_eps", "currency_per_share", "usd_per_share", "one", "gaap_diluted", "company", 91, "same_measure", "pg_prior_diluted_eps"),
-    PGDefinition("pg_prior_diluted_eps", "currency_per_share", "usd_per_share", "one", "gaap_diluted", "company", 91, "same_measure", "pg_diluted_eps"),
+    PGDefinition("pg_total_volume_growth_pct", "percent", "percent", "one", "total_volume", "company", 91, "total_volume", row_label="Total P&G", column_label="Volume with Acquisitions & Divestitures"),
+    PGDefinition("pg_organic_volume_growth_pct", "percent", "percent", "one", "organic_volume", "company", 91, "organic_volume", row_label="Total P&G", column_label="Volume Excluding Acquisitions & Divestitures"),
+    PGDefinition("pg_price_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution", row_label="Total P&G", column_label="Price"),
+    PGDefinition("pg_mix_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution", row_label="Total P&G", column_label="Mix"),
+    PGDefinition("pg_fx_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution", row_label="Total P&G", column_label="Foreign Exchange"),
+    PGDefinition("pg_other_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution", row_label="Total P&G", column_label="Other"),
+    PGDefinition("pg_diluted_eps", "currency_per_share", "usd_per_share", "one", "gaap_diluted", "company", 91, "same_measure", "pg_prior_diluted_eps", row_label="Diluted Net Earnings per Common Share"),
+    PGDefinition("pg_prior_diluted_eps", "currency_per_share", "usd_per_share", "one", "gaap_diluted", "company", 91, "same_measure", "pg_diluted_eps", row_label="Diluted Net Earnings per Common Share"),
     PGDefinition("pg_reported_eps_growth_pct", "percent", "percent", "one", "reported_eps_growth", "company", 91, "reported_eps"),
-    PGDefinition("pg_core_eps", "currency_per_share", "usd_per_share", "one", "core_non_gaap", "company", 91, "same_measure", "pg_prior_core_eps"),
-    PGDefinition("pg_prior_core_eps", "currency_per_share", "usd_per_share", "one", "core_non_gaap", "company", 91, "same_measure", "pg_core_eps"),
+    PGDefinition("pg_core_eps", "currency_per_share", "usd_per_share", "one", "core_non_gaap", "company", 91, "same_measure", "pg_prior_core_eps", row_label="Core EPS"),
+    PGDefinition("pg_prior_core_eps", "currency_per_share", "usd_per_share", "one", "core_non_gaap", "company", 91, "same_measure", "pg_core_eps", row_label="Core EPS"),
     PGDefinition("pg_core_eps_growth_pct", "percent", "percent", "one", "core_eps_growth", "company", 91, "core_eps"),
-    PGDefinition("pg_core_reconciliation_context", "bounded_text", "text", "one", "core_non_gaap_reconciliation", "company", 91, "core_reconciliation"),
-    PGDefinition("pg_beauty_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "beauty_segment", 91, "organic_sales", segment_scope="Beauty"),
-    PGDefinition("pg_grooming_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "grooming_segment", 91, "organic_sales", segment_scope="Grooming"),
-    PGDefinition("pg_health_care_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "health_care_segment", 91, "organic_sales", segment_scope="Health Care"),
-    PGDefinition("pg_fabric_home_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "fabric_home_segment", 91, "organic_sales", segment_scope="Fabric and Home Care"),
-    PGDefinition("pg_baby_feminine_family_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "baby_feminine_family_segment", 91, "organic_sales", segment_scope="Baby, Feminine and Family Care"),
+    PGDefinition("pg_core_reconciliation_context", "bounded_text", "text", "one", "core_non_gaap_reconciliation", "company", 91, "core_reconciliation", row_label="Core EPS"),
+    PGDefinition("pg_beauty_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "beauty_segment", 91, "organic_sales", segment_scope="Beauty", row_label="Beauty"),
+    PGDefinition("pg_grooming_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "grooming_segment", 91, "organic_sales", segment_scope="Grooming", row_label="Grooming"),
+    PGDefinition("pg_health_care_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "health_care_segment", 91, "organic_sales", segment_scope="Health Care", row_label="Health Care"),
+    PGDefinition("pg_fabric_home_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "fabric_home_segment", 91, "organic_sales", segment_scope="Fabric and Home Care", row_label="Fabric and Home Care"),
+    PGDefinition("pg_baby_feminine_family_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "baby_feminine_family_segment", 91, "organic_sales", segment_scope="Baby, Feminine and Family Care", row_label="Baby, Feminine and Family Care"),
 )
+
 PG_METRIC_KEYS = tuple(item.metric for item in PG_DEFINITIONS)
+_PG_FISCAL_QUARTERS = {4: 4, 5: 4, 6: 4, 7: 1, 8: 1, 9: 1, 10: 2, 11: 2, 12: 2, 1: 3, 2: 3, 3: 3}
 
 
 def pg_issuer() -> IssuerIdentity:
@@ -136,15 +141,30 @@ def _normal(value: str) -> str:
     return " ".join(value.casefold().split())
 
 
-def _table(blocks: Sequence[Any], heading: str) -> Any | None:
+def _table(blocks: Sequence[Any], headings: Sequence[str], *, exclusive: bool = True) -> Any | None:
+    wanted = {_normal(heading) for heading in headings}
     active = False
     matches = []
     for block in blocks:
-        if block.kind is BlockKind.HEADING:
-            active = _normal(block.text) == _normal(heading)
-        elif active and block.kind is BlockKind.TABLE and block.table is not None:
+        text = _normal(getattr(block, "text", ""))
+        if text in wanted:
+            active = True
+        elif active and getattr(block, "table", None) is not None:
             matches.append(block)
+        elif active:
+            continue
+    if not exclusive and matches:
+        return matches[0]
     return matches[0] if len(matches) == 1 else None
+
+
+def _quarterly_table(blocks: Sequence[Any], headings: Sequence[str]) -> Any | None:
+    matches = [
+        table for heading in headings
+        if (table := _table(blocks, (heading,), exclusive=False)) is not None
+    ]
+    distinct = [table for index, table in enumerate(matches) if table is not None and table not in matches[:index]]
+    return distinct[0] if len(distinct) == 1 else None
 
 
 def _column(table: Any, row_label: str, header: str) -> tuple[Any, int] | None:
@@ -210,7 +230,13 @@ def _present(*, definition: PGDefinition, value: Any, document_id: str, bound: B
 
 
 def _absent(
-    *, definition: PGDefinition, document_id: str, event_id: str, detail: str, reason: str = "no_span_addressable_evidence"
+    *,
+    definition: PGDefinition,
+    document_id: str,
+    event_id: str,
+    detail: str,
+    reason: str = "no_span_addressable_evidence",
+    subject: str | None = None,
 ) -> dict[str, Any]:
     return {
         "schema": "event_fact.v1",
@@ -219,7 +245,7 @@ def _absent(
         "metric": definition.metric,
         "typed_absence": TypedAbsence(
             reason=reason,
-            subject=definition.metric,
+            subject=subject or definition.metric,
             detail=detail,
             event_id=event_id,
             document_id=document_id,
@@ -227,22 +253,34 @@ def _absent(
     }
 
 
-def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], heading: str, row_label: str, header: str, document_id: str, bound: BoundRelease, event_id: str, period: str) -> dict[str, Any]:
-    table = _table(blocks, heading)
-    located = _column(table, row_label, header)
+def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequence[str], header_forms: Sequence[str], document_id: str, bound: BoundRelease, event_id: str, periods: dict[str, str], preferred_period: str) -> dict[str, Any]:
+    table = _quarterly_table(blocks, headings) if len(headings) > 1 else _table(blocks, headings, exclusive=False)
+    located = None
+    matched_header = None
+    row_label = definition.row_label or header_forms[0]
+    headers = [definition.column_label] if definition.column_label else list(header_forms)
+    for header in headers:
+        located = _column(table, row_label, header)
+        if located is not None:
+            matched_header = header
+            break
     if located is None:
-        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="No unique heading, row label, and column header identifies this observation.")
+        combined = definition.metric in {"pg_total_volume_growth_pct", "pg_organic_volume_growth_pct", "pg_mix_contribution_pp"}
+        return _absent(
+            definition=definition,
+            document_id=document_id,
+            event_id=event_id,
+            subject=f"{definition.metric} combined volume/mix" if combined else definition.metric,
+            detail="The combined volume/mix presentation does not separately disclose this observation." if combined else "No unique heading, row label, and column header identifies this observation.",
+        )
     row, column = located
+    period = periods[matched_header]
     cell = row[column]
     literal = cell.text.strip()
     value: float | None = None
     receipt: SpanReceipt | None = None
     if literal in {"-", "—", "–"}:
-        neutral = _column(table, row_label, "Neutral convention")
-        if neutral is None or _normal(neutral[0][neutral[1]].text) != "dash means zero":
-            return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
-        value = 0.0
-        receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
     elif literal:
         value = parse_pg_literal(literal, unit=definition.unit)
         if value is None:
@@ -263,7 +301,7 @@ def _text_fact(
     *,
     definition: PGDefinition,
     blocks: Sequence[Any],
-    heading: str,
+    headings: Sequence[str],
     document_id: str,
     bound: BoundRelease,
     event_id: str,
@@ -272,11 +310,11 @@ def _text_fact(
     active = False
     paragraphs = []
     for block in blocks:
-        if block.kind is BlockKind.HEADING:
-            active = _normal(block.text) == _normal(heading)
-        elif active and block.kind is BlockKind.PARAGRAPH:
+        if not active and any(_normal(block.text) == _normal(heading) for heading in headings) or active and any(_normal(block.text) == _normal(heading) for heading in headings):
+            active = _normal(block.text) in {_normal(item) for item in headings}
+        elif active and block.kind.value == BlockKind.PARAGRAPH.value:
             normal = _normal(block.text)
-            if all(term.casefold() in normal for term in ("core eps", "incremental charge", "dilution")):
+            if _normal(definition.row_label or "") in normal and "incremental charge" in normal and "dilution" in normal:
                 paragraphs.append(block)
     if len(paragraphs) != 1:
         return _absent(
@@ -317,114 +355,35 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
     if fiscal_period.calendar_end != current_end:
         return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The source fiscal period does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
     blocks = bound.document.blocks
-    current_year = current_end.year
-    current_date = f"{current_end:%B} {current_end.day}, {current_end.year}"
-    current_header = current_end.isoformat()
-    prior_header = prior_end.isoformat()
-    eps_rows = {
-        "pg_diluted_eps": ("Diluted EPS", current_header),
-        "pg_prior_diluted_eps": ("Prior Diluted EPS", prior_header),
-        "pg_core_eps": ("Core EPS", current_header),
-        "pg_prior_core_eps": ("Prior Core EPS", prior_header),
-    }
-    driver_headers = {
-        "pg_reported_sales_growth_pct": "Reported sales growth percent",
-        "pg_organic_sales_growth_pct": "Organic sales growth percent",
-        "pg_total_volume_growth_pct": "Total volume growth percent",
-        "pg_organic_volume_growth_pct": "Organic volume growth percent",
-        "pg_price_contribution_pp": "Price contribution percent",
-        "pg_mix_contribution_pp": "Mix contribution percent",
-        "pg_fx_contribution_pp": "FX contribution percent",
-        "pg_other_contribution_pp": "Other contribution percent",
-    }
-    segments = {
-        "pg_beauty_organic_sales_growth_pct": "Beauty",
-        "pg_grooming_organic_sales_growth_pct": "Grooming",
-        "pg_health_care_organic_sales_growth_pct": "Health Care",
-        "pg_fabric_home_organic_sales_growth_pct": "Fabric and Home Care",
-        "pg_baby_feminine_family_organic_sales_growth_pct": "Baby, Feminine and Family Care",
-    }
+    ordinal = {1: "First", 2: "Second", 3: "Third", 4: "Fourth"}[_PG_FISCAL_QUARTERS[_current_start.month]]
+    fiscal_year = current_end.year + (_PG_FISCAL_QUARTERS[_current_start.month] != 4 and _current_start.month >= 7)
+    date_header = f"{current_end:%B} {current_end.day}, {current_end.year}"
+    quarterly_headings = (
+        f"{ordinal} Quarter Fiscal Year {fiscal_year}",
+        f"Three Months Ended {date_header}",
+        f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year}",
+    )
+    driver_headings = (f"Net Sales Change Drivers {current_end.year} vs. {current_end.year - 1}", *quarterly_headings)
+    current_forms = (current_end.isoformat(), str(current_end.year), f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year}", date_header)
+    prior_forms = (prior_end.isoformat(), str(prior_end.year), f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year - 1}", f"{prior_end:%B} {prior_end.day}, {prior_end.year}")
+    periods = {form: endpoint.isoformat() for forms, endpoint in ((current_forms, current_end), (prior_forms, prior_end)) for form in forms}
     facts = []
     for definition in PG_DEFINITIONS:
-        if definition.metric in eps_rows:
-            row_label, period_header = eps_rows[definition.metric]
-            facts.append(
-                _row_fact(
-                    definition=definition,
-                    blocks=blocks,
-                    heading=f"Fourth Quarter {current_year} Results",
-                    row_label=row_label,
-                    header=period_header,
-                    document_id=document_id,
-                    bound=bound,
-                    event_id=event_id,
-                    period=period_header,
-                )
-            )
-        elif definition.metric in driver_headers:
-            volume = definition.metric in {
-                "pg_total_volume_growth_pct", "pg_organic_volume_growth_pct",
-            }
-            facts.append(
-                _row_fact(
-                    definition=definition,
-                    blocks=blocks,
-                    heading=(
-                        "Volume Conventions"
-                        if volume
-                        else f"Sales Drivers for the Quarter Ended {current_date}"
-                    ),
-                    row_label=(
-                        driver_headers[definition.metric]
-                        if volume
-                        else current_header
-                    ),
-                    header=(
-                        current_header
-                        if volume
-                        else driver_headers[definition.metric]
-                    ),
-                    document_id=document_id,
-                    bound=bound,
-                    event_id=event_id,
-                    period=current_header,
-                )
-            )
-        elif definition.metric in segments:
-            facts.append(
-                _row_fact(
-                    definition=definition,
-                    blocks=blocks,
-                    heading="Segments",
-                    row_label=segments[definition.metric],
-                    header=current_header,
-                    document_id=document_id,
-                    bound=bound,
-                    event_id=event_id,
-                    period=current_header,
-                )
-            )
+        if definition.metric in {
+            "pg_diluted_eps", "pg_prior_diluted_eps", "pg_core_eps", "pg_prior_core_eps",
+        }:
+            forms = current_forms if definition.metric.startswith("pg_diluted") or definition.metric.startswith("pg_core") and "prior" not in definition.metric else prior_forms
+            if definition.metric in {"pg_prior_diluted_eps", "pg_prior_core_eps"}:
+                forms = prior_forms
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=quarterly_headings, header_forms=forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=periods[forms[0]]))
+        elif definition.row_label is not None and definition.column_label is not None:
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=driver_headings[:1], header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
+        elif definition.metric.endswith("_organic_sales_growth_pct") and definition.row_label is not None:
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=("Organic Sales Change by Segment",), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
         elif definition.metric == "pg_core_reconciliation_context":
-            facts.append(
-                _text_fact(
-                    definition=definition,
-                    blocks=blocks,
-                    heading="Core Reconciliation",
-                    document_id=document_id,
-                    bound=bound,
-                    event_id=event_id,
-                    period=current_header,
-                )
-            )
+            facts.append(_text_fact(definition=definition, blocks=blocks, headings=("Non-GAAP Measures", "Core EPS Reconciliation"), document_id=document_id, bound=bound, event_id=event_id, period=current_end.isoformat()))
         else:
-            facts.append(
-                _absent(
-                    definition=definition,
-                    document_id=document_id,
-                    event_id=event_id,
-                    detail="This literal growth fact is not separately disclosed by the selected source.",
-                )
-            )
+            facts.append(_absent(definition=definition, document_id=document_id, event_id=event_id, detail="This literal growth fact is not separately disclosed by the selected source."))
     return facts
 
 

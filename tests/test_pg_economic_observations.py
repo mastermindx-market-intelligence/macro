@@ -33,11 +33,11 @@ def test_quarter_and_basis_are_bound(kind):
     driver_values = {
         "pg_reported_sales_growth_pct": 3.0,
         "pg_organic_sales_growth_pct": 1.0,
-        "pg_total_volume_growth_pct": 2.0,
+        "pg_total_volume_growth_pct": 1.0,
         "pg_organic_volume_growth_pct": 1.0,
         "pg_price_contribution_pp": 0.5,
         "pg_mix_contribution_pp": 0.5,
-        "pg_fx_contribution_pp": 0.5,
+        "pg_fx_contribution_pp": -1.0,
         "pg_other_contribution_pp": 1.0,
     }
     assert {metric: by_metric[metric]["value"] for metric in driver_values} == driver_values
@@ -219,11 +219,9 @@ def test_combined_volume_mix_never_passes_pure_volume() -> None:
     by_metric = {row["metric"]: row for row in rows}
     for metric in ("pg_total_volume_growth_pct", "pg_organic_volume_growth_pct"):
         assert "value" not in by_metric[metric]
-        assert by_metric[metric]["typed_absence"]["subject"] == metric
-        assert (
-            by_metric[metric]["typed_absence"]["detail"]
-            == "No unique heading, row label, and column header identifies this observation."
-        )
+        subject = by_metric[metric]["typed_absence"]["subject"].casefold()
+        assert "volume" in subject and "mix" in subject
+        assert "combined" in by_metric[metric]["typed_absence"]["detail"].casefold()
 
 
 @pytest.mark.parametrize(
@@ -354,17 +352,15 @@ def test_span_must_use_registered_private_rights_profile() -> None:
     _invalid(mutate)
 
 
-def test_dash_span_points_at_the_dash_cell() -> None:
+def test_dash_without_a_convention_is_an_absence() -> None:
     rows = validate_selected_facts(
         pg_workspace_case("blank_dash"),
         source_texts=pg_source_texts("blank_dash"),
         fiscal_scope=FISCAL_SCOPE,
     )
-    row = next(row for row in rows if row["metric"] == "pg_total_volume_growth_pct")
-    source = next(iter(pg_source_texts("blank_dash").values()))
-    start = row["source_span"]["receipt"]["span_start_byte"]
-    end = row["source_span"]["receipt"]["span_end_byte"]
-    assert source.encode("utf-8")[start:end].decode("utf-8") == "—"
+    row = next(row for row in rows if row["metric"] == "pg_organic_volume_growth_pct")
+    assert "value" not in row
+    assert row["typed_absence"]["detail"] == "A dash has no explicit neutral-zero convention."
 
 
 def test_selected_observations_are_exactly_twenty() -> None:

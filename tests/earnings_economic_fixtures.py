@@ -41,41 +41,34 @@ def _html(
     current_end = date(period, 6, 30).isoformat()
     prior_end = date(prior_year, 6, 30).isoformat()
     eps_rows = (
-        ("Diluted EPS", "1.25%" if eps_unit_mismatch else "$3.07", "$2.93"),
-        ("Prior Diluted EPS", "$3.07", "$2.93"),
+        ("Diluted Net Earnings per Common Share", "1.25%" if eps_unit_mismatch else "$3.07", "$2.93"),
         ("Core EPS", "$3.11", "$2.97"),
-        ("Prior Core EPS", "$3.11", "$2.97"),
     )
-    driver_header = (
-        "Period",
-        "Reported sales growth percent",
-        "Organic sales growth percent",
-        "Total volume growth percent",
-        "Organic volume growth percent",
-        "Price contribution percent",
-        "Mix contribution percent",
-        "FX contribution percent",
-        "Other contribution percent",
-    )
-    current_drivers = ("3.0%", "1.0%", "2.0%", "1.0%", "0.5%", "0.5%", "0.5%", "1.0%")
-    prior_drivers = ("2.0%", "0.5%", "1.0%", "0.5%", "0.4%", "0.4%", "0.3%", "0.5%")
+    driver_headers = [
+        "Net Sales Growth",
+        "Volume with Acquisitions & Divestitures",
+        "Volume Excluding Acquisitions & Divestitures",
+        "Foreign Exchange",
+        "Price",
+        "Mix",
+        "Other",
+    ]
+    current_drivers = ["1%", "1%", "1%", "(1)%", "0.5%", "0.5%", "1.0%"]
+    prior_drivers = ["0.5%", "0.5%", "0.5%", "(0.5)%", "0.4%", "0.4%", "0.5%"]
+    if volume_only == "combined":
+        driver_headers.remove("Volume with Acquisitions & Divestitures")
+        driver_headers.remove("Volume Excluding Acquisitions & Divestitures")
+        driver_headers.remove("Mix")
+        driver_headers.insert(1, "Volume/Mix")
+        current_drivers = ["1%", "2%", "(1)%", "0.5%", "1.0%"]
+        prior_drivers = ["0.5%", "1%", "(0.5)%", "0.4%", "0.5%"]
+    if blank_volume:
+        current_drivers[driver_headers.index("Volume Excluding Acquisitions & Divestitures")] = "—"
     if reordered:
-        driver_header = (driver_header[0], *reversed(driver_header[1:]))
-        current_drivers = tuple(reversed(current_drivers))
-        prior_drivers = tuple(reversed(prior_drivers))
-
-    if volume_only == "split":
-        volume_rows = (
-            ("Total volume growth percent", "—" if blank_volume else "2.0%", "0.0%"),
-            (
-                "Organic volume growth percent",
-                "—" if blank_volume else "1.0%",
-                "0.5%",
-            ),
-        )
-    else:
-        volume_rows = (("Combined volume and mix", "1.7%", "0.8%"),)
-
+        pairs = list(zip(driver_headers[1:], current_drivers[1:]))
+        pairs.reverse()
+        driver_headers = [driver_headers[0], *[item[0] for item in pairs]]
+        current_drivers = [current_drivers[0], *[item[1] for item in pairs]]
     segment_rows = (
         ("Beauty", "1.0%", "0.5%"),
         ("Grooming", "2.0%", "1.5%"),
@@ -92,32 +85,27 @@ def _html(
 <h1>Synthetic Consumer Company Results</h1>
 <p>This original fixture has no source relationship to any real company release.</p>
 <p>全球品牌 demand was stable before 3.07 units of synthetic EPS.</p>
-<h2>Fourth Quarter {current_year} Results</h2>
+<h2>Fourth Quarter Fiscal Year {current_year} Results</h2>
+<h2>Three Months Ended June 30, {current_year}</h2>
 <table>
-<tr>{_cells(("Measure", current_end, prior_end))}</tr>
+<tr>{_cells(("", current_end, prior_end))}</tr>
 {''.join(f'<tr>{_cells(row)}</tr>' for row in eps_rows)}
 </table>
-<h2>Sales Drivers for the Quarter Ended June 30, {current_year}</h2>
+<h2>Net Sales Change Drivers {current_year} vs. {prior_year}</h2>
+<h2>Three Months Ended June 30, {current_year}</h2>
 <table>
-<tr>{_cells(driver_header)}</tr>
-<tr>{_cells((current_end, *current_drivers))}</tr>
-<tr>{_cells((prior_end, *prior_drivers))}</tr>
+<tr>{_cells(tuple(driver_headers))}</tr>
+<tr>{_cells(("Total P&amp;G", *current_drivers))}</tr>
+<tr>{_cells(("Prior Quarter", *prior_drivers))}</tr>
 </table>
-<h2>Volume Conventions</h2>
-<p>A dash means zero when the table states dash means zero.</p>
-<table>
-<tr>{_cells(("Measure", current_end, prior_end, "Neutral convention"))}</tr>
-{''.join(f'<tr>{_cells((*row, "dash means zero" if row[0] == "Total volume growth percent" else "0.0"))}</tr>' for row in volume_rows)}
-</table>
-<h2>Core Reconciliation</h2>
+<h2>Non-GAAP Measures</h2>
 <p>Core EPS excludes an incremental charge of 0.20 and dilution of 0.05.</p>
-<h2>Segments</h2>
+<h2>Organic Sales Change by Segment</h2>
 <table>
 <tr>{_cells(("Segment", current_end, prior_end))}</tr>
 {''.join(f'<tr>{_cells(row)}</tr>' for row in segment_rows)}
 </table>
 </body></html>"""
-
 
 def pg_bound_case(kind: str, *, period: int = 2026):
     kwargs = {"period": period}
