@@ -1,0 +1,49 @@
+{
+  "source_pr": 7029,
+  "source_head": "f7545a519c02fb8fb7b4c5b8e9f73c62e00aecc0",
+  "tests": {
+    "tests/test_perception_contracts.py": {
+      "before_sha256": "06351db19889f815f4f7d6c8e3865a312c982387ed0f5a982c35a0ffaa7b3b5a",
+      "after_sha256": "1bd5c82b5151fd9c0f03eacda886b71f8761e0f8c066be5ffce535a81915d82f"
+    },
+    "tests/test_risk_radar_market_catalysts.py": {
+      "before_sha256": "1f8ca4488eef09b0b3e62ea3b6d3c713caca811be3d019f850f49c1d49fbe779",
+      "after_sha256": "470aea238e28248df2504c2b53eda3c2be642724625d5b1f3fb5a400ab79d570"
+    },
+    "tests/test_risk_radar_recovery.py": {
+      "before_sha256": "74e7e261cbc067e8a14d11a75f39e1a6b7f380cbbc91057d377ab3e6bdd4fa19",
+      "after_sha256": "8ef156d24b6d3980877c30f442a064bc5625acd6d2b1e405d0e1067c5829ac30"
+    },
+    "tests/test_risk_radar_recovery_audit.py": {
+      "before_sha256": "6ca3874749f41a4a065d5dd400f79ab436b0c272d29e9a40219d046df3e42647",
+      "after_sha256": "9467dc48a3add83aebe696bfb163b81644f1e1c4fdc649be5c4cf52d7298fefb"
+    },
+    "tests/test_us_audit_lane_gates.py": {
+      "before_sha256": "d77be1cffe92c54a8a2760972e9a8a782d5d5062d52539cf28c3117525f0ba5a",
+      "after_sha256": "0060adc18dd0480832eead653d90466c32ea2284a25af3cecf1d3b308bf9f82f"
+    }
+  },
+  "product": {
+    "engine/risk_radar_market_catalysts.py": {
+      "before_sha256": "28442483c418491f71f1e6c1fb11bbecd5cac3d5237662c361d8b44199ee28c5",
+      "after_sha256": "d1c84229e4a0ec36f0b743afe9d6bfc723fd399043eb1ced94525552350b370f"
+    },
+    "engine/risk_radar_recovery.py": {
+      "before_sha256": "321545a3cace15f20d23b564e1b43595ccd0804fab3de362eceb5a580695c593",
+      "after_sha256": "7ef3a93afc32cf5d18500f7416aa4a88a3fc2f641564dc08a7bf5d519f58bdfc"
+    },
+    "engine/risk_radar_recovery_audit.py": {
+      "before_sha256": "60f263bce3cd780fd0f788474c41c9333de468bedd03f6aebb6026571d101185",
+      "after_sha256": "bc5b50ffae4d208a87f537cfe7f7eab4614ecba0b302ed23265a0b41d0e9af83"
+    },
+    "templates/_risk_radar_card.html.j2": {
+      "before_sha256": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d",
+      "after_sha256": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
+    }
+  },
+  "baseline_test_result": {
+    "failed": 96,
+    "passed": 108,
+    "warnings": 6
+  }
+}

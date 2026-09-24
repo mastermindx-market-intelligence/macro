@@ -211,3 +211,11 @@ Non-NBS schedules/publication timing, model calibration and production acceptanc
 open. Current-main/CI/publication continue only when release resumes. Resume from this
 same-PR checkpoint and minimal fresh canonical source, not the tool transcript.
 No automatic wake, custody transfer or mission completion is implied.
+
+## Active continuation: source gates and independent recovery integration
+Current Chairman asks sustained advancement. Procedure remains freshly verified Mastermind4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2.
+Calendar source-edit returned opaque tool error; same-carrier metadata/search show original291-line source/old date table, no applied patch. Weight-method write explicitly safety-status refused; exact path absent. Do not retry or change their carrier.
+Independent audit probe ran read-only: recorded14 graded calls/5 alerts, can_force false. A synthetic single continuous decline generates40 daily successful calls but only2 disjoint21-session windows; existing scorecard nevertheless returns can_force true. No policy/ledger write. Its independence assertion is1 RED/2 passing controls; pending research, not product acceptance.
+Existing recovery repair PR7029 exact head f7545a519c02fb8fb7b4c5b8e9f73c62e00aecc0 has actual APPROVED review by mastermindx-3 on2026-09-15. All9 candidate base blobs equal this branch's existing copies.8 match older reviewedf09 source; the final card differs, and latestf754 itself is approved.
+Sol retains PR7622 source custody. Bounded integration imports those exact9 product/test blobs only, preserving original provenance. No original7029 branch/controller,7018/6989 research candidate, risk-force policy or CI state is modified.
+Next: run imported recovery tests against old code to discriminate, incorporate exact4 product files, verify owning suites and real saved-input page/dialog. Parent mission remains incomplete; no new worker or deployment.

@@ -1,0 +1,120 @@
+{
+  "kind": "read-only validation-dependence diagnostic; no market backtest",
+  "ledger_sha256": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac",
+  "actual_recorded": {
+    "n_graded": 14,
+    "n_alerts": 5,
+    "alert_precision": 0.4,
+    "can_force": false,
+    "grant_reason": "n-floors-not-met: n_graded=14 (need 30), n_alerts=5 (need 8)",
+    "asof_range": [
+      "2026-06-26",
+      "2026-08-21"
+    ]
+  },
+  "actual_graded_alert_dates": [
+    "2026-07-10",
+    "2026-07-13",
+    "2026-07-14",
+    "2026-07-15",
+    "2026-07-16"
+  ],
+  "synthetic": {
+    "single_continuous_decline": true,
+    "quiet_calls": 60,
+    "daily_alert_calls": 40,
+    "distinct_decline_paths": 1,
+    "maximum_disjoint_21_session_alert_windows": 2,
+    "one_alert": {
+      "market": "cn",
+      "n_graded": 61,
+      "base_rate_dd5_h21": 0.016,
+      "alert_precision": 1.0,
+      "n_alerts": 1,
+      "alert_hit_rate": 1.0,
+      "force_lift": 61.0,
+      "can_force": false,
+      "wilson_lift_lb": null,
+      "grant_reason": "n-floors-not-met: n_graded=61 (need 30), n_alerts=1 (need 8)",
+      "evidence_asof": "2026-07-02",
+      "by_state": {
+        "calm": {
+          "n": 60,
+          "hit_rate": 0.0
+        },
+        "risk-off": {
+          "n": 1,
+          "hit_rate": 1.0
+        }
+      },
+      "realized_odds": {
+        "calm": {
+          "n": 60,
+          "h5": 0.0,
+          "h10": 0.0,
+          "h21": 0.0
+        },
+        "risk-off": {
+          "n": 1,
+          "h5": 0.0,
+          "h10": 1.0,
+          "h21": 1.0
+        }
+      },
+      "recent_mistakes": [],
+      "asof_range": [
+        "2026-02-26",
+        "2026-07-02"
+      ]
+    },
+    "dense_daily_alerts": {
+      "market": "cn",
+      "n_graded": 100,
+      "base_rate_dd5_h21": 0.4,
+      "alert_precision": 1.0,
+      "n_alerts": 40,
+      "alert_hit_rate": 1.0,
+      "force_lift": 2.5,
+      "can_force": true,
+      "wilson_lift_lb": 2.3416,
+      "grant_reason": "granted: n-floors cleared, wilson-lift > 1.25, evidence fresh",
+      "evidence_asof": "2026-08-26",
+      "by_state": {
+        "calm": {
+          "n": 60,
+          "hit_rate": 0.0
+        },
+        "risk-off": {
+          "n": 40,
+          "hit_rate": 1.0
+        }
+      },
+      "realized_odds": {
+        "calm": {
+          "n": 60,
+          "h5": 0.0,
+          "h10": 0.0,
+          "h21": 0.0
+        },
+        "risk-off": {
+          "n": 40,
+          "h5": 0.0,
+          "h10": 1.0,
+          "h21": 1.0
+        }
+      },
+      "recent_mistakes": [],
+      "asof_range": [
+        "2026-02-26",
+        "2026-08-26"
+      ]
+    }
+  },
+  "source_sha256": {
+    "engine/risk_radar_intl_audit.py": "59215f15f68371a114213a9beac5f5d5023725425de37ab9e17e60e34a2870aa",
+    "engine/neuralweb/constitution.py": "20581d37f8a13282d2c6694a1b449d854c229cde5973cf0365bfd8386da6a4ac"
+  },
+  "source_or_policy_changed": false,
+  "forecast_validated": false,
+  "production": false
+}
