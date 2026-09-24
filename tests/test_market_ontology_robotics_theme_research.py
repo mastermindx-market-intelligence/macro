@@ -21,7 +21,20 @@ import json
 
 import pytest
 
-import engine.market_ontology.robotics_theme_research as robotics
+try:  # the composer needs the shared assertion contract (#7870, RR9: main alone must
+    # still collect); when that module is absent every test here is a strict xfail.
+    import engine.market_ontology.robotics_theme_research as robotics
+    HAS_SHARED = True
+except ImportError:  # pragma: no cover - carrier base without the shared foundation
+    robotics = None  # type: ignore[assignment]
+    HAS_SHARED = False
+
+pytestmark = pytest.mark.xfail(
+    condition=not HAS_SHARED,
+    strict=True,
+    reason="engine.theme_graph.curation_assertion (#7870 shared foundation) is not on "
+           "this base; flips loudly the day it lands",
+)
 from tests.robotics_research_helpers import load_case, load_bundle_case
 
 try:
@@ -94,7 +107,7 @@ def test_frozen_constants():
                                   "can_open_entry": False}
 
 
-@pytest.mark.xfail(condition=not robotics.SHARED_TYPES, strict=True,
+@pytest.mark.xfail(condition=not (HAS_SHARED and robotics.SHARED_TYPES), strict=True,
                   reason=SHARED_TYPES_REASON)
 def test_shared_types_are_the_shared_owner_types():
     assert robotics.SHARED_TYPES is True
