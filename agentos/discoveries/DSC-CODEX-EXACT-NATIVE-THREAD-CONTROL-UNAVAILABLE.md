@@ -8,11 +8,17 @@ claim: >
   app-server control transport that may become an exact current-writer attach seam, but that seam is
   not yet proven against the Chairman's existing Desktop tasks.
 falsifier: >
-  The GUI/AX negative control is falsified only by an accepted host path that mechanically verifies the
-  exact current writer before input without title/newest-tab/window-order selection. The newly identified
-  Codex Unix control socket is a candidate, not yet falsifying evidence: a canary must tie socket inode/path,
-  owner process generation and exact loaded thread to the canonical current RuntimeBinding, then reach
-  MAS-229 TARGET_ACKNOWLEDGED without creating or replacing a writer.
+  Exercise the accepted exact-session source seams with
+  `python3 -m pytest -q tests/test_codex_app_server_wake_rpc.py
+  tests/test_executive_wake_ack_end_to_end.py tests/test_wake_ack_ingress.py`
+  in `mastermindx-market-intelligence/Mastermind`, then require one accepted
+  production canary on the current writer. The discovery is falsified only if
+  that canary mechanically binds the current process/generation and exact loaded
+  thread to the canonical RuntimeBinding immediately before input and reaches
+  TARGET_ACKNOWLEDGED without title/OCR/newest-tab/window-order selection and
+  without creating or replacing a writer. The protected ACK1 path being
+  built/tested but globally unarmed is supporting source evidence, not the
+  production falsifier.
 so_what: >
   Do not build or commission title/OCR/newest-tab GUI foregrounding, arbitrary deep-link navigation,
   cold CLI resume or a new standalone App Server as the Mastermind continuity primitive. Prefer passive
