@@ -25,6 +25,7 @@ from .pg_profile import (
     parse_pg_literal,
     parse_release_blocks,
     pg_reconciliation_paragraph,
+    pg_observation_present,
     pg_volume_cross_check,
     replay_table_layout,
 )
@@ -272,6 +273,14 @@ def validate_selected_facts(
                     raise EconomicObservationError("combined typed_absence has no combined volume/mix drivers column in the source")
             elif subject != metric:
                 raise EconomicObservationError("typed_absence subject is neither its metric nor the combined volume/mix form")
+            else:
+                # R80 (round-6 disposition (a)): a plain absence may not hide a value the extractor's own decision
+                # path would bind from the caller-held source.
+                release_source = source_texts.get(workspace_document_id)
+                if isinstance(release_source, str) and pg_observation_present(
+                    release_source, definition, current_start=current_start, current_end=current_end, prior_end=prior_end
+                ):
+                    raise EconomicObservationError("typed_absence hides an observation the source uniquely addresses")
             if absence_payload.get("event_id") != event_id:
                 raise EconomicObservationError("typed_absence belongs to another event")
             if absence_payload.get("document_id") != workspace_document_id:
