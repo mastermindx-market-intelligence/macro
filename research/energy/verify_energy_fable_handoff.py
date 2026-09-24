@@ -13,7 +13,7 @@ SPEC = ROOT / "docs/superpowers/specs/2026-09-23-energy-economic-change-dossier-
 PLAN = ROOT / "docs/superpowers/plans/2026-09-23-energy-economic-change-first-vertical-implementation.md"
 OUT = ROOT / "research/energy/ENERGY_FABLE_HANDOFF_VERIFICATION_2026-09-23.json"
 
-EXPECTED_HANDOFF_BLOB = "6b69d4bd04c81704fc1679c14d00054c1130a616"
+EXPECTED_HANDOFF_BLOB = "f628167227613175cc3ede088f40423add7252fb"
 EXPECTED_CHECKPOINT_BLOB = "6696e76eff9f93a7822a5dc50afb4d340c6aa075"
 EXPECTED_SPEC_BLOB = "d6dac80bead5a028da8d757b419c896b1b8437ed"
 EXPECTED_PLAN_BLOB = "f7dc93621532b06e2478f90ef3876d6c31236242"
