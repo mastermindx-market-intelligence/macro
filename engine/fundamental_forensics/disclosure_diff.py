@@ -69,12 +69,20 @@ class Applicability(str, Enum):
 
 
 def _span_attribute(value: str | None) -> int:
-    """A ``colspan``/``rowspan`` attribute as an integer span: 1 when absent, not plain ASCII digits, zero or absurd."""
-    text = str(value or "").strip()
-    if re.fullmatch(r"[0-9]{1,3}", text) is None:
+    """A ``colspan``/``rowspan`` attribute as HTML's rules for parsing non-negative integers read it: leading
+    whitespace and an optional "+" are skipped, the leading run of ASCII digits is the value and anything after
+    it is ignored ("2.0", "2_0", "+2" and "3px" are 2, 2, 2 and 3; a non-ASCII digit is an error).  Absent,
+    unparseable, zero or absurd (above 64) means 1."""
+    match = re.match(r"\s*\+?([0-9]+)", str(value or ""))
+    if match is None:
         return 1
-    span = int(text)
+    span = int(match.group(1))
     return span if 1 <= span <= 64 else 1
+
+
+def _heading_level(tag: str) -> int:
+    """1..6 for an ``h1``..``h6`` tag; 0 for anything else (a promoted paragraph, a plain-text heading)."""
+    return int(tag[1]) if len(tag) == 2 and tag[0] == "h" and tag[1] in "123456" else 0
 
 
 def _attribute_map(attrs: list[tuple[str, str | None]]) -> dict[str, str]:
@@ -266,6 +274,7 @@ class TableCell:
     colspan: int = 1
     rowspan: int = 1
     row_ordinal: int = -1
+    row_group: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -318,6 +327,9 @@ class DisclosureBlock:
     topic_keys: tuple[str, ...]
     source_span: SourceSpan
     table: NormalizedTable | None = None
+    # 1..6 for a real ``h1``..``h6`` heading, 0 for a promoted paragraph or plain-text heading.  A layout fact
+    # for consumers that read section hierarchy; it does not enter ``to_dict`` or any id.
+    heading_level: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -582,6 +594,8 @@ class _RawCell:
     rowspan: int = 1
     # Ordinal of the HTML row (``tr``) the cell belongs to, counting rows that emit no cell; -1 when unknown.
     row_ordinal: int = -1
+    # Ordinal of the row group (``thead`` / ``tbody`` / ``tfoot``, explicit or implied) the row belongs to.
+    row_group: int = 0
 
 
 @dataclass
@@ -594,6 +608,7 @@ class _RawTable:
     caption_parts: list[str] = field(default_factory=list)
     in_caption: bool = False
     row_ordinal: int = -1
+    row_group: int = 0
 
 
 @dataclass
@@ -604,6 +619,7 @@ class _RawBlock:
     text: str
     table_rows: tuple[tuple[_RawCell, ...], ...] = ()
     table_caption: str = ""
+    heading_level: int = 0
 
 
 @dataclass
@@ -713,6 +729,11 @@ class _HtmlBlockExtractor(HTMLParser):
                     table.rows.append(table.current_row)
                 table.current_row = []
                 table.row_ordinal += 1
+            elif tag in {"thead", "tbody", "tfoot"}:
+                if table.current_row is not None and table.current_row:
+                    table.rows.append(table.current_row)
+                table.current_row = None
+                table.row_group += 1
             elif tag == "caption":
                 table.in_caption = True
             elif tag in {"td", "th"}:
@@ -727,6 +748,7 @@ class _HtmlBlockExtractor(HTMLParser):
                     colspan=_span_attribute(attr_map.get("colspan")),
                     rowspan=_span_attribute(attr_map.get("rowspan")),
                     row_ordinal=table.row_ordinal,
+                    row_group=table.row_group,
                 )
                 table.current_row.append(cell)
                 table.current_cell = cell
@@ -770,6 +792,12 @@ class _HtmlBlockExtractor(HTMLParser):
                     table.rows.append(table.current_row)
                 table.current_row = None
                 return
+            if tag in {"thead", "tbody", "tfoot"}:
+                if table.current_row is not None and table.current_row:
+                    table.rows.append(table.current_row)
+                table.current_row = None
+                table.row_group += 1
+                return
             if tag == "table":
                 if table.current_row is not None and table.current_row:
                     table.rows.append(table.current_row)
@@ -796,7 +824,7 @@ class _HtmlBlockExtractor(HTMLParser):
             if not text or (capture.tag == "div" and capture.has_block_child):
                 continue
             kind = BlockKind.HEADING if capture.tag.startswith("h") and len(capture.tag) == 2 else BlockKind.PARAGRAPH
-            self.blocks.append(_RawBlock(kind, capture.start, end, text))
+            self.blocks.append(_RawBlock(kind, capture.start, end, text, heading_level=_heading_level(capture.tag)))
 
     def finish(self) -> tuple[_RawBlock, ...]:
         self.close()
@@ -814,7 +842,7 @@ class _HtmlBlockExtractor(HTMLParser):
             text = _compact_text("".join(capture.text_parts))
             if text and not (capture.tag == "div" and capture.has_block_child):
                 kind = BlockKind.HEADING if capture.tag.startswith("h") and len(capture.tag) == 2 else BlockKind.PARAGRAPH
-                self.blocks.append(_RawBlock(kind, capture.start, end, text))
+                self.blocks.append(_RawBlock(kind, capture.start, end, text, heading_level=_heading_level(capture.tag)))
         unique: dict[tuple[str, int, int, str], _RawBlock] = {}
         for block in self.blocks:
             unique[(block.kind.value, block.start, block.end, block.text)] = block
@@ -1089,6 +1117,7 @@ def normalize_filing(
                             colspan=raw_cell.colspan,
                             rowspan=raw_cell.rowspan,
                             row_ordinal=raw_cell.row_ordinal if raw_cell.row_ordinal >= 0 else row_index,
+                            row_group=raw_cell.row_group,
                         )
                     )
                 if cells:
@@ -1136,6 +1165,7 @@ def normalize_filing(
                 topic_keys=config.topic_keys_for(text, current_section.key),
                 source_span=span,
                 table=table,
+                heading_level=raw_block.heading_level if block_kind is BlockKind.HEADING else 0,
             )
         )
     return DisclosureDocument(
