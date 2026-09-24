@@ -199,6 +199,9 @@ def derive_evidence(rows: list[dict[str, Any]]) -> dict[str, Any]:
     legacy_alerts = [row for row in legacy_graded if _is_alert(row)]
     legacy_alert_hits = sum(_is_hit(row) for row in legacy_alerts)
     legacy_base_hits = sum(_is_hit(row) for row in legacy_graded)
+    legacy_incomplete_authority_rows = sum(
+        not _has_authority_outcome(row) for row in legacy_graded
+    )
 
     ordered = _ordered_rows(rows)
     graded = [row for row in ordered if _has_authority_outcome(row)]
@@ -258,6 +261,7 @@ def derive_evidence(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "legacy_n_total_graded_rows": len(legacy_graded),
         "legacy_n_alert_rows": len(legacy_alerts),
         "legacy_n_alert_hits": legacy_alert_hits,
+        "legacy_n_incomplete_authority_rows": legacy_incomplete_authority_rows,
         "legacy_row_base_rate_dd5_h21": _ratio(
             legacy_base_hits, len(legacy_graded)
         ),
