@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-23T23:26:40.715275+00:00",
-  "count": 2740,
+  "generated_at": "2026-09-23T23:41:05.397381+00:00",
+  "count": 2741,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -560,6 +560,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-po5gpsfzoio-d65dde",
+      "title": "GS Utilities Daily Iberdrola reportedly planning sale of a stake in UK offshore project Global renewable additions need to accelerate to meet 2030",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:39:18Z",
+      "summary_points": [
+        "Iberdrola UK Offshore Stake Sale: Monetization of 49% stake in €5bn East Anglia Two project (960MW) signals strategic asset shift; impacts renewable project valuations and capital flows amid UK net zero policy scrutiny.",
+        "Renewable Capacity Gap: Current global additions (693GW/y) insufficient to meet 2030 target (11.2TW), requiring accelerated build-out to avoid structural shortfall; critical for sector growth assessment.",
+        "EU Diesel Cost Surge: Drivers pay ~40% more on diesel since year start, adding €203mn/day toll due to Middle East conflict; imported fossil fuel costs up €90bn since Feb, straining energy-intensive sectors.",
+        "Europe Electrification Acceleration: Power demand growth +5% pa, PowerGen investments tripling to €2T by 2035; Agentic AI driving +25% datacenter power needs, boosting utility infrastructure demand and valuations.",
+        "Global Renewable Policy Support: Critical for sector growth; requires tracking subsidies, carbon pricing, and capacity addition data to gauge market dynamics and investment opportunities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
