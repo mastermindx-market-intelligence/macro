@@ -33,6 +33,7 @@ from pathlib import Path
 import re
 import sys
 import tempfile
+import time
 from typing import Any, Callable, Mapping
 from urllib.parse import urlsplit
 import requests
@@ -95,6 +96,8 @@ MAX_SELECTED_PACKET_COUNT = 10_000
 MAX_SELECTED_PACKET_BYTES = 1024 * 1024 * 1024
 MAX_DEFERRED_PACKET_COUNT = 10_000
 MAX_EXISTING_AGE_SECONDS = 48 * 60 * 60
+HTTP_FETCH_MAX_ATTEMPTS = 3
+HTTP_FETCH_RETRY_BACKOFF_SECONDS = 0.25
 ROUTE_CATALOG_SCHEMA_V1 = "earnings.public_wire_routes/v1"
 ROUTE_CATALOG_SCHEMA_V2 = "earnings.public_wire_routes/v2"
 ROUTE_CATALOG_SCHEMA = ROUTE_CATALOG_SCHEMA_V2
@@ -177,50 +180,81 @@ def _json_bytes(value: bytes, *, label: str) -> Mapping[str, Any]:
     return decoded
 
 
+def _retryable_source_transport_error(exc: requests.RequestException) -> bool:
+    """Return whether one immutable GET may be retried on the same origin."""
+    return isinstance(
+        exc,
+        (
+            requests.ConnectionError,
+            requests.Timeout,
+            requests.exceptions.ChunkedEncodingError,
+            requests.exceptions.ContentDecodingError,
+        ),
+    )
+
+
 def _http_fetch(url: str, *, timeout: float, max_bytes: int) -> bytes:
     """Fetch one immutable-source object without unbounded buffering.
 
     Public packet storage is an input boundary, not a trusted local file.  The
     source never needs redirects, so rejecting them also closes a server-side
     request pivot.  ``max_bytes`` protects both builder memory and CI time.
+    Transient connection/read failures retry only this idempotent immutable GET;
+    source-policy, HTTP-status, size, receipt, and contract failures remain
+    immediate fail-closed errors.
     """
     parsed = urlsplit(url)
     expected_origin = (parsed.scheme.lower(), (parsed.hostname or "").lower(), parsed.port or 443)
     if parsed.scheme.lower() != "https" or not parsed.hostname or parsed.username or parsed.password:
         raise PublicWireBuildError("public story packet source must be a safe https URL")
-    try:
-        response = requests.get(
-            url,
-            headers={"User-Agent": "MastermindX-EarningsWire/1.0 (+https://www.mastermind-x.com)"},
-            timeout=timeout,
-            stream=True,
-            allow_redirects=False,
-        )
-        with response:
-            landed = urlsplit(str(getattr(response, "url", url) or url))
-            landed_origin = (landed.scheme.lower(), (landed.hostname or "").lower(), landed.port or 443)
-            if response.is_redirect or 300 <= response.status_code < 400 or landed_origin != expected_origin:
-                raise PublicWireBuildError("public story packet source redirected or changed origin")
-            response.raise_for_status()
-            content_length = response.headers.get("Content-Length")
-            if content_length:
-                try:
-                    if int(content_length) > max_bytes:
+    for attempt in range(1, HTTP_FETCH_MAX_ATTEMPTS + 1):
+        try:
+            response = requests.get(
+                url,
+                headers={"User-Agent": "MastermindX-EarningsWire/1.0 (+https://www.mastermind-x.com)"},
+                timeout=timeout,
+                stream=True,
+                allow_redirects=False,
+            )
+            with response:
+                landed = urlsplit(str(getattr(response, "url", url) or url))
+                landed_origin = (landed.scheme.lower(), (landed.hostname or "").lower(), landed.port or 443)
+                if response.is_redirect or 300 <= response.status_code < 400 or landed_origin != expected_origin:
+                    raise PublicWireBuildError("public story packet source redirected or changed origin")
+                response.raise_for_status()
+                content_length = response.headers.get("Content-Length")
+                if content_length:
+                    try:
+                        if int(content_length) > max_bytes:
+                            raise PublicWireBuildError("public story packet object exceeds safe size bound")
+                    except ValueError as exc:
+                        raise PublicWireBuildError("public story packet object has invalid Content-Length") from exc
+                chunks: list[bytes] = []
+                used = 0
+                for chunk in response.iter_content(chunk_size=65_536):
+                    if not chunk:
+                        continue
+                    used += len(chunk)
+                    if used > max_bytes:
                         raise PublicWireBuildError("public story packet object exceeds safe size bound")
-                except ValueError as exc:
-                    raise PublicWireBuildError("public story packet object has invalid Content-Length") from exc
-            chunks: list[bytes] = []
-            used = 0
-            for chunk in response.iter_content(chunk_size=65_536):
-                if not chunk:
-                    continue
-                used += len(chunk)
-                if used > max_bytes:
-                    raise PublicWireBuildError("public story packet object exceeds safe size bound")
-                chunks.append(chunk)
-            return b"".join(chunks)
-    except requests.RequestException as exc:
-        raise PublicWireBuildError(f"unable to fetch {url}: {exc}") from exc
+                    chunks.append(chunk)
+                return b"".join(chunks)
+        except PublicWireBuildError:
+            raise
+        except requests.RequestException as exc:
+            if attempt >= HTTP_FETCH_MAX_ATTEMPTS or not _retryable_source_transport_error(exc):
+                raise PublicWireBuildError(f"unable to fetch {url}: {exc}") from exc
+            delay = HTTP_FETCH_RETRY_BACKOFF_SECONDS * attempt
+            log.warning(
+                "retrying immutable source transport read after %s (%d/%d): %s",
+                type(exc).__name__,
+                attempt,
+                HTTP_FETCH_MAX_ATTEMPTS,
+                parsed.path,
+            )
+            if delay > 0:
+                time.sleep(delay)
+    raise AssertionError("unreachable immutable source retry state")
 
 
 def _source_url(base: str, relative: str) -> str:

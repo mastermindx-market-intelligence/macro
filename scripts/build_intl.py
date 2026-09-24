@@ -915,6 +915,10 @@ def main() -> int:
         from engine import i18n
         env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
 
+        # Consume the existing Macro producer's snapshot; never rerun its engines.
+        from lib.global_regime_fragment import read_global_regime_fragment
+        vm["global_regime_html"] = read_global_regime_fragment(site)
+
         tmpl = env.get_template("intl.html.j2")
         write_page(site / "intl.html", tmpl.render(**vm, mode="macro"))
         write_page(site / "intl_stocks.html", tmpl.render(**vm, mode="stocks"))

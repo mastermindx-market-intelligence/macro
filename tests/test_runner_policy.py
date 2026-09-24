@@ -79,6 +79,19 @@ def test_fork_scenario_cannot_mutate_to_selfhosted(tmp_path: Path) -> None:
     assert "R1" in result.stdout
 
 
+def test_same_repo_default_cannot_mutate_back_to_pc_mandatory(tmp_path: Path) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    mutate_registry(
+        registry,
+        lambda doc: doc["scenario_routes"].__setitem__(
+            "same_repo_ordinary_pr", "pc-ci-via-main-executor"
+        ),
+    )
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R1" in result.stdout
+
+
 def test_server_side_runner_group_cannot_lose_main_pinned_workflow_restriction(
     tmp_path: Path,
 ) -> None:
@@ -94,7 +107,7 @@ def test_server_side_runner_group_cannot_lose_main_pinned_workflow_restriction(
     assert "runner-group policy drifted" in result.stdout
 
 
-def test_p3bb_executor_is_main_pinned_and_only_same_repo_execution_moves() -> None:
+def test_hosted_first_keeps_pc_executor_main_pinned_as_fallback() -> None:
     registry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))
     assert registry["phase"] == "p3b-b-production-route"
     selected = set(registry["runtime_runner_group"]["selected_workflows"])
@@ -103,7 +116,7 @@ def test_p3bb_executor_is_main_pinned_and_only_same_repo_execution_moves() -> No
         "trusted-ci-executor.yml@refs/heads/main"
     ) in selected
     assert registry["scenario_routes"]["same_repo_ordinary_pr"] == (
-        "pc-ci-via-main-executor"
+        "github-hosted"
     )
     assert registry["scenario_routes"]["fork_pr"] == "github-hosted"
     route = registry["trusted_executor_route"]
@@ -248,6 +261,48 @@ def test_p3ba_policy_rejects_new_caller_supplied_inputs(tmp_path: Path) -> None:
     result = run_guard(root, registry, workflows)
     assert result.returncode == 1
     assert "R13" in result.stdout
+
+
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_moved_to_pc(tmp_path: Path) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    compat = document["jobs"]["legacy-hosted-pack"]
+    compat["runs-on"] = {"group": "macro-home-canary", "labels": "ci-linux"}
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_without_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["legacy-hosted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_pc_pack_without_explicit_pc_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["trusted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "explicit PC route" in result.stdout
 
 
 def test_p3ba_policy_rejects_a_second_runner_group_consumer(tmp_path: Path) -> None:
