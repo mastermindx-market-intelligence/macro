@@ -4,160 +4,108 @@ session: claude/communications-sector-research-20260923
 model: sol
 ended_because: context_budget
 mission: >
-  Complete the Chairman-directed Communications research and planning end to end, retaining
-  the intellectual work with Sol and preparing the final build package for Fable CEO.
-  The full written design, implementation handoff and production outcome remain incomplete.
+  Complete the Chairman-directed Communications research and planning, retaining intellectual
+  ownership with Sol and preparing the final implementation package for Fable CEO. Parent mission
+  remains incomplete. This is an in-progress safety snapshot, not a claim that the turn ended.
 state_before: >
-  Six economic-family research phases were preserved on Macro Draft/HOLD PR 7794 at
-  df059da9c393029e49175985ce9189676ef9fa0d. Cross-family business exposure integration and
-  targeted gap closure were next. No Fable receiver, worker, Attempt or watcher had started.
+  Phase 7 integrated 94 business/activity rows across 47 issuer labels on Draft/HOLD PR 7794
+  at b3b77e50018f416eab32dbc44dc56a1cc4473c0c. Written design and build planning were next.
 changed:
-  - path: research/communications/COMMUNICATIONS_BUSINESS_EXPOSURE_MAP_2026-09-23.md
+  - path: docs/superpowers/specs/2026-09-23-communications-business-intelligence-design.md
     what: >
-      Added 94 source-indexed business/activity rows across 47 issuer labels, with roles,
-      financial-evidence scope, analyst mechanisms, contrary conditions and source references.
-      Native identities, membership, geography weights and financial sensitivities stay unassigned.
-  - path: research/communications/COMMUNICATIONS_INTEGRATION_AND_GAP_CLOSURE_2026-09-23.md
-    what: >
-      Added eight fresh issuer sources, cross-family economic/overlap synthesis, native contract
-      integration findings, twelve arithmetic cases, twenty written acceptance requirements and
-      a proposed four-company first vertical with a finite gap and qualification plan.
+      Added the full-program written design and first four-company advertising vertical,
+      resolving native integration boundaries, signed financial measures, identity, clocks,
+      private publication, deterministic comparisons, compact UI and distinct validation stages.
   - path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
-    what: Updated this same cumulative continuation through the Phase 7 integration boundary.
+    what: Preserved the verified design before the next substantial planning and fixture work.
 prs: [7794]
 verified:
-  - claim: Protected procedure and incumbent carrier were reconciled before modification.
+  - claim: Current protected procedure and incumbent source carrier were reconciled.
     command: >
-      GitHub.fetch branches/master and incumbent branch ref; fetch_file INDEX at
-      a7d2b3049e5cdc523e91e61a6e9d70a1cb911157; get_pr_info 7794; get_repo macro.
+      GitHub.fetch protected master and Macro main; fetch_file INDEX at
+      a7d2b3049e5cdc523e91e61a6e9d70a1cb911157; get_pr_info 7794 and read incumbent branch ref.
     result: >
-      Same compatible Skillpack 1.0.1/bootstrap 1 as the fully loaded prior revision;
-      incumbent head unchanged before writes; push permission returned.
-  - claim: The business exposure map is persisted with matching exact-byte identity.
+      Compatible Skillpack 1.0.1/bootstrap 1 at the unchanged fully loaded revision;
+      current interface pin da092e5d4a64dbb7c3958826f8cd60d7cbd02cc5 is not a rebase.
+  - claim: The written design was persisted and its exact-byte identity verified.
     command: >
-      GitHub.create_file and immutable fetch_file at f5810bf53da978b5afe94fd4be2d748fc29e7269;
-      compare native blob with local Git blob.
-    result: Matching blob c146b61b43bfd7c93516ffcbdf1b892321d8e4c4.
-  - claim: The integration and gap-closure companion is persisted with matching exact-byte identity.
-    command: >
-      GitHub.create_file and immutable fetch_file at b3511a781b9e93260ac0d2abdb638ea9ad9890e7;
-      compare native blob with local Git blob.
-    result: Matching blob 4c77c8079cf92422801339bc734d0b6264675ded.
-  - claim: Bounded local research checks passed after a syntax-only helper repair.
-    command: >
-      python -m py_compile /mnt/data/communications_research/validate_phase7.py;
-      python /mnt/data/communications_research/validate_phase7.py
+      GitHub.create_file followed by fetch_file at d65263dc15a8dc3ddded35b1529c535c881175bd;
+      compare returned Git blob with locally calculated content identity.
     result: >
-      94 sequential row IDs, 47 issuer labels, 65 used source identifiers, eight new issuer
-      references, unassigned native fields, twelve Decimal/Fraction calculations, six synthetic
-      interpretations and twenty written requirement IDs checked. Not application validation.
+      Blob 2cf3918e95715cd924a5a5f402201e4053e2a036 matches the 37991-byte local design;
+      local numbered-section and declared-boundary checks passed. No application tests run.
 unverified:
-  - claim: Canonical issuer/security joins and production evidence admission.
+  - claim: Written design acceptance and executable first-vertical plan.
     what_would_verify: >
-      Reconcile the existing identity/company-route and evidence/curation owners for the first
-      four-company vertical. Source labels and a filing ticker are not that join or admission.
-  - claim: Full repository validation, CI and source release qualification.
+      Complete the plan, source-based proof examples, spec-to-task self-review and required
+      principal/shared-owner review. A written proposal is not accepted implementation.
+  - claim: Production native assertions, identity rows and private publication binding.
     what_would_verify: >
-      Run existing repository checks in an admitted exact-head workspace at the appropriate
-      release boundary. None was executed or inferred from local research checks; HOLD remains.
-  - claim: Exhaustive sector coverage, forecast or investment usefulness.
+      Qualify the existing native owner implementation, actual configured private retention/
+      publication exclusion and current four-issuer route receipts. No live admission performed.
+  - claim: Product or Fable execution.
     what_would_verify: >
-      Close explicitly scoped regional and peer gaps and qualify original-vintage operational
-      and return studies through existing owners. Do not label the current map a complete census.
-  - claim: Accepted final design, Fable execution or a live user outcome.
-    what_would_verify: >
-      Finish the written specification/build plan; obtain lawful handoff and execution receipts;
-      prove real input through the existing comparison, company/watchlist and browser workflow.
+      Lawful Fable receiver delivery and START, exact-head implementation/review and real
+      source-to-browser/company/watchlist proof. No worker, Attempt or watcher exists here.
 unresolved:
-  - The inspected eighteen-theme crosswalk has no direct advertising/media/gaming/telecom theme; no forced mapping is allowed.
-  - Company Theme Exposure is a membership projection, not the financial exposure model; exact additive integration remains to be specified.
-  - China Mobile's issuer page returned 403; no primary financial row was adopted and no secondary figures substituted.
-  - Telesat backlog composition and later transaction/JV milestones remain unresolved dated research obligations.
-  - Broadcasting, remaining regional operators/satellites and peer breadth remain scoped gaps, not global current-state claims.
-  - Original consensus histories, exact microtheme weights and conditional financial coefficients remain unqualified.
+  - Shared Robotics assertion proposal is not implemented at the selected current native schema/store.
+  - Financial signed values and measurement context need a narrow shared-contract amendment, not a second evidence plane.
+  - Private owner binding, exact live identities, review and final release evidence remain required.
+  - Broad forecast/stock-return qualification and remaining coverage gaps are not completed by the descriptive design.
 next_actions:
   - >
-    Reconcile this same branch and PR at its exact current head; refresh only material procedure,
-    authority, custody, source or effect changes. Do not replay prior research or tool history.
+    Continue on this same carrier to write the first advertising implementation plan and
+    source-based examples, including forty explicit acceptance requirements and task mapping.
   - >
-    Resolve the existing evidence/curation assertion, company identity/route and shared-template
-    integration seams for Meta, Alphabet, The Trade Desk and Magnite. Read exact current owner
-    contracts and relevant incumbent PRs rather than inventing a financial-weight sidecar.
-  - >
-    Write the comprehensive Communications specification and phased build plan from the integrated
-    matrix and preserved economic chapters. Separate the first descriptive proof from later
-    forecast/investment qualification, retain scoped coverage obligations, and prepare Fable's
-    eventual implementation packet only after the intellectual package is ready.
+    Self-review the complete design/plan against native interfaces, publish and read back exact
+    artifacts, then update this cumulative checkpoint and PR projection.
 do_not_redo:
-  - Preserve all Phase 1–6 chapters and this integrated map unless a material invalidator changes their evidence or scope.
-  - Publicis and New York Times initial agency/publishing anchors were added in Phase 7; do not restart that search as missing.
-  - Do not recreate PR 7794, its branch, the shared sector template or Robotics PR 7773's accepted intellectual work.
-  - Do not create another theme, identity, financial-weight, evidence, rights, forecasting, publication or runtime authority.
-  - Do not populate GMI reserved-null axes or overload Company Theme Exposure with unqualified business weights.
+  - Preserve all Phase 1-7 research and the 94-row map on this same carrier.
+  - Preserve shared sector architecture, Robotics 7773, GMI, K1, Data OS identity, Company Theme Exposure and F04 owners.
+  - Do not rebuild another graph, identity, rights, metric, publication, outcome, refresh or runtime control plane.
+  - Do not treat the four-company research population as a canonical theme, price basket, ranking or trading policy.
 danger_areas:
-  - Public repository; only original public-source research, no restricted raw datasets or personal/customer data.
-  - Business rows are not independent securities, causal corroborations or additive revenue partitions.
-  - Groupings, currencies, fiscal periods, quarter/half-year bases and reporting precision must remain explicit.
-  - A source-defined product floor is not an exact amount; revenue materiality is not earnings sensitivity.
-  - Current research membership cannot be projected backward as historical knowability.
-  - No Fable delivery, ACK, START, source-custody transfer or autonomous wake occurred; DRAFT/HOLD remains.
+  - Public repository; no live private evidence, credentials, personal/customer data or full paid payload.
+  - Current schemas lack the structured assertion; proposed contract names are not proof of deployed implementation.
+  - Physical negative quantities must stay rejected while legitimate signed financial measures remain representable.
+  - K1 cross-type joins remain refused; a stock link needs its actual identity-owner receipt.
+  - DRAFT/HOLD persists; no merge-on-green, native auto-merge, custody transfer or background work is claimed.
 ---
 
-# GMI Communications — cumulative Phase 7 continuation
+# Communications Phase 8 — in-progress design checkpoint
 
-**FINALIZATION_CLASSIFICATION:** CHECKPOINTED_CONTINUATION  
 **MISSION_COMPLETE:** false  
+**FINALIZATION_CLASSIFICATION:** MORE_WORK_EXISTS  
 **Operation:** `gmi-communications-research-20260923-sol-001`
 
-## State and justified boundary
+The written design is now durable; the build plan and reference examples are actively unfinished.
+This snapshot protects the material design result before another long unit. It is not a stop,
+accepted design, release of custody or autonomous wake.
 
-The economic-family chapters are now connected by a source-indexed business map and an integration
-analysis. The phase added six China/Korea issuer sources, then advanced the agency/publishing gaps
-with Publicis and The New York Times in the same turn. The map distinguishes 94 business/activity
-rows and 47 issuer labels from resolved securities, financial weights and canonical theme membership.
+Sole PR #7794 and branch `claude/communications-sector-research-20260923` remain unchanged.
+Original Macro base is `c4da107fe729e46b4d4036b3e0e290390315d0fd`. Entering Phase 7 head is
+`b3b77e50018f416eab32dbc44dc56a1cc4473c0c`; all earlier chapters remain untouched.
 
-The named next dependency is the written product specification against existing owner contracts,
-not another broad round of industry archaeology. This boundary follows the substantial regional,
-source-contract, quantitative and cross-family synthesis phase and accumulated context. It is not
-completion or release of research responsibility. No autonomous work continues after the turn.
+Written design: `docs/superpowers/specs/2026-09-23-communications-business-intelligence-design.md`,
+commit `d65263dc15a8dc3ddded35b1529c535c881175bd`, blob
+`2cf3918e95715cd924a5a5f402201e4053e2a036`.
+The first comparison is Meta, Alphabet, The Trade Desk and Magnite; full-sector expansion and
+separate operational/investment validation remain in the design rather than being abandoned.
 
-## Exact durable frontier
+Protected Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157` remains compatible and unchanged;
+INDEX and the same-revision ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT are controlling.
+Direct research/design rationale is PRINCIPAL_JUDGMENT. Interface reads use Macro
+`da092e5d4a64dbb7c3958826f8cd60d7cbd02cc5`, not a new research base. Exact interface blobs and
+Robotics dependency identities are in design section 2.
 
-Sole branch: `claude/communications-sector-research-20260923`; sole PR: #7794, DRAFT/HOLD.
-Original base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`; no rebase or replacement.
-Entering head: `df059da9c393029e49175985ce9189676ef9fa0d`.
-Map commit/blob: `f5810bf53da978b5afe94fd4be2d748fc29e7269` /
-`c146b61b43bfd7c93516ffcbdf1b892321d8e4c4`.
-Integration companion commit/blob: `b3511a781b9e93260ac0d2abdb638ea9ad9890e7` /
-`4c77c8079cf92422801339bc734d0b6264675ded`.
-This checkpoint's own immutable revision/blob is established by its native write receipt and readback.
-All earlier research remains unchanged on this same branch; source registers preserve its exact blobs.
+The live source schema and fixed evidence column list have no curation assertion. The Robotics
+plan's negative-quantity rule needs a type-scoped financial amendment; its physical guards remain.
+K1 cannot silently accept a cross-security recipe. The current design keeps native-evidence blocks
+separate and requires the existing identity owner for stock navigation. No actual private storage
+path or source-retention receipt was invented.
 
-Native interface read pin: Macro `8db6896dab2199a4b7fc61a005c225380cac7cd6`, not a new research base.
-Load-bearing inspected objects:
-- `config/theme_crosswalk.yml`, blob `782dbc519b7bb2d446af91c66c6fb9248722a8b9`.
-- `engine/company_theme_exposure/contracts.py`, blob `eb1b5136f220027c746eb086b3403b77e3bbdc13`.
-- `contracts/theme_graph/edges.v1.schema.json`, blob `136322e8076695a3cc24869e60ee5793f09d41f4`.
-- `contracts/theme_graph/README.md`, blob `72f17bdada6fe47564396eba49aafe6a1889769c`.
-The historical W2 probe was read only for construction/coverage context, not fresh permission.
-
-Protected procedure: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, Skillpack 1.0.1/bootstrap 1.
-Current master/INDEX confirmed the same revision whose ACTIVE_EXECUTION, WEB_CEO_DELEGATION and
-CLOSEOUT were fully loaded. Direct research rationale: PRINCIPAL_JUDGMENT under continuing intent.
-Existing WS:GMI-THEME-GRAPH, shared sector architecture and Robotics remain preserved owners.
-
-## Effects and limitations
-
-Only two new research files and this existing checkpoint were authored; PR metadata projects that
-frontier, not design acceptance. No product code, live graph, membership, publisher, trading policy
-or runtime state changed. No modifying EFFECT_UNKNOWN is outstanding. Native GitHub writes succeeded;
-no Extra High switch or additional research seat was needed for this lane.
-
-The local helper initially had an extra closing parenthesis. The syntax was corrected, compiled and
-all checks rerun without changing source inputs or tolerances. Arithmetic methods share transcribed
-inputs and do not independently audit the issuer. Written IX requirements are not application passes.
-The JSON/ZIP artifacts are portable research exports, not a second data or continuity owner.
-
-Resume in this Sol research conversation or a fresh Sol session from this checkpoint and minimum
-current state. The next action is the exact owner-contract reconciliation and written specification
-above. Fable remains intended final integrator, not a delivered or executing receiver.
+No modifying EFFECT_UNKNOWN is outstanding. Only the design and this checkpoint changed. No
+product code, live evidence, identity rows, memberships, publisher, runtime or trade authority changed.
+No Fable delivery, child, Attempt or watcher started. Native writes succeeded, so no mode switch was
+needed. Exact next action is the planned task/proof package on this same branch; a fresh reader
+recovers this snapshot plus the design rather than the prior tool transcript.
