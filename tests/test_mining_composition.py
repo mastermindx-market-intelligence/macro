@@ -542,3 +542,254 @@ def test_omission_to_limitation_is_wired(name):
     # if a definition field is missing — that is acceptable because the case has no definition fields.
     for code in expected_limitations:
         assert code in result["limitations"], f"case {name!r}: missing {code!r}"
+
+
+# ---------------------------------------------------------------------------
+# packet-driven expectation rows (R-MIN-31 §3; literal expected values)
+# ---------------------------------------------------------------------------
+
+from dataclasses import replace as _replace  # noqa: E402  (local import per the ruling)
+
+
+def _copper_with_packets(*packets):
+    """Return (query, bundle) for a usable copper case with the given mev packets."""
+    case = synthetic_case("copper_complete")
+    return case.query, _replace(case.bundle, financial_packets=tuple(packets))
+
+
+def _mev_packet(pair, epe_value, la_value, **extras):
+    """Build a literal ``management_estimate_vs_actual`` packet for one comparison pair."""
+    base = {
+        "kind": "management_estimate_vs_actual",
+        "pair": pair,
+        "earlier_point_estimate": {
+            "value": epe_value,
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+        "later_actual": {
+            "value": la_value,
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+    }
+    base.update(extras)
+    return base
+
+
+def test_packet_driven_sales_pair_emits_one_row_with_literal_values():
+    """A copper sales packet (epe=1700, la=1680) emits exactly one row with literal values
+    and the comparison word ``below_estimate`` (la < epe). The row binds to the issuer
+    identity of the casebook fixture (Ardent Copper Holdings / cik 0000000421).
+    """
+    query, bundle = _copper_with_packets(_mev_packet("sales", 1700, 1680))
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 1, result["expectations"]
+    row = result["expectations"][0]
+    assert row["stable_subject_id"] == "0000000421"
+    assert row["comparison_kind"] == "earlier_point_estimate_vs_later_actual"
+    assert row["comparison"] == "below_estimate"
+    assert row["is_range"] is False and row["is_consensus"] is False
+    epe = row["earlier_point_estimate"]
+    la = row["later_actual"]
+    assert epe["value"] == 1700
+    assert la["value"] == 1680
+    assert epe["metric"] == "management_issued_copper_sales_estimate"
+    assert la["metric"] == "consolidated_copper_sales"
+    assert epe["basis"] == "fictional point estimate"
+    assert la["basis"] == "fictional reported measure"
+    # The casebook carries no native-block packet, so no native blocks; limitations
+    # carry ``omitted:expectations`` only (the row WAS attempted, successfully).
+    assert "omitted:expectations" not in result["limitations"]
+
+
+def test_packet_driven_sales_pair_above_estimate_when_la_exceeds_epe():
+    """A sales packet with la > epe emits ``above_estimate``."""
+    query, bundle = _copper_with_packets(_mev_packet("sales", 1700, 1750))
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 1
+    assert result["expectations"][0]["comparison"] == "above_estimate"
+
+
+def test_packet_driven_equal_legs_withhold_row_and_mint_omitted_expectations():
+    """Two equal leg values withhold the row (no fabricated surprise) and mint
+    ``omitted:expectations`` (R-MIN-31 §3 — never synthesize the comparison).
+    """
+    query, bundle = _copper_with_packets(_mev_packet("sales", 1700, 1700))
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+
+
+def test_packet_driven_missing_required_field_withholds_row_and_mints_unqualified():
+    """A leg whose ``unit`` field is missing withholds the row and mints
+    ``definition_unqualified:unit`` (R-MIN-31 §3, MAJOR-D). The code is
+    deduplicated across multiple bad legs.
+    """
+    bad_packet = _mev_packet("sales", 1700, 1680)
+    del bad_packet["earlier_point_estimate"]["unit"]
+    del bad_packet["later_actual"]["unit"]
+    query, bundle = _copper_with_packets(bad_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "definition_unqualified:unit" in result["limitations"]
+
+
+def test_packet_driven_non_numeric_value_withholds_row_and_mints_omitted_expectations():
+    """A packet whose ``value`` is the string ``"quarter"`` (the BLOCKER-A fabrication)
+    withholds the row and mints ``omitted:expectations`` (MINOR-I) — the
+    ``definition_unqualified:value`` limitation is reserved for definition
+    fields, never for a missing measurement datum.
+    """
+    bad_packet = {
+        "kind": "management_estimate_vs_actual",
+        "pair": "sales",
+        "earlier_point_estimate": {
+            "value": "quarter",
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+        "later_actual": {
+            "value": "quarter",
+            "unit": "Mlbs",
+            "perimeter": "consolidated",
+            "basis": "reported",
+            "period": "Q2 2026",
+        },
+    }
+    query, bundle = _copper_with_packets(bad_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+    assert "definition_unqualified:value" not in result["limitations"]
+
+
+def test_packet_driven_unknown_pair_withholds_row_and_mints_omitted_expectations():
+    """A packet whose ``pair`` is ``"foo"`` (unknown) withholds the row and mints
+    ``omitted:expectations``. No row is invented with a synthesised comparison.
+    """
+    bad_packet = _mev_packet("foo", 1700, 1680)
+    query, bundle = _copper_with_packets(bad_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["expectations"] == []
+    assert "omitted:expectations" in result["limitations"]
+
+
+def test_packet_driven_row_order_sales_first_unit_net_cash_cost_second():
+    """MINOR-J: row order is pinned by pair name regardless of packet arrival order.
+    A reversed packet list still emits sales-then-unit_net_cash_cost.
+    """
+    unit_packet = _mev_packet(
+        "unit_net_cash_cost", 2.95, 2.85,
+        earlier_point_estimate={"value": 2.95, "unit": "USD/lb", "perimeter": "consolidated",
+                                "basis": "company_adjusted", "period": "Q2 2026"},
+        later_actual={"value": 2.85, "unit": "USD/lb", "perimeter": "consolidated",
+                      "basis": "company_adjusted", "period": "Q2 2026"},
+    )
+    sales_packet = _mev_packet("sales", 1700, 1750)
+    # Reversed order on input; ordered on output.
+    query, bundle = _copper_with_packets(unit_packet, sales_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 2
+    assert result["expectations"][0]["earlier_point_estimate"]["metric"] == "management_issued_copper_sales_estimate"
+    assert result["expectations"][1]["earlier_point_estimate"]["metric"] == "management_issued_copper_unit_net_cash_cost_estimate"
+    assert result["expectations"][0]["comparison"] == "above_estimate"
+    assert result["expectations"][1]["comparison"] == "below_estimate"
+
+
+def test_packet_driven_both_pairs_emitted_with_subject_id_from_identity_results():
+    """Sales + unit-cost packets together emit TWO rows, both bound to the issuer
+    identity of the casebook (cik 0000000421); MAJOR-F: the row's
+    ``stable_subject_id`` falls back to cik when ``stable_subject_id`` is absent
+    on the identity_results entry — never ``"subject:unknown"``.
+    """
+    unit_packet = _mev_packet(
+        "unit_net_cash_cost", 2.95, 2.85,
+        earlier_point_estimate={"value": 2.95, "unit": "USD/lb", "perimeter": "consolidated",
+                                "basis": "company_adjusted", "period": "Q2 2026"},
+        later_actual={"value": 2.85, "unit": "USD/lb", "perimeter": "consolidated",
+                      "basis": "company_adjusted", "period": "Q2 2026"},
+    )
+    sales_packet = _mev_packet("sales", 1700, 1750)
+    query, bundle = _copper_with_packets(sales_packet, unit_packet)
+    result = composition.compose_mining_research(query, bundle)
+    assert len(result["expectations"]) == 2
+    for row in result["expectations"]:
+        assert row["stable_subject_id"] != "subject:unknown"
+        assert row["stable_subject_id"] == "0000000421"
+
+
+def test_packet_driven_withdrawn_case_publishes_no_expectation_row():
+    """MAJOR-B: a case with any omission (bundle.omissions != ()) publishes NO row,
+    even when mev packets are present in ``financial_packets``.
+    """
+    case = synthetic_case("missing_issuer")
+    packets = (_mev_packet("sales", 1700, 1750),)
+    withdrawn_bundle = _replace(case.bundle, financial_packets=packets)
+    result = composition.compose_mining_research(case.query, withdrawn_bundle)
+    assert result["expectations"] == []
+
+
+def test_rare_earth_usable_case_carries_slice_definitional_codes_only():
+    """R-MIN-31 §2: rare-earth usable cases carry the closed slice-definitional codes
+    ``stream_threshold_unknown`` + ``industry_total_unknown`` +
+    ``definition_unqualified:management_estimate_vs_actual``, NEVER
+    ``omitted:expectations`` (the rare-earth mev declares both legs null —
+    the truthful "no comparison selected" marker is the definition_unqualified
+    code, not the omission-mapped code).
+    """
+    case = synthetic_case("rare_earth_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert "stream_threshold_unknown" in result["limitations"]
+    assert "industry_total_unknown" in result["limitations"]
+    assert "definition_unqualified:management_estimate_vs_actual" in result["limitations"]
+    assert "omitted:expectations" not in result["limitations"]
+    assert "missing_derivation" not in result["limitations"]
+
+
+def test_copper_usable_case_carries_no_slice_definitional_codes():
+    """R-MIN-31 §2: copper mints no slice-definitional codes; only the case's
+    own omission-mapped codes (none for a usable case) plus the truthful
+    ``omitted:expectations`` when no mev packet is present.
+    """
+    case = synthetic_case("copper_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    for code in ("stream_threshold_unknown", "industry_total_unknown",
+                 "definition_unqualified:management_estimate_vs_actual"):
+        assert code not in result["limitations"], (code, result["limitations"])
+    assert "omitted:expectations" in result["limitations"]
+
+
+def test_limitations_list_is_sorted_and_deduplicated():
+    """R-MIN-31 §4 / F3 colon-aware: limitations is a sorted, duplicate-free list."""
+    case = synthetic_case("rare_earth_complete")
+    from dataclasses import replace as _r
+    # Inject a known limitation, plus try to mint duplicates.
+    bundle = _r(case.bundle, omissions=("stream_threshold", "page_generation"))
+    result = composition.compose_mining_research(case.query, bundle)
+    limits = result["limitations"]
+    assert limits == sorted(limits), limits
+    assert len(limits) == len(set(limits)), limits
+
+
+def test_minor_h_empty_source_label_degrades_to_synthetic_source():
+    """MINOR-H: an empty ``source_label`` on a native-block packet degrades to the
+    closed ``synthetic-source`` fallback (never ``""``, which would trip the
+    schema's ``minLength: 1`` and raise a raw ``jsonschema.ValidationError``).
+    """
+    case = synthetic_case("copper_complete")
+    empty_packet = {
+        "measure": "reported operating income",
+        "value": 880,
+        "basis": "fictional reported dollars",
+        "source_label": "",
+    }
+    bundle = _replace(case.bundle, financial_packets=(empty_packet,))
+    result = composition.compose_mining_research(case.query, bundle)
+    assert result["economics"]["native_blocks"][0]["source_label"] == "synthetic-source"
