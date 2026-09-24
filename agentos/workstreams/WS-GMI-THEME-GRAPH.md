@@ -102,14 +102,13 @@ waves:
     status: in_progress
     pr: 7881
     next_action: >
-      Fable CEO seat 8955bbc3 (Chairman delegation 2026-09-24). Wave 1 on the fabric against the
-      freeze-v2 carrier commit: T3 registers the ONE shared contracts/market_ontology/
-      economic_change_dossier.v1.schema.json + pure Energy adapter, T4 nuclear witness profiles with
-      synthetic fixtures, T9 membership/ThemeState non-regression freeze; seat integrates by
-      cherry-pick, independent review, slice-1 merge (R-ENE-03). Then Task 2 consumes Semiconductor B's
-      shared curation assertion (#7870), Tasks 5-10 (compose, private economic_changes role in the
-      incumbent Earnings publication family, shared route, UI inside B's generic mount, privacy,
-      real source-to-browser proof), then Power-Demand Value Capture. Working checkpoint:
+      RE-SCOPED 2026-09-24 by Chairman ruling R-ENE-09 (relayed from Astra CEO): Semiconductors (#7870)
+      builds the base — shared assertion, contracts/market_ontology/*, private binding, route, mount —
+      and Energy integrates into it later. Carrier #7881 withdrew the T3 shared-dossier registration,
+      holds T4, keeps the T9 nuclear non-regression freeze (wired into unrun-subsector-themes). Next:
+      land the T9-only slice after review; wait for B's base on main; then the Energy integration wave
+      (adapter on B's contract, nuclear witness profiles, dossier composition, consumed private
+      role/route/mount, browser proof). Working checkpoint:
       agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.
 landmines:
   - >-
