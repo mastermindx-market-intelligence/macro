@@ -1453,5 +1453,81 @@ The drawer is the only modal surface. Tab order follows DOM order. No keyboard s
 | `constraint-list` | B.7 | one `<li class="fi-constraint-row">` per `constraints[]` |
 | `view-tabs` / `view-panels` | B.3 | one `<button role="tab">` and one `<div role="tabpanel">` per `system_views[]` in payload order |
 | `evidence-body` | B.0 aside | `dl.fi-evidence-fields` populated from `source_records[]`; suppression rule applied (D.23) |
+
+---
+
+## F. Two entry modules — static markup, no payload bindings
+
+Both entry modules become **static markup** with NO payload-bound Jinja. No `{% for` over document data, no `{{ fin.… }}` bindings. Static bilingual copy uses the repo's `data-en`/`data-zh` idiom and is swapped by existing `theme.js` on `html[data-lang]` flip. The CTA href is a route variable `{{ fi_dossier_href }}` (placeholder; bound at integration into the shared foundation route — the spec names no path).
+
+### F.1 `_finance_sector_deep_dive.html.j2` — Theme Tracker card (navigation-only)
+
+A navigation-only card placed AFTER the existing `rp` "What to look at first" module and OUTSIDE the canonical theme lanes (per packet §F + R11 §3). The card must NEVER claim a canonical theme stage or compute the seven Theme Tracker asymmetry legs for Finance.
+
+```jinja
+{# Sector deep dives — Financials / Finance Intelligence.                #}
+{# Stays outside the canonical theme lanes; non-canonical context card.   #}
+{# STATIC markup — no payload bindings. Hydration is owned by §E.         #}
+<section class="sot-sector-deep-dive" aria-labelledby="sot-finance-deep-dive-title"
+         data-state-coverage="AVAILABLE" data-state-outer-dossier="AVAILABLE">
+  <p class="sot-kicker">
+    <span class="l-en" data-en="Sector deep dive">Sector deep dive</span>
+    <span class="l-zh" data-zh="子行业深读">子行业深读</span>
+  </p>
+  <h3 id="sot-finance-deep-dive-title">
+    <span class="l-en" data-en="Financials · Finance Intelligence">Financials · Finance Intelligence</span>
+    <span class="l-zh" data-zh="金融 · 金融情报">金融 · 金融情报</span>
+  </h3>
+  <p class="sot-deep-dive-deck">
+    <span class="l-en" data-en="Research context across the financial system — not a canonical theme stage or trade call.">Research context across the financial system — not a canonical theme stage or trade call.</span>
+    <span class="l-zh" data-zh="对金融体系的研究背景 — 非主题生命周期阶段或交易指令。">对金融体系的研究背景 — 非主题生命周期阶段或交易指令。</span>
+  </p>
+  <a class="sot-deep-dive-action"
+     href="{{ fi_dossier_href }}"
+     data-state-cta="navigation"
+     aria-label="Open Finance Intelligence" data-aria-zh="打开金融情报">
+    <span class="l-en" data-en="Open Finance Intelligence ↗">Open Finance Intelligence ↗</span>
+    <span class="l-zh" data-zh="打开金融情报 ↗">打开金融情报 ↗</span>
+  </a>
+</section>
+```
+
+No counts, no `material_changes` slice, no `coverage.{slices_populated, slices_total}` — the card is the eyebrow + title + one static sentence + CTA, per R-D.
+
+### F.2 `_finance_intelligence_launch.html.j2` — Financials page module (static)
+
+A compact launch module placed near the existing back-link on `basket/us_sector_financials.html` (and the analogous Sector Intelligence route). It retains the existing broad Financials price context (equal-weight S&P 500 Financials participation, NOT a buy list, NOT an exposure-pure Finance basket).
+
+```jinja
+{# Finance Intelligence launch — placed near back-link on basket/us_sector_financials.html.
+   STATIC markup — no payload bindings. Hydration is owned by §E.            #}
+<section class="fi-launch" aria-labelledby="fi-launch-title"
+         data-state-coverage="AVAILABLE">
+  <p class="fi-kicker">
+    <span class="l-en" data-en="Finance Intelligence">Finance Intelligence</span>
+    <span class="l-zh" data-zh="金融情报">金融情报</span>
+  </p>
+  <h3 id="fi-launch-title">
+    <span class="l-en" data-en="Research context for the financial system">Research context for the financial system</span>
+    <span class="l-zh" data-zh="金融体系的研究背景">金融体系的研究背景</span>
+  </h3>
+  <p class="fi-launch-deck">
+    <span class="l-en" data-en="Broad Financials price context stays below — equal-weight, not a buy list. The dossier below is research context only.">Broad Financials price context stays below — equal-weight, not a buy list. The dossier below is research context only.</span>
+    <span class="l-zh" data-zh="下方仍保留广义金融价格背景 — 等权重，非买入清单。下方的报告仅作研究背景。">下方仍保留广义金融价格背景 — 等权重，非买入清单。下方的报告仅作研究背景。</span>
+  </p>
+  <p class="fi-launch-vertical">
+    <span class="l-en" data-en="Domains mapped: Money Movement, Securities Infrastructure">Domains mapped: Money Movement, Securities Infrastructure</span>
+    <span class="l-zh" data-zh="已映射子域：资金流动、证券基础设施">已映射子域：资金流动、证券基础设施</span>
+  </p>
+  <a class="fi-launch-action"
+     href="{{ fi_dossier_href }}"
+     aria-label="Open Finance Intelligence" data-aria-zh="打开金融情报">
+    <span class="l-en" data-en="Open Finance Intelligence ↗">Open Finance Intelligence ↗</span>
+    <span class="l-zh" data-zh="打开金融情报 ↗">打开金融情报 ↗</span>
+  </a>
+</section>
+```
+
+The "Domains mapped" wording replaces the prior "Top research domains" (R-J). The two facets "Money Movement" and "Securities Infrastructure" are the static sub-buckets of `coverage.first_vertical` named in §A.0; they are NOT a baked taxonomy — they are the canonical first-vertical split for the dossier, present in the spec by reference to `coverage.first_vertical.name = "Financial Rails & Market Infrastructure"`.
 ```
 ```
