@@ -163,16 +163,24 @@ def shared_identity() -> dict[str, Any]:
 
 
 class _MemoryPublicationStore:
-    """Dict-backed store mirroring only the surfaces _put_verified touches.
+    """Dict-backed store satisfying the full ``StrictBoundedReadStore`` chain.
 
-    Built from the local Store protocol: ``get_bytes_strict_bounded`` and
-    ``put_bytes``.  No filesystem, no parent class — the harness must never
-    create side-effect bytes on disk in a sparse worktree.
+    Implements every member of ``Store -> StrictReadStore -> StrictBoundedReadStore``
+    so ``isinstance(store, StrictBoundedReadStore)`` is true and the owner's
+    ``_bounded_read`` check passes. No filesystem, no parent class — the
+    harness must never create side-effect bytes on disk in a sparse worktree.
     """
 
     def __init__(self) -> None:
         self._blobs: dict[str, bytes] = {}
+        self._upload_times: dict[str, str] = {}
         self.read_count = 0
+
+    def get_bytes(self, key: str) -> bytes | None:
+        return self._blobs.get(key)
+
+    def get_bytes_strict(self, key: str) -> bytes | None:
+        return self._blobs.get(key)
 
     def get_bytes_strict_bounded(self, key: str, maximum_bytes: int) -> bytes | None:
         self.read_count += 1
@@ -191,7 +199,17 @@ class _MemoryPublicationStore:
     ) -> bool:
         del content_type
         self._blobs[key] = data
+        self._upload_times[key] = "2026-09-24T00:00:00Z"
         return True
+
+    def exists(self, key: str) -> bool:
+        return key in self._blobs
+
+    def list_prefix(self, prefix: str) -> list[str]:
+        return sorted(key for key in self._blobs if key.startswith(prefix))
+
+    def upload_time(self, key: str) -> str | None:
+        return self._upload_times.get(key)
 
 
 class _SyntheticClient:
