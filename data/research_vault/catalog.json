@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T04:11:36.923491+00:00",
-  "count": 2754,
+  "generated_at": "2026-09-24T05:01:22.067965+00:00",
+  "count": 2756,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -241,6 +241,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-8wmue97o1zc-e19d07",
+      "title": "Pi gfiv 4q26",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:37:20Z",
+      "summary_points": [
+        "Economic Outlook Shift: Expansion probability raised to 85% (recession 5%), with Above-Trend Growth at 45% (3Q26) and Sub-Trend Growth at 40% (4Q26), driven by loose fiscal policy, oil >$100, and central bank actions.",
+        "Rate & Yield Strategy: U.S.",
+        "Treasury yields to retrace to 4.5%-4.75% as Fed follows data; best ideas in securitized credit, AAA collateralized loans, EM debt/currencies, and long government/municipal bonds for single-digit returns.",
+        "Critical Inflation Risks: Growth reacceleration tightening labor markets (sparking inflation), AI pushback (job displacement fears), and central bank tightening beyond market expectations.",
+        "Bond Allocation Priorities: Prioritize duration, yield, and carry with exposure to credit (AAA CLOs), EM debt, and government bonds (U.S./Australia/municipal) amid resilient economy and rising yields."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-f8nhnxlth6e-84709a",
       "title": "TPL Sept 23 26",
       "institution": "The PunchLine",
@@ -300,6 +321,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-93vt1lehxln-f14301",
+      "title": "DB The Main Event Trump, Xi, and the Art of the Truce",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T19:39:04Z",
+      "summary_points": [
+        "US-China Geopolitical Tensions Persist: Unresolved trade issues (tariffs, supply chains), AI race, Iran sanctions, and Taiwan tensions threaten stability despite temporary summit calm, escalating systemic risk.",
+        "Economic Friction Signals: 70%+ US voters prioritize cost-of-living (midterm driver) and China’s 10%+ August export rebound directly impact market sentiment and trade dynamics.",
+        "Critical Policy Timeline: Nov 3 US midterms may delay trade measures; Dec US defense measures targeting China investments (biotech, solar) and tech restrictions will escalate economic friction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
