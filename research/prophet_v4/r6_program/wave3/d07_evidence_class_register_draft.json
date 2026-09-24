@@ -1,7 +1,29 @@
 {
-  "schema": "prophet.d07_evidence_class_register/draft-1",
+  "schema": "prophet.d07_evidence_class_register/draft-2",
   "source_sha": "cde1e7e5e0cd7134f88a7f78dbeec614976c5090",
   "generated_by": "pu_w3_d07_register",
+  "classing_rule": {
+    "OBSERVED_AS_RUN": "input identity, release clock, observed clock (a capture receipt stamped by the writer at write time) and correction clock all recorded at capture; any model in the path pinned at decision time; store generation pinned.",
+    "PUBLIC_INFO_REPLAY": "source-recorded release and correction (vintage-boundary) clocks exist for every input row used; no model of unknown vintage in the path; no capture clock required.",
+    "RETROSPECTIVE": "a KNOWN, identifiable construction (code blob, selection era, unfitted-but-selected head, or a model of unknown vintage) whose knowledge boundary cannot be proven not to include the future of the decisions it would be applied to. The label names a known construction with an unprovable boundary.",
+    "null": "a required element is ABSENT or UNIDENTIFIED (no acquired body, no identity, no reconstructable event set, no pinned generation) — nothing to class yet; the consumer is blocked pending the prospective remedy. Every null carries `null_reason` ∈ {NOT_ACQUIRED, IDENTITY_UNPINNED, EVENT_SET_NOT_RECONSTRUCTABLE, GENERATION_UNPINNED, NO_VINTAGE_ROUTE, NOT_APPLICABLE_UNFITTED}."
+  },
+  "null_reasons": [
+    "NOT_ACQUIRED",
+    "IDENTITY_UNPINNED",
+    "EVENT_SET_NOT_RECONSTRUCTABLE",
+    "GENERATION_UNPINNED",
+    "NO_VINTAGE_ROUTE",
+    "NOT_APPLICABLE_UNFITTED"
+  ],
+  "flag_vocabulary": {
+    "late-capture": "TESTED — <tests/…:line> | STATED — <path:line> | ABSENT — <reason> | N/A — <reason>",
+    "corrected-body": "TESTED — <tests/…:line> | STATED — <path:line> | ABSENT — <reason> | N/A — <reason>",
+    "current-only-event-set": "TESTED — <tests/…:line> | STATED — <path:line> | ABSENT — <reason> | N/A — <reason>",
+    "future-membership": "TESTED — <tests/…:line> | STATED — <path:line> | ABSENT — <reason> | N/A — <reason>",
+    "overlap": "TESTED — <tests/…:line> | STATED — <path:line> | ABSENT — <reason> | N/A — <reason>",
+    "fitting-label-maturity": "TESTED — <tests/…:line> | STATED — <path:line> | ABSENT — <reason> | N/A — <reason>"
+  },
   "rows": [
     {
       "row_id": "S0-neworder-alfred-vintage",
@@ -10,19 +32,23 @@
       "input_identity": "series, period, and realtime_start identify one ALFRED vintage; the grain is recorded at config/dataset_registry.yml:213.",
       "release_clock": "Recorded by ALFRED realtime_start as the date a vintage became knowable; config/dataset_registry.yml:238.",
       "observed_clock": "NOT_RECORDED for the original acquisition of a replayed vintage; the store records no per-vintage capture clock, and collectors/fred.py:197 says the collector writes the vintage matrix.",
-      "correction_clock": "Recorded by realtime_end; the full-vintage path defines the next-vintage boundary at collectors/fred.py:293.",
+      "correction_clock": "DERIVED — realtime_end is inferred as the successor vintage's realtime_start − 1 day (`collectors/fred.py:293`); the boundary itself is source-recorded.",
       "model_vintage": "N/A",
       "retrieval_semantics": "Select a vintage by series, period, and realtime_start, then join only vintages whose release clock is on or before the decision date; the point-in-time reader is collectors/fred.py:239.",
       "leakage_controls": {
         "late-capture": "ABSENT — the replayed store has no per-vintage observed clock; collectors/fred.py:197.",
-        "corrected-body": "PRESENT — the full-vintage path records realtime_start and realtime_end; collectors/fred.py:289.",
-        "current-only-event-set": "ABSENT — this is a macro series rather than an event set; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:14.",
-        "future-membership": "PRESENT — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
-        "overlap": "PRESENT — distinct anchor episodes are separated by at least six calendar months; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25."
+        "corrected-body": "STATED — vintage clocks only: realtime_end is inferred as the successor realtime_start minus one day; collectors/fred.py:293.",
+        "current-only-event-set": "ABSENT — this is a macro series or mechanism rather than an event set; research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:29.",
+        "future-membership": "STATED — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
+        "overlap": "STATED — the six-month spacing rule is a design constraint, not a held-out partition; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this row."
       },
       "proposed_class": "PUBLIC_INFO_REPLAY",
-      "basis_rationale": "The deciding receipt is research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:29, which records the measured NEWORDER vintage span supporting replay.",
-      "prospective_remedy": ""
+      "basis_rationale": "The PUBLIC_INFO_REPLAY clause decides this row because source-recorded release and vintage-boundary clocks cover every input row and no unknown-vintage model is in the path; research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:29. The ratification's design phrase “retrospective diagnostic” names the diagnostic use, not this evidence class.",
+      "prospective_remedy": "",
+      "consumers": [
+        "S0"
+      ]
     },
     {
       "row_id": "S0-isratio-alfred-vintage",
@@ -31,19 +57,23 @@
       "input_identity": "series, period, and realtime_start identify one ALFRED vintage; the grain is recorded at config/dataset_registry.yml:213.",
       "release_clock": "Recorded by ALFRED realtime_start as the date a vintage became knowable; config/dataset_registry.yml:238.",
       "observed_clock": "NOT_RECORDED for the original acquisition of a replayed vintage; the store records no per-vintage capture clock, and collectors/fred.py:197 says the collector writes the vintage matrix.",
-      "correction_clock": "Recorded by realtime_end; the full-vintage path defines the next-vintage boundary at collectors/fred.py:293.",
+      "correction_clock": "DERIVED — realtime_end is inferred as the successor vintage's realtime_start − 1 day (`collectors/fred.py:293`); the boundary itself is source-recorded.",
       "model_vintage": "N/A",
       "retrieval_semantics": "Select a vintage by series, period, and realtime_start, then join only vintages whose release clock is on or before the decision date; the point-in-time reader is collectors/fred.py:239.",
       "leakage_controls": {
         "late-capture": "ABSENT — the replayed store has no per-vintage observed clock; collectors/fred.py:197.",
-        "corrected-body": "PRESENT — the full-vintage path records realtime_start and realtime_end; collectors/fred.py:289.",
-        "current-only-event-set": "ABSENT — this is a macro series rather than an event set; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:14.",
-        "future-membership": "PRESENT — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
-        "overlap": "PRESENT — distinct anchor episodes are separated by at least six calendar months; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25."
+        "corrected-body": "STATED — vintage clocks only: realtime_end is inferred as the successor realtime_start minus one day; collectors/fred.py:293.",
+        "current-only-event-set": "ABSENT — this is a macro series or mechanism rather than an event set; research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:56.",
+        "future-membership": "STATED — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
+        "overlap": "STATED — the six-month spacing rule is a design constraint, not a held-out partition; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this row."
       },
       "proposed_class": "PUBLIC_INFO_REPLAY",
-      "basis_rationale": "The deciding receipt is research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:56, which records the measured ISRATIO vintage span supporting replay.",
-      "prospective_remedy": ""
+      "basis_rationale": "The PUBLIC_INFO_REPLAY clause decides this row because source-recorded release and vintage-boundary clocks cover every input row and no unknown-vintage model is in the path; research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:56. The ratification's design phrase “retrospective diagnostic” names the diagnostic use, not this evidence class.",
+      "prospective_remedy": "",
+      "consumers": [
+        "S0"
+      ]
     },
     {
       "row_id": "S0-indpro-alfred-vintage",
@@ -52,313 +82,387 @@
       "input_identity": "series, period, and realtime_start identify one ALFRED vintage; the grain is recorded at config/dataset_registry.yml:213.",
       "release_clock": "Recorded by ALFRED realtime_start as the date a vintage became knowable; config/dataset_registry.yml:238.",
       "observed_clock": "NOT_RECORDED for the original acquisition of a replayed vintage; the store records no per-vintage capture clock, and collectors/fred.py:197 says the collector writes the vintage matrix.",
-      "correction_clock": "Recorded by realtime_end; the full-vintage path defines the next-vintage boundary at collectors/fred.py:293.",
+      "correction_clock": "DERIVED — realtime_end is inferred as the successor vintage's realtime_start − 1 day (`collectors/fred.py:293`); the boundary itself is source-recorded.",
       "model_vintage": "N/A",
       "retrieval_semantics": "Select a vintage by series, period, and realtime_start, then join only vintages whose release clock is on or before the decision date; the point-in-time reader is collectors/fred.py:239.",
       "leakage_controls": {
         "late-capture": "ABSENT — the replayed store has no per-vintage observed clock; collectors/fred.py:197.",
-        "corrected-body": "PRESENT — the full-vintage path records realtime_start and realtime_end; collectors/fred.py:289.",
-        "current-only-event-set": "ABSENT — this is a macro series rather than an event set; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:14.",
-        "future-membership": "PRESENT — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
-        "overlap": "PRESENT — distinct anchor episodes are separated by at least six calendar months; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25."
+        "corrected-body": "STATED — vintage clocks only: realtime_end is inferred as the successor realtime_start minus one day; collectors/fred.py:293.",
+        "current-only-event-set": "ABSENT — this is a macro series or mechanism rather than an event set; research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:46.",
+        "future-membership": "STATED — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
+        "overlap": "STATED — the six-month spacing rule is a design constraint, not a held-out partition; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this row."
       },
       "proposed_class": "PUBLIC_INFO_REPLAY",
-      "basis_rationale": "The deciding receipt is research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:46, which records the measured INDPRO vintage span supporting replay.",
-      "prospective_remedy": ""
+      "basis_rationale": "The PUBLIC_INFO_REPLAY clause decides this row because source-recorded release and vintage-boundary clocks cover every input row and no unknown-vintage model is in the path; research/prophet_v4/r6_program/wave2/alfred_depth_b16a.json:46. The ratification's design phrase “retrospective diagnostic” names the diagnostic use, not this evidence class.",
+      "prospective_remedy": "",
+      "consumers": [
+        "S0"
+      ]
     },
     {
       "row_id": "S1-massive-stock-day",
       "study": "S1",
       "source_family": "Massive massive_stock_day",
       "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
+      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly; engine/prophet_lab/intelligence_vector.py:399.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is user-facing, feed-conditional.",
-      "prospective_remedy": "Freeze an exact feed artifact, body hash, source release clock, observed clock, and correction clock at each decision, beginning with the first prospective B04 capture. This row blocks B04-D."
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-first-party-baskets",
       "study": "S1",
       "source_family": "First-party curated baskets/theme graph",
       "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
+      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly; engine/prophet_lab/intelligence_vector.py:399.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is user-facing.",
-      "prospective_remedy": "For each future dossier decision, capture the exact curated row hash and its release, observation, and correction clocks from the first prospective build. This row blocks B04-D."
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-fred-alfred",
       "study": "S1",
       "source_family": "FRED/ALFRED",
-      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "ALFRED records realtime_start, but no D5 family release path is recorded; config/dataset_registry.yml:238.",
+      "input_identity": "NONE at B04 family level; ALFRED itself identifies a vintage by series, period, and realtime_start, but B04 has no route that selects that identity; config/dataset_registry.yml:213.",
+      "release_clock": "PRESENT at source as ALFRED realtime_start, but B04 has no route that selects a decision-time vintage; config/dataset_registry.yml:238 and collectors/fred.py:239.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only; model use absent.",
-      "prospective_remedy": "If B04 needs a macro fact, register an exact series, period, and vintage selection plus immutable output, beginning after the seat admits that prospective use. This row blocks B04-D."
+      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; config/dataset_registry.yml:238 and collectors/fred.py:239.",
+      "prospective_remedy": "Add a B04 route that selects the exact series, period, and realtime_start vintage and records an immutable decision output; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "NO_VINTAGE_ROUTE"
     },
     {
       "row_id": "S1-census-m3",
       "study": "S1",
       "source_family": "Census M3",
-      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
+      "input_identity": "NONE — no B04 acquisition or decision-time source identity is recorded; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
+      "release_clock": "NOT_RECORDED for a B04 decision-time source release route; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only.",
-      "prospective_remedy": "Capture a source-dated document body, its release and correction clocks, and an immutable extraction at each future decision, beginning only after a lawful source route exists. This row blocks B04-D."
+      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
+      "prospective_remedy": "Register a dated release and correction route, pin exact row identity, and freeze outputs before the first prospective B04-D decision; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "NO_VINTAGE_ROUTE"
     },
     {
       "row_id": "S1-sec-edgar",
       "study": "S1",
       "source_family": "SEC EDGAR",
-      "input_identity": "Event-specific issuer_release source_sha256 is extracted when present; engine/neuralweb/company_intelligence_reader.py:1155.",
-      "release_clock": "Filing date and acceptance time are source fields for a filing body; engine/institutional_census/sec_sources.py:138.",
+      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
+      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly; engine/prophet_lab/intelligence_vector.py:399.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is user-facing with citation and trademark limits.",
-      "prospective_remedy": "Capture the filing accession, accepted time, body hash, observed clock, and amendment chain before each future decision, beginning with the first prospective dossier event. This row blocks B04-D."
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-nasdaq-calendar",
       "study": "S1",
       "source_family": "Nasdaq earnings calendar",
-      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
-      "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
-      "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
+      "input_identity": "NONE — the census finds no acquired body for this family; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "release_clock": "NOT_RECORDED — no acquired body or source release clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "observed_clock": "NOT_RECORDED — no acquired body or observed clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "correction_clock": "NOT_RECORDED — no acquired body or correction chain exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "model_vintage": "N/A — no model input exists because the family was not acquired.",
+      "retrieval_semantics": "No decision-time body can be selected because the family was not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
-        "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "late-capture": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "corrected-body": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "current-only-event-set": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "future-membership": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "overlap": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is not a source for storage/model/redistribution.",
-      "prospective_remedy": "Do not capture this family unless written permission reverses its posture; if that happens, freeze event bodies and all three clocks from the first permitted decision. This row blocks B04-D."
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no Nasdaq calendar body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "prospective_remedy": "Acquire and register an exact body, identity, release clock, observed clock, and correction chain before the first prospective B04-D decision; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "NOT_ACQUIRED"
     },
     {
       "row_id": "S1-yahoo-expectations",
       "study": "S1",
       "source_family": "Yahoo/yfinance expectations",
-      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "The expectation accessor exposes no source-issued publication clock; collectors/equity_revisions.py:354.",
-      "observed_clock": "Provider observation and system observation are recorded for a prospective snapshot; collectors/equity_revisions.py:357.",
-      "correction_clock": "Same-period changes supersede through an append-only observation lineage; collectors/equity_revisions.py:361.",
-      "model_vintage": "N/A",
+      "input_identity": "NONE at B04 family level; the collector identifies a prospective snapshot only after acquisition and exposes no source release clock; collectors/equity_revisions.py:320 and collectors/equity_revisions.py:354.",
+      "release_clock": "NOT_RECORDED — source_effective_at and source_published_at are null because the estimate accessors do not expose source clocks; collectors/equity_revisions.py:354.",
+      "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "STATED — a historical system_observed_at more than sixty seconds from now is rejected; collectors/equity_revisions.py:441.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only; model use and redistribution absent.",
-      "prospective_remedy": "For each future decision, store the provider payload hash and release, observed, and correction clocks if Yahoo later exposes them; until then keep typed absence, beginning now. This row blocks B04-D."
+      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; collectors/equity_revisions.py:354.",
+      "prospective_remedy": "Expose and store a provider release clock with each payload, or keep typed absence, before the first prospective B04-D decision; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "NO_VINTAGE_ROUTE"
     },
     {
       "row_id": "S1-basket-spy-closes",
       "study": "S1",
       "source_family": "Basket/SPY closes",
-      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
+      "input_identity": "NONE — no B04 acquisition or decision-time source identity is recorded; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
+      "release_clock": "NOT_RECORDED for a B04 decision-time source release route; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only; model use and redistribution absent.",
-      "prospective_remedy": "If a future dossier uses a close, freeze the bar source identity and all three clocks at decision time, beginning with the first prospective capture. This row blocks B04-D."
+      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
+      "prospective_remedy": "Register a dated release and correction route, pin exact row identity, and freeze outputs before the first prospective B04-D decision; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "NO_VINTAGE_ROUTE"
     },
     {
       "row_id": "S1-equitydesk-scores",
       "study": "S1",
       "source_family": "EquityDesk / Finnhub / earnings-call scores",
-      "input_identity": "Native score identity is ticker, call_date, and earnings_call_sent; engine/prophet_stage_inputs.py:147.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
+      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
+      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly; engine/prophet_lab/intelligence_vector.py:399.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
-      "retrieval_semantics": "The production stage path indexes the native table and selects the most recent call strictly before entry; engine/prophet_stage_inputs.py:445.",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
+      "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only.",
-      "prospective_remedy": "For B04 use, capture the native row, transport generation, body hash, and all three clocks before each decision, beginning with the first prospective event. This row blocks B04-D."
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-finviz-ths",
       "study": "S1",
       "source_family": "Finviz / THS",
       "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
+      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly; engine/prophet_lab/intelligence_vector.py:399.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only.",
-      "prospective_remedy": "If a future dossier needs a mapping, capture an immutable dated map body and its clocks from the first permitted prospective build. This row blocks B04-D."
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-sp-kensho-theia",
       "study": "S1",
       "source_family": "S&P Kensho / Theia",
-      "input_identity": "NONE; the register reserves both families and records no acquisition; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:179.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
-      "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
-      "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
+      "input_identity": "NONE — the census finds no acquired body for this family; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "release_clock": "NOT_RECORDED — no acquired body or source release clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "observed_clock": "NOT_RECORDED — no acquired body or observed clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "correction_clock": "NOT_RECORDED — no acquired body or correction chain exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "model_vintage": "N/A — no model input exists because the family was not acquired.",
+      "retrieval_semantics": "No decision-time body can be selected because the family was not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
-        "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "late-capture": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "corrected-body": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "current-only-event-set": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "future-membership": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "overlap": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is not a source.",
-      "prospective_remedy": "Acquire and register an exact body and its three clocks first; no prospective decision date can begin before that acquisition. This row blocks B04-D."
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no S&P Kensho / Theia body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "prospective_remedy": "Acquire and register an exact body, identity, release clock, observed clock, and correction chain before the first prospective B04-D decision; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "NOT_ACQUIRED"
     },
     {
       "row_id": "S1-consensus-estimates",
       "study": "S1",
       "source_family": "Consensus estimates",
-      "input_identity": "NONE; the seat ruling records consensus as absent rather than an input; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
-      "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
-      "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
+      "input_identity": "NONE — the census finds no acquired body for this family; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "release_clock": "NOT_RECORDED — no acquired body or source release clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "observed_clock": "NOT_RECORDED — no acquired body or observed clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "correction_clock": "NOT_RECORDED — no acquired body or correction chain exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "model_vintage": "N/A — no model input exists because the family was not acquired.",
+      "retrieval_semantics": "No decision-time body can be selected because the family was not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
-        "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "late-capture": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "corrected-body": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "current-only-event-set": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "future-membership": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "overlap": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+        "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is permanently absent.",
-      "prospective_remedy": "Keep typed absence unless a future authority reverses the ruling and supplies a licensed immutable capture; any prospective start begins after both events. This row blocks B04-D."
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no licensed consensus body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "prospective_remedy": "Acquire and register an exact body, identity, release clock, observed clock, and correction chain before the first prospective B04-D decision; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "NOT_ACQUIRED"
     },
     {
       "row_id": "S1-transcripts",
       "study": "S1",
       "source_family": "Transcripts rp_public_primary_v1",
-      "input_identity": "A transcript span carries document_id, body_sha256, and rights profile; engine/company_intelligence/event_workspace.py:253.",
-      "release_clock": "No acquisition or source publication grant is defined by the profile string; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:197.",
+      "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
+      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly; engine/prophet_lab/intelligence_vector.py:399.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
-      "retrieval_semantics": "D5 projects only allowlisted spans and keeps transcript authority context-only; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:204.",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
+      "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only, context-only.",
-      "prospective_remedy": "Capture each permitted transcript body, hash, release clock, observed clock, and correction chain before a future decision, beginning with the first prospectively authorized event. This row blocks B04-D."
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-press-narrative",
       "study": "S1",
       "source_family": "Press / narrative / search / Google Trends",
       "input_identity": "NONE at family level; the D5 adapter pins event-specific identity only after current event discovery, at engine/prophet_lab/intelligence_vector.py:1031.",
-      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly, and the clock vocabulary is defined at engine/prophet_lab/intelligence_vector.py:399.",
+      "release_clock": "NOT_RECORDED for the D5 family row; no source-wide release clock is exposed by the current assembly; engine/prophet_lab/intelligence_vector.py:399.",
       "observed_clock": "Event-specific observed_at can be asserted from the owner lifecycle, but captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:425.",
-      "correction_clock": "Later generation time can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434.",
-      "model_vintage": "N/A",
+      "correction_clock": "A later generated_at computation clock can be asserted when a later revision is visible; engine/prophet_lab/intelligence_vector.py:434. It is not a source correction clock.",
+      "model_vintage": "N/A — no model is fitted on this family row.",
       "retrieval_semantics": "Resolve current issuer identity, discover only the current event generation, walk immutable revisions, and admit a field only when release, observation, and computation clocks are on or before the episode cut; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
-        "late-capture": "ABSENT — the D5 envelope names captured_at as not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — a workspace body is accepted only after its byte count and SHA-256 match the manifest; engine/neuralweb/company_intelligence_reader.py:1122.",
-        "current-only-event-set": "PRESENT — discovery is disclosed as current-generation-only with historical reconstruction false; engine/prophet_lab/intelligence_vector.py:1010.",
+        "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — integrity only: a body is checked against its manifest hash and byte count; engine/neuralweb/company_intelligence_reader.py:1122.",
+        "current-only-event-set": "STATED — current-generation-only discovery and historical reconstruction false are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the vector has empty fusion bindings and all authority values false; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:27."
+        "overlap": "ABSENT — empty fusion bindings and false authority are non-use, not an overlap control; engine/prophet_lab/intelligence_vector.py:1004.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the current-generation-only assembly limit at engine/prophet_lab/intelligence_vector.py:1010; rights posture is internal-only.",
-      "prospective_remedy": "If a future dossier uses narrative evidence, freeze the exact document body, hash, and three clocks at capture, beginning only after a lawful route is registered. This row blocks B04-D."
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
+      "consumers": [
+        "B04-D"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S2-alfred-macro-expectation",
@@ -368,18 +472,22 @@
       "release_clock": "Recorded by ALFRED realtime_start as the date a vintage became knowable; config/dataset_registry.yml:238.",
       "observed_clock": "NOT_RECORDED for the original acquisition of a replayed vintage; the store records no per-vintage capture clock, and collectors/fred.py:197 says the collector writes the vintage matrix.",
       "correction_clock": "Recorded by realtime_end; the full-vintage path defines the next-vintage boundary at collectors/fred.py:293.",
-      "model_vintage": "UNKNOWN — the coherent_ridge_v1 registry freezes the target and feature rules but this register finds no fitting cutoff or calibration receipt; config/release_forecast_model_registry.yml:1 records the model name.",
-      "retrieval_semantics": "Join the declared ALFRED same-release vintage chain and refuse cross-vintage reconstruction; the model registry records that rule at research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:65.",
+      "model_vintage": "UNKNOWN — coherent_ridge_v1 is a known model identity, but its coefficients, fitting window, and calibration are not pinned; config/release_forecast_model_registry.yml:5.",
+      "retrieval_semantics": "The ALFRED input itself remains replayable by series, period, and realtime_start, but coherent_ridge_v1 stands in the path with an unknown vintage; config/release_forecast_model_registry.yml:5.",
       "leakage_controls": {
-        "late-capture": "ABSENT — no original decision-time capture clock is recorded for a replayed vintage; collectors/fred.py:197.",
-        "corrected-body": "PRESENT — realtime_start and realtime_end bound each vintage; collectors/fred.py:289.",
-        "current-only-event-set": "ABSENT — this is a macro expectation rather than an issuer event set; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:65.",
-        "future-membership": "ABSENT — macro targets do not establish issuer membership; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:65.",
-        "overlap": "PRESENT — completed parity and exact-period rules are required by the registry; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:65."
+        "late-capture": "ABSENT — the replayed store has no per-vintage observed clock; collectors/fred.py:197.",
+        "corrected-body": "STATED — vintage clocks only: realtime_end is inferred as the successor realtime_start minus one day; collectors/fred.py:293.",
+        "current-only-event-set": "ABSENT — this is a macro series or mechanism rather than an event set; config/release_forecast_model_registry.yml:5.",
+        "future-membership": "STATED — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
+        "overlap": "STATED — the six-month spacing rule is a design constraint, not a held-out partition; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this row."
       },
-      "proposed_class": "PUBLIC_INFO_REPLAY",
-      "basis_rationale": "The deciding receipt is the ALFRED same-release vintage chain at research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:65.",
-      "prospective_remedy": ""
+      "proposed_class": "RETROSPECTIVE",
+      "basis_rationale": "The RETROSPECTIVE clause decides this row because coherent_ridge_v1 is a known model of unknown vintage whose knowledge boundary cannot be bounded; config/release_forecast_model_registry.yml:5.",
+      "prospective_remedy": "Freeze the coherent_ridge_v1 coefficients, fitting window, and calibration at a named commit sha before the next prospective run and use only that frozen model.",
+      "consumers": [
+        "B08"
+      ]
     },
     {
       "row_id": "S2-sec-comparable-events",
@@ -389,18 +497,23 @@
       "release_clock": "Filing date and SEC acceptance time are retained source clocks; engine/institutional_census/sec_sources.py:138.",
       "observed_clock": "NOT_RECORDED for historical B08 event-set capture; the current D5 discovery scope is current-generation-only at engine/prophet_lab/intelligence_vector.py:1010.",
       "correction_clock": "Amendment forms and amendment fields are retained, but a complete B08 correction chain is not selected by current code; engine/institutional_census/sec_sources.py:140.",
-      "model_vintage": "UNKNOWN — no B08 comparable-event model fitting cutoff or calibration vintage is recorded in the cited code.",
-      "retrieval_semantics": "Use current event discovery and immutable revision walks, not a reconstructed historical filing population; engine/prophet_lab/intelligence_vector.py:1031.",
+      "model_vintage": "N/A — no comparable-event model input is identified because the event set is not reconstructable.",
+      "retrieval_semantics": "Current discovery cannot reconstruct the filing population that existed at a historical B08 decision; engine/prophet_lab/intelligence_vector.py:1010.",
       "leakage_controls": {
-        "late-capture": "ABSENT — captured_at is not asserted by the D5 revision receipt; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — amendment form and number are retained source fields; engine/institutional_census/sec_sources.py:147.",
-        "current-only-event-set": "PRESENT — the adapter explicitly refuses historical event-set reconstruction; engine/prophet_lab/intelligence_vector.py:1011.",
-        "future-membership": "ABSENT — current-registrant-only identity cannot support historical issuer membership; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — event identity is content-addressed and D5 authority remains false; engine/us_candidate_episode.py:301."
+        "late-capture": "ABSENT — captured_at is not asserted; engine/prophet_lab/intelligence_vector.py:430.",
+        "corrected-body": "STATED — amendment form and number are retained source fields; engine/institutional_census/sec_sources.py:151.",
+        "current-only-event-set": "STATED — historical event-set reconstruction is explicitly false; engine/prophet_lab/intelligence_vector.py:1011.",
+        "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
+        "overlap": "ABSENT — content-addressed identity is not an overlap control and no held-out partition is recorded; engine/us_candidate_episode.py:301.",
+        "fitting-label-maturity": "N/A — nothing is fitted because no event set is reconstructable; engine/prophet_lab/intelligence_vector.py:1011."
       },
-      "proposed_class": "RETROSPECTIVE",
-      "basis_rationale": "The deciding receipt is the current-only event discovery limit at engine/prophet_lab/intelligence_vector.py:1010, so historical filing replay is not established.",
-      "prospective_remedy": "From the first prospective B08 decision, capture accession, accepted time, body hash, observed clock, amendment chain, and selected event set before the decision."
+      "proposed_class": null,
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because current-generation discovery leaves no reconstructable historical filing population; engine/prophet_lab/intelligence_vector.py:1010.",
+      "prospective_remedy": "From the first prospective B08 decision, freeze the complete accession set, accepted times, body hashes, observed clock, and amendment chain before the decision; this row blocks B08.",
+      "consumers": [
+        "B08"
+      ],
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S2-yahoo-expectation-accrual",
@@ -410,18 +523,23 @@
       "release_clock": "NOT_RECORDED — source_effective_at and source_published_at are null because the accessors do not expose source clocks; collectors/equity_revisions.py:354.",
       "observed_clock": "Provider observation and system observation are recorded for each snapshot; collectors/equity_revisions.py:357.",
       "correction_clock": "Append-only correction_state and supersedes_observation_id record later changes; collectors/equity_revisions.py:361.",
-      "model_vintage": "UNKNOWN — no fitting cutoff, selection vintage, or calibration is recorded for a B08 expectation model.",
+      "model_vintage": "N/A — no B08 expectation model is fitted.",
       "retrieval_semantics": "Accrue current provider snapshots with bounded sessions, reject historical system clocks, and supersede only through recorded lineage; collectors/equity_revisions.py:433.",
       "leakage_controls": {
-        "late-capture": "PRESENT — a historical system_observed_at more than sixty seconds from now is rejected; collectors/equity_revisions.py:441.",
-        "corrected-body": "PRESENT — changed same-period rows carry supersedes lineage; collectors/equity_revisions.py:361.",
-        "current-only-event-set": "PRESENT — the current snapshot cannot be backfilled as history; collectors/equity_revisions.py:444.",
-        "future-membership": "ABSENT — issuer and security references are null in the observation row; collectors/equity_revisions.py:331.",
-        "overlap": "PRESENT — observation_id deduplicates the exact payload and horizon; collectors/equity_revisions.py:320."
+        "late-capture": "STATED — a historical system_observed_at more than sixty seconds from now is rejected; collectors/equity_revisions.py:441.",
+        "corrected-body": "STATED — changed rows carry supersedes lineage; collectors/equity_revisions.py:361.",
+        "current-only-event-set": "STATED — current snapshots cannot be backfilled as history; collectors/equity_revisions.py:444.",
+        "future-membership": "ABSENT — issuer and security references are null in the observation row; collectors/equity_revisions.py:332.",
+        "overlap": "ABSENT — payload deduplication is not a held-out partition; collectors/equity_revisions.py:320.",
+        "fitting-label-maturity": "N/A — nothing is fitted on the accrual row; collectors/equity_revisions.py:433."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the null source release clock at collectors/equity_revisions.py:356, so provider publication time is not established.",
-      "prospective_remedy": "From the first permitted prospective B08 capture, store provider release time when exposed, plus payload hash and all observation clocks; until then this row blocks B08."
+      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because every used row lacks the source-recorded release clock required for PUBLIC_INFO_REPLAY; collectors/equity_revisions.py:354.",
+      "prospective_remedy": "Expose and store a provider release clock with each row, or keep B08 blocked, beginning with the first permitted prospective capture; this row blocks B08.",
+      "consumers": [
+        "B08"
+      ],
+      "null_reason": "NO_VINTAGE_ROUTE"
     },
     {
       "row_id": "S2-consensus-expectations",
@@ -431,39 +549,49 @@
       "release_clock": "NOT_RECORDED — no licensed consensus body exists in the current program; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
       "observed_clock": "NOT_RECORDED — no licensed consensus observation exists in the current program; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
       "correction_clock": "NOT_RECORDED — no licensed correction chain exists in the current program; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
-      "model_vintage": "UNKNOWN — no consensus model input or vintage exists under the current ruling.",
-      "retrieval_semantics": "Emit a typed absence for consensus-dependent lanes rather than substituting another estimate or fabricating a neutral value; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:33.",
+      "model_vintage": "N/A — no consensus model input exists under the ruling.",
+      "retrieval_semantics": "Emit a typed absence rather than substituting another estimate or fabricating a neutral value; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
       "leakage_controls": {
-        "late-capture": "ABSENT — there is no captured body whose late capture could be tested; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
-        "corrected-body": "ABSENT — there is no corrected body chain; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
-        "current-only-event-set": "PRESENT — consensus absence is typed rather than treated as coverage; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:33.",
-        "future-membership": "ABSENT — no licensed issuer input exists; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
-        "overlap": "PRESENT — the lane remains absent and cannot enter a fusion vote; research/prophet_v4/r6_program/wave0/C_EARNINGS_D5_READINESS_CENSUS_2026-09-23.md:33."
+        "late-capture": "N/A — not acquired; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
+        "corrected-body": "N/A — not acquired; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
+        "current-only-event-set": "N/A — not acquired; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
+        "future-membership": "N/A — not acquired; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
+        "overlap": "N/A — not acquired; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
+        "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the permanently absent consensus ruling at research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
-      "prospective_remedy": "No capture can start under current authority; if a future authority and licensed source both appear, freeze bodies and clocks from that first permitted decision; this row blocks B08."
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because the seat ruling records licensed consensus as permanently absent; research/prophet_v4/r6_program/rulings/SEAT_RULING_R6-C-01_2026-09-23.md:14.",
+      "prospective_remedy": "No capture can start under current authority; if a future authority and licensed source both appear, freeze bodies and clocks from that first permitted decision; this row blocks B08.",
+      "consumers": [
+        "B08"
+      ],
+      "null_reason": "NOT_ACQUIRED"
     },
     {
       "row_id": "S3-episode-registry",
       "study": "S3",
       "source_family": "Candidate episode registry",
-      "input_identity": "A content-addressed event id hashes the immutable event semantics, including source receipt and clocks; engine/us_candidate_episode.py:301.",
+      "input_identity": "A content-addressed event envelope and source_receipt identify one event, but no store generation is pinned for the B10 decision; engine/us_candidate_episode.py:301.",
       "release_clock": "occurred_at is the source event time used by the envelope; engine/us_candidate_episode.py:279.",
-      "observed_clock": "known_at and recorded_at are explicit event clocks and must satisfy occurred_at <= known_at <= recorded_at; engine/us_candidate_episode.py:280.",
-      "correction_clock": "CORRECTED, RETRACTED, and IDENTITY_SUPERSEDED are closed correction events; engine/us_candidate_episode.py:35.",
+      "observed_clock": "known_at and recorded_at are caller-supplied strings that are ordering-checked, not stamped by the writer at write time; engine/us_candidate_episode.py:255 and engine/us_candidate_episode.py:281.",
+      "correction_clock": "CORRECTED, RETRACTED, and IDENTITY_SUPERSEDED are closed correction event kinds; engine/us_candidate_episode.py:41.",
       "model_vintage": "N/A",
       "retrieval_semantics": "A store read validates HEAD, the generation manifest, exact file set, hashes, and byte counts before projecting episodes; engine/us_candidate_episode.py:1534.",
       "leakage_controls": {
-        "late-capture": "PRESENT — recorded_at is a required captured event clock; engine/us_candidate_episode.py:281.",
-        "corrected-body": "PRESENT — correction and retraction events require explicit lineage; engine/us_candidate_episode.py:275.",
-        "current-only-event-set": "PRESENT — only turn_watch_reset_low opens an episode, so no silent event species enters; engine/us_candidate_episode.py:34.",
-        "future-membership": "ABSENT — identity is pinned at observation but the code does not provide a historical issuer universe; engine/us_candidate_episode.py:67.",
-        "overlap": "PRESENT — episode identity and anchor token detect changed or duplicate anchors; engine/us_candidate_episode.py:218."
+        "late-capture": "ABSENT — recorded_at is caller-supplied and no write-time stamp is proven; engine/us_candidate_episode.py:255.",
+        "corrected-body": "STATED — closed correction event kinds are declared; engine/us_candidate_episode.py:41.",
+        "current-only-event-set": "STATED — closed ANCHOR_KINDS contain only turn_watch_reset_low; engine/us_candidate_episode.py:34.",
+        "future-membership": "ABSENT — the code does not provide a historical issuer universe; engine/us_candidate_episode.py:67.",
+        "overlap": "STATED — anchor tokens detect changed or duplicate anchors; engine/us_candidate_episode.py:218.",
+        "fitting-label-maturity": "N/A — nothing is fitted on the episode registry row; engine/us_candidate_episode.py:34."
       },
-      "proposed_class": "OBSERVED_AS_RUN",
-      "basis_rationale": "The immutable source_receipt and content-addressed event identity at engine/us_candidate_episode.py:301 plus the required recorded_at clock at engine/us_candidate_episode.py:281 establish this observed row.",
-      "prospective_remedy": ""
+      "proposed_class": null,
+      "basis_rationale": "The null GENERATION_UNPINNED clause decides this row because recorded_at is caller-supplied and no committed generation is pinned; engine/us_candidate_episode.py:255.",
+      "prospective_remedy": "Commit a generation manifest and make the writer stamp recorded_at from the wall clock at write time; only episodes written after that generation first writes live may claim OBSERVED_AS_RUN. This row blocks B10.",
+      "consumers": [
+        "B10"
+      ],
+      "null_reason": "GENERATION_UNPINNED"
     },
     {
       "row_id": "S3-macro-join-inputs",
@@ -478,13 +606,17 @@
       "leakage_controls": {
         "late-capture": "ABSENT — run asof is not an original capture receipt; scripts/build_prophet.py:1791.",
         "corrected-body": "ABSENT — corrected macro or market bodies are not chained in this path; scripts/build_prophet.py:1791.",
-        "current-only-event-set": "PRESENT — future market state and future closes are refused by date checks; scripts/build_prophet.py:1804.",
+        "current-only-event-set": "STATED — future market state and future closes are refused by date checks; scripts/build_prophet.py:1804.",
         "future-membership": "ABSENT — no historical membership control is present in this build path; scripts/build_prophet.py:1791.",
-        "overlap": "ABSENT — no held-out partition is recorded in this path; scripts/build_prophet.py:1791."
+        "overlap": "ABSENT — no held-out partition is recorded in this path; scripts/build_prophet.py:1791.",
+        "fitting-label-maturity": "ABSENT — no fitting-label boundary or maturity partition is recorded; scripts/build_prophet.py:1791."
       },
       "proposed_class": "RETROSPECTIVE",
-      "basis_rationale": "The deciding receipt is the asof-only filtering description at scripts/build_prophet.py:1791, which cannot establish model or source observation.",
-      "prospective_remedy": "From the first prospective Early Leadership run, freeze feature code, input artifact hashes, asof, release clocks, and the complete model vintage before decision time."
+      "basis_rationale": "The RETROSPECTIVE clause decides this row because the known build code and run-date construction has a selection era whose knowledge boundary cannot be proven future-free; scripts/build_prophet.py:1791.",
+      "prospective_remedy": "Freeze feature code, input hashes, asof, release clocks, and complete model vintage before the first prospective Early Leadership decision.",
+      "consumers": [
+        "B10"
+      ]
     },
     {
       "row_id": "S4-rank-feature-code",
@@ -497,36 +629,45 @@
       "model_vintage": "UNKNOWN — feature training cutoff and calibration are not recorded, although the fusion score is explicitly unfitted; engine/us_board_rank.py:523.",
       "retrieval_semantics": "The canonical order is an unfitted equal-weight evidence-family vote rather than a fitted return forecast; engine/us_board_rank.py:531.",
       "leakage_controls": {
-        "late-capture": "ABSENT — no feature-body capture clock is recorded; engine/us_board_rank.py:523.",
-        "corrected-body": "ABSENT — code corrections are not represented as per-row correction clocks; engine/us_board_rank.py:112.",
-        "current-only-event-set": "PRESENT — the board definition separates ranker generations; engine/us_board_rank.py:100.",
+        "late-capture": "ABSENT — no feature-body capture clock is recorded; engine/us_board_rank.py:119.",
+        "corrected-body": "ABSENT — code corrections are not represented as per-row correction clocks; engine/us_board_rank.py:119.",
+        "current-only-event-set": "STATED — the board definition separates ranker generations; engine/us_board_rank.py:100.",
         "future-membership": "ABSENT — no historical membership vintage is pinned by the ranker; engine/us_board_rank.py:100.",
-        "overlap": "PRESENT — the rank authority is fenced by board definition and superseded stamps; engine/us_board_rank.py:138."
+        "overlap": "STATED — the board-definition fence separates generations but is not a held-out partition; engine/us_board_rank.py:119.",
+        "fitting-label-maturity": "N/A — the construction declares that no coefficient was fitted; engine/us_board_rank.py:524."
       },
       "proposed_class": "RETROSPECTIVE",
-      "basis_rationale": "The deciding receipt is the unfitted-score statement at engine/us_board_rank.py:523, which still leaves no complete model vintage.",
-      "prospective_remedy": "Before the next prospective challenger run, freeze code blob identity, all input artifact hashes, normalization, fitting cutoff, and calibration; start from that frozen run."
+      "basis_rationale": "The RETROSPECTIVE clause decides this row because us_prophet_v3 is a known construction selected in the BOARD_DEFINITION_ADOPTED era; engine/us_board_rank.py:119.",
+      "prospective_remedy": "Freeze the code blob, all input hashes, normalization, fitting cutoff, and calibration before the next prospective challenger run.",
+      "consumers": [
+        "B11"
+      ]
     },
     {
       "row_id": "S4-fitting-data-cutoff",
       "study": "S4",
       "source_family": "Ranker fitting-data cutoff",
-      "input_identity": "NONE — no fitting-data artifact identity is recorded for the current head; engine/us_board_rank.py:523.",
-      "release_clock": "NOT_RECORDED — no fitting-data release clock is present in the current ranker receipts; engine/us_board_rank.py:523.",
-      "observed_clock": "NOT_RECORDED — the ranker does not record a fitting observation clock; engine/us_board_rank.py:523.",
-      "correction_clock": "NOT_RECORDED — no fitting-data correction chain is present; engine/us_board_rank.py:523.",
-      "model_vintage": "UNKNOWN — the current receipts state that no coefficient was read from an outcome but do not provide a fitting-data cutoff; engine/us_board_rank.py:524.",
+      "input_identity": "NONE — no fitting-data artifact exists because the selected head is unfitted; engine/us_board_rank.py:523.",
+      "release_clock": "N/A — no fitted body exists for the unfitted head; engine/us_board_rank.py:523.",
+      "observed_clock": "N/A — no fitted body exists for the unfitted head; engine/us_board_rank.py:523.",
+      "correction_clock": "N/A — no fitted body exists for the unfitted head; engine/us_board_rank.py:523.",
+      "model_vintage": "N/A — unfitted head (engine/us_board_rank.py:523-528).",
       "retrieval_semantics": "No held-out fitting partition is selected in the current ranker because no fitted coefficient set is identified; engine/us_board_rank.py:524.",
       "leakage_controls": {
-        "late-capture": "ABSENT — no fitting body capture is recorded; engine/us_board_rank.py:523.",
-        "corrected-body": "ABSENT — no corrected fitting body chain is recorded; engine/us_board_rank.py:523.",
-        "current-only-event-set": "PRESENT — the rank path is declared unfitted rather than silently using current events; engine/us_board_rank.py:524.",
-        "future-membership": "ABSENT — no universe membership vintage is pinned; engine/us_board_rank.py:523.",
-        "overlap": "ABSENT — no held-out fold boundary is recorded; engine/us_board_rank.py:524."
+        "late-capture": "N/A — nothing is fitted; engine/us_board_rank.py:523.",
+        "corrected-body": "N/A — nothing is fitted; engine/us_board_rank.py:523.",
+        "current-only-event-set": "N/A — nothing is fitted; engine/us_board_rank.py:523.",
+        "future-membership": "N/A — nothing is fitted; engine/us_board_rank.py:523.",
+        "overlap": "N/A — nothing is fitted; engine/us_board_rank.py:523.",
+        "fitting-label-maturity": "N/A — nothing is fitted; engine/us_board_rank.py:523."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the absent fitting-data identity implied by the unfitted construction at engine/us_board_rank.py:523, so a cutoff cannot be asserted.",
-      "prospective_remedy": "Register a frozen fitting dataset identity and cutoff before the next challenger decision; until then this row blocks only the historical S4 challenger claim."
+      "basis_rationale": "The null NOT_APPLICABLE_UNFITTED clause decides this row because the selected head is unfitted and has no fitting-data cutoff to register; engine/us_board_rank.py:523.",
+      "prospective_remedy": "No prospective remedy is required while the head remains unfitted; if fitting begins, freeze the dataset identity, cutoff, label maturity, and partition first. This row blocks nothing.",
+      "consumers": [
+        "B11"
+      ],
+      "null_reason": "NOT_APPLICABLE_UNFITTED"
     },
     {
       "row_id": "S4-normalization-head",
@@ -541,13 +682,17 @@
       "leakage_controls": {
         "late-capture": "ABSENT — no captured normalization input clock is recorded; scripts/build_stock_library.py:5914.",
         "corrected-body": "ABSENT — no correction chain is recorded for normalized outputs; scripts/build_stock_library.py:5914.",
-        "current-only-event-set": "PRESENT — normalization is within-day and does not use a future cross-section by construction; scripts/build_stock_library.py:5914.",
+        "current-only-event-set": "STATED — normalization is within-day and does not use a future cross-section by construction; scripts/build_stock_library.py:5914.",
         "future-membership": "ABSENT — no historical membership vintage is pinned; scripts/build_stock_library.py:5914.",
-        "overlap": "PRESENT — rows are kept first by asof and ticker for the shadow ledger; scripts/build_stock_library.py:5918."
+        "overlap": "STATED — keep-first rows by asof and ticker are not a held-out partition; scripts/build_stock_library.py:5918.",
+        "fitting-label-maturity": "N/A — the normalization is within-day and nothing is fitted across time; scripts/build_stock_library.py:5914."
       },
       "proposed_class": "RETROSPECTIVE",
-      "basis_rationale": "The deciding receipt is the within-day normalization description at scripts/build_stock_library.py:5914 without a model-vintage receipt.",
-      "prospective_remedy": "Freeze the normalization code, exact day population, input hashes, head definition, and calibration before the first prospective challenger decision."
+      "basis_rationale": "The RETROSPECTIVE clause decides this row because anticipation-v1-2026-08-08 is a known selection era whose knowledge boundary cannot be proven future-free; engine/us_board_rank.py:267.",
+      "prospective_remedy": "Freeze the normalization code, exact day population, input hashes, head definition, and calibration before the first prospective challenger decision.",
+      "consumers": [
+        "B11"
+      ]
     },
     {
       "row_id": "S5-equitydesk-native-score",
@@ -561,14 +706,19 @@
       "retrieval_semantics": "Index the native table by ticker and select the most recent call_date strictly before entry; engine/prophet_stage_inputs.py:445.",
       "leakage_controls": {
         "late-capture": "ABSENT — no row-level capture clock is present; engine/prophet_stage_inputs.py:147.",
-        "corrected-body": "PRESENT — a transported payload is checked against its sibling generation manifest; engine/prophet_stage_inputs.py:277.",
+        "corrected-body": "STATED — integrity only: a transported payload is checked against its generation manifest; engine/prophet_stage_inputs.py:277.",
         "current-only-event-set": "ABSENT — the native ladder is a current history table rather than a captured decision-time event set; engine/prophet_stage_inputs.py:171.",
         "future-membership": "ABSENT — no historical membership lineage is carried; engine/prophet_stage_inputs.py:147.",
-        "overlap": "PRESENT — call_date must be strictly before entry date; engine/prophet_stage_inputs.py:448."
+        "overlap": "STATED — call_date must be strictly before entry date; engine/prophet_stage_inputs.py:445.",
+        "fitting-label-maturity": "ABSENT — the vendor model and fitting-label boundary are unidentified; engine/prophet_stage_inputs.py:22."
       },
-      "proposed_class": "RETROSPECTIVE",
-      "basis_rationale": "The deciding receipt is the strictly-before date filter at engine/prophet_stage_inputs.py:448 paired with the absent row clock at engine/prophet_stage_inputs.py:147.",
-      "prospective_remedy": "From the first prospective B15 run, capture the native body or score, model identity, transport generation, release clock, and observed clock before the decision."
+      "proposed_class": null,
+      "basis_rationale": "The null IDENTITY_UNPINNED clause decides this row because the vendor model behind earnings_call_sent is unidentified; engine/prophet_stage_inputs.py:22.",
+      "prospective_remedy": "Cite and freeze the vendor model identity, prompt or calibration where applicable, native body or score, transport generation, release clock, and observed clock before the first prospective B15 decision; this row blocks B15.",
+      "consumers": [
+        "B15"
+      ],
+      "null_reason": "IDENTITY_UNPINNED"
     },
     {
       "row_id": "S5-d5-earnings-context",
@@ -582,14 +732,18 @@
       "retrieval_semantics": "Current-generation discovery, immutable revision walking, and episode-cut clock checks select the decision-time packet; engine/prophet_lab/intelligence_vector.py:1031.",
       "leakage_controls": {
         "late-capture": "ABSENT — captured_at is explicitly not asserted; engine/prophet_lab/intelligence_vector.py:430.",
-        "corrected-body": "PRESENT — later revisions require a post-cut generation and receipt; engine/prophet_lab/intelligence_vector.py:697.",
-        "current-only-event-set": "PRESENT — current-generation-only discovery and no historical reconstruction are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
+        "corrected-body": "STATED — later revisions require a later generation and receipt; engine/prophet_lab/intelligence_vector.py:697.",
+        "current-only-event-set": "STATED — current-generation-only discovery and no historical reconstruction are explicit; engine/prophet_lab/intelligence_vector.py:1010.",
         "future-membership": "ABSENT — identity resolution is current-registrant-only; engine/prophet_lab/intelligence_vector.py:1012.",
-        "overlap": "PRESENT — the context annotation is attached after selection and cannot change rank or authority; engine/prophet_bridge.py:4220."
+        "overlap": "ABSENT — context attached after selection is non-use, not an overlap control; engine/prophet_bridge.py:4220.",
+        "fitting-label-maturity": "ABSENT — the extraction model and fitting-label boundary are not exposed; engine/prophet_lab/intelligence_vector.py:41."
       },
       "proposed_class": "RETROSPECTIVE",
-      "basis_rationale": "The deciding receipt is the unknown owner model identity behind the adapter-set version at engine/prophet_lab/intelligence_vector.py:41.",
-      "prospective_remedy": "For each prospective B15 decision, freeze the source body, extraction model and prompt version, output hash, all clocks, and generation identity before entry."
+      "basis_rationale": "The RETROSPECTIVE clause decides this row because the D5 extraction path is a known construction with an unknown model vintage; engine/prophet_lab/intelligence_vector.py:41.",
+      "prospective_remedy": "For each prospective B15 decision, freeze the source body, extraction model and prompt version, output hash, all clocks, and generation identity before entry.",
+      "consumers": [
+        "B15"
+      ]
     },
     {
       "row_id": "S6-internal-era-mechanisms",
@@ -598,19 +752,23 @@
       "input_identity": "series, period, and realtime_start identify one ALFRED vintage; the grain is recorded at config/dataset_registry.yml:213.",
       "release_clock": "Recorded by ALFRED realtime_start as the date a vintage became knowable; config/dataset_registry.yml:238.",
       "observed_clock": "NOT_RECORDED for the original acquisition of a replayed vintage; the store records no per-vintage capture clock, and collectors/fred.py:197 says the collector writes the vintage matrix.",
-      "correction_clock": "Recorded by realtime_end; the full-vintage path defines the next-vintage boundary at collectors/fred.py:293.",
+      "correction_clock": "DERIVED — realtime_end is inferred as the successor vintage's realtime_start − 1 day (`collectors/fred.py:293`); the boundary itself is source-recorded.",
       "model_vintage": "N/A",
       "retrieval_semantics": "Select a vintage by series, period, and realtime_start, then join only vintages whose release clock is on or before the decision date; the point-in-time reader is collectors/fred.py:239.",
       "leakage_controls": {
-        "late-capture": "ABSENT — replayed vintages carry no original observed clock; collectors/fred.py:197.",
-        "corrected-body": "PRESENT — realtime_start and realtime_end define correction boundaries; collectors/fred.py:289.",
-        "current-only-event-set": "ABSENT — these are macro mechanisms rather than an event set; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:27.",
-        "future-membership": "PRESENT — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
-        "overlap": "PRESENT — the era is source-clock derived and fixed at 2002-12 through 2025-05-15; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:13."
+        "late-capture": "ABSENT — the replayed store has no per-vintage observed clock; collectors/fred.py:197.",
+        "corrected-body": "STATED — vintage clocks only: realtime_end is inferred as the successor realtime_start minus one day; collectors/fred.py:293.",
+        "current-only-event-set": "ABSENT — this is a macro series or mechanism rather than an event set; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:13.",
+        "future-membership": "STATED — the admitted use is macro-only and reports survivorship as a limit; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:25.",
+        "overlap": "STATED — the six-month spacing rule is a design constraint, not a held-out partition; research/prophet_v4/r6_program/wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md:25.",
+        "fitting-label-maturity": "N/A — nothing is fitted on this row."
       },
       "proposed_class": "PUBLIC_INFO_REPLAY",
-      "basis_rationale": "The deciding receipt is the ratified source-clock era at research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:13.",
-      "prospective_remedy": ""
+      "basis_rationale": "The PUBLIC_INFO_REPLAY clause decides this row because every macro input row has source-recorded release and vintage-boundary clocks and no unknown-vintage model is in the path; research/prophet_v4/r6_program/rulings/R6-B16-01a_ERA_RATIFICATION_2026-09-23.md:13. The ratification's design phrase “retrospective diagnostic” names the diagnostic use, not this evidence class.",
+      "prospective_remedy": "",
+      "consumers": [
+        "B18"
+      ]
     },
     {
       "row_id": "S6-historical-membership",
@@ -620,18 +778,23 @@
       "release_clock": "NOT_RECORDED — no historical mapping source publication clock exists; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
       "observed_clock": "NOT_RECORDED — no observed historical membership capture exists; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
       "correction_clock": "NOT_RECORDED — no historical membership revision chain exists; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
-      "model_vintage": "UNKNOWN — no B18 population model or fitting vintage can be formed without membership.",
+      "model_vintage": "N/A — no population or policy model input exists.",
       "retrieval_semantics": "No current GICS, basket, concept, or sector map may be backdated; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:176.",
       "leakage_controls": {
-        "late-capture": "ABSENT — no historical body was captured; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
-        "corrected-body": "ABSENT — no historical correction chain exists; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
-        "current-only-event-set": "PRESENT — current-map backdating is explicitly refused; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:176.",
-        "future-membership": "ABSENT — the missing control is the absence of historical membership itself; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
-        "overlap": "ABSENT — no original-universe overlap audit exists; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:170."
+        "late-capture": "ABSENT — no acquired body exists.",
+        "corrected-body": "ABSENT — no acquired correction chain exists.",
+        "current-only-event-set": "ABSENT — no acquired decision-time event set exists.",
+        "future-membership": "ABSENT — no historical membership lineage exists.",
+        "overlap": "ABSENT — no original-universe overlap audit exists.",
+        "fitting-label-maturity": "N/A — nothing is fitted without an acquired population."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the absent licensed dated mapping history at research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
-      "prospective_remedy": "Acquire a dated membership history with add, remove, rename, and spin lineage, then capture immutable snapshots from the first permitted date; this row blocks B18."
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because the required historical body or event set was never acquired; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
+      "prospective_remedy": "Acquire a dated membership history with add, remove, rename, and spin lineage, then capture immutable snapshots from the first permitted date; this row blocks B18.",
+      "consumers": [
+        "B18"
+      ],
+      "null_reason": "NOT_ACQUIRED"
     },
     {
       "row_id": "S6-delistings-failed-universe",
@@ -641,18 +804,23 @@
       "release_clock": "NOT_RECORDED for the missing general failed-issuer event source; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
       "observed_clock": "NOT_RECORDED for failed-issuer observation; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
       "correction_clock": "NOT_RECORDED for failed-issuer corrections; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
-      "model_vintage": "UNKNOWN — no failure-inclusive population or policy model vintage can be formed.",
+      "model_vintage": "N/A — no population or policy model input exists.",
       "retrieval_semantics": "B18 remains blocked because failure-inclusive policy research requires an issuer universe with failure coverage; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
       "leakage_controls": {
-        "late-capture": "ABSENT — no general failed-issuer capture exists; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
-        "corrected-body": "ABSENT — no general correction chain exists; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
-        "current-only-event-set": "PRESENT — the ruling refuses a current event set as failure coverage; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
-        "future-membership": "ABSENT — future membership cannot be known from the missing universe; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
-        "overlap": "ABSENT — no dead-name overlap audit exists; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:173."
+        "late-capture": "ABSENT — no acquired body exists.",
+        "corrected-body": "ABSENT — no acquired correction chain exists.",
+        "current-only-event-set": "ABSENT — no acquired decision-time event set exists.",
+        "future-membership": "ABSENT — no historical membership lineage exists.",
+        "overlap": "ABSENT — no original-universe overlap audit exists.",
+        "fitting-label-maturity": "N/A — nothing is fitted without an acquired population."
       },
       "proposed_class": null,
-      "basis_rationale": "The deciding receipt is the explicit B18 failure-coverage blocker at research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
-      "prospective_remedy": "Acquire a failure-inclusive original universe with dated exits and correction lineage, then begin immutable prospective capture from its first lawful date; this row blocks B18."
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because the required historical body or event set was never acquired; research/prophet_v4/r6_program/rulings/R6-B16-01_ADMISSION_2026-09-23.md:21.",
+      "prospective_remedy": "Acquire a failure-inclusive original universe with dated exits and correction lineage, then begin immutable prospective capture from its first lawful date; this row blocks B18.",
+      "consumers": [
+        "B18"
+      ],
+      "null_reason": "NOT_ACQUIRED"
     }
   ]
 }
