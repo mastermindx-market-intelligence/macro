@@ -177,3 +177,32 @@ TrialLedger/Evaluation owners. Do not fabricate two-hour data from daily FRED,
 backdate signal confirmation, assume rate declines always mean risk-on, or reset
 seen-history status. RD2 remains independently useful policy-source work and
 retains its separate custody/integration obligations. Parent mission is incomplete.
+
+## Continuation: exact uploaded indicator families
+
+Chairman supplied three RTF files and requested testing both families. The new
+UPLOADED_INDICATOR_BINDING_2026-09-24.md binds their hashes and actual formulas.
+macd-rsi.rtf and stoch-rsi 1.rtf have different RTF bytes but identical extracted
+text containing both TH_RSIMACD+ and CM_Stochastic_MTF. The latter is price
+stochastic on high/low/close, NOT Stochastic RSI. stoch rsi 2.rtf is the native
+Stochastic RSI 14/14/3/3 plot. Actual chart overrides remain unverified.
+
+Bounded research-only synthetic verification: 14 sandbox unit tests passed;
+the committed reproducible recipe uploaded_formula_probe.py passed 11 grouped
+formula/input checks on the original Studio (PID 23451; numpy 2.5.2/pandas 3.0.5).
+Recipe SHA256 fc76d6e78b1899c24ebb7b9726eb3c762cbf0dac1e0357062f16e4fae4d1d186.
+These are not independent market episodes, Pine runtime parity, or win rates.
+No live trading, empirical model fit, TrialLedger change or RD1 re-evaluation.
+
+An existing potential intraday source is now located: mastermind-terminal
+master 1d2ac1e64a21c957b229e2e2567fcc248d557a64,
+terminal/lib/intradaySources.ts fetchYahooMacroIntraday (^TNX; 2h from 60m).
+This is a proxy source, not TVC:US10Y. The chart projection can synthesize missing
+OHLC and substitutes display epochs; raw origin/true clocks must be retained for
+research. No new collector or source migration is authorized by this finding.
+Next bounded read: source-availability/coverage check only, without strategy grading.
+Then bind native exported values and complete observed OHLC before empirical
+trial registration. Seven single/pair/triple comparisons are proposed, not executed.
+Procedure pin 2a7681601a419532a47f0d24029b55b37bfe2b5c; same original records
+carrier. No children/watcher/wake, no effect uncertainty; all held siblings and
+RD1 files/results/ledger remain untouched. Parent mission remains incomplete.
