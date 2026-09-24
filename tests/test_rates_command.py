@@ -657,6 +657,68 @@ class TestForwardLogLane:
         lines = [l for l in log_path.read_text().strip().splitlines() if l.strip()]
         assert len(lines) == 1, f"Expected 1 line (keep-FIRST), got {len(lines)}"
 
+    def test_forward_log_freezes_policy_repricing_measurement_keep_first(self, tmp_path, monkeypatch):
+        """Nightly ledger must freeze the exact measured repricing block once per night."""
+        monkeypatch.setenv("COLLECT_LANE", "nightly")
+        from scripts.build_rates_command import _append_forward_log
+
+        first_measurement = {
+            "schema": "rate_futures.repricing.v1",
+            "evaluated_at": "2026-09-24T22:30:00+00:00",
+            "asof": "2026-09-24",
+            "historical_availability_qualified": False,
+            "display_only": True,
+            "authority": False,
+            "can_score": False,
+            "can_rank": False,
+            "can_size": False,
+            "can_gate": False,
+            "can_trade": False,
+            "families": {
+                "zq": {
+                    "status": "available",
+                    "rate_family": "EFFR",
+                    "observation_dates": ["2026-09-22", "2026-09-23"],
+                    "snapshot_sha256": ["a" * 64, "b" * 64],
+                    "horizons": {
+                        "m12": {
+                            "status": "available",
+                            "raw_change_bp": 12.0,
+                            "matched_contract_change_bp": 11.9999,
+                            "roll_change_bp": 0.0,
+                            "rounding_residual_bp": 0.0001,
+                            "forward_reference_only": True,
+                            "causal_policy_shock": False,
+                        }
+                    },
+                }
+            },
+        }
+        artifact = {
+            "asof": "2026-09-24",
+            "expectations_pressure": {"net_state": "two_sided", "hawk_score": 0, "ease_score": 0},
+            "divergence": [],
+            "board": {"rate_path_row": {}},
+            "policy_path_repricing": first_measurement,
+        }
+        out_dir = tmp_path / "rates_command"
+        out_dir.mkdir()
+        _append_forward_log(out_dir, artifact)
+
+        # A later rebuild/correction on the same night must not rewrite the first-known row.
+        artifact["policy_path_repricing"] = {
+            **first_measurement,
+            "families": {"zq": {"status": "unavailable", "reason": "later_revision"}},
+        }
+        _append_forward_log(out_dir, artifact)
+
+        lines = (out_dir / "forward_log.jsonl").read_text().strip().splitlines()
+        assert len(lines) == 1
+        row = json.loads(lines[0])
+        assert row["policy_path_repricing"] == first_measurement
+        assert row["policy_path_repricing"]["authority"] is False
+        assert row["policy_path_repricing"]["can_trade"] is False
+
 
 # RD2: actual collector -> incumbent store -> RIC measurement path.
 def _rd2_frames(*, shift=0.0, missing_old=None, dates=('2026-09-30', '2026-10-01'),
