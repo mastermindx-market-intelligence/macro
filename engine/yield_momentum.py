@@ -11,12 +11,40 @@ import json
 from typing import Any
 import numpy as np
 import pandas as pd
+from pandas.tseries.holiday import AbstractHolidayCalendar, GoodFriday, USFederalHolidayCalendar
 
 SERIES = {'2y': 'us2y', '5y': 'us5y', '10y': 'us10y',
           '20y': 'us20y', '30y': 'us30y'}  # Existing DGS20 -> CCW us20y alias.
 HORIZONS = (5, 22, 63)
 TURN_LOOKBACK = 1260
 ORIGIN_ATTR = 'rate_observations'
+HOLIDAY_BASIS = 'us_federal_holidays_plus_good_friday_v1'
+
+
+class _ExpectedAbsenceCalendar(AbstractHolidayCalendar):
+    """US federal holidays plus Good Friday (SIFMA full close; CMT does not print).
+
+    Seat amendment A-RIC-F3-W1 (2026-09-24): measured on origin/main
+    data/fred/DGS{2,5,10,20,30}, the 1260-row weekday grid 2021-11-24 -> 2026-09-22
+    carries 54 rows = 51 federal holidays + 3 Good Fridays (2022-04-15, 2024-03-29,
+    2025-04-18); the federal calendar alone leaves those 3 as unexpected carries on
+    every series, this calendar leaves zero.
+    """
+    rules = USFederalHolidayCalendar.rules + [GoodFriday]
+
+
+def expected_absent_grid(index: pd.DatetimeIndex) -> list[bool]:
+    """Mark each grid date that is an expected absence (US federal holiday or Good Friday).
+
+    Pure helper: no network, clock or I/O; an empty index returns ``[]``. The
+    fixed weekday grid itself never carries weekends (``pd.bdate_range``).
+    """
+    if len(index) == 0:
+        return []
+    holidays = _ExpectedAbsenceCalendar().holidays(
+        start=index[0], end=index[-1])
+    holiday_set = set(pd.Timestamp(d).date() for d in holidays)
+    return [pd.Timestamp(t).date() in holiday_set for t in index]
 
 
 def _date(value: Any) -> str | None:
@@ -118,10 +146,20 @@ def _bp_change(values: pd.Series, horizon: int) -> float | None:
 
 
 def _turn_watch(values: pd.Series, change_22d_bp: float | None) -> str | None:
+    # `values` is the measured series on the fixed weekday grid: the < 60 guard and
+    # the TURN_LOOKBACK window count GRID INTERVALS (horizon_basis), never observed
+    # samples. Only the percentile denominator excludes the NaN rows of expected
+    # absences -- otherwise a 1260-row grid with ~58 holiday rows scores each NaN as
+    # "not <= latest" and biases the percentile down (~0.92 -> ~0.88), silently
+    # withholding extreme_high_watch. Seat amendment A-RIC-F3-W1 (2026-09-24).
     if change_22d_bp is None or len(values) < 60:
         return None
     trailing = values.iloc[-TURN_LOOKBACK:]
-    percentile = float((trailing <= trailing.iloc[-1]).mean())
+    latest = trailing.iloc[-1]
+    if pd.isna(latest):
+        return None
+    observed = trailing.dropna()
+    percentile = float((observed <= latest).mean())
     if percentile >= 0.85 and change_22d_bp <= -12:
         return 'rolldown_forming'
     if percentile >= 0.90:
@@ -142,6 +180,9 @@ def _series_read(frame: pd.DataFrame, column: str,
            'availability_status': 'provided' if source_available else 'not_provided_by_feature_frame',
            'historical_availability_qualified': False, 'observation_origin': 'unverified',
            'origin_status': 'not_provided', 'path_qualified': False,
+           'holiday_basis': HOLIDAY_BASIS,
+           'expected_absent_grid_rows': 0, 'unexpected_carried_grid_rows': 0,
+           'path_qualification_basis': 'captured_source_rows_or_expected_absent',
            'horizon_basis': 'fixed_weekday_grid_intervals',
            'level': None, 'carried_level': None, 'last_observed': None,
            'velocity_bp': {f'{h}d': None for h in HORIZONS},
@@ -165,11 +206,16 @@ def _series_read(frame: pd.DataFrame, column: str,
     if dates is not None:
         observed = [o == _date(t) for o, t in zip(dates, index)]
         measured = numeric.where(observed)
+        expected = expected_absent_grid(index)
+        qualified_rows = [o or e for o, e in zip(observed, expected)]
         out.update(source_id=item.get('source_id'), source_basis=item['source_basis'],
                    source_digest=item.get('source_digest'))
         out['observation_origin'] = ('captured_source_row' if observed[-1]
                                      else 'carried' if dates[-1] else 'missing')
-        out['path_qualified'] = (all(observed) and numeric.notna().all()
+        out['expected_absent_grid_rows'] = sum(1 for e in expected if e)
+        out['unexpected_carried_grid_rows'] = sum(
+            1 for o, e in zip(observed, expected) if not o and not e)
+        out['path_qualified'] = (all(qualified_rows) and numeric.notna().all()
                                  and item['source_basis'] == 'captured_source_rows')
         out['path_qualified'] = bool(out['path_qualified'])
         if item['source_basis'] == 'caller_override' and observed[-1]:
@@ -201,6 +247,8 @@ def _series_read(frame: pd.DataFrame, column: str,
     elif not out['path_qualified']:
         out['null_reason'] = 'endpoint comparisons only; complete observed path not qualified'
     if enough and out['path_qualified']:
+        # Grid-based series in; expected-absence NaNs are excluded only from the
+        # percentile denominator inside _turn_watch (see its comment).
         out['turn_watch'] = _turn_watch(measured, out['velocity_bp']['22d'])
     return out
 
@@ -216,12 +264,13 @@ def build_yield_momentum(frame: pd.DataFrame, *,
     """
     evidence = (frame.attrs.get(ORIGIN_ATTR) if observation_evidence is None
                 else observation_evidence)
-    return {'schema': 'yield_momentum.v1', 'calculation_version': 'fixed_grid_origin.v2',
+    return {'schema': 'yield_momentum.v1', 'calculation_version': 'fixed_grid_origin.v3',
             'asof': _date(frame.index[-1]) if len(frame.index) else None,
             'display_only': True, 'authority': False, 'can_score': False,
             'can_size': False, 'can_trade': False,
             'caveats': ['Weekday grid intervals are not verified Treasury trading sessions.',
                         'Captured source rows do not certify historical availability.',
-                        'Endpoint changes do not prove continuous deceleration or a market turn.'],
+                        'Endpoint changes do not prove continuous deceleration or a market turn.',
+                        'Expected absences are US federal holidays and Good Friday only; a carried print on any other weekday still withholds path qualification.'],
             'series': {label: _series_read(frame, column, available_at, evidence)
                        for label, column in SERIES.items()}}
