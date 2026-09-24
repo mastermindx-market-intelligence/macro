@@ -852,7 +852,8 @@ def write_result_artifacts(result: Mapping[str, object], output_dir) -> dict[str
 
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    claims = result.get("claims")
+    clean_result = json_ready(result)
+    claims = clean_result.get("claims")
     if not isinstance(claims, Mapping) or tuple(claims.keys()) != _CLAIM_KEYS:
         missing = [claim for claim in _CLAIM_KEYS if not isinstance(claims, Mapping) or claim not in claims]
         extra = [] if not isinstance(claims, Mapping) else [claim for claim in claims if claim not in _CLAIM_KEYS]
@@ -861,18 +862,30 @@ def write_result_artifacts(result: Mapping[str, object], output_dir) -> dict[str
     for claim, record in claims.items():
         if not isinstance(record, Mapping) or record.get("verdict") not in _ALLOWED_VERDICTS:
             raise ValueError(f"invalid verdict record for {claim}: {record}")
-    json_text = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
-    report_text = render_report(result)
+    json_text = json.dumps(clean_result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    report_text = render_report(clean_result)
     json_path = output / "results.json"
     report_path = output / "REPORT.md"
     json_path.write_text(json_text)
     report_path.write_text(report_text)
-    return {
+    written = {
         "results_json": str(json_path),
         "results_sha256": sha256_file(json_path),
         "report_md": str(report_path),
         "report_sha256": sha256_file(report_path),
     }
+    if "data_provenance" in clean_result:
+        manifest_path = output / "data_manifest.json"
+        manifest_path.write_text(
+            json.dumps(clean_result["data_provenance"], indent=2, sort_keys=True, allow_nan=False) + "\n"
+        )
+        written.update(
+            {
+                "data_manifest_json": str(manifest_path),
+                "data_manifest_sha256": sha256_file(manifest_path),
+            }
+        )
+    return written
 
 
 OPERATION_KEY = "cn-risk-p1-radar-revalidation-20260923-solpro-001"
@@ -932,3 +945,532 @@ def main(argv: list[str] | None = None) -> int:
     )
     write_result_artifacts(result, Path(args.output_dir))
     return 0
+
+
+def episode_bootstrap_rate(
+    *,
+    condition: pd.Series,
+    outcome: pd.Series,
+    episode_gap: int,
+    reps: int,
+    seed: int,
+) -> dict[str, float | int]:
+    """Bootstrap a conditional event rate by resampling complete signal episodes."""
+    if reps <= 0:
+        raise ValueError("reps must be positive")
+    frame = pd.concat(
+        [condition.rename("condition"), pd.to_numeric(outcome, errors="coerce").rename("outcome")],
+        axis=1,
+        join="inner",
+    ).dropna(subset=["outcome"])
+    qualified = frame["condition"].fillna(False).astype(bool)
+    ids = episode_ids(qualified, max_gap_sessions=episode_gap)
+    episode_hits: list[float] = []
+    episode_rows: list[int] = []
+    for episode in ids.dropna().astype(int).unique():
+        values = frame.loc[ids == episode, "outcome"].to_numpy(dtype=float)
+        if len(values):
+            episode_hits.append(float(values.sum()))
+            episode_rows.append(int(len(values)))
+    episodes = len(episode_rows)
+    total_rows = int(sum(episode_rows))
+    estimate = float(sum(episode_hits) / total_rows) if total_rows else float("nan")
+    if episodes == 0:
+        return {
+            "estimate": estimate,
+            "ci_low": float("nan"),
+            "ci_high": float("nan"),
+            "episodes": 0,
+            "valid_reps": 0,
+            "invalid_reps": reps,
+        }
+    hit_array = np.asarray(episode_hits, dtype=float)
+    row_array = np.asarray(episode_rows, dtype=float)
+    rng = np.random.default_rng(seed)
+    values: list[float] = []
+    invalid = 0
+    for _ in range(reps):
+        selection = rng.integers(0, episodes, size=episodes)
+        denominator = float(row_array[selection].sum())
+        if denominator <= 0.0:
+            invalid += 1
+            continue
+        values.append(float(hit_array[selection].sum() / denominator))
+    if values:
+        low, high = np.quantile(np.asarray(values, dtype=float), [0.025, 0.975])
+    else:
+        low = high = float("nan")
+    return {
+        "estimate": estimate,
+        "ci_low": float(low),
+        "ci_high": float(high),
+        "episodes": episodes,
+        "valid_reps": len(values),
+        "invalid_reps": invalid,
+    }
+
+
+def summarize_forward_ledger(path) -> dict[str, object]:
+    """Read the immutable issued CN ledger without grading or modifying any row."""
+    import json
+    from collections import Counter
+    from pathlib import Path
+
+    source = Path(path)
+    rows: list[dict[str, object]] = []
+    invalid_lines = 0
+    for line in source.read_text().splitlines():
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            invalid_lines += 1
+            continue
+        if isinstance(record, dict):
+            rows.append(record)
+        else:
+            invalid_lines += 1
+    matured = [row for row in rows if isinstance(row.get("graded"), dict)]
+    pending = [row for row in rows if not isinstance(row.get("graded"), dict)]
+
+    def is_loud(row: Mapping[str, object]) -> bool:
+        return bool(row.get("alert")) or row.get("state") in {"elevated", "risk-off"}
+
+    def is_hit(row: Mapping[str, object]) -> bool:
+        graded = row.get("graded")
+        return bool(graded.get("any_dd5_within_h21")) if isinstance(graded, Mapping) else False
+
+    loud = [row for row in matured if is_loud(row)]
+    risk_off = [row for row in matured if row.get("state") == "risk-off"]
+    pending_dates = sorted(str(row.get("asof")) for row in pending if row.get("asof"))
+    matured_dates = sorted(str(row.get("asof")) for row in matured if row.get("asof"))
+    total_state_counts = Counter(str(row.get("state")) for row in rows)
+    matured_state_counts = Counter(str(row.get("state")) for row in matured)
+    floors_met = len(matured) >= 30 and len(loud) >= 8
+    return {
+        "evidence_class": "genuinely_issued_forward",
+        "source_sha256": sha256_file(source),
+        "total_rows": len(rows),
+        "matured_rows": len(matured),
+        "pending_rows": len(pending),
+        "invalid_lines": invalid_lines,
+        "matured_loud_alerts": len(loud),
+        "matured_loud_hits": sum(is_hit(row) for row in loud),
+        "matured_risk_off_rows": len(risk_off),
+        "matured_risk_off_hits": sum(is_hit(row) for row in risk_off),
+        "matured_all_hits": sum(is_hit(row) for row in matured),
+        "matured_asof_range": [matured_dates[0], matured_dates[-1]] if matured_dates else None,
+        "pending_asof_range": [pending_dates[0], pending_dates[-1]] if pending_dates else None,
+        "september_pending_rows": sum(date.startswith("2026-09") for date in pending_dates),
+        "total_state_counts": dict(sorted(total_state_counts.items())),
+        "matured_state_counts": dict(sorted(matured_state_counts.items())),
+        "authority_floors_met": floors_met,
+        "can_force": False,
+        "authority_interpretation": (
+            "not eligible: fewer than 30 matured rows or 8 matured loud alerts"
+            if not floors_met
+            else "floor eligible but no authority inferred without the live constitution gate"
+        ),
+        "pool_with_reconstructed_history": False,
+    }
+
+
+
+def _sample_conditional_rate(sample: pd.DataFrame) -> float:
+    condition = sample["condition"].fillna(False).to_numpy(dtype=bool)
+    outcome = pd.to_numeric(sample["outcome"], errors="coerce").to_numpy(dtype=float)
+    valid = np.isfinite(outcome)
+    selected = condition & valid
+    return float(outcome[selected].mean()) if selected.any() else float("nan")
+
+
+def _sample_lift(sample: pd.DataFrame) -> float:
+    condition = sample["condition"].fillna(False).to_numpy(dtype=bool)
+    outcome = pd.to_numeric(sample["outcome"], errors="coerce").to_numpy(dtype=float)
+    valid = np.isfinite(outcome)
+    if not valid.any():
+        return float("nan")
+    selected = condition & valid
+    if not selected.any():
+        return float("nan")
+    base = float(outcome[valid].mean())
+    conditional = float(outcome[selected].mean())
+    return float(conditional / base) if base > 0.0 else float("nan")
+
+def _conditional_analysis(
+    *,
+    condition: pd.Series,
+    outcome: pd.Series,
+    horizon: int,
+    bootstrap_reps: int,
+    seed: int,
+) -> dict[str, object]:
+    point = lift_summary(condition, outcome)
+    block_frame = pd.concat(
+        [condition.rename("condition"), pd.to_numeric(outcome, errors="coerce").rename("outcome")],
+        axis=1,
+        join="inner",
+    ).dropna(subset=["outcome"])
+    block = moving_block_bootstrap(
+        block_frame,
+        statistic=_sample_lift,
+        block_length=42,
+        reps=bootstrap_reps,
+        seed=seed,
+    )
+    episodes = episode_summary(
+        condition=condition,
+        outcome=outcome,
+        horizon=horizon,
+        episode_gap=42,
+    )
+    episode_rate = episode_bootstrap_rate(
+        condition=condition,
+        outcome=outcome,
+        episode_gap=42,
+        reps=bootstrap_reps,
+        seed=seed + 1,
+    )
+    return {
+        **point,
+        "block_ci": [float(block["ci_low"]), float(block["ci_high"])],
+        "block_valid_reps": int(block["valid_reps"]),
+        "block_invalid_reps": int(block["invalid_reps"]),
+        "episode_rate_ci": [
+            float(episode_rate["ci_low"]),
+            float(episode_rate["ci_high"]),
+        ],
+        "episode_valid_reps": int(episode_rate["valid_reps"]),
+        "effective_n": episodes,
+    }
+
+
+def analyze_target(
+    frame: pd.DataFrame,
+    *,
+    target_name: str,
+    benchmark_label: str,
+    horizon: int,
+    bootstrap_reps: int,
+    permutation_reps: int,
+    seed: int,
+) -> dict[str, object]:
+    """Analyze one frozen target on an already aligned exact-production frame."""
+    required = {"state", "state_ungated", "composite", "outcome"}
+    missing = sorted(required - set(frame.columns))
+    if missing:
+        raise ValueError(f"target frame missing columns: {missing}")
+    eligible = frame.dropna(subset=["outcome", "composite"]).copy()
+    outcome = pd.to_numeric(eligible["outcome"], errors="coerce")
+    conditions = {
+        "risk_off": eligible["state"].eq("risk-off"),
+        "elevated_plus": eligible["state"].isin(["elevated", "risk-off"]),
+        "ungated_risk_off": eligible["state_ungated"].eq("risk-off"),
+        "ungated_elevated_plus": eligible["state_ungated"].isin(["elevated", "risk-off"]),
+    }
+    condition_results = {
+        name: _conditional_analysis(
+            condition=condition,
+            outcome=outcome,
+            horizon=horizon,
+            bootstrap_reps=bootstrap_reps,
+            seed=seed + position * 17,
+        )
+        for position, (name, condition) in enumerate(conditions.items())
+    }
+    base_rate = float(outcome.mean()) if len(outcome) else float("nan")
+    ap = average_precision(eligible["composite"], outcome)
+    auc = roc_auc(eligible["composite"], outcome)
+    permutations = {
+        name: circular_shift_permutation(
+            condition,
+            outcome,
+            reps=permutation_reps,
+            min_shift=42,
+            seed=seed + 1000 + position * 31,
+        )
+        for position, (name, condition) in enumerate(
+            (("risk_off", conditions["risk_off"]), ("ungated_risk_off", conditions["ungated_risk_off"]))
+        )
+    }
+    return {
+        "target": target_name,
+        "benchmark": benchmark_label,
+        "horizon": horizon,
+        "eligible_rows": int(len(eligible)),
+        "first_eligible_date": str(eligible.index.min().date()) if len(eligible) else None,
+        "last_eligible_date": str(eligible.index.max().date()) if len(eligible) else None,
+        "base_rate": base_rate,
+        "continuous_discrimination": {
+            "average_precision": ap,
+            "ap_over_base": float(ap / base_rate) if np.isfinite(ap) and base_rate > 0.0 else float("nan"),
+            "roc_auc": auc,
+        },
+        **condition_results,
+        "permutation": permutations,
+    }
+
+
+def state_probability_series(states: pd.Series, surface: Mapping[str, float]) -> pd.Series:
+    probability = states.map(surface)
+    unknown = sorted(set(states.dropna().astype(str)) - set(surface))
+    if unknown:
+        raise ValueError(f"probability surface missing states: {unknown}")
+    return pd.to_numeric(probability, errors="coerce").rename("probability")
+
+
+def analyze_calibration(
+    *,
+    states: pd.Series,
+    probabilities: pd.Series,
+    outcomes: pd.Series,
+    base_probability: float,
+    horizon: int,
+    bootstrap_reps: int,
+    seed: int,
+) -> dict[str, object]:
+    frame = pd.concat(
+        [
+            states.rename("state"),
+            pd.to_numeric(probabilities, errors="coerce").rename("probability"),
+            pd.to_numeric(outcomes, errors="coerce").rename("outcome"),
+        ],
+        axis=1,
+        join="inner",
+    ).dropna()
+    table = state_calibration_table(
+        frame["state"],
+        frame["probability"],
+        frame["outcome"],
+        horizon=horizon,
+        episode_gap=42,
+    )
+    enriched: list[dict[str, object]] = []
+    for position, row in enumerate(table):
+        state = str(row["state"])
+        condition = frame["state"].eq(state)
+        block_frame = frame[["state", "outcome"]].copy()
+        block_frame["condition"] = condition
+        block = moving_block_bootstrap(
+            block_frame,
+            statistic=_sample_conditional_rate,
+            block_length=42,
+            reps=bootstrap_reps,
+            seed=seed + position * 19,
+        )
+        episode = episode_bootstrap_rate(
+            condition=condition,
+            outcome=frame["outcome"],
+            episode_gap=42,
+            reps=bootstrap_reps,
+            seed=seed + 500 + position * 19,
+        )
+        enriched.append(
+            {
+                **row,
+                "block_ci": [float(block["ci_low"]), float(block["ci_high"])],
+                "block_valid_reps": int(block["valid_reps"]),
+                "episode_ci": [float(episode["ci_low"]), float(episode["ci_high"])],
+                "episode_valid_reps": int(episode["valid_reps"]),
+            }
+        )
+    return {
+        "rows": int(len(frame)),
+        "brier": brier_score(frame["probability"], frame["outcome"]),
+        "brier_skill_vs_baked_base": brier_skill(
+            frame["probability"],
+            frame["outcome"],
+            baseline_probability=base_probability,
+        ),
+        "base_probability": float(base_probability),
+        "states": enriched,
+        "point_inversions": detect_probability_inversions(
+            enriched,
+            material_delta=0.05,
+        ),
+        "intercept_slope_row_level": calibration_intercept_slope(
+            frame["probability"], frame["outcome"]
+        ),
+    }
+
+
+def _sample_state_difference(sample: pd.DataFrame) -> float:
+    states = sample["state"].astype(str).to_numpy()
+    outcomes = pd.to_numeric(sample["outcome"], errors="coerce").to_numpy(dtype=float)
+    valid = np.isfinite(outcomes)
+    elevated = valid & (states == "elevated")
+    risk_off = valid & (states == "risk-off")
+    if not elevated.any() or not risk_off.any():
+        return float("nan")
+    return float(outcomes[risk_off].mean() - outcomes[elevated].mean())
+
+
+def state_separation_analysis(
+    *,
+    states: pd.Series,
+    outcomes: pd.Series,
+    horizon: int,
+    bootstrap_reps: int,
+    seed: int,
+) -> dict[str, object]:
+    frame = pd.concat(
+        [states.rename("state"), pd.to_numeric(outcomes, errors="coerce").rename("outcome")],
+        axis=1,
+        join="inner",
+    ).dropna()
+    elevated = frame["state"].eq("elevated")
+    risk_off = frame["state"].eq("risk-off")
+    elevated_rate = float(frame.loc[elevated, "outcome"].mean()) if elevated.any() else float("nan")
+    risk_off_rate = float(frame.loc[risk_off, "outcome"].mean()) if risk_off.any() else float("nan")
+    difference = float(risk_off_rate - elevated_rate)
+    block = moving_block_bootstrap(
+        frame,
+        statistic=_sample_state_difference,
+        block_length=42,
+        reps=bootstrap_reps,
+        seed=seed,
+    )
+    elevated_effective = episode_summary(
+        condition=elevated,
+        outcome=frame["outcome"],
+        horizon=horizon,
+        episode_gap=42,
+    )
+    risk_off_effective = episode_summary(
+        condition=risk_off,
+        outcome=frame["outcome"],
+        horizon=horizon,
+        episode_gap=42,
+    )
+    return {
+        "elevated_rate": elevated_rate,
+        "risk_off_rate": risk_off_rate,
+        "difference": difference,
+        "block_ci": [float(block["ci_low"]), float(block["ci_high"])],
+        "block_valid_reps": int(block["valid_reps"]),
+        "block_invalid_reps": int(block["invalid_reps"]),
+        "elevated_effective_n": elevated_effective,
+        "risk_off_effective_n": risk_off_effective,
+        "material_inversion": bool(
+            difference <= -0.05 and np.isfinite(float(block["ci_high"])) and float(block["ci_high"]) < 0.0
+        ),
+    }
+
+
+def _lift_record(condition: pd.Series, outcome: pd.Series) -> dict[str, object]:
+    record = lift_summary(condition, outcome)
+    return {
+        "rows": int(record["rows"]),
+        "hits": int(record["hits"]),
+        "conditional_rate": float(record["conditional_rate"]),
+        "base_rate": float(record["base_rate"]),
+        "lift": float(record["lift"]),
+    }
+
+
+def stability_lifts(
+    *,
+    condition: pd.Series,
+    outcome: pd.Series,
+    horizon: int,
+    crises: tuple[tuple[str, str, str], ...],
+) -> dict[str, object]:
+    frame = pd.concat(
+        [condition.rename("condition"), pd.to_numeric(outcome, errors="coerce").rename("outcome")],
+        axis=1,
+        join="inner",
+    ).dropna(subset=["outcome"])
+    frame = frame.sort_index()
+    first_index, second_index = chronological_split_half(pd.DatetimeIndex(frame.index))
+
+    def subset_record(mask: pd.Series | np.ndarray) -> dict[str, object]:
+        subset = frame.loc[mask]
+        return {
+            **_lift_record(subset["condition"], subset["outcome"]),
+            "eligible_rows": int(len(subset)),
+            "first_date": str(subset.index.min().date()) if len(subset) else None,
+            "last_date": str(subset.index.max().date()) if len(subset) else None,
+        }
+
+    split_half = {
+        "first": subset_record(frame.index.isin(first_index)),
+        "second": subset_record(frame.index.isin(second_index)),
+    }
+    modern = frame.index >= pd.Timestamp("2016-01-01")
+    era = {
+        "pre_2016": subset_record(~modern),
+        "post_2016": subset_record(modern),
+    }
+    loco: list[dict[str, object]] = []
+    for name, start, end in crises:
+        keep = crisis_exclusion_mask(
+            pd.DatetimeIndex(frame.index),
+            crisis_start=pd.Timestamp(start),
+            crisis_end=pd.Timestamp(end),
+            horizon=horizon,
+        )
+        record = subset_record(keep.to_numpy(dtype=bool))
+        record.update(
+            {
+                "crisis": name,
+                "crisis_start": start,
+                "crisis_end": end,
+                "excluded_rows": int((~keep).sum()),
+            }
+        )
+        loco.append(record)
+    return {"split_half": split_half, "era": era, "loco": loco}
+
+
+def compare_baselines(
+    baselines: pd.DataFrame,
+    outcomes: pd.Series,
+) -> dict[str, dict[str, object]]:
+    results: dict[str, dict[str, object]] = {}
+    for name in baselines.columns:
+        frame = pd.concat(
+            [
+                pd.to_numeric(baselines[name], errors="coerce").rename("score"),
+                pd.to_numeric(outcomes, errors="coerce").rename("outcome"),
+            ],
+            axis=1,
+            join="inner",
+        ).dropna()
+        threshold = 0.5 if name == "trend_context" else 0.91
+        elevated_threshold = 0.5 if name == "trend_context" else 0.83
+        risk_condition = frame["score"] >= threshold
+        elevated_condition = frame["score"] >= elevated_threshold
+        risk_lift = lift_summary(risk_condition, frame["outcome"])
+        elevated_lift = lift_summary(elevated_condition, frame["outcome"])
+        results[str(name)] = {
+            "rows": int(len(frame)),
+            "average_precision": average_precision(frame["score"], frame["outcome"]),
+            "roc_auc": roc_auc(frame["score"], frame["outcome"]),
+            "risk_off_threshold": float(threshold),
+            "risk_off_rows": int(risk_lift["rows"]),
+            "risk_off_lift": float(risk_lift["lift"]),
+            "elevated_threshold": float(elevated_threshold),
+            "elevated_plus_rows": int(elevated_lift["rows"]),
+            "elevated_plus_lift": float(elevated_lift["lift"]),
+        }
+    return results
+
+
+def json_ready(value):
+    """Convert research results to strict, deterministic JSON-compatible values."""
+    from pathlib import Path
+
+    if isinstance(value, Mapping):
+        return {str(key): json_ready(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_ready(item) for item in value]
+    if isinstance(value, (pd.Timestamp, np.datetime64)):
+        return pd.Timestamp(value).isoformat()
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, np.generic):
+        return json_ready(value.item())
+    if isinstance(value, float):
+        return value if np.isfinite(value) else None
+    return value

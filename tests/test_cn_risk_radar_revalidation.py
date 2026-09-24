@@ -553,3 +553,275 @@ def test_check_only_cli_verifies_frozen_contract_without_writing_results(tmp_pat
     assert payload["prereg_sha"] == "db5590accaa03f78396ca91b6874f04b9bcf4cf3"
     assert payload["overlay"] == "absent"
     assert not (tmp_path / "results.json").exists()
+
+
+def test_episode_bootstrap_rate_is_seeded_and_resamples_whole_episodes():
+    idx = pd.bdate_range("2024-01-02", periods=10)
+    condition = pd.Series([True, True, False, False, False, False, True, True, False, False], index=idx)
+    outcome = pd.Series([1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], index=idx)
+
+    first = _fn("episode_bootstrap_rate")(
+        condition=condition,
+        outcome=outcome,
+        episode_gap=2,
+        reps=399,
+        seed=17,
+    )
+    second = _fn("episode_bootstrap_rate")(
+        condition=condition,
+        outcome=outcome,
+        episode_gap=2,
+        reps=399,
+        seed=17,
+    )
+
+    assert first == second
+    assert first["estimate"] == pytest.approx(0.5)
+    assert first["episodes"] == 2
+    assert first["valid_reps"] == 399
+    assert first["ci_low"] == pytest.approx(0.0)
+    assert first["ci_high"] == pytest.approx(1.0)
+
+
+def test_summarize_forward_ledger_keeps_issued_rows_separate_from_pending(tmp_path):
+    import json
+
+    rows = [
+        {
+            "asof": "2026-08-03",
+            "state": "risk-off",
+            "alert": True,
+            "graded": {"any_dd5_within_h21": True, "fwd_dd": {"h21": -0.08}},
+        },
+        {
+            "asof": "2026-08-04",
+            "state": "elevated",
+            "alert": True,
+            "graded": {"any_dd5_within_h21": False, "fwd_dd": {"h21": -0.02}},
+        },
+        {
+            "asof": "2026-08-05",
+            "state": "caution",
+            "alert": False,
+            "graded": {"any_dd5_within_h21": True, "fwd_dd": {"h21": -0.06}},
+        },
+        {
+            "asof": "2026-09-22",
+            "state": "risk-off",
+            "alert": True,
+            "graded": None,
+        },
+    ]
+    path = tmp_path / "cn_forward_log.jsonl"
+    path.write_text("\n".join(json.dumps(row) for row in rows) + "\n")
+
+    result = _fn("summarize_forward_ledger")(path)
+
+    assert result["total_rows"] == 4
+    assert result["matured_rows"] == 3
+    assert result["pending_rows"] == 1
+    assert result["matured_loud_alerts"] == 2
+    assert result["matured_loud_hits"] == 1
+    assert result["matured_risk_off_rows"] == 1
+    assert result["matured_risk_off_hits"] == 1
+    assert result["pending_asof_range"] == ["2026-09-22", "2026-09-22"]
+    assert result["september_pending_rows"] == 1
+    assert result["can_force"] is False
+    assert result["evidence_class"] == "genuinely_issued_forward"
+
+
+def test_analyze_target_reports_fixed_conditions_and_dependence_aware_counts():
+    idx = pd.bdate_range("2020-01-02", periods=120)
+    state = pd.Series(["calm"] * 80 + ["risk-off"] * 40, index=idx)
+    state_ungated = state.copy()
+    score = pd.Series([0.2] * 80 + [0.95] * 40, index=idx)
+    outcome = pd.Series([0.0, 1.0] * 40 + [1.0] * 30 + [0.0] * 10, index=idx)
+    frame = pd.DataFrame(
+        {
+            "state": state,
+            "state_ungated": state_ungated,
+            "composite": score,
+            "score": score * 100.0,
+            "gate": True,
+            "outcome": outcome,
+        },
+        index=idx,
+    )
+
+    result = _fn("analyze_target")(
+        frame,
+        target_name="fixture",
+        benchmark_label="fixture_index",
+        horizon=21,
+        bootstrap_reps=199,
+        permutation_reps=199,
+        seed=23,
+    )
+
+    assert result["eligible_rows"] == 120
+    assert result["base_rate"] == pytest.approx(70 / 120)
+    assert result["risk_off"]["rows"] == 40
+    assert result["risk_off"]["conditional_rate"] == pytest.approx(0.75)
+    assert result["risk_off"]["lift"] == pytest.approx(0.75 / (70 / 120))
+    assert result["risk_off"]["effective_n"]["episodes"] == 1
+    assert result["continuous_discrimination"]["average_precision"] >= result["base_rate"]
+    assert result["permutation"]["risk_off"]["valid_reps"] == 199
+
+
+def test_state_probability_series_uses_exact_baked_surface():
+    idx = pd.bdate_range("2024-01-02", periods=5)
+    states = pd.Series(["calm", "watch", "caution", "elevated", "risk-off"], index=idx)
+    surface = {
+        "calm": 0.27,
+        "watch": 0.32,
+        "caution": 0.35,
+        "elevated": 0.40,
+        "risk-off": 0.50,
+    }
+
+    result = _fn("state_probability_series")(states, surface)
+
+    assert result.tolist() == pytest.approx([0.27, 0.32, 0.35, 0.40, 0.50])
+
+
+def test_analyze_calibration_records_block_and_episode_intervals():
+    idx = pd.bdate_range("2020-01-02", periods=200)
+    states = pd.Series(["calm"] * 100 + ["risk-off"] * 100, index=idx)
+    probabilities = pd.Series([0.2] * 100 + [0.6] * 100, index=idx)
+    outcomes = pd.Series([1.0] * 20 + [0.0] * 80 + [1.0] * 60 + [0.0] * 40, index=idx)
+
+    result = _fn("analyze_calibration")(
+        states=states,
+        probabilities=probabilities,
+        outcomes=outcomes,
+        base_probability=0.4,
+        horizon=21,
+        bootstrap_reps=199,
+        seed=31,
+    )
+
+    assert result["brier"] == pytest.approx(0.20)
+    assert result["brier_skill_vs_baked_base"] == pytest.approx(1.0 - 0.20 / 0.24)
+    by_state = {row["state"]: row for row in result["states"]}
+    assert by_state["calm"]["observed"] == pytest.approx(0.2)
+    assert by_state["risk-off"]["observed"] == pytest.approx(0.6)
+    assert by_state["risk-off"]["block_ci"][0] <= 0.6 <= by_state["risk-off"]["block_ci"][1]
+    assert by_state["risk-off"]["episode_ci"][0] <= 0.6 <= by_state["risk-off"]["episode_ci"][1]
+
+
+def test_state_separation_analysis_reports_difference_interval_and_episode_counts():
+    idx = pd.bdate_range("2020-01-02", periods=160)
+    states = pd.Series(["elevated"] * 80 + ["risk-off"] * 80, index=idx)
+    outcomes = pd.Series([1.0] * 24 + [0.0] * 56 + [1.0] * 48 + [0.0] * 32, index=idx)
+
+    result = _fn("state_separation_analysis")(
+        states=states,
+        outcomes=outcomes,
+        horizon=21,
+        bootstrap_reps=199,
+        seed=37,
+    )
+
+    assert result["elevated_rate"] == pytest.approx(0.30)
+    assert result["risk_off_rate"] == pytest.approx(0.60)
+    assert result["difference"] == pytest.approx(0.30)
+    assert result["block_ci"][0] <= result["difference"] <= result["block_ci"][1]
+    assert result["elevated_effective_n"]["episodes"] == 1
+    assert result["risk_off_effective_n"]["episodes"] == 1
+
+
+def test_stability_lifts_uses_frozen_split_era_and_loco_windows():
+    idx = pd.bdate_range("2015-01-02", periods=800)
+    condition = pd.Series(False, index=idx)
+    condition.iloc[::10] = True
+    outcome = pd.Series(0.0, index=idx)
+    outcome.loc[condition] = 1.0
+    outcome.iloc[1::13] = 1.0
+    crises = (("fixture_crisis", "2016-01-04", "2016-02-29"),)
+
+    result = _fn("stability_lifts")(
+        condition=condition,
+        outcome=outcome,
+        horizon=21,
+        crises=crises,
+    )
+
+    assert set(result["split_half"]) == {"first", "second"}
+    assert set(result["era"]) == {"pre_2016", "post_2016"}
+    assert result["split_half"]["first"]["lift"] > 1.0
+    assert result["split_half"]["second"]["lift"] > 1.0
+    assert result["loco"][0]["crisis"] == "fixture_crisis"
+    assert result["loco"][0]["excluded_rows"] > 0
+    assert result["loco"][0]["lift"] > 1.0
+
+
+def test_compare_baselines_reports_continuous_and_fixed_threshold_metrics():
+    idx = pd.bdate_range("2020-01-02", periods=100)
+    outcomes = pd.Series([0.0] * 70 + [1.0] * 30, index=idx)
+    baselines = pd.DataFrame(
+        {
+            "breadth_only": np.linspace(0.0, 1.0, 100),
+            "rates_only": np.linspace(0.0, 1.0, 100),
+            "trend_context": [0.0] * 70 + [1.0] * 30,
+            "ungated_composite": np.linspace(0.0, 1.0, 100),
+        },
+        index=idx,
+    )
+
+    result = _fn("compare_baselines")(baselines, outcomes)
+
+    assert set(result) == {
+        "breadth_only", "rates_only", "trend_context", "ungated_composite"
+    }
+    assert result["breadth_only"]["average_precision"] == pytest.approx(1.0)
+    assert result["breadth_only"]["roc_auc"] == pytest.approx(1.0)
+    assert result["breadth_only"]["risk_off_threshold"] == pytest.approx(0.91)
+    assert result["trend_context"]["risk_off_lift"] == pytest.approx(1 / 0.3)
+
+
+def test_json_ready_converts_nonfinite_numpy_and_timestamp_values():
+    payload = {
+        "nan": float("nan"),
+        "inf": float("inf"),
+        "np": np.float64(1.25),
+        "int": np.int64(4),
+        "bool": np.bool_(True),
+        "date": pd.Timestamp("2026-09-23"),
+        "nested": [np.float64("nan"), (1, 2)],
+    }
+
+    result = _fn("json_ready")(payload)
+
+    assert result == {
+        "nan": None,
+        "inf": None,
+        "np": 1.25,
+        "int": 4,
+        "bool": True,
+        "date": "2026-09-23T00:00:00",
+        "nested": [None, [1, 2]],
+    }
+
+
+def test_write_result_artifacts_writes_data_manifest_when_present(tmp_path):
+    claims = {
+        claim: {"verdict": "INSUFFICIENT_EVIDENCE", "basis": "fixture"}
+        for claim in _fn("claim_keys")()
+    }
+    result = {
+        "schema": "cn_risk_radar_revalidation.v1",
+        "operation_key": "fixture",
+        "base_sha": "abc",
+        "prereg_sha": "def",
+        "claims": claims,
+        "targets": {},
+        "forward_ledger": {},
+        "data_provenance": {"benchmark": {"sha256": "123"}},
+        "discoveries": [],
+    }
+
+    written = _fn("write_result_artifacts")(result, tmp_path)
+
+    assert (tmp_path / "data_manifest.json").is_file()
+    assert "data_manifest_json" in written
+    assert "data_manifest_sha256" in written
