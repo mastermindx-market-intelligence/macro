@@ -4,70 +4,125 @@ session: sol/consumer-defensive-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Deliver principal-led Consumer Defensive economic research and implementation planning,
-  then final Fable CEO buildout through existing Mastermind owners.
+  Deliver Consumer Defensive economic research and implementation planning, then
+  Fable-led integration and real source-to-user product proof through existing owners.
 state_before: >
-  R5 written design and six self-review clarifications were presented at research
-  head 69e3e0e2bbd59a60f348e2d21104b462efc8a33c.
+  R5 written design and clarifications were presented at
+  69e3e0e2bbd59a60f348e2d21104b462efc8a33c. Chairman continued the work into planning.
 changed:
+  - path: docs/superpowers/plans/2026-09-23-consumer-defensive-cdv1-implementation.md
+    what: "Eight task test-first plan, actual native/private interfaces, all36 acceptance mappings."
+  - path: research/consumer_defensive/CONSUMER_DEFENSIVE_R6_PLAN_REVIEW_2026-09-23.md
+    what: "Self-review corrections,32 executed document/syntax checks, exact-byte persistence and limits."
+  - path: agentos/handoffs/GMI-CONSUMER-DEFENSIVE-FABLE-INTEGRATION-PACKET-2026-09-23.md
+    what: "Prepared integration packet, not delivered; no receiver ACK or START."
   - path: agentos/handoffs/GMI-CONSUMER-DEFENSIVE-RESEARCH-2026-09-23.md
-    what: "R6 intermediate planning frontier and current source findings; work continues."
+    what: "Current cumulative continuation with precise placement and implementation frontier."
 verified:
-  - claim: "Current compatible protected procedure loaded."
-    command: "Protected master, immutable INDEX/ACTIVE_EXECUTION and companion reads"
-    result: "Mastermind a7d2b3049e5cdc523e91e61a6e9d70a1cb911157; Skillpack 1.0.1/bootstrap 1."
-  - claim: "Incumbent research carrier recovered without replacement or rebase."
-    command: "get_pr_info #7792 and exact-commit checkpoint read"
-    result: "Open/draft/unmerged; head 69e3e0e2bbd59a60f348e2d21104b462efc8a33c."
-  - claim: "Current implementation source exposes specific planning constraints."
-    command: "Bounded exact-main reads of acquisition, private publication and native documents"
-    result: "Macro dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b; source findings below."
+  - claim: "Full portable implementation plan matches the committed native Git blob."
+    command: "create_file, immutable fetch_file and local Git-object hash computation"
+    result: "a30ed45c6d991c4a4e412bd9114de63f1656e181; blob c7cfb3e0271bf4016276daa42e4203e8b1a0bff5;70156bytes."
+  - claim: "Authored plan structure and code-snippet syntax checked."
+    command: "Container Python check_plan.py; fresh rerun and QA JSON readback"
+    result: "32 checks PASS;8 tasks;36 acceptance cases;12 Python snippets parsed;0 product tests."
+  - claim: "Review and prepared Fable packet persisted and read back."
+    command: "GitHub create_file followed by exact-commit fetch_file"
+    result: "Review3574ceb2dc43e759fc8e4ae2cf12ed82f518abde; packet df6d1509ecbbfa1b70e2c05ebc42c934a97369b7."
 unverified:
-  - claim: "Product implementation, source admission, independent review or Fable execution."
-    what_would_verify: "Actual qualified source/branch/runtime/receiver and production-path evidence."
+  - claim: "Concrete Fable placement/delivery, execution or product acceptance."
+    what_would_verify: "Current approved receiver/transport binding, separate ACK/START, implementation and real production proof."
 next_actions:
-  - "Complete the CDV-1 task-by-task plan, explicit interfaces and all 36 acceptance mappings."
+  - "Bind one eligible Fable receiver through the existing placement/direct-delivery owner and deliberately deliver the prepared packet; do not broadcast or allocate accounts through Chairman."
+  - "Then reconcile exact implementation custody and action-local gates and begin CDV-1 Task1 through existing eligible engineering capacity."
 do_not_redo:
-  - "R1-R5 research and written design; use exact refs below rather than replay history."
-  - "No generic Consumer Defensive database, state, identity, source or publication plane."
-  - "No false currentness from an older fallback filing or a new render clock."
-  - "No protected PG profile in the public workspace publication path."
+  - "R1-R5 research and R6 implementation plan; no further broad sector census or template/Robotics reconstruction."
+  - "No rival financial, identity, source, state, retry, watcher, model-router or publication owner."
+  - "No private economic workspaces in the public company-intelligence publisher."
+  - "No fake latest-source claim from fallback acquisition or render timestamps."
+  - "No packet discovery interpreted as assignment, no blind re-home or retry of unknown effects."
 ---
 
-# Consumer Defensive — R6 intermediate planning checkpoint
+# Consumer Defensive — R6 plan-to-integration continuation
 
-MISSION_COMPLETE: false. Capability: SPEC_ONLY. Work continues in the active turn.
-FABLE_HANDOFF: NOT_ISSUED. EFFECT_UNKNOWN: none observed.
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+Capability: SPEC_ONLY / IMPLEMENTATION_PLAN_PREPARED
+FABLE_HANDOFF: PREPARED_NOT_DELIVERED
+PLACEMENT_STATE: WAITING_CAPACITY / needs_placement=true
+Exact receiver: NOT_BOUND. ACK/START: NOT_OBSERVED.
 
-## Present intent and source law
+## Mission, present intent and current source
 
-The Chairman's current response to the presented R5 written review is: "good job, continue next turn". Proceed to the implementation-planning stage using that design and the six clarifications. This is not a claim of independent technical/privacy review, production acceptance, or a receiver START. Fable remains the selected eventual principal integrator; Sol retains principal planning and synthesis now.
+Chairman commissioned principal-led Consumer Defensive research/planning with final Fable CEO buildout and responded to the written R5 review: "good job, continue next turn". The design and six clarifications were taken into implementation planning. No independent technical/privacy review, production acceptance or runtime assignment is inferred. Sol retains prepared-packet/placement and return-adjudication responsibility until an actual consumed binding establishes the next owner.
 
-Fresh protected source: Mastermind a7d2b3049e5cdc523e91e61a6e9d70a1cb911157, compatible Skillpack1.0.1/bootstrap1. INDEX blob cc40fb22e7ae9b20a39bbaa551e883e625a5de56 and ACTIVE_EXECUTION blob 9fed10f7cc7a2f4323d039b406f7c0715445e22e were read. WEB_CEO_DELEGATION and CLOSEOUT same-pin blobs match their full previously loaded text. Current ACTIVE_EXECUTION scopes gates to affected actions and prohibits a second administrative approval round for already commissioned routine planning/build/test work. Preserve real reserved scope/privacy/custody and platform-consent decisions; do not invent an additional Chairman ceremony.
+Operation `gmi-consumer-defensive-research-20260923-sol-001`; repository `mastermindx-market-intelligence/macro`; original Draft/HOLD PR #7792; branch `sol/consumer-defensive-research-20260923`. Current protected Mastermind pin `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, compatible Skillpack1.0.1/bootstrap1. INDEX/ACTIVE_EXECUTION were loaded from that revision. Companion blobs matched their same content already fully loaded. Commission/routing preparation rules were consulted; actual placement must consume complete then-current applicable law.
 
-Operation gmi-consumer-defensive-research-20260923-sol-001; Macro #7792, branch sol/consumer-defensive-research-20260923. The research branch remains documentation-only. Current implementation read pin dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b is not a rebase; original research base c4da107fe729e46b4d4036b3e0e290390315d0fd remains unchanged. Direct-work rationale: PRINCIPAL_JUDGMENT.
+The current procedure prohibits a second administrative approval loop for already commissioned routine work. Keep genuine data-rights/privacy/custody/consent and release decisions action-local. Direct research/planning rationale remains PRINCIPAL_JUDGMENT. User-reported mode is not a hidden-budget or provider attestation. Native GitHub text writes succeeded; no Extra High switch was needed for those demonstrated actions.
 
-## R5 review packet (unchanged)
+R6 implementation-read pin: `dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b`. Original research base remains `c4da107fe729e46b4d4036b3e0e290390315d0fd`; no rebase or product implementation on this carrier. Source snapshots are not permanent runtime/custody certifications.
 
-- Written design: docs/superpowers/specs/2026-09-23-consumer-defensive-economic-dossier-design.md @ de3086fff1a883f2375ced3c9e8c713e8566f29b; blob4539bb9db3e3f4e41ee9b1418ee4712eb4e5e56d.
-- Self-review/clarifications: research/consumer_defensive/CONSUMER_DEFENSIVE_R5_DESIGN_REVIEW_2026-09-23.md @ bc9c2426c693f478c007c517d44e69b88d4b1b4f; blob9d5c2b86f4655a88e6f3a47469eb3c2dc6c54740.
-- Masterplan: research/consumer_defensive/CONSUMER_DEFENSIVE_MASTERPLAN_R5_2026-09-23.md @ 5fa43c0585f979263a2a7e28e4b468077c14aa55; blob34e46e1ccf17caf8ab913ff3cd12e9ceebb65ac2.
-- Feasibility: research/consumer_defensive/CONSUMER_DEFENSIVE_NATIVE_OWNER_FEASIBILITY_R5_2026-09-23.md @ 32a37c79aff4a602f5e15a1e3b7d5599e5805fde; blobe262f4fc2ea616223496c0614cfd02567958bd73.
+## Exact new artifacts
 
-R1-R4 remain unchanged on the same branch. Their exact research refs are preserved in the preceding cumulative checkpoint at69e3e0e2bbd59a60f348e2d21104b462efc8a33c. They remain DO_NOT_REDO; no broad census, template/Robotics reconstruction or revalidation of all historical arithmetic is needed for this plan.
+| Artifact | Immutable content commit | Blob |
+|---|---|---|
+| `docs/superpowers/plans/2026-09-23-consumer-defensive-cdv1-implementation.md` | `a30ed45c6d991c4a4e412bd9114de63f1656e181` | `c7cfb3e0271bf4016276daa42e4203e8b1a0bff5` |
+| `research/consumer_defensive/CONSUMER_DEFENSIVE_R6_PLAN_REVIEW_2026-09-23.md` | `3574ceb2dc43e759fc8e4ae2cf12ed82f518abde` | `7fdbd0822eeb8f4e88cdc27933fdd4b0d9714aa2` |
+| `agentos/handoffs/GMI-CONSUMER-DEFENSIVE-FABLE-INTEGRATION-PACKET-2026-09-23.md` | `df6d1509ecbbfa1b70e2c05ebc42c934a97369b7` | `a12d77634d88f3b5b61dcbb8c7185e9072b67f19` |
 
-## R6 findings that affect implementation
+The intermediate R6 checkpoint at `a8e86da1d75b3b480f6fc910437d697424ac3396` was verified before the large plan write. This cumulative record supersedes its next-action state, not its evidence. This record's own immutable revision is supplied by its write/readback receipt.
 
-1. `engine/earnings_narrative/private_publication.py` remains blob0ee93909693893f419f0109f9eba1994d94e2b46. Its manifest/staging closure currently accepts records and context only. A new workspace/source role needs versioned validation and complete generation integration, not a post-publish append or a separate current pointer. A one-off PG record must not disappear when the next normal wire generation rebuilds staging.
-2. `scripts/refresh_event_workspaces.py` is blob7d01aacb3bec29e42de799eeed480d16f930389b. `acquire_results_filing` can skip a newer failed candidate and return an older accessible filing without returning the full candidate outcome history. The private CDV consumer needs an opt-in currentness receipt through this same collector; do not change accepted legacy behavior globally. Failed fetch is not proof that no newer eligible evidence exists.
-3. The current public refresh imports the public `publish_event_workspaces` path. Adding PG to its ordinary public allowlist is not a private implementation. Separate private admission at the existing source/profile and publication boundaries; preserve Apple/homebuilder behavior.
-4. `engine/company_intelligence/documents.py` is blob21ef185557d54e8b4c24c4e84c6f94bf3ea1190b. Native source_document.v1/source_span.v1 distinguish held-byte replay from address-only evidence. Raw HTTP bytes, decoded UTF-8 span coordinates and generated JSON transport bytes must not share an invented digest. Public URLs and research numbers are not source-retention proof.
-5. STSI #7777 is still open/unmerged at4122e3b7e1524482216fb156f201f8229c14011b, a five-file contract slice. Shared mount/composer acceptance is still not proven. Plan a bounded consumer integration, not a competing shell. Product-write custody must be reconciled when those paths are actually changed; no whole-estate collision clearance is claimed by planning.
+Plan:622lines,8647 whitespace-separated words,70156UTF-8bytes. SHA-256 `8c91c8f3a187d500b388de49a6ce637af0f3095ee19c26e9b03004acc7c5d2b6`. Full local Git hash matched exact native readback. Portable local plan and QA exist under `/mnt/data/consumer_defensive_r6/`, but recovery relies on GitHub, not their survival. QA JSON4085bytes, SHA-256 `b393919ac533685ee882440c104fa0ce79cbc181d71a8fb456f6386a3f3268d2`.
 
-The P&G July29,2026 issuer page and official SEC API documentation were re-read for plan source semantics. A broad SEC filing search did not resolve a fresh exact PG accession; no accession, live retention receipt or current security certificate has been invented. Actual source admission remains a task on the existing collector. No public financial data has been admitted into production here.
+## Retained R5 packet and research depth
 
-## Effects and immediate continuation
+Primary execution references:
+- Written CDV-1 spec `docs/superpowers/specs/2026-09-23-consumer-defensive-economic-dossier-design.md` @`de3086fff1a883f2375ced3c9e8c713e8566f29b`.
+- R5 six clarifications `research/consumer_defensive/CONSUMER_DEFENSIVE_R5_DESIGN_REVIEW_2026-09-23.md` @`bc9c2426c693f478c007c517d44e69b88d4b1b4f`.
+- Masterplan `research/consumer_defensive/CONSUMER_DEFENSIVE_MASTERPLAN_R5_2026-09-23.md` @`5fa43c0585f979263a2a7e28e4b468077c14aa55`.
+- Native feasibility `research/consumer_defensive/CONSUMER_DEFENSIVE_NATIVE_OWNER_FEASIBILITY_R5_2026-09-23.md` @`32a37c79aff4a602f5e15a1e3b7d5599e5805fde`.
 
-Only this cumulative research/organizational record changes at this intermediate boundary. Native GitHub permissions include push; no product, schema, live source, identity, basket, rank, entry, sizing, trading, auth, publisher, CI, merge or deployment changed. No worker, Executive Attempt, watcher, Fable delivery/ACK/START or autonomous wake exists from this operation.
+R1-R4 remain unchanged under `research/consumer_defensive/`, as contextual depth rather than required whole-corpus pickup:
+- FOUNDATION @`d6c1b2e1fe500b867a46607c414635c08fe496cf`.
+- COMPANY_EXPOSURES_R2 @`b80a30032a9b0042a66713c91767f6cf7c45f3e3`.
+- MECHANISMS_AND_MEASUREMENT_R2 @`afa2c30a4e83a1a321bd168a06488878f45449ad`.
+- VALUE_CHAIN_ECONOMICS_R3 @`b0f721fd71058b3ac8eece52934bfa5348383c02`.
+- TRADE_DOWN_PASS_THROUGH_AND_CASH_R3 @`db0ac3bfa497a4738be72af5d58a4e31b3cd8c10`.
+- ALCOHOL_NICOTINE_R4 @`0364b4587ce60a263695fc280687fbfb1c37e83f`.
+- ASIA_EXPOSURES_R4 @`c2fcab1b75f530bb1fedaacbc9cb6f8905c0a640`.
+- HISTORICAL_OUTCOME_CONTROLS_R4 @`b0f99a1610b9951cb87950ec4d34cdd14329fd62`.
 
-Next: finish one executable CDV-1 plan with test-first tasks, source and publication contracts, shared consumer seam, natural follow-on proof and an exact 36-case acceptance map. Preserve the full six-milestone global mission. Do not stop for a repeated research approval, and do not claim implementation from a plan. Use the current native app permissions and same-carrier effect reconciliation for all further documentation writes.
+These shortened labels identify the existing `CONSUMER_DEFENSIVE_<label>_2026-09-23.md` files, with FOUNDATION using `CONSUMER_DEFENSIVE_RESEARCH_FOUNDATION_2026-09-23.md`. Preserve R2 source/metric corrections, external/internal revenue, actual corporate-action eligibility, unresolved KPI bridges and retrospective-versus-as-known valuation boundaries. No global unique-company count or predictive performance is implied by research case counts.
+
+## Material decisions to preserve
+
+CDV-1 remains one authentic P&G source-to-private-dossier journey, not a PG recommendation. Use latest eligible evidence at execution, with historical Hershey as regression only. Later CDV-2..6 retain business exposure, channel/cash, expectations/valuation, regional and learning/proactive delivery. Do not silently drop them after a single-company release.
+
+The plan freezes eight tasks, finite selected native metrics, all36 acceptance mappings, exact interfaces and test examples. It preserves the actual profile's fiscal_period argument, explicitly passed fiscal scope, source bytes versus decoded-text versus JSON hashes, and strict current/prior/accounting-basis matching. Organic sales are not household consumption. Evidence quality is not investment attractiveness.
+
+New currentness tracing belongs to the existing collector. A failed newer candidate can leave older evidence displayed only with pending/unverified currentness. An unchanged render cannot refresh business time. No second collector, timer or liveness store is introduced.
+
+Private roles evolve inside the existing private Earnings generation/store/pointer. Normal subsequent wire runs must not lose or downgrade the native content. A matching pointer alone does not prove the entire required closure. The reader/source drawer pins generation plus manifest/record digests and native selector. An unsupported historical rule version cannot silently recompute with new logic. Existing process mutex is not a distributed CAS or source lease.
+
+The first useful interpretation is deterministic and no LLM is required. All six derived decision effects remain false. Protected additions must be rejected by public admission and the actual public publisher, not only hidden in the UI. Login/logout request cleanup and no browser persistent/telemetry payload are acceptance requirements.
+
+STSI #7777 remained open/unmerged at `4122e3b7e1524482216fb156f201f8229c14011b` at the R6 read. Its five-file contract slice does not prove shared mount readiness. Preserve Robotics/shared STSI/F04 and all incumbent financial/GMI/identity/state/valuation/publication custody. Product-write preflight is still owed; the plan does not clear other writers globally.
+
+## Verification and placement limits
+
+32 authored-plan structural/syntax checks passed in a fresh rerun. Twelve Python snippets syntax-parsed. All36 application acceptance cases remain NOT_EXECUTED; zero product tests or investment backtests. Plan/full-file blob verified; review and prepared packet read back by exact commits. No independent security/design review, live source retention, deployment or browser proof.
+
+Directory searches for Executive OS and Mastermind/Executive/Fabric exposed no matching actionable connector here. This is a discovery limitation only, not proof that the company's runtime or fabric is offline. No approved concrete Fable receiver or live return carrier was established. Native GitHub planning writes remain usable. Do not perform another unchanged directory search as a substitute for progress; use a materially changed/authorized runtime surface for actual placement, or an existing approved exact direct-delivery path when verified.
+
+Fable integration packet is PREPARED_NOT_DELIVERED, organizational WAITING_CAPACITY/needs_placement. No OPEN_PICKUP broadcast, Chairman account-allocation request or receiver-specific watcher. The packet's existence is not an assignment, ACK, START or custody transfer.
+
+## Effects and hold
+
+Effects are research/planning/Agent OS preparation records on the same branch only. EFFECT_UNKNOWN:none observed. No product source, schema/native source admission, live private payload, identity, memberships/baskets, ranking/entry/sizing/trading, authentication, publisher configuration, CI policy, merge or deployment. No worker, Executive Attempt, Fable delivery/ACK/START, watcher or autonomous wake.
+
+Keep #7792 Draft/HOLD. Product implementation requires its own lawful current-main carrier after collision/effect reconciliation; never create a replacement for a started or uncertain operation. No pending external counterpart is waiting on an unclosed reciprocal thread from this turn.
+
+## Boundary and next action
+
+R6 reaches the actual planning-to-integration boundary: source-dependent implementation details are specified, self-reviewed, structurally verified and persisted, and the exact Fable packet is prepared. The turn accumulated substantial code, source-law and long-artifact context. Resume on a fresh bounded placement/integration surface from this checkpoint and the packet, not the earlier source/tool history. This is context/phase continuity, not completion, cancellation, writer release or a claim of hard failure.
+
+Exact next action: identify one eligible concrete Fable receiver through the existing approved placement/direct-delivery owner, reconcile no conflicting START/effect, deliver the prepared packet and establish separate pickup/START and return evidence. Then execute plan Task1 on a fresh lawful implementation carrier through the existing least-scarce capable worker route, with G1-G4 applied only to dependent actions. Do not ask for the research mandate again or repeat the R1-R5 census. The overall Consumer Defensive mission remains incomplete until required real user capability and later milestone obligations are actually delivered and accepted.
