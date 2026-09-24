@@ -184,21 +184,6 @@ def test_question_must_resolve_and_not_duplicate_members(raw,presentation):
     with pytest.raises(GuideError):compile_test(raw,presentation)
 
 
-def test_question_search_terms_are_bilingual_and_projected(raw,presentation):
-    out=compile_test(raw,presentation)
-    risk=next(q for q in out['questions'] if q['id']=='risk')
-    assert 'what does risk mean' in risk['search_terms']['en']
-    assert '风险是什么意思' in risk['search_terms']['zh']
-
-
-def test_question_search_terms_fail_closed_when_missing_or_duplicate(raw,presentation):
-    del presentation['questions'][0]['search_terms_zh']
-    with pytest.raises(GuideError):compile_test(raw,presentation)
-    presentation=json.loads(PRESENTATION.read_text())
-    presentation['questions'][0]['search_terms_zh'][0]=presentation['questions'][0]['search_terms_en'][0]
-    with pytest.raises(GuideError,match='unique'):compile_test(raw,presentation)
-
-
 def test_related_id_is_not_silently_dropped(raw,presentation):
     raw['entries'][0]['related_ids']=['not-there']
     with pytest.raises(GuideError):compile_test(raw,presentation)

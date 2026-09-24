@@ -201,7 +201,7 @@ def compile_guide(raw: dict, presentation: dict, *, validate_registry: Callable,
     if not isinstance(raw_questions, list):
         raise GuideError("questions must be a list")
     for q in raw_questions:
-        if not isinstance(q, dict) or set(q) - {"id", "label_en", "label_zh", "entry_ids", "search_terms_en", "search_terms_zh"}:
+        if not isinstance(q, dict) or set(q) - {"id", "label_en", "label_zh", "entry_ids"}:
             raise GuideError("unknown question field")
         qid = q.get("id")
         if not isinstance(qid, str) or not SLUG.fullmatch(qid) or qid in question_ids:
@@ -209,12 +209,8 @@ def compile_guide(raw: dict, presentation: dict, *, validate_registry: Callable,
         members = _string_list(q.get("entry_ids"), qid + ".entry_ids")
         if not members or set(members) - set(ids) or len(members) != len(set(members)):
             raise GuideError(f"{qid}: invalid question membership")
-        search_terms = {lang: _string_list(q.get("search_terms_" + lang), qid + ".search_terms_" + lang) for lang in LANGUAGES}
-        normalized_terms = [normalize(term) for lang in LANGUAGES for term in search_terms[lang]]
-        if any(not term for term in normalized_terms) or len(normalized_terms) != len(set(normalized_terms)):
-            raise GuideError(f"{qid}: search terms must be unique after normalization")
         question_ids.add(qid)
-        questions.append({"id": qid, "label": _pair(q, "label"), "entry_ids": members, "search_terms": search_terms})
+        questions.append({"id": qid, "label": _pair(q, "label"), "entry_ids": members})
     payload = {"schema": SCHEMA, "authority_ceiling": "reference_only", "live_values": False,
                "entries": output, "coverage": coverage_items, "questions": questions,
                "lookup": {key: sorted(targets) for key, targets in sorted(lookup.items())}}
