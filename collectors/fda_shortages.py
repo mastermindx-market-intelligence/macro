@@ -448,6 +448,11 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         try:
             _write_staged(path, write_parquet)
             os.replace(staged_sidecar, sidecar)
+        except Exception:
+            return {
+                "promoted": False, "reason": "METADATA_WRITE_FAILED",
+                "predecessor": on_disk_predecessor,
+            }
         finally:
             if staged_sidecar.exists():
                 staged_sidecar.unlink()
