@@ -1,0 +1,41 @@
+{
+  "schema": "ric.rates_direction.retained_row_audit.v1",
+  "checked_at": "2026-09-24T08:35:02.104423+00:00",
+  "status": "PASS",
+  "rows_checked": 220736,
+  "predictions_sha256": "8017c3165f2081cfb594cd2e38eed717cbc84188f211667b2604c3e19ad68e7b",
+  "primary_metrics_recomputed": {
+    "no_change": {
+      "n": 1244,
+      "mse_bp2": 176.5313504823151,
+      "mae_bp": 10.312700964630226
+    },
+    "momentum_5": {
+      "n": 1244,
+      "mse_bp2": 355.13504823151123,
+      "mae_bp": 14.717041800643086
+    },
+    "ridge_curve": {
+      "n": 1244,
+      "mse_bp2": 184.17463610338808,
+      "mae_bp": 10.542841822432514
+    },
+    "ridge_curve_real": {
+      "n": 1244,
+      "mse_bp2": 184.12818479528752,
+      "mae_bp": 10.543371384852687
+    }
+  },
+  "checks": [
+    "unique identity",
+    "purged clocks",
+    "finite normalized probabilities",
+    "ordered intervals",
+    "PIT and authority withheld",
+    "MSE/MAE reproduced",
+    "digest matches"
+  ],
+  "scope": "Same-author second arithmetic pass; not independent review, PIT certification or live proof.",
+  "new_fits": 0,
+  "new_trials": 0
+}
