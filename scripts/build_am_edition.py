@@ -1915,8 +1915,15 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # R4 (BLOCKER-major, 2026-09-24): in-process callers (e.g. the page test)
+    # invoke `main()` with no args. The OLD contract read `sys.argv[1:]` in
+    # that branch — when invoked under pytest the test runner's argv leaks in
+    # and argparse aborts with `SystemExit code 2`. The new contract treats
+    # `None` as "no args" (empty list); the CLI path passes `sys.argv[1:]`
+    # explicitly via the `__main__` guard below. Production callers are safe:
+    # `daily.yml:4056` and `render.yml:791` both use `python -m`.
     if argv is None:
-        argv = sys.argv[1:]
+        argv = []
     args = _parse_args(argv)
     try:
         cfg = config.load()
@@ -1958,4 +1965,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
