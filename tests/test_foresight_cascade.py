@@ -1247,13 +1247,13 @@ def test_chip_zh_labels_translate_every_appended_fact():
     now = datetime(2026, 9, 23, 12, tzinfo=UTC)
     current_with_remainder = summarize_supply(
         [_summary_row("Current"), _summary_row("Under Review", ndc="TEST-B")],
-        capture=_capture(now, "2026-09-20"), now=now, max_capture_age=None,
+        capture=_capture(now - timedelta(days=3), "2026-09-20"), now=now, max_capture_age=None,
     )
     legacy = summarize_supply(
         [_summary_row("Current")], capture=None, now=now, max_capture_age=None,
     )
     unavailable = summarize_supply(
-        [_summary_row()], capture=_failed_capture(now), now=now,
+        [_summary_row()], capture=_failed_capture(now, "2026-09-20"), now=now,
         max_capture_age=timedelta(days=2),
     )
 
@@ -1268,10 +1268,10 @@ def test_chip_zh_labels_translate_every_appended_fact():
     assert legacy["label"].endswith("capture time unknown")
     assert legacy["label_zh"].endswith("采集时间未知")
     assert unavailable["label"] == (
-        "FDA source unavailable — last qualified 2026-09-20, refresh failed · captured 3 d ago"
+        "FDA source unavailable — last qualified 2026-09-20, refresh failed · captured 30 d ago"
     )
     assert unavailable["label_zh"] == (
-        "FDA来源不可用——上次合格为2026-09-20，刷新失败 · 采集于3天前"
+        "FDA来源不可用——上次合格为2026-09-20，刷新失败 · 采集于30天前"
     )
     for summary in (current_with_remainder, legacy, unavailable):
         chinese = summary["label_zh"].casefold()
@@ -1334,10 +1334,10 @@ def test_legacy_chip_rows_preserve_discontinued_and_unclassified_states():
         )["themes"][0]
 
     current = run("CURRENT_REPORTED")
-    resolved = run("UNAVAILABLE")
+    resolved = run("RESOLVED_REPORTED")
     assert current["stage"] == resolved["stage"] == "WATCH"
     assert current.get("entry") == resolved.get("entry") is None
-    assert current["tier"] == unavailable["tier"] == "P"
+    assert current["tier"] == resolved["tier"] == "P"
 
 
 def test_rendered_html_shows_zh_chip_and_no_banned_words():

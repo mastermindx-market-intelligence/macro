@@ -106,13 +106,14 @@ def _closed_rows(rows):
     return closed
 
 
-def _label(status, counts, generation, capture_qualified, unclassified_rows):
-    suffix = f" · source generation {generation}" if generation else ""
-    if capture_qualified is None:
-        suffix += " · capture time unknown"
-    remainder = f" · {unclassified_rows} record unclassified" if unclassified_rows == 1 else (
-        f" · {unclassified_rows} records unclassified" if unclassified_rows else ""
-    )
+def _duration_text(seconds):
+    days = int(seconds // 86400)
+    if days == 1:
+        return ("1 d ago", "1天前")
+    return (f"{days} d ago", f"{days}天前")
+
+
+def _label(status, counts, generation, capture_qualified, unclassified_rows, capture_age_s=None):
     labels = {
         _CURRENT_REPORTED: ("FDA shortage: current ({current})", "FDA短缺：当前（{current}）"),
         _RESOLVED_REPORTED: ("FDA shortage: resolved ({resolved}) — supply status only", "FDA短缺：已解决（{resolved}）——仅供给状态"),
@@ -120,13 +121,31 @@ def _label(status, counts, generation, capture_qualified, unclassified_rows):
         _MIXED_REPORTED: ("FDA: mixed — current {current} / resolved {resolved}", "FDA：混合——当前{current}／已解决{resolved}"),
         _UNCLASSIFIED: ("FDA: observed, status unclassified ({unrecognized})", "FDA：已观察到，状态未分类（{unrecognized}）"),
         _NO_MATCHING_RECORDS: ("FDA: no matching records", "FDA：无匹配记录"),
-        _UNAVAILABLE: ("FDA source unavailable", "FDA来源不可用——刷新失败"),
+        _UNAVAILABLE: ("FDA source unavailable", "FDA来源不可用"),
     }
     english, chinese = labels[status]
-    if status == _UNAVAILABLE and generation:
-        english = f"FDA source unavailable — last qualified {generation}, refresh failed"
-        chinese = f"FDA来源不可用——上次合格为{generation}，刷新失败"
-    return english.format(**counts, unclassified_rows=unclassified_rows) + suffix + remainder, chinese.format(**counts, unclassified_rows=unclassified_rows) + suffix + remainder
+    english_parts = [english.format(**counts)]
+    chinese_parts = [chinese.format(**counts)]
+    if status == _UNAVAILABLE:
+        english_parts[0] = f"FDA source unavailable — last qualified {generation}, refresh failed"
+        chinese_parts[0] = f"FDA来源不可用——上次合格为{generation}，刷新失败"
+    elif generation:
+        english_parts.append(f"source generation {generation}")
+        chinese_parts.append(f"来源生成日期{generation}")
+    if capture_age_s is not None:
+        english_age, chinese_age = _duration_text(capture_age_s)
+        english_parts.insert(1 if status == _UNAVAILABLE else 1, f"captured {english_age}")
+        chinese_parts.insert(1 if status == _UNAVAILABLE else 1, f"采集于{chinese_age}")
+    if capture_qualified is None:
+        english_parts.append("capture time unknown")
+        chinese_parts.append("采集时间未知")
+    if unclassified_rows == 1:
+        english_parts.append("1 record unclassified")
+        chinese_parts.append("1条记录未分类")
+    elif unclassified_rows:
+        english_parts.append(f"{unclassified_rows} records unclassified")
+        chinese_parts.append(f"{unclassified_rows}条记录未分类")
+    return " · ".join(english_parts), " · ".join(chinese_parts)
 
 
 def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -> dict:
@@ -181,6 +200,7 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
     unclassified_rows = counts["unrecognized"]
     label, label_zh = _label(
         source_status, counts, generation, qualified, unclassified_rows,
+        capture_age_s=capture_age_s,
     )
     return {
         "source_status": source_status,
@@ -321,9 +341,27 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
     if summary is None:
         status = scarcity_row.get("source_status")
         if status is None:
-            status = _CURRENT_REPORTED if scarcity_row.get("band") == SHORTAGE_ACTIVE else (
-                _RESOLVED_REPORTED if scarcity_row.get("band") == SHORTAGE_RESOLVED else _NO_MATCHING_RECORDS
-            )
+            counts_for_status = {
+                "current": int(scarcity_row.get("n_active") or 0),
+                "resolved": int(scarcity_row.get("n_resolved") or 0),
+                "discontinued": int(scarcity_row.get("n_discontinued") or 0),
+            }
+            if counts_for_status["discontinued"]:
+                status = _DISCONTINUATION_REPORTED
+            elif counts_for_status["current"] and counts_for_status["resolved"]:
+                status = _MIXED_REPORTED
+            elif counts_for_status["current"]:
+                status = _CURRENT_REPORTED
+            elif counts_for_status["resolved"]:
+                status = _RESOLVED_REPORTED
+            elif any(
+                "under review" in str(value).casefold()
+                for value in scarcity_row.get("details", [])
+                if isinstance(value, str)
+            ):
+                status = _UNCLASSIFIED
+            else:
+                status = _NO_MATCHING_RECORDS
         counts = {
             "current": int(scarcity_row.get("n_active") or 0),
             "resolved": int(scarcity_row.get("n_resolved") or 0),
