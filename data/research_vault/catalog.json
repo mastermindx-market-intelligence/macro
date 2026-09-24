@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T10:42:34.049175+00:00",
-  "count": 2773,
+  "generated_at": "2026-09-24T11:12:41.019123+00:00",
+  "count": 2775,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -180,6 +180,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lqbydvvs2b4-e01969",
+      "title": "JPM US Market Intelligence | Afternoon Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:15:36Z",
+      "summary_points": [
+        "Geopolitical Escalation: Iran's UN speech drove Brent oil to $100 (Brent +4.3%), Trump-Xi summit (Sep 23-24) intensifies US-China friction, Putin meeting at Trump's Florida resort heightens Russia-US tensions.",
+        "10Y Yield Break 5%: 10Y yield breached 5% technical level (5.14%), driven by hot PMI (input cost inflation highest since late 2022), Brent >$100, and weak 5Y auction demand.",
+        "Meta Muse Unit Economics Risk: Meta's Muse agent blocked by companies to protect unit economics, eliminating underwriter incentives—a fundamental business risk for Meta Pay partnerships.",
+        "Midterm Volatility Catalysts: Post-midterm policy uncertainty from tariffs, Iran escalation, and debt ceiling brinkmanship to skew market volatility.",
+        "Semis/AI Hedging Strategy: JPUXERNV basket (70% beta to Semis, ~5–7 vol cheaper) hedges Semis/AI risk for September quarter-end rebalancing amid historical weakness in high-beta names."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rj6un4scbam-e45f74",
+      "title": "IS A 5% 10Y TREASURY COMPENSATORY",
+      "institution": "TS Lombard",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-24T09:12:26Z",
+      "summary_points": [
+        "Oil-Yield Technical: $1 oil move ≈ 2BP 10Y yield; Fed hiking cycle shifts preference to rolling 3M T-bills over 10Y bonds (vs. historical 10Y yield trade).",
+        "Equity Return Gap: 5% 10Y yield underperforms S&P 500 historical returns (11.8% avg); driven by US-Iran war, tax hikes, and political volatility.",
+        "Term Premium Shift: Rising term premium on 10Y zero-coupon bonds signals end of QE-driven yield suppression, correlating with bear markets and equity risk.",
+        "Fed Policy Arbitrage: Rolling 3M bills yield ~4.5% vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
