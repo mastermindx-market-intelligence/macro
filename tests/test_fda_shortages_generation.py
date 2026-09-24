@@ -341,7 +341,6 @@ def test_failed_metadata_write_is_not_advertised_as_current(tmp_path, monkeypatc
     assert state["inconsistent"] is False
     assert state["rows"] is not None and len(state["rows"]) == 1
     assert state["capture"]["source_generation"] == "2026-09-20"
-    assert path.read_bytes() == path.read_bytes()
     assert hashlib.sha256(path.read_bytes()).hexdigest() == old_digest
     assert sidecar.read_bytes() == old_sidecar
     assert json.loads(sidecar.read_text())["parquet_sha256"] == old_digest

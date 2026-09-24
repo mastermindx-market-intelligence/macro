@@ -24,6 +24,7 @@ import json
 import logging
 import os
 import time
+import uuid
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -436,7 +437,7 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         }
         try:
             payload = _json_dumps(receipt)
-            staged_sidecar = sidecar.with_name(f".{sidecar.name}.{os.getpid()}.tmp")
+            staged_sidecar = sidecar.with_name(f".{sidecar.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
             staged_sidecar.write_bytes(payload.encode("utf-8"))
         except Exception:
             return {
