@@ -4,92 +4,99 @@ session: sol/technology-ex-semis-research-20260923
 model: sol
 ended_because: checkpoint
 mission: >
-  Deliver the full Technology ex-Semiconductors intelligence program through principal-owned
-  research/design/planning and final Fable build integration, preserving existing owners.
+  Deliver Technology ex-Semiconductors intelligence across all fifteen research families,
+  retaining principal research/design/planning with Sol and final build integration with Fable.
 state_before: >
-  R1-R6 and the exact integrated written specification were preserved and presented for review.
-  The predecessor checkpoint marked written-spec review required.
+  The user approved continuation from the written design. The next turn visibly ended
+  with Thinking failed, but its intermediate approval checkpoint and implementation plan
+  had reached the incumbent GitHub branch. The PR description still referenced R6.
 changed:
   - path: agentos/handoffs/GMI-TECHNOLOGY-EX-SEMIS-RESEARCH-2026-09-23.md
-    what: "Current Chairman approval/continuation advances the reviewed design to executable planning."
+    what: "Same-carrier effect reconciliation, exact saved-plan pointer, and hard-rotation boundary."
 verified:
-  - claim: "The incumbent research carrier is unchanged at pickup."
-    command: "GitHub get_pr_info and exact-commit checkpoint read"
-    result: "Macro #7793 draft/open at6bbda539730d87fc7605173025c06f90218f74e0; checkpoint blobfe110cca2b1aa10e09d69e6ea613970b3564066d."
-  - claim: "The mounted written design matches the exact reviewed repository artifact."
-    command: "Compute full Git blob from the mounted design bytes"
-    result: "57914bytes;266b5198543792a200575cebe8cf82266b7eef8a; design commit26a3c4c6b3c20b2ebe7fbd469cae320b4ad0eb96."
-  - claim: "Current protected procedure is compatible and action-scoped."
-    command: "Protected-master and same-commit INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT reads"
-    result: "Mastermind a7d2b3049e5cdc523e91e61a6e9d70a1cb911157;1.0.1/bootstrap1. Repository source work is not blocked by unrelated future runtime/deployment gates."
+  - claim: "Two documentation commits survived beyond the last user-facing checkpoint."
+    command: "get_pr_info; compare_commits 6bbda539730d87fc7605173025c06f90218f74e0..6d301d092e0c1f140b23544aff45953f8adb2a99; exact-commit reads"
+    result: "ahead_by=2, behind_by=0; only this cumulative record and a new 532-line implementation-plan file changed. No product source changed in this comparison."
+  - claim: "The implementation plan write is reconciled on its original carrier."
+    command: "Git commit metadata and fetch_file at6d301d092e0c1f140b23544aff45953f8adb2a99"
+    result: "Plan blob febe42f1ff24fdfe7c50dd69784239992acf65ee; parent3d3d5a7cdef0c247497230b3a34cbe6dacb38769. Plan opening and native-seam/gate sections read; no full plan acceptance inferred."
+  - claim: "Compatible protected procedure and repository write permission were freshly checked."
+    command: "Protected master plus same-commit INDEX/recovery-relevant ACTIVE_EXECUTION/WEB_CEO_DELEGATION/RECONCILE_STATE/CLOSEOUT reads; get_repo"
+    result: "Mastermind a7d2b3049e5cdc523e91e61a6e9d70a1cb911157, Skillpack1.0.1/bootstrap1; Macro push permission true."
 unverified:
-  - claim: "The executable plan is complete or the feature is built."
-    what_would_verify: "Complete exact-path/contract/test plan, current interface/admission decisions, then separately admitted implementation and real-path acceptance."
+  - claim: "The recovered plan is fully verified, accepted for execution, or implemented."
+    what_would_verify: "Fresh-session full plan review, required 48-requirement trace, current scoped interface/custody/admission evidence, then separate implementation and production proof."
+unresolved:
+  - "The root cause of Thinking failed is not established. Do not infer a hidden time/token ceiling or promise it cannot recur."
+  - "Private native assertion binding, selected issuer/metric/source admission, private projection-role registration and delivered shared-page readiness remain scoped dependencies."
 next_actions:
-  - "Resolve exact first-vertical source/profile, private binding and shared-page seams, without another broad census."
-  - "Write and verify the first-vertical implementation plan and a requirements-to-task index on this research carrier."
-  - "Retain final Fable execution selection; do not dispatch unresolved architecture or duplicate the Robotics native extension."
+  - "Resume in a FRESH conversation from this checkpoint and the saved plan, never the accumulated tool transcript."
+  - "Verify and finish the existing implementation plan at6d301d092e0c1f140b23544aff45953f8adb2a99; reconcile its requirements-to-task coverage and exact named gates. Do not recreate it."
+  - "Prepare the build-ready Fable packet after the plan and source decisions are ready, retaining all implementation/placement/review/release gates."
 do_not_redo:
-  - "Do not recreate #7793, R1-R6 or the integrated design."
-  - "Do not ask again for approval of the written design already presented and continued."
-  - "No product writes on this research branch; no second graph, fact/expectation/consensus/identity/evaluation store, queue, publisher or template."
-  - "Keep E1 consensus basis_match/beat guards unchanged; management comparisons need separate typed semantics."
-  - "No Semiconductor or shared implementation custody transfer."
+  - "Do not continue substantive or tool-heavy work in the failed originating chat after this bounded recovery."
+  - "Do not recreate #7793, its branch, R1-R6, the approved written design, or the saved implementation plan."
+  - "Do not ask again for the written-design approval already given by good job contoniue."
+  - "Do not replace shared GMI/Robotics, Semiconductor, Company/Earnings, financial, identity, publication, evaluation or trading owners."
+  - "Do not infer a failed write from a failed chat; the saved plan is a verified effect."
+danger_areas:
+  - "Persistence is not plan verification, implementation, worker START, or production acceptance."
+  - "The old PR description and the pre-plan checkpoint's write-the-plan instruction are stale relative to the saved plan."
+  - "A fresh conversation is not source-custody transfer, writer release, provider admission, or retry permission."
 ---
 
-# Technology ex-Semiconductors — cumulative active checkpoint
+# Technology ex-Semiconductors — hard-rotation recovery checkpoint
 
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 CAPABILITY_STATE: SPEC_ONLY
 DESIGN_REVIEW: APPROVED_FOR_PLANNING
-TURN_STATE: MORE_WORK_EXISTS — current turn continues into exact implementation planning.
+PLAN_STATE: PERSISTED_VERIFICATION_PENDING
+ROTATION: HARD_ROTATION
+CHAT_STATE: SEALED_AFTER_BOUNDED_RECOVERY
+INTENDED_RESUME_SURFACE: fresh conversation in the same MastermindX project
 
-## Authority, identity and effects
+## Mission and authority
 
-Present intent is the live Chairman response `good job contoniue` to the presented exact written design. It accepts continuation into its stated next planning stage; it is not approval of uncreated artifacts, source-rights clearance, a worker START or production acceptance. Earlier selection of Fable for final build integration remains. Routine reversible planning decisions stay with this assigned principal; no redundant administrative approval round is introduced.
+Preserve theme-first discovery and company-first economic explanation across all fifteen Technology ex-Semiconductor families. Follow demand/adoption through actual products, workloads and paying customers to revenue, retained profit/cash, expectations/valuation and existing governed stock/entry workflows. Do not shrink the mission to an earnings card or research library.
 
-Operation `gmi-technology-ex-semis-research-20260923-sol-001`; Macro draft/HOLD PR #7793; branch `sol/technology-ex-semis-research-20260923`. Original base `c4da107fe729e46b4d4036b3e0e290390315d0fd` remains unchanged. New interface pin `2c7436bea5d1fca9d2ad1778eed1a6b55fa9e8ea`; prior R5/R6 pins remain dated evidence, not runtime claims. Protected Skillpack `Mastermind@a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, compatible1.0.1/bootstrap1. Direct work reason PRINCIPAL_JUDGMENT. Requested mode is user-reported, not provider/runtime attestation.
+The live Chairman response `good job contoniue` followed the exact written-design presentation and authorized its next planning stage. The subsequent failure report preserves the mission; it triggers recovery and fresh-context continuation, not cancellation. Do not invent approval of unwritten work, source rights, worker START or production readiness. Fable remains intended final build integrator. Recovery direct-work rationale: LOWER_TOTAL_OVERHEAD, bounded same-carrier reconciliation and continuity only.
 
-Only this cumulative record changes at this intermediate boundary. EFFECT_UNKNOWN: none observed. No child, worker, watcher, runtime Attempt, deployment, native source admission or trading effect. This is not a finalization or autonomous wake. Its exact revision is established by the write/readback receipt.
+## Exact frontier
 
-## Mission
+- Repository: `mastermindx-market-intelligence/macro`.
+- Carrier: draft/HOLD PR #7793; `sol/technology-ex-semis-research-20260923`.
+- Operation: `gmi-technology-ex-semis-research-20260923-sol-001`.
+- Original base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`, unchanged.
+- Last user-facing R6 checkpoint: `6bbda539730d87fc7605173025c06f90218f74e0`.
+- Recovered pre-plan checkpoint: same path at `6d301d092e0c1f140b23544aff45953f8adb2a99`, blob `fc562d96586d4d4cb8530a6d5e0075bec8c0e850`. This archived version contains the complete immutable R1-R6 index and detailed prior conclusions. Read only specific entries when needed; do not replay the history.
+- Saved implementation plan: `docs/superpowers/plans/2026-09-23-technology-economic-change-first-vertical-implementation.md`, commit `6d301d092e0c1f140b23544aff45953f8adb2a99`, blob `febe42f1ff24fdfe7c50dd69784239992acf65ee`.
+- Approved-for-planning design: `docs/superpowers/specs/2026-09-23-technology-economic-change-dossier-design.md`, commit `26a3c4c6b3c20b2ebe7fbd469cae320b4ad0eb96`, blob `266b5198543792a200575cebe8cf82266b7eef8a`.
+- Last substantive interface pin from the recovered plan: `macro@2c7436bea5d1fca9d2ad1778eed1a6b55fa9e8ea`. It is not new live proof or a rebase.
+- Recovery procedure pin: `Mastermind@a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, protected master, compatible1.0.1/bootstrap1. Re-pin minimum current procedure in the fresh session.
 
-Theme-first discovery and company-first explanation across all fifteen non-semiconductor Technology families: follow adoption/budget through actual product/workload and paid units to financially material revenue/profit/cash, expectations and valuation, then the existing stock/entry workflow. Preserve identity, dates, definitions, rights, dependence, uncertainty, corrections and coverage. An earnings card alone does not complete the mission; neither does a research library.
+This update's immutable commit/blob is supplied by its write receipt and exact readback, not a self-referential value.
 
-## Immutable artifacts — preserve
+## What survived and what remains unverified
 
-Paths below are relative to `research/technology_ex_semis/` except the design.
+Fresh GitHub comparison proves two commits after the last R6 user-facing checkpoint. The only changed paths are this cumulative record and the 532-line plan. The intermediate record already preserved written-design approval. The saved plan names concrete Company/Earnings callbacks, release binding, private publication, `templates/ticker.html.j2`, Research Vault transport, shared Robotics assertion and existing source-owner dialogue. Its presence is verified; full source/semantic review, requirement trace and execution readiness are not established by this recovery.
 
-| Artifact | Commit | Git blob |
-|---|---|---|
-| TECHNOLOGY_EX_SEMIS_RESEARCH_FOUNDATION_2026-09-23.md | ca28a48ce58c2eeaeb22d8f16494831c2dd5ff9a | 3bc3b5f1253b8d6e55c0dbc25e7f78d0fc675303 |
-| TECHNOLOGY_EX_SEMIS_SOFTWARE_ECONOMICS_R2_2026-09-23.md | d5d82d605e2e53332354bd409f0401dc7d21fb31 | e743967ed9f16f1a448bad863a1e4e0c527e5a90 |
-| TECHNOLOGY_SOFTWARE_BILLING_AND_SCENARIO_LAB_R2_2026-09-23.md | 3155a5106bee350f01a5c8e4c1ab8cc7edd81991 | 08ab52b29a5dd0ac004f219c67a0adc527ae3517 |
-| TECHNOLOGY_IT_SERVICES_ECONOMICS_R3A_2026-09-23.md | 128a9866b76d004adc68ddb3397dad3274401e44 | 73379083106bcf8b8412c96426e17ca969f35d16 |
-| TECHNOLOGY_PHYSICAL_VALUE_NETWORK_R3B_2026-09-23.md | ea6396de106a62d9f7bc9bdea7cfdec04fdea997 | bfd2dcf021869f8ff4f1f2676a9b11eac5be940a |
-| TECHNOLOGY_REGIONAL_MATERIALITY_R4A_2026-09-23.md | af0053273e9aaaac15d8d423ecf31163eca40cf4 | 844002426e2ccd342164171e95f9657e6c3fefaa |
-| TECHNOLOGY_VALUATION_EXPECTATIONS_R4B_2026-09-23.md | 22f87a49f7a0aaef9bc7e129ee850ee0d1e98727 | 1ff65ac8db7fe363419e679b2a41a228125ed6a2 |
-| TECHNOLOGY_SOURCE_PRODUCT_FEASIBILITY_R5A_2026-09-23.md | 98cfd30144d4051108ea94fc17ea36afccdcb6fc | f2ff2e09654542b2b7c0a048455de51019681b24 |
-| TECHNOLOGY_EVALUATION_AND_TEMPORAL_PROOF_R5B_2026-09-23.md | 1c224989b050be4322075af633fc83bd1a77e9dc | 95242280f199544801f60f2f68f959c206831124 |
-| TECHNOLOGY_BREADTH_AND_DESIGN_DISCRIMINATORS_R6_2026-09-23.md | aa84abbe4f06ef29cd33ec8e628ef0e8a9648ea2 | f0b6b1c77c96d333d13667f4117b36439e002526 |
-| docs/superpowers/specs/2026-09-23-technology-economic-change-dossier-design.md | 26a3c4c6b3c20b2ebe7fbd469cae320b4ad0eb96 | 266b5198543792a200575cebe8cf82266b7eef8a |
+The predecessor's instruction to write the plan from scratch is superseded by **verify and finish the saved plan**. The plan itself remains untouched. No full-plan audit, new research, implementation or worker commission was performed in this recovery.
 
-## Decisions and research that must survive
+The original R1-R6 documents and their calculations remain development evidence, not a complete global census or confirmatory holdout. Historical test counts are not rerun claims. The deterministic management bridge contains no new conditional information beyond all its inputs; do not turn it into an independent evidence vote. Earnings owns the first comparison; F04 renders it; financial truth remains with its owner. Do not reuse the E1 consensus `basis_match` guard for management-only comparisons.
 
-All R1-R6 examples are development research, not global coverage or confirmatory holdout. The selected design composes native owners, keeps theme/business context, and assigns the first deterministic management-outlook comparison to Earnings Intelligence without replacing financial truth. Its formula requires role-labeled earlier/newly-completed/remaining fiscal partitions, actual-vintage correction terms, matching units/accounting/perimeter, and source selection receipts. Do not overload the existing consensus basis_match flag. Midpoint arithmetic is not probability or Street surprise.
+## Scoped dependencies and owners
 
-The derived bridge adds no conditional information beyond all its complete inputs. Evaluate task usefulness and representation against complete-input and restricted baselines, including new guidance. No new independent evidence vote. Retain software billing versus activity, services contract capture, hardware purchased-content/cash, reporting containment, regional intersection bounds, capital/reinvestment/ownership and conditional valuation requirements. The full design has48 specified requirements, not48 executed tests.
+Retain the plan's G1-G7 gates: shared source custody; one accepted GMI assertion subtype; approved private native binding; selected issuer/numerical source admission; private projection-role registration; current shared UI hook; and production release/proof. Validate only the next action's required gates in the fresh session, not an unrelated platform-wide census.
 
-Prior32/48/54/41 arithmetic/oracle suites and R6's15 editorial checks remain historical. None was rerun merely to rebuild context. Source/byte correctness, native tests, independent review, user usefulness, predictive validity and production acceptance are separate. Earlier transport-loss write was reconciled on its original carrier; do not resurrect its resolved EFFECT_UNKNOWN.
+Preserve #7331/#7426 source dialogue and revision work, Robotics #7773, Semiconductor #7780, shared #7577/#7211, GMI/K1/F04/K3-D, DataOS, financial/Company/Earnings, Prophet B1/D5/B04 and EvaluationOS/QLedger. No new graph, global product master, source/fact/consensus/expectations store, publisher, queue, grader or trading authority. Chip-specific EDA/IP/device/fab/material/equipment research remains excluded. Broad regional/smaller-company/non-AI production coverage and the full integrated build outcome remain owed.
 
-## Existing owners and specific unresolveds
+## Failure and effect boundary
 
-Preserve #7577 shared federation, #7211 focused publication, GMI/K1/F04/K3-D, DataOS, financial/Earnings/company, Prophet B1/D5 and B04#7850, EvaluationOS/QLedger. Semiconductor #7780 is identified from prior exact-head evidence; chip-specific EDA/IP/device/fab/material/equipment scope stays there. No sibling writer is displaced.
+Observed `Thinking failed` plus the user's explicit session-failure report is the hard-rotation trigger. Root cause remains unknown. The recovery is restricted to canonical reads, effect reconciliation, this durable record and a bounded PR projection update. After persistence/readback, seal this chat; no further substantive work here, even on a generic continue request.
 
-Robotics #7773 freshly read at `f10211657c6c31df3c9af73cd4b9484e2dd7690a` has an accepted-plan record for shared optional `theme_graph.curation_assertion.v1`. Its plan blob is `d0a04e96c874395ae51cf44281039c99527dcd86`. This is a design dependency, not proof that its schema/storage/private binding is implemented. Its current intended Fable placement is not an actual worker START. Reuse that shared subtype rather than create a Technology variant.
-
-Still unresolved: approved private storage/publication binding for the detailed assertions; selected issuer's admitted metric/source profile; exact compatible shared-page hook; optional historical population/consensus/valuation capabilities; breadth of governed production coverage; real source-to-browser proof. Native inspection may resolve individual items; do not turn a historical owner name or unrelated missing runtime into a mission-wide stop.
+EFFECT_UNKNOWN: none remaining for the reconciled GitHub documentation writes. The saved plan is a known effect and must not be resubmitted. No pending modifying call is known. Runtime liveness was not globally audited; the recovered record/plan reports no Fable or worker START, and none was initiated by this recovery. Active children/returns/watchers: none known for this operation. No automatic wake, background execution, cancellation, writer release, custody transfer or production effect is claimed.
 
 ## Exact next action
 
-Resolve the narrow source/profile/private-binding/page seams, write the executable first-vertical plan with exact tasks, interfaces, negative tests and consumer proof, and verify its trace to all48 design requirements with explicit later-vertical scope. Keep working in the present turn; no Fable dispatch or product implementation has begun.
+In the fresh conversation, recover this checkpoint, read the saved plan and only the needed approved-design sections, then verify its completeness and trace to the48 specified requirements. Resolve or precisely retain each source/profile/private-publication/shared-page dependency; continue from the latest verified effect instead of rewriting the plan. Advance the existing build-ready Fable handoff under current placement/custody law when ready. Keep non-first-vertical scope explicit and continue useful authorized work without repeating the completed domain research.
