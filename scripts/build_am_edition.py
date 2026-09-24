@@ -1504,10 +1504,13 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             precision=present_precision,
         )
         # When one half is missing, the row carries a state_reason_en/zh
-        # naming the missing half in plain words (R5) — these keys are
-        # required on every non-CURRENT row so the consumer can render
-        # the missing-market disclosure alongside the present-market clock.
-        if missing_en is not None and intl_row["state"] != "CURRENT":
+        # naming the missing half in plain words (R5) — REGARDLESS of
+        # the row's freshness state. The disclosure is about the
+        # MISSING half, not the freshness of the present half; even a
+        # fresh present market must disclose that its sibling is
+        # absent. The prior code only attached the reason on non-CURRENT
+        # rows, hiding the disclosure from a fresh row's consumer.
+        if missing_en is not None:
             intl_row["state_reason_en"] = missing_en
             intl_row["state_reason_zh"] = missing_zh
         rows.append(intl_row)
