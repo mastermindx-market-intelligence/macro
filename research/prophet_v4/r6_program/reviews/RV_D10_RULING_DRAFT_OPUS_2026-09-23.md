@@ -29,6 +29,6 @@ One recursive `grep -rn 73620` over the kit's `ext/` reached `ext/glm_shim/shim.
 ## Seat follow-ups created by this audit
 1. Opus read-only review of `wave2/CYCLE_A_MACRO_DIAGNOSTIC_PREREG_2026-09-23.md` (#7847) commissioned; the m1 diagnostic-run enqueue (02:01Z) is stopped if it returns a BLOCKER before launch.
 2. Opus read-only review of `rulings/R6-B04-01_DOSSIER_CONTRACT_2026-09-24.md` (#7850) commissioned; B04-A consumes the contract only if no BLOCKER.
-3. Chairman disclosure of the 09-23 m1 window breach in the wave-3 checkpoint on #6805.
+3. Chairman disclosure of the 09-23 m1 window breach posted on #6805 as comment 5805139954 (2026-09-24T00:18:20Z), fence read clear after 5803910454.
 4. Fabric-program items owed: `remote_lane_v8.sh` trap-without-exit; refusal-evidence preservation; ledger correction for `run-1790198866-pu_w2_dspr0a`.
-5. v2 re-check requested from the same reviewer, bounded to the repairs.
+5. v2 re-check by the same reviewer (7 read-only calls): all 11 findings REPAIRED/disclosed; VERDICT APPROVE WITH REQUIRED REPAIRS — n1 minor (the timed-enqueue lanes are SCHEDULED, not QUEUED) and two evidence notes (commission evidence for the #7847/#7850 reviews; confirm the #6805 disclosure) — folded in v2.1.
