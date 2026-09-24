@@ -262,13 +262,38 @@ def test_partial_coverage_industry_total_stays_null():
     assert "industry_total_unknown" not in result["limitations"]
 
 
-def test_industry_total_unknown_propagates_into_limitations():
+def test_stream_threshold_omission_propagates_as_limitation():
+    """The stream_threshold omission translates to the closed stream_threshold_unknown code (R-MIN-15)."""
     case = synthetic_case("rare_earth_complete")
     bundle = composition._add_omission(case.bundle, "stream_threshold")
     result = composition.compose_mining_research(case.query, bundle)
-    # stream_threshold_unknown is the contracted limitation for the stream-threshold omission
-    # and the contract is also the right place for industry_total_unknown — both must coexist.
+    # stream_threshold_unknown is the contracted limitation for the stream-threshold omission.
     assert "stream_threshold_unknown" in result["limitations"]
+
+
+def test_industry_total_unknown_is_minted_when_no_identity_axis_is_bound():
+    """MAJOR-7 / W-R: industry_total_unknown is contracted only for the W-R slice; the
+    limitation is minted when the W-R identity axis is unbound (no identity_results),
+    NOT when it is bound."""
+    case = synthetic_case("rare_earth_complete")
+    from dataclasses import replace as _replace
+
+    # W-R with the identity axis unbound -> industry_total_unknown IS minted.
+    unbound_bundle = _replace(case.bundle, identity_results=())
+    result_unbound = composition.compose_mining_research(case.query, unbound_bundle)
+    assert "industry_total_unknown" in result_unbound["limitations"]
+    # W-R with the identity axis bound -> industry_total_unknown is NOT minted; the
+    # partial coverage still carries a literal-null industry_total (R-MIN-25).
+    result_bound = composition.compose_mining_research(case.query, case.bundle)
+    assert "industry_total_unknown" not in result_bound["limitations"]
+    assert result_bound["authorized_coverage"]["industry_total"] is None
+
+
+def test_industry_total_unknown_is_absent_on_w_c_slice():
+    """Copper does not contract industry_total_unknown; the closed bare-code set is slice-scoped."""
+    case = synthetic_case("copper_complete")
+    result = composition.compose_mining_research(case.query, case.bundle)
+    assert "industry_total_unknown" not in result["limitations"]
 
 
 def test_unsupported_contract_calculation_is_missing_derivation_not_invented_value():

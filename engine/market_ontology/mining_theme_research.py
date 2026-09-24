@@ -445,6 +445,15 @@ def compose_mining_research(
         if code and code not in limitations:
             limitations.append(code)
 
+    # MAJOR-7 — industry_total_unknown is a contracted limitation on the W-R slice
+    # (domain yaml §B ``limitations_vocabulary``). It is minted when the W-R
+    # identity axis is unbound — partial coverage with no issuer-attributable
+    # economics. The W-C slice does not contract it; there it stays absent.
+    slice_limit_vocab = list(MINING_DEFINITIONS[query.slice_key].get("limitations_vocabulary") or [])
+    if "industry_total_unknown" in slice_limit_vocab and not bundle.identity_results:
+        if "industry_total_unknown" not in limitations:
+            limitations.append("industry_total_unknown")
+
     # MGD-09 — a missing issuer axis blocks any financial join. The native-block list is
     # suppressed in this case so the response cannot fabricate an issuer-bound block.
     # EVERY closed T04 limitation that is mapped from an omission code withdraws the
