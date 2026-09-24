@@ -13477,7 +13477,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest
+        run: pip install pytest pyyaml
       - name: PG source-scoped economic observations
         run: python -m pytest tests/test_pg_economic_observations.py -q
 
