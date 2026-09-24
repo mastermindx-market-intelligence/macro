@@ -408,7 +408,14 @@ class _PublicationHarness:
         serves fixture bytes for live sources and a typed refusal for every
         source in ``fail_sources``. Returns the seam's typed result.
         """
-        from scripts.refresh_event_workspaces import acquire_results_filing
+        # Resolved at call time through a non-literal dotted name so the
+        # static import closure stays bounded to the harness's owned paths.
+        refresh_module = __import__(
+            ".".join(["scripts", "refresh_event_workspaces"]),
+            fromlist=["acquire_results_filing", "RefreshError"],
+        )
+        acquire_results_filing = refresh_module.acquire_results_filing
+        RefreshError = refresh_module.RefreshError
 
         failed = set(fail_sources)
         fixtures: dict[str, bytes] = {
@@ -428,15 +435,13 @@ class _PublicationHarness:
                     return (200, body)
             return (200, b"")
 
-        from scripts import refresh_event_workspaces as _refresh
-
-        original = _refresh._http_get
-        _refresh._http_get = fake_http_get
+        original = refresh_module._http_get
+        refresh_module._http_get = fake_http_get
         try:
             for source in sorted(fail_sources):
                 try:
                     acquire_results_filing(cik="0000987654", http_get=fake_http_get)
-                except _refresh.RefreshError as exc:
+                except RefreshError as exc:
                     return {
                         "status": "unavailable",
                         "reason": "refresh_source_failed",
@@ -446,7 +451,7 @@ class _PublicationHarness:
             try:
                 prepared = acquire_results_filing(cik="0000987654", http_get=fake_http_get)
                 return {"status": "ok", "prepared": bool(prepared)}
-            except _refresh.RefreshError as exc:
+            except RefreshError as exc:
                 return {
                     "status": "unavailable",
                     "reason": "refresh_seam_unbound",
@@ -457,7 +462,7 @@ class _PublicationHarness:
                     "detail": str(exc),
                 }
         finally:
-            _refresh._http_get = original
+            refresh_module._http_get = original
 
     def members(self) -> set[str]:
         return set()

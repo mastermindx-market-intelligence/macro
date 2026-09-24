@@ -16885,10 +16885,13 @@ jobs:
     # read by scripts/run_ci_pack.py.
     if: ${{ false }}
     gate: code
-    # CURATED SCOPE (2026-09-24): the suite, its helper, the fixture corpus, the owned
-    # validator module, and the owner modules the suite imports DIRECTLY (measured via
-    # `grep -hE '^(from|import) engine' tests/test_industrials_dependency_binding.py
-    # tests/industrials_result_cash_helpers.py` -> 3 modules). No transitive modules.
+    # CURATED SCOPE (2026-09-24, step 6): the suite, its helper, the fixture corpus, the
+    # owned validator module, and the TRANSITIVE import closure that
+    # `tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure`
+    # computes from `tests/test_industrials_dependency_binding.py` and
+    # `tests/industrials_result_cash_helpers.py`. Recompute the closure whenever the
+    # suite's imports change (the named test asserts every transitively-needed module
+    # is listed under `paths:` below).
     scope: exclusive
     paths:
       - "tests/test_industrials_dependency_binding.py"
