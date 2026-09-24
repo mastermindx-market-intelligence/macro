@@ -4600,6 +4600,42 @@ jobs:
       - name: company intelligence — management-outlook comparison contract + pure calculator (Technology ex-Semis T2/T3)
         run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py -q
 
+  technology-ex-semis-boundary:
+    if: ${{ false }}
+    gate: code
+    # TECHNOLOGY EX-SEMIS FIRST VERTICAL, ON THE MERGE GATE (2026-09-24, #7891).
+    #
+    # The three Technology ex-Semis suites were named only in `gate: data` jobs
+    # (the comparison contract + calculator in `neural-web-core`, the F04
+    # composer in `unrun-intl-libraries`). ci.yml packs `--gate code`, so a PR
+    # that flipped an authority flag, widened the closed decimal grammar or
+    # invented a provenance edge would merge green and red only in the next
+    # day's data-health lane — the same correction class as `regwall-boundary`
+    # and `semiconductor-b-boundary` (#7870). By the manifest's own definition
+    # these verdicts are `gate: code`: pure in-memory contract/calculator/
+    # composer logic over synthetic fixtures, no `data/**`, no `site/**`, no
+    # nightly ledger. The nightly steps stay where they are; this job adds the
+    # merge-gate verdict.
+    #
+    # Scope is inferred: the suites import their subjects directly
+    # (engine/company_intelligence/management_outlook{,_contract}.py,
+    # engine/market_ontology/technology_economic_change.py, the two frozen
+    # contracts) and pull no app or builder closure, so inference owns the
+    # re-run set without a curated declaration.
+    #
+    # Deps: jsonschema for the frozen contracts; pandas/numpy/pyarrow/requests
+    # because engine/company_intelligence imports them at package load.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
+      - name: Technology ex-Semis boundary (comparison contract + calculator + economic-change composer)
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py -q
+
   cn-standout-audit:
     if: ${{ false }}
     gate: code
