@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T02:11:18.583442+00:00",
-  "count": 2748,
+  "generated_at": "2026-09-24T02:26:21.804458+00:00",
+  "count": 2749,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -139,6 +139,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-goykvdtdty8-770277",
+      "title": "BofA Securities Equity Client Flow Trends Record week for mid cap inflows",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:02:21Z",
+      "summary_points": [
+        "Record Mid Cap Inflows & Sector Rotation: Institutional-driven record mid-cap inflows (5th largest normalized by Russell Midcap), with Industrials seeing largest outflows since 2008 vs.",
+        "Health Care’s record inflows (2nd largest normalized by S&P 500 Health Care), signaling rotation from crowded sectors to healthcare.",
+        "Institutional Investors Drive Equity Flows: Institutional clients lead net buying (vs.",
+        "Retail/Hedge Funds), with Hedge Funds contributing to inflows; institutional dominance confirmed across Exhibits 8, 9, 10, 12, 13.",
+        "Corporate Buyback Activity Decline: Corporate buybacks down -34% YoY (Exhibit 19), normalized to S&P 500 market cap at 0.18% (lowest since 2021, Exhibit 21), signaling reduced equity repurchases and fundamental risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
