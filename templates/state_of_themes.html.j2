@@ -40,6 +40,7 @@
 {% include "_seo_head.html.j2" %}
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="assets/css/theme-research.css">
 <style>
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5;margin:0;padding:18px 0 60px;-webkit-font-smoothing:antialiased}
@@ -637,6 +638,11 @@ html[data-theme="dark"] body::before{
   </details>
 </div>
 
+<section class="theme-research" id="theme-research" data-theme-research-mount data-anchor-theme-id="ai_semiconductors" data-slices="hbm_packaging,sic_gan_specialty" data-api-query="/api/themes/v1/research/query" data-api-evidence="/api/themes/v1/research/evidence" hidden aria-labelledby="theme-research-title">
+  <h2 id="theme-research-title" class="theme-research-title">{{ t('Semiconductor industry research', '半导体产业研究') }}</h2>
+  <p class="theme-research-note">{{ t('Paid research context for members. Nothing here ranks, gates, sizes or times anything.', '会员研究内容。此处内容不构成排序、准入、仓位或时机判断。') }}</p>
+</section>
+
 <p class="sot-disclosure">{{ t('Everything here describes where each market story sits and what could change it — none of it is a prediction or a trade signal. Updated nightly.', '本页描述每个市场主题所处的位置及可能改变它的因素——皆非预测或交易信号。每晚更新。') }}</p>
 
 {% else %}
@@ -649,6 +655,7 @@ html[data-theme="dark"] body::before{
 </div>{# /wrap #}
 
 <script src="theme.js"></script>
+<script defer src="assets/js/theme-research.js?v=20260924a"></script>
 <script>
 (function(){
   "use strict";
