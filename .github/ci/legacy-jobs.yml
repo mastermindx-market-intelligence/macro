@@ -5532,6 +5532,8 @@ jobs:
       - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
       - "tests/test_finance_intelligence_contract.py"
+      - "engine/sector_intelligence/finance_overlap.py"
+      - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
@@ -5571,7 +5573,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -16383,8 +16385,8 @@ jobs:
 
   dashboard-render-contract:
     # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and
-    # the UD-B2-W2 spine bindings, on the PULL-REQUEST merge gate. The same five
-    # suites already run in gate:data lanes — the first four as
+    # the UD-B2-W2 spine bindings, on the PULL-REQUEST merge gate. The five
+    # baseline suites already run in gate:data lanes — the first four as
     # unrun-picks-boards' "dashboard.html.j2 rendered-HTML contract" step,
     # tests/test_unified_dashboard_b2w2.py inside engine-render-guards' sweep —
     # and those lanes keep them for data-health.yml. But scripts/run_ci_pack.py
@@ -16409,8 +16411,13 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
-      # The five suites the step runs, plus the two helper suites they import.
+      # The seven suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      # #7859: volatility-placement tests used to live only in gate:data
+      # engine-render-guards, which PR packs do not execute. This code-gate
+      # owner already owns dashboard.html.j2 and the committed macro projection.
+      - "tests/test_ud_b2_w1_vw_fold.py"
+      - "tests/test_vsb_surface.py"
       - "tests/test_macro_risk_dialog.py"
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
@@ -16531,8 +16538,16 @@ jobs:
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
         run: pip install pytest pyyaml jinja2 pandas plotly pyarrow requests
-      - name: dashboard.html.j2 rendered-HTML contract + UD-B2-W2 spine bindings
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py tests/test_unified_dashboard_b2w2.py -q
+      - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings
+        run: >-
+          python -m pytest
+          tests/test_dashboard_template_render.py
+          tests/test_macro_risk_dialog.py
+          tests/test_risk_envelope_radar_integration.py
+          tests/test_us_stocks_s2_compression.py
+          tests/test_unified_dashboard_b2w2.py
+          tests/test_ud_b2_w1_vw_fold.py
+          tests/test_vsb_surface.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
