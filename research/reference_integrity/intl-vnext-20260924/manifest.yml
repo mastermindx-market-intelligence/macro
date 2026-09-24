@@ -13,16 +13,8 @@ author:
   role: designer
 
 reference_files:
-  - path: mockups/refs/institutionalize/intl/desktop-reference-dark-en.png
-    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
-  - path: mockups/refs/institutionalize/intl/country-inspector-reference-dark-en.png
-    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
-  - path: mockups/refs/institutionalize/intl/rotation-reference-dark-en.png
-    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
-  - path: mockups/refs/institutionalize/intl/transmission-reference-dark-en.png
-    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
-  - path: mockups/refs/institutionalize/intl/hero-reference-dark-en.png
-    frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+  - path: mockups/refs/institutionalize/intl/reference-r2.html
+    frozen_sha: 62d710eedb9e5cc2a9d9f3e17fc02cc302de39f9
 
 files:
   baseline: baseline.yml
@@ -31,3 +23,4 @@ files:
     product_regression: reviews/product_regression.yml
     visual_taste: reviews/visual_taste.yml
   verdict: verdict.yml
+  approval: approval.yml

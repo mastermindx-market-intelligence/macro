@@ -2,19 +2,22 @@ schema: mastermind.rig_proposal.v1
 reference_id: intl-vnext-20260924
 
 proposed_artifact:
-  frozen_sha: f3873dcbda51f42e3e7a5c6bec51acf5e6a446df
+  frozen_sha: 62d710eedb9e5cc2a9d9f3e17fc02cc302de39f9
   paths:
-    - mockups/refs/institutionalize/intl/desktop-reference-dark-en.png
-    - mockups/refs/institutionalize/intl/hero-reference-dark-en.png
-    - mockups/refs/institutionalize/intl/rotation-reference-dark-en.png
-    - mockups/refs/institutionalize/intl/transmission-reference-dark-en.png
-    - mockups/refs/institutionalize/intl/country-inspector-reference-dark-en.png
+    - mockups/refs/institutionalize/intl/reference-r2.html
   screenshots:
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-desktop-dark-en.png, viewport: desktop, theme: dark, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-hero-dark-en.png, viewport: desktop, theme: dark, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-rotation-dark-en.png, viewport: desktop, theme: dark, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-transmission-dark-en.png, viewport: desktop, theme: dark, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-country-inspector-dark-en.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en.png, viewport: desktop, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-light-en.png, viewport: desktop, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-zh.png, viewport: desktop, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-light-zh.png, viewport: desktop, theme: light, locale: zh}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-dark-en.png, viewport: mobile, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-light-en.png, viewport: mobile, theme: light, locale: en}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-dark-zh.png, viewport: mobile, theme: dark, locale: zh}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-light-zh.png, viewport: mobile, theme: light, locale: zh}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-loading.png, viewport: desktop, theme: dark, locale: en, state: loading}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-empty.png, viewport: desktop, theme: dark, locale: en, state: empty}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-stale.png, viewport: desktop, theme: dark, locale: en, state: stale}
+    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-error.png, viewport: desktop, theme: dark, locale: en, state: error}
 
 dispositions:
   - id: global.regime-verdict
