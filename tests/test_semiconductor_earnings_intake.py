@@ -622,6 +622,8 @@ def test_end_to_end_52_53_week_tolerance_is_applied_only_for_the_declaring_issue
                           period_phrase="Quarters Ended April 3, 2026")
     assert len(admitted) == 1 and "2026q1" in admitted[0][0]
     assert admitted[0][1]["sources"][0]["form"] == "8-K"
+    # within tolerance the EVENT carries the issuer's STATED period end, not the derived calendar end
+    assert admitted[0][1]["fiscal_period"] == {"year": 2026, "quarter": 1, "calendar_end": "2026-04-03"}
 
     calendar_issuer = _run_52_53(monkeypatch, external_ids={"results_form": "8-K"},
                                  period_phrase="Quarters Ended April 3, 2026")

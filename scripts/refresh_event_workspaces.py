@@ -1306,6 +1306,19 @@ def discover_new_homebuilder_revisions(
                 flush=True,
             )
             continue
+        if stated_drift:
+            # T05a∘T05b carrier integration (Semiconductor B, 2026-09-24): a
+            # 52/53-week issuer's quarter ends on the date IT states (onsemi
+            # Q1-2026 ended April 3, not March 31). Within the declared
+            # tolerance the EVENT keeps the issuer's own period end — the
+            # profile's closed grammar corroborates the stated date against
+            # the filing, and the payload must never publish a derived
+            # calendar end the filing does not name. The event id is
+            # unaffected (its token is year+quarter); a calendar-quarter
+            # issuer's drift is always 0 here, so its path is byte-identical.
+            fiscal_period = FiscalPeriod(
+                year=fiscal_period.year, quarter=fiscal_period.quarter, calendar_end=stated_end,
+            )
 
         asof = date.fromisoformat(str(resolved_row["filing_date"]))
         pair = f"{ticker}/{fiscal_period.year}Q{fiscal_period.quarter}"
