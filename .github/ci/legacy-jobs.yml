@@ -2187,7 +2187,7 @@ jobs:
     # roots and the job would select on templates/index.html and every other
     # ordinary code PR it never reads (the packing-ceiling probe caught exactly
     # that: +1 job on all three probes). The paths below are the files these
-    # twelve suites import, open or render — the vertical's own subjects, the
+    # fourteen suites import, open or render — the vertical's own subjects, the
     # shared owners it consumes (Theme Graph rights/contracts, Earnings
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
@@ -2205,6 +2205,14 @@ jobs:
       # engine/market_ontology/__init__.py -> exposure_map.py (as conviction-profile declares).
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/exposure_map.py"
+      # T08b-fix (public workspace -> composer-shaped projection) and T08c-1
+      # (declared witness roster + identity join through the Theme Graph /
+      # Data OS owners): the binder's read-side primitives and their suites.
+      # Their import closure (engine/theme_graph/**, lib/**) is already below.
+      - "engine/market_ontology/workspace_projection.py"
+      - "tests/test_workspace_projection.py"
+      - "engine/market_ontology/semiconductor_witness_scope.py"
+      - "tests/test_semiconductor_witness_scope.py"
       - "scripts/refresh_event_workspaces.py"
       - "scripts/build_theme_detail.py"
       - "templates/_theme_research_mount.html.j2"
@@ -2308,6 +2316,8 @@ jobs:
         run: python -m pytest tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_intake_integration.py -q
       - name: semiconductor research composer (inputs, composition, temporal law)
         run: python -m pytest tests/test_semiconductor_research_inputs.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
+      - name: binder read-side primitives (workspace projection; declared witness scope + owner identity join)
+        run: python -m pytest tests/test_workspace_projection.py tests/test_semiconductor_witness_scope.py -q
       - name: basket-intelligence mount partial
         run: python -m pytest tests/test_basket_intelligence_mounts.py -q
 
