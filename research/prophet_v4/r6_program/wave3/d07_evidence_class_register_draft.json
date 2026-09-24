@@ -119,7 +119,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010. Rights posture is User-facing, feed-conditional; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:221.",
       "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -145,7 +145,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010. Rights posture is User-facing; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:222.",
       "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -171,7 +171,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; config/dataset_registry.yml:238 and collectors/fred.py:239.",
+      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; config/dataset_registry.yml:238 and collectors/fred.py:239. Rights posture is Internal-only; model use absent; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:223.",
       "prospective_remedy": "Add a B04 route that selects the exact series, period, and realtime_start vintage and records an immutable decision output; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -197,12 +197,12 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because no B04 acquisition or decision-time source identity is recorded; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169. Rights posture is Internal-only; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:224.",
       "prospective_remedy": "Register a dated release and correction route, pin exact row identity, and freeze outputs before the first prospective B04-D decision; this row blocks B04-D.",
       "consumers": [
         "B04-D"
       ],
-      "null_reason": "NO_VINTAGE_ROUTE"
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-sec-edgar",
@@ -223,7 +223,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010. Rights posture is User-facing with citation and trademark limits; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:225.",
       "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -234,22 +234,22 @@
       "row_id": "S1-nasdaq-calendar",
       "study": "S1",
       "source_family": "Nasdaq earnings calendar",
-      "input_identity": "NONE — the census finds no acquired body for this family; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-      "release_clock": "NOT_RECORDED — no acquired body or source release clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-      "observed_clock": "NOT_RECORDED — no acquired body or observed clock exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-      "correction_clock": "NOT_RECORDED — no acquired body or correction chain exists; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-      "model_vintage": "N/A — no model input exists because the family was not acquired.",
-      "retrieval_semantics": "No decision-time body can be selected because the family was not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "input_identity": "NONE — no decision-time body is identified for B04; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+      "release_clock": "NOT_RECORDED — no decision-time body or source release clock is identified; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+      "observed_clock": "NOT_RECORDED — no decision-time body or observed clock is identified; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+      "correction_clock": "NOT_RECORDED — no decision-time body or correction chain is identified; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+      "model_vintage": "N/A — no model input exists because no decision-time body is acquired.",
+      "retrieval_semantics": "No decision-time body can be selected; the available calendar is current-only discovery, not a guaranteed full history; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
       "leakage_controls": {
-        "late-capture": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-        "corrected-body": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-        "current-only-event-set": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-        "future-membership": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-        "overlap": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
-        "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68."
+        "late-capture": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+        "corrected-body": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+        "current-only-event-set": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+        "future-membership": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+        "overlap": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37.",
+        "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37."
       },
       "proposed_class": null,
-      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no Nasdaq calendar body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no Nasdaq calendar body is acquired for decision-time replay; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:37. Rights posture is Not a source for storage/model/redistribution; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:226.",
       "prospective_remedy": "Acquire and register an exact body, identity, release clock, observed clock, and correction chain before the first prospective B04-D decision; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -275,7 +275,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; collectors/equity_revisions.py:354.",
+      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; collectors/equity_revisions.py:354. Rights posture is Internal-only; model use and redistribution absent; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:227.",
       "prospective_remedy": "Expose and store a provider release clock with each payload, or keep typed absence, before the first prospective B04-D decision; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -301,12 +301,12 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null NO_VINTAGE_ROUTE clause decides this row because a required B04 route or identity is absent; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because no B04 acquisition or decision-time source identity is recorded; research/prophet_v4/r6_program/wave2/D03_CYCLE_SOURCE_READINESS_CENSUS_2026-09-23.md:169. Rights posture is Internal-only; model use and redistribution absent; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:227.",
       "prospective_remedy": "Register a dated release and correction route, pin exact row identity, and freeze outputs before the first prospective B04-D decision; this row blocks B04-D.",
       "consumers": [
         "B04-D"
       ],
-      "null_reason": "NO_VINTAGE_ROUTE"
+      "null_reason": "EVENT_SET_NOT_RECONSTRUCTABLE"
     },
     {
       "row_id": "S1-equitydesk-scores",
@@ -327,7 +327,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010. Rights posture is Internal-only; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:228.",
       "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -353,7 +353,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010. Rights posture is Internal-only; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:229.",
       "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -379,7 +379,7 @@
         "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68."
       },
       "proposed_class": null,
-      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no S&P Kensho / Theia body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no S&P Kensho / Theia body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68. Rights posture is Not a source; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:230.",
       "prospective_remedy": "Acquire and register an exact body, identity, release clock, observed clock, and correction chain before the first prospective B04-D decision; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -405,7 +405,7 @@
         "fitting-label-maturity": "N/A — not acquired; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68."
       },
       "proposed_class": null,
-      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no licensed consensus body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68.",
+      "basis_rationale": "The null NOT_ACQUIRED clause decides this row because no licensed consensus body is acquired or identifiable; research/prophet_v4/r6_program/wave2/D03_ISSUER_EVENT_SOURCE_READINESS_CENSUS_2026-09-23.md:68. Rights posture is Permanently absent; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:231.",
       "prospective_remedy": "Acquire and register an exact body, identity, release clock, observed clock, and correction chain before the first prospective B04-D decision; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -431,7 +431,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010. Rights posture is Internal-only, context-only; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:232.",
       "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
       "consumers": [
         "B04-D"
@@ -457,7 +457,7 @@
         "fitting-label-maturity": "N/A — nothing is fitted on this family row."
       },
       "proposed_class": null,
-      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010.",
+      "basis_rationale": "The null EVENT_SET_NOT_RECONSTRUCTABLE clause decides this row because a required B04 route or identity is absent; engine/prophet_lab/intelligence_vector.py:1010. Rights posture is Internal-only; research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:233.",
       "prospective_remedy": "Freeze the exact body, immutable identity, release clock, observed clock, and correction chain for each future B04-D decision, beginning with the first prospective capture; this row blocks B04-D.",
       "consumers": [
         "B04-D"
