@@ -918,3 +918,36 @@ def test_missing_rights_registry_fails_closed_with_private_headers(entitled_clie
         assert response.headers.get(name) == value
     assert "theme_sources" not in response.text and "absent" not in response.text
 
+
+def test_missing_rights_registry_fails_closed_on_the_evidence_route_too(entitled_client, monkeypatch, tmp_path):
+    """Same registry-unavailable path through /evidence: the second route has
+    its own handler ordering, so the 503 + private headers + no-leak contract is
+    pinned there as well (review nit N7 on 7384a891929e)."""
+    fixture = load_case("revoked_rights_warm")
+    bundle_spec = fixture["bundle"]
+    monkeypatch.setattr(rights_module, "registry_path", lambda: tmp_path / "absent" / "theme_sources.yml")
+    from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+
+    def loader(*_a, **_kw):
+        return OwnerBundle(
+            revision_tuple=tuple(tuple(x) for x in bundle_spec["revision_tuple"]),
+            rights_revision="rights_unavailable_probe",
+            assertions=tuple(bundle_spec["assertions"]),
+            identity_results=tuple(bundle_spec["identity_results"]),
+            event_workspaces=tuple(bundle_spec["event_workspaces"]),
+            financial_packets=tuple(bundle_spec["financial_packets"]),
+            interpretation_blocks=tuple(bundle_spec["interpretation_blocks"]),
+            native_refs=tuple(bundle_spec["native_refs"]),
+            omissions=tuple(bundle_spec["omissions"]),
+        )
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", loader)
+    from engine.theme_graph.curation_assertion import source_ref_for
+
+    ref = source_ref_for(bundle_spec["assertions"][0])  # the route loads + filters before any generation check
+    response = entitled_client.post("/api/themes/v1/research/evidence", json=_evidence_body_with(ref))
+    assert response.status_code == 503, response.text
+    assert response.json()["detail"]["error"]["code"] == "service_unavailable"
+    for name, value in theme_research._PRIVATE_HEADERS.items():
+        assert response.headers.get(name) == value
+    assert "theme_sources" not in response.text and "absent" not in response.text
+

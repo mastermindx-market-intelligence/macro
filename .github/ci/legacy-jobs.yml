@@ -2151,6 +2151,158 @@ jobs:
       - name: access boundary (Caddyfile public matchers <-> site_access.yml policy)
         run: python -m pytest tests/test_regwall_json_gate.py -q
 
+  semiconductor-b-boundary:
+    if: ${{ false }}
+    gate: code
+    # SEMICONDUCTOR THEME INTELLIGENCE B, ON THE MERGE GATE (2026-09-24, #7870).
+    #
+    # Every Semiconductor B suite was named only in `gate: data` jobs — the
+    # paid theme-research transport in `tier-gate`, the issuer profiles /
+    # guidance history / intake in `neural-web-core`, the composer in
+    # `unrun-intl-libraries`, the basket mount in `unrun-subsector-themes`.
+    # ci.yml packs `--gate code`, so a PR that removed the rights-owner veto
+    # from app/theme_research.py or broke the closed release grammars would
+    # merge green and red only in the next day's data-health lane (the
+    # independent review of 7384a891929e constructed exactly that case).
+    # By the manifest's own definition these verdicts are `gate: code`: pure
+    # tree logic over tmp_path fixtures, monkeypatched registries, synthetic
+    # exhibit bodies and public EDGAR metadata constants — no `data/**`, no
+    # rendered `site/**`, no nightly ledger. Same correction class as
+    # `regwall-boundary` above. The nightly steps stay where they are (the
+    # field never deletes a receipt); this job adds the merge-gate verdict.
+    #
+    # Scope is inferred (the suites import their subjects), so an edit to any
+    # engine/company_intelligence, engine/market_ontology, engine/theme_graph,
+    # app/theme_research.py or templates/_theme_research_mount.html.j2 subject
+    # re-runs it.
+    #
+    # Deps: fastapi/httpx for the transport suites (they import app.main),
+    # jsonschema for the frozen contracts, jinja2 for the mount partial,
+    # pandas/numpy/pyarrow/requests because the company-intelligence intake
+    # imports them at module load. Proven locally with exactly this line.
+    #
+    # `scope: exclusive` (job id registered in CURATED_EXCLUSIVE in
+    # tests/test_ci_pack.py): the transport suites import app.main, whose
+    # closure is opaque enough that inference falls back to whole-tree scan
+    # roots and the job would select on templates/index.html and every other
+    # ordinary code PR it never reads (the packing-ceiling probe caught exactly
+    # that: +1 job on all three probes). The paths below are the files these
+    # eleven suites import, open or render — the vertical's own subjects, the
+    # shared owners it consumes (Theme Graph rights/contracts, Earnings
+    # Intelligence binder, crosswalk) and the app the transport mounts on.
+    scope: exclusive
+    paths:
+      # The vertical's own subjects first, then the app.main import closure the
+      # transport suites drag in — the same glob closure `defense-rail-laws`
+      # (gate: code, also imports app.main) declares, minus that job's own
+      # suites and fixtures. Verified against the closure audit.
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      - "scripts/refresh_event_workspaces.py"
+      - "scripts/build_theme_detail.py"
+      - "templates/_theme_research_mount.html.j2"
+      - "templates/_basket_intelligence_mounts.html.j2"
+      - "templates/basket_detail.html.j2"
+      - "tests/semiconductor_research_helpers.py"
+      - "tests/fixtures/semiconductor_theme_research/**"
+      - "tests/test_theme_research_api.py"
+      - "tests/test_theme_research_rights_refresh.py"
+      - "tests/test_theme_research_private_binding.py"
+      - "tests/test_semiconductor_guidance_history.py"
+      - "tests/test_semiconductor_earnings_witnesses.py"
+      - "tests/test_semiconductor_earnings_intake.py"
+      - "tests/test_semiconductor_earnings_intake_integration.py"
+      - "tests/test_semiconductor_research_inputs.py"
+      - "tests/test_semiconductor_research_composition.py"
+      - "tests/test_semiconductor_research_temporal.py"
+      - "tests/test_basket_intelligence_mounts.py"
+      - "scripts/build_state_of_themes.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
+      - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
+      - "research/US_BOARD_MEASUREMENT.md"
+      - "scripts/compile_capital_structure_events.py"
+      - "app/**"
+      - "collectors/**"
+      - "lib/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/*.py"
+      - "engine/biocatalyst/**"
+      - "engine/capital_structure/**"
+      - "engine/chronicle/**"
+      - "engine/codex_lane/**"
+      - "engine/company_intelligence/**"
+      - "engine/context_index/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/**"
+      - "engine/entry_radar/**"
+      - "engine/fundamental_forensics/**"
+      - "engine/government_revenue/**"
+      - "engine/intelligence_workspace/**"
+      - "engine/marketing/**"
+      - "engine/metabolism/**"
+      - "engine/neuralweb/**"
+      - "engine/oracle/**"
+      - "engine/pick_lab/**"
+      - "engine/press/**"
+      - "engine/prophet_lab/**"
+      - "engine/prophet_live/**"
+      - "engine/research_vault/**"
+      - "engine/seasonality/**"
+      - "engine/sector_intelligence/**"
+      - "engine/theme_graph/**"
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "site/basketdata/**"
+      - "site/canadabasketdata/**"
+      - "site/chinabasketdata/**"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/**"
+      - "site/flowleaders/**"
+      - "site/government_revenue.html"
+      - "site/hkbasketdata/**"
+      - "site/leaderradar/**"
+      - "site/master_brief.json"
+      - "site/prophet/**"
+      - "site/vol/**"
+      - "templates/government-revenue-dossiers.js"
+      - "templates/government_revenue.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 jsonschema fastapi httpx requests numpy pandas pyarrow
+      - name: paid theme research transport (auth gate, rights owner veto, private binding)
+        run: python -m pytest tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
+      - name: issuer release grammars, guidance history, EDGAR intake (TSMC + onsemi witnesses)
+        run: python -m pytest tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_intake_integration.py -q
+      - name: semiconductor research composer (inputs, composition, temporal law)
+        run: python -m pytest tests/test_semiconductor_research_inputs.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
+      - name: basket-intelligence mount partial
+        run: python -m pytest tests/test_basket_intelligence_mounts.py -q
+
   lens-tap-boundary:
     if: ${{ false }}
     gate: code
@@ -2221,6 +2373,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -8079,6 +8234,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -8709,6 +8867,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -10793,6 +10954,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -11164,6 +11328,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -14662,6 +14829,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
+      # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/semiconductor_theme_research.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"

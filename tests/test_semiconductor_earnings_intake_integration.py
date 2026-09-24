@@ -385,8 +385,15 @@ def test_tsm_two_real_filings_yield_a_comparable_sequence_with_the_fx_limitation
     assert sorted(e for e, _p in revisions) == ["evt_cik0001046179_2026q1_results", "evt_cik0001046179_2026q2_results"]
     result = _composer_sequence(revisions, "fact_revenue_usd")
     assert result["comparisons"]["prior_vs_actual"] == {"status": "comparable", "reason": None, "position": "below_range"}
-    assert "fx_assumption_unreconciled" in result["limitations"]          # TSMC guides at a stated NT$ rate
-    assert not any(t.startswith("comparison_refused") for t in result["limitations"])
+    # Pinned exactly: the FX residual is present because TSMC guides at a stated
+    # NT$ rate; the two definition tokens are present because neither the fact
+    # nor the guidance qualifies perimeter/definition; nothing else may appear.
+    assert result["limitations"] == [
+        "no_external_consensus",
+        "definition_unqualified:perimeter",
+        "definition_unqualified:definition",
+        "fx_assumption_unreconciled",
+    ]
 
 
 def test_on_two_real_filings_yield_a_comparable_sequence_across_caption_and_cell_units(monkeypatch) -> None:
@@ -399,6 +406,10 @@ def test_on_two_real_filings_yield_a_comparable_sequence_across_caption_and_cell
     assert sorted(e for e, _p in revisions) == ["evt_cik0001097864_2026q1_results", "evt_cik0001097864_2026q2_results"]
     result = _composer_sequence(revisions, "fact_revenue")
     assert result["comparisons"]["prior_vs_actual"] == {"status": "comparable", "reason": None, "position": "below_range"}
-    assert "fx_assumption_unreconciled" not in result["limitations"]      # onsemi states no FX assumption
-    assert not any(t.startswith("comparison_refused") for t in result["limitations"])
+    # Pinned exactly: onsemi states no FX assumption, so no FX residual.
+    assert result["limitations"] == [
+        "no_external_consensus",
+        "definition_unqualified:perimeter",
+        "definition_unqualified:definition",
+    ]
 
