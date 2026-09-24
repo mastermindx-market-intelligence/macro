@@ -1,21 +1,21 @@
 {
   "appended": 2,
-  "asof": "2026-09-21",
+  "asof": "2026-09-23",
   "candidates": {
     "R": 0,
-    "T": 8,
+    "T": 10,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 6,
+    "T": 8,
     "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-22",
+      "asof": "2026-09-24",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -32,21 +32,16 @@
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Crypto & Blockchain": {
-          "theme_thrust_frac": 0.2308,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
         "Semiconductors": {
-          "theme_thrust_frac": 0.3235,
+          "theme_thrust_frac": 0.1176,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 60,
-      "tickers_read": 68
+      "tickers_ok": 34,
+      "tickers_read": 42
     },
     "keys": [
       "relay_count_3d",
@@ -66,14 +61,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 126,
-      "n_covered": 83,
+      "members_indexed": 140,
+      "n_covered": 0,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-21",
+      "last_session": "2026-09-23",
       "n_tickers": 1545,
       "ok": true,
       "reason": null,
@@ -108,8 +103,8 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "RMBS",
-      "COIN"
+      "NVDA",
+      "WDC"
     ],
     "W": []
   },
@@ -119,41 +114,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-22 22:30:04",
-  "runtime_s": 116.7,
+  "run_utc": "2026-09-24 11:46:04",
+  "runtime_s": 120.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-09-22",
-    "n_members": 126,
+    "asof": "2026-09-24",
+    "n_members": 140,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 5.214,
+        "emerging_score": 5.366,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.02,
+        "emerging_score": 2.061,
         "rank": 2,
         "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 1.659,
+        "emerging_score": 1.558,
         "rank": 3,
-        "theme": "Space Tech"
-      },
-      {
-        "emerging_score": 1.644,
-        "rank": 4,
         "theme": "Crypto & Blockchain"
       },
       {
-        "emerging_score": 1.415,
-        "rank": 5,
+        "emerging_score": 1.528,
+        "rank": 4,
         "theme": "Nanotechnology"
+      },
+      {
+        "emerging_score": 1.255,
+        "rank": 5,
+        "theme": "Electric Vehicles"
       }
     ]
   },
@@ -163,15 +158,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-22",
-    "asof_mismatch": 4,
-    "asof_run": "2026-09-21",
+    "asof_max": "2026-09-23",
+    "asof_mismatch": 0,
+    "asof_run": "2026-09-23",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 26.4,
+    "runtime_s": 23.3,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 76,
