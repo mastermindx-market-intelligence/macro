@@ -1,66 +1,83 @@
-# GMI A - Case1 research return and continuation
+# GMI A - complete bounded research tranche, returned for review
 
 Operation: `gmi-theme-research-food-agriculture-environment-20260924-001`.
-Parent: `gmi-thematic-research-meta-ceo-20260924-001`, Macro #7886, `WS:GMI-THEME-GRAPH`.
-Child: Macro Draft/HOLD #7890, `sol/gmi-theme-research-a-20260924`.
-MISSION_COMPLETE: false. This is the first substantive case unit, not the complete three-case/19-leaf return and not Meta-CEO acceptance.
+Parent: `gmi-thematic-research-meta-ceo-20260924-001`, Macro Draft/HOLD #7886, `WS:GMI-THEME-GRAPH`.
+Single child: Macro Draft/HOLD #7890, `sol/gmi-theme-research-a-20260924`.
 
-## 1. Research result
+RESEARCH_DELIVERABLE: THREE_CASES_AND_NINETEEN_LEAF_ASSESSMENT_READY_FOR_META_CEO_REVIEW
+META_CEO_ACCEPTANCE: NOT_ESTABLISHED
+MISSION_COMPLETE: false
 
-The initial unit located existing research without primary verification. This continuation directly inspected eight substantive issuer/agency documents and one SEC metadata index, developed Case1, specified four observation profiles and two concrete dossier journeys, and tested new arithmetic/counterexamples. Source counts describe inspected documents, not independent confirmations, domain completeness or investment quality.
+This is the full bounded research return specified by the charter, not proof that nineteen themes are deeply complete, production acceptance, or authority to begin implementation. A compact parent return will reference this verified version; posting and parent consumption must remain separate.
 
-The useful answer is that current demand, forecast procurement timing, advance funding, financing stock and actual collection require separate evidence. FMC's $200m rimisoxafen receipt is source-qualified as a product prepurchase recorded as deferred revenue for future supply. This refines the inherited 'licensing receipt' shorthand while preserving AGR5's conclusion that the receipt does not prove recurring operating recovery. The disclosed co-exclusive agreement structure and retained ownership are known; its full price, volume, cost, refund and exclusivity limitations are not. No contract margin is manufactured.
+## 1. What changed this continuation
 
-FMC's North America order-shift expectation remains a dated management forecast with an undisclosed original cohort. The separate future rimisoxafen corn/soy scope cannot populate that missing current crop/product field. Subsequent total growth would not isolate returned orders from new products, other regions or channel inventory. This makes a prospective falsifier precise without claiming actual Q4 demand already recovered.
+The Chairman explicitly requested more useful work per turn rather than ending after one case. Starting from the preserved Case1 frontier, this continuation developed both remaining case jobs, completed the assessment of every assigned leaf, added targeted primary evidence for four thinner areas, and integrated observation and user-journey requirements. This is a research-to-review phase boundary, not a one-case or elapsed-time stop.
 
-Nutrien's reported North America same-season snapshots show lower overdue amounts/ratios in June2026 versus June2025 alongside a larger gross book. The original arithmetic uses a gross denominator and an adjacent-year June comparator. It does not identify actual same-cohort repayments: payment, write-off and term extension can produce the same ending overdue stock. Regional lender context is independent evidence about a different population, not a company-customer bridge.
+Case2 compares ingredient and retail roles using source-qualified profit and cash disclosures. Its new Sprouts operating bridge explains how gross profit can rise while operating income falls; Ingredion provides different segment and investment perimeters. A synthetic one-unit chain demonstrates why successive invoices cannot be added as final demand. The issuers are contrasting examples, not a proven supplier-customer pair. Full contract, customer-cohort and store-return attribution remains unavailable.
 
-The practical product proposal is a useful partial explanation with visible unmeasured fields, not a false recovery badge or blank whole page. All source/financial/identity/rights/publication and Evaluation ownership remains native; no implementation is performed.
+Case3 examines the original Kalaeloa water-service agreement, guaranty, later project disclosure and a contrasting Xylem-Dow announcement. It distinguishes original contract terms from current-unknown rates, construction from accepted operation, restricted maintenance funding from free cash, and payment from full obligations. The selected electricity-settlement arithmetic is a conditional educational example, not a full legal model or actual invoice. The current amendment/acceptance/full-cost gap stays visible.
 
-## 2. Exact reviewed artifacts
+COVERAGE now assesses all nineteen keys exactly once. It retains exact existing-source sections, primary-validation levels, economic questions and the decision each missing field prevents. Newly inspected narrower evidence concerns preliminary indoor-farm results, alternative-protein channel shipments, filtration equipment versus replacement demand and delivery metric populations. Several leaves still rely on worked incumbent research or framework evidence; this is explicitly stated, not promoted to complete independent primary validation.
 
-All paths below are under `research/theme_graph/thematic_research_20260924/food-agriculture-environment/`.
+The integrated proposal contains twelve observation profiles: four preserved Case1 profiles plus eight new ones. They preserve population, numerator/denominator, source feasibility, event/review cadence, horizon, vintages, corrections, alternatives, falsifiers, intended native owners and missing data. Thirty proposed application examples are NOT_EXECUTED. Existing Case1 journeys, added food/water journeys and breadth navigation describe useful partial answers rather than fabricated certainty.
 
-| File | Containing/creation commit | Git blob | Verification |
-|---|---|---|---|
-| SYNTHESIS.md | `24020c459647ac86a11f927758bb11c6476ebd00` | `28d4f1821941666663809645624cca211e8960da` | Complete sequential exact-ref readback,1-115 and116-end. |
-| OBSERVATIONS_AND_INTEGRATION.md | `cf12eec45c90627a3caa44128bbf34347d9307dc` | `07f9863da0aea7f7909557e8daa1a38461b8f48a` | Complete exact-ref readback. |
-| CASE1_RESEARCH_CHECKS.py | `6a98bcbda765a522e1c085c30eff8cff0dbe043a` | `ab8f7b93358cbadd1b3b3d9fd19ffd1f1f61c025` | Exact-ref blob at `1b237ce4f0d2072f3f62ccea379d725d6c912b02` matches the complete locally executed file. |
-| CASE1_VERIFICATION.json | `1b237ce4f0d2072f3f62ccea379d725d6c912b02` | `ffb60df0a4291741687588a02385ae79b76ddfdc` | Complete exact-ref JSON readback; full local Git-object hash matches. |
-| COVERAGE.md | `4123aecb70cbcb907cab90d30fd47eb65f94c67a` | `534006f5d499c98fceefbeb46cd2b3c4d5cc1845` | Complete exact-ref readback; all19 keys preserved, narrower Case1 evidence distinguished from full leaf depth. |
+## 2. Exact artifact set and verification
 
-This return's revision comes from its own write/readback receipt. The sole cumulative owner remains `agentos/handoffs/GMI-THEMATIC-A-2026-09-24.md`; in-turn checkpoint `67c113d0344528e0d985c556c47f90e04b312ae2`, blob `bdb4b2991bdb1d20cb1a6f48bb5401da4c59b6b7`, was fully read back before long publication. It must be updated/read back with the final effects before a verified continuation disposition.
+All paths below are under `research/theme_graph/thematic_research_20260924/food-agriculture-environment/` and present at research head `4b5a770b1203494b38155e1b90fb909b1e946641`.
 
-Local code:9,226bytes; SHA256 `61a0ea7f0f37f209f5397a193f684f2f92df126dfb5372dbf7b8d5c35ab2e489`.
-Local receipt:5,523bytes; SHA256 `3b316683f6b9ce48b49019dc6e4fa172c4919f3379deee5fb43a621e4319a282`.
-Portable files under `/mnt/data/gmi_a_case1/` are copies, not another organizational owner; future download links require actual runtime existence.
+| Artifact | Immutable creation/update commit | Git blob |
+|---|---|---|
+| CASE2_FOOD_CHAIN.md | `761f40b131f2cf69f906d619993cdad3b5092280` | `2883aedaab5b239f0e682fd90e7fda3db8695ec7` |
+| CASE3_WATER_SERVICE.md | `9f11c946f284f9e70e24e79397d79e02caa500c6` | `ee0311ce11978a5050087e650c1f7d5e708e2590` |
+| COVERAGE.md | `53f127f660354ddfdb838e76bb6af557561dcb0b` | `b3a116f5bcd28923aae2d9f3863396d8eaf3d72d` |
+| OBSERVATIONS_AND_INTEGRATION.md | `7f89f62ee4976bef333c6e342944cf3f0c31da08` | `956f10f5391062c0910e72c6d89dff02734afa4d` |
+| SYNTHESIS.md | `3841ef81784e3c8df276d3096179da50777088a9` | `3f292b33e7456c6aa1e94478f521ae0a9b0fef11` |
+| TRANCHE_RESEARCH_CHECKS.py | `18eba74673888840a4a3fd4c9b5e900f08a607ba` | `0eb07601e1e783017c1e11909d7ca86be99ee355` |
+| TRANCHE_VERIFICATION.json | `4b5a770b1203494b38155e1b90fb909b1e946641` | `6c76ae67e19519dccf2a5ec2d2c0b8dcbeaca392` |
 
-## 3. Validation performed and not performed
+The five new/updated substantive Markdown bodies were completely read back at exact commits. COVERAGE was read sequentially1-58/59-end and OBSERVATIONS1-74/75-end; all nineteen table rows and eight added profiles/sixteen added application examples were inspected. SYNTHESIS and both cases were read fully. The JSON was read fully and its Git blob matches the complete local bytes. The script's native blob matches the complete locally executed file; a header-only connector read is not misrepresented as full script textual readback.
 
-Executed42 positive checks,8 deliberate corrupted variants rejected, zero failures; successful fresh rerun before canonical publication. Tests cover six transcribed aging rows, regional/allowance identities, seasonal/unit/region compatibility, gross-versus-net denominator, three synthetic overdue-stock histories, advance-versus-revenue timing, and duplicate-event evidence. A computed Git-object hash confirms exact local-to-canonical script and receipt bytes. These are research arithmetic and authored semantic examples, not a general accounting engine or tested native adapter.
+The full original Case1 remains byte-preserved at this root's historical SYNTHESIS revision `24020c459647ac86a11f927758bb11c6476ebd00`, blob `28d4f1821941666663809645624cca211e8960da`; the original four profiles/fourteen examples remain at historical OBSERVATIONS revision `cf12eec45c90627a3caa44128bbf34347d9307dc`, blob `07f9863da0aea7f7909557e8daa1a38461b8f48a`. The cumulative files incorporate those exact references rather than erase their source detail or reproduce unchanged research. CASE1_RESEARCH_CHECKS.py and CASE1_VERIFICATION.json remain unchanged.
 
-The14 proposed application examples in the observation document remain NOT_EXECUTED. No product tests, source-authenticity audit, independent review, native Agent OS validation, source-rights admission, forecast backtest, CI, merge, deployment or browser acceptance is claimed. Prior five initial packet checks remain historical; no unchanged AGR5 arithmetic or generic inventory audit was rerun.
+This RETURN file's own revision is supplied by its actual write/readback. The only cumulative organizational owner remains `agentos/handoffs/GMI-THEMATIC-A-2026-09-24.md`. Its in-turn checkpoint was persisted/read back at `447e129cf762e5db6e6822e0f7167aa0b7d973a0`, blob `cae706408247449b5bf10fc8c4d25dcecacf4eea`; final updating/readback and PR projection must cover all later effects before verified finalization.
 
-Direct external verification means checking primary disclosures independently of the inherited repository summary, not independently auditing the issuer or proving a field outcome. Exact URLs/locators, publication/economic dates, evidence dependencies, unknown timestamps and retention limitations are in SYNTHESIS E01-E09. No immutable raw primary body or commercial redistribution entitlement was established. Missing crop/customer/contract data stays unavailable.
+## 3. Actual local checks and precise limits
 
-## 4. Current authority, mode, ownership and effects
+New checks executed successfully twice: **58 positive checks, 11 deliberately corrupted examples rejected, zero failures**. They cover selected hand-transcribed financial identities, period/population/unit guards, the non-additive one-unit chain, constrained cash and conditional electricity-settlement examples. They are authored research checks, not independent tests of business truth or native product behavior. The prior42 positive/8 rejected Case1 checks remain historical and were not rerun. No unchanged AGR5/FOOD3 arithmetic was redone.
 
-Current Chairman instruction continues this same research and reports Pro mode selected. Receiver is the same ChatGPT web conversation; exact provider session identifier, served-mode attestation and hidden budget remain unknown. No model selection, duration or empirical insufficiency receipt is fabricated. Native GitHub write schemas and repository push permission were checked and authorized writes succeeded. No mode switch was required for the demonstrated writes.
+Local script:9,681bytes; SHA256 `45bb6700e497c1fe08a8fda3c63a0380c809a57bd52577f6fe168da0065ac7b2`.
+Local JSON:5,180bytes; SHA256 `25656601baa12125b3768d4301c4776d35dd440c31a451d4eb037e3cf3f10af9`.
+Both independently computed local Git-object hashes match the canonical blobs above. Final local receipt inspection confirms the listed check counts match the actual arrays. Portable copies under `/mnt/data/gmi_a_tranche/` are distribution copies, not another authority.
 
-Protected Mastermind procedure remains `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`, compatible1.0.1/bootstrap1; fresh INDEX, unchanged already-read companion fingerprints and full RECONCILE_STATE read. Charter remains `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. Original branch base remains `ef43ff17b916d11db6588309889ec28f0ecc74a6`; no rebase or replacement.
+All thirty proposed application examples remain unexecuted. No automatic source extraction, native Agent OS validation, independent research/security/legal review, source-rights admission, application tests, market backtests, CI, merge, deployment or browser proof was performed. The agreement example deliberately omits numerous conditions/schedules/current amendments; it must not be used for real billing, legal compliance or a project valuation.
 
-Basic Materials' R11 checkpoint at `5c5e8c9fbe4b676e08810942c6da45df09ae1d6a` concerns shared-foundation reconciliation, not a conflicting crop-input research unit; it preserves R1-R10. Its reference to Semiconductor #7870 is existing-owner input, not this child's shared-interface audit or implementation permission.
+## 4. Primary-source validation and unresolved observations
 
-Parent comments5808696026/5808773878 remain prior pickup/initial result receipts. The current pickup query found no newer parent comment after the previous closeout. The earlier Pro-source discrepancy remains with the parent; no ruling is inferred. A compact material Case1 return is due on #7886 after this file's verification; exact receipt goes in the final cumulative handoff.
+This turn directly inspected ten substantive primary documents: F21/F22 for the food case, W31-W34 for water and B41-B44 for targeted breadth. Selected passages/tables only; no whole-file audit of all filings or original contract. All were HTML; no PDF/OCR. A release and agreement about one event remain related sources, not independent confirmations. Prior Case1's eight substantive documents and metadata index retain their original validation limits, not a new audit count.
 
-Known effects so far: same handoff update, four new Case1 research/check files and the same COVERAGE update, followed by this return update. All remain on #7890's permitted paths. No product/shared source, registry, live data, rights, identity/membership, rank/trade, metered spend, credentials, worker/Fable, automation, merge or deployment effect. No unresolved write response is known; each publication is read back before relied upon. Failed web handle clicks were technical invalid-argument reads, not permission refusals; no access boundary was bypassed.
+Source URLs, locators, economic periods, original publication dates, units, source dependence and relevant correction needs are in the cases and COVERAGE. Exact per-fetch timestamps, raw-response digests and native immutable source retention were not established. Public access is not commercial ingestion/redistribution entitlement. An inaccessible historical SunOpta page remained unverified; no login boundary was circumvented. Other technical public-read failures did not create a safety-refusal or company-wide outage claim.
 
-## 5. Continuation boundary
+Unclosed observations are specific: actual deferred-order and due-invoice cohorts; current operative water amendments, acceptance, indexed charges and site costs; matched food SKU/contracts and store-cohort investment returns; household repeat demand; application-specific environmental outcomes; and the archived climate/agriculture taxonomy exception. These limit particular claims. They do not justify fabricated completion, a fresh global research sweep or automatic rejection of otherwise useful evidence.
 
-This is a substantive evidence-to-case boundary after source qualification, original inference limits, reproducible checks and observation/dossier design. It is not merely an inventory packet or elapsed-time stop. The remaining work changes subject to the food-chain comparison and actual water/waste contract; do not keep expanding Case1 into a separate sector encyclopedia.
+## 5. Authority, continuity and effects
 
-Next action: recover FOOD3's relevant worked producer/ingredient and retailer/distributor cases, check only material incumbent changes, then build Case2 with primary evidence at compatible periods or clearly separated historical scopes. Preserve the distinction between consumer savings, supplier revenue, conversion contribution, retail/distribution economics and shareholder cash. No guessed supplier relationship or additive counting of intermediate purchases. After that, inspect the actual Industrials W6 water case behind IND9 J16 and close the specific Case3 contract/full-cost question. Complete the remaining19-leaf qualification without claiming every leaf deeply complete.
+Protected Mastermind procedure was refreshed to `4fe4d25e3ee268e24162f33c35d176ebf9ab02e6`; compatible INDEX1.0.1/bootstrap1 and same-pin unchanged companion blobs were verified. Charter remains `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. Original child base `ef43ff17b916d11db6588309889ec28f0ecc74a6` and operation are unchanged.
 
-WHAT MUST NOT BE REDONE: original268-key inventory,49-leaf Pass2/Cybersecurity samples, generic AGR5/FOOD3 foundations, unchanged source arithmetic, this completed source classification or same-season comparison without a material invalidator. Keep inherited clock faults, vendor refresh, product implementation and worker dispatch outside scope.
+Receiver remains this Chairman-addressed ChatGPT web conversation; exact provider session identifier, served-model/mode attestation and hidden budget are unknown. Last user-reported mode is Pro. Native write schemas and current push permission were checked; authorized writes succeeded without a mode switch. The older mode-receipt discrepancy stays with the parent without a fabricated ruling or duration estimate.
 
-Intended resume: this same Chairman-selected conversation and #7890, using the cumulative checkpoint plus current material invalidators only. Case1 is developed, not parent-accepted. Cases2/3, final breadth and final research-return-for-Meta-CEO-review remain open. CHECKPOINTED_CONTINUATION is valid only after the final cumulative handoff readback covers all effects. No automatic wake, post-turn execution, custody transfer or product completion is claimed.
+Incumbent source metadata was refreshed only for the selected questions. FOOD3 is unchanged; Industrials/Consumer Cyclical advances concern shared foundation consumption, not reassigned case work. Energy's bounded framework remains reused. No incumbent source writer is released and #7870 interfaces are not accepted by this child.
+
+Known effects: same research branch; four new case/check files; cumulative COVERAGE/SYNTHESIS/OBSERVATIONS/RETURN and one handoff updates. Parent result comment and final filename census are due after this return's readback; their exact receipts belong in the final handoff/PR, not an invented future ID here. Prior parent Case1 return is5808970379. No product/shared source, native schema/data/rights, identity/membership, ranking/trade, credentials, spend, worker/Fable, automation, merge or deployment. EFFECT_UNKNOWN: none observed before this write; read back this exact result before relying on it.
+
+## 6. Exact next owner action and justified boundary
+
+The specified bounded research now has all three cases, all nineteen qualified leaves, the integrated synthesis and observation/journey proposal. This reaches the charter's research-return-for-Meta-CEO-review boundary after substantial source/case/integration work. It is not a claim that the overall GMI mission or a production capability is complete.
+
+**Next:** Meta-CEO consumes this immutable return on the existing #7886 carrier, reconciles cross-lane source/owner overlap and issues an explicit acceptance/STOP or a bounded repair/CONTINUE instruction. This child retains continuity for any such repair on #7890; it does not self-commission implementation or create a successor operation. No autonomous wake, durable running worker or parent consumption is inferred from posting.
+
+WHAT MUST NOT BE REDONE: original268-key inventory, prior49-leaf Pass2/Cybersecurity sample, AGR5/FOOD3 foundations, unchanged Case1 research/arithmetic, the completed bounded Case2/Case3 investigations, or the nineteen-leaf assessment without a material source/authority/evidence invalidator. Current missing-data limits remain visible; additional deep sector expansion requires the parent's bounded direction, not self-expansion.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION, effective only after final cumulative handoff persistence/readback covers the return and parent delivery.
+MISSION_COMPLETE: false
+INTENDED_RESUME_SURFACE: same conversation and same #7890 after actual Meta-CEO review/repair instruction; no custody transfer or new START.
