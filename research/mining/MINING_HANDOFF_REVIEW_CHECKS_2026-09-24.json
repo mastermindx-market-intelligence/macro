@@ -1,0 +1,92 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "PLANNING_PACKAGE_INTEGRITY_AND_ADMISSION_LABELS_ONLY",
+  "run_utc": "2026-09-24T08:08:09.567524+00:00",
+  "command": "python research/mining/check_mining_handoff.py",
+  "passed": 22,
+  "failed": 0,
+  "checks": {
+    "frozen:docs/superpowers/specs/2026-09-24-mining-shared-foundation-economic-dossier-design.md": true,
+    "frozen:docs/superpowers/plans/2026-09-24-mining-economic-dossier-implementation.md": true,
+    "frozen:research/mining/MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md": true,
+    "frozen:research/mining/MINING_IMPLEMENTATION_TRACE_2026-09-24.json": true,
+    "forty_obligations_retained": true,
+    "verbatim_spec_obligations": true,
+    "all_product_tests_unrun": true,
+    "eight_tasks_resolve": true,
+    "future_test_references_retained": true,
+    "prepared_not_build_ready": true,
+    "receiver_unassigned": true,
+    "two_positive_witnesses": true,
+    "eight_corpus_passes": true,
+    "duplicate_explicitly_excluded": true,
+    "no_excluded_P05_bytes": true,
+    "upstream_only_T01": true,
+    "definition_warning_not_acceptance": true,
+    "answered_vs_pending_distinguished": true,
+    "version_extension_not_enrolled": true,
+    "source_use_not_blanket_government_work": true,
+    "seven_original_gates_retained": true,
+    "full_mission_retained": true
+  },
+  "mutations_rejected": {
+    "missing_MGD_40_rejected": true,
+    "false_build_readiness_rejected": true,
+    "base_build_assignment_rejected": true,
+    "changed_original_plan_rejected": true,
+    "invented_product_pass_rejected": true
+  },
+  "documents": {
+    "docs/superpowers/specs/2026-09-24-mining-shared-foundation-economic-dossier-design.md": {
+      "bytes": 41539,
+      "words": 5618,
+      "sha256": "0925e376bc7504aa5e191cfc1795415ecbfe2b7128d6d2bc06ecd5d6d361530e",
+      "git_blob_sha1": "33d9448142d1ce922201b9938ae755b6239ea1e2"
+    },
+    "docs/superpowers/plans/2026-09-24-mining-economic-dossier-implementation.md": {
+      "bytes": 46805,
+      "words": 5694,
+      "sha256": "900559afd62db3781f71310262a294a7830f196ef6913525ac38744cd8d1b71d",
+      "git_blob_sha1": "a2fca1c561b799b7e49d69c9095e5ffa7dd094cc"
+    },
+    "research/mining/MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md": {
+      "bytes": 16277,
+      "words": 2059,
+      "sha256": "53cca0633bd355141e007b8517d1845e4df76b1ac53b107938c74690e4b68f1d",
+      "git_blob_sha1": "34548e6b874148e017ec9b4efb7566c3e94123c8"
+    },
+    "research/mining/MINING_IMPLEMENTATION_TRACE_2026-09-24.json": {
+      "bytes": 17190,
+      "words": 1325,
+      "sha256": "04b9635fe62ebb5cf7c2a6a713f01a4cfcbdb44235c4bd0cc0f1773070ada4ca",
+      "git_blob_sha1": "37ccaa92c301667b176be80c3fa6fbdcece72665"
+    },
+    "docs/superpowers/plans/2026-09-24-mining-integration-plan-addendum.md": {
+      "bytes": 17122,
+      "words": 2268,
+      "sha256": "b3c0b2fad4df1f3b77cc516cbf079fc18076a4a1b8f780a363a35d58195b2942",
+      "git_blob_sha1": "053a59e2b805c8e9eaffcd767c77f9d29cf380a8"
+    },
+    "agentos/handoffs/GMI-MINING-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md": {
+      "bytes": 16176,
+      "words": 1984,
+      "sha256": "f5c3b66e08353a08e05578e728dbbfff6878e0c97f5aed1b1527e8a1a491541a",
+      "git_blob_sha1": "bb2372987e90f8f135ddb0acebecb029eec2a849"
+    }
+  },
+  "checker_git_blob_sha1": "6b815443c1441daf47b40bd0c9cd379a761ba5b9",
+  "not_claimed": [
+    "native product tests",
+    "upstream module execution",
+    "independent review",
+    "source admission",
+    "source rights grant",
+    "receiver assignment",
+    "START",
+    "CI",
+    "merge",
+    "deployment",
+    "browser proof",
+    "investment validation"
+  ]
+}
