@@ -799,7 +799,7 @@ def _append_ledger(brief: dict, root) -> list:
         kept = _ledger_law.reject_existing_ids(lp, rows, "thematic_desk")
         with open(lp, "a") as fh:
             for row in kept:
-                fh.write(json.dumps(row, default=str) + "\\n")
+                fh.write(json.dumps(row, default=str) + "\n")
         return [row for row in kept if (row.get("record_type") or "thesis") == "thesis"]
     except Exception as e:  # noqa: BLE001
         log.warning("thematic_desk ledger append failed: %s", e)
