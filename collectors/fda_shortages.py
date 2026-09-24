@@ -296,9 +296,6 @@ def _selected_state(path):
                 "forward_retention_started_at": None,
             }, "legacy": True, "inconsistent": inconsistent,
         }
-    if False:
-        return {
-            "rows": frame, "capture": None, "last_refresh": None,
     try:
         receipt = json.loads(sidecar.read_text())
     except Exception:
