@@ -1241,6 +1241,9 @@ jobs:
       - "config/theme_graph_identity_breaks.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/earnings_story_promotion.yml"
+      # Shared llm_auth workload-policy dependencies (contract-delta 2026-09-24).
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       # B1A wiring 2026-08-24: this gate:code job owns the dossier contract and now runs the security_state.v1 suite (contract-delta named it unrun).
       - "contracts/market_os/security_state.v1.schema.json"
       - "engine/security_state.py"
@@ -3730,6 +3733,8 @@ jobs:
       - "config/ai_pricing.yml"
       - "config/capability_manifest.yml"
       - "config/metabolism_budget.yml"
+      # Shared llm_auth workload-policy config (contract-delta 2026-09-24).
+      - "config/provider_workloads.v1.json"
       - "contracts/capital_structure_document_term_observation.schema.json"
       - "contracts/capital_structure_projection.schema.json"
       - "data/capital_structure/**"
@@ -3759,6 +3764,8 @@ jobs:
       - "engine/neuralweb/key_pool.py"
       - "engine/ollama_provider.py"
       - "engine/provider_health.py"
+      # Shared llm_auth workload-policy module (contract-delta 2026-09-24).
+      - "engine/provider_workload_policy.py"
       - "engine/short_volume.py"
       - "engine/stock_fundamentals.py"
       - "engine/thesis_funnel.py"
@@ -11155,6 +11162,8 @@ jobs:
       - "engine/portfolio_vocab.py"
       - "engine/prophet_integrity.py"
       - "engine/provider_health.py"
+      # Shared llm_auth workload-policy module (contract-delta 2026-09-24).
+      - "engine/provider_workload_policy.py"
       - "engine/qbus.py"
       - "engine/qkernel.py"
       - "engine/qledger.py"
