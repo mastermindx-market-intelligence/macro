@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T00:26:10.175176+00:00",
-  "count": 2743,
+  "generated_at": "2026-09-24T04:11:36.923491+00:00",
+  "count": 2754,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -101,6 +101,145 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-alc0nknqxhy-851f9b",
+      "title": "Daily ShortActivity22Sept2026 US CLEARED",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:23:16Z",
+      "summary_points": [
+        "Charles Schwab (GC): 49.9% short flow, highest concentration in financials, critical risk factor for portfolio managers.",
+        "Life Sciences Tools & Svcs: 5.3% short flow (highest among top 5 shorted industries), signaling significant bearish sentiment and downside risk.",
+        "IT & Real Estate Short Interest Peaks: Dell (IT) at 11.2% and American Tower (Real Estate) at 17.4%, indicating extreme bearish positioning and elevated short squeeze risk.",
+        "Housing Sector Risk: GSXUHOME +2.8% and LSH +4.6% short interest spikes, highlighting interest rate sensitivity and sector-specific risk requiring allocation adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-68wyvesrh4q-cc2fc0",
+      "title": "GS Equities Color US EQUITIES COLOR INCREASING RATES PRESSURE 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:20:51Z",
+      "summary_points": [
+        "Yield Surge & Equity Pressure: 2yr yield at 4.90% (2+ yr high), 10yr at 5.10% (post-2007 high), driving S&P -75bps, Dow -68bps amid hot September PMI and input cost inflation.",
+        "Rate Hike Pricing: Markets price 71% chance of October rate hike, reflecting heightened inflation concerns from recent data.",
+        "Technical Yield Threat: 10yr yield moving ~25bps in 2 weeks (2-std dev), exceeding historical equity resilience thresholds (S&P at 19x).",
+        "Resilience Risk: Current yield trajectory (50bps/month) already pressuring equities, with S&P trading near 2-std dev yield stress levels."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-v62v8pl5vds-adbefc",
+      "title": "Oil Analyst China Crude Imports Will Likely Remain Low For Now",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:07:02Z",
+      "summary_points": [
+        "China Import Volatility Drives Brent Sensitivity: 1mb/d change in China’s net crude imports over 6 months alters Brent fair value by $4/bbl; wider gaps (e.g., 5mb/d) could reduce Brent by $9/bbl.",
+        "Middle East Strikes Pose Primary Upside Risk: Mideast production/export strikes (not China import rebound) are the key risk factor, with Brent forecast at $80 in 2027; China’s import recovery remains unlikely despite seasonal upticks.",
+        "Structural Demand Suppression in China: Gasoline/diesel consumption down 15% YoY (Aug 2026), sustained by high prices and non-oil alternatives, signaling persistent oil demand weakness.",
+        "Strategic Stock Dynamics Fuel Volatility: China’s 8-year crude stock accumulation enables opportunistic low-price buying, creating price-responsive import volatility critical for supply chain risk and pricing models.",
+        "Product Stock Decline Drives Storage Management Priority: Gasoline/diesel stocks trend downward due to weaker demand, yet national storage management remains critical; correlation (-0.5) shows stocks adjust around long-term trends with price sensitivity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-goykvdtdty8-770277",
+      "title": "BofA Securities Equity Client Flow Trends Record week for mid cap inflows",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:02:21Z",
+      "summary_points": [
+        "Record Mid Cap Inflows & Sector Rotation: Institutional-driven record mid-cap inflows (5th largest normalized by Russell Midcap), with Industrials seeing largest outflows since 2008 vs.",
+        "Health Care’s record inflows (2nd largest normalized by S&P 500 Health Care), signaling rotation from crowded sectors to healthcare.",
+        "Institutional Investors Drive Equity Flows: Institutional clients lead net buying (vs.",
+        "Retail/Hedge Funds), with Hedge Funds contributing to inflows; institutional dominance confirmed across Exhibits 8, 9, 10, 12, 13.",
+        "Corporate Buyback Activity Decline: Corporate buybacks down -34% YoY (Exhibit 19), normalized to S&P 500 market cap at 0.18% (lowest since 2021, Exhibit 21), signaling reduced equity repurchases and fundamental risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xquvtpnueu1-661934",
+      "title": "Global Equity Volatility Insights BTDD (buy the dispersion dip)",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:58:34Z",
+      "summary_points": [
+        "Dispersion Trade Viability: S&P 500 dispersion (implied/realized) shows multi-year uptrend; single-stock vol drop (SNDK, MU, MRVL) and low sector correlation create favorable entry amid AI uncertainty.",
+        "Cybersecurity Bubble Risk: US Cybersecurity Basket (BRI 0.93) exhibits extreme bubble dynamics; highest bubble risk among equity themes (Exhibit 10).",
+        "Dotcom Bubble Comparison: Current SPX froth contained (3% index weight in high-BRI stocks vs. 20-40% in Dotcom peak), indicating lower systemic risk.",
+        "Sector Bubble Concentration: Healthcare (MRNA, MRK, RVTY) and cybersecurity (CRWD, PANW) rank highest in Bubble Risk Indicators (BRI), signaling price-driven overvaluation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pyms1cbi93c-f9702e",
+      "title": "Systematic Flows Monitor Equity stop outs spread and trend followers rotate to USD",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:58:18Z",
+      "summary_points": [
+        "USD positioning shift: CTAs aggressively buying USD post-Fed hike, driving USD strength against EUR/GBP/CAD (critical flow for portfolio managers) - Equity trend reversal risk: Russell 2000/Nasdaq-100 short-term signals negative; S&P 500 stop-outs 1.3% away (key risk for trend-following strategies) - Systematic equity flow asymmetry: $157bn sell in down markets vs.",
+        "$8bn buy in up markets; risk parity/vol control amplifying downside exposure (Exhibits 1-2) - Delta-hedging volatility suppression: Gamma-driven S&P 500 e-mini realized volatility suppressed by 1pt (10%) via last-15-min delta-hedging (critical risk factor) - S&P 500 CTA unwind triggers: Long positions across all timeframes; sell triggers at 7521–7565 (imminent unwinds near 7586) - ETF-driven liquidity shock: Leveraged/inverse ETFs generate $1.1bn (S&P 500) and $2.8bn (NASDAQ-100) per 1% index move; NVDA/MU flows amplify volatility (Exhibits 67)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q5tuzr2c9vh-6157db",
+      "title": "Trading Catalysts Watch Fedspeak; two more hikes remain in view",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:58:03Z",
+      "summary_points": [
+        "Fed Policy & S&P Target: Two additional rate hikes expected in October/December, S&P 500 2026 target raised to 7400 (from 7100) amid inflation, EPS quality, and credit risk considerations.",
+        "QQQ Call Strategy: Short-dated QQQ calls recommended to capture tech dips, leveraging Nasdaq volatility near 2026 lows and AI’s rapid rebound dynamics mitigating slowdown fears.",
+        "Inflation/Recession Trade-off: Persistent supply shocks force Fed to choose between extended inflation or hard landing, raising inflation persistence risk while lowering recession probability from rate hikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-f8nhnxlth6e-84709a",
       "title": "TPL Sept 23 26",
@@ -360,6 +499,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bnuzdilqlwf-75f370",
+      "title": "Global Energy Oil Refining Deep dive into the LatAm Refining Markets + Equities Implications",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T18:35:14Z",
+      "summary_points": [
+        "LatAm Diesel Shortage: Structural diesel deficit (20% of demand met by imports, 430 kbpd net imports in key markets) driven by 60-70% refining utilization vs global 83%, with Mexico/Venezuela as major importers.",
+        "Petrobras Expansion Impact: 320 kbpd capacity growth (2025-2030) adds $1.5bn EBITDA/year; Buy-rated with 25% FCY target (2027) at USD70/bbl oil/diesel cracks.",
+        "Mexico PEMEX Turnaround: Utilization to rise from ~60% to ~80% by 2030 (vs global avg), reducing diesel net imports from 40% to 30% by 2030 via Dos Bocas ramp-up.",
+        "Venezuela Refinery Mismatch: Production growth (700k bpd to 1.9m bpd by 2030) but refinery utilization stuck at ~30% (demand collapsed from 140kbpd to 40kbpd), creating underutilized capacity risk.",
+        "Geopolitical Supply Shift: Brazil’s diesel imports shifted from Russia to U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
       "language": "en",
       "needs_metadata": false
     },
@@ -688,6 +848,45 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-cyjn3uxfdth-71560b",
+      "title": "National Bank of Kuwait (NBKK.KW) Mortgage draft law approved; sentiment positive but largely priced in, finer details unclear",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T14:38:05Z",
+      "summary_points": [
+        "Mortgage Law Approval: Limited Upside Due to Pricing-In Market has priced in 10% CAGR 2026-29E vs. 5% 5Y; finer details (LTVs, CBK parameters) unclear, limiting incremental upside despite approval.",
+        "Affordability Constraint Impact Draft law’s KWD 200k mortgage (KWD 70k subsidy) yields KWD 1K monthly EMI, exceeding average borrower’s DBR limit (KWD 500), severely restricting loan uptake and bank profitability.",
+        "Mortgage Backlog & Execution Risk 100k+ application backlog could take >10 years to clear due to infrastructure gaps and affordability constraints (EMI > DBR), delaying growth despite law.",
+        "Margin/Earnings Uncertainty Subsidized mortgages (lower rates) may neutralize/drag NIMs; bank lobbying for exemptions (e.g., reserve requirements) adds policy risk to volume upside."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q59he9u3owr-2536af",
+      "title": "GS Quinn Energy Futures WTI Oil Washout 23 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:51:07Z",
+      "summary_points": [
+        "CoT Build & Unwind: Record open interest decline (-$10.7bn) amid $6.0bn gross long build across Managed Money, Other, Non-Reportable, signaling rapid speculative unwinding and heightened near-term volatility risk.",
+        "WTI Price vs Open Interest Divergence: Late August 2026 price surge to $102.5 coinciding with steep open interest drop (1.9m→1.8m) indicates short-covering pressure or supply/demand imbalance, amplifying volatility risk.",
+        "Volatility & Delta Skew Convergence: Mar-Apr 2026 spike in WTI 3m ATM volatility (orange) and positive 25 delta skew (red) confirms elevated downside risk and structural market stress."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ks7yulaakge-837989",
       "title": "GS Armbrust What Matters Today Anthropic Releases a New Frontier Model The Second Order Effects of Muse China Oil Imports are Expected to Remain Low 23 Sep 2026",
       "institution": "S&T",
@@ -786,6 +985,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3bhwj6ebg0t-fa3dbd",
+      "title": "GS Fishman Cross Border M&A Flow Update 22 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-23T12:50:46Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
