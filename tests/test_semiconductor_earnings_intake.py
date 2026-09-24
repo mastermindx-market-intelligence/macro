@@ -465,11 +465,17 @@ def test_quarter_end_report_date_is_a_prefilter_not_the_discriminator() -> None:
         refresh_mod._parse_sgml_manifest_entries(_sgml(MONTHLY_REVENUE_6K_SHAPE))) is False
 
 
-def test_bare_ex99_manifest_without_hint_or_results_keyword_is_not_selected() -> None:
-    """A bare ``EX-99`` (no ``.1``) with neither the ex99-1 filename hint nor
-    an earnings keyword is not selected by the pre-existing three-tier
-    fallback — pins that the rescue stays narrow."""
-    assert refresh_mod._select_exhibit_99_1([("EX-99", "attachment.htm")]) is None
+def test_bare_ex99_is_selected_only_as_the_sole_text_exhibit_of_a_results_8k() -> None:
+    """A bare ``EX-99`` (no ``.1``) reaches this selector only for an 8-K row that
+    already passed the Item 2.02 (results of operations) admission, so a SOLE
+    bare EX-99 text exhibit is that filing's results release (onsemi's Q2-2026
+    8-K 0001140361-26-030989 is typed exactly so). The rescue stays narrow:
+    two bare exhibits, a non-text exhibit or an unnumbered EX-99.2 are refused."""
+    select = refresh_mod._select_exhibit_99_1
+    assert select([("EX-99", "attachment.htm")]) == "attachment.htm"
+    assert select([("EX-99", "a.htm"), ("EX-99", "b.htm")]) is None
+    assert select([("EX-99", "attachment.pdf")]) is None
+    assert select([("EX-99.2", "presentation.htm")]) is None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -666,3 +672,9 @@ def test_press_release_described_exhibits_never_admit_on_their_own() -> None:
     # the verified filer shape still admits twice over: by description and by filename convention
     assert admits([{"type": "EX-99.1", "filename": "ex991.htm", "description": "Earnings report with guidance"}]) is True
     assert admits([{"type": "EX-99.1", "filename": "a2q26e_withguidance.htm", "description": "Press release"}]) is True
+
+
+def test_numbered_ex99_1_keeps_precedence_over_a_bare_ex99() -> None:
+    select = refresh_mod._select_exhibit_99_1
+    assert select([("8-K", "form8k.htm"), ("EX-99", "bare.htm"), ("EX-99.1", "release.htm")]) == "release.htm"
+    assert select([("8-K", "form8k.htm"), ("EX-99", "ex99.htm")]) == "ex99.htm"

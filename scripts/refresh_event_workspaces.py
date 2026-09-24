@@ -98,6 +98,7 @@ _RETRIES = 3
 _TIMEOUT = 30
 _EX99_TYPE = re.compile(r"^EX-99\.1(?:\b|$)", re.I)
 _EX99_NAME = re.compile(r"ex[-_]?99[-_.]?1", re.I)
+_EX99_BARE_TYPE = re.compile(r"^EX-99$", re.I)
 
 # T05b — semiconductor earnings intake (operation
 # gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001).  The per-ticker
@@ -234,7 +235,15 @@ def _select_exhibit_99_1(manifest: list[tuple[str, str]]) -> str | None:
     if prefixed:
         return prefixed[0]
     hinted = [name for _, name in textish if _EX99_NAME.search(name)]
-    return hinted[0] if hinted else None
+    if hinted:
+        return hinted[0]
+    # Some domestic filers type their single results press release as a bare
+    # ``EX-99`` (onsemi's Q2-2026 results 8-K 0001140361-26-030989 does). That
+    # is admitted ONLY when it is the sole EX-99* text exhibit in the manifest;
+    # two or more bare/unnumbered exhibits are ambiguous and are refused rather
+    # than guessed at.
+    bare = [name for kind, name in textish if _EX99_BARE_TYPE.match(kind)]
+    return bare[0] if len(bare) == 1 else None
 
 
 # T05b — calendar-quarter-end PRE-FILTER for 6-K candidate rows.  An 8-K
