@@ -261,8 +261,8 @@ def _selected_state(path):
         "rows": pd.read_parquet(path) if path.exists() else None,
         "capture": receipt.get("selected_capture"),
         "last_refresh": receipt.get("last_refresh"),
-        "history_coverage": coverage, "legacy": False,
-        "inconsistent": False,
+        "history_coverage": coverage, "retention": receipt.get("retention") or {},
+        "legacy": False, "inconsistent": False,
     }
     expected = receipt.get("parquet_sha256")
     if expected is None or not path.exists() or _digest(path) != expected:
@@ -316,7 +316,8 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         for key, old in previous.iterrows():
             if key not in new_frame.index:
                 row = old.to_dict()
-                row["absent_since_generation"] = generation
+                if row.get("absent_since_generation") is None or pd.isna(row.get("absent_since_generation")):
+                    row["absent_since_generation"] = generation
                 row["last_observed_generation"] = row.get("last_observed_generation")
                 row["capture_known"] = bool(row.get("capture_known"))
                 merged.append(row)
@@ -345,21 +346,18 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
             if column not in frame:
                 frame[column] = None
         frame = frame.drop_duplicates(subset=["package_ndc", "initial_posting_date"], keep="last")
-        qualified_generations = []
+        generations_seen = list((state["history_coverage"] or {}).get("generations_seen") or [])
         if previous.get("capture_known").any():
             if selected:
-                qualified_generations.append(selected.get("source_generation"))
-            previous_absent = previous["absent_since_generation"].dropna().tolist()
-            previous_present = previous["last_observed_generation"].dropna().tolist()
-            qualified_generations.extend(previous_absent)
-            qualified_generations.extend(previous_present)
-        if capture["source_generation"] not in qualified_generations:
-            qualified_generations.append(capture["source_generation"])
-        known = sorted(set(value for value in qualified_generations if value is not None))
-        generation_rank = {value: rank for rank, value in enumerate(known)}
-        absent = frame["absent_since_generation"].map(lambda value: generation_rank.get(value, 0))
-        floor_rank = max(0, len(known) - 1 - 90)
-        keep = absent.isna() | (absent >= floor_rank)
+                generations_seen.append(selected.get("source_generation"))
+        generations_seen.append(capture["source_generation"])
+        generations_seen = list(dict.fromkeys(value for value in generations_seen if value is not None))[-120:]
+        generation_rank = {value: rank for rank, value in enumerate(generations_seen)}
+        absent = frame["absent_since_generation"].map(
+            lambda value: generation_rank.get(value, len(generations_seen))
+        )
+        age = len(generations_seen) - 1 - absent
+        keep = absent.isna() | (age < 90)
         dropped = int((~keep).sum())
         frame = frame.loc[keep].reset_index(drop=True)
 
@@ -377,6 +375,8 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
             coverage = dict(state["history_coverage"])
             coverage["earliest_qualified_generation"] = coverage.get("earliest_qualified_generation") or generation
             coverage["forward_retention_started_at"] = coverage.get("forward_retention_started_at") or capture["finished_at"]
+            coverage["generations_seen"] = generations_seen
+        previous_dropped = int((state.get("retention") or {}).get("dropped_absent_rows") or 0)
         receipt = {
             "schema": SCHEMA,
             "selected_capture": capture,
@@ -385,7 +385,7 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
                 "failure_code": None, "partial_rows_observed": 0,
             },
             "history_coverage": coverage,
-            "retention": {"absent_generations_kept": 90, "dropped_absent_rows": dropped},
+            "retention": {"absent_generations_kept": 90, "dropped_absent_rows": previous_dropped + dropped},
             "predecessor": expected_predecessor,
             "parquet_sha256": parquet_digest,
         }
