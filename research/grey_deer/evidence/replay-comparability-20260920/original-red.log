@@ -1,0 +1,89 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+____ test_replay_comparability_uses_price_observations_not_forecast_spacing ____
+
+    def test_replay_comparability_uses_price_observations_not_forecast_spacing():
+        out = _comparability_fixture([100., 90., 100., 100., 100.], dates=[0, 2, 4])
+>       assert out['n_days'] == 2 and out['precision'] == .5
+E       assert (2 == 2 and 0.0 == 0.5)
+
+tests/test_risk_radar.py:508: AssertionError
+_______ test_replay_comparability_invalid_price_window_is_not_no_selloff _______
+
+    def test_replay_comparability_invalid_price_window_is_not_no_selloff():
+        for bad in (float('nan'), float('inf'), 0., -1.):
+            out = _comparability_fixture([100., bad, 90., 100.], H=2)
+>           assert out['n_days'] == 0 and out['n_unscored'] == 4
+E           assert (2 == 0)
+
+tests/test_risk_radar.py:516: AssertionError
+_____________ test_replay_comparability_different_dates_cannot_win _____________
+
+    def test_replay_comparability_different_dates_cannot_win():
+        results = [_comparison_entry(v) for v in (.2, .3, .4, .5)]
+        results[2]['evaluation']['outcomes_sha256'] = 'b' * 64
+        out = _comparability_comparison(results)
+>       assert not out['improves'] and not out['comparison_ready']
+E       assert (not True)
+
+tests/test_risk_radar.py:540: AssertionError
+____________ test_replay_comparability_no_event_contrast_cannot_win ____________
+
+    def test_replay_comparability_no_event_contrast_cannot_win():
+        out = _comparability_comparison([_comparison_entry(v, events=0) for v in (.2, .3, .4, .5)])
+>       assert not out['improves'] and not out['comparison_ready']
+E       assert (not True)
+
+tests/test_risk_radar.py:546: AssertionError
+_______ test_replay_comparability_missing_population_metadata_is_unknown _______
+
+    def test_replay_comparability_missing_population_metadata_is_unknown():
+        out = _comparability_comparison([{'f1': v} for v in (.2, .3, .4, .5)])
+>       assert not out['improves'] and not out['comparison_ready']
+E       assert (not True)
+
+tests/test_risk_radar.py:551: AssertionError
+_____________ test_replay_comparability_invalid_target_is_rejected _____________
+
+    def test_replay_comparability_invalid_target_is_rejected():
+        import pytest
+        for dd in (True, 0., -.05, 1., float('nan'), float('inf')):
+>           with pytest.raises(ValueError):
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_risk_radar.py:557: Failed
+______ test_replay_comparability_complete_matching_population_keeps_rule _______
+
+    def test_replay_comparability_complete_matching_population_keeps_rule():
+        for vals, expected in [((.2, .3, .4, .5), True), ((.2, .3, .2, .3), False),
+                                ((.2, .3, .1, .5), False)]:
+            out = _comparability_comparison([_comparison_entry(v) for v in vals])
+            assert out['comparison_ready'] and out['improves'] is expected
+>           assert out['comparison_reasons'] == []
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'comparison_reasons'
+
+tests/test_risk_radar.py:566: KeyError
+_______ test_replay_comparability_digest_binds_outcomes_not_predictions ________
+
+    def test_replay_comparability_digest_binds_outcomes_not_predictions():
+        one = _comparability_fixture([100., 90., 100., 100.])
+        two = _comparability_fixture([100., 100., 90., 100.])
+        assert one['n_days'] == two['n_days'] == 3
+>       assert one['evaluation']['outcomes_sha256'] != two['evaluation']['outcomes_sha256']
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'evaluation'
+
+tests/test_risk_radar.py:573: KeyError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, data, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_risk_radar.py::test_replay_comparability_uses_price_observations_not_forecast_spacing
+FAILED tests/test_risk_radar.py::test_replay_comparability_invalid_price_window_is_not_no_selloff
+FAILED tests/test_risk_radar.py::test_replay_comparability_different_dates_cannot_win
+FAILED tests/test_risk_radar.py::test_replay_comparability_no_event_contrast_cannot_win
+FAILED tests/test_risk_radar.py::test_replay_comparability_missing_population_metadata_is_unknown
+FAILED tests/test_risk_radar.py::test_replay_comparability_invalid_target_is_rejected
+FAILED tests/test_risk_radar.py::test_replay_comparability_complete_matching_population_keeps_rule
+FAILED tests/test_risk_radar.py::test_replay_comparability_digest_binds_outcomes_not_predictions
+8 failed, 41 deselected in 5.42s

@@ -31,6 +31,7 @@ GENERATION_MANIFEST_SCHEMA = "prophet.candidate_episode_generation_manifest/v1"
 SUPPRESSION_SCHEMA = "prophet.candidate_episode_suppression/v1"
 RECONCILE_RECEIPT_SCHEMA = "prophet.candidate_episode_reconcile_receipt/v1"
 DEFAULT_DEFINITION_ERA = "candidate-episode-v1-2026-08-25"
+ANCHOR_KINDS = frozenset({"turn_watch_reset_low"})
 EVENT_TYPES = frozenset({
     "OPENED",
     "OBSERVED",
@@ -59,6 +60,7 @@ PATCHABLE_FIELDS = frozenset({
     "terminal_reason",
 })
 SUPPRESSION_REASONS = frozenset({
+    "ANCHOR_KIND_NOT_REGISTERED",
     "MISSING_STRUCTURAL_ANCHOR",
     "IDENTITY_UNRESOLVED",
     "ISSUER_UNRESOLVED",
@@ -203,6 +205,8 @@ def canonical_anchor(anchor: Mapping[str, object]) -> dict[str, object]:
     kind, basis = anchor["kind"], anchor["basis"]
     if not isinstance(kind, str) or not isinstance(basis, str):
         raise EpisodeContractError("structural anchor kind and basis must be strings")
+    if kind not in ANCHOR_KINDS:
+        raise EpisodeContractError(f"structural anchor kind is not registered: {kind}")
     return {
         "kind": kind,
         "time": _timestamp(anchor["time"], field="anchor.time"),
@@ -370,10 +374,10 @@ def validate_events(events: Sequence[Mapping[str, object]]) -> list[dict[str, ob
     return validated
 
 
-def _event_order(event: Mapping[str, object]) -> tuple[str, str, str]:
+def _event_order(event: Mapping[str, object]) -> tuple[datetime, str, str]:
     """The frozen ledger/replay order, independent of content-address hashes."""
     return (
-        str(event["known_at"]),
+        _timestamp_value(event["known_at"], field="event.known_at"),
         str(event["source_system"]),
         str(event["source_event_id"]),
     )
@@ -618,7 +622,14 @@ def project_events(events: Sequence[Mapping[str, object]]) -> list[dict[str, obj
         observed = [event for event in related if event["event_type"] == "OBSERVED"]
         experts = [event for event in related if event["event_type"] == "EXPERT_EVENT_ATTACHED"]
         row["observation_count"] = len(observed)
-        row["last_observed_at"] = max((str(event["known_at"]) for event in observed), default=None)
+        latest_observed = max(
+            observed,
+            key=lambda event: _timestamp_value(event["known_at"], field="event.known_at"),
+            default=None,
+        )
+        row["last_observed_at"] = (
+            str(latest_observed["known_at"]) if latest_observed is not None else None
+        )
         row["source_event_ids"] = sorted({str(event["source_event_id"]) for event in observed + experts})
         row["expert_events"] = sorted({
             str(event["payload"].get("expert_event_id"))
@@ -627,7 +638,13 @@ def project_events(events: Sequence[Mapping[str, object]]) -> list[dict[str, obj
         row["intake_classes"] = sorted(set(row["intake_classes"]))
 
     active: set[tuple[str, str]] = set()
-    result = sorted(rows.values(), key=lambda row: (str(row["opened_at"]), str(row["episode_id"])))
+    result = sorted(
+        rows.values(),
+        key=lambda row: (
+            _timestamp_value(row["opened_at"], field="episode.opened_at"),
+            str(row["episode_id"]),
+        ),
+    )
     for row in result:
         if row["episode_state"] not in TERMINAL_STATES:
             key = (str(row["security_id"]), str(row["identity_epoch"]))
@@ -721,7 +738,11 @@ def _assert_ordinary_source_retry_matches(
         if not isinstance(anchor, Mapping):
             raise EpisodeContractError("ordinary source key reused with different committed bytes")
         canonical = canonical_anchor(anchor)
-        opened_at = max(_timestamp(canonical["time"], field="anchor.time"), known_at)
+        anchor_time = _timestamp(canonical["time"], field="anchor.time")
+        opened_at = max(
+            (anchor_time, known_at),
+            key=lambda value: _timestamp_value(value, field="opened_at"),
+        )
         committed_payload = committed.get("payload")
         if not isinstance(committed_payload, Mapping):
             raise EpisodeContractError("ordinary source key reused with different committed bytes")
@@ -824,7 +845,14 @@ def reconcile_observations(
         _ordinary_source_key(row): row for row in validated_suppressions
     }
     returned_persisted_suppressions: set[tuple[str, str, str]] = set()
-    ordered = sorted(observations, key=lambda value: (str(value.get("known_at")), str(value.get("source_system")), str(value.get("source_event_id"))))
+    ordered = sorted(
+        observations,
+        key=lambda value: (
+            _timestamp_value(value.get("known_at"), field="observation.known_at"),
+            str(value.get("source_system")),
+            str(value.get("source_event_id")),
+        ),
+    )
     for observation in ordered:
         security = _security_id(observation.get("security_id"))
         company = _company_id(observation.get("company_id"))
@@ -873,6 +901,15 @@ def reconcile_observations(
                 returned_persisted_suppressions.add(source_key)
             continue
         anchor = observation.get("anchor")
+        if (
+            isinstance(anchor, Mapping)
+            and isinstance(anchor.get("kind"), str)
+            and anchor["kind"] not in ANCHOR_KINDS
+        ):
+            suppression = _suppression(observation, "ANCHOR_KIND_NOT_REGISTERED")
+            suppressions.append(suppression)
+            suppressed_by_source_key[source_key] = suppression
+            continue
         canonical = canonical_anchor(anchor) if anchor is not None else None  # type: ignore[arg-type]
         active = next((row for row in projected if row["security_id"] == security and row["identity_epoch"] == epoch and row["episode_state"] == ACTIVE_STATE), None)
         if active is not None and canonical is not None and canonical != canonical_anchor(active["structural_anchor"]):
@@ -894,7 +931,11 @@ def reconcile_observations(
                 continue
             generation = max((_episode_generation(str(row["episode_id"])) for row in prior), default=0) + 1
             rearm_of = str(prior[-1]["episode_id"]) if prior else None
-            opened_at = max(_timestamp(canonical["time"], field="anchor.time"), known)
+            anchor_time = _timestamp(canonical["time"], field="anchor.time")
+            opened_at = max(
+                (anchor_time, known),
+                key=lambda value: _timestamp_value(value, field="opened_at"),
+            )
             anchor_payload = dict(canonical)
             if isinstance(anchor, Mapping) and anchor.get("source_receipt") is not None:
                 anchor_payload["source_receipt"] = anchor["source_receipt"]
@@ -1050,7 +1091,13 @@ def load_all_candidates(path: Path, *, payload: bytes | None = None) -> list[dic
             raise EpisodeContractError("all candidates episode_id does not match frozen identity and anchor")
         _timestamp(row.get("opened_at"), field="opened_at")
         rows.append(row)
-    expected = sorted(rows, key=lambda row: (str(row["opened_at"]), str(row["episode_id"])))
+    expected = sorted(
+        rows,
+        key=lambda row: (
+            _timestamp_value(row["opened_at"], field="episode.opened_at"),
+            str(row["episode_id"]),
+        ),
+    )
     if canonical_json(rows) != canonical_json(expected):
         raise EpisodeContractError("all candidates episodes are not in canonical order")
     return rows
