@@ -39,8 +39,9 @@
       const en=(opener.getAttribute('data-guide-current-en')||'').trim();
       const zh=(opener.getAttribute('data-guide-current-zh')||'').trim();
       const asof=(opener.getAttribute('data-guide-asof')||'').trim();
-      if(!en&&!zh)return null;
-      return {en:en||zh,zh:zh||en,asof};
+      const reading=(opener.getAttribute('data-guide-reading')||'').trim();
+      if(!en&&!zh&&!reading)return null;
+      return {en:en||zh,zh:zh||en,asof,reading};
     }
     function targetLink(id,label){
       const url=contextOnly?new URL(guidePath,ownerOrigin):null;
@@ -226,7 +227,7 @@
       const record=model.get(modal);dialog.replaceChildren();
       const close=button('×',()=>dialog.close(),{class:'close','aria-label':t('Close explanation','关闭说明'),'data-close':''});
       add(dialog,add(node('div','',{class:'row'}),node('span',t('QUICK EXPLANATION','快速解读'),{class:'eyebrow muted'}),close),node('h2',value(record.label),{id:'help-title'}));
-      if(currentContext){
+      if(currentContext&&(currentContext.en||currentContext.zh)){
         const current=node('section','',{class:'guide-current','data-guide-current':''});
         const currentHead=add(node('div','',{class:'row'}),node('span',t('CURRENT READING','当前读数'),{class:'eyebrow'}));
         if(currentContext.asof)currentHead.append(node('span',currentContext.asof,{class:'example-label','data-guide-current-asof':''}));
@@ -236,7 +237,7 @@
       if(record.status==='deprecated')dialog.append(retirement(record));
       add(dialog,lesson(record,true),limitation(record),add(node('div','',{class:'dialog-actions'}),targetLink(record.id,t('Open full guide →','打开完整指南 →')),button(t('Back to where I was','返回刚才的位置'),()=>dialog.close(),{class:'pill','data-close':''})));
     }
-    function openHelp(id,opener){const record=model.get(id);if(!record?.presentation)return;currentContext=currentReading(opener);if(dialog.open){modal=id;renderModal();dialog.querySelector('[data-close]').focus();return;}modal=id;trigger=opener;restoreOnClose=true;closeScroll=window.scrollY;renderModal();dialog.showModal();dialog.querySelector('[data-close]').focus();}
+    function openHelp(id,opener){const record=model.get(id);if(!record?.presentation)return;currentContext=currentReading(opener);if(currentContext?.reading){const allowed=record.presentation.kind==='quadrant'?['growth-down-inflation-down','growth-up-inflation-down','growth-down-inflation-up','growth-up-inflation-up']:record.presentation.readings.map(item=>item.id);if(allowed.includes(currentContext.reading))stateByEntry.set(id,currentContext.reading);}if(dialog.open){modal=id;renderModal();dialog.querySelector('[data-close]').focus();return;}modal=id;trigger=opener;restoreOnClose=true;closeScroll=window.scrollY;renderModal();dialog.showModal();dialog.querySelector('[data-close]').focus();}
     function render(){
       if(contextOnly){if(modal)renderModal();return;}
       document.documentElement.lang=route.lang==='zh'?'zh-CN':'en';

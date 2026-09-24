@@ -161,6 +161,19 @@ test('context help surfaces a caller-supplied current reading without interpreti
  assert.equal(h.dialog.querySelector('[data-guide-current-value]').textContent,'56 / 100 · 谨慎');
  assert.match(h.dialog.textContent,/当前读数/);
 });
+test('context help aligns its example with a caller-supplied interpretation state',()=>{
+ const h=harness('https://review.invalid/macro.html',fixture(),{mode:'context'});
+ const opener=h.doc.getElementById('theme');opener.setAttribute('data-guide-current-en','Risk 56 · Watch');opener.setAttribute('data-guide-reading','interpretation_down');
+ h.app.openHelp('risk-radar',opener);
+ assert.equal(h.dialog.querySelector('[data-choice="interpretation_down"]').getAttribute('aria-pressed'),'true');
+ assert.equal(h.dialog.querySelector('[data-choice="interpretation_neutral"]').getAttribute('aria-pressed'),'false');
+});
+test('unknown caller interpretation cannot manufacture a selected guide state',()=>{
+ const h=harness('https://review.invalid/macro.html',fixture(),{mode:'context'});const opener=h.doc.getElementById('theme');
+ opener.setAttribute('data-guide-current-en','Risk 56');opener.setAttribute('data-guide-reading','guaranteed_buy');h.app.openHelp('risk-radar',opener);
+ assert.equal(h.dialog.querySelector('[data-choice="interpretation_neutral"]').getAttribute('aria-pressed'),'true');
+ assert.equal(h.dialog.all('[data-choice="guaranteed_buy"]').length,0);
+});
 test('current-reading text remains inert and is absent when the caller supplies none',()=>{
  const h=harness('https://review.invalid/macro.html',fixture(),{mode:'context'});
  const opener=h.doc.getElementById('theme');opener.setAttribute('data-guide-current-en','<img src=x onerror=alert(1)>');
