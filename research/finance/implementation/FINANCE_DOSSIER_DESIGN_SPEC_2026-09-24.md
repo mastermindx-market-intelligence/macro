@@ -111,7 +111,7 @@ The atlas renders **only** the slices the payload carries, grouped by `domains[]
 | columns = `coverage.first_vertical.slice_ids` in atlas order; cell placed by `cells[].slice_id` (absent → "No role recorded / 未记录角色" cell) | `company_exposures[].cells[].{slice_id, role, exposure, materiality, retained_risk, evidence_date, evidence_refs}` | `role ∈ {DIRECT_PURE_OR_HIGH_EXPOSURE, DIRECT_DIVERSIFIED, ENABLER_OR_TOLL_COLLECTOR, SECOND_ORDER_BENEFICIARY, PROXY_OR_ADJACENCY, AT_RISK_OR_DISRUPTED, HEDGE_OR_OFFSET}`; `materiality ∈ {MATERIAL, PARTIAL, IMMATERIAL, UNMEASURED}` |
 | exposure basis + state (cell chip when `EXPOSURE_NOT_SEPARATELY_DISCLOSED` — visible text, never a hover-only `focus` handler) | `company_exposures[].cells[].exposure.{basis, numerator, denominator, value, unit, state}` | `basis ∈ {SEGMENT_REVENUE, TRANSACTION_VOLUME, AUC_A, AUM, NOTIONAL, QUALITATIVE, NOT_SEPARATELY_DISCLOSED}`; `exposure.state ∈ {MEASURED, EXPOSURE_NOT_SEPARATELY_DISCLOSED, DIRECT_DIVERSIFIED, QUALITATIVE_ONLY}` |
 
-Materiality colour law (per §C, tokens only): `MATERIAL → --ink-warn`; `PARTIAL → --muted` with the word "Partial" / "部分"; `IMMATERIAL / UNMEASURED → --muted` with the word. Never the directional-ink tokens anywhere on the exposure surface.
+Materiality colour law (per §C, tokens only): all four values paint with `var(--fi-text)`; `MATERIAL` differs by `font-weight: 700` and the word "Material" / "重要" only. PARTIAL / IMMATERIAL / UNMEASURED paint with `var(--fi-text)` and their plain-word chip. Never the directional-ink tokens anywhere on the exposure surface.
 
 ### A.6 `macro-matrix` (Tier 6)
 
@@ -167,56 +167,58 @@ All class names use the `fi-` prefix. All copy uses the repo's `data-en` / `data
 ### B.0 Page shell + evidence-drawer aside (one instance each)
 
 ```html
-<main class="fi-shell" id="fi-shell" data-fi-mount="shell"
-      data-state-outer-dossier="AVAILABLE"
-      data-state-coverage="AVAILABLE">
+<main class="fi-shell fi-panel" id="fi-main" data-fi-mount="shell">
   <header class="fi-hero" aria-labelledby="fi-hero-title">
-    <p class="fi-kicker" data-en="Finance Intelligence" data-zh="金融情报">Finance Intelligence</p>
-    <h1 id="fi-hero-title" data-en="Financial Rails &amp; Market Infrastructure"
-        data-zh="金融基础设施与市场运作">Financial Rails &amp; Market Infrastructure</h1>
-    <p class="fi-deck" data-en="Read how the financial system moves money, settles trades and prices assets — context only, not a trade call."
-       data-zh="阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。">Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.</p>
+    <p class="fi-kicker"><span class="l-en" data-en="Finance Intelligence">Finance Intelligence</span><span class="l-zh" data-zh="金融情报">金融情报</span></p>
+    <h1 id="fi-hero-title"><span class="l-en" data-en="Financial Rails &amp; Market Infrastructure">Financial Rails &amp; Market Infrastructure</span><span class="l-zh" data-zh="金融基础设施与市场运作">金融基础设施与市场运作</span></h1>
+    <p class="fi-deck"><span class="l-en" data-en="Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.">Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.</span><span class="l-zh" data-zh="阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。">阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。</span></p>
     <p class="fi-meta">
-      <span data-en="As of 2026-09-24" data-zh="截至 2026-09-24">As of 2026-09-24</span>
+      <span class="l-en" data-fi-mount="hero-asof" data-en="As of {common_as_of}" data-aria-en="As of {common_as_of}" data-aria-zh="截至 {common_as_of}" hidden></span><span class="l-zh" data-fi-mount="hero-asof-zh" data-zh="截至 {common_as_of}" hidden></span>
       <span aria-hidden="true">·</span>
-      <span data-en="Knowledge cutoff 2026-09-23" data-zh="知识截止 2026-09-23">Knowledge cutoff 2026-09-23</span>
+      <span class="l-en" data-fi-mount="hero-cutoff" data-en="Knowledge cutoff {knowledge_cutoff}" data-aria-en="Knowledge cutoff {knowledge_cutoff}" data-aria-zh="知识截止 {knowledge_cutoff}" hidden></span><span class="l-zh" data-fi-mount="hero-cutoff-zh" data-zh="知识截止 {knowledge_cutoff}" hidden></span>
       <span aria-hidden="true">·</span>
-      <span class="fi-freshness" data-state-fresh="Fresh" data-en="Evidence Fresh" data-zh="证据新鲜">Fresh</span>
-      <span class="fi-outer-dossier" data-state-outer-dossier="AVAILABLE" data-en="Outer dossier: accepted" data-zh="外承报告：已接入">Outer dossier: accepted</span>
+      <span class="fi-chip fi-chip-fresh" data-fi-mount="hero-freshness" data-state-freshness="" data-aria-en="Evidence freshness: {freshness_state}" data-aria-zh="证据新鲜度：{freshness_state}" hidden></span>
+      <span class="fi-chip fi-outer-dossier" data-fi-mount="hero-outer" data-state-outer-dossier="" data-aria-en="Outer dossier: {outer_dossier_ref.state}" data-aria-zh="外部报告：{outer_dossier_ref.state}" hidden></span>
     </p>
   </header>
 
-  <nav class="fi-toc" aria-label="Section navigation" data-en="Section navigation" data-aria-zh="章节导航">
+  <nav class="fi-toc fi-panel" aria-label="Section navigation" data-aria-en="Section navigation" data-aria-zh="章节导航">
     <ol>
-      <li><a href="#what-changed" data-en="What changed" data-zh="近期变化">What changed</a></li>
-      <li><a href="#rerating-map" data-en="Rerating map" data-zh="重估链路">Rerating map</a></li>
-      <li><a href="#system-map" data-en="System map" data-zh="系统图">System map</a></li>
-      <li><a href="#subtheme-atlas" data-en="Subtheme atlas" data-zh="子主题图谱">Subtheme atlas</a></li>
-      <li><a href="#company-exposure" data-en="Company exposure" data-zh="公司敞口">Company exposure</a></li>
-      <li><a href="#macro-matrix" data-en="Macro matrix" data-zh="宏观矩阵">Macro matrix</a></li>
-      <li><a href="#constraint-map" data-en="Constraint map" data-zh="约束图">Constraint map</a></li>
-      <li><button type="button" class="fi-toc-evidence" aria-controls="evidence-drawer" data-en="Evidence" data-zh="证据">Evidence</button></li>
+      <li><a href="#what-changed"><span class="l-en" data-en="What changed">What changed</span><span class="l-zh" data-zh="近期变化">近期变化</span></a></li>
+      <li><a href="#rerating-map"><span class="l-en" data-en="Rerating map">Rerating map</span><span class="l-zh" data-zh="重估链路">重估链路</span></a></li>
+      <li><a href="#system-map"><span class="l-en" data-en="System map">System map</span><span class="l-zh" data-zh="系统图">系统图</span></a></li>
+      <li><a href="#subtheme-atlas"><span class="l-en" data-en="Subtheme atlas">Subtheme atlas</span><span class="l-zh" data-zh="子主题图谱">子主题图谱</span></a></li>
+      <li><a href="#company-exposure"><span class="l-en" data-en="Company exposure">Company exposure</span><span class="l-zh" data-zh="公司敞口">公司敞口</span></a></li>
+      <li><a href="#macro-matrix"><span class="l-en" data-en="Macro matrix">Macro matrix</span><span class="l-zh" data-zh="宏观矩阵">宏观矩阵</span></a></li>
+      <li><a href="#constraint-map"><span class="l-en" data-en="Constraint map">Constraint map</span><span class="l-zh" data-zh="约束图">约束图</span></a></li>
+      <li><button type="button" class="fi-toc-evidence" aria-controls="evidence-drawer"><span class="l-en" data-en="Evidence">Evidence</span><span class="l-zh" data-zh="证据">证据</span></button></li>
     </ol>
   </nav>
 
-  <footer class="fi-provenance" data-fi-mount="provenance" aria-label="Input receipts">
+  <footer class="fi-provenance" data-fi-mount="provenance" data-aria-en="Input receipts" data-aria-zh="输入凭据">
     <!-- Hydration (§E) renders one .fi-receipt-line per input_receipts entry whose state ≠ READ. -->
   </footer>
 </main>
 
 <aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"
-       aria-labelledby="fi-evidence-title" hidden inert tabindex="-1">
+       aria-labelledby="fi-evidence-title" hidden tabindex="-1">
   <header class="fi-drawer-head">
     <div>
-      <p class="fi-kicker" data-en="Source receipt" data-zh="来源凭据">Source receipt</p>
-      <h2 id="fi-evidence-title" data-en="Evidence" data-zh="证据">Evidence</h2>
+      <p class="fi-kicker"><span class="l-en" data-en="Source receipt">Source receipt</span><span class="l-zh" data-zh="来源凭据">来源凭据</span></p>
+      <h2 id="fi-evidence-title"><span class="l-en" data-en="Evidence">Evidence</span><span class="l-zh" data-zh="证据">证据</span></h2>
     </div>
     <button class="fi-drawer-close" id="fi-close-evidence" type="button"
             aria-label="Close evidence drawer" data-aria-zh="关闭证据抽屉">×</button>
   </header>
   <div class="fi-drawer-body" id="fi-evidence-body" data-fi-mount="evidence-body">
+    <p class="fi-evidence-empty" data-fi-mount="evidence-empty" hidden>
+      <span class="l-en" data-en="Choose an evidence action in any section">Choose an evidence action in any section</span>
+      <span class="l-zh" data-zh="请在任一板块选择证据操作">请在任一板块选择证据操作</span>
+    </p>
     <!-- Hydration populates the .fi-evidence-fields list; the suppression rule (A.8)
-         hides value/excerpt/native_digest when rights_state is SOURCE_RIGHTS_HELD or INTERNAL_ONLY. -->
+         hides value/excerpt/native_digest when rights_state is SOURCE_RIGHTS_HELD or INTERNAL_ONLY.
+         <dd class="fi-evidence-identity" data-identity=""> is bound to source_records[].identity_state
+         and <dd class="fi-evidence-rights" data-rights=""> is bound to source_records[].rights_state. -->
   </div>
 </aside>
 <div class="fi-scrim" id="fi-scrim" hidden></div>
@@ -227,17 +229,29 @@ The TOC entry "Evidence" is a `<button>` opening the drawer (R-H). The duplicate
 ### B.1 `what-changed` — material changes
 
 ```html
-<section id="what-changed" class="fi-section fi-changes" aria-labelledby="fi-changes-title"
+<section id="what-changed" class="fi-section fi-panel fi-changes" aria-labelledby="fi-changes-title"
          data-fi-mount="what-changed">
-  <h2 id="fi-changes-title" class="fi-section-title">
-    <span data-en="What changed" data-zh="近期变化">What changed</span>
-    <span class="fi-section-eyebrow" data-en="Material observations, plain words" data-zh="重要观察，直白表述">Material observations, plain words</span>
-  </h2>
+  <header class="fi-section-head">
+    <h2 id="fi-changes-title" class="fi-section-title">
+      <span class="l-en" data-en="What changed">What changed</span>
+      <span class="l-zh" data-zh="近期变化">近期变化</span>
+    </h2>
+    <!-- Freshness chip: bound to top-level freshness.state (FRESH|AGING|SOURCE_STALE|NO_EVIDENCE).
+         The C.5 freshness rail/pip rules target THIS element with [data-state-freshness="FRESH"]. -->
+    <span class="fi-chip fi-chip-fresh" data-state-freshness="" data-fi-mount="what-changed-freshness"
+          data-aria-en="Evidence freshness: {freshness.state}" data-aria-zh="证据新鲜度：{freshness.state}"></span>
+    <span class="fi-section-eyebrow">
+      <span class="l-en" data-en="Material observations, plain words">Material observations, plain words</span>
+      <span class="l-zh" data-zh="重要观察，直白表述">重要观察，直白表述</span>
+    </span>
+  </header>
   <ul class="fi-change-list" role="list" data-fi-mount="what-changed-list">
-    <!-- Hydration appends one <li class="fi-change-row"> per material_changes entry. -->
+    <!-- Hydration appends one <li class="fi-change-row" data-state-freshness data-change-id> per material_changes entry. -->
   </ul>
-  <p class="fi-section-foot" data-en="Read the underlying receipts before acting on any line."
-     data-zh="请先查阅原始凭据再行判断。">Read the underlying receipts before acting on any line.</p>
+  <p class="fi-section-foot">
+    <span class="l-en" data-en="Read the underlying receipts before acting on any line.">Read the underlying receipts before acting on any line.</span>
+    <span class="l-zh" data-zh="请先查阅原始凭据再行判断。">请先查阅原始凭据再行判断。</span>
+  </p>
 </section>
 ```
 
@@ -248,55 +262,82 @@ The primary visual has exactly four data-bound stepper nodes — **operating, ex
 A native `<select id="fi-slice-select">` precedes the stepper; options come from `coverage.first_vertical.slice_ids` joined with `slices[].{slice_id, name_en, name_zh}`. The default option is the first slice id. `change` re-renders the stepper. URL hash `#slice=<slice_id>` overrides on hydration and updates on change.
 
 ```html
-<section id="rerating-map" class="fi-section fi-rerating" aria-labelledby="fi-rerating-title"
+<section id="rerating-map" class="fi-section fi-panel fi-rerating" aria-labelledby="fi-rerating-title"
          data-fi-mount="rerating-map">
-  <h2 id="fi-rerating-title" class="fi-section-title">
-    <span data-en="Rerating map" data-zh="重估链路">Rerating map</span>
-    <span class="fi-section-eyebrow" data-en="How a slice reaches per-share value" data-zh="一个子主题如何抵达每股价值">How a slice reaches per-share value</span>
-  </h2>
+  <header class="fi-section-head">
+    <h2 id="fi-rerating-title" class="fi-section-title">
+      <span class="l-en" data-en="Rerating map">Rerating map</span>
+      <span class="l-zh" data-zh="重估链路">重估链路</span>
+    </h2>
+    <!-- Per-slice freshness chip on the rerating-map header: bound to slices[].freshness.state for the selected slice.
+         See §E.4 stepper rule: the step whose plane is the slice's first non-OBSERVED state gets data-active="true";
+         C.6's [data-active="true"] rules then bind. -->
+    <span class="fi-chip fi-slice-fresh" data-state-freshness="" data-fi-mount="rerating-freshness"
+          data-aria-en="Slice freshness: {slices[].freshness.state}" data-aria-zh="切片新鲜度：{slices[].freshness.state}"></span>
+    <span class="fi-section-eyebrow">
+      <span class="l-en" data-en="How a slice reaches per-share value">How a slice reaches per-share value</span>
+      <span class="l-zh" data-zh="一个子主题如何抵达每股价值">一个子主题如何抵达每股价值</span>
+    </span>
+  </header>
 
   <div class="fi-slice-picker">
-    <label for="fi-slice-select" data-en="Slice" data-zh="切片">Slice</label>
+    <label for="fi-slice-select"><span class="l-en" data-en="Slice">Slice</span><span class="l-zh" data-zh="切片">切片</span></label>
     <select id="fi-slice-select" class="fi-slice-select" data-fi-mount="slice-select">
-      <!-- Hydration populates <option> per coverage.first_vertical.slice_ids. -->
+      <!-- Hydration populates <option value="<slice_id>">{name_en} / {name_zh}</option> per coverage.first_vertical.slice_ids. -->
     </select>
   </div>
 
   <ol class="fi-rerating-steps" role="list" data-fi-mount="rerating-steps">
-    <!-- Hydration renders exactly 4 <li class="fi-rerating-step fi-node-{name}"> in the order operating, expectations, valuation, price.
+    <!-- Hydration renders exactly 4 <li class="fi-rerating-step fi-node-{name}" data-active="false|true"> in the order operating, expectations, valuation, price.
+         §E.4 stepper rule: the step whose plane is the slice's first non-OBSERVED state gets data-active="true";
+         if all four are OBSERVED, the price step receives data-active="true". C.6's [data-active="true"] rules then bind.
          Each step carries:
            <span class="fi-step-dot" aria-hidden="true"></span>
-           <span class="fi-step-label" data-en="..." data-zh="...">{caption from A.2}</span>
+           <span class="fi-step-label"><span class="l-en" data-en="...">{caption from A.2}</span><span class="l-zh" data-zh="...">{ZH caption}</span></span>
            <span class="fi-step-metric">{primary_metric via fmtMetric}</span>
            <span class="fi-step-chip" data-state="{plane.state}">{plain-word chip from §D.1}</span>
            <span class="fi-step-clock">{clock via fmtClock}</span>
+           <!-- Comparability chip (D.1b): bound to plane.comparability_state; shown only when ≠ COMPARABLE. -->
+           <span class="fi-chip fi-comparability-chip" data-comparability="" data-aria-en="Comparability: {comparability_state}" data-aria-zh="可比性：{comparability_state}" hidden></span>
            <button class="fi-step-evidence" type="button" data-evidence-ids="{evidence_refs join}"
                    aria-label="Open evidence for this step" data-aria-zh="打开该步骤的证据">↗</button>
          The valuation node additionally carries a <span class="fi-anchor-chip" data-anchor-state="{valuation_anchor.state}">
-         with the primary_per_share_anchor / primary_valuation_anchor / horizon plain-word chip.
-         The expectations node additionally carries <span class="fi-history-chip" data-history-state="{expectations.history.state}">. -->
+         with the primary_per_share_anchor / primary_valuation_anchor / horizon plain-word chip, AND
+         a <span class="fi-chip fi-valuation-chip" data-valuation-state="{valuation_anchor.state}"> bound to valuation_anchor.state.
+         The price node carries a <span class="fi-chip fi-price-chip" data-price-state="{plane.state}"> bound to plane.state.
+         The expectations node additionally carries <span class="fi-history-chip" data-history="{expectations.history.state}"> bound to expectations.history.state (D.16). -->
   </ol>
 
   <p class="fi-rerating-bridge" data-fi-mount="rerating-bridge">
-    <!-- Hydration sets the text node from rerating.bridge; static fallback: "The chain from earnings to divergence is documented in the chips above." -->
+    <!-- Hydration sets the text node from rerating.bridge;
+         static fallback: "The chain from earnings to divergence is documented in the chips above." /
+                          "从盈利到分化的链路已在上方标签中写明。" -->
   </p>
 
-  <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" aria-label="What we are watching" data-en="What we are watching" data-aria-zh="我们正在观察">
+  <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察">
     <!-- Hydration appends one <li class="fi-falsifier" data-state-falsifier="{falsifier.state}"> per falsifiers[] entry. -->
   </ul>
 
   <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
     <h3 id="fi-conflicts-title" class="fi-conflicts-title">
-      <span data-en="Where the planes disagree" data-zh="各维度之间的分歧">Where the planes disagree</span>
-      <span class="fi-section-eyebrow" data-en="Surfaced, never averaged" data-zh="显示差异，而非取均值">Surfaced, never averaged</span>
+      <span class="l-en" data-en="Where the planes disagree">Where the planes disagree</span>
+      <span class="l-zh" data-zh="各维度之间的分歧">各维度之间的分歧</span>
+      <span class="fi-section-eyebrow">
+        <span class="l-en" data-en="Surfaced, never averaged">Surfaced, never averaged</span>
+        <span class="l-zh" data-zh="显示差异，而非取均值">显示差异，而非取均值</span>
+      </span>
     </h3>
     <ul class="fi-conflict-list" role="list" data-fi-mount="conflict-list">
-      <!-- Hydration appends one <li class="fi-conflict-card" data-conflict-id="{c.label}"> per conflicts[] entry. -->
+      <!-- Hydration appends one <li class="fi-conflict-card fi-panel" data-conflict-label="{conflicts[].label}"> per conflicts[] entry
+           whose slice_ids contains the selected slice; conflicts matching no first-vertical slice are counted in one line:
+           "N more conflicts on other slices" / "其他切片另有 N 项冲突". -->
     </ul>
   </div>
 
-  <p class="fi-section-foot" data-en="Horizontal on desktop · vertical on mobile. State chips map to the schema's plane state tokens."
-     data-zh="桌面端为横向 · 移动端为纵向。状态标签对应 schema 中的平面状态词。">Horizontal on desktop · vertical on mobile. State chips map to the schema's plane state tokens.</p>
+  <p class="fi-section-foot">
+    <span class="l-en" data-en="Each step shows what is on file and how recent it is.">Each step shows what is on file and how recent it is.</span>
+    <span class="l-zh" data-zh="每一步显示现有证据及其时效。">每一步显示现有证据及其时效。</span>
+  </p>
 </section>
 ```
 
@@ -307,25 +348,34 @@ The stepper `<li>` markup includes `.fi-step-dot` (R-B: the audit found the CSS 
 Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex with ArrowLeft/ArrowRight/Home/End (R-H). Edges render as a visible `<ol>` under `<details>` (not hover-only).
 
 ```html
-<section id="system-map" class="fi-section fi-system" aria-labelledby="fi-system-title"
+<section id="system-map" class="fi-section fi-panel fi-system" aria-labelledby="fi-system-title"
          data-fi-mount="system-map">
-  <h2 id="fi-system-title" class="fi-section-title">
-    <span data-en="System map" data-zh="系统图">System map</span>
-    <span class="fi-section-eyebrow" data-en="Three views, never blended" data-zh="三种视图，永不混用">Three views, never blended</span>
-  </h2>
+  <header class="fi-section-head">
+    <h2 id="fi-system-title" class="fi-section-title">
+      <span class="l-en" data-en="System map">System map</span>
+      <span class="l-zh" data-zh="系统图">系统图</span>
+    </h2>
+    <span class="fi-section-eyebrow">
+      <span class="l-en" data-en="Three views, never blended">Three views, never blended</span>
+      <span class="l-zh" data-zh="三种视图，永不混用">三种视图，永不混用</span>
+    </span>
+  </header>
 
-  <div class="fi-view-tabs" role="tablist" aria-label="Choose a system view" data-en="Choose a system view" data-aria-zh="选择系统视图">
-    <!-- Hydration renders one <button role="tab" id="tab-{view_id}" aria-controls="panel-{view_id}" aria-selected="true|false" class="fi-view-tab" data-view="{view_id}" tabindex="0|-1">{name_en}</button> per system_views[] in payload order. -->
+  <div class="fi-view-tabs" role="tablist" data-aria-en="Choose a system view" data-aria-zh="选择系统视图">
+    <!-- Hydration renders one <button role="tab" id="tab-{view_id}" aria-controls="panel-{view_id}" aria-selected="true|false" class="fi-view-tab" data-view="{view_id}" tabindex="0|-1">
+         <span class="l-en" data-en="{name_en}">{name_en}</span><span class="l-zh" data-zh="{name_zh}">{name_zh}</span>
+         </button> per system_views[] in payload order. Per-view label id: fi-view-label-{view_id}. -->
   </div>
 
-  <!-- Hydration renders one <div role="tabpanel" id="panel-{view_id}" class="fi-view-panel" data-view="{view_id}" aria-labelledby="tab-{view_id}" hidden> per system_views[] in payload order. -->
+  <!-- Hydration renders one <div role="tabpanel" id="panel-{view_id}" class="fi-view-panel" data-view="{view_id}" aria-labelledby="tab-{view_id}" hidden> per system_views[] in payload order.
+       First-shown nodes per view: the view's nodes with expandable:false first, then expandable nodes, up to 8; remainder behind the expand control. -->
   <template class="fi-view-panel-template">
-    <svg class="fi-system-svg" role="img" aria-labelledby="fi-view-label">
-      <title id="fi-view-label" class="fi-view-label">{name_en}</title>
+    <svg class="fi-system-svg" role="img" aria-labelledby="fi-view-label-{view_id}">
+      <title id="fi-view-label-{view_id}" class="fi-view-label"><span class="l-en" data-en="{name_en}">{name_en}</span><span class="l-zh" data-zh="{name_zh}">{name_zh}</span></title>
       <!-- 5–8 <g class="fi-svg-node"> nodes first paint; children render on click. -->
     </svg>
     <details class="fi-system-edges" open>
-      <summary data-en="Edge list (step view)" data-zh="边的步骤视图">Edge list (step view)</summary>
+      <summary><span class="l-en" data-en="Edge list (step view)">Edge list (step view)</span><span class="l-zh" data-zh="边的步骤视图">边的步骤视图</span></summary>
       <ol class="fi-system-edge-list" role="list">
         <!-- Hydration appends one <li class="fi-system-edge" data-state-evidence="{evidence_state}"> per edges[] entry, format: "<from label> — {relationship word} → <to label> · <evidence_state chip>". -->
       </ol>
@@ -337,18 +387,29 @@ Tab ids `tab-{{view_id}}` ↔ panel ids `panel-{{view_id}}`. Roving tabindex wit
 ### B.4 `subtheme-atlas` — payload-driven domain × slice grid
 
 ```html
-<section id="subtheme-atlas" class="fi-section fi-atlas" aria-labelledby="fi-atlas-title"
+<section id="subtheme-atlas" class="fi-section fi-panel fi-atlas" aria-labelledby="fi-atlas-title"
          data-fi-mount="subtheme-atlas">
-  <h2 id="fi-atlas-title" class="fi-section-title">
-    <span data-en="Subtheme atlas" data-zh="子主题图谱">Subtheme atlas</span>
-    <span class="fi-section-eyebrow" class="fi-atlas-eyebrow" data-fi-mount="coverage eyebrow">
-      <span data-en="0 of 0 domains · 0 of 0 slices mapped" data-zh="0 / 0 个子域 · 0 / 0 个切片已映射">0 of 0 domains · 0 of 0 slices mapped</span>
+  <header class="fi-section-head">
+    <h2 id="fi-atlas-title" class="fi-section-title">
+      <span class="l-en" data-en="Subtheme atlas">Subtheme atlas</span>
+      <span class="l-zh" data-zh="子主题图谱">子主题图谱</span>
+    </h2>
+    <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow">
+      <span class="l-en" data-en="0 of 0 domains · 0 of 0 slices mapped">0 of 0 domains · 0 of 0 slices mapped</span>
+      <span class="l-zh" data-zh="0 / 0 个子域 · 0 / 0 个切片已映射">0 / 0 个子域 · 0 / 0 个切片已映射</span>
     </span>
-  </h2>
+  </header>
 
   <div class="fi-domain-grid" data-fi-mount="domain-grid">
-    <!-- Hydration renders one <section class="fi-domain"> per domains[] entry in payload order.
-         Inside, one <li class="fi-slice" data-state-membership="{slice.membership_state}"> per slices[] entry whose domain_id matches, in payload order. -->
+    <!-- Hydration renders one <section class="fi-domain fi-panel"> per domains[] entry in payload order.
+         Inside, one <li class="fi-slice fi-panel" data-state-membership="{slices[].basket_state.membership_state}"> per slices[] entry whose domain_id matches, in payload order.
+         Each slice carries: <span class="fi-slice-name">{name_en}/{name_zh}</span>,
+           <span class="fi-chip fi-slice-chip" data-state-slice="{slices[].slice_state}"> from D.2,
+           <span class="fi-chip fi-membership-chip" data-state-membership="{slices[].basket_state.membership_state}"> from D.4,
+           <span class="fi-chip fi-posture-chip" data-state-posture="{slices[].basket_state.posture}"> from D.3,
+           <span class="fi-chip fi-price-basis-chip" data-state-price-basis="{slices[].basket_state.price_basis_state}"> from D.19,
+           <span class="fi-chip fi-weighting-chip" data-state-weighting="{slices[].basket_state.weighting_family}"> from D.20.
+         incumbent_basket_ids renders ONLY as a count: "{len(incumbent_basket_ids)} reference baskets" / "{len(incumbent_basket_ids)} 个参考篮子". -->
   </div>
 
   <p class="fi-atlas-gap" data-fi-mount="atlas-gap">
@@ -362,62 +423,89 @@ The atlas renders only the slices the payload carries (R-F). The "Domains mapped
 ### B.5 `company-exposure` — sticky matrix / mobile cards
 
 ```html
-<section id="company-exposure" class="fi-section fi-exposure" aria-labelledby="fi-exposure-title"
+<section id="company-exposure" class="fi-section fi-panel fi-exposure" aria-labelledby="fi-exposure-title"
          data-fi-mount="company-exposure">
-  <h2 id="fi-exposure-title" class="fi-section-title">
-    <span data-en="Company exposure" data-zh="公司敞口">Company exposure</span>
-    <span class="fi-section-eyebrow" data-en="Role, basis, materiality — never a hidden score" data-zh="角色、口径、重要性 — 绝无暗藏分数">Role, basis, materiality — never a hidden score</span>
-  </h2>
+  <header class="fi-section-head">
+    <h2 id="fi-exposure-title" class="fi-section-title">
+      <span class="l-en" data-en="Company exposure">Company exposure</span>
+      <span class="l-zh" data-zh="公司敞口">公司敞口</span>
+    </h2>
+    <span class="fi-section-eyebrow">
+      <span class="l-en" data-en="Role, basis, materiality — never a hidden score">Role, basis, materiality — never a hidden score</span>
+      <span class="l-zh" data-zh="角色、口径、重要性 — 绝无暗藏分数">角色、口径、重要性 — 绝无暗藏分数</span>
+    </span>
+  </header>
 
   <div class="fi-exposure-table-wrap">
     <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
-      <caption id="fi-exposure-desc" class="visually-hidden" data-en="Company exposure matrix. Rows are companies. Columns are slices."
-              data-zh="公司敞口矩阵。行为公司，列为切片。">Company exposure matrix. Rows are companies. Columns are slices.</caption>
+      <caption id="fi-exposure-desc" class="visually-hidden">
+        <span class="l-en" data-en="Company exposure matrix. Rows are companies. Columns are slices.">Company exposure matrix. Rows are companies. Columns are slices.</span>
+        <span class="l-zh" data-zh="公司敞口矩阵。行为公司，列为切片。">公司敞口矩阵。行为公司，列为切片。</span>
+      </caption>
       <thead>
         <tr>
-          <th class="fi-col-company" scope="col" data-en="Company" data-zh="公司">Company</th>
+          <th class="fi-col-company" scope="col"><span class="l-en" data-en="Company">Company</span><span class="l-zh" data-zh="公司">公司</span></th>
           <!-- Hydration renders one <th class="fi-col-slice" scope="col">{slice name}</th> per coverage.first_vertical.slice_ids in atlas order. -->
         </tr>
       </thead>
       <tbody data-fi-mount="exposure-rows">
-        <!-- Hydration renders one <tr data-row-id data-state-identity data-state-basket="{basket.state}"> per company_exposures[] sorted by issuer_label (EN, case-insensitive).
-             Inside each row, <td> cells carry data-state-exposure="{exposure.state}" so the §D.8 plain-word chip and the per-cell colour rule bind to the live payload. -->
+        <!-- Hydration renders one <tr data-row-id data-state-identity="{company_exposures[].identity.state}"> per company_exposures[] sorted by issuer_label (EN, case-insensitive).
+             Inside each row, <td class="fi-cell"> cells carry
+               data-state-exposure="{cells[].exposure.state}" (D.8 plain-word chip),
+               data-state-materiality="{cells[].materiality}" (D.5; MATERIAL uses font-weight:700 + word only, NOT --ink-warn — see §C.5 cell colour rule),
+               data-basket-state="{slices[].basket_state}" (slice-level; no per-cell membership chip on rows).
+             <span class="fi-chip fi-identity-chip" data-identity="{company_exposures[].identity.state}"> bound to identity.state (D.21).
+         -->
       </tbody>
     </table>
   </div>
 
-  <ul class="fi-exposure-cards" role="list" data-fi-mount="exposure-cards" aria-label="Mobile exposure cards" data-en="Mobile exposure cards" data-aria-zh="移动端敞口卡片" hidden>
-    <!-- Hydration renders one <li class="fi-exposure-card"> per company_exposures[] entry listing only the cells the row carries. -->
+  <ul class="fi-exposure-cards" role="list" data-fi-mount="exposure-cards" data-aria-en="Mobile exposure cards" data-aria-zh="移动端敞口卡片" hidden>
+    <!-- Hydration renders one <li class="fi-exposure-card fi-panel"> per company_exposures[] entry listing only the cells the row carries. -->
   </ul>
 </section>
 ```
 
-`<td>` cells never carry a hover-only or `focus`-handler-driven state. The `EXPOSURE_NOT_SEPARATELY_DISCLOSED` chip is visible text inside the cell (R-F).
+`<td>` cells never carry a hover-only or `focus`-handler-driven state. The `EXPOSURE_NOT_SEPARATELY_DISCLOSED` chip is visible text inside the cell (R-F). Materiality colour rule: ALL four values paint with `var(--fi-text)`; MATERIAL differs by `font-weight: 700` and its word only — never `--ink-warn` (see §C.5).
 
 ### B.6 `macro-matrix` — flat mechanism + lag grid
 
 ```html
-<section id="macro-matrix" class="fi-section fi-macro" aria-labelledby="fi-macro-title"
+<section id="macro-matrix" class="fi-section fi-panel fi-macro" aria-labelledby="fi-macro-title"
          data-fi-mount="macro-matrix">
-  <h2 id="fi-macro-title" class="fi-section-title">
-    <span data-en="Macro matrix" data-zh="宏观矩阵">Macro matrix</span>
-    <span class="fi-section-eyebrow" data-en="Mechanism and lag, never a stock verdict" data-zh="机制与时滞 — 非个股结论">Mechanism and lag, never a stock verdict</span>
-  </h2>
+  <header class="fi-section-head">
+    <h2 id="fi-macro-title" class="fi-section-title">
+      <span class="l-en" data-en="Macro matrix">Macro matrix</span>
+      <span class="l-zh" data-zh="宏观矩阵">宏观矩阵</span>
+    </h2>
+    <span class="fi-section-eyebrow">
+      <span class="l-en" data-en="Mechanism and lag, never a stock verdict">Mechanism and lag, never a stock verdict</span>
+      <span class="l-zh" data-zh="机制与时滞 — 非个股结论">机制与时滞 — 非个股结论</span>
+    </span>
+  </header>
   <div class="fi-macro-table-wrap">
     <table class="fi-macro-table" aria-describedby="fi-macro-desc">
-      <caption id="fi-macro-desc" class="visually-hidden" data-en="Macro driver matrix. Rows are slices. Columns are macro drivers."
-              data-zh="宏观驱动矩阵。行为切片，列为宏观驱动。">Macro driver matrix. Rows are slices. Columns are macro drivers.</caption>
+      <caption id="fi-macro-desc" class="visually-hidden">
+        <span class="l-en" data-en="Macro driver matrix. Rows are slices. Columns are macro drivers.">Macro driver matrix. Rows are slices. Columns are macro drivers.</span>
+        <span class="l-zh" data-zh="宏观驱动矩阵。行为切片，列为宏观驱动。">宏观驱动矩阵。行为切片，列为宏观驱动。</span>
+      </caption>
       <thead>
         <tr>
-          <th scope="col" data-en="Slice" data-zh="切片">Slice</th>
-          <!-- 13 columns, headers from §D.8 driver label map. -->
+          <th scope="col"><span class="l-en" data-en="Slice">Slice</span><span class="l-zh" data-zh="切片">切片</span></th>
+          <!-- 13 columns, headers from §D.10 driver label map. -->
         </tr>
       </thead>
       <tbody data-fi-mount="macro-rows">
-        <!-- Hydration renders one <tr data-slice-id> per unique slice_id in macro_matrix[], grouped. Cells by (slice, driver) pair; absent → "Not mapped / 未映射". -->
+        <!-- Hydration renders one <tr data-slice-id> per unique slice_id in macro_matrix[], grouped. Cells by (slice, driver) pair; absent → "Not mapped / 未映射".
+             Each cell carries <span class="fi-macro-cell-state" data-state="{macro_matrix[].state}"> from D.11b (DESCRIBED | CAUSAL_EFFECT_UNMEASURED | NOT_APPLICABLE)
+             alongside the plain-word mechanism + lag chip. -->
       </tbody>
     </table>
   </div>
+  <!-- Mobile cards (≤767): one <li class="fi-macro-card fi-panel"> per slice listing only present driver cells
+       with mechanism + lag chip + state chip. C.10 shows cards and hides the table at ≤767; the table wrapper
+       keeps overflow-x:auto for 768–1199. See §H cell 11 "macro cards at 390". -->
+  <ul class="fi-macro-cards" data-fi-mount="macro-cards" hidden></ul>
 </section>
 ```
 
@@ -517,17 +605,31 @@ html[data-theme="light"] {
 
 The five mechanisms below are the load-bearing art-direction differences; each is a complete CSS rule (token-mixed). The audit found them either missing or wrongly shared.
 
-**(1) Panel elevation.** Dark: nested luminance steps + a hairline inset highlight (no shadow). Light: 1px hairline border + a 2-stop shadow stack (no inset).
+**(1) Panel elevation.** Dark: nested luminance steps + a hairline inset highlight (no shadow). Light: 1px hairline border + a 2-stop shadow stack (no inset). Selectors cover ALL elevation surfaces: `.fi-panel` + `.fi-toc` + `.fi-conflict-card` + `.fi-falsifier` + `.fi-constraint-row` + `.fi-domain` + `.fi-exposure-card` + `.fi-macro-card` (the eight classes that wear the elevation treatment in §B).
 
 ```css
-.fi-panel {
+.fi-panel,
+.fi-toc,
+.fi-conflict-card,
+.fi-falsifier,
+.fi-constraint-row,
+.fi-domain,
+.fi-exposure-card,
+.fi-macro-card {
   background: var(--fi-panel);
   border: 1px solid var(--fi-line);
   border-radius: 12px;
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 7%, transparent);
 }
 .fi-panel2 { background: var(--fi-panel2); }
-html[data-theme="light"] .fi-panel {
+html[data-theme="light"] .fi-panel,
+html[data-theme="light"] .fi-toc,
+html[data-theme="light"] .fi-conflict-card,
+html[data-theme="light"] .fi-falsifier,
+html[data-theme="light"] .fi-constraint-row,
+html[data-theme="light"] .fi-domain,
+html[data-theme="light"] .fi-exposure-card,
+html[data-theme="light"] .fi-macro-card {
   background: var(--fi-panel);
   border: 1px solid var(--fi-line);
   box-shadow:
@@ -537,17 +639,20 @@ html[data-theme="light"] .fi-panel {
 html[data-theme="light"] .fi-panel2 { background: var(--fi-panel2); }
 ```
 
-**(2) Freshness pip.** Dark: glow halo on the dot (focused/active state only). Light: NO glow; a 3px left rail on the section header element. The element is the section header `.fi-section-head` on `what-changed` (per B.1 markup); the rail is on that element, not on the chip.
+**(2) Freshness pip.** Dark: glow halo on the chip (focused/active state only). Light: NO glow; a 3px left rail on the section header element. The element is the section header `.fi-section-head` on `what-changed` (per B.1 markup); the rail is on THAT element, not on the chip. The selector targets the enum value `data-state-freshness="FRESH"` (not the label word "Fresh"). Both top-level and slice-level freshness chips (per E.2(b)) bind here; the colour uses `var(--fresh-ok)` from `theme.css` (the freshness law), never `--ok`.
 
 ```css
-.fi-freshness[data-state-fresh="Fresh"] {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent);
+.fi-chip-fresh[data-state-freshness="FRESH"],
+.fi-slice-fresh[data-state-freshness="FRESH"] {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fresh-ok) 25%, transparent);
+  color: var(--fresh-ok);
 }
-html[data-theme="light"] .fi-freshness[data-state-fresh="Fresh"] {
+html[data-theme="light"] .fi-chip-fresh[data-state-freshness="FRESH"],
+html[data-theme="light"] .fi-slice-fresh[data-state-freshness="FRESH"] {
   box-shadow: none;
 }
 html[data-theme="light"] #what-changed .fi-section-head {
-  border-left: 3px solid var(--ok);
+  border-left: 3px solid var(--fresh-ok);
   padding-left: 12px;
 }
 ```
@@ -570,14 +675,24 @@ html[data-theme="light"] .fi-drawer *:focus-visible {
 }
 ```
 
-**(4) Drawer scrim.** Dark: black scrim (`--bg` mixed). Light: a higher-percentage text-tinted scrim so the panel stays readable.
+**(4) Drawer elevation.** Dark: a `border-left` rail (1px hairline at `--fi-line`). Light: shadow elevation only (2-stop stack with `color-mix(... var(--text) ...)`); no border-left, so the panel reads as paper laid on the desk.
 
 ```css
+.fi-drawer {
+  background: var(--fi-panel);
+  border-left: 1px solid var(--fi-line);
+}
+html[data-theme="light"] .fi-drawer {
+  border-left: 0;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
+    0 12px 32px color-mix(in srgb, var(--text) 8%, transparent);
+}
 .fi-scrim { background: color-mix(in srgb, var(--bg) 70%, transparent); }
 html[data-theme="light"] .fi-scrim { background: color-mix(in srgb, var(--text) 35%, transparent); }
 ```
 
-**(5) Stepper rail/dot.** Dark: glow on the active dot. Light: solid dot + hairline rail.
+**(5) Stepper rail/dot.** Dark: glow on the active dot. Light: solid dot + hairline rail. §E.4 stepper rule: the step whose plane is the slice's first non-OBSERVED state gets `data-active="true"`; if all four are OBSERVED, the price step receives it.
 
 ```css
 .fi-rerating-step[data-active="true"] .fi-step-dot {
@@ -743,12 +858,13 @@ html[data-theme="light"] .fi-rerating-steps::before {
 .fi-cell { min-width: 0; }
 .fi-cell-role { display: block; font-weight: 600; }
 .fi-cell-basis { display: block; font-size: var(--fs-sm); color: var(--fi-muted); }
-.fi-cell-materiality { display: block; font-size: var(--fs-sm); }
-/* No directional-ink tokens anywhere on the exposure surface. */
-.fi-cell[data-state-materiality="MATERIAL"]    .fi-cell-materiality { color: var(--ink-warn); }
-.fi-cell[data-state-materiality="PARTIAL"]    .fi-cell-materiality { color: var(--fi-muted); }
-.fi-cell[data-state-materiality="IMMATERIAL"]  .fi-cell-materiality { color: var(--fi-muted); }
-.fi-cell[data-state-materiality="UNMEASURED"]  .fi-cell-materiality { color: var(--fi-muted); }
+.fi-cell-materiality { display: block; font-size: var(--fs-sm); color: var(--fi-text); }
+/* Materiality colour law: ALL four values paint with --fi-text; MATERIAL differs by font-weight:700 and the word only.
+   Never the directional-ink tokens (--ink-warn) anywhere on the exposure surface. */
+.fi-cell[data-state-materiality="MATERIAL"]    .fi-cell-materiality { color: var(--fi-text); font-weight: 700; }
+.fi-cell[data-state-materiality="PARTIAL"]     .fi-cell-materiality { color: var(--fi-text); }
+.fi-cell[data-state-materiality="IMMATERIAL"]  .fi-cell-materiality { color: var(--fi-text); }
+.fi-cell[data-state-materiality="UNMEASURED"]  .fi-cell-materiality { color: var(--fi-text); }
 .fi-cell-risk { display: block; font-size: var(--fs-sm); color: var(--fi-muted); margin-top: 2px; }
 .fi-cell-evidence-date { display: block; font-size: var(--fs-sm); color: var(--fi-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .fi-company-unresolved, .fi-company-hint { color: var(--fi-muted); font-style: italic; }
@@ -888,6 +1004,17 @@ These two formatters are referenced by every section. They are not enumerated st
 
 (Edge `evidence_state` chips use the same row mapping under the subkey `evidence_state`.)
 
+### D.1b Comparability state chips (plane.comparability_state)
+
+| enum (`data-comparability`) | EN | ZH |
+|---|---|---|
+| COMPARABLE | `Comparable to history` | `与历史可比` |
+| REGIME_BREAK_NOT_COMPARABLE | `Regime break — not comparable` | `制度断裂 — 不可比` |
+| MIXED_BASIS | `Mixed basis` | `口径混合` |
+| UNKNOWN | `Comparability unknown` | `可比性未知` |
+
+The chip is bound via `<span class="fi-chip fi-comparability-chip" data-comparability="">` on every rerating step (per §B.2) and is shown ONLY when `comparability_state` ≠ `COMPARABLE`. System-map edges do NOT carry a comparability chip (edges only carry `evidence_state` — see §A.3 / D.11 row 4 note).
+
 ### D.2 Slice state chips — STANCE WORDS (per R-K)
 
 | enum | EN | ZH |
@@ -1008,6 +1135,16 @@ These two formatters are referenced by every section. They are not enumerated st
 | TWO_TO_FOUR_QUARTERS | `Two to four quarters` | `两到四个季度` |
 | MULTI_YEAR | `Multi-year` | `多年` |
 | UNKNOWN | `Lag not measured` | `尚未测算时滞` |
+
+### D.11b Macro matrix state chips (macro_matrix[].state)
+
+| enum (`data-state`) | EN | ZH |
+|---|---|---|
+| DESCRIBED | `Mechanism described` | `已描述机制` |
+| CAUSAL_EFFECT_UNMEASURED | `Causal effect not measured` | `因果影响未测量` |
+| NOT_APPLICABLE | `Not applicable` | `不适用` |
+
+The chip is bound via `<span class="fi-macro-cell-state" data-state="{macro_matrix[].state}">` in every macro-matrix cell (per §B.6 markup) and in every `fi-macro-card` mobile entry (≤767 — see E11). It paints the §C.8 chip colour; the plain-word text companion always accompanies it.
 
 ### D.12 Freshness state chips
 
@@ -1314,23 +1451,25 @@ This is the canonical table the audit pinned D.11 to. Every row is one schema to
 
 | # | Token | Contract path (live schema, line reference) | DOM location | EN chip | ZH chip |
 |---|---|---|---|---|---|
-| 1 | NO_HISTORICAL_CONSENSUS | `$defs.expectations_plane[0].history.state` enum (`schema.json` line 1186) | `rerating-map` expectations node chip | `No dated consensus on file` | `暂无可追溯的市场预期` |
+| 1 | NO_HISTORICAL_CONSENSUS | `$defs.expectations_plane[0].history.state` enum (`schema.json` line 1186) | `rerating-map` expectations node chip — bound via `<span class="fi-chip fi-history-chip" data-history="">` | `No dated consensus on file` | `暂无可追溯的市场预期` |
 | 2 | VALUATION_ANCHOR_UNAVAILABLE | `$defs.valuation_anchor[0].state` enum + `$defs.plane_state` VALUATION_ANCHOR_UNAVAILABLE (schema.json line 1630) | `rerating-map` valuation node chip + anchor chip | `No valuation anchor available` | `暂无估值锚点` |
 | 3 | PRICE_BASIS_UNQUALIFIED | `$defs.plane_state` PRICE_BASIS_UNQUALIFIED (schema.json plane_state enum) | `rerating-map` price node chip | `No qualified price basis` | `价格口径未达合格` |
-| 4 | REGIME_BREAK_NOT_COMPARABLE | `$defs.plane[0].comparability_state[0]` enum (schema.json line 1062) | any `rerating-map` node chip + `system-map` edge chip | `Regime break — not comparable` | `制度断裂 — 不可比` |
-| 5 | CURRENT_MEMBERSHIP_ONLY | `$defs.basket_state[0].membership_state` enum (schema.json line 1456) | `subtheme-atlas` per-slice membership chip (visible) | `Current membership only — not a history` | `仅为当前成员 — 非历史口径` |
-| 6 | PIT_MEMBERSHIP_INCOMPLETE | `$defs.basket_state[0].membership_state` enum (same path) | `subtheme-atlas` per-slice membership chip (visible) | `Point-in-time membership incomplete` | `时点成员数据不完整` |
-| 7 | CAUSAL_EFFECT_UNMEASURED | `macro_matrix[].state` enum (schema.json line 345) | `macro-matrix` cell chip (visible) | `Causal effect not measured` | `因果效应尚未测算` |
-| 8 | EXPOSURE_NOT_SEPARATELY_DISCLOSED | `exposure.state` enum (schema.json line 2254) | `company-exposure` cell chip (visible text — never a `focus` handler on a `<td>`) | `Exposure not separately disclosed` | `敞口未单独披露` |
-| 9 | IDENTITY_UNRESOLVED | `company_exposures[].identity.state` + `source_records[].identity_state` enum (schema.json lines 2428 / 1985) | `company-exposure` row chip + `evidence-drawer` chip (visible, bilingual) | `Identity unresolved` | `身份尚未确认` |
-| 10 | SOURCE_STALE | `freshness.state` + `material_changes[].freshness_state` + `slices[].freshness.state` enum (schema.json line 578 / coverage line 149) | `what-changed` header chip + `rerating-map` node chip | `Source is stale` | `来源已陈旧` |
-| 11 | SOURCE_RIGHTS_HELD | `source_records[].rights_state` enum (schema.json line 1985) | `evidence-drawer` chip + suppression rule (D.23) | `Source rights restrict display` | `来源权利限制展示` |
+| 4 | REGIME_BREAK_NOT_COMPARABLE | `$defs.plane[0].comparability_state[0]` enum (schema.json line 1062) | any `rerating-map` node chip — bound via `<span class="fi-chip fi-comparability-chip" data-comparability="">` (system-map edges do NOT carry a comparability chip; edges carry `evidence_state` only) | `Regime break — not comparable` | `制度断裂 — 不可比` |
+| 5 | CURRENT_MEMBERSHIP_ONLY | `$defs.basket_state[0].membership_state` enum (schema.json line 1456) | `subtheme-atlas` per-slice membership chip — bound via `<span class="fi-chip fi-membership-chip" data-state-membership="{slices[].basket_state.membership_state}">` | `Current membership only — not a history` | `仅为当前成员 — 非历史口径` |
+| 6 | PIT_MEMBERSHIP_INCOMPLETE | `$defs.basket_state[0].membership_state` enum (same path) | `subtheme-atlas` per-slice membership chip (visible) — bound via same `<span class="fi-chip fi-membership-chip">` | `Point-in-time membership incomplete` | `时点成员数据不完整` |
+| 7 | CAUSAL_EFFECT_UNMEASURED | `macro_matrix[].state` enum (schema.json line 345) | `macro-matrix` cell chip — bound via `<span class="fi-macro-cell-state" data-state="{macro_matrix[].state}">` (D.11b) | `Causal effect not measured` | `因果效应尚未测算` |
+| 8 | EXPOSURE_NOT_SEPARATELY_DISCLOSED | `exposure.state` enum (schema.json line 2254) | `company-exposure` cell chip (visible text — never a `focus` handler on a `<td>`) — bound via `<td data-state-exposure="{cells[].exposure.state}">` | `Exposure not separately disclosed` | `敞口未单独披露` |
+| 9 | IDENTITY_UNRESOLVED | `company_exposures[].identity.state` + `source_records[].identity_state` enum (schema.json lines 2428 / 1985) | `company-exposure` row chip — bound via `<span class="fi-chip fi-identity-chip" data-identity="">` on the `<tr>`; AND `evidence-drawer` field — bound via `<dd class="fi-evidence-identity" data-identity="{source_records[].identity_state}">` (visible, bilingual) | `Identity unresolved` | `身份尚未确认` |
+| 10 | SOURCE_STALE | `freshness.state` + `material_changes[].freshness_state` + `slices[].freshness.state` enum (schema.json line 578 / coverage line 149) | `what-changed` header chip — bound via `<span class="fi-chip fi-chip-fresh" data-state-freshness="">` on the §B.1 `<header class="fi-section-head">`; AND `rerating-map` stepper header chip — bound via `<span class="fi-chip fi-slice-fresh" data-state-freshness="">` on the §B.2 stepper header (two freshness chips total — one per freshness location) | `Source is stale` | `来源已陈旧` |
+| 11 | SOURCE_RIGHTS_HELD | `source_records[].rights_state` enum (schema.json line 1985) | `evidence-drawer` chip — bound via `<dd class="fi-evidence-rights" data-rights="{source_records[].rights_state}">` + suppression rule (D.23) | `Source rights restrict display` | `来源权利限制展示` |
 
-Each of the eleven tokens appears ≥1 time in §B markup as a `data-state-*`/`data-*` binding so the CSS / hydration can render the chip (check #12 — `awk '/^## B\./,/^## C\./' $F | grep -c <TOKEN>` ≥ 1 per token).
+Each of the eleven tokens appears ≥1 time in §B markup as a `data-state-*`/`data-*` binding so the CSS / hydration can render the chip (check #12 — `awk '/^## B\./,/^## C\./' $F | grep -c <TOKEN>` ≥ 1 per token). For self-check coverage, each row also carries a HTML-comment marker of the form `<!-- state: <TOKEN> → chip -->` immediately beside its chip so the token remains greppable AND the visible text stays a plain word.
 
 ### D.37 The ten conflict labels (cards inside `.fi-conflicts`)
 
-| enum (`conflict_id`) | EN label | ZH label |
+The card carries `data-conflict-label="{conflicts[].label}"` (the literal enum token); the visible text uses the EN/ZH label from this table — never the enum token.
+
+| enum (`data-conflict-label`) | EN label | ZH label |
 |---|---|---|
 | EARNINGS_UP_P_E_DOWN | `Earnings up, multiple down` | `盈利上升，倍数下降` |
 | BOOK_UP_P_B_DOWN | `Book value up, multiple down` | `账面价值上升，倍数下降` |
@@ -1558,7 +1697,7 @@ The evidence drawer never opens in any degraded state — the trigger buttons ge
 
 **Conflict pip + card rule (R-H):** the `.fi-conflict-pip` chip and the `.fi-conflict-card` both carry a visible line + an `Open evidence` button; no hover-only meaning anywhere.
 
-**Materiality colour rule (R-J):** MATERIAL → `--ink-warn`; PARTIAL → `--muted` with the word "Partial" / "部分"; IMMATERIAL / UNMEASURED → `--muted` with the word. NEVER the directional-ink tokens anywhere on the exposure surface (or anywhere else in the dossier).
+**Materiality colour rule (R-J):** all four values paint with `--fi-text`; MATERIAL differs by `font-weight: 700` and the word "Material" / "重要" only; PARTIAL / IMMATERIAL / UNMEASURED paint with `--fi-text` and their plain-word chip. NEVER the directional-ink tokens anywhere on the exposure surface (or anywhere else in the dossier).
 
 ---
 
