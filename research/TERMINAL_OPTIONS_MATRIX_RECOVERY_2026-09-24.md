@@ -119,3 +119,31 @@ builder call, and200 date conversions rather than200×200 for200 queries.
 Focused matrix/structure regression now passes120 tests. Fresh real-source
 qualification is required for this changed implementation before acceptance;
 the earlier MU/ARM receipts remain evidence of their exact earlier candidate.
+
+## Recovered source and candidate-owned CI closure — 2026-09-24
+
+The clean local IV-index commit `66af476d73af8631b94cc634aecdefc1b79b4a2e`
+was verified to have remote `0841c721519b485a534b963f0406d71025a39e3f`
+as its sole parent, then published unchanged to the existing PR branch by a
+normal fast-forward push. ARM/SPY receipts above were consumed, not regenerated.
+
+Merged shared repair #7864 is present in tested base
+`4597dd8e72a64aa86d1e07ae1a76924ce9a7b5ae`. The fresh integrated run
+35964965570 tested merge `c72ec63f0b498a573ffe3398c687997512264147`.
+Its contract-delta job 107521411893 exposed a DIFFERENT, candidate-introduced
+edge: publisher tests in `tests/test_options_matrix.py` now reach
+`scripts/build_options_matrix.py`, absent from `flow-surface`'s exclusive paths.
+Add that exact path to the existing job; no command, runner, gate, dependency
+installation, formula, test assertion or source-publication behavior changes.
+
+Native `run_ci_pack` inference checked 744 concrete closure paths: before the
+addition the publisher was the only uncovered path; afterward none were missing.
+Native selection includes this existing job for a publisher-only change, and
+semantic step specifications are identical. The owner definition was identical
+at the feature head and tested base. This scoped qualification is NOT a concluded
+whole-manifest/integrated CI pass. Transcript SHA256:
+`b746d903bae8176a2ccb300cd7065c6b4660d9c68e59261062b6af7da4a2ca72`
+(`matrix-ci-scope-66af476d-qualification.log` in the existing Studio evidence directory).
+
+The production installation and authenticated published-data-to-Terminal journey
+remain unproven. Both PRs stay draft/unmerged pending source and release gates.
