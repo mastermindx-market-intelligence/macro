@@ -763,6 +763,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_evidence_foundation_contract.py
+          tests/test_semiconductor_native_identity.py
           tests/test_evidence_foundation_product_contract.py -q
       # K2-B is a pure contract/fixture compiler which deliberately does not import
       # an institutional owner or materialize a store. Keeping its hostile contract

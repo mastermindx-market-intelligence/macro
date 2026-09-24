@@ -513,3 +513,28 @@ def test_a_row_without_a_stamped_assertion_is_refused(null_cell):
     row["curation_assertion"] = null_cell
     with pytest.raises(ca.CurationAssertionError):
         ca.reference_for_assertion(row)
+
+
+def test_a_denied_right_yields_rights_blocked_and_a_typed_absence_never_a_grant():
+    """A row whose licensing attestation denies ANY right projects as a
+    rights-blocked reference with a typed absence; K1 still accepts it."""
+    row = deepcopy(load_case('source_only_business')['native_rows'][0])
+    assert all(row.get(flag) is True for flag in ca._LICENSING_FLAGS)
+    row['licensing_redistribution_ok'] = False
+    checked = validate_reference(ca.reference_for_assertion(row))
+    assert checked['rights']['state'] == 'rights_blocked'
+    assert checked['missingness'] == {'state': 'absent', 'reason': 'rights_blocked', 'zero_substituted': False}
+
+
+def test_missing_licensing_flags_yield_unknown_rights_never_permitted():
+    """Flags neither attested nor denied are UNKNOWN: the projection never
+    defaults to a grant, and the object is present (nothing is fabricated absent)."""
+    row = deepcopy(load_case('source_only_business')['native_rows'][0])
+    for flag in ca._LICENSING_FLAGS:
+        row.pop(flag, None)
+    checked = validate_reference(ca.reference_for_assertion(row))
+    assert checked['rights'] == {'state': 'unknown', 'policy_id': None}
+    assert checked['missingness']['state'] == 'present'
+    # a single attested right with the others unstated is still not a grant
+    row['licensing_internal_ok'] = True
+    assert validate_reference(ca.reference_for_assertion(row))['rights']['state'] == 'unknown'

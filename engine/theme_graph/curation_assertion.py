@@ -438,7 +438,14 @@ def _rights_and_missingness(
     """Rights + missingness read off the row's licensing attestation: any
     denied right is a rights-blocked object, all rights attested is permitted,
     and a right that is neither attested nor denied is UNKNOWN — never
-    silently permitted, never a fabricated absence."""
+    silently permitted, never a fabricated absence.
+
+    The licensing flags are the row's MINT-TIME snapshot (evidence.v1 says so:
+    no enforcement power). ``permitted`` here therefore means "attested at
+    mint", not "may be emitted now"; the serving path re-checks the fresh
+    rights snapshot through ``engine.theme_graph.rights`` before any body or
+    conclusion is emitted (T03), and ``policy_id`` stays None because this
+    projection consults no policy."""
     flags = [row.get(name) for name in _LICENSING_FLAGS]
     if all(flag is True for flag in flags):
         return (
