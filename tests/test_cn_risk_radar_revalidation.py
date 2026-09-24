@@ -383,3 +383,173 @@ def test_fixed_threshold_condition_never_estimates_cut_from_outcomes():
 
     assert elevated.tolist() == [False, True, True, True]
     assert risk_off.tolist() == [False, False, False, True]
+
+
+def test_probability_adjudication_keeps_well_calibrated_powered_cell():
+    result = _fn("adjudicate_probability")(
+        forecast=0.50,
+        observed=0.48,
+        block_ci=(0.34, 0.61),
+        episode_ci=(0.32, 0.64),
+        brier_skill_value=0.04,
+        effective_n=28,
+        hit_episodes=13,
+        nonhit_episodes=15,
+        material_inversion=False,
+    )
+    assert result["verdict"] == "KEEP"
+
+
+def test_probability_adjudication_refuses_daily_n_when_episode_n_is_sparse():
+    result = _fn("adjudicate_probability")(
+        forecast=0.50,
+        observed=0.50,
+        block_ci=(0.20, 0.80),
+        episode_ci=(0.10, 0.90),
+        brier_skill_value=0.10,
+        effective_n=7,
+        hit_episodes=4,
+        nonhit_episodes=3,
+        material_inversion=False,
+    )
+    assert result["verdict"] == "INSUFFICIENT_EVIDENCE"
+
+
+def test_probability_adjudication_marks_material_error_for_recalibration_or_removal():
+    candidate = _fn("adjudicate_probability")(
+        forecast=0.50,
+        observed=0.34,
+        block_ci=(0.25, 0.42),
+        episode_ci=(0.22, 0.44),
+        brier_skill_value=-0.01,
+        effective_n=30,
+        hit_episodes=10,
+        nonhit_episodes=20,
+        material_inversion=False,
+    )
+    removal = _fn("adjudicate_probability")(
+        forecast=0.50,
+        observed=0.20,
+        block_ci=(0.12, 0.28),
+        episode_ci=(0.10, 0.30),
+        brier_skill_value=-0.08,
+        effective_n=30,
+        hit_episodes=6,
+        nonhit_episodes=24,
+        material_inversion=True,
+    )
+    assert candidate["verdict"] == "RECALIBRATION_CANDIDATE"
+    assert removal["verdict"] == "FAIL / REMOVE"
+
+
+def test_historical_lift_adjudication_applies_preregistered_robustness_and_tolerance():
+    robust = _fn("adjudicate_historical_lift")(
+        lift=2.05,
+        ci=(1.25, 2.90),
+        split_lifts=(1.70, 2.20),
+        modern_lift=1.80,
+        loco_lifts=(1.30, 1.45, 1.60),
+        permutation_p=0.01,
+        effective_n=24,
+    )
+    directional = _fn("adjudicate_historical_lift")(
+        lift=2.00,
+        ci=(0.82, 3.10),
+        split_lifts=(1.40, 1.30),
+        modern_lift=1.20,
+        loco_lifts=(0.95, 1.30, 1.10),
+        permutation_p=0.08,
+        effective_n=18,
+    )
+    failed = _fn("adjudicate_historical_lift")(
+        lift=0.90,
+        ci=(0.60, 1.20),
+        split_lifts=(0.85, 0.95),
+        modern_lift=0.80,
+        loco_lifts=(0.75, 0.88),
+        permutation_p=0.70,
+        effective_n=25,
+    )
+
+    assert robust["verdict"] == "KEEP"
+    assert directional["verdict"] == "KEEP_BUT_RELABEL"
+    assert failed["verdict"] == "FAIL / REMOVE"
+
+
+def test_state_separation_adjudication_requires_episode_power():
+    sparse = _fn("adjudicate_state_separation")(
+        difference=0.20,
+        ci=(-0.10, 0.40),
+        elevated_effective_n=20,
+        risk_off_effective_n=5,
+        material_inversion=False,
+    )
+    directional = _fn("adjudicate_state_separation")(
+        difference=0.08,
+        ci=(-0.03, 0.20),
+        elevated_effective_n=15,
+        risk_off_effective_n=15,
+        material_inversion=False,
+    )
+    robust = _fn("adjudicate_state_separation")(
+        difference=0.12,
+        ci=(0.00, 0.24),
+        elevated_effective_n=16,
+        risk_off_effective_n=18,
+        material_inversion=False,
+    )
+    assert sparse["verdict"] == "INSUFFICIENT_EVIDENCE"
+    assert directional["verdict"] == "KEEP_BUT_RELABEL"
+    assert robust["verdict"] == "KEEP"
+
+
+def test_write_result_artifacts_is_deterministic_and_contains_all_claims(tmp_path):
+    claims = {
+        claim: {"verdict": "INSUFFICIENT_EVIDENCE", "basis": "fixture"}
+        for claim in _fn("claim_keys")()
+    }
+    result = {
+        "schema": "cn_risk_radar_revalidation.v1",
+        "operation_key": "fixture",
+        "base_sha": "abc",
+        "prereg_sha": "def",
+        "claims": claims,
+        "targets": {},
+        "forward_ledger": {},
+        "discoveries": [],
+    }
+
+    first = _fn("write_result_artifacts")(result, tmp_path)
+    first_json = (tmp_path / "results.json").read_bytes()
+    first_report = (tmp_path / "REPORT.md").read_bytes()
+    second = _fn("write_result_artifacts")(result, tmp_path)
+
+    assert first == second
+    assert first_json == (tmp_path / "results.json").read_bytes()
+    assert first_report == (tmp_path / "REPORT.md").read_bytes()
+    report = first_report.decode()
+    for claim in claims:
+        assert claim in report
+    assert "generated_at" not in first_json.decode()
+
+
+def test_check_only_cli_verifies_frozen_contract_without_writing_results(tmp_path, capsys):
+    import json
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parent.parent
+    rc = _fn("main")(
+        [
+            "--repo-root", str(repo_root),
+            "--output-dir", str(tmp_path),
+            "--check-only",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 0
+    assert payload["schema"] == "cn_risk_radar_revalidation.check.v1"
+    assert payload["base_sha"] == "8db6896dab2199a4b7fc61a005c225380cac7cd6"
+    assert payload["prereg_sha"] == "db5590accaa03f78396ca91b6874f04b9bcf4cf3"
+    assert payload["overlay"] == "absent"
+    assert not (tmp_path / "results.json").exists()

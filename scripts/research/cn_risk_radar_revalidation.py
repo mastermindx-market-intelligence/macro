@@ -606,3 +606,329 @@ def fixed_threshold_conditions(
     elevated = (numeric >= elevated_threshold).fillna(False)
     risk_off = (numeric >= risk_off_threshold).fillna(False)
     return elevated.astype(bool), risk_off.astype(bool)
+
+
+_CLAIM_KEYS = (
+    "extreme China external-driver hazard",
+    "98th-percentile intensity semantics",
+    ">=5%/21d risk-off probability = 50%",
+    ">=10%/42d historical lift ~2.07x",
+    "elevated vs risk-off separation",
+    "5d / 10d / 21d ladder",
+    "context gate value-add",
+)
+
+_ALLOWED_VERDICTS = {
+    "KEEP",
+    "KEEP_BUT_RELABEL",
+    "RECALIBRATION_CANDIDATE",
+    "FAIL / REMOVE",
+    "INSUFFICIENT_EVIDENCE",
+}
+
+
+def claim_keys() -> tuple[str, ...]:
+    return _CLAIM_KEYS
+
+
+def adjudicate_probability(
+    *,
+    forecast: float,
+    observed: float,
+    block_ci: tuple[float, float],
+    episode_ci: tuple[float, float],
+    brier_skill_value: float,
+    effective_n: int,
+    hit_episodes: int,
+    nonhit_episodes: int,
+    material_inversion: bool,
+) -> dict[str, object]:
+    reasons: list[str] = []
+    if effective_n < 20 or hit_episodes < 5 or nonhit_episodes < 5:
+        return {
+            "verdict": "INSUFFICIENT_EVIDENCE",
+            "reasons": [
+                f"effective episodes {effective_n}; hits/non-hits {hit_episodes}/{nonhit_episodes}"
+            ],
+        }
+    error = abs(float(observed) - float(forecast))
+    block_contains = float(block_ci[0]) <= forecast <= float(block_ci[1])
+    episode_contains = float(episode_ci[0]) <= forecast <= float(episode_ci[1])
+    if error > 0.20 and not block_contains and not episode_contains and brier_skill_value < 0.0:
+        reasons.append(f"absolute calibration error {error:.3f} exceeds 0.20")
+        if material_inversion:
+            reasons.append("material state-bin inversion")
+        return {"verdict": "FAIL / REMOVE", "reasons": reasons}
+    if (
+        error > 0.10
+        or not block_contains
+        or not episode_contains
+        or brier_skill_value < 0.0
+        or material_inversion
+    ):
+        if error > 0.10:
+            reasons.append(f"absolute calibration error {error:.3f} exceeds 0.10")
+        if not block_contains:
+            reasons.append("forecast outside moving-block interval")
+        if not episode_contains:
+            reasons.append("forecast outside episode interval")
+        if brier_skill_value < 0.0:
+            reasons.append("negative Brier skill versus baked base")
+        if material_inversion:
+            reasons.append("material state-bin inversion")
+        return {"verdict": "RECALIBRATION_CANDIDATE", "reasons": reasons}
+    return {
+        "verdict": "KEEP",
+        "reasons": [
+            f"error {error:.3f}; forecast inside both dependence-aware intervals; nonnegative skill"
+        ],
+    }
+
+
+def adjudicate_historical_lift(
+    *,
+    lift: float,
+    ci: tuple[float, float],
+    split_lifts: tuple[float, float],
+    modern_lift: float,
+    loco_lifts: tuple[float, ...],
+    permutation_p: float,
+    effective_n: int,
+) -> dict[str, object]:
+    if effective_n < 8:
+        return {
+            "verdict": "INSUFFICIENT_EVIDENCE",
+            "reasons": [f"only {effective_n} effective signal episodes"],
+        }
+    slices = [*split_lifts, modern_lift, *loco_lifts]
+    positive = sum(value > 1.0 for value in slices)
+    robust = (
+        lift > 1.0
+        and ci[0] > 1.0
+        and all(value > 1.0 for value in split_lifts)
+        and modern_lift > 1.0
+        and all(value > 1.0 for value in loco_lifts)
+        and permutation_p <= 0.05
+        and effective_n >= 20
+        and abs(lift - 2.07) <= 0.25
+    )
+    if robust:
+        return {
+            "verdict": "KEEP",
+            "reasons": ["robust across block CI, split halves, modern era, LOCO, and permutation"],
+        }
+    if lift <= 1.0:
+        return {
+            "verdict": "FAIL / REMOVE",
+            "reasons": [f"point lift {lift:.3f} is not above one"],
+        }
+    if positive >= max(1, (len(slices) + 1) // 2):
+        return {
+            "verdict": "KEEP_BUT_RELABEL",
+            "reasons": [
+                "directional lift survives a majority of stability slices but misses robust promotion"
+            ],
+        }
+    return {
+        "verdict": "FAIL / REMOVE",
+        "reasons": ["lift reverses across a majority of powered stability slices"],
+    }
+
+
+def adjudicate_state_separation(
+    *,
+    difference: float,
+    ci: tuple[float, float],
+    elevated_effective_n: int,
+    risk_off_effective_n: int,
+    material_inversion: bool,
+) -> dict[str, object]:
+    if elevated_effective_n < 12 or risk_off_effective_n < 12:
+        return {
+            "verdict": "INSUFFICIENT_EVIDENCE",
+            "reasons": [
+                f"effective episodes elevated/risk-off {elevated_effective_n}/{risk_off_effective_n}"
+            ],
+        }
+    if material_inversion and difference < 0.0:
+        return {
+            "verdict": "FAIL / REMOVE",
+            "reasons": ["material risk-off versus elevated inversion"],
+        }
+    if difference > 0.0 and ci[0] >= 0.0:
+        return {
+            "verdict": "KEEP",
+            "reasons": ["risk-off observed rate exceeds elevated with nonnegative lower bound"],
+        }
+    if difference > 0.0:
+        return {
+            "verdict": "KEEP_BUT_RELABEL",
+            "reasons": ["positive point separation but interval overlaps zero"],
+        }
+    return {
+        "verdict": "RECALIBRATION_CANDIDATE",
+        "reasons": ["risk-off point estimate does not exceed elevated"],
+    }
+
+
+def _format_scalar(value: object) -> str:
+    if value is None:
+        return "n/a"
+    if isinstance(value, float):
+        if not np.isfinite(value):
+            return "n/a"
+        return f"{value:.4f}"
+    return str(value)
+
+
+def render_report(result: Mapping[str, object]) -> str:
+    lines = [
+        "# China Risk Radar Revalidation",
+        "",
+        f"- Operation: `{result.get('operation_key', 'unknown')}`",
+        f"- Base SHA: `{result.get('base_sha', 'unknown')}`",
+        f"- Preregistration SHA: `{result.get('prereg_sha', 'unknown')}`",
+        "- Classification: research-only; production behavior unchanged",
+        "",
+        "## Claim-by-claim verdict",
+        "",
+    ]
+    claims = result.get("claims", {})
+    if not isinstance(claims, Mapping):
+        claims = {}
+    for claim in _CLAIM_KEYS:
+        record = claims.get(claim, {}) if isinstance(claims, Mapping) else {}
+        if not isinstance(record, Mapping):
+            record = {}
+        verdict = str(record.get("verdict", "INSUFFICIENT_EVIDENCE"))
+        basis = record.get("basis") or record.get("reasons") or "No basis recorded."
+        if isinstance(basis, (list, tuple)):
+            basis = "; ".join(str(item) for item in basis)
+        lines.extend([f"### {claim}", "", f"**{verdict}** — {basis}", ""])
+    lines.extend(["## Primary target summaries", ""])
+    targets = result.get("targets", {})
+    if isinstance(targets, Mapping) and targets:
+        for name in sorted(targets):
+            target = targets[name]
+            lines.append(f"### {name}")
+            lines.append("")
+            if isinstance(target, Mapping):
+                for key in ("benchmark", "eligible_rows", "base_rate", "risk_off_lift", "elevated_plus_lift"):
+                    if key in target:
+                        lines.append(f"- {key}: {_format_scalar(target[key])}")
+            lines.append("")
+    else:
+        lines.extend(["No target results recorded.", ""])
+    lines.extend(["## Issued forward evidence", ""])
+    forward = result.get("forward_ledger", {})
+    if isinstance(forward, Mapping) and forward:
+        for key in sorted(forward):
+            lines.append(f"- {key}: {_format_scalar(forward[key])}")
+    else:
+        lines.append("No forward-ledger summary recorded.")
+    lines.extend(["", "## Discoveries", ""])
+    discoveries = result.get("discoveries", [])
+    if isinstance(discoveries, list) and discoveries:
+        lines.extend(f"- {item}" for item in discoveries)
+    else:
+        lines.append("- None recorded.")
+    lines.extend(
+        [
+            "",
+            "## Reproduction",
+            "",
+            "```bash",
+            "python3 -m scripts.research.cn_risk_radar_revalidation --repo-root . --output-dir research/cn_risk_revalidation --bootstrap-reps 5000 --permutation-reps 5000 --seed 20260923",
+            "```",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def write_result_artifacts(result: Mapping[str, object], output_dir) -> dict[str, str]:
+    import json
+    from pathlib import Path
+
+    output = Path(output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    claims = result.get("claims")
+    if not isinstance(claims, Mapping) or tuple(claims.keys()) != _CLAIM_KEYS:
+        missing = [claim for claim in _CLAIM_KEYS if not isinstance(claims, Mapping) or claim not in claims]
+        extra = [] if not isinstance(claims, Mapping) else [claim for claim in claims if claim not in _CLAIM_KEYS]
+        if missing or extra:
+            raise ValueError(f"claim set mismatch; missing={missing}, extra={extra}")
+    for claim, record in claims.items():
+        if not isinstance(record, Mapping) or record.get("verdict") not in _ALLOWED_VERDICTS:
+            raise ValueError(f"invalid verdict record for {claim}: {record}")
+    json_text = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    report_text = render_report(result)
+    json_path = output / "results.json"
+    report_path = output / "REPORT.md"
+    json_path.write_text(json_text)
+    report_path.write_text(report_text)
+    return {
+        "results_json": str(json_path),
+        "results_sha256": sha256_file(json_path),
+        "report_md": str(report_path),
+        "report_sha256": sha256_file(report_path),
+    }
+
+
+OPERATION_KEY = "cn-risk-p1-radar-revalidation-20260923-solpro-001"
+BASE_SHA = "8db6896dab2199a4b7fc61a005c225380cac7cd6"
+PREREG_SHA = "db5590accaa03f78396ca91b6874f04b9bcf4cf3"
+FROZEN_SOURCE_SHA256 = {
+    "engine/risk_radar_intl.py": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+    "engine/indicators.py": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5",
+    "scripts/calibrate_risk_radar_intl.py": "ec613aa8b38f317ebd4ed8a4ab9dca153db9c632898c40a5edae663e69c26458",
+    "lib/store.py": "77051ae1e522e415e2b8c3be51f51187f2571d53a049472a52ca54e9ee1a3c4b",
+}
+
+
+def build_parser():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Preregistered research-only revalidation of the China Risk Radar."
+    )
+    parser.add_argument("--repo-root", default=".")
+    parser.add_argument("--output-dir", default="research/cn_risk_revalidation")
+    parser.add_argument("--bootstrap-reps", type=int, default=5000)
+    parser.add_argument("--permutation-reps", type=int, default=5000)
+    parser.add_argument("--seed", type=int, default=20260923)
+    parser.add_argument("--check-only", action="store_true")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    import json
+    from pathlib import Path
+
+    args = build_parser().parse_args(argv)
+    repo_root = Path(args.repo_root).resolve()
+    source_manifest = verify_frozen_sources(repo_root, FROZEN_SOURCE_SHA256)
+    verify_no_cn_overlay(repo_root)
+    if args.check_only:
+        print(
+            json.dumps(
+                {
+                    "schema": "cn_risk_radar_revalidation.check.v1",
+                    "operation_key": OPERATION_KEY,
+                    "base_sha": BASE_SHA,
+                    "prereg_sha": PREREG_SHA,
+                    "overlay": "absent",
+                    "sources": source_manifest,
+                },
+                sort_keys=True,
+            )
+        )
+        return 0
+    result = run_revalidation(
+        repo_root=repo_root,
+        bootstrap_reps=args.bootstrap_reps,
+        permutation_reps=args.permutation_reps,
+        seed=args.seed,
+    )
+    write_result_artifacts(result, Path(args.output_dir))
+    return 0
