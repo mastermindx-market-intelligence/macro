@@ -436,6 +436,39 @@ def test_cache_reader_carries_observation_state(tmp_path, monkeypatch):
     assert observation["failed_refresh"] is False
 
 
+def test_build_foresight_drip_logs_the_selected_observation(caplog, monkeypatch, tmp_path):
+    import logging
+
+    import scripts.build_foresight as builder
+    from collectors import fda_shortages
+    from lib import config as project_config
+
+    project_config.load.cache_clear()
+    monkeypatch.setattr(project_config, "ROOT", tmp_path)
+    monkeypatch.setattr(project_config, "data_dir", lambda: tmp_path / "data")
+
+    class FetchCall:
+        count = 0
+
+    def fetch_shortages():
+        FetchCall.count += 1
+
+    path = tmp_path / "shortages.parquet"
+    fda_shortages.save_shortage_observation(
+        _sweep("2026-09-23", [_record()]), path=path,
+        expected_predecessor=None,
+    )
+    monkeypatch.setattr("collectors.fda_shortages.fetch_shortages", fetch_shortages)
+    monkeypatch.setattr("collectors.fda_shortages._shortages_path", lambda: path)
+    with caplog.at_level(logging.INFO):
+        builder.main()
+    assert FetchCall.count == 1
+    message = next(record.message for record in caplog.records
+                   if "FDA shortage observation" in record.message)
+    assert "qualified=True failure_code=None source_generation=2026-09-23" in message
+    assert "attempted_at=2026-09-23T12:00:06+00:00" in message
+
+
 def test_every_qualified_capture_disclaims_snapshot_proof():
     single = _sweep("2026-09-23", [_record()])
     multiple = _sweep(

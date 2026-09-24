@@ -108,8 +108,18 @@ def main() -> int:
         # Fetches the openFDA drug/shortages endpoint (keyless, bounded, non-fatal).
         # The cascade reads the cache; this drip keeps it fresh.
         try:
-            from collectors.fda_shortages import fetch_shortages
+            from collectors.fda_shortages import (
+                _shortages_path, fetch_shortages, read_shortage_observation,
+            )
             fetch_shortages()
+            observation = read_shortage_observation(path=_shortages_path())
+            last_refresh = observation.get("last_refresh") or {}
+            capture = observation.get("capture") or {}
+            log.info(
+                "FDA shortage observation qualified=%s failure_code=%s source_generation=%s attempted_at=%s",
+                bool(capture.get("complete")), capture.get("failure_code"),
+                capture.get("source_generation"), last_refresh.get("attempted_at"),
+            )
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("fda_shortages drip failed (non-fatal): %s", e)
     # W1b: policy catalyst calendar — pre-compute before the cascade so policy_reg can be
