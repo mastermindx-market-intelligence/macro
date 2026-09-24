@@ -1,8 +1,7 @@
 ## SOURCE_SHA
 
-- **B20 v2 packet:** `origin/main` at `ee69c3614e4b8451644e8b362cde673462c6781b`; blob `a2e31ffcc7ccb76832c87331391c689def639590` (`research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md`).
-- **DS-PR-0a prerequisite:** PR #7849 merge ref `f6e49ea0b15315598eac18213ba7cc6b89bb2b3f` (head `4a1be688dba0ad195db909d849100fab8124becb`); this branch merges the exact merge ref. R6-B20-02 §Ruling says: “B20-1 onward may start on 0a's merge sha.”
-- **This specification head is recorded in `## EVIDENCE`; `SOURCE_SHA` is immutable source lineage, not the mutable branch head.**
+- **B20 v2 packet:** `origin/main` at `cde1e7e5e0cd7134f88a7f78dbeec614976c5090` — the commit at which this branch was last merged with `origin/main`; blob `a2e31ffcc7ccb76832c87331391c689def639590` (`research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md`).
+- **DS-PR-0a prerequisite:** the branch retains the pure #7849 merge because #7849 is still open; its landing is documented by `R6-B20-02_DSPR0_SPLIT_2026-09-23.md` and `DSPR0A_LANDING_RECORD_2026-09-23.md`.
 
 ## TOKEN TRUTH
 
@@ -21,7 +20,11 @@ Verified against `templates/theme.css` **after** the prerequisite merge.
 **Purpose (§4):** shared context, route links, and responsive destination row.
 
 ```html
-<nav class="site-nav" aria-label="Site navigation"><!-- shared _site_nav family; no workspace header band --></nav>
+<nav class="site-nav" aria-labelledby="site-navigation-label">
+  <span id="site-navigation-label" class="l-en" hidden>Site navigation</span>
+  <span id="site-navigation-label-zh" class="l-zh" hidden>网站导航</span>
+  <!-- shared _site_nav family; no workspace header band -->
+</nav>
 <div class="pw-shell" data-surface="action-desk|radar|all-candidates|themes">
   <div class="pw-context">
     <h1 class="pw-title">Prophet US / Prophet 美国</h1>
@@ -223,7 +226,7 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
 **Purpose (§4):** inline two-column evidence, risks, conditions, and actions.
 
 ```html
-<div class="pw-evidence" id="<evidence-id>" data-state="fresh|missing|stale|corrected|loading|error"
+<div class="pw-evidence" id="<evidence-id>" data-state="fresh|missing|stale|corrected|loading|error" data-evidence="fresh|missing|stale|corrected|loading|error"
   role="region" aria-labelledby="<evidence-state-label>">
   <span id="<evidence-state-label>" class="l-en" hidden><exact state sentence from §8.1></span>
   <span id="<evidence-state-label>" class="l-zh" hidden><exact state sentence from §8.1></span>
@@ -380,7 +383,7 @@ Every indexed block is present once and switches dark/light plus EN/ZH from `dat
 
 ## INTERACTION
 
-The fixture exposes only two controls: the theme control writes `document.documentElement.dataset.theme`, and the language control writes `data-lang` plus `lang`. The fixture CSS hides `.l-zh` by default and `.l-en` under `[data-lang="zh"]`. Paired `aria-labelledby` targets carry distinct `-zh` IDs, and the fixture-only language control rewrites those ID references at toggle time. No production interaction JavaScript is specified in B20-1.
+The fixture exposes only two controls: the theme control writes `document.documentElement.dataset.theme`, and the language control writes `data-lang` plus `lang` on `html`. Language switching is exactly `html[data-lang="zh"]` with `[data-lang="zh"] .l-en{display:none}` and `[data-lang="zh"] .l-zh{display:inline}`. Paired `aria-labelledby` targets carry distinct `-zh` IDs, and the fixture-only language control rewrites those ID references at toggle time. No production interaction JavaScript is specified in B20-1.
 
 ## OPEN QUESTIONS FOR THE SEAT
 
@@ -397,11 +400,13 @@ The fixture exposes only two controls: the theme control writes `document.docume
 
 ## EVIDENCE
 
-- `git rev-parse origin/main` → `cde1e7e5e0cd7134f88a7f78dbeec614976c5090`.
-- `git rev-parse origin/main:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md` → `a2e31ffcc7ccb76832c87331391c689def639590`.
-- `git show cde1e7e5e0cd7134f88a7f78dbeec614976c5090:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md | sed -n 1p` → `# B20 DESIGN PACKET V2`.
+- `git merge-base HEAD origin/main` → the single `SOURCE_SHA` commit above.
+- `git rev-parse <SOURCE_SHA>:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md` → `a2e31ffcc7ccb76832c87331391c689def639590`.
+- `git show <SOURCE_SHA>:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md | sed -n 1p` → `# B20 DESIGN PACKET V2`.
 - `grep -o -E 'data-availability="[A-Z_]+"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → seven lines: `APPROACHING_ENTRY`, `ENTRY_OPEN`, `INVALIDATED`, `NOT_READY`, `RAN_DONT_CHASE`, `UNAVAILABLE_DATA`, `WAIT_PULLBACK`.
-- `grep -o -E 'data-state="(fresh|missing|stale|corrected|loading|error)"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → six evidence states including separate `stale` and `corrected` instances.
+- RED→GREEN bilingual fixture audit on the previous head and repaired head → `unilingual_h2=10 title_bilingual=False` (exit 1), then `unilingual_h2=0 title_bilingual=True` (exit 0); the title is the accepted bilingual literal `B20-1 Component Fixture · B20-1 组件夹具`.
+- `grep -c 'aria-label="Site navigation"' research/prophet_v4/r6_program/wave3/B20_1_COMPONENT_SPEC_2026-09-24.md` → `0`.
+- `grep -o -E 'data-evidence="(a-z)+"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → six evidence states: `corrected`, `error`, `fresh`, `loading`, `missing`, `stale`.
 - `grep -Ec 'class="mx-ladder mx-ladder--board' mockups/prophet_workspace/b20_1_fixture.html` → `2`; the Python line-window audit over the second ladder records 7 lines containing `.skel`, with loading cells inside `.mx-cell` children; the loading ladder therefore passes structurally rather than by pretending intervening markup is absent.
 - `grep -c -F 'Your change did not save. Try again.' mockups/prophet_workspace/b20_1_fixture.html` → `1`; `grep -c -F '您的更改未保存。请重试。' mockups/prophet_workspace/b20_1_fixture.html` → `1`.
 - `grep -c -E 'mx-ladder-gap|mx-cell--term|data-absent="1"' mockups/prophet_workspace/b20_1_fixture.html` → `6`.
@@ -415,8 +420,9 @@ The fixture exposes only two controls: the theme control writes `document.docume
 - `grep -n 'title="' mockups/prophet_workspace/b20_1_fixture.html` → no hits, exit 1 (`grep -c` prints `0`).
 - `diff <(sed -n '/^```css$/,/^```$/p' research/prophet_v4/r6_program/wave3/B20_1_COMPONENT_SPEC_2026-09-24.md | sed '1d;$d') <(sed -n '/<style>/,/<\/style>/p' mockups/prophet_workspace/b20_1_fixture.html | sed '1d;$d')` → empty, exit 0.
 - Static audit → 10/10 required fixture blocks; watch idle/pending/saved/failed/unwatched/local-only/disabled plus exact watch-failure twins present; `pw-ladder` count 0; one `/us_track_record.html` link.
+- Language coverage audit → 10/10 fixture block headings have `.l-en`/`.l-zh` twins; fixture title is the accepted bilingual literal; body language-parent audit reports only numeric identifiers, ticker/example identifiers, terminal punctuation, and the decorative tier mark.
 - RED-first static audits are recorded against the previous head; pytest is ruled out by the ruling’s scope because this design-only unit changes a research specification and mockup, not a production behavior or test-owned module.
-- Browser evidence receipt `mockups/evidence/b20-1-component-fixture/EVIDENCE.yml` owns `templates/theme.css` through `mockups/evidence/b20-1-component-fixture/manifest.json`; the latter records eight captured fixture cells — dark/light × EN/ZH × 1440/390 — at the head carrying this receipt.
+- Browser evidence is served from the worktree root so `../../templates/theme.css` and `../../templates/tier_preview.css` resolve. At the final evidence head, the manifest acceptance command reports `ok`: `failed_responses=[]`, `console_errors=[]`, and `states_captured=8` for dark/light × EN/ZH × 1440/390.
 
 ## GAPS
 
