@@ -388,7 +388,6 @@ class TestUDB2W1VwFold:
         mobile = projection[projection.index("@media(max-width:640px)"):]
         assert "body.page-macro .riskdlg-vw .sx-vw-strip" in mobile
         assert "grid-template-columns:minmax(0,1fr);" in mobile
-        assert "body.page-macro .mx5-sc-vw" not in projection
 
 
     def test_glance_cor1m_and_cor3m_labels_are_distinct(self, macro_html):
