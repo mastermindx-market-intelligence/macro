@@ -12,6 +12,7 @@ Run: python -m scripts.build_sector_central
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import sys
@@ -210,7 +211,9 @@ def split_actnow(action_board: dict | None, preview: int, *, gated: bool = True)
 
 
 def write_payload(env, site: Path, pgate: dict | None, locked: list[dict],
-                  action_board: dict | None, *, built: str = "") -> None:
+                  action_board: dict | None, *, built: str = "",
+                  as_of: str = "", baskets_sha256: str = "",
+                  action_board_sha256: str = "") -> None:
     """Write the withheld Act-Now rows to site/premiumdata/sector_central.json.
 
     ALWAYS written, including the ungated / nothing-withheld case: a night whose
@@ -226,7 +229,9 @@ def write_payload(env, site: Path, pgate: dict | None, locked: list[dict],
     path.parent.mkdir(parents=True, exist_ok=True)
     payload: dict = {"schema": "tier_payload.v1", "page": "sector_central",
                      "gated": bool(pgate), "required_tier": "essential",
-                     "built": built}
+                     "built": built, "as_of": as_of,
+                     "baskets_sha256": baskets_sha256,
+                     "action_board_sha256": action_board_sha256}
     if pgate:
         payload["panels"] = {"actnow": pgate["actnow"]}
         try:
@@ -404,7 +409,14 @@ def _flows_section_html() -> str | None:
         "<p class='muted sm' style='margin:8px 2px 0'>" + str(note) + "</p></div>")
 
 
-def main() -> int:
+def main(*, strict: bool = False) -> int:
+    """Build Sector Central.
+
+    Broad render lanes preserve the historical fail-soft contract. The independent
+    Sector Intelligence publication lane passes ``strict=True`` so an upstream
+    producer failure cannot be laundered by last-good files that still sit within
+    the one-session semantic freshness budget.
+    """
     root = config.ROOT
     site = root / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
@@ -412,12 +424,12 @@ def main() -> int:
     try:
         from engine import sector_central as cc
         data = cc.compute()
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
+    except Exception as e:  # noqa: BLE001 — fail-soft broadly; fail-closed in focused lane
         log.exception("sector_central engine failed: %s", e)
-        return 0
+        return 1 if strict else 0
     if not data or not data.get("sectors"):
         log.warning("sector_central: no data — skipping")
-        return 0
+        return 1 if strict else 0
 
     # self-grader: append today's calls (PIT) + grade matured ones; attach the scorecard
     try:
@@ -463,10 +475,15 @@ def main() -> int:
     # engine job); read it fail-soft so an absent/corrupt file just renders the refreshing
     # fallback. The US board pre-merges every per-row field, so no separate lookup is needed.
     _action_board = None
+    _action_doc: dict = {}
+    _action_sha256 = ""
     try:
         _ab_p = site / "basketdata" / "action_board.json"
         if _ab_p.exists():
-            _action_board = (json.loads(_ab_p.read_text(encoding="utf-8")) or {}).get("action_board")
+            _action_raw = _ab_p.read_bytes()
+            _action_doc = json.loads(_action_raw) or {}
+            _action_board = _action_doc.get("action_board")
+            _action_sha256 = hashlib.sha256(_action_raw).hexdigest()
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("sector_central: action_board read failed (%s)", e)
     # W-A bottoming watch (reader pattern, same shape as the board above). The lane's
@@ -476,12 +493,16 @@ def main() -> int:
     # the display half that #4642 dropped when it transplanted the us_stocks board over
     # sector_central's own five lanes; the engine and builder halves never stopped.
     _bottoming = None
+    _basket_doc: dict = {}
+    _basket_sha256 = ""
     try:
         _bk_p = site / "basketdata" / "baskets.json"
         if _bk_p.exists():
-            _bk = json.loads(_bk_p.read_text(encoding="utf-8")) or {}
+            _basket_raw = _bk_p.read_bytes()
+            _basket_doc = json.loads(_basket_raw) or {}
+            _basket_sha256 = hashlib.sha256(_basket_raw).hexdigest()
             _bottoming = build_bottoming_context(
-                ((_bk.get("theme_intel") or {}).get("act_now")), _action_board
+                ((_basket_doc.get("theme_intel") or {}).get("act_now")), _action_board
             )
             if _bottoming is not None:
                 log.info(
@@ -507,14 +528,29 @@ def main() -> int:
     _sc_pgate, _sc_locked = split_actnow(
         _action_board, _sc_gate_cfg["preview_rows"], gated=_sc_gate_cfg["gated"])
     _sc_built = ctx.get("generated_utc") or data.get("as_of") or ""
+    _source_as_of = (
+        _action_doc.get("as_of")
+        or ((_basket_doc.get("theme_intel") or {}).get("as_of")
+            if isinstance(_basket_doc.get("theme_intel"), dict) else None)
+        or _basket_doc.get("as_of")
+        or data.get("as_of")
+        or ""
+    )
     try:
-        write_payload(env, site, _sc_pgate, _sc_locked, _action_board,
-                      built=_sc_built)
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        write_payload(
+            env, site, _sc_pgate, _sc_locked, _action_board,
+            built=_sc_built,
+            as_of=_source_as_of,
+            baskets_sha256=_basket_sha256,
+            action_board_sha256=_action_sha256,
+        )
+    except Exception as e:  # noqa: BLE001 — fail-soft broadly; fail-closed in focused lane
         # A payload we could not write must NOT be paired with a gated shell that
         # promises it: fall back to the ungated board rather than publish a page
         # whose withheld rows are unreachable for everyone, paying or not.
         log.error("sector_central: payload write failed (%s) — board ungated", e)
+        if strict:
+            return 1
         _sc_pgate = None
     _acc_rows, _acc_uni = _accumulation_rows()
     try:
@@ -527,6 +563,9 @@ def main() -> int:
             flow=ctx.get("flow"),
             basket_member_syms=ctx.get("basket_member_syms") or [],
             action_board=_action_board,
+            source_as_of=_source_as_of,
+            baskets_sha256=_basket_sha256,
+            action_board_sha256=_action_sha256,
             accumulation=_acc_rows,
             accumulation_universe_n=_acc_uni,
             theme_tape=_theme_tape_view(site),
@@ -538,6 +577,11 @@ def main() -> int:
         # whole engine job → no commit → stale site (this exact `t`-undefined crash, #624→#643).
         # Degrade: keep the last-good committed sector_central.html (the fresh data JS/JSON written
         # above still drive the page's runtime content) and return 0 so the rest of the build ships.
+        if strict:
+            log.exception(
+                "sector_central: page render failed (%s) — focused publication withheld", e
+            )
+            return 1
         log.exception("sector_central: page render failed (%s) — keeping last-good HTML", e)
         return 0
 

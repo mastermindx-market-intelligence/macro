@@ -620,6 +620,56 @@ _FAST_VISIBLE_PROFILE_COMPOSITIONS: dict[str, tuple[str, ...]] = {
 }
 
 
+# A family is covered only by a discriminating read from that family. Shared context
+# reads such as get_market_events/read_contradictions deliberately do not witness two
+# families at once: doing so would recreate the mixed-domain false-positive #7406 fixed.
+# This is not a second classifier; it consumes the same _QuestionProfile compositions
+# used by progressive visibility.
+_FAST_EVIDENCE_FAMILY_WITNESSES: dict[str, tuple[str, ...]] = {
+    "single_name_current": (
+        "get_symbol_context", "get_quote", "get_symbol_intel",
+        "read_company_intelligence", "get_fundamentals", "get_earnings",
+        "get_house_view", "query_spine",
+    ),
+    "macro_rates": (
+        "read_world_state", "get_curve_detail", "read_mechanism_pathways",
+        "read_inflation_intelligence", "read_liquidity_plumbing",
+    ),
+    "options_single_name": (
+        "read_options_entry_state", "explain_options_context", "query_options_confluence",
+    ),
+    "portfolio_current": ("get_portfolio_brief", "get_watchlist"),
+    "theme_current": (
+        "read_theme_state", "read_theme_thesis", "read_theme_pathways",
+        "read_theme_asymmetry", "read_theme_options_witness", "read_theme_clinical",
+        "read_theme_trade_flows",
+    ),
+}
+
+
+def _fast_required_evidence_families(
+    profile: _QuestionProfile,
+) -> dict[str, tuple[str, ...]] | None:
+    """Return qualified Fast evidence families, or None for a fail-open profile.
+
+    The values are witness-tool names, not authorization. Brain still builds its complete
+    authorized schema first and may enforce this contract only when every family has an
+    authorized witness. Self-contained scenarios intentionally require no external family.
+    """
+    if profile.name == "self_contained_financial":
+        return {}
+    families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
+    if not families:
+        return None
+    required: dict[str, tuple[str, ...]] = {}
+    for name in families:
+        witnesses = _FAST_EVIDENCE_FAMILY_WITNESSES.get(name)
+        if witnesses is None:
+            return None
+        required[name] = witnesses
+    return required
+
+
 def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | None:
     """Return qualified Fast model-visible names, or None to retain full authorization.
 
@@ -633,7 +683,13 @@ def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | Non
     families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
     if not families:
         return None
-    return _merge_seed_tools(*(_FAST_VISIBLE_TOOL_FAMILIES[name] for name in families))
+    tool_families: list[tuple[str, ...]] = []
+    for name in families:
+        tools = _FAST_VISIBLE_TOOL_FAMILIES.get(name)
+        if tools is None:
+            return None
+        tool_families.append(tools)
+    return _merge_seed_tools(*tool_families)
 
 
 def _legacy_classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:

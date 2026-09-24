@@ -284,6 +284,38 @@ def test_natural_nightly_opens_once_and_publishes_exact_derived_targets(tmp_path
     assert len(logical_json) == 1
 
 
+def test_unregistered_anchor_kind_is_suppressed_fail_closed(tmp_path: Path, monkeypatch):
+    """A new anchor species cannot enter B1 through the sole ordinary anchor source."""
+    _seed_sources(tmp_path)
+    original_turn_watch = writer.turn_watch_observations
+
+    def foreign_kind_turn_watch(path, spine):
+        batch = original_turn_watch(path, spine)
+        observations = tuple(
+            {**observation, "anchor": {**observation["anchor"], "kind": "future_low"}}
+            for observation in batch.observations
+        )
+        return writer.IntakeBatch(observations, batch.suppressions, batch.source_receipts)
+
+    monkeypatch.setattr(writer, "turn_watch_observations", foreign_kind_turn_watch)
+    receipt = _run_nightly(tmp_path, monkeypatch)
+
+    suppressions = _suppression_rows(tmp_path)
+    assert receipt["counts"] == {
+        "input": 1,
+        "mapped": 0,
+        "suppressed": 1,
+        "ledger_suppressions": 1,
+        "old_events": 0,
+        "new_events": 0,
+        "appended_events": 0,
+    }
+    assert [row["reason"] for row in suppressions] == ["ANCHOR_KIND_NOT_REGISTERED"]
+    assert _event_rows(tmp_path) == []
+    projection = json.loads((_generation(tmp_path) / "all_candidates.json").read_text())
+    assert projection["coverage"] == {"active": 0, "episodes": 0, "suppressed_inputs": 1}
+
+
 def test_generation_payload_orders_subsecond_clocks_by_instant_without_rewriting_bytes():
     """The durable writer must share B1 instant order while preserving accepted timestamp text."""
     events = [

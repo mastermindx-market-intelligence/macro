@@ -1,0 +1,34 @@
+{
+  "document_kind": "MISSION_ROUTING_CONSTRAINT_NOT_NEW_RUNTIME_ENUM",
+  "operation": "prophet-us-fable-meta-ceo-20260923-001",
+  "accountable_owner": "Fable Meta-CEO",
+  "delegated_execution": "EXTERNAL_FABRIC_ONLY",
+  "built_in_subagents_allowed": false,
+  "internal_codex_fallback_allowed": false,
+  "nested_builtin_delegation_allowed": false,
+  "requires_astra": false,
+  "fable_default_implementer": false,
+  "fable_direct_exception": "Principal-only decision or hardest bounded residual after evidence-based specialist escalation; scoped custody and independent review remain required.",
+  "prohibited_native_child_examples": [
+    "Opus",
+    "Sonnet",
+    "Haiku",
+    "native internal Codex subagent",
+    "Agent Teams native child"
+  ],
+  "model_selection": "Current eligible external routes through existing Capacity/Model Router, not hardcoded provider slugs.",
+  "route_enforcement": "Verify actual native placement/admission or current owner-supported restriction before child effect. A prose label is not runtime enforcement.",
+  "runtime_parameters": "Use only discovered accepted schema. No invented fabric.* endpoint, socket, provider credential or unsupported request field.",
+  "capacity_fallback": "Another already-approved external route pre-effect; otherwise lane-local capacity hold and independent principal work, never internal child substitution.",
+  "no_new_control_planes": true,
+  "reserved_chairman_gates": [
+    "Physical or credential ceremony",
+    "Permission/legal commitment requiring its real owner",
+    "New spend outside approved envelope",
+    "Materially expanded or deleted product scope",
+    "New real-money sizing/leverage/trade authority"
+  ],
+  "prepared_only": true,
+  "workers_started": 0,
+  "receiver_acknowledged": false
+}
