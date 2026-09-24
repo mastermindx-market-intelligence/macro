@@ -514,6 +514,106 @@ def test_tsm_fx_assumption_is_the_rate_stated_in_the_forward_sentence_only() -> 
     assert item["fx_assumption"] is None and (item["low"], item["high"]) == (13.0, 13.5)
 
 
+USD_SENTENCE = "In U.S. dollars, second quarter revenue was US$12.34 billion, compared with US$8.00 billion a year ago."
+FORWARD_SENTENCE = ("Looking ahead to the third quarter of 2026, we expect revenue between "
+                    "US$13.0 billion and US$13.5 billion, assuming an exchange rate of 31.5 NTD per USD.")
+
+
+def test_tsm_horizon_is_never_read_across_a_sentence_end_after_an_abbreviation() -> None:
+    """'…in the fourth quarter of 2026 at TSMC Corp. We expect revenue between …' —
+    the abbreviation-aware window merges the two sentences (safe for markers) but
+    the horizon is read from the range's own strict sentence, which names none →
+    no item, never 2026Q4.  A forward sentence that names its own horizon still
+    emits even when the merge happens in front of it."""
+    for suffix in ("Corp.", "Inc.", "Ltd.", "Co.", "Limited."):
+        body = TSM_SYNTHETIC_EXHIBIT.replace(
+            FORWARD_SENTENCE,
+            f"Capacity expansion completes in the fourth quarter of 2026 at TSMC {suffix} "
+            "We expect revenue between US$13.0 billion and US$13.5 billion.")
+        assert _tsm_guidance(body) == [], suffix
+    own_horizon = TSM_SYNTHETIC_EXHIBIT.replace(
+        FORWARD_SENTENCE, "Capacity expansion completes at TSMC Corp. " + FORWARD_SENTENCE)
+    item = _tsm_guidance(own_horizon)[0]
+    assert (item["horizon"], item["fx_assumption"]) == ("2026Q3", "31.5 NTD per USD")
+
+
+def test_tsm_fx_assumption_is_never_read_across_a_sentence_end_after_an_abbreviation() -> None:
+    body = TSM_SYNTHETIC_EXHIBIT.replace(
+        FORWARD_SENTENCE,
+        "Our planning rate is set at TSMC Corp. assuming an exchange rate of 28.0 NTD per USD. "
+        "Looking ahead to the third quarter of 2026, we expect revenue between US$13.0 billion and US$13.5 billion.")
+    item = _tsm_guidance(body)[0]
+    assert item["fx_assumption"] is None and item["horizon"] == "2026Q3"
+
+
+def test_tsm_competing_fx_assumptions_in_the_forward_sentence_refuse_the_item() -> None:
+    two_rates = TSM_SYNTHETIC_EXHIBIT.replace(
+        "assuming an exchange rate of 31.5 NTD per USD.",
+        "assuming an exchange rate of 31.5 NTD per USD or assuming an exchange rate of 32.0 NTD per USD.")
+    assert _tsm_guidance(two_rates) == []
+    same_rate_twice = TSM_SYNTHETIC_EXHIBIT.replace(
+        "assuming an exchange rate of 31.5 NTD per USD.",
+        "assuming an exchange rate of 31.5 NTD per USD and again assuming an exchange rate of 31.5 NTD per USD.")
+    assert _tsm_guidance(same_rate_twice) == []          # repeated → no single literal receipt → refuse, never pick
+
+
+def test_guidance_without_a_reported_period_emits_nothing() -> None:
+    """Forwardness is relative to the reported period; a caller that does not
+    say which period was reported gets no item (the builder always passes it)."""
+    for profile, body, binder, doc in (
+        (tsm_profile(), TSM_SYNTHETIC_EXHIBIT, _bind_tsm, "doc:tsm-synthetic"),
+        (on_profile(), ON_SYNTHETIC_EXHIBIT, _bind_on, "doc:on-synthetic"),
+    ):
+        items = profile.extract_guidance(
+            bound=binder(body), release_document_id=doc, segments=[], document_id="doc:tx",
+            body_sha256="", event_id="evt_x")
+        assert items == []
+
+
+def test_tsm_hyphenated_comparative_markers_redirect_like_their_spaced_forms() -> None:
+    """'In the year-earlier quarter, revenue was US$8.00 billion.' is a comparative
+    whether the marker is hyphenated or spaced; alone in a block that names the
+    reported quarter it is a typed absence, never the reported quarter's fact."""
+    for lead in ("In the year-earlier quarter, ", "A year earlier, ", "In the prior-year quarter, ",
+                 "In the same period last year, ", "In the preceding quarter, ", "In the corresponding period, ",
+                 "In the year-ago period, "):
+        paired = TSM_SYNTHETIC_EXHIBIT.replace(
+            USD_SENTENCE,
+            f"In U.S. dollars, second quarter 2026 revenue was US$12.34 billion. {lead}revenue was US$8.00 billion.")
+        assert _tsm_facts(paired)["fact_revenue_usd"]["value"] == 12.34, lead
+        solo = TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, f"{lead}revenue was US$8.00 billion.")
+        usd = _tsm_facts(solo)["fact_revenue_usd"]
+        assert "typed_absence" in usd and usd["typed_absence"]["reason"] == "no_span_addressable_evidence", lead
+
+
+def test_tsm_figure_dated_to_another_quarter_is_never_the_reported_fact() -> None:
+    """A clause that names a quarter+year other than the reported one dates its
+    figure there even without a lexical comparative marker — in the figure's own
+    clause, in a figure-less leading clause, and when the dating sentence is
+    merged into the previous one across an abbreviation."""
+    for solo in ("In the second quarter of 2025, revenue was US$8.00 billion.",
+                 "Revenue for the second quarter of 2025 was US$8.00 billion.",
+                 "Revenue was US$8.00 billion in Q2 2025."):
+        usd = _tsm_facts(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, solo))["fact_revenue_usd"]
+        assert "typed_absence" in usd and usd["typed_absence"]["reason"] == "no_span_addressable_evidence", solo
+    both = TSM_SYNTHETIC_EXHIBIT.replace(
+        USD_SENTENCE,
+        "In U.S. dollars, second quarter 2026 revenue was US$12.34 billion, compared to US$8.00 billion in the second quarter of 2025.")
+    assert _tsm_facts(both)["fact_revenue_usd"]["value"] == 12.34
+    merged = TSM_SYNTHETIC_EXHIBIT.replace(
+        USD_SENTENCE,
+        "Revenue in the second quarter of 2026 rose 54% at TSMC Corp. Revenue was US$8.00 billion in the second quarter of 2025.")
+    usd = _tsm_facts(merged)["fact_revenue_usd"]
+    assert "typed_absence" in usd
+
+
+def test_tsm_parenthetical_and_dashed_comparatives_do_not_suppress_the_fact() -> None:
+    for form in ("In U.S. dollars, second quarter 2026 revenue (US$8.00 billion a year ago) reached US$12.34 billion.",
+                 "In U.S. dollars, second quarter 2026 revenue — up from US$8.00 billion a year ago — reached US$12.34 billion.",
+                 "In U.S. dollars, second quarter 2026 revenue - US$8.00 billion in the prior year - reached US$12.34 billion."):
+        assert _tsm_facts(TSM_SYNTHETIC_EXHIBIT.replace(USD_SENTENCE, form))["fact_revenue_usd"]["value"] == 12.34, form
+
+
 def test_a_horizon_not_after_the_reported_period_is_not_guidance() -> None:
     same_quarter = TSM_SYNTHETIC_EXHIBIT.replace("Looking ahead to the third quarter of 2026", "Looking ahead to the second quarter of 2026")
     assert _tsm_guidance(same_quarter) == []
