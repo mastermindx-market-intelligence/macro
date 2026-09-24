@@ -3,6 +3,7 @@
 Operation: `rates-direction-prospective-ledger-20260924-sol-004`.
 Parent: `WS:RATES-INFLATION-COMMAND`.
 Stacked dependency: Macro PR #7923 exact base `dbf8d03ed4f2a29ea349bb37a23b9048f18bc2db`.
+Source carrier: Draft/HOLD Macro PR #7940, initial implementation commit `6791be6e01bfc608217a8ff3972d09ec6c50e422`.
 
 ## Capability
 

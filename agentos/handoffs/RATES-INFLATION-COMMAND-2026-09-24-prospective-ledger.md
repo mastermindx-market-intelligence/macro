@@ -2,6 +2,7 @@
 workstream: WS:RATES-INFLATION-COMMAND
 session: claude/rates-direction-prospective-ledger-20260924-sol-004
 model: sol
+prs: [7940]
 ended_because: ci_handoff
 mission: >
   Preserve #7923 policy-path matched-contract/roll measurements prospectively
@@ -72,4 +73,5 @@ This bounded slice closes the prospective-retention implementation gap only.
 Parent rates-direction intelligence remains incomplete. No external worker or
 watcher was started, no production data was mutated, and no empirical model trial
 was run. The exact dependency base is #7923 at
-`dbf8d03ed4f2a29ea349bb37a23b9048f18bc2db`.
+`dbf8d03ed4f2a29ea349bb37a23b9048f18bc2db`. Source carrier is Draft/HOLD Macro
+PR #7940; first implementation commit `6791be6e01bfc608217a8ff3972d09ec6c50e422`.
