@@ -430,7 +430,7 @@ def test_risk_reading_same_value_other_driver_is_not_breadth_attribution():
 
 # Execute the actual published page and its existing dialog view-model, not a
 # hand-written copy of the card. All fixtures are synthetic, never live proof.
-def _render_china_risk_case(recession, action_en="", action_zh="", *, playbook=None, **extra):
+def _render_china_risk_case(recession, action_en="", action_zh="", *, playbook=None, latest_updates=None, **extra):
     from jinja2 import ChainableUndefined, Environment, FileSystemLoader
     from engine import china_tier1, i18n
     from scripts.build_china import _radar_dlg_vm
@@ -450,7 +450,8 @@ def _render_china_risk_case(recession, action_en="", action_zh="", *, playbook=N
                       autoescape=False, undefined=ChainableUndefined)
     env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t,
                        **{k: getattr(china_tier1, k, None) for k in
-                          ("posture_lane", "posture_tone", "reason_faces", "hero_clause", "slowdown_face")})
+                          ("posture_lane", "posture_tone", "reason_faces", "hero_clause", "slowdown_face", "connect_flow_face", "regime_watch_face")})
+    latest.update(latest_updates or {})
     ctx = _radar_dlg_vm({"market_state": market_state}, latest)
     return env.get_template("china.html.j2").render(
         mode="macro", latest=latest, market_state=market_state, sectors=[], radar_dlg=ctx, pb=playbook, **extra)
@@ -1019,3 +1020,95 @@ def test_event_clock_same_day_event_never_claims_release_is_pending():
     assert view['imminent']['date'] == '2026-09-21'
     assert 'today' not in view['imminent']['en'] and 'tomorrow' not in view['imminent']['en']
     assert 'Scheduled' in view['imminent']['en'] and '排期' in view['imminent']['zh']
+
+
+@pytest.mark.parametrize('value', [None, True, False, '123', float('nan'), float('inf'), -float('inf'), 10**400])
+def test_connect_context_invalid_flow_is_unknown_not_support(value):
+    from engine import china_tier1 as tier
+    face = tier.connect_flow_face({'net': value})
+    assert face['net'] is None and face['tone'] == 'muted'
+    assert face['en'] == 'Unavailable' and face['zh'] == '暂不可用'
+
+
+@pytest.mark.parametrize('value,en,zh,tone', [(123.4,'Net buying','净买入','up'),
+    (-123.4,'Net selling','净卖出','down'), (0,'Flat net flow','净流入为零','muted')])
+def test_connect_context_valid_signs_do_not_invent_entry_advice(value,en,zh,tone):
+    from engine import china_tier1 as tier
+    source = {'net':value,'cum_20d':value*20,'pos_days_20':10,'hold_mktcap':20000}
+    face = tier.connect_flow_face(source)
+    assert (face['en'],face['zh'],face['tone']) == (en,zh,tone)
+    assert face['net'] == value and face['cum_20d'] == value*20
+    assert source == {'net':value,'cum_20d':value*20,'pos_days_20':10,'hold_mktcap':20000}
+
+
+@pytest.mark.parametrize('source', [None, {}, {'pending_quad':'Q1','pending_days':0},
+    {'pending_quad':'Q1','pending_days':True}, {'pending_quad':'Q1','pending_days':-1},
+    {'pending_quad':'Q1','pending_days':'2'}, {'pending_quad':'Q5','pending_days':2},
+    {'quad':'Q4','pending_quad':'Q4','pending_days':2}])
+def test_regime_context_does_not_promote_invalid_transition(source):
+    from engine import china_tier1 as tier
+    assert tier.regime_watch_face(source) is None
+
+
+@pytest.mark.parametrize('code,en,zh', [('Q1','Goldilocks','金发姑娘'),('Q2','Reflation','再通胀'),
+    ('Q3','Stagflation','滞胀'),('Q4','Growth-scare','增长担忧')])
+def test_regime_context_watch_is_pending_not_an_accepted_regime(code,en,zh):
+    from engine import china_tier1 as tier
+    source={'quad':'Q2' if code!='Q2' else 'Q1','pending_quad':code,'pending_days':2}
+    face=tier.regime_watch_face(source)
+    assert face == {'en':en,'zh':zh,'days':2}
+    assert source['quad'] != code
+
+
+@pytest.mark.parametrize('value', [None, float('nan'), float('inf'), 'bad', False])
+def test_connect_context_real_page_survives_missing_values(value):
+    from bs4 import BeautifulSoup
+    html=_render_china_risk_case(None,internals={'southbound':{'net':value,'cum_20d':None,'pos_days_20':None}})
+    soup=BeautifulSoup(html,'html.parser')
+    rail=soup.select_one('[data-cn-driver-rail]')
+    assert rail and len(rail.select('a')) == 4
+    flow=rail.select_one('a[href="#cnx-dlg-flows"]')
+    assert 'Unavailable' in flow.get_text() and '暂不可用' in flow.get_text()
+    card=soup.select_one('.cnx-card[onclick="cnxOpenDlg(\'cnx-dlg-flows\')"]')
+    assert 'Unavailable' in card.get_text() and 'supporting Hong Kong' not in card.get_text()
+    assert 'None' not in card.get_text() and 'nan' not in card.get_text().lower()
+
+
+@pytest.mark.parametrize('value,label', [(123.4,'Net buying'),(-123.4,'Net selling'),(0,'Flat net flow')])
+def test_connect_context_real_page_has_scope_and_no_mismatched_units(value,label):
+    from bs4 import BeautifulSoup
+    html=_render_china_risk_case(None,internals={'southbound':{'net':value,'cum_20d':0,'pos_days_20':0}})
+    soup=BeautifulSoup(html,'html.parser'); rail=soup.select_one('[data-cn-driver-rail]')
+    assert rail and label in rail.get_text() and 'Hong Kong flows' in rail.get_text()
+    assert 'bn' not in rail.get_text() and '亿' not in rail.get_text()
+    assert 'Radar state' in rail.get_text() and 'mainland inflows' not in rail.get_text().lower()
+
+
+@pytest.mark.parametrize('days,visible', [(2,True),(0,False),(-1,False),(True,False),('2',False)])
+def test_regime_context_header_and_detail_agree_on_pending_transition(days,visible):
+    from bs4 import BeautifulSoup
+    html=_render_china_risk_case(None, latest_updates={'quad':'Q4','pending_quad':'Q2','pending_days':days})
+    soup=BeautifulSoup(html,'html.parser'); chip=soup.select_one('[data-cn-pending-regime]')
+    assert bool(chip) is visible
+    if visible:
+        assert 'Transition pending' in chip.get_text() and '再通胀' in chip.get_text()
+        assert 'Confirmation pending' in soup.get_text()
+    else:
+        assert 'No pending transition recorded' in soup.get_text()
+
+
+@pytest.mark.parametrize('field,value', [('cum_20d',None),('cum_20d',float('inf')),
+    ('pos_days_20',False),('pos_days_20',21),('pos_days_20',1.5),('hold_mktcap',-1)])
+def test_connect_context_invalid_detail_preserves_valid_net(field,value):
+    from engine import china_tier1 as tier
+    result=tier.connect_flow_face({'net':12,field:value})
+    assert result['net']==12 and result[field] is None
+
+
+def test_regime_context_links_preserve_all_original_deep_destinations():
+    from bs4 import BeautifulSoup
+    soup=BeautifulSoup(_render_china_risk_case(None),'html.parser')
+    links=soup.select('[data-cn-driver-rail] a')
+    assert {a['href'] for a in links}=={'#cnx-dlg-policy','#cnx-dlg-flows','#cnx-dlg-risk','#cnx-dlg-property'}
+    assert all(soup.select_one(a['href']) is not None for a in links)
+    assert soup.select_one('a[href="flow_velocity.html"]') is not None

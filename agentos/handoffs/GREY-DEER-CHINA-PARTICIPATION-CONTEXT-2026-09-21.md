@@ -224,3 +224,18 @@ Next: run imported recovery tests against old code to discriminate, incorporate 
 The active integration described above is complete locally at semantic head f83432597c0a2fc8fe0fc0c3835e4219fa4d4eb1:746 tests passed, actual builder preserved6592 values/eight input hashes, and8 actual dialog journeys plus24 synthetic recovery cases passed. Final page e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d.
 Current exact evidence and remaining limits are in research/grey_deer/CHINA_RECOVERY_INTEGRATION_20260924.md and mockups/evidence/china-recovery-safety-20260924/qualification.json. This supersedes only the preceding request to run the recovery tests/build; the original source-supply gates and deferred release remain open.
 The audit-dependence finding is returned to the original RRU owner at PR6989 comment5805701829. No actual policy or foreign source carrier changed. No worker/browser server remains running. Mission incomplete; next original-source action remains the NBS/weight acceptance work once those recorded gates permit it.
+
+## Active 2026-09-24 continuation — source-disjoint context integration
+Current Chairman continues accuracy work; CI/release deferred and review exception retained.
+Fresh compatible law: Mastermind@a7d2b3049e5cdc523e91e61a6e9d70a1cb911157.
+Original PR7622/worktree/operation remains; pickup1c2148ca4e88727d16eebb37c1dce96d0dd54dcd.
+Calendar/weight safety denials remain action-scoped holds, not retry permission. No retries made.
+Current main f8d9790b19a52dd54f8d065b535b3a29b0fe43f1 contains #7667 context navigation.
+Its nullable flow condition compares None>=0 and its same numeric value is labelled bn/亿.
+Independent unit: integrate the existing link-rail navigation and pending-regime context,
+with safe nullable directional flow context, explicit Hong Kong scope and no amount-unit guess.
+Do not imply context cards are inputs/votes in the macro regime or confirmed regime changes.
+Preserve original main provenance, all deep cards, saved values, clocks, recovery and held source files.
+Direct rationale: PRINCIPAL_JUDGMENT/CRITICAL_PATH_SHORTCUT at the incumbent interpretation seam.
+No full-main merge, CI, release, new worker or source-custody transfer. 28 prior dirty paths stay excluded.
+Next: discriminating pure/render tests, bounded existing-template integration, actual-page/browser proof.

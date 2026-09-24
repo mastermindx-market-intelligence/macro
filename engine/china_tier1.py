@@ -538,3 +538,46 @@ def plain_gross_band(gross: float | None) -> tuple[str, str]:
     if 0.45 <= g < 0.70:
         return ("half of normal", "约常规一半")
     return (f"×{g:.2f} of normal", f"常规的 {g:.2f} 倍")
+
+
+def _finite_context_number(value):
+    """Validate a producer number without accepting booleans or numeric strings."""
+    if isinstance(value, bool) or not isinstance(value, Real):
+        return None
+    try:
+        return value if isfinite(value) else None
+    except (ValueError, OverflowError, TypeError):
+        return None
+
+
+def connect_flow_face(record: Mapping | None) -> dict:
+    """Dated-source direction only; no currency conversion or recovery inference."""
+    record = record if isinstance(record, Mapping) else {}
+    out = {key: _finite_context_number(record.get(key))
+           for key in ('net', 'cum_20d', 'pos_days_20', 'hold_mktcap')}
+    count = out['pos_days_20']
+    if count is not None and (not 0 <= count <= 20 or count != int(count)):
+        out['pos_days_20'] = None
+    if out['hold_mktcap'] is not None and out['hold_mktcap'] < 0:
+        out['hold_mktcap'] = None
+    net = out['net']
+    en, zh, tone = ('Unavailable', '暂不可用', 'muted') if net is None else (
+        ('Net buying', '净买入', 'up') if net > 0 else
+        ('Net selling', '净卖出', 'down') if net < 0 else
+        ('Flat net flow', '净流入为零', 'muted'))
+    return dict(out, en=en, zh=zh, tone=tone)
+
+
+def regime_watch_face(latest: Mapping | None) -> dict | None:
+    """Describe only an explicit pending transition, never replace the regime."""
+    from numbers import Integral
+    record = latest if isinstance(latest, Mapping) else {}
+    pending, days = record.get('pending_quad'), record.get('pending_days')
+    labels = {'Q1': ('Goldilocks', '金发姑娘'), 'Q2': ('Reflation', '再通胀'),
+              'Q3': ('Stagflation', '滞胀'), 'Q4': ('Growth-scare', '增长担忧')}
+    if (not isinstance(pending, str) or pending not in labels
+            or pending == record.get('quad') or isinstance(days, bool)
+            or not isinstance(days, Integral) or days <= 0):
+        return None
+    en, zh = labels[pending]
+    return {'en': en, 'zh': zh, 'days': int(days)}

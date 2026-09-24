@@ -2187,11 +2187,12 @@ def main() -> int:
         env = Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)
         from engine import i18n
-        from engine.china_tier1 import hero_clause, posture_lane, posture_tone, reason_faces
+        from engine.china_tier1 import hero_clause, posture_lane, posture_tone, reason_faces, connect_flow_face, regime_watch_face
         env.globals.update(
             td=i18n.td, tr=i18n.tr, t=i18n.t, t_pctile=i18n.t_pctile,
             posture_lane=posture_lane, posture_tone=posture_tone,
             reason_faces=reason_faces, hero_clause=hero_clause,
+            connect_flow_face=connect_flow_face, regime_watch_face=regime_watch_face,
         )
         # One shared view-model feeds BOTH the China macro-regime page and the
         # A-share Stock Dashboard — the same china.html.j2 is rendered twice with

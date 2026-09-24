@@ -1808,6 +1808,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _rr = _risk_reading.get('radar') if _risk_basis else (ms.radar if ms else {}) %}
   {% set I = internals or {} %}
   {% set P = property %}
+  {% set _flow = connect_flow_face(I.southbound if I and I.southbound else none) if connect_flow_face is defined else {'net':none,'cum_20d':none,'pos_days_20':none,'hold_mktcap':none,'en':'Unavailable','zh':'暂不可用','tone':'muted'} %}
+  {% set _regime_watch = regime_watch_face(latest) if regime_watch_face is defined else none %}
   {% set pb_obj = pb %}
   {% set CN = china_news %}
   {# Selective synthesis from the retired Archetype-D experiment: preserve the
@@ -1829,6 +1831,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-hero-meta">
         <span class="cnx-regime-pill"><span class="dot"></span>
           {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span></span>
+        {% if _regime_watch %}<span class="cnx-regime-pill" data-cn-pending-regime>{{ t('Transition pending','周期转变待确认') }} → {{ t(_regime_watch.en, _regime_watch.zh) }}</span>{% endif %}
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
           <span id="ms-snapshot-kind"><span class="l-en">Saved assessment</span><span class="l-zh">已保存评估</span></span>
           <span id="ms-date" data-assessment-asof="{{ latest.date }}" style="margin-left:4px"><span class="l-en">As of </span><span class="l-zh">截至 </span><time datetime="{{ latest.date }}">{{ latest.date }}</time></span>
@@ -2156,6 +2159,19 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   {{ cbx.participation_panel(breadth_context | default(none), td) }}
 
+  {# Adapted from main #7667,9e9da53a671f: existing link-rail and dialog owners.
+     Separate context is not a four-input model explanation. Flow magnitude/currency
+     is not projected until its source units are qualified; the sign is scale invariant. #}
+  {% set _policy = {'easing':['Easing','宽松'],'neutral':['Neutral','中性'],'tightening':['Tightening','收紧']}.get(I.pboc.bias, ['Unavailable','暂不可用']) if I and I.pboc and I.pboc.bias is string else ['Unavailable','暂不可用'] %}
+  {% set _risk_context = {'calm':['Calm','平稳'],'watch':['Watch','观察'],'caution':['Caution','谨慎'],'elevated':['Elevated','偏高'],'risk-off':['Risk-off','避险']}.get(latest.risk_radar.state, ['Unavailable','暂不可用']) if latest.risk_radar and latest.risk_radar.state is string else ['Unavailable','暂不可用'] %}
+  <div class="cnx-lbl">{{ t('Read the backdrop','查看市场背景') }}</div>
+  <div class="cnx-links" data-cn-driver-rail>
+    <a href="#cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy');return false;">{{ t('Policy stance','政策立场') }} · {{ t(_policy[0], _policy[1]) }}</a>
+    <a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Hong Kong flows','港股资金') }} · {{ t(_flow.en, _flow.zh) }}</a>
+    <a href="#cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk');return false;">{{ t('Radar state','雷达状态') }} · {{ t(_risk_context[0], _risk_context[1]) }}</a>
+    <a href="#cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property');return false;">{{ t('Property','房地产') }} · {% if P and P.regime and P.regime.label_en is string and P.regime.label_zh is string and P.regime.label_en and P.regime.label_zh %}{{ t(P.regime.label_en, P.regime.label_zh) }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
+  </div>
+
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
   <div class="cnx-rack2">
     {# What To Do card — keep the deep-card interaction, but use the retired
@@ -2388,15 +2404,16 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {# Connect Flows card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-flows')">
       <div class="cnx-ctitle">{{ t('Connect Flows','互联通资金') }}</div>
-      {% if I.southbound %}
-      <div class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</div>
-      <div class="cnx-bigsub" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ t('Southbound buying' if I.southbound.net >= 0 else 'Southbound selling', '南向买入' if I.southbound.net >= 0 else '南向卖出') }}</div>
-      <div class="cnx-kv"><span class="k">{{ t('Streak','连续') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20 {{ t('days','天') }}</span></div>
+      {% if _flow.net is not none %}
+      <div class="cnx-bignum" style="color:{{ "var(--" ~ _flow.tone ~ ")" }}">{{ '+¥' if _flow.net > 0 else ('−¥' if _flow.net < 0 else '¥') }}{{ '{:,.0f}'.format((_flow.net | abs) / 100) }}亿</div>
+      <div class="cnx-bigsub" style="color:{{ "var(--" ~ _flow.tone ~ ")" }}">{{ t(_flow.en, _flow.zh) }}</div>
+      {% if _flow.pos_days_20 is not none %}<div class="cnx-kv"><span class="k">{{ t('Net-buying days','净买入天数') }}</span><span class="v">{{ _flow.pos_days_20 }}/20</span></div>{% endif %}
+      {% else %}<div class="mx-empty">{{ t('Unavailable','暂不可用') }}</div>
       {% endif %}
       {% if leaderboard and leaderboard.southbound_buy %}
       <div class="cnx-kv"><span class="k">{{ t('Top buys','主要买入') }}</span><span class="v">{{ leaderboard.southbound_buy[:3] | map(attribute='name_zh') | select | list | join(' · ') or '—' }}</span></div>
       {% endif %}
-      <div class="cnx-foot">{{ t('Mainland money supporting Hong Kong.','内地资金持续支撑香港。') }}</div>
+      <div class="cnx-foot">{{ t('Southbound trading concerns Hong Kong shares, not inflows into mainland A-shares.','南向交易涉及港股，不代表资金流入内地A股。') }}</div>
     </div>
 
     {# What Changed: preserve the Macro News dialog, but orient the glance card
@@ -2505,11 +2522,13 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </div>
 
   <!-- =============== FOOTER: Links pill row + Data health strip =============== -->
+  <div class="cnx-lbl">{{ t('Go deeper','深入研究') }}</div>
   <div class="cnx-links">
     <a href="china_stocks.html">{{ t('A-Share Stocks','A股个股') }}</a>
     <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
     <a href="china_intel.html">{{ t('China Intel','中国情报') }}</a>
     <a href="china_policy_watch.html">{{ t('Policy & Credit','政策与信贷') }}</a>
+    <a href="flow_velocity.html">{{ t('Flow Velocity','资金流速') }}</a>
     <a href="china_allocation.html">{{ t('Allocation','仓位策略') }}</a>
     <a href="china_history.html">{{ t('Regime History','周期历史') }}</a>
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
@@ -2579,9 +2598,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           <div>
             <div class="cnx-kv"><span class="k">{{ t('Regime','周期') }}</span><span class="v">{{ td(latest.quad_name) }}</span></div>
             <div class="cnx-kv"><span class="k">{{ t('Regime watch','周期预警') }}</span><span class="v">
-              {% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}
-              {{ t('BUILDING','累积中') }} → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}
-              {% else %}{{ t('Stable','稳定') }}{% endif %}</span></div>
+              {% if _regime_watch %}
+              {{ t('Confirmation pending','待确认') }} → {{ t(_regime_watch.en, _regime_watch.zh) }}
+              {% else %}{{ t('No pending transition recorded','未记录待确认的周期转变') }}{% endif %}</span></div>
             <div class="cnx-kv"><span class="k">{{ t('Signal agreement','信号一致度') }}</span><span class="v">{{ (latest.confidence*100)|round|int }}%</span></div>
             <div class="cnx-kv"><span class="k">{{ t('Cycle backdrop','商业周期') }}</span><span class="v">{{ td(latest.cycle_tag) }}</span></div>
           </div>
@@ -2905,13 +2924,13 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-cols2">
           <div>
             <div class="cnx-eyebrow">{{ t('Southbound flow · mainland → Hong Kong','南向资金 · 内地 → 香港') }}</div>
-            {% if I.southbound %}
+            {% if _flow.net is not none %}
             <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 8px">
-              <span class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</span>
+              <span class="cnx-bignum" style="color:{{ "var(--" ~ _flow.tone ~ ")" }}">{{ '+¥' if _flow.net > 0 else ('−¥' if _flow.net < 0 else '¥') }}{{ '{:,.0f}'.format((_flow.net | abs) / 100) }}亿</span>
             </div>
-            <div class="cnx-kv"><span class="k">{{ t('20-day cumulative','20日累计') }}</span><span class="v {{ 'cnx-tt-up' if I.southbound.cum_20d >= 0 else 'cnx-tt-dn' }}">{{ '+¥' if I.southbound.cum_20d >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.cum_20d | abs) / 100) }}亿</span></div>
-            <div class="cnx-kv"><span class="k">{{ t('Buy-day streak','净买入天数') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20</span></div>
-            {% if I.southbound.hold_mktcap is defined %}<div class="cnx-kv"><span class="k">{{ t('Total HK holdings','港股持仓市值') }}</span><span class="v">¥{{ (I.southbound.hold_mktcap/10000)|round(1) }}{{ t('T','万亿') }}</span></div>{% endif %}
+            {% if _flow.cum_20d is not none %}<div class="cnx-kv"><span class="k">{{ t('20-day cumulative','20日累计') }}</span><span class="v {{ 'cnx-tt-up' if _flow.cum_20d >= 0 else 'cnx-tt-dn' }}">{{ '+¥' if _flow.cum_20d >= 0 else '−¥' }}{{ '{:,.0f}'.format((_flow.cum_20d | abs) / 100) }}亿</span></div>{% endif %}
+            {% if _flow.pos_days_20 is not none %}<div class="cnx-kv"><span class="k">{{ t('Net-buying days','净买入天数') }}</span><span class="v">{{ _flow.pos_days_20 }}/20</span></div>{% endif %}
+            {% if _flow.hold_mktcap is not none %}<div class="cnx-kv"><span class="k">{{ t('Total HK holdings','港股持仓市值') }}</span><span class="v">¥{{ (_flow.hold_mktcap/10000)|round(1) }}{{ t('T','万亿') }}</span></div>{% endif %}
             {% if I.southbound.chart_html %}<div class="chart">{{ I.southbound.chart_html | safe }}</div>{% endif %}
             {% endif %}
           </div>
