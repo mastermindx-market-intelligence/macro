@@ -519,6 +519,31 @@ def test_every_qualified_capture_disclaims_snapshot_proof():
         assert result["capture"]["atomic_snapshot_proven"] is False
 
 
+def test_generationless_sweep_is_unqualified_at_the_public_seam(tmp_path):
+    from collectors.fda_shortages import (
+        read_shortage_observation, save_shortage_observation,
+    )
+
+    path = tmp_path / "shortages.parquet"
+    result = _sweep(None, [_record()])
+
+    assert result["qualified"] is False
+    assert result["failure_code"] == "NO_SOURCE_GENERATION"
+    assert result["capture"]["source_generation"] is None
+
+    outcome = save_shortage_observation(
+        result, path=path, expected_predecessor=None,
+    )
+
+    assert outcome["promoted"] is False
+    assert outcome["reason"] == "NO_SOURCE_GENERATION"
+    assert not path.exists()
+    state = read_shortage_observation(path=path)
+    assert state["capture"] is None
+    assert state["rows"] is None
+    assert state["history_coverage"] == {}
+
+
 def test_first_generationless_capture_never_promotes_or_stamps_absence(tmp_path):
     from collectors.fda_shortages import (
         read_shortage_observation, save_shortage_observation,
@@ -526,6 +551,7 @@ def test_first_generationless_capture_never_promotes_or_stamps_absence(tmp_path)
 
     path = tmp_path / "shortages.parquet"
     result = _sweep(None, [_record(), _record(ndc="TEST-B", name="Synthetic B")])
+    result = {**result, "qualified": True}
 
     outcome = save_shortage_observation(
         result, path=path, expected_predecessor=None,
