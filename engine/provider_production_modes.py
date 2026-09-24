@@ -1312,6 +1312,12 @@ def run_minimax_canary(
 
     if armed_mode != CANARY_MODE_ID:
         raise ProductionCanaryRefusal("CANARY_NOT_ARMED")
+    try:
+        priced_probe = ai_costs.estimate_cost_usd(MINIMAX_PINNED_MODEL, 1, 1)
+    except Exception as exc:  # noqa: BLE001 — pricing is a pre-call admission gate
+        raise ProductionCanaryRefusal("CANARY_PRICING_UNAVAILABLE") from exc
+    if not isinstance(priced_probe, (int, float)) or isinstance(priced_probe, bool):
+        raise ProductionCanaryRefusal("CANARY_PRICING_UNAVAILABLE")
     source = Path(source_path) if source_path is not None else Path(DEFAULT_PATH)
     candidate, source_sha = _canary_source_candidate(source)
     with tempfile.TemporaryDirectory(prefix="mmx-provider-canary-") as tmp:
