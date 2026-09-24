@@ -1,0 +1,228 @@
+{
+  "operation": "china-participation-context-20260921-sol-001",
+  "procedure": "1a7d400294b0d37c460b963b8865b40a23173b58",
+  "pickup": "a23644a91453e84488acbd1d37d8e29aa51564a4",
+  "change": "18 literal dependency paths in existing conviction-profile job",
+  "before": {
+    "parent_head": "a23644a91453e84488acbd1d37d8e29aa51564a4",
+    "main_reference": "bbd02daf6ae9cc00e6c1c50f7559f4d8e873f3ac",
+    "main_manifest_blob": "5f7db2acfd80a7e7f8694cce61f0d427dba59fc8",
+    "parent_selection_before": {
+      "collectors/china_universe.py": false,
+      "engine/china_participation.py": false,
+      "engine/live_overlay.py": false,
+      "engine/live_quotes.py": false,
+      "engine/market_drivers.py": false,
+      "engine/shock_deescalation.py": false,
+      "research/grey_deer/china_render_projection_check.py": false,
+      "scripts/build_risk_state.py": false,
+      "scripts/render_china_fast.py": false,
+      "site/china_risk_state_live.js": false,
+      "site/risk_envelope_live.js": false,
+      "site/risk_state_live.js": false,
+      "templates/_risk_radar_dlg.css.j2": false,
+      "templates/china_risk_state_live.js": false,
+      "templates/risk_envelope_live.js": false,
+      "templates/risk_state_live.js": false,
+      "tests/test_risk_radar_dlg_partial.py": false,
+      "tests/test_risk_state_live_session_floor.py": false
+    },
+    "main_explicit_paths_present": {
+      "collectors/china_universe.py": false,
+      "engine/china_participation.py": false,
+      "engine/live_overlay.py": false,
+      "engine/live_quotes.py": false,
+      "engine/market_drivers.py": false,
+      "engine/shock_deescalation.py": false,
+      "research/grey_deer/china_render_projection_check.py": false,
+      "scripts/build_risk_state.py": false,
+      "scripts/render_china_fast.py": false,
+      "site/china_risk_state_live.js": false,
+      "site/risk_envelope_live.js": false,
+      "site/risk_state_live.js": false,
+      "templates/_risk_radar_dlg.css.j2": false,
+      "templates/china_risk_state_live.js": false,
+      "templates/risk_envelope_live.js": false,
+      "templates/risk_state_live.js": false,
+      "tests/test_risk_radar_dlg_partial.py": false,
+      "tests/test_risk_state_live_session_floor.py": false
+    },
+    "scope": "targeted path presence and existing selector, not a full main compatibility proof",
+    "hosted_ci": false
+  },
+  "selection_after": {
+    "scope": "canonical selector with all 218 declared jobs; not hosted execution",
+    "cases": [
+      {
+        "changed_path": "collectors/china_universe.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 186
+      },
+      {
+        "changed_path": "engine/china_participation.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 182
+      },
+      {
+        "changed_path": "engine/live_overlay.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 184
+      },
+      {
+        "changed_path": "engine/live_quotes.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 187
+      },
+      {
+        "changed_path": "engine/market_drivers.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 182
+      },
+      {
+        "changed_path": "engine/shock_deescalation.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 182
+      },
+      {
+        "changed_path": "research/grey_deer/china_render_projection_check.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 177
+      },
+      {
+        "changed_path": "scripts/build_risk_state.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "scripts/render_china_fast.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "site/china_risk_state_live.js",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "site/risk_envelope_live.js",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 179
+      },
+      {
+        "changed_path": "site/risk_state_live.js",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "templates/_risk_radar_dlg.css.j2",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "templates/china_risk_state_live.js",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "templates/risk_envelope_live.js",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 179
+      },
+      {
+        "changed_path": "templates/risk_state_live.js",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "tests/test_risk_radar_dlg_partial.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      },
+      {
+        "changed_path": "tests/test_risk_state_live_session_floor.py",
+        "intended_job_selected": true,
+        "selection_origin": "declared",
+        "total_selected_jobs": 178
+      }
+    ],
+    "negative_controls": [
+      "engine/unrelated_cn_scope_probe.py",
+      "templates/unrelated_cn_scope_probe.html.j2",
+      "site/unrelated_cn_scope_probe.js"
+    ],
+    "manifest_sha256": "023a0cd9db28fcbf26fe71679fa6b2b07fc82c8320eb6aa8464f3a710587fe6a"
+  },
+  "p2_existing_selection": [
+    {
+      "job": "engine-render-guards",
+      "path": "engine/risk_radar_intl_evidence.py",
+      "selected": true,
+      "match": null,
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (1 unscoped always-on, 0 scoped matches); 1 unowned path(s) did not widen (engine/risk_radar_intl_evidence.py)"
+    },
+    {
+      "job": "engine-render-guards",
+      "path": "tests/test_risk_radar_intl_audit_evidence.py",
+      "selected": true,
+      "match": null,
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (1 unscoped always-on, 0 scoped matches); 1 unowned path(s) did not widen (tests/test_risk_radar_intl_audit_evidence.py)"
+    },
+    {
+      "job": "engine-render-guards",
+      "path": "tests/fixtures/risk_radar_intl_p2_20260924.json",
+      "selected": true,
+      "match": null,
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (1 unscoped always-on, 0 scoped matches); 1 unowned path(s) did not widen (tests/fixtures/risk_radar_intl_p2_20260924.json)"
+    }
+  ],
+  "red": {
+    "generic_guard": "1 failed, 16 old-temporary-directory cleanup warnings",
+    "new_cases": "18 failed, 3 passed, 16 old-temporary-directory cleanup warnings"
+  },
+  "final_guard": {
+    "passed": 26,
+    "failed": 0,
+    "warnings": 0,
+    "pid": 45124,
+    "exit_code": 0,
+    "whole_manifest_closure": "no uncovered paths",
+    "new_cases": 21,
+    "registered_suite": "tests/test_ci_pack.py",
+    "command": "python -m pytest tests/test_ci_pack.py -k 'china_repair or scope_glob_separator_semantics or selection_fails_safe_toward_running_everything or every_declared_scope_in_the_real_manifest_is_covered or the_curated_exclusive_set_is_actually_declared or curated_exclusive_scopes_cover_their_own_import_closure' -q --tb=short --basetemp=<owned evidence>/pytest-check-selection-green"
+  },
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "023a0cd9db28fcbf26fe71679fa6b2b07fc82c8320eb6aa8464f3a710587fe6a",
+    "tests/test_ci_pack.py": "90c878894921edebaadd1f1a6337925d9627a82418805fa5c7caccb9653d2db0"
+  },
+  "log_sha256": {
+    "check-selection-red.log": "947a93ebd9d9ee41e86b4c80a0b31cb5c8ee94d3afca19fde02c9b8acff8449e",
+    "check-selection-cases-red.log": "144d7af32555ab1f54b69416957348f682704161a00078501bf2541f0d8e1cc1",
+    "check-selection-green.log": "50e72937793338c690d9cbbfbba1603090ae71a83956d551d62d13c387755f64"
+  },
+  "page_sha256": "e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d",
+  "hosted_ci": false,
+  "deployed": false,
+  "workflow_dispatched": false,
+  "product_source_changed": false,
+  "original_action_holds_retained": true,
+  "p0_return": "No new source/repair; head cd0bcb0f257fc92e7f42b1fb8c90c7307475d0b6",
+  "new_weighted_diagnostic": "safety-status refused before dispatch; no result/no retry",
+  "unchanged_job_definitions_except_paths": 218
+}

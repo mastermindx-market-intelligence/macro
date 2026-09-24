@@ -4722,3 +4722,48 @@ def test_no_hash_token_inside_folded_run_scalar_in_legacy_jobs_manifest() -> Non
             for _indent, ln, _body, bl in offenders
         )
     )
+
+
+_CN_REPAIR_SCOPE_DEPENDENCIES = (
+    "collectors/china_universe.py",
+    "engine/china_participation.py",
+    "engine/live_overlay.py",
+    "engine/live_quotes.py",
+    "engine/market_drivers.py",
+    "engine/shock_deescalation.py",
+    "research/grey_deer/china_render_projection_check.py",
+    "scripts/build_risk_state.py",
+    "scripts/render_china_fast.py",
+    "site/china_risk_state_live.js",
+    "site/risk_envelope_live.js",
+    "site/risk_state_live.js",
+    "templates/_risk_radar_dlg.css.j2",
+    "templates/china_risk_state_live.js",
+    "templates/risk_envelope_live.js",
+    "templates/risk_state_live.js",
+    "tests/test_risk_radar_dlg_partial.py",
+    "tests/test_risk_state_live_session_floor.py",
+)
+
+
+@pytest.mark.parametrize("dependency", _CN_REPAIR_SCOPE_DEPENDENCIES)
+def test_china_repair_closure_selects_existing_conviction_job(dependency: str) -> None:
+    """Each real imported dependency must select the job without fallback smearing."""
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST) if j.job_id == "conviction-profile")
+    assert job.exclusive
+    selected, reason = PACK.select_jobs([job], [dependency])
+    assert [j.job_id for j in selected] == [job.job_id], (dependency, reason)
+    match = PACK._job_diff_match(job, [dependency])
+    assert match and match[1] == "declared", (dependency, match)
+
+
+@pytest.mark.parametrize("unrelated", [
+    "engine/unrelated_cn_scope_probe.py",
+    "templates/unrelated_cn_scope_probe.html.j2",
+    "site/unrelated_cn_scope_probe.js",
+])
+def test_china_repair_scope_does_not_select_unrelated_paths(unrelated: str) -> None:
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST) if j.job_id == "conviction-profile")
+    selected, reason = PACK.select_jobs([job], [unrelated])
+    assert not selected, (unrelated, reason)
+    assert PACK._job_diff_match(job, [unrelated]) is None

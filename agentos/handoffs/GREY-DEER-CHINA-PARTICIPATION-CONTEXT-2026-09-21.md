@@ -206,3 +206,17 @@ Next:consume P0's actual sizing-language correction when returned,then qualify t
 page only after its original browser/publication gates permit. Keep separate source-supply
 and render-write recovery obligations; current-main/CI/live acceptance are deferred,not waived.
 Resume from this checkpoint plus minimum fresh canonical state; preserve original source custody.
+
+## Active test-selection integration repair
+Chairman continuation; procedure Mastermind@1a7d400294b0d37c460b963b8865b40a23173b58.
+Original PR7622/locked Studio source a23644a91453e84488acbd1d37d8e29aa51564a4 retained.
+P0 remains cd0bcb0 with no returned sizing repair. No duplicate P0 writer or request.
+Named existing gap: conviction-profile exclusive scope omits 18 known transitive
+paths used by its China-rendering tests. Scope is one manifest block, not scheduler,
+CI-runtime or strategy changes. Direct LOWER_TOTAL_OVERHEAD; no worker has started.
+Next: reproduce the existing ownership guard failure, add only exact uncovered
+paths, verify original checker and path selection. Hosted CI/release stays deferred.
+A new weighted-window diagnostic command was safety-status refused before dispatch;
+no diagnostic result or product effect is claimed and that action is not retried.
+Prior source/browser/risk-write and optional notification holds remain unchanged.
+No source EFFECT_UNKNOWN. Existing 24 generated outputs/4 images remain excluded.
