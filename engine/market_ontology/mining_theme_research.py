@@ -459,28 +459,34 @@ def compose_mining_research(
 
     # Build the closed native-blocks list. Unknown data is None, never zero; signed
     # values travel with their sign (MGD-15). Order is by stable source identity.
+    # The block's stable_subject_id is bound to the bundle's identity_results
+    # (issuer axis) — never the literal "subject:unknown" fallback that hid
+    # MAJOR-9's degenerate ordering. A packet carrying its own non-empty
+    # stable_subject_id keeps it; otherwise we use the identity sid.
+    identity_sid = "subject:unknown"
+    for ident in bundle.identity_results:
+        cand = str(ident.get("stable_subject_id") or ident.get("cik") or "")
+        if cand:
+            identity_sid = cand
+            break
     raw_blocks: list[dict[str, Any]] = []
     if not _suppress_native_blocks:
         for packet in bundle.financial_packets:
-            if "stable_subject_id" not in packet:
-                packet = {
-                    "stable_subject_id": "subject:unknown",
-                    "measure": str(packet.get("measure", "unknown")),
-                    "value": _signed_value(packet),
-                    "sign": "+" if (_signed_value(packet) or 0) >= 0 else "-",
-                    "basis": str(packet.get("basis", "unspecified")),
-                    "source_label": str(packet.get("source_label", packet.get("selection_label", "source"))),
-                }
-            else:
-                packet = {
-                    "stable_subject_id": str(packet["stable_subject_id"]),
+            packet_sid = str(packet.get("stable_subject_id") or "")
+            if not packet_sid or packet_sid == "subject:unknown":
+                packet_sid = identity_sid
+            raw_blocks.append(
+                {
+                    "stable_subject_id": packet_sid,
                     "measure": str(packet.get("measure", "")),
                     "value": _signed_value(packet),
                     "sign": "+" if (_signed_value(packet) or 0) >= 0 else "-",
-                    "basis": str(packet.get("basis", "")),
-                    "source_label": str(packet.get("source_label", packet.get("selection_label", ""))),
+                    "basis": str(packet.get("basis", "") or "fictional reported dollars"),
+                    "source_label": str(
+                        packet.get("source_label", packet.get("selection_label", "") or "synthetic-source")
+                    ),
                 }
-            raw_blocks.append(packet)
+            )
     native_blocks = _order_rows_by_stable_source_identity(raw_blocks)
 
     # Native subjects come from identity_results (a stable_subject_id axis) and never

@@ -177,6 +177,42 @@ def test_economics_rows_ordered_by_stable_source_identity_not_magnitude():
     ]
 
 
+def test_economics_rows_ordered_through_compose_mining_research():
+    """MAJOR-9: ordering by stable source identity is enforced end-to-end, not only in the helper.
+
+    The probe froze the test above (private helper). This is the composed-channel assertion:
+    a bundle carrying two financial_packets with distinct stable_subject_ids is run through
+    ``compose_mining_research`` and the produced native_blocks list is asserted to come out
+    ordered by stable_subject_id, never by magnitude. Each packet keeps its own
+    stable_subject_id (no 'subject:unknown' fallback).
+    """
+    case = synthetic_case("copper_complete")
+    from dataclasses import replace as _replace
+
+    custom_packets = (
+        {
+            "stable_subject_id": "subject:z-block",
+            "measure": "test_measure_z",
+            "value": 999,
+            "basis": "fictional reported dollars",
+            "selection_label": "z-block-source",
+        },
+        {
+            "stable_subject_id": "subject:a-block",
+            "measure": "test_measure_a",
+            "value": 1,
+            "basis": "fictional reported dollars",
+            "selection_label": "a-block-source",
+        },
+    )
+    custom_bundle = _replace(case.bundle, financial_packets=custom_packets)
+    result = composition.compose_mining_research(case.query, custom_bundle)
+    ids = [b["stable_subject_id"] for b in result["economics"]["native_blocks"]]
+    assert ids == ["subject:a-block", "subject:z-block"], ids
+    # And no block has collapsed to the 'subject:unknown' fallback.
+    assert all(i != "subject:unknown" for i in ids)
+
+
 # ---------------------------------------------------------------------------
 # duplicate local asset labels and internal transfer / elimination sign
 # ---------------------------------------------------------------------------
