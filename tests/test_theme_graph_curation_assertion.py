@@ -118,7 +118,11 @@ def _stamped(payload: dict) -> dict:
 def _robotics_reference_payload() -> dict:
     """The frozen Robotics smallest-valid assertion (Robotics plan Task 1
     Step 1, `valid_assertion()`), verbatim. The ONE shared contract must
-    represent its own owner's reference payload — nulls included."""
+    represent its own owner's reference payload — nulls included.
+
+    The publisher/URL are the Robotics owner's own public example (a vendor
+    case-study page, not a semiconductor issuer and not paid data); they are
+    kept byte-for-byte so this test pins the reference, not a paraphrase."""
     return {
         "schema": "theme_graph.curation_assertion.v1",
         "curation_revision": None,

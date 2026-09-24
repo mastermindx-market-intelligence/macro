@@ -19,7 +19,9 @@ named codes for the semantic rules (``authority_not_all_false``,
 ``predicate_mode_pairing_invalid``, ``published_at_grain_mismatch``,
 ``duplicate_local_selector``, ``relation_endpoint_missing``,
 ``containment_cycle``, ``purchase_boundary_double_count``,
-``unstamped_not_allowed``, ``curation_revision_mismatch``).
+``unstamped_not_allowed``, ``curation_revision_mismatch``), plus the shape
+codes ``not_a_mapping`` (payload is not an object), ``not_a_string`` and
+``malformed_json`` (an encoded cell that is not JSON text).
 ``published_at_grain_mismatch`` is the one rule beyond the frozen Robotics
 list (a grain/date consistency strengthening; the Robotics pinned
 unknown+null case passes it) — recorded in the contracts README.

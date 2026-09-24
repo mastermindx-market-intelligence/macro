@@ -51,6 +51,7 @@ def test_fixture_roster_is_pinned_to_exactly_twenty_eight_named_cases():
     # no stray non-JSON files ride along in the corpus directory
     assert sorted(p.name for p in FIXTURE_ROOT.iterdir() if p.is_file()) == \
         sorted(p.name for p in _all_fixture_paths())
+    assert not any(p.is_dir() for p in FIXTURE_ROOT.iterdir()), 'no subdirectories in the corpus root'
 
 
 def test_two_positive_witnesses_have_three_distinct_economic_roles():
@@ -115,7 +116,9 @@ def test_fixture_corpus_contains_no_real_issuer_identity():
     blob = '\n'.join(blob_parts)
     # every URL present must be the reserved, non-resolvable host — checked
     # BEFORE the blanket http(s) refusal so the refusal stays blanket for all else
-    for url in re.findall(r'https?://[^"\s]*', blob):
+    # a backslash (JSON escape) ends a match, so a second URL cannot hide behind
+    # the first inside one string; the token scan below is the backstop anyway
+    for url in re.findall(r'https?://[^"\s\\]*', blob):
         assert url.startswith(ALLOWED_FIXTURE_URL_PREFIX), (
             f'fixture corpus names a URL outside {ALLOWED_FIXTURE_URL_PREFIX!r}: {url!r}'
         )
