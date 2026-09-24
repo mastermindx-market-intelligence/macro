@@ -121,13 +121,61 @@ production verification distinguished them. It is reported rather than quietly f
 No V2 LTH, V3 LULU or V4 theme journey. R15 forbids self-authorizing them on a V1 pass, and the next
 modifying child takes its own continuation edge.
 
-## 8. Operational note for the next wave
+## 8. Operational note for the next wave — **corrected**
 
-Delegation to the external fabric was only partly available from this host. `pool run qwen` refused
-with `LOCAL_SEAT_REMOTE_REQUIRED host=m2 … local_only=grok,ocfree`; `grok` was then refused with
-`host_load_at_or_above_limit` at load1 22.8/24; `minimax` died at launch on
-`unrecognized_model MiniMax-M3`. `pool remote` exposes only `cursor|glm|glm-codex|minimax|minimax-codex`
-modes — bailian has none — and a remote host would need its own checkout of the carrier branch. Two
-lanes did deliver real work before that (the contract schema is theirs); the repair fell to the
-principal directly under the continuation law. **Fixing this provisioning gap would materially cut
-principal token burn on the next wave.**
+An earlier revision of this section told you the external fabric was largely unavailable from this host
+and asked you to close a provisioning gap. **That was substantially wrong, and the error was mine, not
+the fabric's.** Correcting it here because you would otherwise have spent the Agent Fabric program's
+time on a non-problem.
+
+What I originally reported, and what is actually true:
+
+| I reported | Actually |
+|---|---|
+| `pool run qwen` refused -> delegation unavailable | The refusal text was `LOCAL_SEAT_REMOTE_REQUIRED host=m2 … local_only=grok,ocfree`. That is an **instruction to use the remote path**, not a refusal. I read it as a dead end. |
+| `pool run grok` refused on host load -> no capacity | True, and irrelevant: `m2` is the **seat**, it is `roles=FAIL(seat)` for lanes by design, and it was at load 31.1/24. Remote hosts were idle. |
+| `pool remote` exposes no bailian mode, so there is no remote path | The mode list was right, but I obtained it from an **argparse usage string**. `pool hosts` takes a **positional** mode (`pool hosts minimax`); I invoked `pool hosts --mode minimax`, which errors before printing anything. **I never once saw a host-eligibility table** and concluded from its absence. |
+
+Measured now, from this same seat:
+
+- **Capacity was never the constraint.** `pool plan --class execute --need 2` -> `grant_now=2`,
+  `wait_est=0s` on *every* pool (bailian, minimax, grok, cursor, glm, go).
+- **Two hosts were ELIGIBLE**: `mini2` (score 0.9479, load 1.25, lane-ceiling 0/2) and `mb`
+  (score 0.4942). Both reachable over `BatchMode` ssh.
+- **Both already carry a macro checkout** at `~/lanes/repos/macro`, with the established lane-worktree
+  convention at `~/lanes/wt/<name>`.
+- I then tried to place a real GLM review lane on this PR's own head, and got **partway**: a worktree
+  was minted on `mb` at `c4bc7a4ce1` (`~/lanes/wt/cc-v1-review`) and `pool remote mb glm …` returned
+  **`LEASE_OK pool=glm`** — the lease and placement layers work. It then failed at transport:
+  `SUPPORT_STALE_ACTIVE_REFUSED active=2` / `SCP_FAILED rc=75`.
+
+**So delegation IS currently blocked — but for none of the reasons I first gave, and the real ones are
+narrow and fixable:**
+
+1. **Only two hosts can ever run lanes.** Of seven, `m2` is the seat (`roles=FAIL(seat)`), `bm1`/`bmb`
+   are `lanes-shadow`, `m1`'s window is `CLOSED`, and `pc` is ssh-unreachable. That leaves `mb` and
+   `mini2` — so a single busy host halves fleet lane capacity.
+2. **`mb` is at its lane ceiling** (`lane-ceiling=FAIL(2<2)`) and refuses to refresh its stale
+   executor surface while lanes are active — reasonable, but it makes a saturated host fail at
+   transport *after* granting a lease, which reads like a transport bug rather than saturation.
+3. **`mini2` — the only ELIGIBLE host, and the picker's top choice at score 0.93 — cannot reach
+   GitHub.** `git fetch` dies with `Could not resolve host: github.com` under both a plain and a login
+   shell, with no proxy configured, while `nslookup github.com` resolves and ICMP to `1.1.1.1` is 100%
+   loss. Its last successful macro fetch was `2026-09-23 21:59`, so this is a **regression, not its
+   configuration**. **The eligibility scorer does not measure git egress** — `reachable=PASS` means ssh,
+   `tools=PASS(all)` means binaries — so the picker will keep recommending the one host where any lane
+   needing a carrier branch is guaranteed to fail.
+4. **`remote_sub.sh` requires a `REMOTE_CWD` that already exists** — it neither fetches the carrier
+   branch nor mints a worktree, and under `auto` host selection you cannot know which host to prepare.
+   A `--branch` flag minting `~/lanes/wt/<id>` on the selected host would remove the manual step
+   entirely — and would have to solve (3) to work at all.
+
+Two smaller items: the `pool` wrapper's `hosts` subcommand takes a positional mode while its own
+comment reads like a flag, which is what misled me — and a bare `pool hosts` dies with
+`line 42: 1: mode` rather than a usage line. `pool pick review` now returns
+`MiniMax-M2.7-highspeed`, which is presumably the answer to the earlier `unrecognized_model
+MiniMax-M3` launch failure.
+
+**The honest lesson is mine to carry:** I treated a malformed command's error output as a finding about
+the world. The instrument was broken and I never positive-controlled it before reporting its null as
+evidence.
