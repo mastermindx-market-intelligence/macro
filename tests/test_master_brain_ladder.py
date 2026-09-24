@@ -339,3 +339,517 @@ def test_ladder_cfg_shipped_shape_is_unchanged_by_that_guard():
     assert out["deepseek_base_url"] == _SHIPPED_CFG["llm_base_url"]
     assert out["deepseek_model"] == "deepseek-v4-pro"
     assert out["opus_model"] == "claude-opus-4-8"
+
+
+# VPS-SITE-BRIEF-W1: real Brief consumer + shared provider builder, with all
+# external credential/provider/usage boundaries inert. No network or publication.
+import types
+import pytest
+
+
+@pytest.fixture
+def policy_boundary(monkeypatch, tmp_path):
+    from engine import codex_provider, provider_health, provider_workload_policy as policy
+    from engine.neuralweb import key_pool
+    from lib import ai_costs, config
+
+    events = {"secrets": [], "native": [], "custom": [], "calls": [],
+              "after_call": None, "reply": json.dumps({"summary": "Synthetic brief."})}
+    monkeypatch.delenv(policy.HOST_PROFILE_ENV, raising=False)
+    document = json.loads(policy.DEFAULT_POLICY_PATH.read_text())
+    path = tmp_path / "workload-policy.json"
+    path.write_text(json.dumps(document))
+    monkeypatch.setattr(policy, "DEFAULT_POLICY_PATH", path)
+
+    class Client:
+        def __init__(self, **kwargs):
+            self.messages = self
+        def create(self, **kwargs):
+            events["calls"].append(kwargs["model"])
+            if events["after_call"]:
+                events["after_call"]()
+            if events.get("exception") is not None:
+                raise events["exception"]
+            return types.SimpleNamespace(stop_reason=None, usage=None,
+                content=[types.SimpleNamespace(type="text", text=events["reply"])])
+
+    sdk = types.ModuleType("anthropic")
+    sdk.Anthropic = Client
+    sdk.DefaultHttpxClient = lambda **kwargs: object()
+    monkeypatch.setitem(sys.modules, "anthropic", sdk)
+    monkeypatch.setattr(config, "secret", lambda name:
+        events["secrets"].append(name) or "synthetic-test-credential")
+    monkeypatch.setattr(codex_provider, "available_accounts", lambda:
+        events["native"].append("codex") or [])
+    monkeypatch.setattr(llm_auth_mod, "_oauth_pool_candidates", lambda *a, **k:
+        events["native"].append("oauth") or [])
+    monkeypatch.setattr(mb, "_client", lambda cfg:
+        events["custom"].append("custom") or Client())
+    for name, value in [("discover_present_keys", []), ("is_enabled", True),
+                        ("is_cooling", False), ("window_load", 0), ("record_session", None)]:
+        monkeypatch.setattr(key_pool, name, lambda *a, _v=value, **k: _v)
+    monkeypatch.setattr(provider_health, "record_waterfall", lambda **kwargs: None)
+    monkeypatch.setattr(provider_health, "record_attempt", lambda **kwargs: None)
+    monkeypatch.setattr(key_pool, "mark_cooling", lambda *args, **kwargs: None)
+    monkeypatch.setattr(ai_costs, "record_usage", lambda *a, **k: None)
+    monkeypatch.setattr(mb, "_collect_style_violations", lambda parsed: [])
+    monkeypatch.setattr(llm_auth_mod, "_dead_providers", set())
+    yield events, path, document
+
+
+def _policy_cfg(**updates):
+    return {**_SHIPPED_CFG, "workload_profile": "site_batch",
+            "provider_order": ["oauth", "codex", "anthropic", "deepseek"],
+            "emit_theses": False, "reply_cache_dir": "brief-cache", **updates}
+
+
+@pytest.mark.parametrize("host_only", [False, True])
+def test_profiled_brief_custom_endpoint_refuses_before_client(policy_boundary, monkeypatch, host_only):
+    events, _, _ = policy_boundary
+    cfg = {**_CUSTOM_ENDPOINT_CFG, "provider_order": ["anthropic"]}
+    if host_only:
+        monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", "site_batch")
+    else:
+        cfg["workload_profile"] = "site_batch"
+    text, reason = mb._call_model("system", "user", cfg)
+    assert text is None and reason == "workload_policy:WORKLOAD_CUSTOM_ENDPOINT_UNSUPPORTED"
+    assert not any(events[k] for k in ("secrets", "native", "custom", "calls"))
+
+
+def test_profiled_brief_requires_original_explicit_provider_order(policy_boundary):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg(); del cfg["provider_order"]
+    text, reason = mb._call_model("system", "user", cfg)
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_ORDER_REQUIRED"
+    assert not any(events[k] for k in ("secrets", "native", "custom", "calls"))
+
+
+@pytest.mark.parametrize("profile,code", [("", "WORKLOAD_PROFILE_INVALID"),
+    (None, "WORKLOAD_PROFILE_INVALID"), ("unknown", "WORKLOAD_PROFILE_UNKNOWN"),
+    ("lobe_maintenance", "NATIVE_AGENT_PATH_REQUIRED")])
+def test_brief_policy_refusal_precedes_cache_and_provider(policy_boundary, monkeypatch, tmp_path, profile, code):
+    events, _, _ = policy_boundary
+    cache_reads = []
+    monkeypatch.setattr(mb, "_mb_reply_cache_get", lambda *a, **k:
+        cache_reads.append(True) or events["reply"])
+    result = mb.synthesize({}, _policy_cfg(workload_profile=profile), root=tmp_path)
+    assert result["degraded_reason"] == "workload_policy:" + code
+    assert result["raw_text"] is None and result["served_by"] is None
+    assert cache_reads == [] and events["calls"] == [] and events["secrets"] == []
+
+
+@pytest.mark.parametrize("order", [[], ["oauth", "codex"]])
+def test_brief_denied_order_does_not_reuse_cache(policy_boundary, monkeypatch, tmp_path, order):
+    events, _, _ = policy_boundary
+    monkeypatch.setattr(mb, "_mb_reply_cache_get", lambda *a, **k: events["reply"])
+    result = mb.synthesize({}, _policy_cfg(provider_order=order), root=tmp_path)
+    assert result["degraded_reason"] == "workload_policy:WORKLOAD_NO_ELIGIBLE_PROVIDER"
+    assert result["raw_text"] is None and events["calls"] == []
+
+
+def test_brief_real_builder_produces_safe_receipt(policy_boundary, tmp_path):
+    events, _, _ = policy_boundary
+    result = mb.synthesize({}, _policy_cfg(), root=tmp_path)
+    assert result["summary"] == "Synthetic brief."
+    assert result["degraded_reason"] is None and result["served_by"] == "anthropic"
+    assert events["native"] == [] and events["custom"] == [] and len(events["calls"]) == 1
+    receipt = result["workload_policy"]
+    assert set(receipt) == {"schema", "policy_revision", "policy_hash", "profiles",
+                           "execution_surface", "allowed_order", "denied_order"}
+    assert receipt["profiles"] == ["site_batch"]
+    assert receipt["allowed_order"] == ["anthropic", "deepseek"]
+    assert "synthetic-test-credential" not in json.dumps(result)
+
+
+def test_brief_profile_cache_is_separate_from_legacy_and_reused(policy_boundary, tmp_path):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg(provider_order=["anthropic"])
+    legacy = {k: v for k, v in cfg.items() if k != "workload_profile"}
+    mb.synthesize({}, legacy, root=tmp_path)
+    events["native"].clear()
+    result = mb.synthesize({}, cfg, root=tmp_path)
+    assert result["served_by"] == "anthropic" and len(events["calls"]) == 2
+    cached = mb.synthesize({}, cfg, root=tmp_path)
+    assert cached["served_by"] == "cache" and len(events["calls"]) == 2
+    assert cached["workload_policy"] == result["workload_policy"]
+
+
+def test_brief_new_policy_does_not_reuse_old_reply(policy_boundary, tmp_path):
+    events, path, document = policy_boundary
+    cfg = _policy_cfg()
+    first = mb.synthesize({}, cfg, root=tmp_path)
+    document["revision"] += 1
+    document["profiles"]["site_batch"]["allowed_providers"] = ["deepseek"]
+    path.write_text(json.dumps(document))
+    second = mb.synthesize({}, cfg, root=tmp_path)
+    assert len(events["calls"]) == 2 and second["served_by"] == "deepseek"
+    assert second["workload_policy"]["policy_hash"] != first["workload_policy"]["policy_hash"]
+
+
+def test_brief_model_change_invalidates_profiled_cache(policy_boundary, tmp_path):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg(opus_model="synthetic-model-one")
+    mb.synthesize({}, cfg, root=tmp_path)
+    second = mb.synthesize({}, {**cfg, "opus_model": "synthetic-model-two"}, root=tmp_path)
+    assert events["calls"] == ["synthetic-model-one", "synthetic-model-two"]
+    assert second["model"] == "synthetic-model-two"
+
+
+def test_brief_policy_change_during_call_discards_result_without_retry(policy_boundary, tmp_path):
+    events, path, document = policy_boundary
+    def retire():
+        document["revision"] += 1
+        document["profiles"]["site_batch"]["allowed_providers"] = []
+        path.write_text(json.dumps(document))
+    events["after_call"] = retire
+    result = mb.synthesize({}, _policy_cfg(), root=tmp_path)
+    assert result["raw_text"] is None and result["summary"] is None
+    assert result["degraded_reason"].startswith("workload_policy:")
+    assert len(events["calls"]) == 1 and not list(tmp_path.glob("brief-cache/*.txt"))
+
+
+def test_profiled_brief_typeerror_does_not_replay_model_call(policy_boundary, monkeypatch, tmp_path):
+    calls = []
+    def broken(*args, **kwargs):
+        calls.append(True)
+        raise TypeError("synthetic provider error after possible effect")
+    monkeypatch.setattr(mb, "_call_model", broken)
+    result = mb.synthesize({}, _policy_cfg(), root=tmp_path)
+    assert len(calls) == 1
+    assert result["raw_text"] is None and result["degraded_reason"] == "llm_error"
+
+
+
+def test_profiled_cache_preserves_actual_served_model(policy_boundary, tmp_path):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg(opus_model="synthetic-served-model")
+    first = mb.synthesize({}, cfg, root=tmp_path)
+    second = mb.synthesize({}, cfg, root=tmp_path)
+    assert second["served_by"] == "cache" and len(events["calls"]) == 1
+    assert first["model"] == second["model"] == "synthetic-served-model"
+    assert second["cache_origin_provider"] == "anthropic"
+
+
+def test_profiled_cache_rejects_wrong_policy_receipt(policy_boundary, tmp_path):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg()
+    mb.synthesize({}, cfg, root=tmp_path)
+    cache = next(tmp_path.glob("brief-cache/*.txt"))
+    cache.write_text(json.dumps({"schema": "master_brief_cache.v1", "text": events["reply"],
+        "provider": "oauth", "model": "synthetic-forbidden", "workload_policy": {}}))
+    result = mb.synthesize({}, cfg, root=tmp_path)
+    assert result["served_by"] == "anthropic" and len(events["calls"]) == 2
+    assert result["model"] != "synthetic-forbidden"
+
+
+def test_brief_rewrite_policy_change_discards_original_and_cache(policy_boundary, monkeypatch, tmp_path):
+    events, path, document = policy_boundary
+    calls = []
+    def style(parsed):
+        calls.append(True)
+        return ["token: synthetic"] if len(calls) == 1 else []
+    def retire_on_rewrite():
+        if len(events["calls"]) == 2:
+            document["revision"] += 1
+            document["profiles"]["site_batch"]["allowed_providers"] = []
+            path.write_text(json.dumps(document))
+    monkeypatch.setattr(mb, "_collect_style_violations", style)
+    events["after_call"] = retire_on_rewrite
+    result = mb.synthesize({}, _policy_cfg(), root=tmp_path)
+    assert len(events["calls"]) == 2
+    assert result["raw_text"] is None and result["summary"] is None
+    assert result["degraded_reason"].startswith("workload_policy:")
+    assert not list(tmp_path.glob("brief-cache/*.txt"))
+
+
+
+def _policy_run(monkeypatch, tmp_path, cfg):
+    cfg.update(enabled=True, translate_zh=False, interval_days=7)
+    monkeypatch.setattr(mb, "_cfg", lambda: cfg)
+    monkeypatch.setitem(mb.LENSES, "macro", {**mb.LENSES["macro"],
+        "state_fn": lambda root: {"macro": {"asof": "2026-09-15"}}})
+    (tmp_path / "site").mkdir(exist_ok=True)
+
+
+def test_brief_run_interval_cannot_hide_policy_change(policy_boundary, monkeypatch, tmp_path):
+    events, path, document = policy_boundary
+    cfg = _policy_cfg(); _policy_run(monkeypatch, tmp_path, cfg)
+    first = mb.run(root=tmp_path)
+    stable = mb.run(root=tmp_path)
+    assert stable["generated_at"] == first["generated_at"] and len(events["calls"]) == 1
+    document["revision"] += 1
+    document["profiles"]["site_batch"]["allowed_providers"] = ["deepseek"]
+    path.write_text(json.dumps(document))
+    newer = mb.run(root=tmp_path)
+    assert newer["served_by"] == "deepseek" and len(events["calls"]) == 2
+    assert newer["workload_fingerprint"] != first["workload_fingerprint"]
+
+
+def test_brief_run_interval_cannot_hide_model_change(policy_boundary, monkeypatch, tmp_path):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg(opus_model="synthetic-model-one"); _policy_run(monkeypatch, tmp_path, cfg)
+    mb.run(root=tmp_path)
+    cfg["opus_model"] = "synthetic-model-two"
+    newer = mb.run(root=tmp_path)
+    assert newer["model"] == "synthetic-model-two" and len(events["calls"]) == 2
+
+
+def test_brief_run_new_denial_replaces_prior_artifact(policy_boundary, monkeypatch, tmp_path):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg(); _policy_run(monkeypatch, tmp_path, cfg)
+    mb.run(root=tmp_path)
+    cfg["provider_order"] = []
+    newer = mb.run(root=tmp_path)
+    published = json.loads((tmp_path / "site/master_brief.json").read_text())
+    assert newer == published and len(events["calls"]) == 1
+    assert published["summary"] is None and published["raw_text"] is None
+    assert published["workload_refusal_code"] == "WORKLOAD_NO_ELIGIBLE_PROVIDER"
+
+
+@pytest.mark.parametrize("persist", [True, False])
+def test_brief_run_rechecks_policy_after_translation(policy_boundary, monkeypatch, tmp_path, persist):
+    events, path, document = policy_boundary
+    cfg = _policy_cfg(); _policy_run(monkeypatch, tmp_path, cfg)
+    def retire(brief, cfg, lens):
+        document["revision"] += 1
+        document["profiles"]["site_batch"]["allowed_providers"] = []
+        path.write_text(json.dumps(document))
+        brief["zh"] = {"summary": "synthetic obsolete translation"}
+    monkeypatch.setattr(mb, "_translate_brief", retire)
+    result = mb.run(persist=persist, root=tmp_path)
+    assert result["raw_text"] is None and result["summary"] is None
+    assert "zh" not in result and len(events["calls"]) == 1
+    assert result["workload_refusal_code"]
+
+
+def _render_policy_brief(brief):
+    import jinja2
+    from engine import i18n
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(Path(mb.__file__).parents[1] / "templates"))
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    return env.get_template("aibrief.html.j2").render(
+        as_of="2026-09-15", master_brief=brief,
+        ctx_strip={"absent": True},
+        fwd_panel={"absent": True, "events": [], "rebal_note_en": None, "rebal_note_zh": None},
+        record_panel={"absent": True})
+
+
+def test_brief_real_run_publishes_policy_result_to_existing_template(policy_boundary, monkeypatch, tmp_path):
+    events, _, _ = policy_boundary
+    cfg = _policy_cfg(); _policy_run(monkeypatch, tmp_path, cfg)
+    result = mb.run(root=tmp_path)
+    data = json.loads((tmp_path / "data/regime/master_brief.json").read_text())
+    published = json.loads((tmp_path / "site/master_brief.json").read_text())
+    assert result == data == published
+    assert published["workload_policy"]["profiles"] == ["site_batch"]
+    assert "Synthetic brief." in _render_policy_brief(published)
+    assert events["native"] == [] and len(events["calls"]) == 1
+
+
+def test_brief_policy_degraded_template_hides_internal_codes(policy_boundary, tmp_path):
+    brief = mb.synthesize({}, _policy_cfg(provider_order=[]), root=tmp_path)
+    html = _render_policy_brief(brief)
+    assert "WORKLOAD_NO_ELIGIBLE_PROVIDER" not in html and "workload_policy:" not in html
+    assert "AI provider settings need review" in html
+    assert "AI 服务配置需要检查" in html
+
+
+
+def test_brief_retired_policy_cannot_try_the_next_provider(policy_boundary):
+    events, path, document = policy_boundary
+    def retire():
+        document["revision"] += 1
+        document["profiles"]["site_batch"]["allowed_providers"] = []
+        path.write_text(json.dumps(document))
+    events["after_call"] = retire
+    events["exception"] = RuntimeError("401 Unauthorized")
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason.startswith("workload_policy:")
+    assert len(events["calls"]) == 1
+
+
+def test_brief_sdk_typeerror_does_not_retry_or_fail_over(policy_boundary):
+    events, _, _ = policy_boundary
+    events["exception"] = TypeError("synthetic ambiguous SDK effect")
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    assert len(events["calls"]) == 1
+
+
+def test_shared_waterfall_propagates_policy_refusal_without_fallback(policy_boundary):
+    from engine.provider_workload_policy import ProviderWorkloadPolicyError
+    calls = []
+    def refuse(client, model):
+        calls.append(model)
+        raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
+    providers = [_fake_provider("anthropic"), _fake_provider("deepseek")]
+    with pytest.raises(ProviderWorkloadPolicyError, match="WORKLOAD_POLICY_CHANGED"):
+        llm_auth_mod.make_call(providers, refuse)
+    assert len(calls) == 1
+
+
+def test_profiled_brief_uses_strict_messages_signature(policy_boundary, monkeypatch):
+    """The real SDK rejects seed before a request; a **kwargs fake hid that."""
+    events, _, _ = policy_boundary
+
+    def create(self, *, model, max_tokens, system, messages):
+        events["calls"].append(model)
+        return types.SimpleNamespace(
+            stop_reason=None, usage=None,
+            content=[types.SimpleNamespace(type="text", text=events["reply"])],
+        )
+
+    monkeypatch.setattr(sys.modules["anthropic"].Anthropic, "create", create)
+    served = {}
+    text, reason = mb._call_model("system", "user", _policy_cfg(), served=served)
+    assert text == events["reply"] and reason is None
+    assert len(events["calls"]) == 1
+    assert served["provider"] == "anthropic"
+
+
+def test_client_tuning_uses_the_installed_sdk_timeout_type(monkeypatch):
+    """SDK 1.x uses httpx2; a separately installed httpx type is incompatible."""
+    import sys
+    import types
+    from engine.llm_auth import _client_tuning_kwargs
+
+    class SdkTimeout:
+        def __init__(self, value, *, connect):
+            self.read = value
+            self.connect = connect
+
+    sdk = types.ModuleType("anthropic")
+    sdk.Timeout = SdkTimeout
+    monkeypatch.setitem(sys.modules, "anthropic", sdk)
+    result = _client_tuning_kwargs({"client_timeout_s": 45})
+    assert isinstance(result["timeout"], SdkTimeout)
+    assert result["timeout"].read == 45.0
+    assert result["timeout"].connect == 5.0
+    assert "max_retries" not in result
+
+
+@pytest.mark.parametrize("configured", ["absent", None, 0, 3, "invalid"])
+def test_profiled_builder_disables_sdk_internal_retries(policy_boundary, monkeypatch, configured):
+    captured = []
+    sdk = sys.modules["anthropic"]
+    original = sdk.Anthropic.__init__
+    def capture(self, **kwargs):
+        captured.append(kwargs)
+        original(self, **kwargs)
+    monkeypatch.setattr(sdk.Anthropic, "__init__", capture)
+    cfg = _policy_cfg()
+    if configured != "absent":
+        cfg["client_max_retries"] = configured
+    providers = llm_auth_mod.build_providers(mb._ladder_cfg(cfg))
+    assert [p["name"] for p in providers] == ["anthropic", "deepseek"]
+    assert len(captured) == 2
+    assert all(kwargs.get("max_retries") == 0 for kwargs in captured)
+
+
+@pytest.mark.parametrize("error", [TimeoutError("missing response"),
+    ConnectionError("response lost"), ValueError("response decode failed"),
+    RuntimeError("401 in untrusted exception text"), RuntimeError("429 in exception text")])
+def test_profiled_unknown_effect_never_walks_the_waterfall(policy_boundary, error):
+    events, _, _ = policy_boundary
+    events["exception"] = error
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    assert len(events["calls"]) == 1 and events["native"] == []
+
+
+@pytest.mark.parametrize("status", [401, 403, 429, 408, 409, 500, 529])
+def test_profiled_fallback_requires_a_concrete_auth_or_quota_refusal(policy_boundary, monkeypatch, status):
+    events, _, _ = policy_boundary
+    class StatusError(Exception):
+        def __init__(self):
+            super().__init__("synthetic provider status")
+            self.status_code = status
+            self.response = types.SimpleNamespace(status_code=status)
+    sdk = sys.modules["anthropic"]
+    monkeypatch.setattr(sdk, "APIStatusError", StatusError, raising=False)
+    def create(self, **kwargs):
+        events["calls"].append(kwargs["model"])
+        if len(events["calls"]) == 1:
+            raise StatusError()
+        return types.SimpleNamespace(stop_reason=None, usage=None,
+            content=[types.SimpleNamespace(type="text", text=events["reply"])])
+    monkeypatch.setattr(sdk.Anthropic, "create", create)
+    served = {}
+    text, reason = mb._call_model("system", "user", _policy_cfg(), served=served)
+    if status in (401, 403, 429):
+        assert text == events["reply"] and reason is None
+        assert len(events["calls"]) == 2 and served["provider"] == "deepseek"
+    else:
+        assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+        assert len(events["calls"]) == 1 and not served
+
+
+@pytest.mark.parametrize("sdk_typed,response_code", [(False, 401), (True, 429), (True, None), (True, "401")])
+def test_profiled_refusal_rejects_untyped_or_conflicting_status(policy_boundary, monkeypatch, sdk_typed, response_code):
+    events, _, _ = policy_boundary
+    class StatusError(Exception):
+        status_code = 401
+        response = types.SimpleNamespace(status_code=response_code)
+    class OtherSdkStatusError(Exception):
+        pass
+    monkeypatch.setattr(sys.modules["anthropic"], "APIStatusError",
+                        StatusError if sdk_typed else OtherSdkStatusError, raising=False)
+    events["exception"] = StatusError("401 claimed without coherent SDK response")
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    assert len(events["calls"]) == 1
+
+
+def test_unprofiled_builder_preserves_explicit_sdk_retry_tuning(policy_boundary, monkeypatch):
+    sdk = sys.modules["anthropic"]
+    captured = []
+    original = sdk.Anthropic.__init__
+    def capture(self, **kwargs):
+        captured.append(kwargs)
+        original(self, **kwargs)
+    monkeypatch.setattr(sdk.Anthropic, "__init__", capture)
+    cfg = {**_SHIPPED_CFG, "provider_order": ["anthropic"], "codex_provider": False, "client_max_retries": 3}
+    assert llm_auth_mod.build_providers(mb._ladder_cfg(cfg))
+    assert len(captured) == 1 and captured[0]["max_retries"] == 3
+
+
+def test_host_profile_alone_disables_sdk_replays(policy_boundary, monkeypatch):
+    captured = []
+    sdk = sys.modules["anthropic"]
+    original = sdk.Anthropic.__init__
+    def capture(self, **kwargs):
+        captured.append(kwargs)
+        original(self, **kwargs)
+    monkeypatch.setattr(sdk.Anthropic, "__init__", capture)
+    monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", "site_batch")
+    cfg = {**_SHIPPED_CFG, "provider_order": ["anthropic"], "client_max_retries": 5}
+    assert llm_auth_mod.build_providers(mb._ladder_cfg(cfg))
+    assert len(captured) == 1 and captured[0]["max_retries"] == 0
+
+
+def test_unknown_effect_is_not_marked_dead_or_reported_as_provider_success(policy_boundary, monkeypatch):
+    from engine import provider_health
+    events, _, _ = policy_boundary
+    observations = []
+    monkeypatch.setattr(provider_health, "record_attempt", lambda **kw: observations.append(kw))
+    events["exception"] = TimeoutError("synthetic-private-marker")
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    assert "synthetic-private-marker" not in reason
+    assert len(events["calls"]) == 1
+    assert observations == [] and llm_auth_mod._dead_providers == set()
+
+
+def test_response_loss_is_visible_without_claiming_generation_never_happened(policy_boundary, tmp_path):
+    events, _, _ = policy_boundary
+    events["exception"] = TimeoutError("synthetic-private-response-error")
+    brief = mb.synthesize({}, _policy_cfg(), root=tmp_path)
+    assert brief["workload_refusal_code"] == "WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    html = _render_policy_brief(brief)
+    assert "We could not confirm the AI response. No new brief is available." in html
+    assert "AI 回复未能确认，暂无新简报。" in html
+    assert "AI provider settings need review" not in html
+    assert "WORKLOAD_PROVIDER_EFFECT_UNKNOWN" not in html
+    assert "synthetic-private-response-error" not in html
+    assert brief["summary"] is None and brief["raw_text"] is None
+    assert len(events["calls"]) == 1

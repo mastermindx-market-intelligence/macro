@@ -599,6 +599,14 @@ def pytest_sessionfinish(session, exitstatus):
 _REAL_MB_REPLY_CACHE_TESTS = frozenset({
     "test_reply_cache_roundtrip_root_aware",   # tests/test_master_brain.py
     "test_master_brain_cache_hit",             # tests/test_w7_llm_determinism.py
+    # VPS Brief adoption: every test below passes an isolated tmp_path root.
+    "test_brief_profile_cache_is_separate_from_legacy_and_reused",
+    "test_brief_new_policy_does_not_reuse_old_reply",
+    "test_brief_model_change_invalidates_profiled_cache",
+    "test_brief_policy_change_during_call_discards_result_without_retry",
+    "test_profiled_cache_preserves_actual_served_model",
+    "test_profiled_cache_rejects_wrong_policy_receipt",
+    "test_brief_rewrite_policy_change_discards_original_and_cache",
 })
 
 
