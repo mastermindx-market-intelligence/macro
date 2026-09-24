@@ -10,7 +10,7 @@ from engine.company_intelligence.economic_observations import (
     validate_selected_facts,
 )
 from engine.company_intelligence.issuer_profiles import profile_for_ticker
-from engine.company_intelligence.pg_profile import PG_METRIC_KEYS
+from engine.company_intelligence.pg_profile import PG_METRIC_KEYS, parse_pg_literal
 from tests.earnings_economic_fixtures import (
     FISCAL_SCOPE,
     pg_bound_case,
@@ -30,6 +30,17 @@ def test_quarter_and_basis_are_bound(kind):
     assert by_metric["pg_prior_diluted_eps"]["value"] == 1.37
     assert by_metric["pg_core_eps"]["value"] == 1.45
     assert by_metric["pg_prior_diluted_eps"]["period"] == "2025-06-30"
+    driver_values = {
+        "pg_reported_sales_growth_pct": 3.0,
+        "pg_organic_sales_growth_pct": 1.0,
+        "pg_total_volume_growth_pct": 2.0,
+        "pg_organic_volume_growth_pct": 1.0,
+        "pg_price_contribution_pp": 0.5,
+        "pg_mix_contribution_pp": 0.5,
+        "pg_fx_contribution_pp": 0.5,
+        "pg_other_contribution_pp": 1.0,
+    }
+    assert {metric: by_metric[metric]["value"] for metric in driver_values} == driver_values
     assert all(row["event_id"] == workspace["event_id"] for row in rows)
 
 
@@ -193,9 +204,10 @@ def test_blank_is_absent_and_dash_is_neutral_zero() -> None:
         fiscal_scope=FISCAL_SCOPE,
     )
     by_metric = {row["metric"]: row for row in rows}
-    assert "value" not in by_metric["pg_total_volume_growth_pct"]
-    assert "typed_absence" in by_metric["pg_total_volume_growth_pct"]
-    assert by_metric["pg_organic_volume_growth_pct"]["value"] == 0.0
+    assert "value" not in by_metric["pg_organic_volume_growth_pct"]
+    assert "typed_absence" in by_metric["pg_organic_volume_growth_pct"]
+    assert by_metric["pg_total_volume_growth_pct"]["value"] == 0.0
+    assert by_metric["pg_total_volume_growth_pct"]["source_span"]["display_excerpt"] == "dash means zero"
 
 
 def test_combined_volume_mix_never_passes_pure_volume() -> None:
@@ -207,6 +219,25 @@ def test_combined_volume_mix_never_passes_pure_volume() -> None:
         assert row["metric"] != "combined_volume_mix"
     assert {row["metric"] for row in rows} == set(PG_METRIC_KEYS)
     assert "pg_total_volume_growth_pct" in {row["metric"] for row in rows}
+
+
+@pytest.mark.parametrize(
+    ("literal", "expected"), [("$1.25", 1.25), ("1.25", 1.25), ("(1.25)", -1.25)]
+)
+def test_usd_per_share_literals_parse_by_unit(literal, expected):
+    assert parse_pg_literal(literal, unit="usd_per_share") == expected
+
+
+@pytest.mark.parametrize("literal", ["1%", "(2)%", "+3%", "(2%)"])
+def test_percent_literals_parse_by_unit(literal):
+    assert parse_pg_literal(literal, unit="percent") is not None
+
+
+def test_unit_shape_mismatch_is_a_typed_absence():
+    workspace, rows = _selected("eps_unit_mismatch")
+    row = next(row for row in rows if row["metric"] == "pg_diluted_eps")
+    assert "value" not in row
+    assert row["typed_absence"]["reason"] == "missing_units"
 
 
 def test_fy2027_scope_binds_current_and_prior_columns() -> None:

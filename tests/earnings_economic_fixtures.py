@@ -33,6 +33,7 @@ def _html(
     hostile: bool = False,
     blank_volume: bool = False,
     volume_only: str = "split",
+    eps_unit_mismatch: bool = False,
     period: int = 2026,
 ) -> str:
     current_year = period
@@ -40,7 +41,7 @@ def _html(
     current_end = date(period, 6, 30).isoformat()
     prior_end = date(prior_year, 6, 30).isoformat()
     eps_rows = (
-        ("Diluted EPS", "$1.25", "$1.31"),
+        ("Diluted EPS", "1.25%" if eps_unit_mismatch else "$1.25", "$1.31"),
         ("Prior Diluted EPS", "$1.50", "$1.37"),
         ("Core EPS", "$1.45", "$1.56"),
         ("Prior Core EPS", "$1.31", "$1.42"),
@@ -130,6 +131,8 @@ def pg_bound_case(kind: str, *, period: int = 2026):
         body = _html(blank_volume=True, **kwargs)
     elif kind == "combined_volume_only":
         body = _html(volume_only="combined", **kwargs)
+    elif kind == "eps_unit_mismatch":
+        body = _html(eps_unit_mismatch=True, **kwargs)
     else:
         raise ValueError(f"unknown synthetic PG case: {kind}")
     return bind_release_document(

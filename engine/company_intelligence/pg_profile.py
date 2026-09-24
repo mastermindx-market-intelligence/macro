@@ -109,7 +109,7 @@ def pg_profile(*, fiscal_scope: tuple[str, str, str, str]) -> IssuerProfile:
 
 
 _NUMBER = r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?"
-_PERCENT_PATTERN = rf"^(?:\(?({_NUMBER})\)?%|\+?({_NUMBER})%?)$"
+_PERCENT_PATTERN = rf"^(?:\(?\+?({_NUMBER})%\)?|\(?\+?({_NUMBER})\)?%)$"
 _CURRENCY_PATTERN = rf"^(?:\$?({_NUMBER})|\(\$?({_NUMBER})\))$"
 
 
@@ -209,14 +209,16 @@ def _present(*, definition: PGDefinition, value: Any, document_id: str, bound: B
     }
 
 
-def _absent(*, definition: PGDefinition, document_id: str, event_id: str, detail: str) -> dict[str, Any]:
+def _absent(
+    *, definition: PGDefinition, document_id: str, event_id: str, detail: str, reason: str = "no_span_addressable_evidence"
+) -> dict[str, Any]:
     return {
         "schema": "event_fact.v1",
         "fact_id": f"fact_{definition.metric}",
         "event_id": event_id,
         "metric": definition.metric,
         "typed_absence": TypedAbsence(
-            reason="no_span_addressable_evidence",
+            reason=reason,
             subject=definition.metric,
             detail=detail,
             event_id=event_id,
@@ -236,15 +238,22 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], heading: str, 
     value: float | None = None
     receipt: SpanReceipt | None = None
     if literal in {"-", "—", "–"}:
-        neutral = _locate(table, row_label, "Neutral convention")
+        neutral = _column(table, row_label, "Neutral convention")
         if neutral is None or _normal(neutral[0][neutral[1]].text) != "dash means zero":
             return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
         value = 0.0
         receipt = _receipt(bound, neutral[0][neutral[1]].source_span.char_start, neutral[0][neutral[1]].source_span.char_end, "dash means zero")
     elif literal:
         value = parse_pg_literal(literal, unit=definition.unit)
-        if value is not None:
-            receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
+        if value is None:
+            return _absent(
+                definition=definition,
+                document_id=document_id,
+                event_id=event_id,
+                detail="The cell literal does not match the definition unit.",
+                reason="missing_units",
+            )
+        receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
     if value is None or not math.isfinite(value) or receipt is None:
         return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
     return _present(definition=definition, value=value, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period)
@@ -377,7 +386,7 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
                         else current_header
                     ),
                     header=(
-                        "Neutral convention"
+                        current_header
                         if volume
                         else driver_headers[definition.metric]
                     ),
