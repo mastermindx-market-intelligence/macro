@@ -1,0 +1,291 @@
+"""Private, source-scoped Procter & Gamble economic observations.
+
+Prior PG EPS rows use the prior fiscal interval's ISO end date instead of the
+generic ``prior_year_same_quarter`` label.  ``fiscal_scope`` supplies both
+interval boundaries that ``FiscalPeriod`` lacks.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import date
+import math
+from typing import Any, Sequence
+
+from engine.fundamental_forensics.disclosure_diff import BlockKind
+
+from .documents import TypedAbsence, text_span
+from .event_workspace import IssuerRegistry
+from .identity import IssuerIdentity, ListingAlias, company_id_for_cik
+from .issuer_profiles import IssuerProfile, _no_guidance
+from ..earnings_release.binding import BoundRelease
+from ..earnings_release.receipts import ReceiptError, SpanReceipt, receipt_for_literal
+
+
+PG_CIK = "0000080424"
+PG_PRIVATE_RIGHTS_PROFILE = "rp_internal_private_v1"
+
+
+@dataclass(frozen=True)
+class PGDefinition:
+    metric: str
+    value_kind: str
+    unit: str
+    scale: str
+    basis: str
+    scope: str
+    quarter_duration: int
+    comparison_family: str
+    paired_metric: str | None = None
+    segment_scope: str | None = None
+
+
+PG_DEFINITIONS: tuple[PGDefinition, ...] = (
+    PGDefinition("pg_reported_sales_growth_pct", "percent", "percent", "one", "reported_sales", "company", 91, "reported_sales"),
+    PGDefinition("pg_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "company", 91, "organic_sales"),
+    PGDefinition("pg_total_volume_growth_pct", "percent", "percent", "one", "total_volume", "company", 91, "total_volume"),
+    PGDefinition("pg_organic_volume_growth_pct", "percent", "percent", "one", "organic_volume", "company", 91, "organic_volume"),
+    PGDefinition("pg_price_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
+    PGDefinition("pg_mix_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
+    PGDefinition("pg_fx_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
+    PGDefinition("pg_other_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution"),
+    PGDefinition("pg_diluted_eps", "currency_per_share", "usd_per_share", "one", "gaap_diluted", "company", 91, "same_measure", "pg_prior_diluted_eps"),
+    PGDefinition("pg_prior_diluted_eps", "currency_per_share", "usd_per_share", "one", "gaap_diluted", "company", 91, "same_measure", "pg_diluted_eps"),
+    PGDefinition("pg_reported_eps_growth_pct", "percent", "percent", "one", "reported_eps_growth", "company", 91, "reported_eps"),
+    PGDefinition("pg_core_eps", "currency_per_share", "usd_per_share", "one", "core_non_gaap", "company", 91, "same_measure", "pg_prior_core_eps"),
+    PGDefinition("pg_prior_core_eps", "currency_per_share", "usd_per_share", "one", "core_non_gaap", "company", 91, "same_measure", "pg_core_eps"),
+    PGDefinition("pg_core_eps_growth_pct", "percent", "percent", "one", "core_eps_growth", "company", 91, "core_eps"),
+    PGDefinition("pg_core_reconciliation_context", "bounded_text", "text", "one", "core_non_gaap_reconciliation", "company", 91, "core_reconciliation"),
+    PGDefinition("pg_beauty_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "beauty_segment", 91, "organic_sales", segment_scope="Beauty"),
+    PGDefinition("pg_grooming_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "grooming_segment", 91, "organic_sales", segment_scope="Grooming"),
+    PGDefinition("pg_health_care_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "health_care_segment", 91, "organic_sales", segment_scope="Health Care"),
+    PGDefinition("pg_fabric_home_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "fabric_home_segment", 91, "organic_sales", segment_scope="Fabric and Home Care"),
+    PGDefinition("pg_baby_feminine_family_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "baby_feminine_family_segment", 91, "organic_sales", segment_scope="Baby, Feminine and Family Care"),
+)
+PG_METRIC_KEYS = tuple(item.metric for item in PG_DEFINITIONS)
+
+
+def pg_issuer() -> IssuerIdentity:
+    return IssuerIdentity(
+        company_id=company_id_for_cik(PG_CIK),
+        display_name="Procter & Gamble Co.",
+        fiscal_year_end_month=6,
+        reporting_currency="USD",
+        listings=(ListingAlias(ticker="PG", mic="XNYS", share_class="common", trading_currency="USD", is_primary=True),),
+        external_ids={"cik": PG_CIK},
+    )
+
+
+def pg_private_registry() -> IssuerRegistry:
+    return IssuerRegistry([pg_issuer()])
+
+
+def _scope(value: Sequence[Any]) -> tuple[date, date, date, date]:
+    if not isinstance(value, Sequence) or len(value) != 4:
+        raise ValueError("fiscal_scope must contain four dates")
+    dates = tuple(date.fromisoformat(item) if isinstance(item, str) else item for item in value)
+    if not all(isinstance(item, date) for item in dates):
+        raise ValueError("fiscal_scope must contain four dates")
+    current_start, current_end, prior_start, prior_end = dates
+    if not (current_start < current_end and prior_start < prior_end and prior_end < current_start):
+        raise ValueError("fiscal_scope ordering is invalid")
+    if not 89 <= (current_end - current_start).days <= 92 or not 89 <= (prior_end - prior_start).days <= 92:
+        raise ValueError("fiscal_scope must identify quarters")
+    if (current_start - prior_start).days not in {364, 365, 366}:
+        raise ValueError("prior fiscal interval does not match current")
+    return dates
+
+
+def pg_profile(*, fiscal_scope: tuple[str, str, str, str]) -> IssuerProfile:
+    scope = _scope(fiscal_scope)
+    def extract(**kwargs: Any) -> list[dict[str, Any]]:
+        return extract_pg_release_facts(**kwargs, fiscal_scope=scope)
+    return IssuerProfile(
+        ticker="PG",
+        extract_release_facts=extract,
+        extract_transcript_claims=lambda **_kwargs: [],
+        extract_guidance=_no_guidance,
+    )
+
+
+def _normal(value: str) -> str:
+    return " ".join(value.casefold().split())
+
+
+def _table(blocks: Sequence[Any], heading: str) -> Any | None:
+    active = False
+    matches = []
+    for block in blocks:
+        if block.kind is BlockKind.HEADING:
+            active = _normal(block.text) == _normal(heading)
+        elif active and block.kind is BlockKind.TABLE and block.table is not None:
+            matches.append(block)
+    return matches[0] if len(matches) == 1 else None
+
+
+def _locate(table: Any, row_label: str, header: str) -> tuple[Any, int] | None:
+    if table is None:
+        return None
+    rows = table.table.rows
+    row = [item for item in rows if item and _normal(item[0].text) == _normal(row_label)]
+    header_cells = [
+        (item, index)
+        for item in rows
+        for index, cell in enumerate(item)
+        if _normal(cell.text) == _normal(header)
+    ]
+    if len(row) != 1 or len(header_cells) != 1 or rows.index(header_cells[0][0]) >= rows.index(row[0]):
+        return None
+    column = header_cells[0][1]
+    if column >= len(row[0]):
+        return None
+    return row[0], column
+
+
+def _receipt(source: BoundRelease, start: int, end: int, literal: str) -> SpanReceipt | None:
+    try:
+        return receipt_for_literal(
+            source=source.source,
+            source_sha256=source.revision.source_sha256,
+            search_start=start,
+            search_end=end,
+            literal=literal,
+        )
+    except ReceiptError:
+        return None
+
+
+def _span(document_id: str, bound: BoundRelease, receipt: SpanReceipt) -> dict[str, Any]:
+    return text_span(
+        document_id=document_id,
+        document_version=1,
+        body_sha256=bound.revision.source_sha256,
+        segment_index=0,
+        segment_text=bound.source,
+        start_byte=receipt.byte_start,
+        end_byte=receipt.byte_end,
+        text=receipt.span_text,
+        rights_profile=PG_PRIVATE_RIGHTS_PROFILE,
+    ).to_payload()
+
+
+def _present(*, definition: PGDefinition, value: Any, document_id: str, bound: BoundRelease, receipt: SpanReceipt, event_id: str, period: str) -> dict[str, Any]:
+    return {
+        "schema": "event_fact.v1",
+        "fact_id": f"fact_{definition.metric}",
+        "event_id": event_id,
+        "metric": definition.metric,
+        "value": value,
+        "unit": definition.unit,
+        "period": period,
+        "basis": definition.basis,
+        "source_span": _span(document_id, bound, receipt),
+    }
+
+
+def _absent(*, definition: PGDefinition, document_id: str, event_id: str, detail: str) -> dict[str, Any]:
+    return {
+        "schema": "event_fact.v1",
+        "fact_id": f"fact_{definition.metric}",
+        "event_id": event_id,
+        "metric": definition.metric,
+        "typed_absence": TypedAbsence(
+            reason="no_span_addressable_evidence",
+            subject=definition.metric,
+            detail=detail,
+            event_id=event_id,
+            document_id=document_id,
+        ).to_payload(),
+    }
+
+
+def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], heading: str, row_label: str, header: str, document_id: str, bound: BoundRelease, event_id: str, period: str) -> dict[str, Any]:
+    table = _table(blocks, heading)
+    located = _locate(table, row_label, header)
+    if located is None:
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="No unique heading, row label, and column header identifies this observation.")
+    row, column = located
+    cell = row[column]
+    literal = cell.text.strip()
+    value: float | None = None
+    receipt: SpanReceipt | None = None
+    if literal in {"-", "—", "–"}:
+        neutral = _locate(table, row_label, "Neutral convention")
+        if neutral is None or _normal(neutral[0][neutral[1]].text) != "dash means zero":
+            return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
+        value = 0.0
+        receipt = _receipt(bound, neutral[0][neutral[1]].source_span.char_start, neutral[0][neutral[1]].source_span.char_end, "dash means zero")
+    elif literal:
+        try:
+            value = float(literal.rstrip("%"))
+        except ValueError:
+            value = None
+        if value is not None and math.isfinite(value):
+            receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
+    if value is None or not math.isfinite(value) or receipt is None:
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The cell is blank, nonnumeric, ambiguous, or not uniquely addressable.")
+    return _present(definition=definition, value=value, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period)
+
+
+def _text_fact(*, definition: PGDefinition, blocks: Sequence[Any], sentence: str, document_id: str, bound: BoundRelease, event_id: str, period: str) -> dict[str, Any]:
+    receipts = []
+    for block in blocks:
+        if block.kind is BlockKind.PARAGRAPH and sentence.casefold() in block.text.casefold():
+            receipt = _receipt(bound, block.source_span.char_start, block.source_span.char_end, sentence)
+            if receipt is not None:
+                receipts.append(receipt)
+    if len(receipts) != 1:
+        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The reconciliation sentence is not uniquely addressable in source paragraphs.")
+    return _present(definition=definition, value=sentence, document_id=document_id, bound=bound, receipt=receipts[0], event_id=event_id, period=period)
+
+
+def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, fiscal_period: Any, fiscal_scope: Sequence[Any] | None = None) -> list[dict[str, Any]]:
+    if fiscal_scope is None:
+        raise ValueError("PG extraction requires fiscal_scope")
+    _current_start, current_end, _prior_start, prior_end = _scope(fiscal_scope)
+    current = current_end.isoformat()
+    prior = prior_end.isoformat()
+    if fiscal_period.calendar_end != current_end:
+        return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The source fiscal period does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
+    blocks = bound.document.blocks
+    eps = {
+        "pg_diluted_eps": ("Diluted EPS", current),
+        "pg_prior_diluted_eps": ("Prior Diluted EPS", prior),
+        "pg_core_eps": ("Core EPS", current),
+        "pg_prior_core_eps": ("Prior Core EPS", prior),
+    }
+    drivers = {
+        "pg_reported_sales_growth_pct": "Reported sales growth percent",
+        "pg_organic_sales_growth_pct": "Organic sales growth percent",
+        "pg_total_volume_growth_pct": "Total volume growth percent",
+        "pg_organic_volume_growth_pct": "Organic volume growth percent",
+        "pg_price_contribution_pp": "Price contribution percent",
+        "pg_mix_contribution_pp": "Mix contribution percent",
+        "pg_fx_contribution_pp": "FX contribution percent",
+        "pg_other_contribution_pp": "Other contribution percent",
+    }
+    segments = {
+        "pg_beauty_organic_sales_growth_pct": "Beauty",
+        "pg_grooming_organic_sales_growth_pct": "Grooming",
+        "pg_health_care_organic_sales_growth_pct": "Health Care",
+        "pg_fabric_home_organic_sales_growth_pct": "Fabric and Home Care",
+        "pg_baby_feminine_family_organic_sales_growth_pct": "Baby, Feminine and Family Care",
+    }
+    volume = set(drivers) & {"pg_total_volume_growth_pct", "pg_organic_volume_growth_pct"}
+    sentence = "Fourth quarter core EPS excludes a synthetic incremental charge of 0.20 and dilution of 0.05."
+    facts = []
+    for definition in PG_DEFINITIONS:
+        if definition.metric in eps:
+            header, period = eps[definition.metric]
+            facts.append(_row_fact(definition=definition, blocks=blocks, heading="Fourth Quarter Results", row_label="Fourth Quarter 2026", header=header, document_id=document_id, bound=bound, event_id=event_id, period=period))
+        elif definition.metric in drivers:
+            facts.append(_row_fact(definition=definition, blocks=blocks, heading="Volume Conventions" if definition.metric in volume else "Sales Drivers", row_label=drivers[definition.metric], header="Fourth Quarter 2026", document_id=document_id, bound=bound, event_id=event_id, period=current))
+        elif definition.metric in segments:
+            facts.append(_row_fact(definition=definition, blocks=blocks, heading="Segments", row_label=segments[definition.metric], header="Fourth Quarter 2026 organic sales growth percent", document_id=document_id, bound=bound, event_id=event_id, period=current))
+        elif definition.metric == "pg_core_reconciliation_context":
+            facts.append(_text_fact(definition=definition, blocks=blocks, sentence=sentence, document_id=document_id, bound=bound, event_id=event_id, period=current))
+        else:
+            facts.append(_absent(definition=definition, document_id=document_id, event_id=event_id, detail="This literal growth fact is not separately disclosed by the selected source."))
+    return facts
+
+
+__all__ = ["PG_DEFINITIONS", "PG_METRIC_KEYS", "extract_pg_release_facts", "pg_issuer", "pg_private_registry", "pg_profile"]
