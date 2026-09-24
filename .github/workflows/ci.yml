@@ -3553,6 +3553,8 @@ on:
       - "tests/test_release_integration_2b.py"
       - "tests/test_release_integration_w11g.py"
       - "tests/test_release_market_context.py"
+      - "tests/test_kalshi_releases.py"
+      - "collectors/kalshi_releases.py"
       - "scripts/build_release_forecast.py"
       - "scripts/check_hazard_model_freshness.py"
       # Unrun backfill 2026-08-03: CPI bridge, official-event live client,

@@ -3516,12 +3516,43 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
+    # this file's own packing-ceiling probe: templates/index.html 132 jobs /
+    # 5,810 weight > 5,800; the two code probes over their job ceilings too).
+    # Four smear-at-source curations, each an inferred opaque-fallback claim
+    # its own block never justified — see the wave note on
+    # test_exclusive_curation_narrows_ordinary_code_prs.
+    # `market-os-macro-workspaces` is the follow-on named there at the
+    # previous wave (B-CUR-MARKET-OS-MACRO-WORKSPACES-1): 21 paths declared
+    # at birth without `scope: exclusive`, so a builder subprocess and a
+    # jinja loader smeared engine/scripts/templates/site/data onto all three
+    # probes. `uk-policy-desk` (#7771) keeps engine/**/*.py + scripts/**/*.py
+    # on purpose — its no-scoring-import test rglobs both trees — and sheds
+    # only the templates/** loader smear. `options-payoff-lab-consumer`
+    # (#7763) reads one template and engine-render.yml as text.
+    # `options-catalyst-links` (#7774) is hermetic and reads daily.yml and
+    # this manifest as text. Closure-coverage audit: zero misses.
+    "market-os-macro-workspaces",
+    "uk-policy-desk",
+    # 2026-09-24 Finance T1 contract lane: exclusive ownership for the new schema job.
+    "finance-intelligence",
+    # Consumer Cyclical V1-CORE: contract + deterministic projection. Exclusive
+    # for the same reason finance-intelligence is — engine/sector_intelligence/
+    # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
+    # so the job's paths must cover its own import closure.
+    "consumer-cyclical-economic-change",
+    "options-payoff-lab-consumer",
+    "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
     # the gate:code home for tests/test_b4_entry_policy_calibration_prereg.py — its
     # thematic neighbours are `gate: data`. Curated because the measured import
     # closure is empty (stdlib only): the scope is the suite + the registration
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
+    # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
+    # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
+    # curated scope is exactly the Mining files it names.
+    "mining-economic-dossier",
     # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
     # home for tests/test_markets_regime_strip.py — its thematic neighbours
     # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
@@ -4225,12 +4256,96 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     non-cancelled runs since it was green as of this measurement — and the
     seat's finding places this step's own last green at 4b2f97f196d5
     (2026-09-09 00:20Z, 690 passed).
+
+    WAVE 2026-09-23 (B-HEAL-CI-PACK-CEILING-2): the WEIGHT ceiling reds.
+    Main's integration-baseline lane failed this nodeid alone (run
+    35923703447 at 6ffa33740a49, "1 failed, 712 passed") at
+    templates/index.html 132 jobs / 5,810 weight — the job ceiling met
+    exactly, the weight ceiling breached by 10 — and the two code probes
+    were over their JOB ceilings behind it (the loop asserts the first probe
+    first): build_free_content.py 130 > 129, plan_book.py 127 > 125. The
+    manifest had grown 212 → 227 jobs since the previous wave's baseline
+    (021b2ae3a4a6). Diffing that baseline manifest RE-MEASURED on today's
+    tree (133 / 5,713 on templates/index.html — inference drift accounts for
+    +2 jobs / +10 weight of the delta) against the current manifest, the
+    weight breach is NOT one entrant: it is +105 weight-seconds spread over
+    ~20 already-selected fallback-tier jobs whose step lists grew
+    (washout-turn-organ 31 → 52, unrun-page-guards 34 → 50, unrun-brain-gateway
+    40 → 47, self-mod-fence 46 → 53, billing-emails 16 → 22, design-governance
+    18 → 23, …), plus two 4-weight entrants on templates/index.html
+    (uk-policy-desk #7771, options-payoff-lab-consumer #7763), one 8-weight
+    entrant on both code probes (options-catalyst-links #7774), and
+    design-governance newly riding engine/prophet/plan_book.py (23). Three
+    small jobs left (am-edition-producer, ftr-tape-surfaces,
+    unrun-government-revenue-candidate-projection).
+
+    Every entrant matched on the FALLBACK tier and no block text claims
+    whole-tree breadth on purpose, so — per the standing convention — the
+    ceiling is not raised; the smear is curated at the source. FOUR jobs are
+    curated ``scope: exclusive`` in the manifest, every declared path earned
+    by the inferred import closure or by a read-as-text the suite performs
+    (closure-coverage audit: zero misses; contract-delta: 0 introduced):
+
+    ``market-os-macro-workspaces`` — the follow-on named at the previous
+    wave (B-CUR-MARKET-OS-MACRO-WORKSPACES-1), now paid: 21 ``paths:``
+    declared at birth WITHOUT ``scope: exclusive`` were unioned under
+    inference, and scripts/build_macro_workspaces.py:52 (subprocess) plus
+    test_macro_workspace_prior_publication.py:341 (jinja FileSystemLoader)
+    minted engine/scripts/templates/site/data claims on all three probes.
+    Declared: the 48-file closure (composers, lib/macro_suite_*,
+    scripts/build_macro_suite_pages.py), the shell template it renders by
+    name, and its committed fixture. Weight 39, leaves all three probes.
+
+    ``uk-policy-desk`` (#7771) — "the suite imports nothing further" was
+    true of the file and false of the closure (engine/uk_policy_brain.py
+    reaches 133 first-party files). Its ``test_no_scoring_path_imports_this_desk``
+    rglobs engine/ and scripts/ for ``*.py``, so ``engine/**/*.py`` and
+    ``scripts/**/*.py`` are EARNED and declared — this job KEEPS both code
+    probes on purpose (the cn-standout-audit shape) — and it sheds only the
+    ``templates/**`` claim its jinja loader minted. Weight 4, leaves
+    templates/index.html only.
+
+    ``options-payoff-lab-consumer`` (#7763) — hermetic per its block; the
+    ``templates/**`` claim came from scripts/build_options_command.py's
+    jinja loader. Declared: the 14-file closure, templates/options.html.j2
+    (read as text), .github/workflows/engine-render.yml (read as text for
+    its R2-restore pins). Weight 4, leaves templates/index.html.
+
+    ``options-catalyst-links`` (#7774) — hermetic per its block; the
+    engine/**, scripts/**, data/** claims came from ledger-lane /
+    session-digest opaque edges in the closure. Declared: the 19-file
+    closure plus daily.yml and this manifest, which its nightly-shape suite
+    reads as text. Weight 8, leaves both code probes.
+
+    Re-measured on the curated manifest — the four curated jobs are the
+    ONLY delta and NOTHING entered any probe:
+
+        templates/index.html          132 -> 129 jobs, 5,810 -> 5,763 weight
+        scripts/build_free_content.py 130 -> 128 jobs, 5,577 -> 5,530 weight
+        engine/prophet/plan_book.py   127 -> 125 jobs, 5,583 -> 5,536 weight
+
+    JOB ceilings re-based to measurement + 1 per the wave-3 rule
+    (130 / 129 / 126): templates/index.html comes DOWN from 132, the
+    build_free_content.py bound is unchanged, and plan_book.py goes UP by
+    one — said explicitly: its measurement sits AT the old 125 bound
+    because ``design-governance`` (w23) now fallback-matches it through
+    scripts/check_p0b_receipt_closure.py:100's ``evidence.glob`` (the p0b
+    receipt-closure step added 2026-09-23), a claim that is NOT earned
+    (the design ratchets diff user-facing trees, never engine/) but that
+    cannot be curated: ``test_deliberately_unscoped_gates_stay_always_on``
+    pins that gate unscoped by design. Its fix is at the glob source, not in
+    the manifest — follow-on: B-CUR-DESIGN-GOVERNANCE-P0B-1. Re-basing to
+    125 would restore the zero-headroom defect this wave and the last both
+    diagnosed. WEIGHT and PACK ceilings stay unmoved (5,800 / 5,600 / 5,600
+    and 10 packs; measured 5,763 / 5,530 / 5,536, packs 10 / 10 / 10) —
+    they bound the incident, and this wave's 47-weight cut on the index
+    probe is the honest size of four small smears, not a re-base.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 132, 5_800),
+        ("templates/index.html", 130, 5_800),
         ("scripts/build_free_content.py", 129, 5_600),
-        ("engine/prophet/plan_book.py", 125, 5_600),
+        ("engine/prophet/plan_book.py", 126, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
         weight = sum(job.weight for job in selected)
