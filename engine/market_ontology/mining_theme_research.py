@@ -481,8 +481,16 @@ def compose_mining_research(
                     "value": value,
                     "sign": "+" if value >= 0 else "-",
                     "basis": str(packet.get("basis", "") or "fictional reported dollars"),
+                    # MINOR-H: an existing-but-empty source_label or selection_label
+                    # degrades to a typed limitation rather than raising a raw
+                    # ``jsonschema.ValidationError`` (R-MIN-31). The ``or`` chain
+                    # collapses every empty-string fallthrough to the closed
+                    # "synthetic-source" default so the schema's ``minLength: 1``
+                    # never trips on a present-but-empty input.
                     "source_label": str(
-                        packet.get("source_label", packet.get("selection_label", "") or "synthetic-source")
+                        packet.get("source_label")
+                        or packet.get("selection_label")
+                        or "synthetic-source"
                     ),
                 }
             )
