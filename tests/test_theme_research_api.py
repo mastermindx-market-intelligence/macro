@@ -1285,3 +1285,16 @@ def test_registry_fault_during_resolution_is_a_private_503_not_a_bare_500(
         "detail": {"error": {"code": "service_unavailable", "action": "retry_later"}},
     }
     assert "secret" not in response.text and bundle_loader == []
+
+
+def test_registry_returning_a_non_registration_is_a_private_503(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    monkeypatch.setattr(
+        theme_research, "registration_for", lambda anchor: {"slice_keys": ("hbm_packaging",)},
+    )
+    response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body())
+    assert response.status_code == 503, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"]["error"]["code"] == "service_unavailable"
+    assert bundle_loader == []

@@ -30,9 +30,10 @@ Closure laws
 * A slice is accepted only when it is a member of the registration's closed
   ``slice_keys`` tuple. Unknown or foreign slices fail closed.
 * The schema ids and definition version are the exact strings the vertical's
-  composer emits; the shell compares the composed payload's ``schema`` against
-  the registration and refuses a mismatch (a composer and its registration
-  can never drift apart silently).
+  composer emits; the shell compares the composed payload's ``schema`` (and,
+  for the query envelope, ``definition_version``) against the registration
+  and refuses a mismatch (a composer and its registration can never drift
+  apart silently).
 * This module imports no web framework and no template engine so
   ``scripts/`` and ``templates/`` producers can import it without pulling
   FastAPI into a build.
@@ -153,6 +154,7 @@ _SEMICONDUCTOR = VerticalRegistration(
 )
 
 _ENTRIES: tuple[VerticalRegistration, ...] = (_SEMICONDUCTOR,)
+
 
 def _assert_unique_anchors(entries: tuple[VerticalRegistration, ...]) -> None:
     """Load-time closure: a registration is keyed by its own anchor, once."""

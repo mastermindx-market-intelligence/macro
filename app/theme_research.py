@@ -102,8 +102,9 @@ class RegisteredContractMismatch(Exception):
     """A registered vertical's composer returned a payload that is not the
     registration's accepted contract (wrong ``schema`` / ``definition_version``
     or not a mapping). Same fixed 503 envelope on the wire as
-    :class:`PrivateStoreUnavailable`; a distinct class so logs can tell a
-    composer/registration drift from an unbound reader.
+    :class:`PrivateStoreUnavailable`; a distinct class so an in-process
+    observer (tests, a future log hook — this module logs nothing today) can
+    tell a composer/registration drift from an unbound reader.
     """
 
 
@@ -376,6 +377,13 @@ def _resolve_registration(body: _QueryBody) -> VerticalRegistration:
         ) from None
     if registration is None:
         raise _private_error(404, {"error": {"code": "not_available", "action": "none"}})
+    if not isinstance(registration, VerticalRegistration):
+        # A registry that hands back anything but a registration is a fault,
+        # not a vertical: stay inside the private envelope (never a bare 500).
+        raise _private_error(
+            503,
+            {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        )
     if body.slice_key not in registration.slice_keys:
         raise _private_error(
             400,
