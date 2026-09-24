@@ -1325,6 +1325,42 @@
       "at": "2026-09-22T22:14:25.608372+00:00",
       "activated": false,
       "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50729": {
+      "id": "wh-2026-09-23-president-trump-delivers-powerful-america-first-message-to-the-united-nations",
+      "at": "2026-09-23T17:05:06.260178+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=50727": {
+      "id": "wh-2026-09-21-presidential-message-on-national-historically-black-colleges-and-universities-we",
+      "at": "2026-09-23T17:05:08.195448+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50878": {
+      "id": "wh-2026-09-23-white-house-app-hits-no-1-in-news-and-cracks-app-store-top-20-as-americans-tune-",
+      "at": "2026-09-23T20:21:53.364916+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51010": {
+      "id": "wh-2026-09-24-presidential-message-on-the-beatification-of-archbishop-fulton-j-sheen",
+      "at": "2026-09-24T15:05:55.393356+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51007": {
+      "id": "wh-2026-09-24-first-lady-melania-trump-releases-details-on-the-state-dinner-with-his-excellenc",
+      "at": "2026-09-24T15:05:57.368297+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51033": {
+      "id": "wh-2026-09-24-first-lady-melania-trump-and-madame-peng-liyuan-visit-smithsonian-national-museu",
+      "at": "2026-09-24T19:09:45.751987+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
