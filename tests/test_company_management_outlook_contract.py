@@ -673,8 +673,11 @@ def test_serialized_envelope_carries_no_promotion_or_surprise_key():
 
 def test_comparison_id_excludes_correction_lineage():
     plain = serialize_comparison(valid_calc_result())
+    # A predecessor is a DIFFERENT prior envelope; naming itself is refused (see
+    # test_self_referential_correction_link_is_refused). Lineage still never
+    # enters the content identity.
     corrected = serialize_comparison(valid_calc_result(correction={
-        "corrected": True, "predecessor_id": plain["comparison_id"],
+        "corrected": True, "predecessor_id": "moc_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
         "reason": "source revision superseded the prior result"}))
     assert corrected["correction"]["corrected"] is True
     assert corrected["comparison_id"] == plain["comparison_id"]
