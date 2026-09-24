@@ -106,7 +106,7 @@ waves:
       builds the base — shared assertion, contracts/market_ontology/*, private binding, route, mount —
       and Energy integrates into it later. Carrier #7881 withdrew the T3 shared-dossier registration,
       holds T4, keeps the T9 nuclear non-regression freeze (wired into unrun-subsector-themes). Next:
-      land the T9-only slice after review; wait for B's base on main; then the Energy integration wave
+      T9 slice ACCEPTED (four Opus READ_ONLY rounds) and shipping on #7881 (ready + merge-on-green); wait for B's base on main; then the Energy integration wave
       (adapter on B's contract, nuclear witness profiles, dossier composition, consumed private
       role/route/mount, browser proof). Working checkpoint:
       agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.

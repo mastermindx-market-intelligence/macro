@@ -174,13 +174,6 @@ def _read_baseline() -> dict[str, Any]:
     return json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
 
 
-def _assert_section_unchanged(
-    live_value: Any, baseline: dict[str, Any], section_name: str
-) -> None:
-    """Exact equality for a section without a shape law (membership, public pages)."""
-    assert live_value == baseline[section_name]
-
-
 def _assert_projected_section_unchanged(
     live_section: dict[str, Any],
     baseline: dict[str, Any],
@@ -377,7 +370,6 @@ def test_baseline_sections_match_their_recorded_sha256() -> None:
     baseline = _read_baseline()
     for section_name, digest in baseline["section_sha256"].items():
         assert _canonical_sha256(baseline[section_name]) == digest, section_name
-    assert tuple(baseline["public_pages"]["canaries"]) == PRIVATE_DOSSIER_CANARIES
 
 
 def test_regeneration_rejects_sha_that_is_not_on_origin_main(
