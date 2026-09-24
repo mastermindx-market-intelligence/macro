@@ -1,45 +1,49 @@
-# Healthcare principal research and implementation-review packet
+# Healthcare principal research and consolidated implementation plan
 
-**Canonical carrier:** Macro PR #7788, branch `claude/healthcare-theme-research-20260923`. **Status:** research/design/plan under review; no Healthcare implementation, live admission, deployment or Fable Healthcare dispatch. The sole cumulative continuity owner is `../../agentos/handoffs/GMI-HEALTHCARE-RESEARCH-2026-09-23.md`.
+**Canonical research carrier:** Macro PR #7788, branch `claude/healthcare-theme-research-20260923`. **Status:** consolidated plan awaiting review; no Healthcare implementation, live source admission, deployment or worker START. The sole cumulative frontier is `../../agentos/handoffs/GMI-HEALTHCARE-RESEARCH-2026-09-23.md`.
+
+## Chairman-selected handoff route
+
+The Chairman will receive the manual startup prompt and complete packet **later**, then initiate a **NEW Healthcare-specific Fable CEO session**. The existing Semiconductor Fable on #7870 is a shared-infrastructure/compatibility counterpart, **not the Healthcare build receiver**. Do not send it the Healthcare build, dispatch a worker, or create a wake from this index. The eventual new Healthcare Fable orchestrates bounded implementation and independent review; foundational Healthcare research stays with this principal-led program.
 
 ## Start here
 
-1. [R12 shared extension specification](HEALTHCARE_R12_SHARED_EXTENSION_SPEC_2026-09-24.md): consume the actual shared-owner return, preserve B/v1, and define the common versioned extension and typed Healthcare profile. It corrects the literal R9/R10 enum-expansion requests without discarding their economic meaning. [Standalone research oracle](verify_r12_semantics.py) constructs 46 hypothetical witnesses, not native application tests.
-2. [R11 review-consumption packet](HEALTHCARE_R11_REVIEW_CONSUMPTION_PACKET_2026-09-24.md): exact review job, input hashes, questions and remaining gates. Its previously unobserved R4 consumption is now established by the R12 return below; independent Healthcare approval and production proof remain absent.
-3. [R10 compatibility amendment](HEALTHCARE_R10_SHARED_COMPATIBILITY_REVIEW_2026-09-24.md): read before R9. Consume #7870's shared identity/mint/rights/transport instead of duplicating them. Apply R12's narrower domain/version/profile interpretation.
-4. [R9 implementation plan](HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md), [review decisions](HEALTHCARE_R9_REVIEW_DECISIONS_2026-09-23.md), and [traceability](HEALTHCARE_R9_TRACEABILITY_2026-09-23.json): eight tasks/four useful releases. Prior bytes remain intact; apply the explicit R10–R12 amendments. All 60 application requirements remain NOT_EXECUTED. R12's 46 local research checks are a separate denominator.
+1. [Operative consolidated plan](HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md) — current R13 content at the stable R9 filename. Eight tasks, four useful releases, concrete ownership/dependency boundaries, all sixty original acceptance results/task mappings and all twelve research families. It incorporates the selected R10–R12 corrections; a new reader does not have to reconcile incompatible historical recipes. **REVIEW_PENDING, not a build commission.**
+2. [Shared extension specification](HEALTHCARE_R12_SHARED_EXTENSION_SPEC_2026-09-24.md) — detailed version-aware economic-right, supply-status, signed/exact and non-numerical semantics. Candidate v1.1 and the Healthcare profile are not installed merely because they are specified. The accompanying [research oracle](verify_r12_semantics.py) uses hypothetical data, not native application tests.
+3. [Review scope](HEALTHCARE_R11_REVIEW_CONSUMPTION_PACKET_2026-09-24.md) — five substantive review questions and evidence boundaries. Its older interface reading is qualified by the consolidated plan and R12. The existing review request #7788/5808976193 remains; a request or shared-code review is not independent Healthcare acceptance.
+4. [Original R9 traceability](HEALTHCARE_R9_TRACEABILITY_2026-09-23.json) and [R10 amendment](HEALTHCARE_R10_SHARED_COMPATIBILITY_REVIEW_2026-09-24.md) — historical requirement provenance. Sixty application cases remain **NOT_EXECUTED**. Their original required-result texts and task assignments are preserved in the operative plan's Appendix A.
 
-## Shared decisions and current review boundary
+## One plan, preserved history
 
-**R4:** [Sol ruling #7780/5808854275](https://github.com/mastermindx-market-intelligence/macro/pull/7780#issuecomment-5808854275) is now [acknowledged by the receiver at 5808981293](https://github.com/mastermindx-market-intelligence/macro/pull/7780#issuecomment-5808981293). Use existing private Research Vault transport under GMI ownership; protected current house research stays private; source rights remain independent of paid entitlement; nonce-first exact-existing-object proof precedes real protected admission. Actual reader/configuration/registration/invalidation and source-to-page proof remain owed.
+The R9 plan path is intentionally updated in place. Original R9 bytes remain at commit `9b06712b56450b38f952d4bc30bfcd2dcfb91e0f`, blob `f58970d627a6334905bd42fa5994a25a2b00956a`. Historical R9/R10 checkers must use that exact immutable input, not the changing plan path. Prior research dossiers, example records and the original traceability remain unchanged; their dates and limitations are not refreshed by consolidation.
 
-**Healthcare contract:** [Shared return #7870/5808981043](https://github.com/mastermindx-market-intelligence/macro/pull/7870#issuecomment-5808981043) accepts native mint and cross-domain preservation, but holds new Healthcare semantics outside Semiconductor B. [Sol R12 disposition 5809358801](https://github.com/mastermindx-market-intelligence/macro/pull/7870#issuecomment-5809358801) accepts that scope boundary and selects a versioned shared extension as Healthcare T03's dependency. No v1 rewrite, second hash, coerced unknown rate, signed physical count or Healthcare-local validator. Candidate `theme_graph.curation_assertion.v1.1` is not installed merely because it is specified. The common POST URL also needs a real typed Healthcare profile; a Semiconductor response must not be relabeled.
+R13's [planning checker](verify_r13_plan.py) compares the consolidated plan to the previously verified R11 derived review matrix and syntax-parses the illustrative Python snippets. It does not run native modules, assert all design requirements are sufficient, or provide independent review. The portable R13 package includes the exact matrix, checker and reproducible command; it is a convenience copy, not a second requirements owner or the complete research corpus.
 
-**Review:** existing #7788 request `5808976193` remains pending for shared compatibility and genuinely independent Healthcare-plan review. A username, review request or existing shared-code review does not prove independent Healthcare acceptance. Current return/effect identities belong to the cumulative checkpoint. No duplicate reviewer request or provider assignment is made by this index.
+## Shared dependencies, not a transferred Healthcare build
 
-The inspected shared implementation is #7870 at `d5b0c00d772e5034ed8c109b5990b1f3b91e0be5`, draft/unmerged. Current B source and #7462/#7669 custody remain unchanged by this research. Fable is the intended later Healthcare implementation orchestrator; foundational research is not delegated back to it.
+R4 ruling #7780/5808854275 and acknowledgment 5808981293 select existing private Research Vault transport under GMI ownership. Preserve protected current research, known-existing-object privacy proof, current source rights and the existing capped positive-only entitlement-outage policy. Actual private reader/configuration/registration and source-to-page proof remain owed.
+
+Shared response #7870/5808981043, Sol R12 disposition 5809358801 and acknowledgment 5809602368 preserve Semiconductor B/v1 and select a separately gated common versioned extension. No second hash, validator, source-rights system, publisher, global product master or auth client. A common endpoint still requires a typed Healthcare profile; it must not return renamed Semiconductor data.
+
+The latest source observation in R13 is #7870 at `b256aa6a756afa3308a534f1ec259ff0074d5154`, draft/unmerged. Reported mount and original-source resolver work requires actual accepted interface/custody receipts before integration. The source-rights qualification finding already recorded at #7870/5809660585 is not a new Healthcare registry or a blanket prohibition on SEC filings. The operative plan preserves representation-specific review and both the SEC distribution statement and authorship limitations.
 
 ## Research corpus
 
 | Wave | Dossier | Contribution |
 |---|---|---|
-| R1 | [Foundation](HEALTHCARE_RESEARCH_FOUNDATION_2026-09-23.md) | Twelve linked research families, existing-system limits and initial ontology. |
-| R2 | [Therapeutic economics](HEALTHCARE_THERAPEUTIC_ECONOMICS_R2_2026-09-23.md) | Asset/indication/territory rights, trial-analysis versions and retained economics. |
-| R3 | [Supplier economics](HEALTHCARE_SUPPLIER_ECONOMICS_R3_2026-09-23.md) | Qualified capacity, contracts, cash investment, ownership and negative scenarios. |
+| R1 | [Foundation](HEALTHCARE_RESEARCH_FOUNDATION_2026-09-23.md) | Twelve research families, existing-system limits and ontology. |
+| R2 | [Therapeutic economics](HEALTHCARE_THERAPEUTIC_ECONOMICS_R2_2026-09-23.md) | Asset/indication/territory rights, clinical-analysis versions and retained economics. |
+| R3 | [Supplier economics](HEALTHCARE_SUPPLIER_ECONOMICS_R3_2026-09-23.md) | Qualified capacity, contracts, cash requirements, ownership and contrary scenarios. |
 | R4 | [Device/procedure economics](HEALTHCARE_DEVICE_PROCEDURE_ECONOMICS_R4_2026-09-23.md) | Actual use, installed systems, clinical/access scope and provider economics. |
-| R5 | [Provider/payer economics](HEALTHCARE_PROVIDER_PAYER_ECONOMICS_R5_2026-09-23.md) | Payment, cost risk, retained economics, service periods and source feasibility. |
-| R6 | [Coverage-to-release](HEALTHCARE_COVERAGE_RELEASE_R6_2026-09-23.md) | Full-sector coverage gaps and first useful existing-theme workflow. |
-| R7 | [Source integration design](HEALTHCARE_SOURCE_INTEGRATION_DESIGN_R7_2026-09-23.md) | Native integration gaps and offline FDA-path characterization. |
-| R8 | [Shared admission review](HEALTHCARE_SHARED_ADMISSION_REVIEW_R8_2026-09-23.md) | Private binding, economic-right/supply-status branches and 41 intended cases. |
+| R5 | [Provider/payer economics](HEALTHCARE_PROVIDER_PAYER_ECONOMICS_R5_2026-09-23.md) | Payment, claims risk, retained economics, service periods and data feasibility. |
+| R6 | [Coverage-to-release](HEALTHCARE_COVERAGE_RELEASE_R6_2026-09-23.md) | Full-sector gaps and first useful existing-theme workflow. |
+| R7 | [Source integration design](HEALTHCARE_SOURCE_INTEGRATION_DESIGN_R7_2026-09-23.md) | Native integration gaps and historical offline FDA-path characterization. |
+| R8 | [Shared admission review](HEALTHCARE_SHARED_ADMISSION_REVIEW_R8_2026-09-23.md) | Private binding, domain requirements and initial acceptance cases. |
 
-Earlier examples and probes remain alongside the dossiers. They are original research/specifications, not admitted production objects. Historical characterization output is not repaired-product acceptance. The twelve-family breadth and later valuation/consensus/point-in-time evaluation remain incomplete; the first GLP-1 workflow does not replace the full-sector mission.
+Original structured examples and probes remain alongside their dossiers. They are research/specifications, not admitted production facts. Historical defect characterization is not repaired-product acceptance.
 
-## Reproduce the R12 research examples
+## Completion boundary
 
-```sh
-python research/healthcare/verify_r12_semantics.py --emit-dir /tmp/healthcare-r12-research
-```
+The investor job remains: **what changed → economic mechanism → evidenced participants → counterevidence → next observation**. D1 corrects the existing FDA source view independently; D2 proves the shared native/private/profile path; D3 delivers the full GLP-1 explanation; D4 proves correction and non-metabolic reuse. Broad Healthcare depth, global access, real security bridges, contemporary valuation/consensus and point-in-time evaluation remain explicit later obligations.
 
-The standard-library script generates invented economic/supply/version/profile witnesses and local results. It imports no product module and performs no native mint, network, source acquisition, private admission or worker operation. The 46 local checks and eight corrupted-packet rejections establish selected example consistency only. Two candidate native envelopes remain unstamped, held and synthetic; full native schema validation is NOT_EXECUTED.
-
-The source records, independent review, unchanged legacy native outputs, version-aware persistence/K1, typed Healthcare consumer, private publication and real source-to-browser proof remain separate obligations. Portable ZIPs are convenience copies, not the full prior corpus or another native evidence store. GitHub remains the canonical research owner.
+All sixty application requirements remain unexecuted. Local planning/arithmetic/syntax checks, native implementation, independent review, real-source admission, CI, merge and browser proof are different evidence. The final manual startup text and build packet have not been issued to a Fable receiver. No automated handoff, source-writer transfer or unattended execution follows from publication.
