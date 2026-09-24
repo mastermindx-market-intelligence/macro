@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T00:11:02.115792+00:00",
-  "count": 2742,
+  "generated_at": "2026-09-24T00:26:10.175176+00:00",
+  "count": 2743,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,7 @@
     "TS Lombard",
     "Talos",
     "The Market Ear",
+    "The PunchLine",
     "The Punchline",
     "Trump Xi Preview",
     "UBS",
@@ -100,6 +101,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-f8nhnxlth6e-84709a",
+      "title": "TPL Sept 23 26",
+      "institution": "The PunchLine",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:01:14Z",
+      "summary_points": [
+        "Red Sea Supply Chain Crisis: Houthi attacks on Saudi East-West pipeline (4M bpd, ~4% global supply) and Strait of Hormuz closure force rerouting, spiking VLCC rates 100% and diverting 15% of global fleet, directly squeezing oil supply and increasing logistics costs.",
+        "Diesel Price Surge & Inflation Shock: Average diesel at $6.52 driving PPI/CPI spikes, with U.S.",
+        "logistics/transportation sectors facing critical cost pressures amid refinery chokepoints from Iran-Ukraine conflicts.",
+        "China Treasury Holdings Decline: China’s official U.S.",
+        "Treasury holdings at lowest since 2008 (July 2026), signaling strategic diversification into gold and agency bonds, complicating global capital flow assessments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-nwnr2g0qu3c-a92c42",
       "title": "JPM Trump Xi summit Low bar, high stakes",
