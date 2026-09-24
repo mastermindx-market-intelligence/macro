@@ -962,3 +962,52 @@ def test_a_degraded_case_falls_back_to_the_neutral_lead() -> None:
     ]
     explanation = project_economic_change(case)["explanation"]
     assert "nearly matching expense" not in explanation["lead"]
+
+
+def test_result_keys_and_fact_keys_are_never_interchangeable() -> None:
+    """Pin the invariant whose violation caused two separate defects.
+
+    A fact identifier is not a result identifier. The two spellings currently
+    coincide (`advertising_revenue` + `_change` == `advertising_revenue_change`),
+    which is exactly why confusing them stayed silent: the economic lead was
+    unreachable on every input, and facts grouped on `key` never paired.
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    fact_keys = {
+        mod.FACT_KEY_TOTAL_REVENUE,
+        mod.FACT_KEY_ADVERTISING_REVENUE,
+        mod.FACT_KEY_ADVERTISING_EXPENSE,
+    }
+    result_keys = {
+        mod.RESULT_KEY_TOTAL_REVENUE_CHANGE,
+        mod.RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+        mod.RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        mod.RESULT_KEY_ADVERTISING_NET_CHANGE,
+        mod.RESULT_KEY_ADVERTISING_CURRENT_PERIOD_NET,
+        mod.RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
+    }
+    assert not (fact_keys & result_keys)
+
+    document = project_economic_change(_fixture_case())
+    emitted_result_keys = {r["key"] for r in document["results"]}
+    emitted_fact_keys = {f["key"] for f in document["facts"]}
+    assert emitted_result_keys <= result_keys
+    assert not (emitted_result_keys & emitted_fact_keys)
+    # input_refs name FACT keys, never result keys
+    for result in document["results"]:
+        assert set(result["input_refs"]) <= emitted_fact_keys
+        assert not (set(result["input_refs"]) & result_keys)
+
+
+def test_facts_are_grouped_by_metric_not_by_key() -> None:
+    """Facts keyed <metric>_current/_prior must still pair on their metric."""
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    grouped = mod._index_facts_by_metric(_fixture_case()["facts"])
+    assert set(grouped) == {
+        "total_revenue",
+        "advertising_revenue",
+        "advertising_expense",
+    }
+    assert all(len(v) == 2 for v in grouped.values())
