@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-09-23",
+  "asof": "2026-09-24",
   "data_session": "2026-09-23",
-  "built": "2026-09-23T18:51:35Z",
+  "built": "2026-09-24T08:02:51Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -676,55 +676,6 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": null
-    },
-    {
-      "ticker": "SPCE",
-      "company": "Virgin Galactic Holdings Inc",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-09-23",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 54,
-      "ma30_slope_pct5w": 1.784,
-      "pct_vs_ma30": 2.15,
-      "mansfield_rs": -11.43,
-      "vol_ratio": 0.33,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
-        "tags": [
-          "guidance_lowered",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "Virgin Galactic reported Q2 FY2026 with operating expenses of $65 million and capital expenditures of $41 million, resulting in free cash flow of -$91 million. Management raised the first commercial spaceflight to February 2027 due to modest time extensions on installation tas…"
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.4704,
-      "atr_ext": 0.138,
-      "atr_pct_price": 0.15323,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 65.5
     },
     {
       "ticker": "AVAH",
@@ -1569,7 +1520,7 @@
       "ticker": "VALU",
       "company": "Value Line Inc",
       "sector": "Financial",
-      "stage_source_asof": "2026-09-21",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
@@ -1778,7 +1729,7 @@
       "vol_ratio": 0.76,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": true,
+      "blackout": false,
       "arc_pos": 0.3375,
       "earnings": {
         "present": true,
@@ -1807,13 +1758,11 @@
       },
       "why": [
         "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Earnings soon — wait, don't chase"
+        "Trading above its 30-week line — the trend is with it"
       ],
       "why_zh": [
         "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "财报临近 — 先等待，不要追高"
+        "位于 30 周均线之上 — 趋势向好"
       ],
       "atr_14w": 7.1608,
       "atr_ext": 1.913,
@@ -3075,6 +3024,53 @@
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 59.2
+    },
+    {
+      "ticker": "BETA",
+      "company": "BETA Technologies Inc",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 1.826,
+      "pct_vs_ma30": 14.28,
+      "mansfield_rs": null,
+      "vol_ratio": 1.91,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 9.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "guidance_raised"
+        ],
+        "quarter": "Q2",
+        "summary": "BETA Technologies reported Q2 FY2026 revenue of $14.7 million, significantly beating the guidance range of $8-$11 million and showing year-over-year growth of 146%. The company raised its full-year revenue guidance to a new high-end range of $42-$50 million following strong ex…"
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 3.1561,
+      "atr_ext": 0.828,
+      "atr_pct_price": 0.15101,
+      "sata_score": 6,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": null
     }
   ],
   "warnings_stage3": [
@@ -3089,6 +3085,12 @@
       "company": "Ironwood Pharmaceuticals Inc",
       "weeks_in_stage": 5,
       "sga_score": 35
+    },
+    {
+      "ticker": "INOD",
+      "company": "Innodata Inc",
+      "weeks_in_stage": 3,
+      "sga_score": 30
     },
     {
       "ticker": "NXPI",
@@ -3191,19 +3193,13 @@
       "company": "Saul Centers, Inc.",
       "weeks_in_stage": 2,
       "sga_score": 12
-    },
-    {
-      "ticker": "DMRA",
-      "company": "Damora Therapeutics Inc",
-      "weeks_in_stage": 1,
-      "sga_score": 12
     }
   ],
   "sectors": [
     {
       "sector": "Financial",
-      "n": 241,
-      "pct_stage2": 76.3,
+      "n": 242,
+      "pct_stage2": 76.4,
       "trend": "up"
     },
     {

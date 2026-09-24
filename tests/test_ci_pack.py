@@ -3524,6 +3524,13 @@ CURATED_EXCLUSIVE = {
     # this manifest as text. Closure-coverage audit: zero misses.
     "market-os-macro-workspaces",
     "uk-policy-desk",
+    # 2026-09-24 Finance T1 contract lane: exclusive ownership for the new schema job.
+    "finance-intelligence",
+    # Consumer Cyclical V1-CORE: contract + deterministic projection. Exclusive
+    # for the same reason finance-intelligence is — engine/sector_intelligence/
+    # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
+    # so the job's paths must cover its own import closure.
+    "consumer-cyclical-economic-change",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
@@ -3533,6 +3540,10 @@ CURATED_EXCLUSIVE = {
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
     "earnings-economic-dossier",
+    # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
+    # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
+    # curated scope is exactly the Mining files it names.
+    "mining-economic-dossier",
     # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
     # home for tests/test_markets_regime_strip.py — its thematic neighbours
     # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the

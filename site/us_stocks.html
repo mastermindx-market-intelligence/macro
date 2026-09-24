@@ -98,6 +98,7 @@
 <link rel="preload" as="style" href="assets/css/b1234b62.css?v=b1234b62">
 <link rel="preload" as="style" href="assets/css/0c244078.css?v=0c244078">
 <link rel="preload" as="style" href="assets/css/6b41b25d.css?v=6b41b25d">
+<link rel="preload" as="style" href="assets/css/3d60fa20.css?v=3d60fa20">
 <link rel="preload" as="style" href="assets/css/97280b63.css?v=97280b63">
 <link rel="preload" as="style" href="assets/css/73403668.css?v=73403668">
 <link rel="preload" as="style" href="assets/css/4d0ba968.css?v=4d0ba968">
@@ -361,10 +362,10 @@
     <div class="stk-headline">
       <h1><span class="l-en">US Stocks</span><span class="l-zh">美国股票</span></h1>
       <div class="stk-head-meta">
-        <span class="stk-status" data-tip-en="The date is the last session this board has data for. Prices, buy zones and the ranking are rebuilt from scratch every session, so they are all as of this date." data-tip-zh="此日期是本榜单最后一个有数据的交易日。价格、买区和排序每个交易日都会完全重算，因此都截至该日期。">
+        <span class="stk-status is-delayed" data-tip-en="The date is the last session this board has data for. Prices, buy zones and the ranking are rebuilt from scratch every session, so they are all as of this date. A delayed board keeps showing its last good data rather than nothing — check a live quote before you act." data-tip-zh="此日期是本榜单最后一个有数据的交易日。价格、买区和排序每个交易日都会完全重算，因此都截至该日期。数据延迟时，榜单会继续显示最后一批有效数据，而不是留空——操作前请先看一下实时报价。">
           <span class="stk-fresh-dot" aria-hidden="true"></span>
-          <span class="l-en">Data through</span><span class="l-zh">数据截至</span>
-          <strong>2026-09-22</strong>
+          <span class="l-en">Delayed · data through</span><span class="l-zh">已延迟 · 数据截至</span>
+          <strong>2026-09-23</strong>
         </span>
         <span class="stk-status"><span class="l-en">Regime</span><span class="l-zh">周期</span> <strong><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span></strong></span>
         <span class="stk-status"><span class="l-en">Posture</span><span class="l-zh">姿态</span> <strong><span class="l-en">DEFENSIVE</span><span class="l-zh">防御</span></strong></span>
@@ -428,7 +429,7 @@
          data-tip-en="META — 99.56th percentile of 3,179 overlapping 21-session windows across 12.7 years of tape. Last larger: 2026-09-22. Source: daily price store. Windows overlap — this ranks the move, it is not an independent sample."
          data-tip-zh="META — 在 12.7 年、3,179 个重叠的 21 日窗口中位于第 99.56 百分位。上一次更大：2026-09-22。来源：日线价格库。窗口互相重叠，因此这是对本次走势的排序，并非独立样本。">
       <span class="acb-tape-sym">META</span>
-      <span class="acb-tape-fig is-up">+33.7%</span>
+      <span class="acb-tape-fig is-up">+33.2%</span>
       <span class="acb-tape-say"><span class="l-en">over 21 sessions — last bigger in Sep 2026<span class="m7t-rare">top 0.5% of its 13-year record</span></span>
         <span class="l-zh">21个交易日内 — 上一次更大是2026年9月<span class="m7t-rare">位于其 13 年历史最强的 0.5%</span></span>
       </span>
@@ -538,7 +539,7 @@
     </span>
     <span class="row-pop-stat">
       <span class="row-pop-lbl"><span class="l-en">Breadth</span><span class="l-zh">广度</span></span>
-      <strong class="">11/20</strong><small><span class="l-en">in buy zone</span><span class="l-zh">处于买入区</span></small>
+      <strong class="">9/20</strong><small><span class="l-en">in buy zone</span><span class="l-zh">处于买入区</span></small>
     </span>
   </div>
   <div class="row-pop-takeaway warn">
@@ -967,10 +968,10 @@
       <div class="plv-body" id="plv-body"></div>
       <div class="plv-fn" id="plv-fn"></div>
     </div>
-    <script type="application/json" id="plv-names">{"CVI": "CVR Energy, Inc.", "FIX": "Comfort Systems USA", "RNG": "RingCentral, Inc.", "TEAM": "Atlassian", "TRLV": "Trulieve Cannabis", "VTRS": "Viatris"}</script>
+    <script type="application/json" id="plv-names">{"FIX": "Comfort Systems USA", "MRNA": "Moderna", "RNG": "RingCentral, Inc.", "TEAM": "Atlassian", "TRLV": "Trulieve Cannabis", "VTRS": "Viatris"}</script>
     
     <div class="panel span12 notable" id="us-standouts"
-         data-prophet-src="candidates" data-board-asof="2026-09-22" data-board-delayed="0">
+         data-prophet-src="candidates" data-board-asof="2026-09-23" data-board-delayed="1">
       <div class="pb-hdrow" style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
         <h2 style="margin:0"><span class="l-en">Prophet Stock Signals</span><span class="l-zh">Prophet 选股</span></h2>
         <span class="pbs pbs-ahead" data-bs="ahead" hidden><span class="l-en">◐ Tonight&#39;s picks</span><span class="l-zh">◐ 今晚选股</span></span>
@@ -986,12 +987,12 @@
           <button id="us-st-btn-table" aria-selected="false" onclick="USStockTable._setView('table')">&#9776; <span class="l-en">Table</span><span class="l-zh">表格</span></button>
         </span>
         
-        <span class="muted" id="us-board-sub" style="font-size:11.5px"><span class="l-en">green dot = entry open, yellow = wait for pullback.</span><span class="l-zh">绿点＝现在可入场，黄点＝等回调。</span>
-          <span class="help">?<span class="tip tip-wide"><span class="l-en">Each card separates two questions: is the stock worth owning, and is today a good entry? A strong company can still be a wait if price has run too far. Green means the entry is open; yellow means wait.</span><span class="l-zh">每张卡片分开回答两个问题：这只股票是否值得持有，以及今天是否适合入场。好公司若股价已经跑远，仍然应该等待。绿点表示入场窗口已开；黄点表示等待。</span></span></span></span>
+        <span class="muted" id="us-board-sub" style="font-size:11.5px"><span class="l-en">dots reflect prices as of 2026-09-21 — verify before acting.</span><span class="l-zh">价格点位截至 2026-09-21，操作前请确认最新价格。</span>
+          <span class="help">?<span class="tip tip-wide"><span class="l-en">Board is delayed — prices are as of 2026-09-21. Dots and entry signals may not reflect current prices. Use the card to judge the company, then check a live quote before acting.</span><span class="l-zh">数据延迟 — 价格截至 2026-09-21。绿点及入场信号可能不反映最新价格。先用卡片判断公司，再查看实时报价后操作。</span></span></span></span>
         
       </div>
       <div class="pbs-note">
-        <span class="pbs-nv" data-bs-note="confirmed"><span class="l-en"><span class="pbs-fig">6</span> of <span class="pbs-fig">25</span> confirmed overnight · <span class="pbs-fig">1</span> adjusted, <span class="pbs-fig">18</span> left the board</span><span class="l-zh"><span class="pbs-fig">25</span> 只中 <span class="pbs-fig">6</span> 只隔夜确认 · 调整 <span class="pbs-fig">1</span> 只，离榜 <span class="pbs-fig">18</span> 只</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Last evening's board was built from the day's closes; the overnight pass then rebuilt it with the inputs that only arrive at night. Confirmed means the name came through unchanged. Adjusted means its entry range, stage or place in the order moved — the card shows the current numbers. Left the board means it no longer meets the bar; that is not a sell instruction for a position you already hold. Left the board: ALAB, ARM, ARQT, BIDU, BKSY, CORZ, DX-Y.NYB, EU, FTAI, GSK, LQD, MTUM</span><span class="l-zh">昨晚的榜单是按当日收盘价生成的；隔夜复核会用深夜才到位的数据重算一遍。「确认」表示这只股票原样通过；「已调整」表示入场区间、阶段或排序位置有变动，卡片上显示的是最新数值；「已离榜」表示它不再达标 —— 这不是让你卖出已有仓位的指令。已离榜：ALAB、ARM、ARQT、BIDU、BKSY、CORZ、DX-Y.NYB、EU、FTAI、GSK、LQD、MTUM</span></span></span></span>
+        <span class="pbs-nv" data-bs-note="confirmed"><span class="l-en"><span class="pbs-fig">7</span> of <span class="pbs-fig">19</span> confirmed overnight · <span class="pbs-fig">0</span> adjusted, <span class="pbs-fig">12</span> left the board</span><span class="l-zh"><span class="pbs-fig">19</span> 只中 <span class="pbs-fig">7</span> 只隔夜确认 · 调整 <span class="pbs-fig">0</span> 只，离榜 <span class="pbs-fig">12</span> 只</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Last evening's board was built from the day's closes; the overnight pass then rebuilt it with the inputs that only arrive at night. Confirmed means the name came through unchanged. Adjusted means its entry range, stage or place in the order moved — the card shows the current numbers. Left the board means it no longer meets the bar; that is not a sell instruction for a position you already hold. Left the board: ALAB, ARM, ARQT, CORZ, DX-Y.NYB, EU, FTAI, GSK, MTUM, NNE, SMH, SOXX</span><span class="l-zh">昨晚的榜单是按当日收盘价生成的；隔夜复核会用深夜才到位的数据重算一遍。「确认」表示这只股票原样通过；「已调整」表示入场区间、阶段或排序位置有变动，卡片上显示的是最新数值；「已离榜」表示它不再达标 —— 这不是让你卖出已有仓位的指令。已离榜：ALAB、ARM、ARQT、CORZ、DX-Y.NYB、EU、FTAI、GSK、MTUM、NNE、SMH、SOXX</span></span></span></span>
         <span class="pbs-nv" data-bs-note="ahead" hidden><span class="l-en"><b>Get ready</b> — set from today's close, confirmed by morning.</span><span class="l-zh"><b>可以开始准备</b> — 依今日收盘价选出，明早完成确认。</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Only part of the full test can run this early. In: how strong the signal is, and how far the name has already run. Not yet in: the entry range, the edge score the cards normally show, and the setup-quality checks — those need inputs that arrive later at night. So this is a shortlist, not the ranked board: order, scores and buy zones land with the overnight pass, and a name can still be adjusted or leave before morning. Room is how far a name has left to go before it counts as stretched — "Not checked" means that reading did not arrive for this one.</span><span class="l-zh">这个时点只能完成整套判定中的一部分。已纳入：信号强弱，以及这只股票已经走了多远。尚未纳入：入场区间、卡片上平时显示的「优势」评分，以及形态质量检查 —— 这几项都要等深夜的数据到位。所以这是一份候选名单，还不是排好序的榜单：排序、评分和买区都要等隔夜复核给出，个别股票在明早之前仍可能被调整或移出。「空间」指的是股价在被视为过度拉伸之前还剩多少余地；标注「未检查」表示这只股票没有取到这项读数。</span></span></span></span>
         <span class="pbs-nv" data-bs-note="behind" hidden><span class="l-en">Tonight's early update isn't in — these are last night's confirmed picks. Check a live quote before you act.</span><span class="l-zh">今晚的提前更新未到位，以下为昨晚确认的选股名单。操作前请先看一下实时报价。</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Tonight's early rebuild didn't publish, so the board still shows the picks the overnight pass confirmed on the date stamped above. The overnight pass runs regardless and will refresh the board tonight. Prices on the cards are from that date, not from today.</span><span class="l-zh">今晚的提前重算没有发布，所以榜单显示的仍是上方日期那一晚确认的选股。隔夜复核照常运行，今晚会刷新榜单。卡片上的价格来自那一天，不是今天。</span></span></span></span>
         <span class="pbs-nv" data-bs-note="closed" hidden><span class="l-en">Markets are closed — these are the last confirmed picks. The board updates after the next session's close.</span><span class="l-zh">休市中，以下为最近一次确认的选股名单。下一个交易日收盘后更新。</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Markets were closed today, so there is nothing new to add. The board shows the picks confirmed after the last session, and it refreshes after the next one closes.</span><span class="l-zh">今天休市，没有新的内容。榜单显示的是上一个交易日之后确认的选股，下一个交易日收盘后会刷新。</span></span></span></span>
@@ -999,6 +1000,12 @@
       
       
       
+      
+      
+      
+      <div class="nb-stale-note">
+        <span class="l-en">Still ranked on prices as of 2026-09-21 — 2 sessions behind. We’re updating it; check a live quote before you act.</span><span class="l-zh">仍按截至 2026-09-21 的价格排序，落后 2 个交易日。数据正在更新，操作前请先看一下实时报价。</span>
+      </div>
       
       
       
@@ -1011,11 +1018,11 @@
           <h3><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
           <span class="plo-asof">
             <span class="l-en">Source</span><span class="l-zh">数据日期</span>
-            2026-09-21
+            2026-09-23
           </span>
         </div>
         <div class="plo-summary">
-          <span><b>111</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
+          <span><b>113</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
           <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
         </div>
         
@@ -1058,12 +1065,173 @@
         </div>
         
         <div class="pg-more plo-more">
-          <span class="l-en">108 more observed names</span>
-          <span class="l-zh">另有 108 个观察标的</span>
+          <span class="l-en">110 more observed names</span>
+          <span class="l-zh">另有 110 个观察标的</span>
         </div>
         
       </section>
       
+      
+
+
+
+
+
+<link rel="stylesheet" href="assets/css/3d60fa20.css?v=3d60fa20">
+<details class="ucp" id="us-candidate-pool" data-status="ready" data-total="93" data-as-of="2026-09-23" data-source-digest="8d2dc959c26e7c25351ff8d12654c2b6393ba180683daacc9dacc3ca0a2cd06a">
+  <summary><span class="l-en">All eligible candidates</span><span class="l-zh">全部候选股票</span>
+    <span class="ucp-summary-count">93 <span class="l-en">eligible</span><span class="l-zh">个候选</span> · 31 <span class="l-en">outside main list</span><span class="l-zh">个不在主榜</span></span>
+  </summary>
+  <div class="ucp-body">
+    <p class="ucp-note"><span class="l-en">Eligibility is not an entry recommendation. Display limits do not remove names from this view.</span><span class="l-zh">候选资格并非入场推荐。展示上限不会使候选从此视图消失。</span>
+      <span class="l-en">As of</span><span class="l-zh">截至</span> 2026-09-23.</p>
+    
+    
+    <details class="ucp-receipt ucp-archive" data-archive-status="matched_fields">
+      <summary><span class="l-en">Saved history</span><span class="l-zh">历史记录</span> ·
+        93/93 <span class="l-en">candidate records match</span><span class="l-zh">个候选记录匹配</span>
+        
+      </summary>
+      <p><span class="l-en">Saved candidate fields match this screen. The archive does not establish the exact build version.</span><span class="l-zh">已保存的候选字段与此筛选结果匹配，但档案无法确认完全相同的构建版本。</span>
+      </p>
+    </details>
+    
+    
+    <div class="ucp-controls">
+      <label class="ucp-search" for="ucp-search"><span><span class="l-en">Find ticker, company or sector</span><span class="l-zh">查找代码、公司或板块</span></span><input id="ucp-search" type="search" autocomplete="off"></label>
+      <label class="ucp-toggle"><input id="ucp-outside" type="checkbox"><span><span class="l-en">Outside main list only</span><span class="l-zh">仅看主榜之外</span></span></label>
+    </div>
+    <p class="ucp-status" aria-live="polite"><span data-ucp-matched>3</span> <span class="l-en">shown of</span><span class="l-zh">个匹配，共加载</span> <span data-ucp-loaded>3</span> <span class="l-en">loaded</span><span class="l-zh">个</span> · 31 <span class="l-en">without a final score in the full pool</span><span class="l-zh">个候选尚无最终评分</span></p>
+    <div class="ucp-list">
+
+
+
+
+
+<div class="ucp-row" data-ticker="STRL" data-off-board="false">
+  <div class="ucp-identity">
+    <a href="stock.html#STRL">STRL</a>
+    <span class="ucp-name">Sterling Infrastructure</span>
+    <span class="muted">Industrials</span>
+  </div>
+  <div class="ucp-decision">
+    <span class="ucp-placement"><span class="l-en">On main list</span><span class="l-zh">主榜标的</span></span>
+    <span class="l-en">Confirmation window expired</span><span class="l-zh">确认窗口已过期</span>
+    <details class="ucp-receipt"><summary><span class="l-en">Decision record</span><span class="l-zh">决策记录</span></summary>
+      <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> 1
+       · <span class="l-en">Signal</span><span class="l-zh">信号</span> T1
+      <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
+      <code>pending_expired</code>
+      
+      <div class="ucp-archive-row" data-archive-state="matched_fields">
+        <span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+        
+      </div>
+      
+    </details>
+  </div>
+  <div class="ucp-score">
+    
+    <b>57.5</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
+    
+  </div>
+</div>
+
+
+
+<div class="ucp-row" data-ticker="PWR" data-off-board="false">
+  <div class="ucp-identity">
+    <a href="stock.html#PWR">PWR</a>
+    <span class="ucp-name">Quanta Services Inc</span>
+    <span class="muted">Industrials</span>
+  </div>
+  <div class="ucp-decision">
+    <span class="ucp-placement"><span class="l-en">On main list</span><span class="l-zh">主榜标的</span></span>
+    <span class="l-en">Confirmation window expired</span><span class="l-zh">确认窗口已过期</span>
+    <details class="ucp-receipt"><summary><span class="l-en">Decision record</span><span class="l-zh">决策记录</span></summary>
+      <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> 2
+       · <span class="l-en">Signal</span><span class="l-zh">信号</span> T1
+      <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
+      <code>pending_expired</code><code>conviction_low</code>
+      
+      <div class="ucp-archive-row" data-archive-state="matched_fields">
+        <span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+        
+      </div>
+      
+    </details>
+  </div>
+  <div class="ucp-score">
+    
+    <b>69.2</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
+    
+  </div>
+</div>
+
+
+
+<div class="ucp-row" data-ticker="PLAB" data-off-board="false">
+  <div class="ucp-identity">
+    <a href="stock.html#PLAB">PLAB</a>
+    <span class="ucp-name">Photronics, Inc.</span>
+    <span class="muted">Information Technology</span>
+  </div>
+  <div class="ucp-decision">
+    <span class="ucp-placement"><span class="l-en">On main list</span><span class="l-zh">主榜标的</span></span>
+    <span class="l-en">Admission checks passed</span><span class="l-zh">已通过准入检查</span>
+    <details class="ucp-receipt"><summary><span class="l-en">Decision record</span><span class="l-zh">决策记录</span></summary>
+      <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> 3
+       · <span class="l-en">Signal</span><span class="l-zh">信号</span> T2
+      <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
+      <code>cleared_admission</code><code>board_featured</code><code>already_open</code>
+      
+      <div class="ucp-archive-row" data-archive-state="matched_fields">
+        <span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+        
+      </div>
+      
+    </details>
+  </div>
+  <div class="ucp-score">
+    
+    <b>50.8</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
+    
+  </div>
+</div>
+
+
+</div>
+    <p class="ucp-no-match muted" hidden><span class="l-en">No matches in the loaded candidates.</span><span class="l-zh">已加载的候选中没有匹配结果。</span></p>
+    <div class="pg-more ucp-more"><span class="l-en">90 more candidates are available with full access.</span><span class="l-zh">完整访问权限可查看另外 90 个候选。</span></div>
+    
+  </div>
+</details>
+<script>
+(function(){
+  'use strict';
+  var root=document.getElementById('us-candidate-pool');
+  if(!root || root.dataset.filterBound) return;
+  var search=root.querySelector('#ucp-search'), outside=root.querySelector('#ucp-outside');
+  if(!search || !outside) return;
+  root.dataset.filterBound='true';
+  function filter(){
+    var term=search.value.trim().toLocaleLowerCase(), rows=root.querySelectorAll('.ucp-row'), shown=0;
+    for(var i=0;i<rows.length;i++){
+      var row=rows[i], match=(!outside.checked || row.dataset.offBoard==='true') && (!term || row.textContent.toLocaleLowerCase().indexOf(term)!==-1);
+      row.hidden=!match; if(match) shown++;
+    }
+    root.querySelector('[data-ucp-matched]').textContent=String(shown);
+    root.querySelector('[data-ucp-loaded]').textContent=String(rows.length);
+    root.querySelector('.ucp-no-match').hidden=shown!==0;
+  }
+  search.addEventListener('input',filter); outside.addEventListener('change',filter);
+  root.addEventListener('candidate-pool-hydrated',filter);
+  filter();
+})();
+</script>
+
+
+
       
       
       
@@ -1079,11 +1247,11 @@
           "ticker":        "FIX",
           "name":          "Comfort Systems USA",
           "sector":        "Industrials",
-          "lane":          "bottoming",
-          "stage":         "ENTRY",
+          "lane":          "watch",
+          "stage":         "RAN_LATE",
           "price":         1632.59,
           "conviction_score": 62,
-          "alpha":         1.56,
+          "alpha":         1.51,
           "off_high":      -21.0,
           "factor_z":      -0.949,
           "sue_z":         2.04,
@@ -1091,17 +1259,17 @@
           "sig_tier":      "T1",
           "entry_status":  "partial",
           
-          "days_since_signal": 1,
+          "days_since_signal": 2,
           "dir":           "up"
         },{
           "ticker":        "VTRS",
           "name":          "Viatris",
           "sector":        "Health Care",
-          "lane":          "bottoming",
-          "stage":         "ENTRY",
+          "lane":          "watch",
+          "stage":         "RAN_LATE",
           "price":         17.1,
-          "conviction_score": 38,
-          "alpha":         1.17,
+          "conviction_score": 35,
+          "alpha":         1.24,
           "off_high":      -3.5,
           "factor_z":      -0.436,
           "sue_z":         null,
@@ -1109,7 +1277,7 @@
           "sig_tier":      "T2",
           "entry_status":  "partial",
           
-          "days_since_signal": 1,
+          "days_since_signal": 2,
           "dir":           "up"
         },{
           "ticker":        "TRLV",
@@ -1119,7 +1287,7 @@
           "stage":         "ENTRY",
           "price":         12.5,
           "conviction_score": 42,
-          "alpha":         0.66,
+          "alpha":         0.63,
           "off_high":      -3.8,
           "factor_z":      null,
           "sue_z":         null,
@@ -1130,7 +1298,7 @@
           "days_since_signal": 22,
           "dir":           "up"
         }],
-        "as_of": "2026-09-22"
+        "as_of": "2026-09-23"
       }
       </script>
       
@@ -1153,12 +1321,12 @@
   </button>
   <button type="button" class="mx-cell" data-life="ready" aria-pressed="false">
     <span class="mx-cap mx-cap--ready" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">66</span>
+    <span class="mx-cell-n fig">61</span>
     <span class="mx-cell-l"><span class="l-en">Ready</span><span class="l-zh">就绪</span></span>
   </button>
   <button type="button" class="mx-cell" data-life="entered" aria-pressed="false">
     <span class="mx-cap mx-cap--entered" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">149</span>
+    <span class="mx-cell-n fig">150</span>
     <span class="mx-cell-l"><span class="l-en">Entered</span><span class="l-zh">入场</span></span>
   </button>
   <button type="button" class="mx-cell" data-life="delivering" aria-pressed="false" data-zero="1">
@@ -1173,7 +1341,7 @@
   </button>
   <button type="button" class="mx-cell mx-cell--last-live" data-life="invalidated" aria-pressed="false">
     <span class="mx-cap mx-cap--invalidated" aria-hidden="true"></span>
-    <span class="mx-cell-n fig">22</span>
+    <span class="mx-cell-n fig">26</span>
     <span class="mx-cell-l"><span class="l-en">Invalidated</span><span class="l-zh">失效</span></span>
   </button>
   
@@ -1276,22 +1444,22 @@
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2"><span class="l-en">Candidates</span><span class="l-zh">候选</span></h2>
           
-          <span class="mx-sec-total"><span class="l-en"><b>62</b> screened · as of <time datetime="2026-09-22">2026-09-22</time></span><span class="l-zh">筛出 <b>62</b> 只 · 截至 <time datetime="2026-09-22">2026-09-22</time></span></span>
+          <span class="mx-sec-total"><span class="l-en"><b>62</b> screened · as of <time datetime="2026-09-23">2026-09-23</time></span><span class="l-zh">筛出 <b>62</b> 只 · 截至 <time datetime="2026-09-23">2026-09-23</time></span></span>
           <a class="mx-sec-link" href="discovery.html"><span class="l-en">Open the screener</span><span class="l-zh">打开筛选器</span></a>
         </div><p class="mx-sec-note"><span class="l-en">Names surfaced by this dated screen. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.</span><span class="l-zh">本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。</span></p><div class="us-gate-note" id="us-gate-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <span class="l-en">You're seeing the first 3 of 62 screened candidates. Sign in to see the full list.</span>
           <span class="l-zh">当前显示本次筛出的 62 只候选中的前 3 只。登录后可查看完整名单。</span>
         </div><div class="cand-shelves">
-          <span class="cand-shelf"><b class="fig">18</b><span><span class="l-en">Live now</span><span class="l-zh">现在可操作</span></span><i><span class="l-en">entry window is open</span><span class="l-zh">入场窗口已打开</span></i></span>
+          <span class="cand-shelf"><b class="fig">19</b><span><span class="l-en">Live now</span><span class="l-zh">现在可操作</span></span><i><span class="l-en">entry window is open</span><span class="l-zh">入场窗口已打开</span></i></span>
           
-          <span class="cand-shelf"><b class="fig">27</b><span><span class="l-en">Setting up</span><span class="l-zh">形成中</span></span><i><span class="l-en">not there yet — get ready</span><span class="l-zh">尚未触发 — 做好准备</span></i></span>
+          <span class="cand-shelf"><b class="fig">26</b><span><span class="l-en">Setting up</span><span class="l-zh">形成中</span></span><i><span class="l-en">not there yet — get ready</span><span class="l-zh">尚未触发 — 做好准备</span></i></span>
           
-          <span class="cand-shelf"><b class="fig">10</b><span><span class="l-en">Ran — don’t chase</span><span class="l-zh">已启动 — 勿追</span></span><i><span class="l-en">the move already started</span><span class="l-zh">行情已经启动</span></i></span>
+          <span class="cand-shelf"><b class="fig">9</b><span><span class="l-en">Ran — don’t chase</span><span class="l-zh">已启动 — 勿追</span></span><i><span class="l-en">the move already started</span><span class="l-zh">行情已经启动</span></i></span>
           
           <span class="cand-shelf"><b class="fig">1</b><span><span class="l-en">Basing</span><span class="l-zh">筑底中</span></span><i><span class="l-en">no entry signal yet — watch, don’t chase</span><span class="l-zh">尚无入场信号 — 观察，勿追高</span></i></span>
           
-          <span class="cand-shelf"><b class="fig">6</b><span><span class="l-en">Blocked</span><span class="l-zh">受阻</span></span><i><span class="l-en">stand aside for now</span><span class="l-zh">暂时观望</span></i></span>
+          <span class="cand-shelf"><b class="fig">7</b><span><span class="l-en">Blocked</span><span class="l-zh">受阻</span></span><i><span class="l-en">stand aside for now</span><span class="l-zh">暂时观望</span></i></span>
           
         </div><div class="nbgrid" data-showmore-rows="3" id="us-cand-grid">
       
@@ -1300,7 +1468,7 @@
         
         <div class="nb-stage-hd sg-live" data-stage="live" data-sm-heading="1" data-tip-en="The entry window is open now. Higher Priority means the setup is more ready today, not more likely to win." data-tip-zh="入场窗口现在已经打开。 优先级越高，表示今天越接近可操作，并不代表更容易获胜。">
           <span class="sh-l"><span class="l-en">Live now</span><span class="l-zh">现在可操作</span></span>
-          <span class="sh-n">18</span>
+          <span class="sh-n">19</span>
           <span class="sh-s"><span class="l-en">entry window is open</span><span class="l-zh">入场窗口已打开</span></span>
         </div>
         
@@ -1365,11 +1533,11 @@
         
         <a class="pvcard pv-buy pv-featured" href="stock.html#FIX" data-ticker="FIX" data-stage="live">
   <div class="pv-chart">
-    <svg class="nch" viewBox="0 0 240 42" preserveAspectRatio="none" width="100%" height="42"><rect x="144.0" y="34.7" width="96.0" height="3.4" fill="var(--up)" fill-opacity="0.09" stroke="none"/><line x1="144.0" y1="34.7" x2="240" y2="34.7" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><line x1="144.0" y1="38.1" x2="240" y2="38.1" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><polyline points="0,42 0.0,17.1 3.9,14.1 7.7,10.1 11.6,20.5 15.5,14.5 19.4,12.4 23.2,19.8 27.1,27.8 31.0,24.4 34.8,31.5 38.7,31.4 42.6,25.2 46.5,26.8 50.3,28.4 54.2,25.6 58.1,28.1 61.9,31.7 65.8,32.1 69.7,29.7 73.5,25.8 77.4,24.6 81.3,22.1 85.2,28.3 89.0,28.5 92.9,35.2 96.8,42.0 100.6,30.6 104.5,28.6 108.4,25.9 112.3,25.6 116.1,28.1 120.0,29.6 123.9,30.8 127.7,32.1 131.6,31.2 135.5,28.0 139.4,28.6 143.2,25.7 147.1,18.8 151.0,27.9 154.8,30.7 158.7,32.1 162.6,33.2 166.5,36.2 170.3,39.2 174.2,35.8 178.1,35.8 181.9,42.0 185.8,40.3 189.7,39.7 193.5,39.4 197.4,38.1 201.3,36.1 205.2,33.7 209.0,35.8 212.9,37.4 216.8,31.0 220.6,37.9 224.5,38.3 228.4,37.6 232.3,38.5 236.1,33.5 240.0,34.7 240,42" fill="var(--up)" opacity="0.12" stroke="none"/><polyline points="0.0,17.1 3.9,14.1 7.7,10.1 11.6,20.5 15.5,14.5 19.4,12.4 23.2,19.8 27.1,27.8 31.0,24.4 34.8,31.5 38.7,31.4 42.6,25.2 46.5,26.8 50.3,28.4 54.2,25.6 58.1,28.1 61.9,31.7 65.8,32.1 69.7,29.7 73.5,25.8 77.4,24.6 81.3,22.1 85.2,28.3 89.0,28.5 92.9,35.2 96.8,42.0 100.6,30.6 104.5,28.6 108.4,25.9 112.3,25.6 116.1,28.1 120.0,29.6 123.9,30.8 127.7,32.1 131.6,31.2 135.5,28.0 139.4,28.6 143.2,25.7 147.1,18.8 151.0,27.9 154.8,30.7 158.7,32.1 162.6,33.2 166.5,36.2 170.3,39.2 174.2,35.8 178.1,35.8 181.9,42.0 185.8,40.3 189.7,39.7 193.5,39.4 197.4,38.1 201.3,36.1 205.2,33.7 209.0,35.8 212.9,37.4 216.8,31.0 220.6,37.9 224.5,38.3 228.4,37.6 232.3,38.5 236.1,33.5 240.0,34.7" fill="none" stroke="var(--up)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="34.7" r="2.6" fill="var(--up)"/></svg>
+    <svg class="nch" viewBox="0 0 240 42" preserveAspectRatio="none" width="100%" height="42"><rect x="144.0" y="34.7" width="96.0" height="3.4" fill="var(--up)" fill-opacity="0.09" stroke="none"/><line x1="144.0" y1="34.7" x2="240" y2="34.7" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><line x1="144.0" y1="38.1" x2="240" y2="38.1" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><polyline points="0,42 0.0,14.1 3.9,10.1 7.9,20.5 11.8,14.5 15.7,12.4 19.7,19.8 23.6,27.8 27.5,24.4 31.5,31.5 35.4,31.4 39.3,25.2 43.3,26.8 47.2,28.4 51.1,25.6 55.1,28.1 59.0,31.7 63.0,32.1 66.9,29.7 70.8,25.8 74.8,24.6 78.7,22.1 82.6,28.3 86.6,28.5 90.5,35.2 94.4,42.0 98.4,30.6 102.3,28.6 106.2,25.9 110.2,25.6 114.1,28.1 118.0,29.6 122.0,30.8 125.9,32.1 129.8,31.2 133.8,28.0 137.7,28.6 141.6,25.7 145.6,18.8 149.5,27.9 153.4,30.7 157.4,32.1 161.3,33.2 165.2,36.2 169.2,39.2 173.1,35.8 177.0,35.8 181.0,42.0 184.9,40.3 188.9,39.7 192.8,39.4 196.7,38.1 200.7,36.1 204.6,33.7 208.5,35.8 212.5,37.4 216.4,31.0 220.3,37.9 224.3,38.3 228.2,37.6 232.1,38.5 236.1,33.5 240.0,34.7 240,42" fill="var(--up)" opacity="0.12" stroke="none"/><polyline points="0.0,14.1 3.9,10.1 7.9,20.5 11.8,14.5 15.7,12.4 19.7,19.8 23.6,27.8 27.5,24.4 31.5,31.5 35.4,31.4 39.3,25.2 43.3,26.8 47.2,28.4 51.1,25.6 55.1,28.1 59.0,31.7 63.0,32.1 66.9,29.7 70.8,25.8 74.8,24.6 78.7,22.1 82.6,28.3 86.6,28.5 90.5,35.2 94.4,42.0 98.4,30.6 102.3,28.6 106.2,25.9 110.2,25.6 114.1,28.1 118.0,29.6 122.0,30.8 125.9,32.1 129.8,31.2 133.8,28.0 137.7,28.6 141.6,25.7 145.6,18.8 149.5,27.9 153.4,30.7 157.4,32.1 161.3,33.2 165.2,36.2 169.2,39.2 173.1,35.8 177.0,35.8 181.0,42.0 184.9,40.3 188.9,39.7 192.8,39.4 196.7,38.1 200.7,36.1 204.6,33.7 208.5,35.8 212.5,37.4 216.4,31.0 220.3,37.9 224.3,38.3 228.2,37.6 232.1,38.5 236.1,33.5 240.0,34.7" fill="none" stroke="var(--up)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="34.7" r="2.6" fill="var(--up)"/></svg>
     <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Buy</span><span class="l-zh">买入</span></span>
       <span class="pv-trg" data-tip-en="Fresh entry trigger — it fired in the last few days and momentum is still building. A conviction card plus a fresh trigger is the strongest read on this board — but the main chip still rules: if this card says Wait, price has already run past the zone; don&#39;t chase." data-tip-zh="新的入场触发 — 最近几天刚刚触发，动量还在往上走。信念卡片加上新触发，是本板最强的组合 — 但主标签仍然是最终判断：如果卡片写的是「等待」，说明价格已经冲过买点区，不要追。">⚡ <span class="l-en">Triggered</span><span class="l-zh">已触发</span></span>
       <span class="pv-live" hidden></span>
-      <span class="pv-cau"><button class="pv-cau-btn" type="button" aria-label="Caution notes (3)" onclick="event.preventDefault();event.stopPropagation();this.focus()">⚠ 3</button><span class="pv-cau-pop" role="tooltip"><span class="pv-cau-hd"><span class="l-en">Before you act</span><span class="l-zh">动手之前</span></span><span class="pv-cau-row"><span class="l-en">Accounting quality looks weak.</span><span class="l-zh">财务质量偏弱。</span></span><span class="pv-cau-row"><span class="l-en">Its Industrials (Equal-Weight) basket is below its long-term trend. Size down: the tape is rewarding leaders, and this basket is not one.</span><span class="l-zh">所属 工业（等权） 篮子已跌破长期趋势。减小仓位：当前行情奖励领先板块，该篮子并不在其中。</span></span><span class="pv-cau-row"><span class="l-en">Sector stance is reduce. This is a single-stock trigger, not a sector call.</span><span class="l-zh">板块态度为减配。个股信号，非板块判断。</span></span></span></span>
+      <span class="pv-cau"><button class="pv-cau-btn" type="button" aria-label="Caution notes (3)" onclick="event.preventDefault();event.stopPropagation();this.focus()">⚠ 3</button><span class="pv-cau-pop" role="tooltip"><span class="pv-cau-hd"><span class="l-en">Before you act</span><span class="l-zh">动手之前</span></span><span class="pv-cau-row"><span class="l-en">Accounting quality looks weak.</span><span class="l-zh">财务质量偏弱。</span></span><span class="pv-cau-row"><span class="l-en">Its Industrials (Equal-Weight) basket is below its long-term trend. Size down: the tape is rewarding leaders, and this basket is not one.</span><span class="l-zh">所属 工业（等权） 篮子已跌破长期趋势。减小仓位：当前行情奖励领先板块，该篮子并不在其中。</span></span><span class="pv-cau-row"><span class="l-en">Already moving. Don&#39;t chase above the buy zone.</span><span class="l-zh">已在异动。不要在买区上方追高。</span></span></span></span>
     </span>
     <span class="pv-ov pv-ovr"><span class="pv-quote"><span class="nb-px pv-px" data-sym="FIX" data-mkt="us">$1632.59</span><span class="nb-chg pv-chg" data-sym="FIX" data-mkt="us">—</span></span></span>
   </div>
@@ -1378,9 +1546,9 @@
       <span class="pv-idw"><span class="pv-tk">FIX</span><span class="pv-nm"><span class="l-en">Comfort Systems USA</span><span class="l-zh">Comfort Systems USA</span></span></span>
       <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">73</span></span>
     </div>
-    <div class="pv-ind"><span class="l-en">Industrials</span><span class="l-zh">工业</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-feat"><span class="l-en">★ Featured</span><span class="l-zh">★ 精选</span></span><span class="pv-mk-i pv-mk-lane" data-tip-en="The shape of the setup: bottoming = turning up off a base · continuation = an existing uptrend resuming · trend / recovery = further along. It groups risk, it does not rank the name." data-tip-zh="形态类型：筑底＝自底部转强 · 延续＝原有上升趋势重启 · 趋势／复苏＝走得更远。它用于摆放风险，不决定排名。"><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span></div>
-    <div class="pv-stp"><span class="pv-dot on"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span></div>
-    <div class="pv-stl"><span class="on"><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span><span><span class="l-en">Turning</span><span class="l-zh">转向</span></span><span><span class="l-en">Ready</span><span class="l-zh">就绪</span></span><span><span class="l-en">Trend</span><span class="l-zh">趋势</span></span></div>
+    <div class="pv-ind"><span class="l-en">Industrials</span><span class="l-zh">工业</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-feat"><span class="l-en">★ Featured</span><span class="l-zh">★ 精选</span></span></div>
+    <div class="pv-stp"><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span></div>
+    <div class="pv-stl"><span><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span><span><span class="l-en">Turning</span><span class="l-zh">转向</span></span><span><span class="l-en">Ready</span><span class="l-zh">就绪</span></span><span><span class="l-en">Trend</span><span class="l-zh">趋势</span></span></div>
   </div>
   <div class="pv-zn"><span class="pv-znl"><span class="l-en">Zone</span><span class="l-zh">买区</span></span><span class="pv-znr">$1579.00–$1632.60</span><span class="pv-added" data-added="2026-09-21" data-tip-en="On the Prophet board continuously since this date. If the name leaves and later returns, this date resets." data-tip-zh="自该日起持续在 Prophet 榜上；若离榜后重新上榜，此日期将重新计算。"><span class="l-en">Added Sep 21</span><span class="l-zh">入榜 09-21</span></span>
   </div>
@@ -1448,7 +1616,7 @@
         
         <a class="pvcard pv-buy pv-featured" href="stock.html#VTRS" data-ticker="VTRS" data-stage="live">
   <div class="pv-chart">
-    <svg class="nch" viewBox="0 0 240 42" preserveAspectRatio="none" width="100%" height="42"><rect x="144.0" y="20.2" width="96.0" height="4.2" fill="var(--up)" fill-opacity="0.09" stroke="none"/><line x1="144.0" y1="20.2" x2="240" y2="20.2" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><line x1="144.0" y1="24.4" x2="240" y2="24.4" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><polyline points="0,42 0.0,42.0 3.9,39.1 7.7,36.8 11.6,32.6 15.5,34.3 19.4,39.9 23.2,35.1 27.1,26.7 31.0,25.0 34.8,22.5 38.7,27.3 42.6,32.5 46.5,33.6 50.3,31.7 54.2,33.0 58.1,27.0 61.9,16.5 65.8,17.1 69.7,22.0 73.5,12.3 77.4,23.7 81.3,19.4 85.2,20.0 89.0,13.6 92.9,10.1 96.8,10.7 100.6,11.7 104.5,14.9 108.4,13.8 112.3,12.6 116.1,13.4 120.0,35.2 123.9,33.0 127.7,35.4 131.6,35.4 135.5,38.3 139.4,39.2 143.2,36.2 147.1,36.2 151.0,37.2 154.8,35.9 158.7,38.0 162.6,32.8 166.5,29.2 170.3,26.3 174.2,24.2 178.1,23.6 181.9,32.5 185.8,29.7 189.7,27.8 193.5,20.4 197.4,22.8 201.3,23.8 205.2,28.1 209.0,29.9 212.9,31.8 216.8,29.7 220.6,27.3 224.5,27.5 228.4,21.5 232.3,19.7 236.1,22.6 240.0,20.2 240,42" fill="var(--up)" opacity="0.12" stroke="none"/><polyline points="0.0,42.0 3.9,39.1 7.7,36.8 11.6,32.6 15.5,34.3 19.4,39.9 23.2,35.1 27.1,26.7 31.0,25.0 34.8,22.5 38.7,27.3 42.6,32.5 46.5,33.6 50.3,31.7 54.2,33.0 58.1,27.0 61.9,16.5 65.8,17.1 69.7,22.0 73.5,12.3 77.4,23.7 81.3,19.4 85.2,20.0 89.0,13.6 92.9,10.1 96.8,10.7 100.6,11.7 104.5,14.9 108.4,13.8 112.3,12.6 116.1,13.4 120.0,35.2 123.9,33.0 127.7,35.4 131.6,35.4 135.5,38.3 139.4,39.2 143.2,36.2 147.1,36.2 151.0,37.2 154.8,35.9 158.7,38.0 162.6,32.8 166.5,29.2 170.3,26.3 174.2,24.2 178.1,23.6 181.9,32.5 185.8,29.7 189.7,27.8 193.5,20.4 197.4,22.8 201.3,23.8 205.2,28.1 209.0,29.9 212.9,31.8 216.8,29.7 220.6,27.3 224.5,27.5 228.4,21.5 232.3,19.7 236.1,22.6 240.0,20.2" fill="none" stroke="var(--up)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="20.2" r="2.6" fill="var(--up)"/></svg>
+    <svg class="nch" viewBox="0 0 240 42" preserveAspectRatio="none" width="100%" height="42"><rect x="144.0" y="20.9" width="96.0" height="4.5" fill="var(--up)" fill-opacity="0.09" stroke="none"/><line x1="144.0" y1="20.9" x2="240" y2="20.9" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><line x1="144.0" y1="25.4" x2="240" y2="25.4" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><polyline points="0,42 0.0,41.1 3.9,38.7 7.9,34.2 11.8,36.0 15.7,42.0 19.7,36.8 23.6,27.8 27.5,26.1 31.5,23.3 35.4,28.5 39.3,34.1 43.3,35.3 47.2,33.2 51.1,34.6 55.1,28.2 59.0,16.9 63.0,17.6 66.9,22.8 70.8,12.4 74.8,24.7 78.7,20.0 82.6,20.7 86.6,13.9 90.5,10.1 94.4,10.8 98.4,11.8 102.3,15.2 106.2,14.0 110.2,12.8 114.1,13.7 118.0,37.0 122.0,34.6 125.9,37.2 129.8,37.2 133.8,40.3 137.7,41.3 141.6,38.0 145.6,38.0 149.5,39.1 153.4,37.7 157.4,39.9 161.3,34.4 165.2,30.6 169.2,27.5 173.1,25.2 177.0,24.5 181.0,34.1 184.9,31.1 188.9,29.0 192.8,21.1 196.7,23.7 200.7,24.7 204.6,29.4 208.5,31.3 212.5,33.4 216.4,31.1 220.3,28.5 224.3,28.7 228.2,22.3 232.1,20.4 236.1,23.5 240.0,20.9 240,42" fill="var(--up)" opacity="0.12" stroke="none"/><polyline points="0.0,41.1 3.9,38.7 7.9,34.2 11.8,36.0 15.7,42.0 19.7,36.8 23.6,27.8 27.5,26.1 31.5,23.3 35.4,28.5 39.3,34.1 43.3,35.3 47.2,33.2 51.1,34.6 55.1,28.2 59.0,16.9 63.0,17.6 66.9,22.8 70.8,12.4 74.8,24.7 78.7,20.0 82.6,20.7 86.6,13.9 90.5,10.1 94.4,10.8 98.4,11.8 102.3,15.2 106.2,14.0 110.2,12.8 114.1,13.7 118.0,37.0 122.0,34.6 125.9,37.2 129.8,37.2 133.8,40.3 137.7,41.3 141.6,38.0 145.6,38.0 149.5,39.1 153.4,37.7 157.4,39.9 161.3,34.4 165.2,30.6 169.2,27.5 173.1,25.2 177.0,24.5 181.0,34.1 184.9,31.1 188.9,29.0 192.8,21.1 196.7,23.7 200.7,24.7 204.6,29.4 208.5,31.3 212.5,33.4 216.4,31.1 220.3,28.5 224.3,28.7 228.2,22.3 232.1,20.4 236.1,23.5 240.0,20.9" fill="none" stroke="var(--up)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="20.9" r="2.6" fill="var(--up)"/></svg>
     <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Buy</span><span class="l-zh">买入</span></span>
       <span class="pv-trg" data-tip-en="Fresh entry trigger — it fired in the last few days and momentum is still building. A conviction card plus a fresh trigger is the strongest read on this board — but the main chip still rules: if this card says Wait, price has already run past the zone; don&#39;t chase." data-tip-zh="新的入场触发 — 最近几天刚刚触发，动量还在往上走。信念卡片加上新触发，是本板最强的组合 — 但主标签仍然是最终判断：如果卡片写的是「等待」，说明价格已经冲过买点区，不要追。">⚡ <span class="l-en">Triggered</span><span class="l-zh">已触发</span></span>
       <span class="pv-live" hidden></span>
@@ -1459,11 +1627,11 @@
   <div class="pv-bd">
     <div class="pv-hd">
       <span class="pv-idw"><span class="pv-tk">VTRS</span><span class="pv-nm"><span class="l-en">Viatris</span><span class="l-zh">Viatris</span></span></span>
-      <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">63</span></span>
+      <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">64</span></span>
     </div>
-    <div class="pv-ind"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-feat"><span class="l-en">★ Featured</span><span class="l-zh">★ 精选</span></span><span class="pv-mk-i pv-mk-lane" data-tip-en="The shape of the setup: bottoming = turning up off a base · continuation = an existing uptrend resuming · trend / recovery = further along. It groups risk, it does not rank the name." data-tip-zh="形态类型：筑底＝自底部转强 · 延续＝原有上升趋势重启 · 趋势／复苏＝走得更远。它用于摆放风险，不决定排名。"><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span></div>
-    <div class="pv-stp"><span class="pv-dot on"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span></div>
-    <div class="pv-stl"><span class="on"><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span><span><span class="l-en">Turning</span><span class="l-zh">转向</span></span><span><span class="l-en">Ready</span><span class="l-zh">就绪</span></span><span><span class="l-en">Trend</span><span class="l-zh">趋势</span></span></div>
+    <div class="pv-ind"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-feat"><span class="l-en">★ Featured</span><span class="l-zh">★ 精选</span></span></div>
+    <div class="pv-stp"><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span><span class="pv-seg"></span><span class="pv-dot"></span></div>
+    <div class="pv-stl"><span><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span><span><span class="l-en">Turning</span><span class="l-zh">转向</span></span><span><span class="l-en">Ready</span><span class="l-zh">就绪</span></span><span><span class="l-en">Trend</span><span class="l-zh">趋势</span></span></div>
   </div>
   <div class="pv-zn"><span class="pv-znl"><span class="l-en">Zone</span><span class="l-zh">买区</span></span><span class="pv-znr">$16.84–$17.10</span><span class="pv-added" data-added="2026-09-21" data-tip-en="On the Prophet board continuously since this date. If the name leaves and later returns, this date resets." data-tip-zh="自该日起持续在 Prophet 榜上；若离榜后重新上榜，此日期将重新计算。"><span class="l-en">Added Sep 21</span><span class="l-zh">入榜 09-21</span></span>
   </div>
@@ -1543,7 +1711,7 @@
       <span class="pv-idw"><span class="pv-tk">TRLV</span><span class="pv-nm"><span class="l-en">Trulieve Cannabis</span><span class="l-zh">Trulieve Cannabis</span></span></span>
       <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">60</span></span>
     </div>
-    <div class="pv-ind"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-feat"><span class="l-en">★ Featured</span><span class="l-zh">★ 精选</span></span><span class="pv-mk-i pv-mk-lane" data-tip-en="The shape of the setup: bottoming = turning up off a base · continuation = an existing uptrend resuming · trend / recovery = further along. It groups risk, it does not rank the name." data-tip-zh="形态类型：筑底＝自底部转强 · 延续＝原有上升趋势重启 · 趋势／复苏＝走得更远。它用于摆放风险，不决定排名。"><span class="l-en">Continuation</span><span class="l-zh">延续</span></span></div>
+    <div class="pv-ind"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-feat"><span class="l-en">★ Featured</span><span class="l-zh">★ 精选</span></span><span class="pv-mk-i pv-mk-new"><span class="l-en">New</span><span class="l-zh">新</span></span><span class="pv-mk-i pv-mk-lane" data-tip-en="The shape of the setup: bottoming = turning up off a base · continuation = an existing uptrend resuming · trend / recovery = further along. It groups risk, it does not rank the name." data-tip-zh="形态类型：筑底＝自底部转强 · 延续＝原有上升趋势重启 · 趋势／复苏＝走得更远。它用于摆放风险，不决定排名。"><span class="l-en">Continuation</span><span class="l-zh">延续</span></span></div>
     <div class="pv-stp"><span class="pv-dot pa"></span><span class="pv-seg pa"></span><span class="pv-dot pa"></span><span class="pv-seg pa"></span><span class="pv-dot on"></span><span class="pv-seg"></span><span class="pv-dot"></span></div>
     <div class="pv-stl"><span><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span><span><span class="l-en">Turning</span><span class="l-zh">转向</span></span><span class="on"><span class="l-en">Ready</span><span class="l-zh">就绪</span></span><span><span class="l-en">Trend</span><span class="l-zh">趋势</span></span></div>
   </div>
@@ -1578,8 +1746,8 @@
           <div class="cand-row"><span class="cand-tk">VKTX</span><span class="cand-nm"><span class="l-en">Viking Therapeutics</span><span class="l-zh">Viking Therapeutics</span></span><span class="cand-px fig">$40.16</span></div>
         </div>
         <p class="mx-sec-note" style="margin:12px 0 0">
-          <span class="l-en">Showing 3 that carry no plan yet · <b>62</b> screened 2026-09-22</span>
-          <span class="l-zh">显示其中 3 只尚未建立计划的 · 本次共筛出 <b>62</b> 只 · 筛选日 2026-09-22</span>
+          <span class="l-en">Showing 3 that carry no plan yet · <b>62</b> screened 2026-09-23</span>
+          <span class="l-zh">显示其中 3 只尚未建立计划的 · 本次共筛出 <b>62</b> 只 · 筛选日 2026-09-23</span>
         </p>
       </div>
       
@@ -1611,10 +1779,11 @@
       </div>
     </li>
     <li class="pvr-g">
-      <div class="pvr-gh"><span class="pvr-why"><span class="l-en">Standing aside for now</span><span class="l-zh">暂时回避</span></span><span class="pvr-n">6</span></div>
+      <div class="pvr-gh"><span class="pvr-why"><span class="l-en">Standing aside for now</span><span class="l-zh">暂时回避</span></span><span class="pvr-n">7</span></div>
       <div class="pvr-tks">
         <span class="pvr-tk" data-tip-en="Assurant — what's holding it back tonight: Standing aside for now; No setup yet; Still heading down." data-tip-zh="Assurant — 今晚未纳入的原因：暂时回避；暂无买点；方向仍朝下。">AIZ</span>
         <span class="pvr-tk" data-tip-en="Simon Property Group Inc — what's holding it back tonight: Standing aside for now; No setup yet; Still heading down." data-tip-zh="Simon Property Group Inc — 今晚未纳入的原因：暂时回避；暂无买点；方向仍朝下。">SPG</span>
+        <span class="pvr-tk" data-tip-en="KB Home — what's holding it back tonight: Standing aside for now; No setup yet; Still heading down." data-tip-zh="KB Home — 今晚未纳入的原因：暂时回避；暂无买点；方向仍朝下。">KBH</span>
         <span class="pvr-tk" data-tip-en="American Express Co — what's holding it back tonight: Standing aside for now; No setup yet; Still heading down." data-tip-zh="American Express Co — 今晚未纳入的原因：暂时回避；暂无买点；方向仍朝下。">AXP</span>
         <span class="pvr-tk" data-tip-en="Vulcan Materials Co — what's holding it back tonight: Standing aside for now; No setup yet; Still heading down." data-tip-zh="Vulcan Materials Co — 今晚未纳入的原因：暂时回避；暂无买点；方向仍朝下。">VMC</span>
         <span class="pvr-tk" data-tip-en="Martin Marietta Materials — what's holding it back tonight: Standing aside for now; No setup yet; Still heading down." data-tip-zh="Martin Marietta Materials — 今晚未纳入的原因：暂时回避；暂无买点；方向仍朝下。">MLM</span>
@@ -1622,12 +1791,11 @@
       </div>
     </li>
     <li class="pvr-g">
-      <div class="pvr-gh"><span class="pvr-why"><span class="l-en">No setup yet</span><span class="l-zh">暂无买点</span></span><span class="pvr-n">7</span></div>
+      <div class="pvr-gh"><span class="pvr-why"><span class="l-en">No setup yet</span><span class="l-zh">暂无买点</span></span><span class="pvr-n">6</span></div>
       <div class="pvr-tks">
         <span class="pvr-tk" data-tip-en="Quanta Services Inc — what's holding it back tonight: No setup yet." data-tip-zh="Quanta Services Inc — 今晚未纳入的原因：暂无买点。">PWR</span>
         <span class="pvr-tk" data-tip-en="Ciena — what's holding it back tonight: No setup yet." data-tip-zh="Ciena — 今晚未纳入的原因：暂无买点。">CIEN</span>
         <span class="pvr-tk" data-tip-en="ServisFirst Bancshares, Inc. — what's holding it back tonight: No setup yet." data-tip-zh="ServisFirst Bancshares, Inc. — 今晚未纳入的原因：暂无买点。">SFBS</span>
-        <span class="pvr-tk" data-tip-en="Ross Stores Inc — what's holding it back tonight: No setup yet." data-tip-zh="Ross Stores Inc — 今晚未纳入的原因：暂无买点。">ROST</span>
         <span class="pvr-tk" data-tip-en="Apple Hospitality REIT, Inc. — what's holding it back tonight: No setup yet." data-tip-zh="Apple Hospitality REIT, Inc. — 今晚未纳入的原因：暂无买点。">APLE</span>
         <span class="pvr-tk" data-tip-en="Park Hotels &amp; Resorts — what's holding it back tonight: No setup yet." data-tip-zh="Park Hotels &amp; Resorts — 今晚未纳入的原因：暂无买点。">PK</span>
         <span class="pvr-tk" data-tip-en="Xenia Hotels &amp; Resorts, Inc. — what's holding it back tonight: No setup yet." data-tip-zh="Xenia Hotels &amp; Resorts, Inc. — 今晚未纳入的原因：暂无买点。">XHR</span>
@@ -1665,8 +1833,8 @@
     <span class="pbr-tk">IREN</span>
     <span class="pbr-nm">IREN (Iris Energy)</span>
     <span class="pv-mk-i pv-mk-theme"><span class="l-en">AI Neoclouds &amp; HPC Hosting</span><span class="l-zh">AI 新云与高性能算力托管</span></span>
-    <span class="pbr-m"><span class="az-up">+23.5%</span> <span class="l-en">since signal · fired 30 sessions ago</span>
-      <span class="l-zh">信号后 · 30个交易日前触发</span>
+    <span class="pbr-m"><span class="az-up">+23.5%</span> <span class="l-en">since signal · fired 31 sessions ago</span>
+      <span class="l-zh">信号后 · 31个交易日前触发</span>
     </span>
     
     
@@ -1737,8 +1905,8 @@
       <link rel="stylesheet" href="assets/css/97280b63.css?v=97280b63"><span class="trd-wrap trd-band-neutral">
 <button type="button" id="trd-btn" class="trd-btn"
         aria-haspopup="dialog" aria-expanded="false" aria-controls="trd-dlg"><svg class="trd-spark" viewBox="0 0 40 14" aria-hidden="true" preserveAspectRatio="none">
-    <path class="trd-live" d="M0.0,2.0 L3.1,6.6 L6.2,10.0 L9.2,6.3 L12.3,6.1 L15.4,4.1 L18.5,11.8 L21.5,9.5 L24.6,7.9 L27.7,9.0 L30.8,11.5 L33.8,9.8 L36.9,11.0 L40.0,12.0"/>
-  </svg><span class="trd-stat"><span class="trd-lead"><span class="l-en">Track record</span><span class="l-zh">往绩</span></span><span class="trd-sep">·</span><span class="l-en"><b>47% win</b> · -0.4% a trade</span><span class="l-zh"><b>胜率 47%</b> · 每笔 -0.4%</span></span>
+    <path class="trd-live" d="M0.0,2.0 L3.1,6.5 L6.2,9.9 L9.2,6.3 L12.3,6.1 L15.4,4.0 L18.5,11.7 L21.5,9.4 L24.6,7.8 L27.7,8.9 L30.8,11.4 L33.8,9.8 L36.9,10.9 L40.0,12.0"/>
+  </svg><span class="trd-stat"><span class="trd-lead"><span class="l-en">Track record</span><span class="l-zh">往绩</span></span><span class="trd-sep">·</span><span class="l-en"><b>46% win</b> · -0.44% a trade</span><span class="l-zh"><b>胜率 46%</b> · 每笔 -0.44%</span></span>
   <span class="trd-chev" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M4.5 2.5 L8 6 L4.5 9.5"/></svg></span>
 </button><span class="trd-basis-chip" tabindex="0" role="note"
       data-tip-en="Measurement updated 2026-08-07. The timing used to decide when a trade is sold used to shift as older price history rolled out of our window, which moved the results of trades that had already closed. It no longer shifts; how picks are chosen, bought and sold has not changed. Before, to 2026-07-31: 64% made money, +1.19% average trade over 173 finished trades. Open the record for the full comparison."
@@ -1761,18 +1929,18 @@
 
     <div class="trd-body"><div class="trd-stg trd-stg-1"><div class="trd-cards"><div class="trd-card">
           <div class="trd-card-k"><span class="l-en">Win rate</span><span class="l-zh">胜率</span></div>
-          <div class="trd-card-v trd-accented">46.8%</div>
-          <div class="trd-card-m"><span class="l-en">of 977 finished trades · likely 40.2–53.6%</span><span class="l-zh">共 977 笔已完成交易 · 大致区间 40.2–53.6%</span></div>
+          <div class="trd-card-v trd-accented">46.5%</div>
+          <div class="trd-card-m"><span class="l-en">of 987 finished trades · likely 39.7–53.2%</span><span class="l-zh">共 987 笔已完成交易 · 大致区间 39.7–53.2%</span></div>
         </div>
         <div class="trd-card">
-          <div class="trd-card-k"><span class="l-en">Average trade</span><span class="l-zh">每笔平均</span></div><div class="trd-card-v az-dn">-0.4%</div>
-          <div class="trd-card-m"><span class="l-en">wins and losses together · likely -1.41% to +0.61%</span><span class="l-zh">盈亏合计 · 大致区间 -1.41% 至 +0.61%</span></div>
+          <div class="trd-card-k"><span class="l-en">Average trade</span><span class="l-zh">每笔平均</span></div><div class="trd-card-v az-dn">-0.44%</div>
+          <div class="trd-card-m"><span class="l-en">wins and losses together · likely -1.46% to +0.51%</span><span class="l-zh">盈亏合计 · 大致区间 -1.46% 至 +0.51%</span></div>
         </div><div class="trd-card">
           <div class="trd-card-k"><span class="l-en">When right vs wrong</span><span class="l-zh">对错幅度</span></div>
-          <div class="trd-card-v" style="font-size:20px"><span class="az-up">+5.41%</span> <span class="trd-mut" style="font-size:15px">/</span> <span class="az-dn">-5.5%</span></div><div class="trd-card-m"><span class="l-en">a typical win vs a typical loss · adding it all up, 0.86x as much made as lost</span><span class="l-zh">典型盈利 vs 典型亏损 · 全部加总，赚的是亏的 0.86 倍</span></div>
+          <div class="trd-card-v" style="font-size:20px"><span class="az-up">+5.39%</span> <span class="trd-mut" style="font-size:15px">/</span> <span class="az-dn">-5.52%</span></div><div class="trd-card-m"><span class="l-en">a typical win vs a typical loss · adding it all up, 0.85x as much made as lost</span><span class="l-zh">典型盈利 vs 典型亏损 · 全部加总，赚的是亏的 0.85 倍</span></div>
         </div><div class="trd-card">
           <div class="trd-card-k"><span class="l-en">Still running</span><span class="l-zh">进行中</span></div>
-          <div class="trd-card-v">196</div>
+          <div class="trd-card-v">192</div>
           <div class="trd-card-m"><span class="l-en">too recent to score — listed below, not counted above</span><span class="l-zh">时间尚短未计分——下方可见，不计入上方</span></div>
         </div><div class="trd-card">
           <div class="trd-card-k"><span class="l-en">Typical hold</span><span class="l-zh">典型持有</span></div>
@@ -1781,7 +1949,7 @@
           <div class="trd-card-m"><span class="l-en">sold at 10 sessions, or sooner on a hot run or a broken base</span><span class="l-zh">持有 10 个交易日卖出；冲高或跌破底部则提前</span></div>
         </div><div class="trd-card trd-card-wide">
           <div class="trd-card-k"><span class="l-en">What was on the table</span><span class="l-zh">最大可得与最大回撤</span></div>
-          <div class="trd-card-v" style="font-size:20px"><span class="az-up">+2.53%</span> <span class="trd-mut" style="font-size:15px">/</span> <span class="az-dn">-3.47%</span></div>
+          <div class="trd-card-v" style="font-size:20px"><span class="az-up">+2.52%</span> <span class="trd-mut" style="font-size:15px">/</span> <span class="az-dn">-3.51%</span></div>
           <div class="trd-card-m"><span class="l-en">The best and worst a typical trade touched while held — selling by the rule kept about 27% of the best. Nobody sells the exact high; this is the room, not a result.</span><span class="l-zh">典型交易持有期内触及的最高与最低——按规则卖出约保留了最高点的 27%。无人能卖在最高点；这是空间，不是成绩。</span></div>
         </div></div><div class="trd-basis">
         <div class="trd-basis-hd"><span class="l-en">Measurement updated</span><span class="l-zh">计量方式已更新</span><span class="dt">2026-08-07</span></div>
@@ -1795,11 +1963,11 @@
           </div>
           <div class="trd-basis-col">
             <div class="trd-basis-col-k"><span class="l-en">Now</span><span class="l-zh">现在</span></div>
-            <div class="trd-basis-row"><span class="w"><span class="l-en">made money</span><span class="l-zh">盈利占比</span></span><span class="n">47%</span></div>
-            <div class="trd-basis-row"><span class="w"><span class="l-en">average trade</span><span class="l-zh">每笔平均</span></span><span class="n">-0.4%</span></div>
-            <div class="trd-basis-row"><span class="w"><span class="l-en">finished trades</span><span class="l-zh">已完成交易</span></span><span class="n">977</span></div>
+            <div class="trd-basis-row"><span class="w"><span class="l-en">made money</span><span class="l-zh">盈利占比</span></span><span class="n">46%</span></div>
+            <div class="trd-basis-row"><span class="w"><span class="l-en">average trade</span><span class="l-zh">每笔平均</span></span><span class="n">-0.44%</span></div>
+            <div class="trd-basis-row"><span class="w"><span class="l-en">finished trades</span><span class="l-zh">已完成交易</span></span><span class="n">987</span></div>
           </div>
-        </div><p class="trd-basis-ft"><span class="l-en">More than the measurement separates these two columns: 977 trades have finished now against 173 on 2026-07-31, so part of the move is simply more results, not a different ruler.</span><span class="l-zh">两列之间的差异不止来自计量方式：现已走完 977 笔交易，而 2026-07-31 时为 173 笔，因此部分变化只是结果变多，并非换了尺子。</span></p></div></div><div class="trd-stg trd-stg-2">
+        </div><p class="trd-basis-ft"><span class="l-en">More than the measurement separates these two columns: 987 trades have finished now against 173 on 2026-07-31, so part of the move is simply more results, not a different ruler.</span><span class="l-zh">两列之间的差异不止来自计量方式：现已走完 987 笔交易，而 2026-07-31 时为 173 笔，因此部分变化只是结果变多，并非换了尺子。</span></p></div></div><div class="trd-stg trd-stg-2">
       <div class="trd-rail" id="trd-rail" role="toolbar" aria-label="Filter ledger"><div class="trd-chips" id="trd-cohort-chips" style="display:none"></div>
         <div class="trd-chips" id="trd-status-chips" data-market="us"></div>
         <input type="search" class="trd-search" id="trd-search" data-ph-en="Find a stock" data-ph-zh="搜索股票" aria-label="Find a stock">
@@ -1810,7 +1978,7 @@
       <div class="trd-pg" id="trd-pg"></div>
       </div>
     </div><div class="trd-ft">
-      <div class="trd-ft-note"><span class="l-en">Every pick is bought at the next session&#39;s close and sold 10 sessions later, or sooner if it runs hot or breaks its base. Picks too recent to have finished are listed but not scored. As of 2026-09-21.</span><span class="l-zh">每个标的均以次日收盘价买入，持有 10 个交易日后卖出；若提前冲高或跌破底部则提早离场。尚未走完的标的会列出但不计分。 截至 2026-09-21。</span></div><a class="trd-ft-link" href="us_track_record.html"><span class="l-en">Methodology &amp; full history ↗</span><span class="l-zh">方法与完整历史 ↗</span></a></div>
+      <div class="trd-ft-note"><span class="l-en">Every pick is bought at the next session&#39;s close and sold 10 sessions later, or sooner if it runs hot or breaks its base. Picks too recent to have finished are listed but not scored. As of 2026-09-22.</span><span class="l-zh">每个标的均以次日收盘价买入，持有 10 个交易日后卖出；若提前冲高或跌破底部则提早离场。尚未走完的标的会列出但不计分。 截至 2026-09-22。</span></div><a class="trd-ft-link" href="us_track_record.html"><span class="l-en">Methodology &amp; full history ↗</span><span class="l-zh">方法与完整历史 ↗</span></a></div>
   </div>
 </div>
 </div>
@@ -2176,11 +2344,6 @@
     
   
   
-
-  
-    
-  
-  
     
   
 
@@ -2231,59 +2394,12 @@
     
   
   
-
-  
-    
-  
-  
-
-  
-    
-  
-  
     
   
 
   
     
   
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
   
 
   
@@ -2314,7 +2430,7 @@
   <span class="wcd-glyph" aria-hidden="true">✦</span>
   <span class="trd-stat">
     <span class="trd-lead"><span class="l-en">What changed today</span><span class="l-zh">今日变化</span></span>
-    <span class="trd-sep">·</span><b>21</b>
+    <span class="trd-sep">·</span><b>13</b>
   </span>
   <span class="trd-chev" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M4.5 2.5 L8 6 L4.5 9.5"/></svg></span>
 </button>
@@ -2329,8 +2445,8 @@
         <div class="trd-eyebrow"><span class="l-en">Prophet board · daily change log</span><span class="l-zh">Prophet 榜单 · 每日变动记录</span></div>
         <div class="trd-title" id="wcd-dlg-title"><span class="l-en">What changed today</span><span class="l-zh">今日变化</span></div>
         <div class="trd-sub">
-          <span class="l-en">Board additions, removals and reason changes · 2026-09-21 → 2026-09-22</span>
-          <span class="l-zh">榜单新增、移除与原因变化 · 2026-09-21 → 2026-09-22</span>
+          <span class="l-en">Board additions, removals and reason changes · 2026-09-22 → 2026-09-23</span>
+          <span class="l-zh">榜单新增、移除与原因变化 · 2026-09-22 → 2026-09-23</span>
         </div>
       </div>
       <button type="button" class="trd-close" data-wcd-close aria-label="Close">
@@ -2343,22 +2459,22 @@
         <div class="trd-cards wcd-cards">
           <div class="trd-card">
             <div class="trd-card-k"><span class="l-en">Total updates</span><span class="l-zh">变动总数</span></div>
-            <div class="trd-card-v trd-accented">21</div>
+            <div class="trd-card-v trd-accented">13</div>
             <div class="trd-card-m"><span class="l-en">names with a board change</span><span class="l-zh">发生榜单变化的标的</span></div>
           </div>
           <div class="trd-card">
             <div class="trd-card-k"><span class="l-en">Joined</span><span class="l-zh">新上榜</span></div>
-            <div class="trd-card-v az-up">9</div>
+            <div class="trd-card-v az-up">6</div>
             <div class="trd-card-m"><span class="l-en">new to the board</span><span class="l-zh">今日新增至榜单</span></div>
           </div>
           <div class="trd-card">
             <div class="trd-card-k"><span class="l-en">Left</span><span class="l-zh">已离榜</span></div>
-            <div class="trd-card-v az-dn">8</div>
+            <div class="trd-card-v az-dn">6</div>
             <div class="trd-card-m"><span class="l-en">removed from the board</span><span class="l-zh">今日从榜单移除</span></div>
           </div>
           <div class="trd-card">
             <div class="trd-card-k"><span class="l-en">Read changed</span><span class="l-zh">读数变化</span></div>
-            <div class="trd-card-v">18</div>
+            <div class="trd-card-v">9</div>
             <div class="trd-card-m"><span class="l-en">verb or reason updates</span><span class="l-zh">动作词或原因变化</span></div>
           </div>
         </div>
@@ -2369,7 +2485,26 @@
           
           <div class="wcd-item" role="listitem">
             <div class="wcd-item-hd">
-              <span class="nb-delta-tk">BXMT</span>
+              <span class="nb-delta-tk">CNK</span>
+              
+                <span class="nb-delta-verb nb-delta-enter">
+                  <span class="l-en">entered board · TRIM ONLY</span>
+                  <span class="l-zh">新上榜 · TRIM ONLY</span>
+                </span>
+              
+            </div>
+            
+            
+            <span class="nb-delta-added">
+              <span class="l-en">added: Entry capped — entry timing blocks a full buy · Extended / parabolic — do not chase</span>
+              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓 · 过度拉伸/抛物线——勿追高</span>
+            </span>
+            
+          </div>
+          
+          <div class="wcd-item" role="listitem">
+            <div class="wcd-item-hd">
+              <span class="nb-delta-tk">KBH</span>
               
                 <span class="nb-delta-verb nb-delta-enter">
                   <span class="l-en">entered board · WAIT</span>
@@ -2377,6 +2512,110 @@
                 </span>
               
             </div>
+            
+            
+          </div>
+          
+          <div class="wcd-item" role="listitem">
+            <div class="wcd-item-hd">
+              <span class="nb-delta-tk">LULU</span>
+              
+                <span class="nb-delta-verb nb-delta-enter">
+                  <span class="l-en">entered board · BUY</span>
+                  <span class="l-zh">新上榜 · BUY</span>
+                </span>
+              
+            </div>
+            
+            
+            <span class="nb-delta-added">
+              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
+              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
+            </span>
+            
+          </div>
+          
+          <div class="wcd-item" role="listitem">
+            <div class="wcd-item-hd">
+              <span class="nb-delta-tk">MU</span>
+              
+                <span class="nb-delta-verb nb-delta-enter">
+                  <span class="l-en">entered board · WAIT</span>
+                  <span class="l-zh">新上榜 · WAIT</span>
+                </span>
+              
+            </div>
+            
+            
+          </div>
+          
+          <div class="wcd-item" role="listitem">
+            <div class="wcd-item-hd">
+              <span class="nb-delta-tk">PLTR</span>
+              
+                <span class="nb-delta-verb nb-delta-enter">
+                  <span class="l-en">entered board · BUY</span>
+                  <span class="l-zh">新上榜 · BUY</span>
+                </span>
+              
+            </div>
+            
+            
+            <span class="nb-delta-added">
+              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
+              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
+            </span>
+            
+          </div>
+          
+          <div class="wcd-item" role="listitem">
+            <div class="wcd-item-hd">
+              <span class="nb-delta-tk">TEM</span>
+              
+                <span class="nb-delta-verb nb-delta-enter">
+                  <span class="l-en">entered board · WAIT</span>
+                  <span class="l-zh">新上榜 · WAIT</span>
+                </span>
+              
+            </div>
+            
+            
+            <span class="nb-delta-added">
+              <span class="l-en">added: Extended / parabolic — do not chase</span>
+              <span class="l-zh">新增：过度拉伸/抛物线——勿追高</span>
+            </span>
+            
+          </div>
+          
+          <div class="wcd-item" role="listitem">
+            <div class="wcd-item-hd">
+              <span class="nb-delta-tk">BXMT</span>
+              
+                <span class="nb-delta-verb nb-delta-leave">
+                  <span class="l-en">left board · was WAIT</span>
+                  <span class="l-zh">已离榜 · 原为 WAIT</span>
+                </span>
+              
+            </div>
+            
+            
+          </div>
+          
+          <div class="wcd-item" role="listitem">
+            <div class="wcd-item-hd">
+              <span class="nb-delta-tk">DAR</span>
+              
+                <span class="nb-delta-verb nb-delta-leave">
+                  <span class="l-en">left board · was WAIT</span>
+                  <span class="l-zh">已离榜 · 原为 WAIT</span>
+                </span>
+              
+            </div>
+            
+            <span class="nb-delta-cleared">
+              <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+              <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
+            </span>
             
             
           </div>
@@ -2385,107 +2624,28 @@
             <div class="wcd-item-hd">
               <span class="nb-delta-tk">DRH</span>
               
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · WAIT</span>
-                  <span class="l-zh">新上榜 · WAIT</span>
+                <span class="nb-delta-verb nb-delta-leave">
+                  <span class="l-en">left board · was WAIT</span>
+                  <span class="l-zh">已离榜 · 原为 WAIT</span>
                 </span>
               
             </div>
             
-            
-            <span class="nb-delta-added">
-              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
+            <span class="nb-delta-cleared">
+              <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+              <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
             </span>
             
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">LMT</span>
-              
-                <span class="nb-delta-verb">WAIT → BUY</span>
-              
-            </div>
-            
             
           </div>
           
           <div class="wcd-item" role="listitem">
             <div class="wcd-item-hd">
-              <span class="nb-delta-tk">OKLO</span>
+              <span class="nb-delta-tk">KLIC</span>
               
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · BUY</span>
-                  <span class="l-zh">新上榜 · BUY</span>
-                </span>
-              
-            </div>
-            
-            
-            <span class="nb-delta-added">
-              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">RIO</span>
-              
-                <span class="nb-delta-verb">WAIT → BUY</span>
-              
-            </div>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">SGML</span>
-              
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · BUY</span>
-                  <span class="l-zh">新上榜 · BUY</span>
-                </span>
-              
-            </div>
-            
-            
-            <span class="nb-delta-added">
-              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">SKY</span>
-              
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · BUY</span>
-                  <span class="l-zh">新上榜 · BUY</span>
-                </span>
-              
-            </div>
-            
-            
-            <span class="nb-delta-added">
-              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">TRLV</span>
-              
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · WAIT</span>
-                  <span class="l-zh">新上榜 · WAIT</span>
+                <span class="nb-delta-verb nb-delta-leave">
+                  <span class="l-en">left board · was BUY</span>
+                  <span class="l-zh">已离榜 · 原为 BUY</span>
                 </span>
               
             </div>
@@ -2495,70 +2655,7 @@
           
           <div class="wcd-item" role="listitem">
             <div class="wcd-item-hd">
-              <span class="nb-delta-tk">UNFI</span>
-              
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · WAIT</span>
-                  <span class="l-zh">新上榜 · WAIT</span>
-                </span>
-              
-            </div>
-            
-            
-            <span class="nb-delta-added">
-              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">VKTX</span>
-              
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · BUY</span>
-                  <span class="l-zh">新上榜 · BUY</span>
-                </span>
-              
-            </div>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">YETI</span>
-              
-                <span class="nb-delta-verb">WAIT → BUY</span>
-              
-            </div>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">YUMC</span>
-              
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board · BUY</span>
-                  <span class="l-zh">新上榜 · BUY</span>
-                </span>
-              
-            </div>
-            
-            
-            <span class="nb-delta-added">
-              <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">AFRM</span>
+              <span class="nb-delta-tk">LFUS</span>
               
                 <span class="nb-delta-verb nb-delta-leave">
                   <span class="l-en">left board · was BUY</span>
@@ -2577,7 +2674,7 @@
           
           <div class="wcd-item" role="listitem">
             <div class="wcd-item-hd">
-              <span class="nb-delta-tk">ALM</span>
+              <span class="nb-delta-tk">MYRG</span>
               
                 <span class="nb-delta-verb nb-delta-leave">
                   <span class="l-en">left board · was WAIT</span>
@@ -2596,121 +2693,7 @@
           
           <div class="wcd-item" role="listitem">
             <div class="wcd-item-hd">
-              <span class="nb-delta-tk">B</span>
-              
-                <span class="nb-delta-verb nb-delta-leave">
-                  <span class="l-en">left board · was BUY</span>
-                  <span class="l-zh">已离榜 · 原为 BUY</span>
-                </span>
-              
-            </div>
-            
-            <span class="nb-delta-cleared">
-              <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">JD</span>
-              
-                <span class="nb-delta-verb nb-delta-leave">
-                  <span class="l-en">left board · was BUY</span>
-                  <span class="l-zh">已离榜 · 原为 BUY</span>
-                </span>
-              
-            </div>
-            
-            <span class="nb-delta-cleared">
-              <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">NXPI</span>
-              
-                <span class="nb-delta-verb nb-delta-leave">
-                  <span class="l-en">left board · was BUY</span>
-                  <span class="l-zh">已离榜 · 原为 BUY</span>
-                </span>
-              
-            </div>
-            
-            <span class="nb-delta-cleared">
-              <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">TEM</span>
-              
-                <span class="nb-delta-verb nb-delta-leave">
-                  <span class="l-en">left board · was WAIT</span>
-                  <span class="l-zh">已离榜 · 原为 WAIT</span>
-                </span>
-              
-            </div>
-            
-            <span class="nb-delta-cleared">
-              <span class="l-en">cleared: Extended / parabolic — do not chase</span>
-              <span class="l-zh">已解除：过度拉伸/抛物线——勿追高</span>
-            </span>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">TME</span>
-              
-                <span class="nb-delta-verb nb-delta-leave">
-                  <span class="l-en">left board · was BUY</span>
-                  <span class="l-zh">已离榜 · 原为 BUY</span>
-                </span>
-              
-            </div>
-            
-            <span class="nb-delta-cleared">
-              <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">WB</span>
-              
-                <span class="nb-delta-verb nb-delta-leave">
-                  <span class="l-en">left board · was BUY</span>
-                  <span class="l-zh">已离榜 · 原为 BUY</span>
-                </span>
-              
-            </div>
-            
-            <span class="nb-delta-cleared">
-              <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
-              <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
-            </span>
-            
-            
-          </div>
-          
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">RKLB</span>
+              <span class="nb-delta-tk">PRU</span>
               
             </div>
             
@@ -2823,37 +2806,37 @@
   <tr class="ts-row" data-tkr="MU">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#MU"><span class="ts-tk">MU</span></a> <span class="ts-nm">Micron Technology Inc</span> <span class="ts-sue" data-tip-en="The latest earnings beat the stock's usual year-ago pattern. This clue has not held up over a long history, so treat it as supporting context only." data-tip-zh="最新盈利好于该股往年同期的常见表现。这个线索在长期历史中并不稳定，因此仅作辅助参考。">📈 <span class="l-en">earnings beat</span><span class="l-zh">盈利超预期</span></span></td>
     <td class="muted c-sector"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></td>
-    <td class="r c-edge az-up">+2.91</td>
+    <td class="r c-edge az-up">+2.86</td>
     <td class="r muted c-rank">#2/222</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">BOTTOMING</span><span class="l-zh">筑底中</span></td>
     <td class="c-trend"><span class="ent-warn"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
     <td class="r c-factor az-dn">-0.9</td>
-    <td class="r c-setup"><b>+2.59</b></td>
+    <td class="r c-setup"><b>+2.55</b></td>
   </tr>
 
   <tr class="ts-row" data-tkr="FORM">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#FORM"><span class="ts-tk">FORM</span></a> <span class="ts-nm">FormFactor, Inc.</span> <span class="ts-sue" data-tip-en="The latest earnings beat the stock's usual year-ago pattern. This clue has not held up over a long history, so treat it as supporting context only." data-tip-zh="最新盈利好于该股往年同期的常见表现。这个线索在长期历史中并不稳定，因此仅作辅助参考。">📈 <span class="l-en">earnings beat</span><span class="l-zh">盈利超预期</span></span></td>
     <td class="muted c-sector"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></td>
-    <td class="r c-edge az-up">+1.88</td>
+    <td class="r c-edge az-up">+1.85</td>
     <td class="r muted c-rank">#11/222</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">UPTREND</span><span class="l-zh">上涨趋势</span></td>
     <td class="c-trend"><span class="ent-warn"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
     <td class="r c-factor az-dn">-0.8</td>
-    <td class="r c-setup"><b>+0.97</b></td>
+    <td class="r c-setup"><b>+0.94</b></td>
   </tr>
 
-  <tr class="ts-row" data-tkr="CIEN">
-    <td class="c-stock"><a class="ts-tk-a" href="stock.html#CIEN"><span class="ts-tk">CIEN</span></a> <span class="ts-nm">Ciena</span> <span class="ts-sue" data-tip-en="The latest earnings beat the stock's usual year-ago pattern. This clue has not held up over a long history, so treat it as supporting context only." data-tip-zh="最新盈利好于该股往年同期的常见表现。这个线索在长期历史中并不稳定，因此仅作辅助参考。">📈 <span class="l-en">earnings beat</span><span class="l-zh">盈利超预期</span></span></td>
+  <tr class="ts-row" data-tkr="DOCN">
+    <td class="c-stock"><a class="ts-tk-a" href="stock.html#DOCN"><span class="ts-tk">DOCN</span></a> <span class="ts-nm">DigitalOcean</span></td>
     <td class="muted c-sector"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></td>
-    <td class="r c-edge az-up">+1.70</td>
+    <td class="r c-edge az-up">+1.65</td>
     <td class="r muted c-rank">#15/222</td>
     <td class="c-buy"><span class="ts-buy ok" data-tip-en="Confirmed: fired within the last few days and still building" data-tip-zh="已确认：最近几天刚触发，还在往上走"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
     <td class="c-cycle"><span class="l-en">UNCONFIRMED TURN</span><span class="l-zh">未确认转向</span></td>
-    <td class="c-trend"><span class="muted">intact</span></td>
-    <td class="r c-factor az-dn">-0.7</td>
-    <td class="r c-setup"><b>+1.19</b></td>
+    <td class="c-trend"><span class="ent-warn"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
+    <td class="r c-factor az-dn">-0.8</td>
+    <td class="r c-setup"><b>+0.45</b></td>
   </tr>
 
           </tbody>
@@ -2887,11 +2870,23 @@
 
   
   
+  <tr class="ts-row" data-tkr="MRNA">
+    <td class="c-stock"><a class="ts-tk-a" href="stock.html#MRNA"><span class="ts-tk">MRNA</span></a> <span class="ts-nm">Moderna</span></td>
+    <td class="muted c-sector"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></td>
+    
+    <td class="r c-edge az-up">+1.51</td>
+    <td class="r muted c-offhigh">+0.0%</td>
+    <td class="c-state"><span class="l-en">NEARING A HIGH</span><span class="l-zh">接近高点</span></td>
+    <td class="c-entry"><span class="ent-good"><span class="l-en">pullback zone</span><span class="l-zh">回调买区</span> $152.00–$152.00</span> <span class="ent-warn" data-tip-en="Price is unusually far above its trend — chasing here is risky." data-tip-zh="价格已明显高于趋势，追高风险较大。"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
+  </tr>
+
+  
+  
   <tr class="ts-row" data-tkr="TEAM">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#TEAM"><span class="ts-tk">TEAM</span></a> <span class="ts-nm">Atlassian</span></td>
     <td class="muted c-sector"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></td>
     
-    <td class="r c-edge az-dn">-0.16</td>
+    <td class="r c-edge az-dn">-0.12</td>
     <td class="r muted c-offhigh">-0.4%</td>
     <td class="c-state"><span class="l-en">NEARING A HIGH</span><span class="l-zh">接近高点</span></td>
     <td class="c-entry"><span class="ent-good"><span class="l-en">pullback zone</span><span class="l-zh">回调买区</span> $186.20–$188.50</span> <span class="ent-warn" data-tip-en="Price is unusually far above its trend — chasing here is risky." data-tip-zh="价格已明显高于趋势，追高风险较大。"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
@@ -2903,22 +2898,10 @@
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#RNG"><span class="ts-tk">RNG</span></a> <span class="ts-nm">RingCentral, Inc.</span></td>
     <td class="muted c-sector"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></td>
     
-    <td class="r c-edge az-up">+1.02</td>
+    <td class="r c-edge az-up">+1.06</td>
     <td class="r muted c-offhigh">+0.0%</td>
     <td class="c-state"><span class="l-en">NEARING A HIGH</span><span class="l-zh">接近高点</span></td>
     <td class="c-entry"><span class="ent-good"><span class="l-en">pullback zone</span><span class="l-zh">回调买区</span> $70.97–$72.00</span> <span class="ent-warn" data-tip-en="Price is unusually far above its trend — chasing here is risky." data-tip-zh="价格已明显高于趋势，追高风险较大。"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
-  </tr>
-
-  
-  
-  <tr class="ts-row" data-tkr="CVI">
-    <td class="c-stock"><a class="ts-tk-a" href="stock.html#CVI"><span class="ts-tk">CVI</span></a> <span class="ts-nm">CVR Energy, Inc.</span></td>
-    <td class="muted c-sector"><span class="l-en">Energy</span><span class="l-zh">能源</span></td>
-    
-    <td class="r c-edge az-dn">-0.06</td>
-    <td class="r muted c-offhigh">-1.8%</td>
-    <td class="c-state"><span class="l-en">NEARING A HIGH</span><span class="l-zh">接近高点</span></td>
-    <td class="c-entry"><span class="ent-good"><span class="l-en">pullback zone</span><span class="l-zh">回调买区</span> $47.84–$50.69</span> <span class="ent-warn" data-tip-en="Price is unusually far above its trend — chasing here is risky." data-tip-zh="价格已明显高于趋势，追高风险较大。"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
   </tr>
 
           </tbody>
@@ -3372,7 +3355,7 @@
             <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="29.8" width="14.2" height="10.2" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="40.0" width="14.2" height="2.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="30.2" width="14.2" height="9.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="26.1" width="14.2" height="13.9" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="34.3" width="14.2" height="5.7" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="30.7" width="14.2" height="9.3" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="27.3" width="14.2" height="12.7" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="36.5" width="14.2" height="3.5" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="210.7" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="216.2" y="40.0" width="14.2" height="13.2" rx="1.5" style="fill:var(--down);opacity:1"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">9</text><rect x="241.6" y="32.0" width="14.2" height="8.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="266.9" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">11</text><rect x="292.2" y="23.5" width="14.2" height="16.5" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="pos">+0.9%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="neg">-0.2%</td><td>57%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="pos">+0.9%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+1.3%</td><td>54%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+0.5%</td><td>68%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="pos">+0.9%</td><td>57%</td><td class="muted">28</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+1.2%</td><td>64%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+0.3%</td><td>57%</td><td class="muted">28</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-1.2%</td><td>39%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="pos">+0.7%</td><td>59%</td><td class="muted">27</td></tr><tr><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+2.4%</td><td>78%</td><td class="muted">27</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="pos">+1.5%</td><td>67%</td><td class="muted">27</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
-        <td class="pos" style="font-size:11.5px" data-tip-en="50% of 496 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="496 个实测 63 日窗口中有 50% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">+0.2% vs SPY · even odds</span><span class="l-zh">对SPY +0.2% · 胜率接近五五</span></td>
+        <td class="pos" style="font-size:11.5px" data-tip-en="50% of 497 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="497 个实测 63 日窗口中有 50% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">+0.2% vs SPY · even odds</span><span class="l-zh">对SPY +0.2% · 胜率接近五五</span></td>
       </tr>
       
       <tr>
@@ -3396,7 +3379,7 @@
             <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="40.0" width="14.2" height="6.2" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="30.9" width="14.2" height="9.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="30.6" width="14.2" height="9.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="19.5" width="14.2" height="20.5" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="38.6" width="14.2" height="1.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="40.0" width="14.2" height="4.5" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="29.6" width="14.2" height="10.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="40.0" width="14.2" height="1.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="210.7" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="216.2" y="40.0" width="14.2" height="17.9" rx="1.5" style="fill:var(--down);opacity:1"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">9</text><rect x="241.6" y="27.9" width="14.2" height="12.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="266.9" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">11</text><rect x="292.2" y="28.1" width="14.2" height="11.9" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="neg">-0.9%</td><td>43%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="pos">+1.3%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="pos">+1.3%</td><td>64%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+2.9%</td><td>68%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+0.2%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="neg">-0.6%</td><td>43%</td><td class="muted">28</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+1.4%</td><td>50%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="neg">-0.0%</td><td>46%</td><td class="muted">28</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-2.5%</td><td>39%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="pos">+1.7%</td><td>56%</td><td class="muted">27</td></tr><tr><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+3.6%</td><td>81%</td><td class="muted">27</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="pos">+1.7%</td><td>67%</td><td class="muted">27</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
-        <td class="pos" style="font-size:11.5px" data-tip-en="50% of 496 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="496 个实测 63 日窗口中有 50% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">+0.2% vs SPY · even odds</span><span class="l-zh">对SPY +0.2% · 胜率接近五五</span></td>
+        <td class="pos" style="font-size:11.5px" data-tip-en="50% of 497 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="497 个实测 63 日窗口中有 50% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">+0.2% vs SPY · even odds</span><span class="l-zh">对SPY +0.2% · 胜率接近五五</span></td>
       </tr>
       
       <tr>
@@ -3413,7 +3396,7 @@
         </td><td class="l" style="font-size:12px" data-tip-en="StochRSI ↓80 — 3-day stochastic crossed down through the stretched end (80). Machine term demoted; not an entry." data-tip-zh="StochRSI ↓80 — 3 日随机指标从拉伸端（80）下穿。机器术语已下放到悬停；不是入场。"><span class="l-en">stretched</span><span class="l-zh">拉伸</span></td>
         <td class="pos" style="font-size:12px">✓200d ✓50d</td>
         <td style="font-size:12px" data-tip-en="RSI 56 · Stochastic 56 on the 3-day chart. Under 20 on the stochastic is the washed-out end; over 80 is the stretched end. Momentum readings only — never a signal on their own." data-tip-zh="3 日图上 RSI 56 · 随机指标 56。随机指标低于 20 为超卖端，高于 80 为拉伸端。仅为动量读数，绝不单独作为信号。"><span class="l-en">mid-range</span><span class="l-zh">中位</span></td>
-        <td class="pos" data-sort="11.4">+11.4%</td>
+        <td class="pos" data-sort="10.5">+10.5%</td>
         <td>
           <span class="help" style="width:auto;height:auto;border:none;margin:0">
             <span style="cursor:help">-0.8%</span>
@@ -3437,7 +3420,7 @@
         </td><td class="l" style="font-size:12px"><span class="l-en">no fresh cross</span><span class="l-zh">无新交叉</span></td>
         <td class="" style="font-size:12px">✓200d ✗50d</td>
         <td style="font-size:12px" data-tip-en="RSI 44 · Stochastic 0 on the 3-day chart. Under 20 on the stochastic is the washed-out end; over 80 is the stretched end. Momentum readings only — never a signal on their own." data-tip-zh="3 日图上 RSI 44 · 随机指标 0。随机指标低于 20 为超卖端，高于 80 为拉伸端。仅为动量读数，绝不单独作为信号。"><span class="l-en">washed out</span><span class="l-zh">超卖</span></td>
-        <td class="neg" data-sort="-2.4">-2.4%</td>
+        <td class="neg" data-sort="-1.8">-1.8%</td>
         <td>
           <span class="help" style="width:auto;height:auto;border:none;margin:0">
             <span style="cursor:help">-1.3%</span>
@@ -3687,8 +3670,8 @@
         <tr><td class="l"><b>BETZ</b></td>
             <td class="l"><a href="stock.html#ALWN GA"><b>ALWN GA</b></a> <span class="muted">Allwyn Ag</span></td>
             <td class="l muted"><span class="l-en">Sports Betting</span><span class="l-zh">Sports Betting</span></td>
-            <td class="r muted">11.60%</td>
-            <td class="r pos"><b>+7.93pp</b></td>
+            <td class="r muted">11.70%</td>
+            <td class="r pos"><b>+8.00pp</b></td>
             <td class="l"><span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span></td></tr>
         
         <tr><td class="l"><b>SILJ</b></td>
@@ -3701,8 +3684,8 @@
         <tr><td class="l"><b>MEME</b></td>
             <td class="l"><a href="stock.html#MRNA"><b>MRNA</b></a> <span class="muted">Moderna Inc</span></td>
             <td class="l muted"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></td>
-            <td class="r muted">6.93%</td>
-            <td class="r pos"><b>+6.93pp</b></td>
+            <td class="r muted">7.03%</td>
+            <td class="r pos"><b>+7.03pp</b></td>
             <td class="l"><span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span></td></tr>
         
         <tr><td class="l"><b>CTEC</b></td>
@@ -5989,11 +5972,11 @@ if (document.readyState === 'loading') {
 <script>
 (function(){
   'use strict';
-  var GATE = {"locked": 59, "payload": "/premiumdata/us_stocks.json", "preview": 3, "stage_counts": {"basing": 1, "blocked": 6, "bottoming": 46, "continuation": 15, "live": 18, "ran": 10, "recovery": 0, "setting_up": 27, "trend": 0, "watch": 1}, "tier": "essential", "total": 62};
+  var GATE = {"locked": 59, "payload": "/premiumdata/us_stocks.json", "preview": 3, "stage_counts": {"basing": 1, "blocked": 7, "bottoming": 25, "continuation": 14, "live": 19, "ran": 9, "recovery": 0, "setting_up": 26, "trend": 0, "watch": 23}, "tier": "essential", "total": 62};
   /* The board and the four adjacent panels are separate switches over ONE
      payload — either can be gated alone, so the fetch is driven by whichever
      is present and each hydrate step is independently guarded below. */
-  var PGATE = {"actnow": {"locked": 27, "preview": 3, "total": 35}, "leader_observations": {"locked": 108, "preview": 3, "total": 111}, "leaders": {"locked": 12, "preview": 3, "total": 15}, "payload": "/premiumdata/us_stocks.json", "plv_names": {"locked": 72}, "preview": 3, "ran": {"locked": 9, "preview": 3, "total": 12}, "setups": {"locked": 1, "preview": 3, "total": 4}, "tape": {"locked": 144}, "tier": "essential"};
+  var PGATE = {"actnow": {"locked": 27, "preview": 3, "total": 35}, "candidate_pool": {"locked": 90, "preview": 3, "total": 93}, "leader_observations": {"locked": 110, "preview": 3, "total": 113}, "leaders": {"locked": 12, "preview": 3, "total": 15}, "payload": "/premiumdata/us_stocks.json", "plv_names": {"locked": 72}, "preview": 3, "ran": {"locked": 9, "preview": 3, "total": 12}, "setups": {"locked": 1, "preview": 3, "total": 4}, "tape": {"locked": 167}, "tier": "essential"};
   /* P-MP1-SHELL §8b: the Setups grid's OWN gate, over the plan book rather
      than the candidate board GATE splits — same payload, same URL, a third
      independent switch. */
@@ -6039,7 +6022,10 @@ if (document.readyState === 'loading') {
   }
   function dropNotes(scope){
     var notes = (scope || document).querySelectorAll('.pg-more');
-    for (var i = 0; i < notes.length; i++) notes[i].remove();
+    for (var i = 0; i < notes.length; i++) {
+      // Candidate counts are honest even when the protected row render failed.
+      if (!notes[i].classList.contains('ucp-more')) notes[i].remove();
+    }
   }
 
   function hydrateLeaderObservations(html){
@@ -6058,7 +6044,37 @@ if (document.readyState === 'loading') {
     if (window.initShowMore) window.initShowMore();
   }
 
+  function hydrateCandidatePool(html, source){
+    if (!html || !source) return;
+    var root = document.getElementById('us-candidate-pool');
+    if (!root || root.dataset.poolHydrated === 'true') return;
+    if (!root.dataset.sourceDigest || source.digest !== root.dataset.sourceDigest ||
+        source.as_of !== root.dataset.asOf || source.total !== Number(root.dataset.total)) return;
+    var list = root.querySelector('.ucp-list');
+    if (!list) return;
+    // Validate the whole remainder before mutating the visible list.
+    var fragment = document.createElement('template');
+    fragment.innerHTML = html;
+    var current = list.querySelectorAll('.ucp-row'), incoming = fragment.content.querySelectorAll('.ucp-row');
+    if (current.length + incoming.length !== source.total) return;
+    var identities = new Set();
+    for (var i = 0; i < current.length; i++) identities.add(current[i].dataset.ticker);
+    for (var j = 0; j < incoming.length; j++) {
+      var ticker = incoming[j].dataset.ticker;
+      if (!ticker || identities.has(ticker)) return;
+      identities.add(ticker);
+    }
+    list.appendChild(fragment.content);
+    root.dataset.poolHydrated = 'true';
+    if (list.querySelectorAll('.ucp-row').length === Number(root.dataset.total)) {
+      var note = root.querySelector('.ucp-more');
+      if (note) note.remove();
+    }
+    root.dispatchEvent(new Event('candidate-pool-hydrated'));
+  }
+
   function hydratePanels(payload){
+    hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);
@@ -6371,6 +6387,5 @@ if (document.readyState === 'loading') {
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
-<script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>
