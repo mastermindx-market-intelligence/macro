@@ -131,13 +131,17 @@ FIFTY_TWO_FIFTY_THREE_WEEK_TOLERANCE_DAYS = 6
 # dividend / board-resolution 6-K is described as an announcement.  The
 # patterns are tight on purpose — they are the discriminator, never a
 # permissive catch-all; "revenue" alone never admits.
+# "press release" is deliberately NOT a token: it is the single most common
+# EX-99.1 description on EDGAR and describes revenue reports and dividend
+# announcements just as often as results — the verified filer admits through
+# `earnings` (description) and the a<q>q<yy>e filename convention without it.
 _RESULTS_DESCRIPTION_RE = re.compile(
     r"(?:\bearnings\b|quarterly\s+results|financial\s+results|results\s+of\s+operations"
-    r"|(?:quarterly|interim)\s+financial\s+statements|press\s+release)",
+    r"|(?:quarterly|interim)\s+financial\s+statements)",
     re.I,
 )
 _RESULTS_FILENAME_RE = re.compile(
-    r"(?:^a[1-4]q\d{2}e|earnings|quarterly[_-]?results|financial[_-]?results|press[_-]?release)",
+    r"(?:^a[1-4]q\d{2}e|earnings|quarterly[_-]?results|financial[_-]?results)",
     re.I,
 )
 _TEXT_EXHIBIT_SUFFIXES = (".htm", ".html", ".txt")
@@ -259,10 +263,10 @@ def _results_six_k_manifest_admits(entries: list[Mapping[str, str]]) -> bool:
     ``^EX-99\\.1\\b``, or a filename carrying the ``ex99-1`` hint — AND
     whose <DESCRIPTION> matches ``_RESULTS_DESCRIPTION_RE`` (earnings /
     quarterly results / financial results / results of operations /
-    quarterly or interim financial statements / press release) OR whose
-    FILENAME matches ``_RESULTS_FILENAME_RE`` (the ``a<q>q<yy>e…``
+    quarterly or interim financial statements — never "press release") OR
+    whose FILENAME matches ``_RESULTS_FILENAME_RE`` (the ``a<q>q<yy>e…``
     earnings-release convention, or earnings / quarterly-results /
-    financial-results / press-release keywords). Everything else is refused:
+    financial-results keywords). Everything else is refused:
     a manifest with no EX-99 document (the monthly-revenue 6-K shape), an
     EX-99.1 described as a revenue report, a dividend or board-resolution
     announcement, a non-text attachment. It never reads ``reportDate`` and
@@ -1161,7 +1165,8 @@ def discover_new_homebuilder_revisions(
     T05b: rows whose issuer declares ``external_ids["results_form"] ==
     "6-K"`` are admitted through the 6-K candidate selector (calendar-
     quarter-end reportDate pre-filter + the results-6-K manifest
-    discriminator on the EX-99.1 description/filename); rows whose issuer declares ``external_ids["fiscal_calendar"]
+    discriminator on the EX-99.1 description/filename); rows whose issuer
+    declares ``external_ids["fiscal_calendar"]
     == "52_53_week"`` get the named 6-day stated-vs-derived tolerance.
     Both extensions key ONLY on issuer external_ids strings, never on
     ticker literals.

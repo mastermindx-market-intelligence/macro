@@ -644,17 +644,25 @@ def test_discover_refuses_an_identity_without_its_own_profile_fail_closed() -> N
         )
 
 
-def test_refresh_iterates_discovery_tickers_at_runtime(monkeypatch) -> None:
-    """The per-ticker loop in ``refresh()`` walks DISCOVERY_TICKERS: with a
-    discovery stub that records every ticker it is asked about, the recorded
-    set equals DISCOVERY_TICKERS exactly (the a5a fail-soft test pins the
-    same thing through the ::warning path)."""
-    seen: list[str] = []
+def test_refresh_source_names_discovery_tickers_not_the_homebuilder_tuple() -> None:
+    """Static pin only: ``refresh()`` references DISCOVERY_TICKERS and no longer
+    references HOMEBUILDER_TICKERS. The RUNTIME property (every ticker in the
+    superset is attempted and every failure is a ::warning skip) is pinned by
+    tests/test_issuer_profiles_a5a.py::test_refresh_is_fail_soft_per_homebuilder,
+    which runs a real refresh() and asserts the skipped set equals
+    DISCOVERY_TICKERS."""
+    names = refresh_mod.refresh.__code__.co_names
+    assert "DISCOVERY_TICKERS" in names and "HOMEBUILDER_TICKERS" not in names
 
-    def discovery(ticker, **_kwargs):
-        seen.append(ticker)
-        raise refresh_mod.RefreshError("stub")
 
-    monkeypatch.setattr(refresh_mod, "discover_new_homebuilder_revisions", discovery)
-    source = refresh_mod.refresh.__code__.co_names
-    assert "DISCOVERY_TICKERS" in source and "HOMEBUILDER_TICKERS" not in source
+def test_press_release_described_exhibits_never_admit_on_their_own() -> None:
+    """'Press release' is the commonest EX-99.1 description on EDGAR and names
+    revenue reports and dividend notices as often as results; it must not be
+    a results token by itself."""
+    admits = refresh_mod._results_six_k_manifest_admits
+    assert admits([{"type": "EX-99.1", "filename": "june_revenue.htm", "description": "Press Release"}]) is False
+    assert admits([{"type": "EX-99.1", "filename": "dividend_announcement.htm", "description": "Press release"}]) is False
+    assert admits([{"type": "EX-99.1", "filename": "press_release.htm", "description": ""}]) is False
+    # the verified filer shape still admits twice over: by description and by filename convention
+    assert admits([{"type": "EX-99.1", "filename": "ex991.htm", "description": "Earnings report with guidance"}]) is True
+    assert admits([{"type": "EX-99.1", "filename": "a2q26e_withguidance.htm", "description": "Press release"}]) is True
