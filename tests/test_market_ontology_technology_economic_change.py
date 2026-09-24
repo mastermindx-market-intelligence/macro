@@ -18,6 +18,7 @@ import hashlib
 import importlib
 import json
 import re
+import sys
 import types
 from pathlib import Path
 
@@ -285,7 +286,11 @@ def _synthetic_validate(payload):
     if any(payload["authority"].get(flag) is not False for flag in _FALSE_AUTHORITY):
         raise _SyntheticCurationError("synthetic_validation_failed: authority flags must be false")
     for side in ("subject", "object"):
-        if not isinstance(payload[side], dict) or not isinstance(payload[side].get("entity_id"), str):
+        entity_id = payload[side].get("entity_id") if isinstance(payload[side], dict) else False
+        # Mirror the emitted contract: subject.entity_id is a string; object.entity_id may be null.
+        if not isinstance(payload[side], dict) or not (
+            isinstance(entity_id, str) or (side == "object" and entity_id is None)
+        ):
             raise _SyntheticCurationError(f"synthetic_validation_failed: {side} shape")
     return dict(payload)
 
@@ -968,3 +973,57 @@ def test_owner_mode_and_freshness_preserved(monkeypatch):
     assert dossier["owner"]["program"] == "gmi-technology-ex-semis"
     assert dossier["mode"] == "first_unit_synthetic_fixture"
     assert dossier["freshness"] == {"as_of": AS_OF, "cutoff": CUTOFF}
+
+
+# --- review pins (T5 independent review, 2026-09-24) -------------------------------
+
+
+def _rels(dossier):
+    return dossier["business"]["relationships"]
+
+
+def test_null_object_buyer_row_keeps_counterparty_unnamed_and_invents_no_edge(monkeypatch):
+    unnamed_object = _assertion(
+        predicate="buyer_paid_unit",
+        object_=(None, None, "seat-month (SYNTHETIC)"),
+        text="Synthetic buyer statement: the paid unit is bought by an unnamed counterparty.",
+        seed="nullobj-buyer-1",
+    )
+    dossier = _compose_happy(monkeypatch, business_assertions=[unnamed_object])
+    rows = dossier["business"]["rows"]
+    assert len(rows) == 1 and rows[0]["object"]["entity_id"] is None
+    assert not [r for r in _rels(dossier) if r["rel_type"] == "product_has_buyer"]
+    assert not [r for r in _rels(dossier) if r["from_id"] == r["to_id"]]
+    assert all(r["from_id"] and r["to_id"] for r in _rels(dossier))
+    assert all(card["title"] for card in dossier["business"]["cards"])
+
+
+def test_null_object_workload_role_emits_no_role_edge(monkeypatch):
+    unnamed_object = _assertion(
+        predicate="product_workload_role",
+        object_=(None, None, None),
+        text="Synthetic role statement with an unnamed product side.",
+        seed="nullobj-role-1",
+    )
+    dossier = _compose_happy(monkeypatch, business_assertions=[unnamed_object])
+    assert len(dossier["business"]["rows"]) == 1
+    assert not [r for r in _rels(dossier) if r["rel_type"] == "product_has_workload_role"]
+    assert all(r["to_id"] for r in _rels(dossier))
+
+
+def test_partially_present_shared_contract_is_typed_unavailable(monkeypatch):
+    partial = types.SimpleNamespace(
+        CurationAssertionError=_SyntheticCurationError, validate_assertion=_synthetic_validate
+    )  # no curation_revision symbol
+    # Install through the import seam so the loader's own symbol gate is exercised.
+    monkeypatch.setitem(sys.modules, "engine.theme_graph.curation_assertion", partial)
+    dossier = _compose(business_assertions=[_assertion(predicate="buyer_paid_unit", seed="partial-1")])
+    business = dossier["business"]
+    assert business["refused"] is True and business["reason_code"] == "shared_contract_unavailable"
+
+
+def test_attributed_assertion_without_statement_text_is_counted_not_rendered(monkeypatch):
+    blank = _assertion(predicate="buyer_paid_unit", text=None, seed="blank-1")  # type: ignore[arg-type]
+    dossier = _compose_happy(monkeypatch, business_assertions=[blank])
+    assert dossier["business"]["rows"] == []
+    assert '"invalid_assertions": 1' in json.dumps(dossier, sort_keys=True)

@@ -339,8 +339,9 @@ def _load_shared_curation_contract() -> Any | None:
         from engine.theme_graph import curation_assertion as shared
     except ImportError:
         return None
-    if not callable(getattr(shared, "validate_assertion", None)):
-        return None
+    if not callable(getattr(shared, "validate_assertion", None)) \
+            or not callable(getattr(shared, "curation_revision", None)):
+        return None  # a partially-present contract is typed unavailable, never a silent zero-row render
     return shared
 
 
@@ -810,6 +811,10 @@ def _process_assertions(payloads: Iterable[Any], shared: Any,
                 (observation_id, subject_id, revision, source_ref["object_id"])
             )
         else:
+            if not statement:
+                # An attributed business fact with no statement text is not a fact.
+                out.invalid += 1
+                continue
             row_id = "tecrow_" + _digest_hex(
                 {
                     "predicate": predicate,
@@ -867,17 +872,20 @@ def _cards_and_relationships(out: _AssertionOutcome,
         revision = row["curation_revision"]
         subject_id = row["subject"]["entity_id"]
         object_id = row["object"]["entity_id"]
+        # An unnamed counterparty side yields NO role/procurement edge: the row
+        # stays visible, the edge is never invented (no self-edge, no empty endpoint).
         if row["predicate"] == "product_workload_role":
-            _rel("product_has_workload_role", subject_id, object_id or "", revision)
-        else:
-            _rel("product_has_buyer", object_id or subject_id, subject_id, revision)
+            if object_id:
+                _rel("product_has_workload_role", subject_id, object_id, revision)
+        elif object_id:
+            _rel("product_has_buyer", object_id, subject_id, revision)
         _rel("row_backed_by_source", row["row_id"], row["source_ref"]["object_id"], revision)
 
     # Cards: one per product/kind, aggregating row ids — never a magnitude.
     by_product: dict[tuple[str, str], list[dict[str, Any]]] = {}
     product_names: dict[str, str] = {}
     for row in out.rows:
-        object_id = row["object"]["entity_id"] or ""
+        object_id = row["object"]["entity_id"] or "unnamed-counterparty"
         if row["predicate"] == "product_workload_role":
             by_product.setdefault(("product_workload_role", object_id), []).append(row)
             name = row["object"]["display_name"]
