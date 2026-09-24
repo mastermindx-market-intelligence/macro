@@ -16,7 +16,7 @@ state_before: >
   no START, no product code. Macro main at packet preparation was dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b.
 changed:
   - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-24-semiconductor-b-implementation.md
-    what: "Created the implementation-operation working checkpoint: pickup receipt, procedure pin, current-main/custody reconciliation, Fable custody rulings R1-R4, wave plan and exact next action."
+    what: "Created the implementation-operation working checkpoint: pickup receipt, procedure pin, current-main/custody reconciliation, Fable custody rulings R1-R4, wave plan and exact next action; updated with wave-1 dispatch, the R4/T05 read-only qualifications, the fabric ship-loop incident and the R4 DECISION_REQUEST."
 verified:
   - claim: "Current protected procedure is compatible and loaded from one pin."
     command: "git rev-parse origin/master in Mastermind; read docs/sol_skills/INDEX.md, ACTIVE_EXECUTION.md, WEB_CEO_DELEGATION.md, WATCHER_ACTION_LOOP.md, RECONCILE_STATE.md, docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md, docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md at that commit"
@@ -36,6 +36,18 @@ verified:
   - claim: "Native owner interfaces named by the plan exist on the carrier base."
     command: "git show origin/main:<path> for contracts/theme_graph/evidence.v1.schema.json, engine/theme_graph/store.py, engine/theme_graph/rights.py, lib/evidence_foundation.py, contracts/evidence_foundation/vocabulary.v1.json, engine/company_intelligence/{event_workspace,event_workspace_build,issuer_profiles,identity}.py, contracts/financial_intelligence_packet.schema.json, app/earnings.py, app/paywall.py, engine/earnings_narrative/private_publication.py, engine/research_vault/r2_store.py, templates/basket_detail.html.j2, templates/state_of_themes.html.j2, config/theme_sources.yml, config/theme_crosswalk.yml"
     result: "All present. EVIDENCE_COLUMNS has 12 columns and no curation_assertion; rights registry has 3 families (mastermind_curated direct_display_ok; finviz_themes, ths_concepts unresolved); production_registry enrolls AAPL + DHI/PHM/KBH/TOL only; ticker_cik_ledger has ON=1097864 and no TSM row; vocabulary owner_stores has 13 entries and no curation subtype."
+  - claim: "START was emitted separately from PICKUP_ACK and the one implementation carrier exists."
+    command: "gh pr comment 7780 --body-file start_7780.md; gh pr create --draft --base main"
+    result: "START = https://github.com/mastermindx-market-intelligence/macro/pull/7780#issuecomment-5807391383; carrier = #7870 (draft), first commit 545ece0c7177a56627204e77302cd9c2d4d03f3e on base 9438880952d3."
+  - claim: "Wave-1 children returned commits that pass their deterministic gates on a second environment (Studio python3.14) before integration."
+    command: "python3 -m pytest tests/test_semiconductor_research_inputs.py -q (fe9238b9aeee); python3 -m pytest tests/test_theme_research_private_binding.py tests/test_theme_research_rights_refresh.py -q plus test_theme_sources_registry/test_market_ontology_exposure_map/test_deploy_update_self_heal/test_theme_graph_contracts (d30457d5de7c); python3 -m pytest tests/test_semiconductor_guidance_history.py tests/test_issuer_profiles_a5a.py -q (53c5bd3702f3)"
+    result: "T01 9 passed, leak-guard grep NONE, 26 files; T03 30 passed + 364 adjacent passed, store.py diff 0 lines; T06 32 passed + 38 adjacent passed, fixtures leak-guard NONE. Independent Opus READ_ONLY reviews launched for all three (builder != reviewer; MiniMax output under R20)."
+  - claim: "Candidate (i) for the R4 private binding is public by construction."
+    command: "gh api repos/mastermindx-market-intelligence/macro --jq '{private,visibility,forks_count}'; curl -sI https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/main/data/theme_graph/evidence.parquet; git ls-files data/theme_graph; grep -n 'git add data/' scripts/ci/daily_engine_commit_outputs.sh"
+    result: "private=false visibility=public forks=0; raw parquet HTTP 200; evidence.parquet tracked; daily engine job commits data/ (line 64); lib/config.py data_dir() has no env override and store.py path functions take no root argument, so candidate (iii) is not constructible per-store."
+  - claim: "The Earnings owner is form-agnostic and only its intake filter blocks a 6-K; onsemi is silently skipped today by the fiscal cross-check."
+    command: "read-only Opus qualification over engine/company_intelligence/*, scripts/refresh_event_workspaces.py:210-233,632-634,663-716,1021-1029, engine/fundamental_forensics/metric_registry.py:50-53, data/edgar/ticker_cik_ledger.json; SEC submissions/exhibits for CIK 0001046179 and 0001097864 fetched read-only"
+    result: "build_event_workspace + validate_event_workspace accept a real TSMC 6-K unchanged; _select_newest_results_rows admits only 8-K with Item 2.02 and every TSMC 6-K row has items==''; onsemi 52/53-week period ends (2026-04-03, 2026-07-03) fail the calendar cross-check and the 'quarter ended' regex; ticker ledger has ON=1097864 and no TSM; FIF registry excludes IFRS/TWD/20-F (typed gap for W-A financial packet); guidance_item.v1 has no validator and no currency field; tests/test_issuer_profiles_a5a.py:114 pins len(registry)==5."
 unverified:
   - claim: "GMI has an approved private storage/publication binding for full-fidelity assertions."
     what_would_verify: "T01/T03 evidence from the existing GMI storage and private-publication owners that the incumbent reader/writer can be bound to a non-public runtime root or to the existing private Research Vault store, with current-rights enforcement; no second store."
@@ -48,10 +60,16 @@ unresolved:
   - "SOURCE_COLLISION (lane-local): templates/basket_detail.html.j2 generic research mount + asset includes frozen pending #7669 release or accepted current template identity."
   - "Private binding for live full-fidelity GMI admission is unproven; synthetic contract/composition/test work continues; live admission lane closed."
   - "mastermind-executive MCP connector is unauthenticated in this session; fabric dispatch uses the installed pool/lease-broker CLI (canonical Subagent Fabric surface on this host), not a new queue."
+  - "DECISION_REQUEST R4 open on #7780 (issuecomment-5807772681): adopt candidate (ii) — full-fidelity assertion bodies through the existing private Research Vault owner under one registered prefix, reference-only rows in the public parquet — pending Sol/Chairman; live admission (T11) blocked until ruled; preconditions R2_RESEARCH_BUCKET has no public r2.dev domain and PAYWALL_GRACE_SECONDS acceptability unverified."
+  - "Fabric incident 2026-09-24: executor lanes running under the Claude Code SDK harness (MiniMax mode) obey the Macro repository ship loop (push, PR, merge-on-green label, gh run watch) despite the lane contract; T01 opened #7874 and armed merge-on-green (disarmed: draft, label removed, custody comment 5807689936, stray watcher killed); T06 pushed claude/semi-b-t06-guidance before its lane was terminated (no PR). Every later packet carries a binding LANE LAW preamble forbidding push/PR/labels/watchers; stray origin branches claude/semi-b-t01-inputs and claude/semi-b-t06-guidance are to be deleted after integration."
+  - "Executor return blocks were missing or replaced by ship-loop status for T01 and T03 (stdout 1.5 KB / 2 lines); acceptance therefore rests on the commits, second-environment gates and independent review, not on executor self-report."
+  - "Dependency PR #7669 is actively executing ('manifest-read fix executing', 2026-09-24T02:04Z); custody questions on #7462/#7669 unanswered."
 next_actions:
-  - "Emit a separate START receipt on #7780 once this carrier PR exists (this commit is the carrier's first commit)."
-  - "Wave 1 (path-disjoint, synthetic only): T01 fixtures/input tests; T02 shared curation_assertion schema+module+tests WITHOUT the store.py column; T03 rights snapshot API+tests; T05 read-only witness qualification. Each child gets its own SSD worktree/branch and returns commits for principal review and integration into this carrier."
-  - "Wave 2 after T02 accepted: T04 K1 subtype binding, T06 guidance_history, T07/T08 F04 composition, T09 API, T10 shared client + state_of_themes mount. Wave 3: T11/T12 proofs and independent review."
+  - "Consume the three Opus reviews; integrate accepted T01/T03/T06 commits into #7870 by cherry-pick (T06 fixture files supersede T01 stubs), rerun the combined gates, push, record pool ledger outcomes."
+  - "When T02 (glm-5.3, m1 lane rs_20260924T041531Z_74227) returns: second-environment gate, Opus READ_ONLY review of the shared contract, integrate; then dispatch T04 (K1 subtype) and T07/T08 (F04 composition) with the LANE LAW preamble."
+  - "Dispatch T05 (operator, packet ready) and T10 part 1 (operator, packet ready) as soon as a remote lane frees (both hosts at their 2-lane ceiling at 04:35Z)."
+  - "Fresh-read #7780 for the R4 ruling and #7462/#7669 for custody answers before every substantive write; keep store.py and basket_detail.html.j2 frozen until released."
+  - "Close #7874 with a pointer to the carrier commit after T01 lands; delete the two stray claude/semi-b-* origin branches."
 do_not_redo:
   - "Do not repeat the R01-R09 research, A/B/C selection, written design, plan or 48-requirement mapping."
   - "Do not implement on #7780, #7773, #7462 or #7669; do not transplant their hunks."
@@ -63,7 +81,10 @@ danger_areas:
   - "A synthetic-fixture green is not native admission; an industrial-only pane does not satisfy either witness."
   - "Current issuer identity is not historical lineage; source-only businesses get no fabricated CIK/security/company node."
   - "Fabric executor first-pass acceptance is low (glm-5.3 0.29, MiniMax-M2.7 0.14 over last 20): every child needs an executable deterministic gate and independent review before integration."
-prs: [7780]
+discoveries:
+  - "GMI evidence parquet is an unregistered artifact on the public raw plane (config/r2_delivery_plane_classification.v1.json:166 DEFAULT_DENY:MACRO_GIT_RAW data/**) while config/theme_sources.yml:34 calls data/theme_graph an internal plane; nothing enforces the internal-plane language."
+  - "Macro executor harness (claude -p under MiniMax/GLM keys) inherits the repository CLAUDE.md ship loop; a lane contract alone does not stop push/PR/merge-on-green."
+prs: [7780, 7870, 7874]
 ---
 
 # Semiconductor B — implementation operation working checkpoint
