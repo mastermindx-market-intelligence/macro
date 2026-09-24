@@ -90,3 +90,27 @@ The repair candidate is ready for targeted independent re-review of these change
 An eventual implementation packet must carry these selected decisions and the exact remaining owner binding tasks. Do not demand future production proof as a condition for beginning its producing task; do not treat an accepted design as that proof. Real source admission, Consumer profile registration, qualified private delivery, all three positive cases and governed theme-to-company/browser acceptance remain mandatory before calling the first vertical delivered.
 
 The R8 native-code staging denial remains untouched. An optional native fabric ledger-recent read was separately blocked in R12 and not retried; no ledger outcome write is claimed. The original independent review completed on its original carrier with exit0, STOP_REVIEW and unchanged input hashes. No hidden worker, watcher, product implementation, source admission, Fable build dispatch, merge or deployment follows.
+
+## 8. Executable H1-H3 / M1-M5 repair candidate
+
+The prose decisions above are now paired with a separate R12 research reference rather than mutating the immutable R11 review target:
+
+- `CONSUMER_R12_SYNTHETIC_WORKED_CASES.json` — same three invented mechanisms with explicit `period_kind`, timezone-aware `published_at`, reported `display_quantum`, and the closed Consumer profile/subject contract.
+- `research_oracle.py` — dependency-local derivation with a uniform result envelope: `value_text`, `unit`, `scale_power10`, `input_refs`, sign, period/event metadata, precision, status and refusal reason.
+- `verify_research_oracle.py` — mutation-oriented checks of H1-H3 and M1-M5.
+- generated `research_results.json` and `verification.json` — reproducible example output and source-hash-bound research receipt.
+
+The targeted isolated command `python3 -I -S research/consumer_cyclical/r12/verify_research_oracle.py` passes **60 checks, 0 failed**. Those checks are deliberately not counted as native application, native schema, source-admission, browser, or investment tests.
+
+The repaired semantics are concrete:
+
+- H1: the shared Themes POST family is the sole new-dossier delivery design; R6 Earnings delivery language is superseded and R7 Task4 is reduced to qualification/non-loss proof against its incumbent owner.
+- H2: one company-subject contract is selected: profile `consumer_cyclical`, profile version `1`, discriminator `consumer_economic_change.v1`, subject type `company`, with unsupported requests refusing rather than falling back. Its registration state is still **PENDING_SHARED_OWNER_ACCEPTANCE** and must not be mislabeled as an enrolled wire contract.
+- H3: each derived result carries scale and input lineage through the result envelope; explanation rendering prints the scale explicitly, so a value such as `-1` at `scale_power10=3` cannot silently become `-1 USD`.
+- M1: numerical explanation text is regenerated from selected result envelopes; counterevidence and next observation are mandatory; configured forbidden markers are actively checked. The marker check is a regression guard, not semantic proof.
+- M2: missing or malformed inputs suppress only dependent results where independent results remain qualified. Missing asset proceeds, for example, leaves the pre-proceeds cash subtotal available but suppresses reconciliation.
+- M3: invented calendar examples require explicit quarter/half-year/year grain and validate the declared interval; an annual interval relabeled as a quarter is rejected while a leap-year calendar quarter remains valid. Real fiscal calendars remain the native owner's job.
+- M4: outlook comparisons require timezone-aware publication clocks and strict later-event ordering in addition to distinct event IDs.
+- M5: the percentage denominator is withheld when nonpositive or when the input display-rounding envelope includes zero. Large percentages are not rejected merely for exceeding 100 percent.
+
+This closes the **research-package repair** for H1-H3/M1-M5; it does not close shared registration, representation-rights, native pin, entitlement-grace, native execution, or production proof. Those remain the next reconciliation boundary before targeted independent re-review.
