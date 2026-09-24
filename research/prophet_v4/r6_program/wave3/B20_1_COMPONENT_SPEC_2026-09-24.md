@@ -405,7 +405,7 @@ The fixture exposes only two controls: the theme control writes `document.docume
 - `git show <SOURCE_SHA>:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md | sed -n 1p` → `# B20 DESIGN PACKET V2`.
 - `grep -o -E 'data-availability="[A-Z_]+"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → seven lines: `APPROACHING_ENTRY`, `ENTRY_OPEN`, `INVALIDATED`, `NOT_READY`, `RAN_DONT_CHASE`, `UNAVAILABLE_DATA`, `WAIT_PULLBACK`.
 - RED→GREEN bilingual fixture audit on the previous head and repaired head → `unilingual_h2=10 title_bilingual=False` (exit 1), then `unilingual_h2=0 title_bilingual=True` (exit 0); the title is the accepted bilingual literal `B20-1 Component Fixture · B20-1 组件夹具`.
-- `grep -c 'aria-label="Site navigation"' research/prophet_v4/r6_program/wave3/B20_1_COMPONENT_SPEC_2026-09-24.md` → `0`.
+- `grep -cF 'aria-label="Site navigation"' research/prophet_v4/r6_program/wave3/B20_1_COMPONENT_SPEC_2026-09-24.md` → `0`; the labelled-element pattern uses twinned hidden targets rather than a monolingual literal.
 - `grep -o -E 'data-evidence="(a-z)+"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → six evidence states: `corrected`, `error`, `fresh`, `loading`, `missing`, `stale`.
 - `grep -Ec 'class="mx-ladder mx-ladder--board' mockups/prophet_workspace/b20_1_fixture.html` → `2`; the Python line-window audit over the second ladder records 7 lines containing `.skel`, with loading cells inside `.mx-cell` children; the loading ladder therefore passes structurally rather than by pretending intervening markup is absent.
 - `grep -c -F 'Your change did not save. Try again.' mockups/prophet_workspace/b20_1_fixture.html` → `1`; `grep -c -F '您的更改未保存。请重试。' mockups/prophet_workspace/b20_1_fixture.html` → `1`.
