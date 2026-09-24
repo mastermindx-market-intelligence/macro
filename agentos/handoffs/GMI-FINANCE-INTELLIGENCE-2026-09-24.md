@@ -159,3 +159,55 @@ browser proof, production acceptance.
 
 Open the DRAFT carrier PR, emit START on #7786, dispatch `fin_t1_contract` and
 `fin_t3_overlap` to mini2 through `admission_wait_dispatch.sh`.
+
+## Wave 1 addendum (seat 938d17d6, 2026-09-24 06:43Z) — to land on a FRESH records branch after #7887 merges
+
+### changed
+- T1 read-model contract: PR #7896 (head 4fddbd33970e) armed merge-on-green. Delivered by fabric lane fin_t1_contract (glm-codex/glm-5.3); the builder exhausted its auto-continue budget after writing complete files; the seat verified on mini2 with `~/lanes/venv/bin/python` (15 passed; `run_ci_pack.py --validate-only` rc 0; `test_ci_pack.py -k "exclusive or curated"` 7 passed), added the 25 import-closure paths (`engine/sector_intelligence/__init__.py` → `launch_slo_verifier` → earnings_narrative → biocatalyst) the exclusive job needed, committed, fetched the commit over SSH and pushed from the seat worktree.
+- Lane engine switch: glm-codex/glm-5.3 produced word salad with AUTO_CONTINUE_EXHAUSTED on 3/3 Finance lanes (T1 end-of-run, D1, T3 first turn). All remaining Finance lane args now run `fix_engine: minimax` / `MiniMax-M3`, `review_engine: seat`, rounds 1. D1 and T3 re-dispatched (mb 06:28Z, mini2 06:33Z).
+- T2 packet addendum: SHAPE AUTHORITY clause naming the required field families the frozen text did not spell out (snapshot_identity, coverage counts, conflicts left/right, slices indicators/falsifiers/retained_risk/valuation_anchor, macro_matrix item, outer_dossier_ref nulls).
+- Packets staged for Wave 3: fin_t8_ui_shell (dossier page shell + hydration from the D1 spec; biocatalyst shell/fetch idiom; no payload in static HTML or browser storage; two art directions; evidence receipt), fin_t9_entries (Theme Tracker sector-deep-dive card outside canonical lanes; Financials launch module gated on #7669 merge), fin_d1_audit_prompt (Opus read-only AUDIT of the D1 spec before T8).
+
+### verified
+- `scripts/merge_on_green.py` treats `ci-authority/codex/merge-queue-pilot` as non-binding (`CI_AUTHORITY_INACTIVE_CONTEXT`, `is_non_binding_check`) — the pilot red on #7887 does not block the sweeper. Command: `git show origin/main:scripts/merge_on_green.py | sed -n '650,690p;926,940p'`.
+- mini2 `python3` is 3.14 without pytest/jsonschema; the lane venv is `~/lanes/venv/bin/python` (3.14.7 + pytest 9.1.1). Command: `ssh mini2 '~/lanes/venv/bin/python -c "import pytest,jsonschema"'`.
+
+### unverified / open
+- #7887 Stop-guard block `ci_failed_unmerged: semantic evidence base_sha mismatch` (main moved while packs ran; classified by the guard as an external WAIT). Whether the sweeper merges on concluded green or marks `merge-blocked` is pending the watcher.
+- mini2 HTTPS push hang (osxkeychain, headless) — reproduced once for ~7 min, then a later push authenticated normally; root cause not pinned; the SSH-fetch route is the reliable path.
+
+### do_not_redo (additions)
+- Do not re-run fin_t1_contract; the T1 files are on #7896.
+- Do not edit mini2's shared git credential config on the dry-run evidence (public repo — ref advertisement needs no auth).
+
+### danger_areas (additions)
+- A lane log `r1_fix: … rc=0 out=NNNNNB` is not success; read `~/lanes/ext/lanes/<label>/r1_fix.out.md` and the fix worktree before consuming.
+- `git add` in a lane/sparse clone needs `--sparse` for new files under data/, site/, mockups/.
+
+### verified (06:44Z additions)
+- #7780 comment 5807772681 (R4 DECISION_REQUEST, Semiconductor seat, 04:36Z): recommends candidate (ii) = canonical bodies through the existing private Research Vault owner (`engine.research_vault.r2_store.build_store`, private `R2_RESEARCH_BUCKET`) under one registered prefix; public `evidence.v1` rows carry bodies only for `direct_display_ok` families. Finance's frozen T4/T5/T6/T7 path is the same owner + its own prefix `finance_intelligence_private/v1` → consumer of the one owner, not a duplicate. Command: `gh api repos/mastermindx-market-intelligence/macro/issues/comments/5807772681 --jq .body`.
+- #7870 head moved to `d5b0c00d772e`; ships `contracts/theme_graph/evidence.v1.schema.json` (required: evidence_id, kind[filing|xbrl|8k_counterparty|scrape_receipt|scrape|news_item|operator_curation|comovement_stat|external_classification], published_at, source_ref, licensing_internal_ok/display_ok/redistribution_ok, computed_at). Finance `source_records[].evidence_ref` binds to `evidence_id`; licensing booleans ↔ `rights_state`. No fork needed. Command: `git fetch origin refs/pull/7870/head && git show FETCH_HEAD:contracts/theme_graph/evidence.v1.schema.json`.
+- R2 research secrets are usable: `earnings-public-wire.yml` workflow_run completed success 2026-09-24T05:00:55Z (`gh run list --workflow earnings-public-wire.yml -L 2`). The repo-level secrets listing returned nothing (token scope), so existence is proven by use, not by listing.
+- Chairman direction (relayed by Industrials/Consumer/Mining notes on #7870, 06:34–06:42Z): every sector consumes the Semiconductor-led shared GMI foundation. Finance alignment note + `sec_edgar` family request posted on #7870 (06:44Z).
+
+### new gate before Wave 2's first REAL publish
+- R4 preconditions (a) research bucket has no public r2.dev domain and is not the shared `mastermindx` bucket; (b) `build_store()` refuses a shared bucket; (c) dry-run receipt for the same research_sha. Added to the fin_t6 packet as PRIVACY PRECONDITION; the seat performs the gate, never a lane.
+
+### Sol R4 ruling consumed (06:49Z) — SOL-R4-PRIVATE-BINDING-20260924-HEALTHCARE-R11 (#7780 comment 5808854275, 06:20Z)
+- §1 one native owner via `engine.research_vault.r2_store` + registered prefix → Finance prefix `finance_intelligence_private/v1` (T4) registers in the same place as the earnings private prefix. §2 no public-body shortcut → Finance serves bodies only behind the authenticated API; R-FIN-6's `sec_edgar` request concerns display INSIDE the product, not public bodies. §3 immutable write→verify→advertise, identical no-op, conflict refuse, predecessor fencing → added to fin_t4 packet (SOL R4 QUALIFICATIONS). §4 concrete nonce-object privacy proof → fin_t6 gains `mode: nonce_probe` + seat-run public negative reads; the store-fallback landmine (draft DSC) is why the per-run privacy gate stays too. §5 entitlement grace ≤ 86,400 s lives in the shared paywall module Finance reuses. §6 source rights are an independent veto → rights_state derived at read time (already frozen). §7 shared route family `/api/themes/v1/research/{query,evidence}` continues for assertion bodies.
+- **Seat ruling R-FIN-7 (records with the next DEC):** the Finance dossier read model keeps its own read route `/api/sector-intelligence/financials/finance/v1` (T7) because it serves a composed sector read model, not assertion bodies; it reuses the identical fences (`require_user` → `enforce_site_full(always=True)`, private headers) and, once #7870 lands, resolves `evidence_ref` through the shared evidence route rather than re-serving bodies. Alternative (serve the dossier through the shared query family) requires the shared owner to extend that route and is recorded as the revisit condition, not adopted unilaterally.
+- Posted on #7780 (06:49Z): the r2_store fallback fact (build_store never refuses a shared bucket).
+
+### T3 delivered (06:52Z)
+- PR #7900 `feat(sector-intelligence): expose finance overlap context (Finance T3)`, head b1929dbb3cab, built by fabric lane fin_t3_overlap on mb (minimax / MiniMax-M3, 442 s, review deferred to the seat). Seat review: `python3 -m pytest tests/test_finance_overlap.py -q` → 53 passed (files overlaid temporarily in the seat worktree, then removed); public surface == frozen packet; `basket_state_context` never returns ADMITTED (docstring line ~591); no filesystem reads of basket data. Armed merge-on-green. CI wiring deferred to T2 (T3 WIRING addendum).
+
+### Chairman directive consumed (07:46Z) — integrate, never rebuild the base
+- Relayed from Astra CEO via the Chairman: the Semiconductor session builds the shared foundation; Finance integrates later. T4 (private evidence path), T5 (private staging), T6 (publish workflow), T7 (serving route) HELD; the T4 lane that had started on m1 was killed at 07:47Z before any commit; their args are quarantined (`*.HELD-foundation-integration-20260924`). Ruling R-FIN-8 supersedes R-FIN-7 (no Finance route; `FI_READ_URL` bound at integration). Continuing: T3 merge, T2, D1a/D1b, T8, T9. Integration items listed in DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE.
+
+### Wave 1 closed (08:29Z) — merges, audit, lanes
+- T3 #7900 MERGED 08:12:42Z (3ca9c303) after the seat wired `finance_overlap.py` + suite into the `finance-intelligence` job (0fc4be532d13). Wave 1 records #7902 MERGED 08:29:11Z (b558ba6bc17d) by seat squash on concluded green (`mergeStateStatus: UNSTABLE` is the non-binding pilot context; the sweeper leaves such PRs — merge by hand).
+- D1a spec #7903 (469e932e) FAILED the read-only Opus audit (comment 5810133462): private payload in static Jinja, invented contract fields, hex light palette, raw missing-state tokens, wrong macro/conflict shapes, ARIA gaps. The seven-step stepper was the SEAT's D1 packet error → `DEC:FINANCE-RERATING-STEPPER-BINDS-FOUR-CONTRACT-PLANES` (R-FIN-9). D1b mockup withdrawn before admission. Repair lane `fin_d1a_repair` (MiniMax, mb, admitted 08:19Z) applies rulings R-A..R-K + 14 greppable self-checks; a SECOND audit gates the mockup (`DSC:DESIGN-SPEC-LANES-BIND-INVENTED-FIELDS-AUDIT-AGAINST-THE-LIVE-SCHEMA-FIRST`).
+- T2 lane `fin_t2_projection` admitted on m1 08:16Z (new PR `claude/finance-t2-owner-projection`).
+- R11 freeze docs live on the research pin 615f1050 under `research/finance/FINANCE_R11_*` (not on main); read them with `git show <pin>:<path>`.
+- verified: `git ls-tree origin/main engine/sector_intelligence/finance_overlap.py tests/test_finance_overlap.py`; `gh pr view 7902 --json state,mergedAt,mergeCommit`.
+- do_not_redo: never re-dispatch the D1b mockup or T8 before the second audit PASSes; never bind stepper nodes beyond the four contract planes.
