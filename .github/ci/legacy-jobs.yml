@@ -6254,7 +6254,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml jinja2
+      # PR #7797 regional detail composition is a source-only user-facing UI
+      # contract. Keep it in the PR-time gate:code governance lane rather than
+      # a gate:data render lane, which cannot protect the merge gate.
+      - name: regional sector shared-body source contract
+        run: python3 -m pytest tests/test_regional_sector_detail_shared_body.py -q
       - name: design governance unit suites
         run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_check_p0b_receipt_closure.py tests/test_freshness_chips_language_invariant.py -q
       - name: design-system ratchet selftest (each rule fires on its own fixture)
