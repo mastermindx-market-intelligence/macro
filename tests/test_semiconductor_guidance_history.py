@@ -508,3 +508,33 @@ def test_non_finite_derivation_value_is_refused_not_displayed():
     variant["native_derivations"]["prior_midpoint"]["value"] = math.nan
     with pytest.raises(GuidanceHistoryError, match="non_finite"):
         assess_management_sequence(**variant)
+
+
+def _without_definitions(item):
+    return {k: v for k, v in item.items() if k not in ("basis", "currency", "perimeter", "definition")}
+
+
+def test_absent_on_both_sides_definitions_are_surfaced_as_unqualified_not_certified():
+    """Matching unknowns do not certify comparability: when neither the prior
+    outlook nor the actual states basis / currency / perimeter / definition the
+    assessment still compares (frozen spec) but says definition_unqualified:<field>
+    for each such field. A field stated on both sides is not flagged."""
+    prior = _without_definitions(_shape_prior_outlook())
+    actual = _without_definitions(_shape_actual())
+    nxt = _without_definitions(_shape_next_outlook())
+    out = assess_management_sequence(prior, actual, nxt)
+    assert out["comparisons"]["prior_vs_actual"]["status"] != "refused"
+    flagged = {entry for entry in out["limitations"] if entry.startswith("definition_unqualified:")}
+    assert flagged == {"definition_unqualified:basis", "definition_unqualified:currency",
+                       "definition_unqualified:perimeter", "definition_unqualified:definition"}
+    stated = assess_management_sequence(
+        {**prior, "basis": "reported_gaap", "currency": "USD"},
+        {**actual, "basis": "reported_gaap", "currency": "USD"}, nxt)
+    stated_flags = {entry for entry in stated["limitations"] if entry.startswith("definition_unqualified:")}
+    assert stated_flags == {"definition_unqualified:perimeter", "definition_unqualified:definition"}
+    assert "no_external_consensus" in stated["limitations"]
+
+
+def test_fully_qualified_definitions_are_never_flagged_unqualified():
+    out = assess_management_sequence(_shape_prior_outlook(), _shape_actual(), _shape_next_outlook())
+    assert not [entry for entry in out["limitations"] if entry.startswith("definition_unqualified:")]

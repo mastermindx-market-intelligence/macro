@@ -115,6 +115,9 @@ def _echo_actual_role(obj: Mapping[str, Any], role: str) -> dict[str, Any]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+_OPTIONAL_DEFINITION_FIELDS: tuple[str, ...] = ("basis", "currency", "perimeter", "definition")
+
+
 def _optional_equal(a: Any, b: Any) -> bool:
     """None == None counts as equal; None vs non-None is a MISMATCH."""
     if a is None and b is None:
@@ -283,6 +286,14 @@ def assess_management_sequence(
     for cmp_value in comparisons.values():
         if cmp_value.get("status") == "refused" and cmp_value.get("reason"):
             limitations.append(f"comparison_refused:{cmp_value['reason']}")
+    # Two ABSENT optional definitions compare equal above (frozen spec), but
+    # matching unknowns do not certify comparability: the producer never
+    # established that basis / currency / perimeter / definition. Say so, per
+    # field, as a limitation — additive, never a refusal (Industrials W12 item 2,
+    # Consumer R10 item 3, disposition #7870 issuecomment-5809602368).
+    for field in _OPTIONAL_DEFINITION_FIELDS:
+        if roles["prior_outlook"].get(field) is None and roles["actual"].get(field) is None:
+            limitations.append(f"definition_unqualified:{field}")
 
     authority = {
         "can_rank": False,
