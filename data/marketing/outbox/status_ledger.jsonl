@@ -7690,3 +7690,4 @@
 {"id":"ob-2026-09-24-53bbc42293","from":"approved","to":"quarantined","at":"2026-09-24T06:19:44Z","actor":"publisher","note":"clock: stale_session_claim:2026-09-18!=2026-09-24 (copy names Friday's tape)","receipt":null}
 {"id":"ob-2026-09-24-f41b542b7e","from":"approved","to":"posting","at":"2026-09-24T06:19:44Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-24-f41b542b7e","from":"posting","to":"posted","at":"2026-09-24T06:19:45Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab4c1015b0b95240b4ccecd","external_url":null,"at":"2026-09-24T06:19:32Z","booked_at":"2026-09-24T06:19:32Z"}}
+{"id":"ob-2026-09-22-ede2d1a564","from":"queued","to":"quarantined","at":"2026-09-24T11:17:28Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}

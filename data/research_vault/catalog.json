@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T09:57:24.228933+00:00",
-  "count": 2771,
+  "generated_at": "2026-09-24T11:57:55.220391+00:00",
+  "count": 2777,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -102,6 +102,48 @@
   ],
   "items": [
     {
+      "id": "marketdesk-d38vixq3uta-27670a",
+      "title": "PUTTING MONEY BACK INTO MONETARY POLICY",
+      "institution": "TS Lombard",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-24T09:28:05Z",
+      "summary_points": [
+        "Monetarist Revival Superficiality: Central banks (e.g., Fed via Warsh) cite monetary aggregates for inflation signals but maintain interest rate focus; historical monetarist failures (Goodhart’s law, 1970s deregulation) render this revival ineffective for policy shifts.",
+        "Weak Money-Inflation Correlation: Chart 19 shows low R² (0.3226) between excess broad money and inflation (2020Q4-2022Q3), undermining monetarist forecasting and policy relevance.",
+        "Fiscal Policy as Primary Inflation Driver: Post-COVID inflation stemmed from combined fiscal expansion + QE (not money supply alone), per BIS analysis, exposing monetarism’s incompleteness.",
+        "Monetarist Forecasting Failure: Errors in predicting money supply contraction (e.g., Steve Hank’s 2023 recession call) and velocity rebound prove models lack macro forecasting utility.",
+        "Central Banks’ Lip Service to Monetarism: Revival is opportunistic (e.g., IMF/Warsh citing aggregates) but policy remains anchored to interest rates; no targeting of monetary aggregates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sjipdfd8qxk-a400d2",
+      "title": "JPM Flows Liquidity",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:27:14Z",
+      "summary_points": [
+        "Corporate Financing Surplus Expansion: US non-financial corporate financing surplus at 1.5% of GDP (Q2 2026), highest since 1958, driven by cash flows exceeding capex; G4 surplus near historical highs (~2% of US GDP).",
+        "AI Capex Crowding Effect: AI-related capex (data centers) rising, crowding out non-tech sector funding needs; tech buybacks likely to reverse as hyperscalers shift to infrastructure spending.",
+        "Bitcoin Price Above Production Cost: Bitcoin price recently exceeded $85k implied production cost after 280-day dip, reducing miner forced selling risk and supporting market stability.",
+        "Bond Futures Extreme Shorts: Elevated shorts on 10y US Treasuries (-1.7 z-score) and OATs (-2.5 z-score), signaling heightened mean reversion risk for fixed income portfolios.",
+        "US Equity/Bond Flow Divergence: Strong inflows to US equities ($6.1bn 4wk avg) and bonds ($4.0bn) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 33,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-scwhihalhqx-a9f08a",
       "title": "JPM China AI value chain",
       "institution": "J.P. Morgan",
@@ -117,6 +159,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 47,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-e3vti2g2ljc-0ef099",
+      "title": "JPM Washington Policy perspectives",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:26:31Z",
+      "summary_points": [
+        "House Flip Consensus: 90% odds Democrats gain House control (214-162), shifting legislative power on spending/regulation with immediate policy execution implications.",
+        "Iran Conflict Energy Shock: Brent oil at $100-110/bbl (vs $75-100 baseline) from Strait of Hormuz/Houthi threats, driving 8mm bpd shipping risk and second-largest financial concern.",
+        "Affordability Dominance: 31% cite cost of living/inflation as top financial issue (vs 27% historical), with 71% disapproving of Trump’s economic handling—directly pressuring consumer spending and equity valuations.",
+        "Policy Execution Gaps: Unmet promises (e.g., 10Y UST yield at -0.50% vs 4.00% policy rates, FY2026-27 deficit at 6.5% GDP vs target) eroding credibility amid affordability crisis.",
+        "Tariff Burden Surge: Midwest/Southeast manufacturing tariff costs tripled (IPMCI), with Midwest at 11% and Southeast at 9.6%—threatening transportation equipment and supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zrm6c8wob07-dcdeeb",
+      "title": "The Point for Europe: Thursday, 24 September 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:19:16Z",
+      "summary_points": [
+        "MTU Aero Engines Upgrade: Fundamental upgrade driven by improved cash conversion (55%→80-90% by 2030) via LTSAs with Safran, narrowing gap and +c8.5% CAGR 2026-31E.",
+        "UBS Capital Legislation: Policy-driven risk requiring ~$17bn capital raise under Swiss law (90%/10% CET1/AT1 split), lowering CET1 ratio to ~14%.",
+        "Nordic Banks Valuation Risk: Overvalued at 13-14x PE vs European peers' 10x, priced for perfection amid Swedish tax concerns and ECB rate expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -138,6 +220,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lqbydvvs2b4-e01969",
+      "title": "JPM US Market Intelligence | Afternoon Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:15:36Z",
+      "summary_points": [
+        "Geopolitical Escalation: Iran's UN speech drove Brent oil to $100 (Brent +4.3%), Trump-Xi summit (Sep 23-24) intensifies US-China friction, Putin meeting at Trump's Florida resort heightens Russia-US tensions.",
+        "10Y Yield Break 5%: 10Y yield breached 5% technical level (5.14%), driven by hot PMI (input cost inflation highest since late 2022), Brent >$100, and weak 5Y auction demand.",
+        "Meta Muse Unit Economics Risk: Meta's Muse agent blocked by companies to protect unit economics, eliminating underwriter incentives—a fundamental business risk for Meta Pay partnerships.",
+        "Midterm Volatility Catalysts: Post-midterm policy uncertainty from tariffs, Iran escalation, and debt ceiling brinkmanship to skew market volatility.",
+        "Semis/AI Hedging Strategy: JPUXERNV basket (70% beta to Semis, ~5–7 vol cheaper) hedges Semis/AI risk for September quarter-end rebalancing amid historical weakness in high-beta names."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rj6un4scbam-e45f74",
+      "title": "IS A 5% 10Y TREASURY COMPENSATORY",
+      "institution": "TS Lombard",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-24T09:12:26Z",
+      "summary_points": [
+        "Oil-Yield Technical: $1 oil move ≈ 2BP 10Y yield; Fed hiking cycle shifts preference to rolling 3M T-bills over 10Y bonds (vs. historical 10Y yield trade).",
+        "Equity Return Gap: 5% 10Y yield underperforms S&P 500 historical returns (11.8% avg); driven by US-Iran war, tax hikes, and political volatility.",
+        "Term Premium Shift: Rising term premium on 10Y zero-coupon bonds signals end of QE-driven yield suppression, correlating with bear markets and equity risk.",
+        "Fed Policy Arbitrage: Rolling 3M bills yield ~4.5% vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },

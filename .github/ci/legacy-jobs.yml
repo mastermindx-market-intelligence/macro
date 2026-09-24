@@ -346,7 +346,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: install test deps
         # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml jinja2
       - name: AM Edition producer contract (per-source clocks, six states, no laundering)
         run: python -m pytest tests/test_am_edition_producer.py -q
 
@@ -5535,6 +5535,8 @@ jobs:
       - "engine/sector_intelligence/finance_overlap.py"
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "tests/test_finance_intelligence_projection.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
       # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
@@ -5573,7 +5575,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -11960,7 +11962,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl xlrd scikit-learn
       - name: the macro-release forecast producer — projections, benchmarks and the graded forward ledger
-        run: python -m pytest tests/test_content_stamp_freshness_sweep2.py tests/test_cpi_postmortem_fixes.py tests/test_release_combined.py tests/test_release_forecast_producer.py tests/test_release_forecast_v2.py tests/test_release_integration_2a.py tests/test_release_integration_2b.py tests/test_release_integration_w11g.py tests/test_release_market_context.py -q
+        run: python -m pytest tests/test_content_stamp_freshness_sweep2.py tests/test_cpi_postmortem_fixes.py tests/test_release_combined.py tests/test_release_forecast_producer.py tests/test_release_forecast_v2.py tests/test_release_integration_2a.py tests/test_release_integration_2b.py tests/test_release_integration_w11g.py tests/test_release_market_context.py tests/test_kalshi_releases.py -q
       # Unrun backfill 2026-08-03: the CPI bridge (Track CB), the official-event
       # progressive-enhancement client, and the date-scoped Release Radar
       # selector join the producer lane that owns the release-forecast estate.
@@ -14529,6 +14531,12 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "tests/test_energy_economic_change_non_regression.py"
+      - "tests/fixtures/energy_non_regression/**"
+      - "data/baskets/membership.json"
+      - "data/neuralweb/theme_state.json"
+      - "site/basket/nuclear_power.html"
+      - "lib/pages.py"
       - "collectors/base.py"
       - "collectors/fda_shortages.py"
       - "config/**"
@@ -14607,7 +14615,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
-        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py -q
+        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
       - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
         run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
 
