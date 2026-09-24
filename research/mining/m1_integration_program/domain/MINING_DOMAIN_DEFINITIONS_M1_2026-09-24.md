@@ -18,7 +18,6 @@ investor_question: Did Freeport-McMoRan's reported quarter deliver copper sales 
 affected_asset_or_process:
   - Consolidated copper sales
   - Consolidated copper unit net cash cost
-  - Grasberg Block Cave operating recovery
   - Morenci proportionately consolidated copper reporting
 economics_chain:
   - Mined and recovered copper
@@ -34,7 +33,7 @@ required_metrics:
     sign_convention: Positive production and sales quantities; sales exclude purchases.
     exclusions_or_definition_notes: Million recoverable pounds on a consolidated reporting basis; this is not production or cash receipts.
     source_family: sec_edgar_8k_exhibit
-    selection_label: Consolidated sales outlook or operating summary copper sales row
+    selection_label: Consolidated copper sales row
     research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
   - key: copper_unit_net_cash_cost
     label: Copper unit net cash cost
@@ -47,7 +46,7 @@ required_metrics:
     research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
   - key: idle_and_restoration_costs_excluded_from_unit_cost
     label: Excluded idle and restoration costs
-    basis: company_adjusted
+    basis: reported
     period_kind: quarter
     sign_convention: Charges retain their reported charge direction.
     exclusions_or_definition_notes: Quarterly and half-year scopes are distinct and must not be added as though they reconcile.
@@ -71,32 +70,44 @@ required_metrics:
     exclusions_or_definition_notes: The selected Morenci row is proportionately consolidated; ownership must not be applied again.
     source_family: sec_edgar_8k_exhibit
     selection_label: Morenci copper production row
-    research_locator: MINING_COPPER_PRECIOUS_ASSET_DOSSIERS_2026-09-23.md § Dossier 1 selected evidence
-  - key: grasberg_block_cave_operating_level_estimate
-    label: Grasberg Block Cave operating level estimate
-    basis: reported
-    period_kind: point_in_time
-    sign_convention: Operating level is stated as the issuer's approximate level.
-    exclusions_or_definition_notes: A dated recovery expectation is not new capacity, a discovery, or a next-period outlook.
-    source_family: issuer_release
-    selection_label: Grasberg Block Cave operating level outlook
-    research_locator: MINING_COPPER_PRECIOUS_ASSET_DOSSIERS_2026-09-23.md § Recovery, expansion and new capacity are different economic mechanisms
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
 management_estimate_vs_actual:
   earlier_point_estimate:
     metric: management_issued_copper_sales_estimate
     source_family: sec_edgar_8k_exhibit
     selection_label: Second-quarter consolidated copper sales outlook
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C candidate source sequence
-    definition_status: definition_unqualified
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
+    definition_fields_required: [unit, perimeter, basis]
+    definition_notes: Million recoverable pounds; consolidated reporting; sales exclude purchases.
     period_kind: quarter
   later_actual:
     metric: consolidated_copper_sales
     source_family: sec_edgar_8k_exhibit
     selection_label: Second-quarter operating summary copper sales
     research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
-    definition_status: definition_unqualified
+    definition_fields_required: [unit, perimeter, basis]
+    definition_notes: Million recoverable pounds; consolidated reporting; sales exclude purchases.
     period_kind: quarter
-  comparison: The two separately sourced literals remain inspectable, but an unqualified definition produces no beat, miss, improvement, or consensus badge.
+  comparison: Comparison classification and any `definition_unqualified:<field>` warning are emitted by the shared helper at runtime from the qualified fields; when that warning is present both values stay inspectable and no beat/miss/badge or confirmed-surprise wording is produced; fully qualified compatible inputs are compared normally and never suppressed.
+  pairs:
+  - earlier_point_estimate:
+    metric: management_issued_copper_unit_net_cash_cost_estimate
+    source_family: sec_edgar_8k_exhibit
+    selection_label: Second-quarter consolidated copper unit net cash cost outlook
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
+    definition_fields_required: [unit, perimeter, basis]
+    definition_notes: USD per pound; consolidated reporting; includes by-product credits and excludes specified idle and restoration costs.
+    period_kind: quarter
+
+  - later_actual:
+    metric: copper_unit_net_cash_cost
+    source_family: sec_edgar_8k_exhibit
+    selection_label: Second-quarter operating summary copper unit net cash cost
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
+    definition_fields_required: [unit, perimeter, basis]
+    definition_notes: USD per pound; consolidated reporting; includes by-product credits and excludes specified idle and restoration costs.
+    period_kind: quarter
+  comparison: Comparison classification and any `definition_unqualified:<field>` warning are emitted by the shared helper at runtime from the qualified fields; when that warning is present both values stay inspectable and no beat/miss/badge or confirmed-surprise wording is produced; fully qualified compatible inputs are compared normally and never suppressed.
   is_range: false
   is_consensus: false
 mechanism: Copper rock must become recoverable production before it can be sold under a stated reporting basis. Costs then reflect mine operations, by-product credits, and the exclusions the issuer defines. Ownership and accounting treatment determine which economic share reaches the listed company. Shareholder value depends on the durability of that capture after investment and other claims. A later reported result can test an earlier management expectation, but only when definitions and periods remain comparable.
@@ -104,7 +115,7 @@ counter_thesis:
   - A later consolidated sales observation at a different definition than the estimate, or evidence that shipment timing moved between periods, contradicts an inferred demand or productivity improvement.
   - A changed by-product assumption or excluded idle and restoration charge contradicts attributing the unit-cost difference to mine productivity alone.
   - Evidence that ownership or accounting treatment differs from the selected row's basis contradicts the claimed attributable economics.
-  - A later compatible operating or cash observation that reverses the direction contradicts an assertion of durable improvement.
+  - A later consolidated_copper_sales or copper_unit_net_cash_cost observation on a matching definition and forecast vintage that reverses the direction contradicts an assertion of durable improvement.
 limitations_vocabulary:
   - missing_derivation
   - definition_unqualified
@@ -133,6 +144,8 @@ authority:
 The rare-earth question is whether MP Materials' physical processing and commercial progress convert into retained external economics. The dossier must keep material form, segment, period, elimination sign, accounting basis, and contractual income separate. Finished magnets, precursors, stockpiles, affiliate transfers, and external sales are not interchangeable merely because they share a label.
 
 Processing progress and retained economics are different conclusions. Positive adjusted EBITDA can coexist with a GAAP loss; contractual price-protection income is not revenue; and the difference between production and sales does not by itself prove inventory depletion. The absence of a verified stream threshold leaves a contract explanation useful but its entitlement uncomputed.
+
+The `stream_threshold_unknown` limitation is used here for any unverified contractual threshold balance, including a price-protection benchmark or capacity condition; it does not assert a metal-stream instrument.
 
 ```yaml
 slice_key: mining_rare_earth_economics
@@ -164,7 +177,7 @@ required_metrics:
     exclusions_or_definition_notes: Segment revenue is not consolidated revenue until the issuer's stated elimination is applied; do not replace a quarter with a half-year column.
     source_family: sec_edgar_8k_exhibit
     selection_label: Materials segment revenue including intersegment sales
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: magnetics_precursor_revenue
     label: Magnetics precursor product revenue
     basis: reported
@@ -172,8 +185,8 @@ required_metrics:
     sign_convention: Positive revenue.
     exclusions_or_definition_notes: Precursor products are not finished magnets, and the segment label does not establish the customer program stage.
     source_family: sec_edgar_8k_exhibit
-    selection_label: Magnetics revenue magnetic precursor products
-    research_locator: MINING_BATTERY_RARE_EARTH_ECONOMICS_2026-09-23.md § B04 MP Materials
+    selection_label: Magnetics revenue
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: revenue_elimination
     label: Intersegment revenue elimination
     basis: reported
@@ -182,7 +195,7 @@ required_metrics:
     exclusions_or_definition_notes: The row must remain tied to the selected quarter and segment reconciliation.
     source_family: sec_edgar_8k_exhibit
     selection_label: Segment revenue elimination row
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: consolidated_revenue
     label: Consolidated revenue
     basis: reported
@@ -191,7 +204,7 @@ required_metrics:
     exclusions_or_definition_notes: The issuer's reported total and linked components are preferred; a newly computed reconciliation requires a native financial derivation.
     source_family: sec_edgar_8k_exhibit
     selection_label: Segment revenue table total revenue row
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: price_protection_income
     label: Price-protection income
     basis: reported
@@ -200,7 +213,7 @@ required_metrics:
     exclusions_or_definition_notes: This is a separate financial line and not revenue; designated inventory and affiliate sales must not duplicate external sales.
     source_family: sec_edgar_8k_exhibit
     selection_label: Price protection income line
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: gaap_net_loss
     label: GAAP net loss
     basis: reported
@@ -209,7 +222,7 @@ required_metrics:
     exclusions_or_definition_notes: GAAP result must not be relabeled as adjusted performance.
     source_family: sec_edgar_8k_exhibit
     selection_label: Consolidated results GAAP net loss row
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: adjusted_ebitda
     label: Adjusted EBITDA
     basis: company_adjusted
@@ -218,7 +231,7 @@ required_metrics:
     exclusions_or_definition_notes: The issuer's reconciliation and non-GAAP definition travel with the literal and do not erase the GAAP loss.
     source_family: sec_edgar_8k_exhibit
     selection_label: Consolidated results adjusted EBITDA row
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: ndpr_production
     label: NdPr production
     basis: reported
@@ -227,7 +240,7 @@ required_metrics:
     exclusions_or_definition_notes: Production is not output sold and cannot be mixed with the separately defined sales quantity.
     source_family: sec_edgar_8k_exhibit
     selection_label: Operating indicators NdPr production row
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
   - key: ndpr_sales
     label: NdPr sales
     basis: reported
@@ -236,9 +249,11 @@ required_metrics:
     exclusions_or_definition_notes: The issuer's sales definition includes intercompany quantities and does not support a verified physical inventory-depletion calculation.
     source_family: sec_edgar_8k_exhibit
     selection_label: Operating indicators NdPr sales row
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R selected measurements
+    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-R Selected Q2 measurements, USD thousands unless stated
 management_estimate_vs_actual:
-  observation: W-R has no selected management estimate-versus-actual comparison in M1; it reports separately qualified quarter observations without inventing one.
+  earlier_point_estimate: null
+  later_actual: null
+  comparison: W-R has no selected management estimate-versus-actual comparison in M1; separately qualified quarter observations are reported without inventing one.
   is_range: false
   is_consensus: false
 mechanism: Rare-earth concentrate must be processed into specified commercial material before it can earn external revenue. Magnet development adds product qualification, regulatory testing, and investment before finished-product economics arrive. Contractual price protection can alter price exposure without establishing orders, margins, or returns. Affiliate transfers and eliminations determine how much segment activity remains outside consolidated revenue. Shareholder capture ultimately depends on costs, contractual claims, funding, and the coexistence of adjusted profitability with GAAP losses.
