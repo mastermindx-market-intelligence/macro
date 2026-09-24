@@ -13,13 +13,21 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from copy import deepcopy
 from decimal import Decimal, InvalidOperation
+from hashlib import sha256
 import json
 from pathlib import Path
 from typing import Any
 
 from engine.earnings_narrative.private_publication import (
+    _pointer_for,
     _put_verified,
+    prepare_private_publication,
+    validate_private_manifest,
     validate_private_pointer,
+)
+from engine.earnings_narrative.context_packets import (
+    _context_id,
+    canonical_json_bytes as _context_canonical_json_bytes,
 )
 from engine.company_intelligence.documents import ABSENCE_REASONS
 
@@ -46,7 +54,12 @@ case = load_case
 
 
 def cell(value: str, **overrides: Any) -> dict[str, Any]:
-    """Build one native-shaped synthetic financial operand."""
+    """Build one native-shaped synthetic financial operand.
+
+    ``unit`` is authoritative for the operand's reporting unit; ``scale`` is
+    always 1 in this corpus (raw decimal text carries the magnitude, never a
+    scaled multiplier).
+    """
     if isinstance(value, (float, bool)) or not isinstance(value, str):
         raise TypeError("cell value must be decimal text")
     try:
@@ -213,21 +226,238 @@ class _MemoryPublicationStore:
 
 
 class _SyntheticClient:
+    """Holds a store reference so test_route_unbound_client_causes_no_read can
+    assert that a route_unbound .get()/.post() never increments read_count."""
+
+    def __init__(self, store: _MemoryPublicationStore) -> None:
+        self._store = store
+
     def get(self, *_args: Any, **_kwargs: Any) -> dict[str, Any]:
+        # Route remains intentionally unbound — no store read may happen here.
         return {"status": "unavailable", "reason": "route_unbound", "status_code": None}
 
     def post(self, *_args: Any, **_kwargs: Any) -> dict[str, Any]:
         return {"status": "unavailable", "reason": "route_unbound", "status_code": None}
 
 
+def _build_minimal_staging_tree(stage_dir: Path) -> None:
+    """Write the smallest staging tree that satisfies ``prepare_private_publication``.
+
+    No network, no ``data/`` — the tree is built from synthetic receipts whose
+    hashes are computed locally.  The staging tree is local to ``stage_dir``,
+    which the test passes via pytest's ``tmp_path``.
+    """
+    from engine.earnings_narrative.context_packets import (
+        EXECUTION_RECEIPT as _CONTEXT_EXEC,
+    )
+
+    body = b'{"speaker":"CEO","role":"executive","text":"We delivered 50 million in operating cash."}'
+    source_sha256 = sha256(body).hexdigest()
+    text = "We delivered 50 million in operating cash."
+    text_bytes = text.encode("utf-8")
+    text_start = body.index(text_bytes)
+    text_end = text_start + len(text_bytes)
+    receipt = {
+        "source_sha256": source_sha256,
+        "segment_index": 0,
+        "segment_sha256": source_sha256,
+        "segment_bytes": len(body),
+        "span_start_byte": text_start,
+        "span_end_byte": text_end,
+        "text_sha256": sha256(text_bytes).hexdigest(),
+    }
+    claim_id = "claim_" + "0" * 32
+    quote = {
+        "claim_id": claim_id,
+        "kind": "quote",
+        "text": text,
+        "receipt": receipt,
+    }
+    fact = {
+        "claim_id": claim_id,
+        "quote": quote,
+        "speaker": "CEO",
+        "role": "executive",
+        "chapter": "performance",
+        "categories": ["performance"],
+        "numeric": [],
+    }
+
+    packet: dict[str, Any] = {
+        "schema": "earnings.context_packet/v1",
+        "context_id": "earnctx_" + "0" * 32,
+        "event": {
+            "ticker": "AAPL",
+            "transcript_id": "abc123",
+            "period": "2026Q1",
+            "date": "2026-01-30",
+        },
+        "identities": {
+            "article_id": "wirearticle_" + "0" * 32,
+            "packet_id": "packet_001",
+            "story_id": "story_001",
+            "story_revision_id": "revision_001",
+        },
+        "source": {
+            "kind": "transcript",
+            "source_sha256": source_sha256,
+            "known_at": "2026-02-01T00:00:00Z",
+            "correction_status": "current",
+        },
+        "admission": {
+            "promotion_tier": "A",
+            "quality_status": "ready",
+            "citation_coverage": 1.0,
+        },
+        "categories": ["performance"],
+        "facts": [fact],
+        "source_completeness": {
+            "release": "not_ingested",
+            "filing": "not_ingested",
+            "transcript": "present",
+            "slides": "not_ingested",
+            "consensus": "unlicensed_absent",
+        },
+        "links": {
+            "record": "/stocks/earnings/aapl-abc123-call-record.html",
+            "dossier": "/stocks/AAPL.html",
+            "terminal": (
+                "https://app.mastermind-x.com/terminal?"
+                "sym=AAPL&pane=transcripts&tx=abc123"
+            ),
+        },
+        "authority": {
+            "class": "context_only",
+            "may_add_candidate": False,
+            "may_rank": False,
+            "may_size": False,
+            "may_gate": False,
+            "may_escalate": False,
+            "prophet_authority": False,
+        },
+        "execution": dict(_CONTEXT_EXEC),
+    }
+    unsigned_packet = dict(packet)
+    unsigned_packet["context_id"] = "earnctx_" + "0" * 32
+    packet["context_id"] = _context_id(unsigned_packet)
+
+    packet_bytes = _context_canonical_json_bytes(packet)
+    packet_sha = sha256(packet_bytes).hexdigest()
+
+    manifest: dict[str, Any] = {
+        "schema": "earnings.context_manifest/v1",
+        "generation_id": "earnctxgen_" + "0" * 32,
+        "knowledge_cutoff": "2026-02-01T00:00:00Z",
+        "source": {
+            "generation_id": "a" * 32,
+            "manifest_sha256": source_sha256,
+            "wire_manifest_id": "wiremanifest_" + "a" * 32,
+        },
+        "ticker_count": 1,
+        "event_count": 1,
+        "objects": {
+            "AAPL": {
+                "path": "aapl.json",
+                "context_id": packet["context_id"],
+                "sha256": packet_sha,
+                "bytes": len(packet_bytes),
+            }
+        },
+        "execution": dict(_CONTEXT_EXEC),
+    }
+    unsigned_manifest = dict(manifest)
+    unsigned_manifest["generation_id"] = "earnctxgen_" + "0" * 32
+    manifest["generation_id"] = (
+        "earnctxgen_" + sha256(_context_canonical_json_bytes(unsigned_manifest)).hexdigest()[:32]
+    )
+
+    record = {
+        "schema": "earnings.tier_payload/v1",
+        "page": "earnings_wire_article",
+        "slug": "synth-001",
+        "required_tier": "essential",
+        "public_facts": 1,
+        "locked_facts": 1,
+        "facts_html": "<p>Test</p>",
+        "receipt_rows_html": "<table><tr><td>1</td></tr></table>",
+    }
+
+    records_dir = stage_dir / "records"
+    context_dir = stage_dir / "context"
+    records_dir.mkdir(parents=True, exist_ok=True)
+    context_dir.mkdir(parents=True, exist_ok=True)
+    (records_dir / "synth-001.json").write_bytes(_context_canonical_json_bytes(record))
+    (context_dir / "latest.json").write_bytes(_context_canonical_json_bytes(manifest))
+    (context_dir / "aapl.json").write_bytes(_context_canonical_json_bytes(packet))
+
+
 class _PublicationHarness:
     def __init__(self) -> None:
         self.store = _MemoryPublicationStore()
-        self.read_count = 0
 
-    def run_refresh(self, _changes: Mapping[str, str], fail_sources: Iterable[str] = ()) -> dict[str, Any]:
-        del fail_sources
-        return {"status": "unavailable", "reason": "refresh_seam_unbound", "needed": "profile=/issuer= discovery binding"}
+    @property
+    def read_count(self) -> int:
+        return self.store.read_count
+
+    def run_refresh(
+        self,
+        _changes: Mapping[str, str],
+        fail_sources: Iterable[str] = (),
+    ) -> dict[str, Any]:
+        """Inject ``acquire_results_filing`` with a fake ``http_get`` that
+        serves fixture bytes for live sources and a typed refusal for every
+        source in ``fail_sources``. Returns the seam's typed result.
+        """
+        from scripts.refresh_event_workspaces import acquire_results_filing
+
+        failed = set(fail_sources)
+        fixtures: dict[str, bytes] = {
+            "synthetic:northgate": (
+                b'{"filings":{"recent":{"form":["8-K"],"accessionNumber":["0000987654-26-000001"],'
+                b'"primaryDocument":["ex99-1.htm"],"items":["2.02"],"filingDate":["2026-09-23"],'
+                b'"reportDate":["2026-09-22"],"acceptanceDateTime":["2026-09-23T13:30:00Z"]}}}'
+            ),
+        }
+
+        def fake_http_get(url: str) -> tuple[int, bytes]:
+            for source in failed:
+                if source in url:
+                    return (503, b"")
+            for source, body in fixtures.items():
+                if source in url:
+                    return (200, body)
+            return (200, b"")
+
+        from scripts import refresh_event_workspaces as _refresh
+
+        original = _refresh._http_get
+        _refresh._http_get = fake_http_get
+        try:
+            for source in sorted(fail_sources):
+                try:
+                    acquire_results_filing(cik="0000987654", http_get=fake_http_get)
+                except _refresh.RefreshError as exc:
+                    return {
+                        "status": "unavailable",
+                        "reason": "refresh_source_failed",
+                        "source": source,
+                        "detail": str(exc),
+                    }
+            try:
+                prepared = acquire_results_filing(cik="0000987654", http_get=fake_http_get)
+                return {"status": "ok", "prepared": bool(prepared)}
+            except _refresh.RefreshError as exc:
+                return {
+                    "status": "unavailable",
+                    "reason": "refresh_seam_unbound",
+                    "needed": (
+                        "scripts.refresh_event_workspaces.acquire_results_filing("
+                        "cik='0000987654', http_get=<callable>)"
+                    ),
+                    "detail": str(exc),
+                }
+        finally:
+            _refresh._http_get = original
 
     def members(self) -> set[str]:
         return set()
@@ -235,34 +465,62 @@ class _PublicationHarness:
     def get(self, slug: str) -> dict[str, Any]:
         return {"slug": slug, "status": "unavailable", "reason": "refresh_seam_unbound"}
 
-    def publish(self, changes: Mapping[str, Any]) -> dict[str, Any]:
-        self.read_count = self.store.read_count
+    def publish(self, changes: Mapping[str, Any], *, stage_dir: Path) -> dict[str, Any]:
+        """Bind every owner entry point in the owner's real order.
+
+        Step 1: ``prepare_private_publication(stage_dir)`` validates a
+        locally-built staging tree (records/ + context/) and freezes one
+        generation. Step 2: ``_put_verified`` writes every prepared payload
+        through the bounded strict store. Step 3: ``validate_private_manifest``
+        re-checks the prepared manifest. Step 4: ``validate_private_pointer``
+        re-checks the pointer built by the owner's ``_pointer_for``.
+
+        If a precondition beyond tmp_path is missing, returns the typed
+        refusal permitted by the META-CEO ruling.
+        """
         del changes
-        # Bind one real owner publication primitive while the route remains
-        # intentionally unbound; no fake success is possible from this harness.
-        body = b'{"synthetic":true}'
+        try:
+            _build_minimal_staging_tree(stage_dir)
+            prepared = prepare_private_publication(stage_dir)
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "status": "unavailable",
+                "reason": "publication_seam_unbound",
+                "needed": (
+                    "prepare_private_publication(stage_dir) needs a complete "
+                    "records/ + context/latest.json + context/<ticker>.json "
+                    f"staging tree; got {type(exc).__name__}: {exc}"
+                ),
+            }
+
+        for artifact in prepared.artifacts:
+            body = prepared.payloads[artifact.object_key]
+            _put_verified(
+                self.store,
+                key=artifact.object_key,
+                body=body,
+                maximum=artifact.maximum_bytes,
+            )
+        # The owner publishes the manifest via the same _put_verified path.
         _put_verified(
             self.store,
-            key="synthetic/industrials-result-cash/binding.json",
-            body=body,
-            maximum=len(body) * 2,
+            key=prepared.manifest_key,
+            body=prepared.manifest_bytes,
+            maximum=len(prepared.manifest_bytes) * 2,
         )
-        validate_private_pointer(
-            {
-                "schema": "earnings.private_pointer/v1",
-                "generation_id": "earnpriv_" + "0" * 32,
-                "manifest_key": "earnings-private/manifests/" + "earnpriv_" + "0" * 32 + ".json",
-                "manifest_sha256": "0" * 64,
-                "manifest_bytes": 2,
-                "published_at": "2026-09-24T00:00:00Z",
-            }
-        )
+
+        validated_manifest = validate_private_manifest(prepared.manifest)
+        pointer = _pointer_for(prepared)
+        validated_pointer = validate_private_pointer(pointer)
+
         return {
-            "status": "unavailable",
-            "reason": "route_unbound",
-            "owner_function": "_put_verified",
+            "status": "ok",
+            "generation_id": validated_manifest["generation_id"],
+            "manifest_key": prepared.manifest_key,
+            "pointer": validated_pointer,
+            "read_count": self.store.read_count,
         }
 
     def client(self, entitled: bool) -> _SyntheticClient:
         del entitled
-        return _SyntheticClient()
+        return _SyntheticClient(self.store)

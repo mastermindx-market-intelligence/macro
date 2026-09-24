@@ -91,6 +91,18 @@ def test_route_unbound_client_causes_no_read() -> None:
     assert harness.read_count == 0
 
 
+def test_publish_binds_owner_entry_points(tmp_path) -> None:
+    from tests.industrials_result_cash_helpers import publication_harness
+
+    harness = publication_harness()
+    before = harness.read_count
+    result = harness.publish({}, stage_dir=tmp_path)
+    assert result["status"] == "ok"
+    assert result["generation_id"].startswith("earnpriv_")
+    assert result["pointer"]["generation_id"] == result["generation_id"]
+    assert result["read_count"] > before
+
+
 def test_unknown_delivery_input_key_refused() -> None:
     from engine.company_intelligence.financial_dossier import validate_delivery_inputs
 
