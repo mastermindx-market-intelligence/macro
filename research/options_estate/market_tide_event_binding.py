@@ -92,8 +92,6 @@ def bind_notices(notices: Sequence[Mapping[str, Any]], *, decision_at: str,
             reject(row, "invalid_notice"); continue
         if row.get("evidence_role") != "advance_schedule":
             reject(row, "not_advance_schedule"); continue
-        if row.get("plan_status") not in ("scheduled", "tentative"):
-            reject(row, "not_active_plan"); continue
         if row.get("published_at") is None:
             reject(row, "publication_clock_unavailable"); continue
         try:
@@ -127,6 +125,10 @@ def bind_notices(notices: Sequence[Mapping[str, Any]], *, decision_at: str,
             for row in versions: reject(row, "unresolved_notice_versions")
             continue
         row = versions[0]
+        # Keep visible cancelled versions in the group above: dropping them
+        # earlier would resurrect the older active plan. No resolver is invented.
+        if row.get("plan_status") not in ("scheduled", "tentative"):
+            reject(row, "not_active_plan"); continue
         d = date.fromisoformat(row["event_date"])
         instant = utc(row["event_at"]) if row["precision"] == "instant" else None
         if instant is not None:
