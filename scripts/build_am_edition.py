@@ -331,15 +331,22 @@ def _classify(
     max_age_minutes: int | None,
     *,
     covered: bool = True,
-    precision: str | None = None,
 ) -> tuple[str, int | None]:
     """Pure. -> (state, age_minutes). NEVER returns CURRENT when age > max_age,
     and NEVER returns CURRENT for a future-stamped (negative-age) source.
 
-    When `precision` is "day" (the source ships only a date, e.g. "2026-09-23"),
-    the freshness budget is interpreted in DAYS, not minutes — a yesterday-
-    stamped source IS CURRENT today. Premarket reads (e.g. 2026-09-24 11:30Z
-    against asof=2026-09-23) must read CURRENT, not STALE (MAJOR 5)."""
+    Legacy helper. The six legacy blocks (session_clock, tape_since_prior_close,
+    market_state, cross_asset_plane, todays_calendar, prior_close_brief_ref —
+    and the seventh, regime, which the MOR-2b spec named by omission) call this
+    helper with byte-identical inputs to origin/main dd20710c; any change to
+    its signature or semantics here changes the legacy payload. Day-precision
+    freshness lives in `_row_state` / `_classify_day_aware`, used ONLY by the
+    three new blocks (DEC:R1, 2026-09-24).
+
+    Premarket reads are CURRENT here too — freshness is judged by age against
+    the source's own budget, not by session_open alone (intraday-fastpath runs
+    */30 11-21 UTC, so a weekday build at 11:30Z can call a 22h-old nightly
+    CURRENT if the source was stamped at the prior 16:00 ET close)."""
     if not covered:
         return "NOT_COVERED", None
     if source_as_of is None:
@@ -354,24 +361,6 @@ def _classify(
     if age_seconds < 0:
         # Future-stamped source: never trust it as CURRENT.
         return "UNAVAILABLE", age_minutes
-    if precision == "day" and max_age_minutes is not None:
-        # Day-precision source: compare on whole UTC days. A 1440-minute
-        # budget ("1 day") means same day or one calendar day back = CURRENT;
-        # older = STALE.
-        try:
-            gen_date = gen_dt.astimezone(timezone.utc).date()
-            src_date = src_dt.astimezone(timezone.utc).date()
-            age_days = (gen_date - src_date).days
-            max_age_days = -(-max_age_minutes // 1440) if max_age_minutes > 0 else 0
-            if age_days <= max_age_days:
-                return "CURRENT", age_minutes
-            return "STALE_WITH_LAST_KNOWN", age_minutes
-        except Exception:  # noqa: BLE001
-            pass  # fall through to minute-precision path
-    # Freshness is judged purely by age against the source's own budget —
-    # premarket is a real product window (intraday-fastpath runs
-    # */30 11-21 UTC) and a reading from this morning must be able to read
-    # CURRENT before the cash open, not be forced STALE by session_open alone.
     if max_age_minutes is not None and age_minutes <= max_age_minutes:
         return "CURRENT", age_minutes
     return "STALE_WITH_LAST_KNOWN", age_minutes
@@ -403,7 +392,7 @@ def _block(
     if precision is None:
         _, precision = _norm_clock(source_as_of) if source_as_of else (None, "day")
     state, age_minutes = _classify(
-        source_as_of, generated_at, max_age_minutes, covered=covered, precision=precision
+        source_as_of, generated_at, max_age_minutes, covered=covered
     )
     out = {
         "key": key,

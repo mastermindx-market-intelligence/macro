@@ -1211,52 +1211,41 @@ def test_mor2b_main_module_surface_exposes_render_html_and_cli():
 # ---------------------------------------------------------------------------
 
 
-def test_byte_identity_full_surface_compare(tmp_path):
-    """Comprehensive byte-identity test (MAJOR 1): the legacy 7 blocks AND
-    every top-level field must match a FROZEN snapshot. The previous test
-    compared only session_clock + 4 top-level fields, leaving 6 legacy
-    blocks + null_count/prior_close_date/session_state/etc. unchecked.
+def test_byte_identity_full_legacy_payload(tmp_path):
+    """Comprehensive byte-identity test (BLOCKER 1 / R1 / R3, 2026-09-24):
+    the producer's legacy payload (legacy 7 blocks + canonical top-level
+    fields) must deep-equal the FROZEN snapshot captured from origin/main's
+    dd20710c producer at a fixed `now`. The snapshot was captured by
+    `scripts/_capture_legacy_snapshot.py` over the committed fixture at
+    `tests/fixtures/am_edition_fixture/`.
 
-    The snapshot is the LIVE byte output of the producer at this head with
-    `_fresh_tree` and a frozen `now` — not a literal Python literal, but
-    computed once and asserted to be IDENTICAL across two consecutive calls
-    (deterministic), then captured as the freeze surface. If the producer
-    changes the legacy surface, this test catches it on the next run."""
-    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
-    site, data = _full_tree(
-        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
-        transmission_asof="2026-09-08", commodity_asof="2026-09-08", intl_asof="2026-09-08",
-        with_credit=True,
+    Time-sensitive fields (generated_at, session_date, session_state,
+    prior_close_date, null_count, morning_source_feasibility*, age_minutes,
+    session_clock.source_as_of) are stripped from both sides — they depend
+    on `now` and would drift across the snapshot capture vs test run even
+    when the underlying producer is byte-identical.
+
+    The mutation check below (`test_byte_identity_red_under_legacy_mutation`)
+    asserts this test would FAIL if any legacy field changes. The snapshot
+    origin commit is documented in the fixture file's docstring.
+    """
+    snapshot_path = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "am_edition_legacy_snapshot_dd20710c.json"
     )
-    p1 = build_payload(site, data, now=now)
-    p2 = build_payload(site, data, now=now)
-    # Determinism guard — frozen snapshot can ONLY be the bytes if the
-    # producer is deterministic at this head.
-    assert json.dumps(p1, sort_keys=True) == json.dumps(p2, sort_keys=True)
-    # Extract the legacy 7 + every top-level field, then capture the snapshot.
-    legacy_now = [b for b in p1["blocks"] if b["key"] in _LEGACY_BLOCK_KEYS]
-    legacy_keys_now = sorted(b["key"] for b in legacy_now)
-    assert legacy_keys_now == sorted(_LEGACY_BLOCK_KEYS)
-    # Top-level fields are an exact list — every key the producer ships
-    # outside `blocks`. Pin them so a future schema drift fails the test.
-    expected_top_keys = sorted({
-        "schema", "display_only", "authority", "generated_at", "session_date",
-        "session_state", "prior_close_date", "morning_source_feasibility",
-        "morning_source_feasibility_cause_en", "morning_source_feasibility_cause_zh",
-        "null_count", "blocks",
-    })
-    assert sorted(p1.keys()) == expected_top_keys
-    # Capture the freeze snapshot — every legacy block's KEY (deterministic
-    # from input) and a structural fingerprint so any drift in non-keyed
-    # fields fails the assertion below.
-    snapshot_keys = [b["key"] for b in legacy_now]
-    snapshot_top = {k: p1[k] for k in expected_top_keys if k != "blocks"}
-    # Pin: a subsequent run on the SAME fixture must yield the IDENTICAL
-    # snapshot. We re-build and re-extract, then compare by JSON.
-    legacy_again = [b for b in p2["blocks"] if b["key"] in _LEGACY_BLOCK_KEYS]
-    top_again = {k: p2[k] for k in expected_top_keys if k != "blocks"}
-    assert [b["key"] for b in legacy_again] == snapshot_keys
-    assert top_again == snapshot_top
+    assert snapshot_path.exists(), snapshot_path
+    snapshot = json.loads(snapshot_path.read_text())
+    fixture_dir = Path(__file__).resolve().parent / "fixtures" / "am_edition_fixture"
+    assert fixture_dir.exists(), fixture_dir
+    site = fixture_dir / "site"
+    data = fixture_dir / "data"
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    payload = build_payload(site, data, now=now)
+    # Same filter the snapshot capture used — keep legacy 7 + canonical top,
+    # strip time-sensitive fields.
+    actual = _filter_for_byte_identity(payload)
+    assert actual == snapshot, _byte_identity_diff(actual, snapshot)
     # Pin: every legacy block carries the same set of canonical contract keys
     # (session_clock omits `rows` because it has no row payload; all other
     # legacy blocks carry one).
@@ -1265,9 +1254,89 @@ def test_byte_identity_full_surface_compare(tmp_path):
         "source_as_of", "source_as_of_precision", "age_minutes", "max_age_minutes",
         "classification", "state_reason_en", "state_reason_zh",
     }
-    for b in legacy_now:
+    for b in [blk for blk in payload["blocks"] if blk["key"] in _LEGACY_BLOCK_KEYS]:
         missing = canonical_block_keys - set(b.keys())
         assert not missing, (b["key"], missing)
+    # Pin: the top-level keys the producer ships outside `blocks` are exact.
+    expected_top_keys = sorted({
+        "schema", "display_only", "authority", "generated_at", "session_date",
+        "session_state", "prior_close_date", "morning_source_feasibility",
+        "morning_source_feasibility_cause_en", "morning_source_feasibility_cause_zh",
+        "null_count", "blocks",
+    })
+    assert sorted(payload.keys()) == expected_top_keys
+
+
+def test_byte_identity_red_under_legacy_mutation(tmp_path, monkeypatch):
+    """Mutation guard (BLOCKER 3 / R3): this test asserts that mutating
+    ANY legacy field (e.g. session_clock.source_owner -> "REVIEWER_MUTATION")
+    causes the byte-identity snapshot compare to FAIL — i.e. the regression
+    protection actually fires. The previous test compared only 4 top-level
+    fields + session_clock (and silently passed under a real payload change).
+
+    We run the producer over the committed fixture at the frozen `now`, but
+    patch `_session_clock_block` to overwrite `source_owner`. The byte-
+    identity compare MUST report a mismatch."""
+    from scripts import build_am_edition as mod
+    from scripts.build_am_edition import build_payload
+
+    snapshot_path = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "am_edition_legacy_snapshot_dd20710c.json"
+    )
+    snapshot = json.loads(snapshot_path.read_text())
+    fixture_dir = Path(__file__).resolve().parent / "fixtures" / "am_edition_fixture"
+    site = fixture_dir / "site"
+    data = fixture_dir / "data"
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    # Mutation: overwrite session_clock.source_owner with a REVIEWER marker.
+    original = mod._session_clock_block
+
+    def _mutated(generated_at: str, now_arg: datetime) -> dict:
+        block = original(generated_at, now_arg)
+        block["source_owner"] = "REVIEWER_MUTATION"
+        return block
+
+    monkeypatch.setattr(mod, "_session_clock_block", _mutated)
+    payload = build_payload(site, data, now=now)
+    mutated = _filter_for_byte_identity(payload)
+    # Mismatch required — the regression protection must fire.
+    assert mutated != snapshot, "byte-identity guard failed: legacy mutation was not detected"
+
+
+def _filter_for_byte_identity(payload: dict) -> dict:
+    """Same filter the snapshot capture used: legacy 7 blocks + canonical
+    top-level fields, with time-sensitive fields stripped."""
+    payload = json.loads(json.dumps(payload))  # deep copy
+    payload.pop("generated_at", None)
+    payload.pop("session_date", None)
+    payload.pop("session_state", None)
+    payload.pop("prior_close_date", None)
+    payload.pop("null_count", None)
+    payload.pop("morning_source_feasibility", None)
+    payload.pop("morning_source_feasibility_cause_en", None)
+    payload.pop("morning_source_feasibility_cause_zh", None)
+    for b in payload.get("blocks", []):
+        b.pop("age_minutes", None)
+        if b.get("key") == "session_clock":
+            b.pop("source_as_of", None)
+            b.pop("source_as_of_precision", None)
+    payload["blocks"] = [b for b in payload.get("blocks", []) if b.get("key") in _LEGACY_BLOCK_KEYS]
+    return payload
+
+
+def _byte_identity_diff(a: dict, b: dict) -> str:
+    """Human-readable diff for failing byte-identity compares."""
+    msgs: list[str] = []
+    for k in set(a) | set(b):
+        if a.get(k) != b.get(k):
+            msgs.append(f"top.{k}: {a.get(k)!r} vs {b.get(k)!r}")
+    for i, (ba, bb) in enumerate(zip(a.get("blocks", []), b.get("blocks", []))):
+        for k in set(ba) | set(bb):
+            if ba.get(k) != bb.get(k):
+                msgs.append(f"block[{i}].{k}: {ba.get(k)!r} vs {bb.get(k)!r}")
+    return "\n".join(msgs[:20]) or "(no diff fields found)"
 
 
 def test_render_html_returns_empty_when_jinja2_unavailable(tmp_path, monkeypatch):
