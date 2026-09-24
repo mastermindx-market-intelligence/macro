@@ -53,17 +53,24 @@ def validate_delivery_inputs(
 ) -> dict[str, object]:
     """Classify inert research inputs without issuing any delivery permission.
 
-    ``research_hosts`` is the closed set of hostnames a deliverable research
-    payload is allowed to advertise; no source URL outside that set is
-    research-usable. T05/T06 will replace the caller's ``frozenset({"example.invalid"})``
-    placeholder with the real host policy supplied by the ranking/gating programs.
-    A well-formed 10-digit CIK is necessary but not sufficient identity proof.
-    ``identity`` is resolved only when ``company_id`` carries the corpus
-    namespace and ``(company_id, external_ids.cik)`` is a registered pair in
-    ``registry``. A missing/empty ``registry`` resolves nothing.
+    ``research_hosts`` is a closed set of research hosts supplied by the
+    caller; the synthetic corpus supplies its own. No source URL outside that
+    set is research-usable. A well-formed 10-digit CIK is necessary but not
+    sufficient identity proof. ``identity`` is resolved only when
+    ``company_id`` carries the corpus namespace and ``(company_id,
+    external_ids.cik)`` is a registered pair in ``registry``. A missing/empty
+    ``registry`` resolves nothing.
+
+    ``registry`` is materialized into a ``frozenset`` once at entry so a
+    generator caller cannot get contradictory ``live_admission`` and
+    ``bindings.identity`` answers — every read in this function consumes the
+    SAME frozen registry view.
     """
     if not isinstance(inputs, Mapping):
         raise TypeError("delivery inputs must be a mapping")
+
+    materialized_registry: frozenset[tuple[str, str]] | None
+    materialized_registry = None if registry is None else frozenset(registry)
 
     unknown = sorted(set(inputs) - _ALLOWED_INPUT_KEYS)
     reasons: list[str] = []
@@ -76,7 +83,7 @@ def validate_delivery_inputs(
         reasons.append("accepted_binding_missing")
 
     identity = inputs.get("identity")
-    identity_status, identity_reason = _check_identity(identity, registry)
+    identity_status, identity_reason = _check_identity(identity, materialized_registry)
     if identity_status != "resolved":
         # Top-level reasons stay in the closed set; the finer
         # ``identity_not_registered`` lives only in ``bindings["identity"]["reason"]``.
@@ -97,7 +104,7 @@ def validate_delivery_inputs(
     bindings: dict[str, object] = {
         "release_binding": _checked_binding(release_binding),
         "private_binding": _checked_binding(private_binding),
-        "identity": _checked_identity_value(identity, registry),
+        "identity": _checked_identity_value(identity, materialized_registry),
     }
     return {
         "live_admission": "admissible" if not reasons else "refused",

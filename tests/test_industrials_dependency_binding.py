@@ -308,6 +308,45 @@ def test_realistic_cik_with_unknown_pair_is_identity_not_registered() -> None:
     assert identity["reason"] == "identity_not_registered"
 
 
+def test_registry_generator_is_materialized_once_no_contradiction() -> None:
+    """N4 (T01 round-5): a generator registry must not contradict itself.
+
+    The OLD harness materialized ``frozenset(registry)`` inside
+    ``_check_identity`` — every call after the first exhausted the generator
+    and the second ``bindings.identity`` read answered
+    ``identity_not_registered`` even though the FIRST identity read had
+    answered ``resolved``. Pin the new contract: the registry is materialized
+    ONCE at entry, so a generator caller observes the SAME answer in both
+    ``live_admission`` and ``bindings.identity``.
+    """
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "0000987654"},
+    }
+    payload["release_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:release:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+    }
+    payload["private_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:private:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+        "rights_state": "public_primary",
+    }
+
+    registry = iter(list(issuer_registry()))  # iterator, single-pass
+    result = _validate(payload, registry=registry)
+
+    assert result["live_admission"] == "admissible", result
+    assert result["bindings"]["identity"]["status"] == "resolved", result["bindings"]
+    # No contradiction: identity is resolved AND live_admission is admissible.
+    assert "identity_unresolved" not in result["reasons"]
+
+
 def test_missing_registry_resolves_no_identity() -> None:
     payload = case("source_only")
     payload["identity"] = {

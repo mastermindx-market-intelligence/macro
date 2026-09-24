@@ -190,9 +190,11 @@ class _MemoryPublicationStore:
         self.read_count = 0
 
     def get_bytes(self, key: str) -> bytes | None:
+        self.read_count += 1
         return self._blobs.get(key)
 
     def get_bytes_strict(self, key: str) -> bytes | None:
+        self.read_count += 1
         return self._blobs.get(key)
 
     def get_bytes_strict_bounded(self, key: str, maximum_bytes: int) -> bytes | None:
@@ -503,6 +505,11 @@ class _PublicationHarness:
     def publish(self, changes: Mapping[str, Any], *, stage_dir: Path) -> dict[str, Any]:
         """Bind every owner entry point in the owner's real order.
 
+        ``stage_dir`` is the REQUIRED keyword-only argument (a pytest
+        ``tmp_path`` in T02/T04). The harness builds a minimal synthetic
+        ``records/`` + ``context/`` tree inside it and lets the owner's
+        ``prepare_private_publication`` validate it.
+
         Step 1: ``prepare_private_publication(stage_dir)`` validates a
         locally-built staging tree (records/ + context/) and freezes one
         generation. Step 2: ``_put_verified`` writes every prepared payload
@@ -510,7 +517,7 @@ class _PublicationHarness:
         re-checks the prepared manifest. Step 4: ``validate_private_pointer``
         re-checks the pointer built by the owner's ``_pointer_for``.
 
-        If a precondition beyond tmp_path is missing, returns the typed
+        If a precondition beyond ``stage_dir`` is missing, returns the typed
         refusal permitted by the META-CEO ruling.
         """
         del changes
