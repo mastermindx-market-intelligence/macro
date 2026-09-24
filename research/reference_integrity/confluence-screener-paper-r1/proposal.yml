@@ -2,7 +2,7 @@ schema: mastermind.rig_proposal.v1
 reference_id: confluence-screener-paper-r1
 
 proposed_artifact:
-  frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+  frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   paths:
     - mockups/refs/reference_integrity/confluence-screener-paper-r1/REFERENCE.md
   screenshots:
@@ -14,6 +14,9 @@ proposed_artifact:
     - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-en-mobile.jpg, viewport: mobile390, theme: light, locale: en}
     - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-zh-mobile.jpg, viewport: mobile390, theme: dark, locale: zh}
     - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-zh-mobile.jpg, viewport: mobile390, theme: light, locale: zh}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/global-zero-dark-en.jpg, viewport: state720, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/entitled-hydration-dark-en.jpg, viewport: state720, theme: dark, locale: en}
+    - {path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/honesty-open-dark-en.jpg, viewport: state720, theme: dark, locale: en}
 
 dispositions:
   - id: hero.current_answer
@@ -24,144 +27,146 @@ dispositions:
     target: "Ranked result cards #1..#3; deterministic builder remains rank authority."
   - id: ledger.validation_pair
     disposition: IMPROVE
-    target: "Recent-vs-older-era validation remains visibly comparable on every rank and viewport, with explicit runtime binding and sample context."
-    rationale: "The first freeze does not prove this consistently: mobile rank 1 demotes the older-era read into a compact receipt while paid rows compress the surrounding validation evidence."
+    target: "Recent-vs-older-era validation plus sample basis stays visible on every rank and viewport; compact mobile receipts wrap rather than drop either era."
+    rationale: "The refreshed freeze restores both eras and their sample context on rank 1 and paid rows while keeping the ranked board scannable."
   - id: ledger.signal_legs
     disposition: RETAIN
-    target: "Builder-owned variable-length D/W leg rows remain explicit on every result card and locale, including layout capacity for three-leg cases without inventing a special third-leg semantic. The first freeze must repair missing ZH-desktop rank-1 stacks, two-row mobile rank-1 capacity, and generic paid-row placeholders before this retention can be credited."
+    target: "Builder-owned variable-length D/W leg rows stay explicit on every rank and locale; a neutral TF placeholder demonstrates third-row layout capacity without inventing a timeframe semantic."
   - id: ledger.occurrence_freshness
     disposition: RETAIN
-    target: "Public occurrence count, history span/frequency and last-seen context on every rank. The first freeze under-proves this even on rank 1 and compresses it further on ranks 2/3, so all ranks must be repaired and refrozen before this retention can be credited."
+    target: "Public occurrence/history/frequency and last-seen context remains in the evidence receipt on every rank."
   - id: ledger.validation_sample_basis
     disposition: RETAIN
-    target: "Recent and older-era month/fire sample basis remains inspectable for every rank. The first freeze does not visibly prove the full sample basis on rank 1 and compresses it on ranks 2/3; all ranks need explicit receipt capacity before this retention can be credited."
+    target: "Recent and older-era month/fire sample basis remains visible on every rank, including mobile."
   - id: ledger.random_baseline_consistency
     disposition: RETAIN
-    target: "Random-entry edge plus cross-era consistency/ranking evidence remains public for every rank. The first freeze uses generic runtime receipt copy on rank 1 and compresses the evidence on ranks 2/3; the refreshed freeze must visibly restore the full public receipt before RIG review."
+    target: "Random-entry edge and cross-era consistency remain public evidence on every rank."
   - id: ledger.wins_per_10
     disposition: RELOCATE
-    destination: "Result evidence/receipt detail rather than primary card hero."
-    reachability: "Must remain visibly reachable on every rank in the repaired Paper reference; the first freeze does not visibly prove this receipt. It may be compact in the card footer/disclosure but cannot disappear."
+    destination: "Compact result evidence/receipt line rather than the primary card hero."
+    reachability: "Visible in the refreshed evidence receipt on rank 1 and ranks 2–3 across desktop and mobile; implementation may bind the exact runtime label/value without moving it behind entitlement."
   - id: access.rank1_free_tickers
     disposition: RETAIN
-    target: "Rank-1 Matching now row with public ticker links."
+    target: "Rank-1 Matching now row with public ticker links; DEMO-only labels are used in the design fixture."
   - id: access.rank23_no_leak
     disposition: IMPROVE
-    target: "Paid result lock slot that explicitly states count-only public truth and reveals no ticker identity."
-    rationale: "Makes the existing server boundary legible instead of presenting a generic paywall."
+    target: "Paid rows keep public evidence and count while ticker identities remain absent until entitlement."
+    rationale: "Makes the existing server boundary legible without fake blurred or placeholder ticker names."
   - id: access.entitled_hydration
     disposition: RETAIN
-    target: "Locked row transforms in-place to paid Matching now identities after protected payload hydration; representative unlocked DEMO evidence is required in the refreshed freeze before this retention can be credited."
+    target: "The governed entitled-hydration specimen keeps public evidence fixed and reveals only DEMO ticker identities after the protected-payload boundary."
   - id: honesty.guidance
     disposition: IMPROVE
-    target: "Hero/context warning plus a compact How to read this honestly disclosure below the result set, with one governed expanded/open specimen preserving the current detailed guidance."
-    rationale: "The current frozen reference names honesty topics but does not yet make the five production explanations visibly reachable; the refreshed freeze must repair that gap."
+    target: "Hero/context warning plus a compact How to read this honestly disclosure below the result set, with a governed expanded/open specimen preserving all five production explanations."
+    rationale: "Moves the warning earlier while keeping the full production guidance visibly reachable."
   - id: cta.paid_continuation
     disposition: RETAIN
-    target: "Dedicated paid-view continuation CTA after the result stack, distinct from row-level ticker unlock actions; the current frozen reference must add and refreeze this surface."
+    target: "Dedicated post-ledger See every line-up's matching stocks continuation CTA, distinct from row-level ticker unlock actions."
   - id: parity.theme_locale
     disposition: RETAIN
     target: "Eight-cell Dark/Light × EN/ZH × desktop/mobile reference matrix."
   - id: parity.mobile_no_horizontal_scroll
     disposition: RETAIN
-    target: "390px stacked composition with no page-level horizontal-scroll allowance."
+    target: "390px stacked Paper compositions; browser/runtime no-horizontal-scroll remains a separate migration proof."
   - id: state.global_zero
     disposition: RETAIN
-    target: "Separate global-zero treatment for no eligible combinations firing, preserving rarity guidance and notification continuation; filter-empty remains an additional state and may not replace it."
+    target: "Separate governed global-zero specimen for no eligible combinations firing, preserving rarity guidance and notification continuation; filter-empty remains a distinct state."
 
 additions:
   - id: add.presentation_filters
     note: "Presentation-only discovery filters/open state. They may filter the already-rendered top-three result set but may not change deterministic rank, producer eligibility, or access truth. RIG may reject this addition without affecting the rest of the reference."
   - id: add.state_contract
-    note: "Desktop currently shows loading, empty, stale and error treatments, but the frozen 390px cells presently show only stale + error. Loading + empty mobile parity is a known preflight defect and must be repaired/refrozen; focus/focus-visible, hover, expanded/open and disabled treatments remain design requirements. Browser/runtime proof remains separate."
+    note: "The refreshed desktop and 390px compositions visibly cover loading, filter-empty, stale and error; mobile uses a second two-tile Loading + Empty row. Focus/focus-visible, hover, expanded/open and disabled treatments are represented. Separate governed specimens cover global-zero, entitled hydration and open honesty guidance. Browser/runtime proof remains separate."
 
 user_tasks:
   - id: task.scan_now
     task: Identify which combinations and names deserve research attention now.
     critical: true
     production: "Hero count followed by three ledger cards."
-    proposal: "Answer-first hero followed by ranked result cards; same deterministic population."
+    proposal: "Answer-first hero followed by the same deterministic top-three ranked evidence stack."
     verdict: EQUIVALENT
-    notes: "Hierarchy changes, population authority does not."
+    notes: "Hierarchy changes, population and rank authority do not."
   - id: task.compare_evidence
     task: Compare recent validation with older-era performance without cherry-picking.
     critical: true
     production: "Recent and old rates appear together in each card, with inspectable sample basis."
-    proposal: "The first freeze keeps both eras somewhere in each row, but mobile rank 1 demotes the older-era read into the lower receipt and paid rows compress the sample/supporting evidence."
-    verdict: WORSE
-    notes: "Restore a visibly comparable recent/older pair plus sample basis on every rank and viewport before claiming equivalence or improvement."
+    proposal: "Every refreshed rank shows both eras plus sample basis; mobile wraps this into the compact evidence receipt rather than dropping it."
+    verdict: EQUIVALENT
+    notes: "Functional evidence parity is restored in the design candidate; the independent taste critic must still judge whether the denser mobile receipt is sufficiently scannable."
   - id: task.read_signal_stack
     task: Understand what legs/timeframes make a setup.
     critical: true
     production: "Variable-length builder-owned D/W leg stack on every card."
-    proposal: "The first freeze is inconsistent: EN desktop rank 1 has a three-row stack but invents a special third-leg meaning; mobile rank 1 proves only two rows; ZH desktop rank 1 omits the stack; ranks 2/3 collapse it to generic text."
-    verdict: WORSE
-    notes: "Repair all theme/locale/viewport cells to tolerate builder-owned variable leg depth, including three-leg cases, without inventing a special third-leg semantic."
+    proposal: "Every refreshed rank exposes D/W runtime-leg capacity and a neutral TF third-row placeholder proving three-leg layout tolerance without claiming a third runtime timeframe."
+    verdict: EQUIVALENT
+    notes: "The implementation must bind the final rows directly from the builder-owned variable-length leg array."
   - id: task.read_public_receipt
     task: Assess frequency, sample basis, random-entry edge and cross-era support for every rank before deciding what deserves deeper research.
     critical: true
     production: "All ranks expose occurrence/frequency/last-seen, validation sample basis, wins-per-10, random-entry edge and cross-era consistency before the ticker-identity access boundary."
-    proposal: "The first freeze under-proves the full receipt on rank 1 and compresses or omits several public facts on ranks 2/3."
-    verdict: WORSE
-    notes: "Only ticker identities are paid. Restore the complete public evidence receipt on every rank before refreeze; paid rows may be denser, but public evidence may not vanish."
+    proposal: "The refreshed rank-1 and rank-2/3 receipts visibly retain those public facts on desktop and mobile."
+    verdict: EQUIVALENT
+    notes: "The evidence is intentionally compact; visual scanning/density remains an independent taste-review question rather than an author-side claim of superiority."
   - id: task.use_free_match
     task: Open the free rank-1 matching ticker identities.
     critical: true
     production: "Rank 1 exposes public ticker links."
-    proposal: "Rank 1 keeps a Matching now row and links."
+    proposal: "Rank 1 keeps the Matching now slot; the design fixture uses DEMO-only identity labels and reserves actual links for implementation."
     verdict: EQUIVALENT
-    notes: ""
+    notes: "No live market identity is invented in Paper."
   - id: task.respect_paid_boundary
     task: Know paid matches exist without seeing protected ticker identities before entitlement.
     critical: true
     production: "Rank 2/3 lock shows count and hydrates only after protected fetch."
-    proposal: "Count-only lock makes the same boundary explicit; hydration remains the only reveal path."
+    proposal: "Locked rows preserve the public receipt and count while the separate entitled specimen demonstrates that only identities appear after hydration."
     verdict: BETTER
-    notes: ""
+    notes: "The boundary is more legible without widening access authority."
   - id: task.mobile_bilingual
     task: Use the same screener truth on mobile and in Chinese.
     critical: true
     production: "Current live eight-cell capture; 390px scrollWidth equals viewport."
-    proposal: "Eight-cell matrix exists, but the first freeze has semantic parity defects: mobile rank-1 evidence is thinner, mobile state coverage is incomplete, and Light EN mobile is mislabeled as Dark."
-    verdict: WORSE
-    notes: "Repair the eight-cell Paper matrix first; then implementation must separately prove no-horizontal-scroll."
+    proposal: "The refreshed eight-cell Paper matrix preserves the same evidence/state grammar in Dark/Light and EN/ZH at a fixed 390px mobile artboard."
+    verdict: EQUIVALENT
+    notes: "Paper width parity is design evidence only; the later browser implementation must separately prove no page-level horizontal overflow."
 
 authority_delta:
   - id: auth.rank
     production_claim: "Builder rank ordering decides the top three."
-    proposal_claim: "UI presents builder rank ordering; filters may not rerank."
+    proposal_claim: "UI presents builder rank ordering; presentation filters may not rerank."
     direction: equal
     warranted: true
     evidence: "scripts/build_confluence_screener.py:116-122; REFERENCE.md truth contract"
   - id: auth.access
     production_claim: "Rank 2/3 ticker identities are protected until entitlement."
-    proposal_claim: "Same; public view exposes count only."
+    proposal_claim: "Same; public view exposes evidence/count only, governed entitled specimen reveals DEMO identities only."
     direction: equal
     warranted: true
-    evidence: "scripts/build_confluence_screener.py:81-83,146-148,186-212"
+    evidence: "scripts/build_confluence_screener.py:81-83,146-148,186-212; proposal/entitled-hydration-dark-en.jpg"
   - id: auth.trade
     production_claim: "Watch/research context, not a buy instruction."
     proposal_claim: "Evidence increases research priority; it does not authorize a position."
     direction: equal
     warranted: true
-    evidence: "templates/confluence_screener.html.j2:403-417; proposal hero/truth footer"
+    evidence: "templates/confluence_screener.html.j2:403-417; proposal/honesty-open-dark-en.jpg"
   - id: auth.market_values
     production_claim: "Runtime data is produced by the deterministic artifact/builder."
-    proposal_claim: "Reference uses runtime/DEMO placeholders and claims no live values."
+    proposal_claim: "Reference uses runtime/DEMO placeholders and claims no live market values."
     direction: weaker
     warranted: true
-    evidence: "REFERENCE.md; all proposal screenshot fixtures"
+    evidence: "REFERENCE.md; refreshed proposal screenshots"
 
 information_economics:
   words_per_card:
     production: "Compact card plus leg labels, validation labels and access treatment; see production captures."
-    proposal: "Comparable glance density; detail warnings are moved to hero/footer rather than duplicated on every card."
+    proposal: "The refreshed cards preserve the full public receipt in a compact evidence line; mobile wraps the receipt and paid rows become visibly denser."
   findings:
-    - "The desired contract keeps recent and older-era validation visibly comparable, but the first freeze demotes the older-era read on mobile rank 1 and must be repaired before this compression can be credited."
-    - "The desired contract keeps signal legs as visual rows, but the first freeze omits them on ZH desktop rank 1 and collapses paid rows to generic text; this is a pre-review repair requirement."
-    - "Access truth is made more explicit without fake protected content."
-    - "Presentation filters are an addition and must not become a second ranking/eligibility authority."
+    - "Recent and older-era validation, sample basis, leg depth, freshness/history, wins-per-10, random baseline and cross-era evidence are all visibly preserved in the refreshed candidate."
+    - "Paid rows remain more information-dense than the first freeze because public evidence may not disappear merely because ticker identities are gated."
+    - "The density is an explicit review surface: functional parity is restored, but the Visual/Taste critic must judge whether the typography and compression remain sufficiently scannable."
+    - "Access truth is more explicit without fake protected content."
+    - "Presentation filters remain an addition and must not become a second ranking/eligibility authority."
   preserved:
     - "Answer-first discovery-board shape rather than report layout."
     - "Top-three card density and paid/free separation."
     - "Dark/Light, EN/ZH and 390px parity as first-class design constraints."
+    - "Global-zero, entitlement and honesty semantics remain distinct rather than being folded into a generic empty/paywall state."

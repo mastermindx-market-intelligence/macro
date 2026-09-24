@@ -14,23 +14,29 @@ author:
 
 reference_files:
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/REFERENCE.md
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-en-desktop.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-en-desktop.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-zh-desktop.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-zh-desktop.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-en-mobile.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-en-mobile.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-zh-mobile.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
   - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-zh-mobile.jpg
-    frozen_sha: eb4d1e7fa6b531e21fd857c31027182e65d002c2
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/global-zero-dark-en.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/entitled-hydration-dark-en.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/honesty-open-dark-en.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
 
 files:
   baseline: baseline.yml
@@ -41,5 +47,6 @@ files:
   verdict: verdict.yml
 
 # No prior RIG cycle exists for confluence_screener.html on the captured main tree.
-# This is a full cycle because the proposal changes information hierarchy and adds
-# presentation-only discovery controls. No migration is authorized by this draft.
+# This remains one full cycle. The original defective freeze is preserved in Git
+# history; this manifest points only at the refreshed candidate evidence.
+# No migration is authorized by this draft.
