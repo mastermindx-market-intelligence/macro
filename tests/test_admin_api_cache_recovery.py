@@ -185,6 +185,56 @@ class TestSiteInventoryLinkCache:
             {"page": "index.html", "link": "/absent.html"}
         ]
 
+    def test_template_removal_invalidates_ci_built_cache(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        content, site = self._bind_site(monkeypatch, tmp_path)
+        templates = tmp_path / "templates"
+        source = site / "index.html"
+        template = templates / "ghost.html.j2"
+        source.write_text('<a href="/ghost.html">Generated page</a>')
+        template.write_text("<main>rendered by CI</main>")
+
+        first = content.link_check()
+        assert first["count"] == 0
+        assert first["ci_built_count"] == 1
+
+        template.unlink()
+        second = content.link_check()
+
+        assert second["ci_built_count"] == 0
+        assert second["count"] == 1
+        assert second["broken"] == [
+            {"page": "index.html", "link": "/ghost.html"}
+        ]
+
+    def test_directory_symlink_retarget_invalidates_cache(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        content, site = self._bind_site(monkeypatch, tmp_path)
+        source = site / "index.html"
+        inside = site / "inside"
+        outside = tmp_path / "outside"
+        inside.mkdir()
+        outside.mkdir()
+        source.write_text('<a href="alias/target.html">Aliased page</a>')
+        (inside / "target.html").write_text("<main>same-size target</main>")
+        (outside / "target.html").write_text("<main>same-size target</main>")
+        alias = site / "alias"
+        alias.symlink_to(inside, target_is_directory=True)
+
+        first = content.link_check()
+        assert first["count"] == 0
+
+        alias.unlink()
+        alias.symlink_to(outside, target_is_directory=True)
+        second = content.link_check()
+
+        assert second["count"] == 1
+        assert second["broken"] == [
+            {"page": "index.html", "link": "alias/target.html"}
+        ]
+
 
 def test_http_200_semantic_failure_does_not_poison_client_cache() -> None:
     _require_node()

@@ -66,22 +66,33 @@ def _ci_built(target) -> bool:
 # lets the UI say "scanned N of M" honestly when the cap ever does bite.
 
 # A full scan reads+parses ~3k pages (~17s) and blocks the single-threaded server, but the
-# result only changes when the site/ tree does. Cache it behind a complete stat fingerprint:
-# relative path + size + each page's own mtime/ctime. This remains stat-only (far cheaper
-# than re-reading every page) while an edit to an older page can no longer hide behind an
-# unrelated page's newer mtime.
+# result changes with the local page tree, symlink topology, and the root template files
+# used by ``_ci_built``. Cache it behind a dependency-complete stat fingerprint. This
+# remains far cheaper than re-reading every page while preventing warm-cache verdicts
+# from surviving a link-containment or CI-built-classification change.
 _link_cache: dict = {}  # (max_pages, count, metadata_digest) -> result dict
 
 
 def _tree_sig(max_pages: int):
-    """Stat-only fingerprint of every local HTML page used by ``link_check``.
+    """Stat-only fingerprint of every local input that can change ``link_check``.
 
-    Paths are sorted before hashing so traversal order cannot churn the cache. Including
-    every page's size and nanosecond mtime/ctime invalidates edits, replacements, additions,
-    removals and renames without reading page bodies on each panel request.
+    Page metadata catches edits/replacements/additions/removals. Symlink records include
+    the link target itself because containment depends on where a path resolves, even when
+    every HTML file is byte-identical. Root template metadata covers ``_ci_built``: adding
+    or removing ``templates/<stem>.html(.j2)`` changes a missing link's classification.
+    Paths are sorted so traversal order cannot churn the cache.
     """
     digest = hashlib.sha256()
     count = 0
+
+    def _add(kind: str, rel: str, stat, target: str = "") -> None:
+        fields = (
+            kind, rel, target, str(stat.st_size),
+            str(stat.st_mtime_ns), str(stat.st_ctime_ns),
+        )
+        digest.update("\0".join(fields).encode("utf-8", errors="surrogateescape"))
+        digest.update(b"\0\0")
+
     for page in sorted(SITE.rglob("*.html"), key=lambda item: item.as_posix()):
         try:
             stat = page.stat()
@@ -89,14 +100,32 @@ def _tree_sig(max_pages: int):
         except (OSError, ValueError):
             continue
         count += 1
-        fields = (
-            rel,
-            str(stat.st_size),
-            str(stat.st_mtime_ns),
-            str(stat.st_ctime_ns),
-        )
-        digest.update("\0".join(fields).encode("utf-8", errors="surrogateescape"))
-        digest.update(b"\0\0")
+        _add("page", rel, stat)
+
+    # ``rglob('*.html')`` does not follow directory symlinks, which is exactly what
+    # the scan wants, but a link traversing such a directory still resolves through it.
+    # Fingerprint every symlink entry separately so retargeting cannot reuse a cached
+    # healthy result. ``lstat`` records the link, never the destination.
+    for item in sorted(SITE.rglob("*"), key=lambda entry: entry.as_posix()):
+        try:
+            if not item.is_symlink():
+                continue
+            rel = item.relative_to(SITE).as_posix()
+            _add("symlink", rel, item.lstat(), item.readlink().as_posix())
+        except (OSError, RuntimeError, ValueError):
+            continue
+
+    # _ci_built deliberately checks only root-level templates by target basename.
+    # Track those exact inputs; no template body read is needed.
+    if _TEMPLATES.is_dir():
+        templates = list(_TEMPLATES.glob("*.html")) + list(_TEMPLATES.glob("*.html.j2"))
+        for template in sorted(templates, key=lambda item: item.name):
+            try:
+                target = template.readlink().as_posix() if template.is_symlink() else ""
+                _add("template", template.name, template.lstat(), target)
+            except (OSError, RuntimeError):
+                continue
+
     return (max_pages, count, digest.digest())
 
 
@@ -104,8 +133,8 @@ def link_check(max_pages: int = 10000) -> dict:
     """Cached wrapper around the offline nav-integrity scan (see `_link_check`).
 
     The scan reads+parses the whole local tree (~17s); here we return a memoized result
-    whenever the site/ tree signature (page count + newest mtime) is unchanged, so repeat
-    panel loads are near-instant instead of re-running the crawl on the single-threaded
+    whenever the complete local dependency signature is unchanged, so repeat panel loads
+    are near-instant instead of re-running the crawl on the single-threaded
     server. Returns the identical dict `_link_check` produces.
     """
     if not SITE.is_dir():
