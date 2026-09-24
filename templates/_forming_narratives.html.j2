@@ -7,6 +7,31 @@
    by the builder via engine.narrative_emergence. Self-contained: renders nothing
    (display:none) if the JSON is absent, so it is always safe to include. `ne_base` is the
    page's basketdata folder (default 'basketdata/' for US). #}
-<section id="forming-narratives"></section>
-<script src="forming_narratives.js"></script>
-<script>renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });</script>
+<section id="forming-narratives" data-render-state="pending"></section>
+<script id="forming-narratives-runtime" src="forming_narratives.js"></script>
+<script>
+(function () {
+  var sec = document.getElementById('forming-narratives');
+  var runtime = document.getElementById('forming-narratives-runtime');
+  var called = false;
+  function unavailable() {
+    if (!sec || called) return;
+    sec.setAttribute('data-render-state', 'unavailable');
+    sec.innerHTML = '<p class="ne-shell-state panel pad muted sm" role="status" aria-live="polite">'
+      + '<span class="l-en">Forming narratives are temporarily unavailable. Sign in if you have access, or try again later.</span>'
+      + '<span class="l-zh">成形叙事暂不可用。如已有权限请登录，或稍后重试。</span></p>';
+  }
+  function render() {
+    if (called) return;
+    if (typeof window.renderFormingNarratives !== 'function') { unavailable(); return; }
+    called = true;
+    if (sec) sec.setAttribute('data-render-state', 'ready');
+    window.renderFormingNarratives({ base: "{{ ne_base | default('basketdata/') }}" });
+  }
+  if (typeof window.renderFormingNarratives === 'function') render();
+  else if (runtime && (runtime.defer || runtime.hasAttribute('defer'))) {
+    runtime.addEventListener('load', render, { once: true });
+    runtime.addEventListener('error', unavailable, { once: true });
+  } else unavailable();
+})();
+</script>

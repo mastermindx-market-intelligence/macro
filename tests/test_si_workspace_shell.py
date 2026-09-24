@@ -308,7 +308,7 @@ def test_lazy_assets_keep_their_version_stamp() -> None:
 
 def test_cycle_map_trio_is_mounted_by_the_map_view() -> None:
     router = _router()
-    assert "'@cycles'" in router and "function loadCycles()" in router
+    assert "'@cycles'" in router and "function loadCycles(view)" in router
     for f in ("sector_cycles_data.js", "mm_charts.js", "sector_cycles.js"):
         assert f in router
     assert "map:['@cycles']" in router
@@ -550,6 +550,119 @@ def test_no_i18n_macro_inside_an_html_attribute() -> None:
     # and the rail's own label survived as plain text
     nav = re.search(r"<nav class=\"si-side\"[^>]*>", html)
     assert nav and 'aria-label="Sector Intelligence views"' in nav.group(0), nav
+
+
+def test_lazy_asset_load_failure_has_an_explicit_shell_state() -> None:
+    """A gated/missing organ may fail, but the active view must not look inert."""
+    code = _code(_router())
+    assert "addEventListener('error'" in code
+    assert "showAssetFailure" in code
+    assert "si-load-state" in code
+    assert "Sign in if you have access" in code
+    assert "如已有权限请登录" in code
+
+
+def test_lazy_asset_error_executes_visible_degraded_state() -> None:
+    """Exercise the real router/inject error path: a missing lazy script cannot leave Map inert."""
+    import subprocess
+    import textwrap
+
+    node_script = textwrap.dedent(r"""
+        const fs = require('fs');
+        const vm = require('vm');
+        const src = fs.readFileSync('templates/si_workspace.js', 'utf8');
+        const scripts = [];
+        let loadState = null;
+
+        function classes() {
+          return { toggle: () => {}, add: () => {}, remove: () => {} };
+        }
+        const mapSec = {
+          firstChild: null,
+          offsetHeight: 100,
+          classList: classes(),
+          getAttribute: (k) => k === 'data-view' ? 'map' : null,
+          querySelector: (q) => q === '.si-load-state' ? loadState : null,
+          querySelectorAll: () => [],
+          insertBefore: (node) => { loadState = node; },
+          appendChild: (node) => { loadState = node; },
+        };
+        const mapBtn = {
+          classList: classes(),
+          getAttribute: (k) => k === 'data-view' ? 'map' : null,
+          setAttribute: () => {},
+          removeAttribute: () => {},
+        };
+        const document = {
+          documentElement: { getAttribute: () => null },
+          title: 'Sector',
+          querySelectorAll: (q) => q === '.si-view' ? [mapSec] : (q === '.si-view-btn' ? [mapBtn] : []),
+          querySelector: (q) => q === '.si-view[data-view="map"]' ? mapSec : null,
+          getElementById: () => null,
+          dispatchEvent: () => {},
+          addEventListener: () => {},
+          createElement: (tag) => {
+            const listeners = {};
+            const el = {
+              tagName: tag,
+              className: '',
+              innerHTML: '',
+              async: false,
+              src: '',
+              attrs: {},
+              addEventListener: (name, fn) => { listeners[name] = fn; },
+              setAttribute: (k, v) => { el.attrs[k] = String(v); },
+              getAttribute: (k) => el.attrs[k] || null,
+              hasAttribute: (k) => Object.prototype.hasOwnProperty.call(el.attrs, k),
+              _listeners: listeners,
+            };
+            return el;
+          },
+          head: { appendChild: (node) => { scripts.push(node); } },
+        };
+        const ctx = {
+          document,
+          history: { replaceState: () => {} },
+          location: { hash: '#map' },
+          console,
+          setTimeout, clearTimeout,
+          addEventListener: () => {},
+          dispatchEvent: () => {},
+          CustomEvent: function(type, init) { return {type, detail: init && init.detail}; },
+          Event: function(type) { return {type}; },
+        };
+        vm.createContext(ctx);
+        ctx.window = ctx;
+        vm.runInContext(src, ctx);
+
+        if (scripts.length !== 3) throw new Error('map-lazy-assets-not-injected');
+        if (!scripts[0]._listeners.error) throw new Error('missing-script-error-handler');
+        scripts[0]._listeners.error();
+
+        if (!loadState) throw new Error('no-visible-degraded-state');
+        if (loadState.className !== 'si-load-state panel pad muted sm') throw new Error('wrong-degraded-class');
+        if (loadState.attrs.role !== 'status' || loadState.attrs['aria-live'] !== 'polite') throw new Error('missing-live-status');
+        if (!loadState.innerHTML.includes('Some tools are unavailable in this view.')) throw new Error('missing-en-copy');
+        if (!loadState.innerHTML.includes('此视图的部分工具暂不可用。')) throw new Error('missing-zh-copy');
+    """)
+    out = subprocess.run(
+        ["node", "-e", node_script],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert out.returncode == 0, f"node lazy-error replay failed: {out.stderr}"
+
+
+def test_generated_router_stamp_matches_changed_asset() -> None:
+    """Immutable CDN URL must move whenever the public router body moves."""
+    import hashlib
+
+    site_copy = ROOT / "site" / "si_workspace.js"
+    digest = hashlib.sha256(site_copy.read_bytes()).hexdigest()[:8]
+    assert f'si_workspace.js?v={digest}' in (ROOT / "site" / "sector_central.html").read_text(
+        encoding="utf-8"
+    )
 
 
 def test_router_asset_is_paired_into_site() -> None:
