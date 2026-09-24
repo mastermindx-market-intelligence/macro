@@ -99,7 +99,7 @@ waves:
       MarketOntology F04 operation marketontology-f04-ontology-transmission-20260826-fable-001.
   - id: ENE-1
     title: "Energy — Nuclear Value Capture first vertical (gmi-energy-fable-ceo-e2e-20260923-chairman-001)"
-    status: active
+    status: in_progress
     pr: 7881
     next_action: >
       Fable CEO seat 8955bbc3 (Chairman delegation 2026-09-24). Wave 1 on the fabric against the
