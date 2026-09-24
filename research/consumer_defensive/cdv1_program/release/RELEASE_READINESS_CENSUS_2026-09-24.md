@@ -58,7 +58,13 @@ Existing `gate:code` browser-capable jobs do not actually execute these tests. `
 
 ## Q6 — Release ordering hazards
 
-PENDING
+The exact v1 literals are production-owned in `engine/earnings_narrative/private_publication.py:36-37` and `scripts/build_earnings_public_wire.py:82`. They are pinned by API and store tests: API fixtures/loads assert `earnings.tier_payload/v1` (`tests/test_earnings_api.py:61,127-128`), private-store round-trip asserts it (`tests/test_earnings_private_store.py:236-240`), and public-wire staged payload asserts it (`tests/test_earnings_public_wire.py:1337-1341`). The private manifest shape itself is strict-object validated (`engine/earnings_narrative/private_publication.py:250-315`), so adding v2 manifest fields requires a versioned validator/contract change; a validator literal swap or permissive patch is not enough.
+
+The frozen contract requires `earnings.tier_payload/v2` to preserve v1 fields and add required `economic_interpretation`, while v1 remains byte-semantically readable; `earnings.private_manifest/v2` preserves existing catalogs/source binding, adds closed `native` and `previous_manifest` sections, and requires every reference to resolve and digest-check (frozen plan `88970a1a...` §2.5 lines 156-172). Release ordering must therefore deploy compatible readers/unavailable UI first, verify v1, then enable the producer; never deploy a v2 writer ahead of readers and never downgrade the stored pointer to v1 on withdrawal (frozen plan Task 8.2, lines 536-538).
+
+The 48-hour public fallback is `MAX_EXISTING_AGE_SECONDS = 48 * 60 * 60` (`scripts/build_earnings_public_wire.py:98`). Fresh-source failure may retain only a valid existing state; if `verified_at` is older than 48 hours or index is missing, the build fails closed (`scripts/build_earnings_public_wire.py:837-857,1719-1728`). Separately, the archive staleness tripwire runs `if: always()` and `python -m scripts.audit_earnings_wire_freshness --strict` (`.github/workflows/earnings-public-wire.yml:199-206`). It defaults to warning at 3 days and erroring at 7 days (`scripts/audit_earnings_wire_freshness.py:26-29,53-56`); strict exits 1 on the error level (`scripts/audit_earnings_wire_freshness.py:199-213,240-262`).
+
+A v2 pointer itself would not trip the 48-hour gate, which checks the public catalog's `verified_at`, not the private pointer schema. The actual hazards are: (1) v1 readers/writers must not claim success after a v2 pointer if their loader rejects it; (2) a v1 writer must not rewind/overwrite v2 history; and (3) a prolonged producer outage eventually trips the existing 48-hour build fallback and then the separate 3/7-day freshness gate. Release monitoring must distinguish private-pointer failure, public fallback age, and upstream ingest lag rather than treating all as one staleness signal.
 
 ## Q7 — Legacy market-decision evidence
 
