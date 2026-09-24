@@ -125,8 +125,8 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
         <span class="mx-ladder-gap" aria-hidden="true"></span>
         <div class="mx-cell mx-cell--term pw-lad-count" data-life="resolved" data-withheld="true"><span class="mx-cell-n">12</span><span class="mx-cell-l"><span class="l-en">Resolved</span><span class="l-zh">已结</span></span></div>
       </div>
-      <div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-labelledby="ladder-loading-label" data-state="loading">
-        <span id="ladder-loading-label" class="l-en" hidden>Lifecycle counts</span><span id="ladder-loading-label-zh" class="l-zh" hidden>生命周期计数</span>
+      <div class="mx-ladder mx-ladder--board pw-identity" role="group" aria-labelledby="ladder-loading-label-en" data-state="loading">
+        <span id="ladder-loading-label-en" class="l-en" hidden>Lifecycle counts</span><span id="ladder-loading-label-zh" class="l-zh" hidden>生命周期计数</span>
         <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
         <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
         <div class="mx-cell"><span class="skel pw-load"></span><span class="skel pw-load pw-load--short"></span></div>
@@ -175,9 +175,9 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
         <div class="pw-evidence" id="row-evidence-expanded" data-state="fresh" role="region" aria-labelledby="evidence-fresh-label">
           <span id="evidence-fresh-label" class="l-en" hidden>Entry open</span><span id="evidence-fresh-label-zh" class="l-zh" hidden>入场窗口开启</span>
           <section class="pw-evidence-col"><ul><li><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></li></ul></section>
-          <section class="pw-evidence-col"><p><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></p><a class="pw-evidence-link" href="/prophet/EXMPL"><span class="l-en">Full dossier at /prophet/<T></span><span class="l-zh">完整档案 /prophet/<T></span></a></section>
+          <section class="pw-evidence-col"><p><span class="l-en">Entry open</span><span class="l-zh">入场窗口开启</span></p><a class="pw-evidence-link" href="/prophet/EXMPL"><span class="l-en">Full dossier at /prophet/&lt;T&gt;</span><span class="l-zh">完整档案 /prophet/&lt;T&gt;</span></a></section>
         </div>
-        <div class="pw-evidence" id="row-evidence-collapsed" data-state="missing" role="region" aria-labelledby="evidence-missing-label" hidden><span id="evidence-missing-label" class="l-en" hidden>No read yet</span><span id="evidence-missing-label-zh" class="l-zh" hidden>暂无判断</span><section class="pw-evidence-col"><p><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></p></section></div>
+        <div class="pw-evidence" id="row-evidence-collapsed" data-state="missing" role="region" aria-labelledby="evidence-missing-label-en" hidden><span id="evidence-missing-label-en" class="l-en" hidden>No read yet</span><span id="evidence-missing-label-zh" class="l-zh" hidden>暂无判断</span><section class="pw-evidence-col"><p><span class="l-en">No read yet</span><span class="l-zh">暂无判断</span></p></section></div>
         <div class="pw-evidence" data-state="stale" role="region" aria-labelledby="evidence-stale-label"><span id="evidence-stale-label" class="l-en" hidden>Price is stale</span><span id="evidence-stale-label-zh" class="l-zh" hidden>价格数据已过期</span><section class="pw-evidence-col"><p><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p></section><section class="pw-evidence-col"><span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span></section></div>
         <div class="pw-evidence" data-state="corrected" role="region" aria-labelledby="evidence-corrected-label"><span id="evidence-corrected-label" class="l-en" hidden>Corrected · prior value available</span><span id="evidence-corrected-label-zh" class="l-zh" hidden>已更正 · 可查看原值</span><section class="pw-evidence-col"><p><span class="l-en">No source note yet</span><span class="l-zh">暂无来源说明</span></p></section><section class="pw-evidence-col"><span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span></section></div>
         <div class="pw-evidence" data-state="loading" role="region" aria-labelledby="evidence-loading-label"><span id="evidence-loading-label" class="l-en" hidden>No read yet</span><span id="evidence-loading-label-zh" class="l-zh" hidden>暂无判断</span><section class="pw-evidence-col"><span class="skel pw-load pw-load--long"></span><span class="skel pw-load pw-load--short"></span></section><section class="pw-evidence-col"><span class="skel pw-load pw-load--short"></span></section></div>
@@ -189,7 +189,7 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
 
     <section class="pw-block" aria-labelledby="stamp-heading">
       <h2 id="stamp-heading">AsOfStamp · fresh · stale · corrected · §4</h2>
-      <span class="pw-asof"><span class="l-en">As of <date time></span><span class="l-zh">数据截至 <date time></span></span>
+      <span class="pw-asof"><span class="l-en">As of &lt;date time&gt;</span><span class="l-zh">数据截至 &lt;date time&gt;</span></span>
       <span class="pw-asof"><time datetime="2026-09-23T09:05:00-07:00"><span class="l-en">As of Sep 23, 2026 09:05 PDT</span><span class="l-zh">数据截至 9月23日 09:05 PDT</span></time></span>
       <span class="pw-asof-mark" data-status="stale"><span class="l-en">Price is stale</span><span class="l-zh">价格数据已过期</span></span>
       <span class="pw-asof-mark" data-status="corrected"><span class="l-en">Corrected · prior value available</span><span class="l-zh">已更正 · 可查看原值</span></span>
@@ -203,7 +203,7 @@ html[data-theme="light"] .pw-tier-ghost{filter:blur(var(--sp-1,4px)) saturate(.3
         <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="saved"><span class="l-en">Saved to &lt;list&gt;</span><span class="l-zh">已保存至 &lt;list&gt;</span></button><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
         <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="failed"><span class="l-en">Your list choice did not save. Try again.</span><span class="l-zh">您的列表选择未保存。请重试。</span></button></div>
         <div class="pw-watch-panel"><button class="pw-watch" type="button" data-state="failed"><span class="l-en">Your change did not save. Try again.</span><span class="l-zh">您的更改未保存。请重试。</span></button></div>
-        <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Removed from <list></span><span class="l-zh">已从 <list> 移除</span></span><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
+        <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Removed from &lt;list&gt;</span><span class="l-zh">已从 &lt;list&gt; 移除</span></span><button class="pw-undo" type="button"><span class="l-en">Undo</span><span class="l-zh">撤销</span></button></div>
         <div class="pw-watch-panel"><span class="pw-watch-meta"><span class="l-en">Saved on this device only</span><span class="l-zh">仅保存在此设备</span></span></div>
         <div class="pw-watch-panel"><button class="pw-watch" type="button" disabled><span class="l-en">Not saved yet</span><span class="l-zh">暂未保存</span></button></div>
       </div>

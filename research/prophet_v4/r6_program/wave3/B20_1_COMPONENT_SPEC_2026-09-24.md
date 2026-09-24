@@ -397,15 +397,15 @@ The fixture exposes only two controls: the theme control writes `document.docume
 
 ## EVIDENCE
 
-- `git rev-parse origin/main` → `ee69c3614e4b8451644e8b362cde673462c6781b`.
+- `git rev-parse origin/main` → `cde1e7e5e0cd7134f88a7f78dbeec614976c5090`.
 - `git rev-parse origin/main:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md` → `a2e31ffcc7ccb76832c87331391c689def639590`.
-- `git show ee69c3614e4b8451644e8b362cde673462c6781b:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md | sed -n 1p` → `# B20 DESIGN PACKET V2`.
+- `git show cde1e7e5e0cd7134f88a7f78dbeec614976c5090:research/prophet_v4/r6_program/wave1/B20_DESIGN_PACKET_V1_2026-09-23.md | sed -n 1p` → `# B20 DESIGN PACKET V2`.
 - `grep -o -E 'data-availability="[A-Z_]+"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → seven lines: `APPROACHING_ENTRY`, `ENTRY_OPEN`, `INVALIDATED`, `NOT_READY`, `RAN_DONT_CHASE`, `UNAVAILABLE_DATA`, `WAIT_PULLBACK`.
 - `grep -o -E 'data-state="(fresh|missing|stale|corrected|loading|error)"' mockups/prophet_workspace/b20_1_fixture.html | sort -u` → six evidence states including separate `stale` and `corrected` instances.
-- `grep -Ec 'class="mx-ladder mx-ladder--board' mockups/prophet_workspace/b20_1_fixture.html` → `2`; `grep -c -E 'mx-ladder[^>]*>[^<]*<[^>]*skel' mockups/prophet_workspace/b20_1_fixture.html` → `1`; the loading cells are children of the second ladder.
+- `grep -Ec 'class="mx-ladder mx-ladder--board' mockups/prophet_workspace/b20_1_fixture.html` → `2`; the Python line-window audit over the second ladder records 7 lines containing `.skel`, with loading cells inside `.mx-cell` children; the loading ladder therefore passes structurally rather than by pretending intervening markup is absent.
 - `grep -c -F 'Your change did not save. Try again.' mockups/prophet_workspace/b20_1_fixture.html` → `1`; `grep -c -F '您的更改未保存。请重试。' mockups/prophet_workspace/b20_1_fixture.html` → `1`.
 - `grep -c -E 'mx-ladder-gap|mx-cell--term|data-absent="1"' mockups/prophet_workspace/b20_1_fixture.html` → `6`.
-- Packet-pair audit (single Python command over §8.1) → `pairs=21 missing=0`: every `/`-separated EN/ZH pair occurs verbatim in the fixture.
+- Packet-pair audit (single Python command over §8.1 plus the mandatory first-visit twin) → `pairs=22 missing=0`; HTML entity decoding yields byte-identical visible twins for `<list>`, `<date time>`, and `<T>`.
 - `python3 - <<'PY'` HTML parser audit (`HTMLParser.feed`/`.close`) → `HTML parser OK`; duplicate-ID audit → no output.
 - `grep -n -E '\.mx-(vh|sec|callout|disc)|class="[^"]*mx-(vh|sec|callout|disc)' mockups/prophet_workspace/b20_1_fixture.html` → no hits, exit 1.
 - `python3 scripts/check_design_system.py --mode report --root . 2>&1 | tail -n 3` → three pre-existing `templates/winner_health.html.j2` findings (`:1015`, `:397`, `:411`); exit 0, report-only.
@@ -415,10 +415,11 @@ The fixture exposes only two controls: the theme control writes `document.docume
 - `grep -n 'title="' mockups/prophet_workspace/b20_1_fixture.html` → no hits, exit 1 (`grep -c` prints `0`).
 - `diff <(sed -n '/^```css$/,/^```$/p' research/prophet_v4/r6_program/wave3/B20_1_COMPONENT_SPEC_2026-09-24.md | sed '1d;$d') <(sed -n '/<style>/,/<\/style>/p' mockups/prophet_workspace/b20_1_fixture.html | sed '1d;$d')` → empty, exit 0.
 - Static audit → 10/10 required fixture blocks; watch idle/pending/saved/failed/unwatched/local-only/disabled plus exact watch-failure twins present; `pw-ladder` count 0; one `/us_track_record.html` link.
-- RED-first pytest is ruled out by the ruling’s scope: this design-only unit changes a research specification and mockup, no production behavior or test-owned module.
+- RED-first static audits are recorded against the previous head; pytest is ruled out by the ruling’s scope because this design-only unit changes a research specification and mockup, not a production behavior or test-owned module.
+- Browser evidence receipt `mockups/evidence/b20-1-component-fixture/EVIDENCE.yml` owns `templates/theme.css` through `mockups/evidence/b20-1-component-fixture/manifest.json`; the latter records eight captured fixture cells — dark/light × EN/ZH × 1440/390 — at the head carrying this receipt.
 
 ## GAPS
 
 - No production route, template, payload, data owner, permission, chart, or route implementation is added.
-- B16 visual captures and comprehension tests remain outside this design-spec-first unit.
+- B20 comprehension tests and authenticated production captures remain outside this design-spec-first unit; the committed fixture receipt supplies the required static-surface visual matrix for the merged `templates/theme.css` bytes.
 - The fixture is renderable static evidence, not an authenticated production screenshot.

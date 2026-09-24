@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - mockups/prophet_workspace/b20_1_fixture.html
+  - research/prophet_v4/r6_program/wave3/B20_1_COMPONENT_SPEC_2026-09-24.md
+  - templates/theme.css
+manifest: mockups/evidence/b20-1-component-fixture/manifest.json
