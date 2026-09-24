@@ -82,33 +82,41 @@ CLASSIFICATIONS = (
 # scan; both are exercised by the test suite.
 
 
-# Whitelist of keys the producer is allowed to read from a single thesis
-# row (R6 — A7 contract is STRUCTURAL). Any key outside this set must NOT
-# be accessed; the loader returns None for that row and the test suite
-# monkeypatches `dict.__getitem__` to fail on access.
+# Whitelist of keys the producer is allowed to READ from a single thesis
+# row (R6 — A7 contract is STRUCTURAL). The producer may encounter rows
+# carrying additional fields (lean, conviction, entry_levels, outcome,
+# realized, subject, regime, horizon_d, scored_at, ... — all real
+# thesis.jsonl metadata); it must NOT reject those rows. It must only
+# READ the whitelisted fields. The test suite monkeypatches
+# `dict.__getitem__` to fail on access of any non-whitelisted key so the
+# structural guarantee is held at every call site (R6 round-3 mandated
+# test).
 _THESIS_ROW_KEYS = frozenset({
     "id", "status", "state_asof", "logged_at", "falsifier", "check_by",
 })
 
 
 def _load_theses_row(obj: dict) -> dict | None:
-    """A7 load-time key gate (R6): the producer reads ONLY the whitelisted
+    """A7 load-time read gate (R6): the producer reads ONLY the whitelisted
     keys (`_THESIS_ROW_KEYS`) from a thesis row. Any thesis whose `status`
-    is not `open`, whose `falsifier.text` is absent, or whose read keys
-    fall outside the whitelist is dropped. The whitelist is a CLOSED
-    set — the producer must NEVER widen this list without a Meta-CEO
-    ruling. The function returns a flat dict of normalised fields the
-    caller can pass straight to the row builder; the original `obj` is
-    never held by the producer past this call."""
+    is not `open` or whose `falsifier.text` is absent is dropped. A thesis
+    carrying additional fields (`lean`, `entry_levels`, `conviction`,
+    `outcome`, `realized`, `subject`, `regime`, ...) is ACCEPTED — the
+    producer simply does not READ those fields. The whitelist is a CLOSED
+    set for READS — the producer must NEVER widen this list without a
+    Meta-CEO ruling. The function returns a flat dict of normalised
+    fields the caller can pass straight to the row builder; the
+    original `obj` is never held by the producer past this call."""
     if not isinstance(obj, dict):
         return None
     if obj.get("status") != "open":
         return None
-    # The whitelist check: any unknown top-level key means the upstream
-    # artifact has added a directional field we do NOT consume — refuse
-    # the row (the test suite proves we never widen the whitelist).
-    if any(k not in _THESIS_ROW_KEYS for k in obj.keys()):
-        return None
+    # Read-only access via `obj.get(...)` — the test suite's structural
+    # monkey-patch on `dict.__getitem__` fails on any access of a
+    # non-whitelisted key (see test_research_watch_loader_does_not_read_a7_keys).
+    # Additional real-schema keys on the row (lean, conviction, ...) are
+    # IGNORED — we never widen the read set, but we never reject the row
+    # for carrying them either. This is the structural A7 contract.
     falsifier = obj.get("falsifier") or {}
     if not isinstance(falsifier, dict):
         return None
@@ -131,17 +139,18 @@ def _load_theses_row(obj: dict) -> dict | None:
     }
 
 
-# Plain-language ZH mirror for an OPEN-condition row. The condition text is
-# English (theses.jsonl is EN-only); the producer never machine-translates
-# it. The ZH field surfaces ONE plain-word ZH sentence that names the row's
-# intent — never the EN text, never an "（条件原文照录如下）" prefix (the
-# previous copy embedded the EN condition into the ZH field and broke the
-# plain-language law / BLOCKER 3 / MAJOR-minor 7). The same row renders the
-# EN condition in its own EN field; the ZH field is a glance-tier ZH mirror.
-_RESEARCH_WATCH_ZH_FRAMES = (
-    "正在观察这一条件，留意后续变化。",
-    "对这一条件保持关注，等待复核。",
-)
+# Plain-language ZH disclosure for an OPEN-condition row. The condition
+# text is English (theses.jsonl is EN-only); the producer never
+# machine-translates it (gate 8 / R9). The ZH field surfaces a
+# disclosed-null phrase that tells the reader the original condition is
+# in English — never a fabricated ZH mirror of the EN condition, never
+# a boilerplate frame ("正在观察这一条件，留意后续变化。") that hides what
+# the row actually says. MAJOR 7 round 3: the prior boilerplate was
+# content-free and gave a ZH-only reader nothing; gate 8's honest route
+# is a disclosed null the consumer can render with `.mx-empty` +
+# `.mx-empty-why`.
+_RESEARCH_WATCH_ZH_DISCLOSURE = "原文为英文条件。"
+_RESEARCH_WATCH_ZH_DISCLOSURE_WHY = "观察条件以英文记录，此栏不提供中文译文。"
 
 # Per-row freshness budgets — one US session ≈ 24h × weekday window. Premarket
 # reading windows are narrow (intraday-fastpath runs */30 11-21 UTC; a weekday
@@ -151,19 +160,20 @@ _CONTEXT_PLANE_MAX_AGE = 1440
 _RESEARCH_WATCH_MAX_AGE = 1440 * 10  # 10 US sessions; older -> STALE block
 
 # Owner-page anchors verified against templates/_navlinks.html.j2 on
-# origin/main. Each plane maps to ONE owner page (DEC item 8 §A4 — one per
-# plane; the international row folds both, see _owner_links_block below).
-# `macro.html` is generated by scripts/build_site.py:7702 (no .j2 template);
-# the other four are .j2-templated pages written by build_china.py,
-# build_hk.py, build_bonds.py and build_commodities.py respectively. The
-# resolution helper checks both shapes; macro.html is whitelisted because
-# it is a known generated page (no template) but never appears as a .j2.
+# origin/main. R10 round-2 merged dollar + credit onto a single
+# bonds.html row ("Rates & credit dashboard" -> bonds.html) and
+# collapsed international onto a single "China & Hong Kong" row
+# (-> china.html, hk.html is not emitted — the international context
+# plane row already attributes CN/HK). The plane keys here are the
+# LOGICAL planes the consumer sees (rates, dollar, credit, commodity,
+# international) — `_owner_links_block` collapses the resolved hrefs
+# via the seen_hrefs set so two logical planes mapping to the same
+# href never produce duplicate rows.
 _OWNER_PAGE_BY_PLANE = {
     "rates": "macro.html",
     "dollar": "bonds.html",
-    "credit": "bonds.html",
     "commodity": "commodities.html",
-    "international": "china.html",  # hk.html is a sub-link below
+    "international": "china.html",  # R10: hk.html not emitted; international row already attributes CN/HK
 }
 
 # Reference registry anchor map for the owner_links kind=reference rows.
@@ -1004,18 +1014,21 @@ def _row_age_phrase_en_zh(age_minutes: int | None) -> tuple[str, str]:
     return f"Last updated {age_en} ago.", f"最近更新于{age_zh}前。"
 
 
-def _safe_zh_mirror(cond_text: str) -> str:
-    """Build the ZH mirror of an OPEN-condition row. The condition text is
-    English (theses.jsonl is EN-only); the ZH field surfaces a single ZH
-    framing sentence that names the row's intent — NEVER the EN text, never
-    a prefix that embeds the EN condition into the ZH field (BLOCKER 3 /
-    plain-language law). The framing is picked deterministically by the
-    hash of the condition string so the same row always reads the same ZH
-    frame, but the framing itself is ZH only."""
+def _safe_zh_mirror(cond_text: str) -> tuple[str, str]:
+    """Build the disclosed-null ZH mirror of an OPEN-condition row. The
+    condition text is English (theses.jsonl is EN-only); the producer
+    never machine-translates it. The ZH field surfaces a disclosed-null
+    phrase naming that the original is in English — the consumer
+    renders this with `.mx-empty` + `.mx-empty-why`. MAJOR 7 round 3:
+    the prior code emitted two content-free boilerplate frames
+    ("正在观察这一条件...") that hid what the row actually said; gate 8's
+    honest route is a disclosed null that names its own reason."""
     if not cond_text:
-        return ""
-    pick = int(hashlib.sha256(cond_text.encode("utf-8")).hexdigest(), 16) % len(_RESEARCH_WATCH_ZH_FRAMES)
-    return _RESEARCH_WATCH_ZH_FRAMES[pick]
+        return ("", "")
+    return (
+        _RESEARCH_WATCH_ZH_DISCLOSURE,
+        _RESEARCH_WATCH_ZH_DISCLOSURE_WHY,
+    )
 
 
 def _context_planes_row(
@@ -1106,12 +1119,32 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         # owner label itself may carry extremeness copy ("at a 5y extreme"),
         # which we pass through unchanged (the producer never invents the
         # extremeness phrase — it surfaces the owner's own plain words).
+        #
+        # R11 (MAJOR 2 round 3): rates copy is two to three sentences with
+        # terminal periods and no run-on. First sentence = owner-rendered
+        # label (regime + direction). Second sentence = yield-curve phrase
+        # when present. Third sentence = the watch phrase when a turn
+        # watch is on. The watch sentence fires REGARDLESS of whether a
+        # yield-curve phrase is present (R11 mandated: "Under watch —
+        # fresh extremes being tracked." must ship even when a yield-curve
+        # label exists).
         read_en_parts: list[str] = []
         read_zh_parts: list[str] = []
         if rates_label.get("en"):
-            read_en_parts.append(str(rates_label["en"]))
+            # Ensure the first sentence ends with a period so the second
+            # sentence starts cleanly (R11: no run-on). The owner label
+            # often arrives without a trailing period — we add one if
+            # missing. This was the prior bug: the first sentence ran
+            # straight into "Yield curve:" with no sentence break.
+            first_en = str(rates_label["en"]).rstrip()
+            if not first_en.endswith((".", "!", "?")):
+                first_en = first_en + "."
+            read_en_parts.append(first_en)
         if rates_label.get("zh"):
-            read_zh_parts.append(str(rates_label["zh"]))
+            first_zh = str(rates_label["zh"]).rstrip()
+            if not first_zh.endswith(("。", "！", "？")):
+                first_zh = first_zh + "。"
+            read_zh_parts.append(first_zh)
         if yc_label_en_str:
             # Owner-rendered plain words; no percentiles, no slope numbers.
             read_en_parts.append(f"Yield curve: {yc_label_en_str}.")
@@ -1119,24 +1152,32 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
                 read_zh_parts.append(f"收益率曲线：{yc_label_zh_str}。")
             else:
                 read_zh_parts.append("收益率曲线：参见英文标注。")
-        if rates_turn_watch and rates_turn_watch != "none" and not yc_label_en_str:
-            # Plain-word "watch" phrase; never the percentile itself. Only
-            # surface when there is NO yield-curve phrase so the row stays
-            # at two sentences (R11: no run-on, no stray spaces).
+        if rates_turn_watch and rates_turn_watch != "none":
+            # Plain-word "watch" phrase; never the percentile itself.
+            # R11 (round 3): ships REGARDLESS of whether a yield-curve
+            # phrase is present — the prior code suppressed it whenever
+            # yc_label_en_str was truthy.
             read_en_parts.append("Under watch — fresh extremes being tracked.")
             read_zh_parts.append("正在观察——正在跟踪新的极值。")
-        # R11: rates copy is two sentences max with no run-on. The first
-        # sentence carries the owner-rendered label (regime + direction).
-        # The second sentence carries the yield-curve phrase OR the
-        # turn-watch phrase — never both. Joined with a single space;
-        # ZH fields use a full-width 。 separator (no ASCII spaces around
-        # clauses; the ZH field is one glance-tier line).
+        # R11: rates copy is at most three sentences. Joined with a single
+        # space; ZH fields use the full-width 。 that each part already
+        # carries (no ASCII spaces around clauses; the ZH field is one
+        # glance-tier line).
         read_en_str = " ".join(p for p in read_en_parts if p).strip()
         read_zh_str = "".join(p for p in read_zh_parts if p).strip()
         rates_state = _context_planes_row(
             "rates",
             label_en=rates_label.get("en") or rates_regime_en,
-            label_zh=rates_label.get("zh") or (rates_regime_en and _RATES_REGIME_ZH.get(rates_regime_en)),
+            # MINOR 10 round 3: an unmapped regime surfaces the literal
+            # "未知" rather than None (gate 8 / R9: a ZH field must never
+            # be silently null; the literal "未知" is the disclosed-null
+            # for an unmapped owner value). The EN field already shows
+            # the raw regime slug — the ZH field is its honest mirror.
+            label_zh=(
+                rates_label.get("zh")
+                or (_RATES_REGIME_ZH.get(rates_regime_en) if rates_regime_en else None)
+                or "未知"
+            ),
             read_en=read_en_str or None,
             read_zh=read_zh_str or None,
             as_of=transmission_root_asof,
@@ -1242,9 +1283,14 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         if c_regime_pair is not None:
             c_label_en, c_label_zh = c_regime_pair
         else:
-            # Unmapped regime: surface the EN, leave ZH null with a disclosure.
-            c_label_en = c_regime
-            c_label_zh = None
+            # MINOR 10 round 3: unmapped commodity regime — never the raw
+            # slug in the EN field (gate 8: no raw slugs in a glance-tier
+            # block). The producer surfaces a generic plain-word EN/ZH
+            # pair instead; the row still carries the regime via
+            # `state_reason_en/zh` so the owner can debug, but the
+            # glance-tier label is generic.
+            c_label_en = "Commodity regime"
+            c_label_zh = "商品状态"
         c_favored = commodity.get("favored") or []
         c_breadth = commodity.get("breadth") or {}
         c_breadth_n = c_breadth.get("n_members")
@@ -1255,7 +1301,12 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
             breadth_en = f"{c_breadth_up}/{c_breadth_n} members trending up."
             breadth_zh = f"{c_breadth_up}/{c_breadth_n} 个品种趋势向上。"
         favored_en_list = [str(x) for x in c_favored if x]
-        favored_en = "、".join(favored_en_list) if favored_en_list else None
+        # MINOR 9 round 3: EN copy uses an ASCII comma + space separator
+        # (e.g. "Copper, Oil · WTI, Silver"), NOT the CJK enumeration
+        # comma "、" — a plain-word EN sentence cannot carry CJK
+        # punctuation. The ZH side keeps "、" because that is the
+        # canonical CJK enumeration comma.
+        favored_en = ", ".join(favored_en_list) if favored_en_list else None
         # Map EN commodity names to ZH (R9); unknown names are OMITTED from
         # the ZH list (a missing ZH label must NOT copy the EN token into
         # the ZH field).
@@ -1306,14 +1357,21 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
 
     # international — China then HK market_state summaries. Each contributes
     # one row keyed under plane="international" with both markets folded in.
-    intl_rows: list[dict] = []
+    # The row is built from whichever halves are PRESENT (R5 round-3); when
+    # BOTH files are absent, we emit an UNAVAILABLE row at the same level as
+    # rates/dollar/credit/commodity (BLOCKER 3 round-3) — the intl pipeline
+    # exists; both files just aren't there.
+    cn: dict | None = None
+    hk: dict | None = None
     cn_present = hk_present = False
-    for path in ("china_market_state.json", "hk_market_state.json"):
-        label = "china" if "china" in path else "hk"
-        d = _load_committed(site, data_dir, path, path.replace(".json", "/latest.json"))
+    for label, path in (
+        ("china", ("china_market_state.json", "china_market_state/latest.json")),
+        ("hk", ("hk_market_state.json", "hk_market_state/latest.json")),
+    ):
+        d = _load_committed(site, data_dir, *path)
         if isinstance(d, dict):
             d_asof, d_precision = _norm_clock(d.get("asof"))
-            intl_rows.append({
+            entry = {
                 "label": label,
                 "asof": d_asof,
                 "asof_precision": d_precision,
@@ -1323,144 +1381,136 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
                 "posture_zh": d.get("posture_zh"),
                 "headline_en": d.get("headline_en"),
                 "headline_zh": d.get("headline_zh"),
-            })
+            }
             if label == "china":
+                cn = entry
                 cn_present = True
             else:
+                hk = entry
                 hk_present = True
-        # NOTE: when BOTH intl files are absent the producer surfaces an
-        # UNAVAILABLE row (the intl pipeline exists; both files just aren't
-        # there). R5 covers the asymmetric case where ONE file is missing —
-        # the row is then built from the PRESENT half only. When zero
-        # halves are present we drop the intl_rows list entirely below
-        # and emit a UNAVAILABLE row via the same `_context_planes_row` path
-        # the other planes use.
-    if intl_rows:
-        cn = intl_rows[0]
-        hk = intl_rows[1] if len(intl_rows) > 1 else {"label": "hk", "asof": None, "asof_precision": "day"}
-        # When BOTH intl files are missing the row degrades to UNAVAILABLE
-        # directly — the intl pipeline exists; both files just aren't there
-        # (matches the transmission/commodity "missing owner file" semantic).
-        if not cn_present and not hk_present:
-            rows.append(_context_planes_row(
-                "international",
-                label_en=None, label_zh=None,
-                read_en=None, read_zh=None,
-                as_of=None,
-                source_ref="data/china_market_state/latest.json + data/hk_market_state/latest.json",
-                generated_at=generated_at,
-                covered=True,
-                not_covered_reason_en=_UNAVAILABLE_DEFAULT_EN,
-                not_covered_reason_zh=_UNAVAILABLE_DEFAULT_ZH,
-            ))
+    # BLOCKER 3 (round 3): both intl files absent → emit an UNAVAILABLE row
+    # at the same level as the other planes (rather than skipping the row
+    # entirely and letting the block silently read CURRENT). This matches
+    # the transmission/commodity "missing owner file" semantic: the
+    # pipeline exists, the files just aren't there.
+    if not cn_present and not hk_present:
+        rows.append(_context_planes_row(
+            "international",
+            label_en=None, label_zh=None,
+            read_en=None, read_zh=None,
+            as_of=None,
+            source_ref="data/china_market_state/latest.json + data/hk_market_state/latest.json",
+            generated_at=generated_at,
+            covered=True,
+            not_covered_reason_en=_UNAVAILABLE_DEFAULT_EN,
+            not_covered_reason_zh=_UNAVAILABLE_DEFAULT_ZH,
+        ))
+    else:
+        # R5 round-3: per-row per-market state — the row is built from
+        # whichever owner file is PRESENT. If one file is missing, the
+        # row's clock comes from the present file only — never from a
+        # phantom as_of the producer invents. cn/hk are dict-keyed
+        # (BLOCKER 2 round 3) so the mirror case (CN missing / HK present)
+        # surfaces HK's clock, label and headline rather than silently
+        # swallowing it.
+        present = cn if cn_present else hk
+        missing = hk if cn_present else cn
+        present_iso = present.get("asof") if present else None
+        present_precision = present.get("asof_precision") if present else None
+        present_label_en = present.get("label_en") if present else None
+        present_label_zh = present.get("label_zh") if present else None
+        # Build per-market attribution phrases (each prefixed with its
+        # market name so the reader can tell which sentence is which).
+        # Headline is the OWNER's full sentence — never the truncated
+        # label + posture pair (which duplicated each other in the real
+        # artifact: the committed china_market_state ships label =
+        # "Risk-off" and posture = "Risk-off" verbatim, making the row
+        # redundant).
+        cn_phrase_en = (
+            f"China — {cn.get('label_en') or '—'}; posture {cn.get('posture_en') or '—'}."
+            if (cn_present and cn.get("label_en")) else None
+        )
+        hk_phrase_en = (
+            f"Hong Kong — {hk.get('label_en') or '—'}; posture {hk.get('posture_en') or '—'}."
+            if (hk_present and hk.get("label_en")) else None
+        )
+        cn_phrase_zh = (
+            f"中国——{cn.get('label_zh') or '—'}；姿态 {cn.get('posture_zh') or '—'}。"
+            if (cn_present and cn.get("label_zh")) else None
+        )
+        hk_phrase_zh = (
+            f"香港——{hk.get('label_zh') or '—'}；姿态 {hk.get('posture_zh') or '—'}。"
+            if (hk_present and hk.get("label_zh")) else None
+        )
+        cn_headline_en = (
+            f"China — {cn.get('headline_en')}"
+            if (cn_present and cn.get("headline_en")) else cn_phrase_en
+        )
+        hk_headline_en = (
+            f"Hong Kong — {hk.get('headline_en')}"
+            if (hk_present and hk.get("headline_en")) else hk_phrase_en
+        )
+        cn_headline_zh = (
+            f"中国——{cn.get('headline_zh')}"
+            if (cn_present and cn.get("headline_zh")) else cn_phrase_zh
+        )
+        hk_headline_zh = (
+            f"香港——{hk.get('headline_zh')}"
+            if (hk_present and hk.get("headline_zh")) else hk_phrase_zh
+        )
+        # R5 missing-owner disclosure: when one of the two files is
+        # missing, the missing market's headline slot is REPLACED with a
+        # plain-word disclosure naming the absent half — never a phantom
+        # sentence borrowing from the present market's clock. The
+        # missing market identifier names which half is absent (CN/HK),
+        # not the present market.
+        missing_en = missing_zh = None
+        if not cn_present:
+            missing_en = "Mainland read not available this morning."
+            missing_zh = "今晨暂无A股读数。"
+        elif not hk_present:
+            missing_en = "Hong Kong read not available this morning."
+            missing_zh = "今晨暂无港股读数。"
+        if missing_en is not None:
+            # Always attribute the disclosure to the MISSING market,
+            # never the present one (BLOCKER 2 round 3).
+            if cn_present:
+                hk_headline_en = missing_en
+                hk_headline_zh = missing_zh
+            else:
+                cn_headline_en = missing_en
+                cn_headline_zh = missing_zh
+        # Two sentences joined with a full-width semicolon (a plain
+        # sentence separator in ZH, never a pipe — MINOR 12 round 3).
+        # When both halves are present, the ZH separator is 「；」; the EN
+        # separator is the matching " — " so the consumer can split on a
+        # sentence boundary, not a pipe.
+        if missing_en is not None:
+            read_en = " — ".join(p for p in (cn_headline_en, hk_headline_en) if p) or None
+            read_zh = "；".join(p for p in (cn_headline_zh, hk_headline_zh) if p) or None
         else:
-            # Per-row per-market state (R5): the row is built from whichever
-            # owner file is PRESENT. If one file is missing, the row's clock
-            # comes from the present file only — never from a phantom as_of the
-            # producer invents. State and reasons are decided per-row, NOT via a
-            # post-hoc state override that re-writes what `_context_planes_row`
-            # already decided.
-            cn_state, cn_age = _row_state(cn.get("asof"), generated_at, precision=cn.get("asof_precision"))
-            hk_state, hk_age = _row_state(hk.get("asof"), generated_at, precision=hk.get("asof_precision"))
-            # Per-market attribution: china then HK, each prefixed with its market
-            # name so the reader can tell which sentence is which (BLOCKER 4:
-            # the previous code concatenated two byte-identical headlines into
-            # one sentence with no attribution — measured the committed artifact
-            # ships identical headline_en for both markets).
-            cn_phrase_en = (
-                f"China — {cn.get('label_en') or '—'}; posture {cn.get('posture_en') or '—'}."
-                if cn.get("label_en") else None
-            )
-            hk_phrase_en = (
-                f"Hong Kong — {hk.get('label_en') or '—'}; posture {hk.get('posture_en') or '—'}."
-                if hk.get("label_en") else None
-            )
-            cn_phrase_zh = (
-                f"中国——{cn.get('label_zh') or '—'}；姿态 {cn.get('posture_zh') or '—'}。"
-                if cn.get("label_zh") else None
-            )
-            hk_phrase_zh = (
-                f"香港——{hk.get('label_zh') or '—'}；姿态 {hk.get('posture_zh') or '—'}。"
-                if hk.get("label_zh") else None
-            )
-            # Headline is the OWNER's full sentence — never the truncated label
-            # + posture pair (which duplicated each other in the real artifact:
-            # the committed china_market_state ships label = "Risk-off" and
-            # posture = "Risk-off" verbatim, making the row redundant). Each
-            # market's headline is prefixed with its market name so the reader
-            # can attribute the prose (BLOCKER 4).
-            cn_headline_en = (
-                f"China — {cn.get('headline_en')}" if cn.get("headline_en") else cn_phrase_en
-            )
-            hk_headline_en = (
-                f"Hong Kong — {hk.get('headline_en')}" if hk.get("headline_en") else hk_phrase_en
-            )
-            cn_headline_zh = (
-                f"中国——{cn.get('headline_zh')}" if cn.get("headline_zh") else cn_phrase_zh
-            )
-            hk_headline_zh = (
-                f"香港——{hk.get('headline_zh')}" if hk.get("headline_zh") else hk_phrase_zh
-            )
-            # R5 missing-owner disclosure: when one of the two files is missing,
-            # the missing market's headline slot is REPLACED with a plain-word
-            # disclosure naming the absent half — never a phantom sentence
-            # borrowing from the present market's clock. The row's overall state
-            # is then decided from the present market's clock + the missing
-            # half's disclosed UNAVAILABLE copy.
-            missing_en = missing_zh = None
-            if not cn_present:
-                missing_en = "Mainland read not available this morning."
-                missing_zh = "今晨暂无A股读数。"
-            elif not hk_present:
-                missing_en = "Hong Kong read not available this morning."
-                missing_zh = "今晨暂无港股读数。"
-            if missing_en is not None:
-                if cn_present:
-                    # HK missing: keep CN sentence, replace HK slot with disclosure.
-                    hk_headline_en = missing_en
-                    hk_headline_zh = missing_zh
-                else:
-                    # CN missing: replace CN slot with disclosure, keep HK sentence.
-                    cn_headline_en = missing_en
-                    cn_headline_zh = missing_zh
-            # Two sentences joined with a hard separator; the row carries both
-            # markets' attribution, so the reader can tell which is which even
-            # when the underlying headlines are byte-identical.
-            read_en = " | ".join(p for p in (cn_headline_en, hk_headline_en) if p) or None
-            read_zh = " | ".join(p for p in (cn_headline_zh, hk_headline_zh) if p) or None
-            # R5 row clock: when one half is missing the row's clock is the
-            # PRESENT half's clock (the producer never invents an as_of). The
-            # row's state is decided from that clock via _context_planes_row.
-            present_iso = cn.get("asof") if cn_present else hk.get("asof")
-            present_precision = (
-                cn.get("asof_precision") if cn_present else hk.get("asof_precision")
-            )
-            present_label_en = (
-                cn.get("label_en") if cn_present else hk.get("label_en")
-            )
-            present_label_zh = (
-                cn.get("label_zh") if cn_present else hk.get("label_zh")
-            )
-            intl_row = _context_planes_row(
-                "international",
-                label_en=present_label_en,
-                label_zh=present_label_zh,
-                read_en=read_en,
-                read_zh=read_zh,
-                as_of=present_iso,
-                source_ref="data/china_market_state/latest.json + data/hk_market_state/latest.json",
-                generated_at=generated_at,
-                covered=bool(present_iso),
-                precision=present_precision,
-            )
-            # When one half is missing, the row carries a state_reason_en/zh
-            # naming the missing half in plain words (R5) — these keys are
-            # required on every non-CURRENT row so the consumer can render
-            # the missing-market disclosure alongside the present-market clock.
-            if missing_en is not None and intl_row["state"] != "CURRENT":
-                intl_row["state_reason_en"] = missing_en
-                intl_row["state_reason_zh"] = missing_zh
-            rows.append(intl_row)
+            read_en = " — ".join(p for p in (cn_headline_en, hk_headline_en) if p) or None
+            read_zh = "；".join(p for p in (cn_headline_zh, hk_headline_zh) if p) or None
+        intl_row = _context_planes_row(
+            "international",
+            label_en=present_label_en,
+            label_zh=present_label_zh,
+            read_en=read_en,
+            read_zh=read_zh,
+            as_of=present_iso,
+            source_ref="data/china_market_state/latest.json + data/hk_market_state/latest.json",
+            generated_at=generated_at,
+            covered=bool(present_iso),
+            precision=present_precision,
+        )
+        # When one half is missing, the row carries a state_reason_en/zh
+        # naming the missing half in plain words (R5) — these keys are
+        # required on every non-CURRENT row so the consumer can render
+        # the missing-market disclosure alongside the present-market clock.
+        if missing_en is not None and intl_row["state"] != "CURRENT":
+            intl_row["state_reason_en"] = missing_en
+            intl_row["state_reason_zh"] = missing_zh
+        rows.append(intl_row)
 
     # Block state: worst row state across all rows.
     block_state = _WorstOf([r["state"] for r in rows]) if rows else "UNAVAILABLE"
@@ -1498,9 +1548,16 @@ def _context_planes_block(site: Path, data_dir: Path, generated_at: str) -> dict
         "state": block_state,
         "source_ref": "see per-row source_ref",
         "source_owner": "multi-owner",
-        "source_as_of": newest_as_of if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
-        "source_as_of_precision": newest_precision if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
-        "age_minutes": newest_age if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
+        # R12 (MAJOR 1 round 3): block clock = the newest as_of among rows
+        # that carry one, REGARDLESS of the block state. The previous code
+        # nulled source_as_of whenever the worst row was NOT_COVERED /
+        # UNAVAILABLE — even when 4 of 5 rows carried fresh clocks. The
+        # truthful disclosure for a multi-owner summary is the NEWEST
+        # reading in the block (the block was last touched when this row
+        # was committed), with the worst row driving the state.
+        "source_as_of": newest_as_of,
+        "source_as_of_precision": newest_precision,
+        "age_minutes": newest_age,
         "max_age_minutes": _CONTEXT_PLANE_MAX_AGE,
         "classification": "owner_context_summary",
         "rows": rows,
@@ -1545,13 +1602,18 @@ def _WorstOf(states):
     return max(states, key=lambda s: _STATE_RANK.get(s, _UNKNOWN_STATE_RANK))
 
 
-def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict:
+def _research_watch_block(data_dir: Path, generated_at: str) -> dict:
     """Read the track-record / theses artifacts and surface at most 5 OPEN
     conditions. Words only — no direction, size, order, target or buy/sell.
     If the newest row is older than _RESEARCH_WATCH_MAX_AGE (10 US sessions
     ≈ 14 calendar days = 14400 minutes), the whole block is
     STALE_WITH_LAST_KNOWN with the dated reason
     "Last updated <YYYY-MM-DD> — showing the last known conditions."
+
+    R13 round 3: the unused `site` parameter was dropped (the research
+    watch reads only from `data_dir`; the legacy `site` argument
+    surfaced for shape parity with the other block builders is no
+    longer needed).
 
     R2 (BLOCKER 2, 2026-09-24): source_as_of comes from the DISPLAYED ROWS
     only. The previous code mixed in `track_record.json`'s top-level `as_of`
@@ -1606,9 +1668,11 @@ def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict
                 # never touched. The runtime regex is removed (R6) so
                 # benign owner prose ("long-dated", "long end", "long
                 # Treasury") is rendered verbatim.
+                cond_zh, cond_zh_why = _safe_zh_mirror(cond_text)
                 rows.append({
                     "condition_en": cond_text,
-                    "condition_zh": _safe_zh_mirror(cond_text),
+                    "condition_zh": cond_zh,
+                    "condition_zh_disclosed_why": cond_zh_why,
                     "since": since_iso,
                     "as_of": as_of_iso,
                     "source_ref": "data/master_brain/theses.jsonl",
@@ -1618,18 +1682,32 @@ def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict
                     newest_asof = as_of_iso
                     newest_asof_raw = logged_raw or since_raw
         # 2. track_record.json — calibration summary. Its `as_of` is NOT a
-        # block clock here (R2); we only surface the calibration_note pair
-        # as plain display copy when present.
+        # block clock here (R2); we surface ONLY a plain-word calibration
+        # note derived from its top-level `as_of` (the calibration summary's
+        # own "as-of" stamp, which tells the reader when the calibration
+        # itself was last compiled). The owner may ship a richer
+        # calibration_note with counts/stats ("12 leans scored, hit-rate
+        # 0.833, directional accuracy 0.583") — that copy carries the
+        # OWNER's jargon ("leans", counts, "hit-rate") and violates gate 8
+        # (R8: no counts, no jargon in a glance-tier block). We translate
+        # it down to the plain calibration-as-of phrase; never surface
+        # raw counts or untranslated stats.
         if track_path.exists():
             try:
                 track = json.loads(track_path.read_text(encoding="utf-8"))
                 if isinstance(track, dict):
-                    note_en = track.get("calibration_note")
-                    note_zh = track.get("calibration_note_zh")
-                    if isinstance(note_en, str) and note_en:
-                        calibration_note_en = note_en
-                    if isinstance(note_zh, str) and note_zh:
-                        calibration_note_zh = note_zh
+                    track_asof = track.get("as_of")
+                    track_asof_iso, _ = _norm_clock(track_asof)
+                    track_date = track_asof_iso[:10] if track_asof_iso else None
+                    if track_date:
+                        # Plain disclosure of the calibration summary's own
+                        # "as-of" stamp — never the owner's count-jargon.
+                        calibration_note_en = (
+                            f"Calibration summary covers through {track_date}."
+                        )
+                        calibration_note_zh = (
+                            f"校准汇总更新至 {track_date}。"
+                        )
             except Exception as exc:  # noqa: BLE001
                 log.debug("am_edition: track_record read failed (%s)", exc)
         # Cap at 5 most-recent conditions (newest first).
@@ -1702,9 +1780,12 @@ def _research_watch_block(site: Path, data_dir: Path, generated_at: str) -> dict
         "state": block_state,
         "source_ref": source_ref,
         "source_owner": "master_brain",
-        "source_as_of": newest_asof if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
-        "source_as_of_precision": newest_precision if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
-        "age_minutes": newest_age if block_state in ("CURRENT", "STALE_WITH_LAST_KNOWN") else None,
+        # R12 (MAJOR 1 round 3): block clock = newest as_of among rows that
+        # carry one, REGARDLESS of the block state. The truthful disclosure
+        # for an open-condition list is the NEWEST reading in the block.
+        "source_as_of": newest_asof,
+        "source_as_of_precision": newest_precision,
+        "age_minutes": newest_age,
         "max_age_minutes": _RESEARCH_WATCH_MAX_AGE,
         "classification": "owner_research_watch",
         "rows": rows,
@@ -1744,8 +1825,12 @@ def _resolve_reference_anchor(anchor: str, registry_raw: dict | None) -> str | N
 # them; new entries here MUST name the script that writes the page so the
 # guard is reviewable (DEC §6: "no second producer, a second JSON, or a
 # client-side re-render" — generated pages are owned by the listed script).
+# MINOR 13 round 3: the prior entry pinned a drifting line number
+# (`scripts/build_site.py:7702`) as the only justification — line numbers
+# shift on every edit, so the pin is meaningless. The script NAME is the
+# load-bearing review reference; verify by `git grep -n 'macro.html' scripts/build_site.py`.
 _KNOWN_GENERATED_PAGES = {
-    "macro.html": "scripts/build_site.py:7702",
+    "macro.html": "scripts/build_site.py",
 }
 
 
@@ -1776,6 +1861,11 @@ def _owner_links_block() -> dict:
     duplicate international sub-link (R10 — the international row already
     points at china.html which the product nav serves alongside HK; a
     second byte-identical row over-promised relative to its href).
+
+    R13 round 3: the unused `site`/`data_dir` parameters were dropped
+    (the static-link block reads only from `repo_root` + the
+    Reference registry; the legacy args surfaced for shape parity with
+    the other block builders are no longer needed).
     """
     repo_root = Path(__file__).resolve().parent.parent
     # §A4 mandates one owner page per plane. R10 merges dollar + credit
@@ -1970,7 +2060,7 @@ def build_payload(site: Path, data_dir: Path, *, now: datetime | None = None, li
     # fail-open (returns an UNAVAILABLE/NOT_COVERED block with a plain-word
     # reason rather than removing the block) so the JSON render never breaks.
     blocks.append(_context_planes_block(site, data_dir, generated_at))
-    blocks.append(_research_watch_block(site, data_dir, generated_at))
+    blocks.append(_research_watch_block(data_dir, generated_at))
     blocks.append(_owner_links_block())
 
     feasibility, feasibility_cause_internal, feasibility_cause_en, feasibility_cause_zh = _feasibility(
