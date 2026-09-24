@@ -1,23 +1,46 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-23T10:37:28Z",
+  "produced_at": "2026-09-23T22:04:05Z",
   "as_of": "2026-09-23",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 18,
-    "passed": 18,
-    "quarantined": 0,
-    "quarantined_policy": 0,
+    "items": 17,
+    "passed": 16,
+    "quarantined": 1,
+    "quarantined_policy": 1,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
-  "reasons_histogram": {},
-  "quarantined": [],
+  "reasons_histogram": {
+    "near_dup": 1
+  },
+  "quarantined": [
+    {
+      "id": "post-cici-003",
+      "account": "cici",
+      "slot": "D1-S3",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "Claims averaging 203k a week this month, 10.7% below a year ago.",
+      "class": "policy",
+      "reasons": [
+        "near_dup:post-meagan-013"
+      ]
+    }
+  ],
   "passed": [
+    {
+      "id": "post-flagship-015",
+      "account": "flagship",
+      "slot": "D1-S15",
+      "type": "receipt",
+      "cashtag": "$WING",
+      "headline": "$WING up four straight sessions, +6.1% today."
+    },
     {
       "id": "post-flagship-020",
       "account": "flagship",
@@ -27,43 +50,51 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-029",
+      "id": "post-conf-flagship-003",
       "account": "flagship",
-      "slot": "D1-S29",
-      "type": "watchlist",
-      "cashtag": "$FIX",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-031",
-      "account": "flagship",
-      "slot": "D1-S31",
-      "type": "watchlist",
-      "cashtag": "$JNJ",
-      "headline": ""
+      "slot": "CONF-03",
+      "type": "signal",
+      "cashtag": "$CMI",
+      "headline": "$CMI just lined up a pattern we track."
     },
     {
       "id": "post-theme-003",
       "account": "flagship",
       "slot": "D1-S2",
       "type": "theme_list",
-      "cashtag": "$VKTX",
-      "headline": "Healthcare & Biotech ripping, +1.6% avg on Tuesday"
+      "cashtag": "$EXK",
+      "headline": "Commodities Metals selling off, -3.5% avg today"
     },
     {
-      "id": "post-housepick-002",
+      "id": "post-congress-001",
       "account": "flagship",
-      "slot": "D1-S23",
-      "type": "watchlist",
-      "cashtag": "$ACRE",
+      "slot": "D1-S9",
+      "type": "congress",
+      "cashtag": "$AAPL",
       "headline": ""
     },
     {
-      "id": "post-founder-027",
+      "id": "post-insider-008",
+      "account": "flagship",
+      "slot": "D1-S23",
+      "type": "insider",
+      "cashtag": "$CTRI",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-015",
       "account": "founder",
-      "slot": "D1-S27",
+      "slot": "D1-S15",
       "type": "signal",
       "cashtag": "$COHU",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-016",
+      "account": "founder",
+      "slot": "D1-S16",
+      "type": "macro",
+      "cashtag": "",
       "headline": ""
     },
     {
@@ -71,71 +102,47 @@
       "account": "founder",
       "slot": "D1-S19",
       "type": "congress",
+      "cashtag": "$ABBV",
+      "headline": ""
+    },
+    {
+      "id": "post-housepick-001",
+      "account": "founder",
+      "slot": "D1-S22",
+      "type": "watchlist",
+      "cashtag": "$ADEA",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-013",
+      "account": "meagan",
+      "slot": "D1-S13",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "Jobless claims are averaging 203k a week this month, 10.7% below a year ago."
+    },
+    {
+      "id": "post-meagan-050",
+      "account": "meagan",
+      "slot": "D1-S50",
+      "type": "chart",
+      "cashtag": "$IPGP",
+      "headline": ""
+    },
+    {
+      "id": "post-congress-003",
+      "account": "meagan",
+      "slot": "D1-S6",
+      "type": "congress",
       "cashtag": "$GOOGL",
       "headline": ""
     },
     {
-      "id": "post-meagan-022",
-      "account": "meagan",
-      "slot": "D1-S22",
-      "type": "chart",
-      "cashtag": "$CNM",
-      "headline": "$CNM back above 46.3, the level that capped every rally since June."
-    },
-    {
-      "id": "post-meagan-023",
-      "account": "meagan",
-      "slot": "D1-S23",
-      "type": "chart",
-      "cashtag": "$FIX",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-051",
-      "account": "meagan",
-      "slot": "D1-S51",
-      "type": "chart",
-      "cashtag": "$AIZ",
-      "headline": ""
-    },
-    {
-      "id": "post-theme-004",
-      "account": "meagan",
-      "slot": "D1-S5",
-      "type": "theme_list",
-      "cashtag": "$EVER",
-      "headline": "FinTech selling off, -1.3% avg on Tuesday"
-    },
-    {
-      "id": "post-sophia-012",
+      "id": "post-sophia-055",
       "account": "sophia",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "Jobless claims averaging 203k a week this month, 13.1% below a year ago."
-    },
-    {
-      "id": "post-kelly-012",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-016",
-      "account": "kelly",
-      "slot": "D1-S16",
-      "type": "chart",
-      "cashtag": "$ALGT",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-017",
-      "account": "kelly",
-      "slot": "D1-S17",
-      "type": "chart",
-      "cashtag": "$PLAB",
+      "slot": "D1-S55",
+      "type": "watchlist",
+      "cashtag": "$NCLH",
       "headline": ""
     },
     {
@@ -143,30 +150,22 @@
       "account": "kelly",
       "slot": "D1-S3",
       "type": "theme_list",
-      "cashtag": "$MPWR",
-      "headline": "Semiconductors ripping, +1.3% avg on Tuesday"
+      "cashtag": "$EOSE",
+      "headline": "Energy Renewable selling off, -1.5% avg today"
     },
     {
-      "id": "post-cici-003",
+      "id": "post-theme-006",
       "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "Claims are running 13.1% below a year ago while GDPNow tracks 5.1% growth."
-    },
-    {
-      "id": "post-cici-048",
-      "account": "cici",
-      "slot": "D1-S48",
-      "type": "chart",
-      "cashtag": "$ATR",
-      "headline": "Aptar, $ATR, back above 124 for the first time in two weeks."
+      "slot": "D1-S2",
+      "type": "theme_list",
+      "cashtag": "$SANA",
+      "headline": "Healthcare & Biotech selling off, -1.4% avg today"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 129,
-      "hits": 0,
+      "pairs_checked": 107,
+      "hits": 1,
       "shared_media_hits": 0
     },
     "cadence": {
@@ -193,7 +192,7 @@
         "ATO",
         "CARR",
         "CMS",
-        "GL",
+        "FIBK",
         "HBAN",
         "HUBG",
         "IART",
