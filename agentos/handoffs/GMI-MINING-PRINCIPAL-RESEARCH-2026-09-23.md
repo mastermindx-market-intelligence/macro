@@ -5,132 +5,82 @@ model: sol
 ended_because: checkpoint
 mission: >
   Principal-led Mining research, analysis and product planning before a mature Fable CEO
-  implementation package. Preserve incumbent GMI evidence/identity and F04 composition.
+  implementation package, preserving incumbent GMI identity/evidence and F04 composition.
 state_before: >
-  Canonical Passes 01-05 and parallel-Pass-05 reconciliation were recovered at
-  fa86dd4ed30ef6706bb75922255812d54cd19469. Specialty/by-product and supplier economics,
-  then corpus-level coverage reconciliation, were the next research dependencies.
+  Six canonical research passes and the coverage matrix were preserved at
+  bf552839eb69ba12b9e455edb8c4126f4d92de6b. Aluminium/energy was the next economic-regime gap.
 changed:
-  - path: research/mining/MINING_SPECIALTY_ENABLER_ECONOMICS_2026-09-23.md
-    what: "Pass 06: 5,998 words, eleven dossiers, sixteen primary-source records, ten economic views, five hypothetical cases, four persona workflows and 28 MS proposals."
-  - path: research/mining/MINING_COVERAGE_AND_DESIGN_FRONTIER_2026-09-23.md
-    what: "2,110-word principal six-pass coverage assessment, twelve domains, three gap classes, first-vertical sufficiency criteria and exact pre-design priorities."
-  - path: research/mining/check_specialty_research.py
-    what: "Standard-library local research arithmetic, document indexing and pedagogical incompatible-input examples; no product imports/network or investment output."
-  - path: research/mining/MINING_SPECIALTY_RESEARCH_CHECKS_2026-09-23.json
-    what: "Actual 58/58 PASS receipt with exact report, coverage and script digests."
   - path: agentos/handoffs/GMI-MINING-PRINCIPAL-RESEARCH-2026-09-23.md
-    what: "Same cumulative owner record replaces the in-turn frontier with verified research and bounded next actions."
+    what: "In-turn continuity before deeper aluminium primary-source and cash/contract reconciliation. No final Pass 07 artifact yet."
 verified:
-  - claim: "Current compatible protected procedure and expected carrier recovered."
-    command: "Protected master/INDEX and same-SHA required skills; exact PR/checkpoint reads."
-    result: "Mastermind a7d2b3049e5cdc523e91e61a6e9d70a1cb911157, Skillpack 1.0.1/bootstrap 1. #7795 Draft/unmerged. Action-scoped repository permission applies; no runtime state invented."
-  - claim: "All four new remote artifacts match the locally checked bytes."
-    command: "Sequential GitHub create_file, immutable fetch_file and comparison with locally calculated Git blob SHA-1."
-    result: "Report e2c3807f1a48f8430f9100bb019c0b66206e966e / 835fda608cf0d68af42969c602b119546866873d; coverage 60788b911d3a2f53205bd260db946579bada9d9a / 8362465637263cefad4dce2abaa45ab834351823; checker 2f2ec0f7c8223e4626a49941a744024ecacaada8 / f4b3af56fb54b0ef00967aef55e3081dec21ea77; receipt 9d7aa29de4b452bf3f4a25bd49e48a94234355b1 / 3c6e3249db56d7a62eb27a5737a93b6532dd1030."
-  - claim: "The new local research checks ran and passed."
-    command: "python /mnt/data/mining_research/check_specialty_research.py"
-    result: "58 total, 58 passed, zero failed. Receipt run_utc 2026-09-24T02:30:09.921797+00:00; research cutoff remains 2026-09-23. No earlier check suite rerun."
-  - claim: "Only research and the exact cumulative-record paths changed."
-    command: "GitHub list_pr_changed_filenames after publication."
-    result: "20 paths total: nineteen research reports/utilities/receipts and this exact Agent OS record. Prior Passes 01-05 unchanged."
+  - claim: "Current compatible protected procedure and exact original carrier recovered."
+    command: "Protected master/INDEX; same-SHA ACTIVE_EXECUTION, WEB_CEO_DELEGATION, COLD_START and CLOSEOUT reads; exact PR/checkpoint."
+    result: "Mastermind a7d2b3049e5cdc523e91e61a6e9d70a1cb911157, Skillpack 1.0.1/bootstrap 1. Blobs unchanged from preceding complete load. Macro #7795 open/draft/unmerged at bf552839eb69ba12b9e455edb8c4126f4d92de6b."
+  - claim: "GitHub file-write actions are exposed and repository reports push permission."
+    command: "Current update_file/create_file discovery and get_repo preflight."
+    result: "Research writes technically available; no inference about served model, runtime admission or production capability."
+  - claim: "Initial source comparisons identify distinct aluminium/energy economic mechanisms."
+    command: "Read Hydro Q2 2026 release, Century Q2 Form 10-Q, Novelis Q1 FY2027 release and Constellium Q2 release."
+    result: "Hydro upstream/metal/energy results diverge; Century contracts have market, cost-of-service and LME-linked terms; downstream reports separate metal-price timing from conversion and cash. These are research observations, not validated returns."
 unverified:
-  - claim: "The model, requirements or proposed first vertical is accepted or deployed."
-    what_would_verify: "Current-owner written design/plan acceptance, native source rights/retention and independently verified real-path/browser behavior."
-  - claim: "Minor-metal optionality is current economic entitlement or all supplier revenue is recurring."
-    what_would_verify: "Asset/product-specific recovery, payability, sales and contractual evidence; disclosed service/software revenue definitions."
-  - claim: "The source-grounded explanations validate a stock-return or causal model."
-    what_would_verify: "Dated expectation benchmarks and accepted investment/causal validation. None is claimed."
+  - claim: "Pass 07 findings have completed source/arithmetic verification or a report is published."
+    what_would_verify: "Finish primary-source checks, publish original synthesis and actual research-check receipt with exact readback."
+  - claim: "Mining design, source admission or product behavior is accepted or deployed."
+    what_would_verify: "Current-owner integration/rights/design/plan gates and required independent real-path proof."
 unresolved:
-  - "Bauxite-alumina-aluminium with energy contracts is the first remaining regime gap; nickel/cobalt/graphite/anode economics follow. Thermal-coal and selected alloy/long-tail differences remain scoped gaps."
-  - "Actual accessory assays/payability, finite-stock depletion, recovery investments, contract settlements, supplier customer economics and global cost/asset coverage remain incomplete."
-  - "Sangdong certification is an issuer-reported September event, not independent regulator evidence or measured steady-state output."
-  - "Epiroc printed page 9 was visually checked; page-10 screenshot failed and no page-10-only assertion is required. Umicore issuer-authored newswire and Weir issuer RNS were used, not host commentary."
-  - "Prior Antamina residuals/thresholds, Windfield accounting, qualification/settlements, full dilution and historical native expectations remain unclosed."
+  - "Power volume/price basis, price area, physical delivery, derivative settlement and collateral must remain separate. A long-term PPA is not evidence of a fixed price."
+  - "Aluminium stage cash/inventory bridges, acquired versus currently owned assets, downstream metal timing and recycling margin remain this tranche's active questions."
+  - "Prior Antamina accounting/thresholds, Windfield accounting, qualification/settlements, Paladin bridge, dilution and historical native expectations remain open."
+  - "Nickel/cobalt/graphite/anode, selected alloy/thermal-coal distinctions, global asset/cost coverage and source reuse/retention remain incomplete."
 next_actions:
-  - "Research contrasting bauxite-alumina-aluminium issuer/asset economics with energy-contract, purchased-feed, inventory and cash-flow boundaries; then close high-value nickel/cobalt/graphite/anode regime gaps."
-  - "Use the coverage matrix to select only cases that change the model; distinguish claim-specific unknowns, missing economic regimes and genuine design/release gates."
-  - "Then inspect current native GMI/identity/assertion/correction and Themes/F04 publication interfaces, consolidate overlapping requirements and prepare the written design/implementation plan. Do not invent parallel owners."
-  - "Keep the final Fable handoff, implementation, live baskets and release held until the relevant research, design, rights, custody and proof gates are met."
+  - "Continue primary aluminium-chain research and original synthesis in this turn, including energy-contract differences, physical versus financial protection, converter cash and acquisition-state boundaries."
+  - "Use the existing coverage matrix to update only the missing regime and preserve remaining high-value gaps. Do not repeat completed research."
+  - "Keep Fable dispatch, implementation, live constituents and release held; research publication is not acceptance."
 do_not_redo:
-  - "Do not replay raw tool history or broad repository archaeology. Use this frontier and the coverage companion."
-  - "Passes 01-06 need no repetition without a material new question, source change or contradiction; historical checks are not fresh current tests."
-  - "DO_NOT_PUBLISH_DUPLICATE remains: canonical Pass 05 blob 42c90b4634b4b408c014b7ccb335744adb79bf48; parallel local blob 587ee020adec174233c42ad987f531d767b7c0ea is excluded."
-  - "Healthcare #7787 scope correction remains settled; do not reopen, transfer or delete it."
-  - "No duplicate GMI identity/evidence/ThemeState, K3-D, F04, publication, runtime, queue or watcher owner."
-  - "Do not treat host geology as issuer exposure, mixed ounces as value, aftermarket as ARR, or certification as achieved nameplate output."
-  - "Do not request a mode switch merely from the Pro label; current documentation writes worked."
+  - "Preserve Passes 01-06 unchanged and treat their checks as historical, not rerun."
+  - "DO_NOT_PUBLISH_DUPLICATE: canonical P05 blob 42c90b4634b4b408c014b7ccb335744adb79bf48; parallel local blob 587ee020adec174233c42ad987f531d767b7c0ea remains excluded."
+  - "Do not reopen or transfer Healthcare #7787 or duplicate any GMI/F04/identity/evidence/publication/runtime owner."
+  - "Do not rehydrate whole tool histories, equate hedge value with current cash, or promote source dates into historical native retention."
 ---
 
-# Mining principal research — cumulative continuation after Pass 06
+# Mining cumulative working checkpoint — Pass 07 in progress
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
-MISSION_COMPLETE: false
-CAPABILITY_STATE: SPEC_ONLY
-
+MISSION_COMPLETE: false. This is an in-turn checkpoint, not a final Fable handoff or stop gate.
 Operation: `gmi-mining-principal-research-20260923-sol-001`.
-Carrier: Macro Draft/HOLD #7795 / `sol/mining-principal-research-20260923`.
-Protected procedure: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, v1.0.1/bootstrap 1.
-Original Macro interface baseline: `c4da107fe729e46b4d4036b3e0e290390315d0fd`, not current integration proof.
-Direct-work reason: PRINCIPAL_JUDGMENT. Current Chairman continuation authorizes this research and
-GitHub documentation scope. User-selected Pro does not attest hidden budgets or served identity.
+Carrier: Macro Draft/HOLD #7795, `sol/mining-principal-research-20260923`.
+Procedure: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, version 1.0.1/bootstrap 1.
+Original Macro interface: `c4da107fe729e46b4d4036b3e0e290390315d0fd`, not current integration proof.
+Current Chairman instruction: continue principal research and authorized documentation checkpoints.
+Direct-work rationale: PRINCIPAL_JUDGMENT. User-reported Pro is not a served-model/budget attestation.
 
-## Material delta
+## Exact preserved corpus
 
-Before: the corpus lacked the specialty/by-product and supplier comparisons and a reconciled coverage
-frontier. After: eleven new dossiers distinguish host occurrence, recovery, payability and issuer
-capture; selective feed and finite tailings; current versus acquired growth; aftermarket versus
-subscription; accounting accrual versus cash; and scope-preserving commercial milestone updates.
-The companion matrix assesses twelve domains across six canonical passes and distinguishes local
-unknowns from missing business mechanisms and true implementation dependencies. It does not invent
-a completeness percentage or certify a global issuer universe.
+P01: report `1991c91bc6ca7678a455cabaf38bdfe14e800028`, blob `d107e5527a898c834c26b4869d6de7e51b254af1`.
+P02: report `926e222335f1010c19933b88651f4acd1aa6cdcc`, blob `52ac589b7ab6e220c44deeb143ae33edcd550fde`.
+P03: report `e7923486007e8f98e51169636894cf045965d726`, blob `1bef33fc71eaf25f3627988ccb746bd3c827852c`.
+P04: report `66c77095aff61e196c0aee356ff7f0e7d08ff01b`, blob `164f5f58b5f0ea47eaac5afad760385c89ff694a`.
+Canonical P05: report `38690a0909799d5d2b80ef23ff467cd1a73006a4`, blob `42c90b4634b4b408c014b7ccb335744adb79bf48`.
+P06: report `e2c3807f1a48f8430f9100bb019c0b66206e966e`, blob `835fda608cf0d68af42969c602b119546866873d`.
+Coverage: `60788b911d3a2f53205bd260db946579bada9d9a`, blob `8362465637263cefad4dce2abaa45ab834351823`.
+Historical check receipts and detailed prior limits remain at pickup head
+`bf552839eb69ba12b9e455edb8c4126f4d92de6b`; no prior check run repeated or unique-source count inferred.
 
-The 58 local checks cover selected arithmetic, indexing, explicit boundaries and pedagogical
-compatibility examples. They are not application tests, CI, independent research review, accounting
-or contract audits, customer confirmation, native historical retention, source-rights admission,
-canonical Agent OS validation, browser proof or investment validation. No old suite was rerun.
+## Current primary leads and resolved distinctions
 
-## Exact preserved research
+Hydro Q2 release: https://www.hydro.com/en/global/media/news/2026/hydros-second-quarter-2026-operational-strength-delivering-solid-results/
+Century Q2 filing: https://www.sec.gov/Archives/edgar/data/949157/000162828026054308/cenx-20260630.htm
+Novelis June quarter: https://investors.novelis.com/news-events/press-releases/detail/1425/novelis-reports-first-quarter-fiscal-year-2027-results
+Constellium June quarter: https://www.sec.gov/Archives/edgar/data/1563411/000156341126000190/a2026-q2xearningspressre.htm
+Hydro/Eviny contract: https://www.hydro.com/en/global/media/news/2026/hydro-and-eviny-sign-long-term-power-contract/
 
-Pass 06 report: `e2c3807f1a48f8430f9100bb019c0b66206e966e`, blob
-`835fda608cf0d68af42969c602b119546866873d`; 44,847 bytes, SHA-256
-`a8a7700c0e02858773651c3e5d1035bc570719d061d88d6b3c7390018650ea1b`.
-Coverage: `60788b911d3a2f53205bd260db946579bada9d9a`, blob
-`8362465637263cefad4dce2abaa45ab834351823`; 15,967 bytes, SHA-256
-`447fea0605b3c2b99ca5293171f0e0da2e42dd2f4fdf1dba8fd250d42012af13`.
-Checker and actual receipt commits/blobs are recorded above.
+Continue from these source-specific questions, not a new global repo audit. Source retrieval is not
+native retention, a price feed, a licence grant or independently audited commercial performance.
 
-Pass 01: `1991c91bc6ca7678a455cabaf38bdfe14e800028`, blob `d107e5527a898c834c26b4869d6de7e51b254af1`; historical 20 checks.
-Pass 02: `926e222335f1010c19933b88651f4acd1aa6cdcc`, blob `52ac589b7ab6e220c44deeb143ae33edcd550fde`; historical 44 checks.
-Pass 03: `e7923486007e8f98e51169636894cf045965d726`, blob `1bef33fc71eaf25f3627988ccb746bd3c827852c`; historical 37 checks.
-Pass 04: `66c77095aff61e196c0aee356ff7f0e7d08ff01b`, blob `164f5f58b5f0ea47eaac5afad760385c89ff694a`; historical 55 checks.
-Canonical Pass 05: `38690a0909799d5d2b80ef23ff467cd1a73006a4`, blob `42c90b4634b4b408c014b7ccb335744adb79bf48`; historical 63 checks.
-Detailed prior receipts remain recoverable at `fa86dd4ed30ef6706bb75922255812d54cd19469`.
-Pass-level references overlap and cannot be summed into a unique-source census. The parallel local
-Pass 05 remains noncanonical and must not be published under another filename or overwrite the above.
-Its source leads may be reused selectively only after fresh question-specific verification.
+## Effects and holds
 
-## Effects, holds and continuity boundary
-
-Known current-turn effects: in-turn checkpoint `ad93ef591b44dddd935f2d39c2d48704c3893131`; four
-new research artifacts at the immutable revisions above; this cumulative update and matching PR
-metadata. This record's own exact revision is established by its receipt/readback, not embedded
-self-referentially. All changes stay on the original carrier. EFFECT_UNKNOWN: none observed.
-
-Active children/returns/watchers created here: none. No Fable/worker commission, Executive Job/Attempt,
-production code/config/schema/data, live basket, ranking/entry/sizing/trade, merge, deployment or real
-product publication. External runtime/custody remains unknown; no shared implementation writer is
-claimed. GitHub repository push permission and actions were directly checked; writes succeeded.
-No automatic wake, background execution, provider placement or source-custody transfer is implied.
-
-This is a substantial specialty/supplier plus corpus-synthesis boundary after extensive source/PDF,
-financial comparison and publishing context, before a different energy-sensitive materials regime.
-The new reports and all material effects are recoverable. Resume from this compact record and the
-coverage frontier rather than carry or replay the source/tool transcript. No arbitrary elapsed-time
-ceiling is asserted. No Thinking failed event was observed; no hard seal is asserted.
-
-Exact next action: **principal aluminium-chain and energy-contract research, then prioritized battery
-regime gaps, using the coverage matrix to prevent indefinite disconnected case accumulation**.
-Intended resume surface: the principal research-capable conversation in the user-selected mode,
-preserving this carrier and current source/effect fences. Final Fable handoff and product acceptance
-remain unfinished, not implied by research publication or passing local checks.
+Only this cumulative documentation record is modified in this continuation so far; its exact effect
+is established by the write receipt/readback. No ambiguous prior mutation observed. No Fable/worker
+commission, Executive Job/Attempt, watcher, production code/config/schema/data, live basket,
+rank/entry/size/trade, merge or deployment. External runtime/custody is unknown; no shared writer is
+claimed. All future writes stay on this carrier and permitted original-research/continuation paths.
+No automatic wake, background work, source-custody transfer or hard session seal is claimed.
