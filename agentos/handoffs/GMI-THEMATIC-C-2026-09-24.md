@@ -3,135 +3,55 @@ workstream: "WS:GMI-THEME-GRAPH"
 session: sol/gmi-theme-research-c-20260924
 model: unknown
 ended_because: checkpoint
-mission: >
-  Qualify the 32 assigned automation, mobility and connected-systems source-local
-  leaves; reuse incumbent research; develop three deployment-economics cases; and
-  return evidence-qualified observations/integration proposals to the GMI Meta-CEO.
-state_before: >
-  Earlier checkpoint had only source qualification and case candidates. The three
-  required cases, complete 32-key assessment and final integration return were still open.
-changed:
-  - path: research/theme_graph/thematic_research_20260924/automation-mobility-deployment/COVERAGE.md
-    what: "Full 32-key assessment, reuse/source boundaries and explicit gaps."
-  - path: research/theme_graph/thematic_research_20260924/automation-mobility-deployment/COVERAGE.json
-    what: "Machine-checkable 32-key companion with evidence classes and owner seams."
-  - path: research/theme_graph/thematic_research_20260924/automation-mobility-deployment/SYNTHESIS.md
-    what: "Three required deployment-economics cases plus bounded primary-source revalidation."
-  - path: research/theme_graph/thematic_research_20260924/automation-mobility-deployment/OBSERVATIONS_AND_INTEGRATION.md
-    what: "Five observation profiles, four investor workflows and future acceptance examples."
-  - path: research/theme_graph/thematic_research_20260924/automation-mobility-deployment/RETURN_AND_CHECKPOINT.md
-    what: "Full bounded research return for Meta-CEO review."
-verified:
-  - claim: "Current protected procedure was re-pinned before continuation effects."
-    command: "Protected Mastermind master + same-commit procedure reads"
-    result: "Mastermind 294b4c00ed668b497edb834be8108f14bc1bee8a; schema mastermind.sol_skillpack.v1; version 1.0.1; bootstrap major 1."
-  - claim: "All assigned source-local keys are accounted for exactly once."
-    command: "COVERAGE.json parse + COVERAGE.md exact-key occurrence check"
-    result: "32 entries, 32 unique, zero missing/extra/duplicates; every exact assigned key occurs once in the Markdown assessment."
-  - claim: "The three chartered cases are present and selectively revalidated against primary sources."
-    command: "Exact-file marker check + fresh SEC/company primary-source reads"
-    result: "Symbotic/Walmart, EVgo and Caterpillar/Luck Stone cases present; Caterpillar expansion source clock corrected to 2026-09-15."
-  - claim: "Only the allowed C research root plus this cumulative handoff changed."
-    command: "PR #7893 changed-file census"
-    result: "Six changed files; zero disallowed paths."
-unverified:
-  - claim: "Meta-CEO accepted this research return."
-    what_would_verify: "Explicit acceptance/STOP or bounded repair/CONTINUE on parent #7886."
-  - claim: "Any proposed observation/interface is live or product-complete."
-    what_would_verify: "Separate native-owner admission, implementation and real-path product acceptance."
-  - claim: "The visible Chat model/mode equals the actually served model or has a valid Pro exception receipt."
-    what_would_verify: "Current platform/runtime attestation and the controlling cognition admission owner."
+mission: "Repair only C-R1 through C-R4 on the existing GMI C research carrier."
+state_before: "Full 32-leaf and three-case research returned at 28b517561187412b8ea9b32b6001bcdb1a68b1af; Meta-CEO requested narrow measurement/documentation repair."
 next_actions:
-  - "Meta-CEO consumes the exact C return on parent #7886 and issues acceptance/STOP or one bounded repair/CONTINUE."
-  - "If repair is requested, keep it on #7893 and target only the named unsupported proposition or selected downstream dependency."
+  - "Correct measured revenue versus prospective energy, endpoint versus integrated exposure, and profit versus cash; align SYNTHESIS status and qualify preliminary profiles."
+  - "Run small synthetic counterexamples, preserve unchanged coverage and nonaffected cases, and return exact revised artifacts on parent #7886."
 do_not_redo:
-  - "Do not rebuild the 32-key inventory, ROBOT1, IND9, HEALTH4 or the three completed case foundations without a material invalidator."
-  - "Do not edit sibling A/B or incumbent source branches."
-  - "Do not create a new graph, evidence store, identity owner, scheduler, worker/Fable commission, ranking/trading path, merge or deployment from this child."
+  - "No broad research, 32-key census, ROBOT1/IND9/HEALTH4, sibling work, private-ROI search, implementation or worker dispatch."
 ---
 
-# GMI C cumulative checkpoint — full bounded research return
+# GMI C cumulative checkpoint — same-operation measurement repair
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION  
-MISSION_COMPLETE: false — delivery is complete for Meta-CEO review, but parent acceptance/repair is outstanding.
+Operation: `gmi-theme-research-automation-mobility-deployment-20260924-001`.
+Carrier: Macro Draft/HOLD #7893, `sol/gmi-theme-research-c-20260924`.
+Parent: #7886, `gmi-thematic-research-meta-ceo-20260924-001`.
+MISSION_COMPLETE: false. This is an in-turn recovery checkpoint, not acceptance or a new execution owner.
 
-Operation: `gmi-theme-research-automation-mobility-deployment-20260924-001`.  
-Parent: `gmi-thematic-research-meta-ceo-20260924-001`, Macro Draft/HOLD #7886.  
-Carrier: Macro Draft/HOLD #7893 / `sol/gmi-theme-research-c-20260924`.
+## Current authority and reconciliation
 
-## Current authority and procedure
+Current live Chairman directed this same conversation to consume parent comment `5810356948` and continue only its repair. The exact comment was read. Detailed review: `research/theme_graph/thematic_research_20260924/WAVE1_META_CEO_REVIEW_2026-09-24.md`, commit `30cca9d7a216f94580104444c405fc31064c7e48`, blob `db9bfc80dcd7625d329e48d44ef9a2506b83b19a`, section 4.
 
-Canonical charter: `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`.
+Current #7893 head matched reviewed head `28b517561187412b8ea9b32b6001bcdb1a68b1af`; open/draft. No intervening source modification or unresolved mutation was observed before this checkpoint. Repository preflight reports push permission; native update/create-file actions are exposed. Source custody stays here; no worker or alternate carrier is created.
 
-Current protected Mastermind pin: `294b4c00ed668b497edb834be8108f14bc1bee8a`. Current same-pin ACTIVE_EXECUTION, RECONCILE_STATE, WEB_CEO_DELEGATION, CLOSEOUT and Chairman routing addendum were loaded before continuation modifications. Initial lane pickup pin `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca` remains historical evidence only.
+Fresh Mastermind master pin: `1a7d400294b0d37c460b963b8865b40a23173b58`. INDEX blob `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`, schema `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap major 1. Fresh same-pin file reads and exact blob comparisons against the previously loaded revision confirmed unchanged ACTIVE_EXECUTION (`9fed10f7cc7a2f4323d039b406f7c0715445e22e`), RECONCILE_STATE (`1373b72a13fb4a084b0331eb2bcf2d4a680d9738`), WEB_CEO_DELEGATION (`2073a33f05506268b15f0b5ce292ce57d5b60ed3`) and routing addendum (`21ac0d28c3ca36d4fefdfc501453f3338636df0d`). CLOSEOUT read in full at current pin, blob `4a9ec3782da001322604e977dbe91b9cf371f0b9`.
 
-Receiver remains this Chairman-addressed ChatGPT web conversation; exact provider session identity and served model/mode are UNKNOWN. No Executive Job, worker, watcher or autonomous wake is claimed.
+Canonical wave charter remains commit `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`. The later explicit repair ruling governs only the four specified corrections.
 
-## Exact research artifacts
+## Preserved research and exact inputs
 
-All under `research/theme_graph/thematic_research_20260924/automation-mobility-deployment/`:
+At reviewed head `28b517561187412b8ea9b32b6001bcdb1a68b1af`, under `research/theme_graph/thematic_research_20260924/automation-mobility-deployment/`:
 
-- `COVERAGE.md` — blob `5dbe7bfca0718ac3e70a19945fb1077982c6ae66`.
-- `COVERAGE.json` — blob `03d851ad54bf70c881a19a4198637864971d637c`.
-- `SYNTHESIS.md` — blob `6b3cd817106107d7ff9ebcb486ca3d606da3ae76`.
-- `OBSERVATIONS_AND_INTEGRATION.md` — blob `d6ac03ff2cfc8f71d9a42b7ac46d24be28a41d3a`.
-- `RETURN_AND_CHECKPOINT.md` — blob `680bdae8c09ace7c05c62f3d852765595bae7ba5`.
+- COVERAGE.md: `5dbe7bfca0718ac3e70a19945fb1077982c6ae66`.
+- COVERAGE.json: `03d851ad54bf70c881a19a4198637864971d637c`.
+- SYNTHESIS.md: `6b3cd817106107d7ff9ebcb486ca3d606da3ae76`.
+- OBSERVATIONS_AND_INTEGRATION.md: `d6ac03ff2cfc8f71d9a42b7ac46d24be28a41d3a`.
+- RETURN_AND_CHECKPOINT.md: `680bdae8c09ace7c05c62f3d852765595bae7ba5`.
 
-Consume the full return file first; it indexes the exact findings, source validation, checks, owner boundaries and gaps.
+The full prior return is preserved by this immutable reference. Keep its useful 32-leaf assessment, Symbotic/Walmart, EVgo and Caterpillar/Luck Stone cases. Matched site ROI, achieved charging uptime and quarry cost/ton remain unknown; no new source audit is required or claimed. The parent has not accepted C; it preserved the research subject to these repairs.
 
-## Research result
+## Finite repair
 
-Coverage:
-- 32 assigned keys / 32 unique / zero missing / zero extra / zero duplicate.
-- Evidence classes: 4 PRIMARY_CASE, 8 DIRECT_WORKED_REUSE, 4 DIRECT_FRAMEWORK_REUSE, 1 DIRECT_COMPONENT_REUSE, 8 FRAMEWORK_REUSE, 4 ADJACENT_REUSE, 3 INVENTORY_ONLY.
-- Thin areas remain visible rather than fabricated: EV batteries, additive manufacturing and defense-autonomy commercial dossiers.
+C-R1: measured direct revenue `sum(E_i * p_i)` has no additional stall/availability multiplier. Prospective energy `sum(H_i * a_i * q_i)` uses scheduled eligible stall-hours and kWh per available stall-hour; an all-scheduled-hours rate excludes the extra availability factor.
+C-R2: endpoint `3930 * 276 * 91` is a hypothetical approximation, not exposure reconciliation. Retain the source's public-network population; actual integrated exposure/average definition remain unmeasured here.
+C-R3: separate accounting depreciation from cash capex; explicitly scope working capital, taxes, financing and offsets. Missing inputs are not zero.
+C-R4: complete-for-review research status, not production completion; C-O4/C-O5 remain preliminary.
 
-Three required case jobs:
-1. **Symbotic/Walmart warehouse automation:** real contract/deployment/operational/support economics; matched site-level buyer payback remains unmeasured.
-2. **EVgo charging:** real stalls, delivered-energy utilization, revenue/cost/capex/funding evidence; achieved matched-cohort uptime and site return remain unmeasured.
-3. **Caterpillar/Luck Stone autonomy:** real go-live, productive tonnage, embedded implementation support and later multi-site expansion; matched cost per accepted ton and supplier contract economics remain unmeasured.
+## Surface/effects/return
 
-Observation/integration:
-- C-O1 warehouse productive utilization/payback;
-- C-O2 charging site/vintage economics;
-- C-O3 autonomous quarry cost/accepted ton;
-- C-O4 machine-vision task economics;
-- C-O5 medical-robotics comparable operating cohort;
-- four investor workflows and discriminating future application/acceptance examples.
+User reports Pro mode now selected. Served model/session ID, hidden budget, empirical non-Pro insufficiency and Pro-duration receipt remain unknown; no such attestation or global-law change is invented. The parent ruling permits this bounded phase on the current permitted surface.
 
-## Primary-source validation and correction
+No external worker, Executive Job, watcher or native wake is claimed. Manual Chairman relay plus the exact parent GitHub return remains the continuation path. A container raw-file read failed DNS; no credential, alternate publication effect or safety/permission denial occurred. Native GitHub remains available.
 
-Fresh external validation covered decisive case propositions using Symbotic SEC filings, Walmart FY26 Q4 materials, EVgo Q2/10-Q materials and Caterpillar/Luck Stone releases.
-
-Material correction: Caterpillar's expansion release is dated **2026-09-15**, not 2026-09-14. The exact source clock is corrected in `SYNTHESIS.md`; conclusions are unchanged.
-
-This is bounded validation, not full independent validation of all incumbent reports or all 32 leaves. Reused source lineage never becomes a second confirmation.
-
-## Owner boundaries / DO_NOT_REDO
-
-- #7773 Robotics retains physical/BOM research.
-- #7789 Industrials retains project/order/customer-economics foundations.
-- #7788 and GMI B #7892 retain clinical/access/payer evidence for medical robotics.
-- GMI A #7890 retains grower/customer economics for agricultural deployments.
-- #7780 Semiconductors retains device/fab specifics.
-- #7793 Technology retains software/cloud archetypes.
-- #7794 Communications retains network economics.
-- #7791 Energy retains power/grid/tariff semantics.
-
-C owns the deployment/productive-work/customer-benefit/support-capital synthesis for its assigned leaves. It creates no second authority plane.
-
-## Mode-law state
-
-No controlling parent ruling or source-law amendment was observed after pickup. Protected cognition law still requires a complete Pro exception receipt containing specific non-Pro insufficiency evidence and an 80–1440 minute estimate; the wave charter simultaneously prohibits inventing those facts. This child does not fabricate the receipt or claim Pro admission.
-
-## Effects and holds
-
-Known effects: one C branch, Draft/HOLD #7893, the five C research artifacts plus this one cumulative handoff, and parent transport comments. No ambiguous mutation is known.
-
-No product/native-schema/source-rights/identity/membership, live ingestion, basket/rank/trade, credential, paid API, worker/Fable, watcher, merge or deployment effect.
-
-## Exact continuation
-
-Meta-CEO should read `RETURN_AND_CHECKPOINT.md` blob `680bdae8c09ace7c05c62f3d852765595bae7ba5` and either accept/STOP this bounded child tranche or issue one exact repair/CONTINUE on the same #7893 carrier.
-
-A future product/Fable commission, if any, must come from the parent after cross-lane integration and existing-owner/interface qualification. This return does not originate it.
+Known effect at checkpoint: updating this one cumulative handoff. Reconcile this same object if its write response is ambiguous; never retry blindly. Next: execute finite documentation repair and local synthetic checks, then update this record and return to parent comment 5810356948 on #7886.
