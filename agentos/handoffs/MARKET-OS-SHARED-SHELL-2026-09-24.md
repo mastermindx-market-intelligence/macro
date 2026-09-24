@@ -4,107 +4,157 @@ session: sol/market-os-shared-shell-design-20260924
 model: sol
 ended_because: context_budget
 mission: >
-  Lead a shared application-shell migration across Macro and eventual Terminal
-  convergence. Produce editable Paper mockups and refine them with the Chairman
-  before implementation and site-wide release; preserve working intelligence,
-  canonical identity and personal-state owners, existing routes and source custody.
+  Lead the shared application-shell migration across Macro and eventual Terminal
+  convergence. Refine editable Paper mockups with the Chairman before implementation
+  and site-wide release. Preserve intelligence, identity, personal-state owners,
+  useful routes and incumbent source custody.
 state_before: >
-  The Chairman approved the shared-shell direction and Sol leadership. Existing
-  China, Sector Central and International Paper designs existed independently.
-  No cross-product shared-shell review page or source implementation had been created
-  by this operation.
+  PR 7949 at 0eb8280a0a1b6d1ec44d12e23d233ba6878e201f held the first two studies:
+  US Overview TUD-0 and Terminal focus U19-0. Paper page p-D-0 had 520 nodes.
+  The first-turn US resize and US-to-China duplication were safety-refused and held.
 changed:
   - path: research/market_os/SHARED_APPLICATION_SHELL_DESIGN_2026-09-24.md
-    what: Recorded the design candidate, four navigation responsibilities, market-context behavior, first useful vertical and migration boundaries; not release approval.
-  - path: "paper:01M2WGNCX9475G79JRKJTCM08P/p-D-0"
-    what: Created a separate shared-shell review page with editable US Overview and Terminal focus studies; preserved existing page designs and shared tokens.
+    what: Added the incumbent-aligned Sector composition, source-grounded regional route matrix, preference boundaries and eleven proposed acceptance cases; no application code.
+  - path: "paper:01M2WGNCX9475G79JRKJTCM08P/p-D-0/UBT-0"
+    what: Completed the new Sector shared-shell composition and corrected its inspector overflow; screenshot-reviewed at 1440x900.
+  - path: "paper:01M2WGNCX9475G79JRKJTCM08P/p-D-0/UP4-0"
+    what: Created and reviewed only the mobile status bar, app header, workspace tabs and primary-read block; explicitly renamed INCOMPLETE.
+  - path: "paper:01M2WGNCX9475G79JRKJTCM08P/p-D-0/UJ4-0"
+    what: Created a copy of the new Sector study for a market-popup state, but popup composition was refused; explicitly renamed NOT COMPOSED.
+  - path: "paper:01M2WGNCX9475G79JRKJTCM08P/p-D-0/UQL-0"
+    what: Created an empty mobile global-drawer artboard, but composition was refused; explicitly renamed NOT COMPOSED.
 verified:
-  - claim: Paper review page contains exactly two created artboards and 520 nodes at closeout.
-    command: "Paper MCP get_basic_info(fileId=01M2WGNCX9475G79JRKJTCM08P, pageId=p-D-0)"
-    result: "TUD-0 US Overview 1440x900 at 0,0; U19-0 Terminal focus 1440x900 at 1520,0; token hash 5ae876bc unchanged."
-  - claim: The US primary layout was visually reviewed and initial text/fill defects were corrected.
-    command: "Paper get_screenshot(TUD-0, scale=1), followed by Remote Desktop read_file of 03-us-review.png"
-    result: "Primary content reviewed; screenshot SHA256 7db491cac3a7f0e96e262b7a00886dbf34ee71476c2e214efb53362488905591. Bottom disclosure still clips at fixed 900px."
-  - claim: The independent Terminal focus study was visually reviewed after completion of its content groups.
-    command: "Paper get_screenshot(U19-0, scale=1), followed by Remote Desktop read_file of 05-terminal-review.png"
-    result: "Collapsed rail, source-return header, listing context, tabs, synthetic chart, sample watchlist and research context visible without observed clipping; SHA256 1ef42864ce214517ac2440ecb71fa2b83a2c1dd13b6f2559f2a858c0ce58eacb."
-  - claim: Working indicators on both owned artboards were released without changing other agents' artboards.
-    command: "Paper finish_working_on_nodes(fileId=01M2WGNCX9475G79JRKJTCM08P, nodeIds=[TUD-0,U19-0])"
-    result: "OK; shared token hash remains 5ae876bc."
-  - claim: The denied US resize and duplication did not produce a second artboard or change the US dimensions.
-    command: "Read-only Paper get_basic_info immediately after the pre-dispatch tool denial"
-    result: "One US artboard still 1440x900, before the separate Terminal study was created; EFFECT_NONE for the refused call, not retry permission."
+  - claim: Initial same-carrier readback matched the prior two-artboard checkpoint.
+    command: "Paper get_basic_info(fileId=01M2WGNCX9475G79JRKJTCM08P,pageId=p-D-0) through existing process 90003"
+    result: "TUD-0 and U19-0, 520 nodes; same operation/file/page. No replacement carrier."
+  - claim: Sector composition matches the incumbent design's three principal views and preserves its sample semantics.
+    command: "Paper get_tree_summary(OOM-0,depth=2), get_screenshot(OOM-0), then get_screenshot(UBT-0) and native image inspection"
+    result: "Rotation / Discover / Market breadth; sector/theme/subsector controls, Map/List, selected-group inspector and members. Existing OOM-0 was read-only."
+  - claim: Final Sector layout was visually reviewed after a targeted new-inspector fit correction.
+    command: "Paper get_screenshot(UBT-0,scale=1), Remote Desktop read_file 09-sector-review-final.png, and SHA256 computation"
+    result: "No observed clipping in the final 1440x900 composition, including its footer; SHA256 de4d4cc46ed62a6ed14e1433fa55beff7785fb9ede34f53306f06c9266836897. Visual study only, not interaction/production proof."
+  - claim: Mobile shell prefix was created and visually inspected.
+    command: "Paper get_screenshot(UP4-0,scale=1), Remote Desktop read_file 11-mobile-header-check.png"
+    result: "390x844 status/header/title/tabs/primary read visible; lower half intentionally unfinished. No screenshot digest was recorded for this prefix."
+  - claim: Market-popup refusal produced no popup in the copied Sector scaffold.
+    command: "Immediate same-carrier get_children(UJ4-0) and Python variable-presence readback"
+    result: "Only cloned sidebar and workspace children; no switchbox variable. Refused operation was not retried."
+  - claim: Incomplete scaffolds were explicitly labeled and owned working indicators cleared.
+    command: "Paper rename_nodes for UJ4-0, UP4-0 and UQL-0; finish_working_on_nodes for UBT-0/UJ4-0/UP4-0 and later UQL-0"
+    result: "Acknowledged NOT COMPOSED / INCOMPLETE labels and OK cleanup; token hash 5ae876bc unchanged. Cleanup success is not recovery of refused content operations."
+  - claim: The country/workspace route distinction was grounded in current source, not inferred from mockups.
+    command: "GitHub fetch_file templates/nav_market.js lines145-470 at b9d23ca4bce4308fa7466c4e0f5d318168a50f6f; terminal/lib/markets.ts lines1-100 at 145bfbe4c8ea0da04658cbbe05879c84c990721b"
+    result: "Source declares different HK/Canada basket/rotation destinations, separate china.html/china_intel.html jobs, and distinct followed/enabled/home semantics. Presence in a menu is not live equivalence proof."
 unverified:
-  - claim: Complete cross-product design set and Chairman visual acceptance.
-    what_would_verify: Complete the China and Sector compositions, market-switch and narrow-screen states, resolve the held US fit defect through permitted recovery, and obtain Chairman review of the complete candidate.
-  - claim: Functional navigation, data integration, responsive behavior and production acceptance.
-    what_would_verify: An approved implementation plan, fresh source-writer reconciliation, tests and real production-path browser proof; current Paper artboards are static design studies only.
-  - claim: Full repository validation and integration acceptance of this records branch.
-    what_would_verify: Run owning Agent OS validation and applicable exact-head checks and review through the normal release path; no passing CI is claimed here.
+  - claim: Full China, market-switch and mobile design set and Chairman visual acceptance.
+    what_would_verify: Complete the missing designs only through permitted actions/recovery, then obtain review of the cross-product candidate.
+  - claim: Mobile controls/list/drawer and market-popup composition.
+    what_would_verify: Actual permitted composition and screenshots on the existing target artboards; current scaffolds are not completed designs.
+  - claim: Final aggregate Paper node count and post-refusal mobile descendant readback.
+    what_would_verify: A permitted current aggregate/target read; the attempted compound readback was safety-refused. Do not reuse 520 as the current count.
+  - claim: Complete source-route inventory and qualified equivalent subviews across countries.
+    what_would_verify: Reconcile template, adaptive menu, conditional/deep-link/redirect and owning consumer sources, then verify actual targets and rights.
+  - claim: Functional navigation, responsive behavior, repository validation and production acceptance.
+    what_would_verify: Approved implementation plan, fresh source custody, owning validation/CI and real browser journeys. Eleven acceptance cases are specified, not executed.
 unresolved:
-  - The US footer disclosure exists but clips at the fixed artboard boundary. The upper sample-data badge is visible.
-  - China and Sector shared-shell compositions have not been created; their existing independent design pages remain untouched.
-  - The combined US fit-content resize and US-to-China duplicate call was explicitly safety-blocked before dispatch. Do not repeat that effect through another payload, tool, provider or device without actual permitted recovery.
-  - No broad source-path collision census has cleared an implementation writer. Existing program owners retain all custody.
+  - The original US footer disclosure fit remains held; its upper sample-data badge is visible.
+  - The complete market-popup and mobile list/drawer operations were explicitly safety-refused; no alternate tool, provider or rephrased retry is authorized by a continuation.
+  - One read-only compound Paper readback was also safety-refused. Small labeling/cleanup actions succeeded later; this does not establish permission for refused actions or a global outage.
+  - Confluence must remain reachable after the three-view Sector regrouping; exact subview placement requires incumbent owner reconciliation.
+  - No application implementation writer has been admitted or displaced. Current branch is records-only and DRAFT/HOLD.
 next_actions:
-  - Re-pin protected procedure and read this cumulative checkpoint and current Paper review page only; retain the two existing artboards and consume any Chairman feedback.
-  - Continue independent design of the Sector workspace and market-switch/mobile interaction states on the same review page, without reproducing the denied US resize/duplication operation. Resolve the held operation only after a genuine permitted platform recovery condition.
-  - Complete the cross-product design review, then freeze the written implementation plan and reconcile exact shared-chrome and page-writer paths before the first useful vertical.
+  - Consume Chairman feedback on the completed new Sector composition and existing Overview/Terminal studies; keep incomplete scaffolds explicitly distinguished.
+  - On this same PR, finish the independent route-family/deep-link inventory and qualify the legacy Confluence plus regional Sector equivalence before any implementation plan is treated as final.
+  - Resume any specifically refused Paper operation only after actual permitted platform recovery, on its existing target. A new chat, smaller payload, different tool or delegate is not recovery permission.
+  - Complete the remaining cross-product design review, then freeze the implementation plan and reconcile exact shared-chrome/page-writer paths before the first useful vertical.
 do_not_redo:
-  - Do not create a replacement Paper file/page, records branch, shared-shell program or duplicate US/Terminal study.
-  - Do not modify the existing China, Sector Central, International or Company Intelligence design pages or their shared tokens from this carrier.
-  - Do not reattempt the denied resize/duplication through rephrasing or another carrier; a fresh chat alone is not recovery.
-  - Do not create a new auth, identity, watchlist, portfolio, route-state, lifecycle or publication authority.
-  - Do not discard existing product URLs, intelligence engines or page owners to make the shell easier to build.
-  - Do not claim sample market data, synthetic candles, mocked actions or static screenshots are live market or functional production evidence.
-  - Do not claim a worker, watcher or background Web session is executing; none was dispatched or armed.
+  - Do not recreate the Paper file/page, operation, PR 7949 or sole records branch.
+  - Do not recreate the US, Terminal or completed Sector study; retain the screenshot-reviewed results and exact Sector digest.
+  - Do not alter the incumbent China, Sector Central, International or Company Intelligence reference pages or shared tokens.
+  - Do not retry refused US resize/duplication, market-popup composition, mobile local controls/list, mobile drawer composition or denied readback by rephrasing or changing carriers/providers.
+  - Do not treat empty/copy scaffolds as completed designs or the old 520-node count as current.
+  - Do not invent regional sector URLs, silently substitute a thematic basket for an unqualified equivalent, or use absence from a menu as proof of missing capability.
+  - Do not write followed/enabled markets or change selected listing/holdings/watchlist membership merely to switch viewing context.
+  - Do not create new auth, identity, state, route registry, lifecycle, worker, watcher or publication owners.
+  - Do not claim any sample data, static interaction affordance, specified test or source route is production evidence.
 danger_areas:
-  - Paper inserts in separate calls did not inherit the artboard text color automatically; explicitly bind text colors to existing tokens.
-  - SVG fill-opacity was not reflected as expected in the first chart render; the corrected area node uses explicit opacity.
-  - Market viewing context must not rewrite followed/enabled markets, selected listing identity or portfolio/watchlist membership.
-  - Full-source migration remains held behind design acceptance and fresh source custody; this checkpoint is not a lease transfer.
+  - Separate Paper insertions need explicit token-bound text colors; inherited artboard text color was not reliable in the first pass.
+  - Preserve source flags, deep links, redirect stubs, languages, supported themes and rights when reconciling menus.
+  - Terminal global preference vocabulary maps to intl for ranking, not automatically every market; do not conflate it with a cross-market dashboard scope.
+  - Safety refusal, technical parse failure, effect uncertainty and unavailable capability are distinct. The mobile prefix parse error was reconciled and repaired once; it is not a safety bypass.
+prs: [7949]
 ---
 
-# Shared-shell review 01 — cumulative continuation
+# Shared-shell review 01 — cumulative second-pass continuation
 
 **FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION**
 **MISSION_COMPLETE: false**
 
-Boundary: first expanded/focused pair of editable compositions exists and has been screenshot-reviewed after a tool-heavy design phase. Context pressure and the documented action-local refusal justify preserving this bounded frontier before the next design matrix. This is not parent completion, release acceptance or an all-lanes-blocked claim.
+Boundary: one additional full desktop composition and a reviewed mobile prefix are preserved, and the market-switch route semantics now have source-grounded constraints. Substantial tool/context work plus repeated action-local safety refusals justify stopping at this design/recovery boundary. This is not parent completion, an all-lanes-blocked claim, custody transfer or an autonomous wake.
 
-## Authority and exact references
+## Exact identity and authority
 
-Chairman's current 2026-09-24 instruction: Sol takes leadership, uses Paper mockups first, and refines with the Chairman before releasing across the site. Sol remains responsible for product architecture and eventual integration; existing implementation writers are not displaced.
+Current Chairman intent: Sol leads this end to end, Paper mockups first, collaborative refinement before site-wide release. Current continuation: "continue next run". Source ownership and real release gates remain intact.
 
 - Operation: `market-os-shared-shell-design-20260924-sol-001`.
-- Existing parent: `WS:MARKET-OS`; coordinate eventual shared experience with existing Macro #6819 rather than creating another integration plane.
-- Procedure: protected Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`, Skillpack 1.0.1 / bootstrap 1, INDEX + COLD_START + ACTIVE_EXECUTION + WEB_CEO_DELEGATION + CLOSEOUT.
-- Macro reference base: `8a55040f204cd0f1c92320bae1d44e1cfd21d212`.
-- Sole records branch: `sol/market-os-shared-shell-design-20260924`.
-- Initial design-doc commit: `9dd1d82f7c6deaf37b9517df4fd7bfed615327a4`.
-- Direct design rationale: PRINCIPAL_JUDGMENT. Model field `sol` records CEO authorship under the existing schema; it is not a runtime model attestation.
+- Existing parent: `WS:MARKET-OS`; eventual shared-experience coordination remains with existing Macro #6819.
+- Protected procedure: Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`, Skillpack1.0.1/bootstrap1. Fresh pin matched the already-loaded COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT revision.
+- Sole branch: `sol/market-os-shared-shell-design-20260924`; sole Draft PR: Macro #7949.
+- Initial design commit: `9dd1d82f7c6deaf37b9517df4fd7bfed615327a4`; first checkpoint: `0eb8280a0a1b6d1ec44d12e23d233ba6878e201f`.
+- Current expanded design document commit: `a3ab842a19b5d9354bbb11680d1abf3f8a122526`.
+- Current Macro navigation inspection: `b9d23ca4bce4308fa7466c4e0f5d318168a50f6f`; nav_market.js blob `4edee693e1e6d4391de3482b2a618057df686e56`.
+- Current Terminal preference inspection: `145bfbe4c8ea0da04658cbbe05879c84c990721b`; markets.ts blob `6168662381b7d0a32af90eb262ae2c8862883a1b`.
+- Interim same-PR material receipt: comment `5815802421`.
+- Direct design rationale: PRINCIPAL_JUDGMENT. Model field sol denotes CEO authorship, not hidden runtime-model attestation.
 
-## Reviewable artifact
+## Paper frontier
 
-[Open the editable Paper review page](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-D-0).
+[Open the existing review page](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-D-0).
 
-File **MASTERMIND PAGES**, page **Mastermind · Shared Shell · Review 01 · 2026-09-24**. Two studies only:
+File MASTERMIND PAGES; review page p-D-0. Preserve these exact targets:
 
-1. **01 · US Market Overview · Shared shell · 1440**: expanded 216px global sidebar, common topbar, country context, page tabs, primary backdrop read and lower next-action/catalyst panels. The bottom disclosure fit is still unresolved.
-2. **04 · Terminal focus · Shared-shell study · 1440**: collapsed 72px rail, exact source-return concept, selected listing, security workspace tabs, large chart canvas and optional personal-context rail. Numeric chart content is synthetic and the watchlist is illustrative.
+| Artboard | Actual state |
+|---|---|
+| TUD-0 — 01 US Overview | Existing study; primary layout reviewed previously; bottom disclosure fit remains held. |
+| U19-0 — 04 Terminal focus | Existing composed/reviewed study, unchanged in this pass. |
+| UBT-0 — 03 Sector intelligence | New composed/reviewed shared-shell study; footer and inspector fit in final screenshot. |
+| UJ4-0 — 05 Market-switcher scaffold · NOT COMPOSED | Copy of UBT-0 for a distinct popup study; no popup was added. |
+| UP4-0 — 06 Mobile shell header · INCOMPLETE | Status bar, app header, heading/tabs/primary read only. |
+| UQL-0 — 07 Mobile global drawer · NOT COMPOSED | Empty 390x844 artboard; no drawer content. |
 
-The numbering reserves China and Sector studies; it does not mean four designs are complete. Existing China `p-7-1`, Sector Central `p-9-0`, and International `p-C-0` were inspected as references and left unchanged. Token hash `5ae876bc` remained unchanged.
+These identities come from acknowledged creation/rename receipts, not a final aggregate census. The final aggregate read was denied; total current node count is UNKNOWN. The earlier count520 belongs only to the beginning of this pass.
 
-## Evidence and effect limits
+Existing reference pages p-7-1 China, p-9-0 Sector, p-C-0 International and all shared tokens remain untouched. The Sector reference OOM-0 was screenshot/tree inspected read-only. Shared token hash remained5ae876bc in the latest cleanup receipts. Working indicators on all new owned artboards were explicitly cleared; this is not source-writer or operation-custody release.
 
-Native screenshot/receipt directory: `/tmp/market-os-shared-shell-design-20260924-sol-001` on the current m2studio design carrier. This temporary directory is evidence convenience, not the durable organizational authority. Paper is the editable design artifact; this committed handoff preserves exact findings and digests.
+## Evidence and effects
 
-Final Paper mutation-receipt JSON SHA256: `9d8fffe44cd8d59e428625b00caee647f848f53beee6e73ad67b6858dcff60c8`.
+Native evidence convenience directory: `/tmp/market-os-shared-shell-design-20260924-sol-001` on m2studio. Existing same-carrier Paper MCP client is Python process90003, session b8170906-d9fb-4b5e-9460-ee0bbf64e7f8, port29979. A future session must check actual liveness before using a process; it must not replay full process output.
 
-The single refused compound call intended US height fitting plus US duplication for China. It was blocked before dispatch with: "This tool call was blocked by OpenAI because we couldn't determine the safety status of the request." Same-carrier readback showed the existing US artboard unchanged. No blind retry occurred. A separate Terminal composition subsequently succeeded, so this is not evidence that all Paper writes are unavailable.
+Durable authority is this committed handoff and the editable Paper artifact, not the temporary directory.
 
-**EFFECT_UNKNOWN: none identified. Active children/returns: none. Watchers: none. Production/source application effects: none.** Paper working indicators for the two owned artboards were explicitly released.
+- Preserved US screenshot SHA256: `7db491cac3a7f0e96e262b7a00886dbf34ee71476c2e214efb53362488905591`.
+- Preserved Terminal screenshot SHA256: `1ef42864ce214517ac2440ecb71fa2b83a2c1dd13b6f2559f2a858c0ce58eacb`.
+- New Sector final screenshot: `09-sector-review-final.png`, SHA256 `de4d4cc46ed62a6ed14e1433fa55beff7785fb9ede34f53306f06c9266836897`.
+- Mobile prefix screenshot: `11-mobile-header-check.png`, visually inspected; hash not recorded.
+- The first-pass mutation-receipt digest9d8fffe44cd8d59e428625b00caee647f848f53beee6e73ad67b6858dcff60c8 is HISTORICAL, not the current cumulative receipt digest.
 
-## Resume contract
+Held operations, each on its original target:
+1. Prior US fit-content resize and US-to-China duplication: pre-dispatch safety denial, no retry.
+2. New market-popup composition on UJ4-0: pre-dispatch safety denial; immediate same-carrier readback confirmed no popup.
+3. Mobile local controls/list additions under UP4-0: pre-dispatch safety denial, no retry.
+4. Compound mobile/page readback after that refusal: safety-denied read; no inferred post-refusal census.
+5. Global mobile-drawer composition on UQL-0: pre-dispatch safety denial, no retry.
 
-Resume on the same operation, branch and Paper page, with current procedure and bounded readback. Consume feedback and advance independent Sector and market-switch/mobile design work; keep the refused US resize/duplication frozen unless actual permitted recovery is established. No new file, duplicate study, source writer, worker dispatch, merge or publication is implied by continuing this design review.
+Exact refusal text: "This tool call was blocked by OpenAI because we couldn't determine the safety status of the request." No causal explanation beyond that response is established. Independent initial mobile-shell creation, source research, labeling and cleanup succeeded; never generalize the refusals to all account or all Paper capability. Cleanup success is not permission to retry a denied action.
+
+A separate mobile-prefix command had a Python SyntaxError before execution. Same-carrier readback showed an empty new mobile artboard, then one quote-corrected technical retry created the prefix successfully. This was not a safety-refused action.
+
+**EFFECT_UNKNOWN: none identified.** Known effects are the acknowledged Paper objects/labels, same-PR comment and records commits. **Active children/returns: none. Watchers: none. Application source, production, data/model and user-state effects: none.** No background work is claimed.
+
+## Exact continuation
+
+Remain on operation/PR7949/branch and Paper page p-D-0. First consume Chairman feedback on Sector plus the existing Overview/Terminal studies. The next independent actionable lane is the complete source-route/deep-link inventory, especially Confluence preservation and HK/Canada Sector equivalence, using the new source-grounded contract rather than repeating the broad website audit.
+
+Any specifically refused Paper operation stays held until an actual permitted platform recovery condition exists; do not use a smaller request, different tool, account, provider, delegate or new chat as a workaround. No exact human authentication ceremony has been identified, so do not invent one or hand routine recovery to the Chairman.
+
+After missing designs and the integrated interaction contract are accepted, freeze the implementation plan and reconcile live shared-chrome/page-writer custody before the first producer-to-consumer vertical. Static design acceptance is not merge, deployment or production acceptance. Intended resume surface: the same Sol-owned design/integration assignment with this cumulative checkpoint and minimum fresh canonical state.
