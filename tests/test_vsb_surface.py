@@ -357,30 +357,23 @@ def _render_advanced(ctx: dict) -> str:
 class TestVSBSurfaceBothPayloads:
     """Scenario (i): both vol_weather and breadth_split present.
 
-    UD-B2-W1 (R-W1-A-AMENDED): the vol-weather chips no longer render
-    inside #dlg-sentiment. They now live as a sub-row inside the mx5
-    scorecard left column (.mx5-sc-left / .mx5-sc-vw) — see
-    test_ud_b2_w1_vw_fold.py for the engine-true fold tests. This class
-    keeps the surface-render assertions (plain text, pctile phrasing,
-    breadth_split surface) on the new location.
+    The vol-weather chips no longer render inside #dlg-sentiment or the
+    primary scorecard. They live once inside #dlg-risk; see
+    test_ud_b2_w1_vw_fold.py for the engine-true placement tests. This class
+    keeps surface assertions on that detail location.
     """
 
-    def test_vol_weather_subrow_present_in_risk_isle(self):
+    def test_vol_weather_detail_present_in_risk_dialog(self):
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         ctx["breadth_split"] = _full_breadth_split(spread=25.0)
         html = _render(ctx)
-        # The new sub-row is identified by data-sx-vw-strip + scope class
-        assert "data-sx-vw-strip" in html, (
-            "Vol weather sub-row must render (folded into the risk isle)"
-        )
-        assert "sx-vw-strip--risk-isle" in html, (
-            "Vol weather sub-row must carry its scope class"
-        )
-        # And the OLD sibling-section id must NOT appear anymore
-        assert 'id="vsb-vol-weather-section"' not in html, (
-            "Old dialog sibling-section id (vsb-vol-weather-section) must not appear on the page"
-        )
+        assert 'data-sx-vw-host="risk-detail"' in html
+        assert "data-sx-vw-strip" in html
+        assert "sx-vw-strip--risk-detail" in html
+        assert 'data-sx-vw-host="mx5-sc-left"' not in html
+        assert 'class="mx5-sc-vw"' not in html
+        assert 'id="vsb-vol-weather-section"' not in html
 
     def test_vol_weather_chip_rows_present(self):
         ctx = _base_ctx()
@@ -396,8 +389,24 @@ class TestVSBSurfaceBothPayloads:
         assert 'data-vsb-chip="' not in html
 
     def test_vol_weather_plain_text_and_pctile_phrase(self):
-        """R-W1-B + one-integer law: glance tier carries ONLY tier words
-        (calm/breeze/gust/storm + ZH twins). The OLD phrases ('Volatility is
+        """Risk Detail keeps tier words without restoring percentile scoreboard prose."""
+        ctx = _base_ctx()
+        ctx["vol_weather"] = _full_vol_weather()
+        html = _render(ctx)
+        host_start = html.find('<section class="riskdlg-vw"')
+        assert host_start >= 0, "Risk Detail volatility host must render"
+        host_end = html.find("</section>", host_start)
+        assert host_end >= 0
+        detail = html[host_start:host_end]
+        tier_words_en = ("calm", "breeze", "gust", "storm")
+        tier_words_zh = ("平静", "微风", "疾风", "风暴")
+        assert any(f'>{w}</span>' in detail or f'>{w}<' in detail for w in tier_words_en)
+        assert any(f'>{w}</span>' in detail or f'>{w}<' in detail for w in tier_words_zh)
+        assert "higher than" not in html
+        assert "lower than" not in html
+        assert "data-vsb-chip=" not in html
+
+ZH twins). The OLD phrases ('Volatility is
         calm', 'higher than N% of days', 'lower than N% of days') are banned
         from the glance tier — they belonged to the dialog's scoreboard row
         and have been demoted/removed entirely.
@@ -511,7 +520,7 @@ class TestVSBSurfaceBothPayloads:
         # The brief check: no Jinja undefined-variable render artifacts
         assert "<< NaN" not in html, "No << NaN artifacts should appear"
         # Spot-check our added sections specifically: extract the vol-weather
-        # sub-row from the risk isle slice and the breadth block; neither should
+        # detail block from the Risk Detail slice and the breadth block; neither should
         # contain rendering NaNs. Post-fold, vol-weather lives inside the risk
         # isle, so we slice by the new data-sx-vw-strip sentinel.
         if "data-sx-vw-strip" in html:
