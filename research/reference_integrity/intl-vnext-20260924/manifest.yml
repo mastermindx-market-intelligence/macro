@@ -2,20 +2,16 @@ schema: mastermind.rig_manifest.v1
 reference_id: intl-vnext-20260924
 scope: full
 status: in_review
-
 surface:
   route: intl.html
   registry_row: macro:intl
   archetype: regime_dashboard
-
 author:
-  identity: "Sol Pro — intl-vnext-implementation-20260924-sol-001"
+  identity: Sol Pro — intl-vnext-implementation-20260924-sol-001
   role: designer
-
 reference_files:
-  - path: mockups/refs/institutionalize/intl/reference-r2.html
-    frozen_sha: 62d710eedb9e5cc2a9d9f3e17fc02cc302de39f9
-
+- path: mockups/refs/institutionalize/intl/reference-r3.html
+  frozen_sha: 980e035a451e1f16925b6e3418a64d3dd8a0b026
 files:
   baseline: baseline.yml
   proposal: proposal.yml

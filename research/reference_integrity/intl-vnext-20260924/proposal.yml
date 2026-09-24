@@ -1,168 +1,330 @@
 schema: mastermind.rig_proposal.v1
 reference_id: intl-vnext-20260924
-
 proposed_artifact:
-  frozen_sha: 62d710eedb9e5cc2a9d9f3e17fc02cc302de39f9
+  frozen_sha: 980e035a451e1f16925b6e3418a64d3dd8a0b026
   paths:
-    - mockups/refs/institutionalize/intl/reference-r2.html
+  - mockups/refs/institutionalize/intl/reference-r3.html
   screenshots:
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en.png, viewport: desktop, theme: dark, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-light-en.png, viewport: desktop, theme: light, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-zh.png, viewport: desktop, theme: dark, locale: zh}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-light-zh.png, viewport: desktop, theme: light, locale: zh}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-dark-en.png, viewport: mobile, theme: dark, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-light-en.png, viewport: mobile, theme: light, locale: en}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-dark-zh.png, viewport: mobile, theme: dark, locale: zh}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-mobile-light-zh.png, viewport: mobile, theme: light, locale: zh}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-loading.png, viewport: desktop, theme: dark, locale: en, state: loading}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-empty.png, viewport: desktop, theme: dark, locale: en, state: empty}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-stale.png, viewport: desktop, theme: dark, locale: en, state: stale}
-    - {path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r2-desktop-dark-en-error.png, viewport: desktop, theme: dark, locale: en, state: error}
-
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-dark-zh.png
+    viewport: desktop
+    theme: dark
+    locale: zh
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-light-zh.png
+    viewport: desktop
+    theme: light
+    locale: zh
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-dark-en.png
+    viewport: mobile
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-dark-zh.png
+    viewport: mobile
+    theme: dark
+    locale: zh
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-light-en.png
+    viewport: mobile
+    theme: light
+    locale: en
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-light-zh.png
+    viewport: mobile
+    theme: light
+    locale: zh
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-dark-en-horizon-12m.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: horizon-12m
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-light-zh-horizon-1m.png
+    viewport: mobile
+    theme: light
+    locale: zh
+    state: horizon-1m
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: country-jp
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-dark-zh.png
+    viewport: desktop
+    theme: dark
+    locale: zh
+    state: country-jp
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+    state: country-jp
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-light-zh.png
+    viewport: desktop
+    theme: light
+    locale: zh
+    state: country-jp
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: country-gb
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-dark-zh.png
+    viewport: desktop
+    theme: dark
+    locale: zh
+    state: country-gb
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+    state: country-gb
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-light-zh.png
+    viewport: desktop
+    theme: light
+    locale: zh
+    state: country-gb
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-loading-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: global-pulse-loading
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-loading-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+    state: global-pulse-loading
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-empty-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: global-pulse-empty
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-empty-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+    state: global-pulse-empty
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-stale-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: global-pulse-stale
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-stale-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+    state: global-pulse-stale
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-error-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: global-pulse-error
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-error-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+    state: global-pulse-error
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-dark-zh.png
+    viewport: desktop
+    theme: dark
+    locale: zh
+    state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+    state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-light-zh.png
+    viewport: desktop
+    theme: light
+    locale: zh
+    state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-dark-en.png
+    viewport: mobile
+    theme: dark
+    locale: en
+    state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-dark-zh.png
+    viewport: mobile
+    theme: dark
+    locale: zh
+    state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-light-en.png
+    viewport: mobile
+    theme: light
+    locale: en
+    state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-light-zh.png
+    viewport: mobile
+    theme: light
+    locale: zh
+    state: intl-stocks-preservation
 dispositions:
-  - id: global.regime-verdict
-    disposition: IMPROVE
-    target: "Global Call hero with engine verdict, plain clause, receipts, flip condition, and current posture"
-    rationale: "Answers the primary question before exposing supporting organs."
-  - id: global.us-world-rotation
-    disposition: IMPROVE
-    target: "Global Pulse and Rotation & turns"
-    rationale: "Makes leadership migration visible as ranked movement instead of a separate abstract scatter."
-  - id: market.turn-state
-    disposition: IMPROVE
-    target: "Global Pulse cards, Risk Radar, and Turn candidates"
-    rationale: "Puts state, change, stance, trigger, and invalidation on the same operating path."
-  - id: market.performance-usd
-    disposition: IMPROVE
-    target: "Global Pulse cards with USD headline and local/FX decomposition in the detail line"
-    rationale: "Preserves currency-aware comparison while lowering scan cost."
-  - id: market.macro-comparison
-    disposition: RELOCATE
-    destination: "Country inspector tabs on intl.html plus existing country routes"
-    reachability: "A market card opens the in-page inspector; Open full page reaches the country route."
-  - id: rates.curve-desk
-    disposition: RELOCATE
-    destination: "Transmission & fragility summary, Country inspector Rates & Credit tab, and bonds.html"
-    reachability: "The country inspector keeps a Rates & Credit task tab and the deep-link band names Bonds."
-  - id: risk.contagion
-    disposition: IMPROVE
-    target: "Transmission & fragility with origin-versus-US separation and a named transmission chain"
-    rationale: "Preserves connectedness while preventing correlation or receiving share from reading as causal certainty."
-  - id: policy.central-banks
-    disposition: RELOCATE
-    destination: "Country inspector Catalysts tab, Watch Next queue, and policy_watch.html"
-    reachability: "The inspector exposes the next policy event; the deep-link band names Policy Watch."
-  - id: risk.credit-bonds
-    disposition: IMPROVE
-    target: "International risk map and Country inspector Rates & Credit tab"
-    rationale: "Keeps credit and sovereign stress visible at the decision point without a separate L1 museum panel."
-  - id: fx.dollar-drivers
-    disposition: IMPROVE
-    target: "Global Call signal stack and Transmission & fragility chain"
-    rationale: "Connects the dollar fact to affected markets, conditions, and reversal risk."
-  - id: risk.fragility-map
-    disposition: IMPROVE
-    target: "International risk map with separate FX, credit, external, policy, and market columns"
-    rationale: "Retains slow vulnerability as a separate reading from fast market stress."
-  - id: risk.pressure-flow
-    disposition: IMPROVE
-    target: "Transmission chain, sensitivity strip, and Country inspector Evidence tab"
-    rationale: "Preserves directed links but demotes mechanics from first-level reading."
-  - id: reference.regime-correlation-ranks
-    disposition: RELOCATE
-    destination: "Country inspector Evidence tab and named deep-research disclosures"
-    reachability: "Evidence remains one task tab away and carries links to full reference views."
-  - id: action.sector-rotation
-    disposition: RELOCATE
-    destination: "International playbook summary and sector_central.html"
-    reachability: "The playbook quotes the accepted regional stance; the deep-link band names Sector Intelligence."
-  - id: action.prophet-stocks
-    disposition: RELOCATE
-    destination: "International playbook summary and intl_stocks.html"
-    reachability: "Stock Dashboard remains in global navigation and the page-level deep-link band."
-  - id: shell.theme-language-responsive
-    disposition: IMPROVE
-    target: "Intentional dark command-center and light research-workspace treatments, EN/ZH parity, 390w recomposition"
-    rationale: "Makes all supported states deliberate while preserving the canonical site shell."
-
+- id: global.regime-verdict
+  disposition: IMPROVE
+  target: Preserved upstream overview plus Act 1 Global Call
+  rationale: Keeps the canonical overview and gives the international engine-owned 66/100 verdict a bounded first answer.
+- id: global.us-world-rotation
+  disposition: IMPROVE
+  target: Act 1 US-versus-world beam and Act 3 separate RRG reference
+  rationale: Retains leadership versus the US without fusing RRG vocabulary into turn state.
+- id: market.turn-state
+  disposition: IMPROVE
+  target: Act 2 full ten-market turn-state board and Act 3 current order
+  rationale: Every published state remains visible with its accepted stance; no market is suppressed.
+- id: market.performance-usd
+  disposition: IMPROVE
+  target: Act 2 seven-market cards with 1M/3M/6M/12M/YTD controls, sparklines, local return, FX contribution, and USD return
+  rationale: Preserves currency-aware comparison and change shape while making the selected horizon explicit.
+- id: market.macro-comparison
+  disposition: RETAIN
+  target: Act 5 seven-economy comparison table plus country inspector tabs
+- id: rates.curve-desk
+  disposition: RETAIN
+  target: Act 6 rates and curve desk with a real bonds.html destination
+- id: risk.contagion
+  disposition: IMPROVE
+  target: Act 4 contagion board with connectedness, named transmitters, US receiving share, and non-causal disclosure
+  rationale: Makes transmission readable while preserving the explicit no-causation boundary.
+- id: policy.central-banks
+  disposition: RETAIN
+  target: Act 6 seven-bank table with realized stance, honest balance-sheet nulls, and meetings
+- id: risk.credit-bonds
+  disposition: RETAIN
+  target: Act 6 credit and bond stress table with magnitudes, 20-day direction, inversion count, and history start
+- id: fx.dollar-drivers
+  disposition: IMPROVE
+  target: Act 4 Dollar Drivers card plus forex.html escape
+  rationale: Restores the accepted rate-driven read and its window/confirmation receipts without inventing a new score.
+- id: risk.fragility-map
+  disposition: IMPROVE
+  target: Act 4 seven-economy structural fragility ledger
+  rationale: Accounts for every economy and keeps threshold, source, cadence, base-rate, and honest-null law in place.
+- id: risk.pressure-flow
+  disposition: RETAIN
+  target: Act 4 complete ten-row production pressure population with qualitative severity and named sources
+- id: reference.regime-correlation-ranks
+  disposition: RETAIN
+  target: Act 3 RRG table, Act 5 regime comparison, and Act 6 correlation/regime/ranks desk
+- id: action.sector-rotation
+  disposition: RELOCATE
+  destination: Act 6 honest-null sector card plus sector_central.html and cycle destinations
+  reachability: The section remains visible even when zero rows qualify and links to established sector routes.
+- id: action.prophet-stocks
+  disposition: RELOCATE
+  destination: Act 6 preserved-route contract plus intl_stocks.html
+  reachability: The stock route is linked directly and has an eight-cell desktop/mobile × theme × locale preservation matrix.
+- id: shell.theme-language-responsive
+  disposition: IMPROVE
+  target: Visible canonical shell representation, dark/light art directions, native EN/ZH, exact 390px recomposition, and
+    organ-local degraded states
+  rationale: Preserves product navigation and state controls while eliminating whole-page failure takeovers.
 additions:
-  - "Material Risk Radar: only changes that alter the playbook, each with trigger and invalidation."
-  - "Country inspector: same-page task tabs and explicit full-page escape."
-  - "International playbook: Favor, Reduce, Hedge, and Watch Next as display projections only."
-  - "One continuous operating flow from verdict to evidence to action to invalidation."
-
+- A full ten-market turn-state coverage ledger next to the seven-market performance population.
+- Organ-local loading, empty, stale, and error presentations that preserve unrelated intelligence.
+- A seven-economy comparison table plus accessible inspector tabs, without replacing dedicated country routes.
+- A visible non-regression contract and browser evidence matrix for the shared intl_stocks.html mode.
 user_tasks:
-  - id: task.read-global-call
-    task: Decide whether the international tape is constructive, mixed, or risk-off and what changes the call.
-    critical: true
-    production: "A dial, thesis, tug, and vitals answer the question, but compete with many equal-weight panels."
-    proposal: "Global Call states the engine verdict, supporting facts, posture, and flip condition in one bounded hero."
-    verdict: BETTER
-    notes: "Less search and no loss of the engine-owned verdict or receipts."
-  - id: task.find-leadership
-    task: Identify the leading, weakening, and breaking markets without losing USD and FX context.
-    critical: true
-    production: "Turn tiles, performance leaderboard, and rotation scatter answer separately."
-    proposal: "Global Pulse cards and Rotation & turns combine USD return, state, rank migration, and stance."
-    verdict: BETTER
-    notes: "The proposal preserves decomposition in detail rather than repeating it across three L1 modules."
-  - id: task-diagnose-risk
-    task: Distinguish a local country problem from a cross-market transmission threat.
-    critical: true
-    production: "Contagion, dollar, fragility, and pressure-flow panels require synthesis by the user."
-    proposal: "Transmission & fragility separates origin stress, US transmission, mechanism, and structural risk."
-    verdict: BETTER
-    notes: "The causal boundary becomes more explicit, not more certain."
-  - id: task-investigate-country
-    task: Open the evidence behind one country's state and know what confirms or invalidates it.
-    critical: true
-    production: "The comparison table and market tiles link outward; supporting organs are page-wide."
-    proposal: "Country inspector keeps state evidence, thresholds, catalyst, task tabs, and full-page escape together."
-    verdict: BETTER
-    notes: "The proposal reduces route switching while keeping the dedicated route reachable."
-  - id: task-act-with-bounds
-    task: Translate international evidence into a bounded portfolio posture without mistaking display context for sizing authority.
-    critical: true
-    production: "Stances exist across turn, sector, and stock surfaces but the page ends in additional reference panels."
-    proposal: "The playbook groups existing stances and risk channels, discloses its basis, and never sizes positions."
-    verdict: BETTER
-    notes: "Acceptance is conditional on using only existing engine outputs and stance vocabulary."
+- id: task.read-global-call
+  task: Decide whether the international tape is constructive, mixed, or risk-off and understand the receipts behind the call.
+  critical: true
+  production: The upstream overview and international compass both exist but sit inside a long equal-weight dashboard.
+  proposal: The upstream overview is preserved and Act 1 gives the international 66/100 verdict, coverage receipt, drags,
+    US-versus-world beam, and vitals.
+  verdict: BETTER
+  notes: No authority change; hierarchy and duplicate-reading cost improve.
+- id: task.find-leadership
+  task: Identify leaders, weakening markets, and changed states across useful horizons without losing FX context.
+  critical: true
+  production: Turn tiles, a USD leaderboard, horizon controls, sparklines, and RRG answer the job in separate panels.
+  proposal: Act 2 keeps every horizon, decomposition, sparkline, ten-market state, and stance; Act 3 keeps rotation rank and
+    RRG separate.
+  verdict: BETTER
+  notes: The proposal removes no horizon or change-shape evidence.
+- id: task-diagnose-risk
+  task: Distinguish local stress, global transmission, dollar pressure, and structural fragility.
+  critical: true
+  production: Four panels expose contagion, pressure flow, dollar, and fragility with technical receipts.
+  proposal: Act 4 composes the same capabilities, full populations, a restored Dollar Drivers card, and non-causal/slow-versus-fast
+    disclosures.
+  verdict: BETTER
+  notes: The result is more coherent without making a stronger claim.
+- id: task-investigate-country
+  task: Compare all seven economies and inspect one country without losing the common scale.
+  critical: true
+  production: A dense comparison table supports cross-country scanning; country routes provide depth.
+  proposal: Act 5 preserves the complete comparison table, adds accessible same-page tabs, and keeps real rates/FX destinations.
+  verdict: BETTER
+  notes: Comparison remains first; tabs add depth rather than replace population coverage.
+- id: task-use-deep-desks
+  task: Reach central banks, credit, curves, correlation, sector intelligence, and international stock candidates.
+  critical: true
+  production: Each capability is a first-level panel or linked route.
+  proposal: Act 6 retains compact inspectable desks with real routes; sector zero rows are disclosed and the stock route is
+    separately proven.
+  verdict: EQUIVALENT
+  notes: The jobs remain reachable while the L1 hierarchy is reduced.
+- id: task-survive-degradation
+  task: Continue using healthy international intelligence when one producer is loading, empty, stale, or in error.
+  critical: true
+  production: Engines fail open independently, but page-level designed-state evidence is inconsistent.
+  proposal: Only the affected Global Pulse organ changes state; rotation, transmission, comparison, and deep desks remain
+    visible.
+  verdict: BETTER
+  notes: Browser evidence covers all four states in both themes.
 authority_delta:
-  - id: auth.global-verdict
-    production_claim: "Engine-owned world risk-appetite label, score, drags, and descriptive thesis."
-    proposal_claim: "The same verdict and receipts, with a clearer page-level hierarchy."
-    direction: equal
-    warranted: true
-    evidence: "scripts/build_intl.py:181-386; templates/intl.html.j2:475-676"
-  - id: auth.playbook
-    production_claim: "Market-state, sector, and stock surfaces publish plain-language stances without portfolio sizing."
-    proposal_claim: "Those stances are grouped into Favor, Reduce, Hedge, and Watch Next; no new score, probability, size, or trade origin."
-    direction: stronger
-    warranted: true
-    evidence: "Conditional: implementation may project only accepted stance fields and named risk channels, with display-only disclosure."
-  - id: auth.transmission
-    production_claim: "Connectedness and US receiving share are transmission reads, not causal shares."
-    proposal_claim: "The mechanism chain is explicitly conditional and origin stress remains separate from US transmission."
-    direction: weaker
-    warranted: true
-    evidence: "research/INTL_RISK_DESK_MASTERPLAN_BY_FABLE.md; templates/intl.html.j2:1400-1879"
-  - id: auth.country-thresholds
-    production_claim: "Market states carry engine thresholds, recovery quality, events, and radar context."
-    proposal_claim: "The inspector exposes only thresholds already present in the selected market state/radar payload."
-    direction: equal
-    warranted: true
-    evidence: "scripts/build_intl.py:692-849"
-
+- id: auth.global-verdict
+  production_claim: Engine-owned world risk appetite label, score, coverage, drags, and descriptive thesis.
+  proposal_claim: The same 66/100 verdict and receipts in a clearer hierarchy.
+  direction: equal
+  warranted: true
+  evidence: mockups/refs/institutionalize/intl/reference-r3.html#global-call; scripts/build_intl.py:181-386
+- id: auth.rotation
+  production_claim: Rotation rank is a display-tier result derived by the accepted engine.
+  proposal_claim: Engine rotation rank is shown as a result; partial formula inputs are deliberately not presented as an explanation.
+  direction: equal
+  warranted: true
+  evidence: mockups/refs/institutionalize/intl/reference-r3.html#rotation-turns; engine/intl_rotation.py
+- id: auth.transmission
+  production_claim: Connectedness, receiving share, and pressure links are transmission reads, not causal shares.
+  proposal_claim: The same read is labelled non-causal and no decorative quantitative pressure magnitude is introduced.
+  direction: weaker
+  warranted: true
+  evidence: mockups/refs/institutionalize/intl/reference-r3.html#transmission-fragility
+- id: auth.posture
+  production_claim: Market-state engines publish plain-language stance fields without position sizing.
+  proposal_claim: Act 6 repeats those accepted stance fields and explicitly says it never originates, sizes, or upgrades a
+    trade.
+  direction: equal
+  warranted: true
+  evidence: mockups/refs/institutionalize/intl/reference-r3.html#deep-desks
+- id: auth.fragility
+  production_claim: Structural flags disclose thresholds, annual source/cadence, and a high false-positive base rate.
+  proposal_claim: The same thresholds and caveats are kept while every economy is accounted for.
+  direction: equal
+  warranted: true
+  evidence: mockups/refs/institutionalize/intl/reference-r3.html#transmission-fragility
 information_economics:
   words_per_card:
-    production: "Baseline harness measured 1,923 visible English words across 27 panels and 20 sections."
-    proposal: "Reference targets short card labels plus one meaning and one stance; full detail moves to task tabs or named deep links."
+    production: Baseline harness measured 1,923 visible English words across 27 panels and 20 sections.
+    proposal: Six operating acts with short visible meanings; technical mechanics stay in local receipts, tables, or real
+      deep routes.
   findings:
-    - "The proposal removes equal visual weight from raw reference organs but does not remove their user jobs."
-    - "Charts remain where shape matters: market sparklines, rank migration, transmission sequence, and threshold movement."
-    - "Dense receipts move to hover, inspector tabs, disclosures, or dedicated routes rather than becoming explanatory paragraphs."
-    - "The playbook is the main authority-risk surface and must name its display-only basis."
+  - The proposal reduces the first-level hierarchy without deleting a baseline capability.
+  - Change shape remains visual through seven sparklines; RRG remains a distinct relative-leadership table.
+  - Full populations are printed for turn states, economies, pressure flow, fragility, and central banks.
+  - Organ-local degraded states prevent one failed producer from blanking unrelated intelligence.
+  - The exact international stock route remains outside the redesign and is browser-proven in eight cells.
   preserved:
-    - "Currency-aware returns, market state, rotation, contagion, slow fragility, and falsifiable thresholds remain visible."
-    - "Bilingual labels, both themes, mobile access, stock dashboard, and dedicated country pages remain reachable."
-    - "The proposal reduces the L1 hierarchy from roughly twenty sections to six operating acts."
+  - Engine-owned 66/100 verdict, coverage receipt, drags, US-versus-world read, and four vitals.
+  - Five horizons, local/FX/USD decomposition, sparklines, rotation result, RRG, and dated events.
+  - Contagion, Dollar Drivers, structural fragility, pressure flow, macro comparison, and deep desks.
+  - Dark/light, EN/ZH, desktop/mobile, keyboard tabs, and real destination links.
