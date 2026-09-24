@@ -138,7 +138,7 @@ def test_selection_is_theme_coverage_first_not_global_newest_only():
     frame = pd.DataFrame([
         {
             "ticker": "AAA", "cik": 111, "form": "8-K", "filing_date": "2026-09-23",
-            "items": "8.01", "accession": f"0000000111-26-0000{i}",
+            "items": "8.01", "accession": f"0000000111-26-00000{i}",
             "_first_seen": f"2026-09-23T{20-i:02d}:00:00Z",
         }
         for i in range(1, 5)
