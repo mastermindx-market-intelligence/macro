@@ -183,7 +183,7 @@
     "predictive_rule": "No predictive/alpha claim until event definitions, sample construction, controls and holdout are frozen before evaluation and pass accepted out-of-sample testing."
   },
   "acceptance_cases": [
-    "Do not label an exact panel value PRE_EVENT_TIMESTAMPSTAMPED when only issuer process plus a current archive supports it.",
+    "Do not label an exact panel value PRE_EVENT_TIMESTAMPED when only issuer process plus a current archive supports it.",
     "Do not use result-morning third-party reporting to backdate exact consensus bytes to a week earlier.",
     "Require metric-definition matching; adjusted net income cannot substitute for adjusted operating income after tax.",
     "Preserve mixed surprise vectors rather than one generic beat/miss bit.",
