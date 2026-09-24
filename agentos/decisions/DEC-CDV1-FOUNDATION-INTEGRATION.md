@@ -24,9 +24,12 @@ rationale: >
   candidate, that #7777's sector read model is sector-bounded and public-only,
   and that a static rights profile conflicts with source-family rights.
 alternatives:
-  - "Build a CDV-1-native collapsed dossier slot on the sector page now and migrate later — rejected: forks the shell and the auth/evidence contracts, and re-implements what #7870 already owns."
-  - "Bind Task 7 to #7777's sector dossier read model — rejected: dossier identity and dimensions are sector-scoped and public-only; issuer display needs a future additive version, not a reinterpretation."
-  - "Keep `rp_public_primary_v1` as a static display permission — rejected: rights are per source family and fail closed under #7870's registry."
+  - option: "Build a CDV-1-native collapsed dossier slot on the sector page now and migrate later"
+    why_not: "Forks the shell and the auth/evidence contracts and re-implements what #7870 already owns."
+  - option: "Bind Task 7 to #7777's sector dossier read model"
+    why_not: "Dossier identity and dimensions are sector-scoped and public-only; issuer display needs a future additive version, not a reinterpretation."
+  - option: "Keep rp_public_primary_v1 as a static display permission"
+    why_not: "Rights are per source family and fail closed under #7870's registry; a static profile conflicts with them."
 evidence:
   - research/consumer_defensive/cdv1_program/integration/FOUNDATION_INTEGRATION_MAP_2026-09-24.md
   - research/consumer_defensive/cdv1_program/design/T7_DOSSIER_DESIGN_SPEC_2026-09-24.md
