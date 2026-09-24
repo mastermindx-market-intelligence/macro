@@ -24,8 +24,9 @@ admitted real workspace reaches the bundle, and drops every real workspace in
 
 Laws (each pinned in ``tests/test_workspace_projection.py``)
 ------------------------------------------------------------
-* PURE and CLOSED: imports are ``copy``, ``math`` and ``typing`` only — no
-  engine import, no I/O, no clock, no network, no regular expressions.
+* PURE and CLOSED: imports are ``copy``, ``datetime`` (parsers only — the
+  clock is never read; no ``now``/``today``), ``math`` and ``typing`` — no
+  engine import, no I/O, no network, no regular expressions.
 * NEVER RAISES: every malformed input degrades to ``None`` (whole payload) or
   to a dropped field plus a typed omission token; no exception escapes for
   any input.
@@ -33,7 +34,8 @@ Laws (each pinned in ``tests/test_workspace_projection.py``)
   ``isinstance(v, (int, float)) and not isinstance(v, bool)`` and, for a
   float, ``math.isfinite(v)``. A string is NOT a number (``"40.2"``,
   ``"2026"``, ``"2"`` are refused). ``fiscal_period.year`` / ``.quarter`` are
-  accepted iff they are non-bool ``int`` (quarter in 1..4). Nothing is
+  accepted iff they are non-bool ``int`` with year in 1000..9999 (so the
+  token is a genuine four-digit ``YYYY``) and quarter in 1..4. Nothing is
   coerced, normalised, defaulted or invented; the closed ``"YYYYQn"`` token
   is formed ONLY from the workspace block's int year and quarter — never
   from a fact's ISO ``period`` or any date.
@@ -48,30 +50,41 @@ Laws (each pinned in ``tests/test_workspace_projection.py``)
 * COLLISION: two present facts sharing ``(metric, basis)`` are ambiguous —
   NEITHER is emitted and ``"reported_ambiguous:<metric>"`` is recorded.
 * UNKEYED PERIOD: when present facts exist but the workspace's ``year`` is
-  not an int (so no ``"YYYYQn"`` token can be formed), the facts are dropped
-  and ``"reported_unkeyed:fiscal_period"`` is recorded once. A quarter that
-  is not an int in 1..4 refuses the WHOLE payload (``None``) because the
+  not an int in 1000..9999 (so no ``"YYYYQn"`` token can be formed), the
+  facts are dropped, ``fiscal_period.year`` is emitted as ``None`` and
+  ``"reported_unkeyed:fiscal_period"`` is recorded once. A quarter that is
+  not an int in 1..4 refuses the WHOLE payload (``None``) because the
   composer refuses a non-int quarter.
 * CLOSED CIK GRAMMAR: ``issuer.company_id`` is accepted ONLY as
   ``cik:<digits>`` or ``cik<digits>`` (case-insensitive prefix) or a bare
-  ASCII all-digit string of 1..10 digits; the digits are emitted zero-padded
-  to ten. Anything else (LEI, ticker, prose, unicode digits, surrounding
-  whitespace) yields no CIK — and a payload whose CIK cannot be parsed is
+  ASCII all-digit string of 1..10 digits, not all zeros; the digits are
+  emitted zero-padded to ten (the identifier namespace ``_company_key``
+  compares as ``cik:0000000000``). Anything else (LEI, ticker, prose,
+  unicode digits, surrounding whitespace, an all-zero run) yields no CIK — and a payload whose CIK cannot be parsed is
   refused as a WHOLE (``None``), never emitted with ``cik: None``: the
   composer's ``_company_key`` would collapse every unknown-CIK workspace into
   the shared ``"cik:"`` bucket and pair one issuer's guidance with another's
   actual.
-* FRESH COPIES: guidance items and every emitted token value are deep-copied;
-  a downstream mutation never writes into the producer's payload. A guidance
-  item that is not a mapping is dropped with ``"guidance_malformed_item"``
-  recorded once (the composer calls ``.get`` on each item).
+* FRESH COPIES: guidance items are deep-copied (token values are immutable
+  ``str``/``None`` and need no copy); a downstream mutation never writes into
+  the producer's payload. A guidance item that is not a mapping, or that
+  cannot be deep-copied (an unpicklable member, pathological nesting), is
+  dropped with ``"guidance_malformed_item"`` recorded once (the composer
+  calls ``.get`` on each item).
+* CLOCK STRINGS: ``lifecycle.source_available_at`` / ``.observed_at`` are
+  copied only when they are strings in the grammar the composer's replay
+  gate parses (``YYYY-MM-DD`` or an ISO-8601 instant, ``Z`` accepted) — the
+  literal ``"unknown"`` is also copied for ``source_available_at`` because
+  the composer types it. Anything else present under those keys is dropped
+  with ``"lifecycle_malformed:<key>"``, so the composer's ``_le`` never sees a
+  string it cannot parse.
 * TWO CLOCKS (N11): production's system-recording clock is
   ``lifecycle.observed_at`` — real wall-clock ``now`` at first observation,
   carried forward unchanged by
   ``scripts/refresh_event_workspaces.py::prior_observed_at``. This bridge
   emits ``lifecycle.recorded_at = lifecycle.observed_at`` WHEN AND ONLY WHEN
-  ``observed_at`` is present and a non-empty string, keeping ``observed_at``
-  alongside. ``recorded_at`` is NEVER derived from ``generated_at`` or from a
+  ``observed_at`` is present as a non-empty clock string (grammar above),
+  keeping ``observed_at`` alongside. ``recorded_at`` is NEVER derived from ``generated_at`` or from a
   manifest — those are the SOURCE clock
   (``refresh_event_workspaces.py``: ``source_clock = acceptance_datetime``,
   which becomes ``source_available_at``; the two-clock violation
@@ -93,6 +106,7 @@ from __future__ import annotations
 
 import copy
 import math
+from datetime import datetime, timezone
 from typing import Any, Mapping
 
 __all__ = ["project_event_workspace"]
@@ -108,6 +122,8 @@ _LIFECYCLE_COPY_KEYS = ("source_available_at", "observed_at")
 
 _ASCII_DIGITS = frozenset("0123456789")
 _CIK_MAX_DIGITS = 10
+_YEAR_MIN, _YEAR_MAX = 1000, 9999
+_SOURCE_AVAILABILITY_TYPED_UNKNOWN = "unknown"  # the composer types this literal
 
 
 # ---------------------------------------------------------------------------
@@ -145,10 +161,36 @@ def _is_quarter(value: Any) -> bool:
     return _is_int(value) and 1 <= value <= 4
 
 
+def _is_year(value: Any) -> bool:
+    """A four-digit int year — the only year that forms a closed ``YYYY``."""
+    return _is_int(value) and _YEAR_MIN <= value <= _YEAR_MAX
+
+
+def _is_clock_string(value: Any) -> bool:
+    """True iff ``value`` is a non-empty string the composer's replay gate can
+    parse: a ``YYYY-MM-DD`` day or an ISO-8601 instant (``Z`` accepted) —
+    the same two parsers the composer applies. Pure: nothing is converted or
+    emitted, the clock is never read."""
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        if "T" in value:
+            text = value[:-1] + "+00:00" if value.endswith("Z") else value
+            moment = datetime.fromisoformat(text)
+            if moment.tzinfo is None:
+                moment.replace(tzinfo=timezone.utc)
+        else:
+            datetime.strptime(value, "%Y-%m-%d")
+    except (ValueError, TypeError, OverflowError):
+        return False
+    return True
+
+
 def _parse_cik(raw: Any) -> str | None:
     """Closed CIK grammar (N3): ``cik:<digits>``, ``cik<digits>``
     (case-insensitive prefix) or a bare ASCII all-digit string of 1..10
-    digits. No stripping, no search, no regex; anything else → ``None``."""
+    digits, not all zeros. No stripping, no search, no regex; anything else
+    → ``None``."""
     if not isinstance(raw, str) or not raw:
         return None
     lowered = raw.lower()
@@ -162,6 +204,8 @@ def _parse_cik(raw: Any) -> str | None:
         return None
     if not all(char in _ASCII_DIGITS for char in digits):
         return None
+    if set(digits) == {"0"}:
+        return None  # an all-zero run is not an issuer; it would key the shared bucket
     return digits.zfill(_CIK_MAX_DIGITS)
 
 
@@ -177,8 +221,8 @@ def _record(omissions: list[str], token: str) -> None:
 
 def _fiscal_period_token(year: Any, quarter: Any) -> str | None:
     """The closed ``"YYYYQn"`` token the composer's ``_fiscal_key`` parses —
-    formed ONLY from an int year and an int quarter in 1..4."""
-    if not _is_int(year) or not _is_quarter(quarter):
+    formed ONLY from a four-digit int year and an int quarter in 1..4."""
+    if not _is_year(year) or not _is_quarter(quarter):
         return None
     return f"{year}Q{quarter}"
 
@@ -234,12 +278,12 @@ def _project_reported(
         row: dict[str, Any] = {
             "metric": metric,
             "value": fact["value"],
-            "unit": copy.deepcopy(fact.get("unit")),
+            "unit": fact.get("unit"),          # str | None — immutable, verbatim
             "fiscal_period": token,
         }
         for optional in _REPORTED_OPTIONAL_KEYS:
             if optional in fact:
-                row[optional] = copy.deepcopy(fact[optional])
+                row[optional] = fact[optional]  # str | None — immutable, verbatim
         rows.append(row)
     rows.sort(key=lambda r: (r["metric"], r.get("basis") or ""))
     return rows
@@ -247,7 +291,8 @@ def _project_reported(
 
 def _project_guidance(raw: Any, omissions: list[str]) -> list[Any]:
     """Deep-copy ``guidance_item.v1`` mappings verbatim. A non-list yields
-    ``[]``; a non-mapping item is dropped with ``guidance_malformed_item``."""
+    ``[]``; a non-mapping item, or one that cannot be deep-copied, is dropped
+    with ``guidance_malformed_item``."""
     if not isinstance(raw, (list, tuple)):
         return []
     items: list[Any] = []
@@ -255,22 +300,34 @@ def _project_guidance(raw: Any, omissions: list[str]) -> list[Any]:
         if not isinstance(item, Mapping):
             _record(omissions, "guidance_malformed_item")
             continue
-        items.append(copy.deepcopy(item))
+        try:
+            items.append(copy.deepcopy(item))
+        except Exception:  # noqa: BLE001 — unpicklable member / pathological nesting
+            _record(omissions, "guidance_malformed_item")
     return items
 
 
-def _project_lifecycle(raw: Any) -> dict[str, Any]:
+def _project_lifecycle(raw: Any, omissions: list[str]) -> dict[str, Any]:
     """Copy ``source_available_at`` / ``observed_at`` verbatim WHEN PRESENT
-    and derive ``recorded_at`` from ``observed_at`` under the two-clock law.
-    Missing keys are dropped, never coerced to ``None``."""
+    as clock strings the composer can parse, and derive ``recorded_at`` from
+    ``observed_at`` under the two-clock law. Missing keys are dropped, never
+    coerced to ``None``; a present value outside the clock grammar is dropped
+    with ``lifecycle_malformed:<key>``."""
     if not isinstance(raw, Mapping):
         return {}
     projected: dict[str, Any] = {}
     for key in _LIFECYCLE_COPY_KEYS:
-        if key in raw:
-            projected[key] = copy.deepcopy(raw[key])
-    observed = raw.get("observed_at")
-    if isinstance(observed, str) and observed:
+        if key not in raw:
+            continue
+        value = raw[key]
+        if _is_clock_string(value) or (
+            key == "source_available_at" and value == _SOURCE_AVAILABILITY_TYPED_UNKNOWN
+        ):
+            projected[key] = value
+        else:
+            _record(omissions, f"lifecycle_malformed:{key}")
+    observed = projected.get("observed_at")
+    if isinstance(observed, str):
         projected["recorded_at"] = observed
     return projected
 
@@ -283,7 +340,9 @@ def project_event_workspace(payload: Mapping[str, Any]) -> dict[str, Any] | None
     ``omissions``; or ``None`` when the payload cannot be projected as a
     whole: not a mapping, no non-empty ``event_id`` string, no
     ``fiscal_period`` mapping, a quarter that is not an int in 1..4, or an
-    ``issuer.company_id`` outside the closed CIK grammar. Never raises.
+    ``issuer.company_id`` outside the closed CIK grammar. A year outside
+    1000..9999 is emitted as ``None`` (its facts become ``reported_unkeyed``).
+    Never raises.
     """
     if not isinstance(payload, Mapping):
         return None
@@ -309,12 +368,12 @@ def project_event_workspace(payload: Mapping[str, Any]) -> dict[str, Any] | None
     token = _fiscal_period_token(year, quarter)
     reported = _project_reported(payload.get("facts"), token, omissions)
     guidance = _project_guidance(payload.get("guidance"), omissions)
-    lifecycle = _project_lifecycle(payload.get("lifecycle"))
+    lifecycle = _project_lifecycle(payload.get("lifecycle"), omissions)
 
     return {
         "event_id": event_id,
         "cik": cik,
-        "fiscal_period": {"year": year if _is_int(year) else None, "quarter": quarter},
+        "fiscal_period": {"year": year if _is_year(year) else None, "quarter": quarter},
         "guidance": guidance,
         "reported": reported,
         "lifecycle": lifecycle,

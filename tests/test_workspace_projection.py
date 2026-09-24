@@ -38,8 +38,10 @@ Pinned here and nowhere else:
 """
 from __future__ import annotations
 
+import ast
 import copy
 import math
+from pathlib import Path
 
 import pytest
 
@@ -73,10 +75,12 @@ from tests.test_semiconductor_earnings_intake_integration import (
 )
 
 ROW_KEYS = ("event_id", "cik", "fiscal_period", "guidance", "reported", "lifecycle", "omissions")
+MODULE_PATH = Path(__file__).resolve().parents[1] / "engine" / "market_ontology" / "workspace_projection.py"
 
 
 def _fact(metric="revenue", value=12.34, **extra):
-    fact = {"schema": "event_fact.v1", "fact_id": f"fact_{metric}", "metric": metric,
+    label = metric if isinstance(metric, str) else "hostile"   # never str() a hostile metric
+    fact = {"schema": "event_fact.v1", "fact_id": f"fact_{label}", "metric": metric,
             "value": value, "unit": "usd_billions", "period": "2026-06-30",
             "basis": "reported_ifrs", "currency": "USD"}
     fact.update(extra)
@@ -234,6 +238,34 @@ def test_projected_tsm_two_quarter_bundle_drives_economics_ready(monkeypatch) ->
     assert management["comparisons"]["prior_vs_actual"]["status"] == "comparable", management
 
 
+def test_projected_tsm_rows_drive_economics_ready_under_system_replay(monkeypatch) -> None:
+    """N11 end-to-end in ONE path: the REAL projected rows (production
+    lifecycle → recorded_at) survive the composer's system_replay gate and
+    still reach economics.ready / comparable. Cutoffs sit after the
+    discovery-time observed_at (wall-clock now) and after the packet's
+    recorded_at."""
+    projected = _projected_tsm_q1_q2(monkeypatch)
+    for row in projected:
+        assert row["lifecycle"]["recorded_at"] == row["lifecycle"]["observed_at"]
+    bundle = _tsm_q1_q2_bundle(projected)
+    query = ResearchQuery(
+        anchor_theme_id="ai_semiconductors", slice_key="hbm_packaging",
+        view="economics", time_mode="system_replay",
+        source_cutoff="2099-12-31", recorded_cutoff="2099-12-31",
+    )
+    response = compose_semiconductor_research(query, bundle)
+    assert response["economics"]["status"] == "ready", response["economics"]
+    assert response["economics"]["management"]["comparisons"]["prior_vs_actual"]["status"] == "comparable"
+    assert sorted(response["economics"]["input_refs"]) == sorted(r["event_id"] for r in projected)
+    # And a recorded_cutoff BEFORE the rows' observed_at drops them: no triple.
+    early = ResearchQuery(
+        anchor_theme_id="ai_semiconductors", slice_key="hbm_packaging",
+        view="economics", time_mode="system_replay",
+        source_cutoff="2099-12-31", recorded_cutoff="2026-01-01",
+    )
+    assert compose_semiconductor_research(early, bundle)["economics"]["status"] == "unavailable"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # (c) Typed absences never produce rows
 # ─────────────────────────────────────────────────────────────────────────────
@@ -330,6 +362,8 @@ def test_closed_cik_grammar_accepts_only_cik_prefixed_or_bare_digits(company_id,
     pytest.param("cik:", id="prefix-only"),
     pytest.param("cik:٠٠٠١٠٤٦١٧٩", id="unicode-digits"),
     pytest.param("cik:1046179x", id="digits-then-letter"),
+    pytest.param("0", id="all-zero-one-digit"),
+    pytest.param("cik:0000000000", id="all-zero-ten-digits"),
     pytest.param("TSM", id="ticker"),
     pytest.param("", id="empty"),
     pytest.param(None, id="none"),
@@ -399,13 +433,27 @@ def test_numeric_values_are_copied_verbatim_including_ints_and_huge_ints() -> No
     pytest.param(2026.0, id="float"),
     pytest.param(True, id="bool"),
     pytest.param(None, id="none"),
+    pytest.param(7, id="one-digit"),
+    pytest.param(-5, id="negative"),
+    pytest.param(999, id="below-range"),
+    pytest.param(10000, id="above-range"),
+    pytest.param(10 ** 20, id="huge"),
+    pytest.param(10 ** 4300, id="beyond-int-str-limit"),
 ])
-def test_non_int_year_drops_facts_with_unkeyed_omission_and_projects_year_none(year) -> None:
+def test_non_formable_year_drops_facts_with_unkeyed_omission_and_projects_year_none(year) -> None:
     row = project_event_workspace(_payload(fiscal_period={"year": year, "quarter": 2}))
     assert row is not None
     assert row["fiscal_period"] == {"year": None, "quarter": 2}
     assert row["reported"] == []
     assert row["omissions"] == ["reported_unkeyed:fiscal_period"]
+
+
+@pytest.mark.parametrize("year", [1000, 2026, 9999])
+def test_four_digit_years_form_the_closed_token(year) -> None:
+    row = project_event_workspace(_payload(fiscal_period={"year": year, "quarter": 3}))
+    assert row is not None
+    assert row["fiscal_period"] == {"year": year, "quarter": 3}
+    assert row["reported"][0]["fiscal_period"] == f"{year}Q3"
 
 
 def test_unkeyed_omission_is_recorded_only_when_present_facts_exist() -> None:
@@ -478,6 +526,86 @@ def test_non_mapping_guidance_items_are_dropped_with_typed_omission() -> None:
     assert row is not None
     assert row["guidance"] == [{"horizon": "2026Q3"}]
     assert row["omissions"] == ["guidance_malformed_item"]
+
+
+def _deep(levels: int) -> dict:
+    root: dict = {}
+    cursor = root
+    for _ in range(levels):
+        cursor["n"] = {}
+        cursor = cursor["n"]
+    return root
+
+
+def test_uncopyable_guidance_items_are_dropped_not_raised() -> None:
+    def gen():
+        yield 1
+
+    row = project_event_workspace(_payload(guidance=[
+        {"g": gen()},                      # unpicklable member → TypeError inside deepcopy
+        _deep(5000),                       # pathological nesting → RecursionError inside deepcopy
+        {"horizon": "2026Q3"},
+    ]))
+    assert row is not None
+    assert row["guidance"] == [{"horizon": "2026Q3"}]
+    assert row["omissions"] == ["guidance_malformed_item"]
+
+
+@pytest.mark.parametrize("value", [
+    pytest.param("mutated", id="prose"),
+    pytest.param("2026-13-45", id="impossible-date"),
+    pytest.param("2026-07-21T25:00:00Z", id="impossible-instant"),
+    pytest.param("", id="empty"),
+    pytest.param(1721000000, id="epoch-int"),
+    pytest.param(None, id="none"),
+    pytest.param(["2026-07-21"], id="list"),
+])
+def test_lifecycle_value_outside_the_clock_grammar_is_dropped_with_typed_omission(value) -> None:
+    row = project_event_workspace(_payload(lifecycle={
+        "observed_at": value, "source_available_at": "2026-07-16T12:00:00Z",
+    }))
+    assert row is not None
+    assert row["lifecycle"] == {"source_available_at": "2026-07-16T12:00:00Z"}
+    assert row["omissions"] == ["lifecycle_malformed:observed_at"]
+    row = project_event_workspace(_payload(lifecycle={"source_available_at": value}))
+    assert row is not None
+    assert row["lifecycle"] == {}
+    assert row["omissions"] == ["lifecycle_malformed:source_available_at"]
+
+
+def test_uncopyable_lifecycle_value_is_dropped_not_raised() -> None:
+    def gen():
+        yield 1
+
+    row = project_event_workspace(_payload(lifecycle={"observed_at": gen(), "source_available_at": "unknown"}))
+    assert row is not None
+    assert row["lifecycle"] == {"source_available_at": "unknown"}
+    assert row["omissions"] == ["lifecycle_malformed:observed_at"]
+
+
+@pytest.mark.parametrize("value", [
+    pytest.param("2026-07-21", id="date-only"),
+    pytest.param("2026-07-21T09:15:00Z", id="instant-z"),
+    pytest.param("2026-07-21T09:15:00+00:00", id="instant-offset"),
+    pytest.param("2026-07-21T09:15:00.250000Z", id="instant-micros"),
+])
+def test_clock_strings_in_the_composer_grammar_are_copied_verbatim_and_promoted(value) -> None:
+    row = project_event_workspace(_payload(lifecycle={"observed_at": value, "source_available_at": value}))
+    assert row is not None
+    assert row["lifecycle"] == {"source_available_at": value, "observed_at": value, "recorded_at": value}
+    assert row["omissions"] == []
+    assert [w["event_id"] for w in _replay_selection([row], recorded_cutoff="2099-12-31")] == ["evt_test"]
+
+
+def test_typed_unknown_source_availability_is_copied_verbatim_for_the_composer() -> None:
+    row = project_event_workspace(_payload(lifecycle={"source_available_at": "unknown",
+                                                      "observed_at": "2026-07-21T09:15:00Z"}))
+    assert row is not None
+    assert row["lifecycle"]["source_available_at"] == "unknown"
+    assert row["omissions"] == []
+    # observed_at never accepts the typed literal: it is a system clock reading.
+    row = project_event_workspace(_payload(lifecycle={"observed_at": "unknown"}))
+    assert row is not None and row["lifecycle"] == {} and row["omissions"] == ["lifecycle_malformed:observed_at"]
 
 
 @pytest.mark.parametrize("lifecycle", [
@@ -629,8 +757,13 @@ def test_payload_supplied_recorded_at_is_never_copied() -> None:
 # (k) Never raises — hostile grid over every slot
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _gen():
+    yield 1
+
+
 _HOSTILE = [None, "", "x", "40.2", 0, 1, -1, 2.5, True, False, float("nan"), float("inf"),
-            [], ["a"], {}, {"k": "v"}, {"k": {"n": ["deep"]}}, b"bytes", 10 ** 400, object()]
+            [], ["a"], {}, {"k": "v"}, {"k": {"n": ["deep"]}}, b"bytes", 10 ** 400, 10 ** 4300,
+            object(), _gen(), {"g": _gen()}, "2026-13-45", "mutated"]
 
 
 def test_never_raises_for_any_slot_value() -> None:
@@ -648,3 +781,24 @@ def test_never_raises_for_any_slot_value() -> None:
             project_event_workspace(_payload(facts=[_fact(**{key: hostile})]))
         for key in ("observed_at", "source_available_at", "recorded_at", "state"):
             project_event_workspace(_payload(lifecycle={key: hostile}))
+    project_event_workspace(_payload(guidance=[_deep(5000)], facts=[_deep(5000)], lifecycle=_deep(5000)))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# (l) Module closure — parsers only, no clock read, no conversion of payload values
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def test_module_never_reads_the_clock_and_applies_no_numeric_conversion() -> None:
+    tree = ast.parse(MODULE_PATH.read_text(encoding="utf-8"))
+    roots: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            roots.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            roots.add(node.module.split(".")[0])
+        if isinstance(node, ast.Call):
+            name = getattr(node.func, "attr", getattr(node.func, "id", ""))
+            assert name not in {"now", "today", "utcnow", "time", "open", "float", "int",
+                                "round", "abs", "eval", "exec"}, name
+    assert roots == {"__future__", "copy", "math", "datetime", "typing"}, sorted(roots)
