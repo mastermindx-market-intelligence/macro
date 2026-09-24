@@ -183,4 +183,38 @@ class EventBindingTests(unittest.TestCase):
         self.assertEqual(self.run_packet([a,b]), self.run_packet([b,a]))
 
 
+    def test_conflicting_revision_id_must_not_resurrect_old_plan(self):
+        out = self.run_packet([
+            notice(notice_id="old"),
+            notice(notice_id="revision"),
+            notice(notice_id="revision", plan_status="cancelled"),
+        ])
+        self.assertEqual(out["events"], [])
+        self.assertTrue(any(x["reason"] == "unresolved_notice_versions" for x in out["excluded"]))
+
+    def test_reused_id_quarantines_every_referenced_event(self):
+        out = self.run_packet([
+            notice(notice_id="old-A"),
+            notice(notice_id="old-B", event_ref="event-B", type="NFP"),
+            notice(notice_id="revision"),
+            notice(notice_id="revision", event_ref="event-B", type="NFP", plan_status="cancelled"),
+        ])
+        self.assertEqual(out["events"], [])
+
+    def test_future_id_conflict_does_not_change_past(self):
+        out = self.run_packet([
+            notice(),
+            notice(plan_status="cancelled", published_at="2017-03-15T10:00:00Z"),
+        ])
+        self.assertEqual(len(out["events"]), 1)
+
+    def test_unrelated_event_survives_conflict(self):
+        out = self.run_packet([
+            notice(notice_id="revision"),
+            notice(notice_id="revision", plan_status="cancelled"),
+            notice(notice_id="other", event_ref="other-event", type="NFP"),
+        ])
+        self.assertEqual([row["type"] for row in out["events"]], ["NFP"])
+
+
 if __name__ == "__main__": unittest.main(verbosity=2)
