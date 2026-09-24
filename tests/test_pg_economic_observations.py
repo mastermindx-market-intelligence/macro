@@ -240,7 +240,7 @@ def test_unit_shape_mismatch_is_a_typed_absence():
     workspace, rows = _selected("eps_unit_mismatch")
     row = next(row for row in rows if row["metric"] == "pg_diluted_eps")
     assert "value" not in row
-    assert row["typed_absence"]["reason"] == "missing_units"
+    assert row["typed_absence"]["reason"] == "unit_mismatch"
 
 
 def test_fy2027_scope_binds_current_and_prior_columns() -> None:
