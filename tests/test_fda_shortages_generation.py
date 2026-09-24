@@ -419,6 +419,33 @@ def test_wrapper_returns_previous_qualified_frame_after_failed_refresh(
     assert state["capture"]["source_generation"] == "2026-09-20"
 
 
+def test_failed_refresh_preserves_the_digest_of_a_torn_parquet(
+        tmp_path, monkeypatch):
+    from collectors import fda_shortages
+
+    path = tmp_path / "shortages.parquet"
+    fda_shortages.save_shortage_observation(
+        _sweep("2026-09-20", [_record()]), path=path, expected_predecessor=None,
+    )
+    sidecar = path.with_suffix(".observation.json")
+    before = json.loads(sidecar.read_text())
+    path.write_bytes(path.read_bytes()[:-16])
+    assert fda_shortages.read_shortage_observation(path=path)["inconsistent"] is True
+
+    def outage(skip, limit=100):
+        raise OSError("synthetic refresh outage")
+
+    monkeypatch.setattr(fda_shortages, "_shortages_path", lambda: path)
+    monkeypatch.setattr(fda_shortages, "_fetch_page", outage)
+    fda_shortages.fetch_shortages()
+    after = json.loads(sidecar.read_text())
+    assert after["parquet_sha256"] == before["parquet_sha256"]
+    state = fda_shortages.read_shortage_observation(path=path)
+    assert state["inconsistent"] is True
+    assert state["rows"] is None
+    assert state["capture"] is None
+
+
 def test_cache_reader_carries_observation_state(tmp_path, monkeypatch):
     from collectors import fda_shortages
 

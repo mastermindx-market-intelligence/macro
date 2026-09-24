@@ -38,9 +38,6 @@ def _legacy_parse_clock():
     return datetime.now(timezone.utc)
 
 
-class _MalformedRecord(TypeError):
-    pass
-
 SHORTAGES_URL = "https://api.fda.gov/drug/shortages.json"
 PAGE_SIZE = 100       # openFDA max per request
 MAX_PAGES = 25        # cap: 2500 records; avoids runaway loop
@@ -50,7 +47,7 @@ HISTORY_COLUMNS = [
     "first_observed_generation", "last_observed_generation",
     "absent_since_generation", "previous_status", "status_changed_generation",
     "capture_known",
-]          # polite pacing between pages
+]
 
 
 def _shortages_path():
@@ -468,7 +465,7 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
             "absent_generations_kept": 90, "dropped_absent_rows": 0,
         },
         "predecessor": expected_predecessor,
-        "parquet_sha256": _digest(path) if path.exists() else None,
+        "parquet_sha256": existing.get("parquet_sha256"),
     }
     try:
         payload = _json_dumps(receipt)
@@ -508,11 +505,11 @@ def fetch_shortages(full_refresh: bool = False) -> pd.DataFrame | None:
             time.sleep(PACE_S)
         return _fetch_page(skip=skip, limit=limit)
 
-    result = collect_shortage_sweep(
-        fetch_page, clock=lambda: datetime.now(timezone.utc),
-        page_size=PAGE_SIZE, max_pages=MAX_PAGES,
-    )
     try:
+        result = collect_shortage_sweep(
+            fetch_page, clock=lambda: datetime.now(timezone.utc),
+            page_size=PAGE_SIZE, max_pages=MAX_PAGES,
+        )
         outcome = save_shortage_observation(
             result, path=path, expected_predecessor=expected_predecessor,
         )
