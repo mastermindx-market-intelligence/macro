@@ -924,7 +924,10 @@ def price_breadth_context(
     """Matched-window sample evidence, never a market-wide/index-weight diagnosis.
 
     Calendar is the benchmark's observed daily-session index, not a generated
-    business-day calendar. No price is forward-filled. Every return requires all
+    business-day calendar. Missing benchmark rows evidenced by usable requested
+    stock observations invalidate the affected window, not its unaffected siblings.
+    This cross-source check is not a complete exchange-calendar certification.
+    No price is forward-filled. Every return requires all
     window observations. MA change uses identical eligible names at both ends.
     Current library membership is descriptive, not point-in-time backtest evidence.
     The comparator (CSI300 ETF) is a different universe: no contribution claim.
@@ -953,7 +956,18 @@ def price_breadth_context(
             raise ValueError('no common session')
         end = calendar[-1]
         grid = calendar[-205:]
-        p = _context_prices(prices.reindex(index=grid, columns=members))
+        # The benchmark remains the ruler. A missing row cannot compress an
+        # observed stock session out of the advertised horizon. Cross-check only
+        # requested names with real usable observations, never unrelated columns.
+        observed = _context_prices(prices.loc[(prices.index >= grid[0]) &
+                                              (prices.index <= end)].reindex(columns=members))
+        p = observed.reindex(index=grid)
+        orphan_dates = observed.index[observed.notna().any(axis=1)].difference(calendar)
+        def calendar_gaps(block):
+            if block.empty:
+                return []
+            return orphan_dates[(orphan_dates >= block.index[0]) &
+                                (orphan_dates <= block.index[-1])].strftime('%Y-%m-%d').tolist()
         b = _context_prices(bench.reindex(index=grid))['benchmark']
         result.update(asof=end.strftime('%Y-%m-%d'),
                       status='current' if end == when else 'delayed',
@@ -967,6 +981,15 @@ def price_breadth_context(
                  'benchmark_return_pct': None, 'comparison': None}
             block = p.tail(horizon + 1)
             if len(block) == horizon + 1:
+                missing_dates = calendar_gaps(block)
+                if missing_dates:
+                    w.update(status='incomplete_calendar', start=str(block.index[0].date()),
+                             calendar_gaps=missing_dates)
+                    result['windows'][str(horizon)] = w
+                    result['data_gaps'].append(
+                        f'{horizon}-session window: benchmark omits observed stock dates: '
+                        + ', '.join(missing_dates))
+                    continue
                 eligible = block.notna().all()
                 ret = ((block.iloc[-1, eligible.values] /
                         block.iloc[0, eligible.values] - 1) * 100).replace([np.inf, -np.inf], np.nan).dropna()
@@ -989,14 +1012,18 @@ def price_breadth_context(
             result['windows'][str(horizon)] = w
         trend = {'window': 200, 'change_sessions': 5, 'eligible': 0,
                  'above200_pct': None, 'paired_eligible': 0, 'paired_change_pp': None}
-        if len(p) >= 200:
+        current_gaps = calendar_gaps(p.tail(200)) if len(p) >= 200 else []
+        paired_gaps = calendar_gaps(p) if len(p) == 205 else []
+        if current_gaps or paired_gaps:
+            trend['calendar_gaps'] = sorted(set(current_gaps + paired_gaps))
+        if len(p) >= 200 and not current_gaps:
             current = p.tail(200)
             names = current.notna().all()
             trend['eligible'] = int(names.sum())
             if names.mean() >= min_coverage:
                 trend['above200_pct'] = float((current.iloc[-1, names.values] >
                                                current.loc[:, names].div(len(current)).sum()).mean() * 100)
-        if len(p) == 205:
+        if len(p) == 205 and not paired_gaps:
             paired = p.notna().all()
             trend['paired_eligible'] = int(paired.sum())
             if paired.mean() >= min_coverage:
@@ -1276,6 +1303,9 @@ def index_member_breadth_context(membership, closes, benchmark, *, asof: str) ->
         for w in result['windows'].values():
             w['membership_observed_after_start'] = bool(w['start'] and observed>pd.Timestamp(w['start']))
             w['coverage_detail'] = _index_member_price_gaps(closes, benchmark, names, w)
+            if w.get('calendar_gaps'):
+                w['coverage_detail']['status'] = 'incomplete_calendar'
+                w['coverage_detail']['calendar_gaps'] = list(w['calendar_gaps'])
         if snapshot['status']=='unavailable':
             return result
         if not any(w['status']=='ok' for w in result['windows'].values()):

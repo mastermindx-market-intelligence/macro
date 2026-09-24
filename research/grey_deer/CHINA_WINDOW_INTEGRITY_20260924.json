@@ -1,0 +1,155 @@
+{
+  "base": "b810694952776f58ff882e3174592555d82cdf4f",
+  "source_sha256": "cfd525d2b8faaf2af4860cd3f730ca2f87b0cf58ae4e0ce9420b30e7f9e33447",
+  "scope": "descriptive observed-date consistency; no complete exchange-calendar certification",
+  "synthetic": {
+    "removed_benchmark_date": "2026-09-10",
+    "complete": {
+      "5": {
+        "status": "ok",
+        "start": "2026-09-11",
+        "end": "2026-09-18",
+        "eligible": 10,
+        "median_return_pct": -9.999999999999998,
+        "benchmark_return_pct": 0.0,
+        "calendar_gaps": null
+      },
+      "20": {
+        "status": "ok",
+        "start": "2026-08-21",
+        "end": "2026-09-18",
+        "eligible": 10,
+        "median_return_pct": -9.999999999999998,
+        "benchmark_return_pct": 0.0,
+        "calendar_gaps": null
+      }
+    },
+    "old_missing_row": {
+      "5": {
+        "status": "ok",
+        "start": "2026-09-11",
+        "end": "2026-09-18",
+        "eligible": 10,
+        "median_return_pct": -9.999999999999998,
+        "benchmark_return_pct": 0.0,
+        "calendar_gaps": null
+      },
+      "20": {
+        "status": "ok",
+        "start": "2026-08-20",
+        "end": "2026-09-18",
+        "eligible": 10,
+        "median_return_pct": 80.0,
+        "benchmark_return_pct": 0.0,
+        "calendar_gaps": null
+      }
+    },
+    "repaired_missing_row": {
+      "5": {
+        "status": "ok",
+        "start": "2026-09-11",
+        "end": "2026-09-18",
+        "eligible": 10,
+        "median_return_pct": -9.999999999999998,
+        "benchmark_return_pct": 0.0,
+        "calendar_gaps": null
+      },
+      "20": {
+        "status": "incomplete_calendar",
+        "start": "2026-08-20",
+        "end": "2026-09-18",
+        "eligible": 0,
+        "median_return_pct": null,
+        "benchmark_return_pct": null,
+        "calendar_gaps": [
+          "2026-09-10"
+        ]
+      }
+    }
+  },
+  "stored_input": {
+    "assessment": "2026-09-21",
+    "members": 1817,
+    "before": {
+      "5": {
+        "status": "ok",
+        "start": "2026-09-14",
+        "end": "2026-09-21",
+        "eligible": 1698,
+        "median_return_pct": 1.8817343672487885,
+        "benchmark_return_pct": 1.2302230952597526,
+        "calendar_gaps": null
+      },
+      "20": {
+        "status": "ok",
+        "start": "2026-08-24",
+        "end": "2026-09-21",
+        "eligible": 1695,
+        "median_return_pct": 0.9302390913331626,
+        "benchmark_return_pct": -0.41063440676488705,
+        "calendar_gaps": null
+      }
+    },
+    "after": {
+      "5": {
+        "status": "ok",
+        "start": "2026-09-14",
+        "end": "2026-09-21",
+        "eligible": 1698,
+        "median_return_pct": 1.8817343672487885,
+        "benchmark_return_pct": 1.2302230952597526,
+        "calendar_gaps": null
+      },
+      "20": {
+        "status": "ok",
+        "start": "2026-08-24",
+        "end": "2026-09-21",
+        "eligible": 1695,
+        "median_return_pct": 0.9302390913331626,
+        "benchmark_return_pct": -0.41063440676488705,
+        "calendar_gaps": null
+      }
+    },
+    "exact_complete_result_equal": true,
+    "trend_before": {
+      "window": 200,
+      "change_sessions": 5,
+      "eligible": 1656,
+      "above200_pct": 29.951690821256037,
+      "paired_eligible": 1655,
+      "paired_change_pp": 3.9879154078549863
+    },
+    "trend_after": {
+      "window": 200,
+      "change_sessions": 5,
+      "eligible": 1656,
+      "above200_pct": 29.951690821256037,
+      "paired_eligible": 1655,
+      "paired_change_pp": 3.9879154078549863
+    }
+  },
+  "protected_input_sha256": {
+    "data/china_search/closes.parquet": "3404730851aab46aa3314eb7e7d9376bfca776b18814b9c2fcce3b00b732030d",
+    "data/china/510300.SS.parquet": "9d3119a02d68d633af7e050828b04df1f9e7b88d697e86efa904bb902ed62f28",
+    "data/china_regime/latest.json": "f8c58d027dce31e042379a1323f5ee2fda690053cb41e69102d1a9faa87a2ae1",
+    "data/risk_radar_intl/cn_forward_log.jsonl": "5d4a9127e4d49547f2c04f66b1fb998f2c54fe694b025f49a20a22dc86ea27ac"
+  },
+  "inputs_unchanged": true,
+  "collection": false,
+  "risk_model_modified": false,
+  "production": false,
+  "procedure": "294b4c00ed668b497edb834be8108f14bc1bee8a",
+  "verification": {
+    "passed": 614,
+    "failed": 0,
+    "warnings": 10,
+    "suites": 6,
+    "new_cases": 14,
+    "initial_corrected_red": 8,
+    "initial_controls": 5,
+    "panel": "actual loader and unchanged Jinja macro; no browser",
+    "test_log_sha256": "82401a6603e3e0c579dffc3e1b14081775919725e0f0738482e31386b5305fba",
+    "test_source_sha256": "bb9172b0a88834d6aefb8f28a7b6c5b7c1decdd0695d98d51f2f9a3084696dc3"
+  },
+  "page_sha256": "e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d"
+}

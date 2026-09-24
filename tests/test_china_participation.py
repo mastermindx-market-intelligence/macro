@@ -1646,3 +1646,119 @@ def test_clock_calendar_runtime_failure_stays_unavailable(monkeypatch):
     result = _timed_context(monkeypatch)
     assert result['timing']['status'] == 'unavailable'
     assert result['sample']['current_comparison'] is None
+
+
+# A missing benchmark row must not stretch a claimed return/MA window backward.
+@pytest.mark.parametrize('position,affected', [(-3, {'5','20'}), (-7, {'20'}),
+                                               (-21, {'20'}), (-22, set())])
+def test_context_calendar_hole_cannot_change_the_return_horizon(position, affected):
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-22] = 50.; prices.iloc[-21] = 100.; prices.iloc[-1] = 90.
+    before = _price_context(prices, bench, names)
+    missing = bench.index[position]
+    result = _price_context(prices, bench.drop(missing), names)
+    for key in ('5','20'):
+        w = result['windows'][key]
+        if key in affected:
+            assert w['status'] == 'incomplete_calendar'
+            assert w['median_return_pct'] is None and w['benchmark_return_pct'] is None
+            assert w['comparison'] is None
+            assert w['calendar_gaps'] == [str(missing.date())]
+        else:
+            assert w['median_return_pct'] == before['windows'][key]['median_return_pct']
+            assert w['start'] == before['windows'][key]['start']
+            assert w['status'] == 'ok'
+    if '20' in affected:
+        assert result['current_comparison'] is None
+
+
+@pytest.mark.parametrize('position,current_ok,paired_ok',
+                         [(-7,False,False),(-100,False,False),(-202,True,False)])
+def test_context_calendar_hole_qualifies_ma_windows_separately(position,current_ok,paired_ok):
+    prices, bench, names = _price_context_fixture()
+    missing = bench.index[position]
+    result = _price_context(prices, bench.drop(missing), names)
+    assert (result['trend']['above200_pct'] is not None) == current_ok
+    assert (result['trend']['paired_change_pp'] is not None) == paired_ok
+    assert str(missing.date()) in result['trend']['calendar_gaps']
+
+
+@pytest.mark.parametrize('position', [-209, -1])
+def test_context_calendar_gap_outside_used_window_does_not_erase_evidence(position):
+    prices, bench, names = _price_context_fixture()
+    reference = _price_context(prices, bench, names)
+    if position == -1:
+        prices.loc[pd.Timestamp('2026-09-21')] = 2000.
+    else:
+        bench = bench.drop(bench.index[position])
+    assert _price_context(prices, bench, names) == reference
+
+
+def test_context_calendar_gap_uses_only_requested_valid_observations():
+    prices, bench, names = _price_context_fixture()
+    missing = bench.index[-7]
+    prices.loc[missing] = np.nan
+    prices['UNREQUESTED'] = 100.
+    reduced = bench.drop(missing)
+    without_extra = _price_context(prices.drop(columns='UNREQUESTED'), reduced, names)
+    assert _price_context(prices, reduced, names) == without_extra
+    assert without_extra['windows']['20']['status'] == 'ok'
+
+
+def test_context_calendar_hole_is_not_silently_counted_as_a_rising_sector():
+    from engine.china_participation import sector_breadth_context
+    prices, bench, names = _price_context_fixture()
+    prices.iloc[-1] = 120.
+    result = sector_breadth_context({names[0]: prices[[names[0]]].rename(columns={names[0]:'close'})},
+        bench.drop(bench.index[-7]), names={names[0]: ('Synthetic sector',)}, asof='2026-09-18')
+    assert result['declared'] == 1 and result['eligible'] == result['rising'] == 0
+    assert result['rows'][0]['return_pct'] is None
+
+
+def test_index_member_calendar_hole_is_not_three_hundred_missing_stock_quotes():
+    from engine.china_participation import index_member_breadth_context
+    membership, prices, benchmark = _index_member_fixture()
+    missing = benchmark.index[-7]
+    result = index_member_breadth_context(membership, prices, benchmark.drop(missing), asof='2026-09-18')
+    window = result['windows']['20']
+    assert window['status'] == 'incomplete_calendar'
+    assert window['median_return_pct'] is None
+    assert window['coverage_detail']['status'] == 'incomplete_calendar'
+    assert window['coverage_detail']['excluded_count'] is None
+    assert window['coverage_detail']['members'] == []
+    assert window['coverage_detail']['calendar_gaps'] == [str(missing.date())]
+
+
+def test_context_calendar_check_preserves_inputs():
+    prices, bench, names = _price_context_fixture()
+    bench = bench.drop(bench.index[-7])
+    p0, b0 = prices.copy(deep=True), bench.copy(deep=True)
+    _price_context(prices, bench, names)
+    pd.testing.assert_frame_equal(prices, p0)
+    pd.testing.assert_series_equal(bench, b0)
+
+
+def test_context_calendar_hole_reaches_loader_and_existing_panel(monkeypatch):
+    from datetime import datetime, timezone
+    from lib import store
+    from engine.china_participation import load_breadth_context
+    prices, bench, _ = _price_context_fixture()
+    prices.columns = [f'{600000+i:06d}.SS' for i in range(len(prices.columns))]
+    prices.iloc[-22] = 50.; prices.iloc[-21] = 100.; prices.iloc[-1] = 90.
+    frames = {('china_search','closes'): prices,
+              ('china','510300.SS'): bench.drop(bench.index[-7]).to_frame('close'),
+              ('china_board_breadth','breadth'): _board_fixture()}
+    calls = []
+    def read(group,name):
+        calls.append((group,name))
+        return frames.get((group,name))
+    monkeypatch.setattr(store,'read',read)
+    result = load_breadth_context(asof='2026-09-18',
+                                 now=datetime(2026,9,18,12,tzinfo=timezone.utc))
+    assert result['timing']['status'] == 'partial'
+    assert result['sample']['current_comparison'] is None
+    assert result['sample']['windows']['20']['median_return_pct'] is None
+    html = _render_participation_context(result)
+    assert 'current participation is not fully established' in html
+    assert '+80.00%' not in html and 'Unavailable' in html
+    assert set(calls) == set(frames) and len(calls) == 3
