@@ -400,14 +400,18 @@ def test_expected_holiday_absence_keeps_path_qualified():
     raw = f.us10y.drop([d for d in holidays])
     out = _origin_read(_attach_origin(f.copy(), raw))
     assert out['path_qualified'] is True
-    assert out['holiday_basis'] == 'us_federal_holidays_v1'
+    assert out['holiday_basis'] == 'us_federal_holidays_plus_good_friday_v1'
     assert out['path_qualification_basis'] == 'captured_source_rows_or_expected_absent'
-    assert out['expected_absent_grid_rows'] == 2
+    # Calendar census, not a carry census: MLK + Presidents' Day (carried) and
+    # Good Friday 2025-04-18 (printed in this fixture) are all expected absences.
+    assert out['expected_absent_grid_rows'] == 3
     assert out['unexpected_carried_grid_rows'] == 0
     assert out['observation_origin'] == 'captured_source_row'
     # Monotonic +1 bp/day fixture → trailing percentile == 1.0; the 22d/44d
     # endpoints (index[-23] and index[-45]) do not land on the two holidays.
+    assert f.index[-23] not in holidays and f.index[-45] not in holidays
     assert out['velocity_bp']['22d'] == 22.0
+    assert out['acceleration_bp'] == 0.0  # 22d change equals the 22d change 22 rows earlier
     assert out['turn_watch'] == 'extreme_high_watch'
 
 
@@ -419,7 +423,7 @@ def test_unexpected_weekday_absence_still_withholds_path_qualification():
     raw = f.us10y.drop([unexpected])
     out = _origin_read(_attach_origin(f.copy(), raw))
     assert out['path_qualified'] is False
-    assert out['expected_absent_grid_rows'] == 2  # Holidays still counted.
+    assert out['expected_absent_grid_rows'] == 3  # Holidays + Good Friday still counted.
     assert out['unexpected_carried_grid_rows'] == 1
     assert out['turn_watch'] is None
     assert (out['null_reason']
@@ -446,32 +450,33 @@ def test_expected_absent_grid_is_pure_and_bounded():
     idx = pd.bdate_range('2025-01-02', periods=100)
     flags = yield_momentum.expected_absent_grid(idx)
     assert len(flags) == len(idx)
-    assert sum(flags) == 2  # MLK Day (Jan 20) + Presidents' Day (Feb 17).
+    assert sum(flags) == 3  # MLK Day (Jan 20) + Presidents' Day (Feb 17) + Good Friday (Apr 18).
     # Pin identities (not just count) so any calendar drift fails loudly.
     flagged = [idx[i] for i, f in enumerate(flags) if f]
-    assert flagged == [pd.Timestamp('2025-01-20'), pd.Timestamp('2025-02-17')]
-    assert yield_momentum.HOLIDAY_BASIS == 'us_federal_holidays_v1'
+    assert flagged == [pd.Timestamp('2025-01-20'), pd.Timestamp('2025-02-17'),
+                       pd.Timestamp('2025-04-18')]
+    assert yield_momentum.HOLIDAY_BASIS == 'us_federal_holidays_plus_good_friday_v1'
 
 
 def test_turn_watch_percentile_excludes_carried_holiday_nans():
-    # Regression: on a 1260-row weekday grid ~53 holidays fall inside and the
-    # old `measured` (NaN at carried holidays) dragged the percentile denominator
-    # — a true 0.9198 was scored 0.8810, suppressing extreme_high_watch on the
-    # rising regime this packet exists to unblock. `_turn_watch` is now called
-    # over `measured.dropna()` so the observed sample is the denominator.
+    # Regression: on a 1260-row weekday grid ~58 expected absences fall inside
+    # (53 federal holidays + 5 Good Fridays) and a grid-length denominator scored
+    # each carried NaN as "not <= latest", dragging a true ~0.92 percentile to
+    # ~0.88 and suppressing extreme_high_watch. `_turn_watch` keeps its grid-based
+    # guard/window and excludes the NaNs from the percentile denominator only.
     idx = pd.bdate_range(end='2026-09-23', periods=1260)
     holiday_flags = yield_momentum.expected_absent_grid(idx)
     holiday_rows = [idx[i] for i, f in enumerate(holiday_flags) if f]
-    assert len(holiday_rows) == 53  # Production-scale pattern.
+    assert len(holiday_rows) == 58  # 53 federal + 5 Good Fridays on this grid.
 
     # Construct values so 97 measured samples are above the last measured sample
-    # and the remaining 1110 are below — true percentile 1110/1207 = 0.9198
-    # (above the 0.90 extreme_high_watch threshold) which the old `measured`
-    # denominator scored as 1110/1260 = 0.8810 (below 0.90, returned None).
+    # and the remaining 1105 are <= it — observed percentile 1105/1202 =
+    # 0.9193 (above the 0.90 extreme_high_watch threshold) which a
+    # grid-length denominator scores as 1105/1260 = 0.877 (below 0.90 -> None).
     n = 1260
     holiday_positions = {idx.get_loc(d) for d in holiday_rows}
     measured_positions = [i for i in range(n) if i not in holiday_positions]
-    assert len(measured_positions) == 1207
+    assert len(measured_positions) == 1202
     last_position = measured_positions[-1]  # Last grid point is a Wednesday.
     high_positions = measured_positions[:97]  # 97 measured samples above last.
     values = np.full(n, 4.0)
@@ -483,8 +488,8 @@ def test_turn_watch_percentile_excludes_carried_holiday_nans():
     raw = f.us10y.drop(holiday_rows)
     out = _origin_read(_attach_origin(f.copy(), raw))
     assert out['path_qualified'] is True
-    assert out['expected_absent_grid_rows'] == 53
+    assert out['expected_absent_grid_rows'] == 58
     assert out['unexpected_carried_grid_rows'] == 0
-    # Post-fix (measured.dropna()): observed percentile is 1110/1207 = 0.9198 →
-    # extreme_high_watch. Pre-fix (measured): 1110/1260 = 0.8810 → None.
+    below = len(measured_positions) - 97
+    assert below / len(measured_positions) > 0.90 > below / n
     assert out['turn_watch'] == 'extreme_high_watch'
