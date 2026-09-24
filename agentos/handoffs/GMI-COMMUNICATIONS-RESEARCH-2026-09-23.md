@@ -3,142 +3,161 @@ workstream: WS:GMI-THEME-GRAPH
 session: claude/communications-sector-research-20260923
 model: sol
 ended_because: context_budget
-mission: Complete the Chairman-directed Communications research and planning, with Sol retaining the intellectual
-  work and Fable intended for final implementation integration. The full exposure map, targeted coverage gaps,
-  historical qualification, written design and build plan remain incomplete.
-state_before: Phase 5 terrestrial-connectivity research was preserved on Draft/HOLD Macro PR 7794 at 9209c068383752b5bef0d3b840ff8bfe7466e343.
-  Satellite/direct-to-device economics was the next unit. No worker, Attempt, watcher or Fable receiver was
-  started.
+mission: >
+  Complete the Chairman-directed Communications research and planning end to end, retaining
+  the intellectual work with Sol and preparing the final build package for Fable CEO.
+  The full written design, implementation handoff and production outcome remain incomplete.
+state_before: >
+  Six economic-family research phases were preserved on Macro Draft/HOLD PR 7794 at
+  df059da9c393029e49175985ce9189676ef9fa0d. Cross-family business exposure integration and
+  targeted gap closure were next. No Fable receiver, worker, Attempt or watcher had started.
 changed:
-- path: research/communications/SATELLITE_D2D_ECONOMICS_RESEARCH_2026-09-23.md
-  what: Added six satellite-service economic roles, capacity-to-cash and replenishment/funding models, fifteen
-    public primary references, twelve candidate subtheme mechanisms, dated operator/partner examples and explicitly
-    unresolved evidence. No live taxonomy or product code changed.
-- path: research/communications/SATELLITE_METRICS_AND_ACCEPTANCE_2026-09-23.md
-  what: Added twenty-eight proposed metric definitions, twenty-four issuer-input arithmetic examples, twelve
-    synthetic illustrations and thirty written future acceptance requirements. No executed application-test
-    PASS is implied.
-- path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
-  what: Updated the existing cumulative continuation through the satellite research boundary; no replacement
-    carrier or organizational owner.
-prs:
-- 7794
+  - path: research/communications/COMMUNICATIONS_BUSINESS_EXPOSURE_MAP_2026-09-23.md
+    what: >
+      Added 94 source-indexed business/activity rows across 47 issuer labels, with roles,
+      financial-evidence scope, analyst mechanisms, contrary conditions and source references.
+      Native identities, membership, geography weights and financial sensitivities stay unassigned.
+  - path: research/communications/COMMUNICATIONS_INTEGRATION_AND_GAP_CLOSURE_2026-09-23.md
+    what: >
+      Added eight fresh issuer sources, cross-family economic/overlap synthesis, native contract
+      integration findings, twelve arithmetic cases, twenty written acceptance requirements and
+      a proposed four-company first vertical with a finite gap and qualification plan.
+  - path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
+    what: Updated this same cumulative continuation through the Phase 7 integration boundary.
+prs: [7794]
 verified:
-- claim: Current compatible procedure and the original research carrier were reconciled.
-  command: GitHub.fetch protected branches/master and incumbent branch ref; fetch_file INDEX, ACTIVE_EXECUTION,
-    WEB_CEO_DELEGATION and CLOSEOUT at a7d2b3049e5cdc523e91e61a6e9d70a1cb911157; get_pr_info 7794; get_repo
-    macro.
-  result: Skillpack 1.0.1/bootstrap 1 loaded from one revision. Branch matched the entering Phase 5 head before
-    modification; native push permission observed. No rebase or replacement.
-- claim: The satellite chapter is persisted with exact-byte identity.
-  command: GitHub.create_file and immutable fetch_file at d6258cc7384c80ecc57dda4238b1e0d40df274f6; compare
-    returned Git blob with local bytes.
-  result: Matching blob a630819dbd23e4ae2013e3d5a0aa4b8ee1130b84; 37388 bytes.
-- claim: The satellite metric/acceptance companion is persisted with exact-byte identity.
-  command: GitHub.create_file and immutable fetch_file at 64ac1837254222fceeef1424cd036dbb542ec18c; compare
-    returned Git blob with local bytes.
-  result: Matching blob e787a9d7392bf6e9b7e8e5cc5b27ee7b28d971b2; 17124 bytes.
-- claim: Bounded research arithmetic, reference and structure checks passed.
-  command: python /mnt/data/communications_research/build_phase6_companion.py; local YAML schema-mirror validation
-    of this cumulative checkpoint.
-  result: Twenty-four Decimal/Fraction issuer-input comparisons, twelve synthetic illustrations, fifteen source
-    references, twenty-eight metric IDs, twelve mechanism IDs and thirty written acceptance IDs checked. Same
-    transcribed inputs, not an independent audit or product test.
+  - claim: Protected procedure and incumbent carrier were reconciled before modification.
+    command: >
+      GitHub.fetch branches/master and incumbent branch ref; fetch_file INDEX at
+      a7d2b3049e5cdc523e91e61a6e9d70a1cb911157; get_pr_info 7794; get_repo macro.
+    result: >
+      Same compatible Skillpack 1.0.1/bootstrap 1 as the fully loaded prior revision;
+      incumbent head unchanged before writes; push permission returned.
+  - claim: The business exposure map is persisted with matching exact-byte identity.
+    command: >
+      GitHub.create_file and immutable fetch_file at f5810bf53da978b5afe94fd4be2d748fc29e7269;
+      compare native blob with local Git blob.
+    result: Matching blob c146b61b43bfd7c93516ffcbdf1b892321d8e4c4.
+  - claim: The integration and gap-closure companion is persisted with matching exact-byte identity.
+    command: >
+      GitHub.create_file and immutable fetch_file at b3511a781b9e93260ac0d2abdb638ea9ad9890e7;
+      compare native blob with local Git blob.
+    result: Matching blob 4c77c8079cf92422801339bc734d0b6264675ded.
+  - claim: Bounded local research checks passed after a syntax-only helper repair.
+    command: >
+      python -m py_compile /mnt/data/communications_research/validate_phase7.py;
+      python /mnt/data/communications_research/validate_phase7.py
+    result: >
+      94 sequential row IDs, 47 issuer labels, 65 used source identifiers, eight new issuer
+      references, unassigned native fields, twelve Decimal/Fraction calculations, six synthetic
+      interpretations and twenty written requirement IDs checked. Not application validation.
 unverified:
-- claim: Complete source, company/security and geographic coverage.
-  what_would_verify: Build the cross-family company/business exposure matrix using the preserved chapters;
-    reconcile existing identity and taxonomy owners; close material regional and contract gaps. No complete
-    global census is claimed.
-- claim: Predictive usefulness, historical expectation completeness or stock-return edge.
-  what_would_verify: Qualify original-vintage expectations and outcomes, failed/degraded cases, appropriate
-    controls and out-of-sample evaluation through the existing evaluation owner. No such study ran in this
-    phase.
-- claim: Full repository validation, CI qualification and final implementation acceptance.
-  what_would_verify: Run the existing exact-head repository checks in an admitted workspace at the appropriate
-    release stage, finish the written design/build plan, and then prove the real product journey. No merge,
-    CI-green or browser acceptance is claimed.
-- claim: Fable delivery, pickup or execution.
-  what_would_verify: After the final research/design package is ready, use the lawful existing delivery/admission
-    path and obtain exact receiver and START receipts. No packet was sent in this phase.
+  - claim: Canonical issuer/security joins and production evidence admission.
+    what_would_verify: >
+      Reconcile the existing identity/company-route and evidence/curation owners for the first
+      four-company vertical. Source labels and a filing ticker are not that join or admission.
+  - claim: Full repository validation, CI and source release qualification.
+    what_would_verify: >
+      Run existing repository checks in an admitted exact-head workspace at the appropriate
+      release boundary. None was executed or inferred from local research checks; HOLD remains.
+  - claim: Exhaustive sector coverage, forecast or investment usefulness.
+    what_would_verify: >
+      Close explicitly scoped regional and peer gaps and qualify original-vintage operational
+      and return studies through existing owners. Do not label the current map a complete census.
+  - claim: Accepted final design, Fable execution or a live user outcome.
+    what_would_verify: >
+      Finish the written specification/build plan; obtain lawful handoff and execution receipts;
+      prove real input through the existing comparison, company/watchlist and browser workflow.
 unresolved:
-- The selected Telesat sources do not reconcile C$1.1bn June LEO backlog plus the C$2.7bn options-included
-  contract to C$5.6bn pro forma. The C$1.8bn difference remains unexplained; no award, error or additional
-  cash is invented.
-- Later completion of proposed transactions and the US mobile-operator satellite JV, country/device service
-  availability and undisclosed wholesale economics require then-current source checks.
-- Source publicity and announced licenses do not establish Mastermind ingestion/display rights. No private
-  engineering telemetry or customer-level data was obtained.
-- Chinese satellite operators and other regional/business coverage gaps must be prioritized in the cross-family
-  gap pass, not silently described as completed.
+  - The inspected eighteen-theme crosswalk has no direct advertising/media/gaming/telecom theme; no forced mapping is allowed.
+  - Company Theme Exposure is a membership projection, not the financial exposure model; exact additive integration remains to be specified.
+  - China Mobile's issuer page returned 403; no primary financial row was adopted and no secondary figures substituted.
+  - Telesat backlog composition and later transaction/JV milestones remain unresolved dated research obligations.
+  - Broadcasting, remaining regional operators/satellites and peer breadth remain scoped gaps, not global current-state claims.
+  - Original consensus histories, exact microtheme weights and conditional financial coefficients remain unqualified.
 next_actions:
-- Resume this same branch and PR from the cumulative checkpoint; reconcile its current head and material procedure/source/effect
-  changes only. Preserve all six completed research phases.
-- 'Assemble the cross-family company/business exposure matrix: distinguish issuer, subsidiary, service, economic
-  role, geography, source-local/canonical theme, basket and security. Mark reported versus modeled versus unknown
-  materiality and identify the most consequential coverage gaps.'
-- Close those targeted gaps and qualify point-in-time expectations and historical evaluation before producing
-  the final written Communications design, bounded build plan and Fable implementation handoff.
+  - >
+    Reconcile this same branch and PR at its exact current head; refresh only material procedure,
+    authority, custody, source or effect changes. Do not replay prior research or tool history.
+  - >
+    Resolve the existing evidence/curation assertion, company identity/route and shared-template
+    integration seams for Meta, Alphabet, The Trade Desk and Magnite. Read exact current owner
+    contracts and relevant incumbent PRs rather than inventing a financial-weight sidecar.
+  - >
+    Write the comprehensive Communications specification and phased build plan from the integrated
+    matrix and preserved economic chapters. Separate the first descriptive proof from later
+    forecast/investment qualification, retain scoped coverage obligations, and prepare Fable's
+    eventual implementation packet only after the intellectual package is ready.
 do_not_redo:
-- Do not recreate the research carrier or repeat the foundation, advertising, streaming/rights, gaming, connectivity
-  or satellite chapters without a material invalidator.
-- Do not rebuild the shared sector template, Robotics PR 7773, GMI graph, ThemeState or the existing evidence/identity/rights/clock/propagation
-  owners.
-- Do not create a new technical simulator, geography registry, metrics store, valuation engine, publisher or
-  runtime control plane.
-- Do not promote candidate research mechanisms into live baskets, stock ranks, sizing or trading authority.
+  - Preserve all Phase 1–6 chapters and this integrated map unless a material invalidator changes their evidence or scope.
+  - Publicis and New York Times initial agency/publishing anchors were added in Phase 7; do not restart that search as missing.
+  - Do not recreate PR 7794, its branch, the shared sector template or Robotics PR 7773's accepted intellectual work.
+  - Do not create another theme, identity, financial-weight, evidence, rights, forecasting, publication or runtime authority.
+  - Do not populate GMI reserved-null axes or overload Company Theme Exposure with unqualified business weights.
 danger_areas:
-- 'Public repository: original public-source research only; no restricted raw corpora, credentials or personal/customer
-  data.'
-- Launched, accepted, geographically reachable, continuously usable and billed capacity are distinct observations.
-- Telesat funded-plan increments and MDA manufacturing-order increments use different starting populations;
-  the mixed contract change is not a disclosed satellite unit price.
-- Customer funding can reduce financing risk while creating a future service obligation; cash sensitivities
-  are not normalized reported metrics.
-- Replacement burden, restricted liquidity and dilution can separate project progress from per-share value.
-- An optional PDF screenshot/download failure does not mean native GitHub writes are unavailable. Do not repeat
-  unchanged failed read paths or claim chart-only values were visually verified.
-- DRAFT/HOLD remains; no merge-on-green, native auto-merge, custody transfer or autonomous wake is authorized
-  by this record.
+  - Public repository; only original public-source research, no restricted raw datasets or personal/customer data.
+  - Business rows are not independent securities, causal corroborations or additive revenue partitions.
+  - Groupings, currencies, fiscal periods, quarter/half-year bases and reporting precision must remain explicit.
+  - A source-defined product floor is not an exact amount; revenue materiality is not earnings sensitivity.
+  - Current research membership cannot be projected backward as historical knowability.
+  - No Fable delivery, ACK, START, source-custody transfer or autonomous wake occurred; DRAFT/HOLD remains.
 ---
 
-# GMI Communications — cumulative Phase 6 continuation
+# GMI Communications — cumulative Phase 7 continuation
 
 **FINALIZATION_CLASSIFICATION:** CHECKPOINTED_CONTINUATION  
 **MISSION_COMPLETE:** false  
 **Operation:** `gmi-communications-research-20260923-sol-001`
 
-## State and boundary
+## State and justified boundary
 
-The satellite/direct-to-device phase is persisted on the incumbent research carrier. It completes the initial economic-family pass, not the full research or product mission. The substantive new model connects usable capacity, commercial service, replacement requirements and financial claims rather than treating launches or partner bases as revenues.
+The economic-family chapters are now connected by a source-indexed business map and an integration
+analysis. The phase added six China/Korea issuer sources, then advanced the agency/publishing gaps
+with Publicis and The New York Times in the same turn. The map distinguishes 94 business/activity
+rows and 47 issuer labels from resolved securities, financial weights and canonical theme membership.
 
-The boundary follows a substantial issuer/technical/PDF research unit, quantitative verification and accumulated source/tool context. Resume from this record and the exact artifacts, not the long tool transcript. No autonomous work continues after the turn; Sol retains the research responsibility.
+The named next dependency is the written product specification against existing owner contracts,
+not another broad round of industry archaeology. This boundary follows the substantial regional,
+source-contract, quantitative and cross-family synthesis phase and accumulated context. It is not
+completion or release of research responsibility. No autonomous work continues after the turn.
 
 ## Exact durable frontier
 
 Sole branch: `claude/communications-sector-research-20260923`; sole PR: #7794, DRAFT/HOLD.
-Original Macro base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`; no rebase or replacement.
-Entering Phase 5 head: `9209c068383752b5bef0d3b840ff8bfe7466e343`.
+Original base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`; no rebase or replacement.
+Entering head: `df059da9c393029e49175985ce9189676ef9fa0d`.
+Map commit/blob: `f5810bf53da978b5afe94fd4be2d748fc29e7269` /
+`c146b61b43bfd7c93516ffcbdf1b892321d8e4c4`.
+Integration companion commit/blob: `b3511a781b9e93260ac0d2abdb638ea9ad9890e7` /
+`4c77c8079cf92422801339bc734d0b6264675ded`.
+This checkpoint's own immutable revision/blob is established by its native write receipt and readback.
+All earlier research remains unchanged on this same branch; source registers preserve its exact blobs.
 
-Phase 6 chapter commit/blob: `d6258cc7384c80ecc57dda4238b1e0d40df274f6` / `a630819dbd23e4ae2013e3d5a0aa4b8ee1130b84`.
-Companion commit/blob: `64ac1837254222fceeef1424cd036dbb542ec18c` / `e787a9d7392bf6e9b7e8e5cc5b27ee7b28d971b2`.
-This checkpoint's own immutable commit/blob is established by the native update receipt and readback, not a self-referential identifier in these bytes. All Phase 1–5 research files remain unchanged on the same branch.
+Native interface read pin: Macro `8db6896dab2199a4b7fc61a005c225380cac7cd6`, not a new research base.
+Load-bearing inspected objects:
+- `config/theme_crosswalk.yml`, blob `782dbc519b7bb2d446af91c66c6fb9248722a8b9`.
+- `engine/company_theme_exposure/contracts.py`, blob `eb1b5136f220027c746eb086b3403b77e3bbdc13`.
+- `contracts/theme_graph/edges.v1.schema.json`, blob `136322e8076695a3cc24869e60ee5793f09d41f4`.
+- `contracts/theme_graph/README.md`, blob `72f17bdada6fe47564396eba49aafe6a1889769c`.
+The historical W2 probe was read only for construction/coverage context, not fresh permission.
 
-Protected procedure: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, Skillpack 1.0.1/bootstrap 1. INDEX, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT loaded from that same commit. Direct research rationale: PRINCIPAL_JUDGMENT. The procedure update scopes repository-only gates to their actual actions; it grants no new runtime, release or trade authority.
+Protected procedure: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, Skillpack 1.0.1/bootstrap 1.
+Current master/INDEX confirmed the same revision whose ACTIVE_EXECUTION, WEB_CEO_DELEGATION and
+CLOSEOUT were fully loaded. Direct research rationale: PRINCIPAL_JUDGMENT under continuing intent.
+Existing WS:GMI-THEME-GRAPH, shared sector architecture and Robotics remain preserved owners.
 
-Existing `WS:GMI-THEME-GRAPH`, shared sector design blob `d3bb8a03d4e571a058a499bd35a1a94c7c8e8971` and Robotics #7773 remain preserved dependencies. Their historical capability statements are not fresh production proof.
+## Effects and limitations
 
-## Verification and limitations
+Only two new research files and this existing checkpoint were authored; PR metadata projects that
+frontier, not design acceptance. No product code, live graph, membership, publisher, trading policy
+or runtime state changed. No modifying EFFECT_UNKNOWN is outstanding. Native GitHub writes succeeded;
+no Extra High switch or additional research seat was needed for this lane.
 
-The research helper initially failed on an unescaped apostrophe in a text literal. The quoting was corrected, the script compiled and the full arithmetic/structure checks reran successfully. Financial inputs, required behaviors and tolerance were not weakened. Decimal and Fraction compare the same transcribed inputs; they do not independently audit a filing. Thirty SAT cases are written requirements, not thirty application-test passes.
+The local helper initially had an extra closing parenthesis. The syntax was corrected, compiled and
+all checks rerun without changing source inputs or tolerances. Arithmetic methods share transcribed
+inputs and do not independently audit the issuer. Written IX requirements are not application passes.
+The JSON/ZIP artifacts are portable research exports, not a second data or continuity owner.
 
-The selected Viasat cash-page screenshot failed while parsed prose remained available; chart-only values were not adopted. Other specified PDF pages were inspected. An optional public-file download also failed. These bounded read-path limitations did not block native GitHub research writes. No Extra High switch was needed.
-
-Only the two new research documents and this existing handoff were authored; PR metadata projects research progress only. No product code, template, live evidence store, membership, publisher, runtime or trade policy changed. No modifying EFFECT_UNKNOWN is outstanding. No worker, Attempt, watcher or Fable receiver started.
-
-## Exact next action
-
-Build the cross-family company/business exposure matrix and targeted gap register from the six preserved research phases. The matrix must separate structural classifications from economic associations and disclose unknown financial materiality. Resolve only the gaps that matter for the first useful vertical and the wider masterplan; do not restart sector archaeology.
-
-Then qualify original-vintage expectations and historical evaluation, finish the written specification/build plan, and deliver the final implementation packet through the existing lawful Fable route. Fable remains an intended recipient, not an acknowledged receiver.
-
-The local JSON/ZIP files are portable exports of canonical research, not another production authority. Resume in this Sol research conversation or a fresh one with this checkpoint and minimum current state. A presentation change does not transfer custody or create an automatic wake.
+Resume in this Sol research conversation or a fresh Sol session from this checkpoint and minimum
+current state. The next action is the exact owner-contract reconciliation and written specification
+above. Fable remains intended final integrator, not a delivered or executing receiver.
