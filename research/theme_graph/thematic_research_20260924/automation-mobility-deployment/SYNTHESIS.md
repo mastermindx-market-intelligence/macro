@@ -268,7 +268,7 @@ This supports an important GMI distinction: autonomy can substitute for one oper
 
 ## Retention / expansion signal
 
-**REPORTED FACT — Caterpillar release dated 2026-09-14.** After more than 18 months of autonomous hauling at Bull Run, Caterpillar reported more than 3.5 million tons hauled and announced expansion with Luck Stone to two additional Virginia operations, Boscobel and Bealeton, using autonomous-haulage fleets of Cat 775 trucks.
+**REPORTED FACT — Caterpillar release dated 2026-09-15.** After more than 18 months of autonomous hauling at Bull Run, Caterpillar reported more than 3.5 million tons hauled and announced expansion with Luck Stone to two additional Virginia operations, Boscobel and Bealeton, using autonomous-haulage fleets of Cat 775 trucks.
 
 Source:  
 https://www.caterpillar.com/en/news/corporate-press-releases/h/luck-stone-builds-on-autonomous-hauling-success-with-caterpillar.html
@@ -338,5 +338,16 @@ A common deployment chain emerges:
 `capability -> contracted/financed installation -> accepted operation -> measured productive unit -> customer economic value -> supplier/operator revenue -> support + capital + financing -> retained cash`
 
 Every arrow needs evidence. Skipping from catalog capability to theme membership, or from installed units to profitable adoption, is precisely the error this lane is designed to prevent.
+
+## Independent primary-source revalidation pass
+
+A fresh external primary-source pass was performed after the three cases were drafted.
+
+- **Symbotic:** SEC Form 10-Q for the period ended 2026-06-27 confirms the $22.5bn long-duration unsatisfied-performance-obligation figure, 77 Systems in Deployment, 56 Operational Systems under software maintenance/support, Q3 revenue by category, category cost of revenue, gross profit and the 90.5% quarterly revenue concentration observation. The same filing preserves the distinction between deployment systems and operational systems.
+- **Walmart:** its FY26 Q4 SEC-filed presentation confirms ~50% of eCommerce fulfillment-center volume automated, ~60% of stores receiving some automated freight and 23 of 42 regional distribution centers in stages of automation retrofit. Walmart separately attributes benefits to automation-related inventory, labor productivity and cost to serve, but the inspected sources still do not isolate Symbotic site ROI.
+- **EVgo:** the 2026-08-05 Q2 release confirms 99 GWh network throughput, 276 kWh/day average public-stall throughput, 3,930 owned/operated public-network stalls, charging-network gross profit/margin and the Q2 capex/offset bridge. The 2026-06-30 10-Q confirms the GM contractual availability thresholds, charging-network cost of sales, DOE eligible-project reimbursement mechanics, $226.1m outstanding DOE balance and ~5.63% weighted-average rate. No source acquired in this pass establishes actual matched-cohort GM uptime, so the observation remains missing.
+- **Caterpillar/Luck Stone:** Caterpillar's 2026-01-07 operating account confirms November 2024 go-live, the 1m/2m ton milestones, staffed-machine productivity comparison and embedded Caterpillar/dealer implementation support. Caterpillar's official investor release is dated **2026-09-15** and confirms >3.5m tons after more than 18 months plus expansion to two additional Virginia quarries. The earlier draft's September 14 date was corrected; no economic conclusion depends on that one-day correction.
+
+This validation is bounded to the material case propositions above. It is not a complete audit of every cited source, every 32-leaf member, source rights, current vendor membership or product admission.
 
 MISSION_COMPLETE: false
