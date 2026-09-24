@@ -23,6 +23,19 @@ depends_on:
   - WS:GMI-THEME-GRAPH
 decisions:
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
+do_not_redo:
+  - >-
+    Do not rebuild the shared base (theme-graph assertion/evidence/rights/route/mount);
+    consume #7870's accepted contract — Chairman/Astra directive 2026-09-24.
+  - Do not implement on the research branch #7788 or on #7870.
+  - Do not re-ACK; PICKUP_ACK is #7788/5811997064.
+  - >-
+    Do not treat `probe_r7_fda.py` as a test of desired behavior — it characterizes
+    the pre-D1 defects.
+  - >-
+    Do not add rank/entry/sizing/trade/stage effects from the FDA chip — display-only
+    by plan.
+  - No target price / expected return / underpricing claims in the first descriptive release.
 artifacts:
   - research/healthcare/hc_program/
 waves:
@@ -94,14 +107,5 @@ The Healthcare workstream consumes, but does not own, `engine/theme_graph/`, `co
 ## External rulings
 
 R4 is recorded at PR `#7780`, comment `5808854275`; R12 is recorded at PR `#7870`, comment `5809358801`; the SEC rights basis is recorded at PR `#7870`, comment `5809660585`.
-
-## Binding execution notes
-
-- Do not rebuild the shared base (theme-graph assertion/evidence/rights/route/mount); consume #7870's accepted contract — Chairman/Astra directive 2026-09-24.
-- Do not implement on the research branch #7788 or on #7870.
-- Do not re-ACK; PICKUP_ACK is #7788/5811997064.
-- Do not treat `probe_r7_fda.py` as a test of desired behavior — it characterizes the pre-D1 defects.
-- Do not add rank/entry/sizing/trade/stage effects from the FDA chip — display-only by plan.
-- No target price / expected return / underpricing claims in the first descriptive release.
 
 Regulator status, manufacturer availability, and any economic capacity thesis remain three separate observations. Discontinuation is not resolution; absence from a later complete snapshot is not resolution; partial acquisition is never promoted. Source generation (`meta.last_updated`), acquisition time, and render time remain distinct. Complete-empty, failed acquisition, stale cache, and unrecognized status remain distinct states. Cache history before an acquired snapshot is unknown, never backfilled.
