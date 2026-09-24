@@ -708,7 +708,6 @@ def test_all_groups_totals_outside_the_snapshot_carry_the_published_value():
             assert a['observation']['value'] == HDS_TOTALS[measure], (name, label)
 
 
-@pytest.mark.xfail(condition=not HAS_SHARED, strict=True, reason=SHARED_CONTRACT_REASON)
 def test_no_fixture_assertion_is_slug_keyed():
     """Every ready assertion is keyed on the canonical theme id the identity
     owner mints for the case anchor; a bare slug on the assertion side is the
