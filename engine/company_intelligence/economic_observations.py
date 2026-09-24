@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import date
 import hashlib
 import math
+import re
 from numbers import Real
 from typing import Any, Mapping
 
@@ -62,6 +63,81 @@ def _fiscal_scope(value: Any) -> tuple[date, date, date, date]:
 
 
 _PG_FISCAL_QUARTERS = {4: 4, 5: 4, 6: 4, 7: 1, 8: 1, 9: 1, 10: 2, 11: 2, 12: 2, 1: 3, 2: 3, 3: 3}
+_NEUTRAL_ZERO = re.compile(r"\bdash(?:es)?\s+(?:means|represent[sd]?)\s+zero\b", re.IGNORECASE)
+_TABLE_CELLS = re.compile(rb"<t[dh][^>]*>(.*?)</t[dh]>", re.IGNORECASE | re.DOTALL)
+
+
+
+def _cell_text(fragment: bytes) -> str:
+    text = re.sub(rb"<[^>]+>", b"", fragment)
+    return text.decode("utf-8", errors="strict").strip().replace("&amp;", "&")
+
+
+def _verify_pg_replay(
+    *,
+    source: str,
+    definition: Any,
+    start: Any,
+    end: Any,
+    row: Mapping[str, Any],
+    current_end: date,
+    prior_end: date,
+) -> None:
+    source_bytes = source.encode("utf-8")
+    if not isinstance(start, int) or not isinstance(end, int) or not 0 <= start < end <= len(source_bytes):
+        raise EconomicObservationError("replay_mismatch: replay location is invalid")
+    if definition.value_kind == "bounded_text":
+        context = source[max(0, start - 240):end].casefold()
+        if definition.row_label and definition.row_label.casefold() not in context:
+            raise EconomicObservationError("replay_mismatch: replayed basis differs from the metric definition")
+        return
+    table_start = source_bytes.rfind(b"<table", 0, start)
+    table_end = source_bytes.find(b"</table>", end)
+    if table_start < 0 or table_end < 0:
+        raise EconomicObservationError("replay_mismatch: cell has no enclosing table")
+    cells: list[tuple[bytes, int, int]] = []
+    for match in _TABLE_CELLS.finditer(source_bytes, table_start, table_end):
+        cells.append((match.group(1), match.start(1), match.end(1)))
+    target = next((index for index, cell in enumerate(cells) if cell[1] <= start and end <= cell[2]), None)
+    if target is None:
+        raise EconomicObservationError("replay_mismatch: span is not a table cell")
+    try:
+        texts = [_cell_text(cell[0]) for cell in cells]
+    except UnicodeDecodeError as exc:
+        raise EconomicObservationError("replay_mismatch: table bytes are not UTF-8 aligned") from exc
+    opens = list(re.finditer(rb"<tr[^>]*>", source_bytes[table_start:end], re.IGNORECASE))
+    if opens:
+        row_open = opens[-1].start() + table_start
+        row_start = next(
+            index for index, cell in enumerate(cells)
+            if cell[1] > row_open and cell[1] <= start
+        )
+    else:
+        row_start = target
+        while row_start > 0 and texts[row_start - 1]:
+            row_start -= 1
+    row_label = texts[row_start]
+    if definition.row_label and row_label.casefold() != definition.row_label.casefold():
+        raise EconomicObservationError("replay_mismatch: replayed row differs from the metric definition")
+    header = texts[:row_start]
+    if opens:
+        header_open = opens[0].start() + table_start
+        header = [text for index, text in enumerate(texts) if cells[index][1] >= header_open and index < row_start]
+    column = target - row_start
+    if not definition.column_label and column == 0:
+        column = 1
+    expected_period = prior_end if row.get("metric", "").startswith("pg_prior_") else current_end
+    period_forms = {
+        expected_period.isoformat(),
+        str(expected_period.year),
+        expected_period.strftime("%B %-d, %Y"),
+    }
+    if definition.column_label:
+        if column >= len(header) or header[column] != definition.column_label:
+            raise EconomicObservationError("replay_mismatch: replayed column differs from the metric definition")
+        return
+    if column >= len(header) or header[column] not in period_forms:
+        raise EconomicObservationError("replay_mismatch: replayed period differs from the stored observation")
 
 
 def validate_selected_facts(
@@ -217,11 +293,23 @@ def validate_selected_facts(
         if definition.value_kind == "bounded_text":
             replayed_value: Any = replayed_text
         elif replayed_text in {"-", "—", "–"}:
+            before = source[: receipt.get("span_start_byte")]
+            if not _NEUTRAL_ZERO.search(before):
+                raise EconomicObservationError("replay_mismatch: dash has no neutral-zero convention")
             replayed_value = 0.0
         else:
             replayed_value = parse_pg_literal(replayed_text, unit=definition.unit)
         if replayed_value is None or replayed_value != value:
             raise EconomicObservationError("replay_mismatch: replayed value differs from stored value")
+        _verify_pg_replay(
+            source=source,
+            definition=definition,
+            start=receipt.get("span_start_byte"),
+            end=receipt.get("span_end_byte"),
+            row=row,
+            current_end=current_end,
+            prior_end=prior_end,
+        )
 
         checked.append(dict(row))
     return checked
