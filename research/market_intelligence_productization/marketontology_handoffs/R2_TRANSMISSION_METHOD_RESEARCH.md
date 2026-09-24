@@ -86,9 +86,11 @@ Keep the no-result outcome useful: a well-supported rejection or narrowed claim 
 an accepted research result if it prevents a false product capability.
 
 Deliver REPORT.md, SOURCES.csv, IMPLEMENTATION_HANDOFF.md and any actually executed
-bounded study under `returns/R2/<revision>/`. Sol accepts research before a delivery
-principal admits implementation. Stop at that research boundary; no code-owner or
-production effect is granted here.
+bounded study under `returns/R2/<revision>/`, following README.md's shared return,
+source-rights and write-scope contract. Post the exact artifact availability with
+`accepted:false`; an upload or PR is not research acceptance. Sol accepts research
+before a delivery principal admits implementation. Stop at that research boundary;
+no code-owner or production effect is granted here.
 
 Use current deep-reasoning task classification for the substantive research unit,
 with a realistic estimate and stop condition. A requested Astra Pro surface is not
