@@ -1,0 +1,3078 @@
+{
+  "anchor_theme_id": "robotics_automation",
+  "bundle": {
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_08c989d7fe4e803aa189fbd49973c875",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Speed reducers in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Speed reducers (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 8806,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Speed reducers', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-japan-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_789e5e4755f98e610cdc8f8ef9a0eaee",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Speed reducers in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Speed reducers (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 8857,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Speed reducers', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-japan-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_9f0438d5b0d0ab4a5957339952db7085",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Speed reducers in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Speed reducers (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 7146,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Speed reducers', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-japan-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_9bbd9bccb54c5c4025e10612c182f2da",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Speed reducers in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Speed reducers (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 7279,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Speed reducers', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-japan-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_a9be526d6c377de77ff4c50e11e00d41",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Mechatronics in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Mechatronics (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1759,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Mechatronics', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-japan-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_030f0e40da2b1194afd55871a661f145",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Mechatronics in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Mechatronics (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1193,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Mechatronics', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-japan-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_55c05bac415b16271c33ca9473bb4bf8",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Mechatronics in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Mechatronics (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 1287,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Mechatronics', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-japan-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_f5ec6335d78c8c3e47390f6d9d9b1777",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Mechatronics in Japan for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Mechatronics (Japan)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 811,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Japan",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Japan / Mechatronics', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-japan-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_f4fab96503c3bbe054638f3f4e97ab22",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone; the source presents a dash (unavailable/not-applicable), preserved as null, never converted to zero",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Speed reducers in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Speed reducers (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Speed reducers', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-china-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_d06214a7114e0459cf7747812c66947e",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Speed reducers in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Speed reducers (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 981,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Speed reducers', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-china-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_4397100d5b8b961577c8d89a42a3df4b",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Speed reducers in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Speed reducers (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 980,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Speed reducers', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-china-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_14291f4b4d9fb557d9626651a5358e47",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Speed reducers in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Speed reducers (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 703,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Speed reducers', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-china-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_d99778d0a7a2fde952a1806255fab69d",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone; the source presents a dash (unavailable/not-applicable), preserved as null, never converted to zero",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Mechatronics in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Mechatronics (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": null,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Mechatronics', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-china-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_163c1e5f6b5de03b68e5112b351ffac3",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Mechatronics in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Mechatronics (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 149,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Mechatronics', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-china-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_92ef3fed7ab29ba0d60b47b36034b9ac",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Mechatronics in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Mechatronics (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 119,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Mechatronics', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-china-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_0c01a49d3b2bcaaba9995fa2847c930f",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Mechatronics in China for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Mechatronics (China)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 304,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "China",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'China / Mechatronics', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-china-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_9566a61391332b40ee4d1184ef044f57",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Speed reducers in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Speed reducers (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1308,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Speed reducers', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-north-america-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_051aefddbc94e6684088ab860827b784",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Speed reducers in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Speed reducers (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 2663,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Speed reducers', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-north-america-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_bcd3ef9b04292c390bf3a50128bef666",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Speed reducers in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Speed reducers (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 5259,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Speed reducers', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-north-america-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_3bb4c7a41ef032b703ad9b15d3b3d944",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Speed reducers in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Speed reducers (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1735,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Speed reducers', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-north-america-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_7536477a1858ae6fd33764501601a699",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Mechatronics in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Mechatronics (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1014,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Mechatronics', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-north-america-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_16a85cc8c20f4689d7d3d3d8ddcd2f51",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Mechatronics in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Mechatronics (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 4416,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Mechatronics', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-north-america-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_b7e3b42d0e0ae6e9b30360a284640ac5",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Mechatronics in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Mechatronics (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 5330,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Mechatronics', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-north-america-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_43a72c3b8de50838e7c1fc8138855884",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Mechatronics in North America for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Mechatronics (North America)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1299,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "North America",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'North America / Mechatronics', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-north-america-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_412f1076489fe621f10cfa190b8c5830",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Speed reducers in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Speed reducers (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 2859,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Speed reducers', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-europe-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c701ae6a5de692eb5f3b1251f40e5ac1",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Speed reducers in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Speed reducers (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 4309,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Speed reducers', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-europe-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c6b641cb8c4eecf63cf713657c56c312",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Speed reducers in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Speed reducers (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 6947,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Speed reducers', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-europe-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_72d3f6d9e2b2d581f42cc563124fb620",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Speed reducers in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Speed reducers (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 3073,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Speed reducers', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-europe-speed-reducers",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Speed reducers"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_e16fe70eac1fb15a7697f707d5f8c0d5",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "production for Mechatronics in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - Mechatronics (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1318,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Mechatronics', column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-europe-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_9da012567a684421d78386aff0de58a6",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "orders for Mechatronics in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - Mechatronics (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1555,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Mechatronics', column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-europe-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_0a6a6bf27af216fbe79137ee54183b57",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "backlog for Mechatronics in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - Mechatronics (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 2385,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Mechatronics', column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-europe-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c1edc4dfca169f3198ab609a66c05adf",
+        "limitations": {
+          "coverage": "exchange-filed quarterly operating table; production valued at selling prices; the table covers the whole company, not humanoids alone",
+          "does_not_establish": [
+            "humanoid-specific demand (the table covers the whole company)",
+            "unit counts or nameplate capacity (monetary values only)",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "sales for Mechatronics in Europe for the quarter, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - Mechatronics (Europe)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 1473,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": "Europe",
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, row 'Europe / Mechatronics', column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-europe-mechatronics",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "Mechatronics"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c69268fad223ed984b4548af3236a91a",
+        "limitations": {
+          "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 4 JPY million preserved, no balancing rows fabricated)",
+          "does_not_establish": [
+            "humanoid-specific demand",
+            "unit counts",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "the published total for production across all product groups, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Production - published total (All product groups)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 17068,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": null,
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, published total row, column 'Production'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-production-published-total",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "All product groups"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_350345b401b5d21595be3e03b0003a74",
+        "limitations": {
+          "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 5 JPY million preserved, no balancing rows fabricated)",
+          "does_not_establish": [
+            "humanoid-specific demand",
+            "unit counts",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "the published total for orders across all product groups, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Orders - published total (All product groups)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 24128,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": null,
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, published total row, column 'Orders'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-orders-published-total",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "All product groups"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c18a66497b6987b9b1d853427b9e4941",
+        "limitations": {
+          "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 4 JPY million preserved, no balancing rows fabricated)",
+          "does_not_establish": [
+            "humanoid-specific demand",
+            "unit counts",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "the published total for backlog across all product groups, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Backlog - published total (All product groups)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "stock",
+          "unit": "JPY_million",
+          "value": 29457,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": null,
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, published total row, column 'Backlog'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-backlog-published-total",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "All product groups"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_e0f71487503d2a65d8b6657a5b60eba3",
+        "limitations": {
+          "coverage": "published total row preserved as printed; the source total exceeds the sum of displayed component rows (rounding residual of 4 JPY million preserved, no balancing rows fabricated)",
+          "does_not_establish": [
+            "humanoid-specific demand",
+            "unit counts",
+            "delivery lead time"
+          ],
+          "establishes": [
+            "the published total for sales across all product groups, JPY million"
+          ],
+          "expiry_trigger": "the filing is corrected or withdrawn",
+          "source_dependence": "issuer-filed exchange report"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Sales - published total (All product groups)"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "JPY_million",
+          "value": 16681,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-09-23T07:00:00Z",
+          "reviewer": "fixture"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": null,
+          "canonical_theme_id": "robotics_automation",
+          "denominator": null,
+          "period": "2026Q1-FY",
+          "region": null,
+          "technology_facet": "precision_motion"
+        },
+        "source": {
+          "locator": "PDF pp.14-16, product/region operating table, published total row, column 'Sales'",
+          "native_digest": null,
+          "observed_at": "2026-09-23T07:00:00Z",
+          "published_at": "2026-08-07",
+          "published_at_grain": "date",
+          "publisher": "Harmonic Drive Systems",
+          "retained_at": "2026-09-23T07:05:00Z",
+          "retention_ref": "research-vault://fixture/hds-2026q1-sales-published-total",
+          "source_uri": "https://www2.jpx.co.jp/disc/63240/140120260804507706.pdf"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": "co:intl:6324.T",
+          "configuration": null,
+          "source_business_label": "Harmonic Drive Systems",
+          "source_platform_label": null,
+          "source_product_label": "All product groups"
+        },
+        "temporal": {
+          "business_valid_from": null,
+          "business_valid_to": null
+        }
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "identity_results": [
+      {
+        "company_node_id": "co:intl:6324.T",
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-09-22T00:00:00Z",
+        "resolution": "UNSUPPORTED_MARKET",
+        "security_id": null,
+        "source_business_label": "Harmonic Drive Systems"
+      }
+    ],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [],
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_030f0e40da2b1194afd55871a661f145"
+      ],
+      [
+        "assertion",
+        "gmirca_051aefddbc94e6684088ab860827b784"
+      ],
+      [
+        "assertion",
+        "gmirca_08c989d7fe4e803aa189fbd49973c875"
+      ],
+      [
+        "assertion",
+        "gmirca_0a6a6bf27af216fbe79137ee54183b57"
+      ],
+      [
+        "assertion",
+        "gmirca_0c01a49d3b2bcaaba9995fa2847c930f"
+      ],
+      [
+        "assertion",
+        "gmirca_14291f4b4d9fb557d9626651a5358e47"
+      ],
+      [
+        "assertion",
+        "gmirca_163c1e5f6b5de03b68e5112b351ffac3"
+      ],
+      [
+        "assertion",
+        "gmirca_16a85cc8c20f4689d7d3d3d8ddcd2f51"
+      ],
+      [
+        "assertion",
+        "gmirca_350345b401b5d21595be3e03b0003a74"
+      ],
+      [
+        "assertion",
+        "gmirca_3bb4c7a41ef032b703ad9b15d3b3d944"
+      ],
+      [
+        "assertion",
+        "gmirca_412f1076489fe621f10cfa190b8c5830"
+      ],
+      [
+        "assertion",
+        "gmirca_4397100d5b8b961577c8d89a42a3df4b"
+      ],
+      [
+        "assertion",
+        "gmirca_43a72c3b8de50838e7c1fc8138855884"
+      ],
+      [
+        "assertion",
+        "gmirca_55c05bac415b16271c33ca9473bb4bf8"
+      ],
+      [
+        "assertion",
+        "gmirca_72d3f6d9e2b2d581f42cc563124fb620"
+      ],
+      [
+        "assertion",
+        "gmirca_7536477a1858ae6fd33764501601a699"
+      ],
+      [
+        "assertion",
+        "gmirca_789e5e4755f98e610cdc8f8ef9a0eaee"
+      ],
+      [
+        "assertion",
+        "gmirca_92ef3fed7ab29ba0d60b47b36034b9ac"
+      ],
+      [
+        "assertion",
+        "gmirca_9566a61391332b40ee4d1184ef044f57"
+      ],
+      [
+        "assertion",
+        "gmirca_9bbd9bccb54c5c4025e10612c182f2da"
+      ],
+      [
+        "assertion",
+        "gmirca_9da012567a684421d78386aff0de58a6"
+      ],
+      [
+        "assertion",
+        "gmirca_9f0438d5b0d0ab4a5957339952db7085"
+      ],
+      [
+        "assertion",
+        "gmirca_a9be526d6c377de77ff4c50e11e00d41"
+      ],
+      [
+        "assertion",
+        "gmirca_b7e3b42d0e0ae6e9b30360a284640ac5"
+      ],
+      [
+        "assertion",
+        "gmirca_bcd3ef9b04292c390bf3a50128bef666"
+      ],
+      [
+        "assertion",
+        "gmirca_c18a66497b6987b9b1d853427b9e4941"
+      ],
+      [
+        "assertion",
+        "gmirca_c1edc4dfca169f3198ab609a66c05adf"
+      ],
+      [
+        "assertion",
+        "gmirca_c69268fad223ed984b4548af3236a91a"
+      ],
+      [
+        "assertion",
+        "gmirca_c6b641cb8c4eecf63cf713657c56c312"
+      ],
+      [
+        "assertion",
+        "gmirca_c701ae6a5de692eb5f3b1251f40e5ac1"
+      ],
+      [
+        "assertion",
+        "gmirca_d06214a7114e0459cf7747812c66947e"
+      ],
+      [
+        "assertion",
+        "gmirca_d99778d0a7a2fde952a1806255fab69d"
+      ],
+      [
+        "assertion",
+        "gmirca_e0f71487503d2a65d8b6657a5b60eba3"
+      ],
+      [
+        "assertion",
+        "gmirca_e16fe70eac1fb15a7697f707d5f8c0d5"
+      ],
+      [
+        "assertion",
+        "gmirca_f4fab96503c3bbe054638f3f4e97ab22"
+      ],
+      [
+        "assertion",
+        "gmirca_f5ec6335d78c8c3e47390f6d9d9b1777"
+      ],
+      [
+        "identity",
+        "identity-vintage-r01"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0"
+  },
+  "case_key": "hds_operating_snapshot",
+  "expected_regression": "Orders and sales stay quarter flows and backlog an end-period stock in JPY million; published rounded totals and their residuals survive alongside component rows with no balancing rows fabricated.",
+  "query": {
+    "anchor_theme_id": "robotics_automation",
+    "expected_generation": null,
+    "limit": 50,
+    "offset": 0,
+    "recorded_cutoff": null,
+    "slice_key": "precision_motion",
+    "source_cutoff": null,
+    "time_mode": "latest",
+    "view": "manufacturing"
+  },
+  "rbv_refs": [
+    "RBV-23",
+    "RBV-24"
+  ],
+  "slice_key": "precision_motion",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "R1",
+    "R2"
+  ]
+}
