@@ -23,7 +23,7 @@ The host must provide:
 - An authenticated read callback that uses the existing site session client and requests with `cache:'no-store'`.
 - An auth-change subscription that follows `mdx-auth`, ignores `PREFS_SAVED`, and reports a change only when signed-in user identity changes.
 - Focus and return handling for the host panel and evidence dialog: initial focus moves to the dialog close control, Escape and the non-content scrim close the dialog, Tab and Shift+Tab remain inside an open dialog, and focus returns to the invoking evidence control.
-- A lifecycle owner that mounts on first disclosure expansion. Before that expansion there is no prefetch of private data. After the first expansion, the adapter keeps its DOM and the host merely hides it on collapse; re-expansion within the same signed-in session causes no teardown or refetch. The adapter destroys on logout or host teardown, and `destroy()` is idempotent.
+- A lifecycle owner that mounts on first disclosure expansion. Before that expansion there is no prefetch of private data. After the first expansion, the adapter keeps its DOM and the host merely hides it on collapse; re-expansion within the same signed-in session causes no teardown or refetch. The adapter destroys only on host teardown (a sign-out clears the private content to the sign-in state per §6.3 and keeps the adapter mounted), and `destroy()` is idempotent.
 - If a host collapses on click, that host toggle ignores every click originating inside the dossier root.
 - The expanded material area constrained to a maximum height of 390 px, with vertical scrolling inside the dossier content rather than the host page.
 
