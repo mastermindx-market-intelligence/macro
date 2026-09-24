@@ -28,7 +28,7 @@ No Executive Job, worker, watcher, automatic wake or background execution is cla
 - Charter `research/theme_graph/thematic_research_20260924/RESEARCH_WAVE_1.md` at `c86d015cea03b1b1552f45a71abc2ca0520242dd`, blob `531bc3ba9c7f27ac79a9cb114a5f0db709ce1451`.
 - Protected Mastermind Skillpack commit `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`; version 1.0.1 / bootstrap 1.
 - Macro branch created from main `14587e506d3e03c6064086abd417a87d2cafc0da`.
-- Child branch `sol/gmi-theme-research-b-20260924`.
+- Child PR #7892 (OPEN / DRAFT / HOLD); branch `sol/gmi-theme-research-b-20260924`.
 - Allowed research root `research/theme_graph/thematic_research_20260924/health-longevity-wearables/`.
 - This cumulative handoff `agentos/handoffs/GMI-THEMATIC-B-2026-09-24.md`.
 
@@ -46,8 +46,9 @@ The current #7788 cumulative handoff marks R1-R9 DO_NOT_REDO and says R10 is a c
 
 - Exact B operation PR search: none before carrier creation.
 - Candidate B branch: absent before carrier creation.
-- Parent #7886 later comments: sibling GMI A pickup/start only; no B pickup/start/ruling observed.
-- EFFECT_UNKNOWN: none observed in the reads preceding this checkpoint.
+- Parent #7886 had sibling GMI A pickup/start evidence before this B carrier; B pickup/start receipt is now parent comment `5808845932`.
+- The PR-create tool wrapper initially returned an unexpected response shape after dispatch; same-carrier reconciliation found exactly PR #7892 on this branch, so that transient `EFFECT_UNKNOWN` is resolved to the existing intended PR. No duplicate PR was created.
+- EFFECT_UNKNOWN: none remains through this checkpoint.
 - #7788 and parent branches remain read-only.
 
 ## First unit and non-goals
