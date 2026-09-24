@@ -51,10 +51,11 @@
     },
     "facts": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "items": {
         "$ref": "#/$defs/fact"
-      }
+      },
+      "description": "Source facts. May be empty ONLY for an unavailable document (see allOf): R15 requires zero ready results to render as unavailable, never empty-ready."
     },
     "generated_at": {
       "type": "string",
@@ -131,6 +132,28 @@
         "type": "object",
         "properties": {
           "degraded_dependencies": {
+            "type": "array",
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "availability": {
+            "const": "ready"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "facts": {
             "type": "array",
             "minItems": 1
           }
