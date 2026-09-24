@@ -5402,7 +5402,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: options-payoff-lab consumer tests
-        run: python -m pytest tests/test_options_payoff_lab_consumer.py -q
+        run: python -m pytest tests/test_options_payoff_lab_consumer.py tests/test_options_skew_source_note.py -q
   uk-policy-desk:
     if: ${{ false }}
     gate: code
