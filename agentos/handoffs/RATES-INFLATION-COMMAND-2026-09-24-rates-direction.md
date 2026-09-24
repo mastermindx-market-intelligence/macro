@@ -206,3 +206,25 @@ trial registration. Seven single/pair/triple comparisons are proposed, not execu
 Procedure pin 2a7681601a419532a47f0d24029b55b37bfe2b5c; same original records
 carrier. No children/watcher/wake, no effect uncertainty; all held siblings and
 RD1 files/results/ledger remain untouched. Parent mission remains incomplete.
+
+### Source preflight returned; do not repeat it blindly
+
+The native-source request completed HTTP 200 on the original Studio, PID 25569,
+2026-09-24T12:51:02Z to 12:51:03Z. ^TNX yielded 450 hourly timestamped records,
+zero null OHLC fields, 64 UTC dates with seven observations and one partial date.
+No strategy grading/model fit/TrialLedger write occurred. Latest timestamp is an
+irregular 12:35:54Z point; do not admit it as a closed hourly or two-hour bar.
+Raw/source-quality hashes and native evidence path are in the new binding note.
+This proves an existing proxy-source route works, NOT TVC:US10Y equivalence or
+historical information availability. Original indicator files and native screenshot
+remain the motivating input, not a held-out performance test.
+
+Current frontier: source code/default formulas are bound and synthetic identities
+verified. Native Pine numerical parity and source session/closed-bar/proxy contracts
+are the prerequisites for the next registered real-market comparison. Preserve the
+capture rather than re-downloading a different vintage. Proceed using the existing
+Terminal source owner and canonical indicator owner on separately admitted source
+custody. No new collector/queue/signal registry; no parent completion, live forecast,
+autonomous worker or wake. This checkpoint covers all current effects; no unresolved
+mutation remains. The source-contract recipe is research-only and no production
+consumer or existing frozen experiment was changed.

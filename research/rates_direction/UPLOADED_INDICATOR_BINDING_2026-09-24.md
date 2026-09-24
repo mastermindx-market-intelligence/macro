@@ -87,5 +87,35 @@ The chart adapter can synthesize missing O/H/L from close/open, converts true ep
 to home-market DISPLAY epochs, and returns Bar6 without those origin flags. That is
 not a certified OHLC/UTC research receipt. A price-stochastic study must retain actual
 high/low flags; a first-passage study must not grade reconstructed extrema as observed.
-This is code inspection, not a live availability claim. No vendor request or feed
-modification occurred. Extend that owner on separate admitted source custody.
+At that code-inspection checkpoint, live availability had not yet been tested.
+The subsequent source preflight is recorded below. No feed was modified.
+Extend that owner on separate admitted source custody.
+
+## Subsequent live-source preflight (not a strategy evaluation)
+
+After the source-contract checkpoint, one bounded request used the incumbent Yahoo
+chart endpoint on the original Studio: ^TNX, interval=60m, range=3mo, includePrePost=true.
+HTTP 200, no chart error. Request/capture: 2026-09-24T12:51:02Z / 12:51:03Z.
+Raw response SHA256: 687b93d52beeb141dbfc3ea3eff787b67da7b36daa8effedc19568cbe544d070.
+Native evidence location (not a new store or collector):
+/Volumes/Mastermind/evidence/rates-direction-20260924-sol-001/uploaded-formula-source-probe-20260924/.
+
+450 timestamped observations, source metadata granularity=1h, timezone America/Chicago;
+first 2026-06-24T12:20:00Z, last 2026-09-24T12:35:54Z. There are 64 UTC dates with
+seven observations and one partial date with two. This captured batch has ZERO
+null O/H/L/C fields, so the chart adapter's missing-field fallback was not needed
+for these rows. That does not qualify all future/vendor rows.
+The non-hour-aligned latest timestamp and partial day must not be declared completed
+hourly or two-hour bars by appearance. Native timestamps, session anchoring, partial-
+bar policy and any proxy scaling require qualification before a first-passage study.
+The source-quality receipt hash is
+4c6f5eda2698053e5738661a786476aef11e30caa78d0593c74c2da4b8db47b0.
+
+This demonstrates a real existing intraday SOURCE route, not TVC symbol identity,
+point-in-time historical knowledge, exact chart parity, a forecast or a win rate.
+Only coverage/field metadata were inspected; no strategy outcomes were graded.
+The existing source's US-day coverage must not silently replace the screenshot's
+possibly different hours. Keep a TNX-proxy pilot distinct from TVC replication.
+Next: qualify source/session/closed-bar semantics and native indicator output; then
+freeze/register the comparison before opening its performance outcomes. Do not
+rerun RD1, alter HS1 or install these reference functions as another production owner.
