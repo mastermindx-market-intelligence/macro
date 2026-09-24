@@ -1,0 +1,27 @@
+{
+  "schema": "theme_entry_reader.boundary_reproduction.v1",
+  "mission_complete": false,
+  "implemented": false,
+  "operation": "cn-entry-reader-boundary-recovery-20260924-sol-001",
+  "procedure_pin": "1a7d400294b0d37c460b963b8865b40a23173b58",
+  "source_head": "e43c769325311a06724ae211fdcc393ffcf05338",
+  "source_sha256": "f29023fb2f854f4ef8bb1a7bf7391d6072552931bcf1ea60955023f1a9086620",
+  "review": "PRR_kwDOS4LjIs8AAAABO07tAQ",
+  "pickup_comment": 5812263305,
+  "test_result": {
+    "failed": 58,
+    "passed": 12,
+    "deselected": 45,
+    "exit_code": 1,
+    "command": "python3 -m pytest tests/test_stock_board_v2.py -q -k \"entry_owner_ or entry_member_permissions_require or group_member_adapter_cannot or entry_boolean_controls or entry_source_signal_cannot\"",
+    "log_sha256": "e17f7d14d5272e02cec923f62fe2d4d6695686cc8c0a55cbb65b34454b3112ab",
+    "raw_log_sha256": "0d792faf20c271f419a42f0d1f20085d34bbe3ea7173a9bf66ca1ae930300e2c",
+    "normalization": "trailing whitespace only"
+  },
+  "test_patch_sha256": "ab5fb42d3ff44f1cbb6d2e46234245e89a314c7511d789ce34b9ece0036805f6",
+  "source_write": "SAFETY_REFUSED_BEFORE_DISPATCH_EFFECT_NONE",
+  "source_unchanged_on_readback": true,
+  "scope": "Synthetic source-reader/JSON-boolean contract reproduction; not a live Chinese trade or return forecast.",
+  "remaining": "Repair original reader clocks and genuine-boolean boundary after legitimate permission recovery; then independent review. Native CN region wiring is not implemented.",
+  "publication_scope": "diagnostic evidence and prospective test patch only; engine and active test suite unchanged in published commit"
+}

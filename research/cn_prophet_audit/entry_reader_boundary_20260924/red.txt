@@ -1,0 +1,1106 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFF.F.FFFFF.FFFFFFF.FF......F.FFFF   [100%]
+=================================== FAILURES ===================================
+_____ test_entry_owner_requires_real_nonfuture_observation[None-standouts] _____
+
+owner = 'standouts', bad = None
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+______ test_entry_owner_requires_real_nonfuture_observation[None-setups] _______
+
+owner = 'setups', bad = None
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+_______ test_entry_owner_requires_real_nonfuture_observation[-standouts] _______
+
+owner = 'standouts', bad = ''
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+________ test_entry_owner_requires_real_nonfuture_observation[-setups] _________
+
+owner = 'setups', bad = ''
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+__ test_entry_owner_requires_real_nonfuture_observation[not-a-date-standouts] __
+
+owner = 'standouts', bad = 'not-a-date'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+___ test_entry_owner_requires_real_nonfuture_observation[not-a-date-setups] ____
+
+owner = 'setups', bad = 'not-a-date'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+__ test_entry_owner_requires_real_nonfuture_observation[2026-09-20-standouts] __
+
+owner = 'standouts', bad = '2026-09-20'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+___ test_entry_owner_requires_real_nonfuture_observation[2026-09-20-setups] ____
+
+owner = 'setups', bad = '2026-09-20'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+_ test_entry_owner_requires_real_nonfuture_observation[2026-09-18garbage-standouts] _
+
+owner = 'standouts', bad = '2026-09-18garbage'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+_ test_entry_owner_requires_real_nonfuture_observation[2026-09-18garbage-setups] _
+
+owner = 'setups', bad = '2026-09-18garbage'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+_ test_entry_owner_requires_real_nonfuture_observation[2026-09-18Tbad-standouts] _
+
+owner = 'standouts', bad = '2026-09-18Tbad'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+_ test_entry_owner_requires_real_nonfuture_observation[2026-09-18Tbad-setups] __
+
+owner = 'setups', bad = '2026-09-18Tbad'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+_____ test_entry_owner_requires_real_nonfuture_observation[True-standouts] _____
+
+owner = 'standouts', bad = True
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+______ test_entry_owner_requires_real_nonfuture_observation[True-setups] _______
+
+owner = 'setups', bad = True
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+___ test_entry_owner_requires_real_nonfuture_observation[20260918-standouts] ___
+
+owner = 'standouts', bad = 20260918
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+____ test_entry_owner_requires_real_nonfuture_observation[20260918-setups] _____
+
+owner = 'setups', bad = 20260918
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("bad", [None, "", "not-a-date", "2026-09-20",
+                                      "2026-09-18garbage", "2026-09-18Tbad", True, 20260918])
+    def test_entry_owner_requires_real_nonfuture_observation(owner, bad):
+        doc = _standouts(as_of=bad)
+        doc["generated_utc"] = "2026-09-19T00:00:00Z"  # not an observation substitute
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1096: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-available_at-standouts] _
+
+owner = 'standouts', field = 'available_at', value = '2026-09-20T01:00:00Z'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-available_at-setups] _
+
+owner = 'setups', field = 'available_at', value = '2026-09-20T01:00:00Z'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-published_at-standouts] _
+
+owner = 'standouts', field = 'published_at', value = '2026-09-20T01:00:00Z'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-published_at-setups] _
+
+owner = 'setups', field = 'published_at', value = '2026-09-20T01:00:00Z'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-generated_utc-standouts] _
+
+owner = 'standouts', field = 'generated_utc', value = '2026-09-20T01:00:00Z'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-generated_utc-setups] _
+
+owner = 'setups', field = 'generated_utc', value = '2026-09-20T01:00:00Z'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-available_at-standouts] _
+
+owner = 'standouts', field = 'available_at', value = 'invalid-clock'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-available_at-setups] _
+
+owner = 'setups', field = 'available_at', value = 'invalid-clock'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-published_at-standouts] _
+
+owner = 'standouts', field = 'published_at', value = 'invalid-clock'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-published_at-setups] _
+
+owner = 'setups', field = 'published_at', value = 'invalid-clock'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-generated_utc-standouts] _
+
+owner = 'standouts', field = 'generated_utc', value = 'invalid-clock'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-generated_utc-setups] _
+
+owner = 'setups', field = 'generated_utc', value = 'invalid-clock'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    @pytest.mark.parametrize("field", ["available_at", "published_at", "generated_utc"])
+    @pytest.mark.parametrize("value", ["2026-09-20T01:00:00Z", "invalid-clock"])
+    def test_entry_owner_rejects_bad_or_future_supporting_clocks(owner, field, value):
+        doc = _standouts()
+        doc[field] = value
+        source = _entry_owner_source(owner, doc)
+        ctx = _context(source)
+>       assert ctx["stock_setup"]["availability"] == "UNAVAILABLE"
+E       AssertionError: assert 'AVAILABLE' == 'UNAVAILABLE'
+E
+E         - UNAVAILABLE
+E         ? --
+E         + AVAILABLE
+
+tests/test_stock_board_v2.py:1113: AssertionError
+_ test_entry_owner_uses_supplied_intraday_cutoff_without_date_truncation[standouts] _
+
+owner = 'standouts'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    def test_entry_owner_uses_supplied_intraday_cutoff_without_date_truncation(owner):
+        from datetime import datetime, timezone
+        doc = _standouts()
+        doc["available_at"] = "2026-09-19T16:00:00+02:00"  # 14:00 UTC
+        before = _entry_owner_source(owner, doc, now=datetime(2026, 9, 19, 13, tzinfo=timezone.utc))
+        after = _entry_owner_source(owner, doc, now=datetime(2026, 9, 19, 15, tzinfo=timezone.utc))
+>       assert _context(before)["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1125: AssertionError
+_ test_entry_owner_uses_supplied_intraday_cutoff_without_date_truncation[setups] _
+
+owner = 'setups'
+
+    @pytest.mark.parametrize("owner", ["standouts", "setups"])
+    def test_entry_owner_uses_supplied_intraday_cutoff_without_date_truncation(owner):
+        from datetime import datetime, timezone
+        doc = _standouts()
+        doc["available_at"] = "2026-09-19T16:00:00+02:00"  # 14:00 UTC
+        before = _entry_owner_source(owner, doc, now=datetime(2026, 9, 19, 13, tzinfo=timezone.utc))
+        after = _entry_owner_source(owner, doc, now=datetime(2026, 9, 19, 15, tzinfo=timezone.utc))
+>       assert _context(before)["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1125: AssertionError
+______ test_entry_member_permissions_require_real_booleans[None-eligible] ______
+
+field = 'eligible', bad = None
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+_____ test_entry_member_permissions_require_real_booleans[false-eligible] ______
+
+field = 'eligible', bad = 'false'
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[false-buyable] ______
+
+field = 'buyable', bad = 'false'
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[true-eligible] ______
+
+field = 'eligible', bad = 'true'
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[true-buyable] _______
+
+field = 'buyable', bad = 'true'
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+_______ test_entry_member_permissions_require_real_booleans[1-eligible] ________
+
+field = 'eligible', bad = 1
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+________ test_entry_member_permissions_require_real_booleans[1-buyable] ________
+
+field = 'buyable', bad = 1
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+_______ test_entry_member_permissions_require_real_booleans[0-eligible] ________
+
+field = 'eligible', bad = 0
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[bad5-eligible] ______
+
+field = 'eligible', bad = {}
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[bad6-eligible] ______
+
+field = 'eligible', bad = {'yes': True}
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[bad6-buyable] _______
+
+field = 'buyable', bad = {'yes': True}
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[bad7-eligible] ______
+
+field = 'eligible', bad = [True]
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+______ test_entry_member_permissions_require_real_booleans[bad7-buyable] _______
+
+field = 'buyable', bad = [True]
+
+    @pytest.mark.parametrize("field", ["eligible", "buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, 0, {}, {"yes": True}, [True]])
+    def test_entry_member_permissions_require_real_booleans(field, bad):
+        gate = _member_gate()
+        if field == "eligible":
+            gate["eligible"] = bad
+        ctx = _context(_source(), member_gate=gate,
+                       member_eligible=bad if field == "eligible" else True,
+                       member_buyable=bad if field == "buyable" else True)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1138: AssertionError
+___ test_group_member_adapter_cannot_coerce_permission[None-stock_eligible] ____
+
+field = 'stock_eligible', bad = None
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann0')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+___ test_group_member_adapter_cannot_coerce_permission[false-stock_eligible] ___
+
+field = 'stock_eligible', bad = 'false'
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann2')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+___ test_group_member_adapter_cannot_coerce_permission[false-stock_buyable] ____
+
+field = 'stock_buyable', bad = 'false'
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann3')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+___ test_group_member_adapter_cannot_coerce_permission[true-stock_eligible] ____
+
+field = 'stock_eligible', bad = 'true'
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann4')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+____ test_group_member_adapter_cannot_coerce_permission[true-stock_buyable] ____
+
+field = 'stock_buyable', bad = 'true'
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann5')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+_____ test_group_member_adapter_cannot_coerce_permission[1-stock_eligible] _____
+
+field = 'stock_eligible', bad = 1
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann6')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+_____ test_group_member_adapter_cannot_coerce_permission[1-stock_buyable] ______
+
+field = 'stock_buyable', bad = 1
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann7')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+___ test_group_member_adapter_cannot_coerce_permission[bad4-stock_eligible] ____
+
+field = 'stock_eligible', bad = {}
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann8')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+___ test_group_member_adapter_cannot_coerce_permission[bad5-stock_eligible] ____
+
+field = 'stock_eligible', bad = {'yes': True}
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann10')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+____ test_group_member_adapter_cannot_coerce_permission[bad5-stock_buyable] ____
+
+field = 'stock_buyable', bad = {'yes': True}
+tmp_path = PosixPath('/private/tmp/mmx-entry-boundary-red-20260924/test_group_member_adapter_cann11')
+
+    @pytest.mark.parametrize("field", ["stock_eligible", "stock_buyable"])
+    @pytest.mark.parametrize("bad", [None, "false", "true", 1, {}, {"yes": True}])
+    def test_group_member_adapter_cannot_coerce_permission(field, bad, tmp_path):
+        reader = GroupContext(site=tmp_path / "site")
+        reader._entry_source = _source()
+        member = {"stock_eligible": True, "stock_buyable": True, "stock_tier": "T1"}
+        member[field] = bad
+        ctx = reader._entry_context_for_member("AAA", _group(), member)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1151: AssertionError
+_ test_entry_boolean_controls_preserve_independent_eligibility[False-True-False] _
+
+eligible = False, buyable = True, expected = False
+
+    @pytest.mark.parametrize("eligible,buyable,expected", [(True, True, True), (True, False, False),
+                                                           (False, True, False), (False, False, False)])
+    def test_entry_boolean_controls_preserve_independent_eligibility(eligible, buyable, expected):
+        ctx = _context(_source(), member_gate={**_member_gate(), "eligible": eligible},
+                       member_eligible=eligible, member_buyable=buyable)
+>       assert ctx["routing"]["may_present_as_qualified_setup"] is expected
+E       assert True is False
+
+tests/test_stock_board_v2.py:1169: AssertionError
+_ test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[false] _
+
+bad = 'false'
+
+    @pytest.mark.parametrize("bad", ["false", "true", 1, {"yes": True}])
+    def test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility(bad):
+        doc = _standouts()
+        doc["buy"][0]["signal"]["eligible"] = bad
+>       assert _context(_entry_owner_source("standouts", doc))["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1177: AssertionError
+_ test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[true] __
+
+bad = 'true'
+
+    @pytest.mark.parametrize("bad", ["false", "true", 1, {"yes": True}])
+    def test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility(bad):
+        doc = _standouts()
+        doc["buy"][0]["signal"]["eligible"] = bad
+>       assert _context(_entry_owner_source("standouts", doc))["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1177: AssertionError
+___ test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[1] ___
+
+bad = 1
+
+    @pytest.mark.parametrize("bad", ["false", "true", 1, {"yes": True}])
+    def test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility(bad):
+        doc = _standouts()
+        doc["buy"][0]["signal"]["eligible"] = bad
+>       assert _context(_entry_owner_source("standouts", doc))["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1177: AssertionError
+_ test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[bad3] __
+
+bad = {'yes': True}
+
+    @pytest.mark.parametrize("bad", ["false", "true", 1, {"yes": True}])
+    def test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility(bad):
+        doc = _standouts()
+        doc["buy"][0]["signal"]["eligible"] = bad
+>       assert _context(_entry_owner_source("standouts", doc))["routing"]["may_present_as_qualified_setup"] is False
+E       assert True is False
+
+tests/test_stock_board_v2.py:1177: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[None-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[None-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[not-a-date-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[not-a-date-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[2026-09-20-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[2026-09-20-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[2026-09-18garbage-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[2026-09-18garbage-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[2026-09-18Tbad-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[2026-09-18Tbad-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[True-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[True-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[20260918-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_requires_real_nonfuture_observation[20260918-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-available_at-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-available_at-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-published_at-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-published_at-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-generated_utc-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[2026-09-20T01:00:00Z-generated_utc-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-available_at-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-available_at-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-published_at-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-published_at-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-generated_utc-standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_rejects_bad_or_future_supporting_clocks[invalid-clock-generated_utc-setups]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_uses_supplied_intraday_cutoff_without_date_truncation[standouts]
+FAILED tests/test_stock_board_v2.py::test_entry_owner_uses_supplied_intraday_cutoff_without_date_truncation[setups]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[None-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[false-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[false-buyable]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[true-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[true-buyable]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[1-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[1-buyable]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[0-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[bad5-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[bad6-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[bad6-buyable]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[bad7-eligible]
+FAILED tests/test_stock_board_v2.py::test_entry_member_permissions_require_real_booleans[bad7-buyable]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[None-stock_eligible]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[false-stock_eligible]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[false-stock_buyable]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[true-stock_eligible]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[true-stock_buyable]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[1-stock_eligible]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[1-stock_buyable]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[bad4-stock_eligible]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[bad5-stock_eligible]
+FAILED tests/test_stock_board_v2.py::test_group_member_adapter_cannot_coerce_permission[bad5-stock_buyable]
+FAILED tests/test_stock_board_v2.py::test_entry_boolean_controls_preserve_independent_eligibility[False-True-False]
+FAILED tests/test_stock_board_v2.py::test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[false]
+FAILED tests/test_stock_board_v2.py::test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[true]
+FAILED tests/test_stock_board_v2.py::test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[1]
+FAILED tests/test_stock_board_v2.py::test_entry_source_signal_cannot_promote_truthy_nonboolean_eligibility[bad3]
+58 failed, 12 passed, 45 deselected in 2.66s
