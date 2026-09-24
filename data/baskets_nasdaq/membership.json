@@ -4,7 +4,7 @@
  "index": "Nasdaq-100",
  "benchmark": "QQQ",
  "benchmark_label": "Nasdaq-100 (QQQ)",
- "as_of": "2026-09-16",
+ "as_of": "2026-09-24",
  "source": "finviz idx_ndx + QQQ holdings; curated tech subsectors + amalgamations",
  "subsectors": {
   "semiconductors": {
@@ -40,20 +40,16 @@
      "name": "Texas Instruments Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "ADI",
-     "name": "Analog Devices Inc"
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
+     "ticker": "ADI",
+     "name": "Analog Devices Inc"
     },
     {
      "ticker": "MPWR",
@@ -62,6 +58,10 @@
     {
      "ticker": "ALAB",
      "name": "Astera Labs Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "MCHP",
@@ -86,10 +86,6 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
@@ -98,16 +94,20 @@
      "name": "Cadence Design Systems Inc"
     },
     {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
+    },
+    {
      "ticker": "MSTR",
      "name": "Strategy Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
-    },
-    {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -398,20 +398,16 @@
      "name": "Texas Instruments Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "ADI",
-     "name": "Analog Devices Inc"
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
+     "ticker": "ADI",
+     "name": "Analog Devices Inc"
     },
     {
      "ticker": "MPWR",
@@ -420,6 +416,10 @@
     {
      "ticker": "ALAB",
      "name": "Astera Labs Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "MCHP",
@@ -532,10 +532,6 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
@@ -544,16 +540,20 @@
      "name": "Cadence Design Systems Inc"
     },
     {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
+    },
+    {
      "ticker": "MSTR",
      "name": "Strategy Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
-    },
-    {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -861,7 +861,7 @@
     },
     {
      "ticker": "KHC",
-     "name": "Kraft Heinz Co"
+     "name": "KHC"
     },
     {
      "ticker": "AEP",

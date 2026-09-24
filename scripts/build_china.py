@@ -22,7 +22,12 @@ from markupsafe import Markup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import plotly.graph_objects as go  # noqa: E402
+# plotly is intentionally NOT imported at module level: tests under
+# tests/test_china_archetype_d_s1.py import this module for CHINA_TILE_COPY /
+# MARKET_TILE_SPEC without ever rendering a chart, and plotly is absent from the
+# conviction-profile CI env (proven environmental, not this PR's defect). The
+# three renderers below do `import plotly.graph_objects as go` locally so the
+# module is importable wherever the engine is.
 
 from lib import config, illus, site_assets, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
@@ -75,7 +80,10 @@ PLOT_LAYOUT = dict(
     legend={"orientation": "h", "y": 1.08})
 
 
-def _chart_html(fig: go.Figure) -> str:
+def _chart_html(fig: "plotly.graph_objects.Figure") -> str:
+    # plotly import is lazy in the callers below; the annotation is a string
+    # under `from __future__ import annotations`, so this sink needs no plotly
+    # import at all — `to_html` runs against the caller-supplied figure.
     return fig.to_html(full_html=False, include_plotlyjs=False, config={"displayModeBar": False})
 
 
@@ -86,6 +94,37 @@ def _load_json(path: Path) -> dict | None:
     except Exception as e:  # noqa: BLE001 — persisted artifacts are fallback-only
         log.warning("fallback JSON unreadable (%s): %s", path, e)
     return None
+
+
+def _no_network_render() -> bool:
+    """True for site-only rerender lanes that must reuse committed China caches.
+
+    ``render.yml`` promises a no-collector/no-network rebake through
+    ``RENDER_NO_DRIP=1``.  ``CHINA_FAST_RENDER=1`` is the bounded VPS/dev sibling
+    used for emergency template publication.  Neither lane may refresh Eastmoney
+    or the per-stock context drips; the normal nightly remains their owner.
+    """
+    import os
+
+    return (
+        os.environ.get("RENDER_NO_DRIP") == "1"
+        or os.environ.get("CHINA_FAST_RENDER") == "1"
+    )
+
+
+def _build_china_library_for_page(alpha: dict | None) -> dict | None:
+    """Build the stock library only on its owning data-refresh lanes.
+
+    Site-only rerenders fall through to the already-committed
+    ``china_standouts.json`` contract later in ``main`` instead of spending
+    minutes in keyless Eastmoney/akshare drips whose writes are discarded.
+    """
+    if _no_network_render():
+        log.info("china stock library: no-network rerender; reusing persisted board")
+        return None
+    from scripts import build_china_library
+
+    return build_china_library.main(alpha=alpha)
 
 
 def _is_current_prophet_artifact(doc: dict | None) -> bool:
@@ -185,6 +224,7 @@ def _prophet_outage_shell(reason: str = _PROPHET_OUTAGE_REASON,
 
 
 def _chart_regime(px: pd.Series, hist: pd.DataFrame, days: int = 3650) -> str:
+    import plotly.graph_objects as go  # noqa: E402  (lazy — see module docstring)
     cut = px.index.max() - pd.Timedelta(days=days)
     s = px.loc[cut:].dropna()
     sub = hist.loc[cut:]
@@ -203,6 +243,7 @@ def _chart_regime(px: pd.Series, hist: pd.DataFrame, days: int = 3650) -> str:
 
 
 def _chart_axes(hist: pd.DataFrame, days: int = 3650) -> str:
+    import plotly.graph_objects as go  # noqa: E402  (lazy — see module docstring)
     cut = hist.index.max() - pd.Timedelta(days=days)
     sub = hist.loc[cut:]
     fig = go.Figure()
@@ -424,6 +465,10 @@ def _leaderboard() -> dict | None:
     """Stock-Connect 'smart money' leaderboard — today's most-active A-shares by foreign
     (northbound) turnover + the HK names mainland (southbound) money net-bought/sold.
     A build-time fetch (ephemeral top-N, no history needed); fully best-effort."""
+    if _no_network_render():
+        log.info("china leaderboard: no-network rerender; skipping ephemeral fetch")
+        return None
+
     import requests
     UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
@@ -699,24 +744,53 @@ def _china_signal_stack(latest: dict) -> dict | None:
         return None
 
 
+# (store group, ticker, column, en, zh, kind, tag_zh, decimals, is_rate, invert)
+# invert is a quote-orientation flag: True rows MUST disclose what 'higher'
+# means in CHINA_TILE_COPY. It does not invert colour. S1 folded the glance
+# strip into SSE / CSI 300 / ChiNext / HSI — none of those are invert rows —
+# so CNH currently lands only in the markets dialog. The spec table still
+# carries the orientation words so a future face-tile cannot ship silent.
+MARKET_TILE_SPEC: list[tuple] = [
+    ("china", "000001.SS", "close", "Shanghai Comp", "上证综指", "index", "指数", 1, False, False),
+    ("china", "CNH_F", "close", "Offshore yuan", "离岸人民币", "USDCNH", "美元离岸", 3, False, True),
+    ("yahoo", "GC_F", "close", "Gold", "黄金", "USD/oz", "美元/盎司", 0, False, False),
+    ("china_property", "cgb", "cgb_10y", "10Y CGB", "10年国债", "yield", "收益率", 2, True, False),
+]
+
+
+CHINA_TILE_COPY: dict[str, dict[str, str]] = {
+    "index": {
+        "meaning_en": "Shanghai Composite today",
+        "meaning_zh": "今日上证综指",
+    },
+    "USDCNH": {
+        "meaning_en": "quoted as yuan per US dollar — higher = a weaker yuan",
+        "meaning_zh": "以美元兑人民币报价 — 数值升高 = 人民币走弱",
+    },
+    "USD/oz": {
+        "meaning_en": "gold priced in US dollars",
+        "meaning_zh": "以美元计价的黄金",
+    },
+    "yield": {
+        "meaning_en": "10-year China government bond yield",
+        "meaning_zh": "中国十年期国债收益率",
+    },
+}
+
+
 def _china_market_tiles() -> list[dict]:
     """Cross-asset 'market snapshot' tiles — level + 1-day move for the headline A-share /
     macro instruments already on disk (SHCOMP, offshore yuan, gold, the 10Y CGB yield).
-    Coloured by raw sign; semantic read lives in the panels below."""
-    # (store group, ticker, column, en, zh, tag_en, tag_zh, decimals, is_rate, invert_tone)
+    Colour follows the displayed sign; invert rows disclose quote orientation in
+    meaning_en/meaning_zh rather than flipping the chip. Semantic read lives in
+    the panels below."""
     # NO CSI 300 / ChiNext rows: their face tiles are LIVE-ONLY (templates/china.html.j2).
     # The real index histories can't be baked honestly — Yahoo daily history runs weeks
     # stale for 000300.SS and is absent for 399006.SZ (probed 2026-08-11) — and the old
     # 510300.SS/159915.SZ ETF rows rendered NAVs ~4.7/~3.6 under index labels (the
     # 2026-08-11 production bug). Live spark quotes resolve both indexes fine.
-    spec = [
-        ("china", "000001.SS", "close", "Shanghai Comp", "上证综指", "index", "指数", 1, False, False),
-        ("china", "CNH_F", "close", "Offshore yuan", "离岸人民币", "USDCNH", "美元离岸", 3, False, True),
-        ("yahoo", "GC_F", "close", "Gold", "黄金", "USD/oz", "美元/盎司", 0, False, False),
-        ("china_property", "cgb", "cgb_10y", "10Y CGB", "10年国债", "yield", "收益率", 2, True, False),
-    ]
     out: list[dict] = []
-    for grp, name, col, en, zh, ten, tzh, dec, is_rate, invert in spec:
+    for grp, name, col, en, zh, ten, tzh, dec, is_rate, invert in MARKET_TILE_SPEC:
         try:
             df = store.read(grp, name)
             if df is None or df.empty or col not in df.columns:
@@ -727,13 +801,18 @@ def _china_market_tiles() -> list[dict]:
             last, prev = float(s.iloc[-1]), float(s.iloc[-2])
             chg = last - prev
             pct = (last / prev - 1) * 100 if prev else 0.0
+            # Colour follows the displayed sign. invert is orientation disclosure,
+            # never a tone flip (HK #7050 r2; a weaker yuan prints as Up).
             tone = "pos" if chg > 0 else "neg" if chg < 0 else "muted"
-            if invert and tone != "muted":      # a weaker yuan (USDCNH up) = risk-off
-                tone = "neg" if chg > 0 else "pos"
+            copy = CHINA_TILE_COPY.get(ten, {})
             out.append({
                 "sym": name,   # stable identifier for template lookup by ticker
+                "kind": ten,
+                "invert": bool(invert),
                 "label": Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(en, zh),
                 "tag": Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(ten, tzh),
+                "meaning_en": copy.get("meaning_en", ""),
+                "meaning_zh": copy.get("meaning_zh", ""),
                 "level": (f"{last:.{dec}f}%" if is_rate else f"{last:,.{dec}f}"),
                 "chg": f"{chg:+.{dec}f}", "pct": f"{pct:+.1f}%", "tone": tone,
             })
@@ -1477,6 +1556,23 @@ def main() -> int:
                 pass
             vm["market_state"] = _ms.market_state_snapshot(
                 latest, _f, latest.get("alerts") or [], profile=CN_PROFILE)
+            # Persist the CN_PROFILE snapshot to its OWN file
+            # (data/china_market_state/latest.json) so the macro spine can ingest it as
+            # a ratified 0-100 source without ever overwriting the US latest.json.
+            # The no-regress guard travels with the engine (market_key="cn"). The
+            # NYSE freshness stamp is suppressed for CN (its own session calendar
+            # governs CN staleness; the macro spine reads caveat_en / caveat_zh on
+            # the row instead). Fast-render dev rerenders skip the write just like
+            # the score-log append. Off the heavy render path: a single json.dump
+            # beside existing parquet writes.
+            try:
+                import os as _osenv_p_cn  # noqa: PLC0415
+                if _osenv_p_cn.environ.get("CHINA_FAST_RENDER"):
+                    pass                  # dev re-render: read-only
+                else:
+                    _ms.persist(vm.get("market_state"), market_key="cn")
+            except Exception as _pc_e:  # noqa: BLE001 — additive, never fatal
+                log.warning("cn market_state persist failed (%s); skipping", _pc_e)
             # Attach contagion block to the post-transform radar dict so rd.contagion
             # resolves in _risk_radar_card.html.j2 (build_site.py idiom, CGL W1).
             # FIX 2: disclose staleness when the CGL artifact predates the page's as_of.
@@ -1579,8 +1675,7 @@ def main() -> int:
         # china.html. Built here so the setups board renders server-side below.
         setups = None
         try:
-            from scripts import build_china_library
-            setups = build_china_library.main(alpha=alpha)
+            setups = _build_china_library_for_page(alpha)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             # exc_info: this fallback silently served a stale china_standouts.json for
             # 3 sessions (07-13→07-16) because the one-line message gave no traceback
@@ -1958,7 +2053,12 @@ def main() -> int:
         env = Environment(loader=FileSystemLoader(
             str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)
         from engine import i18n
-        env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t, t_pctile=i18n.t_pctile)
+        from engine.china_tier1 import hero_clause, posture_lane, posture_tone, reason_faces
+        env.globals.update(
+            td=i18n.td, tr=i18n.tr, t=i18n.t, t_pctile=i18n.t_pctile,
+            posture_lane=posture_lane, posture_tone=posture_tone,
+            reason_faces=reason_faces, hero_clause=hero_clause,
+        )
         # One shared view-model feeds BOTH the China macro-regime page and the
         # A-share Stock Dashboard — the same china.html.j2 is rendered twice with
         # a `mode` flag (macro / stocks) that selects which sections show. No data
