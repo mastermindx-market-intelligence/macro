@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T01:26:13.218830+00:00",
-  "count": 2746,
+  "generated_at": "2026-09-24T01:59:52.286407+00:00",
+  "count": 2748,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -102,6 +102,26 @@
   ],
   "items": [
     {
+      "id": "marketdesk-alc0nknqxhy-851f9b",
+      "title": "Daily ShortActivity22Sept2026 US CLEARED",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:23:16Z",
+      "summary_points": [
+        "Charles Schwab (GC): 49.9% short flow, highest concentration in financials, critical risk factor for portfolio managers.",
+        "Life Sciences Tools & Svcs: 5.3% short flow (highest among top 5 shorted industries), signaling significant bearish sentiment and downside risk.",
+        "IT & Real Estate Short Interest Peaks: Dell (IT) at 11.2% and American Tower (Real Estate) at 17.4%, indicating extreme bearish positioning and elevated short squeeze risk.",
+        "Housing Sector Risk: GSXUHOME +2.8% and LSH +4.6% short interest spikes, highlighting interest rate sensitivity and sector-specific risk requiring allocation adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-v62v8pl5vds-adbefc",
       "title": "Oil Analyst China Crude Imports Will Likely Remain Low For Now",
       "institution": "Goldman Sachs",
@@ -119,6 +139,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xquvtpnueu1-661934",
+      "title": "Global Equity Volatility Insights BTDD (buy the dispersion dip)",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T00:58:34Z",
+      "summary_points": [
+        "Dispersion Trade Viability: S&P 500 dispersion (implied/realized) shows multi-year uptrend; single-stock vol drop (SNDK, MU, MRVL) and low sector correlation create favorable entry amid AI uncertainty.",
+        "Cybersecurity Bubble Risk: US Cybersecurity Basket (BRI 0.93) exhibits extreme bubble dynamics; highest bubble risk among equity themes (Exhibit 10).",
+        "Dotcom Bubble Comparison: Current SPX froth contained (3% index weight in high-BRI stocks vs. 20-40% in Dotcom peak), indicating lower systemic risk.",
+        "Sector Bubble Concentration: Healthcare (MRNA, MRK, RVTY) and cybersecurity (CRWD, PANW) rank highest in Bubble Risk Indicators (BRI), signaling price-driven overvaluation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
