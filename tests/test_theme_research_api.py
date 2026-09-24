@@ -783,3 +783,107 @@ def test_theme_research_routes_are_unique_against_existing_themes_prefix():
         "/api/themes/v1/research/query",
         "/api/themes/v1/research/evidence",
     }
+
+
+# ---------------------------------------------------------------------------
+# 11. OWNER PARITY — the verdict is ASKED of engine.theme_graph.rights, never
+# restated locally (T09 review fix)
+# ---------------------------------------------------------------------------
+
+def _install_warm_owner_state(monkeypatch, tmp_path) -> dict:
+    """Shared setup for the owner-parity tests: point the rights OWNER at the
+    fixture's PERMITTING synthetic registry and install the warm bundle whose
+    every assertion maps to ``mastermind_curated`` (rights class
+    ``direct_display_ok`` in that registry). Returns the fixture dict."""
+    fixture = load_case("revoked_rights_warm")
+    registry = tmp_path / "theme_sources_owner_parity.yml"
+    registry.write_text(json.dumps(fixture["rights_registry_initial"]))
+    monkeypatch.setattr(rights_module, "registry_path", lambda: registry)
+
+    from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+
+    bundle_spec = fixture["bundle"]
+
+    def loader(*_a, **_kw):
+        snap_revision, _ = rights_module.load_registry_snapshot()
+        return OwnerBundle(
+            revision_tuple=tuple(tuple(x) for x in bundle_spec["revision_tuple"]),
+            rights_revision=snap_revision,
+            assertions=tuple(bundle_spec["assertions"]),
+            identity_results=tuple(bundle_spec["identity_results"]),
+            event_workspaces=tuple(bundle_spec["event_workspaces"]),
+            financial_packets=tuple(bundle_spec["financial_packets"]),
+            interpretation_blocks=tuple(bundle_spec["interpretation_blocks"]),
+            native_refs=tuple(bundle_spec["native_refs"]),
+            omissions=tuple(bundle_spec["omissions"]),
+        )
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", loader)
+    return fixture
+
+
+def test_tightening_the_rights_owner_drops_assertions_through_the_route(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """The transport must OBSERVE the owner's rule, not restate it.
+
+    Same process, registry bytes UNCHANGED (the family is still
+    ``direct_display_ok``): the first call is a permit control, then ONLY the
+    owner's ``engine.theme_graph.rights.EMISSION_OK`` is tightened to drop
+    ``direct_display_ok`` — and the second call must drop the family's
+    assertions and append ``rights_refused_families_hidden``. Against the
+    rejected local-copy design this is exactly the case that failed open."""
+    fixture = _install_warm_owner_state(monkeypatch, tmp_path)
+
+    # Permit control with the owner as shipped: every assertion is kept.
+    permit = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert permit.status_code == 200, permit.text
+    permit_payload = permit.json()
+    assert permit_payload["authorized_coverage"]["selected"] == \
+        fixture["expected_first_selected"]
+    assert "rights_refused_families_hidden" not in permit_payload["limitations"]
+
+    # Tighten ONLY the owner's rule; the registry on disk does not move.
+    monkeypatch.setattr(
+        rights_module, "EMISSION_OK", frozenset({"derived_display_ok"}),
+    )
+
+    tightened = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert tightened.status_code == 200, tightened.text
+    tightened_payload = tightened.json()
+    assert tightened_payload["authorized_coverage"]["selected"] == \
+        fixture["expected_after_revocation_selected"]
+    assert "rights_refused_families_hidden" in tightened_payload["limitations"]
+
+
+def test_owner_permitting_keeps_assertions_with_no_rights_limitation(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """Permit counterpart: with the owner permitting the family, the verdict
+    keeps every assertion and the response carries NO
+    ``rights_refused_families_hidden`` limitation."""
+    fixture = _install_warm_owner_state(monkeypatch, tmp_path)
+
+    response = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    payload = response.json()
+    assert payload["authorized_coverage"]["selected"] == \
+        fixture["expected_first_selected"]
+    assert "rights_refused_families_hidden" not in payload["limitations"]
+
+
+def test_transport_carries_no_local_rights_restatement():
+    """No-restatement source scan: the transport asks the owner, so
+    ``app/theme_research.py`` must carry neither the owner's permission-set
+    constant nor any rights-class literal, and must call the owner's veto."""
+    source = (ROOT / "app" / "theme_research.py").read_text(encoding="utf-8")
+    for forbidden in ("EMISSION_OK", "direct_display_ok", "derived_display_ok"):
+        assert forbidden not in source, f"restated rights constant: {forbidden!r}"
+    assert "assert_current_emission_allowed(" in source

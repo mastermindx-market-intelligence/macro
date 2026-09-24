@@ -19,7 +19,9 @@ T09 of operation gmi-semiconductors-fable-cee-20260923-chairman-001
 * rights filtering is done against a FRESH :func:`load_registry_snapshot` — no
   process cache, so a rights decision that moves between two same-process
   requests reaches the route without a watcher or a restart (the
-  ``revoked_rights_warm`` regression);
+  ``revoked_rights_warm`` regression) — and the permit/refuse verdict itself
+  is ASKED of the rights owner (``engine.theme_graph.rights``), never
+  re-derived here: this transport carries no second opinion about licensing;
 * no writes. ``engine.theme_graph.store.write_evidence`` is never imported; no
   subprocess, no cache layer, no cursor table. The endpoint is a closed read.
 
@@ -47,6 +49,8 @@ from engine.market_ontology.semiconductor_theme_research import (
     select_authorized_evidence,
 )
 from engine.theme_graph.rights import (
+    RightsRefusal,
+    assert_current_emission_allowed,
     family_for_source_ref,
     load_registry_snapshot,
 )
@@ -179,26 +183,24 @@ def _body_to_query(body: _QueryBody | _EvidenceBody) -> ResearchQuery:
 
 
 # ---------------------------------------------------------------------------
-# Rights filter — fresh snapshot, family-keyed drop, no family disclosure
+# Rights filter — owner verdict on a fresh snapshot, family-keyed drop, no
+# family disclosure
 # ---------------------------------------------------------------------------
 
-#: The rights classes that permit a public emission. Must match
-#: ``engine.theme_graph.rights.EMISSION_OK``; restated here so the route can
-#: classify without importing the constant.
-_EMISSION_OK = frozenset({"derived_display_ok", "direct_display_ok"})
-
-
 def _filter_bundle_for_rights(bundle: OwnerBundle) -> tuple[OwnerBundle, bool]:
-    """Strip assertions whose source-ref family is KNOWN-and-REFUSED by the
-    FRESH snapshot. Unknown families (``family_for_source_ref`` returns None)
-    pass through: the registry has no opinion, so we have none either.
+    """Strip assertions whose source-ref family is REFUSED by the rights
+    OWNER's verdict on a FRESH snapshot. The verdict is asked of
+    :func:`engine.theme_graph.rights.assert_current_emission_allowed` — the
+    single veto — so tightening the owner's rule reaches this route without a
+    transport change. Unknown families (``family_for_source_ref`` returns
+    None) pass through: the registry has no opinion, so we have none either.
 
     Returns the rewritten bundle and a flag telling the caller whether any
     assertions were dropped — the route turns that into the
     ``rights_refused_families_hidden`` limitation string without naming which
     families were refused.
     """
-    _, registry = load_registry_snapshot()
+    snapshot = load_registry_snapshot()
     kept: list[Mapping[str, Any]] = []
     dropped = False
     for assertion in bundle.assertions:
@@ -208,12 +210,12 @@ def _filter_bundle_for_rights(bundle: OwnerBundle) -> tuple[OwnerBundle, bool]:
         if family is None:
             kept.append(assertion)
             continue
-        row = registry.get(family) or {}
-        rights_class = str(row.get("rights_class", "")).strip()
-        if rights_class in _EMISSION_OK:
-            kept.append(assertion)
-        else:
+        try:
+            assert_current_emission_allowed([family], snapshot=snapshot)
+        except RightsRefusal:
             dropped = True
+        else:
+            kept.append(assertion)
     if not dropped:
         return bundle, False
     new_bundle = OwnerBundle(
