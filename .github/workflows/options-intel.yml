@@ -1,0 +1,221 @@
+name: options-intel
+
+# ── AD-1 options intelligence brief — STORE-BEARING PRODUCER LANE ──────────────
+# AD-1T2 (WS:ADVANCED-DATA-OPTIONS / MAS-196).
+#
+# HELD INERT BY DESIGN. The single job below is gated on the repository variable
+# AD1_M1_LANE being 'on'. That variable is the WS:RUNNER-FLEET-RESILIENCE (W4)
+# activation switch and is NOT set by the change that introduces this file. While
+# it is unset the job is SKIPPED — never queued — so it cannot request a runner,
+# and daily.yml's in-engine AD-1 step keeps running exactly as it does today.
+# Activation is a W4 act, not a merge. Rollback is unsetting the variable.
+#
+# WHY THIS LANE EXISTS. scripts.build_options_intel_brief reads the canonical
+# ThetaData T1 store via engine.thetadata_store.resolve_thetadata_store(). That
+# store exists on exactly ONE licensed host (the M1). daily.yml's `engine` job
+# runs on `macstudio` — runners that all sit on the store-less M2 Studio. So the
+# in-engine AD-1 step resolved nothing every night, took its documented off-host
+# self-skip, and returned 0: the step recorded SUCCESS while
+# site/options_intel_brief.json stayed frozen at built_at_utc=2026-08-22 for 23+
+# trading sessions. The defect is PLACEMENT, not data.
+#
+# WHY A SEPARATE WORKFLOW AND NOT A JOB INSIDE daily.yml. Two reasons, both
+# load-bearing:
+#   1. BLAST RADIUS. `m1-theta` is a single-slot label. A job queued on a label
+#      with no live runner holds its workflow's cron concurrency group for up to
+#      24h — see agentos/discoveries/DSC-QUEUED-JOB-HOSTAGE-HOLDS-THE-NIGHTLY-CRON-GROUP.md,
+#      which froze every Prophet board 2026-08-14..17 with no red anywhere.
+#      `timeout-minutes` does NOT bound queue wait, only execution. Inside
+#      daily.yml the hostage would be the whole authoritative nightly; here it is
+#      this lane alone. runner-policy.yml's own `codex` waiver draws exactly this
+#      line (a single-job run may wait; a multi-job run takes the night hostage).
+#   2. ADMISSION SCOPE. Runner-group admission is per-WORKFLOW. Admitting
+#      daily.yml to the M1's group would admit all 18 of its jobs — including the
+#      300-minute `engine`. Admitting this file grants exactly one job on one
+#      host. The narrower grant is the whole point.
+#
+# WHY IT RUNS AFTER daily COMPLETES. The producer's input closure is NOT only the
+# store — see contracts/options/OPTIONS_INTEL_BRIEF_V1.md §inputs for the
+# authoritative list (seven). Several of those files are written by the nightly
+# itself and only reach git at its commit steps:
+#   * site/prophet/index.json          <- build_prophet, INSIDE the engine job
+#   * data/yahoo/{ROOT}.parquet        <- engine's price-store heal; rung 2 of the
+#                                         spot ladder, and it covers the 19 ETF
+#                                         roots, so its vintage is SCORE-AFFECTING
+#   * data/earnings/earnings.parquet   <- the collect_tail job
+#   * data/baskets/ohlcv/{ROOT}.parquet<- collect
+# plus config.yml, data/baskets/membership.json (absent ⇒ the universe collapses
+# to 25 anchors and the board degrades to UNIVERSE_RESOLUTION_FAILED) and
+# data/options_flow/signing_gate.json.
+# Triggering on the COMPLETED daily run means an ordinary checkout of main
+# carries every one of them at the same cycle — no bundle transport, no
+# foreign-run artifact to authenticate, and no same-cycle input silently replaced
+# by a stale one. It also picks up collect_tail, which a `needs: [engine]` job
+# inside daily.yml would NOT have waited for.
+#
+# THE 300-MINUTE ENGINE DOES NOT MOVE. This lane is a checkout plus two builders
+# (build_options_command is O(seconds), JSON reads only). No Theta Terminal, no
+# collector, no second store is started here — the job only READS the store the
+# M1 already maintains, and starts nothing.
+#
+# LABEL TRAP — READ BEFORE EDITING `runs-on`. Two near-homograph labels exist and
+# they are NOT interchangeable:
+#   m1-theta  -> m1-nightly-2, physically the M1, HAS the ThetaData store. <- this
+#   theta-m1  -> mac-builder-3, physically the M2 Studio, has NO store.
+# Verified 2026-09-23 via `gh api /orgs/.../actions/runners`: m1-nightly-2 online
+# and idle carrying `m1-theta`. Do NOT add a generic `macstudio` label here and do
+# NOT admit `macstudio` to the M1.
+
+on:
+  workflow_run:
+    workflows: [daily]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "daily run id to source inputs from (canary/measurement use)"
+        required: false
+
+concurrency:
+  # Own group: a queued run here can never hold daily.yml's cron group.
+  group: options-intel
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  options_intel:
+    if: >-
+      vars.AD1_M1_LANE == 'on' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.workflow_run.conclusion == 'success')
+    runs-on: [self-hosted, m1-theta]
+    # PROVISIONAL BOUND — NOT A MEASUREMENT. House law in daily.yml: never inherit
+    # a step-cost label, re-measure. The cold path here is a 14k-file checkout
+    # (observed 3s..14.5m elsewhere), a cold venv + `pip install -r
+    # requirements.txt`, then a 375-root parquet sweep. 45 is a hang-stop, not a
+    # profile; the first admitted `workflow_dispatch` runs set the real envelope
+    # via data/ops/nightly_timings/options_intel.jsonl.
+    timeout-minutes: 45
+    steps:
+      - name: timings — job start mark (W2)
+        run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - run: git pull origin main
+
+      - name: engine-success gate (same-cycle inputs must actually exist)
+        # workflow_run fires on completion, not on success of any particular job.
+        # The same-cycle argument above is only true if `engine` COMMITTED this
+        # cycle, so verify that job's conclusion directly rather than trusting the
+        # run-level rollup (18 sibling jobs can fail for unrelated reasons).
+        # Skipping here is the honest outcome: no brief beats a brief scored on a
+        # stale spot ladder.
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          concl=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs?per_page=100" \
+                    --jq '[.jobs[] | select(.name=="engine")] | .[0].conclusion // "absent"')
+          echo "engine job conclusion for run ${RUN_ID}: ${concl}"
+          if [ "$concl" != "success" ]; then
+            echo "::warning title=ad1-lane::engine did not succeed this cycle (${concl}) — the same-cycle prophet/yahoo inputs were never committed. Skipping rather than scoring on a stale ladder."
+            echo "SKIP_REASON=engine-${concl}" >> "$GITHUB_ENV"
+          fi
+
+      - name: python 3.12 (Homebrew venv — self-hosted runner)
+        if: env.SKIP_REASON == ''
+        run: |
+          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
+          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: install requirements
+        if: env.SKIP_REASON == ''
+        run: pip install -r requirements.txt
+
+      - name: host/store binding preflight (hard gate)
+        # The physical store-bearing host must be confirmed WITHOUT relying on the
+        # near-homograph labels. Resolves through the ONE canonical resolver and
+        # fails loudly if this runner is not store-bearing, so a mis-pinned label
+        # can never again present as a green publish. Read-only; starts nothing.
+        if: env.SKIP_REASON == ''
+        run: |
+          python - <<'PY'
+          import sys
+          from engine.thetadata_store import resolve_thetadata_store
+          store = resolve_thetadata_store(required=False, purpose="options_intel_brief_lane")
+          if store is None:
+              print("::error title=ad1-lane::this runner is NOT store-bearing — the canonical "
+                    "ThetaData store did not resolve. Check the runner label: m1-theta is the "
+                    "M1 (has the store); theta-m1 is the M2 Studio (has none).")
+              sys.exit(1)
+          print(f"::notice title=ad1-lane::store-bearing runner confirmed, store={store}")
+          PY
+
+      - name: AD-1 producer — REQUIRED mode (build_options_intel_brief)
+        id: producer
+        # --require-store: a missing canonical store, or an artifact that is
+        # unreadable or carries a receipt_id other than the one this run built, is
+        # an ERROR. Deliberately NOT wrapped in `|| echo "::warning::"` — masking
+        # the one required producer is the defect this lane repairs. A legitimate
+        # semantic no-op still exits 0 and leaves the bytes untouched.
+        if: env.SKIP_REASON == ''
+        run: python -m scripts.build_options_intel_brief --require-store
+
+      - name: OEU M-CMD — rebuild the Options workspace against the fresh brief
+        # O(seconds), JSON reads only. Fail-soft by its own contract: on a render
+        # failure the last committed options.html stands, so this never strands
+        # the brief the step above just produced.
+        if: env.SKIP_REASON == ''
+        run: python -m scripts.build_options_command || echo "::warning::build_options_command non-fatal failure"
+
+      - name: execution evidence (run -> host -> store -> receipt -> digest)
+        # Records the host<->output binding as EXECUTION EVIDENCE rather than
+        # hashing the host into `receipt_id` — the producer deliberately keeps
+        # absolute paths out of that hash so a host migration with identical
+        # logical inputs does not churn the semantic receipt (see the m5 comment
+        # in build()). No new ledger, no new store.
+        #
+        # It MUST distinguish "this run produced this artifact" from "this file was
+        # already on disk". An evidence block that prints a plausible receipt for
+        # the frozen 2026-08-22 artifact after a failed producer is the very
+        # green-looking-proof-of-a-stale-artifact shape this lane exists to kill.
+        if: always()
+        env:
+          PRODUCER_OUTCOME: ${{ steps.producer.outcome }}
+          SKIP_REASON: ${{ env.SKIP_REASON }}
+        run: python scripts/ci/ad1_execution_evidence.py | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: commit the options intelligence brief + workspace
+        if: env.SKIP_REASON == '' && steps.producer.outcome == 'success'
+        run: |
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          git config user.name "dashboard-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add site/options_intel_brief.json site/options.html
+          if git diff --cached --quiet; then echo "no options intel brief change (semantic no-op)"; exit 0; fi
+          git commit -m "ad-1: options intelligence brief $(date -u +%F)"
+          PUSH_ALARM=420
+          push_retry_init "options intelligence brief"
+          while push_attempt; do
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
+            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
+                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
+              | while IFS= read -r f; do rm -f -- "$f" || true; done
+            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+              if push_do; then echo "pushed options intelligence brief on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+            fi
+            push_abort_rebase
+            push_backoff
+          done
+          push_lost
+          echo "::warning::could not push options intelligence brief after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+
+      - name: timings ledger + 85% budget tripwire (W2)
+        if: always()
+        run: bash scripts/ci/nightly_timings_finish.sh 45

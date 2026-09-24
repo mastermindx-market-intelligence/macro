@@ -1426,11 +1426,15 @@ def main(argv: list[str] | None = None) -> int:
                           "against a deliberately frozen test store.")
     ap.add_argument("--require-store", action="store_true",
                      help="PRODUCTION-REQUIRED mode, for the store-bearing nightly lane "
-                          "(AD-1T2). The canonical ThetaData store MUST resolve and the "
-                          "artifact MUST be valid on return; either failure is a loud "
-                          "non-zero exit instead of the default off-host self-skip. A "
-                          "legitimate semantic no-op is still a success. Leave this OFF "
-                          "for every runner that is not the designated producer.")
+                          "(AD-1T2). Two conditions become loud non-zero exits instead of "
+                          "the default off-host self-skip: the canonical ThetaData store "
+                          "must RESOLVE, and the artifact left on disk must be readable "
+                          "and carry this run's receipt_id. It does NOT gate on board "
+                          "HEALTH -- a resolvable but thin or stale store still produces "
+                          "a payload, and publishing that honestly (NO_SIGNAL, "
+                          "INSUFFICIENT_COVERAGE, STALE_SOURCE) is the contract, not a "
+                          "failure. A semantic no-op is also still a success. Leave this "
+                          "OFF for every runner that is not the designated producer.")
     args = ap.parse_args(argv)
 
     out_path = Path(args.out)
