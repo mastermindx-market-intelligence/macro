@@ -40,8 +40,9 @@ def _html(
 ) -> str:
     current_year = period
     prior_year = period - 1
-    current_end = date(period, 6, 30).isoformat()
-    prior_end = date(prior_year, 6, 30).isoformat()
+    # R30: every period end date derives from FISCAL_PERIOD; nothing hardcodes June 30.
+    current_end = date(period, FISCAL_PERIOD.calendar_end.month, FISCAL_PERIOD.calendar_end.day).isoformat()
+    prior_end = date(prior_year, FISCAL_PERIOD.calendar_end.month, FISCAL_PERIOD.calendar_end.day).isoformat()
     eps_rows = (
         ("Diluted Net Earnings per Common Share", "1.25%" if eps_unit_mismatch else "$3.07", "$2.93"),
         ("Core EPS", "$3.11", "$2.97"),
