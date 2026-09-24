@@ -159,9 +159,6 @@ def collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict:
         if reported_total is None:
             reported_total = total
             source_generation = generation
-            if not isinstance(generation, str) or not generation:
-                failure_code = "NO_SOURCE_GENERATION"
-                break
         elif total != reported_total:
             failure_code = "COUNT_DRIFT"
             break
@@ -408,7 +405,8 @@ def save_shortage_observation(result, *, path, expected_predecessor) -> dict:
         if previous.get("capture_known").any():
             if selected:
                 generations_seen.append(selected.get("source_generation"))
-        generations_seen.append(capture["source_generation"])
+        if isinstance(capture["source_generation"], str) and capture["source_generation"]:
+            generations_seen.append(capture["source_generation"])
         generations_seen = list(dict.fromkeys(value for value in generations_seen if value is not None))[-120:]
         generation_rank = {value: rank for rank, value in enumerate(generations_seen)}
         absent = frame["absent_since_generation"].map(
