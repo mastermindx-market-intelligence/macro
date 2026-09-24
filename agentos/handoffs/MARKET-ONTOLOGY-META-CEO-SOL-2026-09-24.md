@@ -1,11 +1,12 @@
 ---
 workstream: WS:MARKET-OS
 session: Sol interactive Web Meta-CEO; native conversation identifier not exposed
-model: platform-served identity not independently attested
-ended_because: explicit restart-planning and handoff-publication boundary
+model: sol
+ended_because: complete
 mission: >
-  Restore one program leader and an efficient research-to-delivery loop for
-  lawful MarketOntology parity and a stronger integrated Mastermind product.
+  Complete the bounded leadership-restart assessment and handoff package for
+  an efficient research-to-delivery loop. The parent lawful MarketOntology
+  parity and beyond-parity product mission remains incomplete.
 state_before: >
   Previous assessment on macro#6819 comment5809304916 found substantive shipped
   work, missing joined workflows and stale reporting. Chairman now says A
@@ -56,6 +57,11 @@ do_not_redo:
   - Existing Paper document/tokens/archetypes; no second design system.
   - No replacement F04/Research Mode/Briefs carrier because the old one is inconvenient.
   - Do not interpret this records publication as a new worker START, production deployment or completed parity.
+danger_areas:
+  - The required model field uses Agent OS's sol vocabulary; it is not independent platform-served model attestation.
+  - ended_because complete describes only this bounded restart assessment and package, never the parent product mission.
+  - B offline and A on Claude5 are Chairman-reported observations, not source-lease expiry or exact native RuntimeBinding proof.
+  - A source/notification/credential or user-data effect must be separately admitted; never inherit permission from this records package.
 ---
 
 # Current pins and return
