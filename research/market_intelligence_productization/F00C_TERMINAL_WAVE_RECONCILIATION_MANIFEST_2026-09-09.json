@@ -774,5 +774,37 @@
     },
     "rows_note": "No state move is claimed or implied by this pass. The 33 held-for-Sol pairs remain unwritten and the unhold applier remains staged and unrun. The 12 OUTSIDE-50 rows and 7 pin conflicts that macro#7357 and macro#7358 want to edit are raised on macro#7390 for Sol's decision.",
     "review_history": "Grok h_rec5b_rv1 at eb02ffcb: FIX_REQUIRED 0/1/1 - a false universal ('every ticker resolves not_loaded', disproved by the seat's own #7472 tests) and a merge-timing mis-framing (dated by branch commit af9d8ea2 instead of the #7121 merge). Grok h_rec5b_rv2 at 1227d294: FIX_REQUIRED 0/1/1 - the rewritten note still asserted a present-tense empty cache, which the drip's 9f49dec1 persist commit falsified three minutes before that commit was authored. Round 3 re-anchors every quantity to the immutable commit that produced it instead of to a moving branch, which is the durable fix for this class of error."
+  },
+  "seat_records_pass_2026_09_24_a": {
+    "recorded_by": "Meta-CEO A seat, harness session 032058ef",
+    "ledger_sha_source": "origin/main at 6d0d355e1aab7b2d4efd4b8175eb1d51c06f076c",
+    "single_writer_note": "FREEZE-LAWFUL append-only pass on the MO-A single-writer precedent. The CSV edit (commit pending this PR) amends MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv and writes ONLY the six A-side rows named in the spec (MO-PAID-013, MO-PAID-023, MO-PAID-039, MO-PAID-073, MO-PAID-016, MO-PAID-009). Only MO-PAID-013 and MO-PAID-023 carry CSV cell changes (capability_state_c2 moves to PROVEN_LIVE plus rewrites of state_delta/real_producer/real_consumer/missing_contract_or_proof/next_bounded_child and an adjudication_notes append); MO-PAID-039, -073, -016, -009 are byte-identical CSV rows whose evidence is recorded here in rows_note per the spec. The other 124 ledger rows are untouched (byte-identical to origin/main at 6d0d355e1aab, verified by the spec proof `diff ... | grep -v '^MO-PAID-013,\\|^MO-PAID-023,\\|^MO-PAID-073,'` -> empty). The test pin OUTSIDE_UNION_SHA256 = b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d is UNCHANGED because both edited rows are inside Sol's 80-row UNION_ROWS. No OUTSIDE-50 row is touched. The held_for_sol keys from the prior MO-B passes (held_for_sol block in seat_records_pass_2026_09_19_b / _2026_09_20_c) are PRE-EXISTING and not added to. No 'awaiting Sol', 'pending Sol', 'hold-for-sol', or 'waiver' token was added to the CSV or this manifest. No HOLD-FOR-SOL/PR-RATIFIED posture is taken; the Chairman override 2026-09-06 places the A-side rows under Meta-CEO A ratification and no Sol authorization is sought.",
+    "why": "The MO-A seat owns the A-side rows and ratifies under Chairman override 09-06. This pass closes MO-PAID-013 (the main event: skew ledger ThetaData canonical) on the chain-closure record of 2026-09-23; promotes MO-PAID-023 (UK policy desk) to PROVEN_LIVE on a measured non-gate_off production state; and refreshes the evidence receipts for the four unchanged rows without moving their state words.",
+    "rows_written": [
+      "MO-PAID-013",
+      "MO-PAID-023",
+      "MO-PAID-039",
+      "MO-PAID-073",
+      "MO-PAID-016",
+      "MO-PAID-009"
+    ],
+    "source_heads": {
+      "macro#6923": "dd973910e95ea3ad99118fbbc2c83473fe8f1c80 (W2-1b ledger source column + thetadata canonical-wins upsert)",
+      "macro#7737": "ac731aec23bde1b8e628259f82937b2013340623 (W2-2 launchd accrual lane + runbook)",
+      "macro#7743": "b2d43b3a4078b7b539b6081cc30d02e1112d7754 (W2-3 cutover: render hosts hydrate R2 + --emit)",
+      "macro#7756": "6298d58ea497fc9091129b4a96d075c861d0db6e (W2-4 methodology-parity audit)",
+      "macro#7783": "f84d9c882b7fabf87835e6c630ad9b4ab1f69fca (W2-4c source windows + plain-language Directional sentence)",
+      "macro#7819": "646eb0611710bfecc395601a29ddd94c52349c03 (runner hardening: reset/clean before detach)",
+      "macro#7827": "2e476c04bb817022a352a8ae0c6a959390a58274 (stdout-only freshness gate verdict)",
+      "macro#7832": "2b15afdab1596183b845391f12979ee1c82b8e5c (W2-6 complete-session accrual law)",
+      "macro#7835": "87ec6297ba3284e636e9560e97ea4d348b1f8132 (closure record for MO-PAID-013)",
+      "macro#7844": "58405e9695cb3f2e68171bbc23535075aa478ae2 (W2-8 caught-up no-op exit code 3)",
+      "macro#7351": "12784c0fcfb461173d2010186560f2e2cf3e886d (UK policy desk activation: UK_POLICY_DESK_ENABLED=1 on the credentialed sentinel)"
+    },
+    "open_blockers_named_not_claimed": {
+      "render_following_7783": "Render following the #7783 (W2-4c) merge is still pending on origin/main: the live site/options_skew/latest.json at 6d0d355e1aab reports source=thetadata, ledger_asof=2026-09-21, n=372, accrual_state=ledger_only, source_state=ok, but source_windows, source_break, source_break_date and history_dates are absent (null/empty). The seat names this gap; it does NOT claim the keys. The skew closure does NOT depend on those keys (the closure record at research/market_intelligence_productization/MARKET_ONTOLOGY_F03_SKEW_CHAIN_CLOSURE_2026-09-23.md names them as the W2-4c body, separate from the chain-closed verdict)."
+    },
+    "rows_note": "MO-PAID-013 (skew -> ThetaData): PROVEN_LIVE -- live site/options_skew/latest.json on origin/main 6d0d355e1aab reports source=thetadata (canonical), ledger_asof=2026-09-21 (a session date), len(names)=372 (>= 300 floor); #7783 (W2-4c source windows) and #7835 (closure record) are MERGED on the seat's head; render following #7783 is pending (see open_blockers) but the chain-closed verdict does not depend on the windowed fields; all cited PRs #6923 #7737 #7743 #7756 #7783 #7819 #7827 #7832 #7835 #7844 are MERGED on origin/main 6d0d355e1aab. MO-PAID-023 (UK policy desk): PROVEN_LIVE -- live site/policy_watch.html on origin/main reports data-uk-state=\"no_new\" at sha cfaeeaf787e (Wed Sep 23 14:28:04 2026 -0700), a non-gate_off honest source/model degradation state per the row's own missing_contract text; #7351 (UK_POLICY_DESK_ENABLED=1) is MERGED at sha 12784c0fcfb461173d2010186560f2e2cf3e886d; row unchanged structurally except capability_state_c2 promotion, state_delta rewrite, missing_contract_or_proof rewrite, and adjudication_notes append. MO-PAID-039 (Eval OS / Calibration Lab): row unchanged -- admin authenticated readback of /research-tools/measurement.html#ric-section with a non-empty research implication card remains owed by the operator per the F10 owner rule; the public Intelligence Hub link to the @never_site measurement.html remains the named defect. MO-PAID-073 (oi_movers / hot_contracts): row unchanged -- freshness receipt not measured this pass: the spec-named path data/options_hub/ carries zero commits on origin/main (the producer writes data/live_flow_out/options_hub/ per scripts/build_options_hub_nightly.py:13 and the data/ tree is sparse), so no sha+date is appended to adjudication_notes; the row's PARTIAL state is unchanged per ruling 4. MO-PAID-016 (theme graph / K3-D HOLD): row unchanged -- K3-D remains Sol-era HOLD outside this pass; no CSV edit, no state move. MO-PAID-009 (AI Daily Brief): row unchanged -- PROVEN_LIVE already; live site/aibrief.html on origin/main is at sha cfaeeaf787e (Wed Sep 23 14:28:04 2026 -0700); page is present, no downgrade; freshness recorded here only.",
+    "review_history": "no reviewer yet -- this is the Meta-CEO A seat's first records pass under the 2026-09-06 Chairman override; Grok and Opus reviews follow if the seat requests them"
   }
 }
