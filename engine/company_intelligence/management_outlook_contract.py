@@ -359,10 +359,11 @@ def _canonical_amount_text(raw):
 
 
 def _canonical_role_row(row: Mapping) -> dict:
-    refs = sorted(
-        ([r["owner"], r["object_id"], r["schema"], r["generation"], r["sha256"], r["selector"]]
-         for r in row["refs"]),
-    )
+    # A citation repeated verbatim is one citation: the digest is over the distinct set.
+    refs = [list(ref) for ref in sorted(
+        {(r["owner"], r["object_id"], r["schema"], r["generation"], r["sha256"], r["selector"])
+         for r in row["refs"]},
+    )]
     return {
         "role": row["role"],
         "low": _canonical_amount_text(row["low"]), "high": _canonical_amount_text(row["high"]),
@@ -546,7 +547,10 @@ def validate_comparison_request(payload, *, verified_context) -> ComparableReven
         raw_refs = raw_row["refs"]
         if not isinstance(raw_refs, list) or not raw_refs:
             _fail("missing_source_ref", f"{where}.refs must cite at least one native source object")
-        refs = tuple(_parse_native_ref(ref, f"{where}.refs[]") for ref in raw_refs)
+        # A citation repeated verbatim carries no further information: the sealed
+        # request (and therefore comparison_id / input_vector_sha256) is over the
+        # distinct citations, so the identity agrees with the deduplicated echo.
+        refs = tuple(_unique_in_order(_parse_native_ref(ref, f"{where}.refs[]") for ref in raw_refs))
         distinct_row_refs = {ref.sha256 for ref in refs}
         if len(distinct_row_refs) > MAX_REFS_PER_ROLE_ROW:
             _fail("request_bound_exceeded", f"{where} cites {len(distinct_row_refs)} distinct native refs; the first-unit maximum per role row is {MAX_REFS_PER_ROLE_ROW}")

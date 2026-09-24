@@ -303,7 +303,7 @@ def _contract_validator() -> Any:
 
 
 def validate_dossier(payload: Mapping[str, Any]) -> None:
-    """Validate an ``technology_economic_change.v1`` payload against the contract.
+    """Validate a ``technology_economic_change.v1`` payload against the contract.
 
     Raises :class:`EconomicChangeDossierError` (code ``dossier_schema_violation``)
     naming the first violating path. Pure; reads the contract file only.
@@ -885,23 +885,23 @@ def _cards_and_relationships(out: _AssertionOutcome,
     # Cards: one per product/kind, aggregating row ids — never a magnitude.
     # The card key separates a named object from an unnamed one structurally, so an
     # unnamed side can never share a card with a real entity whatever its id spells.
+    # Display names are recorded per (kind, id): a buyer card never borrows the
+    # display name an identically-spelled entity carries as a product, and vice versa.
     by_product: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
-    product_names: dict[str, str] = {}
+    object_names: dict[tuple[str, str], str] = {}
     for row in out.rows:
         object_id = row["object"]["entity_id"]
         named = "named" if object_id else "unnamed"
         key_id = object_id if object_id else ""
-        if row["predicate"] == "product_workload_role":
-            by_product.setdefault(("product_workload_role", named, key_id), []).append(row)
-            name = row["object"]["display_name"]
-            if object_id and name:
-                product_names.setdefault(object_id, name)
-        else:
-            by_product.setdefault(("buyer_paid_unit", named, key_id), []).append(row)
+        kind = "product_workload_role" if row["predicate"] == "product_workload_role" else "buyer_paid_unit"
+        by_product.setdefault((kind, named, key_id), []).append(row)
+        name = row["object"]["display_name"]
+        if object_id and name:
+            object_names.setdefault((kind, object_id), name)
     for (kind, named, product_id), rows in sorted(by_product.items()):
         row_ids = sorted(row["row_id"] for row in rows)
         if named == "named":
-            label = product_names.get(product_id, product_id)
+            label = object_names.get((kind, product_id), product_id)
         else:  # the null side is the product for a workload role, the counterparty for a paid unit
             label = "Unnamed product" if kind == "product_workload_role" else "Unnamed counterparty"
         title = (

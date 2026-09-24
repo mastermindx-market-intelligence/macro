@@ -1035,15 +1035,34 @@ def test_unnamed_side_cards_are_labelled_per_kind_and_never_merge_with_a_real_en
         card["title"] for card in dossier["business"]["cards"]
         if card["card_kind"] in {"buyer_paid_unit", "product_workload_role"}
     )
-    # Buyer cards are titled by entity id (display names are recorded for product sides only);
-    # the point here is structural: the real entity keeps its own card, the unnamed sides get
+    # The real entity keeps its own card under its own display name, the unnamed sides get
     # per-kind labels, and nothing merges however an id happens to spell.
     assert titles == [
+        "Literal Sentinel Corp (SYNTHETIC) — buyer / paid unit (attributed)",
         "Unnamed counterparty — buyer / paid unit (attributed)",
         "Unnamed product — workload role (attributed)",
-        "unnamed-counterparty — buyer / paid unit (attributed)",
     ]
     assert len({card["card_id"] for card in dossier["business"]["cards"]}) == len(dossier["business"]["cards"])
+
+
+def test_card_display_names_never_cross_kinds(monkeypatch):
+    shared_id = "counterparty:dual-role (SYNTHETIC)"
+    as_product = _assertion(
+        predicate="product_workload_role",
+        object_=(shared_id, "Dual Role As Product (SYNTHETIC)", None),
+        text="Synthetic role statement where the object is a product.",
+        seed="dual-product-1",
+    )
+    as_buyer = _assertion(
+        predicate="buyer_paid_unit",
+        object_=(shared_id, "Dual Role As Buyer (SYNTHETIC)", "seat-month (SYNTHETIC)"),
+        text="Synthetic buyer statement where the same id is a buyer.",
+        seed="dual-buyer-1",
+    )
+    dossier = _compose_happy(monkeypatch, business_assertions=[as_product, as_buyer])
+    titles = {card["card_kind"]: card["title"] for card in dossier["business"]["cards"]}
+    assert titles["product_workload_role"] == "Dual Role As Product (SYNTHETIC) — workload role (attributed)"
+    assert titles["buyer_paid_unit"] == "Dual Role As Buyer (SYNTHETIC) — buyer / paid unit (attributed)"
 
 
 def test_whitespace_only_statement_is_counted_not_rendered_on_both_paths(monkeypatch):

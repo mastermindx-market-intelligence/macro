@@ -429,3 +429,7 @@ def test_duplicate_refs_on_a_role_row_are_echoed_once():
     echoed = next(row for row in envelope["input_roles"] if row["role"] == "FY_A")["refs_sha256"]
     assert echoed == [FY_A_REF["sha256"]]
     moc.validate_comparison_result(envelope)
+    # Identity agrees with the echo: a verbatim-repeated citation is the same sealed request.
+    single = compare()
+    assert envelope["comparison_id"] == single["comparison_id"]
+    assert envelope["input_vector"]["input_vector_sha256"] == single["input_vector"]["input_vector_sha256"]
