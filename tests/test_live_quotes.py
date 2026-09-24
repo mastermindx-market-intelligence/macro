@@ -85,6 +85,30 @@ def test_parse_polygon_snapshot_refuses_unproven_nbbo():
         assert out[symbol]["day_open"] is None
 
 
+def test_parse_polygon_snapshot_rejects_boolean_and_nonfinite_measurements():
+    trade_ns = int(datetime(2026, 6, 21, 14, 50, tzinfo=timezone.utc).timestamp() * 1e9)
+    cases = [
+        {"ticker": "BOOLBID", "lastTrade": {"p": 10.0, "t": trade_ns},
+         "lastQuote": {"p": True, "P": 10.01, "t": trade_ns},
+         "day": {"o": True}},
+        {"ticker": "INFASK", "lastTrade": {"p": 20.0, "t": trade_ns},
+         "lastQuote": {"p": 19.99, "P": float("inf"), "t": trade_ns},
+         "day": {"o": float("inf")}},
+        {"ticker": "BOOLTIME", "lastTrade": {"p": 30.0, "t": trade_ns},
+         "lastQuote": {"p": 29.99, "P": 30.01, "t": True},
+         "day": {"o": 29.5}},
+    ]
+    out = lq.parse_polygon_snapshot({"tickers": cases})
+    for symbol in ("BOOLBID", "INFASK", "BOOLTIME"):
+        assert out[symbol]["bid_price"] is None
+        assert out[symbol]["ask_price"] is None
+        assert out[symbol]["nbbo_ts"] is None
+        assert out[symbol]["nbbo_source"] is None
+    assert out["BOOLBID"]["day_open"] is None
+    assert out["INFASK"]["day_open"] is None
+    assert out["BOOLTIME"]["day_open"] == 29.5
+
+
 def test_parse_polygon_snapshot_prevday_basis_is_not_live():
     # no trade / minute / day -> falls to prevDay close, basis 'prev'
     payload = {"tickers": [{"ticker": "ZZZ", "prevDay": {"c": 50.0}}]}

@@ -31,6 +31,7 @@ DISPLAY / FEED ONLY — never a scored input on its own.
 from __future__ import annotations
 
 import logging
+import math
 import re
 import time
 from datetime import datetime, timezone
@@ -123,11 +124,15 @@ def _delay_min(ts: datetime, now: datetime | None = None) -> float:
 
 
 def _num(value: object) -> float | None:
+    # JSON booleans are ints in Python, but they are not measured market numbers.
+    # Non-finite values likewise cannot become prices, volumes, timestamps, or change.
+    if isinstance(value, bool):
+        return None
     try:
         out = float(value)
-        return out if out == out else None
     except (TypeError, ValueError):
         return None
+    return out if math.isfinite(out) else None
 
 
 def _pos(value: object) -> float | None:
