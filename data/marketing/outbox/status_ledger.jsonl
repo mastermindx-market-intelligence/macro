@@ -7865,3 +7865,5 @@
 {"id":"ob-2026-09-24-005a02340c","from":"approved","to":"quarantined","at":"2026-09-24T18:27:39Z","actor":"publisher","note":"frame repeat (skeleton jaccard=0.65) of ob-2026-09-24-b2804ababd posted today; same template, different ticker","receipt":null}
 {"id":"ob-2026-09-24-6d8482e0f1","from":"approved","to":"posting","at":"2026-09-24T18:27:47Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-24-6d8482e0f1","from":"posting","to":"posted","at":"2026-09-24T18:27:48Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab56ba400e658950b788ada","external_url":null,"at":"2026-09-24T18:27:37Z","booked_at":"2026-09-24T18:27:37Z"}}
+{"id":"ob-2026-09-24-d9ff9f8e22","from":"approved","to":"posting","at":"2026-09-24T19:56:57Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-24-d9ff9f8e22","from":"posting","to":"posted","at":"2026-09-24T19:56:58Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab5808a374ee6800d368e2a","external_url":null,"at":"2026-09-24T19:56:54Z","booked_at":"2026-09-24T20:00:54Z"}}
