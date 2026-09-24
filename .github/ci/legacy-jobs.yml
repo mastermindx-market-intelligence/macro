@@ -13468,6 +13468,8 @@ jobs:
       - "data/neuralweb/theme_state.json"
       - "scripts/build_state_of_themes.py"
       - "scripts/worktree_sparse.py"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/state_of_themes.html"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
