@@ -76,16 +76,19 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Wave 1 closed 2026-09-24 08:29Z (T1 #7896, T3 #7900, records #7887/#7902 merged). Chairman
+  Wave 1 closed 2026-09-24 08:29Z (T1 #7896, T3 #7900, records #7887/#7902/#7913 merged). T2
+  projection composer #7920 MERGED 11:53Z (e4ac3730; 74 passed on origin/main). Chairman
   directive (Astra CEO): Finance integrates into the Semiconductor-built shared foundation and
   never rebuilds base layers — T4/T5/T6/T7 HELD
-  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). In flight: T2 projection
-  composer (lane fin_t2_projection, m1) and the D1a spec repair on #7903 (lane fin_d1a_repair,
-  mb) after the read-only audit FAIL (DEC:FINANCE-RERATING-STEPPER-BINDS-FOUR-CONTRACT-PLANES,
-  DSC:DESIGN-SPEC-LANES-BIND-INVENTED-FIELDS-AUDIT-AGAINST-THE-LIVE-SCHEMA-FIRST). Then: second
-  audit → D1b mockup → T8 shell + hydration behind FI_READ_URL → T9 entry points → integration
-  (assertion→source_records adapter, packet transcription into the shared admission path,
-  profile:finance composed-dossier kind on the foundation's route) once #7870 is accepted on main.
+  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). In flight: the D1a spec
+  on #7903 — four read-only Opus audits FAILED (comments 5810133462, 5810923955, 5812280671,
+  5812943971), each answered by seat rulings (R-A..R-K, R1–R4, D1–D3); the surgical round-4
+  lane fin_d1a_repair4 (mb) is running and the FIFTH audit decides the freeze (a build-class-only
+  FAIL freezes with a residual appendix on the T8 packet; the lane loop stops at five). Then:
+  D1b mockup → merge #7903 → T8 shell + hydration behind FI_READ_URL → T9 entry points →
+  integration (assertion→source_records adapter, packet transcription into the shared
+  admission path, profile:finance composed-dossier kind on the foundation's route) once #7870
+  (still OPEN/DRAFT at 11:55Z) is accepted on main.
 ---
 
 # Finance Intelligence workstream
