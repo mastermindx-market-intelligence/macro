@@ -569,134 +569,233 @@ def compose_mining_research(
             }
         )
 
-    # Expectations are bound from the CLOSED domain definition for the queried
-    # slice (R-MIN-23 / BLOCKER-1 / seat note). The bundle's financial_packets no
-    # longer influence expectation composition: every ``management_estimate_vs_actual``
-    # claim — and its single ``pairs`` object on the COPPER block — is read from
-    # ``MINING_DEFINITIONS[query.slice_key]``. Management point estimates stay
-    # point estimates (ADDENDUM §4 IR-02). A row may carry null
-    # ``earlier_point_estimate`` / ``later_actual`` (W-R), in which case
-    # ``missing_derivation`` is the limitation — never an invented zero.
+    # Expectations are packet-driven (R-MIN-31 §3). The bundle's
+    # ``financial_packets`` may carry ``kind: management_estimate_vs_actual``
+    # entries whose ``pair`` selects between the slice's domain-yaml
+    # ``management_estimate_vs_actual`` block (sales) and its single
+    # ``pairs`` object (unit net cash cost, copper only). Metric / required
+    # fields / period / selection_label always travel from the domain yaml —
+    # the packet only supplies the measured values, never the leg labels,
+    # so a leg ``value`` is never synthesised from ``period_kind`` /
+    # ``metric`` (BLOCKER-A). A withdrawn case (omissions non-empty)
+    # publishes no expectation row (MAJOR-B); ``missing_derivation`` is
+    # minted ONLY as the mapped omission code for ``next_period_outlook``,
+    # never as a "no mev declared" stand-in (MAJOR-C).
     expectations: list[dict[str, Any]] = []
     slice_def = MINING_DEFINITIONS[query.slice_key]
     mev = slice_def.get("management_estimate_vs_actual") or {}
+    mev_populated = bool(mev) and mev.get("earlier_point_estimate") is not None and mev.get("later_actual") is not None
 
     # Subject identity is bound to the first identity_results entry; the
-    # open fallback stays as a literal default (Step 7 finishes the binding
-    # for the native_blocks channel; here we only need a non-empty
-    # stable_subject_id so the schema item stays valid).
+    # cik is the fallback (MAJOR-F — same cik fallback as the native_blocks
+    # channel), so a row carries the same identity as the issuer axis the
+    # bundle actually has, never the literal "subject:unknown".
     subject_id = "subject:unknown"
     for ident in bundle.identity_results:
-        cand = str(ident.get("stable_subject_id") or "")
+        cand = str(ident.get("stable_subject_id") or ident.get("cik") or "")
         if cand:
             subject_id = cand
             break
 
-    def _leg(leg: Mapping[str, Any] | None) -> dict[str, Any] | None:
-        """Map a domain-yaml leg object to the schema-valid leg dict.
+    def _pair_source(pair_name: str) -> tuple[Mapping[str, Any], Mapping[str, Any], str] | None:
+        """Resolve a packet's pair name to (epe, la, comparison_text) from the domain yaml.
 
-        The yaml leg carries ``metric / source_family / selection_label /
-        period_kind / definition_fields_required``. The schema item requires
-        ``metric / value / basis / source_label`` — all four required, with
-        ``metric / basis / source_label`` typed string minLength: 1.
-        ``value`` accepts a number, integer or string. ``source_label`` falls
-        back to ``selection_label``. ``value`` falls back to the metric or
-        period_kind string when the leg has no literal number.
-        ``basis`` falls back to "fictional point estimate" for the
-        management-issued estimate legs (they have no reported basis yet).
+        ``sales`` reads the slice's top-level ``management_estimate_vs_actual`` block;
+        ``unit_net_cash_cost`` reads its single ``pairs`` object. Anything else is
+        a closed-codec refusal-equivalent: no row is emitted, and ``omitted:expectations``
+        is added to limitations (deduplicated).
         """
-        if leg is None or not isinstance(leg, Mapping):
-            return None
-        metric = str(leg.get("metric") or "")
-        if not metric:
-            return None
-        basis = str(leg.get("basis") or "fictional point estimate")
+        if pair_name == "sales":
+            epe = mev.get("earlier_point_estimate")
+            la = mev.get("later_actual")
+            if not isinstance(epe, Mapping) or not isinstance(la, Mapping):
+                return None
+            return epe, la, str(mev.get("comparison", "") or "")
+        if pair_name == "unit_net_cash_cost":
+            pairs = mev.get("pairs", []) or []
+            if not pairs:
+                return None
+            pair = pairs[0]
+            epe = pair.get("earlier_point_estimate")
+            la = pair.get("later_actual")
+            if not isinstance(epe, Mapping) or not isinstance(la, Mapping):
+                return None
+            return epe, la, str(pair.get("comparison", "") or mev.get("comparison", "") or "")
+        return None
+
+    def _leg_from_domain(leg: Mapping[str, Any], *, default_basis: str) -> dict[str, Any]:
+        """Build the schema leg dict using ONLY the domain-yaml leg's own strings.
+
+        Metric / basis / source_label come from the domain leg; the packet
+        supplies the value at the row level — never from ``period_kind`` /
+        ``metric`` substitutions. ``selection_label`` is the canonical
+        source_label fallback; an empty selection_label degrades to a typed
+        limitation (MINOR-H, dedup'd on the response).
+        """
         source_label = str(
             leg.get("source_label")
             or leg.get("selection_label")
             or "synthetic-selection"
         )
-        raw_value = leg.get("value")
-        if raw_value is None:
-            raw_value = str(leg.get("period_kind") or leg.get("metric") or "")
+        if not source_label:
+            # The schema requires ``minLength: 1``; we never propagate an
+            # empty literal that would trip the validator (MINOR-H).
+            source_label = "synthetic-selection"
         return {
-            "metric": metric,
-            "value": raw_value,
-            "basis": basis,
+            "metric": str(leg.get("metric", "") or ""),
+            "value": None,  # set by the row builder below from the packet
+            "basis": str(leg.get("basis", "") or default_basis),
             "source_label": source_label,
         }
 
-    def _unq(leg: Mapping[str, Any] | None) -> list[str]:
-        if leg is None or not isinstance(leg, Mapping):
-            return []
-        return [str(f) for f in (leg.get("definition_fields_required") or [])]
-
-    def _expectation_row(
-        epe: Mapping[str, Any] | None,
-        la: Mapping[str, Any] | None,
-        comparison: str,
-        unq_fields: list[str],
-    ) -> dict[str, Any]:
-        return {
-            "stable_subject_id": subject_id,
-            "comparison_kind": "earlier_point_estimate_vs_later_actual",
-            "earlier_point_estimate": _leg(epe),
-            "later_actual": _leg(la),
-            "comparison": comparison,
-            "definition_unqualified_fields": list(unq_fields),
-            "is_range": False,
-            "is_consensus": False,
-        }
-
-    # The closed defined_fields: union of every leg's definition_fields_required
-    # across the mev + its pairs. Falls back to the canonical closed set when the
-    # yaml drops the field.
-    defined_fields: set[str] = set()
-    for leg in (mev.get("earlier_point_estimate"), mev.get("later_actual")):
-        for f in _unq(leg):
-            defined_fields.add(f)
-    for pair in mev.get("pairs", []) or []:
-        for leg in (pair.get("earlier_point_estimate"), pair.get("later_actual")):
-            for f in _unq(leg):
-                defined_fields.add(f)
-    if not defined_fields:
-        defined_fields = {"basis", "unit", "perimeter"}
-
-    if mev:
-        main_epe = mev.get("earlier_point_estimate")
-        main_la = mev.get("later_actual")
-        main_comparison = str(mev.get("comparison", "") or "")
-        main_unq = _unq(main_epe) + _unq(main_la)
-        expectations.append(
-            _expectation_row(main_epe, main_la, main_comparison, main_unq)
+    def _value_is_numeric(v: Any) -> bool:
+        return (
+            v is not None
+            and not isinstance(v, bool)
+            and isinstance(v, (int, float))
         )
-        # W-R null legs -> missing_derivation limitation (R-MIN-15 / BLOCKER-1).
-        if main_epe is None and main_la is None:
-            if "missing_derivation" not in limitations:
-                limitations.append("missing_derivation")
-        # The COPPER block carries a single ``pairs`` object surfaced as a SECOND
-        # comparison row, never merged with the sales pair (seat note / BLOCKER-1).
-        pairs = mev.get("pairs", []) or []
-        for pair in pairs:
-            pair_epe = pair.get("earlier_point_estimate")
-            pair_la = pair.get("later_actual")
-            pair_comparison = str(pair.get("comparison", "") or main_comparison)
-            pair_unq = _unq(pair_epe) + _unq(pair_la)
-            expectations.append(
-                _expectation_row(pair_epe, pair_la, pair_comparison, pair_unq)
-            )
-    else:
-        # A slice with no mev declared at all: surface as missing_derivation;
-        # no expectation row is invented.
-        if "missing_derivation" not in limitations:
-            limitations.append("missing_derivation")
 
-    # IR-01: limitations now include any definition_unqualified:<field> markers; headline must
-    # stay plain-language without badge vocabulary.
-    summary_block = _summarize_expectations(expectations, defined_fields=defined_fields)
-    for code in summary_block["limitations"]:
-        if code not in limitations:
-            limitations.append(code)
+    def _missing_required_fields(
+        leg: Mapping[str, Any], packet_leg: Mapping[str, Any]
+    ) -> list[str]:
+        """Return the ordered, deduplicated list of domain-required fields absent on the leg.
+
+        The domain yaml's ``definition_fields_required`` is the source of truth
+        (per R-MIN-31 §3, MAJOR-D); a packet whose leg omits one of those
+        fields withholds the row and contributes one
+        ``definition_unqualified:<field>`` code to the response limitations.
+        """
+        required = list(leg.get("definition_fields_required") or [])
+        missing: list[str] = []
+        for f in required:
+            value = packet_leg.get(f)
+            if value is None or (isinstance(value, str) and not value):
+                missing.append(str(f))
+        return missing
+
+    def _build_row(
+        packet: Mapping[str, Any],
+        epe: Mapping[str, Any],
+        la: Mapping[str, Any],
+    ) -> tuple[dict[str, Any] | None, list[str], bool]:
+        """Build a schema-valid expectation row from one packet.
+
+        Returns ``(row, missing_field_codes, withhold_for_unqualified)``.
+        ``row is None`` means the row is withheld; ``missing_field_codes`` are
+        the deduplicated ``definition_unqualified:<field>`` codes to mint, and
+        ``withhold_for_unqualified`` distinguishes "missing definition fields"
+        (mint ``definition_unqualified:*``) from "bad value / unknown pair"
+        (mint ``omitted:expectations``).
+        """
+        epe_packet = packet.get("earlier_point_estimate") or {}
+        la_packet = packet.get("later_actual") or {}
+        epe_value = epe_packet.get("value")
+        la_value = la_packet.get("value")
+
+        if not _value_is_numeric(epe_value) or not _value_is_numeric(la_value):
+            return None, [], True
+        if epe_value == la_value:
+            # "equal_to_estimate" is the comparison word for equality, but
+            # the ruling binds: equal values WITHHOLD the row with
+            # ``omitted:expectations`` (a true equal would be an invented
+            # surprise at the wire; the row is suppressed).
+            return None, [], True
+
+        missing_epe = _missing_required_fields(epe, epe_packet)
+        missing_la = _missing_required_fields(la, la_packet)
+        missing_fields = []
+        for f in missing_epe + missing_la:
+            if f not in missing_fields:
+                missing_fields.append(f)
+        if missing_fields:
+            return None, [f"definition_unqualified:{f}" for f in missing_fields], True
+
+        comparison_word = "above_estimate" if la_value > epe_value else "below_estimate"
+        epe_leg = _leg_from_domain(epe, default_basis="fictional point estimate")
+        la_leg = _leg_from_domain(la, default_basis="fictional reported measure")
+        epe_leg["value"] = epe_value
+        la_leg["value"] = la_value
+        return (
+            {
+                "stable_subject_id": subject_id,
+                "comparison_kind": "earlier_point_estimate_vs_later_actual",
+                "earlier_point_estimate": epe_leg,
+                "later_actual": la_leg,
+                "comparison": comparison_word,
+                "definition_unqualified_fields": [],
+                "is_range": False,
+                "is_consensus": False,
+            },
+            [],
+            False,
+        )
+
+    withdrawn = bool(bundle.omissions)
+
+    if not withdrawn and mev_populated:
+        # Collect mev packets; pair-name ordering is enforced (sales first,
+        # unit_net_cash_cost second) regardless of packet arrival order
+        # (MINOR-J). An unknown pair withholds with ``omitted:expectations``.
+        mev_packets = [
+            p for p in bundle.financial_packets
+            if isinstance(p, Mapping) and p.get("kind") == "management_estimate_vs_actual"
+        ]
+
+        def _pair_sort_key(p: Mapping[str, Any]) -> int:
+            order = {"sales": 0, "unit_net_cash_cost": 1}
+            return order.get(str(p.get("pair") or ""), 99)
+
+        for packet in sorted(mev_packets, key=_pair_sort_key):
+            pair_name = str(packet.get("pair") or "")
+            source = _pair_source(pair_name)
+            if source is None:
+                # Unknown pair -> withhold + mint omitted:expectations.
+                if "omitted:expectations" not in limitations:
+                    limitations.append("omitted:expectations")
+                continue
+            epe, la, _ = source
+            row, missing_codes, withhold_unqualified = _build_row(packet, epe, la)
+            if row is None:
+                if withhold_unqualified and missing_codes:
+                    for code in missing_codes:
+                        if code not in limitations:
+                            limitations.append(code)
+                else:
+                    if "omitted:expectations" not in limitations:
+                        limitations.append("omitted:expectations")
+                continue
+            expectations.append(row)
+    elif not withdrawn and not mev_populated:
+        # A slice whose mev declares both legs null (rare-earth) — no
+        # comparison is selected in M1, and the slice-definitional code
+        # ``definition_unqualified:management_estimate_vs_actual`` is the
+        # truthful "no comparison selected" marker, NOT
+        # ``omitted:expectations`` (R-MIN-31 §3 last sentence).
+        pass
+
+    # Slice-definitional codes for the rare-earth slice (R-MIN-31 §2):
+    # stream_threshold_unknown + industry_total_unknown from the slice's
+    # own ``limitations_vocabulary``; plus
+    # ``definition_unqualified:management_estimate_vs_actual`` because the
+    # rare-earth mev declares both legs null. Copper mints none of these
+    # — its vocabulary does not name them and its mev legs are populated.
+    if "stream_threshold_unknown" in slice_limit_vocab:
+        if "stream_threshold_unknown" not in limitations:
+            limitations.append("stream_threshold_unknown")
+    if not mev_populated:
+        slice_def_unq_code = "definition_unqualified:management_estimate_vs_actual"
+        if slice_def_unq_code not in limitations:
+            limitations.append(slice_def_unq_code)
+
+    # Usable copper with no mev packet in the bundle -> ``omitted:expectations``
+    # is the truthful "no row was attempted" marker (R-MIN-31 §3).
+    if (
+        not withdrawn
+        and mev_populated
+        and not expectations
+        and "omitted:expectations" not in limitations
+    ):
+        limitations.append("omitted:expectations")
 
     domain_label = MINING_DEFINITIONS[query.slice_key]["anchor_theme_id"]
     status = _summarize_status(limitations, has_native_blocks=bool(native_blocks))
@@ -750,7 +849,7 @@ def compose_mining_research(
             "count_scope": "two_closed_definitions",
             "industry_total": None,
         },
-        "limitations": limitations,
+        "limitations": sorted(limitations),
         "authority": dict(AUTHORITY),
     }
 

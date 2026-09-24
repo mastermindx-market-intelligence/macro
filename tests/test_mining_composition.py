@@ -271,22 +271,29 @@ def test_stream_threshold_omission_propagates_as_limitation():
     assert "stream_threshold_unknown" in result["limitations"]
 
 
-def test_industry_total_unknown_is_minted_when_no_identity_axis_is_bound():
-    """MAJOR-7 / W-R: industry_total_unknown is contracted only for the W-R slice; the
-    limitation is minted when the W-R identity axis is unbound (no identity_results),
-    NOT when it is bound."""
-    case = synthetic_case("rare_earth_complete")
+def test_industry_total_unknown_is_minted_iff_slice_vocab_contracts_it():
+    """R-MIN-31 §4 / MAJOR-E: ``industry_total_unknown`` polarity — minted iff the slice's
+    own ``limitations_vocabulary`` names the code AND ``authorized_coverage.industry_total``
+    is contracted null (R-MIN-25). The rare-earth slice names it; copper does not.
+    Binding or not binding the issuer axis never toggles the code.
+    """
     from dataclasses import replace as _replace
 
-    # W-R with the identity axis unbound -> industry_total_unknown IS minted.
-    unbound_bundle = _replace(case.bundle, identity_results=())
-    result_unbound = composition.compose_mining_research(case.query, unbound_bundle)
-    assert "industry_total_unknown" in result_unbound["limitations"]
-    # W-R with the identity axis bound -> industry_total_unknown is NOT minted; the
-    # partial coverage still carries a literal-null industry_total (R-MIN-25).
-    result_bound = composition.compose_mining_research(case.query, case.bundle)
-    assert "industry_total_unknown" not in result_bound["limitations"]
-    assert result_bound["authorized_coverage"]["industry_total"] is None
+    # Rare-earth slice — every case mints it (slice-vocab contract).
+    rare_case = synthetic_case("rare_earth_complete")
+    rare_bound = composition.compose_mining_research(rare_case.query, rare_case.bundle)
+    assert "industry_total_unknown" in rare_bound["limitations"]
+    assert rare_bound["authorized_coverage"]["industry_total"] is None
+    rare_unbound_bundle = _replace(rare_case.bundle, identity_results=())
+    rare_unbound = composition.compose_mining_research(rare_case.query, rare_unbound_bundle)
+    assert "industry_total_unknown" in rare_unbound["limitations"]
+    # Copper slice — never mints it (slice-vocab does not contract it).
+    copper_case = synthetic_case("copper_complete")
+    copper_result = composition.compose_mining_research(copper_case.query, copper_case.bundle)
+    assert "industry_total_unknown" not in copper_result["limitations"]
+    copper_unbound_bundle = _replace(copper_case.bundle, identity_results=())
+    copper_unbound = composition.compose_mining_research(copper_case.query, copper_unbound_bundle)
+    assert "industry_total_unknown" not in copper_unbound["limitations"]
 
 
 def test_industry_total_unknown_is_absent_on_w_c_slice():
