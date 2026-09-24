@@ -1077,7 +1077,7 @@
       })
       .then(function (response) {
         if (response.status === 401) {
-          gate("Sign in to see the current trace", "登录后查看当前追踪",
+          gate("Sign in to see the current path", "登录后查看当前路径",
             "This page describes the product. The current reading is served only to a "
             + "signed-in account.",
             "本页面介绍该产品。当前读数仅向已登录账户提供。",
