@@ -1,4 +1,4 @@
-# Mining research: coverage and design frontier after Pass 07
+# Mining research: coverage and design frontier after Pass 08
 
 **Research cutoff:** 23 September 2026. **Status:** principal synthesis / proposed scope / HOLD. **Mission complete:** false. **Final Fable implementation handoff:** not created.
 
@@ -22,9 +22,10 @@ This is a qualitative coverage assessment, not a numerical completeness score. A
 | P04 | `MINING_URANIUM_FUEL_CYCLE_ECONOMICS_2026-09-23.md`, commit `66c77095aff61e196c0aee356ff7f0e7d08ff01b` | Commercial fuel-cycle roles, procurement horizons, inventories, backlog conditions and financing claims |
 | P05 | `MINING_BULK_FERTILIZER_ECONOMICS_2026-09-23.md`, commit `38690a0909799d5d2b80ef23ff467cd1a73006a4` | Benchmark and delivery bases, buyer value, replacement investment, input spreads and customer credit/calendar |
 | P06 | `MINING_SPECIALTY_ENABLER_ECONOMICS_2026-09-23.md`, commit `e2c3807f1a48f8430f9100bb019c0b66206e966e` | Host/recovery/entitlement distinctions, finite secondary feed, selective processing and supplier value capture |
-| P07 | `MINING_ALUMINIUM_ENERGY_ECONOMICS_2026-09-23.md`, this publication unit | Stage-specific net exposure, energy contract basis, collateral, conversion cash, conditional acquisitions and nonduplicative recycling |
+| P07 | `MINING_ALUMINIUM_ENERGY_ECONOMICS_2026-09-23.md`, commit `2821144f000f508109bb947b31159d3c7482ccf9` | Stage-specific net exposure, energy contract basis, collateral, conversion cash, conditional acquisitions and nonduplicative recycling |
+| P08 | `MINING_NICKEL_COBALT_ANODE_ECONOMICS_2026-09-23.md`, commit `c61dd30ad7b88a34c5f6e80778a079a5f4314800` | Capacity/chemistry demand, product-route choice, in-process cobalt, acceptance evidence and financing horizons |
 
-All reports sit under `research/mining/`. P07's immutable commit is supplied by the publication receipt and cumulative continuation, not invented in advance. The earlier report checks are historical; this pass does not claim to rerun them. References overlap across reports and cannot be summed into a verified unique-source census.
+All reports sit under `research/mining/`. P08's immutable commit above was returned by the completed report write and verified by exact-commit readback. The earlier report checks are historical; this pass does not claim to rerun them. References overlap across reports and cannot be summed into a verified unique-source census.
 
 **DO_NOT_PUBLISH_DUPLICATE remains controlling for the parallel local Pass 05.** The canonical P05 blob is `42c90b4634b4b408c014b7ccb335744adb79bf48`; the parallel local report is `587ee020adec174233c42ad987f531d767b7c0ea`. They are different syntheses. The parallel file is not another canonical pass and must not inflate coverage or replace the committed work. Its source-specific leads may be investigated for a new question, but a bulk merge or an alternate-filename publication would repeat the resolved problem.
 
@@ -38,7 +39,7 @@ The entries assess what the corpus can currently support as research, not what M
 | Gold, silver and PGMs | P01/P02/P06 address cost definitions, mine-plan timing, resource-component scope, financial rights and mixed recycled-metal quantities | A deeper metal-specific demand/recycling and primary PGM operating comparison remains. Do not infer equivalent economics from composite ounces. |
 | Lithium and direct extraction | P03 distinguishes grade conformity, physical recovery, conversion spread, feed inventory and customer acceptance | Commercial route-specific operating and capital comparisons remain limited; actual utilization and customer coverage are not globally established. |
 | Rare earths and magnets | P03/P06 test element mix, feed compatibility, customer-program milestones, price mechanisms and separation of mine from processor | NdPr examples do not constitute all-element coverage. Recover actual rights/settlement inputs only for claims that need numerical entitlement. |
-| Nickel, cobalt, graphite and anodes | Existing work names the relevant domains and supplies general qualification/host-dependency tests | This is a material business-model coverage gap, not a completed dossier family. Prioritize contrasting integrated/non-integrated production and conversion economics. |
+| Nickel, cobalt, graphite and anodes | P08 distinguishes capacity-weighted chemistry demand, ore/intermediate/final products, ownership/offtake, processing choice, in-process cobalt, customer tests and project-specific funding | Representative regimes are now tested, not globally covered. Actual yield, customer acceptance, settlement, allocation and competitive substitution remain claim-specific unknowns. Syrah quarterly and CMOC numerical evidence were excluded when primary retrieval failed. |
 | Uranium and fuel services | P04 distinguishes procurement coverage, production, inventory, contracting, commercial services and financing | Broader asset and contract coverage remains; keep commercial economics separate from process engineering. Missing settlements limit numerical claims, not the entire domain. |
 | Iron ore and steelmaking inputs | P05 tests changing benchmark specifications, delivery bases, replacement supply and investment returns | Steel-route substitution and manganese/ferroalloy economics need targeted coverage. Do not generalize the iron-ore examples to all steel inputs. |
 | Potash, phosphate and nutrient products | P05 links product and nutrient quantities, manufacturing spreads, customer value, financing and crop calendar | Region-specific purchasing evidence is not a global elasticity model. Delivered comparisons need compatible logistics and actual product usefulness. |
@@ -59,9 +60,11 @@ The required behavior is to keep the source facts, state the precise missing inp
 
 ### G2 — Missing economic regimes
 
-P07 supplies representative aluminium/energy contrasts. Several battery-material chains and selected alloy/end-market distinctions still could change how the model represents prices, costs, contracts and investment. These justify additional principal research before freezing the full Mining taxonomy. The purpose is to find a discriminating case, not to maximize the number of reports.
+P07 and P08 supply representative aluminium/energy and nickel/cobalt/anode contrasts. They test enough different economic mechanisms to prepare a bounded first-dossier design without pretending the entire Mining universe is mapped. Further unrestricted issuer collection is not the next dependency.
 
-The next bounded package should address the most consequential nickel/cobalt and graphite/anode gaps. It should ask whether the current model handles product/route substitution, integration versus purchased intermediates, tolling, customer qualification and funding without distorting cash economics. Do not repeat the aluminium dossiers solely to increase coverage counts. The remaining long tail can be explicitly phased once the initial product coverage is accepted.
+Primary PGM operating/demand detail, selected manganese/ferroalloy and steel-route substitution, thermal/industrial-coal economics and long-tail specialties remain thinner. For the first vertical, mark them explicitly outside its admitted claim set rather than silently importing a neighboring commodity's assumptions. Keep their future research obligation in the expanded taxonomy; this scoping does not cancel the full-sector ambition.
+
+Add another domain case before design only when it could invalidate the selected user job, native representation or a claim the first slice actually promises. Geographic breadth, global cost curves and full proprietary contract coverage are expansion work unless required by that claim. Unknown local values continue under G1; native release requirements remain G3.
 
 ### G3 — True design and release dependencies
 
@@ -91,7 +94,7 @@ The proposed first slice remains a small economic dossier within the existing Th
 
 The package should contain a principal-reviewed taxonomy with explicit coverage, a limited set of representative asset/company dossiers, and a source dictionary that includes observation periods, units, reporting boundaries and reuse constraints. It should specify the investor journey and the corresponding machine transformations, with counterexamples linked to the behavior they test.
 
-A requirements matrix should consolidate overlapping MN/MA/MB/fuel/MG/MS/ME proposals into a smaller coherent set of behaviors. Repeated requirements are not independent features. For example, several cases express one rule: compare observations only when period, material, accounting scope and basis are compatible. Preserve each case as a test of the rule without creating separate control systems for it.
+A requirements matrix should consolidate overlapping MN/MA/MB/fuel/MG/MS/ME/MC proposals into a smaller coherent set of behaviors. Repeated requirements are not independent features. For example, several cases express one rule: compare observations only when period, material, accounting scope and basis are compatible. Preserve each case as a test of the rule without creating separate control systems for it.
 
 The package must also identify what remains unknown or deliberately out of the first slice. Fable should not be asked to manufacture contracts, customer quantities or cost curves during implementation. Bounded source validation can be assigned later, but foundational domain decisions stay with the principal until resolved or explicitly scoped out.
 
@@ -99,9 +102,11 @@ Acceptance should include meaningful visible synthesis, not only a populated gra
 
 ## 7. Exact next action and held effects
 
-**Next principal action:** research contrasting nickel/cobalt and graphite/anode economics, prioritizing host dependence, product/chemistry substitution, route-specific conversion margins, qualification and funding. Aluminium/energy now has representative P07 coverage; retain its claim-specific unknowns instead of reopening the whole domain. Use the matrix to decide which additional case changes the proposed model. Do not repeat settled dossiers or publish the parallel Pass 05.
+**Next principal action:** reconcile the then-current native identity, evidence/assertion, correction, membership and Themes/F04 publication interfaces for the first Mining economic dossier. Read the current owning source and shared-template state, not the old baseline as if it were deployed. Consolidate overlapping requirements into one proposed behavior-and-acceptance matrix and select the smallest real-input workflow that preserves the investment question.
 
-After that bounded coverage work, prepare the written design against then-current native interfaces and consolidate acceptance requirements. The final Fable handoff remains held. No new principal, subagent, worker, Executive Attempt, watcher, production schema/data, basket, trade, merge or deployment is created by this document.
+P08 supplies the last prioritized representative battery-regime package. Retain its missing conversion costs, customer criteria, settlement and anode penetration evidence as scoped unknowns. Do not reopen completed passes or the excluded parallel Pass05. The written design still needs explicit acceptance and actual implementation-path reconciliation; research sufficiency is not design approval.
+
+Selected PGM/alloy/thermal domains remain limited initial coverage, with a later research obligation rather than invented completion. No new principal, worker, Executive Attempt, watcher, production schema/data, basket, trade, merge or deployment is created by this document. Fable receives a mature package only after the relevant design and planning gates.
 
 The companion research checker verifies indexing, selected arithmetic, exact report digests and the distinction between canonical and excluded local files. It does not validate the entire corpus, rerun historical check suites, or prove a delivered capability. Publication and the current continuation revision must be established by exact GitHub receipts/readbacks. No autonomous background execution or custody transfer is implied.
 
@@ -115,3 +120,28 @@ The source chronology matters. Alcoa's September 23 financing completion is supp
 For the eventual written design, consolidate these additions into existing needs rather than new control planes: observation compatibility; conditional economic rights and time; material-flow accounting; capital/cash bridges; and a visible claim with counter-thesis and missing inputs. Their intelligence synthesis matters as much as their refusal cases. Native source rights, privacy/publication, identity, correction and actual consumer contracts still require fresh owner inspection before implementation.
 
 No earlier research checker was rerun. Historical Pass06 coverage/check evidence remains recoverable at its immutable revision; the current mutable coverage file is intentionally updated and has a new digest in the P07 receipt. Canonical Pass05 and the excluded parallel local package remain unchanged. The current research's exact source hashes and this document's new blob must be read back on the same #7795 carrier before claiming publication.
+
+
+## 9. Pass08 synthesis and the move from research breadth to native design
+
+P08 adds ten focused cases spanning end-market denominators, stainless versus battery first use, ownership/offtake, intermediate-sale choices, in-process cobalt, cash obligations, external qualification, financing triggers, staged mine/anode investment and competing anode technologies. It is not a global cost curve or a verified physical/financial settlement ledger. Fourteen source records and the new MC requirements are research inputs, not a quantitative completeness measure.
+
+The strongest remaining design question is whether the native evidence and identity contracts can express the meaningful differences without creating a second truth plane. The first product must preserve a useful claim, its inputs, uncertainty and counter-thesis. It must also recognize new supported capability rather than being designed solely to refuse numeric transformations.
+
+### Proposed requirement consolidation before the written specification
+
+| Behavior family | Examples to retain as tests, not separate infrastructure | Evidence needed at design |
+|---|---|---|
+| Compatible observations | Wet/dry, contained/product metal, period, first-use/end-use, chemistry capacity versus counts | Current native subject, unit, time and source binding |
+| Conditional economic rights | Ownership, offtake, payability, streams, customer commitments, financing conditions | Native relation/assertion scope and effective intervals |
+| Physical transformation and alternatives | Serial output, in-process material, feasible intermediate sale, finite feed and qualified supply | Explicit bounded calculations under existing calculation/evidence ownership |
+| Cash, capital and security claims | Gross/net investment, funding restrictions, triggered repayment, per-share denominators | Defined accounting basis and existing security identity; no new contract service |
+| Change and correction | Re-presented figures, new acceptance evidence, unknown-to-known programme progress, source conflicts | Current revision/correction and belief/effective-time semantics |
+| Useful investor composition | Thesis, mechanism, counter-thesis, missing inputs, decisive next observation | Existing Themes/F04 consumer and authenticated/public publication boundaries |
+| Scope and validation | Admitted initial facts, excluded unsupported domains, descriptive versus validated investment use | Explicit first-slice acceptance and later expansion obligations |
+
+These are proposed groupings for review. They do not prove the current source already supports them or authorize implementation. A current-source mismatch is a design issue to resolve with the owning component, not permission to mint another graph, registry, evidence store, publisher, ranking framework or queue.
+
+A practical next acceptance target is a small dossier with real source input, one supported economic change, a compatible calculation where possible, a counter-thesis, and a material update/unknown-input test. Copper/asset-rights cases remain the provisional starting point. The final choice must follow current native-interface evidence, not familiarity with a recently researched commodity.
+
+The eight-pass coverage decision is therefore: **begin current-interface design preparation; preserve incomplete global coverage explicitly; do not dispatch the final Fable implementation package yet.** Prior coverage/check pairings remain recoverable at their immutable revisions. Current P08 publication requires its own digest and executed check receipt, not reuse of P07's changed-file hash.
