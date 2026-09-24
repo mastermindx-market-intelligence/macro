@@ -3534,6 +3534,10 @@ CURATED_EXCLUSIVE = {
     # closure is empty (stdlib only): the scope is the suite + the registration
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
+    # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
+    # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
+    # curated scope is exactly the Mining files it names.
+    "mining-economic-dossier",
     # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
     # home for tests/test_markets_regime_strip.py — its thematic neighbours
     # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
