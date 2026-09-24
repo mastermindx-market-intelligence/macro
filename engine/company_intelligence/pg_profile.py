@@ -180,6 +180,7 @@ class _Table:
     governing: tuple[str, ...]
     context: str | None
     row_context: tuple[str | None, ...]
+    forward: bool = False
 
 
 def _grid(block: Any) -> tuple[tuple[_Cell, ...], ...]:
@@ -197,9 +198,15 @@ def _grid(block: Any) -> tuple[tuple[_Cell, ...], ...]:
         by_ordinal.setdefault(ordinal, []).extend(row)
     carried: dict[tuple[int, int], _Cell] = {}
     grid: list[list[_Cell]] = []
-    # Every HTML row exists, including one that emitted no cell: a rowspan from above occupies it (R49).
+    group: int | None = None
+    # Every HTML row exists, including one that emitted no cell: a rowspan from above occupies it (R49); a
+    # rowspan never crosses a row group (thead / tbody / tfoot), exactly as HTML clips it (R61).
     for row_index in range(max(by_ordinal, default=-1) + 1):
         row = by_ordinal.get(row_index, [])
+        row_group = next((int(getattr(cell, "row_group", 0)) for cell in row), group)
+        if group is not None and row_group != group:
+            carried = {}
+        group = row_group
         line: list[_Cell] = []
         column = 0
         for cell in row:
@@ -266,21 +273,43 @@ def _column_headers(rows: Sequence[Sequence[_Cell]], depth: int, column: int) ->
     return tuple(dict.fromkeys(form for form in (" ".join(cells), *cells) if form))
 
 
-def _section_label(row: Sequence[_Cell]) -> _Cell | None:
-    """The one cell of a label-only row: exactly one distinct text-bearing cell, wherever it sits and however
-    many columns it spans (an EDGAR section label is usually one ``colspan`` cell) (R51, R55)."""
-    labels: dict[int, _Cell] = {}
+def _row_text(row: Sequence[_Cell]) -> str:
+    """The distinct texts of a row in column order, each spanning cell once."""
+    texts: dict[int, str] = {}
     for cell in row:
         if cell.text.strip() and cell.origin is not None:
-            labels.setdefault(id(cell.origin), cell)
-    return next(iter(labels.values())) if len(labels) == 1 else None
+            texts.setdefault(id(cell.origin), cell.text.strip())
+    return " ".join(texts.values())
+
+
+def _section_text(row: Sequence[_Cell]) -> str | None:
+    """A row that carries no metric literal is a label row -- one cell or several, in any column, at any colspan --
+    and its whole text is what names a section (R51, R57, R62); a row holding a literal is a data row."""
+    if not row or any(_is_literal_cell(cell.text) for cell in row):
+        return None
+    return _row_text(row)
+
+
+# Markers that open a period FORM ("... ended <date>", "<n> months", "FY..", "fiscal ..."): a bare "Quarter" band
+# cell over a readable period stack is a caption word, not a second period (r19c).
+_RESIDUAL_MARKER = re.compile(r"\b(?:ended|ending|months?|ytd|fiscal|fy)\b", re.IGNORECASE)
+
+
+def _residual_marker(normal: str) -> bool:
+    """True when the text still carries a period-form marker after every recognised period form is removed (R62)."""
+    residual = normal
+    for pattern in (_ANNUAL_QUALIFIER, _QUARTER_ENDED, _Q_FY, _DRIVERS_YEARS, _FISCAL_YEAR_LABEL, _QUARTER_WORD):
+        residual = pattern.sub(" ", residual)
+    return _RESIDUAL_MARKER.search(residual) is not None
 
 
 def _marked_context(text: str, identity: tuple[int, int, date]) -> str | None:
-    """``period_context`` made fail-closed: text carrying a period marker that resolves to no known form is
-    "unknown", which refuses exactly as an annual label does (R50, R55)."""
+    """``period_context`` made fail-closed (R50, R55, R62): text carrying a period marker that resolves to no
+    known form is "unknown", and so is text that names the admitted quarter BESIDE a marker that resolves to
+    nothing ("Three Months Ended June 30, 2026 vs. Quarter Ended 31/03/2026"); unknown refuses exactly as an
+    annual label does."""
     verdict = period_context(text, identity)
-    if verdict is None and _PERIOD_MARKER.search(_normal(text)):
+    if verdict in {None, "scope"} and _residual_marker(_normal(text)):
         return "unknown"
     return verdict
 
@@ -318,9 +347,9 @@ def _row_contexts(rows: Sequence[Sequence[_Cell]], depth: int, identity: tuple[i
     contexts: list[str | None] = [None] * depth
     section: str | None = None
     for row in rows[depth:]:
-        label = _section_label(row)
-        if label is not None:
-            verdict = _marked_context(label.text, identity)
+        text = _section_text(row)
+        if text:
+            verdict = _marked_context(text, identity)
             if verdict is not None:
                 section = verdict
         contexts.append(section)
@@ -451,22 +480,23 @@ _ANNUAL_QUALIFIER = re.compile(
     r"|\bfull[\s-]+year\b|\bannual\b",
     re.IGNORECASE,
 )
-_FISCAL_YEAR_LABEL = re.compile(r"\bfiscal(?:\s+year)?\s+(?:20)?\d{2}\b|\bfy\s*(?:20)?\d{2}\b", re.IGNORECASE)
+_FISCAL_YEAR_LABEL = re.compile(r"\b(?:fiscal(?:\s+year)?|fy)[\s\-]*['\u2019]?\s*(?:20)?(\d{2})\b", re.IGNORECASE)
 _QUARTER_WORD = re.compile(r"\b(first|second|third|fourth)\s+quarter\b", re.IGNORECASE)
 _Q_FY = re.compile(r"\bq([1-4])\s*fy\s*(\d{4}|\d{2})\b", re.IGNORECASE)
 _QUARTER_ENDED = re.compile(
     r"\b(?:(?:three|3)[\s-]+months?(?:\s+period)?|quarter(?:ly\s+period)?)\s+(?:ended|ending)\s+" + _DATE, re.IGNORECASE
 )
-_PERIOD_MARKER = re.compile(r"\b(?:ended|ending|months?|ytd|fiscal|quarter)\b|\bfy\s*\d", re.IGNORECASE)
+_PERIOD_MARKER = re.compile(r"\b(?:ended|ending|months?|ytd|fiscal|quarter|fy)\b", re.IGNORECASE)
 _DRIVERS_YEARS = re.compile(r"\bnet sales change drivers\s+(\d{4})\s+vs\.?\s+(\d{4})\b", re.IGNORECASE)
 _YEAR = re.compile(r"\b(20\d{2})\b")
 _ORDINAL_INDEX = {"first": 1, "second": 2, "third": 3, "fourth": 4}
 _OUT_OF_SCOPE = frozenset({"annual", "foreign"})
 _FORWARD_LOOKING = re.compile(
-    r"\b(?:outlooks?|guidance|forecast(?:s|ed|ing)?|expect(?:s|ed|ing|ations?)?|project(?:ed|ions?)|target(?:s|ed)?|estimat(?:e|es|ed|ing))\b"
+    r"\b(?:outlooks?|guidance|forecast(?:s|ed|ing)?|expect(?:s|ed|ing|ations?)?|project(?:ed|ing|ions?)"
+    r"|target(?:s|ed|ing)?|estimat(?:e|es|ed|ing)|anticipat(?:e|es|ed|ing|ions?))\b"
 )
 _LABEL_PREFIX = re.compile(r"^for(?: the)?\s+")
-_LABEL_SUFFIX = re.compile(r"(?:\s*\([^()]*\))?\s*[:.]?\s*$")
+_LABEL_NOISE = re.compile(r"\([^()]*\)|\bunaudited\b|[\u2014\u2013:;]")
 
 
 def visible_text(source: str) -> str:
@@ -530,8 +560,7 @@ def period_context(text: str, identity: tuple[int, int, date]) -> str | None:
     labelled = False
     for m in _FISCAL_YEAR_LABEL.finditer(normal):
         labelled = True
-        year = int(re.search(r"\d{2,4}", m.group(0)).group(0))
-        if (year + 2000 if year < 100 else year) != fiscal_year:
+        if 2000 + int(m.group(1)) != fiscal_year:
             verdict = "foreign"
     if verdict is None and labelled:
         return "annual"
@@ -547,19 +576,26 @@ def _is_paragraph(block: Any) -> bool:
 
 
 _PURE_DATE = r"(?:[a-z]{3,9}\.? \d{1,2},? \d{4}|\d{1,2} [a-z]{3,9},? \d{4})"
-_PURE_PERIOD_HEADING = re.compile(
-    r"^(?:q[1-4]\s*fy\s*\d{2,4}|(?:first|second|third|fourth) quarter(?: fiscal(?: year)?)? \d{4}"
+_PURE_PERIOD_CORE = (
+    r"(?:q[1-4]\s*fy\s*\d{2,4}|(?:first|second|third|fourth) quarter(?: fiscal(?: year)?)? \d{4}"
     r"|fiscal year \d{4} (?:first|second|third|fourth) quarter"
     r"|(?:three|six|nine|twelve|\d{1,2})[\s-]+months?(?: period)? (?:ended|ending) " + _PURE_DATE
     + r"|quarter(?:ly period)? (?:ended|ending) " + _PURE_DATE
-    + r"|(?:fiscal )?year (?:ended|ending) " + _PURE_DATE + r")$"
+    + r"|(?:fiscal )?year (?:ended|ending) " + _PURE_DATE + r")"
+    + r"(?: and (?:\d{4}|" + _PURE_DATE + r"))?"
 )
+_PURE_PERIOD_HEADING = re.compile(r"^" + _PURE_PERIOD_CORE + r"$")
+# A label paragraph: a pure period form, alone or with at most forty characters of other text before or after it
+# ("Segment data. Three Months Ended March 31, 2026").
+_LABEL_SHAPE = re.compile(r"^(?:.{0,40}?\s)?" + _PURE_PERIOD_CORE + r"(?:\s.{0,40})?$")
 
 
 def _period_label_text(text: str) -> str:
-    """A period label stripped of its decoration: a leading "For the", a trailing parenthetical such as
-    "(Unaudited)", a trailing colon or period (R55)."""
-    return _LABEL_SUFFIX.sub("", _LABEL_PREFIX.sub("", _normal(text))).strip()
+    """A period label stripped of its decoration: parentheticals such as "(Unaudited)" or "(In millions)", the
+    word "unaudited", dashes, colons and semicolons anywhere, a leading "For the", edge punctuation (R56, R62)."""
+    normal = _LABEL_NOISE.sub(" ", _normal(text))
+    normal = _LABEL_PREFIX.sub("", " ".join(normal.split()))
+    return normal.strip(" .,")
 
 
 def _is_pure_period(text: str) -> bool:
@@ -567,9 +603,43 @@ def _is_pure_period(text: str) -> bool:
 
 
 def _pure_period_label(block: Any) -> bool:
-    """A paragraph that is nothing but a period label (a bold "Nine Months Ended ..." line, with or without
-    decoration) governs like a pure-period heading (R50, R55)."""
-    return _is_paragraph(block) and _is_pure_period(getattr(block, "text", "") or "")
+    """A paragraph that is a period label -- a bold "Nine Months Ended ..." line, decorated or not, or a short
+    line that begins or ends with one -- governs like a pure-period heading (R50, R56, R62)."""
+    return _is_paragraph(block) and _LABEL_SHAPE.match(_period_label_text(getattr(block, "text", "") or "")) is not None
+
+
+def _is_forward(text: str, identity: tuple[int, int, date] | None) -> bool:
+    """A heading or caption that names a forward-looking view (outlook, guidance, targets ...) and not the
+    admitted quarter's actual results: "Fourth Quarter Fiscal Year 2026 Results and Outlook" names the results
+    and is not forward-looking (R59, R63)."""
+    if _FORWARD_LOOKING.search(_normal(text)) is None:
+        return False
+    return identity is None or period_context(text, identity) != "scope"
+
+
+def _heading_level(block: Any) -> int:
+    """The heading's level for section hierarchy: h1..h6 as written, a promoted or plain-text heading as 2."""
+    level = int(getattr(block, "heading_level", 0) or 0)
+    return level if 1 <= level <= 6 else 2
+
+
+class _ForwardState:
+    """Section hierarchy for forward-looking headings (R63): a forward heading governs every block after it until
+    a heading of the same or a higher level; a paragraph label never releases it."""
+
+    def __init__(self) -> None:
+        self.level: int | None = None
+
+    def heading(self, block: Any, text: str, identity: tuple[int, int, date] | None) -> None:
+        level = _heading_level(block)
+        if self.level is not None and level <= self.level:
+            self.level = None
+        if _is_forward(text, identity):
+            self.level = level
+
+    @property
+    def active(self) -> bool:
+        return self.level is not None
 
 
 def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -> list[_Table]:
@@ -583,12 +653,15 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
     context: str | None = None
     immediate: str | None = None
     topic: str | None = None
+    forward = _ForwardState()
     scanned: list[_Table] = []
     for block in blocks:
         if _is_heading(block) or _pure_period_label(block):
             immediate = getattr(block, "text", "")
             if not _is_pure_period(immediate):
                 topic = immediate
+            if _is_heading(block):
+                forward.heading(block, immediate, identity)
             verdict = _marked_context(immediate, identity) if identity is not None else None
             if verdict is not None:
                 context = verdict
@@ -599,7 +672,12 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
             band = _band_context(rows, depth, caption, identity) if identity is not None else None
             row_context = _row_contexts(rows, depth, identity) if identity is not None else tuple([None] * len(rows))
             governing = tuple(dict.fromkeys(item for item in (immediate, topic) if item))
-            scanned.append(_Table(block, rows, depth, caption, governing, band if band in _EXCLUDED else context, row_context))
+            scanned.append(
+                _Table(
+                    block, rows, depth, caption, governing, band if band in _EXCLUDED else context, row_context,
+                    forward.active or _is_forward(caption, identity),
+                )
+            )
             immediate = None
             topic = None
     return scanned
@@ -670,23 +748,15 @@ def _scope_period_forms(
     return quarterly_headings, driver_headings, current_forms, prior_forms
 
 
-def _admissible_heading(value: str) -> bool:
-    """A governing heading that names a forward-looking view (outlook, guidance, targets) never admits a table of
-    actual results, whatever period form it carries (R54)."""
-    return _FORWARD_LOOKING.search(_normal(value)) is None
-
-
 def _heading_matches(value: str, forms: Sequence[str]) -> bool:
     normal = _normal(value)
-    return _admissible_heading(value) and any(
-        normal == _normal(form) or normal.startswith(f"{_normal(form)} ")
-        for form in forms
-    )
+    return any(normal == _normal(form) or normal.startswith(f"{_normal(form)} ") for form in forms)
 
 
 def _admissible_table(table: _Table) -> bool:
-    """An in-scope table none of whose governing headings is forward-looking (R54, R55)."""
-    return table.context not in _EXCLUDED and all(_admissible_heading(heading) for heading in table.governing)
+    """An in-scope table that no forward-looking heading or caption governs (R54, R59, R63): the forward state
+    is the section hierarchy of the scan, so "Outlook" over "Segment Results" still refuses."""
+    return table.context not in _EXCLUDED and not table.forward
 
 
 def _keyword_tables(tables: Sequence[_Table], *, keywords: Sequence[str]) -> list[_Table]:
@@ -767,12 +837,17 @@ def _column(table: _Table, row_label: str, headers: Sequence[str]) -> tuple[Sequ
             key: Any = tuple(id(cell.origin) for cell in cells)
         else:
             key = tuple(id(cell.origin) for cell in cells if _normal(cell.text) == _normal(form))
-        columns.append((column, form, key))
-    if len(columns) > 1 and len({key for _column_index, _form, key in columns}) == 1:
-        spanned = [column for column, _form, _key in columns if column < len(row)]
+        # Band cells outside the key tell spanned columns apart ("As Reported" / "Restated") unless they are a
+        # bare "$" or a parenthetical such as "(unaudited)" (R58, R64).
+        residual = [cell.text.strip() for cell in cells if id(cell.origin) not in key]
+        plain = all(re.fullmatch(r"\$|\(.*\)", item) is not None for item in residual)
+        columns.append((column, form, key, plain))
+    if len(columns) > 1 and len({key for _column_index, _form, key, _plain in columns}) == 1:
+        spanned = [column for column, _form, _key, _plain in columns if column < len(row)]
         literal = [column for column in spanned if _is_literal_cell(row[column].text)]
         others_clean = all(_normal(row[column].text) in {"", "$"} for column in spanned if column not in literal)
-        columns = [item for item in columns if item[0] in literal] if len(literal) == 1 and others_clean else []
+        distinct = not all(plain for _column_index, _form, _key, plain in columns)
+        columns = [item for item in columns if item[0] in literal] if len(literal) == 1 and others_clean and not distinct else []
     if len(columns) != 1 or columns[0][0] >= len(row):
         return None
     column = columns[0][0]
@@ -1026,12 +1101,15 @@ def _volume_statements(tables: Sequence[_Table], blocks: Sequence[Any], *, ident
                 if statement is not None:
                     statements.append(statement)
     context = None
+    forward = _ForwardState()
     for block in blocks:
         if _is_heading(block) or _pure_period_label(block):
+            if _is_heading(block):
+                forward.heading(block, getattr(block, "text", ""), identity)
             verdict = _marked_context(getattr(block, "text", ""), identity)
             if verdict is not None:
                 context = verdict
-        elif context not in _OUT_OF_SCOPE and _is_paragraph(block):
+        elif context not in _OUT_OF_SCOPE and not forward.active and _is_paragraph(block):
             for sentence in _SENTENCE_SPLIT.split(_normal(getattr(block, "text", ""))):
                 if not _TOTAL_PG.search(sentence) or period_context(sentence, identity) in _OUT_OF_SCOPE:
                     continue
@@ -1053,18 +1131,21 @@ def _reconciliation_paragraph(blocks: Sequence[Any], definition: PGDefinition, i
     Shared by the extractor and the validator."""
     active = False
     context: str | None = None
+    forward = _ForwardState()
     paragraphs = []
     metric_name = _normal(definition.row_label or "")
     for block in blocks:
         if _is_heading(block) or _pure_period_label(block):
             normal = _normal(getattr(block, "text", ""))
-            active = "reconciliation" in normal and metric_name in normal or "non-gaap" in normal
+            if _is_heading(block):
+                forward.heading(block, normal, identity)
+            active = ("reconciliation" in normal and metric_name in normal or "non-gaap" in normal) and not forward.active
             verdict = _marked_context(normal, identity)
             if verdict is not None:
                 context = verdict
         # A reconciliation paragraph carried under another quarter's heading -- or under a heading whose period
-        # cannot be read -- is not this quarter's statement (R35, R55); a twelve-month heading does not refuse
-        # it, because a Q4 release's non-GAAP section covers both periods.
+        # cannot be read, or inside a forward-looking section -- is not this quarter's statement (R35, R55, R63);
+        # a twelve-month heading does not refuse it, because a Q4 release's non-GAAP section covers both periods.
         elif active and context not in {"foreign", "unknown"} and _is_paragraph(block):
             text = getattr(block, "text", "") or ""
             if metric_name in _normal(text):
