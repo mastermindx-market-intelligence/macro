@@ -16897,21 +16897,43 @@ jobs:
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"
-      - "engine/company_intelligence/financial_dossier.py"
-      - "engine/company_intelligence/documents.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/financial_dossier.py"
+      - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
-      - "engine/earnings_narrative/private_publication.py"
-      - "engine/earnings_narrative/contracts.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
       - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/contracts.py"
       - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/private_publication.py"
       - "engine/earnings_narrative/promotion.py"
       - "engine/earnings_narrative/public_wire.py"
       - "engine/earnings_narrative/story.py"
       - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
       - "engine/press/earnings_adapter.py"
       - "engine/research_vault/r2_store.py"
-      - "config/earnings_story_promotion.yml"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "scripts/refresh_event_workspaces.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -16922,7 +16944,9 @@ jobs:
       - name: install deps for the Industrials result-to-cash suite
         # pyyaml: engine.earnings_narrative.promotion imports yaml (transitive via
         # engine.company_intelligence.documents -> ..earnings_narrative.contracts).
+        # requests: scripts.refresh_event_workspaces._http_get imports requests lazily
+        # (transitive via engine.company_intelligence.event_workspace -> ..refresh_event_workspaces).
         # Stated identically in clean-venv proof below.
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
         run: python -m pytest tests/test_industrials_dependency_binding.py -q

@@ -408,14 +408,10 @@ class _PublicationHarness:
         serves fixture bytes for live sources and a typed refusal for every
         source in ``fail_sources``. Returns the seam's typed result.
         """
-        # Resolved at call time through a non-literal dotted name so the
-        # static import closure stays bounded to the harness's owned paths.
-        refresh_module = __import__(
-            ".".join(["scripts", "refresh_event_workspaces"]),
-            fromlist=["acquire_results_filing", "RefreshError"],
+        from scripts.refresh_event_workspaces import (
+            RefreshError,
+            acquire_results_filing,
         )
-        acquire_results_filing = refresh_module.acquire_results_filing
-        RefreshError = refresh_module.RefreshError
 
         failed = set(fail_sources)
         fixtures: dict[str, bytes] = {
@@ -435,34 +431,25 @@ class _PublicationHarness:
                     return (200, body)
             return (200, b"")
 
-        original = refresh_module._http_get
-        refresh_module._http_get = fake_http_get
-        try:
-            for source in sorted(fail_sources):
-                try:
-                    acquire_results_filing(cik="0000987654", http_get=fake_http_get)
-                except RefreshError as exc:
-                    return {
-                        "status": "unavailable",
-                        "reason": "refresh_source_failed",
-                        "source": source,
-                        "detail": str(exc),
-                    }
+        for source in sorted(fail_sources):
             try:
-                prepared = acquire_results_filing(cik="0000987654", http_get=fake_http_get)
-                return {"status": "ok", "prepared": bool(prepared)}
+                acquire_results_filing(cik="0000987654", http_get=fake_http_get)
             except RefreshError as exc:
                 return {
                     "status": "unavailable",
-                    "reason": "refresh_seam_unbound",
-                    "needed": (
-                        "scripts.refresh_event_workspaces.acquire_results_filing("
-                        "cik='0000987654', http_get=<callable>)"
-                    ),
+                    "reason": "refresh_source_failed",
+                    "source": source,
                     "detail": str(exc),
                 }
-        finally:
-            refresh_module._http_get = original
+        try:
+            prepared = acquire_results_filing(cik="0000987654", http_get=fake_http_get)
+            return {"status": "ok", "prepared": bool(prepared)}
+        except RefreshError as exc:
+            return {
+                "status": "unavailable",
+                "reason": "refresh_source_failed",
+                "detail": str(exc),
+            }
 
     def members(self) -> set[str]:
         return set()
