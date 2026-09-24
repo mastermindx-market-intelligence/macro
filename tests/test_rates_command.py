@@ -941,3 +941,22 @@ def test_rd2_corrupt_latest_never_launders_prior_context(tmp_path):
     out = _rd2_read(tmp_path)['families']['zq']
     assert out['status'] == 'unavailable'
     assert out.get('last_completed_observation_context') is None
+
+
+def test_rd2_shared_collector_runner_accepts_companion_tables(monkeypatch, tmp_path):
+    from copy import deepcopy
+    from collectors import base, rate_futures
+    from lib import config
+    adapter, frames, _ = _rd2_native_fetch(monkeypatch)
+    cfg = deepcopy(config.load())
+    cfg['storage']['run_status_file'] = 'run_status.json'
+    cfg['storage']['data_dir'] = 'data'
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: cfg)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(base, 'datetime', rate_futures.datetime)
+    result = base.run_adapter(adapter)
+    assert result.status == 'ok', result.error
+    assert result.rows == sum(len(frame) for frame in frames.values())
+    out = _rd2_read(tmp_path / 'data')
+    assert out['families']['zq']['horizons']['m12']['matched_contract_change_bp'] == pytest.approx(15)

@@ -1,0 +1,231 @@
+{
+  "schema": "ric.policy_constituents.qualification.v1",
+  "operation": "rates-policy-constituents-20260924-sol-002",
+  "pr": 7923,
+  "source_commit": "5c92d778ae73f557fd4d3d91ea99aa175331e388",
+  "production_files_sha256": {
+    "collectors/rate_futures.py": "38df976887bc565f41001ab970f967963ecb18aed0d8972d05f916a97211689a",
+    "engine/rate_futures_repricing.py": "cf77d27ffbf43137edaa05e356e7edbaa2867c1f09135d2b9d5a9994a4723910",
+    "engine/rates_inflation_command.py": "d4ffb1dde9b98d1ad4d0119eda710624ebe31b491b0488ce7261ddda12620c3e"
+  },
+  "local_tests": {
+    "passed": 140,
+    "warnings": 301,
+    "command": "python3 -m pytest tests/test_rates_command.py tests/test_fed_path.py tests/test_yield_momentum.py -q --disable-warnings --tb=short"
+  },
+  "native_capture": {
+    "started_at": "2026-09-24T09:54:12.148644+00:00",
+    "finished_at": "2026-09-24T09:54:16.442272+00:00",
+    "source_frames": {
+      "zq_path": {
+        "rows": 65,
+        "first_date": "2026-06-24",
+        "last_date": "2026-09-24",
+        "sha256": "a2ef485f9d6fdffcb9fd810bf4a934d3d61d11e818209f7edc4e891c156b3442"
+      },
+      "zq_constituents": {
+        "rows": 65,
+        "first_date": "2026-06-24",
+        "last_date": "2026-09-24",
+        "sha256": "eab1bf98dc98b611d13997d41c8bf359e5d74aa5294f829ccdd11e30e09562fe"
+      },
+      "sofr_path": {
+        "rows": 1,
+        "first_date": "2026-09-24",
+        "last_date": "2026-09-24",
+        "sha256": "73a5bfcf65b3bf9e22d40e0a84e0c3f8ddcf7671422a94b5cbf7cc39a2253293"
+      },
+      "sofr_constituents": {
+        "rows": 1,
+        "first_date": "2026-09-24",
+        "last_date": "2026-09-24",
+        "sha256": "1d2efe1ce81dd92591fc9d93b3ae009a53912f13ee5857de8f1e43a774a7a7d8"
+      }
+    },
+    "client_versions": {
+      "python": "3.14.7",
+      "yfinance": "1.7.0",
+      "pandas": "3.0.5"
+    }
+  },
+  "ric_measurement": {
+    "schema": "rate_futures.repricing.v1",
+    "evaluated_at": "2026-09-24T09:59:39.198782+00:00",
+    "asof": "2026-09-24",
+    "historical_availability_qualified": false,
+    "display_only": true,
+    "authority": false,
+    "can_score": false,
+    "can_rank": false,
+    "can_size": false,
+    "can_gate": false,
+    "can_trade": false,
+    "families": {
+      "zq": {
+        "status": "unavailable",
+        "reason": "capture_may_include_incomplete_bar",
+        "rate_family": "EFFR",
+        "horizons": {},
+        "historical_availability_qualified": false,
+        "display_only": true,
+        "authority": false,
+        "can_score": false,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_trade": false,
+        "last_completed_observation_context": {
+          "status": "available",
+          "reason": null,
+          "rate_family": "EFFR",
+          "horizons": {
+            "m1": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": -0.12000000000003119,
+              "matched_contract_change_bp": -0.1247406005859375,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": 0.004740600585906307,
+              "forward_reference_only": false,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            },
+            "m12": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": 12.00000000000001,
+              "matched_contract_change_bp": 11.999893188476562,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": 0.00010681152344815814,
+              "forward_reference_only": true,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            },
+            "m3": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": 3.500000000000014,
+              "matched_contract_change_bp": 3.4999847412109375,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": 1.5258789076710855e-05,
+              "forward_reference_only": true,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            },
+            "m6": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": 5.750000000000011,
+              "matched_contract_change_bp": 5.750274658203125,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": -0.00027465820311434186,
+              "forward_reference_only": true,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            }
+          },
+          "historical_availability_qualified": false,
+          "display_only": true,
+          "authority": false,
+          "can_score": false,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_trade": false,
+          "observation_dates": [
+            "2026-09-22",
+            "2026-09-23"
+          ],
+          "captured_at": [
+            "2026-09-24T09:54:15.847427+00:00",
+            "2026-09-24T09:54:15.847427+00:00"
+          ],
+          "snapshot_sha256": [
+            "06eded6b8d56f293093d141879f41f387820f5450f9fdde89dc29d14aeb7edff",
+            "3d0f9b47e51bdc9bfd02e1f4ba2b102256edb530e1a74ca1987246a6ac724482"
+          ],
+          "elapsed_calendar_days": 1,
+          "horizon_basis": "successive_retained_source_rows",
+          "evidence_basis": "same_capture_corrected_history",
+          "weight_basis": "legacy_whole_month_centres.v1",
+          "quote_kind": "provider_daily_Close_unverified_exchange_settlement",
+          "context_only": true,
+          "source_cut": "2026-09-23",
+          "current_observation_qualified": false
+        }
+      },
+      "sofr": {
+        "status": "unavailable",
+        "reason": "insufficient_endpoints",
+        "rate_family": "SOFR",
+        "horizons": {},
+        "historical_availability_qualified": false,
+        "display_only": true,
+        "authority": false,
+        "can_score": false,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_trade": false
+      }
+    },
+    "caveats": [
+      "Matched-contract changes include fixings and risk premia; not a causal policy shock.",
+      "Rolling coordinates use the incumbent whole-month centre approximation.",
+      "Provider daily Close is not authenticated exchange settlement.",
+      "Latest-vintage storage and capture clocks do not certify historical availability.",
+      "This is measured context, not a directional forecast or trading permission."
+    ]
+  },
+  "shared_runner": {
+    "status": "PASS",
+    "source_head": "5c92d778ae73f557fd4d3d91ea99aa175331e388",
+    "evaluated_at": "2026-09-24T10:05:05.739022+00:00",
+    "runner_result": {
+      "source": "rate_futures",
+      "status": "ok",
+      "rows": 132,
+      "last_date": "2026-09-24",
+      "error": null,
+      "notes": [],
+      "probed_at": null
+    },
+    "families_equal_to_direct_read": true,
+    "source": "retained_native_quote_capture",
+    "new_network_request": false,
+    "production_store_modified": false,
+    "live_production_proof": false,
+    "source_frames_sha256": {
+      "zq_constituents.parquet": "eab1bf98dc98b611d13997d41c8bf359e5d74aa5294f829ccdd11e30e09562fe",
+      "zq_path.parquet": "a2ef485f9d6fdffcb9fd810bf4a934d3d61d11e818209f7edc4e891c156b3442",
+      "sofr_path.parquet": "73a5bfcf65b3bf9e22d40e0a84e0c3f8ddcf7671422a94b5cbf7cc39a2253293",
+      "sofr_constituents.parquet": "1d2efe1ce81dd92591fc9d93b3ae009a53912f13ee5857de8f1e43a774a7a7d8"
+    }
+  },
+  "held_7521_composition": {
+    "status": "PASS",
+    "held_source": "8da98209ad4a34450745780666c48b6999f2bfb2",
+    "held_fp_sha256": "d66014f840553c06d12a6cbaa7675ae1f8f134e61d1a9e9787575d3f110cb1ac",
+    "held_ric_sha256": "a4d62366bec6181c30cf5ee9f91cac01ed627a8d2b78172e497df51310c9d032",
+    "combined_ric_sha256": "a4d4f0e5ce2346358e17c132449b1dd49d9772e7ecce3c4532977c6ec18c18e4",
+    "source_branch_mutated": false,
+    "all_legacy_fields_equal": true,
+    "scope": "same-author synthetic compatibility; not acceptance or production proof"
+  },
+  "historical_availability_qualified": false,
+  "independent_review": false,
+  "production_store_modified": false,
+  "live_production_proof": false,
+  "new_model_trials": 0,
+  "forecast_promotion": false,
+  "parent_repair": {
+    "pr": 7909,
+    "head": "748067a3631959e2dd6ffe25ebc7675ed82395ee",
+    "ci_pack_10": "SUCCESS"
+  },
+  "evidence_root": "/Volumes/Mastermind/evidence/rates-policy-constituents-20260924-sol-002"
+}

@@ -53,7 +53,7 @@ outside their policy normalization and all existing scoring/stance calculations.
 
 ## Executed qualification and latest-date behavior
 
-The selected rates/RIC/yield suites now pass 139 tests (301 warnings). New tests
+The selected rates/RIC/yield suites now pass 140 tests (301 warnings). New tests
 proved and repaired two concrete source defects: stale inputs cannot become fresh
 through an older board date, and flat batch responses without contract identity
 cannot be copied into many apparently distinct futures instruments.
@@ -89,3 +89,45 @@ Evidence root: /Volumes/Mastermind/evidence/rates-policy-constituents-20260924-s
 Initial native receipt: native-564f86e8/receipt.json (missing dependency, no fetch).
 Native source receipt: native-564f86e8-env1/receipt.json (isolated real-input path).
 Compatibility: held_7521_composition.json; scripts and environment freeze retained.
+
+## Real captured observation result (not a forecast)
+
+On the same provider capture, the separately dated ZQ context spans September 22
+to September 23, 2026. Under the incumbent interpolation convention:
+
+| Policy-path horizon | Published path change | Matched-contract contribution | Roll |
+|---|---:|---:|---:|
+| 1 month | -0.12 bp | -0.124741 bp | 0 bp |
+| 3 months | +3.50 bp | +3.499985 bp | 0 bp |
+| 6 months | +5.75 bp | +5.750275 bp | 0 bp |
+| 12 months | +12.00 bp | +11.999893 bp | 0 bp |
+
+The small residuals are the incumbent published curve's four-decimal rounding,
+not an unexplained market contribution. These are policy-path interpolation
+horizons, NOT Treasury maturities or forecast holding horizons. The one-month
+basket includes a reference period already underway. No row is a causal shock,
+a forecast issued before the move, or proof of forecasting skill.
+
+The CURRENT ZQ result remains unavailable for the forming September 24 daily bar;
+SR3 remains unavailable because the retrieved source has only one dated endpoint.
+The earlier context is separately labelled, never substituted as a live result.
+
+Retained native frames also traversed the actual shared run_adapter -> store ->
+RIC path in an isolated replay: status ok, 132 TABLE rows across four tables,
+no error, and family outputs exactly equal to the direct read. This count includes
+companion rows and is not an independent-observation count. No new network request
+or production mutation occurred.
+
+Full compact qualification: RATES_POLICY_CONSTITUENTS_PROOF_2026-09-24.json.
+Production source commit: 5c92d778ae73f557fd4d3d91ea99aa175331e388.
+Board SHA256: 45cd5d38ff0c1bf01e83e20e98d6437f4a619543cd4436b0f05f293f8dbbc650.
+
+## Next scientific dependency
+
+The existing MRI owner already supplies ALFRED initial-print selection through
+engine.release_forecast.knowable_series and data/fred_vintage/vintages.parquet.
+Its documented filter uses realtime_start <= a date. That date-level filter alone
+is not an intraday pre-release knowledge receipt, nor an archived market-consensus
+estimate. Preserve MRI and its experiments; qualify the existing release-time and
+consensus owners before any surprise-response rate model. No claim that every
+other company archive is absent is made by this bounded source inspection.
