@@ -8,7 +8,7 @@
   "scope_en": "Japan national economy; Nikkei 225 is market context, not the macro universe.",
   "scope_zh": "日本全国经济；日经225仅作市场背景，并非宏观统计范围。",
   "asof": "2026-09-18",
-  "built": "2026-09-19 21:46 UTC",
+  "built": "2026-09-23 20:46 UTC",
   "regime": {
     "quad": "Q2",
     "name": "Reflation",
@@ -204,17 +204,17 @@
   },
   "risk": {
     "state": "watch",
-    "top_score": 67,
+    "top_score": 71,
     "dominant_en": "US rate shock",
     "dominant_zh": "美债利率冲击",
     "h21": 0.307,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 66.7,
-      "peak": 70.6,
-      "peak_days_ago": 12,
-      "off_peak": 4.0,
-      "velocity": 3.8,
+      "intensity": 71.4,
+      "peak": 71.4,
+      "peak_days_ago": 0,
+      "off_peak": 0.0,
+      "velocity": 8.5,
       "phase": "calm",
       "reached_risk": false,
       "state_now": "watch",
@@ -245,16 +245,16 @@
         53.8,
         60.7,
         63.5,
-        66.7
+        71.4
       ],
-      "spark_pts": "3.0,10.9 6.9,12.9 10.8,18.5 14.7,17.0 18.7,21.6 22.6,23.0 26.5,21.7 30.4,19.4 34.3,13.2 38.2,12.7 42.1,12.7 46.0,3.0 50.0,4.4 53.9,10.1 57.8,11.1 61.7,12.5 65.6,13.8 69.5,10.5 73.4,6.5 77.3,10.4 81.3,10.6 85.2,7.5 89.1,6.2 93.0,4.8",
+      "spark_pts": "3.0,11.1 6.9,13.0 10.8,18.6 14.7,17.1 18.7,21.7 22.6,23.0 26.5,21.8 30.4,19.5 34.3,13.4 38.2,12.9 42.1,12.9 46.0,3.4 50.0,4.7 53.9,10.4 57.8,11.4 61.7,12.7 65.6,13.9 69.5,10.7 73.4,6.8 77.3,10.6 81.3,10.8 85.2,7.8 89.1,6.5 93.0,3.0",
       "spark_peak": {
-        "x": 46.0,
+        "x": 93.0,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 4.8
+        "y": 3.0
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -266,22 +266,22 @@
         "tier": "A",
         "label_en": "US rate shock",
         "label_zh": "美债利率冲击",
-        "score": 91.8,
+        "score": 95.8,
         "band": "risk-off",
         "firing_legs": [
           {
             "leg": "us_rate_2y",
-            "pctile": 0.973,
+            "pctile": 0.994,
             "confirmed": true
           },
           {
             "leg": "us_real_rate",
-            "pctile": 0.92,
+            "pctile": 0.964,
             "confirmed": true
           },
           {
             "leg": "us_rate_10y",
-            "pctile": 0.862,
+            "pctile": 0.915,
             "confirmed": true
           }
         ]
@@ -549,7 +549,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2021-06",
-      "age_days": 1936,
+      "age_days": 1940,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -557,7 +557,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 171,
+      "age_days": 175,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -565,15 +565,15 @@
     {
       "metric": "unemployment",
       "asof": "2026-07",
-      "age_days": 80,
-      "state": "fresh",
+      "age_days": 84,
+      "state": "stale",
       "label_en": "Labour",
       "label_zh": "就业"
     },
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 49,
+      "age_days": 53,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"

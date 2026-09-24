@@ -2,6 +2,74 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-23",
+      "tickers": [
+        "AAPL",
+        "ABBV",
+        "ADEA",
+        "CMI",
+        "COHU",
+        "CTRI",
+        "GOOGL",
+        "IPGP",
+        "NCLH",
+        "WING"
+      ]
+    },
+    {
+      "as_of": "2026-09-22",
+      "tickers": [
+        "ACM",
+        "ASTH",
+        "ATR",
+        "BBD",
+        "CMCSA",
+        "COHU",
+        "CYBN",
+        "EBAY",
+        "FIX",
+        "GRAB",
+        "GSAT",
+        "HOOD",
+        "JAAA",
+        "MIR",
+        "MUSA",
+        "PRVA",
+        "QCOM",
+        "REXR",
+        "ROIV",
+        "SIG",
+        "TTMI",
+        "WULF"
+      ]
+    },
+    {
+      "as_of": "2026-09-21",
+      "tickers": [
+        "ACHC",
+        "AMKR",
+        "ATR",
+        "CLH",
+        "CMS",
+        "COHU",
+        "EBAY",
+        "FIX",
+        "HAFC",
+        "IPGP",
+        "MPT",
+        "MUSA",
+        "NABL",
+        "PPL",
+        "REX",
+        "REXR",
+        "SOUN",
+        "STRL",
+        "UPWK",
+        "WHR",
+        "XRAY"
+      ]
+    },
+    {
       "as_of": "2026-09-20",
       "tickers": [
         "AIZ",
@@ -85,49 +153,6 @@
         "PCG",
         "URBN",
         "UTL"
-      ]
-    },
-    {
-      "as_of": "2026-09-16",
-      "tickers": [
-        "AGNT",
-        "EZPW",
-        "MSFT",
-        "MU",
-        "PMTS",
-        "UTL",
-        "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-15",
-      "tickers": [
-        "ALGT",
-        "DLTR",
-        "ECL",
-        "GMED",
-        "IPGP",
-        "LUMN",
-        "PWR",
-        "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-14",
-      "tickers": [
-        "BOC",
-        "CHRW",
-        "ETN",
-        "FWONK",
-        "GMED",
-        "GPI",
-        "HUBG",
-        "IPGP",
-        "NABL",
-        "NOVT",
-        "OKE",
-        "RBLX",
-        "VTR"
       ]
     }
   ]

@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import date
+from copy import deepcopy
+from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
@@ -24,6 +25,31 @@ def _load(path: Path) -> dict:
 
 AAPL = _load(FIXTURE_DIR / "aapl_cash_trimmed.json")
 SYNTH = _load(FIXTURE_DIR / "synthetic_burn.json")
+
+
+def _synthetic_ladder() -> dict:
+    return {
+        "schema": "debt_maturity.v1",
+        "status": "reported",
+        "cik": "0000099999",
+        "unit": "USD",
+        "currency": "USD",
+        "scope": "issuer_reported",
+        "period": {
+            "accn": "synthetic-2025-01",
+            "end": "2024-12-31",
+            "form": "10-K",
+            "fp": "FY",
+            "fy": 2024,
+            "filed": "2025-02-28",
+            "stale": False,
+        },
+        "buckets": [
+            {"key": "y1", "reported": True, "usd": 10_000_000},
+            {"key": "y2", "reported": True, "usd": 5_000_000},
+        ],
+        "as_of": "2025-06-01",
+    }
 
 
 class TestExtractCashRunway:
@@ -88,18 +114,162 @@ class TestExtractCashRunway:
     def test_synthetic_near_term_cover_with_ladder(self):
         """near_term_cover_pct computed when ladder y1 > 0."""
         from engine.cash_runway import extract_cash_runway
-        ladder = {
-            "status": "reported",
-            "buckets": [
-                {"reported": True, "usd": 10_000_000},  # y1
-                {"reported": True, "usd": 5_000_000},
-            ],
-        }
+        ladder = _synthetic_ladder()
         result = extract_cash_runway(
             SYNTH, cik="0000099999", as_of=date(2025, 6, 1), ladder=ladder
         )
         # cash = 50M, y1 = 10M → 500%
         assert result["near_term_cover_pct"] == 500
+
+    @pytest.mark.parametrize("y1_value", [10**400, 5e-324])
+    def test_legacy_ladder_extreme_y1_never_raises_or_emits_nonfinite_cover(
+        self, y1_value,
+    ):
+        from engine.cash_runway import extract_cash_runway
+
+        ladder = _synthetic_ladder()
+        ladder["buckets"][0]["usd"] = y1_value
+        result = extract_cash_runway(
+            SYNTH, cik="0000099999", as_of=date(2025, 6, 1), ladder=ladder
+        )
+        assert result["status"] == "reported"
+        assert result["near_term_cover_pct"] is None
+
+    @pytest.mark.parametrize(
+        ("path", "value"),
+        [
+            (("schema",), "other.v1"),
+            (("cik",), "0000000001"),
+            (("unit",), "EUR"),
+            (("currency",), "EUR"),
+            (("scope",), "investor_held_par"),
+            (("period", "filed"), "malformed"),
+            (("period", "filed"), "2024-12-01"),
+            (("period", "filed"), "2025-03-01"),
+            (("period", "filed"), "2025-07-01"),
+            (("as_of",), "malformed"),
+            (("as_of",), "2025-02-01"),
+            (("period", "end"), "2024-12-30"),
+            (("period", "accn"), "other-accession"),
+            (("period", "stale"), True),
+            (("period", "stale"), "false"),
+            (("buckets", 0, "usd"), -1),
+            (("buckets", 0, "usd"), float("nan")),
+        ],
+    )
+    def test_legacy_ladder_conflicts_withhold_cover(self, path, value):
+        ladder = _synthetic_ladder()
+        target = ladder
+        for part in path[:-1]:
+            target = target[part]
+        target[path[-1]] = value
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            SYNTH, cik="0000099999", as_of=date(2025, 6, 1), ladder=ladder
+        )
+        assert result["status"] == "reported"
+        assert result["near_term_cover_pct"] is None
+
+    @pytest.mark.parametrize(
+        "buckets",
+        [None, {}, "bad", [], [{"reported": True, "usd": 10_000_000}],
+         [{"key": "y1", "reported": True, "usd": 10_000_000}] * 2],
+    )
+    def test_malformed_legacy_ladder_is_nonfatal(self, buckets):
+        ladder = _synthetic_ladder()
+        ladder["buckets"] = buckets
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            SYNTH, cik="0000099999", as_of=date(2025, 6, 1), ladder=ladder
+        )
+        assert result["status"] == "reported"
+        assert result["near_term_cover_pct"] is None
+
+    def test_legacy_schema_defaults_allow_absent_usd_and_issuer_scope(self):
+        ladder = _synthetic_ladder()
+        ladder.pop("unit")
+        ladder.pop("currency")
+        ladder.pop("scope")
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            SYNTH, cik="0000099999", as_of=date(2025, 6, 1), ladder=ladder
+        )
+        assert result["near_term_cover_pct"] == 500
+
+    @pytest.mark.parametrize(
+        ("scope", "source_scope"),
+        [
+            ("issuer_reported", "investor_held_par"),
+            ("investor_held_par", "issuer_reported"),
+            ("issuer_reported", "consolidated"),
+        ],
+    )
+    def test_legacy_ladder_rejects_conflicting_dual_scope_fields(
+        self, scope, source_scope,
+    ):
+        ladder = _synthetic_ladder()
+        ladder["scope"] = scope
+        ladder["source_scope"] = source_scope
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            SYNTH, cik="0000099999", as_of=date(2025, 6, 1), ladder=ladder
+        )
+        assert result["status"] == "reported"
+        assert result["near_term_cover_pct"] is None
+
+    def test_legacy_ladder_rejects_boolean_fiscal_year_even_when_equal(self):
+        facts = deepcopy(SYNTH)
+        for tag_node in facts["facts"]["us-gaap"].values():
+            for entries in tag_node["units"].values():
+                entries[0]["fy"] = True
+        ladder = _synthetic_ladder()
+        ladder["period"]["fy"] = True
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts, cik="0000099999", as_of=date(2025, 6, 1), ladder=ladder
+        )
+        assert result["status"] == "reported"
+        assert result["near_term_cover_pct"] is None
+
+    def test_legacy_ladder_freshness_is_recomputed_at_requested_cutoff(self):
+        ladder = _synthetic_ladder()
+        ladder["period"]["stale"] = False
+        ladder["as_of"] = "2026-09-22"
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            SYNTH, cik="0000099999", as_of=date(2026, 9, 22), ladder=ladder
+        )
+        assert result["period"]["stale"] is True
+        assert result["near_term_cover_pct"] is None
+
+    def test_legacy_ladder_refuses_cash_filed_before_period_end(self):
+        facts = deepcopy(SYNTH)
+        for tag_node in facts["facts"]["us-gaap"].values():
+            for entries in tag_node["units"].values():
+                entries[0]["filed"] = "2024-12-01"
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts,
+            cik="0000099999",
+            as_of=date(2025, 6, 1),
+            ladder=_synthetic_ladder(),
+        )
+        assert result["status"] == "reported"
+        assert result["near_term_cover_pct"] is None
 
     def test_no_filings_status(self):
         from engine.cash_runway import extract_cash_runway
@@ -149,7 +319,140 @@ class TestExtractCashRunway:
         result = extract_cash_runway(AAPL, cik="0000320193", as_of=date(2025, 6, 1))
         assert result["period"] is not None
         assert result["period"]["form"] in ("10-K", "10-K/A", "20-F", "40-F")
+        assert result["period"]["start"] == "2024-09-29"
         assert result["period"]["end"] is not None
+        assert result["unit"] == "USD"
+        assert result["currency"] == "USD"
+        assert result["scope"] == "issuer_reported"
+
+    @pytest.mark.parametrize(
+        ("tag", "start", "reason"),
+        [
+            ("NetCashProvidedByUsedInOperatingActivities", None, "duration_start_missing"),
+            ("PaymentsToAcquirePropertyPlantAndEquipment", "2024-10-01", "duration_not_annual"),
+        ],
+    )
+    def test_duration_requires_true_annual_start(self, tag, start, reason):
+        facts = deepcopy(SYNTH)
+        entry = facts["facts"]["us-gaap"][tag]["units"]["USD"][0]
+        if start is None:
+            entry.pop("start")
+        else:
+            entry["start"] = start
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts, cik="0000099999", as_of=date(2025, 6, 1)
+        )
+        assert result["status"] == "no_cash_facts"
+        assert ("ocf" if tag.startswith("NetCash") else "capex", reason) in result["drop_reasons"]
+        assert result["free_cash_flow_usd"] is None
+        assert result["period"]["start"] is None
+
+    def test_duration_sources_must_share_exact_start(self):
+        facts = deepcopy(SYNTH)
+        facts["facts"]["us-gaap"]["PaymentsToAcquirePropertyPlantAndEquipment"]["units"]["USD"][0]["start"] = "2024-01-02"
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts, cik="0000099999", as_of=date(2025, 6, 1)
+        )
+        assert result["status"] == "no_cash_facts"
+        assert sorted(result["drop_reasons"]) == [
+            ("capex", "duration_start_mismatch"),
+            ("ocf", "duration_start_mismatch"),
+        ]
+        assert result["period"]["start"] is None
+
+    @pytest.mark.parametrize("inclusive_days", [330, 380])
+    def test_duration_accepts_inclusive_annual_boundaries(self, inclusive_days):
+        facts = deepcopy(SYNTH)
+        start = (date(2024, 12, 31) - timedelta(days=inclusive_days - 1)).isoformat()
+        for tag in (
+            "NetCashProvidedByUsedInOperatingActivities",
+            "PaymentsToAcquirePropertyPlantAndEquipment",
+        ):
+            facts["facts"]["us-gaap"][tag]["units"]["USD"][0]["start"] = start
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts, cik="0000099999", as_of=date(2025, 6, 1)
+        )
+        assert result["status"] == "reported"
+        assert result["period"]["start"] == start
+
+    @pytest.mark.parametrize("inclusive_days", [329, 381])
+    def test_duration_rejects_outside_inclusive_annual_boundaries(self, inclusive_days):
+        facts = deepcopy(SYNTH)
+        start = (date(2024, 12, 31) - timedelta(days=inclusive_days - 1)).isoformat()
+        for tag in (
+            "NetCashProvidedByUsedInOperatingActivities",
+            "PaymentsToAcquirePropertyPlantAndEquipment",
+        ):
+            facts["facts"]["us-gaap"][tag]["units"]["USD"][0]["start"] = start
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts, cik="0000099999", as_of=date(2025, 6, 1)
+        )
+        assert result["status"] == "no_cash_facts"
+        assert sorted(result["drop_reasons"]) == [
+            ("capex", "duration_not_annual"),
+            ("ocf", "duration_not_annual"),
+        ]
+
+    def test_negative_or_nonfinite_cash_is_withheld(self):
+        from engine.cash_runway import extract_cash_runway
+
+        for invalid in (-1, float("nan"), float("inf"), 10**400):
+            facts = deepcopy(SYNTH)
+            facts["facts"]["us-gaap"]["CashAndCashEquivalentsAtCarryingValue"]["units"]["USD"][0]["val"] = invalid
+            result = extract_cash_runway(
+                facts, cik="0000099999", as_of=date(2025, 6, 1)
+            )
+            assert result["status"] == "no_cash_facts"
+            assert ("cash", "invalid_value") in result["drop_reasons"]
+
+    def test_negative_capex_is_withheld(self):
+        facts = deepcopy(SYNTH)
+        facts["facts"]["us-gaap"]["PaymentsToAcquirePropertyPlantAndEquipment"]["units"]["USD"][0]["val"] = -1
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts, cik="0000099999", as_of=date(2025, 6, 1)
+        )
+        assert result["status"] == "no_cash_facts"
+        assert ("capex", "invalid_value") in result["drop_reasons"]
+        assert result["free_cash_flow_usd"] is None
+
+    @pytest.mark.parametrize(
+        ("ocf", "capex"),
+        [
+            (-1e308, 1e308),
+            (-5e-324, 0.0),
+        ],
+    )
+    def test_nonfinite_or_underflowed_derived_arithmetic_is_withheld(
+        self, ocf, capex,
+    ):
+        facts = deepcopy(SYNTH)
+        facts["facts"]["us-gaap"]["NetCashProvidedByUsedInOperatingActivities"]["units"]["USD"][0]["val"] = ocf
+        facts["facts"]["us-gaap"]["PaymentsToAcquirePropertyPlantAndEquipment"]["units"]["USD"][0]["val"] = capex
+
+        from engine.cash_runway import extract_cash_runway
+
+        result = extract_cash_runway(
+            facts, cik="0000099999", as_of=date(2025, 6, 1)
+        )
+        assert result["status"] == "no_cash_facts"
+        assert result["drop_reasons"] == [("arithmetic", "invalid_arithmetic")]
+        assert result["free_cash_flow_usd"] is None
+        assert result["runway_months"] is None
 
     def test_stale_flag_when_old(self):
         """A filing with end date > 550 days ago should be flagged stale."""
@@ -172,6 +475,7 @@ class TestExtractCashRunway:
                         "units": {
                             "USD": [
                                 {
+                                    "start": "2019-09-29",
                                     "end": "2020-09-26", "val": 10_000_000,
                                     "accn": "old-accn", "fy": 2020,
                                     "fp": "FY", "form": "10-K", "filed": "2020-11-01",
@@ -183,6 +487,7 @@ class TestExtractCashRunway:
                         "units": {
                             "USD": [
                                 {
+                                    "start": "2019-09-29",
                                     "end": "2020-09-26", "val": 5_000_000,
                                     "accn": "old-accn", "fy": 2020,
                                     "fp": "FY", "form": "10-K", "filed": "2020-11-01",
@@ -266,6 +571,7 @@ class TestExtractCashRunway:
                         "units": {
                             "USD": [
                                 {
+                                    "start": "2024-01-01",
                                     "end": "2024-12-31", "val": 10_000_000,
                                     "accn": "big-1", "fy": 2024,
                                     "fp": "FY", "form": "10-K", "filed": "2025-01-01",
@@ -277,6 +583,7 @@ class TestExtractCashRunway:
                         "units": {
                             "USD": [
                                 {
+                                    "start": "2024-01-01",
                                     "end": "2024-12-31", "val": 100_000_000,
                                     "accn": "big-1", "fy": 2024,
                                     "fp": "FY", "form": "10-K", "filed": "2025-01-01",
@@ -356,8 +663,12 @@ class TestCashRunwayRender:
         en, zh = _en_text(html), _zh_text(html)
         assert "In the year ending 2025-09-27 (10-K) it brought in more cash than it spent, including equipment — no burn to measure." in en
         assert "截至 2025-09-27 的财年（10-K）其现金流入多于支出（包括设备支出），暂无可衡量的消耗。" in zh
-        assert "In the year ending 2025-09-27 (10-K) cash on hand covers 323% of the debt coming due in the next 12 months." in en
-        assert "截至 2025-09-27 的财年（10-K）现金可覆盖未来12个月内到期债务的 323%。" in zh
+        # Near-term debt coverage is rendered by capital_need.v1 only after
+        # exact issuer/period validation; this standalone runway fixture is
+        # FY2025 while the ladder fixture is FY2024, so no 323% cross-period
+        # assertion may appear here.
+        assert "cash on hand covers 323%" not in en
+        assert "现金可覆盖未来12个月内到期债务的 323%" not in zh
         assert "Last year" not in en
         assert "去年" not in zh
         assert "months" not in zh
@@ -423,6 +734,7 @@ class TestCashRunwayRender:
                     "NetCashProvidedByUsedInOperatingActivities": {
                         "units": {
                             "USD": [{
+                                "start": "2024-01-01",
                                 "end": "2024-12-31", "val": 10_000_000,
                                 "accn": "big-1", "fy": 2024, "fp": "FY",
                                 "form": "10-K", "filed": "2025-01-01",
@@ -432,6 +744,7 @@ class TestCashRunwayRender:
                     "PaymentsToAcquirePropertyPlantAndEquipment": {
                         "units": {
                             "USD": [{
+                                "start": "2024-01-01",
                                 "end": "2024-12-31", "val": 100_000_000,
                                 "accn": "big-1", "fy": 2024, "fp": "FY",
                                 "form": "10-K", "filed": "2025-01-01",
@@ -467,6 +780,7 @@ class TestCashRunwayRender:
                     "NetCashProvidedByUsedInOperatingActivities": {
                         "units": {
                             "USD": [{
+                                "start": "2019-09-29",
                                 "end": "2020-09-26", "val": 10_000_000,
                                 "accn": "old-accn", "fy": 2020, "fp": "FY",
                                 "form": "10-K", "filed": "2020-11-01",
@@ -476,6 +790,7 @@ class TestCashRunwayRender:
                     "PaymentsToAcquirePropertyPlantAndEquipment": {
                         "units": {
                             "USD": [{
+                                "start": "2019-09-29",
                                 "end": "2020-09-26", "val": 5_000_000,
                                 "accn": "old-accn", "fy": 2020, "fp": "FY",
                                 "form": "10-K", "filed": "2020-11-01",
@@ -696,4 +1011,3 @@ class TestResolveCashRunway:
         for key in result:
             if key not in ("schema", "status", "as_of"):
                 assert result[key] is None, f"{key} should be None when the loader import failed"
-
