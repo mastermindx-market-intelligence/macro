@@ -290,7 +290,17 @@ def test_the_builder_fails_loudly_when_a_paired_asset_is_missing(tmp_path, monke
     silent success that also skipped every later asset."""
     import scripts.build_ontology_explorer as builder
     monkeypatch.setattr(builder, "PAIRED_ASSETS", ("ontology.css", "definitely_absent.js"))
+    # Render into tmp_path, never the real site/: build_shell writes the page
+    # BEFORE it copies the paired assets, so the in-place render used to leave
+    # site/ontology.html modified whenever the committed bytes differ from a
+    # plain render -- which they do since the render-public lane re-stamps
+    # committed pages (?v=, preload, defer) after merge. CI's MM_DATA_GUARD
+    # then failed the whole job as "test session dirtied ... site/" (2026-09-24,
+    # #7959; identical in the base replay, so main carried it too).
+    monkeypatch.setattr(builder.config, "load",
+                        lambda: {"storage": {"site_dir": str(tmp_path)}})
     assert builder.main() == 1
+    assert (tmp_path / "ontology.html").exists()
 
 
 def test_a_chain_that_composes_is_not_thereby_an_accepted_product(monkeypatch, tmp_path):
