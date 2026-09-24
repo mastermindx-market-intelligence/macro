@@ -2256,6 +2256,17 @@ app.include_router(research_router)
 from app.earnings import router as earnings_router  # noqa: E402
 app.include_router(earnings_router)
 
+# GMI semiconductor theme research is a paid read-only product contract: the
+# router enforces the same site_full entitlement as Earnings before reading a
+# private bundle, every response carries the four private headers, and the
+# private native readers are unbound (503) until the R4 ruling lands. A
+# swallowed ImportError here would delete both entitled routes (/query,
+# /evidence) plus the private remainder catch-all at once and present only as
+# a 404 on a paid endpoint with no startup error and no log line — the same
+# failure mode the Earnings block above documents.
+from app.theme_research import router as theme_research_router  # noqa: E402
+app.include_router(theme_research_router)
+
 # Public per-ticker event context for the static dossier layer.  The router
 # delegates retrieval and immutable-receipt verification to the existing
 # context-only Company Intelligence reader; it is deliberately not a signal or
