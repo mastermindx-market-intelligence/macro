@@ -741,3 +741,93 @@ After that:
 - once ChatGPT3 is terminal on #836, its held #936 review may resume or be lawfully rebound before START.
 
 Parent mission remains incomplete.
+
+
+## Continuation update — #890 owner-surface repair and fresh #836 Opus review
+
+Current protected Mastermind is `0497e28864752e3ab70fa5aa2f1567bc3c9c6aca`; the full required
+Skillpack + review/reconciliation/dialogue laws were reloaded from this exact revision.
+
+### #836 independent review routing
+The prior ChatGPT3 #836 child
+`web-sol-r7-independent-review-r4-20260921-sol-001` on
+`D0BREV7RDCN/1790226208.084549` remained DELIVERY_UNCONSUMED after exact-head CI became green.
+It was terminally STOPped **before PICKUP/START**, with no review/source effect.
+
+A ChatGPT4 reviewer request was explored only as a routing alternative. GitHub
+`request_pull_request_reviewers(... reviewers=["ChatGPT4"])` returned HTTP 422 because ChatGPT4 is not
+a repository collaborator. Treat this as **NO EFFECT**; no ChatGPT4 #836 review child was commissioned.
+
+Fresh independent review child:
+- operation: `web-sol-r7-independent-review-r5-20260924-claude6-001`
+- receiver: Claude6
+- avenue: `Opus`
+- WHY NOT FABLE: bounded adversarial review of settled architecture; preserve scarce Fable principal
+  capacity
+- effect ceiling: READ_ONLY_REVIEW
+- exact carrier: `D0BT2125KHQ/1790231581.990109`
+- subject: #836 exact head `e8d54e6423b3d8a8f450740a9db0c7eff92828ae`
+- exact-head CI: `35959500341` = SUCCESS
+- current protected: `0497e288...`
+- state at latest read: DELIVERY_SENT / **no PICKUP_ACK, no START, no RESULT**.
+
+Do not call this review execution until Claude6 returns the required edges. A GitHub-native APPROVE event
+is not itself required by protected REVIEW_RETURN; a fresh independent commit-anchored semantic review
+plus current integration proof is the required evidence.
+
+### #890 same-carrier authority repair
+#890 remained the highest-leverage independent source lane while R1 was blocked by #836 source custody.
+Current repair stays on incumbent PR #890 / branch
+`sol/web-ceo-capability-preflight-20260919`.
+
+Original green head `ad4ca2ee...` still allowed caller-constructible
+`CurrentActionSurfaceFacts` to masquerade as current owner-issued action scope. Same-carrier repair:
+- RED `1f04a7653901bfc3b58787bcc25b6b78e8dec762`: require current
+  `SURFACE_BINDINGS` attribution, bounded freshness, exact surface evidence rollover fencing, no C2
+  reach on stale/changed owner evidence, and no private scope evidence in C2.
+- GREEN `885aa4a4bca725a198249d95e95394c015e46b10`: version capability receipt to
+  `mastermind.web_ceo_session_capability_receipt.v3`; preflight projection remains v2; add transient
+  source-attributed `CurrentActionSurfaceFacts`; bind its canonical digest into the receipt and
+  action-time guard.
+- fixture migrations `89ab5bc7...`, `60701a20...`.
+- adversarial self-audit then found a same-scope replay gap: positive
+  `ActionServiceabilityFact` evidence could be reused across a changed owner-surface generation.
+- RED `c80145aa4729e6d304f1313168ffa7fec7ef7d9c`: prior same-scope surface evidence must refuse.
+- GREEN `6d88d79d44363bd08d5e29ba1aaba1b672e974a2`: each serviceability fact now carries the exact
+  action-surface evidence digest and receipt composition refuses mismatch.
+- bounded test-helper correction culminates in current exact head
+  `dc15d22a6cbc07058d4f3555c680e2c54057f1cf`.
+
+Current #890 GitHub merge ref:
+`af492e7935b663ec234fdd880f0b810e10320c35 = merge(dc15d22a..., 0497e288...)`.
+PR is mergeable and protected movement from its original base has zero direct overlap with its four
+owned paths.
+
+Fresh hosted CI run `35965287774` is RUNNING on exact head `dc15d22a...` at this checkpoint.
+Any earlier #890 run is historical after source movement.
+
+Claim ceiling remains strict:
+- this repairs the **machine contract**;
+- it does **not** build the live message-scoped Surface/platform producer;
+- protected source still has no production `action_scope_ref` producer;
+- absent that owner-issued live fact, tool-bearing Web placement remains
+  `UNKNOWN / CAPABILITY_PROOF_REQUIRED`.
+
+### #651 adjacent provenance observation
+#651 repaired-head CI remains green, but support audit found its pre/post Macro source fence uses
+`git rev-parse HEAD` only. It detects commit/ref movement but not uncommitted working-tree mutation
+while Agent OS CLI reads the checkout. This is recorded on #651 comment `5808975123` as a review concern,
+**not yet a source blocker/ruling**, because the accepted policy for clean-only versus dirty-worktree
+Agent OS acquisition is not established. Do not guess it.
+
+### Next edges
+1. Consume #890 exact-head CI `35965287774`; repair only #890 on concrete failure.
+2. Consume Claude6 #836 review only after PICKUP_ACK + START; adjudicate RESULT on the same carrier and
+   send explicit CONTINUE/STOP.
+3. If #836 PASSes, release incumbent source custody and start the already-frozen R1 typed
+   assignment-submit/result-observe vertical.
+4. If #836 requests changes, repair only #836 then rerun exact-head CI/review.
+5. #651 dirty-worktree provenance question belongs in its exact-head review adjudication; do not widen
+   source preemptively.
+
+Parent mission remains incomplete; no browser/provider/production canary has run.
