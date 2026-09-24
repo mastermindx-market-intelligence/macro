@@ -40,7 +40,13 @@ The collector uses User-Agent NAME/value constant `_SEC_UA`, paced sleeps `_PACE
 
 ## Q4 — Runtime read path
 
-PENDING
+`app/deploy/macro-api.service` runs `/opt/macro-api/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000`; this `macro-api` unit serves the FastAPI API routes (`app/deploy/macro-api.service:62`). Deployment updates compare changed paths and restart `macro-api` only when its API import closure changes (`app/deploy/update.sh:1123-1259`). The restart is verified by PID transition and retried once on anomaly (`app/deploy/update.sh:1260-1300`). The trigger already includes `app/.*\.py`, `engine/earnings_narrative/(...|private_publication|...)`, `engine/research_vault/.*`, and `engine/company_intelligence/.*` (`app/deploy/update.sh:1254`).
+
+The API route is `/api/earnings/v1/records/{slug}`, guarded by `require_site_full_user` (`app/earnings.py:108-139`). Supabase identity uses env NAMES `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` (`app/main.py:120-128,226`; `app/billing.py:72-73`). `require_user` accepts either `Authorization: Bearer <token>` or the shared Supabase session cookie `sb-<ref>-auth-token`, then verifies via `GET /auth/v1/user` (`app/main.py:308-336,951-993`; `app/paywall.py:245-255`). `require_site_full_user(..., always=True)` always enforces entitlement (`app/earnings.py:59-67`; `app/paywall.py:392-410`). Entitlement reads `user_entitlements` with `SUPABASE_SERVICE_ROLE_KEY` and allows only non-free, active/trialing/past-due-grace state carrying `site_full` (`app/paywall.py:330-383`). `PAYWALL_ENABLED` matters only for non-always gates, not this route (`app/paywall.py:88-90,392-403`).
+
+The operator runbook requires active/trialing `site_full` for a comp and real trial account, free and past-due negatives, Stripe reconciliation, protected-cache probes, and armed `PAYWALL_ENABLED` before global launch (`docs/ops/site-access.md:43-96`). For an entitled test account: sign in to obtain a Supabase session; exercise the endpoint with `Authorization: Bearer <token>` or the authenticated session cookie; expect 200 for entitled access, 401 unauthenticated, 403 free/unentitled, and 503 on store outage. Tests use dependency overrides rather than real credentials (`tests/test_earnings_api.py:49-61,160-181`).
+
+The private response headers are pinned as `Cache-Control: private, no-store`, `Vary: Authorization`, `X-Content-Type-Options: nosniff`, and `X-Robots-Tag: noindex, noarchive` (`app/earnings.py:23-29`). Tests assert exactly this set (`tests/test_earnings_api.py:23-29`) and assert the frontend sends `'Authorization':'Bearer '+token` (`tests/test_earnings_api.py:265`). Error responses overwrite unsafe inherited headers with the same private set (`app/earnings.py:42-56`).
 
 ## Q5 — Browser proof infrastructure
 
