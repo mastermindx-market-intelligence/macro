@@ -292,3 +292,25 @@ family, separate pre-June24 dates from the seen overlap, then evaluate all9.
 Do not select P+R as the primary or tune the barrier/trigger to rescue the pilot.
 Native Pine/TVC parity and retrospective availability stay unqualified; no live
 forecast, equity result, independent review or production proof is implied.
+
+### Expanded replication preparation - no extended outcomes yet
+
+First pilot result commit6fbbd6b33f21d729fe84daece245c177ce7aa246 push completed
+on original process41775. New2y source qualification via the frozen parser:
+2004 completed chart slots (1503 full2h,501 closing40m),2003 valid; one missing
+initial hourly input remains on-grid and resets indicator warmup. Current partial
+and irregular tail excluded. Metadata is provider-declared, not independent
+exchange/PIT authentication. No strategy outcomes were read by this preflight.
+
+New research wrapper swing_proxy_extended.py reuses frozen parser/features/labels/
+evaluator and vectorizes counts only. Three synthetic tests passed on process62038,
+including complete-dictionary parity with the original walker and boundary/future
+isolation. Existing rates CI step extended, no additional queue/runner. A technical
+write timeout for SWING_PROXY_EXTENDED_V1.md was reconciled as absent by exact
+same-host read; one bounded same-tool write completed. No pending effect remains.
+
+SWING_PROXY_EXTENDED_V1.md freezes unchanged rules, same MPR primary, earlier
+pre2026-06-24 target windows as primary, seen overlap separate. Next: publish
+source freeze, append9 new configurations to SAME family (18 cumulative), execute
+once on immutable2y capture. No native Pine/TVC parity, hidden parameter search,
+new production indicator, live forecast or equity authority. Parent incomplete.
