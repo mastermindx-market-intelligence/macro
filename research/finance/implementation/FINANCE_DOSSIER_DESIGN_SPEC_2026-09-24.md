@@ -1601,17 +1601,16 @@ fetch(FI_READ_URL, {
 
 The document lives in one in-memory closure variable only. Deep-link hashes `#evidence=<record_id>` and `#slice=<slice_id>` resolve against the in-memory document.
 
-**Page-local ARIA swapper.** `aria-label` is an HTML attribute, so `.l-en`/`.l-zh` cannot swap it. The page owns a swapper that reads `data-aria-en` + `data-aria-zh` on `[data-lang]` change (the `commodities.html.j2` pattern). Every element with `data-aria-zh` also carries `data-aria-en`.
+**Page-local ARIA swapper (E3).** `aria-label` is an HTML attribute, so `.l-en`/`.l-zh` cannot swap it. The page owns a swapper that reads `data-aria-en` + `data-aria-zh` on `langchange` (the `commodities.html.j2` pattern, copied verbatim). Selects only `[data-aria-en]`; EN branch reads `el.getAttribute('data-aria-en')`; ZH branch reads `data-aria-zh || data-aria-en`. The `data-aria-zh` attribute is OPTIONAL on every element — the EN value is the fallback when ZH is missing. `theme.js` does NOT swap `data-en` / `data-zh`; it does NOT swap `data-aria-*` either — `theme.js` only flips the `.l-en` / `.l-zh` visibility on `html[data-lang]` and writes the language toggle to local storage. The page-local swapper below is the SOLE mechanism that swaps `aria-label` on language flip.
 
 ```js
 (function(){
   function applyAria(){
     var lang = document.documentElement.getAttribute('data-lang') || 'en';
-    // Reads data-aria-en + data-aria-zh keys on [data-lang] flip — both present on every element per §E.1
-    document.querySelectorAll('[data-aria-en],[data-aria-zh]').forEach(function(el){
+    document.querySelectorAll('[data-aria-en]').forEach(function(el){
       el.setAttribute('aria-label', lang === 'zh'
         ? (el.getAttribute('data-aria-zh') || el.getAttribute('data-aria-en'))
-        : el.getAttribute('data-aria-zh') || el.getAttribute('data-aria-en'));
+        : el.getAttribute('data-aria-en'));
     });
   }
   document.addEventListener('langchange', applyAria);
@@ -1619,7 +1618,9 @@ The document lives in one in-memory closure variable only. Deep-link hashes `#ev
 })();
 ```
 
-**Drawer focus ownership.** The drawer is the only modal surface. While the drawer is open, `<main id="fi-main">` is `inert` (per §E.4) and the global site nav (`<nav class="site-nav">` or its language/scoped equivalent — see R11 §3) receives `inert` too — the drawer is the only focusable region.
+**Hydration substitutes label-map words (E6).** Every aria template that interpolates an enum token resolves through the §D label map at hydration time. The template uses a `{§D.<n> label of <path>}` placeholder; hydration substitutes the EN or ZH plain-word row from the matching §D table for the enum value bound to `<path>`. The visible aria-label text is therefore ALWAYS a plain word (per §D's label-map contract); the literal enum token rides only on the `data-state-*` / `data-*` attribute, never in the aria string.
+
+**Drawer focus ownership.** The drawer is the only modal surface. While the drawer is open, `<main id="fi-main">` is `inert` AND `<nav class="site-nav">` (the global site nav sibling of `<main>`) is `inert` — both per §E.4. The drawer is the only focusable region.
 
 ### E.2 FORBIDDEN storage (binding)
 
@@ -1658,13 +1659,13 @@ Every state uses the `.mx-empty` (the block) + `.mx-empty-why` (the one-line rea
 |---|---|---|---|---|
 | `.fi-view-tab` (3 tabs, generated from `system_views[]` payload order) | `click` / `ArrowLeft` / `ArrowRight` / `Home` / `End` | roving `tabindex` (selected=0, others=-1) | `aria-selected=true` on clicked, `false` on siblings | Focus moves to clicked tab; show the matching `role=tabpanel`, hide others |
 | `.fi-system-expand` | `click` | `aria-expanded` flips | `aria-controls` panel toggles `hidden` | Focus stays on the expand button; the now-revealed list is announced via `aria-live=polite` |
-| `.fi-evidence-trigger`, `.fi-step-evidence`, `.fi-constraint-evidence`, `.fi-slice-open`, `.fi-toc-evidence` | `click` | drawer `aria-hidden` flips to `false`; `<main>` receives `inert` | drawer `hidden`/`inert` removed; scrim shown | Focus moves to the drawer's first focusable; previous-active element saved for restore |
-| `.fi-drawer-close`, `.fi-scrim`, `Escape` keydown | `click` / `keydown` | drawer `aria-hidden=true`; `<main>` loses `inert` | drawer `hidden inert` reapplied | Focus restored to the opener (deep-link open → returns to the section heading that triggered it) |
+| `.fi-evidence-trigger`, `.fi-step-evidence`, `.fi-constraint-evidence`, `.fi-slice-open`, `.fi-toc-evidence` | `click` | drawer `aria-hidden` flips to `false`; `<main id="fi-main">` AND `<nav class="site-nav">` (the global site nav sibling) both receive `inert` | drawer `hidden`/`inert` removed; scrim shown | Focus moves to the drawer's first focusable; previous-active element saved for restore |
+| `.fi-drawer-close`, `.fi-scrim`, `Escape` keydown | `click` / `keydown` | drawer `aria-hidden=true`; `<main id="fi-main">` AND `<nav class="site-nav">` lose `inert` | drawer `hidden inert` reapplied | Focus restored to the opener (deep-link open → returns to the section heading that triggered it) |
 | Drawer focus trap | `keydown Tab` / `Shift+Tab` at edges | none | none | Cycle within drawer's focusable elements; do not escape to inert background |
 | `.fi-slice-select` (native) | `change` | re-render `.fi-rerating-steps`, `.fi-falsifiers`, `.fi-conflicts` for the new slice | URL hash updates to `#slice=<slice_id>` | Focus stays on the select |
 | `hashchange` / `popstate` | listener | re-render slice selector + drawer open if `#evidence=<id>` | drawer `aria-hidden=false` for `#evidence` | Focus moves to drawer's first focusable for `#evidence`; no focus shift for `#slice` (select retains focus) |
 | Theme toggle (`.theme-toggle` global) | `click` | `html[data-theme]` flips between `dark` and `light` | none | Persist via existing `theme.js` |
-| Language toggle (`.lang-toggle` global) | `click` | `html[data-lang]` flips between `en` and `zh`; `.l-en` / `.l-zh` visibility swaps; `data-en` / `data-zh` swap; aria-label reads the active `data-aria-*` pair when `[data-lang]` flips | `aria-label` swapped | Persist via existing `theme.js` |
+| Language toggle (`.lang-toggle` global) | `click` | `html[data-lang]` flips between `en` and `zh`; `.l-en` / `.l-zh` visibility swaps (via the existing `theme.js` language toggle on `html[data-lang]`); the page-local ARIA swapper in §E.1 swaps `aria-label` from the active `data-aria-*` pair on `langchange` (NOT `theme.js` — `theme.js` does NOT swap `data-en` / `data-zh` or `data-aria-*`) | `aria-label` swapped | Persist via existing `theme.js` |
 | `prefers-reduced-motion: reduce` | media-query change | drawer's CSS transition collapses to `none` | none | none |
 | Conflict card | `mouseenter` / `focus` | none | visible line + button (no hover-only meaning) | none |
 
@@ -1681,7 +1682,7 @@ The drawer is the only modal surface. Tab order follows DOM order. No keyboard s
 | `rerating-steps` | B.2 | exactly four `<li class="fi-rerating-step fi-node-{name}">` in the order operating, expectations, valuation, price |
 | `rerating-bridge` | B.2 | text node = `slices[].rerating.bridge` (fallback static copy from §B.2) |
 | `falsifiers` | B.2 | one `<li class="fi-falsifier" data-state-falsifier>` per `slices[].falsifiers[]` |
-| `conflicts` (`.fi-conflict-list`) | B.2 | one `<li class="fi-conflict-card" data-conflict-label>` per `conflicts[]` |
+| `conflicts` (`.fi-conflict-list`) | B.2 | one `<li class="fi-conflict-card fi-panel2" data-conflict-label="…" data-state-marker="…">` per `conflicts[]` entry whose `slice_ids` contains the selected slice; each card carries a visible `<footer class="fi-conflict-foot">` rendering the §D.38 footer copy ("Left unresolved by design — both statements stand." / "有意不作裁决 — 两种陈述同时成立。"); conflicts matching no first-vertical slice render in one consistent line: "N more conflicts on other slices" / "其他切片另有 N 项冲突" (E12 — conflict scope is consistent across B.2 / E.5) |
 | `domain-grid` | B.4 | one `<section class="fi-domain">` per `domains[]` in payload order; inside, one `<li class="fi-slice">` per `slices[]` entry whose `domain_id` matches |
 | `coverage eyebrow` | B.4 | text node from `coverage.{domains_populated, domains_total, slices_populated, slices_total}` |
 | `atlas-gap` | B.4 | text node from `coverage.slices_total − sum(rendered)` |
@@ -1812,9 +1813,9 @@ Per R-H: the full evidence matrix is 8 base shots (`{dark,light} × {en,zh} × {
 | Cell | R11 §12 obligation | Design reference | Close-up PNG |
 |---|---|---|---|
 | 1 | Theme Tracker with Finance sector-deep-dive entry | §F.1 — static eyebrow + title + plain sentence + CTA; no canonical lane contamination | `verify_shots/finance/c01_theme_tracker_deep_dive_{theme}.png` |
-| 2 | Financials sector page with Finance Intelligence launch | §F.2 — "Domains mapped" + CTA; broad price context preserved, non-buy-list wording | `verify_shots/finance/c02_financials_launch_{theme}.png` |
+| 2 | Financials sector page with Finance Intelligence launch | §F.2 — eyebrow + title + one plain sentence + CTA; broad price context preserved, non-buy-list wording | `verify_shots/finance/c02_financials_launch_{theme}.png` |
 | 3 | Finance dossier populated — all seven L1 sections + drawer aside | §B.0–§B.7 + §B.0 aside; C-company archetype (instrument_analyzer) | `verify_shots/finance/c03_dossier_populated_{viewport}_{theme}.png` |
-| 4 | Semantic-only slice with honest no-basket state | §B.4 `.fi-slice-no-basket` element + §D.2 SEMANTIC_ONLY chip + §D.38 footer | `verify_shots/finance/c04_semantic_only_slice_{theme}.png` |
+| 4 | Semantic-only slice with honest no-basket state | §B.4 `.fi-slice[data-state-slice="SEMANTIC_ONLY"]` element + §D.2 SEMANTIC_ONLY chip + §D.38 footer | `verify_shots/finance/c04_semantic_only_slice_{theme}.png` |
 | 5 | Candidate-basket slice | §B.4 posture chip `CANDIDATE_READY_FOR_OWNER_REVIEW` with §D.3 plain-word copy "Under owner review" | `verify_shots/finance/c05_candidate_basket_{theme}.png` |
 | 6 | Missing-consensus state | §D.11 NO_HISTORICAL_CONSENSUS chip on rerating-map expectations node + plain-word text companion | `verify_shots/finance/c06_missing_consensus_{theme}.png` |
 | 7 | Regime-break state | §D.11 REGIME_BREAK_NOT_COMPARABLE chip on a rerating node + `comparability_state` chip when ≠ COMPARABLE | `verify_shots/finance/c07_regime_break_{theme}.png` |
@@ -1855,27 +1856,34 @@ A failing cell in any of the four dimensions (theme × lang × viewport × cell)
 
 ## RETURN
 
-**STATUS:** COMPLETE — the spec is the full lane deliverable; every audit finding closed; six stream-safe commits land on the branch.
+**STATUS:** ROUND-3 REPAIR DELIVERED — this branch is the seat's third read-only audit closed. Round-1 audit (audit #1) findings closed; round-2 audit (audit #2) findings closed; round-3 audit (audit #3) — sixteen residuals — closed by THIS run. The binding ruling on this branch (R1 surface tiers, R2 freshness rail/pip state-scoped, R3 answer-outweighs-support, R4 L1 tables, E1-E12 mechanical edits) is fully reflected in §B / §C / §D / §E / §F.
+
+**AUDIT STATE (truthful):**
+
+- **Round 1 (audit #1)** — closed at the head before this branch started. The schema-binding prose, the seven-L1-section render plan, the §D label map, and the §E hydration contract were stamped.
+- **Round 2 (audit #2)** — closed at the head before this branch started. The §C two-art-direction rule, the §G degraded-state copy fixes, the §H 8-shot matrix, and the §F static-modules rule were stamped.
+- **Round 3 (audit #3 — THIS RUN)** — closed at the head this branch lands. The residuals are: R1 (two-tier CSS elevation), R2 (attribute-only freshness), R3 (fi-section-title-answer on §B.2 / §B.6 title), R4 (L1 tables for company exposure + macro matrix), E1 (sections inside `<main>`), E2 (no nested HTML comments — `data-state-marker` is the canonical anchor), E3 (ARIA swapper == house pattern verbatim), E4 (drawer open state CSS), E5 (stepper spine visible), E6 (no raw tokens in accessible names), E7 (step row wraps), E8 (atlas selectors match markup + `.fi-chip` base rule + delete `.fi-freshness` / `.fi-chip-fresh` / `.fi-slice-fresh`), E9 (one label per token + conflict footer copy unified + D.40 deleted + orphan D.39 rows moved into D.38), E10 (stale references cleanup — `.fi-freshness` rules deleted, `.fi-slice-no-basket` reference deleted, "Domains mapped" copy deleted, H.1 cell 2 / H.1 cell 4 prose fixed), E11 (shell content — main carries NO `.fi-panel`, h1 is static, atlas eyebrow mounts are empty placeholders, hero copy templates, etc.), E12 (conflict scope consistent across B.2 / E.5 — "N more conflicts on other slices" line is the consistent render point).
+- A future round-4 audit may still find residuals in code that this spec cannot defend (e.g. CSS that uses raw tokens where the spec rules out token-only layers; code that hard-codes colors instead of using the §C.5 / §C.7 selectors). This spec only governs its own contract surface.
 
 **RESULT:**
 
 - File: `research/finance/implementation/FINANCE_DOSSIER_DESIGN_SPEC_2026-09-24.md`
 - Sections A–H all populated.
 - §A binds ONLY to paths in the live `finance_intelligence_read_model.v1.schema.json` (on `origin/main` since `b4c6e4bd`); the prior "schema is not yet on the main branch" observation is removed; every field the page would like but the schema lacks is moved to **GAPS** as a proposed contract amendment.
-- §B renders seven L1 sections + one evidence-drawer aside; B.2 is exactly four data-bound nodes; the R11 chain questions are static node captions ≤14 words EN+ZH; `rerating.bridge` is the connective sentence; falsifiers[] render as a separate list (NOT a node); conflicts nested inside `rerating-map` as `.fi-conflicts`; the slice selector is a native `<select>` driving URL hash `#slice=<id>`; **zero document-data loops, zero payload-bound Jinja bindings** anywhere in §B or §F.
-- §C declares two art directions as full rules; zero hex / rgb / rgba literals in §C, dark block included; all five differing mechanisms written as real CSS; only `767px` / `768px` / `1199px` / `1200px` appear in `max-width`/`min-width`; font sizes only via `--fs-*` tokens.
-- §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH; closes the label map across every enum the live schema can deliver (plane-state 9, slice-state 8, basket posture 5, membership-state 4, materiality 4, role 7, exposure basis 7, exposure state 4, constraint 10, macro driver 13, lag 5, freshness 4, first-vertical 4, outer-dossier 3, material-changes freshness 4, expectations.history 3, valuation-anchor 9+10+5+2, falsifier 2, price-basis 3, weighting 5, identity-state 3, company-route 2, source rights 4 with suppression, statement-mode 5, published-at grain 5, measurement-class 9, gross/net basis 4, average/end 3, indicator direction 3, indicator state 3, conflict plane words 6, edge relationship per view 20, input-receipts owner 9, input-receipts state 4, degraded-sections section 8, degraded-sections state 3); the previous spec's footer copy that listed the plane-state words is removed; bilingual ARIA rule (plain EN in `aria-label`, EN/ZH pair in `data-aria-en` + `data-aria-zh`, no `t()` inside attributes).
-- §E hydration contract: single `FI_READ_URL` placeholder; `credentials:'include'`, `cache:'no-store'`; in-memory closure variable only; explicit FORBIDDEN list; response status table covers 200 / 401 / 402 / 403 / 503 (typed by JSON `error`: PRIVATE_STORE_UNAVAILABLE / NO_GENERATION / GENERATION_TORN / CONTRACT_INVALID) / network failure / unknown; every state uses `.mx-empty` + `.mx-empty-why`; the prior "slice grid chips + cohort posture chips" claim for 402 is removed.
-- §F entry modules are static markup only (eyebrow + title + one static plain sentence + CTA); the prior counts, top-domains facet, evidence-horizon label, coverage-state readout, and populated-slices count bindings are removed; CTA href is `{{ fi_dossier_href }}` placeholder; "Top research domains" renamed to "Domains mapped".
+- §B renders seven L1 sections + one evidence-drawer aside inside `<main id="fi-main" class="fi-shell">` (main carries NO `.fi-panel` — R1); B.2 is exactly four data-bound nodes; the R11 chain questions are static node captions ≤14 words EN+ZH; `rerating.bridge` is the connective sentence; falsifiers[] render as a separate list (NOT a node); conflicts nested inside `rerating-map` as `.fi-conflicts`; each conflict card carries a visible `<footer class="fi-conflict-foot">` rendering the §D.38 footer copy; the slice selector is a native `<select>` driving URL hash `#slice=<id>`; **zero document-data loops, zero payload-bound Jinja bindings, zero HTML-comment markers** anywhere in §B or §F; `.fi-system-expand` (B.3), `.fi-evidence-trigger` (B.5), `.fi-constraint-evidence` (B.7), `.fi-domain` + `.fi-slice` (B.4), `.fi-constraint-chip` + `.fi-constraint-row` (B.7) all exist in §B markup.
+- §C declares two art directions as full rules; two-tier elevation (`.fi-panel` tier 1 vs `.fi-panel2` tier 2); `data-state-freshness` attribute on `<header class="fi-section-head">` is the only freshness binding (no `.fi-chip-fresh` / `.fi-slice-fresh` rules); zero hex / rgb / rgba literals in §C, dark block included; all five differing mechanisms written as real CSS; only `767px` / `768px` / `1199px` / `1200px` appear in `max-width`/`min-width`; font sizes only via `--fs-*` tokens.
+- §D binds all eleven D.11 missing-state tokens with token | contract path | DOM location | EN | ZH (every row's DOM location uses the `data-state-marker="<TOKEN>"` attribute on the chip element per E2 — no HTML-comment markers); closes the label map across every enum the live schema can deliver; one label per token (VALUATION_ANCHOR_UNAVAILABLE → "No valuation anchor on file / 暂无估值锚"; CAUSAL_EFFECT_UNMEASURED → "Causal effect not measured / 因果影响未测量" — unified across D.1 / D.11b / D.17 / D.36); conflict footer "Left unresolved by design — both statements stand. / 有意不作裁决 — 两种陈述同时成立。" everywhere in §D.38 (the orphan "Falsifier list heading" + "Atlas footer chip" rows moved from D.39 into D.38); D.40 deleted (its five tokens were not in schema); bilingual ARIA rule (plain EN in `aria-label`, EN/ZH pair in `data-aria-en` + `data-aria-zh`, no `t()` inside attributes).
+- §E hydration contract: single `FI_READ_URL` placeholder; `credentials:'include'`, `cache:'no-store'`; in-memory closure variable only; explicit FORBIDDEN list; ARIA swapper pattern matches house verbatim; every conflict's footer copy comes from §D.38; the section-head `data-state-freshness` attribute is hydrated from the top-level `freshness.state` (B.1) and from `slices[].freshness.state` for the selected slice (B.2) — no chip element carries the freshness state; response status table covers 200 / 401 / 402 / 403 / 503 (typed by JSON `error`: PRIVATE_STORE_UNAVAILABLE / NO_GENERATION / GENERATION_TORN / CONTRACT_INVALID) / network failure / unknown; every state uses `.mx-empty` + `.mx-empty-why`; the prior "slice grid chips + cohort posture chips" claim for 402 is removed.
+- §F entry modules are static markup only (eyebrow + title + one static plain sentence + CTA); the prior counts, top-domains facet, evidence-horizon label, coverage-state readout, and populated-slices count bindings are removed; CTA href is `{{ fi_dossier_href }}` placeholder; no top-domains facet is rendered.
 - §G degraded-state copy fixed per R-K; "Outer dossier not accepted" rebinds to `outer_dossier_ref.state` (not 503); "refresh in a moment" copy removed; new degraded_sections per-section rows added.
-- §H evidence matrix is 8 base shots + 14 per-cell close-ups + 5 mechanism-by-mechanism proof shots + the theme × lang × viewport cross-product; the prior single-parity PNG and 390-only cell are removed.
+- §H evidence matrix is 8 base shots + 14 per-cell close-ups + 5 mechanism-by-mechanism proof shots + the theme × lang × viewport cross-product; the prior single-parity PNG and 390-only cell are removed; H.1 cell 2 references the F.2 eyebrow+title+plain-sentence+CTA structure (no "Domains mapped" copy); H.1 cell 4 references `.fi-slice[data-state-slice="SEMANTIC_ONLY"]` (no `.fi-slice-no-basket` class).
 
 **GAPS (proposed contract amendments):**
 
 - No slice-level display headline / guardrail / user-action fields. Tier 1 "what to look at" copy is composed at render time from `operating_implication` + state chips; this is a render-time projection, not a stored field, and is consistent with §13.5's "no owner recalculation in browser" law only because the composer pre-composes the headline before shipping.
 - No coverage-level coverage-state / coverage-label readouts; no freshness-level freshness-label readout; no material-changes evidence-horizon label. The page surfaces `freshness.state` and `coverage.{domains_populated, domains_total, slices_populated, slices_total}` (numeric, not labelled).
 - No per-dossier entry-href — the dossier's CTA href is a route variable (`{{ fi_dossier_href }}`) bound at integration.
-- No top-domains facet — the "Domains mapped" copy is static in §F.2.
+- No top-domains facet — the §F.2 launch module renders only eyebrow + title + one plain sentence + CTA, with no domains listing.
 - No populated-slices count / selected-slices slice — the slice selector is driven by `coverage.first_vertical.slice_ids` directly.
 - No user-facing conflict-resolution string — the schema carries a literal `UNRESOLVED_BY_DESIGN` enum that surfaces only as the §D.38 footer copy.
 - No pivoted macro-matrix shape — `macro_matrix[]` is iterated flat and grouped by `slice_id`; the 13-driver enum is the column header set.
