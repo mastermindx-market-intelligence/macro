@@ -466,7 +466,7 @@ def test_row_shape_vocabulary_and_union_size():
     assert all(r["capability_state_c2"] != "BLOCKED_RIGHTS" for r in rows.values())
 
 
-def test_all_80_integration_rows_pin_disposition_and_capability():
+def test_all_81_integration_rows_pin_disposition_and_capability():
     rows = _rows()
     assert set(EXPECTED) == UNION_ROWS
     for row_id, (disp, cap) in EXPECTED.items():
