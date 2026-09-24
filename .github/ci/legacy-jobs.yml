@@ -16333,8 +16333,8 @@ jobs:
 
   dashboard-render-contract:
     # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and
-    # the UD-B2-W2 spine bindings, on the PULL-REQUEST merge gate. The same five
-    # suites already run in gate:data lanes — the first four as
+    # the UD-B2-W2 spine bindings, on the PULL-REQUEST merge gate. The same six
+    # suites already run in gate:data lanes — the first five as
     # unrun-picks-boards' "dashboard.html.j2 rendered-HTML contract" step,
     # tests/test_unified_dashboard_b2w2.py inside engine-render-guards' sweep —
     # and those lanes keep them for data-health.yml. But scripts/run_ci_pack.py
@@ -16351,7 +16351,7 @@ jobs:
     # replaces inference: the suites' jinja loaders and the render helpers in
     # scripts/build_site.py are opaque constructs. Every pattern below is
     # EARNED from the 574-file import closure inferred_as_if_not_exclusive
-    # derives for the five suites: build_site.py pulls the flat engine/*.py
+    # derives for the six suites: build_site.py pulls the flat engine/*.py
     # layer plus the listed engine subpackages (deliberately NOT engine/**,
     # which would smear onto engine/prophet/**, where the closure holds
     # nothing), the collectors/lib/config layers, and named scripts,
@@ -16359,8 +16359,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
-      # The five suites the step runs, plus the two helper suites they import.
+      # The six suites the step runs, plus the two helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      - "tests/test_macro_sector_desk.py"
       - "tests/test_macro_risk_dialog.py"
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
@@ -16369,6 +16370,8 @@ jobs:
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
       # Templates the renders load by name.
+      - "templates/_macro_sector_desk.html.j2"
+      - "templates/dashboard.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
@@ -16480,9 +16483,9 @@ jobs:
       # persisted-view fixture). markupsafe arrives with jinja2, numpy with
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
-        run: pip install pytest pyyaml jinja2 pandas plotly pyarrow requests
+        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
       - name: dashboard.html.j2 rendered-HTML contract + UD-B2-W2 spine bindings
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py tests/test_unified_dashboard_b2w2.py -q
+        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_sector_desk.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py tests/test_unified_dashboard_b2w2.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
