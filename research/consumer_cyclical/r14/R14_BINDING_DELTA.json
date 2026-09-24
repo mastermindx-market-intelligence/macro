@@ -1,0 +1,93 @@
+{
+  "schema": "consumer_cyclical.r14_binding_delta.v1",
+  "date": "2026-09-24",
+  "operation": "gmi-consumer-cyclical-research-20260923-sol-001",
+  "carrier": {
+    "repo": "mastermindx-market-intelligence/macro",
+    "pr": 7804,
+    "input_head": "6380c513e434d5031db480b615bf1fafc0b8c716",
+    "state": "DRAFT_HOLD"
+  },
+  "procedure": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "commit": "1a7d400294b0d37c460b963b8865b40a23173b58",
+    "skillpack": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "current_pins": {
+    "macro_main": "7103389e8d473618c281c7801c77b7d19bfecb56",
+    "shared_foundation_7870": "3e3a7956d014b8c50be7b197fdbea847cecfa641",
+    "template_owner_7669": "6942b2b62bad2dfc9d3b50eb7042e0a126b708c4",
+    "theme_graph_owner_7462": "31706d7322af55696dc7b2e746ec511b08bd51d7",
+    "company_history_7426": "7bc04876747d773861b47519061279ae033a148d",
+    "buildout_ruling_7780_head": "b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb"
+  },
+  "current_blobs": {
+    "config/theme_sources.yml": "1073ca1e9841dc95084a57b4577d159e74f9d211",
+    "engine/company_intelligence/guidance_history.py": "155f7d0feca825cff3c63b9165aa19feb62f46ba",
+    "app/theme_research.py": "f3c70ffd67ccab5225189ec1a3106bd1ea38c11e",
+    "tests/test_theme_research_api.py": "a06d8c2a489fe23ecc11a7c07819951c83e7ec5d",
+    "app/paywall.py": "7e1c6861ebb7d27924865b2b8d157e6a9356405d",
+    "tests/test_paywall.py": "1d958154eed91ee08f9f7ab65b719e1910e2ccd1"
+  },
+  "completed_consumer_package": {
+    "r12_commit": "83bca96a5ca786de3a55d351149813b5c2d0b1b2",
+    "r12_checks": {
+      "passed": 60,
+      "failed": 0
+    },
+    "r13_commit": "6380c513e434d5031db480b615bf1fafc0b8c716",
+    "r13_checks": {
+      "passed": 9,
+      "failed": 0
+    },
+    "native_application_acceptance": false,
+    "browser_acceptance": false,
+    "production_acceptance": false
+  },
+  "external_gates": {
+    "T09": {
+      "state": "BUILT_NOT_PROVEN__NOT_CONSUMER_ACCEPTED",
+      "owner_pr": 7870,
+      "checkpoint_comment": 5813134102,
+      "open_defect": "unmatched source families pass through; current https://www.sec.gov witness refs resolve to no registered family",
+      "consumer_must_not_bypass": true
+    },
+    "T08b": {
+      "state": "REVIEW_REJECTED__FIX_QUEUED",
+      "owner_pr": 7870
+    },
+    "T10e": {
+      "state": "QUEUED",
+      "owner_pr": 7870
+    },
+    "T10f": {
+      "state": "QUEUED",
+      "owner_pr": 7870
+    },
+    "T11a": {
+      "state": "REVIEW_REJECTED__FIX_QUEUED",
+      "owner_pr": 7870
+    },
+    "buildout_profile_dispatch": {
+      "state": "RULING_OPEN",
+      "owner_pr": 7780,
+      "comment": 5811066300
+    },
+    "consumer_profile_enrollment": false,
+    "live_private_object_proven": false,
+    "browser_proof": false,
+    "native_consumer_source_admission": false,
+    "native_consumer_implementation": false
+  },
+  "sticky_constraints": {
+    "native_staging_action": "BLOCKED_DO_NOT_RETRY_REPHRASE_REHOME_OR_DELEGATE_WORKAROUND",
+    "do_not_redo": [
+      "R1-R11 research",
+      "shared-foundation archaeology",
+      "existing consultations",
+      "completed first independent review",
+      "blocked native-staging action"
+    ]
+  }
+}
