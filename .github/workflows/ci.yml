@@ -1858,6 +1858,8 @@ on:
       - "tests/test_semiconductor_earnings_witnesses.py"
       - "tests/test_semiconductor_earnings_intake_integration.py"
       - "app/theme_research.py"
+      - "engine/market_ontology/theme_research_registry.py"
+      - "tests/test_theme_research_registry.py"
       - "tests/test_theme_research_api.py"
       - "tests/test_theme_research_rights_refresh.py"
       - "tests/test_theme_research_private_binding.py"

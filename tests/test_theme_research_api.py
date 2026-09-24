@@ -951,3 +951,296 @@ def test_missing_rights_registry_fails_closed_on_the_evidence_route_too(entitled
         assert response.headers.get(name) == value
     assert "theme_sources" not in response.text and "absent" not in response.text
 
+
+
+# ---------------------------------------------------------------------------
+# 12. SHARED HOOK 1 — closed vertical registration + dispatch by anchor
+#     (Sol ruling #7780 issuecomment-5813801605). The shell resolves the
+#     vertical AFTER auth + body parsing and BEFORE any reader; unknown anchor
+#     and foreign slice fail closed with the existing private shapes; a
+#     synthetic second registration dispatches to ITS composer.
+# ---------------------------------------------------------------------------
+
+from engine.market_ontology.theme_research_registry import (  # noqa: E402
+    VerticalRegistration,
+    registration_for as _real_registration_for,
+)
+
+_SYNTHETIC_ANCHOR = "synthetic_vertical"
+_SYNTHETIC_SLICE = "synthetic_slice"
+_SYNTHETIC_SCHEMA = "synthetic_theme_research.v1"
+_SYNTHETIC_EVIDENCE_SCHEMA = "synthetic_theme_research.evidence.v1"
+_SYNTHETIC_AUTHORITY = {
+    "can_rank": False, "can_gate": False, "can_size": False,
+    "can_originate": False, "can_open_entry": False,
+}
+
+
+def _install_synthetic_registration(monkeypatch, *, compose=None, select=None):
+    """Register a second vertical for the duration of one test by patching the
+    route's ``registration_for`` seam. The semiconductor entry is replaced by a
+    copy whose callables FAIL, so a dispatch to the wrong vertical is loud.
+    The module-level REGISTRY is never mutated (it is read-only)."""
+    import dataclasses
+
+    calls: dict[str, list] = {"compose": [], "select": []}
+
+    def default_compose(query, bundle):
+        calls["compose"].append((query, bundle))
+        return {
+            "schema": _SYNTHETIC_SCHEMA,
+            "definition_version": "2026-09-24.synthetic",
+            "generation": "gen_" + "b" * 32,
+            "request": {"anchor_theme_id": query.anchor_theme_id,
+                        "slice_key": query.slice_key},
+            "limitations": [],
+            "authority": dict(_SYNTHETIC_AUTHORITY),
+        }
+
+    def default_select(query, bundle, assertion_ref):
+        calls["select"].append((query, bundle, assertion_ref))
+        return {
+            "schema": _SYNTHETIC_EVIDENCE_SCHEMA,
+            "generation": query.expected_generation,
+            "assertion_ref": assertion_ref,
+            "limitations": [],
+            "authority": dict(_SYNTHETIC_AUTHORITY),
+        }
+
+    synthetic = VerticalRegistration(
+        anchor_theme_id=_SYNTHETIC_ANCHOR,
+        slice_keys=(_SYNTHETIC_SLICE,),
+        schema_id=_SYNTHETIC_SCHEMA,
+        evidence_schema_id=_SYNTHETIC_EVIDENCE_SCHEMA,
+        definition_version="2026-09-24.synthetic",
+        compose=compose or default_compose,
+        select_evidence=select or default_select,
+        title_en="Synthetic research", title_zh="合成研究",
+        note_en="Synthetic note.", note_zh="合成说明。",
+    )
+
+    def wrong_vertical(*_a, **_kw):
+        pytest.fail("semiconductor composer invoked for a foreign anchor")
+
+    semiconductor = dataclasses.replace(
+        _real_registration_for("ai_semiconductors"),
+        compose=wrong_vertical, select_evidence=wrong_vertical,
+    )
+
+    def patched(anchor):
+        if anchor == _SYNTHETIC_ANCHOR:
+            return synthetic
+        if anchor == "ai_semiconductors":
+            return semiconductor
+        return _real_registration_for(anchor)
+
+    monkeypatch.setattr(theme_research, "registration_for", patched)
+    return calls
+
+
+def test_unregistered_anchor_is_the_private_404_without_echo_or_reader(
+    entitled_client, bundle_loader,
+):
+    expected_body = load_case("unauthorized_missing_or_hidden")["expected_404_body"]
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(anchor_theme_id="unregistered_vertical"),
+    )
+    assert response.status_code == 404, response.text
+    _assert_private_headers(response)
+    # Byte-identical to the evidence route's unknown-ref refusal: no existence
+    # disclosure, no anchor echo, no registry listing.
+    assert response.json() == {"detail": expected_body}
+    assert "unregistered_vertical" not in response.text
+    assert "ai_semiconductors" not in response.text
+    assert bundle_loader == [], "reader touched for an unregistered anchor"
+
+
+def test_unregistered_anchor_on_the_evidence_route_is_the_same_private_404(
+    entitled_client, bundle_loader,
+):
+    expected_body = load_case("unauthorized_missing_or_hidden")["expected_404_body"]
+    body = _evidence_body_with("gmi-curation://unregistered_vertical/gmirca_" + "0" * 32)
+    body["anchor_theme_id"] = "unregistered_vertical"
+    response = entitled_client.post("/api/themes/v1/research/evidence", json=body)
+    assert response.status_code == 404, response.text
+    _assert_private_headers(response)
+    assert response.json() == {"detail": expected_body}
+    assert "unregistered_vertical" not in response.text
+    assert bundle_loader == []
+
+
+@pytest.mark.parametrize("path", ["/api/themes/v1/research/query",
+                                  "/api/themes/v1/research/evidence"])
+def test_registered_anchor_with_foreign_slice_is_the_private_400_without_reader(
+    entitled_client, bundle_loader, path,
+):
+    body = _valid_body(slice_key="robotics_manipulation")
+    if path.endswith("/evidence"):
+        body = _evidence_body_with(
+            "gmi-curation://ai_semiconductors/gmirca_" + "0" * 32,
+        )
+        body["slice_key"] = "robotics_manipulation"
+    response = entitled_client.post(path, json=body)
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "invalid_request"
+    assert error["action"] == "fix_request"
+    assert "robotics_manipulation" not in response.text
+    assert "hbm_packaging" not in response.text, "the closed slice set is not listed"
+    assert bundle_loader == [], "reader touched for a foreign slice"
+
+
+def test_slice_grammar_is_still_enforced_before_the_registry(monkeypatch):
+    """A slice that fails the id grammar is refused by the body model (400)
+    exactly as before; the registry never sees it."""
+    seen: list = []
+    monkeypatch.setattr(
+        theme_research, "registration_for",
+        lambda anchor: seen.append(anchor) or _real_registration_for(anchor),
+    )
+    client = _auth_ok_app(monkeypatch)
+    response = client.post(
+        "/api/themes/v1/research/query", json=_valid_body(slice_key="HBM-Packaging"),
+    )
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    assert seen == []
+
+
+@pytest.mark.parametrize("path", ["/api/themes/v1/research/query",
+                                  "/api/themes/v1/research/evidence"])
+def test_auth_resolves_before_any_registry_lookup(api_client, monkeypatch, path):
+    seen: list = []
+    monkeypatch.setattr(
+        theme_research, "registration_for",
+        lambda anchor: seen.append(anchor) or _real_registration_for(anchor),
+    )
+    monkeypatch.setattr(
+        theme_research, "load_authorized_owner_bundle",
+        lambda *_a, **_kw: pytest.fail("reader touched before authorization"),
+    )
+    response = api_client.post(path, json=_valid_body(anchor_theme_id="unregistered_vertical"))
+    assert response.status_code in (401, 403), response.text
+    _assert_private_headers(response)
+    assert seen == [], "registry consulted before auth resolved"
+
+
+def test_synthetic_second_registration_dispatches_to_its_own_composer(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    calls = _install_synthetic_registration(monkeypatch)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key=_SYNTHETIC_SLICE),
+    )
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    payload = response.json()
+    assert payload["schema"] == _SYNTHETIC_SCHEMA
+    assert payload["request"] == {"anchor_theme_id": _SYNTHETIC_ANCHOR,
+                                  "slice_key": _SYNTHETIC_SLICE}
+    assert payload["authority"] == _SYNTHETIC_AUTHORITY
+    assert len(calls["compose"]) == 1 and calls["select"] == []
+    query, bundle = calls["compose"][0]
+    assert query.anchor_theme_id == _SYNTHETIC_ANCHOR
+    assert query.slice_key == _SYNTHETIC_SLICE
+    from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+    assert isinstance(bundle, OwnerBundle)
+    assert len(bundle_loader) == 1, "the shared reader seam served the synthetic vertical"
+
+
+def test_synthetic_second_registration_dispatches_evidence_to_its_own_selector(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    calls = _install_synthetic_registration(monkeypatch)
+    ref = "gmi-curation://synthetic_vertical/gmirca_" + "c" * 32
+    body = _evidence_body_with(ref, generation="gen_" + "b" * 32)
+    body["anchor_theme_id"] = _SYNTHETIC_ANCHOR
+    body["slice_key"] = _SYNTHETIC_SLICE
+    response = entitled_client.post("/api/themes/v1/research/evidence", json=body)
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    payload = response.json()
+    assert payload["schema"] == _SYNTHETIC_EVIDENCE_SCHEMA
+    assert payload["assertion_ref"] == ref
+    assert calls["compose"] == [] and len(calls["select"]) == 1
+    assert calls["select"][0][2] == ref
+
+
+def test_synthetic_registration_foreign_slice_fails_closed_before_its_composer(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    calls = _install_synthetic_registration(monkeypatch)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key="hbm_packaging"),
+    )
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    assert calls["compose"] == [] and bundle_loader == []
+
+
+def test_composer_payload_with_unregistered_schema_fails_closed_as_503(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    """A composer whose payload does not carry the registration's exact schema
+    id is a composer/registration mismatch: nothing is served, no detail on
+    the wire."""
+    def drifted_compose(query, bundle):
+        return {"schema": "drifted_theme_research.v2", "authority": dict(_SYNTHETIC_AUTHORITY)}
+
+    _install_synthetic_registration(monkeypatch, compose=drifted_compose)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key=_SYNTHETIC_SLICE),
+    )
+    assert response.status_code == 503, response.text
+    _assert_private_headers(response)
+    assert response.json() == {
+        "detail": {"error": {"code": "service_unavailable", "action": "retry_later"}},
+    }
+    assert "drifted" not in response.text
+
+
+def test_composer_payload_that_is_not_a_mapping_fails_closed_as_503(
+    entitled_client, bundle_loader, monkeypatch,
+):
+    _install_synthetic_registration(monkeypatch, compose=lambda q, b: [_SYNTHETIC_SCHEMA])
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(anchor_theme_id=_SYNTHETIC_ANCHOR, slice_key=_SYNTHETIC_SLICE),
+    )
+    assert response.status_code == 503, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"]["error"]["code"] == "service_unavailable"
+
+
+def test_semiconductor_anchor_still_dispatches_the_real_composer(
+    entitled_client, bundle_loader,
+):
+    """The registry entry for ``ai_semiconductors`` IS the composer: the served
+    payload carries the composer's exact schema id and definition version."""
+    from engine.market_ontology import semiconductor_theme_research as composer
+    entry = _real_registration_for("ai_semiconductors")
+    assert entry.compose is composer.compose_semiconductor_research
+    response = entitled_client.post("/api/themes/v1/research/query", json=_valid_body())
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["schema"] == entry.schema_id == composer.SCHEMA_ID
+    assert payload["definition_version"] == entry.definition_version == composer.DEFINITION_VERSION
+
+
+def test_route_source_carries_no_hard_pinned_vertical():
+    """The shell names no vertical's composer, selector or slice literal; it
+    resolves the registration and dispatches through it."""
+    source = (ROOT / "app" / "theme_research.py").read_text(encoding="utf-8")
+    assert "compose_semiconductor_research" not in source
+    assert "select_authorized_evidence" not in source
+    assert 'Literal["hbm_packaging"' not in source
+    assert "registration_for(" in source
+    assert "registration.compose(" in source
+    assert "registration.select_evidence(" in source
+    for forbidden in ("import re\n", "re.compile", "re.match", "fnmatch", "os.environ"):
+        assert forbidden not in source, forbidden

@@ -25,11 +25,21 @@ T09 of operation gmi-semiconductors-fable-cee-20260923-chairman-001
 * no writes. ``engine.theme_graph.store.write_evidence`` is never imported; no
   subprocess, no cache layer, no cursor table. The endpoint is a closed read.
 
+* the vertical is resolved from the CLOSED registration
+  (:mod:`engine.market_ontology.theme_research_registry`, shared hook 1, Sol
+  ruling #7780 issuecomment-5813801605) AFTER auth and AFTER body parsing and
+  BEFORE any reader is touched: an unregistered anchor is the same private
+  404 ``not_available`` the evidence route gives an unknown ref; a slice
+  outside the registration's closed slice set is the same private 400
+  ``invalid_request`` the body model gives a malformed field. No wildcard, no
+  regex, no default vertical — the composer and evidence selector are the
+  registration's own callables, and a composed payload whose ``schema`` is
+  not the registration's exact schema id is refused (503) rather than served.
+
 The composition module does NOT see rights: this route strips assertions whose
-family is known-and-refused BEFORE handing the bundle to
-:func:`compose_semiconductor_research` and adds
-``rights_refused_families_hidden`` to ``limitations`` without naming the
-families — what was refused is never disclosed.
+family is known-and-refused BEFORE handing the bundle to the registered
+composer and adds ``rights_refused_families_hidden`` to ``limitations``
+without naming the families — what was refused is never disclosed.
 """
 from __future__ import annotations
 
@@ -45,8 +55,10 @@ from engine.market_ontology.semiconductor_theme_research import (
     OwnerBundle,
     ResearchQuery,
     ResearchRefusal,
-    compose_semiconductor_research,
-    select_authorized_evidence,
+)
+from engine.market_ontology.theme_research_registry import (
+    VerticalRegistration,
+    registration_for,
 )
 from engine.theme_graph.rights import (
     RightsRefusal,
@@ -150,7 +162,9 @@ class _QueryBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     anchor_theme_id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
-    slice_key: Literal["hbm_packaging", "sic_gan_specialty"]
+    # Grammar only; MEMBERSHIP is decided by the closed registration for the
+    # anchor (``_resolve_registration``), never by a literal in this shell.
+    slice_key: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
     view: Literal["composition", "manufacturing", "commercial", "capacity", "economics"]
     time_mode: Literal["latest", "source_history", "system_replay"]
     source_cutoff: str | None = Field(default=None, max_length=32)
@@ -330,22 +344,65 @@ async def _parse_body(model: type[BaseModel], request: Request) -> BaseModel:
         ) from None
 
 
-def _call_compose(body: _QueryBody, principal: Mapping[str, Any]) -> JSONResponse:
+# ---------------------------------------------------------------------------
+# Vertical resolution — closed registration, after auth + parse, before any
+# reader; unknown anchor / foreign slice fail closed with the existing shapes
+# ---------------------------------------------------------------------------
+
+def _resolve_registration(body: _QueryBody) -> VerticalRegistration:
+    """Resolve the vertical for ``body.anchor_theme_id`` from the closed
+    registration. Unregistered anchor → the route's private 404
+    ``not_available`` (the same body the evidence route gives an unknown ref;
+    the anchor is not echoed and the registry is not listed). Registered anchor
+    with a slice outside its closed slice set → the private 400
+    ``invalid_request`` the body model gives a malformed field. Nothing here
+    reads a bundle, a file or the environment."""
+    registration = registration_for(body.anchor_theme_id)
+    if registration is None:
+        raise _private_error(404, {"error": {"code": "not_available", "action": "none"}})
+    if body.slice_key not in registration.slice_keys:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "slice_key is not registered for this anchor"}},
+        )
+    return registration
+
+
+def _require_registered_schema(
+    payload: Any, expected_schema_id: str
+) -> dict[str, Any]:
+    """A composed payload is served only when it is a mapping whose ``schema``
+    is the registration's exact schema id; anything else is a composer /
+    registration mismatch and fails closed (the caller maps it to 503)."""
+    if not isinstance(payload, Mapping) or payload.get("schema") != expected_schema_id:
+        raise PrivateStoreUnavailable("composed payload does not carry the registered schema")
+    return dict(payload)
+
+
+def _call_compose(
+    body: _QueryBody, principal: Mapping[str, Any], registration: VerticalRegistration,
+) -> JSONResponse:
     query = _body_to_query(body)
     bundle = load_authorized_owner_bundle(query, principal=principal)
     bundle, dropped = _filter_bundle_for_rights(bundle)
-    payload = compose_semiconductor_research(query, bundle)
+    payload = _require_registered_schema(
+        registration.compose(query, bundle), registration.schema_id,
+    )
     payload = _post_process_rights_limitation(payload, dropped)
     return _private_json(200, payload)
 
 
 def _call_evidence(
-    body: _EvidenceBody, principal: Mapping[str, Any]
+    body: _EvidenceBody, principal: Mapping[str, Any], registration: VerticalRegistration,
 ) -> JSONResponse:
     query = _body_to_query(body)
     bundle = load_authorized_owner_bundle(query, principal=principal)
     bundle, dropped = _filter_bundle_for_rights(bundle)
-    payload = select_authorized_evidence(query, bundle, body.assertion_ref)
+    payload = _require_registered_schema(
+        registration.select_evidence(query, bundle, body.assertion_ref),
+        registration.evidence_schema_id,
+    )
     payload = _post_process_rights_limitation(payload, dropped)
     return _private_json(200, payload)
 
@@ -364,13 +421,19 @@ async def research_query(
 
     Order (LAW): auth (the dependency) runs FIRST — a 401/403 fires before any
     body parsing. Then we read the body manually and return a 400 (with the
-    four private headers) on a malformed payload. Auth precedence is
+    four private headers) on a malformed payload; then the closed registration
+    resolves the vertical (private 404 on an unregistered anchor, private 400
+    on a foreign slice) before any reader is touched. Auth precedence is
     proven by ``test_unauthorized_request_never_constructs_private_reader``.
     """
     _private(response)
     body = await _parse_body(_QueryBody, request)
+    # Closed registration AFTER auth + parse, BEFORE any reader: its private
+    # 404/400 must reach the wire as-is, so it is resolved outside the
+    # catch-all below.
+    registration = _resolve_registration(body)
     try:
-        return _call_compose(body, user)
+        return _call_compose(body, user, registration)
     except ResearchRefusal as exc:
         raise _map_research_refusal(exc) from None
     except PrivateStoreUnavailable:
@@ -401,8 +464,9 @@ async def research_evidence(
     """Paid read-only projection of ONE authorized assertion's evidence."""
     _private(response)
     body = await _parse_body(_EvidenceBody, request)
+    registration = _resolve_registration(body)
     try:
-        return _call_evidence(body, user)
+        return _call_evidence(body, user, registration)
     except ResearchRefusal as exc:
         raise _map_research_refusal(exc) from None
     except PrivateStoreUnavailable:

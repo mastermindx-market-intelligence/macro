@@ -2197,6 +2197,14 @@ jobs:
       # (gate: code, also imports app.main) declares, minus that job's own
       # suites and fixtures. Verified against the closure audit.
       - "engine/market_ontology/semiconductor_theme_research.py"
+      # Shared hook 1 (Sol #7780 issuecomment-5813801605): the closed vertical
+      # registration the transport dispatches through, and its suite.
+      - "engine/market_ontology/theme_research_registry.py"
+      - "tests/test_theme_research_registry.py"
+      # The registry module imports through the package, so its closure carries
+      # engine/market_ontology/__init__.py -> exposure_map.py (as conviction-profile declares).
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
       - "scripts/refresh_event_workspaces.py"
       - "scripts/build_theme_detail.py"
       - "templates/_theme_research_mount.html.j2"
@@ -2294,8 +2302,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 jsonschema fastapi httpx requests numpy pandas pyarrow
-      - name: paid theme research transport (auth gate, rights owner veto, private binding)
-        run: python -m pytest tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
+      - name: paid theme research transport (auth gate, closed vertical registration, rights owner veto, private binding)
+        run: python -m pytest tests/test_theme_research_registry.py tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
       - name: issuer release grammars, guidance history, EDGAR intake (TSMC + onsemi witnesses)
         run: python -m pytest tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_intake_integration.py -q
       - name: semiconductor research composer (inputs, composition, temporal law)
@@ -2376,6 +2384,7 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -8237,6 +8246,7 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -8870,6 +8880,7 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -10957,6 +10968,7 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -11331,6 +11343,7 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -14832,6 +14845,7 @@ jobs:
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
