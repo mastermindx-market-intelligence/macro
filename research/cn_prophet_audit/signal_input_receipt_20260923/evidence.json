@@ -19,7 +19,7 @@
   "source_write": "SUCCEEDED_ON_ORIGINAL_CARRIER_AFTER_RECOVERY",
   "source_unchanged_on_readback": false,
   "regression_patch_sha256": "08d8919bebac8e43549ec0860bfb394910c666180e3c0a37bbbc6962a4d8086b",
-  "new_pr": null,
+  "new_pr": 7860,
   "publication_scope": "Native serializer repair plus existing Chinese consumer tests; no deployment or trading-policy change.",
   "historical_diagnostic": {
     "implemented": false,
@@ -68,5 +68,66 @@
     "result": "15 failed, 551 passed, 16 skipped, 28 errors",
     "cause": "missing sparse site/factordata, site/basketdata, site/chart.js and collectors; qualification after opt-in remains owed",
     "log_sha256": "285b71bdb791a774fb3e0d34475efeb6de073e216b700da4397f410adce7ea55"
+  },
+  "crossmarket_qualification": {
+    "passed": 594,
+    "skipped": 16,
+    "failed": 0,
+    "log": "crossmarket-final.txt",
+    "sha256": "7264bc857d3357885127ee62880404cc52d427f1d4edc826703675f37c0dbe47",
+    "skips": "HK full-data and deep-price cases; not claimed executed",
+    "source_hashes_verified_on_recovery": true
+  },
+  "recovery_procedure_pin": "294b4c00ed668b497edb834be8108f14bc1bee8a",
+  "prior_review_reconciliation": {
+    "operation": "cn-input-receipt-review-722910e0-20260923",
+    "session_id": "ca9da29e-7c92-445a-b965-4ea7b704b424",
+    "stop_result": "error_max_turns",
+    "stop_output_sha256": "3abd702a60500fc16be79f7ba5ab20ce95b93d8295f805e9b05c7a21b4129b26",
+    "parent_assignment_terminal": true,
+    "terminal_acknowledgement": false,
+    "source_writer_or_watcher_assigned": false,
+    "usable_review": false
+  },
+  "exact_semantic_ci": {
+    "head": "722910e0028a982956769cc779673b12e7936e59",
+    "ci": 35941146078,
+    "ci_conclusion": "success",
+    "fences": 35941145859,
+    "fences_conclusion": "success",
+    "production_proven": false
+  },
+  "compact_review_attempt": {
+    "operation": "cn-input-receipt-compact-audit-20260924",
+    "packet": "compact-review-request.md",
+    "packet_sha256": "d380adb77e97e11173415cc6e20180ebd836730852e690d683ad670d84739283",
+    "native_process": 45029,
+    "process_exit": 1,
+    "process_completed": true,
+    "output_status": "EXACT_OUTPUT_READ_PLATFORM_REFUSED",
+    "native_session_id": null,
+    "usable_report": false,
+    "independent_approval": false,
+    "source_writer_assigned": false,
+    "watcher_assigned": false,
+    "parent_assignment": "CLOSED_NO_FURTHER_WORK_AUTHORIZED",
+    "terminal_stop_delivery": "NOT_SENT_SESSION_ID_NOT_RECOVERABLE_THROUGH_REFUSED_READ",
+    "published_packet_sha256": "9ea280d38849c09ab1b919513fe72029e160baafe2ce4f1ed4bf123b6c84e48a",
+    "packet_normalization": "Trailing whitespace only for repository diff guard; actual delivered packet SHA256 retained separately."
+  },
+  "native_input_qualification_observation": {
+    "script": "native-roundtrip-proof.py",
+    "scope": "frozen native China close -> actual signal_gate -> buy_signal -> JSON -> existing China receipt consumer; not full library bake, live event latch, ranking or production proof",
+    "source_commit": "722910e0028a982956769cc779673b12e7936e59",
+    "members_executed": 22,
+    "missing_members": 0,
+    "qualified_process": 58557,
+    "qualified_exit": 0,
+    "engine_error_assertion": true,
+    "all_explicit_daily_receipts_preserved": true,
+    "snapshot_session": "2026-09-23",
+    "preflight": "First run rejected as signal proof: sparse CN calendar anchor was absent. Preflight JSON/text retained separately; existing tracked calendar anchor restored and explicit no-engine-error assertion added before successful run.",
+    "final_output_aggregation_and_digest": "READ_REFUSED_NOT_CLAIMED_VERIFIED",
+    "publication": "Only this observed execution summary is included; script/results remain local pending permitted verification."
   }
 }
