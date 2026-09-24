@@ -85,3 +85,84 @@ def test_snapshot_and_grade_returns_scorecard(tmp_path, monkeypatch):
 
 def test_scorecard_empty_is_safe(tmp_path):
     assert rra.scorecard(root=tmp_path)["n_graded"] == 0
+
+
+
+def _prospective_identity(tag: str) -> dict:
+    engine = (tag * 64)[:64]
+    calibration = ((chr(ord(tag) + 1) if tag != "f" else "e") * 64)[:64]
+    source_files = {
+        "engine/risk_radar.py": engine,
+        "engine/indicators.py": "1" * 64,
+        "lib/nyse_calendar.py": "2" * 64,
+        "lib/store.py": "3" * 64,
+        "lib/config.py": "4" * 64,
+    }
+    identity = {
+        "model_contract": "risk_radar_forward_model.v1",
+        "risk_schema": "risk_radar.v2",
+        "engine_source_sha256": engine,
+        "source_bundle_sha256": rra._sha256_json(source_files),
+        "source_files_sha256": source_files,
+        "calibration_sha256": calibration,
+    }
+    identity["model_fingerprint"] = rra._sha256_json(identity)
+    return identity
+
+
+def test_new_forward_row_carries_prospective_issue_identity(tmp_path, monkeypatch):
+    spy = _synthetic_spy()
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.setattr(
+        rra, "_forward_model_identity", lambda root=None: _prospective_identity("a")
+    )
+    assert rra.log_snapshot(_snap(spy.index[25], "elevated", True), root=tmp_path)
+    row = rra._read(rra._path(tmp_path))[0]
+    issue = row["forecast_issue"]
+    assert issue["contract"] == rra.FORWARD_ISSUE_CONTRACT
+    assert issue["epoch"] == rra.FORWARD_PROSPECTIVE_EPOCH
+    assert issue["ledger_lane"] == "nightly"
+    assert issue["first_writer_wins"] is True
+    assert issue["model_contract"] == "risk_radar_forward_model.v1"
+    assert issue["issued_at"] == row["logged_at"]
+    assert issue["model_fingerprint"] == _prospective_identity("a")["model_fingerprint"]
+
+
+def test_duplicate_date_cannot_replace_first_model_receipt(tmp_path, monkeypatch):
+    spy = _synthetic_spy()
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    identities = [_prospective_identity("a"), _prospective_identity("c")]
+    monkeypatch.setattr(
+        rra, "_forward_model_identity", lambda root=None: identities.pop(0)
+    )
+    snap = _snap(spy.index[25], "elevated", True)
+    assert rra.log_snapshot(snap, root=tmp_path) is True
+    first = rra._read(rra._path(tmp_path))[0]["forecast_issue"]["model_fingerprint"]
+    assert rra.log_snapshot(snap, root=tmp_path) is False
+    rows = rra._read(rra._path(tmp_path))
+    assert len(rows) == 1
+    assert rows[0]["forecast_issue"]["model_fingerprint"] == first
+    assert first == _prospective_identity("a")["model_fingerprint"]
+
+
+def test_forward_model_identity_rotates_on_calibration_overlay(tmp_path):
+    before = rra._forward_model_identity(root=tmp_path)
+    assert before and len(before["engine_source_sha256"]) == 64
+    p = tmp_path / "data" / "risk_radar" / "calibration.json"
+    p.parent.mkdir(parents=True)
+    p.write_text('{"prob_cal":{"h21":{"elevated":0.26}}}')
+    after = rra._forward_model_identity(root=tmp_path)
+    assert after
+    assert after["engine_source_sha256"] == before["engine_source_sha256"]
+    assert after["calibration_sha256"] != before["calibration_sha256"]
+    assert after["model_fingerprint"] != before["model_fingerprint"]
+
+
+def test_model_identity_failure_does_not_stop_legacy_forward_logging(tmp_path, monkeypatch):
+    spy = _synthetic_spy()
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.setattr(rra, "_forward_model_identity", lambda root=None: None)
+    assert rra.log_snapshot(_snap(spy.index[25], "elevated", True), root=tmp_path)
+    row = rra._read(rra._path(tmp_path))[0]
+    assert "forecast_issue" not in row
+    assert row["logged_at"]

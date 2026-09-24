@@ -131,6 +131,18 @@
         {%- if summary.breadth.scope %}
         <div class="hx-bscope">{{ t(summary.breadth.scope.en, summary.breadth.scope.zh) }}</div>
         {%- endif %}
+        {%- if summary.observation_coverage %}
+        {%- set oc = summary.observation_coverage %}
+        {%- set interval = oc.timeframes.get(summary.tf) if oc.timeframes is mapping else none %}
+        <div class="hx-bscope hm-observation-coverage" role="status">
+          {%- if interval and oc.basis == 'current_membership' and oc.membership_count is integer and interval.denominator is integer and interval.denominator > 0 and interval.valid_count is integer and interval.valid_count >= 0 and interval.missing_count is integer and interval.missing_count >= 0 and interval.denominator == oc.membership_count and interval.valid_count + interval.missing_count == interval.denominator %}
+          <span class="l-en">{{ interval.valid_count }} / {{ interval.denominator }} names have observed endpoint pairs · {{ interval.missing_count }} unavailable.</span>
+          <span class="l-zh">{{ interval.valid_count }} / {{ interval.denominator }} 个标的具备有效区间行情 · {{ interval.missing_count }} 个不可用。</span>
+          {%- else %}
+          {{ t('Observation coverage unavailable.', '观测覆盖率不可用。') }}
+          {%- endif %}
+        </div>
+        {%- endif %}
       </div>
       <div class="hx-stat">
         <div class="k">{{ t('Median move', '涨跌中位数') }}</div>
