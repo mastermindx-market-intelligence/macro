@@ -1005,3 +1005,83 @@ def _run_review_battery(js_text: str) -> dict:
     assert run.returncode == 0, f"node exited {run.returncode}:\n{run.stderr}\n{run.stdout}"
     assert run.stdout.strip(), f"no stdout; stderr:\n{run.stderr}"
     return json.loads(run.stdout.strip().splitlines()[-1])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Second-review fixes (seat): closed bilingual error codes, fetch hardening,
+# limitations/coverage wiring pinned at source level.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _fn_body(js_text: str, name: str) -> str:
+    start = js_text.index(f"function {name}(")
+    nxt = re.search(r"\n  function [A-Za-z_]+\(", js_text[start + 1:])
+    return js_text[start:start + 1 + (nxt.start() if nxt else len(js_text))]
+
+
+def _errcode_map(js_text: str) -> dict:
+    block = re.search(r"errcode:\s*\{(.*?)\n    \}", js_text, re.S).group(1)
+    return dict(re.findall(r"([a-z_]+):\s*\['([^']*)',\s*'([^']*)'\]", block) and
+                [(k, (en, zh)) for k, en, zh in re.findall(r"([a-z_]+):\s*\['([^']*)',\s*'([^']*)'\]", block)])
+
+
+def test_every_error_code_the_client_can_raise_is_in_the_closed_bilingual_map(js_text):
+    codes = _errcode_map(js_text)
+    assert set(codes) >= {"endpoint_not_same_origin", "cross_origin_redirect", "invalid_content_type",
+                          "invalid_json", "invalid_envelope", "body_too_large", "request_failed"}
+    for key, (en, zh) in codes.items():
+        assert not re.search(r"[一-鿿]", en), (key, en)
+        assert re.search(r"[一-鿿]", zh), (key, zh)
+        assert "_" not in en and "_" not in zh, f"{key}: slug leaked into copy"
+    raised = set(re.findall(r"typedError\('([a-z_]+)'\)", js_text))
+    raised |= set(re.findall(r"errorText\s*=\s*'([a-z_]+)'", js_text))
+    raised |= set(re.findall(r"errorWord\('([a-z_]+)'\)", js_text))
+    raised |= set(re.findall(r"\.code\s*=\s*'([a-z_]+)'", js_text))
+    assert raised and raised <= set(codes), raised - set(codes)
+    assert "return (typeof code === 'string' && Object.prototype.hasOwnProperty.call(L.errcode, code)) ? code : 'request_failed';" in js_text
+
+
+def test_error_codes_never_reach_the_dom_raw(js_text):
+    """No error string is written as textContent; every visible failure goes
+    through errorWord() → pair(L.errcode) → t(), and a server action string or
+    err.message is never a render input."""
+    assert not re.search(r"textContent\s*=\s*(textSafe\()?\s*(ui\.errorText|err\.(code|message))", js_text)
+    assert "err.message" not in js_text
+    assert "'request failed'" not in js_text
+    assert not re.search(r"throw new Error\(\(?err", js_text)
+    assert "error.action" not in js_text and ".action ||" not in js_text
+    assert js_text.count("errorWord(") >= 3
+
+
+def test_render_limitations_is_wired_and_always_emits_the_coverage_caveat(js_text):
+    assert "renderLimitations();" in _fn_body(js_text, "renderAll")
+    body = _fn_body(js_text, "renderLimitations")
+    assert "pair(L.status, covStatus" in body
+    assert "覆盖范围" in body and "Coverage" in body
+    assert "限制" in body and "Limitations" in body
+
+
+def test_fetch_calls_are_same_origin_and_refuse_redirect_content_type_and_size(js_text):
+    fetches = re.findall(r"fetch\((?:queryUrl|evidenceUrl), \{(.*?)\}\);", js_text, re.S)
+    assert len(fetches) == 2
+    for block in fetches:
+        assert "credentials: 'same-origin'" in block and "method: 'POST'" in block
+    assert js_text.count("refuseCrossOriginRedirect(resp);") == 2
+    assert js_text.count("return readJsonBody(resp);") == 2
+    assert re.search(r"var MAX_BODY_BYTES = \d+;", js_text)
+    body = _fn_body(js_text, "readJsonBody")
+    assert "typedError('invalid_content_type')" in body and "typedError('body_too_large')" in body
+    assert "JSON.parse(text)" in body and "newInvalidJsonError()" in body
+    assert "resp.json().catch(function () { throw newInvalidJsonError(); })" not in js_text
+    redirect = _fn_body(js_text, "refuseCrossOriginRedirect")
+    assert "resp.redirected" in redirect and "target.origin !== window.location.origin" in redirect
+
+
+def test_chip_class_token_is_whitelisted_against_the_label_map(js_text):
+    body = _fn_body(js_text, "chip")
+    assert "Object.prototype.hasOwnProperty.call(L.label, kind) ? kind : 'unknown'" in body
+    assert "'tr-chip tr-chip-' + known" in body
+    assert "textSafe(kind)" not in body
+
+
+def test_pager_never_prints_rows_one_to_zero(js_text):
+    assert "var from = rowCount === 0 ? 0 : offset + 1;" in _fn_body(js_text, "renderPager")

@@ -150,6 +150,36 @@
     return je;
   }
 
+  /* Every failure the UI can show is one of the closed codes in L.errcode; a
+   * server-supplied action string or an HTTP status never reaches the DOM. */
+  function typedError(code) {
+    var te = new Error(code);
+    te.code = code;
+    return te;
+  }
+
+  /* Response-body ceiling for the two research routes; a larger reply is
+   * refused as body_too_large before any byte is parsed. */
+  var MAX_BODY_BYTES = 2097152;  /* 2 MiB, written as a literal: this file computes nothing */
+
+  function readJsonBody(resp) {
+    var ct = String(resp.headers && resp.headers.get ? (resp.headers.get('content-type') || '') : '').toLowerCase();
+    if (ct.indexOf('application/json') !== 0) throw typedError('invalid_content_type');
+    return resp.text().then(function (text) {
+      if (text.length > MAX_BODY_BYTES) throw typedError('body_too_large');
+      try { return JSON.parse(text); } catch (e) { throw newInvalidJsonError(); }
+    });
+  }
+
+  function refuseCrossOriginRedirect(resp) {
+    if (resp.redirected) {
+      var target;
+      try { target = new URL(resp.url, window.location.href); } catch (e) { target = null; }
+      if (!target || target.origin !== window.location.origin) throw typedError('cross_origin_redirect');
+    }
+    return resp;
+  }
+
   /* NIT-7: same-origin guard for the mount's data-api-* URLs. Resolves a
    * relative or absolute URL against `location.origin`; a different origin
    * (or an unparseable string) returns the typed `endpoint_not_same_origin`
@@ -368,8 +398,28 @@
       external_consensus: ['External consensus', '外部共识'],
       house_forecast: ['House forecast', '内部预测'],
       market_incorporation: ['Market incorporation', '市场消化程度']
+    },
+    /* closed set of failure codes the status line and evidence drawer may show */
+    errcode: {
+      endpoint_not_same_origin: ['Research endpoint is not on this site — request refused.', '研究接口不在本站域名下——请求已拒绝。'],
+      cross_origin_redirect: ['The request was redirected off this site — refused.', '请求被重定向到本站之外——已拒绝。'],
+      invalid_content_type: ['The server reply was not JSON — refused.', '服务器返回的不是 JSON——已拒绝。'],
+      invalid_json: ['The server reply was not readable research data.', '服务器返回的不是可读的研究数据。'],
+      invalid_envelope: ['The server reply did not match the research contract.', '服务器返回的内容不符合研究数据合约。'],
+      body_too_large: ['The server reply was too large to read safely.', '服务器返回的内容过大，无法安全读取。'],
+      request_failed: ['The request failed. Try again later.', '请求失败，请稍后重试。']
     }
   };
+
+  function errorCode(err) {
+    var code = err && err.code;
+    return (typeof code === 'string' && Object.prototype.hasOwnProperty.call(L.errcode, code)) ? code : 'request_failed';
+  }
+
+  function errorWord(code) {
+    var w = pair(L.errcode, code);
+    return t(w[0], w[1]);
+  }
 
   var GATE_COPY = [
     'This section is member research. Sign in with a Mastermind account to read it.',
@@ -447,7 +497,10 @@
   }
 
   function chip(kind) {
-    var node = el('span', 'tr-chip tr-chip-' + textSafe(kind));
+    /* the CSS class token is whitelisted against L.label; server text never
+     * becomes a class name */
+    var known = Object.prototype.hasOwnProperty.call(L.label, kind) ? kind : 'unknown';
+    var node = el('span', 'tr-chip tr-chip-' + known);
     var w = pair(L.label, kind);
     node.appendChild(t(w[0], w[1]));
     return node;
@@ -456,7 +509,6 @@
   /* ---- remembered selection (the only storage this file touches) -------- */
 
   function restoreSelection() {
-    var restored = null;
     try {
       var raw = localStorage.getItem('theme_research_sel');
       /* parseStoredSelection refuses anything that is not EXACTLY the three
@@ -543,11 +595,13 @@
           method: 'POST',
           headers: headers,
           body: JSON.stringify(queryRequestBody(newOffset)),
+          credentials: 'same-origin',
           signal: ctrl.signal
         });
       })
       .then(function (resp) {
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return null;
+        refuseCrossOriginRedirect(resp);
         var statusKind = classifyFetchStatus(resp.status);
         if (statusKind === 'gate') {
           /* 401 sign-in / 402 payment required / 403 forbidden — surface the
@@ -566,20 +620,17 @@
               }
               return null;
             }
-            throw new Error((errBody && errBody.error && errBody.error.action) || ('http ' + resp.status));
+            throw typedError('request_failed');
           });
         }
         if (statusKind === 'http_error') {
-          return resp.json().catch(function () { return null; }).then(function (errBody) {
-            var err = errBody && errBody.error;
-            throw new Error((err && (err.action || err.code)) || ('http ' + resp.status));
-          });
+          /* the server's action/code text is never shown; only the typed code is */
+          throw typedError('request_failed');
         }
-        /* statusKind === 'json': a 200-class response. NIT-4: a 200 with a
-         * non-JSON body surfaces a SyntaxError whose message embeds response
-         * bytes — catch it and surface a typed code with no body bytes in
-         * the message. */
-        return resp.json().catch(function () { throw newInvalidJsonError(); });
+        /* statusKind === 'json': a 200-class response. Content-Type, size and
+         * JSON shape are each refused with a typed code; no body byte ever
+         * reaches a message. */
+        return readJsonBody(resp);
       })
       .then(function (payload) {
         if (payload === null || payload === undefined) { renderAll(); return; }
@@ -593,13 +644,10 @@
       .catch(function (err) {
         if (err && err.name === 'AbortError') return;
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return;
-        /* Surface the typed codes (invalid_envelope, invalid_json, etc.)
-         * verbatim — never echo response body bytes through the message. */
-        if (err && err.code) {
-          ui.errorText = err.code;
-        } else {
-          ui.errorText = (err && err.message) || 'request failed';
-        }
+        /* Only a code from the closed L.errcode set is kept; anything else
+         * (a server action string, an HTTP status, a message with bytes in
+         * it) collapses to request_failed. */
+        ui.errorText = errorCode(err);
         renderAll();  /* previous payload (same epoch/principal) stays on screen */
       })
       .finally(function () {
@@ -630,7 +678,7 @@
       openDrawer(invokingButton);
       clear(drawerBody);
       var refuseP = el('p', 'tr-error');
-      refuseP.textContent = 'endpoint_not_same_origin';
+      refuseP.appendChild(errorWord('endpoint_not_same_origin'));
       drawerBody.appendChild(refuseP);
       return;
     }
@@ -654,11 +702,13 @@
           method: 'POST',
           headers: headers,
           body: JSON.stringify(body),
+          credentials: 'same-origin',
           signal: ctrl.signal
         });
       })
       .then(function (resp) {
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return null;
+        refuseCrossOriginRedirect(resp);
         if (resp.status === 401 || resp.status === 402 || resp.status === 403) return { __gate: true };
         if (resp.status === 409) {
           return resp.json().catch(function () { return null; }).then(function (errBody) {
@@ -672,16 +722,11 @@
               }
               return { __refresh: true };
             }
-            throw new Error((errBody && errBody.error && errBody.error.action) || ('http ' + resp.status));
+            throw typedError('request_failed');
           });
         }
-        if (!resp.ok) {
-          return resp.json().catch(function () { return null; }).then(function (errBody) {
-            var err = errBody && errBody.error;
-            throw new Error((err && (err.action || err.code)) || ('http ' + resp.status));
-          });
-        }
-        return resp.json().catch(function () { throw newInvalidJsonError(); });
+        if (!resp.ok) throw typedError('request_failed');
+        return readJsonBody(resp);
       })
       .then(function (payload) {
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return;
@@ -707,7 +752,7 @@
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return;
         clear(drawerBody);
         var p = el('p', 'tr-error');
-        p.textContent = textSafe((err && err.message) || 'request failed');
+        p.appendChild(errorWord(errorCode(err)));
         drawerBody.appendChild(p);
       })
       .finally(function () {
@@ -924,7 +969,7 @@
       }
     } else if (ui.errorText) {
       span = el('span', 'tr-error');
-      span.textContent = textSafe(ui.errorText);
+      span.appendChild(errorWord(ui.errorText));
       statusLine.appendChild(span);
       if (state.payload) {
         statusLine.appendChild(document.createTextNode(' '));
@@ -1157,7 +1202,7 @@
     var section = sectionForView();
     nextBtn.disabled = isFinalPage(section, PAGE_LIMIT);
     var rowCount = (section && Array.isArray(section.rows)) ? section.rows.length : 0;
-    var from = offset + 1;
+    var from = rowCount === 0 ? 0 : offset + 1;
     var to = offset + rowCount;
     clear(pageInfo);
     pageInfo.appendChild(t(
