@@ -13452,6 +13452,34 @@ jobs:
       - name: Energy economic-change dossier laws
         run: TZ=UTC python -m pytest tests/test_market_ontology_energy_economic_change.py -q
 
+  energy-nuclear-non-regression:
+    # ENERGY W1 T9 — the Nuclear decision-surface freeze: nuclear_power / uranium_miners membership
+    # rows, ThemeState structural fields and the Theme Tracker entry compared to a committed
+    # baseline (frozen exactly), nightly-volatile fields compared by JSON shape only (R-ENE-08),
+    # public nuclear pages checked for private-dossier canaries. Reads data/ and site/, so it is a
+    # data-gate job; it must never become a code-gate dependency of the dossier contract job.
+    if: ${{ false }}
+    gate: data
+    scope: exclusive
+    paths:
+      - "tests/test_energy_economic_change_non_regression.py"
+      - "tests/fixtures/energy_non_regression/**"
+      - "data/baskets/membership.json"
+      - "data/neuralweb/theme_state.json"
+      - "scripts/build_state_of_themes.py"
+      - "scripts/worktree_sparse.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the nuclear non-regression freeze
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+      - name: Energy nuclear decision-surface non-regression (W1 T9)
+        run: TZ=UTC python -m pytest tests/test_energy_economic_change_non_regression.py -q
+
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
