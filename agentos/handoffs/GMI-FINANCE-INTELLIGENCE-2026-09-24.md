@@ -200,3 +200,6 @@ Open the DRAFT carrier PR, emit START on #7786, dispatch `fin_t1_contract` and
 
 ### T3 delivered (06:52Z)
 - PR #7900 `feat(sector-intelligence): expose finance overlap context (Finance T3)`, head b1929dbb3cab, built by fabric lane fin_t3_overlap on mb (minimax / MiniMax-M3, 442 s, review deferred to the seat). Seat review: `python3 -m pytest tests/test_finance_overlap.py -q` → 53 passed (files overlaid temporarily in the seat worktree, then removed); public surface == frozen packet; `basket_state_context` never returns ADMITTED (docstring line ~591); no filesystem reads of basket data. Armed merge-on-green. CI wiring deferred to T2 (T3 WIRING addendum).
+
+### Chairman directive consumed (07:46Z) — integrate, never rebuild the base
+- Relayed from Astra CEO via the Chairman: the Semiconductor session builds the shared foundation; Finance integrates later. T4 (private evidence path), T5 (private staging), T6 (publish workflow), T7 (serving route) HELD; the T4 lane that had started on m1 was killed at 07:47Z before any commit; their args are quarantined (`*.HELD-foundation-integration-20260924`). Ruling R-FIN-8 supersedes R-FIN-7 (no Finance route; `FI_READ_URL` bound at integration). Continuing: T3 merge, T2, D1a/D1b, T8, T9. Integration items listed in DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE.

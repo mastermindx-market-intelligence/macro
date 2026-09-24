@@ -76,11 +76,14 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  Wave 1 is landing: T1 contract MERGED (#7896, b4c6e4bdb347); T3 overlap on PR #7900 awaits the
-  seat's CI-wiring commit then merge; D1a (spec) and T4 (private evidence) lanes run on mb/m1;
-  T2 projection dispatches once T3 is on main, then T5 ∥ T7 → T6 (dry-run → nonce_probe →
-  publish under the Sol R4 privacy gate); D1b mockup onto the D1a PR; Opus read-only audit of
-  the spec before T8. Records ride fresh branches per DEC:FINANCE-IMPL-CARRIER-IS-SEAT-PR-TASKS-SHIP-OFF-MAIN.
+  Chairman directive 2026-09-24 (Astra CEO): Finance integrates into the Semiconductor-built
+  shared foundation and never rebuilds base layers — T4/T5/T6/T7 HELD
+  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). Continue the
+  Finance-only layers: merge T3 (#7900), dispatch T2 projection, land D1a/D1b design
+  (#7903) after the Opus audit, build T8 shell + hydration behind FI_READ_URL and T9 entry
+  points; then integrate (assertion→source_records adapter, packet transcription into the
+  shared admission path, composed-dossier serving on the foundation's route) once #7870's
+  foundation is accepted on main.
 ---
 
 # Finance Intelligence workstream
