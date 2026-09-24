@@ -275,6 +275,9 @@ def _evaluate_authority_contract(
     legacy_n_hits = int(
         metrics.get("legacy_n_alert_hits", metrics.get("n_row_hits")) or 0
     )
+    legacy_n_incomplete = int(
+        metrics.get("legacy_n_incomplete_authority_rows") or 0
+    )
     legacy_base = float(
         metrics.get(
             "legacy_row_base_rate_dd5_h21",
@@ -309,6 +312,11 @@ def _evaluate_authority_contract(
             "legacy-row-gate-refused: "
             f"n_alert_rows={legacy_n_alerts} "
             f"< legacy_min_alert_rows={LEGACY_MIN_ALERT_ROWS_FORCE}"
+        )
+    elif legacy_n_incomplete:
+        row_gate_reason = (
+            "legacy-row-gate-refused: "
+            f"incomplete-authority-outcomes={legacy_n_incomplete}"
         )
     elif legacy_n_hits < MIN_ROW_HITS_FORCE:
         row_gate_reason = (
@@ -561,6 +569,9 @@ def _log_can_force_governance(
                 "legacy_n_total_graded_rows": metrics.get("legacy_n_total_graded_rows"),
                 "legacy_n_alert_rows": metrics.get("legacy_n_alert_rows"),
                 "legacy_n_alert_hits": metrics.get("legacy_n_alert_hits"),
+                "legacy_n_incomplete_authority_rows": metrics.get(
+                    "legacy_n_incomplete_authority_rows"
+                ),
                 "n_total_graded_rows": metrics.get("n_total_graded_rows"),
                 "n_loud_rows": metrics.get("n_loud_rows"),
                 "n_row_hits": metrics.get("n_row_hits"),
@@ -607,6 +618,7 @@ def scorecard(market: str, root=None, log_governance: bool = True) -> dict:
         "legacy_n_total_graded_rows",
         "legacy_n_alert_rows",
         "legacy_n_alert_hits",
+        "legacy_n_incomplete_authority_rows",
         "legacy_row_base_rate_dd5_h21",
         "legacy_row_evidence_asof",
         "n_total_graded_rows",
