@@ -4,12 +4,20 @@ from __future__ import annotations
 from datetime import date
 import hashlib
 import math
-import re
 from numbers import Real
 from typing import Any, Mapping
 
 from .documents import ABSENCE_SCHEMA, TypedAbsence
-from .pg_profile import PG_DEFINITIONS, PG_METRIC_KEYS, PG_PRIVATE_RIGHTS_PROFILE, parse_pg_literal
+from .pg_profile import (
+    PG_DEFINITIONS,
+    PG_METRIC_KEYS,
+    PG_PRIVATE_RIGHTS_PROFILE,
+    _NEUTRAL_ZERO,
+    _fiscal_identity,
+    _scope_period_forms,
+    parse_pg_literal,
+    replay_table_layout,
+)
 
 
 PRESENT_KEYS = frozenset({
@@ -62,17 +70,6 @@ def _fiscal_scope(value: Any) -> tuple[date, date, date, date]:
     return current_start, current_end, prior_start, prior_end
 
 
-_PG_FISCAL_QUARTERS = {4: 4, 5: 4, 6: 4, 7: 1, 8: 1, 9: 1, 10: 2, 11: 2, 12: 2, 1: 3, 2: 3, 3: 3}
-_NEUTRAL_ZERO = re.compile(r"\bdash(?:es)?\s+(?:means|represent[sd]?)\s+zero\b", re.IGNORECASE)
-_TABLE_CELLS = re.compile(rb"<t[dh][^>]*>(.*?)</t[dh]>", re.IGNORECASE | re.DOTALL)
-
-
-
-def _cell_text(fragment: bytes) -> str:
-    text = re.sub(rb"<[^>]+>", b"", fragment)
-    return text.decode("utf-8", errors="strict").strip().replace("&amp;", "&")
-
-
 def _fact_id(event_id: Any, metric: Any, period: Any, basis: Any) -> str:
     identity = "|".join(str(item) for item in (event_id, metric, period, basis))
     return f"fact_{hashlib.sha256(identity.encode('utf-8')).hexdigest()[:16]}"
@@ -85,9 +82,11 @@ def _verify_pg_replay(
     start: Any,
     end: Any,
     row: Mapping[str, Any],
+    current_start: date,
     current_end: date,
     prior_end: date,
 ) -> None:
+    _, _, current_forms, prior_forms = _scope_period_forms(current_start, current_end, prior_end)
     source_bytes = source.encode("utf-8")
     if not isinstance(start, int) or not isinstance(end, int) or not 0 <= start < end <= len(source_bytes):
         raise EconomicObservationError("replay_mismatch: replay location is invalid")
@@ -96,52 +95,27 @@ def _verify_pg_replay(
         if definition.row_label and definition.row_label.casefold() not in context:
             raise EconomicObservationError("replay_mismatch: replayed basis differs from the metric definition")
         return
-    table_start = source_bytes.rfind(b"<table", 0, start)
-    table_end = source_bytes.find(b"</table>", end)
-    if table_start < 0 or table_end < 0:
-        raise EconomicObservationError("replay_mismatch: cell has no enclosing table")
-    cells: list[tuple[bytes, int, int]] = []
-    for match in _TABLE_CELLS.finditer(source_bytes, table_start, table_end):
-        cells.append((match.group(1), match.start(1), match.end(1)))
-    target = next((index for index, cell in enumerate(cells) if cell[1] <= start and end <= cell[2]), None)
-    if target is None:
-        raise EconomicObservationError("replay_mismatch: span is not a table cell")
     try:
-        texts = [_cell_text(cell[0]) for cell in cells]
-    except UnicodeDecodeError as exc:
-        raise EconomicObservationError("replay_mismatch: table bytes are not UTF-8 aligned") from exc
-    opens = list(re.finditer(rb"<tr[^>]*>", source_bytes[table_start:end], re.IGNORECASE))
-    if opens:
-        row_open = opens[-1].start() + table_start
-        row_start = next(
-            index for index, cell in enumerate(cells)
-            if cell[1] > row_open and cell[1] <= start
+        row_label, header, column = replay_table_layout(
+            source,
+            start=int(start),
+            end=int(end),
+            header_forms=(
+                (definition.column_label,)
+                if definition.column_label
+                else (*current_forms, *prior_forms)
+            ),
         )
-    else:
-        row_start = target
-        while row_start > 0 and texts[row_start - 1]:
-            row_start -= 1
-    row_label = texts[row_start]
+    except ValueError as exc:
+        raise EconomicObservationError(f"replay_mismatch: {exc}") from exc
     if definition.row_label and row_label.casefold() != definition.row_label.casefold():
         raise EconomicObservationError("replay_mismatch: replayed row differs from the metric definition")
-    header = texts[:row_start]
-    if opens:
-        header_open = opens[0].start() + table_start
-        header = [text for index, text in enumerate(texts) if cells[index][1] >= header_open and index < row_start]
-    column = target - row_start
-    if not definition.column_label and column == 0:
-        column = 1
-    expected_period = prior_end if row.get("metric", "").startswith("pg_prior_") else current_end
-    period_forms = {
-        expected_period.isoformat(),
-        str(expected_period.year),
-        expected_period.strftime("%B %-d, %Y"),
-    }
+    period_forms = set(prior_forms if row.get("metric", "").startswith("pg_prior_") else current_forms)
     if definition.column_label:
-        if column >= len(header) or header[column] != definition.column_label:
+        if column < 1 or header != definition.column_label:
             raise EconomicObservationError("replay_mismatch: replayed column differs from the metric definition")
         return
-    if column >= len(header) or header[column] not in period_forms:
+    if column < 1 or header not in period_forms:
         raise EconomicObservationError("replay_mismatch: replayed period differs from the stored observation")
 
 
@@ -161,10 +135,20 @@ def validate_selected_facts(
         raise EconomicObservationError("workspace fiscal period is missing")
     if fiscal_period.get("calendar_end") != current_end.isoformat():
         raise EconomicObservationError("workspace fiscal period does not match fiscal_scope")
-    expected_quarter = _PG_FISCAL_QUARTERS[current_start.month]
+    expected_year, expected_quarter = _fiscal_identity(current_start, current_end)
     if str(fiscal_period.get("quarter")) != str(expected_quarter):
         raise EconomicObservationError("workspace quarter does not match fiscal_scope")
-    release = workspace.get("sources", [{}])[0]
+    if str(fiscal_period.get("year")) != str(expected_year):
+        raise EconomicObservationError("workspace fiscal year does not match fiscal_scope")
+    releases = [
+        source for source in workspace.get("sources", [])
+        if isinstance(source, Mapping)
+        and source.get("kind") == "issuer_release"
+        and source.get("receipt_state") == "byte_replayed"
+    ]
+    if len(releases) != 1:
+        raise EconomicObservationError("workspace has no unique byte-replayed release document")
+    release = releases[0]
     workspace_document_id = release.get("document_id") if isinstance(release, Mapping) else None
     if not isinstance(workspace_document_id, str) or not workspace_document_id:
         raise EconomicObservationError("workspace has no release document identity")
@@ -207,7 +191,13 @@ def validate_selected_facts(
         fact_ids.add(fact_id)
         metric = row.get("metric")
         definition = _definition(metric)
-        if "value" in row and fact_id != _fact_id(event_id, metric, row.get("period"), definition.basis):
+        expected_fact_id = _fact_id(
+            event_id,
+            metric,
+            row.get("period") if "value" in row else metric,
+            definition.basis,
+        )
+        if fact_id != expected_fact_id:
             raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
         scope_key = (event_id, metric, definition.scope, row.get("period"), definition.basis)
         if scope_key in metric_scope_periods:
@@ -235,6 +225,13 @@ def validate_selected_facts(
                 raise EconomicObservationError("typed_absence authority is not display context")
             if not str(absence_payload.get("subject") or "").startswith(metric):
                 raise EconomicObservationError("typed_absence subject does not match its metric")
+            combined_text = (
+                str(absence_payload.get("subject") or "")
+                + " "
+                + str(absence_payload.get("detail") or "")
+            ).casefold()
+            if "combined" in combined_text and not ("volume" in combined_text and "mix" in combined_text):
+                raise EconomicObservationError("combined typed_absence subject names only one component")
             if absence_payload.get("event_id") != event_id:
                 raise EconomicObservationError("typed_absence belongs to another event")
             if absence_payload.get("document_id") != workspace_document_id:
@@ -304,8 +301,7 @@ def validate_selected_facts(
         if definition.value_kind == "bounded_text":
             replayed_value: Any = replayed_text
         elif replayed_text in {"-", "—", "–"}:
-            before = source[: receipt.get("span_start_byte")]
-            if not _NEUTRAL_ZERO.search(before):
+            if not _NEUTRAL_ZERO.search(source):
                 raise EconomicObservationError("replay_mismatch: dash has no neutral-zero convention")
             replayed_value = 0.0
         else:
@@ -318,6 +314,7 @@ def validate_selected_facts(
             start=receipt.get("span_start_byte"),
             end=receipt.get("span_end_byte"),
             row=row,
+            current_start=current_start,
             current_end=current_end,
             prior_end=prior_end,
         )
