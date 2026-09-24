@@ -124,7 +124,33 @@ STATUS: ANSWERED
 
 ## Q5 — Theme-graph admission for Consumer Staples
 
-STATUS: IN PROGRESS
+#7870 makes `config/theme_sources.yml` the single source-family authority and #7870's `rights.py` enforces it fail-closed. A missing or unreadable registry refuses; an unknown family refuses; a readable but `unresolved`/`internal_only` family refuses public emission (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:engine/theme_graph/rights.py:126-156`, `:159-208`, `:211-241`). `sec_edgar` is registered `direct_display_ok/keyless_public` with explicit SEC fair-access and attribution limits (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:config/theme_sources.yml:43-48`); `mastermind_curated` is `direct_display_ok/house` (`:22-27`); Finviz and THS remain unresolved (`:29-41`). That admission does not make issuer facts or an XLP relationship true: it only permits display under the family's stated scope.
+
+### PG — `0000080424`
+
+PG is an issuer, not a Consumer Staples theme node. If the theme graph carries it, it must be a company-kind node in the permanent `co:<market>:<SYMBOL>[#epoch]` grammar (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:contracts/theme_graph/nodes.v1.schema.json:20-26`). Its status belongs to the theme-graph node lifecycle: nodes are keep-first write-once, lifecycle is a keyed sidecar, and the current read overlays the latest ratified lifecycle row (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:contracts/theme_graph/node_lifecycle.v1.schema.json:5`, `:8-17`, `:28-30`; `origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:engine/theme_graph/store.py:104-121`, `:250-268`, `:370-374`). CDV-1 must not mint `co:us:PG`, set it canonical, or rewrite status.
+
+Identity resolution is also not a CDV-1 write. The bridge requires one row for every company node, re-derives it from the Data OS master/alias spine, allocates no issuer identity, and has no ticker-equality fallback (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:engine/theme_graph/identity_resolution.py:1-29`, `:56-64`, `:541-561`). The schema accepts `RESOLVED` or typed refusals and copies `issuer_id` only when the master's own issuer state is `RESOLVED` (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:contracts/theme_graph/identity_resolution.v1.schema.json:38-70`). Therefore CDV-1 may assert the CIK as a native source registration input, but only the theme-graph owner's identity build can make PG resolve and only CIK evidence in the security master can authorize `issuer_id`. `NOT_IN_MASTER` remains an honest refusal rather than a synthetic identity.
+
+### XLP / Consumer Staples
+
+XLP can be represented only as its own graph object, not by renaming PG into a sector. The node grammar supports ETF nodes (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:contracts/theme_graph/nodes.v1.schema.json:20-26`), but the rights prefix maps at #7870 cover only Finviz/THS local themes and curated basket IDs (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:engine/theme_graph/rights.py:49-77`). There is no CDV rights family or XLP mapping today. An owner minted `etf:XLP` or a curated Consumer Staples node can exist under the graph owner's normal process; a vendor/index-derived membership edge would need a reviewed source family and node/source mapping before it can emit. Until then, CDV must display no fabricated XLP membership.
+
+Probation is not an admission mechanism. Proposals are explicitly unratified production vocabulary, require a known proposal kind and proposer, are born `proposed`, and only a curator's later `ratified` row can act (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:contracts/theme_graph/probation_proposal.v1.schema.json:5`, `:8`, `:15-40`; `origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:engine/theme_graph/probation.py:60-82`, `:124-149`). CDV-1 should mint neither PG nor XLP proposals in round 1: it has no theme-graph discovery task and converting a research observation into graph provenance is forbidden. If a later task needs a proposal, it must use an audited proposer identity and leave ratification to the delegated curator.
+
+### Ownership
+
+| Surface | CDV-1 may do | Theme-graph owner must do | Semiconductors session must do |
+|---|---|---|---|
+| `config/theme_sources.yml` | Cite current rows and fail closed. | Review/admit any genuinely new CDV source family; owns edits. | Keep `sec_edgar` and its SEC/attribution review current; adjudicate any family extension request. |
+| Rights enforcement | Emit only after a current snapshot gate. | Own `rights.py` and the graph emission gate. | Preserve single-registry enforcement and fail-closed behavior in integration. |
+| PG node | No mint/status write. | Materialize/maintain `co:us:PG` only through its canonical graph build. | Ensure the carrier and contract guard accept the existing company-node path without CDV-native admission. |
+| PG CIK/issuer identity | Supply native CIK/listing/fiscal evidence to its own intake. | Run/review identity resolution and its typed refusals. | Ensure no UI treats ticker as identity; consume only the sanctioned resolver read. |
+| XLP/sector node or edge | No mapping or membership mint. | Mint/review the sector object and any edge under its source/lifecycle process. | Add and guard any new node/source-prefix mapping before public emission. |
+| Probation | No proposal in CDV-1. | Curate any proposal produced by a lawful future organ. | Preserve “proposal cannot self-ratify” and append-only behavior. |
+| `admission.py` private-root classifier | Not a graph admission path; use only if a filesystem private theme-research root is later bound. | Own the classifier and public-root refusals. | Keep the object-store/private publication validation separate from this filesystem-only check (`origin/claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9:engine/theme_graph/admission.py:37-41`, `:58-113`). |
+
+STATUS: ANSWERED
 
 ## Q6 — CDV-1 task recommendations
 
