@@ -1241,6 +1241,45 @@ def test_all_supply_chip_statuses_render_with_distinct_plain_text():
         assert all(word not in text.casefold() for word in banned)
 
 
+def test_chip_zh_labels_translate_every_appended_fact():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    current_with_remainder = summarize_supply(
+        [_summary_row("Current"), _summary_row("Under Review", ndc="TEST-B")],
+        capture=_capture(now, "2026-09-20"), now=now, max_capture_age=None,
+    )
+    legacy = summarize_supply(
+        [_summary_row("Current")], capture=None, now=now, max_capture_age=None,
+    )
+    unavailable = summarize_supply(
+        [_summary_row()], capture=_failed_capture(now), now=now,
+        max_capture_age=timedelta(days=2),
+    )
+
+    assert current_with_remainder["label"] == (
+        "FDA shortage: current (1) · captured 3 d ago · "
+        "source generation 2026-09-20 · 1 record unclassified"
+    )
+    assert current_with_remainder["label_zh"] == (
+        "FDA短缺：当前（1） · 采集于3天前 · "
+        "来源生成日期2026-09-20 · 1条记录未分类"
+    )
+    assert legacy["label"].endswith("capture time unknown")
+    assert legacy["label_zh"].endswith("采集时间未知")
+    assert unavailable["label"] == (
+        "FDA source unavailable — last qualified 2026-09-20, refresh failed · captured 3 d ago"
+    )
+    assert unavailable["label_zh"] == (
+        "FDA来源不可用——上次合格为2026-09-20，刷新失败 · 采集于3天前"
+    )
+    for summary in (current_with_remainder, legacy, unavailable):
+        chinese = summary["label_zh"].casefold()
+        assert "source generation" not in chinese
+        assert "record unclassified" not in chinese
+        assert "capture time unknown" not in chinese
+
+
 def test_unavailable_chip_names_last_qualified_generation(monkeypatch):
     import engine.fda_scarcity as fda_module
     from engine.fda_scarcity import compute_fda_scarcity, format_theme_feed_chip
@@ -1260,7 +1299,26 @@ def test_unavailable_chip_names_last_qualified_generation(monkeypatch):
     assert "refresh failed" in chip["label"]
 
 
-def test_fda_chip_statuses_do_not_move_stage_entry_or_tier():
+def test_legacy_chip_rows_preserve_discontinued_and_unclassified_states():
+    from engine.fda_scarcity import format_theme_feed_chip
+
+    discontinued = format_theme_feed_chip(
+        {"band": "NONE", "n_active": 0, "n_resolved": 0, "n_discontinued": 2,
+         "details": ["Synthetic A [To Be Discontinued]"]},
+        "glp1_obesity",
+    )
+    assert discontinued["source_status"] == "DISCONTINUATION_REPORTED"
+    assert discontinued["band"] == "NONE"
+    assert "discontinuation reported (2)" in discontinued["label"]
+
+    unrecognized = format_theme_feed_chip(
+        {"band": "NONE", "n_active": 0, "n_resolved": 0, "n_discontinued": 0,
+         "details": ["Synthetic A [Under Review]"]},
+        "glp1_obesity",
+    )
+    assert unrecognized["source_status"] == "UNCLASSIFIED"
+    assert unrecognized["band"] == "NONE"
+    assert "status unclassified" in unrecognized["label"]
     bottleneck = {"themes": {"glp1_obesity": {"name": "GLP-1 / Obesity", "band": "AWAITING_DATA"}}}
     revisions = {"themes": {"glp1_obesity": {"name": "GLP-1 / Obesity", "breadth": 0.05,
                                               "level_state": "FLAT_LOW"}}}
@@ -1276,9 +1334,9 @@ def test_fda_chip_statuses_do_not_move_stage_entry_or_tier():
         )["themes"][0]
 
     current = run("CURRENT_REPORTED")
-    unavailable = run("UNAVAILABLE")
-    assert current["stage"] == unavailable["stage"] == "WATCH"
-    assert current.get("entry") == unavailable.get("entry") is None
+    resolved = run("UNAVAILABLE")
+    assert current["stage"] == resolved["stage"] == "WATCH"
+    assert current.get("entry") == resolved.get("entry") is None
     assert current["tier"] == unavailable["tier"] == "P"
 
 
