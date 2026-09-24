@@ -1051,11 +1051,12 @@ def _emit_attempt(
     latency_ms: int,
     error_class: str,
     model: str | None = None,
+    lane: str = LANE,
 ) -> None:
     """One health row per attempt, skips included.  Telemetry never raises."""
     try:
         provider_health.record_attempt(
-            lane=LANE,
+            lane=lane,
             context=status.mode_id,
             rung=status.provider_id,
             ok=ok,
@@ -1074,6 +1075,7 @@ def _emit_usage(
     input_tokens: int,
     output_tokens: int,
     model: str,
+    lane: str = LANE,
 ) -> str:
     """One cost row, only when BOTH token counts are known.  Never raises.
 
@@ -1096,14 +1098,14 @@ def _emit_usage(
     try:
         provider, cost_basis = status.cost_identity.split("/", 1)
         ai_costs.record_usage(
-            lane=LANE,
+            lane=lane,
             provider=provider,
             model=model,
             key_id=status.cap_id,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             cost_basis=cost_basis,
-            note="provider_production_modes",
+            note=lane,
             est_cost_usd=estimate,
         )
     except Exception as exc:  # noqa: BLE001 — telemetry must not cost a call
@@ -1149,6 +1151,7 @@ def call_mode(
     max_tokens: int,
     env: Mapping[str, str] | None = None,
     transport: Transport | None = None,
+    telemetry_lane: str = LANE,
 ) -> ProductionCallReceipt:
     """Call one production mode, or refuse to, and return a receipt.
 
@@ -1163,12 +1166,17 @@ def call_mode(
     destination raises :class:`ProductionModeConfigError` before any transport
     exists — that is a refusal, not a provider failure.
     """
+    if telemetry_lane not in {LANE, CANARY_LANE}:
+        raise ProductionModeConfigError("unsupported production-mode telemetry lane")
     mode = _mode(mode_id)
     source: Mapping[str, str] = os.environ if env is None else env
     status, credential = _resolve_status_and_credential(mode, source)
     if status.state != "configured":
         error_class = "unsupported" if status.state == "unqualified" else status.state
-        _emit_attempt(status, ok=False, latency_ms=0, error_class=error_class)
+        _emit_attempt(
+            status, ok=False, latency_ms=0, error_class=error_class,
+            lane=telemetry_lane,
+        )
         return _receipt(
             status,
             ok=False,
@@ -1232,7 +1240,10 @@ def call_mode(
         input_tokens = None
         output_tokens = None
 
-    _emit_attempt(status, ok=ok, latency_ms=latency_ms, error_class=error_class)
+    _emit_attempt(
+        status, ok=ok, latency_ms=latency_ms, error_class=error_class,
+        lane=telemetry_lane,
+    )
     price_state = "unknown"
     if ok and input_tokens is not None and output_tokens is not None:
         price_state = _emit_usage(
@@ -1240,6 +1251,7 @@ def call_mode(
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             model=status.model,
+            lane=telemetry_lane,
         )
 
     return _receipt(
@@ -1257,6 +1269,7 @@ def call_mode(
 # Shadow-only MiniMax PAYG qualification canary
 # --------------------------------------------------------------------------- #
 CANARY_SCHEMA = "mastermind.provider_production_canary.v1"
+CANARY_LANE = "provider_production_modes_canary"
 CANARY_MODE_ID = "minimax_payg_api"
 CANARY_ARM_ENV = "MM_PROVIDER_CANARY_MODE"
 CANARY_EXPECTED_TEXT = "CANARY_OK"
@@ -1311,6 +1324,7 @@ def run_minimax_canary(
             receipt = call_mode(
                 CANARY_MODE_ID, _CANARY_SYSTEM, _CANARY_USER,
                 max_tokens=CANARY_MAX_TOKENS, env=env, transport=transport,
+                telemetry_lane=CANARY_LANE,
             )
         finally:
             DEFAULT_PATH = original_path
@@ -1326,7 +1340,14 @@ def run_minimax_canary(
         and receipt.cap_id == "prod_api:minimax"
     )
     fallback_ok = receipt.fallback == "none"
-    accepted = bool(receipt.ok and response_match and identity_ok and fallback_ok)
+    pricing_ok = (
+        receipt.price_state == "known"
+        and receipt.input_tokens is not None
+        and receipt.output_tokens is not None
+    )
+    accepted = bool(
+        receipt.ok and response_match and identity_ok and fallback_ok and pricing_ok
+    )
     if not receipt.ok:
         reason = "provider_refused"
     elif not identity_ok:
@@ -1335,6 +1356,8 @@ def run_minimax_canary(
         reason = "fallback_observed"
     elif not response_match:
         reason = "response_mismatch"
+    elif not pricing_ok:
+        reason = "pricing_unknown"
     else:
         reason = "accepted"
     return {
@@ -1353,6 +1376,9 @@ def run_minimax_canary(
         "output_tokens": receipt.output_tokens,
         "latency_ms": receipt.latency_ms,
         "price_state": receipt.price_state,
+        "telemetry_lane": CANARY_LANE,
+        "qualification_effect": False,
+        "activation_eligible": accepted,
         "max_tokens": CANARY_MAX_TOKENS,
         "request_count_ceiling": 1,
         "source_config_sha256": source_sha,

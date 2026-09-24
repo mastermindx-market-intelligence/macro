@@ -1479,7 +1479,8 @@ def test_the_merge_gate_step_still_names_this_suite():
     ci = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     assert "tests/test_provider_production_modes.py" in ci
 
-def test_minimax_shadow_canary_is_one_call_and_never_activates_source(receipts):
+def test_minimax_shadow_canary_is_one_call_and_never_activates_source(receipts, monkeypatch):
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: 0.00001)
     transport = FakeTransport({
         "content": [{"type": "text", "text": ppm.CANARY_EXPECTED_TEXT}],
         "usage": {"input_tokens": 3, "output_tokens": 2},
@@ -1494,12 +1495,42 @@ def test_minimax_shadow_canary_is_one_call_and_never_activates_source(receipts):
     assert result["request_count_ceiling"] == 1
     assert result["source_mode_enabled"] is False
     assert result["production_activation"] is False
+    assert result["qualification_effect"] is False
+    assert result["activation_eligible"] is True
+    assert result["price_state"] == "known"
+    assert result["telemetry_lane"] == ppm.CANARY_LANE
     assert result["fallback"] == "none"
     assert len(transport.calls) == 1
+    assert receipts["health"][-1]["lane"] == ppm.CANARY_LANE
+    assert receipts["usage"][-1]["lane"] == ppm.CANARY_LANE
     assert transport.calls[0]["max_tokens"] == ppm.CANARY_MAX_TOKENS
     assert json.loads(CONFIG_PATH.read_text(encoding="utf-8"))["modes"]["minimax_payg_api"]["enabled"] is False
     assert SECRET_VALUE not in json.dumps(result, sort_keys=True)
     assert "text" not in result
+
+
+def test_minimax_shadow_canary_success_without_price_truth_is_not_accepted(
+    receipts, monkeypatch
+):
+    monkeypatch.setattr(ppm.ai_costs, "estimate_cost_usd", lambda *_args: None)
+    transport = FakeTransport({
+        "content": [{"type": "text", "text": ppm.CANARY_EXPECTED_TEXT}],
+        "usage": {"input_tokens": 3, "output_tokens": 2},
+    })
+    result = ppm.run_minimax_canary(
+        armed_mode=ppm.CANARY_MODE_ID,
+        env={"MINIMAX_API_KEY": SECRET_VALUE},
+        transport=transport,
+        source_path=CONFIG_PATH,
+    )
+    assert result["accepted"] is False
+    assert result["activation_eligible"] is False
+    assert result["acceptance_reason"] == "pricing_unknown"
+    assert result["price_state"] == "unknown"
+    assert len(transport.calls) == 1
+    assert receipts["health"][-1]["lane"] == ppm.CANARY_LANE
+    assert receipts["usage"][-1]["lane"] == ppm.CANARY_LANE
+
 
 
 def test_minimax_shadow_canary_refuses_without_arm_and_if_source_is_enabled(tmp_path):

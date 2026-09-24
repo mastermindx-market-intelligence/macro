@@ -36,8 +36,13 @@ Acceptance requires the secret-free JSON receipt to report:
 - `accepted=true` and `acceptance_reason=accepted`;
 - exact `minimax_payg_api` / `MiniMax-M3` / `prod_api:minimax` identity;
 - `fallback=none`, `response_match=true`, `request_count_ceiling=1`;
-- `source_mode_enabled=false` and `production_activation=false`.
+- exact token counts plus `price_state=known` from the canonical pricing owner;
+- `telemetry_lane=provider_production_modes_canary`;
+- `source_mode_enabled=false`, `qualification_effect=false`, and
+  `production_activation=false`.
 
-The receipt never contains model response text or credential material. A passing
-canary qualifies only this bounded transport; consumer migration and normal traffic
-activation require a later reviewed wave.
+The receipt never contains model response text or credential material. A transport
+success with unknown pricing is explicitly rejected as `pricing_unknown`: it proves
+reachability, not economical activation readiness. A passing canary qualifies only
+this bounded transport; consumer migration and normal traffic activation require a
+later reviewed wave.
