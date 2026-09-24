@@ -6,7 +6,7 @@ descriptive question: which producer-declared heating desk has the strongest
 verified five-session rank acceleration? Entry/recommendation state is carried
 alongside that leadership read and must never suppress it.
 
-A separate ``entry_leader`` preserves the strongest Enter/Accumulate candidate
+A separate ``positive_rating_leader`` preserves the strongest Enter/Accumulate candidate
 for consumers that explicitly need entry suitability. Neither read is a fund-flow
 measure, a forecast, or a buy instruction.
 """
@@ -22,7 +22,7 @@ from lib.nyse_calendar import ET, is_session, session_n_back, sessions_behind
 
 _THEME_ID = re.compile(r"[a-z0-9][a-z0-9_-]{0,95}\Z")
 
-_ENTRY_COPY: dict[str, tuple[str, str, bool]] = {
+_RATING_COPY: dict[str, tuple[str, str, bool]] = {
     "enter": ("Enter", "入场", True),
     "accumulate": ("Accumulate", "增持", True),
     "hold": ("Hold", "持有", False),
@@ -64,11 +64,11 @@ def opportunity_desk(
     history: dict[str, Any] | None = None,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Return descriptive leadership plus a separate entry-suitable leader.
+    """Return descriptive leadership plus separate positive-rating context.
 
     The public function name is retained for compatibility with the existing
     dashboard adapter. ``leader`` is the hottest verified heating desk regardless
-    of recommendation verb. ``entry_leader`` is separately constrained to the
+    of recommendation verb. ``positive_rating_leader`` is separately constrained to the
     incumbent Enter/Accumulate verbs.
 
     Reuse the NYSE calendar, including weekends/holidays and the settlement buffer.
@@ -80,13 +80,13 @@ def opportunity_desk(
     out: dict[str, Any] = {
         "status": "unavailable",
         "leader": None,
-        "entry_status": "unavailable",
-        "entry_leader": None,
+        "positive_rating_status": "unavailable",
+        "positive_rating_leader": None,
         "as_of": None,
         "as_of_label": None,
         "sessions_behind": None,
         "href": "sector_central.html",
-        "entry_href": "sector_central.html",
+        "positive_rating_href": "sector_central.html",
     }
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
@@ -104,12 +104,12 @@ def opportunity_desk(
     out.update(as_of=day.isoformat(), as_of_label=f"{day:%b} {day.day}")
     # Bound calendar work for very old/corrupt artifacts; do not walk decades.
     if day < today - timedelta(days=14):
-        out["status"] = out["entry_status"] = "stale"
+        out["status"] = out["positive_rating_status"] = "stale"
         return out
     behind = sessions_behind(day, now)
     out["sessions_behind"] = behind
     if behind > 1:
-        out["status"] = out["entry_status"] = "stale"
+        out["status"] = out["positive_rating_status"] = "stale"
         return out
 
     # Older producers used archive row positions as days. Fail closed until the
@@ -148,7 +148,7 @@ def opportunity_desk(
             name = key.replace("_", " ").replace("-", " ").title()
         zh = row.get("name_zh")
         reco = row.get("reco") if isinstance(row.get("reco"), str) else None
-        entry_en, entry_zh, actionable = _ENTRY_COPY.get(
+        rating_en, rating_zh, actionable = _RATING_COPY.get(
             reco or "", ("Unavailable", "不可用", False)
         )
         candidates.append({
@@ -156,9 +156,9 @@ def opportunity_desk(
             "name": name,
             "name_zh": zh if isinstance(zh, str) and zh else name,
             "reco": reco,
-            "entry_label_en": entry_en,
-            "entry_label_zh": entry_zh,
-            "entry_actionable": actionable,
+            "rating_label_en": rating_en,
+            "rating_label_zh": rating_zh,
+            "positive_rating": positive_rating,
             "rank_delta_5d": five,
             "rank_delta_1d": (
                 _rank_delta(row.get("rank_delta_1d")) if latest_session_known else None
@@ -171,10 +171,10 @@ def opportunity_desk(
         out["leader"] = leader
         out["href"] = f"basket/{leader['id']}.html"
 
-    entry_candidates = [row for row in candidates if row["entry_actionable"]]
-    entry_leader, entry_status = _pick_unique_velocity(entry_candidates)
-    out["entry_status"] = entry_status
-    if entry_leader is not None:
-        out["entry_leader"] = entry_leader
-        out["entry_href"] = f"basket/{entry_leader['id']}.html"
+    positive_candidates = [row for row in candidates if row["positive_rating"]]
+    positive_leader, positive_status = _pick_unique_velocity(positive_candidates)
+    out["positive_rating_status"] = positive_status
+    if positive_rating_leader is not None:
+        out["positive_rating_leader"] = positive_rating_leader
+        out["positive_rating_href"] = f"basket/{positive_rating_leader['id']}.html"
     return out
