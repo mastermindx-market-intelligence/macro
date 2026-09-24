@@ -156,7 +156,4 @@ def main():
     else:print(text,end='')
     if result['failed']:raise SystemExit(1)
 
-def noop_unused():
-    pass
-
 if __name__=='__main__':main()
