@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-09-23",
-  "built": "2026-09-23 18:52 UTC",
+  "built": "2026-09-24 08:03 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -37,7 +37,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -8.988,
+              "value": -9.479,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -78,7 +78,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -8.988,
+              "value": -9.479,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -211,7 +211,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -0.353,
+              "value": -0.402,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -285,7 +285,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -0.353,
+              "value": -0.402,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -398,7 +398,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": -1.0,
+              "value": 1.0,
               "op": "gt",
               "threshold": 15,
               "passed": false
@@ -442,7 +442,7 @@
               "path": "state.rates.real_10y_chg_63d_bp",
               "op": "gt",
               "threshold": 30,
-              "value": 44.0,
+              "value": 45.0,
               "passed": true
             }
           ],
@@ -482,7 +482,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.173,
+              "value": -0.78,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -506,7 +506,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 17.917,
+              "value": 17.2,
               "op": "gt",
               "threshold": 25,
               "passed": false
@@ -514,7 +514,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.8316,
+              "value": 0.8204,
               "op": "gt",
               "threshold": 0,
               "passed": true
@@ -530,7 +530,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": -1.0,
+              "value": 1.0,
               "op": "gt",
               "threshold": 15,
               "passed": false
@@ -553,7 +553,7 @@
               "path": "state.rates.real_10y_chg_63d_bp",
               "op": "gt",
               "threshold": 30,
-              "value": 44.0,
+              "value": 45.0,
               "passed": true
             }
           ]
@@ -568,7 +568,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.173,
+              "value": -0.78,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -724,7 +724,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": -1.0,
+              "value": 1.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -761,7 +761,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 27.0,
+              "value": 28.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -799,7 +799,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.173,
+              "value": -0.78,
               "op": "gt",
               "threshold": 0,
               "passed": false
@@ -823,7 +823,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 20,
-              "value": 7.439,
+              "value": 6.786,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -832,7 +832,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 17.917,
+              "value": 17.2,
               "op": "lt",
               "threshold": -18,
               "passed": false
@@ -840,7 +840,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.8316,
+              "value": 0.8204,
               "op": "lt",
               "threshold": 0,
               "passed": false
@@ -856,7 +856,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": -1.0,
+              "value": 1.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -872,7 +872,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 27.0,
+              "value": 28.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -889,7 +889,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -1.173,
+              "value": -0.78,
               "op": "gt",
               "threshold": 0,
               "passed": false
@@ -1041,7 +1041,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 27.0,
+              "value": 28.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1078,7 +1078,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 8.554,
+              "value": 8.966,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -1136,7 +1136,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 27.0,
+              "value": 28.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1152,7 +1152,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 8.554,
+              "value": 8.966,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -1260,7 +1260,7 @@
             "series": "DFII10",
             "metric": "ret_bp",
             "window": 22,
-            "value": 27.0,
+            "value": 28.0,
             "op": "lte",
             "threshold": 5,
             "passed": false
@@ -1269,7 +1269,7 @@
             "series": "DFII10",
             "metric": "off_high_bp",
             "window": 10,
-            "value": 6.0,
+            "value": 5.0,
             "op": "gte",
             "threshold": 4,
             "passed": true
@@ -1310,7 +1310,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 27.0,
+              "value": 28.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1347,7 +1347,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -4.649,
+              "value": -4.444,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -1401,7 +1401,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 27.0,
+              "value": 28.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1417,7 +1417,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -4.649,
+              "value": -4.444,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -2238,7 +2238,7 @@
             "series": "DFII10",
             "metric": "ret_bp",
             "window": 22,
-            "value": 27.0,
+            "value": 28.0,
             "op": "lte",
             "threshold": 5,
             "passed": false
@@ -2247,7 +2247,7 @@
             "series": "DFII10",
             "metric": "off_high_bp",
             "window": 10,
-            "value": 6.0,
+            "value": 5.0,
             "op": "gte",
             "threshold": 4,
             "passed": true
@@ -2472,7 +2472,7 @@
     "universe": 2944,
     "substrate_asof": {
       "min": "2026-05-07",
-      "max": "2026-09-23"
+      "max": "2026-09-24"
     }
   }
 }

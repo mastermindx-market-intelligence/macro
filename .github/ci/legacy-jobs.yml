@@ -5524,6 +5524,57 @@ jobs:
       - name: uk policy desk unit tests
         run: python -m pytest tests/test_uk_policy_brain.py -q
 
+  finance-intelligence:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
+      - "data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json"
+      - "tests/test_finance_intelligence_contract.py"
+      - "engine/sector_intelligence/finance_overlap.py"
+      - "tests/test_finance_overlap.py"
+      - "engine/sector_intelligence/contracts.py"
+      - "contracts/sector_intelligence/**"
+      - "data/sector_intelligence/fixtures/**"
+      # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
+      # earnings_narrative -> biocatalyst); listed so the exclusive scope covers itself.
+      - "collectors/biocatalyst/drugs_at_fda.py"
+      - "config/biocatalyst_sources.yml"
+      - "config/earnings_story_promotion.yml"
+      - "contracts/capital_structure_projection.schema.json"
+      - "engine/biocatalyst/discovery.py"
+      - "engine/biocatalyst/endpoint_alignment.py"
+      - "engine/biocatalyst/fixed_cohort.py"
+      - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/storage.py"
+      - "engine/biocatalyst/trial_screen.py"
+      - "engine/biocatalyst/trials.py"
+      - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/neuralweb/earnings_context_reader.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/sector_intelligence/__init__.py"
+      - "engine/sector_intelligence/launch_slo_verifier.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jsonschema referencing pyyaml
+      - name: finance intelligence contract tests
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py -q
+
   flow-signals-ledger:
     if: ${{ false }}
     gate: code
@@ -16334,8 +16385,8 @@ jobs:
 
   dashboard-render-contract:
     # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and
-    # the UD-B2-W2 spine bindings, on the PULL-REQUEST merge gate. The same five
-    # suites already run in gate:data lanes — the first four as
+    # the UD-B2-W2 spine bindings, on the PULL-REQUEST merge gate. The five
+    # baseline suites already run in gate:data lanes — the first four as
     # unrun-picks-boards' "dashboard.html.j2 rendered-HTML contract" step,
     # tests/test_unified_dashboard_b2w2.py inside engine-render-guards' sweep —
     # and those lanes keep them for data-health.yml. But scripts/run_ci_pack.py
@@ -16360,8 +16411,13 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
-      # The five suites the step runs, plus the two helper suites they import.
+      # The seven suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      # #7859: volatility-placement tests used to live only in gate:data
+      # engine-render-guards, which PR packs do not execute. This code-gate
+      # owner already owns dashboard.html.j2 and the committed macro projection.
+      - "tests/test_ud_b2_w1_vw_fold.py"
+      - "tests/test_vsb_surface.py"
       - "tests/test_macro_risk_dialog.py"
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
@@ -16482,8 +16538,16 @@ jobs:
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
         run: pip install pytest pyyaml jinja2 pandas plotly pyarrow requests
-      - name: dashboard.html.j2 rendered-HTML contract + UD-B2-W2 spine bindings
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py tests/test_unified_dashboard_b2w2.py -q
+      - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings
+        run: >-
+          python -m pytest
+          tests/test_dashboard_template_render.py
+          tests/test_macro_risk_dialog.py
+          tests/test_risk_envelope_radar_integration.py
+          tests/test_us_stocks_s2_compression.py
+          tests/test_unified_dashboard_b2w2.py
+          tests/test_ud_b2_w1_vw_fold.py
+          tests/test_vsb_surface.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
