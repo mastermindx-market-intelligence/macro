@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T01:11:23.353870+00:00",
-  "count": 2745,
+  "generated_at": "2026-09-24T01:26:13.218830+00:00",
+  "count": 2746,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -102,13 +102,38 @@
   ],
   "items": [
     {
+      "id": "marketdesk-v62v8pl5vds-adbefc",
+      "title": "Oil Analyst China Crude Imports Will Likely Remain Low For Now",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T01:07:02Z",
+      "summary_points": [
+        "China Import Volatility Drives Brent Sensitivity: 1mb/d change in China’s net crude imports over 6 months alters Brent fair value by $4/bbl; wider gaps (e.g., 5mb/d) could reduce Brent by $9/bbl.",
+        "Middle East Strikes Pose Primary Upside Risk: Mideast production/export strikes (not China import rebound) are the key risk factor, with Brent forecast at $80 in 2027; China’s import recovery remains unlikely despite seasonal upticks.",
+        "Structural Demand Suppression in China: Gasoline/diesel consumption down 15% YoY (Aug 2026), sustained by high prices and non-oil alternatives, signaling persistent oil demand weakness.",
+        "Strategic Stock Dynamics Fuel Volatility: China’s 8-year crude stock accumulation enables opportunistic low-price buying, creating price-responsive import volatility critical for supply chain risk and pricing models.",
+        "Product Stock Decline Drives Storage Management Priority: Gasoline/diesel stocks trend downward due to weaker demand, yet national storage management remains critical; correlation (-0.5) shows stocks adjust around long-term trends with price sensitivity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-q5tuzr2c9vh-6157db",
       "title": "Trading Catalysts Watch Fedspeak; two more hikes remain in view",
       "institution": "Bank of America",
       "side": "sell",
       "desk": "",
       "published_at": "2026-09-24T00:58:03Z",
-      "summary_points": [],
+      "summary_points": [
+        "Fed Policy & S&P Target: Two additional rate hikes expected in October/December, S&P 500 2026 target raised to 7400 (from 7100) amid inflation, EPS quality, and credit risk considerations.",
+        "QQQ Call Strategy: Short-dated QQQ calls recommended to capture tech dips, leveraging Nasdaq volatility near 2026 lows and AI’s rapid rebound dynamics mitigating slowdown fears.",
+        "Inflation/Recession Trade-off: Persistent supply shocks force Fed to choose between extended inflation or hard landing, raising inflation persistence risk while lowering recession probability from rate hikes."
+      ],
       "tags": [],
       "tickers": [],
       "top_pick": false,
