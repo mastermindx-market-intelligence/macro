@@ -70,3 +70,34 @@ def test_unload_only_targets_pinned_model(monkeypatch):
     assert calls == []
     GUARD._unload(GUARD.DEFAULT_MODEL, "/usr/local/bin/ollama")
     assert calls == [["/usr/local/bin/ollama", "stop", GUARD.DEFAULT_MODEL]]
+
+
+def test_systemd_guard_is_loopback_only_and_hardened():
+    unit = (ROOT / "ops/inference-host/ubuntu/mastermind-inference-guard.service").read_text()
+    assert "--listen 127.0.0.1:11435" in unit
+    assert "--upstream 127.0.0.1:11434" in unit
+    assert "--model qwen3.5:9b" in unit
+    assert "Requires=ollama.service" in unit
+    assert "NoNewPrivileges=true" in unit
+    assert "ProtectSystem=strict" in unit
+    assert "ProtectHome=true" in unit
+
+
+def test_inference_slice_is_preemptible_and_bounded():
+    unit = (ROOT / "ops/inference-host/ubuntu/mastermind-inference.slice").read_text()
+    assert "CPUQuota=400%" in unit
+    assert "CPUWeight=10" in unit
+    assert "IOWeight=10" in unit
+    assert "MemoryHigh=12G" in unit
+    assert "MemoryMax=16G" in unit
+    assert "MemorySwapMax=2G" in unit
+
+
+def test_ollama_dropin_keeps_one_local_model_and_one_request():
+    dropin = (ROOT / "ops/inference-host/ubuntu/ollama-mastermind.conf").read_text()
+    assert "Slice=mastermind-inference.slice" in dropin
+    assert 'Environment="OLLAMA_HOST=127.0.0.1:11434"' in dropin
+    assert 'Environment="OLLAMA_NUM_PARALLEL=1"' in dropin
+    assert 'Environment="OLLAMA_MAX_LOADED_MODELS=1"' in dropin
+    assert "MemoryHigh=12G" in dropin
+    assert "MemoryMax=16G" in dropin
