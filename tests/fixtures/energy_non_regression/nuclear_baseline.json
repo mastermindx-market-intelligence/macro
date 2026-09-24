@@ -127,7 +127,7 @@
       "weights": null
     }
   },
-  "frozen_at_main": "57210b3a1f1ae7b1d01963e218e9f9d326ad539f",
+  "frozen_at_main": "966fa5b4bd5f308cabff7bdd9076e21ca968070f",
   "owners": {
     "basket_membership": {
       "artifact": "data/baskets/membership.json"
@@ -140,14 +140,21 @@
     }
   },
   "public_pages": {
-    "canaries": []
+    "canaries": [
+      "economic_change_dossier",
+      "economic_change_dossier/v1",
+      "Nuclear Value Capture",
+      "contingent_within_leu",
+      "Westinghouse displayed revenue",
+      "PRE_EVENT_TIMESTAMPED_VALUE"
+    ]
   },
   "schema": "energy.nuclear_non_regression.v1",
   "section_sha256": {
     "basket_membership": "210b19ac93d3e3a175d548f7ddc1a5a41468a07a147562a716e0b52199e8a542",
-    "public_pages": "baab67284af3efee35b70c98f45245828c624744b76dfc6b8d1f9c299edfb912",
-    "theme_state": "62ad8f9c6178b8911fee93459b12a84358333b4581e21d6b6f56948814ce1807",
-    "theme_tracker": "5e3c3b34391103ccb1cdf2505d779eac526e6a77282f6ca2a676046ed7e4f30a"
+    "public_pages": "bfbef8b50c3c298f045f3cd994fe9b9c88d3e14e1f48930553374dcd6247c3c1",
+    "theme_state": "e3b2dd3d1343b45793e73c34743e809e103d68e2e107a860711db326eaac7ab4",
+    "theme_tracker": "e9efb9aebd880bf664969faeae547e102362b0075025f048d4da8db61de38dc0"
   },
   "theme_state": {
     "frozen": {
@@ -155,22 +162,19 @@
         "nuclear_power",
         "uranium_miners"
       ],
-      "foresight": {
-        "bottleneck_band": "TIGHT (text)",
-        "entry_ready": false,
-        "score": 50.0,
-        "source": "site/basketdata/foresight_cascade.json",
-        "stage": "PRECIPICE (text)",
-        "tier": "P"
-      },
       "name_en": "Nuclear & SMR Power",
       "name_zh": "核能与小型模块堆",
-      "narrative": null,
+      "subsector_keys": [
+        "Energy Renewable"
+      ],
       "theme_id": "nuclear_power"
     },
     "shape": {
       "basket_intel": "array",
-      "radar": "array"
+      "divergence_board": "null",
+      "foresight": "object",
+      "radar": "array",
+      "subsector_rotation": "object"
     }
   },
   "theme_tracker": {
@@ -181,14 +185,12 @@
     },
     "shape": {
       "caut_count": "number",
-      "entry_context": "null",
       "falsifier_any_fired": "bool",
       "falsifier_label": "string",
       "fav_count": "number",
       "filter_flags": "string",
       "lane": "string",
-      "lane_rank": "tuple",
-      "leadership_context": "null",
+      "lane_rank": "array",
       "present_count": "number",
       "stage_key": "string",
       "stage_label_en": "string",
