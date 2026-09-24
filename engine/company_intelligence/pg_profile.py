@@ -46,7 +46,7 @@ class PGDefinition:
 
 PG_DEFINITIONS: tuple[PGDefinition, ...] = (
     PGDefinition("pg_reported_sales_growth_pct", "percent", "percent", "one", "reported_sales", "company", 91, "reported_sales", row_label="Total P&G", column_label="Net Sales Growth"),
-    PGDefinition("pg_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "company", 91, "organic_sales"),
+    PGDefinition("pg_organic_sales_growth_pct", "percent", "percent", "one", "organic_sales", "company", 91, "organic_sales", row_label="Total P&G", column_label="Organic Sales Growth"),
     PGDefinition("pg_total_volume_growth_pct", "percent", "percent", "one", "total_volume", "company", 91, "total_volume", row_label="Total P&G", column_label="Volume with Acquisitions & Divestitures"),
     PGDefinition("pg_organic_volume_growth_pct", "percent", "percent", "one", "organic_volume", "company", 91, "organic_volume", row_label="Total P&G", column_label="Volume Excluding Acquisitions & Divestitures"),
     PGDefinition("pg_price_contribution_pp", "percentage_points", "percentage_points", "one", "reported_growth_bridge", "company", 91, "growth_contribution", row_label="Total P&G", column_label="Price"),
@@ -117,6 +117,7 @@ def pg_profile(*, fiscal_scope: tuple[str, str, str, str]) -> IssuerProfile:
 _NUMBER = r"[0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?"
 _PERCENT_PATTERN = rf"^(?:\+?({_NUMBER})%|\(\+?({_NUMBER})\)%|\(\+?({_NUMBER})%\))$"
 _CURRENCY_PATTERN = rf"^(?:\$?({_NUMBER})|\(\$?({_NUMBER})\))$"
+_NEUTRAL_ZERO = re.compile(r"\bdash(?:es)?\s+(?:means|represent[sd]?)\s+zero\b", re.IGNORECASE)
 
 
 def parse_pg_literal(value: str, *, unit: str) -> float | None:
@@ -144,16 +145,19 @@ def _normal(value: str) -> str:
 
 def _table(blocks: Sequence[Any], headings: Sequence[str], *, exclusive: bool = True) -> Any | None:
     wanted = {_normal(heading) for heading in headings}
-    active = False
+    saw_heading = False
+    saw_table = False
     matches = []
     for block in blocks:
-        text = _normal(getattr(block, "text", ""))
-        if text in wanted:
-            active = True
-        elif active and getattr(block, "table", None) is not None:
+        is_heading = getattr(block, "kind", None) is not None and block.kind.value == "heading"
+        if saw_table and is_heading:
+            saw_heading = False
+            saw_table = False
+        if not saw_table and _normal(getattr(block, "text", "")) in wanted and is_heading:
+            saw_heading = True
+        elif not saw_table and saw_heading and getattr(block, "table", None) is not None:
             matches.append(block)
-        elif active:
-            continue
+            saw_table = True
     if not exclusive and matches:
         return matches[0]
     return matches[0] if len(matches) == 1 else None
@@ -285,7 +289,12 @@ def _row_fact(*, definition: PGDefinition, blocks: Sequence[Any], headings: Sequ
     value: float | None = None
     receipt: SpanReceipt | None = None
     if literal in {"-", "—", "–"}:
-        return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
+        if not _NEUTRAL_ZERO.search(bound.source):
+            return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="A dash has no explicit neutral-zero convention.")
+        receipt = _receipt(bound, cell.source_span.char_start, cell.source_span.char_end, literal)
+        if receipt is None:
+            return _absent(definition=definition, document_id=document_id, event_id=event_id, detail="The dash is not uniquely addressable.")
+        return _present(definition=definition, value=0.0, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period)
     elif literal:
         value = parse_pg_literal(literal, unit=definition.unit)
         if value is None:
@@ -368,7 +377,7 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
         f"Three Months Ended {date_header}",
         f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year}",
     )
-    driver_headings = (f"Net Sales Change Drivers {current_end.year} vs. {current_end.year - 1}", *quarterly_headings)
+    driver_headings = (f"Net Sales Change Drivers {fiscal_year} vs. {fiscal_year - 1}", *quarterly_headings)
     current_forms = (current_end.isoformat(), str(current_end.year), f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year}", date_header)
     prior_forms = (prior_end.isoformat(), str(prior_end.year), f"Q{_PG_FISCAL_QUARTERS[_current_start.month]} FY{fiscal_year - 1}", f"{prior_end:%B} {prior_end.day}, {prior_end.year}")
     periods = {form: endpoint.isoformat() for forms, endpoint in ((current_forms, current_end), (prior_forms, prior_end)) for form in forms}
@@ -382,7 +391,7 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
                 forms = prior_forms
             facts.append(_row_fact(definition=definition, blocks=blocks, headings=quarterly_headings, header_forms=forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=periods[forms[0]]))
         elif definition.row_label is not None and definition.column_label is not None:
-            facts.append(_row_fact(definition=definition, blocks=blocks, headings=driver_headings[:1], header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
+            facts.append(_row_fact(definition=definition, blocks=blocks, headings=(driver_headings[0],), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
         elif definition.metric.endswith("_organic_sales_growth_pct") and definition.row_label is not None:
             facts.append(_row_fact(definition=definition, blocks=blocks, headings=("Organic Sales Change by Segment",), header_forms=current_forms, document_id=document_id, bound=bound, event_id=event_id, periods=periods, preferred_period=current_end.isoformat()))
         elif definition.metric == "pg_core_reconciliation_context":

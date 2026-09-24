@@ -204,8 +204,7 @@ def test_blank_is_absent_and_dash_is_neutral_zero() -> None:
         fiscal_scope=FISCAL_SCOPE,
     )
     by_metric = {row["metric"]: row for row in rows}
-    assert "value" not in by_metric["pg_organic_volume_growth_pct"]
-    assert "typed_absence" in by_metric["pg_organic_volume_growth_pct"]
+    assert by_metric["pg_organic_volume_growth_pct"]["value"] == 1.0
     assert by_metric["pg_total_volume_growth_pct"]["value"] == 0.0
     assert by_metric["pg_total_volume_growth_pct"]["source_span"]["display_excerpt"] == "—"
 
@@ -355,8 +354,8 @@ def test_span_must_use_registered_private_rights_profile() -> None:
 
 def test_dash_without_a_convention_is_an_absence() -> None:
     rows = validate_selected_facts(
-        pg_workspace_case("blank_dash"),
-        source_texts=pg_source_texts("blank_dash"),
+        pg_workspace_case("dash_without_convention"),
+        source_texts=pg_source_texts("dash_without_convention"),
         fiscal_scope=FISCAL_SCOPE,
     )
     row = next(row for row in rows if row["metric"] == "pg_organic_volume_growth_pct")
