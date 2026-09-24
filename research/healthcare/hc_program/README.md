@@ -34,3 +34,4 @@ Lane labels `hc_*` on the B-kit `remote_lane_v8.sh` fabric (hosts m1 / mb / mini
 ## Checkpoints
 
 - 2026-09-24 ~10:02Z — PICKUP_ACK posted (`5811997064`); independent review commissioned (Opus read-only reviewer children: plan verdict + D1 probe suite). No product write yet.
+- 2026-09-24 ~10:40Z — Independent review R1 returned (D1 REQUEST_CHANGES → 15 repairs adjudicated into seat rulings; package HOLD scoped to D2–D4, consumed). Frozen probe suite committed RED on carrier PR #7930 (`6a929f59`). D1 unlocked; START recorded on #7788.
