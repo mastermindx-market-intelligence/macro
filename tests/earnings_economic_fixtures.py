@@ -36,13 +36,18 @@ def _html(
     dash_convention: bool = False,
     volume_only: str = "split",
     eps_unit_mismatch: bool = False,
-    period: int = 2026,
+    fiscal_period: FiscalPeriod = FISCAL_PERIOD,
 ) -> str:
-    current_year = period
-    prior_year = period - 1
-    # R30: every period end date derives from FISCAL_PERIOD; nothing hardcodes June 30.
-    current_end = date(period, FISCAL_PERIOD.calendar_end.month, FISCAL_PERIOD.calendar_end.day).isoformat()
-    prior_end = date(prior_year, FISCAL_PERIOD.calendar_end.month, FISCAL_PERIOD.calendar_end.day).isoformat()
+    # R30/R41: every period form (fiscal year, quarter ordinal, period-end dates) derives from the passed
+    # fiscal_period; no month-day, quarter ordinal, or year is hardcoded.
+    current_year = fiscal_period.year
+    prior_year = fiscal_period.year - 1
+    ordinal = {1: "First", 2: "Second", 3: "Third", 4: "Fourth"}[fiscal_period.quarter]
+    current_end_date = fiscal_period.calendar_end
+    prior_end_date = date(current_end_date.year - 1, current_end_date.month, current_end_date.day)
+    current_end = current_end_date.isoformat()
+    prior_end = prior_end_date.isoformat()
+    three_months = f"Three Months Ended {current_end_date:%B} {current_end_date.day}, {current_end_date.year}"
     eps_rows = (
         ("Diluted Net Earnings per Common Share", "1.25%" if eps_unit_mismatch else "$3.07", "$2.93"),
         ("Core EPS", "$3.11", "$2.97"),
@@ -92,15 +97,15 @@ def _html(
 <h1>Synthetic Consumer Company Results</h1>
 <p>This original fixture has no source relationship to any real company release.</p>
 <p>全球品牌 demand was stable before 3.07 units of synthetic EPS.</p>
-<h2>Fourth Quarter Fiscal Year {current_year} Results</h2>
-<h2>Three Months Ended June 30, {current_year}</h2>
+<h2>{ordinal} Quarter Fiscal Year {current_year} Results</h2>
+<h2>{three_months}</h2>
 <table>
 <tr>{_cells(("", current_end, prior_end))}</tr>
 {''.join(f'<tr>{_cells(row)}</tr>' for row in eps_rows)}
 </table>
 <h2>Net Sales Change Drivers {current_year} vs. {prior_year}</h2>
 {dash_convention_markup}
-<h2>Three Months Ended June 30, {current_year}</h2>
+<h2>{three_months}</h2>
 <table>
 <tr>{_cells(("", *driver_headers))}</tr>
 <tr>{_cells(("Total P&amp;G", *current_drivers))}</tr>
@@ -115,8 +120,8 @@ def _html(
 </table>
 </body></html>"""
 
-def pg_bound_case(kind: str, *, period: int = 2026):
-    kwargs = {"period": period}
+def pg_bound_case(kind: str, *, fiscal_period: FiscalPeriod = FISCAL_PERIOD):
+    kwargs = {"fiscal_period": fiscal_period}
     if kind == "annual_first":
         body = _html(**kwargs)
     elif kind == "columns_reordered":
@@ -168,8 +173,10 @@ def pg_workspace_case(
     *,
     fiscal_period: FiscalPeriod = FISCAL_PERIOD,
     fiscal_scope: tuple[str, str, str, str] = FISCAL_SCOPE,
+    document_period: FiscalPeriod | None = None,
 ) -> dict:
-    bound = pg_bound_case(kind, period=fiscal_period.year)
+    """Workspace for ``kind``; the synthetic document follows ``fiscal_period`` unless ``document_period`` splits them (R41)."""
+    bound = pg_bound_case(kind, fiscal_period=document_period or fiscal_period)
     filing = _filing()
     filing["exhibit_url"] = f"https://synthetic.invalid/{kind}.htm"
     return build_event_workspace(
@@ -190,6 +197,7 @@ def pg_source_texts(
     kind: str,
     *,
     fiscal_period: FiscalPeriod = FISCAL_PERIOD,
+    document_period: FiscalPeriod | None = None,
 ) -> dict[str, str]:
-    bound = pg_bound_case(kind, period=fiscal_period.year)
+    bound = pg_bound_case(kind, fiscal_period=document_period or fiscal_period)
     return {bound.revision.document_id: bound.source}

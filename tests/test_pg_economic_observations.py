@@ -15,6 +15,7 @@ from engine.company_intelligence.events import FiscalPeriod
 from engine.company_intelligence.issuer_profiles import profile_for_ticker
 from engine.company_intelligence.pg_profile import PG_DEFINITIONS, PG_METRIC_KEYS, parse_pg_literal
 from tests.earnings_economic_fixtures import (
+    FISCAL_PERIOD,
     FISCAL_SCOPE,
     pg_bound_case,
     pg_source_texts,
@@ -316,16 +317,23 @@ def test_profile_lookup_public_dispatch_is_unchanged() -> None:
         profile_for_ticker("PG", publication="unknown")
 
 
-def test_scope_quarter_matches_workspace_quarter() -> None:
+def test_scope_quarter_over_a_q4_document_yields_only_absences() -> None:
+    """R27: a Q3 scope over a document whose every period signal names the June quarter binds nothing.
+
+    The workspace identity matches the scope, so the validator accepts the rows; the extractor refused the
+    document, so every one of the 20 rows is a typed absence.  (Before R27 this test asserted the defect:
+    twenty rows with values bound from a foreign quarter.)
+    """
     scope = ("2026-01-01", "2026-03-31", "2025-01-01", "2025-03-31")
     period = FiscalPeriod(year=2026, quarter=3, calendar_end=date(2026, 3, 31))
-    workspace = pg_workspace_case("annual_first", fiscal_scope=scope, fiscal_period=period)
+    workspace = pg_workspace_case("annual_first", fiscal_scope=scope, fiscal_period=period, document_period=FISCAL_PERIOD)
     rows = validate_selected_facts(
         workspace,
-        source_texts=pg_source_texts("annual_first", fiscal_period=period),
+        source_texts=pg_source_texts("annual_first", fiscal_period=period, document_period=FISCAL_PERIOD),
         fiscal_scope=scope,
     )
     assert len(rows) == 20
+    assert all("typed_absence" in row and "value" not in row for row in rows)
 
 
 def test_none_fiscal_period_is_typed_error() -> None:
