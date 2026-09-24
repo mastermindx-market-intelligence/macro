@@ -303,3 +303,157 @@ preflight and revalidation law; #892 is procedure-only; protected #904 proves Wo
 qualification but not one selected ChatGPT conversation. The producer must prove exact required read
 actions on the bound session. Provider-native web search is not in #890's current closed capability set,
 so broad internet-research admission remains explicitly unproven.
+
+
+## Continuation update — repaired source frontier, lawful review rebind, and OHF adapter ruling
+
+This section is the **current cumulative frontier** and supersedes earlier head/CI/reviewer statements in
+this handoff where they conflict. Parent mission remains incomplete.
+
+### Current protected procedure/source
+
+- Mastermind protected master: `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`.
+- Skillpack: `mastermind.sol_skillpack.v1` 1.0.1 / bootstrap major 1.
+- Required INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION plus REVIEW_RETURN,
+  RECONCILE_STATE and dialogue close law were reloaded from this exact protected revision.
+- Protected movement since the prior checkpoint is material, so old “path-disjoint” assumptions must
+  not be reused without current-base composition proof.
+
+### #651 — Agent OS continuation source-snapshot blocker repaired on same carrier
+
+Independent review `PRR_kwDOTotz3c8AAAABO0Govw` correctly REQUESTED_CHANGES on
+`8efbd67c...`: `collect_agentos()` could label status + multiple context reads with a stale pre-read
+Macro SHA if the live checkout moved during acquisition.
+
+Same-carrier TDD repair:
+- RED `ad9d2dcf9a335cea209bc6f874bbce363109729e`: multi-workstream acquisition mutates observed
+  Macro identity between first/final reads and requires explicit unavailable state.
+- GREEN/current head `afc4e21ece14243494030392328ea234a04f9f1b`: one final Macro Git identity read fences the
+  complete status + all context sequence; missing final SHA refuses as
+  `AGENTOS_SOURCE_SHA_UNAVAILABLE`, moved SHA refuses as `AGENTOS_SOURCE_MOVED_DURING_READ`.
+- Fresh exact-head hosted CI: `35957636843`, RUNNING at this checkpoint.
+- Exact-head re-review requested from the blocker author `mastermindx-2`.
+- Do not revert the accepted 8 KiB projection/excerpt exclusion/do-not-redo semantics.
+
+### #933 — cognition result root-lineage CI failure repaired on same carrier
+
+Hosted CI on `9bcee18d...` failed the discriminating
+`test_refuses_root_job_drift_inside_existing_role_result`. The generic orchestration envelope validator
+accepts `expected_root_job_id` but current work-role validation did not itself compare the nested
+`role_result.root_job_id`.
+
+Current #933 head `073646dbd4ae6f7d00fa6e543cdd9cd029f01d05` keeps the fix local to the Web result boundary:
+after canonical envelope validation it requires the existing role-result root to equal the exact
+expected Runtime root, otherwise returns the existing `RESULT_REFUSED` surface.
+Fresh exact-head hosted CI `35957647875` is RUNNING. No Runtime-core validator rewrite or new result
+schema/store was introduced.
+
+### #936 — assignment child integrated on repaired #651 base
+
+#936 now has exact head `86fa8b52e45d4e5676b51585d6f00777b62eeba3`, a two-parent integration of:
+- prior assignment head `4cea69a30d434b68519d34a3c2c5111dc005bcb5`; and
+- repaired #651 `afc4e21ece14243494030392328ea234a04f9f1b`.
+
+Its two assignment blobs remain byte-identical and are still the only delta relative to #651.
+Fresh exact-head hosted CI `35957868527` is RUNNING. The ChatGPT3 #936 review carrier
+`D0BREV7RDCN/1790155191.702439` is deliberately **PRE_START HOLD** while that independent seat performs
+the higher-critical-path #836 review; no #936 review execution is claimed.
+
+### #836 — current-base transport review rebound to a genuinely independent reviewer
+
+Exact semantic head remains `f5b37701941f08f74191b0d754712075c0558859`.
+GitHub current merge ref is
+`cf82b4f8c741a2643737acc7f48b7d15319b370c = merge(f5b377..., a7d2b304...)`.
+Protected movement has zero direct overlap across all 48 #836-owned paths, but current
+Executive Runtime/service/RuntimeBinding dependencies moved, so dependency compatibility still requires
+semantic review. The current merge ref has no hosted status; old exact-head CI on the older base is not
+current-base acceptance.
+
+Exact #836 commit-author set is only:
+`chriswong6031-creator`, `MastermindX1`, and `mastermindx-2`.
+The original ChatGPT1/MastermindX1 review delivery never had PICKUP_ACK/START and MastermindX1 is a
+source author, so that same logical review operation was lawfully PRESTART_REBOUND rather than duplicated.
+
+Current independent review carrier:
+- operation: `web-sol-r7-independent-review-r4-20260921-sol-001`
+- receiver: ChatGPT3 / GitHub `mastermindx-3` (zero commits on #836)
+- Slack: `D0BREV7RDCN/1790226208.084549`
+- state at dispatch: DELIVERY_SENT / PRE_START; require PICKUP_ACK then separate START before execution.
+
+The old carrier `D0BSB763FRN/1790060070.186849` was explicitly closed as superseded-before-start.
+Do not accept a verdict from an author identity or infer review execution from delivery.
+
+### R2 architecture ruling — reuse truthful OPERATOR_HARNESS with a Web-Sol adapter process
+
+The earlier “maybe add WEB_COGNITION AttemptExecutionMode” path is rejected as unnecessary and costly.
+Current Runtime schema v5 constrains `attempts.execution_mode` to
+`SEALED_WORKER | OPERATOR_HARNESS`; a third stored mode would require an explicit schema migration and
+would duplicate semantics already available in the provider-neutral harness.
+
+The preferred R2 vertical is instead:
+
+`Executive OPERATOR_HARNESS Attempt -> local managed Web-Sol OperatorHarnessAdapter process -> exact
+Web-Sol assignment submit/terminal-result observation -> existing RawRoleResultObservation/result seal ->
+graceful_stop/reconcile of the adapter process -> existing Runtime terminal return`.
+
+Truth boundary:
+- the **adapter process**, not the persistent ChatGPT browser tab, is the OHF process generation;
+- the adapter holds one exact browser-target writer lease for the turn;
+- graceful stop/dead/writer-release claims apply to that managed adapter process only;
+- the ChatGPT conversation/tab may persist after Attempt completion;
+- no browser-death claim, new Attempt table, new lifecycle, result store or execution-mode migration is
+  required.
+
+The existing provider-neutral `OperatorHarnessAdapter` protocol already owns start/begin-turn/events/
+candidate-result/stop/cancel/reconcile semantics, and existing adapters already return
+`RawRoleResultObservation`. Do not implement the Web-Sol adapter until #836 exposes accepted,
+separately-versioned assignment-submit and exact-terminal-result transport actions; the current fixed
+`SUBMIT_CONTINUATION` must remain fixed.
+
+### First real canary is intentionally actionless
+
+The first end-to-end disposable cognition canary does **not** need #890 capability-serviceability
+machinery if the Web worker performs zero external actions. Admit one self-contained, bounded,
+read-only reasoning objective whose entire evidence/task context is in the assignment capsule; the
+served Pro session only reasons and emits the exact canonical result.
+
+Therefore first proof can be:
+
+`#651/#936 capsule -> #836 exact assignment transport -> actionless Pro reasoning -> #933 bounded result
+egress -> Web-Sol OHF adapter -> existing Runtime completion/terminal return`.
+
+#890 remains required before any session-side GitHub/Studio/Desktop Commander/Executive or other external
+action. Provider-native web search is still outside #890's current closed principal action set, so broad
+internet-research fleet completion remains explicitly unproven.
+
+### Rich real-task context remains a later dependency, not a canary blocker
+
+#818 attended-Web commission publication is exact-head green and independently source-approved at current
+head `cc0f77629df3d155f780619d9eeacf8727367f8e`.
+#811 remains the immutable commission consumer required for substantive real tasks; its current source
+overlaps the active #703 Executive supervisor program, so do not open a competing #811 writer.
+The synthetic/actionless transport canary may use a self-contained Job objective and does not need to
+wait for #811.
+
+### Runtime/source custody correction
+
+Historical #699 no longer blocks Runtime source: its terminal receipt explicitly records
+`ACCEPTED_FOR_AUDIT_ONLY / STOP / BRANCH_WRITER_RELEASED`, including release of
+`control_plane/executive_runtime.py`.
+#833 bounded Runtime acquisition and #851 exact-worker/no-relaunch are both merged/protected and therefore
+DO_NOT_REDO. Current Runtime core can be consumed; do not revive #699.
+
+### Exact next actions
+
+1. Consume #651, #933 and #936 exact-head hosted CI returns; repair only on their incumbent carriers.
+2. Consume the rebound #836 ChatGPT3 review only after PICKUP_ACK + START + formal GitHub verdict.
+3. On #836 current-base semantic acceptance, extend the **incumbent Web-Sol transport owner** with two
+   separately versioned fixed-purpose actions: bounded #936 assignment submit and exact-terminal #933
+   result observation. Do not create a generic caller-controlled prompt API.
+4. Implement the Web-Sol `OperatorHarnessAdapter` vertical over those accepted actions, using the
+   existing OHF/Runtime result and terminal-return owners.
+5. Prove the actionless disposable canary before adding tool-bearing research.
+6. Only after that, integrate #890 live exact-session capability production and #811 rich commission
+   consumption for broader research/implementation workloads.
+
+No production/browser proof exists yet; parent mission remains **false**.
