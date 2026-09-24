@@ -123,7 +123,7 @@ Entering head: `61223fb746a5eec5e2d3cdfb15ac589637e771c1`. No rebase or replacem
 
 Revision2 supersedes only the first proof companion's current explanatory/readiness coverage and
 its earlier forty-only requirement reference; the original calculation rows are byte-identical.
-The original companion remains recoverable at `55f35e395ed4f29a77d545b232da0bb559c69c`, blob
+The original companion remains recoverable at `55f35e395ed4f29a77d54543b232da0bb559c69c`, blob
 `0356b8bf30ab7a97329da0257754f63401eb1f71`. The baseline master specification and implementation
 plan were NOT rewritten in this phase; their current numerical/shared supersessions remain explicit.
 
