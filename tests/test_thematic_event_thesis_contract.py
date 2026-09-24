@@ -228,3 +228,10 @@ def test_placebo_reconstruction_ignores_watch_rows(tmp_path):
     assert orphans == 0
     assert reason == ""
     assert [row["id"] for row, _ in pairs] == ["thesis-1"]
+
+
+def test_event_scout_treats_attention_as_context_not_top_or_buy():
+    prompt = td._PANEL_SYSTEMS["narrative_scout"]
+    assert "attention/inflow spikes mark TOPS" not in prompt
+    assert "NEVER by itself a buy or a top call" in prompt
+    assert "event-first watch may precede a price cluster" in prompt
