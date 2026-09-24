@@ -13285,6 +13285,7 @@ jobs:
       - "tests/test_cn_track_ledger_eras.py"
       - "tests/test_confluence_veto_leg_telemetry.py"
       - "tests/test_dashboard_template_render.py"
+      - "tests/test_macro_sector_desk.py"
       # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
       # renders the same dashboard.html.j2 template (mode=stocks) and imports engine.i18n,
       # which the job's `engine/i18n.py` and `engine/holdings_signals.py` paths already
@@ -16419,8 +16420,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
-      # The seven suites the step runs, plus helper suites they import.
+      # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      # #7798: source-dated Hottest Desk leadership/recommendation contract.
+      - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
       # engine-render-guards, which PR packs do not execute. This code-gate
       # owner already owns dashboard.html.j2 and the committed macro projection.
@@ -16434,6 +16437,8 @@ jobs:
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
       # Templates the renders load by name.
+      - "templates/_macro_sector_desk.html.j2"
+      - "templates/dashboard.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
@@ -16545,11 +16550,12 @@ jobs:
       # persisted-view fixture). markupsafe arrives with jinja2, numpy with
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
-        run: pip install pytest pyyaml jinja2 pandas plotly pyarrow requests
+        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
       - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings
         run: >-
           python -m pytest
           tests/test_dashboard_template_render.py
+          tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
           tests/test_us_stocks_s2_compression.py
