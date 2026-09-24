@@ -190,6 +190,13 @@ def test_equity_method_investee_revenue_is_never_added_to_consolidated():
 
 
 def test_contingent_backlog_remains_contingent_and_nested_components_are_never_summed():
+    contingent = change("change-contingent", status="contingent")
+    contingent_step = bridge(ref="change-contingent")
+    contingent_payload = compose(owner(changes=(contingent,), bridge_steps=(contingent_step,), counters=(counter("bridge:co:us:AAA:demand"),)))
+    assert contingent_payload["changes"][0]["status"] == "contingent"
+    assert contingent_payload["bridge"][0]["state"] == "unavailable"
+    assert "CONTINGENT_NOT_FUNDED" in codes(contingent_payload)
+
     parent = change("change-parent", contained_in=None, additive=True)
     child = change("change-child", contained_in="change-parent", additive=False)
     comparison = EconomicComparison(
