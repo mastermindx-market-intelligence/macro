@@ -1,6 +1,7 @@
 """Validate design-document invariants, not Mastermind product behavior.
 
-Run beside the proposed spec: python check_mining_design.py
+Run from a checkout: python research/mining/check_mining_design.py
+Or beside the portable spec: python check_mining_design.py
 Standard library only; no network, native data, application imports or trading.
 Writes one adjacent receipt. Source interpretations require human/principal review.
 """
@@ -12,7 +13,9 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parent
-SPEC = ROOT / "2026-09-24-mining-shared-foundation-economic-dossier-design.md"
+SPEC_NAME = "2026-09-24-mining-shared-foundation-economic-dossier-design.md"
+REPO_SPEC = ROOT.parent.parent / "docs" / "superpowers" / "specs" / SPEC_NAME
+SPEC = REPO_SPEC if REPO_SPEC.is_file() else ROOT / SPEC_NAME
 RECEIPT = ROOT / "MINING_SHARED_FOUNDATION_DESIGN_CHECKS_2026-09-24.json"
 
 
@@ -53,7 +56,8 @@ def main() -> None:
         "operation": "gmi-mining-principal-research-20260923-sol-001",
         "classification": "DESIGN_DOCUMENT_INVARIANTS_AND_SELF_REVIEW_ONLY",
         "run_utc": datetime.now(timezone.utc).isoformat(),
-        "command": "python check_mining_design.py",
+        "command": "python research/mining/check_mining_design.py" if SPEC == REPO_SPEC else "python check_mining_design.py",
+        "layout": "repository" if SPEC == REPO_SPEC else "portable",
         "document": SPEC.name,
         "document_words": len(text.split()),
         "document_bytes": len(raw),
@@ -65,6 +69,7 @@ def main() -> None:
         "failed": sum(not x for x in checks.values()),
         "mutated_documents_rejected": traps,
         "self_review": [
+            {"finding": "Initial checker assumed the spec was beside it, unlike the committed repository layout.", "resolution": "Repository-layout FileNotFoundError reproduced after initial checker publication; lookup now prefers the canonical docs/superpowers/specs path and supports the flat portable package. Both layouts are checked before final publication.", "source": "local verification utility only"},
             {"finding": "Shared implementation is not only an old research packet.", "resolution": "#7870 source pinned separately from #7780 plan and main; no runtime or production acceptance inferred.", "source": "N01,N06,N09"},
             {"finding": "Generic physical-quantity observation rejects signed financial values.", "resolution": "Retain shared guard and use native financial objects; schema support does not imply issuer/metric coverage.", "source": "N02,N03,N07"},
             {"finding": "Annual outlook revision does not fit the later-period history call.", "resolution": "Keep same-horizon native-owner qualification explicit; do not falsify period or add a local history engine.", "source": "N04"},
