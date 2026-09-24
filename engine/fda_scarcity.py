@@ -163,8 +163,9 @@ def _label(
         english_parts.insert(1, f"captured {english_age}")
         chinese_parts.insert(1, f"采集于{chinese_age}")
     if refresh_failed_at is not None:
-        english_parts.append(f"refresh failed {refresh_failed_at}")
-        chinese_parts.append(f"刷新失败 {refresh_failed_at}")
+        if status != _UNAVAILABLE:
+            english_parts.append(f"refresh failed {refresh_failed_at}")
+            chinese_parts.append(f"刷新失败 {refresh_failed_at}")
     if capture_qualified is None:
         english_parts.append("capture time unknown")
         chinese_parts.append("采集时间未知")
@@ -184,6 +185,8 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
     capture = dict(capture) if capture is not None else None
     observation = capture or {}
     qualified = observation.get("qualified")
+    if observation.get("observation_state") == "LEGACY":
+        qualified = None
     failed_refresh = None
     if observation.get("refresh_failed"):
         failed_refresh = {
@@ -281,7 +284,7 @@ def _all_themes():
     return sorted(themes)
 
 
-def _observation_capture(observation):
+def _observation_capture(observation, frame=None):
     if not observation:
         return None, None
     capture = dict(observation.get("capture") or {})
@@ -300,17 +303,17 @@ def _observation_capture(observation):
     if observation.get("inconsistent"):
         observation_state = "UNREADABLE"
     elif observation.get("legacy"):
-        observation_state = "LEGACY"
-    elif not last_refresh and bool(capture):
-        observation_state = "LEGACY"
+        observation_state = "LEGACY" if frame is not None else "UNREADABLE"
+    elif last_refresh.get("qualified") is False:
+        observation_state = "REFRESH_FAILED"
+    elif not last_refresh:
+        observation_state = "LEGACY" if capture else "NOT_OBSERVED"
     elif not capture:
         observation_state = "UNREADABLE"
     elif qualified:
         observation_state = "QUALIFIED" if not refresh_failed else "REFRESH_FAILED"
     elif not refresh_failed:
         observation_state = "UNREADABLE"
-    elif _generation(capture.get("source_generation")) is not None or capture.get("finished_at"):
-        observation_state = "REFRESH_FAILED"
     else:
         observation_state = "UNREADABLE"
     capture["qualified"] = qualified
@@ -343,7 +346,7 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
                 "inconsistent": state.get("inconsistent", False),
                 "failed_refresh": False,
             }
-            capture, last_refresh = _observation_capture(observation)
+            capture, last_refresh = _observation_capture(observation, frame=frame)
         except Exception as error:
             frame = None
             capture = {
@@ -353,7 +356,9 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
             }
     else:
         frame = df
-        capture, last_refresh = _observation_capture(df.attrs.get("fda_observation"))
+        capture, last_refresh = _observation_capture(
+            df.attrs.get("fda_observation"), frame=df
+        )
 
     records = frame.to_dict("records") if frame is not None else []
     all_themes = _all_themes()
@@ -365,8 +370,8 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
         for molecule in molecules:
             matched = [
                 row for row in records
-                if molecule in str(row.get("generic_name") or "").casefold()
-                or molecule in str(row.get("substance_name") or "").casefold()
+                if molecule.casefold() in str(row.get("generic_name") or "").casefold()
+                or molecule.casefold() in str(row.get("substance_name") or "").casefold()
             ]
             if matched:
                 molecules_with_rows.append(molecule)
