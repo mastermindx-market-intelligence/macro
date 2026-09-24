@@ -157,8 +157,8 @@ information_economics:
     production: "Compact card plus leg labels, validation labels and access treatment; see production captures."
     proposal: "Comparable glance density; detail warnings are moved to hero/footer rather than duplicated on every card."
   findings:
-    - "Recent and older-era validation remain adjacent; no single-rate simplification."
-    - "Signal legs remain visual rows rather than collapsing into prose."
+    - "The desired contract keeps recent and older-era validation visibly comparable, but the first freeze demotes the older-era read on mobile rank 1 and must be repaired before this compression can be credited."
+    - "The desired contract keeps signal legs as visual rows, but the first freeze omits them on ZH desktop rank 1 and collapses paid rows to generic text; this is a pre-review repair requirement."
     - "Access truth is made more explicit without fake protected content."
     - "Presentation filters are an addition and must not become a second ranking/eligibility authority."
   preserved:
