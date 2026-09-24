@@ -1,0 +1,70 @@
+........................................................................ [ 39%]
+..F..................................................................... [ 78%]
+.......................................                                  [100%]
+=================================== FAILURES ===================================
+________ test_recommendation_regressions_are_whole_suite_pr_code_checks ________
+
+    def test_recommendation_regressions_are_whole_suite_pr_code_checks():
+        import yaml
+        jobs = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())["jobs"]
+>       _assert_pr_regression_owner(jobs)
+
+tests/test_theme_recommendation_reasons.py:430:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+jobs = {'yahoo-daily-archive-refresh': {'if': '${{ false }}', 'gate': 'code', 'runs-on': 'ubuntu-latest', 'timeout-minutes': ...{'name': 'shared-nav pages must carry the Research mega-menu', 'run': 'python3 scripts/check_nav_mega.py site'}]}, ...}
+
+    def _assert_pr_regression_owner(jobs):
+        import fnmatch
+        import shlex
+        owner = jobs["conviction-profile"]
+        assert owner["gate"] == "code", "recommendation regressions must run in PR code CI"
+        commands = [str(step.get("run", "")) for step in owner["steps"]]
+        test_commands = [shlex.split(command) for command in commands
+                         if command.startswith("python -m pytest ")]
+        for suite in _PR_REGRESSION_SUITES:
+            executions = [tokens for tokens in test_commands if suite in tokens]
+            assert len(executions) == 1, f"whole suite missing/duplicated in code owner: {suite}"
+>           assert not {"-k", "-m", "--deselect", "--ignore"}.intersection(executions[0])
+E           AssertionError: assert not {'-m'}
+E            +  where {'-m'} = <built-in method intersection of set object at 0x10c614200>(['python', '-m', 'pytest', 'tests/test_stock_score.py', 'tests/test_stock_dossier.py', 'tests/test_theme_recommendation_reasons.py', ...])
+E            +    where <built-in method intersection of set object at 0x10c614200> = {'--deselect', '--ignore', '-k', '-m'}.intersection
+
+tests/test_theme_recommendation_reasons.py:420: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-dad454b0-8065-47df-8c06-06ccef4c9969/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-dad454b0-8065-47df-8c06-06ccef4c9969/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-0657965f-3d82-4806-8a21-5c94f56124df/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-0657965f-3d82-4806-8a21-5c94f56124df/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-5fba87ad-a493-4a97-8ea0-6f36eaad8401/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-5fba87ad-a493-4a97-8ea0-6f36eaad8401/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-b697e6b8-0ab2-4b46-899f-17e912fdce64/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-b697e6b8-0ab2-4b46-899f-17e912fdce64/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-d8ecad9b-6550-48de-9b2c-d4f233fc391a/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-d8ecad9b-6550-48de-9b2c-d4f233fc391a/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/_pytest/pathlib.py:102: PytestWarning: (rm_rf) unknown function <built-in function scandir> when removing /private/tmp/pytest-of-chriswong/garbage-3e515308-d302-498a-ac03-0377b35a3db2/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions:
+  <class 'PermissionError'>: [Errno 13] Permission denied: '/private/tmp/pytest-of-chriswong/garbage-3e515308-d302-498a-ac03-0377b35a3db2/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_theme_recommendation_reasons.py::test_recommendation_regressions_are_whole_suite_pr_code_checks
+1 failed, 182 passed, 6 warnings in 16.61s

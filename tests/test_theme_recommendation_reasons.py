@@ -393,3 +393,72 @@ def test_rollover_chinese_translates_all_native_conditions_not_just_relative_str
         assert phrase not in text
     assert '1.25' in text and '0.5' in text
     assert '涨幅偏高' not in text
+
+
+# A data-only registration is not proof that a pull request exercised these cases.
+# The existing stock/conviction code owner must run each whole suite, while the
+# pre-existing data job remains intact for its original callers.
+_PR_REGRESSION_SUITES = (
+    "tests/test_theme_recommendation_reasons.py",
+    "tests/test_basket_entry_explanations.py",
+    "tests/test_theme_entry_gate_comparison.py",
+    "tests/test_sector_pulse_observation_clock.py",
+)
+
+
+def _assert_pr_regression_owner(jobs):
+    import fnmatch
+    import shlex
+    owner = jobs["conviction-profile"]
+    assert owner["gate"] == "code", "recommendation regressions must run in PR code CI"
+    commands = [str(step.get("run", "")) for step in owner["steps"]]
+    test_commands = [shlex.split(command) for command in commands
+                     if command.startswith("python -m pytest ")]
+    for suite in _PR_REGRESSION_SUITES:
+        executions = [tokens for tokens in test_commands if suite in tokens]
+        assert len(executions) == 1, f"whole suite missing/duplicated in code owner: {suite}"
+        assert executions[0][:3] == ["python", "-m", "pytest"]
+        # Python's -m selects the pytest module. Only arguments AFTER that
+        # launcher may select/deselect pytest cases or markers.
+        pytest_args = executions[0][3:]
+        assert not {"-k", "-m", "--deselect", "--ignore"}.intersection(pytest_args)
+        assert not any(token.startswith(("--deselect=", "--ignore=")) for token in pytest_args)
+        assert any(fnmatch.fnmatchcase(suite, pattern) for pattern in owner["paths"])
+    dependencies = set(next(command for command in commands if command.startswith("pip install ")).split())
+    assert {"pytest", "pandas", "numpy", "pyarrow", "pyyaml", "jinja2"} <= dependencies
+
+
+def test_recommendation_regressions_are_whole_suite_pr_code_checks():
+    import yaml
+    jobs = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())["jobs"]
+    _assert_pr_regression_owner(jobs)
+    # Code coverage is additive: the historical data-gate execution is not removed.
+    old_commands = "\n".join(str(step.get("run", "")) for step in jobs["engine-render-guards"]["steps"])
+    assert jobs["engine-render-guards"]["gate"] == "data"
+    for suite in _PR_REGRESSION_SUITES:
+        assert suite in old_commands
+
+
+@pytest.mark.parametrize("mutation", ["data_only", "deselected", "marker_filter", "missing_suite", "missing_scope", "missing_dependency"])
+def test_pr_code_contract_rejects_false_green_registration(mutation):
+    import yaml
+    jobs = deepcopy(yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())["jobs"])
+    owner = jobs["conviction-profile"]
+    if mutation == "data_only":
+        owner["gate"] = "data"
+    elif mutation == "missing_scope":
+        owner["paths"] = []
+    else:
+        for step in owner["steps"]:
+            command = str(step.get("run", ""))
+            if mutation == "missing_dependency" and command.startswith("pip install "):
+                step["run"] = command.replace(" pyarrow", "")
+            elif "tests/test_theme_recommendation_reasons.py" in command:
+                if mutation == "deselected":
+                    step["run"] = command + " -k unrelated"
+                elif mutation == "marker_filter":
+                    step["run"] = command + " -m unrelated"
+                elif mutation == "missing_suite":
+                    step["run"] = command.replace("tests/test_basket_entry_explanations.py", "")
+    with pytest.raises(AssertionError):
+        _assert_pr_regression_owner(jobs)

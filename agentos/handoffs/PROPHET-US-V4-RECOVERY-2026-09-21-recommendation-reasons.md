@@ -35,10 +35,16 @@ changed:
   - path: data/trial_ledger.jsonl
     what: Append five study configurations through the existing native trial owner; preserve all prior records.
   - path: .github/ci/legacy-jobs.yml
-    what: Register the original theme scoring suite and new reason suite in the existing owner job.
+    what: Add the four full workflow regression suites to the existing conviction-profile PR code job; retain data-gate execution and widen measured scope only.
   - path: .github/workflows/ci.yml
     what: Trigger that job for the reason tests and frozen test-only control fixture.
 verified:
+  - claim: All eight existing conviction-profile pytest commands pass with the four workflow regression suites included.
+    command: Execute each actual manifest pytest command under Python3.12; exact argv and stdout recorded in coverage_20260924/native-job-qualification.json and sibling logs.
+    result: 871 passed across eight commands, including the changed312-test command; no skips. Initial five missing-fixture failures resolved by materializing exact committed inputs, without changing tests.
+  - claim: The PR code owner covers all measured concrete dependencies and retains historical data execution.
+    command: Native load_legacy_jobs and infer_job_scopes for the changed existing owner, with site inputs present.
+    result: 580 concrete paths, zero uncovered; scope only widened; no new jobs or relaxed gate.
   - claim: Frozen historical comparison and existing theme consumers pass the expanded owner suite.
     command: python3 -m pytest -q tests/test_theme_entry_gate_comparison.py tests/test_theme_recommendation_reasons.py tests/test_theme_scoring.py tests/test_theme_scoring_conflicted.py tests/test_theme_scoring_leadership_split.py tests/test_basket_detail_glance_copy.py
     result: 205 passed on Python 3.14; 197 overlapping core tests passed on Python 3.12.
@@ -69,7 +75,7 @@ unverified:
   - claim: Broader Prophet ranking, current-session CPU leadership and full-page design recovery.
     what_would_verify: Existing owner releases and their stated live/input/behavioral acceptance; this reason repair does not substitute.
 unresolved:
-  - Original clock PR 7650 has successful full CI but no independent approval. The Vercel gate dependency is resolved by approved merge 7478; original source review and production proof remain owed.
+  - Original clock PR 7650 is already merged at c32f69485feed3e589d5cf1051c190f7cbc588be and must not be redone. The current recommendation workflow has separate coverage, integration and production obligations.
   - Clean-entry separately requires relative-strength percentile below .75; that percentile is within the theme's own rolling relative-price history, not a sector cross-section. Policy remains unchanged.
   - Shared action-board blanket extension and lane-copy work belongs to incumbent 7076, not this new writer.
   - Live quote/API paths are unavailable by fixture in the browser evidence, never replaced with old Git-tracked quotes.
@@ -86,7 +92,28 @@ danger_areas:
   - Existing descriptor and thesis translations are inherited; only changed reason text is claimed bilingual, not a whole-page redesign.
 ---
 
-# Cumulative continuation
+# Current coverage continuation — 2026-09-24
+
+Protected procedure: `Mastermind@a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`.
+Same #7669 carrier; this increment changes only code-job registration, its regression
+and continuity/evidence. Original semantic source `2c28d950` remains byte-identical.
+The formerly incomplete patch is completed and locally qualified, not held forever
+by an undispatched compound operation. No environment or safety configuration changed.
+Native code-job proof: 871 passes across all eight commands, including312 in the
+changed command; all580 measured concrete scope inputs covered. Previous data-only
+registration did not prove these suites in PR CI and is not described as doing so.
+
+Next: qualify current-main composition, publish this same carrier, conclude current
+hosted tests and independent CI-delta review; then verify the served workflow and
+actual source dates. Keep Draft/HOLD until those gates close. Larger Prophet model
+work remains with the Chairman-delegated programme; no new rank/entry authority.
+The shell-only research mount permission for #7870 is bounded in #7669/comment5807781684.
+No model/UI source or121-page inputs were regenerated in this coverage increment.
+
+See `research/sector_pulse/recommendation_reasons_20260921/coverage_20260924/`.
+MISSION_COMPLETE: false. CAPABILITY_STATE: BUILT_NOT_PROVEN.
+
+# Historical cumulative continuation
 
 MISSION_COMPLETE: false
 CAPABILITY_STATE: BUILT_NOT_PROVEN

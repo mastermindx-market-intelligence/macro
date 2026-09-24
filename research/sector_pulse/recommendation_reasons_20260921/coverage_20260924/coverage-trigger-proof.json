@@ -1,0 +1,63 @@
+{
+  "tests/test_theme_recommendation_reasons.py": [
+    "**",
+    "*",
+    "tests/**",
+    "tests/test_theme_recommendation_reasons.py"
+  ],
+  "tests/test_basket_entry_explanations.py": [
+    "**",
+    "*",
+    "tests/**",
+    "tests/test_basket_entry_explanations.py"
+  ],
+  "tests/test_theme_entry_gate_comparison.py": [
+    "**",
+    "*",
+    "tests/**",
+    "tests/test_theme_entry_gate_comparison.py"
+  ],
+  "tests/test_sector_pulse_observation_clock.py": [
+    "**",
+    "*",
+    "tests/**",
+    "tests/test_sector_pulse_observation_clock.py"
+  ],
+  "engine/theme_scoring.py": [
+    "**",
+    "*",
+    "engine/**",
+    "engine/**",
+    "engine/theme_scoring.py"
+  ],
+  "engine/basket_score.py": [
+    "**",
+    "*",
+    "engine/**",
+    "engine/**",
+    "engine/basket_score.py"
+  ],
+  "engine/sector_pulse.py": [
+    "**",
+    "*",
+    "engine/**",
+    "engine/**",
+    "engine/sector_pulse.py"
+  ],
+  "templates/basket_detail.html.j2": [
+    "**",
+    "*",
+    "templates/**",
+    "templates/**",
+    "templates/**",
+    "templates/basket_detail.html.j2"
+  ],
+  "templates/baskets_desk.js": [
+    "**",
+    "*",
+    "templates/**",
+    "templates/**",
+    "templates/**",
+    "templates/baskets_desk.js"
+  ]
+}
