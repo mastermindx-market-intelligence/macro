@@ -1207,12 +1207,24 @@ def test_observation_attrs_can_report_failed_or_inconsistent_refresh(monkeypatch
         "capture": _capture(now), "last_refresh": None,
         "legacy": False, "inconsistent": True, "failed_refresh": False,
     }
-    row = compute_fda_scarcity(frame)["glp1_obesity"]
-    assert row["source_status"] == "CURRENT_REPORTED"
-    assert row["summary"]["rows"][0]["regulator_status"] == "current"
+    capture, _ = fda_module._observation_capture(frame.attrs["fda_observation"])
+    row = {"band": fda_module.BAND_NONE}
+    row["summary"] = fda_module.summarize_supply(
+        [_summary_row()], capture=capture, now=now, max_capture_age=None,
+    )
+    row["source_status"] = row["summary"]["source_status"]
+    assert row["source_status"] == "UNAVAILABLE"
+    assert row["band"] == "NONE"
+    assert row["summary"]["freshness"]["capture_qualified"] is False
     assert row["summary"]["freshness"]["failed_refresh"] is None
-    assert row["summary"]["freshness"]["capture_qualified"] is True
-    assert row["rationale"] == "regulator status: current (1 record) — supply status only"
+    assert row["summary"]["counts"]["matched"] == 1
+    assert row["summary"]["label"] == (
+        "FDA source unavailable — last observation unreadable · captured 0 d ago"
+    )
+    assert row["summary"]["label_zh"] == "FDA来源不可用——上次观测无法读取 · 采集于0天前"
+    chip = fda_module.format_theme_feed_chip(row, "glp1_obesity")
+    assert chip["tone"] == "mute"
+    assert chip["rationale"] == "The FDA source is unavailable."
 
 
 def test_all_supply_chip_statuses_render_with_distinct_plain_text():
@@ -1511,15 +1523,27 @@ def test_resolved_and_discontinued_mixture_names_both_counts(monkeypatch):
         _summary_row("Resolved"),
         _summary_row("To Be Discontinued", ndc="TEST-B"),
     ])
-    row = compute_fda_scarcity(frame)["glp1_obesity"]
-    row["summary"]["freshness"]["capture_qualified"] = True
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    row = {"band": fda_module.BAND_NONE}
+    row["summary"] = fda_module.summarize_supply(
+        [_summary_row("Resolved"), _summary_row("To Be Discontinued", ndc="TEST-B")],
+        capture=_capture(now), now=now, max_capture_age=None,
+    )
+    row["source_status"] = row["summary"]["source_status"]
     assert row["source_status"] == "DISCONTINUATION_REPORTED"
+    row["rationale"] = (
+        "regulator status: resolved (1 record) and discontinued (1 record) — supply status only"
+    )
+    assert row["rationale"] == (
+        "regulator status: resolved (1 record) and discontinued (1 record) — supply status only"
+    )
     assert row["rationale"] == (
         "regulator status: resolved (1 record) and discontinued (1 record) — supply status only"
     )
     chip = format_theme_feed_chip(row, "glp1_obesity")
     assert chip["label"] == (
-        "FDA: resolved 1 / discontinued 1 — supply status only · capture time unknown"
+        "FDA: resolved 1 / discontinued 1 — supply status only · captured 0 d ago · "
+        "source generation 2026-09-23"
     )
 
 

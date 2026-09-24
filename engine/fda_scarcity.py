@@ -195,6 +195,7 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
     closed = _closed_rows(rows)
     if (
         qualified is False
+        and observation.get("observation_state") != "UNREADABLE"
         and observation.get("failure_code")
         and observation.get("source_generation")
         and closed
@@ -282,7 +283,7 @@ def _all_themes():
 
 def _observation_capture(observation):
     if not observation:
-        return {"qualified": False, "observation_state": "NOT_OBSERVED"}, None
+        return None, None
     capture = dict(observation.get("capture") or {})
     last_refresh = observation.get("last_refresh") or {}
     qualified = (
@@ -300,12 +301,16 @@ def _observation_capture(observation):
         observation_state = "UNREADABLE"
     elif observation.get("legacy"):
         observation_state = "LEGACY"
-    elif not last_refresh:
-        observation_state = "NOT_OBSERVED"
-    elif refresh_failed and not qualified:
-        observation_state = "REFRESH_FAILED"
+    elif not last_refresh and bool(capture):
+        observation_state = "LEGACY"
+    elif not capture:
+        observation_state = "UNREADABLE"
     elif qualified:
         observation_state = "QUALIFIED" if not refresh_failed else "REFRESH_FAILED"
+    elif not refresh_failed:
+        observation_state = "UNREADABLE"
+    elif _generation(capture.get("source_generation")) is not None or capture.get("finished_at"):
+        observation_state = "REFRESH_FAILED"
     else:
         observation_state = "UNREADABLE"
     capture["qualified"] = qualified
