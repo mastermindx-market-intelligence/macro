@@ -83,6 +83,18 @@ capabilities:
     user_job: Understand which daily/weekly signal legs make each combination.
     evidence: "templates/confluence_screener.html.j2:303-323"
     importance: core
+  - id: ledger.occurrence_freshness
+    user_job: See how often each combination has appeared, how long its history is, and when it last fired.
+    evidence: "templates/confluence_screener.html.j2:279-284; scripts/build_confluence_screener.py combo_entry n_fires/first_fire/last_fire/fires_per_year"
+    importance: core
+  - id: ledger.validation_sample_basis
+    user_job: Inspect the month/fire sample basis behind both recent and older-era validation instead of reading rates without denominator context.
+    evidence: "templates/confluence_screener.html.j2:287-297; scripts/build_confluence_screener.py combo_entry n_test/months_test/n_train/months_train"
+    importance: core
+  - id: ledger.random_baseline_consistency
+    user_job: Compare each combination with random entry and see whether the edge held up across both eras.
+    evidence: "templates/confluence_screener.html.j2:325-357; scripts/build_confluence_screener.py combo_entry edge_test_pp/consistent"
+    importance: core
   - id: ledger.wins_per_10
     user_job: Read hit-rate evidence in a compact wins-per-10 visual form.
     evidence: "templates/confluence_screener.html.j2:33-36"
@@ -114,4 +126,8 @@ capabilities:
   - id: parity.mobile_no_horizontal_scroll
     user_job: Use the screener at 390px without page-level horizontal scrolling.
     evidence: "mockups/refs/reference_integrity/confluence-screener-paper-r1/production/geometry.json — scrollWidth=390 in all four mobile cells"
+    importance: core
+  - id: state.global_zero
+    user_job: Understand when no eligible signal combinations are firing at all, rather than confusing global zero with an empty filtered view.
+    evidence: "templates/confluence_screener.html.j2:427-437"
     importance: core
