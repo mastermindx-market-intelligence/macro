@@ -6,6 +6,8 @@ Operation: `gmi-consumer-defensive-research-20260923-sol-001`
 
 Commissioned by: Fable Meta-CEO seat
 
+**Addressed to:** the foundation host slot on PR #7870's lineage and `contracts/sector_intelligence/*.v1.schema.json`. The Earnings owner's clock remains authoritative. Clock-word mappings at that foundation are: fiscal period → `world_valid`; source published → `source_published`; source accepted/knowable time → `knowable`; source currentness observation → `observed`; workspace generation → `belief_or_build`; task-system recording → `system_recorded`. No foundation class yet exists for review freshness, so that clock word remains “no foundation class yet” rather than an invented class.
+
 This document owns the dossier content, copy, DOM contract, adapter behavior, privacy rules, and tests. It does not own a mount, host wiring, an asset path, or any CSS material treatment. Those are foundation-owner obligations. R1A supersedes the original mount, asset, and host-wiring rulings; the original R3-R6 and R8-R10 remain binding where they concern content, contract, copy, accessibility, and density.
 
 ## 1. Integration requirements (host slot)
@@ -22,6 +24,7 @@ The host must provide:
 - An auth-change subscription that follows `mdx-auth`, ignores `PREFS_SAVED`, and reports a change only when signed-in user identity changes.
 - Focus and return handling for the host panel and evidence dialog: initial focus moves to the dialog close control, Escape and the non-content scrim close the dialog, Tab and Shift+Tab remain inside an open dialog, and focus returns to the invoking evidence control.
 - A lifecycle owner that mounts on first disclosure expansion. Before that expansion there is no prefetch of private data. After the first expansion, the adapter keeps its DOM and the host merely hides it on collapse; re-expansion within the same signed-in session causes no teardown or refetch. The adapter destroys on logout or host teardown, and `destroy()` is idempotent.
+- If a host collapses on click, that host toggle ignores every click originating inside the dossier root.
 - The expanded material area constrained to a maximum height of 390 px, with vertical scrolling inside the dossier content rather than the host page.
 
 ### 1.2 Adapter contract
@@ -86,6 +89,7 @@ The foundation may compose its canonical markup, but these data attributes and s
 - Stance sentence: `data-economic-stance`.
 - Loading area: `data-economic-loading`.
 - Content area: `data-economic-content`.
+- Findings container: `data-economic-findings`.
 - Demand rows container: `data-economic-demand`.
 - Optional segment rows container: `data-economic-segments` and `data-economic-segment-rows`.
 - Earnings rows container: `data-economic-earnings`.
@@ -104,14 +108,14 @@ A fact row is a real table row:
     data-economic-basis="reported|organic|core">
   <th scope="row">SERVER_BILINGUAL_OR_SELECTED_LABEL</th>
   <td>SERVER_PERIOD</td>
-  <td><span class="foundation-neutral-chip">SERVER_BASIS</span></td>
+  <td><span data-economic-basis-label>SERVER_BASIS</span></td>
   <td>SERVER_VALUE_AND_UNIT</td>
   <td>
     <button type="button"
             data-economic-evidence
             data-economic-fact-id="SERVER_FACT_ID">
       <span class="l-en">Evidence</span><span class="l-zh">证据</span>
-      <span class="sr-only">ACCESSIBLE_ROW_NAME</span>
+      <span data-economic-accessible-row-name>ACCESSIBLE_ROW_NAME</span>
     </button>
   </td>
 </tr>
@@ -119,7 +123,7 @@ A fact row is a real table row:
 
 The evidence control uses a visible text label, not an icon-only label. Its accessible name is bilingual and includes the row label, for example “Open source evidence — Reported diluted EPS” / “打开源证据——报告稀释每股收益”.
 
-Other accessibility requirements are fixed: real table semantics; heading levels nest correctly inside the host panel; the dialog uses `role="dialog"` and `aria-modal="true"`; initial focus is the close button; Escape and scrim click close; focus returns to the invoking evidence button; all disclosure `hidden` and `aria-expanded` states stay synchronized; every interactive target has an effective target of at least 40×40 px. Bilingual accessible names are provided for the root, links navigation, evidence dialog, evidence controls, close control, sign-in control, and disclosure controls.
+The host must render the basis label as a neutral chip and the row name as visually hidden text while keeping both readable to assistive technology; the spec owns the `data-economic-*` attributes and ARIA, not host class names. Other accessibility requirements are fixed: real table semantics; heading levels nest correctly inside the host panel; the dialog uses `role="dialog"` and `aria-modal="true"`; initial focus is the close button; Escape and the toggle control close the dialog; focus returns to the invoking evidence button; all disclosure `hidden` and `aria-expanded` states stay synchronized; every interactive target has an effective target of at least 40×40 px. Bilingual accessible names are provided for the root, links navigation, evidence dialog, evidence controls, close control, sign-in control, and disclosure controls.
 
 The unentitled state must contain a real sign-in control:
 
@@ -135,19 +139,30 @@ Activation follows the foundation's existing sign-in action and returns focus to
 
 This dossier owns no stylesheet, selector, token, or CSS declaration. The foundation must satisfy both art directions with its shared material system.
 
-### 4.1 Dark art direction
+### 4.1 Intentional theme differences
+
+The reference baseline is `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md` §12 (light component table). The mechanisms that intentionally differ between the two art directions are:
+
+- Separation: dark uses luminance layering; light uses hairline structure.
+- Emphasis: dark uses restrained glow; light uses a tight shadow.
+- Canvas: dark uses a deep neutral; light uses a cool light canvas.
+- Dialog scrim: dark has one; light has none.
+
+### 4.2 Dark art direction
 
 Dark is a command-center treatment. It uses luminance depth, restrained glow, and a dark scrim behind the evidence dialog. Dossier surfaces must separate through layered panel luminance, not a new color family. Interactive evidence and close controls may use a controlled light response or glow consistent with shared dark controls.
 
-Degraded states — loading, unavailable, unentitled, unsupported schema, error, missing context, and reduced motion — must remain legible on dark luminance surfaces without introducing a second palette or mandatory movement.
+Degraded states are concrete: loading geometry uses a panel-luminance step without source text; unavailable and no-access states have no glow or bloom; unsupported and error states use state ink on the existing panel scale; missing context stays legible without a second palette; reduced motion requires no movement.
 
-### 4.2 Light art direction
+### 4.3 Light art direction
 
 Light is a research-workspace treatment. It uses a cool canvas, white or near-white material, hairline structure, and shadow rather than glow. The evidence dialog has no dark scrim; it uses an existing light overlay or transparent separation with the host. Raised controls use a crisp hairline and tight shadow, not glow or glass sheen.
 
-Degraded states need their own light adjudication: loading geometry remains visible on the cool canvas, unavailable and unentitled states retain a structural step or hairline on white, and text remains legible without relying on dark-only glow.
+Degraded states are concrete: loading geometry remains visible on the cool canvas; unavailable and no-access states retain a structural step or hairline on white; unsupported and error text remains legible without relying on dark-only glow; missing context stays legible without a second palette; reduced motion requires no movement.
 
-### 4.3 Neutral and semantic color requirements
+Light mode has no scrim, so click-to-close binds to the toggle control itself and to `Escape`; dark mode also provides its non-content scrim. The toggle is the only other close affordance in both themes.
+
+### 4.4 Neutral and semantic color requirements
 
 - Reported, organic, and core basis chips use the same neutral chip family; only their visible words differ.
 - State color may distinguish up to date, warning, and unavailable semantics, but never labels a basis chip better, suspect, linked, or actionable.
@@ -155,7 +170,7 @@ Degraded states need their own light adjudication: loading geometry remains visi
 - Color is never the only means of distinguishing a basis, state, language, or action.
 - The two art directions must be separately adjudicated in dark and light; token substitution alone is not acceptance evidence.
 
-### 4.4 Density requirement
+### 4.5 Density requirement
 
 The collapsed control is at most 44 px tall. The expanded dossier area is at most 390 px tall and uses inner vertical scrolling. The dossier adds no header, hero, second page, or always-expanded full-sector report.
 
@@ -168,8 +183,8 @@ All source-derived labels and date strings are server-owned bilingual strings. F
 | Token | EN | ZH |
 |---|---|---|
 | title | Demand and earnings evidence | 需求与盈利证据 |
-| compact toggle | Open P&G demand and earnings evidence | 打开宝洁需求与盈利证据 |
-| compact expanded suffix | Close P&G demand and earnings evidence | 关闭宝洁需求与盈利证据 |
+| compact toggle | Open {issuer.name} demand and earnings evidence | 打开{issuer.name}需求与盈利证据 |
+| compact expanded suffix | Close {issuer.name} demand and earnings evidence | 关闭{issuer.name}需求与盈利证据 |
 | action: watch | watch — don't chase | 先观察，不追入 |
 | action: source | check the source before acting | 先核对来源再行动 |
 | action: none | nothing to act on yet | 暂无可执行事项 |
@@ -191,7 +206,7 @@ All source-derived labels and date strings are server-owned bilingual strings. F
 | generation | Generation | 生成版本 |
 | manifest | Manifest | 清单 |
 | record | Record | 记录 |
-| digest | Digest | 摘要 |
+| digest | Digest | 解读 |
 | precision | Precision note | 精度说明 |
 | close | Close | 关闭 |
 | source accepted | Source accepted | 来源采纳时间 |
@@ -357,7 +372,7 @@ Every source-derived placeholder maps exactly as follows:
 | Missing-context text | Fixed §5.7 sentence selected by owner value and page language |
 | Fiscal-period footer item | `interpretation.clocks.fiscal_period.{en,zh}` |
 | Source-accepted footer item | `interpretation.clocks.source_accepted.{en,zh}` |
-| Currentness footer item | `interpretation.selection.currentness` and matching clock value |
+| Currentness footer item | `interpretation.selection.currentness` and `interpretation.clocks.source_currentness` |
 | Evidence route `{slug}` | wrapper `slug` from the displayed response |
 | Evidence route `{fact_id}` | displayed row `fact_id` |
 | Evidence query `generation` | displayed wrapper `generation_id` |
