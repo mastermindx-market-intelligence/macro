@@ -429,3 +429,54 @@ def test_module_imports_nothing_heavy_or_io_bound():
     for needle in ('import pandas', 'from pandas', 'import requests', 'from requests',
                    'import urllib', 'from urllib', 'open(', 'os.environ', 'json.load('):
         assert needle not in src, f'module must not contain {needle!r}'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Economics honesty: a missing, unavailable or foreign-period financial packet
+# never yields a displayed midpoint — the composer owns no arithmetic.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _derived(economics: dict) -> dict:
+    management = economics.get('management') or {}
+    return management.get('derived') or {}
+
+
+def test_a_complete_triple_without_a_packet_never_fabricates_a_midpoint():
+    query, bundle = load_bundle_case('witness_hbm_packaging')
+    with_packet = compose_semiconductor_research(query, bundle)
+    assert _derived(with_packet['economics'])['prior_midpoint']['status'] == 'ready'
+    stripped = compose_semiconductor_research(query, replace(bundle, financial_packets=[]))
+    econ = stripped['economics']
+    assert econ['status'] == 'ready'                     # the literal triple is still shown
+    derived = _derived(econ)
+    assert derived and all(entry['status'] == 'unavailable' for entry in derived.values())
+    assert '16.0' not in json.dumps(derived) and '"value": 16' not in json.dumps(derived)
+    # the receipts in the fixture's packet are the ONLY source of 16.0 anywhere in the response
+    assert '16.0' in json.dumps(with_packet['economics']) and '16.0' not in json.dumps(econ)
+
+
+@pytest.mark.parametrize('mutation', ['unavailable_status', 'foreign_inputs', 'no_inputs'])
+def test_unavailable_or_foreign_period_packets_are_not_attached(mutation):
+    query, bundle = load_bundle_case('witness_hbm_packaging')
+    packet = copy.deepcopy(bundle.financial_packets[0])
+    packet['derivations']['prior_midpoint']['value'] = 99.9
+    if mutation == 'unavailable_status':
+        packet['status'] = 'unavailable'
+    elif mutation == 'foreign_inputs':
+        packet['derivations']['prior_midpoint']['inputs'] = ['evt_0000000001_2019q4_results']
+    else:
+        packet['derivations']['prior_midpoint']['inputs'] = []
+    result = compose_semiconductor_research(query, replace(bundle, financial_packets=[packet]))
+    derived = _derived(result['economics'])
+    assert derived['prior_midpoint']['status'] == 'unavailable'
+    assert '99.9' not in json.dumps(result)
+
+
+def test_authorized_coverage_is_unavailable_when_nothing_is_selected():
+    query, bundle = load_bundle_case('hbm_12h_16h')
+    result = compose_semiconductor_research(query, replace(bundle, assertions=[]))
+    assert result['authorized_coverage']['status'] == 'unavailable'
+    assert result['authorized_coverage']['selected'] == 0
+    full = compose_semiconductor_research(query, bundle)
+    assert full['authorized_coverage']['status'] == 'ready'

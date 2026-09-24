@@ -522,18 +522,37 @@ def _build_views(selection: _Selection, identity: dict[str, Any]) -> dict[str, A
         members_refs = sorted(a["curation_revision"] for a in members)
 
         if key == "capacity" and rows:
-            # one facility counted once physically: dedupe (selector, stage)
-            seen: dict[tuple, dict[str, Any]] = {}
+            # One facility counted once PHYSICALLY: an exact duplicate
+            # measurement of the same facility+stage (identical observation
+            # and measure_scope — the JV / multi-owner shape, where two
+            # assertions restate one physical line) is counted once. A
+            # DIFFERENT measurement on the same facility+stage (another
+            # unit, another basis, a conflicting figure) is NEVER deleted:
+            # two measures are two rows, nothing is merged or chosen, and the
+            # view says so with `multiple_measures_same_facility`.
+            seen: dict[tuple, set[str]] = {}
             deduped: list[dict[str, Any]] = []
-            for row in rows:  # revision-sorted, so "first" is deterministic
-                dedupe_key = (row.get("selector"), row.get("stage"))
-                if dedupe_key[0] is not None and dedupe_key in seen:
+            for row in rows:  # revision-sorted, so the order is deterministic
+                selector = row.get("selector")
+                if selector is None:
+                    deduped.append(row)
+                    continue
+                dedupe_key = (selector, row.get("stage"))
+                fingerprint = json.dumps(
+                    [row.get("observation"), row.get("measure_scope")], sort_keys=True, default=str)
+                fingerprints = seen.setdefault(dedupe_key, set())
+                if not fingerprints:
+                    fingerprints.add(fingerprint)
+                    deduped.append(row)
+                    continue
+                if fingerprint in fingerprints:
                     view_limitations.append("facility_counted_once_multi_owner")
                     continue
-                if dedupe_key[0] is not None:
-                    seen[dedupe_key] = row
+                fingerprints.add(fingerprint)
+                view_limitations.append("multiple_measures_same_facility")
                 deduped.append(row)
             rows = deduped
+            view_limitations = sorted(set(view_limitations))
 
         if not selected_revisions:
             status, reason = "unavailable", "no_selected_assertions"
@@ -738,6 +757,21 @@ def _company_key(workspace: Mapping[str, Any]) -> str:
     return str(workspace.get("company_node_id") or f"cik:{(workspace.get('cik') or '')}")
 
 
+def _receipts_bound_to(derivations: Mapping[str, Any], consumed: set[str]) -> bool:
+    """True when every derivation receipt names only inputs among *consumed*
+    (the event ids of the triple being explained). A receipt without inputs,
+    or one that cites another period's event, does not bind to this triple."""
+    for derivation in derivations.values():
+        if not isinstance(derivation, Mapping):
+            return False
+        inputs = derivation.get("inputs")
+        if not isinstance(inputs, list) or not inputs:
+            return False
+        if not set(str(i) for i in inputs) <= consumed:
+            return False
+    return True
+
+
 def _build_economics(selection: _Selection) -> dict[str, Any]:
     workspaces = selection.event_workspaces()
     packets = selection.financial_packets()
@@ -778,13 +812,25 @@ def _build_economics(selection: _Selection) -> dict[str, Any]:
                 for optional in ("basis", "currency", "perimeter", "definition"):
                     if optional in reported:
                         actual[optional] = reported[optional]
+                consumed = sorted({w.get("event_id", "") for w in ordered})
+                # A financial packet is attached ONLY when it is `ready`, is
+                # for this company, and every derivation receipt's inputs are
+                # among the event ids this triple consumed — a stale,
+                # unavailable or foreign-period packet is not evidence about
+                # this triple, and its figure must never be displayed as one.
                 derivations: Mapping[str, Any] | None = None
                 for packet in packets:
                     entity = packet.get("entity") or {}
-                    if entity.get("cik") == workspace.get("cik") \
-                            and isinstance(packet.get("derivations"), Mapping) and packet["derivations"]:
-                        derivations = packet["derivations"]
-                consumed = sorted({w.get("event_id", "") for w in ordered})
+                    if entity.get("cik") != workspace.get("cik"):
+                        continue
+                    if str(packet.get("status") or "") != "ready":
+                        continue
+                    candidate_derivations = packet.get("derivations")
+                    if not (isinstance(candidate_derivations, Mapping) and candidate_derivations):
+                        continue
+                    if not _receipts_bound_to(candidate_derivations, set(consumed)):
+                        continue
+                    derivations = candidate_derivations
                 candidate = (actual_key, company, prior, actual, new_outlook, consumed, derivations)
                 if best is None or candidate[0] > best[0]:
                     best = candidate
@@ -933,7 +979,7 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
         "expectations": _build_expectations(economics),
         "evidence_refs": _build_evidence_refs(selection),
         "authorized_coverage": {
-            "status": "ready",
+            "status": "ready" if selection.assertions else "unavailable",
             "input_refs": sorted(a["curation_revision"] for a in selection.assertions),
             "selected": len(selection.assertions),
             "industry_total": None,

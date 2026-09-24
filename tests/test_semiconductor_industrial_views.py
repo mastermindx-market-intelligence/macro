@@ -340,7 +340,65 @@ def test_capacity_rows_ordered_by_selector_not_by_value():
     rows = result['industrial_views']['capacity']['rows']
     keys = [(row['selector'] or '', row['configuration'] or '', row['curation_revision']) for row in rows]
     assert keys == sorted(keys)
-    values = [row['observation']['value'] for row in rows]
-    assert values != sorted(values, reverse=True) or values != sorted(values), (
-        'ordering key must be selector-based, not the observation value'
-    )
+    # the emitted order IS the key order — and it is proven not to be the
+    # magnitude order whenever the two differ for this corpus
+    by_key = [row['curation_revision'] for row in sorted(
+        rows, key=lambda r: (r['selector'] or '', r['configuration'] or '', r['curation_revision']))]
+    by_value = [row['curation_revision'] for row in sorted(
+        rows, key=lambda r: (r['observation']['value'] is None, r['observation']['value'] or 0))]
+    emitted = [row['curation_revision'] for row in rows]
+    assert emitted == by_key
+    if by_value != by_key:
+        assert emitted != by_value and emitted != list(reversed(by_value))
+
+
+def _capacity_member(bundle):
+    """The first assertion that renders into the capacity view, plus its row."""
+    from engine.market_ontology.semiconductor_theme_research import select_industrial_sections
+    query, _ = load_bundle_case('mixed_wafer_units')
+    view = select_industrial_sections(query, bundle)['industrial_views']['capacity']
+    row = view['rows'][0]
+    member = next(a for a in bundle.assertions if a['curation_revision'] == row['curation_revision'])
+    return query, member, row
+
+
+def test_a_second_distinct_measurement_on_one_facility_is_kept_not_deleted():
+    """Two measures are two rows: a different observation on the same
+    facility+stage is never merged, never chosen by hash, and the view is
+    marked `multiple_measures_same_facility` (not the multi-owner label)."""
+    from engine.market_ontology.semiconductor_theme_research import select_industrial_sections
+    _, bundle = load_bundle_case('mixed_wafer_units')
+    query, member, row = _capacity_member(bundle)
+    observation = dict(member['observation'])
+    observation.update({'value': 148, 'unit': 'area_kmm2_per_month'})
+    other_measure = _restamp(member, observation=observation)
+    assert other_measure['curation_revision'] != member['curation_revision']
+    bundle2 = replace(bundle, assertions=list(bundle.assertions) + [other_measure])
+    view = select_industrial_sections(query, bundle2)['industrial_views']['capacity']
+    same_facility = [r for r in view['rows'] if r['selector'] == row['selector'] and r['stage'] == row['stage']]
+    assert len(same_facility) == len([r for r in select_industrial_sections(query, bundle)['industrial_views']['capacity']['rows']
+                                      if r['selector'] == row['selector'] and r['stage'] == row['stage']]) + 1
+    assert {r['observation']['unit'] for r in same_facility} >= {observation['unit'], member['observation']['unit']}
+    assert 'multiple_measures_same_facility' in view['limitations']
+    assert 'facility_counted_once_multi_owner' not in view['limitations']
+    assert view['status'] == 'degraded'
+    # coverage and evidence still count every selected assertion; nothing vanished
+    composed_refs = view['input_refs']
+    assert other_measure['curation_revision'] in composed_refs
+
+
+def test_an_exact_duplicate_measurement_on_one_facility_is_counted_once():
+    """The JV / multi-owner shape: the SAME observation and measure_scope
+    restated by a second assertion (different locator, hence a different
+    revision) is one physical line — counted once, labelled honestly."""
+    from engine.market_ontology.semiconductor_theme_research import select_industrial_sections
+    _, bundle = load_bundle_case('mixed_wafer_units')
+    query, member, row = _capacity_member(bundle)
+    restated = _restamp_deep(member, source={'locator': (member['source'].get('locator') or 'p') + ' (restated)'})
+    assert restated['curation_revision'] != member['curation_revision']
+    bundle2 = replace(bundle, assertions=list(bundle.assertions) + [restated])
+    before = select_industrial_sections(query, bundle)['industrial_views']['capacity']
+    view = select_industrial_sections(query, bundle2)['industrial_views']['capacity']
+    assert len(view['rows']) == len(before['rows'])
+    assert 'facility_counted_once_multi_owner' in view['limitations']
+    assert 'multiple_measures_same_facility' not in view['limitations']
