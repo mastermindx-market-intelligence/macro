@@ -14,8 +14,8 @@ changed:
 - path: scripts/build_china.py
   what: Bind the context to the producer assessment date in the existing page view-model.
 - path: templates/_china_participation_context.html.j2
-  what: Add one compact three-column evidence panel and native expandable detail, reusing the deep page
-    and its material system.
+  what: Add one compact three-column evidence panel and native expandable detail, reusing the deep page and
+    its material system.
 - path: tests/test_china_participation.py
   what: Cover missing/stale/invalid/future data, matched denominators, benchmark absence, absolute-versus-relative
     returns and bilingual null presentation.
@@ -23,17 +23,20 @@ changed:
   what: Qualified legacy CN rendering copy identifies historical stress and sampled breadth without changing
     raw model, odds or policy fields.
 - path: collectors/china_breadth.py + engine/china_tier1.py + templates/china.html.j2
-  what: Integrate existing PR7592 safeguards into PR7622 without changing its original branch/controller;
-    preserve both code histories and both test groups.
+  what: Integrate existing PR7592 safeguards into PR7622 without changing its original branch/controller; preserve
+    both code histories and both test groups.
 - path: collectors/china_universe.py + engine/china_participation.py + templates/_china_participation_context.html.j2
-  what: Qualify the official dated close-weight file and consume it as a fixed-start basket with explicit
-    retrospective scope; automatic ingestion is not enabled.
+  what: Qualify the official dated close-weight file and consume it as a fixed-start basket with explicit retrospective
+    scope; automatic ingestion is not enabled.
 - path: scripts/build_china.py + templates/china.html.j2 + paired china_risk_state_live.js
   what: Saved assessment and dated intraday snapshot are distinct; native source disclosure reports collection
     outcomes and dates without certifying freshness.
 - path: engine/china_tier1.py + scripts/build_china.py + scripts/render_china_fast.py + templates/china.html.j2
   what: Adapt main PR7667 context links with explicit HK flow scope, finite null-safe flow views and pending-regime
     interpretation shared by header/detail; no regime/forecast change.
+- path: engine/risk_radar_intl_audit.py + engine/risk_radar_intl_evidence.py
+  what: Integrate exact reviewed P2@5d6ae511 into parent only; old row gate AND episode gate, no signal/probability/gross/ledger
+    change.
 verified:
 - claim: Integrated source and neighboring consumers pass together.
   command: python -m pytest tests/test_china_participation.py tests/test_china_archetype_d_s1.py tests/test_china_breadth_coverage.py
@@ -46,13 +49,13 @@ verified:
     controls.
   command: RENDER_NO_DRIP=1 CHINA_FAST_RENDER=1 python -m scripts.build_china; existing lib.pages normalization;
     python research/grey_deer/capture_china_risk_reading.py --integrated
-  result: Final16 rest/focus captures and8 integrated interactions pass after auxiliary-output cleanup;
-    page0d75fe73 unchanged; source/input/asset fingerprints verified; offline only.
+  result: Final16 rest/focus captures and8 integrated interactions pass after auxiliary-output cleanup; page0d75fe73
+    unchanged; source/input/asset fingerprints verified; offline only.
 - claim: Official-weight parser, arithmetic and optional page consumer
   command: python -m pytest tests/test_china_universe_index_constituents.py tests/test_china_participation.py
     tests/test_china_archetype_d_s1.py -q --tb=short
-  result: 220 passed,31 added cases,10 inherited warnings. Source90e9e9eae2c6; no clock/recovery repair
-    is counted.
+  result: 220 passed,31 added cases,10 inherited warnings. Source90e9e9eae2c6; no clock/recovery repair is
+    counted.
 - claim: Actual builder consumes manually injected genuine official-file data and renders the new detail
   command: python research/grey_deer/probe_china_index_weights.py <operation-local official workbook>
   result: 8 captures and8 interactions passed. Page27296118..., source90e9e9eae2c6. Source table not written;27
@@ -66,86 +69,90 @@ verified:
 - claim: Participation clock qualifies independent time without changing measurement functions.
   command: python -m pytest tests/test_china_participation.py -k 'test_timing_ or test_clock_' -q
   result: 33 clock-contract cases passed. Complete4-suite run438 passed/3 presentation failures. Original15
-    cases promoted. Actual builder preserves6592 saved values and8 input/history/ledger hashes; dated
-    Sep21 versus expected Sep23,2 sessions behind. Eight static captures passed; full clock-disclosure
-    interaction remains unaccepted.
+    cases promoted. Actual builder preserves6592 saved values and8 input/history/ledger hashes; dated Sep21
+    versus expected Sep23,2 sessions behind. Eight static captures passed; full clock-disclosure interaction
+    remains unaccepted.
 - claim: Timing presentation and native disclosure behavior are qualified on the dated page.
   command: python -m pytest tests/test_china_participation.py tests/test_china_archetype_d_s1.py tests/test_risk_radar_dlg_country_wiring.py
     tests/test_risk_radar_dlg_partial.py -q; python research/grey_deer/capture_china_clock.py <exact-page-proof>
     --interactions-only
   result: 441 passed without warnings; all8 localized/theme/viewport timing journeys pass on page47c502b8.
-    Current/mixed fixtures use the real clock reader; absent measurements remain unavailable. Full-page
-    touch/Lens acceptance is separate.
+    Current/mixed fixtures use the real clock reader; absent measurements remain unavailable. Full-page touch/Lens
+    acceptance is separate.
 - claim: Full dated-page interaction qualification preserves genuine touch mode.
   command: pytest five owning suites (477 passed); capture_china_risk_reading.py --current-source --interactions-only;
     capture_china_clock.py --interactions-only
   result: 8 full risk/participation/Lens journeys and8 clock journeys pass on unchanged47c502b8. Screenshot-device
     interference isolated after all gestures. No product JS, data, score or deployment change.
 - claim: Page-wide assessment/collection semantics and actual client updates are qualified offline.
-  command: pytest seven suites (515 passed); probe_china_render_vintage.py; capture_china_page_time.py;
-    source/asset hashes in china-page-time-20260923/qualification.json
-  result: 515 tests;8 source-disclosure journeys;32 synthetic intraday cases;8 static captures.6592 saved
-    values and8 input/ledger hashes unchanged. No production proof.
+  command: pytest seven suites (515 passed); probe_china_render_vintage.py; capture_china_page_time.py; source/asset
+    hashes in china-page-time-20260923/qualification.json
+  result: 515 tests;8 source-disclosure journeys;32 synthetic intraday cases;8 static captures.6592 saved values
+    and8 input/ledger hashes unchanged. No production proof.
 - claim: China event context follows the Beijing reference date independently of saved assessment.
   command: pytest seven owning suites; probe_china_render_vintage.py; capture_china_event_date.py exact-page
     proof
-  result: 542 passed,0 failed,0 warnings;16 added contracts.8 browser event journeys and8 rest captures.0
-    analytical calls,6592 saved values and8 persisted hashes unchanged. Source5e2e11de07c1.
+  result: 542 passed,0 failed,0 warnings;16 added contracts.8 browser event journeys and8 rest captures.0 analytical
+    calls,6592 saved values and8 persisted hashes unchanged. Source5e2e11de07c1.
 - claim: Source-supply and official-calendar gaps reproduced; implementation remains absent.
   command: Explicit pytest of research/grey_deer/china_weight_refresh_pending_tests.py and research/grey_deer/china_calendar_source_pending_tests.py;
     frozen engine output versus NBS2026 calendar.
-  result: 33 failed and12 passed across45 pending cases; not a passing product qualification. Product
-    source/page bytes unchanged.14 official dates absent or misdated;38 wrongly reused static2027 entries.
+  result: 33 failed and12 passed across45 pending cases; not a passing product qualification. Product source/page
+    bytes unchanged.14 official dates absent or misdated;38 wrongly reused static2027 entries.
 - claim: Backdrop source and actual builder qualify without changing saved analytical values.
-  command: Explicit12-suite pytest invocation in backdrop-final-tests.log; probe_china_render_vintage.py
-    with both page-only flags; CHINA_BACKDROP_QUALIFICATION_20260924.json.
+  command: Explicit12-suite pytest invocation in backdrop-final-tests.log; probe_china_render_vintage.py with
+    both page-only flags; CHINA_BACKDROP_QUALIFICATION_20260924.json.
   result: 772 passed,0failures,0warnings,44newcases. Actual builder0 analytical calls,6592saved values/8hashes
     unchanged. Browser remains unaccepted; previous committed page restored.
 - claim: Corroborated missing benchmark dates cannot compress descriptive return and trend windows.
   command: pytest six owning suites; PYTHONPATH=. python research/grey_deer/probe_china_window_integrity.py
-  result: 614 passed/10 inherited warnings,14 new cases; exact old/new parity on1817 stored Sep21 names;
-    loader/Jinja unavailable-state proof; four input hashes unchanged.
+  result: 614 passed/10 inherited warnings,14 new cases; exact old/new parity on1817 stored Sep21 names; loader/Jinja
+    unavailable-state proof; four input hashes unchanged.
+- claim: P2 strict evidence reaches the real China consumer without ledger writes.
+  command: pytest12 owning suites; pytest tests/test_constitution.py; probe_china_episode_integration.py IMPORT_RECEIPT
+    OUTPUT_RECEIPT
+  result: 843 passed plus51 constitutional cases; parent density RED becomes refused; actual main forwards
+    episode fields;15 protected paths unchanged. P2-source fixture and actual parent ledgers remain distinct.
 unverified:
 - claim: Production release and current live data.
   what_would_verify: Current-base integration, required CI, accepted publication and real production input/browser
     proof when release resumes.
 - claim: Automatic official-weight source supply.
-  what_would_verify: Resolve the exact refused method-file write on the original carrier, implement the
-    existing-collector refresh and pass its16 preserved pending cases. No other store, refetch of accepted
-    retrospective evidence or PIT claim.
+  what_would_verify: Resolve the exact refused method-file write on the original carrier, implement the existing-collector
+    refresh and pass its16 preserved pending cases. No other store, refetch of accepted retrospective evidence
+    or PIT claim.
 - claim: Official event schedule, publication-time and result confirmation.
-  what_would_verify: NBS2026 source discrepancy is verified in the research receipt. Correct the existing
-    engine once its source-write gate clears; pass29 pending source cases. Non-NBS schedules, actual release
-    outcomes and data-publication times remain unverified.
+  what_would_verify: NBS2026 source discrepancy is verified in the research receipt. Correct the existing engine
+    once its source-write gate clears; pass29 pending source cases. Non-NBS schedules, actual release outcomes
+    and data-publication times remain unverified.
 - claim: Risk probability/calibration and official historical index attribution.
   what_would_verify: Accepted calibrated validation and point-in-time constituent/weight evidence. Current
     context is not scored forecast authority.
 - claim: Backdrop normalization/browser and final served-page acceptance.
-  what_would_verify: After actual recovery of the original action gate, qualify normalization and execute
-    capture_china_backdrop.py on an exact rebuilt page. No retry or alternate carrier while safety refusal
-    stands.
+  what_would_verify: After actual recovery of the original action gate, qualify normalization and execute capture_china_backdrop.py
+    on an exact rebuilt page. No retry or alternate carrier while safety refusal stands.
 unresolved:
 - CI/release remain deferred; PR7592 and6860 controllers untouched.
 - 24 auxiliary generated outputs and4 prior supplemental images remain unaccepted/excluded.
 - One source-structure/metadata diagnostic was platform-refused; no result inferred or retry performed.
+- Head-only canonical CI ownership check is running as process97234; consume before final integration qualification.
+  No hosted/release approval.
 next_actions:
 - Consume the original P0 sizing correction against P4 without duplicating its source custody.
-- Qualify the existing built page and integrate current source after the original browser/publication
-  action gates permit.
+- Qualify the existing built page and integrate current source after the original browser/publication action
+  gates permit.
 - Retain the separate NBS, official-weight-refresh and risk-publication guards until their actual permission
   recovery; CI/release remain deferred.
 do_not_redo:
 - Do not change PR7592 or restart its reviewer or CI as part of this feature slice.
-- Do not lower94 by judgment or infer whole-market collapse, index contributions, forecast probability
-  or trade authority from this context.
-- Do not call the arithmetic sample mean an equal-weight index or relative outperformance an absolute
-  gain.
+- Do not lower94 by judgment or infer whole-market collapse, index contributions, forecast probability or trade
+  authority from this context.
+- Do not call the arithmetic sample mean an equal-weight index or relative outperformance an absolute gain.
 - Do not create a new collector, participation tape, queue, scheduler or risk engine.
-- Do not re-fetch or redistribute the official workbook to repeat this accepted retrospective result;
-  do not call the basket official index attribution or treat its later observation as PIT evidence.
+- Do not re-fetch or redistribute the official workbook to repeat this accepted retrospective result; do not
+  call the basket official index attribution or treat its later observation as PIT evidence.
 danger_areas:
-- Missing quotes cannot be filled from earlier observations; every return window needs its own sufficient
-  history.
+- Missing quotes cannot be filled from earlier observations; every return window needs its own sufficient history.
 - Trend changes must use the same eligible names at both endpoints.
 - Daily traded-board and multiday library samples have different coverage and horizons.
 - Offline builds can alter local generated files; preserve proof and restore only this operation's generated
@@ -157,49 +164,34 @@ prs:
 ---
 
 # Current cumulative continuation
-
-Operation:china-participation-context-20260921-sol-001; original locked Studio worktree/PR7622.
-Fresh protected procedure:Mastermind@294b4c00ed668b497edb834be8108f14bc1bee8a;1.0.1/bootstrap1.
-Chairman continues accuracy delivery; exceptional review waiver retained; CI/release deferred.
-Pickup:b810694952776f58ff882e3174592555d82cdf4f. No foreign source/controller changed.
-
-Latest delta: the descriptive participation reader rejects affected return/MA windows when
-valid requested stock observations reveal missing benchmark dates. The exact synthetic
-counterexample changed a20-session median from-10% to+80% by dropping one benchmark row;
-that window is now unavailable and its unaffected five-session sibling remains usable.
-The existing sample, sector and CSI300-member consumers inherit the repair. Exact omitted
-dates are returned; unknown member-exclusion counts are not fabricated as0 or300.
-This is cross-source date consistency, not complete exchange-calendar/PIT certification.
-
-614 tests pass across6 suites with10 inherited pandas deprecation warnings;14 new cases.
-Read-only old/new comparison on1817 Sep21 stocks is exactly equal for the entire result;
-four raw/assessment/ledger hashes are unchanged. Actual loader/Jinja emits incomplete-input
-and unavailable readings instead of false positive performance. No new browser/page build.
-Evidence:research/grey_deer/CHINA_WINDOW_INTEGRITY_20260924.md and sibling.json;
-reproducer:probe_china_window_integrity.py. Only two descriptive functions changed by AST.
-Prior page e8d0a5b7 is retained. Backdrop source93399cea remains builder-qualified but not
-browser-accepted; see CHINA_BACKDROP_QUALIFICATION_20260924.json. Prior recovery integration,
-6592-value checks, clocks and event-reference proof remain accepted at their own hashes.
-
-P0 still cd0bcb0 at this read, with no consumed correction to comment5809052741; do not infer
-liveness or take its source. P2 PR7872 retains the independent-alert repair and falsifier
-comment5807940617. P4 #7884 remains research-only; no source or numerical-study import here.
-Original source holds remain: NBS29 pending cases, weight-refresh16, dependence3 and
-render-risk-write54; all excluded from passing totals. Their original explicit denials and
-the backdrop normalization/browser refusal are not retried or routed through another actor.
-Transient Studio transport loss recovered on the same device before the new pure probe.
-This turn's path-claims/instruction compound read and two supplemental test append were
-safety-status refused. Exact readback preserved the14 admitted cases; refused extras absent.
-Inherited news whitespace was excluded by an owned-path diff check, not edited/waived.
-24 inherited auxiliary outputs and4 screenshots remain excluded. No clean-tree claim.
-No active child/server/worker, source EFFECT_UNKNOWN, new collector or automatic wake.
-
-FINALIZATION_CLASSIFICATION:CHECKPOINTED_CONTINUATION
-MISSION_COMPLETE:false
-Boundary:an independently reproduced numerical-integrity defect is repaired and qualified
-through its existing loader/template with a real-input parity check. Large source/test
-recovery makes this the safe committed phase boundary; no release/lease transfer is implied.
-Next:consume P0's actual correction when returned; qualify the held page through its
-original browser/publication gates when permitted. NBS/weight/render-write actions retain
-separate recovery requirements. Do not redo accepted analytics or lower94 by intuition.
-Resume from this cumulative checkpoint plus minimum fresh canonical state, not old logs.
+Operation:china-participation-context-20260921-sol-001; same locked Studio carrier and PR7622.
+Procedure:Mastermind@ed678f27466392bc53cc03f584f91e4f3adf3aa3;1.0.1/bootstrap1.
+Current Chairman continuation retains accuracy delivery, review exception and deferred release.
+P2 final PASS/HOLD consumed from PR7872@5d6ae511c7b82b05e175ba7ea36e2fc5003b6502,
+comment5809904393. Its original source, review operation and HOLD remain unchanged.
+Both product modules and three documents copied exactly; parent manifest adds original4 rows.
+P2's frozen16-grade replay test now uses its own immutable test-only fixture, not the parent's
+14-grade operational log. All original expected count/anchor assertions remain unchanged.
+The parent density counterexample is now enrolled in the existing CI suite and passes.
+843 parent tests and51 unchanged-constitution tests pass. Actual read-only main/template path
+forwards the new evidence contract with CN14 grades/5alerts/1matured loud episode/1open;
+can_force=false, binding=false, measured state40, stress94. HK13 andCA24 grades stay distinct
+from P2's newer snapshots. Legacy diagnostic results and15 protected path hashes are unchanged.
+This is backend/consumer qualification, not a new served page or forecast/sizing validation.
+Evidence:research/grey_deer/CHINA_P2_INTEGRATION_20260924.md and sibling.json;
+probe:probe_china_episode_integration.py. Original P2 and this combined parent have separate CI.
+Ownership check97234 remains running on the same device; next consume its canonical findings,
+repair only integration-owned manifest gaps if any, then persist and publish the final return.
+No new worker or automatic wake. Inspection of two checker function bodies was safety-refused;
+that source-disclosure action was not retried. The known public checker API is a distinct
+functional validation action, not extraction of the refused source text.
+Prior page e8d0a5b7 remains unchanged. Backdrop93399cea is builder-qualified but not browser-
+accepted. Prior participation/clock/recovery proofs remain valid at their own exact hashes.
+DO_NOT_REDO:accepted numerical/recovery/window/source-vintage work and retrospective weights;
+do not lower94, merge/arm siblings, copy newer operational ledgers, or borrow historical odds.
+NBS29, weight16 and render-risk-write54 pending cases remain separate/unfixed. The former
+3-case dependence gap is closed by this integration; preserve its original RED evidence.
+P0 sizing correction still unconsumed on original PR7875; P4 remains research-only. Earlier
+calendar/weight/risk-write/browser denials remain held.24 auxiliary outputs/4images excluded.
+SOURCE_EFFECT_UNKNOWN:none. MISSION_COMPLETE:false. Active same-carrier integration; no final
+stop or source transfer while the local qualification result is still pending.
