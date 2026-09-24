@@ -294,6 +294,15 @@ def assess_management_sequence(
     for field in _OPTIONAL_DEFINITION_FIELDS:
         if roles["prior_outlook"].get(field) is None and roles["actual"].get(field) is None:
             limitations.append(f"definition_unqualified:{field}")
+    # A prior outlook struck at a stated FX planning rate (TSMC: "1 US dollar
+    # to N NT dollars") is compared against an actual translated at realised
+    # rates. The comparison stays comparable — same metric, unit, basis and
+    # currency — but a within/below/above read can be produced by FX drift
+    # alone, so say so. Additive limitation, no new refusal reason (the closed
+    # vocabulary stays frozen); the guidance item's fx_assumption itself is not
+    # echoed by the frozen outlook role. Alignment review, #7870, 2026-09-24.
+    if _require_mapping(prior, "prior").get("fx_assumption") is not None:
+        limitations.append("fx_assumption_unreconciled")
 
     authority = {
         "can_rank": False,

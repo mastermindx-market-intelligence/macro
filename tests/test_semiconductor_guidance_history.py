@@ -538,3 +538,14 @@ def test_absent_on_both_sides_definitions_are_surfaced_as_unqualified_not_certif
 def test_fully_qualified_definitions_are_never_flagged_unqualified():
     out = assess_management_sequence(_shape_prior_outlook(), _shape_actual(), _shape_next_outlook())
     assert not [entry for entry in out["limitations"] if entry.startswith("definition_unqualified:")]
+
+
+def test_prior_outlook_with_an_fx_assumption_surfaces_an_unreconciled_fx_limitation() -> None:
+    prior = {**_shape_prior_outlook(), "fx_assumption": "1 US dollar to 32 NT dollars"}
+    result = assess_management_sequence(prior, _shape_actual(), _shape_next_outlook())
+    assert "fx_assumption_unreconciled" in result["limitations"]
+    assert result["comparisons"]["prior_vs_actual"]["status"] in ("comparable", "refused")  # never a new refusal reason
+    assert "fx_assumption" not in result["roles"]["prior_outlook"]  # frozen role echo unchanged
+    plain = assess_management_sequence(_shape_prior_outlook(), _shape_actual(), _shape_next_outlook())
+    assert "fx_assumption_unreconciled" not in plain["limitations"]
+

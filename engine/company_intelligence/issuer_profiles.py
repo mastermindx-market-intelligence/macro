@@ -434,6 +434,7 @@ def _fact_present(
     bound: BoundRelease,
     receipt: SpanReceipt,
     currency: str | None = None,
+    provenance: str | None = None,
 ) -> dict[str, Any]:
     # ``currency`` is additive: a profile whose guidance items carry a
     # currency (TSM/ON) states the same closed token on its release facts so
@@ -453,6 +454,10 @@ def _fact_present(
     }
     if currency is not None:
         payload["currency"] = currency
+    if provenance is not None:
+        # Non-compared prose about WHERE the figure was read (the T06 law
+        # compares metric/unit/basis/currency/perimeter/definition only).
+        payload["provenance"] = provenance
     return payload
 
 
@@ -1576,6 +1581,7 @@ def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_i
         fact_id="fact_revenue_usd", event_id=event_id, metric="revenue",
         value=value, unit="usd_billions", period=period,
         basis="reported_ifrs", currency="USD",
+        provenance="TSMC USD-restated quarterly revenue, as stated in Exhibit 99.1 ('In US dollars, … quarter revenue was')",
         document_id=document_id, bound=bound, receipt=usd_receipt,
     ))
     return facts
@@ -1774,6 +1780,7 @@ def _on_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id
         fact_id="fact_revenue", event_id=event_id, metric="revenue",
         value=float(parsed[0].group(1).replace(",", "")), unit=unit, period=period,
         basis="reported_gaap", currency="USD",
+        provenance="onsemi GAAP quarterly revenue, as stated in the Exhibit 99.1 summary table",
         document_id=document_id, bound=bound, receipt=receipt,
     )]
 
