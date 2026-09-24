@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import math
+from datetime import date
 
 import pytest
 
@@ -9,8 +11,9 @@ from engine.company_intelligence.economic_observations import (
     EconomicObservationError,
     validate_selected_facts,
 )
+from engine.company_intelligence.events import FiscalPeriod
 from engine.company_intelligence.issuer_profiles import profile_for_ticker
-from engine.company_intelligence.pg_profile import PG_METRIC_KEYS, parse_pg_literal
+from engine.company_intelligence.pg_profile import PG_DEFINITIONS, PG_METRIC_KEYS, parse_pg_literal
 from tests.earnings_economic_fixtures import (
     FISCAL_SCOPE,
     pg_bound_case,
@@ -204,9 +207,31 @@ def test_blank_is_absent_and_dash_is_neutral_zero() -> None:
         fiscal_scope=FISCAL_SCOPE,
     )
     by_metric = {row["metric"]: row for row in rows}
-    assert by_metric["pg_organic_volume_growth_pct"]["value"] == 1.0
-    assert by_metric["pg_total_volume_growth_pct"]["value"] == 0.0
-    assert by_metric["pg_total_volume_growth_pct"]["source_span"]["display_excerpt"] == "—"
+    assert "value" not in by_metric["pg_total_volume_growth_pct"]
+    assert "typed_absence" in by_metric["pg_total_volume_growth_pct"]
+    assert by_metric["pg_organic_volume_growth_pct"]["value"] == 0.0
+    assert by_metric["pg_organic_volume_growth_pct"]["source_span"]["display_excerpt"] == "—"
+
+
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "annual_first",
+        "columns_reordered",
+        "hostile_markup",
+        "blank_dash",
+        "dash_without_convention",
+        "combined_volume_only",
+        "eps_unit_mismatch",
+    ],
+)
+def test_validator_accepts_every_extractor_output(kind: str) -> None:
+    workspace = pg_workspace_case(kind)
+    emitted = [row for row in workspace["facts"] if str(row.get("metric", "")).startswith("pg_")]
+    checked = validate_selected_facts(
+        workspace, source_texts=pg_source_texts(kind), fiscal_scope=FISCAL_SCOPE
+    )
+    assert checked == emitted
 
 
 def test_combined_volume_mix_never_passes_pure_volume() -> None:
@@ -244,10 +269,11 @@ def test_unit_shape_mismatch_is_a_typed_absence():
 
 def test_fy2027_scope_binds_current_and_prior_columns() -> None:
     scope = ("2027-04-01", "2027-06-30", "2026-04-01", "2026-06-30")
-    workspace = pg_workspace_case("annual_first", fiscal_scope=scope)
+    period = FiscalPeriod(year=2027, quarter=4, calendar_end=date(2027, 6, 30))
+    workspace = pg_workspace_case("annual_first", fiscal_scope=scope, fiscal_period=period)
     rows = validate_selected_facts(
         workspace,
-        source_texts=pg_source_texts("annual_first", fiscal_scope=scope),
+        source_texts=pg_source_texts("annual_first", fiscal_period=period),
         fiscal_scope=scope,
     )
     by_metric = {row["metric"]: row for row in rows if "value" in row}
@@ -292,10 +318,11 @@ def test_profile_lookup_public_dispatch_is_unchanged() -> None:
 
 def test_scope_quarter_matches_workspace_quarter() -> None:
     scope = ("2026-01-01", "2026-03-31", "2025-01-01", "2025-03-31")
-    workspace = pg_workspace_case("annual_first", fiscal_scope=scope)
+    period = FiscalPeriod(year=2026, quarter=3, calendar_end=date(2026, 3, 31))
+    workspace = pg_workspace_case("annual_first", fiscal_scope=scope, fiscal_period=period)
     rows = validate_selected_facts(
         workspace,
-        source_texts=pg_source_texts("annual_first", fiscal_scope=scope),
+        source_texts=pg_source_texts("annual_first", fiscal_period=period),
         fiscal_scope=scope,
     )
     assert len(rows) == 20
@@ -338,9 +365,26 @@ def test_fact_id_identity_and_duplicate_refused() -> None:
         return rows
 
     _invalid(mutate)
-    _workspace, baseline = _selected()
-    assert len({row["fact_id"] for row in baseline}) == len(baseline)
-    assert all(row["fact_id"].startswith("fact_") and len(row["fact_id"]) == 21 for row in baseline)
+    workspace, baseline = _selected()
+    for row in baseline:
+        period = row.get("period", row["metric"])
+        definition = next(item for item in PG_DEFINITIONS if item.metric == row["metric"])
+        identity = "|".join((workspace["event_id"], row["metric"], period, definition.basis))
+        expected = f"fact_{hashlib.sha256(identity.encode()).hexdigest()[:16]}"
+        assert row["fact_id"] == expected
+
+
+def test_dash_span_points_at_the_dash_cell() -> None:
+    rows = validate_selected_facts(
+        pg_workspace_case("blank_dash"),
+        source_texts=pg_source_texts("blank_dash"),
+        fiscal_scope=FISCAL_SCOPE,
+    )
+    row = next(row for row in rows if row["metric"] == "pg_organic_volume_growth_pct")
+    source = next(iter(pg_source_texts("blank_dash").values()))
+    start = row["source_span"]["receipt"]["span_start_byte"]
+    end = row["source_span"]["receipt"]["span_end_byte"]
+    assert source.encode("utf-8")[start:end].decode("utf-8") == "—"
 
 
 def test_span_must_use_registered_private_rights_profile() -> None:
