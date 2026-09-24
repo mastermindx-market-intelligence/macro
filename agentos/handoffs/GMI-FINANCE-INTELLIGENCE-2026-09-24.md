@@ -54,6 +54,15 @@ verified:
   - claim: "Fabric lane capacity exists for Wave 1."
     command: "ssh m1/mb/mini2 'ls ~/lanes/ext/active'; ssh mini2 'ls ~/lanes/repos; git -C ~/lanes/repos/macro rev-parse --short HEAD; ls ~/lanes/venv/bin/pytest; which gh codex claude'"
     result: "m1 2/2 (cdv1_t1_pg_facts, mo_a3_mor2_census), mb 1/2 (mo_a3_ric_f3_w1) with a waiting ene dispatcher, mini2 0/2 with macro mirror at 33c73dd9, pytest venv, gh/codex/claude, 148 GB free, load 1.3."
+  - claim: "START is durably recorded and Wave 1 lanes are dispatched on the fabric."
+    command: "gh pr comment 7786 (START); nohup admission_wait_dispatch.sh mini2 fin_t1_contract 2 36; nohup admission_wait_dispatch.sh mini2 fin_t3_overlap 2 36; grep LANE_LEASE remote_lane_v8_mini2_fin_t1_contract.log"
+    result: "START = #7786 comment 5808406935; carrier PR #7887 (DRAFT) head 9f7ec63e; fin_t1_contract ADMITTED on mini2 05:43Z (GLM lease 2a2b25eafc07, remote pid 32877, branch claude/finance-t1-read-model-contract, new-packet mode); fin_t3_overlap queued behind the Energy seat's ene_w1_t3_adapter marker (dispatcher ticking every 300 s)."
+  - claim: "Coordination notes are posted on the two shared-custody carriers before any Wave 3 write."
+    command: "gh pr comment 7870; gh pr comment 7669"
+    result: "#7870 comment 5808435472 (state_of_themes include, app/main include, R11 §14.1 extension request, private prefix); #7669 comment 5808435736 (basket_detail launch include seam)."
+  - claim: "No SSH route from the seat to the API host exists; private publication must be a secrets-bearing workflow."
+    command: "ssh -o BatchMode=yes root@146.190.142.17; gh api repos/mastermindx-market-intelligence/Mastermind --jq .private"
+    result: "Permission denied (publickey); both macro and Mastermind are PUBLIC repos — staging can never be committed; the Finance publish lane rebuilds staging deterministically from the pinned research sha inside a workflow_dispatch run with the R2_RESEARCH_* secrets (packet fin_t6_publish_workflow)."
 unverified:
   - claim: "The R4 private-binding ruling on #7780 (candidate ii — Research Vault under one registered prefix) will be accepted for GMI theme research."
     what_would_verify: "A Sol/Chairman reply on #7780 after comment 5807772681; Finance's private path uses the same store/prefix idiom either way."
@@ -63,8 +72,9 @@ unresolved:
   - "Rights registry (config/theme_sources.yml) carries no SEC filing family; #7870's assert_current_emission_allowed fails closed on unknown families. Until the registry owner admits a family, first-vertical source records display rights_state=SOURCE_RIGHTS_HELD for emission purposes."
   - "Financials launch module seam on basket/us_sector_financials.html is inside templates/basket_detail.html.j2 (held by #7669)."
 next_actions:
-  - "Open the DRAFT carrier PR for claude/finance-intelligence-implementation-20260924 and emit START on #7786 once the Wave 1 packets are frozen."
-  - "Dispatch fin_t1_contract + fin_t3_overlap to mini2 (admission_wait_dispatch), then fin_t2_projection + fin_t4_private once the schema lands on main."
+  - "Consume the fin_t1_contract return (PR by the lane runtime): seat review of the schema against the frozen field list, arm merge-on-green, merge on concluded green; then dispatch fin_t2_projection + fin_t4_private (args pre-staged in $K/ext)."
+  - "Consume fin_t3_overlap; wire tests/test_finance_overlap.py into the finance-intelligence job (paths + run) in the T2 or a seat commit."
+  - "Wave 2 packets are frozen and pre-staged: fin_t5_staging (deterministic staging builder from research sha + locator receipts), fin_t6_publish_workflow (workflow_dispatch publish lane with R2 secrets), fin_t7_api (authenticated route) — dispatch order T5 ∥ T4 → T7 → T6; the seat dispatches the publish workflow (dry-run first)."
   - "Post coordination notes on #7870 (state_of_themes mount + app/main.py include + R11 §14.1 extension sections) and on #7669 (basket_detail launch include) before any Wave 3 write."
   - "Wave 2: transcribe the eleven first-vertical witness records (V, MA, FI, FIS, CME, ICE, NDAQ, BK, STT, SPGI, MCO) from research/finance/FINANCE_FIRST_VERTICAL_ASSERTION_PACKET_V0_1_2026-09-23.json @615f1050 into the frozen read model through the private owner; ship app/finance_intelligence.py."
 do_not_redo:
