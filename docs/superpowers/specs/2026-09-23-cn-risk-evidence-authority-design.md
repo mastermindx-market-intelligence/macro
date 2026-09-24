@@ -100,7 +100,7 @@ The episode gate requires all of:
 - at least 8 successful loud episodes;
 - non-null episode evidence as-of;
 - episode Wilson lower-bound lift over the Wilson upper base-rate bound strictly above 1.25;
-- evidence no older than 120 days.
+- evidence not future-dated and no older than 120 days.
 
 Because the old gate remains conjunctive, this migration has a mechanical no-grant-more guarantee. A later governance decision may retire the compatibility fence only in a separate reviewed change with evidence; this operation does not do so.
 
@@ -112,4 +112,4 @@ Governance transition events remain in the existing ledger and gain additive row
 
 ## Required falsifiers
 
-Tests must prove: one persistent episode; alternating loud/quiet states without a 21-row reset; repeated hits in one drawdown; genuinely separated episodes; sparse logs; stale evidence; no alerts; all hits; zero observed base; incomplete rows; deterministic replay; July-like and September-like streaks; HK/CA no-alert behavior; and `new_can_force => old_can_force` over adversarial synthetic mutations.
+Tests must prove: one persistent episode; alternating loud/quiet states without a 21-row reset; repeated hits in one drawdown; genuinely separated episodes; sparse logs; stale, invalid, and future-dated evidence; no alerts; all hits; zero observed base; incomplete rows; deterministic replay; July-like and September-like streaks; HK/CA no-alert behavior; and `new_can_force => old_can_force` over adversarial synthetic mutations.

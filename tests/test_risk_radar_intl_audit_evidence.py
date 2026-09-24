@@ -543,3 +543,26 @@ def test_raw_legacy_metrics_fence_clean_episode_metrics() -> None:
     assert result["row_gate_reason"] == (
         "legacy-row-gate-refused: n_alert_rows=8 < legacy_min_alert_rows=30"
     )
+
+
+def test_future_dated_evidence_fails_closed_for_both_gates() -> None:
+    result = audit._evaluate_authority_contract(
+        _strong_authority_metrics(
+            row_evidence_asof="2026-09-24",
+            episode_evidence_asof="2026-09-24",
+            legacy_row_evidence_asof="2026-09-24",
+        ),
+        now=AUTHORITY_NOW,
+    )
+
+    assert result["row_gate_granted"] is False
+    assert result["episode_gate_granted"] is False
+    assert result["can_force"] is False
+    assert result["row_gate_reason"] == (
+        "legacy-row-gate-refused: future-row-evidence-asof=2026-09-24 "
+        "> now=2026-09-23"
+    )
+    assert result["episode_gate_reason"] == (
+        "episode-gate-refused: future-episode-evidence-asof=2026-09-24 "
+        "> now=2026-09-23"
+    )

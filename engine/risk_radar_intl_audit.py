@@ -13,23 +13,21 @@ radar has earned the right to HARD-FORCE the Market-State verdict (`can_force`).
 These radars ship DISPLAY-ONLY (verdict untouched) until each one's own log matures and
 clears the bar — accountable by construction, never trusted on faith. Never raises.
 
-CAN_FORCE — ARTICLE-3 GATE (W7a)
----------------------------------
-`can_force` is now gated by a Wilson-CI lower-bound lift (Article 3) rather than a
-point-estimate threshold.  The Wilson lower bound at the 90%-confidence level (z=1.645)
-must exceed 1.25× the base drawdown rate — matching the retired point-estimate floor of
-1.25 but measured on the CI lower bound instead of the point estimate.  Because
-wilson_lb <= point_estimate always, the CI gate is strictly tighter everywhere: zero
-grant-more cases across the full (k, n, base) space.  At minimum sample sizes (n_alerts=8)
-the old point-estimate gate false-granted ~44% of the time under the null; the Wilson
-gate reduces this to ~5.8%.  This is the conservative / authority-revoking direction:
-markets that previously cleared the point-estimate gate may lose can_force; no market
-can gain force authority it did not have under the old gate.
+CAN_FORCE — ARTICLE-3 GATE (W7a / authority.v2)
+------------------------------------------------
+`can_force` is the conjunction of two deterministic gates.  The first replays the exact
+pre-v2 raw-row inputs (graded rows, alert rows, alert hits, all-row base rate, and last
+graded as-of) as a compatibility fence.  The second derives non-overlapping base windows
+and loud stress episodes from the same append-only JSONL, then compares a one-sided 90%
+Wilson lower bound for episode precision against a one-sided 90% Wilson upper bound for
+the independent base rate.  Both gates require named sample floors, valid non-future
+fresh evidence, and lift strictly above 1.25.  Therefore the migration may revoke
+row-level authority but cannot create authority that the pre-v2 implementation refused.
 
 When the grant state changes vs the previous scorecard call, authority_grant or
 authority_lapse events are appended to data/neuralweb/governance.jsonl via
 engine.neuralweb.governance (fail-open — a governance-write failure never aborts the
-audit).
+audit).  Historical events and forward rows are never rewritten.
 """
 from __future__ import annotations
 
@@ -232,14 +230,24 @@ def realized_odds(market: str, root=None) -> dict:
             for st, d in out.items() if d["n"]}
 
 
-def _valid_evidence_asof(value: object) -> bool:
+def _evidence_day(value: object):
     if value is None or not str(value).strip():
-        return False
+        return None
     try:
-        datetime.fromisoformat(str(value)[:10])
-        return True
+        return datetime.fromisoformat(str(value)[:10]).date()
     except (TypeError, ValueError):
-        return False
+        return None
+
+
+def _valid_evidence_asof(value: object) -> bool:
+    return _evidence_day(value) is not None
+
+
+def _utc_now(now: datetime | None) -> datetime:
+    value = now or datetime.now(timezone.utc)
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
 
 
 def _evaluate_authority_contract(
@@ -254,6 +262,8 @@ def _evaluate_authority_contract(
     base rate. Shared constitution semantics remain unchanged.
     """
     from engine.neuralweb.constitution import grant_authority  # type: ignore[import]
+
+    evaluation_now = _utc_now(now)
 
     # Canonical/deduplicated row metrics feed the new episode contract.
     n_total = int(metrics.get("n_total_graded_rows") or 0)
@@ -318,6 +328,12 @@ def _evaluate_authority_contract(
             "legacy-row-gate-refused: invalid-row-evidence-asof="
             f"{legacy_asof!r}"
         )
+    elif _evidence_day(legacy_asof) > evaluation_now.date():
+        row_gate_reason = (
+            "legacy-row-gate-refused: future-row-evidence-asof="
+            f"{_evidence_day(legacy_asof).isoformat()} "
+            f"> now={evaluation_now.date().isoformat()}"
+        )
     else:
         try:
             row_result = grant_authority(
@@ -331,7 +347,7 @@ def _evaluate_authority_contract(
                     "min_n": LEGACY_MIN_ALERT_ROWS_FORCE,
                     "min_events": MIN_ROW_HITS_FORCE,
                 },
-                now=now,
+                now=evaluation_now,
             )
             row_gate_granted = bool(row_result.granted)
             row_wilson_lb = row_result.wilson_lb
@@ -393,6 +409,12 @@ def _evaluate_authority_contract(
             "episode-gate-refused: invalid-episode-evidence-asof="
             f"{episode_asof!r}"
         )
+    elif _evidence_day(episode_asof) > evaluation_now.date():
+        episode_gate_reason = (
+            "episode-gate-refused: future-episode-evidence-asof="
+            f"{_evidence_day(episode_asof).isoformat()} "
+            f"> now={evaluation_now.date().isoformat()}"
+        )
     elif base_upper_raw is None or not (0.0 < float(base_upper_raw) <= 1.0):
         episode_gate_reason = (
             "episode-gate-refused: invalid-episode-base-rate-upper="
@@ -411,7 +433,7 @@ def _evaluate_authority_contract(
                     "min_n": MIN_LOUD_EPISODES_FORCE,
                     "min_events": MIN_EPISODE_HITS_FORCE,
                 },
-                now=now,
+                now=evaluation_now,
             )
             episode_gate_granted = bool(episode_result.granted)
             episode_wilson_lb = episode_result.wilson_lb

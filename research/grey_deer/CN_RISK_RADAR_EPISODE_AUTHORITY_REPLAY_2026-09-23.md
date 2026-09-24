@@ -112,7 +112,7 @@ The scorecard names all denominators. The final authority result is:
 can_force = legacy_row_gate_granted AND episode_gate_granted
 ```
 
-The legacy row gate preserves the exact pre-repair effective behavior as a migration fence, using the raw graded-row count, raw `alert=true` count, raw alert hits, raw all-row base rate, and original last graded `asof`. The episode gate separately requires 30 canonical graded rows, 8 canonical alert rows, 30 independent base windows, 8 matured loud episodes, 8 episode hits, a valid/fresh evidence date, and conservative Wilson lift above 1.25 using the base-rate upper bound. Episode loudness may also recognize an elevated/risk-off state, but it cannot enlarge the legacy alert denominator. Therefore the migration cannot grant where the pre-repair code refused, even if malformed dates or duplicate sessions exist.
+The legacy row gate preserves the exact pre-repair effective behavior as a migration fence, using the raw graded-row count, raw `alert=true` count, raw alert hits, raw all-row base rate, and original last graded `asof`. The episode gate separately requires 30 canonical graded rows, 8 canonical alert rows, 30 independent base windows, 8 matured loud episodes, 8 episode hits, a valid, non-future, fresh evidence date, and conservative Wilson lift above 1.25 using the base-rate upper bound. Episode loudness may also recognize an elevated/risk-off state, but it cannot enlarge the legacy alert denominator. Therefore the migration cannot grant where the pre-repair code refused, even if malformed dates or duplicate sessions exist.
 
 ## Ledger integrity
 
