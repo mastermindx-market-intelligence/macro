@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_risk_radar_card.html.j2
+  - site/china.html
+manifest: mockups/evidence/china-recovery-safety-20260924/manifest.json

@@ -65,3 +65,34 @@ search show the original291-line/old-date source, not an applied repair. Weight
 method write was explicitly safety-status refused, and exact path readback is absent.
 A later compound precommit verification read was refused; its result is not claimed.
 No blocked edit or diagnostic was repeated through another actor/tool/carrier.
+
+## Final source-to-page qualification
+
+Semantic integration f83432597c0a2fc8fe0fc0c3835e4219fa4d4eb1 was pushed on the
+original PR7622. Actual page-only builder returned0 with zero analytical-engine
+calls,6592 saved values unchanged and8 protected input/history/ledger hashes intact.
+The first probe invocation lacked PYTHONPATH and stopped before imports/building;
+the corrected environment ran normally. Existing normalization emitted no new asset.
+
+Final page SHA256: e8d0a5b7e14a48eeda51a77061ce52366447d3835a9a7701f36cc0ec5aaa451d.
+Final page size:281041 bytes;20 versioned asset references match. Risk94 unchanged.
+Actual browser proof:8 full-page captures,8 two-entrypoint risk-dialog journeys,
+and24 explicitly synthetic recovery cases through the real producer and shared
+Jinja dialog. Missing permission, foreign support and unavailable local internals
+stay unconfirmed, without a green TURN or exposure-change instruction in the
+recovery section. Existing risk-score/odds/policy presentation outside that section
+is not newly validated. Both languages, themes and viewport sizes were exercised.
+
+All gesture assertions precede screenshots; mobile touch mode is checked before
+and after. The two inspected synthetic desktop-dark/mobile-light frames show a
+readable unconfirmed-recovery block. They are synthetic-state visual evidence,
+not current market conditions. No browser console/capture failures or document
+overflow; servers closed. The source page fingerprint stayed unchanged.
+Initial packaging presence detection used nonexistent `.rrx-recovery`; that false
+flag is excluded. The actual8 browser cases use `.rrx-rec` and prove presence.
+A subsequent extra DOM diagnostic was refused and is not counted as acceptance.
+
+Visual evidence guard and added-design ratchet pass. AgentOS validation has0errors
+and64 existing warnings. Qualification:mockups/evidence/china-recovery-safety-20260924/.
+The statistical dependence finding was returned to original PR6989 in comment
+5805701829; no RRU worker, source writer or controller was assigned or replaced.
