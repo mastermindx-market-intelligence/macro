@@ -422,12 +422,18 @@ def compose_mining_research(
         if code and code not in limitations:
             limitations.append(code)
 
-    # MAJOR-7 — industry_total_unknown is a contracted limitation on the W-R slice
-    # (domain yaml §B ``limitations_vocabulary``). It is minted when the W-R
-    # identity axis is unbound — partial coverage with no issuer-attributable
-    # economics. The W-C slice does not contract it; there it stays absent.
+    # Slice-definitional limitations (R-MIN-31 §4, MAJOR-E). The slice's own
+    # ``limitations_vocabulary`` lists the codes the domain file contracts for
+    # every case of that slice; the schema carries a single contract for
+    # ``authorized_coverage.industry_total`` which is literal ``null`` on
+    # every response, so any slice whose vocabulary names
+    # ``industry_total_unknown`` (rare-earth only) mints it once per compose
+    # call. Copper does not name it; copper never mints it. The old
+    # "unbound identity axis" predicate was invented; the truthful polarity
+    # is "the slice's industry_total is contracted null" (R-MIN-25), so
+    # binding or not binding the issuer axis never toggles this code.
     slice_limit_vocab = list(MINING_DEFINITIONS[query.slice_key].get("limitations_vocabulary") or [])
-    if "industry_total_unknown" in slice_limit_vocab and not bundle.identity_results:
+    if "industry_total_unknown" in slice_limit_vocab:
         if "industry_total_unknown" not in limitations:
             limitations.append("industry_total_unknown")
 
