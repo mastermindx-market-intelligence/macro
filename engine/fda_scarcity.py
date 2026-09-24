@@ -113,7 +113,7 @@ def _duration_text(seconds):
     return (f"{days} d ago", f"{days}天前")
 
 
-def _label(status, counts, generation, capture_qualified, unclassified_rows, capture_age_s=None):
+def _label(status, counts, generation, capture_qualified, unclassified_rows, capture_age_s=None, refresh_failed_at=None):
     labels = {
         _CURRENT_REPORTED: ("FDA shortage: current ({current})", "FDA短缺：当前（{current}）"),
         _RESOLVED_REPORTED: ("FDA shortage: resolved ({resolved}) — supply status only", "FDA短缺：已解决（{resolved}）——仅供给状态"),
@@ -138,8 +138,11 @@ def _label(status, counts, generation, capture_qualified, unclassified_rows, cap
         chinese_parts.append(f"来源生成日期{generation}")
     if capture_age_s is not None:
         english_age, chinese_age = _duration_text(capture_age_s)
-        english_parts.insert(1 if status == _UNAVAILABLE else 1, f"captured {english_age}")
-        chinese_parts.insert(1 if status == _UNAVAILABLE else 1, f"采集于{chinese_age}")
+        english_parts.insert(1, f"captured {english_age}")
+        chinese_parts.insert(1, f"采集于{chinese_age}")
+    if refresh_failed_at is not None:
+        english_parts.append(f"refresh failed {refresh_failed_at}")
+        chinese_parts.append(f"刷新失败 {refresh_failed_at}")
     if capture_qualified is None:
         english_parts.append("capture time unknown")
         chinese_parts.append("采集时间未知")
@@ -160,11 +163,11 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
     observation = capture or {}
     qualified = observation.get("qualified")
     failed_refresh = None
-    if qualified is False:
+    if observation.get("refresh_failed"):
         failed_refresh = {
-            "reason": str(observation.get("failure_code") or "unqualified observation"),
-            "failure_code": observation.get("failure_code"),
-            "receipt": observation,
+            "reason": str(observation.get("refresh_failure_code") or "refresh failed"),
+            "failure_code": observation.get("refresh_failure_code"),
+            "attempted_at": observation.get("refresh_at"),
         }
 
     closed = _closed_rows(rows)
@@ -202,9 +205,14 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         source_status = _UNCLASSIFIED
 
     unclassified_rows = counts["unrecognized"]
+    refresh_failed_at = (
+        failed_refresh.get("attempted_at")[:10]
+        if failed_refresh and failed_refresh.get("attempted_at")
+        else None
+    )
     label, label_zh = _label(
         source_status, counts, generation, qualified, unclassified_rows,
-        capture_age_s=capture_age_s,
+        capture_age_s=capture_age_s, refresh_failed_at=refresh_failed_at,
     )
     return {
         "source_status": source_status,
@@ -242,14 +250,12 @@ def _observation_capture(observation):
         return None, None
     capture = dict(observation.get("capture") or {})
     last_refresh = observation.get("last_refresh") or {}
-    reason = None
     if observation.get("inconsistent"):
-        reason = "inconsistent observation"
-    elif observation.get("failed_refresh") or last_refresh.get("qualified") is False:
-        reason = str(last_refresh.get("failure_code") or "refresh failed")
-    if reason is not None:
-        capture["qualified"] = False
-        capture["failure_code"] = capture.get("failure_code") or reason
+        capture["failure_code"] = capture.get("failure_code") or "inconsistent observation"
+    if observation.get("failed_refresh") or last_refresh.get("qualified") is False:
+        capture["refresh_failed"] = True
+        capture["refresh_failure_code"] = last_refresh.get("failure_code")
+        capture["refresh_at"] = last_refresh.get("attempted_at")
     return capture, last_refresh
 
 
