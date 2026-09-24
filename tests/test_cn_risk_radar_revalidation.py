@@ -100,3 +100,172 @@ def test_episode_summary_reports_rows_episodes_hits_and_effective_ceiling():
         "nonoverlap_ceiling": 4,
         "effective_n_ceiling": 3,
     }
+
+
+def test_core_discrimination_and_brier_metrics_have_known_values():
+    idx = pd.bdate_range("2024-01-02", periods=4)
+    outcome = pd.Series([0.0, 1.0, 0.0, 1.0], index=idx)
+    probability = pd.Series([0.1, 0.9, 0.2, 0.8], index=idx)
+    score = probability.copy()
+
+    assert _fn("brier_score")(probability, outcome) == pytest.approx(0.025)
+    assert _fn("brier_skill")(probability, outcome, baseline_probability=0.5) == pytest.approx(0.9)
+    assert _fn("roc_auc")(score, outcome) == pytest.approx(1.0)
+    assert _fn("average_precision")(score, outcome) == pytest.approx(1.0)
+
+
+def test_lift_summary_uses_conditional_rate_over_full_base_rate():
+    idx = pd.bdate_range("2024-01-02", periods=4)
+    outcome = pd.Series([0.0, 1.0, 1.0, 1.0], index=idx)
+    condition = pd.Series([False, True, False, True], index=idx)
+
+    result = _fn("lift_summary")(condition, outcome)
+
+    assert result["rows"] == 2
+    assert result["hits"] == 2
+    assert result["conditional_rate"] == pytest.approx(1.0)
+    assert result["base_rate"] == pytest.approx(0.75)
+    assert result["lift"] == pytest.approx(4.0 / 3.0)
+
+
+def test_circular_moving_block_indices_are_seeded_and_locally_contiguous():
+    sampler = _fn("circular_moving_block_indices")
+    first = sampler(n=17, block_length=5, seed=7)
+    second = sampler(n=17, block_length=5, seed=7)
+
+    assert np.array_equal(first, second)
+    assert len(first) == 17
+    assert np.all((first[:4] + 1) % 17 == first[1:5])
+    assert np.all((first[5:9] + 1) % 17 == first[6:10])
+
+
+def test_moving_block_bootstrap_constant_statistic_has_degenerate_interval():
+    frame = pd.DataFrame({"x": np.arange(30, dtype=float)})
+    result = _fn("moving_block_bootstrap")(
+        frame,
+        statistic=lambda sample: 3.25,
+        block_length=7,
+        reps=100,
+        seed=11,
+    )
+
+    assert result["estimate"] == pytest.approx(3.25)
+    assert result["ci_low"] == pytest.approx(3.25)
+    assert result["ci_high"] == pytest.approx(3.25)
+    assert result["valid_reps"] == 100
+    assert result["invalid_reps"] == 0
+
+
+def test_block_permutation_is_reproducible_and_detects_strong_alignment():
+    n = 240
+    idx = pd.bdate_range("2020-01-02", periods=n)
+    condition = pd.Series(False, index=idx)
+    outcome = pd.Series(0.0, index=idx)
+    for start in (20, 80, 140, 200):
+        condition.iloc[start : start + 10] = True
+        outcome.iloc[start : start + 10] = 1.0
+
+    fn = _fn("circular_shift_permutation")
+    first = fn(condition, outcome, reps=399, min_shift=42, seed=19)
+    second = fn(condition, outcome, reps=399, min_shift=42, seed=19)
+
+    assert first == second
+    assert first["observed"] == pytest.approx(6.0)
+    assert first["p_value"] <= 0.05
+    assert first["valid_reps"] == 399
+
+
+def test_state_calibration_table_preserves_fixed_state_order_and_probabilities():
+    states = []
+    probabilities = []
+    outcomes = []
+    for state, probability, hits in (
+        ("calm", 0.2, 4),
+        ("watch", 0.4, 8),
+        ("caution", 0.6, 12),
+        ("elevated", 0.7, 14),
+        ("risk-off", 0.8, 16),
+    ):
+        states.extend([state] * 20)
+        probabilities.extend([probability] * 20)
+        outcomes.extend([1.0] * hits + [0.0] * (20 - hits))
+    idx = pd.bdate_range("2020-01-02", periods=len(states))
+
+    table = _fn("state_calibration_table")(
+        pd.Series(states, index=idx),
+        pd.Series(probabilities, index=idx),
+        pd.Series(outcomes, index=idx),
+        horizon=21,
+        episode_gap=0,
+    )
+
+    assert [row["state"] for row in table] == [
+        "calm", "watch", "caution", "elevated", "risk-off"
+    ]
+    assert [row["forecast"] for row in table] == pytest.approx([0.2, 0.4, 0.6, 0.7, 0.8])
+    assert [row["observed"] for row in table] == pytest.approx([0.2, 0.4, 0.6, 0.7, 0.8])
+    assert all(row["rows"] == 20 for row in table)
+
+
+def test_detect_probability_inversions_requires_material_negative_step():
+    table = [
+        {"state": "calm", "observed": 0.20},
+        {"state": "watch", "observed": 0.28},
+        {"state": "caution", "observed": 0.34},
+        {"state": "elevated", "observed": 0.50},
+        {"state": "risk-off", "observed": 0.39},
+    ]
+
+    result = _fn("detect_probability_inversions")(table, material_delta=0.05)
+
+    assert result == [
+        {
+            "lower_state": "elevated",
+            "higher_state": "risk-off",
+            "difference": pytest.approx(-0.11),
+            "material": True,
+        }
+    ]
+
+
+def test_calibration_intercept_slope_recovers_exact_grouped_calibration():
+    probabilities = []
+    outcomes = []
+    for probability, hits in ((0.2, 20), (0.5, 50), (0.8, 80)):
+        probabilities.extend([probability] * 100)
+        outcomes.extend([1.0] * hits + [0.0] * (100 - hits))
+    idx = pd.bdate_range("2020-01-02", periods=300)
+
+    result = _fn("calibration_intercept_slope")(
+        pd.Series(probabilities, index=idx),
+        pd.Series(outcomes, index=idx),
+    )
+
+    assert result["qualified"] is True
+    assert result["intercept"] == pytest.approx(0.0, abs=1e-5)
+    assert result["slope"] == pytest.approx(1.0, abs=1e-5)
+
+
+def test_crisis_exclusion_mask_embargoes_signals_whose_forward_window_intersects_crisis():
+    idx = pd.bdate_range("2024-01-02", periods=12)
+    mask = _fn("crisis_exclusion_mask")(
+        idx,
+        crisis_start=pd.Timestamp("2024-01-09"),
+        crisis_end=pd.Timestamp("2024-01-11"),
+        horizon=3,
+    )
+
+    # Jan 4 looks forward to Jan 5/8/9, so it must be excluded; Jan 3 does not intersect.
+    assert bool(mask.loc[pd.Timestamp("2024-01-03")]) is True
+    assert bool(mask.loc[pd.Timestamp("2024-01-04")]) is False
+    assert bool(mask.loc[pd.Timestamp("2024-01-09")]) is False
+    assert bool(mask.loc[pd.Timestamp("2024-01-12")]) is True
+
+
+def test_chronological_split_half_is_deterministic_and_exhaustive():
+    idx = pd.bdate_range("2024-01-02", periods=9)
+    first, second = _fn("chronological_split_half")(idx)
+
+    assert list(first) == list(idx[:4])
+    assert list(second) == list(idx[4:])
+    assert set(first).isdisjoint(set(second))
