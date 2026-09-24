@@ -2,251 +2,288 @@
 into the composer row shape ``_build_economics`` consumes.
 
 Operation gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001 (carrier
-PR #7870), T08b. The composer's :func:`semiconductor_theme_research._build_economics`
-keys on rows shaped like the synthetic witness fixture
+PR #7870), T08b + T08b-fix. The composer's
+:func:`semiconductor_theme_research._build_economics` keys on rows shaped like
+the synthetic witness fixture
 (``tests/fixtures/semiconductor_theme_research/witness_hbm_packaging.json`` —
 ``event_id``, ``cik``/``company_node_id``, ``fiscal_period{year,quarter}``,
 ``guidance`` of ``guidance_item.v1`` items, ``reported`` rows with a closed
-``fiscal_period`` ``"YYYYQn"`` token). Production intake
-(:mod:`scripts.refresh_event_workspaces` +
-:mod:`engine.company_intelligence.event_workspace_build`) emits a different
-shape: ``facts`` of ``event_fact.v1`` with an ISO ``period`` end and an
-optional ``typed_absence`` envelope, ``guidance`` of the same v1 items, an
-``issuer`` block (``company_id`` carries the canonical ``cik:0000000000``),
-a ``fiscal_period`` block that ALSO carries ``calendar_end``, ``sources``,
-etc. Without this bridge, the composer silently emits
+``fiscal_period`` ``"YYYYQn"`` token, and a lifecycle whose ``recorded_at``
+the ``system_replay`` gate reads). Production intake
+(``scripts/refresh_event_workspaces.py`` +
+``engine/company_intelligence/event_workspace.py``) emits a different shape:
+``facts`` of ``event_fact.v1`` with an ISO ``period`` end and an optional
+``typed_absence`` envelope, ``guidance`` of the same v1 items, an ``issuer``
+block (``company_id`` carries the canonical ``cik:0000000000``), a
+``fiscal_period`` block that ALSO carries ``calendar_end``, and a lifecycle
+``{state, observed_at, source_available_at}`` with NO ``recorded_at``.
+Without this bridge the composer silently emits
 ``economics.unavailable / management_sequence_missing`` even when a perfectly
-admitted real workspace reaches the bundle.
+admitted real workspace reaches the bundle, and drops every real workspace in
+``system_replay``.
 
-This module is PURE — no I/O, no network, no imports beyond typing/re/collections
-and the two engine modules named above. It is also NON-AUTHORING: every emitted
-value is either an echo of an input the caller passed in or a fiat
-classification over those inputs (CIK substring extraction, integer coercion of
-``quarter``, numeric coercion of ``value``, ``(metric, basis)`` collision
-detection). No arithmetic, no unit conversion, no derived midpoint, no
-ranking, no sizing, no authority assertion.
+Laws (each pinned in ``tests/test_workspace_projection.py``)
+------------------------------------------------------------
+* PURE and CLOSED: imports are ``copy``, ``math`` and ``typing`` only — no
+  engine import, no I/O, no clock, no network, no regular expressions.
+* NEVER RAISES: every malformed input degrades to ``None`` (whole payload) or
+  to a dropped field plus a typed omission token; no exception escapes for
+  any input.
+* VERBATIM, NEVER PARSED: a fact ``value`` is numeric iff
+  ``isinstance(v, (int, float)) and not isinstance(v, bool)`` and, for a
+  float, ``math.isfinite(v)``. A string is NOT a number (``"40.2"``,
+  ``"2026"``, ``"2"`` are refused). ``fiscal_period.year`` / ``.quarter`` are
+  accepted iff they are non-bool ``int`` (quarter in 1..4). Nothing is
+  coerced, normalised, defaulted or invented; the closed ``"YYYYQn"`` token
+  is formed ONLY from the workspace block's int year and quarter — never
+  from a fact's ISO ``period`` or any date.
+* NON-FINITE: a numeric ``value`` that is NaN or ±inf is treated as not
+  present — the fact is dropped and ``"reported_non_finite:<metric>"`` is
+  recorded once per metric.
+* CLOSED TOKENS: ``basis`` / ``currency`` / ``perimeter`` / ``definition`` /
+  ``unit`` are tokens; when present they must be ``str`` (or ``None``), else
+  the fact is malformed and dropped with ``"reported_malformed:<metric>"``
+  (an unhashable ``basis`` such as a dict or list therefore never reaches a
+  collision key).
+* COLLISION: two present facts sharing ``(metric, basis)`` are ambiguous —
+  NEITHER is emitted and ``"reported_ambiguous:<metric>"`` is recorded.
+* UNKEYED PERIOD: when present facts exist but the workspace's ``year`` is
+  not an int (so no ``"YYYYQn"`` token can be formed), the facts are dropped
+  and ``"reported_unkeyed:fiscal_period"`` is recorded once. A quarter that
+  is not an int in 1..4 refuses the WHOLE payload (``None``) because the
+  composer refuses a non-int quarter.
+* CLOSED CIK GRAMMAR: ``issuer.company_id`` is accepted ONLY as
+  ``cik:<digits>`` or ``cik<digits>`` (case-insensitive prefix) or a bare
+  ASCII all-digit string of 1..10 digits; the digits are emitted zero-padded
+  to ten. Anything else (LEI, ticker, prose, unicode digits, surrounding
+  whitespace) yields no CIK — and a payload whose CIK cannot be parsed is
+  refused as a WHOLE (``None``), never emitted with ``cik: None``: the
+  composer's ``_company_key`` would collapse every unknown-CIK workspace into
+  the shared ``"cik:"`` bucket and pair one issuer's guidance with another's
+  actual.
+* FRESH COPIES: guidance items and every emitted token value are deep-copied;
+  a downstream mutation never writes into the producer's payload. A guidance
+  item that is not a mapping is dropped with ``"guidance_malformed_item"``
+  recorded once (the composer calls ``.get`` on each item).
+* TWO CLOCKS (N11): production's system-recording clock is
+  ``lifecycle.observed_at`` — real wall-clock ``now`` at first observation,
+  carried forward unchanged by
+  ``scripts/refresh_event_workspaces.py::prior_observed_at``. This bridge
+  emits ``lifecycle.recorded_at = lifecycle.observed_at`` WHEN AND ONLY WHEN
+  ``observed_at`` is present and a non-empty string, keeping ``observed_at``
+  alongside. ``recorded_at`` is NEVER derived from ``generated_at`` or from a
+  manifest — those are the SOURCE clock
+  (``refresh_event_workspaces.py``: ``source_clock = acceptance_datetime``,
+  which becomes ``source_available_at``; the two-clock violation
+  ``observed_at=source_clock`` was removed everywhere else). A
+  payload-supplied ``recorded_at`` is not a production field and is not
+  copied.
+
+Consumer fact (documented, not changed here): the composer reads only
+``OwnerBundle.omissions`` (``_Selection`` lifts them into ``limitations`` as
+``omitted:<name>``), so the BINDER that assembles the bundle must lift this
+row's ``omissions`` into the bundle's ``omissions``; the row-level list is
+the binder's input, not a composer input.
+
+NON-AUTHORING: every emitted value is an echo of an input the caller passed
+in or a closed classification over those inputs. No arithmetic, no unit
+conversion, no derived midpoint, no ranking, no sizing, no authority flag.
 """
 from __future__ import annotations
 
-import re
-from collections import Counter
+import copy
+import math
 from typing import Any, Mapping
 
-# Only the two engine modules explicitly named by the lane law.  ``re`` is a
-# stdlib regex helper, ``Counter`` is a dict-derivative tally helper, and the
-# rest are typing constructs.  No third-party imports; no I/O; no clock.
 __all__ = ["project_event_workspace"]
 
-# A 10-digit CIK string. ``cik:0001046179`` and ``cik0001046179`` both reduce
-# to ``0001046179``; a bare ``1046179`` is zero-padded on output but the
-# pattern itself accepts any 1..10-digit run that is not preceded by another
-# digit (so "cik0001046179" matches the trailing ten, not a partial digit).
-_CIK_DIGITS_RE = re.compile(r"(?<!\d)(\d{1,10})(?!\d)")
-
-# Closed metric-bases the composer keys on.  Anything else is passed through
-# verbatim and the composer decides what to do with it.
+# Closed token keys copied verbatim from a present fact into the composer's
+# ``reported`` row WHEN PRESENT (never invented, never defaulted).
 _REPORTED_OPTIONAL_KEYS = ("basis", "currency", "perimeter", "definition")
 
-# Lifecycle keys the composer copies verbatim when present.  Each is copied
-# independently — a missing key is dropped, never coerced to ``None``.
-_LIFECYCLE_KEYS = ("source_available_at", "observed_at", "recorded_at")
+# Production lifecycle keys copied verbatim WHEN PRESENT. ``recorded_at`` is
+# NOT in this tuple: it is derived from ``observed_at`` (two-clock law above)
+# and a payload-supplied value is never copied.
+_LIFECYCLE_COPY_KEYS = ("source_available_at", "observed_at")
+
+_ASCII_DIGITS = frozenset("0123456789")
+_CIK_MAX_DIGITS = 10
+
+
+# ---------------------------------------------------------------------------
+# Closed predicates — no coercion anywhere
+# ---------------------------------------------------------------------------
+
+def _is_int(value: Any) -> bool:
+    """A real ``int`` (``bool`` is refused; a numeric string is refused)."""
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _is_number(value: Any) -> bool:
+    """``int`` or ``float`` (not ``bool``); finiteness is judged separately."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _is_numeric(value: Any) -> bool:
+    """A value is numeric iff it is a non-bool ``int``/``float`` AND finite.
+
+    An ``int`` is always finite (``math.isfinite`` is only consulted for a
+    ``float`` — calling it on an arbitrarily large int would raise)."""
+    if not _is_number(value):
+        return False
+    if isinstance(value, float):
+        return math.isfinite(value)
+    return True
+
+
+def _is_token(value: Any) -> bool:
+    """A closed token slot holds a ``str`` or an explicit ``None``."""
+    return value is None or isinstance(value, str)
+
+
+def _is_quarter(value: Any) -> bool:
+    return _is_int(value) and 1 <= value <= 4
 
 
 def _parse_cik(raw: Any) -> str | None:
-    """Extract the first 10-digit-padded CIK from a payload's ``issuer.company_id``.
-
-    Accepts:
-      * ``"cik:0001046179"``     → ``"0001046179"``
-      * ``"cik0001046179"``      → ``"0001046179"``
-      * ``"0001046179"``         → ``"0001046179"``
-      * ``"1046179"``            → ``"0001046179"`` (zero-padded)
-      * ``"0001046179  abcd"``   → ``"0001046179"`` (first run wins)
-
-    Anything else (``None``, a non-string, a string with no digits) returns
-    ``None`` — the composer keys on ``cik`` when ``company_node_id`` is absent.
-    """
-    if not isinstance(raw, str):
+    """Closed CIK grammar (N3): ``cik:<digits>``, ``cik<digits>``
+    (case-insensitive prefix) or a bare ASCII all-digit string of 1..10
+    digits. No stripping, no search, no regex; anything else → ``None``."""
+    if not isinstance(raw, str) or not raw:
         return None
-    text = raw.strip()
-    if not text:
+    lowered = raw.lower()
+    if lowered.startswith("cik:"):
+        digits = raw[4:]
+    elif lowered.startswith("cik"):
+        digits = raw[3:]
+    else:
+        digits = raw
+    if not 1 <= len(digits) <= _CIK_MAX_DIGITS:
         return None
-    if text.lower().startswith("cik:"):
-        text = text[4:]
-    match = _CIK_DIGITS_RE.search(text)
-    if match is None:
+    if not all(char in _ASCII_DIGITS for char in digits):
         return None
-    digits = match.group(1)
-    if not (1 <= len(digits) <= 10):
-        return None
-    return digits.zfill(10)
+    return digits.zfill(_CIK_MAX_DIGITS)
 
 
-def _coerce_year(value: Any) -> int | None:
-    """Accept an int year or a numeric string.  ``None``/anything else → ``None``."""
-    if isinstance(value, bool):
-        return None  # bool is an int subclass; refuse the promotion
-    if isinstance(value, int):
-        return value
-    if isinstance(value, str):
-        try:
-            return int(value.strip())
-        except ValueError:
-            return None
-    return None
+def _record(omissions: list[str], token: str) -> None:
+    """Append an omission token once (order-preserving)."""
+    if token not in omissions:
+        omissions.append(token)
 
 
-def _coerce_quarter(value: Any) -> int | None:
-    """Accept an int 1..4 or a numeric string.  Anything else → ``None``."""
-    coerced = _coerce_year(value)
-    if coerced is None:
-        return None
-    if coerced < 1 or coerced > 4:
-        return None
-    return coerced
-
-
-def _coerce_numeric(value: Any) -> Any:
-    """Accept a real numeric (``int``, ``float``, or numeric string).  Else pass through."""
-    if isinstance(value, bool):
-        # bool subclasses int; refuse the silent promotion to "0" / "1"
-        return None
-    if isinstance(value, (int, float)):
-        return value
-    if isinstance(value, str):
-        text = value.strip()
-        if not text:
-            return None
-        try:
-            if any(ch in text for ch in ".eE"):
-                return float(text)
-            return int(text)
-        except ValueError:
-            return None
-    return None
-
-
-def _is_present_fact(fact: Mapping[str, Any]) -> bool:
-    """A fact counts as ``present`` only when it has a numeric ``value`` and no
-    ``typed_absence`` envelope.  ``typed_absence`` rows contribute nothing to
-    the projection — their absence is already typed on the workspace."""
-    if not isinstance(fact, Mapping):
-        return False
-    if "typed_absence" in fact:
-        return False
-    return _coerce_numeric(fact.get("value")) is not None
-
+# ---------------------------------------------------------------------------
+# Projections
+# ---------------------------------------------------------------------------
 
 def _fiscal_period_token(year: Any, quarter: Any) -> str | None:
-    """The closed ``"YYYYQn"`` token the composer's ``_fiscal_key`` parses.
-
-    Never synthesized from a fact's ISO ``period`` — only from the WORKSPACE
-    block's ``fiscal_period`` (year, quarter)."""
-    coerced_year = _coerce_year(year)
-    coerced_quarter = _coerce_quarter(quarter)
-    if coerced_year is None or coerced_quarter is None:
+    """The closed ``"YYYYQn"`` token the composer's ``_fiscal_key`` parses —
+    formed ONLY from an int year and an int quarter in 1..4."""
+    if not _is_int(year) or not _is_quarter(quarter):
         return None
-    return f"{coerced_year}Q{coerced_quarter}"
+    return f"{year}Q{quarter}"
 
 
 def _project_reported(
-    facts: Any, year: Any, quarter: Any, omissions: list[str],
+    facts: Any, token: str | None, omissions: list[str],
 ) -> list[dict[str, Any]]:
-    """Map ``event_fact.v1`` payloads → composer ``reported`` rows.
-
-    Rules enforced here:
-      * only PRESENT facts (numeric ``value``, no ``typed_absence``) survive;
-      * the row's ``fiscal_period`` is the workspace's closed ``"YYYYQn"`` —
-        never parsed from the fact's ISO ``period``;
-      * ``basis``/``currency``/``perimeter``/``definition`` are copied verbatim
-        WHEN PRESENT, never invented;
-      * ``provenance``/``source_span`` are NEVER copied into ``reported``
-        (the composer keys on closed tokens, not on the prose receipt);
-      * two present facts sharing ``(metric, basis)`` is ambiguous: NEITHER
-        row is emitted and the omission is recorded under
-        ``"reported_ambiguous:<metric>"`` (collisions on different bases do
-        NOT collide and both rows survive).
-    """
-    if not isinstance(facts, list) and not isinstance(facts, tuple):
-        return []
-    token = _fiscal_period_token(year, quarter)
-    if token is None:
-        # Workspace's own (year, quarter) failed validation; nothing to anchor
-        # the rows to.  Absent facts stay absent; no provenance to leak.
+    """Map ``event_fact.v1`` payloads → composer ``reported`` rows under the
+    laws in the module docstring (present-only, verbatim, closed tokens,
+    collision → neither row, unkeyed period → typed omission)."""
+    if not isinstance(facts, (list, tuple)):
         return []
 
-    # Group present facts by (metric, basis) for collision detection.  A
-    # fact without ``basis`` collides with itself and with every other
-    # ``(metric, None)`` — the closed grammar states basis; an absent basis is
-    # a distinct collision key by fiat.
-    groups: dict[tuple[Any, Any], list[dict[str, Any]]] = {}
+    # First pass: classify every fact; nothing here can raise for any input.
+    present: list[tuple[str, Any, Mapping[str, Any]]] = []
     for fact in facts:
-        if not _is_present_fact(fact):
+        if not isinstance(fact, Mapping):
+            continue
+        if "typed_absence" in fact:
             continue
         metric = fact.get("metric")
         if not isinstance(metric, str) or not metric:
             continue
+        value = fact.get("value")
+        if not _is_numeric(value):
+            if _is_number(value):
+                _record(omissions, f"reported_non_finite:{metric}")
+            continue
+        if not _is_token(fact.get("unit")) or any(
+            key in fact and not _is_token(fact[key]) for key in _REPORTED_OPTIONAL_KEYS
+        ):
+            _record(omissions, f"reported_malformed:{metric}")
+            continue
         basis = fact.get("basis") if "basis" in fact else None
+        present.append((metric, basis, fact))
+
+    if not present:
+        return []
+    if token is None:
+        _record(omissions, "reported_unkeyed:fiscal_period")
+        return []
+
+    groups: dict[tuple[str, str | None], list[Mapping[str, Any]]] = {}
+    for metric, basis, fact in present:
         groups.setdefault((metric, basis), []).append(fact)
 
     rows: list[dict[str, Any]] = []
-    for (metric, basis), members in groups.items():
+    for (metric, _basis), members in groups.items():
         if len(members) > 1:
-            omissions.append(f"reported_ambiguous:{metric}")
+            _record(omissions, f"reported_ambiguous:{metric}")
             continue
         fact = members[0]
         row: dict[str, Any] = {
             "metric": metric,
-            "value": _coerce_numeric(fact.get("value")),
-            "unit": fact.get("unit"),
+            "value": fact["value"],
+            "unit": copy.deepcopy(fact.get("unit")),
             "fiscal_period": token,
         }
         for optional in _REPORTED_OPTIONAL_KEYS:
             if optional in fact:
-                row[optional] = fact[optional]
+                row[optional] = copy.deepcopy(fact[optional])
         rows.append(row)
-    # Determinism: same input order, no ranking.
-    rows.sort(key=lambda r: (str(r.get("metric") or ""), str(r.get("basis") or "")))
+    rows.sort(key=lambda r: (r["metric"], r.get("basis") or ""))
     return rows
 
 
-def _project_guidance(raw: Any) -> list[Any]:
-    """Copy ``guidance_item.v1`` items verbatim.  A non-list passes through empty."""
-    if isinstance(raw, list):
-        return list(raw)
-    if isinstance(raw, tuple):
-        return list(raw)
-    return []
+def _project_guidance(raw: Any, omissions: list[str]) -> list[Any]:
+    """Deep-copy ``guidance_item.v1`` mappings verbatim. A non-list yields
+    ``[]``; a non-mapping item is dropped with ``guidance_malformed_item``."""
+    if not isinstance(raw, (list, tuple)):
+        return []
+    items: list[Any] = []
+    for item in raw:
+        if not isinstance(item, Mapping):
+            _record(omissions, "guidance_malformed_item")
+            continue
+        items.append(copy.deepcopy(item))
+    return items
 
 
 def _project_lifecycle(raw: Any) -> dict[str, Any]:
-    """Copy each lifecycle key verbatim WHEN PRESENT.  Missing keys are dropped,
-    never coerced to ``None``.  An absent lifecycle yields ``{}``."""
+    """Copy ``source_available_at`` / ``observed_at`` verbatim WHEN PRESENT
+    and derive ``recorded_at`` from ``observed_at`` under the two-clock law.
+    Missing keys are dropped, never coerced to ``None``."""
     if not isinstance(raw, Mapping):
         return {}
     projected: dict[str, Any] = {}
-    for key in _LIFECYCLE_KEYS:
+    for key in _LIFECYCLE_COPY_KEYS:
         if key in raw:
-            projected[key] = raw[key]
+            projected[key] = copy.deepcopy(raw[key])
+    observed = raw.get("observed_at")
+    if isinstance(observed, str) and observed:
+        projected["recorded_at"] = observed
     return projected
 
 
 def project_event_workspace(payload: Mapping[str, Any]) -> dict[str, Any] | None:
     """Project a production ``event_workspace.v1`` payload into the composer row.
 
-    The composer keys on the witness-fixture shape — ``event_id``,
-    ``cik``/``company_node_id``, ``fiscal_period{year,quarter}``,
-    ``guidance`` (``guidance_item.v1``), ``reported`` rows whose
-    ``fiscal_period`` is a closed ``"YYYYQn"``, and a lifecycle triple.  This
-    function is the pure bridge; it never raises, never invents tokens, and
-    never parses a fiscal period out of a date.
-
-    Returns the projected row (a fresh dict) on success.  Returns ``None`` when
-    the payload cannot safely be projected — i.e. it is not a mapping, or it
-    is missing the minimum scaffolding (``event_id``, ``fiscal_period`` with
-    a coercible int quarter).  Malformed nested fields degrade the row but
-    never raise: a fact with a non-numeric value contributes nothing; a CIK
-    we cannot parse yields ``cik: None`` (the composer keys on ``cik`` when
-    ``company_node_id`` is absent); a missing lifecycle key is dropped.
+    Returns a fresh dict with exactly the keys ``event_id``, ``cik``,
+    ``fiscal_period``, ``guidance``, ``reported``, ``lifecycle``,
+    ``omissions``; or ``None`` when the payload cannot be projected as a
+    whole: not a mapping, no non-empty ``event_id`` string, no
+    ``fiscal_period`` mapping, a quarter that is not an int in 1..4, or an
+    ``issuer.company_id`` outside the closed CIK grammar. Never raises.
     """
     if not isinstance(payload, Mapping):
         return None
@@ -258,38 +295,28 @@ def project_event_workspace(payload: Mapping[str, Any]) -> dict[str, Any] | None
     fiscal_period = payload.get("fiscal_period")
     if not isinstance(fiscal_period, Mapping):
         return None
-    year_value = fiscal_period.get("year")
-    quarter_value = fiscal_period.get("quarter")
-    coerced_year = _coerce_year(year_value)
-    coerced_quarter = _coerce_quarter(quarter_value)
-    if coerced_quarter is None:
-        # The composer refuses a non-int quarter; the same gate applies here.
+    year = fiscal_period.get("year")
+    quarter = fiscal_period.get("quarter")
+    if not _is_quarter(quarter):
         return None
 
     issuer = payload.get("issuer")
-    company_id = None
-    if isinstance(issuer, Mapping):
-        company_id = issuer.get("company_id")
-    cik = _parse_cik(company_id)
+    cik = _parse_cik(issuer.get("company_id")) if isinstance(issuer, Mapping) else None
+    if cik is None:
+        return None
 
     omissions: list[str] = []
-    reported = _project_reported(
-        payload.get("facts"), coerced_year, coerced_quarter, omissions,
-    )
-    guidance = _project_guidance(payload.get("guidance"))
+    token = _fiscal_period_token(year, quarter)
+    reported = _project_reported(payload.get("facts"), token, omissions)
+    guidance = _project_guidance(payload.get("guidance"), omissions)
     lifecycle = _project_lifecycle(payload.get("lifecycle"))
 
-    row: dict[str, Any] = {
+    return {
         "event_id": event_id,
         "cik": cik,
-        "fiscal_period": {"year": coerced_year, "quarter": coerced_quarter},
+        "fiscal_period": {"year": year if _is_int(year) else None, "quarter": quarter},
         "guidance": guidance,
         "reported": reported,
         "lifecycle": lifecycle,
         "omissions": omissions,
     }
-    # ``company_node_id`` is deliberately omitted — the composer keys on
-    # ``cik`` when ``company_node_id`` is absent, and a payload's
-    # ``issuer.company_id`` is a CIK-shaped string ("cik:0001046179"), not the
-    # company_node_id the bundle's identity_results learn.
-    return row
