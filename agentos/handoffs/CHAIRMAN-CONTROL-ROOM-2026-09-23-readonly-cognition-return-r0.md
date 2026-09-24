@@ -457,3 +457,82 @@ DO_NOT_REDO. Current Runtime core can be consumed; do not revive #699.
    consumption for broader research/implementation workloads.
 
 No production/browser proof exists yet; parent mission remains **false**.
+
+
+## Continuation update — #836 semantic-ACK repair and current protected pin
+
+This is the current frontier after the earlier `d2980936...` checkpoint.
+
+### Protected procedure
+- Mastermind protected master: `e03eacbf98655d6a560f16784b8b62d531d8076f`.
+- Skillpack: `mastermind.sol_skillpack.v1` 1.0.1 / bootstrap 1.
+- INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/REVIEW_RETURN/RECONCILE_STATE and
+  dialogue-close law were reloaded from this exact revision.
+- The only movement from the previous pin `a7d2b304...` is #657, changing exactly
+  `control_plane/executive_placement_preference.py` and its test. Those paths have zero overlap with
+  #836/#651/#933/#936 and do not alter the Web-Sol/Wake/RuntimeBinding interfaces consumed here.
+
+### #836 same-carrier semantic-ACK repair
+Fresh canonical source inspection found an already-returned independent Fable/Opus audit
+(#836 comment `5807134731`) plus Meta-CEO REQUEST_REPAIR `5807604276`. The earlier independent-review
+delivery had not PICKUP/STARTed, so it was held at PRE_START rather than asked to ratify known-bad source.
+
+The incumbent branch `sol/web-web-sol-exact-continuation-return-r3-20260918-sol-001` now has:
+- RED `18c2e9ec84ea3d822c9885c4268ddc146eeb7a57`: explicit Web-Sol late-ACK protocol-only test,
+  fresh-process semantic-provenance replay/generic-ACK refusal, SOURCE_RESOLVED-without-semantic-ACK
+  zero-provider typed hold, and malformed rehydration fail-closed.
+- RED `4183b402ac3164e66c368a244d193ca1e061c2af`: incumbent non-Web missing-registry pre-provider
+  refusal and single-pair reconciliation boundary.
+- GREEN/current exact head `f1b60401d4a5f0912504672b5a323ff5252e2663`: changes only
+  `control_plane/wake_dispatcher.py` in production. Web-Sol requires runtime-checkable
+  `reconcile_delivered_ack` and never falls back to generic `reconcile`; non-Web target-registry and
+  single-pair guards are restored; SOURCE_RESOLVED without semantic ACK is a typed hold; ledger
+  rehydration/tamper is fail-closed.
+- Audit lower finding: plain SHA provider-turn digest is retained as a deterministic correlation digest,
+  explicitly **not** claimed as a secrecy/privacy primitive. No new HMAC/key plane was invented.
+- Repair comment: #836 `5808102300`.
+- Current-protected reconciliation comment: #836 `5808129427`.
+- Fresh exact-head hosted CI `35958792954`: RUNNING in the repository test gate at this checkpoint.
+- Current GitHub merge ref:
+  `119d2dc56f8b31940aa89120e9a5d0581bdc07d9 = merge(f1b60401..., e03eacbf...)`.
+  PR is mergeable; no ancestry-only branch refresh was performed.
+
+The genuinely independent `mastermindx-3` #836 review operation remains PRE_START HOLD on
+`D0BREV7RDCN/1790226208.084549`. After exact-head CI is green, update that **same** review carrier to
+`f1b60401...` + merge ref `119d2dc...`, then require PICKUP_ACK -> START -> formal GitHub verdict.
+Do not mint another review operation.
+
+### #651 / #933 / #936 current return gates
+- #651 current head `afc4e21ece14243494030392328ea234a04f9f1b`; hosted CI
+  `35957636843` is terminal SUCCESS. Old independent REQUEST_CHANGES blocker is repaired; exact-head
+  re-review from `mastermindx-2` remains owed. Slack carrier
+  `D0BRLGE0BBN/1790155189.800099` remains PRE_START at latest read.
+- #933 current head `073646dbd4ae6f7d00fa6e543cdd9cd029f01d05`; hosted CI
+  `35957647875` is RUNNING. Independent review child is delivered to ChatGPT1/MastermindX1 at
+  `D0BSB763FRN/1790226451.766309`; no PICKUP_ACK/START at latest read.
+- #936 current head `86fa8b52e45d4e5676b51585d6f00777b62eeba3`; hosted CI
+  `35957868527` is RUNNING. Its ChatGPT3 review carrier
+  `D0BREV7RDCN/1790155191.702439` remains PRE_START HOLD behind #836.
+
+### R2 / canary ruling remains controlling
+Do not add a third Runtime execution mode. The truthful integration is a managed local Web-Sol
+`OperatorHarnessAdapter` process under existing `OPERATOR_HARNESS`; process-dead/writer-release evidence
+applies to that adapter process, not the persistent ChatGPT tab. Implement only after accepted #836
+transport actions exist.
+
+The first end-to-end canary remains intentionally actionless and self-contained:
+`bounded assignment -> Pro reasoning only -> bounded canonical result -> Web-Sol OHF adapter -> existing
+Runtime completion`.
+#890 is not needed for that first no-tool canary; it is required before any session-side external action.
+#811 rich commission consumption is also not a canary blocker.
+
+### Exact next action
+1. Consume exact-head CI for #836/#933/#936 and exact-head re-review for #651.
+2. Repair failures only on their incumbent carriers.
+3. When #836 exact-head CI is green, resume the same held ChatGPT3 review carrier on `f1b60401...` and
+   `119d2dc...`; no duplicate review.
+4. Only after #836 semantic/current-base review acceptance may R1 add the separately versioned bounded
+   assignment-submit and exact-terminal-result-observation actions on the incumbent transport.
+5. Then implement the Web-Sol OHF adapter and prove the actionless disposable canary.
+
+Parent mission remains incomplete; no install/browser/provider/production proof is claimed.
