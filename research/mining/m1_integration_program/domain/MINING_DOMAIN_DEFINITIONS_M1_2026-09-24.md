@@ -91,25 +91,28 @@ management_estimate_vs_actual:
   comparison: Comparison classification and any `definition_unqualified:<field>` warning are emitted by the shared helper at runtime from the qualified fields; when that warning is present both values stay inspectable and no beat/miss/badge or confirmed-surprise wording is produced; fully qualified compatible inputs are compared normally and never suppressed.
   pairs:
   - earlier_point_estimate:
-    metric: management_issued_copper_unit_net_cash_cost_estimate
-    source_family: sec_edgar_8k_exhibit
-    selection_label: Second-quarter consolidated copper unit net cash cost outlook
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
-    definition_fields_required: [unit, perimeter, basis]
-    definition_notes: USD per pound; consolidated reporting; includes by-product credits and excludes specified idle and restoration costs.
-    period_kind: quarter
+      metric: management_issued_copper_unit_net_cash_cost_estimate
+      source_family: sec_edgar_8k_exhibit
+      selection_label: Second-quarter consolidated copper unit net cash cost outlook
+      research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
+      definition_fields_required: [unit, perimeter, basis]
+      definition_notes: USD per pound; consolidated reporting; includes by-product credits and excludes specified idle and restoration costs.
+      period_kind: quarter
+    later_actual:
+      metric: copper_unit_net_cash_cost
+      source_family: sec_edgar_8k_exhibit
+      selection_label: Second-quarter operating summary copper unit net cash cost
+      research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
+      definition_fields_required: [unit, perimeter, basis]
+      definition_notes: USD per pound; consolidated reporting; includes by-product credits and excludes specified idle and restoration costs.
+      period_kind: quarter
+      comparison: Comparison classification and any `definition_unqualified:<field>` warning are emitted by the shared helper at runtime from the qualified fields; when that warning is present both values stay inspectable and no beat/miss/badge or confirmed-surprise wording is produced; fully qualified compatible inputs are compared normally and never suppressed.
+      is_range: false
+      is_consensus: false
+    comparison: Same rule as the sales pair — classification and any `definition_unqualified:<field>` warning are emitted by the shared helper at runtime; both values stay inspectable; no beat/miss badge from an unqualified comparison; a cost measure whose by-product assumptions changed yields no isolated-productivity conclusion.
+    is_range: false
+    is_consensus: false
 
-  - later_actual:
-    metric: copper_unit_net_cash_cost
-    source_family: sec_edgar_8k_exhibit
-    selection_label: Second-quarter operating summary copper unit net cash cost
-    research_locator: MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md § W-C selected test inputs
-    definition_fields_required: [unit, perimeter, basis]
-    definition_notes: USD per pound; consolidated reporting; includes by-product credits and excludes specified idle and restoration costs.
-    period_kind: quarter
-  comparison: Comparison classification and any `definition_unqualified:<field>` warning are emitted by the shared helper at runtime from the qualified fields; when that warning is present both values stay inspectable and no beat/miss/badge or confirmed-surprise wording is produced; fully qualified compatible inputs are compared normally and never suppressed.
-  is_range: false
-  is_consensus: false
 mechanism: Copper rock must become recoverable production before it can be sold under a stated reporting basis. Costs then reflect mine operations, by-product credits, and the exclusions the issuer defines. Ownership and accounting treatment determine which economic share reaches the listed company. Shareholder value depends on the durability of that capture after investment and other claims. A later reported result can test an earlier management expectation, but only when definitions and periods remain comparable.
 counter_thesis:
   - A later consolidated sales observation at a different definition than the estimate, or evidence that shipment timing moved between periods, contradicts an inferred demand or productivity improvement.
