@@ -70,9 +70,12 @@ def test_bundle_declares_both_halves_absent():
 
 
 def test_the_emptiness_predicate_has_teeth():
-    """The assertion above is sensitive, not vacuous: a single fabricated row in
-    any owner field flips it. Without this the suite would pass on a loader
-    that served anything at all."""
+    """A control on the assertion ABOVE, not coverage of the loader: a single
+    fabricated row in any owner field flips the predicate, so
+    ``test_bundle_declares_both_halves_absent`` cannot pass vacuously. It is
+    expected to survive every mutation of the loader — an instrument that fired
+    when the loader changed would not be measuring the predicate. Do not count
+    it toward loader coverage (R4-reg review, nit 3)."""
     bundle = _bundle()
     for field in OWNER_FIELDS:
         fabricated = dataclasses.replace(bundle, **{field: ({"fabricated": True},)})
@@ -130,10 +133,61 @@ def test_a_snapshot_without_a_revision_cannot_serve(bad):
 
 def test_coverage_absence_is_never_a_refusal():
     """The shared 503's own contract reserves it for a broken owner, never for
-    an empty one. A well-formed snapshot always serves."""
-    bundle = loader.load_robotics_owner_bundle(_query(), rights_snapshot=FAKE_SNAPSHOT)
-    assert bundle.rights_revision == FAKE_SNAPSHOT[0]
+    an empty one, so an EMPTY bundle must still serve. Previously this asserted
+    the rights revision, character-for-character what
+    ``test_rights_revision_is_the_snapshot_the_shell_enforced_with`` already
+    asserts (R4-reg review, nit 4); it now exercises the reserved behaviour
+    itself across every view and time mode."""
+    unavailable = getattr(loader, "BundleUnavailable")
+    for view in robotics.VIEWS:
+        for mode in ("latest", "source_history", "system_replay"):
+            try:
+                bundle = _bundle(view=view, time_mode=mode)
+            except unavailable as exc:  # pragma: no cover - the defect this pins
+                pytest.fail(f"coverage absence raised the 503 for {view}/{mode}: {exc}")
+            assert bundle.omissions, f"{view}/{mode} served without declaring absence"
+            assert all(getattr(bundle, f) == () for f in OWNER_FIELDS)
 
+
+
+def test_r5_cannot_admit_assertions_without_facing_replay_vintage():
+    """R5's tripwire, and the reason no blanket ``system_replay`` refusal is
+    added here.
+
+    The composer's ``_refuse_unsupported_identity_vintage`` iterates
+    ``bundle.identity_results``. This loader hard-codes that field to ``()`` and
+    so does ``semiconductor_owner_bundle`` (``:334``, ``:392``) — which is why
+    ITS author added an up-front refusal instead of relying on the guard. So the
+    guard is inert for both verticals, and admitting assertions would NOT wake
+    it: ``assertions`` and ``identity_results`` are separate fields. (Proven by
+    experiment in the R4-reg independent review, which falsified the claim that
+    the guard "will begin firing on its own once R5 admits real evidence".)
+
+    Today the bundle is empty, so nothing is at risk and this passes. The day R5
+    admits any owner material it goes red unless R5 also does one of the two
+    lawful things: populate ``identity_results`` with real vintages, or refuse
+    ``system_replay`` up front the way semiconductor does.
+    """
+    try:
+        bundle = _bundle(time_mode="system_replay")
+    except robotics.ResearchRefusal:
+        return  # the loader refuses replay outright — the other lawful answer
+    # NB: the except clause is deliberately NOT ``Exception``. A bare except here
+    # read any error as "it refuses", which both masked a real loader fault and
+    # made this test XPASS on the carrier-alone base where the module cannot
+    # import at all — caught by the strict-xfail gate on first run.
+    if bundle.identity_results != ():
+        return  # vintages present, so the composer guard can do its job
+    admitted = [
+        field for field in OWNER_FIELDS
+        if field != "identity_results" and getattr(bundle, field) != ()
+    ]
+    assert not admitted, (
+        f"owner material {admitted} is served under system_replay while "
+        "identity_results is empty, so the composer's vintage guard cannot fire: "
+        "populate identity_results with real vintages, or refuse system_replay "
+        "up front as semiconductor_owner_bundle.py:369-370 does"
+    )
 
 # -- what a member actually receives ---------------------------------------
 
@@ -204,8 +258,13 @@ def test_the_loader_pulls_no_reader_or_network_stack():
 
 def test_the_module_creates_no_robotics_side_owner_plane():
     """Master packet §3: no Robotics-specific store, bucket, publisher,
-    evidence ledger or scheduler. The loader reads exactly one owner surface
-    (the shared rights registry) and nothing else."""
+    evidence ledger or scheduler. This is a DRIFT TRIPWIRE, not a proof: a
+    substring scan is defeatable (``from pathlib import Path as _P``, a split
+    ``import_module("sqlite"+"3")``, ``getattr(builtins, "op"+"en")`` all pass
+    it), so it catches the ordinary way such a plane gets added and nothing
+    more. The earlier claim that the loader "reads exactly one owner surface and
+    nothing else" overstated what this can give (R4-reg review, nit 5); the
+    import-closure test next door is the real instrument."""
     source = Path(loader.__file__).read_text(encoding="utf-8")
     body = source.split('"""', 2)[2]  # laws are discussed in the docstring
     for forbidden in ("sqlite3", "boto3", "requests", "open(", "Path(",

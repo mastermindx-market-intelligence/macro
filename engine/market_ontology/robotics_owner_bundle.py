@@ -32,8 +32,33 @@ The honest consequence, measured through the real composer: the response
 carries ``authorized_coverage.status = "degraded"`` with ``selected: 0`` and
 ``input_refs: []``, ``companies.rows`` empty, ``evidence_refs`` empty, every
 ``authority`` flag false, and ``limitations`` ``["rights_partial",
-"slice_scope_unowned"]``. A member sees a mount that states it is serving
-nothing yet. Nothing here ranks, gates, sizes, times or originates anything.
+"slice_scope_unowned"]``. Every CONTENT section states its own emptiness
+truthfully (``companies.status: unavailable`` / ``reason: no_companies``; all
+five ``industrial_views`` and all four ``expectations`` ``unavailable``;
+``native_subjects: []``). Nothing here ranks, gates, sizes, times or
+originates anything.
+
+Two shared-composer misstatements ride on that status, and they are why this
+mount MUST NOT be admitted to a member-facing page in this state (R4-reg
+independent review; the claim that formerly stood here -- "a member sees a
+mount that states it is serving nothing yet" -- was refuted on the served
+bytes):
+
+* the shipped client renders ``degraded`` as "Degraded - partial data" /
+  "降级——部分数据", and there is no partial data here: there is none;
+* ``rights_partial`` tells a member their ENTITLEMENTS are partial, which on a
+  paid-research surface is a false commercial signal. Neither omission is a
+  rights matter -- ``private_assertions_unbound`` is an unbound store and
+  ``public_cohort_unowned`` an undeclared cohort.
+
+Both live in shared code this lane must not fork: the ladder maps any
+non-empty ``omissions`` to ``degraded``, and RBV-27 collapses every omission
+to ``rights_partial`` unconditionally. Dropping this loader's two omissions
+WOULD buy an honest "Unavailable" headline, and is refused deliberately --
+that trades the diagnosis of WHICH half is absent for a cosmetic fix to
+another owner's mapping. So the omissions stay and live admission stays held
+until the composer owner either maps zero-input omissions to ``unavailable``
+or stops emitting ``rights_partial`` for non-rights omissions.
 
 Why coverage absence is an omission and not a 503
 -------------------------------------------------
@@ -60,11 +85,24 @@ no as-known identity vintage can be applied. Sol's ruling refuses AFFECTED
 ``system_replay``. A Robotics bundle carries no identity result and no
 assertion, so no request is affected: there is no vintage being applied to
 anything, and an empty all-authority-false payload states nothing false under
-any time mode. The vintage guard already lives in the composer
-(``_refuse_unsupported_identity_vintage``), keyed on the identity material
-itself, which is where it belongs and where it will begin firing on its own
-once R5 admits real evidence. Duplicating it here would put one decision in
-two places and let them drift.
+any time mode. The composer's vintage guard (``_refuse_unsupported_identity_vintage``) does
+NOT cover this, and will not begin covering it on its own -- corrected under
+independent review, which falsified by experiment the claim that stood here.
+The guard iterates ``bundle.identity_results``; this loader hard-codes that
+field to ``()``, and so does the semiconductor loader
+(``semiconductor_owner_bundle.py:334,392``) -- which is precisely WHY its
+author added an up-front refusal rather than relying on the guard. With no
+identity row the guard is inert by the composer's own documented design ("a
+subject with NO identity row claims no belief and is not affected"). Admitting
+assertions does not populate ``identity_results``: they are separate fields.
+
+So R5 must do one of two things explicitly, and
+``test_r5_cannot_admit_assertions_without_facing_replay_vintage`` goes red the
+moment it does neither: populate ``identity_results`` with real vintages, or
+add semiconductor's up-front ``ResearchRefusal(IDENTITY_VINTAGE_UNSUPPORTED)``.
+A blanket refusal is NOT added today because Sol's ruling refuses AFFECTED
+replay and an empty bundle affects nothing -- over-refusing now would have to
+be undone by R5, and would hide the requirement instead of pinning it.
 
 Refusals
 --------
@@ -84,7 +122,10 @@ the narrower and real window in which Task 1 is present but the shell's
 binding is not — the current review base is exactly that — where
 ``BundleUnavailable`` resolves to the local mirror. The mirror can only ever be
 raised on a base that carries no shell to catch it, so no path exists where the
-shell misses a raise; the tests exercise both resolutions.
+shell misses a raise. Only the MIRROR resolution is exercised today: on the
+review base ``theme_research_binding`` does not exist, so
+``BundleUnavailable.__module__`` is this module and nothing stubs the shared
+class -- the shared resolution is exercised on no base reachable right now.
 """
 from __future__ import annotations
 
