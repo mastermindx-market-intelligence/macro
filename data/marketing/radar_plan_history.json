@@ -4,13 +4,15 @@
     {
       "as_of": "2026-09-25",
       "tickers": [
-        "ATO",
-        "COHU",
+        "CLH",
+        "GATX",
         "GLW",
+        "IPGP",
+        "ITW",
+        "PPG",
         "QCOM",
-        "VTRS",
-        "WFC",
-        "XRAY"
+        "WBD",
+        "WFC"
       ]
     },
     {

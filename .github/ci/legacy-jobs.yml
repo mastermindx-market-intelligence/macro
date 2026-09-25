@@ -5615,24 +5615,6 @@ jobs:
       - name: uk policy desk unit tests
         run: python -m pytest tests/test_uk_policy_brain.py -q
 
-  finance-intelligence-site-wiring:
-    # Always-on (no scope/paths): reads scripts/build_site.py as text. Split from the
-    # exclusive finance-intelligence job so that job need not carry the builder's
-    # import closure (contract-delta on #8010: 538 uncovered paths).
-    if: ${{ false }}
-    gate: code
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: install minimal deps
-        run: pip install pytest
-      - name: finance intelligence site-builder wiring
-        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
-
   finance-intelligence:
     if: ${{ false }}
     gate: code
@@ -10925,6 +10907,14 @@ jobs:
       # immediately above.
       - name: public glossary directory (view-model contract + rendered-page wiring)
         run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
+      # Finance Intelligence site-builder hook (2026-09-25). The suite reads
+      # scripts/build_site.py as TEXT, and this job already owns the site builder, so
+      # hosting it here adds no owned path and no packing-probe match. #8010 ran it
+      # in its own job instead. That job matched every one-file probe in
+      # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
+      # (templates/index.html 134/133), which turned integration-baseline red on main.
+      - name: finance intelligence site-builder wiring (build_site carries the render hook)
+        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
