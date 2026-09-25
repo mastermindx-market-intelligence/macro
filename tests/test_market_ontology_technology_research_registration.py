@@ -533,12 +533,14 @@ def test_select_evidence_returns_the_one_authorized_assertion(monkeypatch):
     assert envelope["schema"] == reg.EVIDENCE_SCHEMA_ID
     assert envelope["definition_version"] == reg.DEFINITION_VERSION
     assert envelope["generation"].startswith("tecd_")
-    # X1: VERBATIM deep copy — the assertion-internal authority block stays,
-    # exactly as the shared curation contract requires it, and the evidence
-    # contract pins its flags false in place
+    # X1 (corrected in T8A-X1): VERBATIM deep copy — the assertion-internal
+    # authority block stays exactly as the owner's contract carries it, in the
+    # ASSERTION contract's own five-flag can_* vocabulary; the envelope's own
+    # top-level ceiling is the SEPARATE six-name Technology vocabulary, and
+    # the two are deliberately never equal
     assert envelope["assertion"] == ROLE_T
     assert envelope["assertion"] is not ROLE_T  # deep copy, never an alias
-    assert envelope["assertion"]["authority"] == envelope["authority"]
+    assert envelope["assertion"]["authority"] == base.ASSERTION_FALSE_AUTHORITY
     assert envelope["limitations"] == sorted(envelope["limitations"])
     assert envelope["authority"] == {
         "rank": False, "gate": False, "size": False,
@@ -714,48 +716,29 @@ def test_evidence_schema_binds_definition_version_by_identity(monkeypatch):
     assert schema["properties"]["definition_version"]["const"] == reg.DEFINITION_VERSION
 
 
-def test_evidence_schema_rejects_an_all_true_authority_inside_the_assertion(monkeypatch):
-    # X1(a): a smuggled assertion-internal authority block — all-six-true,
-    # with rank/recommendation/position sizing riding along — must NOT
-    # validate. This held under the deleted forbid-rule too; it is the half of
-    # the old guarantee the inversion must keep.
+def test_evidence_contract_accepts_the_real_five_flag_can_star_authority(monkeypatch):
+    # T8A-X1 regression: the shared curation assertion's own authority block
+    # is the FIVE can_* flags (can_rank/can_gate/can_size/can_originate/
+    # can_open_entry), closed, all literally false — as inspected at
+    # 382c0b399d5c on macro#7870 (identical at 45eb37bb/e2f4d4909156) and
+    # enforced by the owner's authority_not_all_false code rule on every
+    # render. The six-name pin this test replaces made exactly this
+    # contract-valid assertion REFUSE (evidence_schema_violation:
+    # assertion/authority), which would have left the selector 100% dead the
+    # day the shared module landed.
     _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
-    validator = _evidence_validator()
-
-    abusive = json.loads(json.dumps(envelope))
-    abusive["assertion"]["authority"] = {
-        "rank": True, "gate": True, "size": True,
-        "veto": True, "originate": True, "open_entry": True,
+    assertion = _themed(
+        base._assertion(predicate="product_workload_role", seed="can-star-1")
+    )
+    assert assertion["authority"] == base.ASSERTION_FALSE_AUTHORITY
+    bundle = _bundle(assertions=(assertion,))
+    envelope = reg.select_evidence(QUERY, bundle, "synthetic-doc-role-1")
+    assert envelope["assertion"]["authority"] == {
+        "can_rank": False, "can_gate": False, "can_size": False,
+        "can_originate": False, "can_open_entry": False,
     }
-    abusive["assertion"]["recommendation"] = "overweight the theme"
-    abusive["assertion"]["rank"] = 1
-    abusive["assertion"]["position_size_pct"] = "12.5"
-    with pytest.raises(jsonschema.ValidationError):
-        validator.validate(abusive)
-
-
-def test_evidence_schema_accepts_the_lawful_all_false_authority(monkeypatch):
-    # X1(b): a verbatim, contract-valid curation assertion carries its own
-    # six-false authority block, and the shipped evidence contract MUST accept
-    # it — under the deleted forbid-rule ("not: required authority") this
-    # validation failed, which is the fork the inversion closes.
-    _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
-    assert envelope["assertion"]["authority"] == dict(envelope["authority"])
-    _evidence_validator().validate(envelope)  # no raise: lawful and verbatim
-
-
-def test_evidence_schema_rejects_an_assertion_missing_authority(monkeypatch):
-    # X1(c): authority is REQUIRED by theme_graph.curation_assertion.v1, so an
-    # assertion WITHOUT it must not validate — an evidence envelope may never
-    # hand out an assertion its own shared contract would refuse.
-    _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
-    missing = json.loads(json.dumps(envelope))
-    missing["assertion"].pop("authority")
-    with pytest.raises(jsonschema.ValidationError):
-        _evidence_validator().validate(missing)
+    reg.validate_evidence_envelope(envelope)  # no raise: the real vocabulary validates
+    _evidence_validator().validate(envelope)  # and so does the shipped contract file
 
 
 def test_selected_assertion_passes_the_shared_curation_contract_verbatim(monkeypatch):
@@ -774,20 +757,20 @@ def test_validate_evidence_envelope_has_runtime_teeth(monkeypatch):
     # N3: the same contract check the schema file carries is callable at
     # runtime and refuses TYPED — select_evidence runs it on every envelope
     # immediately before returning. X3: the code carries the violating PATH
-    # only, never the validator's instance-rendering message.
+    # only, never the validator's instance-rendering message. (The mutated
+    # authority is the ENVELOPE's own top-level ceiling — since T8A-X1 the
+    # assertion sub-schema is fully open, so assertion-internal mutations are
+    # the owner contract's business, not this envelope's.)
     _activate_synthetic_contract(monkeypatch)
     envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
 
     reg.validate_evidence_envelope(envelope)  # the lawful envelope passes
 
     abusive = json.loads(json.dumps(envelope))
-    abusive["assertion"]["authority"] = {
-        "rank": True, "gate": True, "size": True,
-        "veto": True, "originate": True, "open_entry": True,
-    }
+    abusive["authority"]["rank"] = True
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
         reg.validate_evidence_envelope(abusive)
-    assert excinfo.value.code.startswith("evidence_schema_violation: assertion")
+    assert excinfo.value.code.startswith("evidence_schema_violation: authority")
 
     unknown_top_level = json.loads(json.dumps(envelope))
     unknown_top_level["unexpected"] = 1
@@ -798,20 +781,20 @@ def test_validate_evidence_envelope_has_runtime_teeth(monkeypatch):
 
 def test_evidence_schema_violation_code_leaks_no_payload(monkeypatch):
     # X3: a refusal code is a snake_case identifier, and this is a SELECTION
-    # path — the jsonschema message for a const/not violation renders the
-    # whole offending instance, so the validator's message must never enter
-    # the code. Path only, canary absent, hard length bound.
+    # path — the jsonschema message for a const violation renders the whole
+    # offending instance, so the validator's message must never enter the
+    # code. Path only, canary absent, hard length bound.
     _activate_synthetic_contract(monkeypatch)
     envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
     canary = "LEAK-CANARY-7c31ab9e-assertion-content"
     smuggled = json.loads(json.dumps(envelope))
-    smuggled["assertion"]["authority"]["rank"] = canary  # const-false violation
+    smuggled["authority"]["rank"] = canary  # const-false violation
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
         reg.validate_evidence_envelope(smuggled)
     code = excinfo.value.code
     assert canary not in code
     assert ROLE_T["observation"]["text"] not in code
-    assert code == "evidence_schema_violation: assertion/authority/rank"
+    assert code == "evidence_schema_violation: authority/rank"
     assert len(code) <= 120  # stated bound: a path, never a rendered instance
 
 
@@ -887,22 +870,29 @@ def test_missing_or_corrupt_contract_file_refuses_typed(monkeypatch, tmp_path):
 def test_evidence_schema_is_closed_and_assertion_open():
     schema = json.loads(EVIDENCE_SCHEMA_PATH.read_text(encoding="utf-8"))
     assert schema["additionalProperties"] is False
-    # X1: the assertion object stays open for the shared contract's shape, but
-    # its authority block is REQUIRED and pinned six-false in place — the same
-    # six the envelope's own top-level ceiling carries — so the assertion can
-    # never fork the shared contract by omitting what that contract requires.
+    # T8A-X1 (corrected): the ASSERTION sub-schema asserts NOTHING about the
+    # assertion's internals — it is exactly {type, additionalProperties,
+    # description}: no required keys, no inner properties, and no forbid-rule.
+    # theme_graph.curation_assertion.v1 owns and validates that shape —
+    # authority included, via its authority_not_all_false code rule, which
+    # runs on every render before anything can be cited — so any mirror here
+    # would be a fork of the owner's contract with a stale-by-design clock.
     assertion = schema["properties"]["assertion"]
+    assert set(assertion) == {"type", "additionalProperties", "description"}
+    assert assertion["type"] == "object"
     assert assertion["additionalProperties"] is True
     assert "not" not in assertion
-    assert assertion["required"] == ["authority"]
-    inner = assertion["properties"]["authority"]
-    assert set(inner["required"]) == {
+    assert "required" not in assertion
+    assert "properties" not in assertion
+    # The ENVELOPE's own top-level authority block stays CLOSED and six-named:
+    # that block is Technology's own row/dossier vocabulary (ECD-48), owned
+    # here and correct — disjoint from the assertion contract's five can_*
+    # flags, which is exactly why the two are never merged.
+    authority = schema["properties"]["authority"]
+    assert authority["additionalProperties"] is False
+    assert set(authority["required"]) == {
         "rank", "gate", "size", "veto", "originate", "open_entry"
     }
-    for flag in inner["required"]:
-        assert inner["properties"][flag] == {"const": False}
-    authority = schema["properties"]["authority"]
-    assert set(authority["required"]) == set(inner["required"])
     for flag in authority["required"]:
         assert authority["properties"][flag] == {"const": False}
 

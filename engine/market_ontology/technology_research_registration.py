@@ -205,8 +205,9 @@ def _resolve_vertical_registration() -> Any:
     ``OwnerBundle``/``ResearchQuery`` symbols would type
     ``shared_shell_unavailable`` for a shell whose registry ACCEPTS the §8
     entry, losing exactly the XPASS signal the pinned round-trip exists to
-    detect. The full three-symbol resolver below stays for consumers that
-    genuinely need the bundle/query shapes."""
+    detect. The full three-symbol resolver below is NOT kept for production
+    consumers — it has none today, only the tests call it; it is kept as the
+    pinned three-symbol shape of the §8 binding."""
     registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
     if registry is None:
         return None
@@ -221,10 +222,12 @@ def _load_shared_shell() -> tuple[Any, Any, Any] | None:
     never a silent half-binding. No shell type is copied into this branch.
     Absence means ONLY the two shell module names themselves
     (:func:`_import_shell_module`); a missing dependency of a present shell
-    and any other import failure propagate. The registration path does NOT
-    use this resolver — it needs only VerticalRegistration and resolves it
-    through :func:`_resolve_vertical_registration` so sibling-symbol drift
-    cannot drown the acceptance signal."""
+    and any other import failure propagate. No production consumer exists —
+    only the tests call it; it stays as the pinned three-symbol shape for the
+    §8 binding, and the registration path does NOT use it (it needs only
+    VerticalRegistration and resolves it through
+    :func:`_resolve_vertical_registration` so sibling-symbol drift cannot
+    drown the acceptance signal)."""
     registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
     semiconductor = _import_shell_module(_SHELL_SIBLING_MODULE)
     if registry is None or semiconductor is None:
@@ -529,10 +532,17 @@ def _evidence_validator() -> Any:
 
         try:
             schema = json.loads(EVIDENCE_CONTRACT_PATH.read_text(encoding="utf-8"))
-        except FileNotFoundError as exc:
-            # typed, content-free: a raw FileNotFoundError out of this lazy
-            # loader is a failure mode of THIS module's refusal vocabulary
+        except OSError as exc:
+            # typed, content-free: any unreadable contract file (absent,
+            # permission-denied, a directory, ...) surfacing raw out of this
+            # lazy loader would be a failure mode of THIS module's refusal
+            # vocabulary, so every OSError is typed here
             raise TechnologyRegistrationRefusal("evidence_contract_unavailable") from exc
+        except UnicodeDecodeError as exc:
+            # bytes that are not valid UTF-8: still "cannot be read as a
+            # contract", typed corrupt (UnicodeDecodeError is a ValueError,
+            # NOT an OSError, so the catch above provably does not cover it)
+            raise TechnologyRegistrationRefusal("evidence_contract_corrupt") from exc
         except json.JSONDecodeError as exc:
             raise TechnologyRegistrationRefusal("evidence_contract_corrupt") from exc
         _EVIDENCE_VALIDATOR = jsonschema.Draft202012Validator(schema)
@@ -548,11 +558,13 @@ def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
     ``evidence_schema_violation: <path>``) naming the first violating PATH
     only — never the validator's message, which renders the offending
     instance and would embed assertion content inside a typed refusal code.
-    Every failure mode of the check itself is likewise typed: a missing or
-    unreadable contract file (``evidence_contract_unavailable`` /
-    ``evidence_contract_corrupt``) and an absent jsonschema
-    (``contract_validator_unavailable: …``). Pure; reads the contract file
-    only.
+    Every failure mode of the check itself is likewise typed and content-free:
+    a contract file that cannot be READ — any ``OSError`` (absent,
+    permission-denied, a directory) — refuses ``evidence_contract_unavailable``,
+    and a file that cannot be DECODED — invalid UTF-8 bytes or bytes that are
+    not JSON — refuses ``evidence_contract_corrupt``; an absent jsonschema
+    refuses ``contract_validator_unavailable: …``. Pure; reads the contract
+    file only.
     """
     try:
         errors = sorted(
@@ -592,13 +604,15 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
     §8 names the finer key, the pin fails loudly instead of silently
     re-passing.
 
-    The assertion is deep-copied VERBATIM — its assertion-internal
-    ``authority`` block included, exactly as the shared curation assertion
-    contract requires that key. The evidence contract pins the six authority
-    flags literally false IN PLACE (the same six the envelope's own top-level
-    ceiling states), so a smuggled all-true block still cannot validate while
-    the assertion stays a contract-valid curation assertion rather than a
-    fork of the shared contract by omission.
+    The assertion is deep-copied VERBATIM, its assertion-internal ``authority``
+    block included, unchanged. Nothing here pops, filters or normalises any
+    part of it: the assertion's internal shape — authority vocabulary included —
+    is owned and validated by ``theme_graph.curation_assertion.v1``, whose
+    ``authority_not_all_false`` code rule runs on every render, BEFORE anything
+    can be cited, and refuses any assertion whose authority flags are not all
+    literally false. The evidence contract deliberately asserts nothing about
+    the assertion's internals; restating them here would fork the owner's
+    contract with a stale-by-design clock.
 
     ``query.view`` is VALIDATION-ONLY here, exactly as in :func:`compose`: the
     envelope is selected from the same view-invariant dossier, and projection

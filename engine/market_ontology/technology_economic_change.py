@@ -138,7 +138,13 @@ SOURCE_REF_FIELDS: tuple[str, ...] = (
 )
 # The single place the six authority flags are pinned: all literally false
 # (ECD-48). AUTHORITY_FLAGS is derived from it so the flag-name list can never
-# drift from the emitted authority objects.
+# drift from the emitted authority objects. VOCABULARY NOTE: these six bare
+# names are Technology's OWN emitted-object vocabulary (dossier rows, cards,
+# relationships, the root ceiling, and the sealed comparison packet this
+# composer checks). They are NOT the shared curation assertion contract's
+# authority vocabulary — that block is the five `can_*` flags owned and
+# enforced by theme_graph.curation_assertion.v1; the two sets are disjoint
+# and must never be merged or substituted for each other.
 _FALSE_AUTHORITY: dict[str, bool] = {
     "rank": False, "gate": False, "size": False,
     "veto": False, "originate": False, "open_entry": False,

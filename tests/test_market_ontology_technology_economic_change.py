@@ -63,9 +63,27 @@ def _src(object_id: str, *, owner: str = "synthetic-owner-a", generation: str = 
     }
 
 
+#: Technology's OWN authority vocabulary: the six bare names every object the
+#: dossier composer EMITS carries (rows, cards, relationships, the root
+#: ceiling) and the sealed comparison packet it checks (ECD-48). This is NOT
+#: the shared curation assertion's vocabulary — see ASSERTION_FALSE_AUTHORITY
+#: below; the two sets are disjoint and must never be merged or substituted.
 _FALSE_AUTHORITY = {
     "rank": False, "gate": False, "size": False,
     "veto": False, "originate": False, "open_entry": False,
+}
+
+#: The shared curation assertion contract's OWN authority vocabulary: the FIVE
+#: `can_*` flags, closed (additionalProperties:false), all required — as
+#: inspected at 382c0b399d5c on macro#7870 (identical at 45eb37bb and
+#: e2f4d4909156), and enforced by the owner's `authority_not_all_false` code
+#: rule, which runs on every render BEFORE anything can be cited. The
+#: intersection with the six-name block above is EMPTY: merging the two is how
+#: the T8A-X1 wrong pin shipped (a six-name block inside the assertion neither
+#: contract knows), so they are defined separately and never interchanged.
+ASSERTION_FALSE_AUTHORITY = {
+    "can_rank": False, "can_gate": False, "can_size": False,
+    "can_originate": False, "can_open_entry": False,
 }
 
 
@@ -99,7 +117,10 @@ def _assertion(
         "temporal": {"observed_on": observed_on, "effective_from": None, "effective_to": None},
         "limitations": [{"text": "synthetic limitation"}],
         "correction": {"superseded_by": None},
-        "authority": dict(authority if authority is not None else _FALSE_AUTHORITY),
+        # the assertion fixture speaks the ASSERTION contract's five-flag
+        # can_* vocabulary (owner-enforced all-false), NOT Technology's own
+        # six-name row/dossier vocabulary
+        "authority": dict(authority if authority is not None else ASSERTION_FALSE_AUTHORITY),
     }
     if family_label is not None:
         payload["industrial_context"] = {"family_label": family_label}
@@ -283,8 +304,22 @@ def _synthetic_validate(payload):
         raise _SyntheticCurationError("synthetic_validation_failed: schema mismatch")
     if not re.fullmatch(r"gmirca_[0-9a-f]{32}", str(payload["curation_revision"])):
         raise _SyntheticCurationError("synthetic_validation_failed: curation_revision grammar")
-    if any(payload["authority"].get(flag) is not False for flag in _FALSE_AUTHORITY):
-        raise _SyntheticCurationError("synthetic_validation_failed: authority flags must be false")
+    # The REAL contract's authority vocabulary: the five can_* flags, CLOSED,
+    # all literally false (as inspected at 382c0b399d5c, identical at
+    # 45eb37bb/e2f4d4909156). Exact key-set equality makes the block closed, so
+    # Technology's six bare names — or any other vocabulary — are REFUSED here
+    # exactly as the owner's closed additionalProperties:false block refuses
+    # them; checking the six names here is the oracle bug that let T8A-X1's
+    # wrong pin ship unnoticed.
+    assertion_authority = payload.get("authority")
+    if (
+        not isinstance(assertion_authority, dict)
+        or set(assertion_authority) != set(ASSERTION_FALSE_AUTHORITY)
+        or any(assertion_authority[flag] is not False for flag in ASSERTION_FALSE_AUTHORITY)
+    ):
+        raise _SyntheticCurationError(
+            "synthetic_validation_failed: authority is the closed five can_* flags, all false"
+        )
     for side in ("subject", "object"):
         entity_id = payload[side].get("entity_id") if isinstance(payload[side], dict) else False
         # Mirror the emitted contract: subject.entity_id is a string; object.entity_id may be null.
@@ -308,6 +343,28 @@ SYNTHETIC_CURATION_CONTRACT = types.SimpleNamespace(
     decode_assertion=lambda value: dict(value) if isinstance(value, dict) else None,
     source_ref_for=lambda payload: f"{payload['source']['owner']}/{payload['source']['object_id']}",
 )
+# KNOWN LIMITATION (recorded here, T5-owned, deliberately NOT fixed in T8A-X1):
+# beyond authority, the fixture assertion built by _assertion() is still far
+# from conformant with the real contract — an independent check found 55 errors
+# across all 14 sections (source, observation, scope, subject, review,
+# predicate/statement_mode enums). Consequence, stated plainly: until that gap
+# is closed, the strict xfail test_shared_assertion_roundtrip_through_pinned_contract
+# keeps xfailing GREEN instead of XPASSing the day the real module lands,
+# because the real validator refuses the fixture — so it is not yet a working
+# early warning for the shared contract's arrival.
+
+
+def test_synthetic_stand_in_speaks_the_real_five_flag_can_star_vocabulary():
+    # T8A-X1 oracle pin: the stand-in checks the ASSERTION contract's five
+    # can_* flags (closed, all false) and refuses any other vocabulary —
+    # checking Technology's six bare names here is exactly the oracle bug that
+    # let the wrong six-name schema pin pass review unnoticed.
+    real = _assertion(predicate="product_workload_role", seed="can-vocab-1")
+    assert real["authority"] == ASSERTION_FALSE_AUTHORITY
+    assert SYNTHETIC_CURATION_CONTRACT.validate_assertion(real) == real
+    six_bare_names = dict(real, authority=dict(_FALSE_AUTHORITY))
+    with pytest.raises(_SyntheticCurationError, match="authority"):
+        SYNTHETIC_CURATION_CONTRACT.validate_assertion(six_bare_names)
 
 
 # --- TR3: the shared contract --------------------------------------------------------
