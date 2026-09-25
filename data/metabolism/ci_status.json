@@ -1,6 +1,6 @@
 {
-  "ts": "2026-09-24T21:52:25+00:00",
-  "main_sha": "ddf39e4d292d7b597cbbb160889534aeb5f1e6cb",
+  "ts": "2026-09-25T00:55:21+00:00",
+  "main_sha": "1c58ce366754998c02a34109196ab1a7be8586ba",
   "red_required": [
     {
       "name": "sweep",
@@ -55,11 +55,18 @@
       "conclusion": "cancelled",
       "status": "completed",
       "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36062155011/job/107843389899"
+    },
+    {
+      "name": "integration-baseline",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36061669342/job/107841827406"
     }
   ],
   "green": false,
-  "consecutive_failures": 176,
+  "consecutive_failures": 177,
   "sensed_shas": [
+    "1c58ce366754998c02a34109196ab1a7be8586ba",
     "ddf39e4d292d7b597cbbb160889534aeb5f1e6cb"
   ],
   "heartbeat_degraded": false

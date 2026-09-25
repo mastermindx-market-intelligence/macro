@@ -155,6 +155,11 @@ def test_css_has_two_art_directions_and_zero_colour_literals():
     assert re.search(r"\brgb\(", css) is None
     assert re.search(r"\brgba\(", css) is None
 
+    # The page owns its canvas in both art directions: theme.css does not paint
+    # body, and the shell's 1200px box alone left the gutters, the nav band and
+    # the area below the content on the browser's white default in dark mode.
+    assert "body.fi-page { background: var(--fi-canvas); }" in css
+
     # Tier 1 (fi-panel) and tier 2 (fi-panel2) elevation rules both exist.
     assert ".fi-panel" in css
     assert ".fi-panel2" in css
@@ -469,7 +474,6 @@ def test_shell_loads_the_shared_theme_runtime():
         assert re.search(r'<script src="theme\.js(\?v=[0-9a-f]{8})?" defer></script>', committed)
 
 
-
 def test_hero_meta_carries_no_unfilled_aria_placeholder():
     """No static aria pair may carry a spec placeholder. The frozen spec wrote
     `{common_as_of}` / `{§D.12 label of freshness.state}` as instructions; the
@@ -508,6 +512,7 @@ def test_runtime_never_turns_a_missing_state_into_a_positive_fact():
     assert "try { return decodeURIComponent(raw); } catch (e) { return null; }" in js
     # A named record missing from source_records says so.
     assert 'data-fi-mount="evidence-missing"' in _render()
+
 
 def test_shell_ships_the_not_connected_binding_until_integration():
     """T8 seat ruling: the read-model endpoint is bound only through
