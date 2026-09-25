@@ -81,6 +81,10 @@ def test_updater_self_heals_stable_git_maintenance_runner() -> None:
     assert 'cmp -s "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance' in text
     assert 'bash -n "$APP_DIR/app/deploy/git-maintenance.sh"' in text
     assert 'install -m 0755 "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance' in text
+    assert "MAINT_CRON='23 6 * * * /usr/local/bin/macro-git-maintenance" in text
+    assert "grep -v 'macro-git-maintenance'" in text
+    assert 'cmp -s "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps' in text
+    assert 'install -m 0644 "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps' in text
 
 
 def test_maintenance_log_is_owned_by_existing_logrotate_policy() -> None:

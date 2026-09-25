@@ -388,6 +388,22 @@ if ! cmp -s "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-ma
 	fi
 fi
 
+# Existing hosts must acquire the maintenance schedule without a broad rerun of
+# setup.sh. Preserve every unrelated root cron entry, including an operator's
+# explicit hold on macro-update, and reconcile only this one source-owned line.
+MAINT_CRON='23 6 * * * /usr/local/bin/macro-git-maintenance >> /var/log/macro-git-maintenance.log 2>&1'
+if ! crontab -l 2>/dev/null | grep -Fxq "$MAINT_CRON"; then
+	{ crontab -l 2>/dev/null | grep -v 'macro-git-maintenance' || true; echo "$MAINT_CRON"; } | crontab -
+	RECONCILED=1
+	echo "macro-update: git maintenance cron reconciled"
+fi
+
+if ! cmp -s "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps; then
+	install -m 0644 "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps
+	RECONCILED=1
+	echo "macro-update: VPS logrotate policy reconciled"
+fi
+
 # Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
 # config can never take the site down — reload is gated on `caddy validate`).
 if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then
