@@ -151,7 +151,7 @@ def _owner_context_index(
 
 def _owner_context_row(
     context: Mapping[str, Any],
-    attention: Mapping[str, Any],
+    attention: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     context_lane = str(context.get("owner_context_lane"))
     lane, permission_status = _OWNER_CONTEXT_LANES[context_lane]
@@ -163,18 +163,19 @@ def _owner_context_row(
         "permission_source": "owner_stance",
         "permission_authority": "official_display",
         "owner_context_lane": context_lane,
-        "attention_rank": attention.get("rank"),
-        "attention_authority": "display_only_screen",
     }
     for key in ("name", "name_zh", "sector", "sector_zh", "stance", "stance_zh"):
         if context.get(key) is not None:
             row[key] = deepcopy(context.get(key))
-    why = attention.get("why")
-    if isinstance(why, (list, tuple)):
-        row["attention_reasons"] = deepcopy(list(why))
-    features = attention.get("features")
-    if isinstance(features, Mapping):
-        row["attention_features"] = deepcopy(dict(features))
+    if isinstance(attention, Mapping):
+        row["attention_rank"] = attention.get("rank")
+        row["attention_authority"] = "display_only_screen"
+        why = attention.get("why")
+        if isinstance(why, (list, tuple)):
+            row["attention_reasons"] = deepcopy(list(why))
+        features = attention.get("features")
+        if isinstance(features, Mapping):
+            row["attention_features"] = deepcopy(dict(features))
     return row
 
 
@@ -268,6 +269,18 @@ def project_opportunities(
 
     discovery = _discovery_index(discovery_rows or (), asof=asof)
     owner_context = _owner_context_index(owner_context_rows or ())
+
+    # Incumbent owner display lanes are useful even when optional discovery or
+    # attention inputs are a lawful observed zero. They remain zero-authority:
+    # ripening can only prepare; ran/leaders/watch can only monitor.
+    owner_context_emitted: dict[str, dict[str, Any]] = {}
+    for ticker, context in owner_context.items():
+        if ticker in official_seen:
+            continue
+        row = _owner_context_row(context)
+        lanes[row["lane"]].append(row)
+        owner_context_emitted[ticker] = row
+
     attention_seen: set[str] = set()
     for source in attention_picks or ():
         ticker = _ticker(source, "ticker")
@@ -282,15 +295,35 @@ def project_opportunities(
             diagnostics["attention_shadowed_by_official"] += 1
             continue
         drow = discovery.get(ticker)
+        context_row = owner_context_emitted.get(ticker)
         if drow is None:
             diagnostics["attention_not_in_discovery"] += 1
-            context = owner_context.get(ticker)
-            if context is None:
+            if context_row is None:
                 diagnostics["attention_without_context"] += 1
                 continue
-            row = _owner_context_row(context, source)
-            lanes[row["lane"]].append(row)
+            enriched = _owner_context_row(owner_context[ticker], source)
+            context_row.update(
+                {
+                    key: deepcopy(value)
+                    for key, value in enriched.items()
+                    if key.startswith("attention_")
+                }
+            )
             diagnostics["attention_recovered_by_owner_context"] += 1
+            continue
+
+        # A real incumbent owner-context row outranks shadow discovery for
+        # presentation identity. Attention may annotate it, but cannot create a
+        # duplicate row or replace its official-display permission/lane.
+        if context_row is not None:
+            enriched = _owner_context_row(owner_context[ticker], source)
+            context_row.update(
+                {
+                    key: deepcopy(value)
+                    for key, value in enriched.items()
+                    if key.startswith("attention_")
+                }
+            )
             continue
 
         status = str(drow.get("availability_status") or "")

@@ -247,6 +247,57 @@ def test_projection_is_deterministic_for_duplicate_attention_rows():
     assert rows[0]["attention_rank"] == 2
     assert rows[0]["attention_features"]["edge_z"] == 1.0
 
+
+def test_owner_context_survives_without_discovery_or_attention():
+    context = [
+        {
+            "ticker": "RIPE.HK",
+            "owner_context_lane": "ripening",
+            "name": "Ripening fixture",
+            "stance": "setup forming — no entry signal yet; watch, don't chase",
+        },
+        {
+            "ticker": "RAN.HK",
+            "owner_context_lane": "ran",
+            "name": "Ran fixture",
+            "stance": "recently fired — don't chase",
+        },
+        {
+            "ticker": "LEAD.HK",
+            "owner_context_lane": "leaders",
+            "name": "Leader fixture",
+            "stance": "watch — don't chase",
+        },
+        {
+            "ticker": "WATCH.HK",
+            "owner_context_lane": "watch",
+            "name": "Watch fixture",
+            "stance": "watch only",
+        },
+    ]
+    out = hop.project_opportunities(
+        incumbent_asof=ASOF,
+        discovery_asof=ASOF,
+        attention_asof=ASOF,
+        incumbent_buy=[],
+        discovery_rows=[],
+        attention_picks=[],
+        owner_context_rows=context,
+    )
+    assert [row["ticker"] for row in out["lanes"][hop.PREPARING]] == ["RIPE.HK"]
+    assert [row["ticker"] for row in out["lanes"][hop.MONITOR]] == [
+        "RAN.HK",
+        "LEAD.HK",
+        "WATCH.HK",
+    ]
+    assert out["lanes"][hop.ENTRY_OPEN] == []
+    for lane in (hop.PREPARING, hop.MONITOR):
+        for row in out["lanes"][lane]:
+            assert row["permission_authority"] == "official_display"
+            assert "attention_rank" not in row
+            assert "attention_authority" not in row
+
+
 def test_attention_missing_discovery_can_only_recover_from_existing_owner_context():
     attention = [
         _attention("LEAD.HK", 1, 2.0),
