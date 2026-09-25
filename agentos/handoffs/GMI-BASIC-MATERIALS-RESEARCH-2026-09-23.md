@@ -5,7 +5,7 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R19_T4_CORE_LOCAL_TDD_STARTED_ACTION_BLOCKED
+research_stage: R20_T4_CORE_PRINCIPAL_REVIEW_ACTION_BLOCKED
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
@@ -121,5 +121,45 @@ The known partial product work is durably pinned on PR #7984, but the carrier re
 Independent safe lanes remain research/read-only reconciliation and durable continuity. Once the platform permits the blocked write class in a later turn/session, resume **the same PR #7984 / branch / RED test**: implement only cash reconciliation, run it green, then continue commercial-progression and contractual-participation cases before schema/identity-link work. Reconcile current main and target-path collisions before the next push; do not create a second carrier or rebuild the existing unit-economics code from scratch unless its exact source is materially invalidated.
 
 R1–R18 research, all44 requirements, eight tasks, five originals/four company journeys and V0–V4 ambition remain intact. Shared/private/native T7/T8 gates remain open. No source admission, identity/rights change, ranking, entry, sizing, trade, publication, worker or autonomous wake occurred.
+
+EFFECT_UNKNOWN: none.
+
+
+## R20 — read-only principal review while cash write remains action-blocked
+
+Current procedure was re-pinned before this unit: Mastermind `605cd056c3463c992d85ba76dbcc90fbb758da75`, INDEX blob `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`, compatible1.0.1/bootstrap1; same-pin ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`. Current Chairman message continued the same mission. No new authority beyond that scope.
+
+### Carrier reconciliation
+
+- #7984 remains OPEN/DRAFT/HOLD at exact head `36f330b1f7829a289a44937bca0007c734d6df5e`; no implementation-head movement.
+- Research PR #7796 remained OPEN/DRAFT/HOLD at the start of R20.
+- Macro main advanced to `773be812b89ccff610a248f187f8ac98b057fbbf`. Exact compare from #7984 base `22094843f4042db6d9d77ad8847bcdbf9a27faa9` showed no changes to the Materials T4 target paths. No merge/rebase/base-update was performed.
+- Materials amendment comment5809093547 still has no direct acceptance response. Later Robotics PICKUP/START comments on #7773 belong to operation `gmi-robotics-fable-ceo-e2e-20260923-chairman-001`; they neither assign nor resolve Materials.
+
+### Read-only defect probes on exact #7984 head
+
+Using the existing M1 clean worktree and Python3.12 venv, no file modifications:
+1. **R20-F1 canonical decimal grammar:** `compare_measures` accepts `"1e3"` and whitespace-padded `" 7 "`, producing available numeric results. R18's qualified scalar convention rejects exponent spelling; the future production parser needs a strict plain-decimal text grammar before Decimal construction.
+2. **R20-F2 duplicate required metric:** two `price_current` assertions are silently collapsed by the dict comprehension. The later synthetic evidence overwrote the first and produced a current unit margin of `918` without refusal. Required role/metric mapping must be unique; no last-write-wins.
+3. **R20-F3 reversed chronology:** current/prior quarter labels were reversed and the composer still emitted `price_up_margin_down`. A valid comparison requires explicit chronological ordering.
+4. **Working control:** missing `quantity_basis` already returns `not_comparable`; preserve this behavior.
+
+Merged Consumer Cyclical V1 (#7942) was inspected only as precedent. Its `_select_pair` requires strictly newer current period_end and groups candidate facts rather than overwriting by key. Its return record also distinguishes deterministic core proof from unreached browser acceptance. Reuse invariants, not its sector-specific contract/source envelope.
+
+Principal review comment **#7984 issuecomment-5826147289** records the exact findings and future TDD order. Independent reviewer approval is still absent.
+
+### Durable R20 artifact and implementation order
+
+`research/basic_materials/BASIC_MATERIALS_R20_T4_CORE_PRINCIPAL_REVIEW_2026-09-24.md` was created on this research carrier in commit `628437cb3a75d599e14c065f6ed8d2b4a1916f95`. The existing Fable packet was then updated in place in `cc045620f7a6d58a4bc98d95570252004eb70010`, new blob `5a54568fb32fc0d6a8c34eb4c63ea559f6be6af8`.
+
+Frozen TDD order once the previously denied product-write class is platform-permitted:
+1. resume **the existing cash-reconciliation RED** on #7984; minimal implementation; prove green;
+2. add canonical-decimal grammar RED; prove exponent/whitespace refusal without losing signed/fractional exact values;
+3. add duplicate-required-role RED; refuse ambiguity;
+4. add reversed/non-prior chronology RED; require explicit ordering;
+5. after each GREEN run the entire Materials targeted file plus `tests/test_market_ontology_exposure_map.py`;
+6. only after the four economic mechanisms/denials are stable, freeze the Materials output schema and run broader T4 gates.
+
+The blocked cash production patch remains `TOOL_DEGRADED / EFFECT_NONE`. It was not retried or rerouted in R20. No product file, source fact, identity, rights registry, ranking/entry/size/trade output, publisher, worker or runtime changed.
 
 EFFECT_UNKNOWN: none.
