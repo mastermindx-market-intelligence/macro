@@ -1,37 +1,35 @@
 {
   "schema": "special_sits_context.v1",
   "asof": "2026-09-25",
-  "built": "2026-09-25T07:28:00Z",
+  "built": "2026-09-25T19:03:30Z",
   "is_context_only": true,
   "disclaimer": "Context only — event tracking + display-tier setup ranking, never a signal or sizing input.",
   "counts": {
-    "total": 1466,
-    "new_today": 60,
+    "total": 1486,
+    "new_today": 86,
     "grade_a": 0,
-    "grade_b": 2,
-    "with_arb": 18,
-    "cross_border": 535
+    "grade_b": 1,
+    "with_arb": 19,
+    "cross_border": 543
   },
   "top_setups": [
     {
-      "ticker": "PI",
-      "company": "IMPINJ INC",
-      "category": "Issuer Tenders",
-      "stage": "live",
+      "ticker": "DLX",
+      "company": "Deluxe Corporation",
+      "category": "Acquisitions",
+      "stage": "",
       "grade": "B",
-      "score": 64.0,
-      "tier": "T2",
-      "mc_musd": null,
-      "date_filed": "2026-09-11",
+      "score": 61.0,
+      "tier": "T1",
+      "mc_musd": 1100.0,
+      "date_filed": "2026-06-21",
       "why": [
         "Buy setup live",
-        "Sector leading rotation",
-        "Strong history for this event type"
+        "Deeply oversold (weeks)"
       ],
       "why_zh": [
         "买点设置已触发",
-        "板块领跑轮动",
-        "此类事件历史表现强"
+        "周线深度超卖"
       ]
     },
     {
@@ -39,11 +37,32 @@
       "company": "GENERAC HOLDINGS INC.",
       "category": "Other",
       "stage": "announced",
-      "grade": "B",
-      "score": 58.0,
-      "tier": "T2",
-      "mc_musd": null,
+      "grade": "C",
+      "score": 53.0,
+      "tier": "T1",
+      "mc_musd": 11620.747716414413,
       "date_filed": "2026-09-16",
+      "why": [
+        "Buy setup live",
+        "Deeply oversold (weeks)",
+        "EDGAR filing confirmed"
+      ],
+      "why_zh": [
+        "买点设置已触发",
+        "周线深度超卖",
+        "EDGAR披露已确认"
+      ]
+    },
+    {
+      "ticker": "BCBP",
+      "company": "BCB BANCORP INC",
+      "category": "Capital Returns",
+      "stage": "announced",
+      "grade": "C",
+      "score": 48.0,
+      "tier": "T1",
+      "mc_musd": null,
+      "date_filed": "2026-09-17",
       "why": [
         "Buy setup live",
         "Deeply oversold (weeks)",
@@ -98,6 +117,27 @@
       ]
     },
     {
+      "ticker": "BCBP",
+      "company": "BCB BANCORP INC",
+      "category": "Divestitures",
+      "stage": "announced",
+      "grade": "C",
+      "score": 42.0,
+      "tier": "T1",
+      "mc_musd": null,
+      "date_filed": "2026-09-16",
+      "why": [
+        "Buy setup live",
+        "Deeply oversold (weeks)",
+        "EDGAR filing confirmed"
+      ],
+      "why_zh": [
+        "买点设置已触发",
+        "周线深度超卖",
+        "EDGAR披露已确认"
+      ]
+    },
+    {
       "ticker": "HERZ",
       "company": "Herzfeld Credit Income Fund, Inc",
       "category": "Going-Private",
@@ -126,7 +166,7 @@
       "grade": "C",
       "score": 40.0,
       "tier": null,
-      "mc_musd": null,
+      "mc_musd": 1659304.890625,
       "date_filed": "2026-09-10",
       "why": [
         "Deeply oversold (weeks)",
@@ -165,6 +205,13 @@
     "items": [
       {
         "kind": "new",
+        "ticker": "NA.TO",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
         "ticker": "ACB",
         "category": "Tender Offers",
         "from": null,
@@ -186,42 +233,7 @@
       },
       {
         "kind": "new",
-        "ticker": "NWTG",
-        "category": "Strategic Reviews",
-        "from": null,
-        "to": "initiated"
-      },
-      {
-        "kind": "new",
-        "ticker": "WTTR",
-        "category": "Strategic Reviews",
-        "from": null,
-        "to": "initiated"
-      },
-      {
-        "kind": "new",
-        "ticker": "CURR",
-        "category": "Spin-Offs",
-        "from": null,
-        "to": "terminated"
-      },
-      {
-        "kind": "new",
         "ticker": "CTVA",
-        "category": "Spin-Offs",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "EDVA",
-        "category": "Spin-Offs",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "HCWB",
         "category": "Spin-Offs",
         "from": null,
         "to": "announced"
@@ -238,7 +250,7 @@
         "ticker": "UYSCR",
         "category": "SPACs",
         "from": null,
-        "to": "de-SPAC"
+        "to": "announced"
       },
       {
         "kind": "new",
@@ -278,6 +290,13 @@
       {
         "kind": "new",
         "ticker": "BGDE",
+        "category": "Issuer Tenders",
+        "from": null,
+        "to": "live"
+      },
+      {
+        "kind": "new",
+        "ticker": "JAGX",
         "category": "Issuer Tenders",
         "from": null,
         "to": "live"
@@ -396,6 +415,13 @@
       },
       {
         "kind": "new",
+        "ticker": "OPRA",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
         "ticker": "AIFU",
         "category": "Capital Returns",
         "from": null,
@@ -432,6 +458,34 @@
       {
         "kind": "new",
         "ticker": "CD",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "HCWB",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "INNV",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "NWTG",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "initiated"
+      },
+      {
+        "kind": "new",
+        "ticker": "PNBK",
         "category": "Capital Returns",
         "from": null,
         "to": "announced"
@@ -487,6 +541,34 @@
       },
       {
         "kind": "new",
+        "ticker": "ELMT",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "NWTG",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "WTTR",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "initiated"
+      },
+      {
+        "kind": "new",
+        "ticker": "TTMI",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
         "ticker": "NATH",
         "category": "Acquisitions",
         "from": null,
@@ -515,10 +597,45 @@
       },
       {
         "kind": "new",
+        "ticker": "MYSE",
+        "category": "Other",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "RGNX",
+        "category": "Other",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "OTEX",
+        "category": "Issuer Tenders",
+        "from": null,
+        "to": "live"
+      },
+      {
+        "kind": "new",
+        "ticker": "SUI",
+        "category": "Divestitures",
+        "from": null,
+        "to": "closed"
+      },
+      {
+        "kind": "new",
         "ticker": "LCCCU",
         "category": "Delistings",
         "from": null,
         "to": "notice"
+      },
+      {
+        "kind": "new",
+        "ticker": "TMSWW",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
       },
       {
         "kind": "stage",
@@ -526,6 +643,41 @@
         "category": "Acquisitions",
         "from": "announced",
         "to": "registered"
+      },
+      {
+        "kind": "new",
+        "ticker": "ONDS",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "closed"
+      },
+      {
+        "kind": "new",
+        "ticker": "RCL",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "RAINW",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "WLDN",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "ZYME",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "closed"
       },
       {
         "kind": "new",
@@ -564,10 +716,87 @@
       },
       {
         "kind": "new",
+        "ticker": "NUR",
+        "category": "Restructuring",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "MAGH",
+        "category": "Delistings",
+        "from": null,
+        "to": "notice"
+      },
+      {
+        "kind": "new",
+        "ticker": "WBUY",
+        "category": "Delistings",
+        "from": null,
+        "to": "notice"
+      },
+      {
+        "kind": "new",
+        "ticker": "SNNUF",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "TIMB",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "AMCI",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "BSEM",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "TLK",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "SCZM",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "TORO",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
         "ticker": "XRPNU",
         "category": "SPACs",
         "from": null,
         "to": "de-SPAC"
+      },
+      {
+        "kind": "grade_up",
+        "ticker": "BCBP",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "C"
       },
       {
         "kind": "new",
@@ -577,11 +806,32 @@
         "to": "de-SPAC"
       },
       {
+        "kind": "grade_down",
+        "ticker": "GNRC",
+        "category": "Other",
+        "from": "B",
+        "to": "C"
+      },
+      {
+        "kind": "grade_up",
+        "ticker": "BCBP",
+        "category": "Divestitures",
+        "from": null,
+        "to": "C"
+      },
+      {
         "kind": "new",
         "ticker": "RANGU",
         "category": "Delistings",
         "from": null,
         "to": "notice"
+      },
+      {
+        "kind": "stage",
+        "ticker": "BZH",
+        "category": "Acquisitions",
+        "from": "vote-scheduled",
+        "to": "announced"
       },
       {
         "kind": "new",
@@ -592,13 +842,27 @@
       },
       {
         "kind": "grade_down",
+        "ticker": "PI",
+        "category": "Issuer Tenders",
+        "from": "B",
+        "to": null
+      },
+      {
+        "kind": "grade_up",
+        "ticker": "DLX",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "B"
+      },
+      {
+        "kind": "grade_down",
         "ticker": "USAR",
         "category": "Acquisitions",
         "from": "C",
         "to": null
       }
     ],
-    "n": 62
+    "n": 94
   },
   "prev_state": {
     "asof": "2026-09-24",
@@ -6486,6 +6750,10 @@
     }
   },
   "_current_by_key": {
+    "NA.TO|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
     "ACB|Tender Offers": {
       "stage": "live",
       "grade": null
@@ -6498,27 +6766,7 @@
       "stage": "initiated",
       "grade": null
     },
-    "NWTG|Strategic Reviews": {
-      "stage": "initiated",
-      "grade": null
-    },
-    "WTTR|Strategic Reviews": {
-      "stage": "initiated",
-      "grade": null
-    },
-    "CURR|Spin-Offs": {
-      "stage": "terminated",
-      "grade": null
-    },
     "CTVA|Spin-Offs": {
-      "stage": "announced",
-      "grade": null
-    },
-    "EDVA|Spin-Offs": {
-      "stage": "announced",
-      "grade": null
-    },
-    "HCWB|Spin-Offs": {
       "stage": "announced",
       "grade": null
     },
@@ -6531,7 +6779,7 @@
       "grade": null
     },
     "UYSCR|SPACs": {
-      "stage": "de-SPAC",
+      "stage": "announced",
       "grade": null
     },
     "FTHAW|SPACs": {
@@ -6559,6 +6807,10 @@
       "grade": null
     },
     "BGDE|Issuer Tenders": {
+      "stage": "live",
+      "grade": null
+    },
+    "JAGX|Issuer Tenders": {
       "stage": "live",
       "grade": null
     },
@@ -6626,6 +6878,10 @@
       "stage": "announced",
       "grade": null
     },
+    "OPRA|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
     "AIFU|Capital Returns": {
       "stage": "announced",
       "grade": null
@@ -6647,6 +6903,22 @@
       "grade": null
     },
     "CD|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "HCWB|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "INNV|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "NWTG|Capital Returns": {
+      "stage": "initiated",
+      "grade": null
+    },
+    "PNBK|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
@@ -6679,6 +6951,22 @@
       "grade": null
     },
     "CDIX|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
+    "ELMT|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
+    "NWTG|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
+    "WTTR|Acquisitions": {
+      "stage": "initiated",
+      "grade": null
+    },
+    "TTMI|Acquisitions": {
       "stage": "announced",
       "grade": null
     },
@@ -6750,7 +7038,11 @@
       "stage": "announced",
       "grade": null
     },
-    "OTEX|Restructuring": {
+    "MYSE|Other": {
+      "stage": "announced",
+      "grade": null
+    },
+    "RGNX|Other": {
       "stage": "announced",
       "grade": null
     },
@@ -6761,6 +7053,10 @@
     "FITB-PK|Issuer Tenders": {
       "stage": "live",
       "grade": "C"
+    },
+    "OTEX|Issuer Tenders": {
+      "stage": "live",
+      "grade": null
     },
     "ARX|Going-Private": {
       "stage": "live",
@@ -6778,11 +7074,7 @@
       "stage": "announced",
       "grade": null
     },
-    "TMSWW|Divestitures": {
-      "stage": "closed",
-      "grade": null
-    },
-    "ZYME|Divestitures": {
+    "SUI|Divestitures": {
       "stage": "closed",
       "grade": null
     },
@@ -6846,7 +7138,7 @@
       "stage": "announced",
       "grade": null
     },
-    "SUI|Capital Returns": {
+    "TMSWW|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
@@ -6890,8 +7182,24 @@
       "stage": "registered",
       "grade": null
     },
-    "QDEL|Acquisitions": {
+    "ONDS|Acquisitions": {
+      "stage": "closed",
+      "grade": null
+    },
+    "RCL|Acquisitions": {
       "stage": "announced",
+      "grade": null
+    },
+    "RAINW|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
+    "WLDN|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
+    "ZYME|Acquisitions": {
+      "stage": "closed",
       "grade": null
     },
     "BLDC|Acquisitions": {
@@ -7422,10 +7730,6 @@
       "stage": "live",
       "grade": null
     },
-    "RETO|Spin-Offs": {
-      "stage": "terminated",
-      "grade": null
-    },
     "CDTTW|Spin-Offs": {
       "stage": "closed",
       "grade": null
@@ -7443,6 +7747,10 @@
       "grade": null
     },
     "GAUZ|Restructuring": {
+      "stage": "announced",
+      "grade": null
+    },
+    "NUR|Restructuring": {
       "stage": "announced",
       "grade": null
     },
@@ -7472,6 +7780,14 @@
     },
     "MORN|Divestitures": {
       "stage": "announced",
+      "grade": null
+    },
+    "MAGH|Delistings": {
+      "stage": "notice",
+      "grade": null
+    },
+    "WBUY|Delistings": {
+      "stage": "notice",
       "grade": null
     },
     "BYSI|Delistings": {
@@ -7526,7 +7842,23 @@
       "stage": "announced",
       "grade": null
     },
+    "SNNUF|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "TIMB|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "AMCI|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
     "ATEX|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "BSEM|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
@@ -7544,6 +7876,18 @@
     },
     "CLGN|Acquisitions": {
       "stage": "initiated",
+      "grade": null
+    },
+    "TLK|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
+    "SCZM|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
+    "TORO|Acquisitions": {
+      "stage": "announced",
       "grade": null
     },
     "LXP-PC|Acquisitions": {
@@ -7744,7 +8088,7 @@
     },
     "BCBP|Capital Returns": {
       "stage": "announced",
-      "grade": null
+      "grade": "C"
     },
     "BRT|Capital Returns": {
       "stage": "announced",
@@ -7880,7 +8224,7 @@
     },
     "GNRC|Other": {
       "stage": "announced",
-      "grade": "B"
+      "grade": "C"
     },
     "NVVE|Other": {
       "stage": "announced",
@@ -7904,7 +8248,7 @@
     },
     "BCBP|Divestitures": {
       "stage": "announced",
-      "grade": null
+      "grade": "C"
     },
     "INVE|Divestitures": {
       "stage": "closed",
@@ -8439,7 +8783,7 @@
       "grade": "C"
     },
     "BZH|Acquisitions": {
-      "stage": "vote-scheduled",
+      "stage": "announced",
       "grade": null
     },
     "GTE|Acquisitions": {
@@ -8780,7 +9124,7 @@
     },
     "PI|Issuer Tenders": {
       "stage": "live",
-      "grade": "B"
+      "grade": null
     },
     "OMH|Divestitures": {
       "stage": "announced",
@@ -12168,7 +12512,7 @@
     },
     "DLX|Acquisitions": {
       "stage": "",
-      "grade": null
+      "grade": "B"
     },
     "603285.SS|Acquisitions": {
       "stage": "",
@@ -12383,8 +12727,8 @@
     {
       "ticker": "SAFT",
       "company": "SAFETY INSURANCE GROUP INC",
-      "gross_spread_pct": 1.31,
-      "annualized_pct": 7.5,
+      "gross_spread_pct": 1.44,
+      "annualized_pct": 8.2,
       "days_to_close": 66
     }
   ]
