@@ -1,7 +1,7 @@
 {
   "schema": "options_entry_coverage.v1",
-  "generated_at": "2026-09-24T12:37:50.550789+00:00",
-  "as_of": "2026-09-24",
+  "generated_at": "2026-09-25T12:15:23.115527+00:00",
+  "as_of": "2026-09-25",
   "absent_stores": [],
   "feature_coverage": {
     "n_rows": 427,
@@ -434,7 +434,7 @@
       "cond_hit_share": 0.7824,
       "readiness_forecast": {
         "forecast": "date",
-        "forecast_date": "2026-09-25",
+        "forecast_date": "2026-09-26",
         "basis": "n_cond=0/30 needed; post-W-C cadence=34.211/day \u00d7 cond_hit_share=0.788 \u2192 1 days",
         "post_wc_fires": 2429,
         "post_wc_span_days": 71
@@ -517,7 +517,7 @@
       "null_share": 1.0,
       "root_cause": "by-design opex_days<=5 gate \u2014 opt_pin_risk requires opex_days<=5 AND gamma='long' AND min_wall_dist<=2%. Gate only fires in the final week before monthly OPEX.",
       "pin_risk_gate_condition": "opex_days<=5 AND gamma_regime='long' AND min(|wall_dist_up_pct|, |wall_dist_down_pct|)<=2.0",
-      "current_opex_days": 16,
+      "current_opex_days": 15,
       "next_opex_date": "2026-10-16",
       "note": "pin_risk will be non-null only in the 5 trading days before each monthly OPEX. Current build date has opex_days>5 \u2014 no fires expected."
     },
@@ -544,30 +544,30 @@
       "sources": [
         {
           "source": "options_entry/state.parquet",
-          "latest_as_of": "2026-09-21",
+          "latest_as_of": "2026-09-22",
           "age_days_from_today": 3,
           "status": "STALE"
         },
         {
           "source": "options_entry/gate.json",
-          "latest_as_of": "2026-09-23 21:04 UTC",
-          "age_days_from_today": 1,
+          "latest_as_of": "2026-09-25 08:43 UTC",
+          "age_days_from_today": 0,
           "status": "FRESH"
         },
         {
           "source": "us_board_ledger/retro_grades.parquet",
           "latest_as_of": "2026-09-14",
-          "age_days_from_today": 10,
+          "age_days_from_today": 11,
           "status": "STALE"
         }
       ]
     },
     {
       "check": "audit_options_accrual_last_run",
-      "generated_at": "2026-09-24T12:37:50.441598+00:00",
+      "generated_at": "2026-09-25T12:15:22.958253+00:00",
       "ok": false,
       "fail_reasons": [
-        "CHAINS STALE: latest chain file is 2026-08-13 (28 NYSE session(s) behind last_session=2026-09-23); threshold=1 \u2014 OI snapshot may have been missed",
+        "CHAINS STALE: latest chain file is 2026-08-13 (29 NYSE session(s) behind last_session=2026-09-24); threshold=1 \u2014 OI snapshot may have been missed",
         "CHAINS SESSION FAILED: session 2026-09-23 has a health-receipt attempt but NO chain parquet was ever written for it \u2014 the accrual captured nothing for the most recently attempted session (see data/polygon_gex_health/2026-09-23.json)"
       ],
       "warnings": [
@@ -577,8 +577,8 @@
   ],
   "_stamp": {
     "audit": "options_entry_coverage.v1",
-    "generated_at_utc": "2026-09-24T12:37:50.550772+00:00",
-    "as_of": "2026-09-24",
+    "generated_at_utc": "2026-09-25T12:15:23.115508+00:00",
+    "as_of": "2026-09-25",
     "absent_stores": []
   }
 }

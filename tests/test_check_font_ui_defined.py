@@ -124,6 +124,23 @@ def test_descendant_body_selector_detected():
     assert uses_body_font_ui(css)
 
 
+def test_var_font_ui_outside_body_font_declaration_is_not_flagged():
+    css = (
+        "<style>.swatch{color:var(--font-ui)} "
+        "body{font-family:Arial,sans-serif}</style>"
+    )
+    assert not uses_body_font_ui(css)
+
+
+def test_nested_supports_body_rule_detected():
+    css = (
+        "<style>@supports (font-variation-settings:normal){"
+        "@media (max-width:700px){body{font-family:var(--font-ui)}}"
+        "}</style>"
+    )
+    assert uses_body_font_ui(css)
+
+
 def test_brand_word_rule_is_not_body_level():
     # The shared _vector_polish brand-word rule must NOT put a host in scope.
     css = (

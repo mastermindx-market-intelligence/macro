@@ -303,6 +303,421 @@ def test_scope_glob_separator_semantics() -> None:
     assert match("**/conftest.py", "conftest.py")
 
 
+
+def _manifest_job(run: str, *, gate: str = "code") -> dict:
+    return {
+        "if": PACK.DISABLED_IF,
+        "gate": gate,
+        "runs-on": "ubuntu-latest",
+        "steps": [{"name": "contract", "run": run}],
+    }
+
+
+def test_manifest_job_local_delta_is_bounded_to_changed_job() -> None:
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+    candidate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -x"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, candidate
+    ) == ("owner",)
+
+
+def test_manifest_multiple_job_local_deltas_are_all_forced() -> None:
+    base = {
+        "jobs": {
+            "first": _manifest_job(
+                "python -m pytest tests/test_first.py -q"
+            ),
+            "second": _manifest_job(
+                "python -m pytest tests/test_second.py -q"
+            ),
+            "third": _manifest_job(
+                "python -m pytest tests/test_third.py -q"
+            ),
+        }
+    }
+    candidate = {
+        "jobs": {
+            "first": _manifest_job(
+                "python -m pytest tests/test_first.py tests/test_new.py -q"
+            ),
+            "second": _manifest_job(
+                "python -m pytest tests/test_second.py -x"
+            ),
+            "third": _manifest_job(
+                "python -m pytest tests/test_third.py -q"
+            ),
+        }
+    }
+
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, candidate
+    ) == ("first", "second")
+
+
+def test_manifest_semantic_noop_is_positive_bounded_evidence() -> None:
+    document = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    assert PACK._classify_bounded_manifest_job_delta(
+        document, document
+    ) == ()
+
+
+def test_manifest_job_delta_rejects_topology_gate_and_top_level_changes() -> None:
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    changed_gate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q",
+                gate="data",
+            ),
+        }
+    }
+    added_job = {
+        "jobs": {
+            **base["jobs"],
+            "new-owner": _manifest_job(
+                "python -m pytest tests/test_new.py -q"
+            ),
+        }
+    }
+    deleted_job = {"jobs": {}}
+    extra_top_level = {**base, "defaults": {"timeout": 10}}
+
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, changed_gate
+    ) is None
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, added_job
+    ) == ("new-owner",)
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, deleted_job
+    ) is None
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, extra_top_level
+    ) is None
+
+
+def test_safe_manifest_job_delta_uses_canonical_trusted_repo_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = tmp_path / "candidate"
+    manifest = repo / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(base, sort_keys=False))
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "ci@example.invalid"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "CI Test"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "base"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+    )
+    base_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    candidate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(candidate, sort_keys=False))
+
+    monkeypatch.setattr(AUDIT, "ROOT", repo)
+
+    assert PACK._safe_manifest_changed_job_ids(
+        manifest,
+        base_sha,
+    ) == ("owner",)
+
+
+def test_copied_trusted_control_plans_manifest_delta_against_candidate_root(
+    tmp_path: Path,
+) -> None:
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    manifest = candidate / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    tests_dir = candidate / "tests"
+    tests_dir.mkdir()
+    (tests_dir / "test_existing.py").write_text(
+        "def test_existing():\n    assert True\n",
+        encoding="utf-8",
+    )
+    (tests_dir / "test_other.py").write_text(
+        "def test_other():\n    assert True\n",
+        encoding="utf-8",
+    )
+    base_document = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(base_document, sort_keys=False))
+    subprocess.run(["git", "init"], cwd=candidate, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "ci@example.invalid"],
+        cwd=candidate,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "CI Test"],
+        cwd=candidate,
+        check=True,
+    )
+    subprocess.run(["git", "add", "."], cwd=candidate, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "base"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+    )
+    base_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    candidate_document = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(candidate_document, sort_keys=False))
+    (tests_dir / "test_new.py").write_text(
+        "def test_new():\n    assert True\n",
+        encoding="utf-8",
+    )
+    subprocess.run(["git", "add", "."], cwd=candidate, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "candidate"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+    )
+    head_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    control = tmp_path / "trusted-ci-control"
+    control_scripts = control / "scripts"
+    control_scripts.mkdir(parents=True)
+    for filename in (
+        "__init__.py",
+        "run_ci_pack.py",
+        "ci_semantic_proof.py",
+        "ci_authority_paths.py",
+        "ci_scope_dependencies.py",
+        "audit_unrun_tests.py",
+        "workflow_run_source.py",
+    ):
+        (control_scripts / filename).write_bytes(
+            (ROOT / "scripts" / filename).read_bytes()
+        )
+
+    plan_path = tmp_path / "plan.json"
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = str(control)
+    environment["MASTERMIND_TRUSTED_CI_REPO_ROOT"] = str(candidate)
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(control_scripts / "run_ci_pack.py"),
+            "--workflow",
+            ".github/ci/legacy-jobs.yml",
+            "--gate",
+            "code",
+            "--pack-count",
+            "12",
+            "--changed-from",
+            base_sha,
+            "--scope-mode",
+            "active",
+            "--plan-only",
+            "--emit-plan-json",
+            str(plan_path),
+            "--workflow-run-id",
+            "trusted-root-regression",
+            "--workflow-name",
+            "ci",
+            "--event",
+            "pull_request",
+            "--role",
+            "pr_head",
+            "--tested-tree-sha",
+            head_sha,
+            "--subject-head-sha",
+            head_sha,
+            "--base-sha",
+            base_sha,
+        ],
+        cwd=candidate,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert "bounded manifest job delta" in plan["reason"], plan
+    assert "full suite" not in plan["reason"], plan
+    assert plan["eligible_jobs"] == ["owner"], plan
+    assert plan["nonempty_pack_indices"] == [0], plan
+
+
+def test_manifest_job_reorder_or_rename_still_fails_closed() -> None:
+    base = {
+        "jobs": {
+            "first": _manifest_job("python -m pytest tests/test_first.py -q"),
+            "second": _manifest_job("python -m pytest tests/test_second.py -q"),
+        }
+    }
+    reordered = {
+        "jobs": {
+            "second": base["jobs"]["second"],
+            "first": base["jobs"]["first"],
+        }
+    }
+    renamed = {
+        "jobs": {
+            "first": base["jobs"]["first"],
+            "second-renamed": base["jobs"]["second"],
+        }
+    }
+
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, reordered
+    ) is None
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, renamed
+    ) is None
+
+
+def test_safe_manifest_job_delta_reads_the_exact_base_commit(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    manifest = repo / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(base, sort_keys=False))
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "ci@example.invalid"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "CI Test"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(["git", "commit", "-m", "base"], cwd=repo, check=True, capture_output=True)
+    base_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    candidate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -x"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(candidate, sort_keys=False))
+
+    assert PACK._safe_manifest_changed_job_ids(
+        manifest,
+        base_sha,
+        repo_root=repo,
+    ) == ("owner",)
+    assert PACK._safe_manifest_changed_job_ids(
+        manifest,
+        "not-an-exact-sha",
+        repo_root=repo,
+    ) is None
+
+
 def test_selection_fails_safe_toward_running_everything() -> None:
     """Unknown changed-sets and global invalidators still widen; unowned paths do not.
 
@@ -1096,7 +1511,10 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     move them, ``validated-claims-contract`` runs the checker's suites when the
     checker, the allowlist or a suite changes, and ``validated-claims`` keeps the
     FULL scan on the data gate — the rendered site and the registries move with
-    nightly commits, so they must never red somebody else's PR.
+    nightly commits, so they must never red somebody else's PR. scripts/ joins the
+    PR-authored roots at its top-level page builders only (``build_*``/``render_*``),
+    the same cut the checker walks, so a checker or a research script never selects
+    the source job.
     """
     manifest = _yaml(MANIFEST)
     checker = "scripts/check_validated_claims.py"
@@ -1106,7 +1524,8 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     source_runs = [str(step.get("run") or "") for step in source_job["steps"]]
     assert source_job["gate"] == "code"
     assert source_job["scope"] == "exclusive"
-    assert {"templates/**", "engine/**", "lib/**", checker, allowlist} <= set(source_job["paths"])
+    assert {"templates/**", "engine/**", "lib/**", "scripts/build_*.py", "scripts/render_*.py",
+            checker, allowlist} <= set(source_job["paths"])
     assert f"python3 {checker} --scope source" in source_runs
     assert f"python3 {checker} --selftest" in source_runs
 
@@ -1129,6 +1548,8 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
         (["templates/dashboard.html.j2"], {"validated-claims-source"}),
         (["engine/flow_signing.py"], {"validated-claims-source"}),
         (["lib/pages.py"], {"validated-claims-source"}),
+        (["scripts/build_spvector.py"], {"validated-claims-source"}),
+        (["scripts/render_china_fast.py"], {"validated-claims-source"}),
         ([checker], {"validated-claims-source", "validated-claims-contract"}),
         ([allowlist], {"validated-claims-source", "validated-claims-contract"}),
         (["tests/test_validated_claims_source_scope.py"], {"validated-claims-contract"}),
@@ -1136,6 +1557,11 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
         selected, reason = PACK.select_jobs(code_jobs, changed)
         assert owners <= {job.job_id for job in selected}, (changed, reason)
         assert "unowned path" not in reason, reason
+    for changed in (["scripts/check_design_system.py"], ["scripts/capture_page_evidence.py"],
+                    ["scripts/research/build_delivery_waterfall.py"]):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert "validated-claims-source" not in {job.job_id for job in selected}, (
+            changed, reason)
 
 
 def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
@@ -2418,6 +2844,36 @@ def test_unknown_top_level_path_does_not_widen_the_plan_to_the_full_suite(
     assert plan.eligible_job_ids == ("always-on",)
     assert "did not widen" in plan.reason
     assert plan.has_work is True
+
+
+
+def test_proven_manifest_job_delta_forces_changed_job_without_full_suite(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _freeze_scope_inference(monkeypatch)
+    jobs = [
+        _plan_job("engine-owner", 0, paths=("engine/**",)),
+        _plan_job("manifest-owner", 1, paths=("site/**",)),
+        _plan_job("elsewhere", 2, paths=("docs/**",)),
+        _plan_job("always-on", 3, paths=()),
+    ]
+    plan = PACK.build_plan(
+        jobs,
+        [PACK.LEGACY_MANIFEST_PATH, "engine/market_state.py"],
+        changed_from="a" * 40,
+        scope_mode="active",
+        pack_count=12,
+        manifest_changed_job_ids=("manifest-owner",),
+    )
+
+    assert set(plan.eligible_job_ids) == {
+        "engine-owner",
+        "manifest-owner",
+        "always-on",
+    }
+    assert "full suite" not in plan.reason
+    assert "bounded manifest job delta" in plan.reason
+    assert plan.scope_summary == "fixture scopes"
 
 
 def test_global_invalidator_widens_the_plan_without_inferring_scopes(
@@ -4447,12 +4903,66 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     honest instead of leaving it red-on-arrival. WEIGHT and PACK ceilings
     stay unmoved (5,800 / 5,600 / 5,600 and 10 packs; measured 5,792 /
     5,538 / 5,526, packs 10 / 10 / 10).
+
+    2026-09-25 (BC-2 merge gate: #7998, then the page-builder root).
+    ``validated-claims-source`` (w2, ``gate: code``, ``scope: exclusive``)
+    grades the display copy of the PR-authored roots, so it rides the PRs
+    that ARE its subject, on the DECLARED tier: templates/** and engine/**
+    since #7998 (templates/index.html and plan_book.py, +1 job / +2 weight
+    each — already on main, which had left both probes AT their bounds),
+    and the top-level page builders scripts/build_*.py /
+    scripts/render_*.py since this change (build_free_content.py, +1 / +2;
+    nothing else under scripts/ selects it). That is the wave-7
+    "ratcheting the ceiling is the correct-risk response, not curation"
+    case. Main's other drift since #7971 is no manifest entrant:
+    biocatalyst-contracts grew 50 -> 52 weight on all three probes, and
+    #7971's own manifest re-measured on today's tree already selects
+    130 jobs / 5,577 weight for build_free_content.py (+1 / +39 against its
+    129 / 5,538) — an inferred scope widened as the tree moved (the
+    selection code did not change), which left that probe AT its bound too.
+    Re-measured, full manifest, inference on, before #8010:
+
+        templates/index.html          133 jobs, 5,796 weight
+        scripts/build_free_content.py 130 -> 131 jobs, 5,579 -> 5,581 weight
+        engine/prophet/plan_book.py   126 jobs, 5,530 weight
+
+    JOB ceilings re-based to measurement + 1 (134 / 132 / 127). WEIGHT and
+    PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs) — the
+    builder root adds 2 weight-seconds to one probe and none to the other
+    two.
+
+    #8010 then landed ``finance-intelligence-site-wiring`` (w4, ``gate:
+    code``, no declared scope). Its one suite reads scripts/build_site.py
+    as text, and inference follows that file's import closure: 560 owned
+    paths, none of them a probe, plus a whole-tree fallback smear
+    (admin/**, app/**, collectors/**, config/**, ...). It rides all three
+    probes on that FALLBACK tier only, +1 job / +4 weight each. On its own,
+    that put main one job over all three ceilings as they stood (133 / 130
+    / 126). Nothing in the merge gate runs this file, so the breach showed
+    only in the data lane. Re-measured on main 7c22f6c5b79 with this change:
+
+        templates/index.html          134 jobs, 5,800 weight
+        scripts/build_free_content.py 132 jobs, 5,585 weight
+        engine/prophet/plan_book.py   127 jobs, 5,534 weight
+
+    The ceilings above are NOT raised for it. They are this change's
+    measurement + 1, and the #8010 entrant fills that headroom exactly. All
+    three probes now sit AT their job bound, and templates/index.html sits
+    AT its 5,800 weight bound. Said explicitly: no headroom is left, so the
+    next entrant on any of the three needs a decision recorded here, not a
+    reflexive bump. The rule this file already follows: curate a
+    fallback-tier smear away (a declared ``scope: exclusive`` for the job
+    that caused it); ratchet a job that enters on its own declared subject
+    (wave 7). By that rule finance-intelligence-site-wiring's own smear is
+    a curation candidate, left to its owner. An exclusive declaration for it
+    would have to cover that closure (#8010's manifest comment: 538
+    uncovered paths), which is why it has none.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 133, 5_800),
-        ("scripts/build_free_content.py", 130, 5_600),
-        ("engine/prophet/plan_book.py", 126, 5_600),
+        ("templates/index.html", 134, 5_800),
+        ("scripts/build_free_content.py", 132, 5_600),
+        ("engine/prophet/plan_book.py", 127, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
         weight = sum(job.weight for job in selected)
