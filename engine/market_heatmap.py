@@ -215,7 +215,7 @@ PAGE_META: dict[str, dict] = {
     "china": {
         "icon": "🔥", "key": "china", "json": "marketdata/china_heatmap.json",
         "title": "China A-share Heatmap",
-        "seo_title": "China A-Share Heatmaps — Sectors & Themes — MastermindX",
+        "seo_title": "China A-Share Heatmaps — Sectors + Themes — MastermindX",
         "seo_desc": ("China A-share sector and THS theme heatmaps — switch between the "
                      "stock market-cap treemap and concept-board leadership across "
                      "multiple timeframes after each close."),
