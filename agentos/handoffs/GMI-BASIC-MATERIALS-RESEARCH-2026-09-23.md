@@ -5,7 +5,7 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R18_EXISTING_CONTRACT_QUALIFIED_CORE_SEQUENCE_REFINED
+research_stage: R19_T4_CORE_LOCAL_TDD_STARTED_ACTION_BLOCKED
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
@@ -77,3 +77,49 @@ MISSION_COMPLETE: false
 Boundary: completed exact-schema compatibility qualification and scoped implementation-order decision after reconciling a non-started review attempt. The current review launch is action-blocked; the native research process is closed; the next material unit crosses into actual implementation assignment or accepted shared-interface review. Preserve the mission and authority rather than calling planning a product release. Resume from this checkpoint/current packet, not R1–R18 raw history. Next-mode recommendation: Extra High for iterative implementation/terminal work after assignment, Pro only when substantial integration judgment warrants it; text does not switch modes and no mode overrides an action denial.
 
 EFFECT_UNKNOWN: none observed. Only this research carrier and existing packet/checkpoint changed. No shared/product code, native facts/identity/rights, ranking/entry/size/trade, publisher, running worker or autonomous wake. Read back this final checkpoint and reconcile #7796 projection before finalizing.
+
+
+## R19 — T4 pure-core implementation began under current live Chairman continuation
+
+The Chairman continued this exact mission with Extra High enabled after R18. That current live directive supplied present intent for the already-frozen bounded T4 core; it does not grant rights/source/publication authority or transfer the shared GMI writer. Product code remains separate from research carrier #7796.
+
+### Workspace/source reconciliation
+
+- M2 designated `/Users/chriswong/Documents/Cluade/macro-main` was dirty and `git fetch origin && git merge --ff-only origin/main` failed because the local main diverged. Per repository law it was not rebased/reset/forced or used for product edits.
+- M1 primary `macro-main` was also unsuitable. The established clean lane clone `/Users/chriswong/lanes/repos/macro` fetched `origin/main` successfully.
+- Fresh worktree: `/Users/chriswong/lanes/wt/basic-materials-core-v0`.
+- Local implementation branch: `claude/basic-materials-core-v0`.
+- Exact base: `22094843f4042db6d9d77ad8847bcdbf9a27faa9` (`origin/main` at worktree creation).
+- Branch is LOCAL ONLY / NOT PUSHED / no product PR exists yet. No merge, CI, release, deployment or browser proof.
+- Protected procedure for this unit: Mastermind `a29161fa0a44cca9927afe042b5f7ea25aae1736`, Skillpack 1.0.1/bootstrap1; same-pin ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT loaded. Current Macro AGENTS/CLAUDE and GMI workstream were read at the implementation base.
+
+### TDD effects actually observed
+
+TDD uses `$HOME/lanes/venv/bin/python` (Python3.12). M1 `/usr/bin/python3` is Python3.9.6 and fails while loading the repository conftest on modern `list[str] | None` syntax; this is an interpreter-selection issue, not a product defect.
+
+1. RED: first test failed because `compare_measures` was absent.
+2. GREEN: implemented an in-memory exact-decimal `same_period_spread` calculation. Test passed.
+3. RED: unit-economics composition failed because `compose_materials_economics` was absent. A temporary test-import coupling also masked the already-green first function; the test harness was corrected, then the intended single RED was reproduced.
+4. GREEN: implemented the synthetic unit-economics composition. It calculates current/prior unit margin plus price/cost/margin changes and emits a deterministic `price_up_margin_down` explanation with an explicit no-whole-company-profitability limitation. Two tests then passed.
+5. RED: added cash-reconciliation behavior. Current exact run is **2 passed / 1 failed**; failure is `ValueError: unsupported analysis_kind` for `cash_reconciliation`, as intended before implementation.
+6. Attempted minimal cash-reconciliation production patch was **blocked by OpenAI safety checks before dispatch**. No tool process or patch effect began. It was not retried, rephrased, switched to another tool/provider/host, or pushed through GitHub.
+
+Current local-only files:
+- `engine/market_ontology/materials_economics.py` — 292 lines, SHA256 `97894a46a91b583be942214e48372791a86302c344db368755e34860af23b5c8`.
+- `tests/test_market_ontology_materials_economics.py` — 168 lines, SHA256 `8967aaf2f816e6e0f06c32bbe5e97d2fde3ee9bbf259676390132f07c5f41652`.
+- Both are untracked. `git diff --check` returned 0, but ordinary `git diff` excludes them; no empty diff hash is accepted as their content identity.
+
+Fresh verification immediately before this checkpoint:
+`$HOME/lanes/venv/bin/python -m pytest tests/test_market_ontology_materials_economics.py -q` -> **2 passed / 1 failed**, with the one expected cash-reconciliation RED. This is deliberately not a green-suite or completion claim.
+
+### Effect and continuation boundary
+
+Blocked patch call: `TOOL_DEGRADED / EFFECT_NONE` for that exact cash-production write. It is not `EFFECT_UNKNOWN`. The denial is not retry permission. Do not route the same patch through GitHub, another device/tool/provider, or a differently worded call merely to bypass it.
+
+The existing local worktree contains known partial product work; it has not been committed or pushed because the current TDD state is deliberately red. Do not interpret the local branch name as a GitHub carrier or accepted implementation child.
+
+Independent safe lanes remain research/read-only reconciliation and durable continuity. Once the platform permits the blocked write class in a later turn/session, resume at the existing RED: implement only cash reconciliation, run it green, then continue commercial-progression and contractual-participation cases before schema/identity-link work. Re-read current main and target-path collisions before any eventual commit/push; do not rebuild the existing unit-economics code from scratch unless its exact local files are lost or source materially invalidates them.
+
+R1–R18 research, all44 requirements, eight tasks, five originals/four company journeys and V0–V4 ambition remain intact. Shared/private/native T7/T8 gates remain open. No source admission, identity/rights change, ranking, entry, sizing, trade, publication, worker or autonomous wake occurred.
+
+EFFECT_UNKNOWN: none.
