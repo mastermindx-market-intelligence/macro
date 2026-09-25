@@ -971,7 +971,13 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
         "offset": offsets,
         "next_evidence": next_evidence,
     }
-    if not selection.assertions:
+    # This block is entirely CURRENT applicability: every field above is
+    # built from ``current_revisions``/``current``. RBV-18 keeps a held,
+    # rejected or review-expired assertion as retained EVIDENCE — that claim
+    # belongs to ``authorized_coverage``, which reports it — but summary makes
+    # no retention claim, so its status must describe the content beside it.
+    # Keying it off ``assertions`` served "ready" over uniformly empty lists.
+    if not selection.current:
         summary.update({"status": "unavailable",
                         "reason": "no_selected_assertions"})
     elif stale_blocks:
