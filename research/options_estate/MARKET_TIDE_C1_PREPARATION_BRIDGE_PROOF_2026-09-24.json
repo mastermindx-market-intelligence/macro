@@ -2,7 +2,7 @@
   "operation": "market-tide-research-20260924-sol-001",
   "carrier": "macro#7929",
   "procedure_pin": "Mastermind@a29161fa0a44cca9927afe042b5f7ea25aae1736",
-  "tested_code_head": "01a44ec96408749017ca97349f21512b78a42980",
+  "tested_code_head": "2687deb19598d6a90d996d346fc2d6b52ce45863",
   "mission_complete": false,
   "market_observations_used": 0,
   "capability_delta": "Added a fail-closed supplied-source preparation bridge that transforms explicit dual-basis price windows plus complete event-window evidence into the unchanged C1-M1 prepared-row contract without granting source admission, publication, promotion, or trade authority.",
@@ -15,27 +15,35 @@
     "focused_green": "13 tests passed, 0 failures/errors",
     "full_green_process": 24453,
     "full_green": "87 C1 tests passed, 0 failures/errors",
-    "cleanliness": "git diff --check clean; git status --short empty; exact HEAD 01a44ec96408749017ca97349f21512b78a42980"
+    "cleanliness": "git diff --check clean; git status --short empty; exact HEAD 01a44ec96408749017ca97349f21512b78a42980",
+    "identity_rights_red_commit": "bbf3c3907d12c1141e426211a9775ab2aef89039",
+    "identity_rights_red_process": 27429,
+    "identity_rights_red_result": "15 bridge tests: 2 errors / 13 passing; source_evidence dropped session/venue identity and price/event rights references",
+    "identity_rights_repair_commit": "2687deb19598d6a90d996d346fc2d6b52ce45863",
+    "final_bridge_green_process": 27458,
+    "final_bridge_green": "15 bridge tests passed, 0 failures/errors",
+    "final_full_green": "89 C1 tests passed, 0 failures/errors; git diff --check clean; git status --short empty"
   },
   "bridge_contract": {
     "feature_window": "exact 64 supplied sessions t-63..t with close_sadj + close_tradj; each row availability >= its supplied close and <= decision; feature adjustment vintage between origin close and decision",
     "outcome_window": "exact 6 total-return sessions t..t+5 using a separately supplied outcome vintage; label availability is max(row availability, outcome adjustment vintage)",
     "measurement": "v20 from pre-decision feature-vintage total-return returns; trend63/momentum5 from feature-vintage split-adjusted closes; Y5 from the separate outcome-vintage total-return path normalized by pre-decision v20",
     "events": "exact CPI/NFP/FOMC 0/1 flags, event times after decision and no later than next supplied cash close, owner-supplied complete_for_window status, and explicit negative-coverage refs for every zero flag",
-    "authority": "all output remains source_qualification=not_assessed_by_preparation_bridge, primary_cohort_admitted=false, can_publish_forecast=false, may_trade=false"
+    "authority": "all output remains source_qualification=not_assessed_by_preparation_bridge, primary_cohort_admitted=false, can_publish_forecast=false, may_trade=false",
+    "identity_and_rights": "feature/label price identities require regular cash-session scope plus primary|consolidated venue scope and are preserved; price and event rights references are mandatory provenance pointers. These are supplied claims, not authentication."
   },
   "source_files": [
     {
       "path": "research/options_estate/market_tide_c1_prepare.py",
-      "bytes": 10732,
-      "sha256": "1d7e9a31d28b992c6dcd214a9ac359cf12a88dd654e6877313839f04cc690053",
-      "git_blob": "b2483f7fbe63b922277b572b6d44f87aff1a02e7"
+      "bytes": null,
+      "sha256": null,
+      "git_blob": "b83f64d023d004c852ba709eb4616828b6e13258"
     },
     {
       "path": "tests/test_market_tide_c1_prepare.py",
-      "bytes": 10176,
-      "sha256": "8906ab9a4647b4595201aebb217b3ef3928ef6192cdae4abb04458efcdc3c0c0",
-      "git_blob": "116906cdcf3f570c6561ac119f9d613d517fa5b6"
+      "bytes": null,
+      "sha256": null,
+      "git_blob": "1ad91c79963e8c410b11b04020c6aac33b9488fa"
     },
     {
       "path": "research/options_estate/market_tide_c1.py",
@@ -70,5 +78,13 @@
     "shared_ci_enrollment_completed": false,
     "production_or_trade_effect": false
   },
-  "next_action": "Adversarially review the preparation bridge and then consume owner-returned event/price evidence when available; shared-CI enrollment and independent review remain separate release gates. Real C1-M1 evaluation remains held until source/coverage eligibility is proven."
+  "next_action": "Obtain admitted independent review and current CI-custody/enrollment evidence; consume genuine price/event owner returns. Do not retry the blocked multi-year stress process or lower source-admission gates.",
+  "blocked_stress_probe": {
+    "action": "single-process full multi-year synthetic bridge->core stress run",
+    "disposition": "TOOL_DEGRADED / EFFECT_NONE",
+    "reason": "Remote process call was explicitly blocked before dispatch because safety status could not be determined",
+    "retry": false,
+    "failover": false,
+    "interpretation": "No process or data effect occurred. The denial does not invalidate the focused bridge/full-suite evidence and is not permission to reroute the same stress action."
+  }
 }
