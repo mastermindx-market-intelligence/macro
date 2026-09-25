@@ -1,3 +1,5 @@
+[Reading 84 lines from start (total: 84 lines, 0 remaining)]
+
 {#- US plan records: one immutable setup episode per row, not current recommendations.
    Both the public shell and entitled remainder render this same partial. The
    candidate population, historical order, plan ids and input objects are untouched.
@@ -42,6 +44,9 @@
    canonical plans[] row; no new fetch, identity join, management owner, or
    user-position state is introduced. The disclosure is collapsed by default. -#}
 {%- set _rd_targets = p.get('targets') if p.get('targets') is sequence and p.get('targets') is not string else [] -%}
+{#- Outcome history intentionally stays unavailable until the existing private
+    effective-ledger producer (#7399) is accepted and wired by its consumer.
+    This is presentation state only; it creates no history computation/store. -#}
 {{ pv.pv_card({
   'record_only': true,
   'href': 'stock.html#' ~ p.asset, 'tk': p.asset|e, 'mkt': 'us', 'id': p.id,
@@ -74,9 +79,6 @@
     'invalidation': p.get('invalidation'),
     't1': (_rd_targets[0] if _rd_targets|length > 0 else none),
     't2': (_rd_targets[1] if _rd_targets|length > 1 else none),
-    # Outcome history intentionally stays unavailable until the existing private
-    # effective-ledger producer (#7399) is accepted and wired by its consumer.
-    # This is presentation state only; it creates no history computation/store.
     'history_available': false,
     'management_available': p.get('management_status') == 'available' and not p.get('management_error')
   }
