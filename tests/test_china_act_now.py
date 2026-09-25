@@ -1452,3 +1452,103 @@ def test_current_defensive_dual_read_is_preserved():
     row, = _continuation_board(ti, cycles=cycles)['display_lanes']['reduce_avoid']
     assert row['dual_read'] is True and row['reco'] == 'avoid'
     assert 'may be bottoming' in render(_continuation_board(ti, cycles=cycles)).lower()
+
+
+# EMERGING/ENTER is a theme-level continuation decision, not stock admission.
+def _emerging_enter_fixture(session="2026-09-21", clean=False, final="enter"):
+    td = {
+        "id": "cn_emerging", "name": "Emerging leader", "name_zh": "新兴领涨主题",
+        "score": 68, "label": "emerging", "reco": final,
+        "reco_en": final.upper(), "reco_zh": "建仓" if final == "enter" else "持有",
+        "regime_demoted": False, "chase_demoted": False, "ext_abs": None,
+        "textures": {"clean_entry": {"flag": clean}}, "n_members": 10,
+        "observation": {"effective_as_of": session, "aggregate_eligible": True},
+    }
+    item = {
+        "id": td["id"], "name": td["name"], "name_zh": td["name_zh"],
+        "score": 68, "action": "enter", "action_en": "ENTER", "action_zh": "建仓",
+    }
+    return {"as_of": session, "themes": [td], "act_now": {
+        "buy": [item] if clean else [],
+        "add_on_pullback": [] if clean else [item],
+        "reduce": [], "conflicted": [],
+    }}
+
+
+def _emerging_enter_board(ti=None, clock="2026-09-21T10:00:00+00:00"):
+    from datetime import datetime
+    return assemble_act_now(
+        [], ti or _emerging_enter_fixture(), None,
+        observed_at=datetime.fromisoformat(clock),
+    )
+
+
+def test_emerging_enter_remains_theme_buy_now_after_clean_entry_closes():
+    board = _emerging_enter_board()
+    row, = board["display_lanes"]["buy_now"]
+    assert row["entry_route"] == "theme_enter"
+    assert row["reco"] == "enter"
+    assert row["theme_decision"]["stock_entry_permission"] is False
+    assert board["display_lanes"]["wait_pullback"] == []
+
+
+def test_emerging_enter_preserves_raw_wait_lane_and_source_evidence():
+    board = _emerging_enter_board()
+    assert board["lanes"]["buy_now"] == []
+    assert len(board["lanes"]["wait_pullback"]) == 1
+    row, = board["display_lanes"]["buy_now"]
+    assert row["observed_lanes"] == ["wait_pullback"]
+    assert row["source_reads"][0]["row"] == board["lanes"]["wait_pullback"][0]
+
+
+def test_emerging_enter_does_not_invent_an_extension_gate():
+    for extension in (None, float("nan")):
+        ti = _emerging_enter_fixture()
+        ti["themes"][0]["ext_abs"] = extension
+        row, = _emerging_enter_board(ti)["display_lanes"]["buy_now"]
+        assert row["entry_route"] == "theme_enter"
+
+
+@pytest.mark.parametrize("final,lane", [
+    ("hold", "wait_pullback"), ("trim", "reduce_avoid"), ("avoid", "reduce_avoid"),
+])
+def test_emerging_enter_never_overrides_final_defensive_recommendation(final, lane):
+    ti = _emerging_enter_fixture(final=final)
+    item = ti["act_now"]["add_on_pullback"][0]
+    if final in ("trim", "avoid"):
+        item.update(action=final, action_en=final.upper())
+        ti["act_now"]["add_on_pullback"] = []
+        ti["act_now"]["reduce"] = [item]
+    board = _emerging_enter_board(ti)
+    assert board["display_lanes"]["buy_now"] == []
+    out, = board["display_lanes"][lane]
+    assert out["reco"] == final
+
+
+def test_emerging_enter_never_overrides_source_conflict():
+    ti = _emerging_enter_fixture()
+    conflict = deepcopy(ti["act_now"]["add_on_pullback"][0])
+    conflict.update(action="avoid", action_en="AVOID", action_zh="回避")
+    ti["act_now"]["conflicted"] = [conflict]
+    board = _emerging_enter_board(ti)
+    assert board["display_lanes"]["buy_now"] == []
+    assert board["display_lanes"]["wait_pullback"][0]["reco"] == "hold"
+
+
+@pytest.mark.parametrize("session", [None, "bad", "2026-09-18", "2026-09-22", "2026-09-20"])
+def test_emerging_enter_missing_stale_future_or_non_session_fails_closed(session):
+    assert _emerging_enter_board(_emerging_enter_fixture(session))["display_lanes"]["buy_now"] == []
+
+
+def test_existing_clean_entry_enter_keeps_clean_entry_route():
+    row, = _emerging_enter_board(_emerging_enter_fixture(clean=True))["display_lanes"]["buy_now"]
+    assert row["entry_route"] == "clean_entry"
+
+
+def test_emerging_enter_render_names_theme_scope_not_stock_permission():
+    html = render(_emerging_enter_board())
+    assert 'data-entry-route="theme_enter"' in html
+    assert 'Theme entry remains open' in html
+    assert 'Theme-level entry' in html
+    assert 'Individual stock timing is separate; no stock entry is implied.' in html
+    assert 'A clean entry is open today.' not in html
