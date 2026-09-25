@@ -54,6 +54,9 @@
   var TR_EXPECTATION_KEYS = [
     'management', 'external_consensus', 'house_forecast', 'market_incorporation'
   ];
+  /* The frozen identity of the management sequence assessment — the block
+   * carrying the only paid figures this client renders. */
+  var TR_MANAGEMENT_SCHEMA = 'management_sequence_assessment.v1';
   var TR_AUTHORITY_KEYS = [
     'can_rank', 'can_gate', 'can_size', 'can_originate', 'can_open_entry'
   ];
@@ -239,7 +242,10 @@
       if (!Object.prototype.hasOwnProperty.call(authority, TR_AUTHORITY_KEYS[a])) return false;
       if (authority[TR_AUTHORITY_KEYS[a]] !== false) return false;
     }
-    return true;
+    /* The contract closes this object (`additionalProperties: false`): an
+     * UNKNOWN flag is an authority claim this client cannot evaluate, so it
+     * is refused rather than ignored. */
+    return _sameKeySet(authority, TR_AUTHORITY_KEYS);
   }
 
   function validateEnvelope(payload) {
@@ -307,6 +313,12 @@
      * top level. */
     if (econ.management && !_authorityAllFalse(econ.management.authority)) {
       return { ok: false, reason: 'economics.management.authority must carry every flag false' };
+    }
+    /* The management block's own frozen identity. It carries the only paid
+     * figures on the page, so a reshaped block under a new definition must
+     * not be rendered by a client written for this one. */
+    if (econ.management && econ.management.schema !== TR_MANAGEMENT_SCHEMA) {
+      return { ok: false, reason: 'economics.management.schema is not the accepted assessment' };
     }
     var expectations = payload.expectations;
     if (!expectations || typeof expectations !== 'object' || Array.isArray(expectations)) {
@@ -427,13 +439,16 @@
   };
   var TR_UNMAPPED = ['Unmapped label', '未映射标签'];
 
+  /* The economics lookup is the SAME lookup as `pair` — it only adds the
+   * "absent field renders as nothing" case. It used to be a second, laxer
+   * implementation, and a laxer copy is how a label defect hides from a
+   * control that only walks the strict one: the review of 92ff7243f5e
+   * reproduced the old `!Array.isArray` bug in this function alone and
+   * `labelMapsSelfTest()` still came back clean while every served figure
+   * read "Unmapped label". One implementation, walked through both names. */
   function _bi(map, key) {
-    if (typeof key === 'string' && Object.prototype.hasOwnProperty.call(map, key)) {
-      var e = map[key];
-      if (e && typeof e[0] === 'string' && typeof e[1] === 'string') return [e[0], e[1]];
-    }
     if (key === null || key === undefined) return ['', ''];
-    return TR_UNMAPPED;
+    return pair(map, key);
   }
   function _same(text) { return [text, text]; }
   function _joinBi(parts, sep) {
@@ -605,7 +620,8 @@
    * both languages. The entry shape is the two-string tuple every map above
    * uses — anything else is refused. */
   function pair(map, key) {
-    if (Object.prototype.hasOwnProperty.call(map, key)) {
+    if (map && typeof map === 'object' &&
+        Object.prototype.hasOwnProperty.call(map, key)) {
       var e = map[key];
       if (Array.isArray(e) && e.length === 2 &&
           typeof e[0] === 'string' && typeof e[1] === 'string') {
@@ -616,7 +632,9 @@
   }
 
   /* Positive control for the closed label maps: every key of every map must
-   * resolve through `pair` to its own entry, never to TR_UNMAPPED. Returns
+   * resolve through BOTH lookup names to its own entry and to the SAME pair,
+   * never to TR_UNMAPPED — a laxer second lookup is exactly how the last
+   * label defect would have hidden from this control. Returns
    * the list of (map, key) pairs that fell back — empty is the only passing
    * answer. Pure; the UI never calls it, the node battery does. */
   function labelMapsSelfTest() {
@@ -636,8 +654,11 @@
       var map = maps[names[i]];
       var keys = Object.keys(map);
       for (var j = 0; j < keys.length; j++) {
-        var got = pair(map, keys[j]);
-        if (got[0] === TR_UNMAPPED[0] && got[1] === TR_UNMAPPED[1]) {
+        var direct = pair(map, keys[j]);
+        var viaBi = _bi(map, keys[j]);
+        if ((direct[0] === TR_UNMAPPED[0] && direct[1] === TR_UNMAPPED[1]) ||
+            (viaBi[0] === TR_UNMAPPED[0] && viaBi[1] === TR_UNMAPPED[1]) ||
+            direct[0] !== viaBi[0] || direct[1] !== viaBi[1]) {
           fell_back.push(names[i] + '.' + keys[j]);
         }
       }
@@ -1420,12 +1441,15 @@
       var value = el('span', 'tr-xvalue');
       var sub = expectations[key];
       var status = sub && typeof sub === 'object' ? sub.status : undefined;
-      if (L.status[status]) {
-        value.appendChild(statusWord(status));
-        value.className = 'tr-xvalue tr-x-' + status;
-      } else {
-        value.textContent = textSafe(status);
-      }
+      /* The file's last bare map read used to live here. `L.status[status]`
+       * is truthy for prototype keys, so `status: "constructor"` wrote
+       * payload text into a class name, and the else-branch rendered a raw
+       * internal slug in one language only — both against this surface's
+       * own laws. Unreachable through validateEnvelope, which is exactly why
+       * it survived: the closed-lookup discipline applies everywhere. */
+      var known = Object.prototype.hasOwnProperty.call(L.status, status);
+      value.className = 'tr-xvalue tr-x-' + (known ? status : 'unknown');
+      value.appendChild(statusWord(status));
       row.appendChild(label);
       row.appendChild(value);
       expectationsBox.appendChild(row);

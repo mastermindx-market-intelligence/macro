@@ -213,6 +213,23 @@ def _bad_payloads() -> list[dict]:
     body = _envelope()
     body["economics"]["management"]["authority"] = None
     bad.append({"name": "management_authority_absent", "payload": body})
+
+    body = _envelope()
+    body["economics"]["management"]["authority"]["can_execute"] = False
+    bad.append({"name": "management_authority_extra_flag", "payload": body})
+
+    body = _envelope()
+    body["authority"]["can_execute"] = False
+    bad.append({"name": "authority_extra_flag", "payload": body})
+
+    # The management block's own frozen identity.
+    body = _envelope()
+    body["economics"]["management"]["schema"] = "management_sequence_assessment.v2"
+    bad.append({"name": "management_schema_not_the_accepted_assessment", "payload": body})
+
+    body = _envelope()
+    del body["economics"]["management"]["schema"]
+    bad.append({"name": "management_schema_missing", "payload": body})
     return bad
 
 
@@ -967,6 +984,16 @@ results.label_real = {
   econ_role: pair(TR_ECON_LABELS.role, 'prior_outlook'),
   errcode: pair(L.errcode, 'invalid_envelope')
 };
+results.bi_matches_pair = {
+  known: _bi(L.status, 'ready'),
+  unknown: _bi(L.status, 'no_such_status'),
+  proto: _bi(L.status, '__proto__'),
+  absent_null: _bi(L.status, null),
+  absent_undefined: _bi(L.status, undefined),
+  null_map: _bi(null, 'ready'),
+  econ_unit: _bi(TR_ECON_LABELS.unit, 'usd_billions')
+};
+results.pair_null_map = pair(null, 'ready');
 results.label_fallback = {
   unknown: pair(L.status, 'no_such_status'),
   proto: pair(L.status, '__proto__'),
@@ -1405,3 +1432,62 @@ def test_expectation_buckets_pinned_to_unavailable_and_nested_authority_refused(
                  "management_authority_absent"):
         assert out["rejects"][name] is True, name
     assert out["validate_ok"] is True and out["accept"] is True
+
+
+@needs_node
+def test_the_economics_lookup_is_the_same_lookup_and_the_control_walks_both(js_text):
+    """The economics maps resolve through `_bi`, not `pair`. While `_bi` was a
+    second, laxer implementation, a defect in it was invisible to the label
+    positive control: the review of the blocker fix reproduced the old
+    `!Array.isArray` bug in `_bi` alone and the self-test still came back
+    clean while every served figure read "Unmapped label". `_bi` now
+    delegates, and the control walks both names and compares them."""
+    contract = _contract(js_text)
+    body = contract[contract.index("function _bi(map, key)"):]
+    body = body[:body.index("\n  }")]
+    assert "return pair(map, key);" in body, "the economics lookup must delegate"
+    assert "Array.isArray" not in body and "hasOwnProperty" not in body, (
+        "a second lookup implementation is what this fix removed"
+    )
+    control = contract[contract.index("function labelMapsSelfTest()"):]
+    assert "_bi(map, keys[j])" in control, "the control must walk the economics lookup too"
+
+    out = _run_review_battery(js_text)
+    bi = out["bi_matches_pair"]
+    assert bi["known"] == ["Ready", "就绪"]
+    assert bi["econ_unit"] == ["US$ bn", "十亿美元"]
+    for name in ("unknown", "proto", "null_map"):
+        assert bi[name] == ["Unmapped label", "未映射标签"], name
+    # An ABSENT field renders as nothing — the one case the economics lookup
+    # adds, and the only difference between the two names.
+    assert bi["absent_null"] == ["", ""] and bi["absent_undefined"] == ["", ""]
+    assert out["pair_null_map"] == ["Unmapped label", "未映射标签"]
+
+
+@needs_node
+def test_management_schema_and_closed_authority_are_refused_when_wrong(js_text):
+    """The management block carries the only paid figures: its frozen schema
+    id is checked, and neither authority block may carry a flag this client
+    cannot evaluate (the contract closes both objects)."""
+    out = _run_battery(js_text)
+    for name in ("management_schema_not_the_accepted_assessment", "management_schema_missing",
+                 "management_authority_extra_flag", "authority_extra_flag"):
+        assert out["rejects"][name] is True, name
+    assert out["validate_ok"] is True and out["accept"] is True
+
+
+def _code_only(js_text: str) -> str:
+    """The file with block and line comments removed, so a scan reads code."""
+    out = re.sub(r"/\*.*?\*/", " ", js_text, flags=re.S)
+    return re.sub(r"(?m)^\s*//.*$", " ", out)
+
+
+def test_no_bare_label_map_read_survives_in_the_render_path(js_text):
+    """Every label lookup goes through the closed helpers. A bare `map[key]`
+    read is truthy for prototype keys (`status: "constructor"` wrote payload
+    text into a class name) and its miss branch rendered a raw internal slug
+    in one language only."""
+    code = _code_only(js_text)
+    for bare in ("L.status[", "L.label[", "L.view[", "L.slice[", "L.expectation[",
+                 "L.errcode[", "TR_ECON_LABELS.role[", "TR_ECON_LABELS.metric["):
+        assert bare not in code, f"bare map read survives: {bare}"
