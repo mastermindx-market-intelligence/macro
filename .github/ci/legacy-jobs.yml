@@ -1245,6 +1245,11 @@ jobs:
     paths:
       # Recommendation and entry regression coverage is a PR code obligation.
       - "site/basketdata/baskets.json"
+      # Cross-component continuation regression binds the accepted China action
+      # card to the exact dated detail witness; both immutable inputs must start
+      # this same PR code owner rather than remain hidden behind a receipt.
+      - "site/chinabasketdata/baskets.json"
+      - "site/basket_china/cn_pharma_cxo.html"
       - "site/basketdata/theme_extension.json"
       - "engine/theme_extension.py"
       - "research/LABEL_FALTERING_PHASE0.md"
