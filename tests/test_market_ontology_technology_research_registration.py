@@ -9,7 +9,10 @@ evidence selector has something real to select from.
 
 The adapter is pinned to the PROPOSED §8 company-first shape
 (CURATION_ASSERTION_V1_1_PROPOSAL_2026-09-24.md @ 382c0b399d5c on macro#7870,
-under Sol adjudication) and to hook 1 as integrated (#7870 @ e2f4d4909156).
+under Sol adjudication) and to hook 1 as inspected at #7870 @ e2f4d4909156 —
+a reading of that head, not a live pin: the foundation head moves faster than any
+citation, and this branch carries no shell at all, so the refusal is
+shared_shell_unavailable regardless of where #7870 now is.
 Nothing here registers anything: the shared shell is absent on this carrier
 base, and test_shared_shell_registration_roundtrip_pinned_to_7870 (strict xfail)
 documents by execution that a company-profile entry (anchor None, empty slice
@@ -1076,7 +1079,8 @@ def test_shell_signature_drift_renamed_parameter_propagates_typeerror(monkeypatc
     strict=True,
     raises=TechnologyRegistrationRefusal,
     reason=(
-        "hook 1 as integrated (#7870 @ e2f4d4909156) refuses the proposed §8 "
+        "hook 1 as inspected at #7870 @ e2f4d4909156 (a reading of that head, not a "
+        "live pin) refuses the proposed §8 "
         "company-profile entry (anchor_theme_id=None, slice_keys=()), and this "
         "carrier base does not carry the shell at all (typed "
         "shared_shell_unavailable; with the shell present, a shell refusal is "
