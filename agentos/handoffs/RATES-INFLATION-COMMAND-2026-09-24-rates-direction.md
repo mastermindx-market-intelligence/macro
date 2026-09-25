@@ -438,3 +438,57 @@ separate candidate only after that source is lawfully live.
 DO_NOT_REDO: RD1 endpoint models, uploaded crossover study, phase/reset study,
 post-shock categorical driver stack and DNS point forecast remain null. Do not tune
 those opened histories or backfill this prospective shadow to meet its floor.
+
+
+## Continuation: direct yield month-end translation passes, but remains context-only
+
+Current protected procedure pin remains Mastermind
+a29161fa0a44cca9927afe042b5f7ea25aae1736, Skillpack1.0.1/bootstrap1.
+Parent carrier remains PR7909 / claude/rates-direction-20260924-sol-001.
+
+The pre-existing d2_rates_calendar_flows V3 month-end extension effect had already
+passed on TLT/IEF and later LQD, but had never been translated directly into the
+rates-direction target. A direct DGS source-translation amendment was frozen before
+opening its outcomes at cfef07d2424a27604698c65eed03df3e0fe8c747,
+2026-09-25T01:33:15.401908Z.
+
+It appended exactly8 configs to the SAME d2_rates_calendar_flows TrialLedger family,
+moving literal width13->21. Frozen modern interval2007-01-01..2026-09-22 admits236
+complete months through2026-08-31. All DGS2/5/10/30 raw and same-month-excess cells
+passed negative-sign, HAC t<=-2, BH q<=.10 and negative split-half gates.
+
+Headline DGS10:
+- raw last-day change -1.186bp, HAC t=-3.267, p=.0011, BH q=.0015
+- excess vs other same-month daily changes -1.242bp, t=-3.276, q=.0015
+- chronological halves raw -1.534bp / -0.839bp
+
+Pre-ETF historical context Feb1962-Jun2002: DGS10 raw -0.703bp, t=-2.581;
+excess -0.745bp, t=-2.614; both chronological halves negative. Context only,
+not a promotion rescue.
+
+Source-clock qualification: all236 modern DGS10 event dates exactly match the
+incumbent engine.rebalance_calendar.month_end_sessions() owner through Aug2026.
+No new calendar owner is needed.
+
+Same-author raw reconstruction reproduced all primary counts/means and verified the
+original TrialLedger prefix plus exact8-row amendment suffix. Evidence:
+registration deed993281afeeabdb5f86f8554ddf65794eae45e0a3de23a041ee88f6626ff7;
+summary 7ecd8a9d89b24c45da83603991d2eb6a8b7bede9dbe109adc8bf0a6f7c0aa20c.
+
+POST-RESULT diagnostics are important but are not new selected rules:
+- quarter-end DGS10 raw +0.295bp, t=.502; no aggregate lower-yield edge there
+- non-quarter month-end -1.918bp, t=-4.370
+- 2022-2026 raw only -0.250bp, t=-.387; excess -.536bp, t=-.767
+- trimming largest5% absolute month-end moves still yields -.787bp, t=-2.688
+- full-family-width Bonferroni upper bounds remain <=.0315 for all8 new cells
+
+DEC:RIC-MONTH-END-EXTENSION-CONTEXT-ONLY therefore withholds score/trade/equity-risk
+authority. The effect may be retained as source-backed display/context and future
+prospective-validation input, but the post-result non-quarter subset cannot be
+promoted. Do not create a separate calendar signal plane; reuse engine.rebalance_calendar
+and RIC if/when display integration is admitted.
+
+Next scientific/product action: freeze a generic forward-only month-end DGS10 shadow
+from the known aggregate sign, with quarter-end merely tagged diagnostically rather
+than changing the sign, so current relevance is resolved without backfitting the
+2022-2026/quarter-end cuts.
