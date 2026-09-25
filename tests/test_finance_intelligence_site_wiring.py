@@ -1,12 +1,14 @@
 """Finance Intelligence page: the site builder carries its render hook.
 
-Split out of tests/test_finance_intelligence_page.py so it runs in an always-on
-legacy job. The assertion reads the site builder as TEXT. The exclusive
-finance-intelligence job's closure check follows any read .py file through its
-imports; for the site builder that is about 500 files across engine/, collectors/
-and lib/, none of which this assertion depends on. An always-on job carries no
-path filter, so no closure has to be declared and the assertion still runs on
-every change to the builder.
+Split out of tests/test_finance_intelligence_page.py. The assertion reads the site
+builder as TEXT. The exclusive finance-intelligence job's closure check follows any
+read .py file through its imports; for the site builder that is about 500 files
+across engine/, collectors/ and lib/, none of which this assertion depends on.
+
+It runs in the public-render-fastlane legacy job (gate: code, inferred scope). That
+job already owns scripts/build_site.py, so the assertion runs on every change to the
+builder and adds no job to any packing probe. A job of its own would add one to every
+probe (#8010 did; see test_exclusive_curation_narrows_ordinary_code_prs).
 """
 from __future__ import annotations
 
