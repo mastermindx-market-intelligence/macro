@@ -1122,3 +1122,140 @@ def test_w7b_builder_attaches_bnrs_to_native_family_bundle_before_discovery():
     bundle = source.index('"native_families": _hk_native_family_rows', attach)
     register = source.index("hk_native_intelligence.BNRS_DEFINITION", bundle)
     assert h3 < attach < bundle < register
+
+
+# ---------------------------------------------------------------------------
+# Owner-mediated Lane-B reader for downstream display-only consumers
+# ---------------------------------------------------------------------------
+def _reader_receipt(data_root: Path, **overrides) -> Path:
+    path = data_root / "prophet_shadow" / "hk_discovery_receipt.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "market": "HK",
+        "as_of": "2026-09-20",
+        "registry_state": "wrote_n_rows n=2",
+        "written": 2,
+        "definitions": ["hk_discovery_v1"],
+        "challenger_failures": [],
+        "stamped_at": "2026-09-20T12:00:00+00:00",
+    }
+    payload.update(overrides)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def _reader_store(data_root: Path, rows: list[dict]) -> Path:
+    path = data_root / "prophet_shadow" / "hk_discovery.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_parquet(path, index=False)
+    return path
+
+
+def _reader_row(date: str, ticker: str, *, definition: str = "hk_discovery_v1") -> dict:
+    return {
+        "session_date": date,
+        "market": "HK",
+        "security_ref": ticker,
+        "security_ref_raw": ticker,
+        "ref_collision_n": 1,
+        "challenger_definition": definition,
+        "candidate_origin": "washout_reclaim",
+        "availability_status": hkdc.WAIT_CONFLUENCE,
+        "availability_source": "hk_signal_gate",
+        "visible_to_user": False,
+        "published_authority": False,
+        "stamped_at": "2026-09-20T12:00:00+00:00",
+    }
+
+
+def test_discovery_reader_returns_exact_receipt_epoch_in_store_order(_isolated_registry):
+    root = _isolated_registry
+    _reader_receipt(root)
+    _reader_store(root, [
+        _reader_row("2026-09-20", "BBB.HK"),
+        _reader_row("2026-09-20", "AAA.HK"),
+    ])
+    result = bs.read_discovery_snapshot("hk", "hk_discovery_v1")
+    assert result["available"] is True
+    assert result["reason"] == "ok"
+    assert result["as_of"] == "2026-09-20"
+    assert [row["security_ref_raw"] for row in result["records"]] == ["BBB.HK", "AAA.HK"]
+    assert all(set(row) == set(bs._DISCOVERY_READER_FIELDS) for row in result["records"])
+
+
+def test_discovery_reader_observed_zero_never_substitutes_older_rows(_isolated_registry):
+    root = _isolated_registry
+    _reader_receipt(root, registry_state="wrote_n_rows n=0", written=0)
+    _reader_store(root, [_reader_row("2026-09-19", "OLD.HK")])
+    result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
+    assert result == {
+        "available": True,
+        "reason": "observed_zero",
+        "as_of": "2026-09-20",
+        "records": [],
+    }
+
+
+def test_discovery_reader_rejects_store_newer_than_receipt(_isolated_registry):
+    root = _isolated_registry
+    _reader_receipt(root)
+    _reader_store(root, [_reader_row("2026-09-21", "FUTURE.HK")])
+    result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
+    assert result["available"] is False
+    assert result["reason"] == "store_newer_than_receipt"
+
+
+@pytest.mark.parametrize(
+    ("receipt_overrides", "reason"),
+    [
+        ({"definitions": ["other"]}, "definition_not_in_receipt"),
+        ({"registry_state": "error"}, "receipt_not_successful"),
+        ({"challenger_failures": [{"definition": "hk_discovery_v1", "error": "x"}]}, "challenger_failed"),
+        ({"as_of": ""}, "receipt_asof_missing"),
+        ({"market": "CA"}, "receipt_market_mismatch"),
+        ({"challenger_failures": "bad"}, "receipt_failures_malformed"),
+    ],
+)
+def test_discovery_reader_receipt_failures_are_explicit(
+    _isolated_registry, receipt_overrides, reason
+):
+    root = _isolated_registry
+    _reader_receipt(root, **receipt_overrides)
+    _reader_store(root, [_reader_row("2026-09-20", "AAA.HK")])
+    result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
+    assert result["available"] is False
+    assert result["reason"] == reason
+    assert result["records"] == []
+
+
+def test_discovery_reader_missing_receipt_and_store_fail_closed(_isolated_registry):
+    root = _isolated_registry
+    assert bs.read_discovery_snapshot("HK", "hk_discovery_v1")["reason"] == "receipt_missing"
+    _reader_receipt(root, registry_state="wrote_n_rows n=0", written=0)
+    result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
+    assert result["available"] is False
+    assert result["reason"] == "store_missing"
+
+
+def test_discovery_reader_rejects_missing_columns_and_unreadable_receipt(_isolated_registry):
+    root = _isolated_registry
+    receipt = _reader_receipt(root)
+    path = root / "prophet_shadow" / "hk_discovery.parquet"
+    pd.DataFrame([{"session_date": "2026-09-20"}]).to_parquet(path, index=False)
+    result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
+    assert result["available"] is False
+    assert result["reason"] == "store_missing_columns"
+
+    receipt.write_text("{broken", encoding="utf-8")
+    result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
+    assert result["available"] is False
+    assert result["reason"] == "receipt_unreadable"
+
+
+def test_discovery_reader_rejects_malformed_store_session(_isolated_registry):
+    root = _isolated_registry
+    _reader_receipt(root)
+    _reader_store(root, [_reader_row("not-a-date", "AAA.HK")])
+    result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
+    assert result["available"] is False
+    assert result["reason"] == "store_session_malformed"
