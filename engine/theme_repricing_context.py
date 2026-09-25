@@ -24,6 +24,7 @@ AUTHORITY = {
     "may_rank": False,
     "may_gate": False,
     "may_size": False,
+    "may_escalate": False,
     "may_trade": False,
 }
 
