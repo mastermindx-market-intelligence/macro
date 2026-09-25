@@ -889,7 +889,7 @@ def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *,
 
 
 def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int]:
-    return {year for value in _headers_over(rows, cell) if (year := _parse_year(value)) is not None}
+    return {int(year) for value in _headers_over(rows, cell) for year in re.findall(r"(?<!\d)(20\d{2})(?!\d)", value)}
 
 
 def _parse_year(value: str) -> int | None:
