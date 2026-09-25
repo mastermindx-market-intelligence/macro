@@ -2187,7 +2187,7 @@ jobs:
     # roots and the job would select on templates/index.html and every other
     # ordinary code PR it never reads (the packing-ceiling probe caught exactly
     # that: +1 job on all three probes). The paths below are the files these
-    # fifteen suites import, open or render — the vertical's own subjects, the
+    # sixteen suites import, open or render — the vertical's own subjects, the
     # shared owners it consumes (Theme Graph rights/contracts, Earnings
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
@@ -2233,6 +2233,15 @@ jobs:
       - "templates/basket_detail.html.j2"
       - "tests/semiconductor_research_helpers.py"
       - "tests/fixtures/semiconductor_theme_research/**"
+      # T10: the paid client's node-shelled contract. It ran only in the
+      # `gate: data` job `unrun-subsector-themes` — the exact gap this job
+      # exists to close. It has teeth: on 2026-09-24 its new label positive
+      # control named 60 keys that all rendered "Unmapped label" on screen,
+      # a defect that had merged and sat green. The suite reads only the
+      # checked-in JS and synthetic fixtures — `gate: code` by the manifest's
+      # own definition. The nightly step stays where it is.
+      - "site/assets/js/theme-research.js"
+      - "tests/test_semiconductor_theme_research_ui.py"
       - "tests/test_theme_research_api.py"
       - "tests/test_theme_research_rights_refresh.py"
       - "tests/test_theme_research_private_binding.py"
@@ -2333,6 +2342,14 @@ jobs:
         run: python -m pytest tests/test_workspace_projection.py tests/test_semiconductor_witness_scope.py -q
       - name: registered owner-bundle loader (public half through the reader; private half declared absent)
         run: python -m pytest tests/test_semiconductor_owner_bundle.py -q
+      # The client-contract cases are executed BY node. Without it the suite's
+      # `needs_node` skips would report green on a runner that checked nothing,
+      # so the version step fails the job loudly instead. `ci-pack` (the
+      # `--gate code` runner) installs node 20.
+      - name: node must be on PATH — the paid client contract skips without it
+        run: node --version
+      - name: paid theme-research client contract (envelope validation, label maps, economics triple)
+        run: python -m pytest tests/test_semiconductor_theme_research_ui.py -q
       - name: basket-intelligence mount partial
         run: python -m pytest tests/test_basket_intelligence_mounts.py -q
 
