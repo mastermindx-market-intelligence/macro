@@ -24,7 +24,7 @@
 ## Review Focus
 
 - Nested `/research/*.html` hrefs must not lose the `../` prefix.
-- Opt-in shell mode must suppress only the old link row, never search, Terminal, theme or language controls.
+- Opt-in shell mode must hide the old link row only through desktop CSS while preserving it for the existing mobile fallback; search, Terminal, theme and language controls remain canonical.
 - Normal pages must render the old header structure unchanged when shell mode is absent.
 - Research paywall/public-excerpt ordering and SEO markup must remain intact.
 - Sidebar active state must be presentational only; it must not mutate route, market, account or personal state.
@@ -57,7 +57,7 @@
 - Consumes: `nav_prefix`, `workspace_active`, `workspace_scope`.
 - Produces: one coarse sidebar and an opt-in topbar mode while preserving the canonical header controls.
 
-- [ ] **Step 1:** Omit only `_navlinks.html.j2` when `workspace_shell` is true; keep canonical search and controls.
+- [ ] **Step 1:** Keep `_navlinks.html.j2` in the canonical header, add an opt-in workspace class/scope marker, and hide the legacy link row only on desktop shell CSS so the existing mobile menu remains the fallback.
 - [ ] **Step 2:** Add one canonical coarse sidebar: Overview, Markets, Sectors & themes, Stocks & setups, Options, Research; Watchlists, Portfolio, My alerts, Ask Mastermind, All tools. No JS or persistent state.
 - [ ] **Step 3:** Add shared shell styling. Desktop uses a 216px sidebar and existing header as topbar; narrow screens fall back to the canonical header rather than inventing an unreviewed drawer.
 - [ ] **Step 4:** Run `python -m pytest -q tests/test_workspace_shell.py tests/test_product_chrome.py --tb=short`.

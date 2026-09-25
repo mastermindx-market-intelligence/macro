@@ -36,9 +36,10 @@ def test_legacy_header_is_identical_when_shell_mode_is_false_or_absent() -> None
     assert 'class="nav-links"' in absent
 
 
-def test_workspace_mode_reuses_header_controls_but_suppresses_legacy_link_row() -> None:
+def test_workspace_mode_reuses_header_controls_and_keeps_mobile_fallback_markup() -> None:
     html = _render_nav(workspace_shell=True, workspace_scope="all")
-    assert 'class="nav-links"' not in html
+    assert 'class="site-nav site-nav-workspace"' in html
+    assert html.count('class="nav-links"') == 1
     for marker in (
         'class="nav-search"',
         "product-icon-terminal",
