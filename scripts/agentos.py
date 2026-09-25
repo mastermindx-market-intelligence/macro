@@ -70,8 +70,6 @@ import os
 import re
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor
-from itertools import islice
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -622,26 +620,99 @@ def git_dates(path: Path) -> tuple[str | None, str | None]:
     return (first[-1] if first else None), (last[0] if last else None)
 
 
-_GIT_DATE_BATCH_SIZE = 4
+_GIT_DATE_PATH_BATCH_SIZE = 128
+
+
+def _git_history_dates(
+    paths: list[str], *, additions_only: bool,
+) -> list[tuple[str, str]] | None:
+    """Read path dates from one bounded local history walk.
+
+    git_dates remains the semantic oracle and fallback. This helper only folds
+    identical per-path git-log observations into one invocation-local query;
+    it adds no cache, new date policy, network call, or durable state.
+    """
+    if not paths:
+        return []
+    args = ["log", "-z", "--format=%x1e%as", "--name-only"]
+    if additions_only:
+        args.append("--diff-filter=A")
+    payload = _git(*args, "--", *paths)
+    if payload is None:
+        return None
+
+    admitted = set(paths)
+    current_date: str | None = None
+    rows: list[tuple[str, str]] = []
+    for raw in payload.split("\0"):
+        if not raw:
+            continue
+        if raw.startswith("\x1e"):
+            current_date = raw[1:].strip() or None
+            continue
+        # Pretty-print and --name-only are separated by exactly one newline.
+        rel = raw[1:] if raw.startswith("\n") else raw
+        if current_date is not None and rel in admitted:
+            rows.append((rel, current_date))
+    return rows
 
 
 def git_dates_batch(paths: Iterable[Path]) -> dict[Path, tuple[str | None, str | None]]:
-    """Read canonical per-path dates with a bounded, invocation-local I/O fan-out.
+    """Read canonical per-path dates with bounded batched local Git history.
 
-    Keep git_dates semantics, input order and None results unchanged. Submit only
-    one small batch at a time, and join every thread before return or failure.
-    There is no persisted cache, new history policy or cross-call executor.
+    Results retain git_dates semantics exactly: updated is the newest commit
+    touching the current path and created is the oldest true add for that path
+    (renames are not treated as adds). Inputs are consumed in bounded batches,
+    output keeps input order, and any batched Git observation failure falls back
+    to the existing per-path oracle for that batch.
     """
     iterator = iter(paths)
-    batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
-    if not batch:
-        return {}
     result: dict[Path, tuple[str | None, str | None]] = {}
-    with ThreadPoolExecutor(max_workers=_GIT_DATE_BATCH_SIZE,
-                            thread_name_prefix="agentos-git-dates") as executor:
-        while batch:
-            result.update(zip(batch, executor.map(git_dates, batch)))
-            batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+
+    while True:
+        batch: list[Path] = []
+        for _ in range(_GIT_DATE_PATH_BATCH_SIZE):
+            try:
+                batch.append(next(iterator))
+            except StopIteration:
+                break
+        if not batch:
+            break
+
+        rel_to_paths: dict[str, list[Path]] = {}
+        for path in batch:
+            try:
+                rel = path.resolve().relative_to(_ROOT).as_posix()
+            except ValueError:
+                result[path] = (None, None)
+                continue
+            rel_to_paths.setdefault(rel, []).append(path)
+
+        if not rel_to_paths:
+            continue
+
+        rels = list(rel_to_paths)
+        updated_rows = _git_history_dates(rels, additions_only=False)
+        created_rows = _git_history_dates(rels, additions_only=True)
+        if updated_rows is None or created_rows is None:
+            for path in batch:
+                if path not in result:
+                    result[path] = git_dates(path)
+            continue
+
+        updated: dict[str, str] = {}
+        for rel, date in updated_rows:
+            updated.setdefault(rel, date)
+        created: dict[str, str] = {}
+        for rel, date in created_rows:
+            # git log is newest-first; repeated assignment retains the oldest add.
+            created[rel] = date
+
+        for rel, originals in rel_to_paths.items():
+            dates = (created.get(rel), updated.get(rel))
+            for path in originals:
+                result[path] = dates
+
     return result
 
 
