@@ -308,13 +308,28 @@ label_registry:
       re-routable in-repo — the codex CLI and ~/.codex/auth.json are host-local
       (CRX-R8) and config/codex_lane.yml is operator-immutable (CRX-R7), so a
       macstudio re-route would fail preflight while burning a production slot.
-      Restore is host-side and operator-owned.
+      Restore is host-side and operator-owned. This lane is a CONFIRMED queued-job
+      hostage, not merely dark. 2026-09-25 receipts: run 35994988547 (created
+      2026-09-24T11:46:30Z) is STILL `queued` 22h later and holds the concurrency
+      group; 36032578502, 36062008421 and 36078078689 each entered `pending`
+      behind it and were superseded 1s after the next firing was created;
+      36109614790 (2026-09-25T07:49:21Z) holds the pending slot now. GitHub's
+      24h queued-job kill lands on 35994988547 at 2026-09-25T11:46:30Z, after
+      which the pending successor is promoted to `queued` and re-wedges — the
+      wedge cycles, it does not self-heal.
     scheduled_use_waiver:
       since: '2026-08-17'
       reason: >
-        Single-job run, so a queued firing sits `pending` and is superseded by
-        the next 2-hourly line rather than holding the group for 24h — the lane
-        is dead, not hostage-taking (contrast daily.yml collect_tail, whose
-        completed sibling jobs kept its run `in_progress` and pended the next
-        night). Waived rather than silenced: the entry above is the standing
-        record that this lane is dark pending an operator host restore.
+        The orphan-use gate is waived because restore is host-side and
+        operator-owned (CRX-R7/CRX-R8 above), NOT because the lane is harmless.
+        The original 2026-08-17 reason argued that a single-job run's queued
+        firing sits `pending` and is superseded by the next 2-hourly line rather
+        than holding the group for 24h; the receipts above FALSIFY that
+        mechanism. GitHub supersedes `pending` runs — the runs blocked BY the
+        group — and never the run holding it, and a run whose only job cannot be
+        assigned sits `queued`, i.e. it is the holder. So a single-job lane is no
+        safer here than daily.yml's collect_tail; being small only means it takes
+        one unassignable job instead of several. Waived rather than silenced:
+        scripts/check_runner_queue_hostage.py reports this lane's queue age on
+        every nightly-liveness run, and this entry is the standing record that it
+        is dark pending an operator host restore.

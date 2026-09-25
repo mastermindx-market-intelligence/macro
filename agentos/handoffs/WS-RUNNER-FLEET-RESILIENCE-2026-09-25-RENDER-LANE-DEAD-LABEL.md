@@ -137,6 +137,18 @@ verified:
       `codex` label; daily.yml healthy at ~01:35Z daily because it routes the live
       `macstudio` label - which is exactly why the per-lane nightly watchdog was
       correctly silent.
+  - claim: "The `codex` waiver's stated mechanism is falsified by its own lane: the queued run is the group HOLDER and is never superseded, so the lane is hostage-taking after all."
+    command: "gh api repos/mastermindx-market-intelligence/macro/actions/workflows/codex-research.yml/runs?per_page=8 --jq '.workflow_runs[]|{id,status,conclusion,created_at,updated_at}'"
+    result: >
+      35994988547 (created 2026-09-24T11:46:30Z) is still `queued` 22h later and
+      holds the group; 36032578502, 36062008421 and 36078078689 each entered
+      `pending` behind it and were superseded 1s after the next firing was created;
+      36109614790 (2026-09-25T07:49:21Z) holds the pending slot now. The waiver's
+      original reason - that a single-job run's queued firing would be superseded
+      rather than hold the group for 24h - describes the `pending` successors, not
+      the holder. Corrected in `.github/runner-policy.yml` in this PR; the waiver
+      is KEPT, because restore is genuinely operator-owned (CRX-R7/CRX-R8), but its
+      reason no longer claims the lane is harmless.
   - claim: "1,479 committed site pages carry the shared nav but not the Morning Edition entry."
     command: "grep -rl 'class=\"site-nav\"' site --include='*.html' | wc -l; grep -rl 'am_edition.html' site --include='*.html' | wc -l"
     result: >
@@ -203,8 +215,10 @@ next_actions:
     <id> --interval 60`) and expect the 35819881039 dossier-integrity red to
     resurface; fix that guard red separately.
   - >
-    Re-judge `codex-research.yml`'s `scheduled_use_waiver` against its own queued
-    run rather than renewing it.
+    The `codex` lane's wedge itself is still open and still operator-owned: the
+    declaration was corrected, the carrier was not. Expect 35994988547 to be killed
+    at 2026-09-25T11:46:30Z and 36109614790 to be promoted and re-wedge seconds
+    later; do not read that kill as a recovery.
   - >
     Remove `render-linux`'s `automatic_use_waiver` in the same act that restores the
     carrier, and set `status: live` with the real `carried_by` - the waiver text says
