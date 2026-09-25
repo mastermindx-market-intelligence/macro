@@ -242,3 +242,15 @@ def test_missing_bundle_degrades_to_an_unversioned_request(tmp_path) -> None:
     """No sibling mm_brain.js -> empty version, not a crash and not a stale hash."""
     (tmp_path / "theme.js").write_text("x")
     assert site_assets.mm_brain_version(tmp_path / "theme.js") == ""
+
+
+def test_tablesort_filter_copy_tracks_active_language() -> None:
+    """Shared long-table filter copy must follow the live EN/ZH page state."""
+    template = (TEMPLATES / "tablesort.js").read_text(encoding="utf-8")
+    shipped = (WORKTREE / "site" / "tablesort.js").read_text(encoding="utf-8")
+
+    assert template == shipped
+    assert "var filterInputs = [];" in template
+    assert "document.addEventListener('langchange', refreshFilterCopy);" in template
+    assert "input.placeholder = zh ? '筛选…' : 'Filter…';" in template
+    assert "input.setAttribute('aria-label', zh ? '筛选表格行' : 'Filter table rows');" in template
