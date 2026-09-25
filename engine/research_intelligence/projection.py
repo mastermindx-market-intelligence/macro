@@ -114,3 +114,37 @@ def claim_edges(rio: dict[str, Any]) -> list[dict[str, Any]]:
                 "authority": "descriptive_research_only",
             })
     return edges
+
+def belief_context_points(rio: dict[str, Any]) -> list[dict[str, Any]]:
+    """Project grounded belief/consensus relationships without claiming participant state.
+
+    These rows expose only model synthesis already carried by the RIO's
+    ``belief_delta`` and ``consensus_relation`` fields. They do not infer
+    positioning, constraints, market response, or trading authority.
+    """
+    obj = _grounded_rio(rio)
+    doc = obj["document"]
+    rows: list[dict[str, Any]] = []
+    for relation in ("belief_delta", "consensus_relation"):
+        item = obj["analysis"][relation]
+        text = item["statement"]
+        support = list(item["support_claim_indices"])
+        if not text or not support:
+            continue
+        if _text_is_verbatim_private_evidence(text, obj["claims"]):
+            raise ValueError(
+                f"analysis.{relation}.statement contains verbatim private evidence"
+            )
+        rows.append({
+            "schema": "mastermind.research_belief_context.v1",
+            "source_document_id": doc["id"],
+            "source_content_sha256": doc["content_sha256"],
+            "published_at": doc["published_at"],
+            "relation": relation,
+            "epistemic_layer": "model_synthesis",
+            "text": text,
+            "text_visibility": "derived_summary",
+            "support_claim_indices": support,
+            "authority": "descriptive_research_only",
+        })
+    return rows
