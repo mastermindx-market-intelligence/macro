@@ -50,7 +50,10 @@ class EconomicObservationError(ValueError):
 
 
 def _definition(metric: Any) -> Any:
-    return next(item for item in PG_DEFINITIONS if item.metric == metric)
+    try:
+        return next(item for item in PG_DEFINITIONS if item.metric == metric)
+    except StopIteration as exc:
+        raise EconomicObservationError("selected metric is not defined") from exc
 
 
 def _sha256(value: str) -> str:
@@ -87,6 +90,125 @@ def _fact_id(event_id: Any, metric: Any, period: Any, basis: Any) -> str:
     return f"fact_{hashlib.sha256(identity.encode('utf-8')).hexdigest()[:16]}"
 
 
+def _validate_source_span(span: Mapping[str, Any], *, source: str) -> None:
+    locator = span.get("locator")
+    if not isinstance(locator, Mapping):
+        raise EconomicObservationError("present observation has no source locator")
+    start = locator.get("span_start_byte")
+    end = locator.get("span_end_byte")
+    if (
+        isinstance(start, bool) or not isinstance(start, int)
+        or isinstance(end, bool) or not isinstance(end, int)
+        or start != span.get("receipt", {}).get("span_start_byte")
+        or end != span.get("receipt", {}).get("span_end_byte")
+    ):
+        raise EconomicObservationError("source locator does not replay")
+    source_bytes = source.encode("utf-8")
+    receipt = span.get("receipt")
+    if not isinstance(receipt, Mapping):
+        raise EconomicObservationError("present observation has no byte receipt")
+    if receipt.get("source_sha256") != _sha256(source):
+        raise EconomicObservationError("source digest does not replay")
+    if receipt.get("segment_sha256") != _sha256(source):
+        raise EconomicObservationError("segment digest does not replay")
+    if receipt.get("segment_bytes") != len(source_bytes):
+        raise EconomicObservationError("segment byte count does not replay")
+    start = receipt.get("span_start_byte")
+    end = receipt.get("span_end_byte")
+    if (
+        isinstance(start, bool) or not isinstance(start, int)
+        or isinstance(end, bool) or not isinstance(end, int)
+        or not 0 <= start < end <= len(source_bytes)
+    ):
+        raise EconomicObservationError("byte span is invalid")
+    replayed_bytes = source_bytes[start:end]
+    try:
+        replayed_text = replayed_bytes.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise EconomicObservationError("byte span is not UTF-8 aligned") from exc
+    if hashlib.sha256(replayed_bytes).hexdigest() != receipt.get("text_sha256"):
+        raise EconomicObservationError("span digest does not replay")
+    if replayed_text != span.get("display_excerpt"):
+        raise EconomicObservationError("display excerpt does not replay")
+
+
+def _validate_row_structure(
+    row: Mapping[str, Any],
+    *,
+    event_id: Any,
+) -> tuple[Any, Any, str | None, frozenset[str]]:
+    if row.get("schema") != "event_fact.v1":
+        raise EconomicObservationError("selected row schema mismatch")
+    actual = set(row)
+    present = "value" in row
+    absent = "typed_absence" in row
+    if actual == PRESENT_KEYS and not absent:
+        expected_keys = PRESENT_KEYS
+    elif actual == ABSENT_KEYS and not present:
+        expected_keys = ABSENT_KEYS
+    else:
+        raise EconomicObservationError("selected row fields, value, and absence conflict")
+    if row.get("event_id") != event_id:
+        raise EconomicObservationError("selected row belongs to another event")
+    metric = row.get("metric")
+    definition = _definition(metric)
+    period = row.get("period") if expected_keys is PRESENT_KEYS else metric
+    if row.get("fact_id") != _fact_id(event_id, metric, period, definition.basis):
+        raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
+
+    if expected_keys is ABSENT_KEYS:
+        absence_payload = row.get("typed_absence")
+        if not isinstance(absence_payload, Mapping) or set(absence_payload) != TYPED_ABSENCE_KEYS:
+            raise EconomicObservationError("typed_absence fields are unknown or incomplete")
+        if absence_payload.get("schema") != ABSENCE_SCHEMA:
+            raise EconomicObservationError("typed_absence schema mismatch")
+        try:
+            TypedAbsence(**{
+                "reason": absence_payload.get("reason"),
+                "subject": absence_payload.get("subject"),
+                "detail": absence_payload.get("detail"),
+                "missing_fields": tuple(absence_payload.get("missing_fields") or ()),
+                "event_id": absence_payload.get("event_id"),
+                "document_id": absence_payload.get("document_id"),
+            })
+        except ValueError as exc:
+            raise EconomicObservationError(str(exc)) from exc
+        if absence_payload.get("authority") != "context_only":
+            raise EconomicObservationError("typed_absence authority is not display context")
+        if not str(absence_payload.get("subject") or "").startswith(metric):
+            raise EconomicObservationError("typed_absence subject does not match its metric")
+        if tuple(absence_payload.get("missing_fields") or ()) != ():
+            raise EconomicObservationError("typed_absence missing fields are invalid")
+    else:
+        value = row.get("value")
+        if definition.value_kind == "bounded_text":
+            if not isinstance(value, str) or not value.strip() or len(value) > 240:
+                raise EconomicObservationError("bounded text observation is invalid")
+        elif isinstance(value, bool) or not isinstance(value, Real) or not math.isfinite(float(value)):
+            raise EconomicObservationError("numeric observation must be finite and non-boolean")
+    return metric, definition, period, expected_keys
+
+
+def _validate_fact_structure(
+    row: Mapping[str, Any],
+    *,
+    event_id: Any,
+    fact_ids: set[str],
+    metric_scope_periods: set[tuple[Any, Any, Any, Any, Any]],
+    duplicate_scope: bool = True,
+) -> tuple[Any, Any, str | None, frozenset[str]]:
+    metric, definition, period, expected_keys = _validate_row_structure(row, event_id=event_id)
+    fact_id = row.get("fact_id")
+    if not isinstance(fact_id, str) or fact_id in fact_ids:
+        raise EconomicObservationError("fact_id is missing or duplicate")
+    fact_ids.add(fact_id)
+    scope_key = (event_id, metric, definition.scope, period, definition.basis)
+    if duplicate_scope and scope_key in metric_scope_periods:
+        raise EconomicObservationError("metric, scope, and period duplicate")
+    metric_scope_periods.add(scope_key)
+    return metric, definition, period, expected_keys
+
+
 def _validate_envelope_rows(
     *,
     rows: list[Mapping[str, Any]],
@@ -96,6 +218,8 @@ def _validate_envelope_rows(
     workspace_document_id: str,
 ) -> list[dict[str, Any]]:
     from .pg_profile import _scope
+    fact_ids: set[str] = set()
+    metric_scope_periods: set[tuple[Any, Any, Any, Any, Any]] = set()
 
     admission = _pg_envelope.admit(source, fiscal_scope)
     definitions = {definition.metric: definition for definition in PG_DEFINITIONS}
@@ -118,20 +242,23 @@ def _validate_envelope_rows(
     checked: list[dict[str, Any]] = []
     seen: set[Any] = set()
     for row in rows:
-        metric = row.get("metric")
-        definition = definitions[metric]
+        if not isinstance(row, Mapping):
+            raise EconomicObservationError("selected row must be a mapping")
+        metric, definition, period, expected_keys = _validate_fact_structure(
+            row,
+            event_id=event_id,
+            fact_ids=fact_ids,
+            metric_scope_periods=metric_scope_periods,
+            duplicate_scope=False,
+        )
         if metric in seen:
             raise EconomicObservationError("selected metric is duplicate")
         seen.add(metric)
-        if row.get("event_id") != event_id:
-            raise EconomicObservationError("selected row belongs to another event")
-        fact_id = row.get("fact_id")
-        period = row.get("period") if "value" in row else metric
-        if fact_id != _fact_id(event_id, metric, period, definition.basis):
-            raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
         expected = expected_rows[metric]
         kind = expected[0]
         if "value" in row:
+            if expected_keys is not PRESENT_KEYS:
+                raise EconomicObservationError("selected observation fields conflict")
             if kind != "present":
                 raise EconomicObservationError("selected observation is present but the envelope does not agree")
             current_start, current_end, _prior_start, prior_end = _scope(fiscal_scope)
@@ -167,7 +294,10 @@ def _validate_envelope_rows(
                 raise EconomicObservationError("selected observation source digest does not replay")
             if span.get("document_id") != workspace_document_id or span.get("rights_profile") != PG_PRIVATE_RIGHTS_PROFILE:
                 raise EconomicObservationError("selected observation source identity is invalid")
+            _validate_source_span(span, source=source)
         else:
+            if expected_keys is not ABSENT_KEYS:
+                raise EconomicObservationError("selected observation fields conflict")
             absence = row.get("typed_absence") or {}
             reason = "cross_check_conflict" if kind == "conflict" else "no_span_addressable_evidence"
             detail = f"envelope_conflict:{metric}" if kind == "conflict" else expected[1]
@@ -177,6 +307,7 @@ def _validate_envelope_rows(
                 raise EconomicObservationError("selected absence does not match the envelope")
             if absence.get("event_id") != event_id or absence.get("document_id") != workspace_document_id:
                 raise EconomicObservationError("selected absence identity is invalid")
+            span = None
         checked.append(dict(row))
     if seen != set(definitions):
         raise EconomicObservationError("selected metric key set is not exact")
@@ -291,7 +422,11 @@ def validate_selected_facts(
         facts = workspace.get("facts")
         if not isinstance(facts, list):
             raise EconomicObservationError("workspace facts must be a list")
-        envelope_rows = [row for row in facts if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")]
+        if any(not isinstance(row, Mapping) for row in facts):
+            raise EconomicObservationError("workspace facts must be mappings")
+        envelope_rows = [
+            row for row in facts if str(row.get("metric", "")).startswith("pg_")
+        ]
         return _validate_envelope_rows(rows=envelope_rows, source=release_text, fiscal_scope=fiscal_scope, event_id=workspace.get("event_id"), workspace_document_id=workspace_document_id)
 
     facts = workspace.get("facts")
@@ -330,24 +465,12 @@ def validate_selected_facts(
             raise EconomicObservationError("selected row fields, value, and absence conflict")
         if row.get("event_id") != event_id:
             raise EconomicObservationError("selected row belongs to another event")
-        fact_id = row.get("fact_id")
-        if not isinstance(fact_id, str) or fact_id in fact_ids:
-            raise EconomicObservationError("fact_id is missing or duplicate")
-        fact_ids.add(fact_id)
-        metric = row.get("metric")
-        definition = _definition(metric)
-        expected_fact_id = _fact_id(
-            event_id,
-            metric,
-            row.get("period") if "value" in row else metric,
-            definition.basis,
+        metric, definition, period, expected_keys = _validate_fact_structure(
+            row,
+            event_id=event_id,
+            fact_ids=fact_ids,
+            metric_scope_periods=metric_scope_periods,
         )
-        if fact_id != expected_fact_id:
-            raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
-        scope_key = (event_id, metric, definition.scope, row.get("period"), definition.basis)
-        if scope_key in metric_scope_periods:
-            raise EconomicObservationError("metric, scope, and period duplicate")
-        metric_scope_periods.add(scope_key)
 
         if expected_keys is ABSENT_KEYS:
             absence_payload = row.get("typed_absence")
@@ -398,6 +521,7 @@ def validate_selected_facts(
                 raise EconomicObservationError("typed_absence belongs to another event")
             if absence_payload.get("document_id") != workspace_document_id:
                 raise EconomicObservationError("typed_absence belongs to another document")
+        if expected_keys is ABSENT_KEYS:
             checked.append(dict(row))
             continue
 
