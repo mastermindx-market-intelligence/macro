@@ -5,28 +5,28 @@
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 28.9,
-  "raw_confidence": 28.2,
+  "raw_confidence": 28.8,
   "delta_vs_base": -31.1,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 40.1,
+    "validity": 39.4,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.508,
+    "dist_to_stop_r": 0.502,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 177.8,
-    "p1": -0.3277,
-    "p2": -0.1638,
+    "p1": -0.332,
+    "p2": -0.166,
     "p3": null,
-    "move_r": -0.492,
+    "move_r": -0.498,
     "mfe_r": 0.206,
-    "mae_r": -0.492
+    "mae_r": -0.498
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.250003051757815,
-  "_mae": -10.16000061035156,
+  "_mae": -10.295002746582028,
   "_max_p1": 0.13707476380447714,
   "_first_trigger_ts": "2026-07-10",
   "_first_t1_ts": null,

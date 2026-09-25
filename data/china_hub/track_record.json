@@ -1,9 +1,9 @@
 {
   "schema": "intel_hub.track_record.v1",
-  "as_of": "2026-09-24",
-  "generated_at": "2026-09-24T13:26:17.331913+00:00",
+  "as_of": "2026-09-25",
+  "generated_at": "2026-09-25T13:09:21.871985+00:00",
   "is_context_only": true,
-  "n_snapshots": 6757,
+  "n_snapshots": 6852,
   "horizons": {
     "5": {
       "n_matured": 1154,
@@ -57,9 +57,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 6286,
+        "n_eligible": 6385,
         "n_matured": 1154,
-        "coverage_pct": 18.36,
+        "coverage_pct": 18.07,
         "below_floor": true
       }
     },
@@ -115,9 +115,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 5894,
+        "n_eligible": 5992,
         "n_matured": 1045,
-        "coverage_pct": 17.73,
+        "coverage_pct": 17.44,
         "below_floor": true
       }
     },
@@ -173,9 +173,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 4872,
+        "n_eligible": 4964,
         "n_matured": 837,
-        "coverage_pct": 17.18,
+        "coverage_pct": 16.86,
         "below_floor": true
       }
     },
@@ -231,9 +231,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 1385,
+        "n_eligible": 1482,
         "n_matured": 220,
-        "coverage_pct": 15.88,
+        "coverage_pct": 14.84,
         "below_floor": true
       }
     }
@@ -261,31 +261,31 @@
     "n_missing": 2,
     "note": "Expected dates are pandas business days \u2014 NYSE market holidays inside the window are counted as gaps, so this over-reports rather than under-reports.",
     "first_snapshot": "2026-07-07",
-    "last_snapshot": "2026-09-24"
+    "last_snapshot": "2026-09-25"
   },
   "coverage_pct": {
     "5": {
-      "n_eligible": 6286,
+      "n_eligible": 6385,
       "n_matured": 1154,
-      "coverage_pct": 18.36,
+      "coverage_pct": 18.07,
       "below_floor": true
     },
     "10": {
-      "n_eligible": 5894,
+      "n_eligible": 5992,
       "n_matured": 1045,
-      "coverage_pct": 17.73,
+      "coverage_pct": 17.44,
       "below_floor": true
     },
     "21": {
-      "n_eligible": 4872,
+      "n_eligible": 4964,
       "n_matured": 837,
-      "coverage_pct": 17.18,
+      "coverage_pct": 16.86,
       "below_floor": true
     },
     "63": {
-      "n_eligible": 1385,
+      "n_eligible": 1482,
       "n_matured": 220,
-      "coverage_pct": 15.88,
+      "coverage_pct": 14.84,
       "below_floor": true
     }
   },
