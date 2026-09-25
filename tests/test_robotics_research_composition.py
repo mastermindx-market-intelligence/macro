@@ -630,12 +630,16 @@ def _role_for(label, sentence):
                           "limitations.establishes": [sentence]})
 
 
-def test_ownership_side_comes_from_establishes_only():
+def test_ownership_side_comes_from_the_curated_object_label_only():
+    # The direction is read from the parenthetical of the assertion's own
+    # curated ``object.source_product_label`` — a curation decision, never an
+    # inference over prose. ``limitations.establishes`` is a GUARD on that
+    # direction, never its source.
+    assert _zebra_role() == "announced_seller"
+    # a denial never affirms and never flips
     base = load_bundle_case("zebra_skild_ownership")[1]
     announced = next(a for a in base.assertions
                      if a["statement_mode"] == "ANNOUNCED_ARRANGEMENT")
-    assert _zebra_role() == "announced_seller"
-    # a denial never affirms
     denial = list(announced["limitations"]["does_not_establish"]) + [
         "that Zebra acquired the Skild AI equity stake"]
     assert _zebra_role(**{"limitations.does_not_establish": denial}) == "announced_seller"
@@ -643,112 +647,92 @@ def test_ownership_side_comes_from_establishes_only():
     assert _zebra_role(**{"limitations.coverage":
                           "issuer press release announcing a sale to Skild AI, "
                           "whose acquisition closes later"}) == "announced_seller"
-    # a verb anchored to the subject as its explicit agent decides the side
-    assert _zebra_role(**{"limitations.establishes":
-                          ["an announced acquisition by Zebra of a perception software business"]}) \
+    # a label carrying NO curated direction serves no side, however clean the prose
+    assert _zebra_role(**{"object.source_product_label": "Robotics Automation business"}) \
+        == "announced_party"
+    # the label's own preposition decides which side: "to" = seller, "from" = acquirer
+    assert _zebra_role(**{"object.source_product_label":
+                          "Twinny perception unit (acquisition from Orbbec)",
+                          "limitations.establishes":
+                          ["an announced acquisition of the Twinny perception unit from Orbbec"]}) \
         == "announced_acquirer"
+    # prose that contradicts the label borrows nothing from it
     assert _zebra_role(**{"limitations.establishes":
-                          ["Zebra acquires a perception software business"]}) == "announced_acquirer"
-    # both sides anchored to the subject = ambiguous, never guessed
+                          ["an announced acquisition of the Twinny perception unit from Orbbec"]}) \
+        == "announced_party"
+    # both directions stated at once = ambiguous, never guessed
     assert _zebra_role(**{"limitations.establishes":
-                          ["Zebra Technologies sells the unit to Skild AI",
-                           "Zebra Technologies acquires the perception business"]}) \
+                          ["an announced sale of the Robotics Automation business to Skild AI",
+                           "an announced acquisition of the Robotics Automation business "
+                           "from Skild AI"]}) == "announced_party"
+    # non-ownership prose under a directional label serves nothing
+    assert _zebra_role(**{"limitations.establishes":
+                          ["a catalog capability listing for strain-wave gearing"]}) \
         == "announced_party"
 
 
-def test_ownership_side_is_served_only_from_the_closed_template_grammar():
-    # The side is a CLOSED TEMPLATE GRAMMAR (four independent reviews rejected
-    # an open agent/patient resolver: each found a sentence naming the WRONG
-    # party as agent). Five shapes serve a side; everything else is neutral.
+def test_ownership_side_requires_the_closed_curated_sentence_grammar():
+    # The guard sentence must name the curated PRODUCT after one of a few fixed
+    # ownership heads, then the curated PREPOSITION and the curated
+    # COUNTERPARTY, then nothing but a date. Product and counterparty enter the
+    # grammar as escaped curated literals, so no free slot is left for a parser
+    # to be wrong about, and the tail is an ALLOWLIST rather than a blocklist.
     anchored = (
-        # T1  <subject> [(...)] <active verb group> <clean tail>
-        ("Zebra Technologies divests the Robotics Automation business to Skild AI",
-         "announced_seller"),
-        ("Zebra Technologies has agreed to sell its Robotics Automation business to Skild AI",
-         "announced_seller"),
-        ("Zebra Technologies agreed to sell.", "announced_seller"),
-        ("Zebra (Nasdaq: ZBRA) sells the Robotics Automation business to Skild AI",
-         "announced_seller"),
-        ("Zebra Technologies (Nasdaq: ZBRA) will sell the Robotics Automation business to "
-         "Skild AI", "announced_seller"),
-        ("Zebra Technologies transferred the Robotics Automation business to Skild AI on "
-         "15 April 2026", "announced_seller"),
-        ("Zebra Technologies sells the unit to Skild AI, Fanuc and ABB, for cash",
-         "announced_seller"),
-        ("Zebra acquires Skild AI's perception unit", "announced_acquirer"),
-        ("Zebra Technologies purchased the Robotics Automation business from Skild AI",
-         "announced_acquirer"),
-        ("Zebra Technologies bought the perception unit", "announced_acquirer"),
-        # T2  an announced <noun> by <subject> [of ...]
-        ("an announced sale by Zebra of its Robotics Automation business to Skild AI",
-         "announced_seller"),
-        ("an announced acquisition by Zebra of a perception software business",
-         "announced_acquirer"),
-        # T3  <clean head> <passive aux> <participle> by <subject> <clean tail>
-        ("the business was sold by Zebra to Skild AI", "announced_seller"),
-        ("The perception unit was purchased by Zebra Technologies", "announced_acquirer"),
-        # T4  <subject>'s <noun> of ...
-        ("Zebra Technologies' sale of the Robotics Automation business to Skild AI",
-         "announced_seller"),
-        ("Zebra Technologies' acquisition of the Twinny perception unit", "announced_acquirer"),
-        # T5  implicit subject (named nowhere): an announced <noun> of X to|from <Party>
-        ("an announced ownership change transferring the Robotics Automation business to "
-         "Skild AI", "announced_seller"),
-        ("an announced sale of the Robotics Automation business to Skild AI", "announced_seller"),
-        ("an announced sale to Skild AI of the Robotics Automation business", "announced_seller"),
-        ("an announced divestiture of the Robotics Automation business to Skild AI, for cash",
-         "announced_seller"),
+        # the two shapes the curated corpus actually uses
+        "an announced ownership change transferring the Robotics Automation business to Skild AI",
+        "an announced sale of the Robotics Automation business to Skild AI",
+        "an announced divestiture of the Robotics Automation business to Skild AI",
+        "an announced transfer of the Robotics Automation business to Skild AI",
+        "an announced change of control of the Robotics Automation business to Skild AI",
+        # the reordered form
+        "an announced sale to Skild AI of the Robotics Automation business",
+        "an announced transfer to Skild AI of the Robotics Automation business",
+        # a date tail, and only a date tail
+        "an announced sale of the Robotics Automation business to Skild AI on 15 April 2026",
+        "an announced sale of the Robotics Automation business to Skild AI, effective April 2026",
+        "an announced sale of the Robotics Automation business to Skild AI dated 2026-04-15",
+        "an announced sale of the Robotics Automation business to Skild AI in 2026",
+        # quotes, typographic marks, a capitalised article and case are normalised
+        "“an announced sale of the Robotics Automation business to Skild AI”",
+        "An announced sale of the Robotics Automation business to Skild AI",
+        "AN ANNOUNCED SALE OF THE ROBOTICS AUTOMATION BUSINESS TO SKILD AI",
+        "an announced sale of the Robotics Automation business to Skild AI.",
     )
-    for sentence, role in anchored:
-        assert _zebra_role(**{"limitations.establishes": [sentence]}) == role, sentence
-    # the conjoined-object fixture shape ("the ThingWorx and Kepware businesses")
+    for sentence in anchored:
+        assert _zebra_role(**{"limitations.establishes": [sentence]}) == "announced_seller", sentence
+    # the conjoined-product fixture shape, on its own curated label
     assert _ptc_role("the announced change of the ThingWorx and Kepware businesses to TPG") \
         == "announced_seller"
     assert _ptc_role("The announced change of the ThingWorx and Kepware businesses to TPG") \
         == "announced_seller"
-    assert _ptc_role("PTC divests the ThingWorx and Kepware businesses to TPG") \
-        == "announced_seller"
-    # typographic apostrophes / quotes and a capitalised article are normalised
-    for sentence, role in (
-        ("Zebra Technologies\u2019 sale of the Robotics Automation business to Skild AI",
-         "announced_seller"),
-        ("\u201cZebra Technologies sells the unit to Skild AI\u201d", "announced_seller"),
-        ("An announced sale of the Robotics Automation business to Skild AI", "announced_seller"),
-        ("Zebra Technologies (advised by Goldman Sachs) sells the unit to Skild AI",
-         "announced_seller"),
-        ("The perception unit was purchased by Zebra Technologies, effective 15 April 2026",
-         "announced_acquirer"),
-        ("Zebra Technologies sells the unit to Skild AI for cash", "announced_seller"),
-        ("Zebra Technologies sells the unit to Skild AI for USD 1.2 billion", "announced_seller"),
-        ("Zebra Technologies sells the unit to Skild AI for an undisclosed sum",
-         "announced_seller"),
-        ("Zebra Technologies sells the unit as part of a restructuring", "announced_seller"),
+    # the acquirer direction, both orders
+    for sentence in ("an announced acquisition of the Twinny perception unit from Orbbec",
+                     "an announced purchase of the Twinny perception unit from Orbbec",
+                     "an announced acquisition from Orbbec of the Twinny perception unit"):
+        assert _zebra_role(**{"object.source_product_label":
+                              "Twinny perception unit (acquisition from Orbbec)",
+                              "limitations.establishes": [sentence]}) \
+            == "announced_acquirer", sentence
+    # everything outside the grammar is neutral: another product, another party,
+    # the wrong preposition, an extra clause, a consideration, a missing head,
+    # an injected phrase inside the product or before it
+    for sentence in (
+        "an announced sale of the perception unit to Skild AI",
+        "an announced sale of the Robotics Automation business to Fanuc",
+        "an announced sale of the Robotics Automation business from Skild AI",
+        "an announced sale of the Robotics Automation business to Skild AI for cash",
+        "an announced sale of the Robotics Automation business to Skild AI for USD 1.2 billion",
+        "an announced sale of the Robotics Automation business to Skild AI for an undisclosed sum",
+        "an announced sale of the Robotics Automation business to Skild AI as part of a "
+        "restructuring",
+        "an announced sale of the Robotics Automation business held for a client to Skild AI",
+        "an announced sale of the Robotics Automation business by Fanuc to Skild AI",
+        "an announced sale (on behalf of Fanuc) of the Robotics Automation business to Skild AI",
+        "a sale of the Robotics Automation business to Skild AI",
+        "the Robotics Automation business goes to Skild AI",
+        "an announced sale of the Robotics Automation business to Skild AI and Fanuc",
     ):
-        assert _zebra_role(**{"limitations.establishes": [sentence]}) == role, sentence
-    # a label ending in a period survives the sentence's stripped period
-    assert _role_for("PTC Inc.", "the ThingWorx business was acquired by PTC Inc.") \
-        == "announced_acquirer"
-    # T5 is bound to the assertion's own curated object label: the slot
-    # (preposition + party) must equal the parenthetical "(sale to Skild AI)"
-    assert _zebra_role(**{"limitations.establishes":
-                          ["an announced acquisition of the Twinny perception unit from Orbbec"],
-                          "object.source_product_label":
-                          "Twinny perception unit (acquisition from Orbbec)"}) \
-        == "announced_acquirer"
-    assert _zebra_role(**{"limitations.establishes":
-                          ["an announced acquisition from Orbbec of the Twinny perception unit"],
-                          "object.source_product_label":
-                          "Twinny perception unit (acquisition from Orbbec)"}) \
-        == "announced_acquirer"
-    assert _zebra_role(**{"limitations.establishes":
-                          ["an announced acquisition of the Twinny perception unit from Orbbec"],
-                          "object.source_product_label": "Twinny perception unit"}) \
-        == "announced_party"
-    # the fixture's own label says "(sale to Skild AI)", so an acquisition
-    # sentence cannot borrow it
-    assert _zebra_role(**{"limitations.establishes":
-                          ["an announced acquisition of the Twinny perception unit from Orbbec"]}) \
-        == "announced_party"
+        assert _zebra_role(**{"limitations.establishes": [sentence]}) == "announced_party", sentence
 
 
 def test_ownership_side_is_withheld_for_every_reviewed_inversion_family():
@@ -896,21 +880,101 @@ def test_ownership_side_is_withheld_for_every_reviewed_inversion_family():
     assert _role_for("PTC", "the ThingWorx business was acquired by PTCTech") == "announced_party"
     assert _role_for("PTC Inc.", "the ThingWorx business was acquired by PTC Inc.'s adviser") \
         == "announced_party"
+    # R2b review 7: the 39 inversions that retired the subject-naming
+    # templates. Each once served a side naming the WRONG party as agent
+    # through an agency phrase outside the then-current blocklist.
+    retired = (
+        # B1  "for a|an <agent>" — the consideration exemption with a determiner
+        "Zebra Technologies acquires the perception unit for a Skild AI subsidiary",
+        "Zebra Technologies acquires the perception unit for an affiliate of Skild AI",
+        "Zebra Technologies acquires the perception unit for a client",
+        "Zebra Technologies acquires the perception unit for a customer",
+        "Zebra Technologies acquires the perception unit for an investor group",
+        "an announced sale by Zebra Technologies of the unit for a client",
+        "the unit was acquired by Zebra Technologies for a Skild AI vehicle",
+        "Zebra Technologies' sale of the unit for a Skild AI vehicle",
+        "an announced sale of the Robotics Automation business to Skild AI for a client",
+        "Zebra Technologies sells the unit (for a client)",
+        "Zebra Technologies sells the unit for the aggregate benefit of Skild AI",
+        "Zebra Technologies sells the unit for cash-rich Skild AI",
+        # B2  appointment-of-agent parentheticals
+        "Zebra Technologies (mandated by Skild AI) sells the unit",
+        "Zebra Technologies (appointed by Skild AI) sells the unit",
+        "Zebra Technologies (retained by Skild AI) sells the unit",
+        "Zebra Technologies (engaged by Skild AI) sells the unit",
+        "the unit was acquired by Zebra Technologies (mandated by Skild AI)",
+        "an announced sale by Zebra Technologies (mandated by Skild AI)",
+        "Zebra Technologies (by Skild AI) sells the unit",
+        # B3  the same agency wording, capitalised
+        "the unit was acquired by Zebra Technologies, On Behalf Of Skild AI",
+        "the unit was sold by Zebra Technologies, as Nominee of Skild AI",
+        "Zebra Technologies (as Agent of Skild AI) sells the unit",
+        "Zebra Technologies (as Trustee) sells the unit",
+        "the unit was sold by Zebra Technologies (Not the seller of record)",
+        "Fortive (as Nominee) sells the automation unit",
+        # B4  a multi-word agency role
+        "Zebra Technologies sells the unit in its capacity as sole manager of the Skild AI fund",
+        "Zebra Technologies acquires the unit as general partner of the Skild AI fund",
+        # B5  agency instruments the lexicon did not name
+        "Zebra Technologies sells the unit under a power of attorney from Skild AI",
+        "Zebra Technologies acquires the unit under an agency agreement with Skild AI",
+        # B6  a co-ordinate clause naming a different principal by role noun
+        "the unit was acquired by Zebra Technologies, Skild AI remains the buyer",
+        "the unit was sold by Zebra Technologies, the vendor of record remains Skild AI",
+        "the unit was acquired by Zebra Technologies, with Skild AI as the ultimate acquirer",
+        "with Skild AI as the ultimate acquirer, the unit was acquired by Zebra Technologies",
+        "Zebra Technologies (the seller of record remains Skild AI) sells the unit",
+        # a bare parenthetical naming another party (review 7 nit 1)
+        "Zebra Technologies (Skild AI) sells the unit",
+        # the same families reaching the implicit path and the label cohort
+        "an announced sale of the Robotics Automation business to Skild AI on behalf of a client",
+        "an announced sale of the Robotics Automation business to Skild AI, Fanuc is the seller",
+        "ABB Ltd sells the robotics division for a client",
+        "Smith & Nephew Robotics acquires the surgical unit for a Skild AI affiliate",
+    )
+    for sentence in retired:
+        assert _zebra_role(**{"limitations.establishes": [sentence]}) == "announced_party", sentence
 
 
-def test_ownership_side_matches_comma_and_short_subject_labels():
-    # the label, the label without its corporate suffix and its first word all
-    # count as the subject — but only when the template's next token follows
-    # immediately
-    assert _role_for("Zebra Technologies, Inc.",
-                     "Zebra Technologies, Inc. sells the Robotics Automation business") \
+def test_ownership_side_is_withheld_when_the_subject_is_named_as_the_actor():
+    # The subject-naming templates are RETIRED (R2b review 7). Six rounds of
+    # blocklist repairs were each inverted by an agency phrase the previous
+    # round had not seen — "for a client", "(mandated by Y)", "as sole manager
+    # of the Y fund", "under a power of attorney from Y", "Y remains the buyer"
+    # — because agency in free prose is an open set. A served side naming the
+    # WRONG party as agent is a blocker; an unnecessary neutral is not. Prose
+    # that makes the subject the actor is therefore neutral whatever its shape,
+    # and however the subject is written.
+    for label, sentence in (
+        ("Zebra Technologies",
+         "Zebra Technologies divests the Robotics Automation business to Skild AI"),
+        ("Zebra Technologies",
+         "an announced sale by Zebra of its Robotics Automation business to Skild AI"),
+        ("Zebra Technologies", "the business was sold by Zebra to Skild AI"),
+        ("Zebra Technologies",
+         "Zebra Technologies' sale of the Robotics Automation business to Skild AI"),
+        ("Zebra Technologies",
+         "Zebra Technologies’ sale of the Robotics Automation business to Skild AI"),
+        ("Zebra Technologies", "Zebra (Nasdaq: ZBRA) sells the Robotics Automation business"),
+        ("Zebra Technologies",
+         "Zebra Technologies (advised by Goldman Sachs) sells the unit to Skild AI"),
+        ("Zebra Technologies, Inc.",
+         "Zebra Technologies, Inc. sells the Robotics Automation business"),
+        ("ABB Ltd", "ABB acquires the robotics unit"),
+        ("Smith & Nephew Robotics", "Smith & Nephew Robotics sells the unit to Skild AI"),
+        ("PTC Inc.", "the ThingWorx business was acquired by PTC Inc."),
+    ):
+        assert _role_for(label, sentence) == "announced_party", (label, sentence)
+    # the subject named INSIDE an otherwise-grammatical guard sentence also
+    # withholds the side
+    assert _zebra_role(**{"limitations.establishes":
+                          ["an announced sale by Zebra Technologies of the Robotics Automation "
+                           "business to Skild AI"]}) == "announced_party"
+    # a curated product that innocently shares a word with its owner's label is
+    # NOT a subject mention, so the guard sentence still anchors
+    assert _role_for("Robotics Automation Holdings",
+                     "an announced sale of the Robotics Automation business to Skild AI") \
         == "announced_seller"
-    assert _role_for("Zebra Technologies, Inc.",
-                     "Zebra Technologies sells the Robotics Automation business") \
-        == "announced_seller"
-    assert _role_for("ABB Ltd", "ABB acquires the robotics unit") == "announced_acquirer"
-    assert _role_for("Smith & Nephew Robotics",
-                     "Smith & Nephew Robotics sells the unit to Skild AI") == "announced_seller"
 
 
 def test_view_reasons_are_the_shared_closed_set_and_never_contradict_the_selection():

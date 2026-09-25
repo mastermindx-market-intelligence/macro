@@ -726,84 +726,53 @@ def _graph(rows: list[dict[str, Any]], selection: _Selection) -> tuple[dict, boo
 # Companies
 # ---------------------------------------------------------------------------
 
-# Ownership side = a CLOSED TEMPLATE GRAMMAR over ``limitations.establishes``.
-# Four rounds of independent review rejected an open agent/patient resolver
-# (each round found a sentence where the served side named the WRONG party as
-# agent). The side is therefore served only when the sentence matches one of
-# five exact shapes in which the assertion subject is textually the agent, the
-# matched head is followed by a clean tail (no second ownership marker, no
-# ``by``, no clause word, no passive auxiliary, no second subject mention) and,
-# for the implicit-subject noun shape, the subject is named nowhere at all.
-# Everything else is ``announced_party``. A structured direction belongs in the
-# shared assertion contract (v1.1 additive request to the #7870 owner), not in
-# a parser.
-_ACTIVE_ACQUIRE = (r"(?:acquires|acquired|has acquired|will acquire|agreed to acquire|"
-                   r"has agreed to acquire|purchases|purchased|has purchased|buys|bought|"
-                   r"has bought)")
-_ACTIVE_SELL = (r"(?:sells|sold|has sold|will sell|agreed to sell|has agreed to sell|divests|"
-                r"divested|has divested|transfers|transferred|has transferred)")
-_PASSIVE_AUX = r"(?:was|were|is|are|has been|have been|had been|will be|to be|being)"
-_PP_ACQUIRE = r"(?:acquired|purchased|bought)"
-_PP_SELL = r"(?:sold|divested|transferred)"
-_NOUN_ACQUIRE = r"(?:acquisition|purchase)"
-_NOUN_SELL = r"(?:sale|divestiture|transfer|ownership change|change of control|change of ownership)"
-# with an explicit agent ("by <subject>", "<subject>'s") only the nouns that
-# have one: "a change of control by X" reads as X being the TARGET
-_NOUN_SELL_AGENT = r"(?:sale|divestiture|transfer)"
-# the bare noun ``change`` counts only as "change of <a business noun phrase>"
-_BUSINESS_NOUN = (r"(?:business|businesses|unit|units|division|divisions|subsidiary|subsidiaries|"
-                  r"operations|stake|interest|assets|line|lines)")
-_PAREN = r"(?P<paren>(?:\s*\([^()]*\))?)"
+# Ownership side = a CROSS-FIELD EQUALITY against the one field that carries a
+# curated direction, guarded by a closed sentence grammar.
+#
+# The direction is read from the parenthetical of the assertion's own curated
+# ``object.source_product_label`` ("Robotics Automation business (sale to Skild
+# AI)"): that parenthetical is a curation decision, not an inference.
+# ``limitations.establishes`` is a GUARD, never the source - a sentence serves
+# the curated side only when it names the SAME product after one of a few fixed
+# ownership heads, followed by the SAME preposition and the SAME counterparty
+# the label names, with nothing after it but a date, and with the subject named
+# NOWHERE. Product and counterparty enter the grammar as escaped curated
+# literals, so no free slot is left for a parser to be wrong about.
+#
+# Six rounds of independent review rejected the earlier subject-naming
+# templates ("<SUBJECT> sells X to Y", "X was acquired by <SUBJECT>", "an
+# announced sale by <SUBJECT>", "<SUBJECT>'s sale of X"). Each round inverted
+# the previous round's blocklist with an agency phrase it had not seen - "for a
+# client", "on behalf of", "(mandated by Y)", "as sole manager of the Y fund",
+# "under a power of attorney from Y", "Y remains the buyer" - because agency in
+# free prose is an open set. A served side naming the WRONG party as agent is a
+# blocker; an unnecessary neutral is not. Those templates are therefore
+# RETIRED: a sentence that names the subject as the actor serves
+# ``announced_party`` until ``curation_assertion`` carries a structured
+# ownership direction (the v1.1 additive request to the #7870 owner).
 _ARTICLE = r"(?:[Aa]n|[Tt]he)"
-_NAMED_PARTY = r"[A-Z][A-Za-z0-9&.-]*(?:\s+[A-Z&][A-Za-z0-9&.-]*)*"
-# after a subject mention or a named party the sentence may only end, pause,
-# or continue with a lowercase function word — never with more name
-_AFTER_NAME = (r"(?P<tail>$|,.*|\s+(?:on|to|from|for|in|at|as|under|with|following|after|"
-               r"before|during|effective|per|pursuant|subject|upon|via|through)\b.*)")
-_ANY_MARKER = re.compile(
-    r"\bacqui(?:res?|red|sition)\b|\bpurchas|\bbuys?\b|\bbuying\b|\bbought\b|\bsale\b|"
-    r"\bsells?\b|\bselling\b|\bsold\b|\bdivest|\btransfer|\bchange of\b|\bownership change\b")
-# ``and``/``or`` are NOT dirty on their own (a conjoined object such as "the
-# ThingWorx and Kepware businesses" is ordinary); a coordinated second clause
-# is caught by its own ownership marker or passive auxiliary. Agency phrases
-# (acting for another principal) are dirty: ``on behalf of``, ``as agent``,
-# ``acting for``, ``in the name of``, and ``for <Capitalised party>``.
-# AGENCY (the subject acting for another principal) is a closed lexicon: the
-# fiduciary nouns, "behalf", "acting", "in the name / favour of", "on account
-# of", "at the direction / instruction / request of", "as <role> of|for", and
-# every ``for`` that is not followed by a consideration (cash, an undisclosed
-# sum, a currency amount). Anything on the list makes the sentence neutral.
-_AGENCY = (r"\b(?:behalf|agents?|brokers?|nominees?|trustees?|custodians?|representatives?|"
-           r"intermediar(?:y|ies)|prox(?:y|ies)|mandates?|mandatar(?:y|ies)|fiduciar(?:y|ies)|"
-           r"acting|instruct(?:ed|ions?)|direction of|request of|account of)\b|"
-           r"\bin the name of\b|\bin favou?r of\b|"
-           r"\bas\s+(?:an?\s+|the\s+)?(?!part\b|result\b|well\b|of\b)[a-z-]+\s+(?:of|for)\b|"
-           r"\bfor\b(?!\s+(?:cash|consideration|approximately|about|around|roughly|up to|an?\s|"
-           r"(?:the\s+)?(?:aggregate|total|nominal|undisclosed|net|gross)\b|"
-           r"\$|\u20ac|\u00a3|\u00a5|USD|EUR|GBP|JPY|CNY|RMB|HKD|SGD|KRW|TWD|CHF|[0-9]))")
-_TAIL_DIRTY = re.compile(
-    r"\bby\b|;|\b(?:while|whereas|which|whose|who|whom|that|be|was|were|is|are|"
-    r"been|being|not|rather|instead)\b|" + _AGENCY)
-# a parenthetical right after the subject may say "(advised by Goldman Sachs)"
-# or "(Nasdaq: ZBRA)", never anything the tail could not say — minus the
-# bare ``by``
-_PAREN_DIRTY = re.compile(
-    r";|\b(?:while|whereas|which|whose|who|whom|that|be|was|were|is|are|been|being|not|"
-    r"rather|instead)\b|" + _AGENCY)
-_TEMPORAL_PARTY = re.compile(
-    r"^(?:January|February|March|April|May|June|July|August|September|October|November|"
-    r"December|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Q[1-4]|H[12]|FY|CY|"
-    r"[0-9])")
+_NOUN_SELL = (r"(?:sale|divestiture|transfer|ownership change|change of control|"
+              r"change of ownership)")
+_NOUN_ACQUIRE = r"(?:acquisition|purchase)"
+_MONTH = (r"(?:January|February|March|April|May|June|July|August|September|October|"
+          r"November|December)")
+_DATE = (r"(?:[0-9]{1,2}\s+" + _MONTH + r"\s+[0-9]{4}|"
+         + _MONTH + r"\s+[0-9]{1,2},?\s+[0-9]{4}|" + _MONTH + r"\s+[0-9]{4}|"
+         r"[0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{4})")
+# An ALLOWLIST, not a blocklist: after the counterparty the sentence may only
+# end or carry a date. A consideration, a second clause, an agency phrase or a
+# third party is outside the grammar and serves no side.
+_CLOSED_TAIL = (r"(?:,?\s+(?:on|in|effective|as of|with effect from|dated)\s+"
+                + _DATE + r")?\.?$")
+_CURATED_SLOT = re.compile(r"\([^()]*\b(?P<prep>to|from)\s+(?P<party>[^()]+?)\s*\)")
 
 
 def _subject_mentions(label: object) -> frozenset[str]:
     """How the subject may be written inside its own prose: the label, the
     label without a corporate suffix after a comma, and its first word (only
     when it is a real word: 3+ letters, not an article). A mention only ever
-    counts when the template's next token follows it IMMEDIATELY after a
-    name boundary, so a longer name that merely starts with the same word
-    ("Fortive Industrial Technologies" for "Fortive", "PTCTech" for "PTC")
-    never matches."""
+    counts when the next character is not more name ("Fortive Industrial
+    Technologies" for "Fortive", "PTCTech" for "PTC" never match)."""
     text = str(label or "").strip()
     if not text:
         return frozenset()
@@ -818,119 +787,83 @@ def _subject_mentions(label: object) -> frozenset[str]:
 
 def _mention_pattern(mentions: frozenset[str]) -> str:
     return ("(?:" + "|".join(re.escape(m) for m in sorted(mentions, key=len, reverse=True))
-            + r")(?![A-Za-z0-9'\u2019])")
-
-
-def _clean(text: str, mention_re: re.Pattern[str]) -> bool:
-    """A head, tail or object phrase is clean when it carries no ownership
-    marker, no ``by``, no clause word / passive auxiliary / agency phrase and
-    no mention of the subject (``and``/``or`` stay clean: a conjoined object
-    is ordinary, a second clause is caught by its own marker or auxiliary,
-    and a joint agent after ``by`` is refused by ``_AFTER_NAME``)."""
-    return not (_ANY_MARKER.search(text) or _TAIL_DIRTY.search(text) or mention_re.search(text))
-
-
-def _paren_clean(text: str, mention_re: re.Pattern[str]) -> bool:
-    return not (_ANY_MARKER.search(text) or _PAREN_DIRTY.search(text) or mention_re.search(text))
+            + r")(?![A-Za-z0-9'’])")
 
 
 def _normalised_sentence(piece: str) -> str:
-    text = piece.strip().strip("\"\u201c\u201d'").strip().rstrip(".").strip()
-    return text.replace("\u2019", "'")
+    text = piece.strip().strip("\"“”'").strip().rstrip(".").strip()
+    return text.replace("’", "'")
+
+
+def _curated_direction(object_label: str) -> tuple[str, str, str] | None:
+    """``(product, preposition, counterparty)`` exactly as the curated object
+    label records them: "Robotics Automation business (sale to Skild AI)" ->
+    ``("Robotics Automation business", "to", "Skild AI")``. ``None`` when the
+    label carries no direction, which is the only place a direction may come
+    from."""
+    slot = _CURATED_SLOT.search(object_label)
+    if not slot:
+        return None
+    product = object_label[: slot.start()].strip()
+    party = slot.group("party").strip()
+    if not product or not party:
+        return None
+    return product, slot.group("prep").lower(), party
+
+
+def _ownership_grammar(product: str, party: str, prep: str) -> tuple[re.Pattern[str], ...]:
+    """The closed ownership sentences for ONE direction, built from the curated
+    product and counterparty as literals. "to" is the seller direction (the
+    subject gave the product up), "from" the acquirer direction."""
+    x = r"(?:an?|the)\s+" + re.escape(product)
+    p = re.escape(party)
+    if prep == "to":
+        # "an announced ownership change transferring X to Y" and "the announced
+        # change of X to Y" are the two shapes the curated corpus uses
+        heads = (_NOUN_SELL + r"\s+(?:of|transferring)", r"change\s+of")
+        reordered = r"(?:sale|transfer)"
+    else:
+        heads = (_NOUN_ACQUIRE + r"\s+of",)
+        reordered = _NOUN_ACQUIRE
+    forms = [_ARTICLE + r"\s+announced\s+(?:" + head + r")\s+" + x + r"\s+" + prep
+             + r"\s+" + p + _CLOSED_TAIL for head in heads]
+    forms.append(_ARTICLE + r"\s+announced\s+" + reordered + r"\s+" + prep + r"\s+" + p
+                 + r"\s+of\s+" + x + _CLOSED_TAIL)
+    return tuple(re.compile(form, re.IGNORECASE) for form in forms)
 
 
 def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
+    """The side the assertion's own curated object label records, served only
+    when its ``establishes`` prose agrees with it and contradicts it nowhere.
+    A sentence matching the OPPOSITE direction's grammar, a sentence matching
+    neither, a missing curated direction and a missing subject label all yield
+    the empty set, i.e. ``announced_party``."""
     limits = assertion.get("limitations") or {}
+    direction = _curated_direction(str((assertion.get("object") or {})
+                                       .get("source_product_label") or ""))
     mentions = _subject_mentions((assertion.get("subject") or {}).get("source_business_label"))
-    object_label = str((assertion.get("object") or {}).get("source_product_label") or "")
+    if direction is None or not mentions:
+        return set()
+    product, prep, party = direction
+    curated_side = "seller" if prep == "to" else "acquirer"
+    grammars = (("seller", _ownership_grammar(product, party, "to")),
+                ("acquirer", _ownership_grammar(product, party, "from")))
+    mention_re = re.compile(r"(?<![A-Za-z0-9])" + _mention_pattern(mentions), re.IGNORECASE)
+    product_re = re.compile(re.escape(product), re.IGNORECASE)
     sides: set[str] = set()
-    if not mentions:
-        return sides
-    m_pat = _mention_pattern(mentions)
-    mention_re = re.compile(r"(?<![A-Za-z0-9])" + m_pat, re.IGNORECASE)
-    flags = re.IGNORECASE
-    templates = (
-        # T1  <SUBJECT> [(...)] <active verb group> <clean tail>
-        (re.compile(r"^" + m_pat + _PAREN + r"\s+" + _ACTIVE_ACQUIRE + r"\b(?P<tail>.*)$", flags),
-         "acquirer", ("tail",)),
-        (re.compile(r"^" + m_pat + _PAREN + r"\s+" + _ACTIVE_SELL + r"\b(?P<tail>.*)$", flags),
-         "seller", ("tail",)),
-        # T2  an announced <noun> by <SUBJECT> [(...)] [of <clean tail>]
-        (re.compile(r"^" + _ARTICLE + r" announced " + _NOUN_ACQUIRE + r" by " + m_pat + _PAREN
-                    + r"(?P<tail>(?:\s+of\b.*)?)$", flags), "acquirer", ("tail",)),
-        (re.compile(r"^" + _ARTICLE + r" announced " + _NOUN_SELL_AGENT + r" by " + m_pat + _PAREN
-                    + r"(?P<tail>(?:\s+of\b.*)?)$", flags), "seller", ("tail",)),
-        # T3  <clean head> <passive aux> <participle> by <SUBJECT> [(...)] <end | , | function word ...>
-        (re.compile(r"^(?P<head>.*?)\s" + _PASSIVE_AUX + r"\s+" + _PP_ACQUIRE + r"\s+by\s+"
-                    + m_pat + _PAREN + _AFTER_NAME, flags), "acquirer", ("head", "tail")),
-        (re.compile(r"^(?P<head>.*?)\s" + _PASSIVE_AUX + r"\s+" + _PP_SELL + r"\s+by\s+"
-                    + m_pat + _PAREN + _AFTER_NAME, flags), "seller", ("head", "tail")),
-        # T4  <SUBJECT>'s <noun> of <clean tail>
-        (re.compile(r"^" + m_pat.replace(r"(?![A-Za-z0-9'\u2019])", "") + r"(?:'s|')\s+"
-                    + _NOUN_ACQUIRE + r"\s+of\b(?P<tail>.*)$", flags), "acquirer", ("tail",)),
-        (re.compile(r"^" + m_pat.replace(r"(?![A-Za-z0-9'\u2019])", "") + r"(?:'s|')\s+"
-                    + _NOUN_SELL_AGENT + r"\s+of\b(?P<tail>.*)$", flags), "seller", ("tail",)),
-    )
-    # T5  implicit subject: the subject is named NOWHERE; "an announced <noun>
-    # of X to|from <Named Party>" with exactly ONE party slot, X and the tail
-    # clean and free of a second to/from slot, the party not a date token, and
-    # the slot (preposition + party) EQUAL to the one the assertion's own
-    # curated object label names in its parenthetical (a cross-field
-    # consistency check, not a parse). The noun and the preposition agree:
-    # sale/transfer/… + to = seller; acquisition/purchase + from = acquirer.
-    x_group = r"(?P<x>(?:(?!\bto\b|\bfrom\b).)+?)"
-    implicit = (
-        (re.compile(r"^" + _ARTICLE + r" announced (?:" + _NOUN_SELL + r"(?: of| transferring)|"
-                    r"change of)\s+" + x_group + r"\s+to\s+(?P<party>" + _NAMED_PARTY + r")"
-                    + _AFTER_NAME), "seller"),
-        (re.compile(r"^" + _ARTICLE + r" announced (?:sale|transfer) to\s+(?P<party>"
-                    + _NAMED_PARTY + r")\s+of\s+" + x_group + r"(?P<tail>)$"), "seller"),
-        (re.compile(r"^" + _ARTICLE + r" announced " + _NOUN_ACQUIRE + r" of\s+" + x_group
-                    + r"\s+from\s+(?P<party>" + _NAMED_PARTY + r")" + _AFTER_NAME), "acquirer"),
-        (re.compile(r"^" + _ARTICLE + r" announced " + _NOUN_ACQUIRE + r" from\s+(?P<party>"
-                    + _NAMED_PARTY + r")\s+of\s+" + x_group + r"(?P<tail>)$"), "acquirer"),
-    )
-    business_change = re.compile(r"^" + _ARTICLE + r" announced change of\b.*\b" + _BUSINESS_NOUN
-                                 + r"\s+to\b")
-    slot_re = re.compile(r"\b(?:to|from)\b")
-    # the curated object label names the counterparty in its parenthetical,
-    # e.g. "Robotics Automation business (sale to Skild AI)": the sentence's
-    # slot must carry the SAME preposition and EXACTLY that party
-    curated = re.search(r"\([^()]*\b(?P<prep>to|from)\s+(?P<party>[^()]+?)\s*\)", object_label)
-    curated_slot = ((curated.group("prep").lower(), curated.group("party").strip().lower())
-                    if curated else None)
     for piece in limits.get("establishes") or []:
         if not isinstance(piece, str):
             continue
         sentence = _normalised_sentence(piece)
-        for pattern, side, groups in templates:
-            match = pattern.match(sentence)
-            if not match or not all(_clean(match.group(g) or "", mention_re) for g in groups):
-                continue
-            paren = match.groupdict().get("paren") or ""
-            if paren and not _paren_clean(paren, mention_re):
-                continue
-            sides.add(side)
-        if mention_re.search(sentence):
+        # the subject named anywhere outside the curated product name (a
+        # product may innocently share a word with its owner's label) puts the
+        # sentence outside the grammar
+        if mention_re.search(product_re.sub(" ", sentence)):
             continue
-        for pattern, side in implicit:
-            match = pattern.match(sentence)
-            if not match:
-                continue
-            x, party, tail = match.group("x"), match.group("party"), match.group("tail") or ""
-            if not (_clean(x, mention_re) and _clean(tail, mention_re)):
-                continue
-            if slot_re.search(x) or slot_re.search(tail) or _TEMPORAL_PARTY.match(party):
-                continue
-            if party.lower() in x.lower():
-                continue
-            prep = "to" if side == "seller" else "from"
-            if curated_slot != (prep, party.lower()):
-                continue
-            if " announced change of " in sentence.lower() and not business_change.match(sentence):
-                continue
-            sides.add(side)
-    return sides
+        for side, patterns in grammars:
+            if any(pattern.match(sentence) for pattern in patterns):
+                sides.add(side)
+    return sides if sides == {curated_side} else set()
 
 
 def _ownership_role(assertion: Mapping[str, Any]) -> str:
@@ -943,10 +876,12 @@ def _ownership_role(assertion: Mapping[str, Any]) -> str:
             return f"owner_from:{valid_from}"
         return "owner_reported_effective_date_unknown"
     if mode == "ANNOUNCED_ARRANGEMENT":
-        # The side is read ONLY from what the assertion ESTABLISHES about its
-        # own subject, through the closed template grammar above: a denial
-        # (``does_not_establish``), the coverage prose, or any sentence outside
-        # the five shapes never decides a side (R2 nit 1; R2b reviews 1-4).
+        # The side is the one the assertion's own CURATED object label
+        # records, served only when its ``establishes`` prose agrees through
+        # the closed grammar above. A denial (``does_not_establish``), the
+        # coverage prose, a sentence naming the subject as the actor, a
+        # sentence contradicting the label and a label with no direction at
+        # all never decide a side (R2 nit 1; R2b reviews 1-7).
         # Ambiguous = neutral.
         sides = _anchored_sides(assertion)
         if sides == {"acquirer"}:

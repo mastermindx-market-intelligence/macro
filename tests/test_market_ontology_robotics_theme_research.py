@@ -414,14 +414,18 @@ def test_rbv10_dated_completion_becomes_owner_from_and_acquirer_marker_scans():
     dated = restamp(
         assertions[1],
         temporal={"business_valid_from": "2026-04-20", "business_valid_to": None})
-    # the side is read from what the assertion ESTABLISHES about its subject
-    # (R2b, review nit 1) — never from a product label, coverage prose or a
-    # denial; a subject-anchored acquisition clause yields the acquirer side
+    # the side is the one the assertion's own CURATED object label records,
+    # served only when its ``establishes`` prose agrees through the closed
+    # grammar (R2b reviews 1-7) — never from coverage prose, a denial, or a
+    # sentence naming the subject as the actor; a curated "from" direction
+    # with an agreeing guard sentence yields the acquirer side
     acquirer = restamp(
         assertions[0],
+        object={**assertions[0]["object"],
+                "source_product_label": "perception assets (acquisition from Skild AI)"},
         limitations={**assertions[0]["limitations"],
-                     "establishes": ["an announced acquisition by Zebra of "
-                                     "Skild AI perception assets"]})
+                     "establishes": ["an announced acquisition of the perception "
+                                     "assets from Skild AI"]})
     rebuilt = dataclasses.replace(
         bundle,
         assertions=(dated, acquirer),
