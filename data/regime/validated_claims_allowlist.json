@@ -1674,6 +1674,48 @@
    "surfaces": [
     "stocks"
    ]
+  },
+  {
+   "match": "identity_validated",
+   "backing": "NOT a displayed claim: IDENTITY_VALIDATED is an identity_state enum VALUE fixed by the Finance Intelligence read-model contract (contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json; emitted by engine/sector_intelligence/finance_projection.py, pinned by tests/test_finance_intelligence_hydration.py), so templates/finance_intelligence.js (+ its byte-identical site/ copy) must key its chip-label map by that exact string. The label a reader sees is the plain 'Identity confirmed' / '身份已确认'. Licenses the machine key only — the displayed label on that line must stay free of the token. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "finance_intelligence"
+   ]
+  },
+  {
+   "match": "pit_membership_validated",
+   "backing": "NOT a displayed claim: PIT_MEMBERSHIP_VALIDATED is a membership_state enum VALUE fixed by the Finance Intelligence read-model contract (contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json; emitted by engine/sector_intelligence/finance_projection.py / finance_overlap.py), so templates/finance_intelligence.js (+ its byte-identical site/ copy) must key its chip-label map by that exact string. The label a reader sees is the plain 'Point-in-time membership checked' / '时点成员数据已校验'. Licenses the machine key only — the displayed label on that line must stay free of the token. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "finance_intelligence"
+   ]
+  },
+  {
+   "match": "the same validated identities drive",
+   "backing": "templates/hk.html.j2 Jinja COMMENT ({# ... #}, stripped at render — never reaches a page). 'validated identities' names the in-template stage-board owner check directly below it: _hk_buy_owner.valid stays true only when setups.buy is a real sequence whose every row carries a unique, non-empty ticker (P0B zero-FOUC owner contract, commits 398b9d77890 / 3fb76ea810a). A code note about a data-integrity check, not a signal or research claim. Allowlisted rather than reworded because templates/hk.html.j2 is sha-pinned by the P0B browser receipts (mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json). Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "hk"
+   ]
+  },
+  {
+   "match": "through the validated owner",
+   "backing": "templates/hk.html.j2 Jinja COMMENT ({# ... #}, stripped at render — never reaches a page) on the stock-table serialization seam: 'validated owner' is the same _hk_buy_owner.valid identity check (unique non-empty tickers over a real setups.buy sequence; commit 3fb76ea810a). A code note, not a signal or research claim; allowlisted rather than reworded because the template is sha-pinned by the P0B browser receipts. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "hk"
+   ]
+  },
+  {
+   "match": "of the validated owner board",
+   "backing": "templates/canada.html.j2 Jinja COMMENT ({# ... #}, stripped at render — never reaches a page). 'validated owner board' is the in-template owner check _ca_owner.board_valid (stable, unique board identities; the comment itself says the page fails to a typed full view when that check fails; commit 398b9d77890). A code note, not a signal or research claim; allowlisted rather than reworded because the template is sha-pinned by the P0B browser receipts. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "canada"
+   ]
+  },
+  {
+   "match": "already validated server-side",
+   "backing": "templates/mm_brain.js (+ byte-identical site/mm_brain.js) JS block COMMENT above attrSafe() — not rendered text. 'already validated server-side' refers to the context receipt's entity symbols, which the server admits only through engine/intelligence_workspace/context_compiler.py::_valid_symbol (the W1-B admission law; anything else is rejected with reason 'invalid_symbol') before engine/neuralweb/brain_gateway.py emits the ai_context_receipt. An input-sanitation note explaining why attrSafe() still strips client-side, not a signal or research claim. Allowlisted rather than reworded because any mm_brain.js byte change re-bakes MM_BRAIN_VER into site/theme.js, which is sha-pinned by the P0B browser receipts. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "mm_brain"
+   ]
   }
  ]
 }

@@ -66,7 +66,7 @@
       NONE:                              ['No membership recorded',                          '未记录成员'],
       CURRENT_MEMBERSHIP_ONLY:           ['Current membership only — not a history',         '仅为当前成员 — 非历史口径'],
       PIT_MEMBERSHIP_INCOMPLETE:         ['Point-in-time membership incomplete',             '时点成员数据不完整'],
-      PIT_MEMBERSHIP_VALIDATED:          ['Point-in-time membership validated',              '时点成员数据已校验']
+      PIT_MEMBERSHIP_VALIDATED:          ['Point-in-time membership checked',                '时点成员数据已校验']
     },
     // D.5 materiality
     materiality: {
@@ -234,7 +234,7 @@
     },
     // D.21 identity state
     identity_state: {
-      IDENTITY_VALIDATED:                ['Identity validated',                 '身份已确认'],
+      IDENTITY_VALIDATED:                ['Identity confirmed',                 '身份已确认'],
       IDENTITY_UNRESOLVED:               ['Identity unresolved',                '身份尚未确认'],
       RESEARCH_HINT_UNVALIDATED:         ['Research hint, not validated',       '研究线索，尚未确认']
     },
@@ -381,8 +381,8 @@
   };
 
   var LABEL_FALLBACKS = {
-    plane_state:        ['On file', '有据可查'],
-    comparability_state:['Comparable', '可比'],
+    plane_state:        ['State not recorded', '未记录状态'],
+    comparability_state:['Comparability not recorded', '未记录可比性'],
     slice_state:        ['Definition only', '仅完成定义'],
     posture:            ['No price basket yet', '暂无价格组合'],
     membership:         ['No membership recorded', '未记录成员'],
@@ -419,7 +419,7 @@
     plane_word:         ['Operating', '经营'],
     edge_relationship:  ['—', '—'],
     receipt_owner:      ['—', '—'],
-    receipt_state:      ['ready', '就绪'],
+    receipt_state:      ['state not recorded', '未记录状态'],
     degraded_section_state:['available', '可用'],
     conflict_label:     ['Disagreement on file', '存在分歧']
   };
@@ -439,11 +439,25 @@
   // helpers
   // ──────────────────────────────────────────────────────────────────────────
   function isZh() { return document.documentElement.getAttribute('data-lang') === 'zh'; }
+  // Accessible name in the CURRENT language plus the EN/ZH pair the inline
+  // swapper re-applies on langchange. Rendered controls are created after that
+  // swapper has run, so the pair alone would leave them English in 中文.
+  function ariaPair(en, zh) {
+    return ' aria-label="' + esc(isZh() ? (zh || en) : en) + '" data-aria-en="' + esc(en) + '" data-aria-zh="' + esc(zh) + '"';
+  }
   function copyPair(pair) { return isZh() ? (pair[1] || pair[0]) : pair[0]; }
-  function labelFor(map, key) {
-    if (!key) return copyPair(FI_LABELS[map] && FI_LABELS[map][''] || LABEL_FALLBACKS[map] || ['—', '—']);
-    var row = (FI_LABELS[map] && FI_LABELS[map][key]) || LABEL_FALLBACKS[map];
-    return copyPair(row);
+  function labelRow(map, key) {
+    if (!key) return FI_LABELS[map] && FI_LABELS[map][''] || LABEL_FALLBACKS[map] || ['—', '—'];
+    return (FI_LABELS[map] && FI_LABELS[map][key]) || LABEL_FALLBACKS[map];
+  }
+  function labelFor(map, key) { return copyPair(labelRow(map, key)); }
+  // Static chips are named "<what>: <current label>"; the runtime writes the
+  // EN/ZH pair (the inline swapper re-applies it on langchange) plus the name
+  // in the current language, since the swapper ran before hydration.
+  function nameChip(el, en, zh) {
+    el.setAttribute('data-aria-en', en);
+    el.setAttribute('data-aria-zh', zh);
+    el.setAttribute('aria-label', isZh() ? zh : en);
   }
   function esc(value) {
     return String(value === null || value === undefined ? '' : value)
@@ -602,13 +616,17 @@
       show(heroCutoff, true); show(heroCutoffZh, true);
     }
     if (d.freshness && freshnessChip) {
+      var freshRow = labelRow('freshness', d.freshness.state);
       freshnessChip.setAttribute('data-state-freshness', d.freshness.state);
-      setText(freshnessChip, labelFor('freshness', d.freshness.state));
+      setText(freshnessChip, copyPair(freshRow));
+      nameChip(freshnessChip, 'Evidence freshness: ' + freshRow[0], '证据新鲜度：' + (freshRow[1] || freshRow[0]));
       show(freshnessChip, true);
     }
     if (d.outer_dossier_ref && outerChip) {
+      var outerRow = labelRow('outer_dossier_state', d.outer_dossier_ref.state);
       outerChip.setAttribute('data-state-outer-dossier', d.outer_dossier_ref.state);
-      setText(outerChip, labelFor('outer_dossier_state', d.outer_dossier_ref.state));
+      setText(outerChip, copyPair(outerRow));
+      nameChip(outerChip, 'Outer dossier: ' + outerRow[0], '外部报告：' + (outerRow[1] || outerRow[0]));
       show(outerChip, true);
     }
   }
@@ -657,7 +675,7 @@
         '<span class="fi-change-name">' + esc(name) + '</span>' +
         '<span class="fi-change-clause">' + esc(clause) + '</span>' +
         chipHtml(labelFor('freshness', freshness), { stateKey: 'FRESHNESS_PLACEHOLDER', classes: 'fi-chip fi-freshness-row' }).replace('data-state="FRESHNESS_PLACEHOLDER"', 'data-state-freshness="' + esc(freshness) + '" data-state-marker="' + esc(freshness) + '"') +
-        '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(evidence) + '" aria-label="Open evidence"><span aria-hidden="true">↗</span></button>' +
+        '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence', '打开证据') + '><span aria-hidden="true">↗</span></button>' +
         '</li>';
     }).join('');
   }
@@ -720,7 +738,7 @@
     var rerating = (slice && slice.rerating) || {};
     var html = RERATING_STEPS.map(function (s, idx) {
       var node = rerating[s.name] || {};
-      var state$ = node.state || 'NOT_APPLICABLE';
+      var state$ = node.state || 'MISSING';
       var comparability = node.comparability_state;
       var evidence = asArray(node.evidence_refs).join(' ');
       var rowHtml = '';
@@ -749,7 +767,7 @@
       if (s.name === 'price' && state$ === 'PRICE_BASIS_UNQUALIFIED') {
         rowHtml += chipHtml(labelFor('plane_state', state$), { stateKey: state$, stateMarker: state$ });
       }
-      rowHtml += '<button type="button" class="fi-step-evidence" data-evidence-ids="' + esc(evidence) + '" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>';
+      rowHtml += '<button type="button" class="fi-step-evidence" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>';
       rowHtml += '</li>';
       return rowHtml;
     }).join('');
@@ -819,12 +837,12 @@
           '<div class="fi-conflict-side" data-side="left">' +
             chipHtml(labelFor('plane_word', left.plane || 'operating'), { stateMarker: left.plane || '' }) +
             '<p class="fi-conflict-side-statement">' + esc(left.statement || '') + '</p>' +
-            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(leftEvidence) + '" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>' +
+            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(leftEvidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>' +
           '</div>' +
           '<div class="fi-conflict-side" data-side="right">' +
             chipHtml(labelFor('plane_word', right.plane || 'operating'), { stateMarker: right.plane || '' }) +
             '<p class="fi-conflict-side-statement">' + esc(right.statement || '') + '</p>' +
-            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(rightEvidence) + '" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>' +
+            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(rightEvidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>' +
           '</div>' +
         '</div>' +
         '<p class="fi-conflict-foot">' + copyPair(SURFACE.conflict_foot) + '</p>' +
@@ -868,7 +886,7 @@
           '</li>';
       }).join('');
       return '<div role="tabpanel" id="panel-' + esc(v.view_id) + '" class="fi-view-panel" data-view="' + esc(v.view_id) + '" aria-labelledby="tab-' + esc(v.view_id) + '"' + hidden + '>' +
-        '<svg class="fi-system-svg" role="img" aria-label="' + esc(v.name_en || v.view_id) + '" data-aria-en="' + esc(v.name_en || '') + '" data-aria-zh="' + esc(v.name_zh || '') + '"><title>' + esc(v.name_en || v.view_id) + '</title></svg>' +
+        '<svg class="fi-system-svg" role="img"' + ariaPair(v.name_en || v.view_id, v.name_zh || '') + '><title>' + esc(v.name_en || v.view_id) + '</title></svg>' +
         '<ul class="fi-slice-list">' + nodeHtml + '</ul>' +
         '<details class="fi-system-edges" open><summary><span class="l-en">Edge list</span><span class="l-zh">边的步骤视图</span></summary>' +
         '<ol class="fi-system-edge-list">' + edgeHtml + '</ol></details>' +
@@ -893,8 +911,11 @@
         }
       });
     });
+    // Keep the reader's chosen view across the langchange re-render.
+    if (state.viewId && views.some(function (v) { return v.view_id === state.viewId; })) activateView(state.viewId);
   }
   function activateView(viewId) {
+    state.viewId = viewId;
     $$('.fi-view-tab').forEach(function (t) {
       var sel = t.dataset.view === viewId;
       t.setAttribute('aria-selected', sel ? 'true' : 'false');
@@ -918,8 +939,8 @@
     if (ey && d && d.coverage) {
       var c = d.coverage;
       ey.textContent = (isZh()
-        ? ('已映射 ' + (c.domains_populated || 0) + ' 个子域 · 共 ' + (c.slices_populated || 0) + ' 个切片（' + (c.slices_total || 0) + ' 个总）')
-        : (c.domains_populated + ' of ' + c.domains_total + ' domains · ' + c.slices_populated + ' of ' + c.slices_total + ' slices mapped'));
+        ? ('已映射 ' + (c.domains_populated || 0) + ' / ' + (c.domains_total || 0) + ' 个子域 · ' + (c.slices_populated || 0) + ' / ' + (c.slices_total || 0) + ' 个切片')
+        : ((c.domains_populated || 0) + ' of ' + (c.domains_total || 0) + ' domains · ' + (c.slices_populated || 0) + ' of ' + (c.slices_total || 0) + ' slices mapped'));
       show(ey, true);
     }
     if (!domains.length) {
@@ -946,7 +967,7 @@
             chipHtml(labelFor('membership', bs), { stateMembership: bs, stateMarker: bs }) +
             (posture && posture !== 'SEMANTIC_ONLY' ? chipHtml(labelFor('posture', posture), { statePosture: posture, stateMarker: posture }) : '') +
             '</div>' +
-            '<span class="fi-slice-open" title="' + esc(isZh() ? ('已加入 ' + incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '">' + esc(isZh() ? (incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '</span>' +
+            '<span class="fi-slice-open">' + esc(isZh() ? (incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '</span>' +
             '</li>';
         }).join('') + '</ul>' +
         '</section>';
@@ -1000,10 +1021,10 @@
             return '<td class="fi-cell" data-state-materiality="UNMEASURED"><span class="fi-cell-role">' + esc(copyPair(SURFACE.no_role)) + '</span></td>';
           }
           var mat = cell.materiality || 'UNMEASURED';
-          var expState = (cell.exposure && cell.exposure.state) || 'MEASURED';
+          var expState = (cell.exposure && cell.exposure.state) || '';
           return '<td class="fi-cell" data-state-exposure="' + esc(expState) + '" data-state-materiality="' + esc(mat) + '" data-state-marker="' + esc(expState) + '">' +
-            '<span class="fi-cell-role">' + esc(labelFor('role', cell.role || 'SECOND_ORDER_BENEFICIARY')) + '</span>' +
-            '<span class="fi-cell-basis">' + esc(labelFor('basis', (cell.exposure && cell.exposure.basis) || 'QUALITATIVE')) + '</span>' +
+            '<span class="fi-cell-role">' + esc(cell.role ? labelFor('role', cell.role) : copyPair(['No role recorded', '未记录角色'])) + '</span>' +
+            '<span class="fi-cell-basis">' + esc(labelFor('basis', (cell.exposure && cell.exposure.basis) || '')) + '</span>' +
             '<span class="fi-cell-materiality">' + esc(labelFor('materiality', mat)) + '</span>' +
             (cell.retained_risk ? '<span class="fi-cell-risk">' + esc(cell.retained_risk) + '</span>' : '') +
             (cell.evidence_date ? '<span class="fi-cell-evidence-date">' + esc(cell.evidence_date) + '</span>' : '') +
@@ -1080,7 +1101,7 @@
           if (!match) {
             return '<td class="fi-cell"><span>' + esc(copyPair(SURFACE.not_mapped)) + '</span></td>';
           }
-          var mState = match.state || 'DESCRIBED';
+          var mState = match.state || '';
           return '<td class="fi-cell" data-state="' + esc(mState) + '" data-state-marker="' + esc(mState) + '">' +
             '<span>' + esc(match.mechanism || (isZh() ? '尚未描述。' : 'No mechanism on file.')) + '</span>' +
             '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">' +
@@ -1123,7 +1144,7 @@
       return '<li class="fi-constraint-row fi-panel2" data-constraint="' + esc(c.constraint) + '" data-slice-id="' + esc(c.slice_id || '') + '" data-state-marker="' + esc(c.constraint) + '">' +
         chipHtml(labelFor('constraint', c.constraint), { stateKey: c.constraint, stateMarker: c.constraint }) +
         '<span class="fi-constraint-effect">' + esc(c.economic_effect || (isZh() ? '尚无经济效应记录。' : 'No economic effect on file.')) + '</span>' +
-        '<button type="button" class="fi-constraint-evidence fi-step-evidence" data-evidence-ids="' + esc(asArray(c.evidence_refs).join(' ')) + '" aria-label="Open evidence" data-aria-en="Open evidence for this constraint" data-aria-zh="打开该约束的证据">↗</button>' +
+        '<button type="button" class="fi-constraint-evidence fi-step-evidence" data-evidence-ids="' + esc(asArray(c.evidence_refs).join(' ')) + '"' + ariaPair('Open evidence for this constraint', '打开该约束的证据') + '>↗</button>' +
         '</li>';
     }).join('');
   }
@@ -1218,13 +1239,19 @@
     state.drawer.source = rec;
     if (!rec) {
       fields.innerHTML = '';
-      show(state.ui.evidenceEmpty, true);
+      // A named record that is not in source_records says so; only the bare
+      // drawer asks the reader to choose an evidence action.
+      show(state.ui.evidenceEmpty, !recordId);
+      show(state.ui.evidenceMissing, !!recordId);
       show(state.ui.evidencePrivate, false);
       return;
     }
-    var rights = rec.rights_state || 'DIRECT_DISPLAY_OK';
-    var suppress = (rights === 'SOURCE_RIGHTS_HELD' || rights === 'INTERNAL_ONLY');
+    // D.23 fails CLOSED: a missing or unrecognised rights_state never displays
+    // value/excerpt (its label falls back to "Source rights restrict display").
+    var rights = rec.rights_state || '';
+    var suppress = !(rights === 'DIRECT_DISPLAY_OK' || rights === 'DERIVED_DISPLAY_OK');
     show(state.ui.evidenceEmpty, false);
+    show(state.ui.evidenceMissing, false);
     show(state.ui.evidencePrivate, suppress);
 
     var rows = [];
@@ -1244,7 +1271,7 @@
     row(isZh() ? '披露时点' : 'Published at', rec.source && rec.source.published_at ? String(rec.source.published_at).slice(0, 10) : '', { sensitive: false });
     row(isZh() ? '披露粒度' : 'Published grain', rec.source && rec.source.published_at_grain ? labelFor('published_at_grain', rec.source.published_at_grain) : '');
     row(isZh() ? '陈述方式' : 'Statement mode', rec.statement_mode ? labelFor('statement_mode', rec.statement_mode) : '');
-    row(isZh() ? '身份状态' : 'Identity state', labelFor('identity_state', rec.identity_state || 'IDENTITY_VALIDATED'), { identity: rec.identity_state });
+    row(isZh() ? '身份状态' : 'Identity state', labelFor('identity_state', rec.identity_state || ''), { identity: rec.identity_state });
     row(isZh() ? '来源权利' : 'Rights', labelFor('rights_state', rights), { rights: true });
     row(isZh() ? '限制' : 'Limitations', asArray(rec.limitations).join(' · '));
     row(isZh() ? '修正' : 'Correction', rec.correction || '—');
@@ -1257,7 +1284,13 @@
     if (!recordIds) return;
     var first = String(recordIds).split(' ').filter(Boolean)[0];
     if (!first) return;
-    location.hash = '#evidence=' + first;
+    var target = '#evidence=' + encodeURIComponent(first);
+    if (location.hash === target) { handleHash(); return; }
+    location.hash = target;
+  }
+
+  function hashPart(raw) {
+    try { return decodeURIComponent(raw); } catch (e) { return null; }
   }
 
   function handleHash() {
@@ -1265,14 +1298,14 @@
     if (!h) return;
     var m1 = h.match(/^slice=([^&]+)/);
     var m2 = h.match(/^evidence=([^&]+)/);
-    if (m1) {
-      state.sliceId = decodeURIComponent(m1[1]);
+    if (m1 && hashPart(m1[1]) !== null) {
+      state.sliceId = hashPart(m1[1]);
       if (state.ui.sliceSelect) state.ui.sliceSelect.value = state.sliceId;
       mirrorFreshness();
       renderRerating();
     }
-    if (m2) {
-      var id = decodeURIComponent(m2[1]);
+    if (m2 && hashPart(m2[1]) !== null) {
+      var id = hashPart(m2[1]);
       renderDrawer(id);
       setDrawer(true);
     }
@@ -1295,6 +1328,7 @@
       generation_torn: ['Generation interrupted — partial context only', '生成中断 — 仅展示部分背景'],
       contract_invalid: ['Contract mismatch — showing public shell only', '契约不一致 — 仅展示公开外壳'],
       network: ["Couldn't load — try again", '未能加载 — 请重试'],
+      source_outage: ['Evidence source temporarily unavailable — try again later', '证据来源暂不可用 — 请稍后重试'],
       unknown: ['Read failed', '读取失败']
     };
     var pair = map[kind] || map.unknown;
@@ -1349,6 +1383,7 @@
     state.ui.constraintList = document.querySelector('[data-fi-mount="constraint-list"]');
     state.ui.evidenceFields = document.querySelector('[data-fi-mount="evidence-fields"]');
     state.ui.evidenceEmpty = document.querySelector('[data-fi-mount="evidence-empty"]');
+    state.ui.evidenceMissing = document.querySelector('[data-fi-mount="evidence-missing"]');
     state.ui.evidencePrivate = document.querySelector('[data-fi-mount="evidence-private-notice"]');
     state.ui.notice = document.querySelector('[data-fi-mount="notice"]');
     state.ui.noticeEn = document.querySelector('[data-fi-mount="notice-en"]');

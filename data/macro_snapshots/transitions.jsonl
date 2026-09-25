@@ -337,3 +337,11 @@
 {"asof": "2026-09-23", "domain": "commodity", "field": "silver_action", "from_value": "HOLD", "to_value": "SELL", "macro_context_id": "4c88b183131134ed"}
 {"asof": "2026-09-23", "domain": "china", "field": "china_fe_band", "from_value": "Greed", "to_value": "Neutral", "macro_context_id": "4c88b183131134ed"}
 {"asof": "2026-09-23", "domain": "dispersion", "field": "dispersion_state", "from_value": "neutral", "to_value": "lean_out", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-25", "domain": "us", "field": "us_risk_radar", "from_value": "calm", "to_value": "caution", "macro_context_id": "65cd3d7430ef8511"}
+{"asof": "2026-09-25", "domain": "us", "field": "us_vrp_state", "from_value": "thin (vol underpriced \u2014 fragile)", "to_value": "normal", "macro_context_id": "65cd3d7430ef8511"}
+{"asof": "2026-09-25", "domain": "us", "field": "cross_asset_verdict", "from_value": "confirm", "to_value": "diverge", "macro_context_id": "65cd3d7430ef8511"}
+{"asof": "2026-09-25", "domain": "market", "field": "market_state_verdict", "from_value": "RISK_ON", "to_value": "MIXED", "macro_context_id": "65cd3d7430ef8511"}
+{"asof": "2026-09-25", "domain": "commodity", "field": "commodity_mtf_grade", "from_value": "TREND-FOLLOW", "to_value": "AVOID", "macro_context_id": "65cd3d7430ef8511"}
+{"asof": "2026-09-25", "domain": "commodity", "field": "commodity_ladder", "from_value": "TURN SIGNALED", "to_value": "BOTTOM WATCH", "macro_context_id": "65cd3d7430ef8511"}
+{"asof": "2026-09-25", "domain": "commodity", "field": "oil_action", "from_value": "SELL", "to_value": "HOLD", "macro_context_id": "65cd3d7430ef8511"}
+{"asof": "2026-09-25", "domain": "canada", "field": "canada_cycle_tag", "from_value": "late", "to_value": "mid", "macro_context_id": "65cd3d7430ef8511"}
