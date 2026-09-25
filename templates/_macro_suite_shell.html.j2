@@ -14,7 +14,7 @@
       component metrics -> evidence drawer
 
   Everything it renders comes from the view model built by
-  ``lib.macro_suite_view.build_view`` over ONE validated
+  ``lib.macro_suite_view.build_view`` over ONE schema-checked
   ``mastermind.macro_workspace_snapshot.v1`` artifact. The shell never invents a
   value, never substitutes zero for missing, and never prints a producer slug:
   absent data arrives as a typed absence carrying a reviewed reason label.
@@ -958,7 +958,7 @@
         <div><dt>{{ t('Producer code version', '生产端代码版本') }}</dt><dd>{% if evidence.generation.code_version %}<code>{{ evidence.generation.code_version }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
         <div><dt>{{ t('Client contract', '客户端契约') }}</dt><dd><code>{{ evidence.artifact.min_client_contract }}</code></dd></div>
       </dl>
-      <p class="mq-lineage-note">{{ t('The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.', '本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。') }}</p>
+      <p class="mq-lineage-note">{{ t('The page checked this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.', '本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。') }}</p>
     </section>
     </div>
   </details>
