@@ -947,6 +947,116 @@ def test_one_unreadable_row_withholds_itself_instead_of_503ing_the_request(
     assert "rights_refused_families_hidden" in payload["limitations"]
 
 
+@pytest.fixture
+def edgar_bundle_loader(monkeypatch):
+    """The witness bundle with every source re-pointed at an EDGAR filing URL.
+
+    The pinned corpus cites ``https://example.invalid/…``, which is unmapped by
+    ruling and therefore fail-closed withheld — so the two end-to-end evidence
+    tests SKIP, and the only full-path witness corpus proves nothing about the
+    filter's SERVE direction. This fixture does not touch the pinned roster; it
+    rewrites the source of each assertion in memory onto the family Sol item 5
+    admitted, so the serve direction is exercised for real."""
+    import copy
+
+    from engine.theme_graph.curation_assertion import curation_revision
+
+    def loader(query, *, principal, **_route_kwargs):
+        case = copy.deepcopy(load_case("witness_hbm_packaging"))
+        from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+
+        src = case["bundle"]
+        assertions = []
+        restamped: dict[str, str] = {}
+        for index, assertion in enumerate(src["assertions"]):
+            row = copy.deepcopy(assertion)
+            source = row.setdefault("source", {})
+            source["source_uri"] = (
+                "https://www.sec.gov/Archives/edgar/data/1046179/"
+                f"000104617926000012/tsmc-6k-{index}.htm"
+            )
+            # The revision is a CONTENT hash, so a rewritten source must be
+            # re-stamped or the composer refuses the row as assertion_invalid.
+            was = row["curation_revision"]
+            row["curation_revision"] = curation_revision(row)
+            restamped[was] = row["curation_revision"]
+            assertions.append(row)
+        # Interpretation blocks name their inputs by revision, so they must
+        # follow the re-stamp or they are correctly withheld as prose whose
+        # source was not served — which would put a rights limitation on a
+        # response where nothing was actually refused.
+        blocks = []
+        for block in src["interpretation_blocks"]:
+            item = copy.deepcopy(block)
+            inputs = item.get("input_revisions")
+            if isinstance(inputs, (list, tuple)):
+                item["input_revisions"] = [restamped.get(rev, rev) for rev in inputs]
+            blocks.append(item)
+        return OwnerBundle(
+            revision_tuple=tuple(tuple(x) for x in src["revision_tuple"]),
+            rights_revision=src["rights_revision"],
+            assertions=tuple(assertions),
+            identity_results=tuple(src["identity_results"]),
+            event_workspaces=tuple(src["event_workspaces"]),
+            financial_packets=tuple(src["financial_packets"]),
+            interpretation_blocks=tuple(blocks),
+            native_refs=tuple(src["native_refs"]),
+            omissions=tuple(src["omissions"]),
+        )
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", loader)
+
+
+def test_a_permitted_family_survives_the_filter_and_reaches_the_wire(
+    entitled_client, edgar_bundle_loader,
+):
+    """The SERVE direction, which nothing proved end to end while every witness
+    source was unmapped. A permitted family must produce selected assertions,
+    evidence refs, and NO rights limitation."""
+    case = load_case("witness_hbm_packaging")
+    q = case["query"]
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json={"anchor_theme_id": q["anchor_theme_id"], "slice_key": q["slice_key"],
+              "view": q["view"], "time_mode": q["time_mode"],
+              "source_cutoff": q["source_cutoff"], "recorded_cutoff": q["recorded_cutoff"],
+              "offset": q["offset"], "limit": q["limit"], "expected_generation": None},
+    )
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["authorized_coverage"]["selected"] > 0, payload["authorized_coverage"]
+    assert [r for r in payload["evidence_refs"] if r.get("kind") == "assertion"]
+    assert "rights_refused_families_hidden" not in payload["limitations"]
+
+
+def test_the_evidence_route_serves_one_permitted_assertion_end_to_end(
+    entitled_client, edgar_bundle_loader,
+):
+    """The evidence half of the same direction: a ref taken from the snapshot
+    resolves to a 200 with that exact ref."""
+    case = load_case("witness_hbm_packaging")
+    q = case["query"]
+    body = {"anchor_theme_id": q["anchor_theme_id"], "slice_key": q["slice_key"],
+            "view": q["view"], "time_mode": q["time_mode"],
+            "source_cutoff": q["source_cutoff"],
+            "recorded_cutoff": q["recorded_cutoff"],
+            "offset": q["offset"], "limit": q["limit"], "expected_generation": None}
+    snapshot = entitled_client.post("/api/themes/v1/research/query", json=body)
+    assert snapshot.status_code == 200, snapshot.text
+    snapshot_payload = snapshot.json()
+    refs = [r for r in snapshot_payload["evidence_refs"] if r.get("kind") == "assertion"]
+    assert refs, "the permitted-family snapshot must carry assertion evidence refs"
+
+    response = entitled_client.post(
+        "/api/themes/v1/research/evidence",
+        json={**body, "expected_generation": snapshot_payload["generation"],
+              "assertion_ref": refs[0]["assertion_ref"]},
+    )
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    assert response.json()["assertion_ref"] == refs[0]["assertion_ref"]
+
+
 def test_transport_carries_no_local_rights_restatement():
     """No-restatement source scan: the transport asks the owner, so
     ``app/theme_research.py`` must carry neither the owner's permission-set

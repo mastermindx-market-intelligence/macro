@@ -583,11 +583,38 @@ def test_every_mount_appears_in_mounts_exactly_once():
     assert sorted(MOUNTS) == sorted(e.anchor_theme_id for e in _ENTRIES)
 
 
+def _assert_called_at_module_level(path, name: str) -> None:
+    """Parse the module and require a MODULE-LEVEL call to ``name``.
+
+    A substring search is not enough: it still matches when the call is
+    commented out or moved inside a function nothing invokes, both of which
+    disarm the guard while the source still contains the line.
+    """
+    import ast as _ast
+
+    tree = _ast.parse(path.read_text(encoding="utf-8"))
+    called = any(
+        isinstance(node, _ast.Expr) and isinstance(node.value, _ast.Call)
+        and isinstance(node.value.func, _ast.Name) and node.value.func.id == name
+        for node in tree.body
+    )
+    assert called, f"{path.name}: {name}() is no longer invoked at import"
+
+
 def test_the_uniqueness_law_actually_runs_at_import():
     """A guard nothing calls is decoration. The call site is pinned in source
     because the test above can only exercise the function, not the import."""
-    source = (
-        REPO_ROOT / "engine" / "market_ontology" / "theme_research_mounts.py"
-    ).read_text(encoding="utf-8")
-    assert "_assert_unique_anchors(_ENTRIES)\n" in source, \
-        "the load-time uniqueness closure is no longer invoked at import"
+    _assert_called_at_module_level(
+        REPO_ROOT / "engine" / "market_ontology" / "theme_research_mounts.py",
+        "_assert_unique_anchors",
+    )
+
+
+def test_the_registry_uniqueness_law_also_runs_at_import():
+    """The registry carries the identical import-time closure, and commit 2's
+    own rationale applies to it just as much: a guard nothing calls is
+    decoration. It had no pin at all."""
+    _assert_called_at_module_level(
+        REPO_ROOT / "engine" / "market_ontology" / "theme_research_registry.py",
+        "_assert_unique_anchors",
+    )

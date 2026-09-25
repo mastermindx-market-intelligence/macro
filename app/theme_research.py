@@ -48,7 +48,7 @@ without naming the families — what was refused is never disclosed.
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -228,6 +228,23 @@ def _body_to_query(body: _QueryBody | _EvidenceBody) -> ResearchQuery:
 # family disclosure
 # ---------------------------------------------------------------------------
 
+def _rows_of(collection: object) -> tuple[tuple[Any, ...], bool]:
+    """``(rows, readable)`` for one owner-supplied collection.
+
+    ``readable`` is False when the collection cannot be iterated at all, and
+    the caller withholds everything rather than letting the failure become a
+    503 for the whole request. Materialising also makes a one-shot iterable
+    safe: iterating it twice, or returning the original bundle after consuming
+    it, would silently serve nothing while reporting nothing withheld.
+    """
+    if isinstance(collection, (str, bytes)) or not isinstance(collection, Iterable):
+        return (), False
+    try:
+        return tuple(collection), True
+    except Exception:  # noqa: BLE001 — a hostile iterator withholds, never 503s
+        return (), False
+
+
 def _canonically_attributable(ref: str) -> bool:
     """False when a LITERAL-PREFIX match cannot be trusted to name where the
     ref really points.
@@ -240,7 +257,17 @@ def _canonically_attributable(ref: str) -> bool:
     opinion about what a path means, which it is forbidden to do — it simply
     declines to attribute a ref carrying a relative segment or a backslash.
     """
-    if "\\" in ref:
+    if "\\" in ref or "%" in ref:
+        # A percent-escape is EXACTLY a ref whose literal prefix cannot be
+        # trusted to say where it points. RFC 3986 normalisation decodes %2E to
+        # "." before dot-segment removal, so "%2e%2e" is not a directory name
+        # to anything that dereferences the URI — and now that the table
+        # carries https prefixes, encoded traversal is the normal spelling of
+        # the attack, not an exotic one. An independent review measured
+        # "https://www.sec.gov/Archives/%2e%2e/%2e%2e/vendor/private.json"
+        # resolving to sec_edgar, a PERMITTED family, and being served.
+        # Declining to decode is the same move this function already makes for
+        # "..": the transport never resolves what a path means.
         return False
     return not any(segment in (".", "..") for segment in ref.split("/"))
 
@@ -256,25 +283,30 @@ def _attributable_family(source: object) -> str | None:
     * no readable ref (missing, empty, or not a string);
     * a ref that is not canonically attributable (see
       :func:`_canonically_attributable`);
-    * the two readable refs DISAGREE. ``source_uri`` used to win outright, so
-      a permissive uri silently overrode a restrictive locator. A
-      disagreement this transport cannot resolve is not an attribution. A
-      locator the table has no opinion about is NOT a disagreement — the
-      owner's None means "no opinion", and only opinions can conflict.
+    ``source_uri`` is the ONLY field consulted. ``locator`` is not a second
+    opinion about the same thing and was never a path: the corpus fills it with
+    ``para-3``, ``table-1`` — a pointer INSIDE the cited document — and the
+    v1.1 proposal names the rights dependency as ``family_for_source_ref(
+    source_uri)``, listing ``locator`` as a sibling field with no rights role.
+    Two earlier readings were both wrong in the same place. Falling back to
+    ``locator`` when ``source_uri`` was absent let a paragraph pointer that
+    happens to look like a repo path ("data/baskets/x.json") ATTRIBUTE a row
+    the rights owner never attributed. Treating the two as co-equal vetoes then
+    manufactured contradictions out of an external URL and an internal pointer,
+    which withholds legitimate rows. Reading one field is strictly narrower
+    than both, and it is the only reading that does not require this transport
+    to hold an opinion about what a locator means.
     """
     if not isinstance(source, Mapping):
         return None
-    families: list[str] = []
-    for key in ("source_uri", "locator"):
-        ref = source.get(key)
-        if not isinstance(ref, str) or not ref.strip():
-            continue
-        if not _canonically_attributable(ref):
-            return None
-        family = family_for_source_ref(ref)
-        if family is not None and family not in families:
-            families.append(family)
-    return families[0] if len(families) == 1 else None
+    ref = source.get("source_uri")
+    # Exact str, never a subclass: a hostile ``__str__`` could hand the family
+    # resolver a different string than the one this row carries on the wire.
+    if type(ref) is not str or not ref.strip():
+        return None
+    if not _canonically_attributable(ref):
+        return None
+    return family_for_source_ref(ref)
 
 
 def _filter_bundle_for_rights(
@@ -306,7 +338,8 @@ def _filter_bundle_for_rights(
     * a row that is not a mapping is withheld by itself. It used to raise
       ``AttributeError`` into the route's catch-all and return a 503 for the
       WHOLE request, which is how one malformed row from the owner denied a
-      caller every row it was entitled to.
+      caller every row it was entitled to. A whole COLLECTION that cannot be
+      iterated withholds everything for the same reason, rather than raising.
 
     Interpretation blocks are withheld alongside the assertions they read.
     A block names its inputs in ``input_revisions``; prose derived from a
@@ -337,7 +370,16 @@ def _filter_bundle_for_rights(
     verdicts: dict[str, bool] = {}  # per-request memo: one owner call per distinct family
     kept: list[Mapping[str, Any]] = []
     dropped = False
-    for assertion in bundle.assertions:
+    # Materialised ONCE, up front, for two reasons. A collection this transport
+    # cannot even iterate (None, a scalar) is withheld rather than raised into
+    # the route's catch-all as a 503 for the whole request — the same rule the
+    # rows follow. And a one-shot iterable would otherwise be CONSUMED here and
+    # reach the composer empty while ``dropped`` stayed False, so the response
+    # would drop every row and say nothing was withheld.
+    assertions, assertions_readable = _rows_of(bundle.assertions)
+    blocks_in, blocks_readable = _rows_of(bundle.interpretation_blocks)
+    dropped = not (assertions_readable and blocks_readable)
+    for assertion in assertions:
         if not isinstance(assertion, Mapping):
             # A row this transport cannot read is WITHHELD, never fatal.
             # Before this, ``assertion.get(...)`` raised AttributeError, the
@@ -374,7 +416,7 @@ def _filter_bundle_for_rights(
         if isinstance(a.get("curation_revision"), str) and a["curation_revision"]
     }
     blocks: list[Mapping[str, Any]] = []
-    for block in bundle.interpretation_blocks:
+    for block in blocks_in:
         if not isinstance(block, Mapping):
             dropped = True
             continue

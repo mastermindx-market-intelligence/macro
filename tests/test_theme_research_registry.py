@@ -139,7 +139,10 @@ def test_every_registration_reconciles_with_its_own_vertical_module():
         compose_module = sys.modules[entry.compose.__module__]
         assert getattr(compose_module, "SCHEMA_ID", None) == entry.schema_id, (
             f"{anchor}: registration schema_id {entry.schema_id!r} is not the "
-            f"one {compose_module.__name__} emits"
+            f"one {compose_module.__name__} emits. If this vertical registers a "
+            f"lazy WRAPPER instead of its module-level composer, register the "
+            f"composer itself: the shell binds callables, and a wrapper hides "
+            f"the module whose constants this law reconciles against."
         )
         assert getattr(compose_module, "DEFINITION_VERSION", None) == \
             entry.definition_version, (

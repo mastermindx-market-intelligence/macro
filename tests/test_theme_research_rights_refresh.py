@@ -335,8 +335,23 @@ def test_a_traversing_source_ref_is_not_attributed_by_its_prefix():
     pytest.param("data/baskets/../finviz_themes/x.json", id="parent-segment"),
     pytest.param("data/baskets/./x.json", id="current-segment"),
     pytest.param("data/baskets/sub/../../baskets_hk/x.json", id="two-parents"),
+    # LOAD-BEARING backslash case: the prefix matches, so only the backslash
+    # branch can decline it. The earlier bare-backslash param passed because
+    # no prefix matched it at all, which proved nothing.
+    pytest.param("data/baskets/x\\..\\finviz_themes\\y.json", id="backslash-after-prefix"),
     pytest.param("data/baskets\\..\\finviz_themes\\x.json", id="backslash"),
     pytest.param("..", id="bare-parent"),
+    # Percent-escaped traversal. RFC 3986 decodes %2E to "." before dot-segment
+    # removal, so these are traversal to anything that dereferences the URI —
+    # and with https prefixes in the table this is the NORMAL spelling.
+    pytest.param("data/baskets/%2e%2e/finviz_themes/x.json", id="encoded-parent"),
+    pytest.param("data/baskets/%2E%2E/finviz_themes/x.json", id="encoded-parent-upper"),
+    pytest.param("data/baskets/..%2ffinviz_themes/x.json", id="encoded-slash"),
+    pytest.param("data/baskets/.%2e/finviz_themes/x.json", id="half-encoded"),
+    pytest.param("https://www.sec.gov/Archives/%2e%2e/%2e%2e/vendor/x.json",
+                 id="encoded-parent-under-a-permitted-https-prefix"),
+    pytest.param("https://www.sec.gov/Archives/..%2f..%2fvendor/x.json",
+                 id="encoded-slash-under-a-permitted-https-prefix"),
 ])
 def test_a_non_canonical_ref_is_never_attributed(ref):
     """The transport declines to attribute; it does NOT normalize. Resolving
@@ -347,37 +362,69 @@ def test_a_non_canonical_ref_is_never_attributed(ref):
     assert _attributable_family({"source_uri": ref}) is None
 
 
-def test_two_refs_that_disagree_withhold_the_row():
-    """``source_uri`` used to win outright, so a permitted uri silently
-    overrode a locator pointing at a different family. A contradiction the
-    transport cannot resolve is not an attribution."""
+def test_a_locator_never_attributes_a_row():
+    """``locator`` is a pointer INSIDE the cited document — the corpus fills it
+    with ``para-3`` and ``table-1`` — not a path, and the v1.1 proposal names
+    the rights dependency as ``family_for_source_ref(source_uri)`` with
+    ``locator`` carrying no rights role. Two earlier readings were wrong in the
+    same place: falling back to it let a paragraph pointer that happens to look
+    like a repo path attribute a row the rights owner never attributed."""
     from app.theme_research import _attributable_family
 
-    assert _attributable_family({
-        "source_uri": "data/baskets/x.json",          # mastermind_curated
-        "locator": "finviz_themes/x.json",            # finviz_themes
-    }) is None
+    assert _attributable_family({"locator": "data/baskets/x.json"}) is None
+    assert _attributable_family({"locator": "para-3"}) is None
 
-    bundle = _bundle([_assertion(
-        "gmirca_" + "2" * 32,
-        source_uri="data/baskets/x.json", locator="finviz_themes/x.json",
-    )])
+    bundle = _bundle([_assertion("gmirca_" + "2" * 32, locator="data/baskets/x.json")])
     filtered, dropped = _filter(bundle)
     assert dropped is True and filtered.assertions == ()
 
 
-def test_a_ref_the_table_has_no_opinion_about_is_not_a_disagreement():
-    """Only opinions can conflict. An unmapped locator alongside a mapped uri
-    leaves exactly one attribution, so the row is still attributable — the
-    fail-closed rule must not collapse into serving nothing."""
+def test_an_internal_pointer_never_contradicts_the_source_uri():
+    """The mirror error, which the first repair introduced: treating the two
+    fields as co-equal vetoes manufactures a contradiction out of an external
+    URL and an internal pointer, and withholds a legitimate row."""
     from app.theme_research import _attributable_family
 
     assert _attributable_family({
-        "source_uri": "data/baskets/x.json", "locator": "s3://nobody/knows.json",
+        "source_uri": "data/baskets/x.json", "locator": "para-3",
     }) == "mastermind_curated"
     assert _attributable_family({
-        "source_uri": "data/baskets/x.json", "locator": "data/baskets_hk/y.json",
-    }) == "mastermind_curated"  # two refs, ONE family: agreement, not conflict
+        "source_uri": "https://www.sec.gov/Archives/edgar/data/1/x.htm",
+        "locator": "data/baskets/membership.json",
+    }) == "sec_edgar"
+
+
+def test_a_hostile_str_subclass_cannot_launder_a_source_uri():
+    """``family_for_source_ref`` re-coerces with ``str()``, so a subclass whose
+    ``__str__`` lies would be attributed by one string and serialised by
+    another. Exact type only."""
+    from app.theme_research import _attributable_family
+
+    class Liar(str):
+        def __str__(self) -> str:  # noqa: D105
+            return "data/baskets/ok.json"
+
+    assert _attributable_family(
+        {"source_uri": Liar("finviz_themes/private.json")}) is None
+
+
+@pytest.mark.parametrize("collection", [None, 7, "a string", object()])
+def test_an_unreadable_collection_withholds_everything_instead_of_503ing(collection):
+    """A collection this transport cannot iterate follows the same rule as a
+    row it cannot read: withheld, never raised into the route's catch-all."""
+    from app.theme_research import _rows_of
+
+    assert _rows_of(collection) == ((), False)
+
+
+def test_a_one_shot_iterable_is_not_consumed_into_a_silent_empty_response():
+    """If ``assertions`` were iterated where it is, a generator would be spent
+    and the composer would see nothing — while ``dropped`` stayed False, so the
+    response would drop every row and report nothing withheld."""
+    from app.theme_research import _rows_of
+
+    rows, readable = _rows_of(iter([{"a": 1}, {"b": 2}]))
+    assert readable is True and len(rows) == 2
 
 
 @pytest.mark.parametrize("row", ["a string", 7, None, ["list"], ("tuple",)])
