@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
   "as_of": "2026-09-25",
-  "generated_utc": "2026-09-25T09:16:13Z",
+  "generated_utc": "2026-09-25T21:32:49Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 317,
@@ -133,8 +133,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 4030,
-        "n_past_check_by": 3622
+        "n_open": 4086,
+        "n_past_check_by": 3632
       },
       "allowed_actions": [
         "inspect",
@@ -181,8 +181,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 4030,
-        "n_past_check_by": 3622
+        "n_open": 4086,
+        "n_past_check_by": 3632
       },
       "allowed_actions": [
         "inspect",
@@ -229,7 +229,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 39532,
+        "n_open": 40696,
         "n_past_check_by": 28580
       },
       "allowed_actions": [
@@ -277,7 +277,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 39532,
+        "n_open": 40696,
         "n_past_check_by": 28580
       },
       "allowed_actions": [
@@ -465,7 +465,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 5274,
+        "n_open": 5398,
         "n_past_check_by": 3998
       },
       "allowed_actions": [
@@ -577,7 +577,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 1516,
+        "n_open": 1525,
         "n_past_check_by": 592
       },
       "allowed_actions": [
@@ -609,7 +609,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 349,
+        "n_open": 353,
         "n_past_check_by": 336
       },
       "allowed_actions": [
@@ -2805,8 +2805,6 @@
           "reliability",
           "contradictions",
           "bottom_sensors",
-          "cortex",
-          "claim_reliability",
           "government_revenue"
         ]
       },
@@ -2890,8 +2888,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 109538,
-        "n_with_falsifier": 1009,
+        "n_claims": 112121,
+        "n_with_falsifier": 1022,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
@@ -9716,7 +9714,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 99,
+        "n_open": 102,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9748,7 +9746,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 42,
+        "n_open": 45,
         "n_past_check_by": 0
       },
       "allowed_actions": [

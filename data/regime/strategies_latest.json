@@ -1,6 +1,6 @@
 {
   "n": 27,
-  "built": "2026-09-25 08:17 UTC",
+  "built": "2026-09-25 20:50 UTC",
   "cards": [
     {
       "key": "spvector",
@@ -14,10 +14,10 @@
     {
       "key": "credit_carry",
       "name": "Credit Carry",
-      "cagr": 6.43,
-      "sharpe": 2.75,
+      "cagr": 6.3,
+      "sharpe": 2.68,
       "maxdd": -2.4,
-      "income": 6.6,
+      "income": 6.79,
       "experimental": true
     },
     {
@@ -26,7 +26,7 @@
       "cagr": 3.34,
       "sharpe": 0.46,
       "maxdd": -18.1,
-      "income": 4.85,
+      "income": 4.94,
       "experimental": true
     },
     {
@@ -35,7 +35,7 @@
       "cagr": 12.16,
       "sharpe": 0.77,
       "maxdd": -35.3,
-      "income": 1.76,
+      "income": 1.77,
       "experimental": true
     },
     {
@@ -53,7 +53,7 @@
       "cagr": 12.78,
       "sharpe": 0.71,
       "maxdd": -32.5,
-      "income": 1.69,
+      "income": 1.7,
       "experimental": true
     },
     {
@@ -98,7 +98,7 @@
       "cagr": 8.51,
       "sharpe": 0.57,
       "maxdd": -55.2,
-      "income": 2.22,
+      "income": 2.23,
       "experimental": true
     },
     {
@@ -107,7 +107,7 @@
       "cagr": 8.49,
       "sharpe": 0.59,
       "maxdd": -54.1,
-      "income": 3.12,
+      "income": 3.14,
       "experimental": true
     },
     {
@@ -125,7 +125,7 @@
       "cagr": 9.03,
       "sharpe": 0.88,
       "maxdd": -19.6,
-      "income": 2.22,
+      "income": 2.23,
       "experimental": true
     },
     {
@@ -143,7 +143,7 @@
       "cagr": 9.55,
       "sharpe": 0.84,
       "maxdd": -14.6,
-      "income": 3.02,
+      "income": 3.04,
       "experimental": true
     },
     {
@@ -176,28 +176,28 @@
     {
       "key": "gold_macro",
       "name": "Gold Macro Timer",
-      "cagr": 6.73,
+      "cagr": 6.74,
       "sharpe": 0.61,
       "maxdd": -33.0,
-      "income": 2.69,
+      "income": 2.71,
       "experimental": true
     },
     {
       "key": "oil_trend",
       "name": "Crude-Oil Trend",
-      "cagr": 3.61,
-      "sharpe": 0.28,
+      "cagr": 3.37,
+      "sharpe": 0.27,
       "maxdd": -44.4,
-      "income": 1.36,
+      "income": 1.37,
       "experimental": true
     },
     {
       "key": "copper_growth",
       "name": "Copper Growth Cyclical",
-      "cagr": 7.48,
+      "cagr": 7.49,
       "sharpe": 0.58,
       "maxdd": -32.9,
-      "income": 1.36,
+      "income": 1.37,
       "experimental": true
     },
     {
@@ -206,16 +206,16 @@
       "cagr": 54.25,
       "sharpe": 0.98,
       "maxdd": -61.9,
-      "income": 2.69,
+      "income": 2.71,
       "experimental": true
     },
     {
       "key": "eth_trend",
       "name": "Ethereum Trend",
-      "cagr": 21.28,
+      "cagr": 21.36,
       "sharpe": 0.52,
       "maxdd": -77.4,
-      "income": 1.36,
+      "income": 1.37,
       "experimental": true
     },
     {
@@ -224,7 +224,7 @@
       "cagr": 3.56,
       "sharpe": 0.75,
       "maxdd": -18.3,
-      "income": 5.62,
+      "income": 5.78,
       "experimental": true
     },
     {
@@ -233,7 +233,7 @@
       "cagr": 2.63,
       "sharpe": 0.64,
       "maxdd": -12.7,
-      "income": 7.14,
+      "income": 7.3,
       "experimental": true
     },
     {
@@ -242,7 +242,7 @@
       "cagr": 2.91,
       "sharpe": 0.64,
       "maxdd": -8.1,
-      "income": 4.02,
+      "income": 4.04,
       "experimental": true
     }
   ]
