@@ -787,50 +787,74 @@ _OWNERSHIP_HEAD = (r"(?:sale|divestiture|transfer|acquisition|purchase|ownership
 _CURATED_SLOT = re.compile(
     r"\(\s*(?:(?:completed|announced|agreed|pending|proposed)\s+)?" + _OWNERSHIP_HEAD
     + r"\s+(?P<prep>to|from)\s+(?P<party>[^()]+?)\s*\)\s*$", re.IGNORECASE)
-# A counterparty is a NAME and nothing else. This is an ALLOWLIST: agency is an
-# open set inside a curated parenthetical for the same reason it is an open set
-# in prose, so the grammar admits proper-noun tokens instead of enumerating the
-# phrases that are not names. "a vehicle managed by Fanuc", "Skild AI on behalf
-# of Fanuc" and "Skild AI, mandated by Fanuc" all fall outside it, as does a
-# second party ("Skild AI and Fanuc") and a second relation.
-_NAME_TOKEN = re.compile(r"[A-Z0-9][A-Za-z0-9&./'’-]*\Z")
-# lower-case tokens that occur INSIDE real names ("Bank of America"); none of
-# them can express an ownership direction in the counterparty position
-_NAME_CONNECTOR = frozenset({"of", "de", "del", "der", "den", "van", "von", "du", "da",
-                             "la", "le"})
-# a capitalised homograph would satisfy _NAME_TOKEN, so a relation word is
-# refused whatever its case
-_NAME_RELATION = frozenset({"to", "from", "by", "for", "via", "through", "and", "or",
-                            "with", "plus", "on", "behalf", "at", "in", "under"})
-_PARTY_MAX_TOKENS = 8
+# A counterparty is a NAME and nothing else. Review 10 rejected the first
+# attempt at this because a shape rule ("every token opens with a capital")
+# does the whole job only on lower-cased input: in TITLE case "Skild AI As
+# Agent Of Fanuc" satisfies it, so the guard degenerated into the same finite
+# word list that lost rounds 2-6, and it missed "As Agent Of", "As Nominee Of",
+# "Per", "Against". A comma was stripped rather than refused, so
+# "Fanuc, Buyer Skild AI" named two parties through the boundary the grammar
+# depended on.
+#
+# The structural fact this version rests on: agency is SEMANTIC and therefore
+# open ("mandated by", "as sole manager of", "under a power of attorney from"),
+# but it cannot attach a second party without a PREPOSITION, a CONJUNCTION or a
+# punctuation separator - and prepositions and conjunctions are a closed
+# GRAMMATICAL class, unlike the semantic class the earlier lists chased. So the
+# grammar refuses the class and the separators, in any case, and never
+# enumerates the phrases built from them.
+_NAME_TOKEN = re.compile(r"(?:[A-Z0-9]|[a-z][A-Z])[A-Za-z0-9&./'’-]*\Z")
+_NAME_FUNCTION_WORD = frozenset("""
+about above across after against along alongside amid among around as at before
+behind below beneath beside besides between beyond by concerning despite down
+during except for from in inside into like near of off on onto opposite out
+outside over past per regarding since than through throughout till to toward
+towards under underneath unlike until up upon versus via with within without
+and but nor or plus so yet
+""".split())
+# Two tokens fit the corpus (`Skild AI`, `TPG`); five admits `Smith & Nephew
+# Robotics Holdings`. A longer run is not refused because it must be wrong but
+# because nothing in the corpus needs it and every extra token is room for a
+# clause.
+_PARTY_MAX_TOKENS = 5
 # The product half must be a product NAME, not a second relation: no
 # preposition, no agent phrase, and no nested parenthetical the slot grammar
 # itself would read as a direction (checked at any depth, review 9 blocker 2).
-_PRODUCT_DIRTY = re.compile(r"\b(?:to|from)\b|\b(?:by|behalf|via|through)\s", re.IGNORECASE)
-# "for" is the one hedge: in a curated product name it usually marks a market
-# segment ("Kepware for Industry 4.0", "Machine Vision for Logistics unit"),
-# which review 9 nit 1 measured as the largest source of silent over-refusal,
-# but "for a client" is a documented agency inversion from rounds 2-6. It is
-# therefore admitted only before a CAPITALISED segment name, which makes this
-# pattern deliberately case-SENSITIVE and separate: under re.IGNORECASE an
-# [A-Z] class matches lower case too and the whole distinction disappears
-# silently.
-_PRODUCT_FOR = re.compile(r"\b[Ff]or\s+(?![A-Z])")
+# "for" is refused flatly. fix9 tried to admit "for <Capitalised Segment>" to
+# recover the recall review 9 nit 1 measured, and review 10 proved that a
+# capitalisation test tracks the curator's shift key rather than meaning: it
+# re-served "business for Client Fanuc" and even "for A Client", one capital
+# letter away from the pinned-neutral "for a client". That is a nit traded for
+# a blocker. The "for <Segment>" recall waits for the v1.1 structured
+# direction, which needs no parse at all.
+_PRODUCT_DIRTY = re.compile(r"\b(?:to|from)\b|\b(?:by|for|behalf|via|through)\s",
+                            re.IGNORECASE)
 
 
 def _is_party_name(party: str) -> bool:
-    """Whether ``party`` is a name and nothing else: 1-8 tokens, each either
-    opening with a capital or a digit or being a name-internal connector, none
-    of them a relation word in any case, and a real name token at each end."""
-    tokens = [t for t in (piece.strip(",") for piece in party.split()) if t]
+    """Whether ``party`` names exactly one entity and nothing else: no comma,
+    semicolon or colon, 1-5 whitespace-separated tokens, each a name token, and
+    no preposition or conjunction anywhere but the FIRST position - real names
+    open with one ("Under Armour", "VIA Technologies", "At Home Group", "Plus
+    Therapeutics") whereas a clause's separator never can, because it has to
+    follow the party it modifies."""
+    if any(mark in party for mark in ",;:"):
+        return False
+    tokens = party.split()
     if not 1 <= len(tokens) <= _PARTY_MAX_TOKENS:
         return False
-    for token in tokens:
-        if token.lower() in _NAME_RELATION:
+    for index, token in enumerate(tokens):
+        if token == "&":
+            # an ampersand joins name parts ("Smith & Nephew"); it cannot
+            # introduce an agent, but it cannot stand at either end either
+            if index in (0, len(tokens) - 1):
+                return False
+            continue
+        if not _NAME_TOKEN.match(token):
             return False
-        if not (_NAME_TOKEN.match(token) or token.lower() in _NAME_CONNECTOR):
+        if index and token.lower() in _NAME_FUNCTION_WORD:
             return False
-    return bool(_NAME_TOKEN.match(tokens[0]) and _NAME_TOKEN.match(tokens[-1]))
+    return tokens[-1].lower() not in _NAME_FUNCTION_WORD
 
 
 def _subject_mentions(label: object) -> frozenset[str]:
@@ -876,8 +900,11 @@ def _curated_direction(object_label: str) -> tuple[str, str, str] | None:
     party = slot.group("party").strip()
     if not product or not _is_party_name(party):
         return None
-    if (_PRODUCT_DIRTY.search(product) or _PRODUCT_FOR.search(product)
-            or _CURATED_SLOT.search(product)):
+    # the nested-slot re-scan is belt-and-braces: review 10 proved every nested
+    # slot necessarily carries a standalone "to"/"from" that _PRODUCT_DIRTY
+    # already refuses, so it is unreachable today and kept only so a future
+    # narrowing of _PRODUCT_DIRTY cannot silently reopen review 9 blocker 2
+    if _PRODUCT_DIRTY.search(product) or _CURATED_SLOT.search(product):
         return None
     return product, slot.group("prep").lower(), party
 

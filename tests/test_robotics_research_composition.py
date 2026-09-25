@@ -735,16 +735,12 @@ def test_ownership_direction_comes_only_from_a_closed_curated_parenthetical():
          "an announced sale of the Robotics (EMEA) business to Skild AI", "announced_seller"),
         ("perception assets (acquisition from Skild AI)",
          "an announced acquisition of the perception assets from Skild AI", "announced_acquirer"),
-        # review 9 nit 1: in a curated product name "for" marks a market
-        # segment, and refusing every "for" was the largest measured source of
-        # silent over-refusal. A capitalised segment is admitted; "for a client"
-        # above stays refused, because that one really is an agency phrase. An
-        # ownership head noun inside the product name is likewise not a relation.
-        ("Kepware for Industry 4.0 (sale to Skild AI)",
-         "an announced sale of the Kepware for Industry 4.0 to Skild AI", "announced_seller"),
-        ("Machine Vision for Logistics unit (sale to Skild AI)",
-         "an announced sale of the Machine Vision for Logistics unit to Skild AI",
-         "announced_seller"),
+        # review 9 nit 1 admitted a capitalised "for <Segment>" product; review
+        # 10 blocker 1 proved capitalisation is not agency ("for A Client"
+        # served where the pinned-neutral "for a client" refused, one capital
+        # apart) and that discriminator is retired - see
+        # test_ownership_side_is_withheld_for_every_agency_preposition_in_the_product.
+        # An ownership head noun inside the product name is still not a relation.
         ("Point of sale systems (sale to Skild AI)",
          "an announced sale of the Point of sale systems to Skild AI", "announced_seller"),
         ("By-products recycling line (sale to Skild AI)",
@@ -781,14 +777,84 @@ def test_ownership_side_is_withheld_when_the_curated_counterparty_is_not_a_bare_
     ):
         assert _zebra_role(**{"object.source_product_label": label,
                               "limitations.establishes": [sentence]}) == "announced_party", label
-    # a real name still anchors, including one with a name-internal connector
-    for party in ("Skild AI", "TPG", "Bank of America", "3M Robotics", "Kollmorgen Holdings"):
+    # Review 10 blockers 2 and 3: the allowlist was a shape rule ("every token
+    # opens with a capital"), which does the whole job only on lower-cased
+    # input - in TITLE case it degenerated into the same finite word list that
+    # had already lost twice, and a comma let an apposition in behind it. What
+    # agency actually needs to attach a second party is a PREPOSITION, a
+    # CONJUNCTION or a punctuation separator, and that is a closed GRAMMATICAL
+    # class regardless of case. The allowlist now refuses that class at any
+    # position but the first, and refuses ",;:" outright.
+    for label, sentence in (
+        ("Robotics Automation business (Sale To Skild AI As Agent Of Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI As Agent Of Fanuc"),
+        ("Robotics Automation business (Acquisition From Fanuc As Agent Of Skild AI)",
+         "an announced acquisition of the Robotics Automation business from Fanuc"
+         " As Agent Of Skild AI"),
+        ("Robotics Automation business (Sale To Skild AI Per Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI Per Fanuc"),
+        ("Robotics Automation business (Sale To Skild AI Alongside Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI Alongside Fanuc"),
+        ("Robotics Automation business (Acquisition From Fanuc, Buyer Skild AI)",
+         "an announced acquisition of the Robotics Automation business from Fanuc,"
+         " Buyer Skild AI"),
+        ("Robotics Automation business (sale to Skild AI, Seller Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI, Seller Fanuc"),
+        ("Robotics Automation business (sale to Skild AI, Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI, Fanuc"),
+        # review 10 nit 2: a period-terminated counterparty is neutral in BOTH
+        # orders now. In the reordered sentence "Skild AI, Inc." used to anchor.
+        ("Robotics Automation business (sale to Skild AI, Inc.)",
+         "an announced sale to Skild AI, Inc. of the Robotics Automation business"),
+    ):
+        assert _zebra_role(**{"object.source_product_label": label,
+                              "limitations.establishes": [sentence]}) == "announced_party", label
+    # a real name still anchors. Review 10 nits 3 and 4: the shape rule refused
+    # real companies - a lower-case-initial name ("iRobot", "eBay") and a name
+    # whose FIRST token is a function word ("Under Armour", "VIA Technologies"),
+    # which cannot be an agency connector because nothing precedes it.
+    # "Bank of America" is a deliberate neutral: its interior "of" is refused,
+    # at zero measured recall cost on the real corpus.
+    for party in ("Skild AI", "TPG", "iRobot", "eBay", "Under Armour", "VIA Technologies",
+                  "Smith & Nephew Robotics", "3M Robotics", "Kollmorgen Holdings"):
         assert _zebra_role(**{
             "object.source_product_label":
                 "Robotics Automation business (sale to %s)" % party,
             "limitations.establishes":
                 ["an announced sale of the Robotics Automation business to %s" % party],
         }) == "announced_seller", party
+    assert _zebra_role(**{
+        "object.source_product_label":
+            "Robotics Automation business (sale to Bank of America)",
+        "limitations.establishes":
+            ["an announced sale of the Robotics Automation business to Bank of America"],
+    }) == "announced_party"
+
+
+def test_ownership_side_is_withheld_for_every_agency_preposition_in_the_product():
+    # Review 10 blocker 1: fix9 admitted "for <Capitalised Segment>" in the
+    # curated product name to recover market-segment names. That tracks
+    # CAPITALISATION, not agency - "for Client Fanuc", "for Fanuc", "for TPG"
+    # and "for A Client" all served a side while naming a different party as
+    # the principal, and the last is one capital letter from the pinned-neutral
+    # "for a client" two tests above. An agency preposition in the product name
+    # is refused flatly, in any case, at the cost of the two recovered segment
+    # names.
+    for product in (
+        "Robotics Automation business for Client Fanuc",
+        "Robotics Automation business for Fanuc",
+        "Robotics Automation business for TPG",
+        "Robotics Automation business held for Client Fanuc",
+        "Robotics Automation business for A Client",
+        "ROBOTICS BUSINESS FOR A CLIENT",
+        "Robotics Automation business for a client",
+        "Kepware for Industry 4.0",
+        "Machine Vision for Logistics unit",
+    ):
+        assert _zebra_role(**{
+            "object.source_product_label": "%s (sale to Skild AI)" % product,
+            "limitations.establishes": ["an announced sale of the %s to Skild AI" % product],
+        }) == "announced_party", product
 
 
 def test_ownership_side_is_withheld_when_the_curated_counterparty_names_the_subject():
