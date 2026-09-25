@@ -182,6 +182,8 @@ class _Table:
     context: str | None
     row_context: tuple[str | None, ...]
     forward: bool = False
+    # The table's own labels: its caption and every label-shaped paragraph since the last heading or table (R89).
+    labels: tuple[str, ...] = ()
 
 
 _GROUP_ORDER = {"thead": 0, "tbody": 1, "tfoot": 2}
@@ -311,14 +313,21 @@ def _row_text(row: Sequence[_Cell]) -> str:
     return " ".join(texts.values())
 
 
+def _is_mark_cell(text: str) -> bool:
+    """A value cell that is a dash or wholly decoration -- a footnote mark "(1)", "(a)", "(ii)", "(*)" (R84, R92)."""
+    literal = text.strip()
+    return literal in _DASHES or (bool(literal) and _DECORATION.fullmatch(_normal(literal)) is not None)
+
+
 def _section_text(row: Sequence[_Cell]) -> str | None:
-    """A row that carries no metric literal other than dashes is a label row -- one cell or several, in any
-    column, at any colspan -- and its whole text is what names a section (R51, R57, R62, R84); a row holding a
-    number is a data row."""
-    if not row or any(_is_literal_cell(cell.text) and cell.text.strip() not in _DASHES for cell in row):
+    """A row that carries no metric literal other than marks is a label row -- one cell or several, in any
+    column, at any colspan -- and its whole text is what names a section (R51, R57, R62, R84, R92); a row holding
+    a number is a data row."""
+    if not row or any(_is_literal_cell(cell.text) and not _is_mark_cell(cell.text) for cell in row):
         return None
-    # A label row may carry dashes in its value columns ("Twelve Months Ended June 30, 2026 | — | —") (R84).
-    return _row_text([cell for cell in row if cell.text.strip() not in _DASHES])
+    # A label row may carry dashes or footnote marks in its value columns ("Twelve Months Ended June 30, 2026 |
+    # (1) | —") (R84, R92).
+    return _row_text([cell for cell in row if not _is_mark_cell(cell.text)])
 
 
 def _marked_context(text: str, identity: tuple[int, int, date]) -> str | None:
@@ -524,15 +533,20 @@ _Q_FY = re.compile(
 )
 # The same form with the fiscal year first: "FY26 Q4", "Fiscal Year 2026 Q4", "fiscal '26 Q4" (R72).
 _FY_Q = re.compile(r"\b" + _FY_TAIL + r"[\s\-]*q[\s-]*([1-4])\b", re.IGNORECASE)
-# A bare quarter number with no year anywhere in the text ("Q3 Highlights"): the admitted quarter when the number
-# matches; beside any year it stays an unreadable token, because "Q3 2026" may be fiscal or calendar (R82).
-_Q_BARE = re.compile(r"\bq[\s-]?([1-4])\b(?![\s-]*(?:fy|fiscal|20\d\d|['\u2019]\d\d))", re.IGNORECASE)
+# A bare quarter number with no year anywhere in the text ("Q3 Highlights", "Quarter 3 Highlights"): the admitted
+# quarter when the number matches; beside any year it stays an unreadable token, because "Q3 2026" may be fiscal or
+# calendar (R82, R94).
+_Q_BARE = re.compile(r"\b(?:q[\s-]?|quarter\s+)([1-4])\b(?![\s-]*(?:fy|fiscal|20\d\d|['\u2019]\d\d))", re.IGNORECASE)
 _QUARTER_ENDED = re.compile(
     r"\b(?:(?:three|3)[\s-]+months?(?:\s+period)?|(?:fiscal\s+)?quarter(?:ly\s+period)?)\s+(?:ended|ending)\s+" + _DATE,
     re.IGNORECASE,
 )
 # The drivers heading's years alone are the form; the heading words stay in the residual for route admission (R73).
-_DRIVERS_YEARS = re.compile(r"(?<=\bnet sales change drivers )(\d{4}) vs\.? (\d{4})\b", re.IGNORECASE)
+# Any connective, parentheses and either order name the same PAIR -- "2027 vs. 2026", "2027 v. 2026", "2027 versus
+# 2026", "2027 compared with 2026", "(2026 vs. 2025)", "2025 vs. 2026" (R87).
+_DRIVERS_YEARS = re.compile(
+    r"(?<=\bnet sales change drivers )\(?(\d{4})\s+(?:vs?\.?|versus|compared\s+(?:with|to)|against)\s+(\d{4})\b\)?", re.IGNORECASE
+)
 _BARE_DATE = re.compile(r"\b" + _DATE, re.IGNORECASE)
 _YEAR = re.compile(r"\b(20\d{2})\b")
 _ORDINAL_INDEX = {"first": 1, "second": 2, "third": 3, "fourth": 4}
@@ -579,9 +593,17 @@ _STRONG_PERIOD_TOKEN = re.compile(
 _LABEL_PREFIX = re.compile(r"^for(?: the)?\s+")
 # Decoration that says nothing about period, topic or basis (R82): "(unaudited)", a units note, a footnote mark.
 # Any OTHER parenthetical keeps its words -- "(Outlook)", "(Pro Forma Combined Company)" -- so admission sees them.
+# The units note is a CLOSED grammar (R88): "(in millions)", "(amounts in millions, except per share amounts)",
+# "(in millions of dollars, except per share data and percentages)", optionally closed by "unaudited"; a
+# parenthetical holding any other word -- "(in millions, pro forma combined)" -- keeps every one of its words.
+_UNITS_EXCEPT = r"(?:per[\s-]+share(?:\s+(?:amounts?|data|figures))?|percentages?|ratios?)"
+_UNITS_NOTE = (
+    r"(?:amounts?|dollars|figures|\$|us\$)?\s*in\s+(?:millions|thousands|billions)(?:\s+of\s+(?:us\s+|u\.s\.\s+)?dollars)?"
+    r"(?:\s*[,;]?\s*except\s+" + _UNITS_EXCEPT + r"(?:\s*(?:,\s*(?:and\s+)?|and\s+)" + _UNITS_EXCEPT + r")*)?"
+    r"(?:\s*[,;]\s*unaudited)?\s*"
+)
 _DECORATION = re.compile(
-    r"\((?:unaudited|(?:amounts?|dollars|figures|\$|us\$)?\s*in\s+(?:millions|thousands|billions)[^()]*|\d{1,2}[a-z]?|[a-z]"
-    r"|[ivx]{2,4}|\*{1,3}|\u2020|\u2021|%|percent(?:ages?)?)\)"
+    r"\((?:unaudited|" + _UNITS_NOTE + r"|\d{1,2}[a-z]?|[a-z]|[ivx]{2,4}|\*{1,3}|\u2020|\u2021|%|percent(?:ages?)?)\)"
 )
 _LABEL_NOISE = re.compile(r"\bunaudited\b|[\u2014\u2013:;()]")
 
@@ -644,14 +666,19 @@ def _quarter_year_verdict(ordinal: int, year: int, quarter: int, fiscal_year: in
     return "prior_quarter" if year == fiscal_year - 1 else "foreign"
 
 
+def _drivers_pair(match: "re.Match[str]", fiscal_year: int) -> bool:
+    """The drivers heading's year PAIR names the admitted fiscal year against its prior, in either order (R81, R87)."""
+    return {int(match.group(1)), int(match.group(2))} == {fiscal_year, fiscal_year - 1}
+
+
 def _period_forms(normal: str, identity: tuple[int, int, date]) -> tuple[list[str], str]:
     """Every recognised period form in ``normal`` with its verdict, and the residual text they leave (R67).
 
     Verdicts: ``"annual"`` (cumulative / full-year forms), ``"scope"`` (the admitted quarter), ``"foreign"``
     (another readable period), ``"fiscal"`` (a bare label of the admitted fiscal year), ``"year"`` (the bare
     admitted year), ``"calendar"`` (the bare quarter-end calendar year when it is not the fiscal year), ``"prior"``
-    (the bare year before either, as in "2026 vs 2025").  Recognised forms are removed from the residual in the
-    order they are judged.
+    (the bare year before the fiscal year, or before the calendar year when the text names no fiscal year, as in
+    "2026 vs 2025").  Recognised forms are removed from the residual in the order they are judged.
     """
     fiscal_year, quarter, current_end = identity
     verdicts: list[str] = []
@@ -672,9 +699,9 @@ def _period_forms(normal: str, identity: tuple[int, int, date]) -> tuple[list[st
     quarter_forms = bool(take(_QUARTER_ENDED, lambda m: _date_verdict(_match_date(m), current_end, prior_end, "scope")))
     quarter_forms |= bool(take(_Q_FY, lambda m: _quarter_year_verdict(int(m.group(1) or m.group(2)), 2000 + int(m.group(3)), quarter, fiscal_year)))
     quarter_forms |= bool(take(_FY_Q, lambda m: _quarter_year_verdict(int(m.group(2)), 2000 + int(m.group(1)), quarter, fiscal_year)))
-    # The drivers heading is a YEAR-level signal (R35): consistent with the admitted year only when it names the
-    # fiscal year against its prior ("2026 vs. 2025"); any other pair is another table (R81).
-    take(_DRIVERS_YEARS, lambda m: "year" if (int(m.group(1)), int(m.group(2))) == (fiscal_year, fiscal_year - 1) else "foreign")
+    # The drivers heading is a YEAR-level signal (R35): consistent with the admitted year only when its pair is the
+    # fiscal year and its prior ("2026 vs. 2025"); any other pair is another table (R81, R87).
+    take(_DRIVERS_YEARS, lambda m: "year" if _drivers_pair(m, fiscal_year) else "foreign")
     quarter_words = list(_QUARTER_WORD.finditer(normal))
     residual = _QUARTER_WORD.sub(" ", residual)
     quarter_forms |= bool(quarter_words)
@@ -688,8 +715,9 @@ def _period_forms(normal: str, identity: tuple[int, int, date]) -> tuple[list[st
     bare_years = [int(m.group(1)) for m in _YEAR.finditer(residual)]
     residual = _YEAR.sub(" ", residual)
     # A bare year names the current column when it is the fiscal year OR the calendar year of the quarter end
-    # (a Q1 FY2027 column reads "2026"), the prior column when it is the year before either; a year that qualifies
-    # an ordinal quarter, and a fiscal-year label, compare to the fiscal year alone (R72).
+    # (a Q1 FY2027 column reads "2026"), the prior column when it is the year before the fiscal year, or the year
+    # before the calendar year in a calendar reading (R87); a year that qualifies an ordinal quarter, and a
+    # fiscal-year label, compare to the fiscal year alone (R72).
     years = [*label_years, *bare_years]
     # An untailed ordinal quarter names the admitted quarter only beside the fiscal year, alone, or beside the
     # fiscal year and its prior ("Fourth Quarter Segment Results 2026 vs. 2025"); any other year is foreign (R76).
@@ -711,7 +739,9 @@ def _period_forms(normal: str, identity: tuple[int, int, date]) -> tuple[list[st
             # The quarter-end calendar year of a Q1/Q2 release: the current column in a calendar-year band, the
             # prior fiscal year beside "2027" -- ambiguous on its own (R76).
             verdicts.append("calendar")
-        elif year in {fiscal_year - 1, current_end.year - 1}:
+        elif year == fiscal_year - 1 or (year == current_end.year - 1 and fiscal_year not in years):
+            # Beside the fiscal year, the calendar year before the quarter end is two fiscal years back: "2025" in
+            # "... 2027 versus 2025" of a Q1 FY2027 release is another table (R87).
             verdicts.append("prior")
         else:
             verdicts.append("foreign")
@@ -903,18 +933,44 @@ _NEUTRAL_WORDS = frozenset({"overview", "highlights", "highlight", "summary", "k
 # Words a table's own caption or short label may add beyond the route, neutral and period vocabularies: units
 # and presentation notes (R83).
 _UNITS_WORDS = frozenset({"amounts", "amount", "in", "millions", "thousands", "billions", "except", "per", "share", "data", "dollars", "usd", "us$", "$", "percent", "%", "unaudited", "and", "of", "the", "table", "tables"})
-PG_TABLE_LABEL_WORDS = 5
+# A table label may name the issuer: "The Procter & Gamble Company and Subsidiaries" (R89).
+_MASTHEAD_WORDS = frozenset({"procter", "&", "gamble", "p&g", "subsidiaries"})
+_ALL_ROUTE_WORDS = frozenset(word for _keys, vocabulary in _ROUTE_WORDS.values() for word in vocabulary)
+# A metric's own basis words a label over its table may carry (R90): "Core" and "Non-GAAP" head the core EPS
+# measures, never GAAP diluted EPS.
+_LABEL_BASIS_WORDS = {"core_non_gaap": frozenset({"core", "non-gaap"})}
+# Presentation bases a PROSE paragraph over a table may not name (R89): the table would present another basis.
+_PRESENTATION_BASIS = re.compile(
+    r"\b(?:pro[\s-]+forma|combined[\s-]+company|supplemental|adjusted|constant[\s-]+currency|currency[\s-]+neutral|comparable[\s-]+basis"
+    r"|illustrative|hypothetical|recast|restated|as[\s-]+if)\b"
+)
 
 
-def _table_label_admissible(text: str, identity: tuple[int, int, date] | None) -> bool:
-    """A caption, or a short paragraph standing directly over a table, must decompose into period forms and
-    words of the route, neutral, units and glue vocabularies -- "Pro Forma Combined" and "Pro Forma (Unaudited)"
-    name a basis and refuse the table (R83)."""
+def _table_label_admissible(text: str, identity: tuple[int, int, date] | None, vocabulary: frozenset[str] = _ALL_ROUTE_WORDS) -> bool:
+    """A table's label -- its caption, or a label-shaped paragraph between the last heading or table and it -- must
+    decompose into period forms and words of the neutral, units, masthead and glue vocabularies plus
+    ``vocabulary``: the union of every route when the table is scanned, the plan's route and the metric's own basis
+    words when it is admitted.  "The Procter & Gamble Company and Subsidiaries" is a masthead; "Pro Forma Combined"
+    and "Supplemental Unaudited Pro Forma Combined Company Information" refuse every table; "Non-GAAP Results" and
+    "Core Results" refuse GAAP diluted EPS (R83, R89, R90)."""
     verdicts, words = _residual_words(text, identity)
     if any(verdict in {"annual", "foreign"} for verdict in verdicts):
         return False
-    allowed = _NEUTRAL_WORDS | _UNITS_WORDS | frozenset(word for _keys, vocabulary in _ROUTE_WORDS.values() for word in vocabulary)
+    allowed = _NEUTRAL_WORDS | _UNITS_WORDS | _MASTHEAD_WORDS | vocabulary
     return all(word in allowed for word in words) and _PERIOD_TOKEN.search(" ".join(words)) is None
+
+
+def _label_shaped(text: str) -> bool:
+    """A paragraph over a table is a LABEL unless it ends in sentence punctuation, whatever its length: "Pro Forma
+    Combined Company Results for the Three Months Ended June 30, 2026" is a label, "Expectations are discussed
+    below." is prose (R83, R89)."""
+    return not _normal(text).rstrip().endswith((".", "!", "?"))
+
+
+def _table_labels(caption: str, run: Sequence[str]) -> tuple[str, ...]:
+    """A table's caption and EVERY label-shaped paragraph between the last heading or table and it -- "Pro Forma
+    Combined" above "(Unaudited)", or above a prose sentence, is a label too (R89)."""
+    return tuple(item for item in (caption, *(text for text in run if _label_shaped(text))) if item and item.strip())
 
 
 def _is_neutral_topic(text: str, identity: tuple[int, int, date] | None) -> bool:
@@ -941,15 +997,26 @@ def _is_non_results_section(text: str, identity: tuple[int, int, date] | None) -
     return not _is_neutral_topic(text, identity)
 
 
+# A title's clauses: split at ";", ":", "|", a spaced dash, "and" and "&" (R93).
+_TITLE_CLAUSE = re.compile(r"\s*[;:|]\s*|\s+[-\u2014\u2013]+\s+|\s+(?:and|&)\s+")
+
+
 def _is_non_results_title(block: Any, text: str, identity: tuple[int, int, date] | None) -> bool:
     """The TITLE -- a first heading block at level 1, a masthead naming the company -- is exempt from the topic
-    rule only: a forward-looking word with no scope form, or a period outside the admitted quarter, still opens
-    a section (R77).  A first heading at any deeper level is an ordinary ancestor (R82)."""
+    rule only: a forward-looking word, unless a clause WITHOUT one names the admitted quarter, or a period outside
+    the admitted quarter, still opens a section (R77, R93).  A first heading at any deeper level is an ordinary
+    ancestor (R82)."""
     if _heading_level(block) != 1:
         return _is_non_results_section(text, identity)
     normal = _normal(text)
-    if _FORWARD_LOOKING.search(normal) is not None and (identity is None or not _has_scope_form(normal, identity)):
-        return True
+    if _FORWARD_LOOKING.search(normal) is not None:
+        # "Fourth Quarter Fiscal Year 2026 Results and Fiscal Year 2027 Outlook" heads the quarter; "Q4 Outlook"
+        # and "Fourth Quarter Fiscal Year 2026 Outlook" name a view of it (R93).
+        if identity is None:
+            return True
+        clauses = [clause for clause in _TITLE_CLAUSE.split(normal) if clause.strip() and _FORWARD_LOOKING.search(clause) is None]
+        if not any(_has_scope_form(clause, identity) for clause in clauses):
+            return True
     return identity is not None and _marked_context(text, identity) in _EXCLUDED
 
 
@@ -1025,7 +1092,7 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
     period = _PeriodContext(identity)
     immediate: str | None = None
     topic: str | None = None
-    table_label: str | None = None
+    run: list[str] = []
     section = _SectionState()
     scanned: list[_Table] = []
     for block in blocks:
@@ -1036,35 +1103,39 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
                 topic = text
             section.heading(block, text, identity)
             period.heading(text)
-            table_label = None
+            run = []
         elif _is_paragraph(block) and identity is not None:
             if _pure_period_label(block, identity):
                 immediate = text
                 if not _is_pure_period(text, identity):
                     topic = text
                 period.label(text)
-                table_label = None
             else:
                 period.prose(text)
-                # A short paragraph standing directly over a table is that table's label (R83).
-                normal = _normal(text)
-                table_label = text if len(normal.split()) <= PG_TABLE_LABEL_WORDS and not normal.endswith((".", "!", "?")) else None
+            # Every paragraph since the last heading or table stands over the next table (R89).
+            run.append(text)
         elif getattr(block, "table", None) is not None:
             rows = _grid(block)
             depth = _header_band(rows)
             caption = getattr(block.table, "caption", "") or ""
             band = _band_context(rows, depth, caption, identity) if identity is not None else None
-            if _layout_overflow(block) or getattr(block.table, "nested", False):
+            if _layout_overflow(block) or getattr(block.table, "nested", False) or getattr(block.table, "contains_nested", False):
                 band = "unknown"
-            if identity is not None and any(not _table_label_admissible(item, identity) for item in (caption, table_label) if item and item.strip()):
+            # Every label must be admissible, and a prose paragraph since the last heading or table that names a
+            # presentation basis ("Pro forma combined company results are presented below.") refuses too (R89).
+            labels = _table_labels(caption, run)
+            if identity is not None and (
+                any(not _table_label_admissible(item, identity) for item in labels)
+                or any(_PRESENTATION_BASIS.search(_normal(item)) is not None for item in run if not _label_shaped(item))
+            ):
                 band = "unknown"
-            table_label = None
+            run = []
             row_context = _row_contexts(rows, depth, identity) if identity is not None else tuple([None] * len(rows))
             governing = tuple(dict.fromkeys(item for item in (immediate, topic) if item))
             scanned.append(
                 _Table(
                     block, rows, depth, caption, governing, band if band in _EXCLUDED else period.context, row_context,
-                    section.active or _is_forward_caption(caption, identity),
+                    section.active or _is_forward_caption(caption, identity), labels,
                 )
             )
             immediate = None
@@ -1087,7 +1158,7 @@ def document_period_verdict(blocks: Sequence[Any], identity: tuple[int, int, dat
         if _is_heading(block) or _pure_period_label(block, identity):
             text = getattr(block, "text", "")
             years = _DRIVERS_YEARS.search(_normal(text))
-            drivers = years is not None and (int(years.group(1)), int(years.group(2))) == (fiscal_year, fiscal_year - 1)
+            drivers = years is not None and _drivers_pair(years, fiscal_year)
             verdict = "scope" if drivers else _marked_context(text, identity)
         elif getattr(block, "table", None) is not None:
             rows = _grid(block)
@@ -1158,14 +1229,20 @@ def _route_for(headings: Sequence[str]) -> str:
     return "quarterly"
 
 
-def _candidate_tables(tables: Sequence[_Table], headings: Sequence[str], identity: tuple[int, int, date] | None = None) -> list[_Table]:
+def _candidate_tables(
+    tables: Sequence[_Table], headings: Sequence[str], identity: tuple[int, int, date] | None = None, basis: frozenset[str] = frozenset()
+) -> list[_Table]:
     """The in-scope tables a route admits: a governing heading must decompose into recognised period forms plus
-    that route's vocabulary (R27, R73)."""
+    that route's vocabulary (R27, R73), and every label of the table into the route's vocabulary plus ``basis``,
+    the metric's own basis words (R90)."""
     route = _route_for(headings)
+    vocabulary = _ROUTE_WORDS[route][1] | basis
     return [
         table
         for table in tables
-        if _admissible_table(table) and any(_admits(heading, route, identity) for heading in table.governing)
+        if _admissible_table(table)
+        and any(_admits(heading, route, identity) for heading in table.governing)
+        and (identity is None or all(_table_label_admissible(label, identity, vocabulary) for label in table.labels))
     ]
 
 
@@ -1309,7 +1386,7 @@ def _select_cell(
     row_label = definition.row_label or plan.header_forms[0]
     located = [
         (table, *found)
-        for table in _candidate_tables(tables, plan.headings, identity)
+        for table in _candidate_tables(tables, plan.headings, identity, _LABEL_BASIS_WORDS.get(definition.basis, frozenset()))
         if (found := _column(
             table, row_label, _band_headers(table, definition, plan, identity), identity,
             current=identity is None or plan.preferred_period != _prior_quarter_end(identity[2]).isoformat(),
@@ -1539,7 +1616,7 @@ def _absent(
 
 
 def _row_fact(*, definition: PGDefinition, tables: Sequence[_Table], blocks: Sequence[Any], plan: _Plan, document_id: str, bound: BoundRelease, event_id: str, identity: tuple[int, int, date]) -> dict[str, Any]:
-    candidates = _candidate_tables(tables, plan.headings, identity)
+    candidates = _candidate_tables(tables, plan.headings, identity, _LABEL_BASIS_WORDS.get(definition.basis, frozenset()))
     headers = (definition.column_label,) if definition.column_label else plan.header_forms
     located = _select_cell(tables, definition, plan, identity)
     # The combined subject is structural: ONE admitted drivers table presenting a Volume/Mix column (R39).
@@ -1607,17 +1684,28 @@ _SENTENCE_SPLIT = re.compile(r"(?<=[.!?;])\s+")
 _VOLUME_COLUMN_QUALIFIERS = ("excluding", "organic", "mix")
 
 
+# A year-level phrase with no year number: "this fiscal year", "for the fiscal year", "the full fiscal year" (R94).
+_YEAR_LEVEL_PHRASE = re.compile(
+    r"\b(?:this|the)\s+(?:full\s+|current\s+|entire\s+)?fiscal[\s-]+year\b"
+    r"(?![\s-]+(?:ago|ended|ending|to[\s-]+date)\b|[\s-]*['\u2019]?\s*(?:20)?\d{2}\b)"
+)
+
+
 def _other_period_sentence(sentence: str, identity: tuple[int, int, date]) -> bool:
     """A sentence that names a readable other period, or an unreadable one by an EXPLICIT token -- a year, a
-    month, a quarter number, a date ("in Q3 2026") -- is not a same-period statement; a sentence that merely
-    says "the quarter" or "this quarter" is, and conflicts (R47, R79, R84)."""
+    month, a quarter number, a date ("in Q3 2026") -- is not a same-period statement; nor is one whose ONLY period
+    reference is a year-level phrase ("increased 4% for the fiscal year").  A sentence that merely says "the
+    quarter", "this quarter" or "last year" is, and conflicts (R47, R79, R84, R94)."""
     verdict = period_context(sentence, identity)
     if verdict in _OUT_OF_SCOPE:
         return True
     if verdict != "unknown":
         return False
-    _verdicts, residual = _period_forms(_normal(sentence), identity)
-    return _EXPLICIT_PERIOD_TOKEN.search(residual) is not None
+    verdicts, residual = _period_forms(_normal(sentence), identity)
+    if _EXPLICIT_PERIOD_TOKEN.search(residual) is not None:
+        return True
+    stripped = _YEAR_LEVEL_PHRASE.sub(" ", residual)
+    return "scope" not in verdicts and stripped != residual and _PERIOD_TOKEN.search(stripped) is None
 
 
 def _volume_statements(tables: Sequence[_Table], blocks: Sequence[Any], *, identity: tuple[int, int, date], skip: _Table) -> list[float]:
