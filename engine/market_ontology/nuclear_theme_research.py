@@ -61,8 +61,26 @@ _VIEW_PREDICATES = {
 }
 _GRAPH_NODE_CAP = 40
 _GRAPH_EDGE_CAP = 80
-_ROW_ORDER = ("selector", "object_selector", "curation_revision")
 _ECONOMICS_REASON = "no_management_sequence_in_nuclear_v1"
+LIMITATION_CODES = (
+    "slice_scope_unowned",
+    "milestone_predicate_unavailable",
+    "supplemental_basket_witnesses",
+    "syndicated_collapsed",
+    "graph_truncated",
+    "held_present",
+    "rejected_present",
+    "review_expired_present",
+    "superseded_present",
+    "interpretation_stale",
+    "target_windows_judged_at:",
+    "witness_cohort_excluded:",
+    "unmapped_rights_source_excluded:",
+    "assertion_invalid:",
+    "scope_slug_keyed:",
+    "interpretation_inputs_absent:",
+    "omitted:",
+)
 
 
 def _selector(label: str | None, prefix: str) -> str | None:
@@ -73,7 +91,9 @@ def _subject_selector(assertion: Mapping[str, Any]) -> tuple[str | None, str | N
     subject = assertion.get("subject") or {}
     business = subject.get("source_business_label")
     product = subject.get("source_product_label")
-    if product:
+    if isinstance(product, str) and product and not business:
+        return _selector(product, "prd"), "product"
+    if isinstance(product, str) and product and isinstance(business, str) and business:
         return f"prd:{business}/{product}", "product"
     selector = _selector(business, "biz")
     return selector, "business" if selector else None
@@ -94,15 +114,32 @@ def _with_observed_availability(assertion: Mapping[str, Any]) -> dict[str, Any]:
     return adapted
 
 
-def _is_passed_target(assertion: Mapping[str, Any], query: ResearchQuery) -> bool:
+def _reference_day(
+    query: ResearchQuery,
+    assertions: tuple[Mapping[str, Any], ...] | list[Mapping[str, Any]],
+) -> str | None:
+    if isinstance(query.source_cutoff, str) and query.source_cutoff:
+        return query.source_cutoff
+    days = [
+        (assertion.get("source") or {}).get("retained_at")
+        or (assertion.get("source") or {}).get("published_at")
+        for assertion in assertions
+    ]
+    days = [day[:10] for day in days if isinstance(day, str) and day]
+    return max(days, default=None)
+
+
+def _is_passed_target(
+        assertion: Mapping[str, Any], reference_day: str | None,
+        query: ResearchQuery | None = None) -> bool:
     end = (assertion.get("temporal") or {}).get("business_valid_to")
     return (
         assertion.get("predicate") == "DEPLOYMENT_TARGET"
         and assertion.get("statement_mode") == "FORWARD_TARGET"
         and isinstance(end, str) and end
-        and isinstance(query.source_cutoff, str)
-        and _parse_day(end) <= _parse_day(query.source_cutoff)
-    ) or _is_retrospective(assertion, query)
+        and isinstance(reference_day, str) and reference_day
+        and _parse_day(end) <= _parse_day(reference_day)
+    ) or (query is not None and _is_retrospective(assertion, query))
 
 
 def _generation(query: ResearchQuery, bundle: OwnerBundle) -> str:
@@ -134,6 +171,8 @@ class _Selection:
         canonical_theme = theme_node_id(query.anchor_theme_id)
         cohort = WITNESS_COHORT[query.slice_key]
         slug_keyed = 0
+        cohort_excluded = 0
+        rights_excluded = 0
         for index, item in enumerate(bundle.assertions):
             try:
                 assertion = validate_assertion(item)
@@ -151,15 +190,19 @@ class _Selection:
                 continue
             subject = assertion.get("subject") or {}
             if subject.get("company_node_id") not in cohort:
-                self.limitations.add("witness_cohort_excluded:1")
+                cohort_excluded += 1
                 continue
             if family_for_source_ref((assertion.get("source") or {}).get("source_uri")) is None:
-                self.limitations.add("unmapped_rights_source_excluded:1")
+                rights_excluded += 1
                 continue
             if not _passes_time_mode(
                     _with_observed_availability(assertion), query, self.limitations):
                 continue
             self.assertions.append(assertion)
+        if cohort_excluded:
+            self.limitations.add(f"witness_cohort_excluded:{cohort_excluded}")
+        if rights_excluded:
+            self.limitations.add(f"unmapped_rights_source_excluded:{rights_excluded}")
         self.assertions.sort(key=lambda assertion: assertion["curation_revision"])
         if slug_keyed:
             self.limitations.add(f"scope_slug_keyed:{slug_keyed}")
@@ -178,6 +221,13 @@ class _Selection:
             self.limitations.add(f"omitted:{name}")
         self._apply_review_gate()
         self._apply_supersession()
+        self._apply_syndication()
+        self.reference_day = _reference_day(self.query, self.assertions)
+        if not isinstance(self.query.source_cutoff, str) \
+                and self.reference_day is not None \
+                and any(assertion.get("predicate") == "DEPLOYMENT_TARGET"
+                        for assertion in self.assertions):
+            self.limitations.add(f"target_windows_judged_at:{self.reference_day}")
         self.row_assertions = [
             assertion for assertion in self.current
             if assertion.get("statement_mode") != "ATTRIBUTED_INTERPRETATION"
@@ -186,6 +236,38 @@ class _Selection:
             assertion for assertion in self.row_assertions
             if assertion["curation_revision"] not in self.superseded
         ]
+
+    def _apply_syndication(self) -> None:
+        """Collapse unambiguous syndicated copies into their original.
+
+        Ported from robotics_theme_research.py @ origin/main 6c9465c7ed7d;
+        moves to a shared import when the shell hosts one.
+        """
+        self.corroboration: dict[str, list[str]] = {}
+        survivors = []
+        for assertion in self.current:
+            dependence = (assertion.get("limitations") or {}).get(
+                "source_dependence") or ""
+            if not dependence.startswith("syndicated_copy_of:"):
+                survivors.append(assertion)
+                continue
+            upstream = dependence[len("syndicated_copy_of:"):]
+            originals = [
+                candidate for candidate in self.current
+                if (candidate.get("source") or {}).get("publisher") == upstream
+                and not ((candidate.get("limitations") or {}).get(
+                    "source_dependence") or "").startswith("syndicated_copy_of:")
+                and candidate.get("predicate") == assertion.get("predicate")
+            ]
+            if len(originals) == 1:
+                original = originals[0]
+                self.corroboration.setdefault(
+                    original["curation_revision"], []).append(
+                    source_ref_for(assertion))
+                self.limitations.add("syndicated_collapsed")
+            else:
+                survivors.append(assertion)
+        self.current = survivors
 
     def _now_of_query(self) -> str | None:
         if self.query.recorded_cutoff is not None:
@@ -297,6 +379,7 @@ def _row(assertion: Mapping[str, Any], selection: _Selection) -> dict[str, Any]:
     limits = assertion.get("limitations") or {}
     temporal = assertion.get("temporal") or {}
     selector, kind = _subject_selector(assertion)
+    corroboration = selection.corroboration.get(assertion["curation_revision"], [])
     return {
         "assertion_ref": source_ref_for(assertion),
         "curation_revision": assertion["curation_revision"],
@@ -312,7 +395,8 @@ def _row(assertion: Mapping[str, Any], selection: _Selection) -> dict[str, Any]:
         "relation_kind": _RELATION_KINDS[assertion["predicate"]],
         "predicate": assertion["predicate"],
         "statement_mode": assertion["statement_mode"],
-        "retrospective": _is_passed_target(assertion, selection.query),
+        "retrospective": _is_passed_target(
+            assertion, selection.reference_day, selection.query),
         "observation": dict(assertion["observation"]),
         "measure_scope": None,
         "purchase_total": None,
@@ -339,7 +423,7 @@ def _row(assertion: Mapping[str, Any], selection: _Selection) -> dict[str, Any]:
             "current": assertion["curation_revision"] not in selection.superseded,
         },
         "independent_source_count": 1,
-        "corroboration_refs": [],
+        "corroboration_refs": sorted(corroboration),
         "correction": {
             "predecessor_revision": (assertion.get("correction") or {})
             .get("predecessor_revision"),
@@ -362,7 +446,9 @@ def _graph(rows: list[dict[str, Any]], selection: _Selection) -> tuple[dict, boo
         for selector_id in (src, dst):
             if selector_id not in nodes:
                 if selector_id.startswith(("prd:", "obj:")):
-                    kind, label = "product", selector_id.split("/", 1)[1]
+                    kind = "product"
+                    label = selector_id.split("/", 1)[1] if "/" in selector_id \
+                        else selector_id.split(":", 1)[1]
                 elif selector_id.startswith("biz:"):
                     kind, label = "business", selector_id[len("biz:"):]
                 else:
@@ -404,7 +490,7 @@ def _companies(selection: _Selection) -> dict[str, Any]:
                 "reason": None if state["security"] else state["reason"],
             },
             "roles": sorted(({
-                "role": "subject",
+                "role": _ownership_role(assertion),
                 "predicate": assertion["predicate"],
                 "statement_mode": assertion["statement_mode"],
                 "assertion_ref": source_ref_for(assertion),
@@ -415,9 +501,27 @@ def _companies(selection: _Selection) -> dict[str, Any]:
     if not rows:
         return {"status": "unavailable", "reason": "no_companies",
                 "input_refs": [], "rows": []}
-    return {"status": "ready", "input_refs": sorted({
+    degraded = any(row["navigation"]["status"] != "ready" for row in rows)
+    section = {"status": "degraded" if degraded else "ready", "input_refs": sorted({
         assertion["curation_revision"] for group in grouped.values()
         for assertion in group}), "rows": rows}
+    if degraded:
+        section["reason"] = "identity_incomplete"
+    return section
+
+
+def _ownership_role(assertion: Mapping[str, Any]) -> str:
+    if assertion.get("predicate") != "OWNERSHIP_EVENT":
+        return "subject"
+    mode = assertion.get("statement_mode")
+    if mode == "REPORTED_FACT":
+        valid_from = (assertion.get("temporal") or {}).get("business_valid_from")
+        if isinstance(valid_from, str) and valid_from:
+            return f"owner_from:{valid_from}"
+        return "owner_reported_effective_date_unknown"
+    if mode == "ANNOUNCED_ARRANGEMENT":
+        return "announced_party"
+    return "subject"
 
 
 def _native_subjects(selection: _Selection) -> list[dict[str, Any]]:
@@ -429,10 +533,18 @@ def _native_subjects(selection: _Selection) -> list[dict[str, Any]]:
             business = subject.get("source_business_label")
             seen[selector] = {
                 "selector": selector, "kind": kind,
-                "source_label": selector.split("/", 1)[-1],
+                "source_label": (
+                    selector.split("/", 1)[-1] if "/" in selector
+                    else selector.split(":", 1)[1]
+                ),
                 "company_node_id": selection.identity_state(
                     business)["company_node_id"] if business else None,
             }
+        application = (assertion.get("scope") or {}).get("application")
+        if isinstance(application, str) and application:
+            seen.setdefault(f"app:{application}", {
+                "selector": f"app:{application}", "kind": "application",
+                "source_label": application, "company_node_id": None})
         facet = (assertion.get("scope") or {}).get("technology_facet")
         if isinstance(facet, str) and facet:
             seen.setdefault(f"facet:{facet}", {
@@ -443,41 +555,97 @@ def _native_subjects(selection: _Selection) -> list[dict[str, Any]]:
 
 def _text_of(assertion: Mapping[str, Any]) -> str:
     limits = assertion.get("limitations") or {}
-    establishes = limits.get("establishes") or []
-    if establishes and isinstance(establishes[0], str) and establishes[0]:
-        return establishes[0]
-    return limits.get("coverage") or ""
+    coverage = limits.get("coverage")
+    return coverage if isinstance(coverage, str) and coverage else ""
 
 
-def _summary(selection: _Selection) -> dict[str, Any]:
+def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str, Any]:
+    selected_revisions = {
+        assertion["curation_revision"] for assertion in selection.assertions
+    }
+    current_revisions = {
+        assertion["curation_revision"] for assertion in selection.current
+    }
+    blocks = selection.interpretation_blocks()
+    stale_blocks = []
+    for block in blocks:
+        supported = block.get("freshness") == "current" and all(
+            revision in selected_revisions
+            for revision in (block.get("input_revisions") or [])
+        )
+        if not supported:
+            stale_blocks.append(block)
     facts = sorted(({
         "text": _text_of(assertion), "label": "fact",
         "input_refs": [assertion["curation_revision"]],
     } for assertion in selection.live if assertion["statement_mode"] in (
         "REPORTED_FACT", "CATALOG_DESCRIPTION")),
         key=lambda item: (item["text"], item["input_refs"]))
-    targets = sorted(({
+    next_evidence = sorted(({
         "text": _text_of(assertion), "label": "target",
         "input_refs": [assertion["curation_revision"]],
-    } for assertion in selection.live if assertion["statement_mode"] in (
-        "FORWARD_TARGET", "ANNOUNCED_ARRANGEMENT")
-        or assertion["predicate"] == "DEPLOYMENT_TARGET"),
+    } for assertion in selection.live
+      if (assertion["statement_mode"] in (
+              "FORWARD_TARGET", "ANNOUNCED_ARRANGEMENT")
+          or assertion["predicate"] == "DEPLOYMENT_TARGET")
+      and not _is_passed_target(assertion, selection.reference_day)),
         key=lambda item: (item["text"], item["input_refs"]))
+    for block in blocks:
+        watcher = block.get("falsifier") or block.get("missing_measurement") or ""
+        if watcher:
+            next_evidence.append({"text": watcher, "label": "interpretation",
+                                  "input_refs": list(
+                                      block.get("input_revisions") or [])})
+    next_evidence.sort(key=lambda item: (item["text"], item["input_refs"]))
+
+    why_it_matters = []
+    for block in blocks:
+        item = {"text": block.get("mechanism") or "", "label": "interpretation",
+                "input_refs": list(block.get("input_revisions") or [])}
+        if item["text"]:
+            why_it_matters.append(item)
     interpretations = sorted(({
         "text": _text_of(assertion), "label": "interpretation",
         "input_refs": [assertion["curation_revision"]],
     } for assertion in selection.current
         if assertion["statement_mode"] == "ATTRIBUTED_INTERPRETATION"),
         key=lambda item: (item["text"], item["input_refs"]))
-    return {
-        "status": "ready" if selection.current else "unavailable",
-        "input_refs": sorted(assertion["curation_revision"]
-                             for assertion in selection.current),
+    why_it_matters.extend(interpretations)
+    why_it_matters.sort(key=lambda item: (item["text"], item["input_refs"]))
+
+    offsets = sorted((
+        {"text": block.get("offset") or "", "label": "interpretation",
+         "input_refs": list(block.get("input_revisions") or [])}
+        for block in blocks if block.get("offset")),
+        key=lambda item: (item["text"], item["input_refs"]))
+
+    stale_ids = {id(block) for block in stale_blocks}
+    for item in why_it_matters + offsets:
+        source_block = next((
+            block for block in blocks
+            if item["input_refs"] == list(block.get("input_revisions") or [])
+        ), None)
+        if source_block is not None and id(source_block) in stale_ids:
+            item["stale"] = True
+            item["text"] = "[stale interpretation] " + item["text"]
+    if stale_blocks:
+        response_limitations.add("interpretation_stale")
+
+    summary = {
+        "status": "ready",
+        "input_refs": sorted(current_revisions),
         "what_changed": facts,
-        "why_it_matters": interpretations,
-        "offset": [],
-        "next_evidence": targets,
+        "why_it_matters": why_it_matters,
+        "offset": offsets,
+        "next_evidence": next_evidence,
     }
+    if not selection.current:
+        return {**summary, "status": "unavailable",
+                "reason": "no_current_assertions"}
+    if stale_blocks:
+        return {**summary, "status": "degraded",
+                "reason": "interpretation_stale"}
+    return summary
 
 
 def _views(selection: _Selection, response_limitations: set[str]) -> dict[str, Any]:
@@ -546,6 +714,7 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
     response_limitations = set(selection.limitations)
     views = _views(selection, response_limitations)
     companies = _companies(selection)
+    summary = _summary(selection, response_limitations)
     companies["rows"] = companies["rows"][query.offset:query.offset + query.limit]
     coverage_status = "unavailable" if not selection.assertions else (
         "degraded" if bundle.omissions else "ready")
@@ -565,7 +734,7 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
             "expected_generation": query.expected_generation,
         },
         "native_subjects": _native_subjects(selection),
-        "summary": _summary(selection),
+        "summary": summary,
         "companies": companies,
         "industrial_views": views,
         "economics": {
@@ -585,7 +754,7 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
         "evidence_refs": [
             {"assertion_ref": source_ref_for(assertion),
              "curation_revision": assertion["curation_revision"],
-             "kind": "assertion"} for assertion in selection.assertions
+             "kind": "assertion"} for assertion in selection.current
         ] + [{"owner_store": ref.get("owner_store"),
               "native_identity": copy.deepcopy(ref.get("native_identity")),
               "reference_id": ref.get("reference_id"), "kind": "native"}
@@ -593,7 +762,7 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
         "authorized_coverage": {
             "status": coverage_status,
             "input_refs": sorted(assertion["curation_revision"]
-                                 for assertion in selection.assertions),
+                                 for assertion in selection.current),
             "selected": len(selection.assertions),
             "industry_total": None,
             "note": "counts only what this principal may know exists",

@@ -21,7 +21,7 @@ def bundle(**changes):
     return loader.load_nuclear_owner_bundle(query, rights_snapshot=SNAPSHOT)
 
 
-def test_bundle_declares_exactly_three_absent_surfaces():
+def test_bundle_declares_exactly_two_omissions():
     value = bundle()
     assert value.omissions == (
         PRIVATE_ASSERTIONS_UNBOUND, loader.PUBLIC_ASSERTIONS_UNCURATED)

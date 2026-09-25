@@ -375,7 +375,7 @@
         },
         "management": {
           "type": "null",
-          "description": "Robotics v1 has no management-sequence witness: the economics VIEW carries the financial observation rows, this SECTION stays the guidance witness slot and is unavailable."
+          "description": "Nuclear v1 has no management-sequence witness: the economics VIEW carries the financial observation rows, this SECTION stays the guidance witness slot and is unavailable."
         },
         "witness_gate": {
           "const": "missing"
@@ -517,7 +517,7 @@
         "type": "string",
         "pattern": "^[a-z0-9_]+(?::[A-Za-z0-9_.-]+)?$"
       },
-      "description": "Every composer limitation token. `supplemental_basket_witnesses` and `milestone_predicate_unavailable` are frozen Energy additions; parameterized drop tokens retain the shared wire grammar."
+      "description": "Every composer limitation token. Nuclear-specific codes include `supplemental_basket_witnesses`, `milestone_predicate_unavailable`, `syndicated_collapsed`, `target_windows_judged_at:`, `witness_cohort_excluded:`, and `unmapped_rights_source_excluded:`; parameterized tokens retain the shared wire grammar."
     },
     "authority": {
       "$ref": "#/$defs/authority"
@@ -642,7 +642,8 @@
       "properties": {
         "text": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "Assertion summaries use only limitations.coverage; establishes and does_not_establish stay on their rows."
         },
         "label": {
           "enum": [
@@ -940,7 +941,7 @@
               "minLength": 1
             }
           ],
-          "description": "Always null in Robotics v1: no structured publisher model field exists on the assertion yet."
+          "description": "Always null in Nuclear v1: no structured publisher model field exists on the assertion yet."
         },
         "configuration": {
           "anyOf": [
@@ -963,7 +964,7 @@
               "minLength": 1
             }
           ],
-          "description": "Null in Robotics v1 unless derivable verbatim from the source."
+          "description": "Null in Nuclear v1 unless derivable verbatim from the source."
         },
         "stage_source_language": {
           "anyOf": [
@@ -1091,11 +1092,11 @@
         },
         "measure_scope": {
           "type": "null",
-          "description": "Always null in Robotics v1; the financial basis lives in period/denominator/unit/gross_net_basis, kept as separate row fields."
+          "description": "Always null in Nuclear v1; the financial basis lives in period/denominator/unit/gross_net_basis, kept as separate row fields."
         },
         "purchase_total": {
           "type": "null",
-          "description": "Always null in Robotics v1 — the composer never builds a cost total."
+          "description": "Always null in Nuclear v1 — the composer never builds a cost total."
         },
         "purchase_total_reason": {
           "anyOf": [

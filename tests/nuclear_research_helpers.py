@@ -37,6 +37,12 @@ def _assertion(
     object_product: str | None = None,
     period: str | None = None,
     valid_to: str | None = None,
+    valid_from: str | None = None,
+    retained_equal_published: bool = False,
+    publisher: str | None = None,
+    source_dependence: str | None = None,
+    business: str | None = None,
+    application: str | None = None,
     source_uri: str | None = None,
     predecessor: str | None = None,
 ) -> dict[str, Any]:
@@ -48,19 +54,19 @@ def _assertion(
             "reviewer": "synthetic-energy-test", "review_due_at": None,
         },
         "source": {
-            "publisher": "Synthetic Energy Filings",
+            "publisher": publisher or "Synthetic Energy Filings",
             "source_uri": source_uri or (
                 f"https://www.sec.gov/Archives/edgar/data/synthetic/{case}.htm"
             ),
             "locator": f"synthetic-{case}",
             "published_at": "2026-09-19", "published_at_grain": "date",
             "observed_at": "2026-09-20T00:00:00Z",
-            "retained_at": "2026-09-20T00:00:00Z",
+            "retained_at": "2026-09-19T00:00:00Z" if retained_equal_published else "2026-09-20T00:00:00Z",
             "retention_ref": f"synthetic://{case}", "native_digest": None,
         },
         "subject": {
             "company_node_id": COMPANIES[company],
-            "source_business_label": company,
+            "source_business_label": business if business is not None else company,
             "source_product_label": product,
             "source_platform_label": None,
             "configuration": configuration,
@@ -72,7 +78,7 @@ def _assertion(
         "predicate": predicate,
         "statement_mode": mode,
         "scope": {
-            "canonical_theme_id": "theme:nuclear_power", "application": None,
+            "canonical_theme_id": "theme:nuclear_power", "application": application,
             "technology_facet": facet, "region": None, "period": period,
             "denominator": None,
         },
@@ -83,13 +89,14 @@ def _assertion(
             "precision": "integer",
         },
         "temporal": {
-            "business_valid_from": "2026-09-19", "business_valid_to": valid_to,
+            "business_valid_from": valid_from or "2026-09-19",
+            "business_valid_to": valid_to,
         },
         "limitations": {
             "establishes": establishes,
             "does_not_establish": does_not_establish,
             "coverage": f"Synthetic coverage statement for {case}.",
-            "source_dependence": "Synthetic source dependence.",
+            "source_dependence": source_dependence or "Synthetic source dependence.",
             "expiry_trigger": valid_to,
         },
         "correction": {"predecessor_revision": predecessor, "reason": (
@@ -218,6 +225,42 @@ N12 = _assertion(
     establishes=["synthetic material was delivered under a government contract"],
     does_not_establish=["funded revenue"],
 )
+
+N13 = _assertion(
+    case="N13", company="Cameco", facet="fuel_cycle",
+    predicate="REPORTED_FINANCIAL_MEASURE", mode="REPORTED_FACT",
+    product="Synthetic consolidated operations", period="2025Q4",
+    observation=_observed(100, "USD million", "per_period", flow="flow"),
+    establishes=["synthetic consolidated revenue was reported"],
+    does_not_establish=["equity-method investee revenue"],
+)
+
+N14 = _assertion(
+    case="N14", company="Cameco", facet="fuel_cycle",
+    predicate="REPORTED_FINANCIAL_MEASURE", mode="REPORTED_FACT",
+    product="Synthetic equity-method investee", period="2025Q4",
+    observation=_observed(50, "USD million", "per_period", flow="flow"),
+    establishes=["the synthetic investee share is equity-accounted"],
+    does_not_establish=["consolidated revenue", "netting against consolidated revenue"],
+)
+
+N03C = _assertion(
+    case="N03C", company="Oklo", facet="reactor_technology",
+    predicate="DEPLOYMENT_TARGET", mode="FORWARD_TARGET",
+    product="Synthetic powerhouse", valid_to="2026-01-31",
+    observation=_observed(5, "units", "absolute"),
+    establishes=["a synthetic earlier target was met"],
+    does_not_establish=["current operation"], retained_equal_published=True,
+)
+
+N03D = _assertion(
+    case="N03D", company="Oklo", facet="reactor_technology",
+    predicate="DEPLOYMENT_TARGET", mode="FORWARD_TARGET",
+    product="Synthetic powerhouse", valid_to="2027-12-31",
+    observation=_observed(4, "units", "absolute"),
+    establishes=["a synthetic later target is open"],
+    does_not_establish=["current operation"], retained_equal_published=True,
+)
 X01 = _assertion(
     case="X01", company="BWX Technologies", facet="nuclear_components",
     predicate="OWNERSHIP_EVENT", mode="ATTRIBUTED_INTERPRETATION",
@@ -234,6 +277,15 @@ X02 = _assertion(
     establishes=["a synthetic regulator-cited value exists"],
     does_not_establish=["emission rights"],
 )
+X02B = _assertion(
+    case="X02B", company="BWX Technologies", facet="nuclear_components",
+    predicate="REPORTED_FINANCIAL_MEASURE", mode="REPORTED_FACT",
+    product="Synthetic regulator-cited work", period="2025Q4",
+    observation=_observed(10, "USD million", "per_period", flow="flow"),
+    source_uri="https://www.nrc.gov/synthetic/X02B.htm",
+    establishes=["a second synthetic regulator-cited value exists"],
+    does_not_establish=["emission rights"],
+)
 X03 = _assertion(
     case="X03", company="BWX Technologies", facet="nuclear_components",
     predicate="REPORTED_FINANCIAL_MEASURE", mode="REPORTED_FACT",
@@ -244,19 +296,81 @@ X03 = _assertion(
     does_not_establish=["consolidated company revenue"],
 )
 X04 = _assertion(
-    case="X04", company="Cameco", facet="reactor_technology",
+    case="X04", company="Cameco", facet="fuel_cycle",
     predicate="REPORTED_OPERATING_MEASURE", mode="REPORTED_FACT",
     product="Synthetic misfaceted fuel service", period="2025Q4",
     observation=_observed(44, "CAD/kgU", "per_unit"),
     establishes=["a mis-faceted synthetic value exists"],
     does_not_establish=["primary slice membership"],
 )
+X04B = _assertion(
+    case="X04B", company="Centrus", facet="reactor_technology",
+    predicate="REPORTED_OPERATING_MEASURE", mode="REPORTED_FACT",
+    product="Synthetic fuel service", period="2025Q4",
+    observation=_observed(45, "CAD/kgU", "per_unit"),
+    establishes=["a second synthetic fuel-service value exists"],
+    does_not_establish=["primary slice membership"],
+)
+X05 = _assertion(
+    case="X05", company="BWX Technologies", facet="nuclear_components",
+    predicate="REPORTED_FINANCIAL_MEASURE", mode="REPORTED_FACT",
+    product="Synthetic syndicated work", period="2025Q4",
+    observation=_observed(100, "USD million", "per_period", flow="flow"),
+    publisher="Synthetic Wire",
+    source_dependence="syndicated_copy_of:Synthetic Energy Filings",
+    establishes=["a synthetic syndicated copy exists"],
+    does_not_establish=["independent corroboration"],
+)
+X06 = _assertion(
+    case="X06", company="NuScale", facet="reactor_technology",
+    predicate="PRODUCT_CAPABILITY", mode="CATALOG_DESCRIPTION",
+    product="Synthetic smaller module", configuration="Synthetic A block",
+    observation=_observed(10, "MWe", "per_unit"),
+    establishes=["a synthetic smaller capability was catalogued"],
+    does_not_establish=["deployment"],
+)
+X07 = _assertion(
+    case="X07", company="Oklo", facet="reactor_technology",
+    predicate="PRODUCT_CAPABILITY", mode="CATALOG_DESCRIPTION",
+    product="Synthetic larger module", configuration="Synthetic Z block",
+    observation=_observed(200, "MWe", "per_unit"),
+    establishes=["a synthetic larger capability was catalogued"],
+    does_not_establish=["deployment"],
+)
+X08 = _assertion(
+    case="X08", company="Oklo", facet="reactor_technology",
+    predicate="PRODUCT_CAPABILITY", mode="CATALOG_DESCRIPTION", product="Synthetic product only",
+    business=None, observation=_observed(8, "MWe", "per_unit"),
+    establishes=["a synthetic product without a business label exists"],
+    does_not_establish=["business identity"],
+)
+X08["subject"]["source_business_label"] = None
+X08["curation_revision"] = None
+X08 = json.loads(encode_assertion(X08))
+X09 = _assertion(
+    case="X09", company="NuScale", facet="reactor_technology",
+    predicate="OWNERSHIP_EVENT", mode="REPORTED_FACT",
+    product="Synthetic acquired line", object_product="Synthetic acquired assets",
+    valid_from="2026-02-01",
+    establishes=["a synthetic ownership event became effective"],
+    does_not_establish=["future acquisitions"],
+)
+X10 = _assertion(
+    case="X10", company="NuScale", facet="reactor_technology",
+    predicate="OWNERSHIP_EVENT", mode="ANNOUNCED_ARRANGEMENT",
+    product="Synthetic ownership arrangement", object_product="Synthetic counterparty",
+    establishes=["a synthetic ownership arrangement was announced"],
+    does_not_establish=["closing"],
+)
 
 FIXTURES = {
     "N01": N01, "N02": N02, "N03": N03, "N03b": N03B, "N04": N04,
     "N05": N05, "N06": N06, "N07": N07, "N08": N08, "N09": N09,
-    "N10": N10, "N11": N11, "N12": N12, "X01": X01, "X02": X02,
-    "X03": X03, "X04": X04,
+    "N10": N10, "N11": N11, "N12": N12, "N13": N13, "N14": N14,
+    "N03C": N03C, "N03D": N03D, "X01": X01, "X02": X02, "X03": X03,
+    "X04": X04, "X04B": X04B, "X02B": X02B, "X05": X05,
+    "X06": X06, "X07": X07, "X08": X08,
+    "X09": X09, "X10": X10,
 }
 
 
@@ -292,3 +406,18 @@ def nuclear_query(slice_key: str = "reactor_technology", view: str = "commercial
 
 def clone(name: str) -> dict[str, Any]:
     return copy.deepcopy(FIXTURES[name])
+
+
+def variant(name: str, case: str, **changes: Any) -> dict[str, Any]:
+    value = clone(name)
+    value["curation_revision"] = None
+    value["source"]["source_uri"] = (
+        f"https://www.sec.gov/Archives/edgar/data/synthetic/{case}.htm")
+    value["source"]["locator"] = f"synthetic-{case}"
+    value["source"]["retention_ref"] = f"synthetic://{case}"
+    for key, change in changes.items():
+        if key in ("source", "subject", "scope", "temporal", "limitations"):
+            value[key].update(change)
+        else:
+            value[key] = change
+    return json.loads(encode_assertion(value))
