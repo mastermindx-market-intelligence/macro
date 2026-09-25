@@ -18,7 +18,7 @@ from collections.abc import Mapping
 
 import numpy as np
 
-from lib.dataos.price import is_ambiguous
+from lib.dataos.price import Session, VenueScope, is_ambiguous
 from lib.dataos.temporal import utc
 from research.options_estate import market_tide_c1 as core
 
@@ -32,6 +32,22 @@ def _text(value, reason: str) -> str:
 def _price_keys_clean(row: Mapping) -> None:
     if any(is_ambiguous(key) for key in row):
         raise ValueError("ambiguous_price_column")
+
+
+def _price_identity(value):
+    if not isinstance(value, Mapping):
+        raise ValueError("price_identity_unavailable")
+    try:
+        session = Session(value.get("session"))
+    except (TypeError, ValueError):
+        raise ValueError("price_identity_unavailable")
+    if session is not Session.REGULAR:
+        raise ValueError("unsupported_price_session_scope")
+    try:
+        venue = VenueScope(value.get("venue_scope"))
+    except (TypeError, ValueError):
+        raise ValueError("price_venue_scope_unavailable")
+    return {"session": session.value, "venue_scope": venue.value}
 
 
 def _window_rows(rows, expected_sessions, *, label: str):
@@ -119,6 +135,7 @@ def _event_fields(evidence, *, decision, next_close):
     if known > decision:
         raise ValueError("event_evidence_not_known_at_decision")
     ref = _text(evidence.get("coverage_ref"), "event_coverage_unavailable")
+    rights_ref = _text(evidence.get("rights_ref"), "event_rights_unavailable")
     features = evidence.get("features")
     event_times = evidence.get("event_times")
     negatives = evidence.get("negative_coverage_refs")
@@ -146,7 +163,7 @@ def _event_fields(evidence, *, decision, next_close):
             parsed.append(stamp.isoformat())
         flags[key] = value
         times[key] = parsed
-    return ref, known, flags, times
+    return ref, rights_ref, known, flags, times
 
 
 def _prepare_origin(origin, days, calendar, positions):
@@ -163,6 +180,9 @@ def _prepare_origin(origin, days, calendar, positions):
         raise ValueError("invalid_decision_window")
 
     price_ref = _text(origin.get("price_bundle_ref"), "source_reference_unavailable")
+    price_rights_ref = _text(origin.get("price_rights_ref"), "price_rights_unavailable")
+    feature_identity = _price_identity(origin.get("feature_price_identity"))
+    label_identity = _price_identity(origin.get("label_price_identity"))
     feature_sadj_ref = _text(origin.get("feature_sadj_ref"), "source_reference_unavailable")
     feature_tradj_ref = _text(origin.get("feature_tradj_ref"), "source_reference_unavailable")
     label_tradj_ref = _text(origin.get("label_tradj_ref"), "source_reference_unavailable")
@@ -178,7 +198,7 @@ def _prepare_origin(origin, days, calendar, positions):
     y5, label_available = _label_measurement(
         origin.get("label_prices"), label_sessions, calendar, label_adjustment, measured["v20"]
     )
-    event_ref, known, flags, event_times = _event_fields(
+    event_ref, event_rights_ref, known, flags, event_times = _event_fields(
         origin.get("event_evidence"), decision=decision, next_close=calendar[days[pos + 1]]
     )
 
@@ -198,12 +218,16 @@ def _prepare_origin(origin, days, calendar, positions):
         "label_end_session": label_sessions[-1].isoformat(),
         "label_available_at": label_available.isoformat(),
         "source_evidence": {
+            "price_rights_ref": price_rights_ref,
+            "feature_price_identity": feature_identity,
+            "label_price_identity": label_identity,
             "feature_sadj_ref": feature_sadj_ref,
             "feature_tradj_ref": feature_tradj_ref,
             "feature_adjustment_asof": feature_adjustment.isoformat(),
             "label_tradj_ref": label_tradj_ref,
             "label_adjustment_asof": label_adjustment.isoformat(),
             "event_coverage_ref": event_ref,
+            "event_rights_ref": event_rights_ref,
         },
     }
 
