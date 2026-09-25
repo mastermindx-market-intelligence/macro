@@ -762,3 +762,51 @@ def test_new_copy_is_glance_tier_and_bilingual():
         i = html.index(frag)
         window = html[i:i + 1400]
         assert 'class="l-en"' in window and 'class="l-zh"' in window, frag
+
+# ── sector / theme map switch contracts (2026-09-24 heatmap wave) ───────────
+def _hm_maps(page: str) -> list[dict]:
+    text = (SITE / page).read_text(encoding="utf-8")
+    match = re.search(r"data-hm-maps='([^']+)'", text)
+    assert match, f"{page}: data-hm-maps missing"
+    return json.loads(match.group(1))
+
+
+def test_us_heatmap_owner_keeps_sector_theme_switch_without_rebuild():
+    maps = _hm_maps("sector_heatmap.html")
+    assert [m["key"] for m in maps] == ["sp500", "themes"]
+    assert [m["url"] for m in maps] == [
+        "marketdata/sp500_heatmap.json",
+        "marketdata/themes_heatmap.json",
+    ]
+    source = (ROOT / "templates" / "sector_heatmap.html.j2").read_text(encoding="utf-8")
+    assert '"key":"sp500"' in source
+    assert '"key":"themes"' in source
+
+
+def test_china_heatmap_switches_between_stock_sectors_and_ths_themes():
+    maps = _hm_maps("china_heatmap.html")
+    assert [m["key"] for m in maps] == ["china-sectors", "china-themes"]
+    sectors, themes = maps
+    assert sectors["url"] == "marketdata/china_heatmap.json"
+    assert themes == {
+        "key": "china-themes",
+        "label_en": "Themes",
+        "label_zh": "主题",
+        "url": "marketdata/subsector_rotation_china.json",
+        "adapter": "china-ths-themes",
+        "join_url": "marketdata/china_heatmap.json",
+    }
+
+
+def test_china_theme_view_reuses_owner_feeds_without_a_second_publisher():
+    template_js = (ROOT / "templates" / "heatmap.js").read_text(encoding="utf-8")
+    site_js = (ROOT / "site" / "heatmap.js").read_text(encoding="utf-8")
+    market_template = (ROOT / "templates" / "market_heatmap.html.j2").read_text(encoding="utf-8")
+    assert template_js == site_js
+    assert "function adaptChinaThsThemes(rotation, stocks)" in template_js
+    assert "loadMapPayload(m)" in template_js
+    assert "m.adapter !== 'china-ths-themes'" in template_js
+    assert "subsector_rotation_china.json" in market_template
+    assert "china_themes_heatmap.json" not in template_js
+    assert "china_themes_heatmap.json" not in market_template
+
