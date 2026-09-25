@@ -38,7 +38,7 @@
     "label": "deteriorating",
     "name": "AI Compute & Optics",
     "name_zh": "AI\u7b97\u529b\u4e0e\u5149\u6a21\u5757",
-    "rank": 9,
+    "rank": 10,
     "reco": "avoid",
     "score": 42
   },
@@ -46,7 +46,7 @@
     "label": "neutral",
     "name": "Home Appliances",
     "name_zh": "\u5bb6\u7535",
-    "rank": 7,
+    "rank": 8,
     "reco": "hold",
     "score": 44
   },
@@ -94,7 +94,7 @@
     "label": "deteriorating",
     "name": "Coal",
     "name_zh": "\u7164\u70ad",
-    "rank": 8,
+    "rank": 9,
     "reco": "avoid",
     "score": 44
   },
@@ -102,7 +102,7 @@
     "label": "deteriorating",
     "name": "Consumer Electronics",
     "name_zh": "\u6d88\u8d39\u7535\u5b50",
-    "rank": 10,
+    "rank": 11,
     "reco": "avoid",
     "score": 39
   },
@@ -110,9 +110,9 @@
     "label": "neutral",
     "name": "Defense & Aerospace",
     "name_zh": "\u519b\u5de5\u822a\u5929",
-    "rank": 11,
+    "rank": 7,
     "reco": "hold",
-    "score": 39
+    "score": 44
   },
   "cn_food_bev": {
     "label": "emerging",

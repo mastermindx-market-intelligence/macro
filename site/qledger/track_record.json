@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T12:33:51.397914+00:00",
+  "generated_at": "2026-09-25T15:26:24.823088+00:00",
   "grade_horizons": [
     5,
     21,
@@ -216,11 +216,11 @@
     },
     "us_importance_v0": {
       "5": {
-        "n_obs": 24640,
-        "n_dates": 79,
+        "n_obs": 25070,
+        "n_dates": 80,
         "hit_rate": null,
-        "excess_mean": 0.027926,
-        "mean_abs_excess": 0.071664,
+        "excess_mean": 0.027679,
+        "mean_abs_excess": 0.071289,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -231,17 +231,17 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 79,
+          "explicit_unit_v1:trading_days:US": 80,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
       },
       "21": {
-        "n_obs": 4297,
-        "n_dates": 56,
+        "n_obs": 4402,
+        "n_dates": 57,
         "hit_rate": null,
-        "excess_mean": -0.005502,
-        "mean_abs_excess": 0.083578,
+        "excess_mean": -0.004024,
+        "mean_abs_excess": 0.083874,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -252,7 +252,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 56,
+          "explicit_unit_v1:trading_days:US": 57,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
@@ -260,11 +260,11 @@
     },
     "us_importance_v0_pit": {
       "5": {
-        "n_obs": 24640,
-        "n_dates": 79,
+        "n_obs": 25070,
+        "n_dates": 80,
         "hit_rate": null,
-        "excess_mean": 0.027926,
-        "mean_abs_excess": 0.071664,
+        "excess_mean": 0.027679,
+        "mean_abs_excess": 0.071289,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -275,17 +275,17 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 79,
+          "explicit_unit_v1:trading_days:US": 80,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
       },
       "21": {
-        "n_obs": 4297,
-        "n_dates": 56,
+        "n_obs": 4402,
+        "n_dates": 57,
         "hit_rate": null,
-        "excess_mean": -0.005502,
-        "mean_abs_excess": 0.083578,
+        "excess_mean": -0.004024,
+        "mean_abs_excess": 0.083874,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -296,7 +296,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 56,
+          "explicit_unit_v1:trading_days:US": 57,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
@@ -443,7 +443,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 7,
+          "explicit_unit_v1:trading_days:US": 8,
           "legacy_calendar_unstamped": 39
         },
         "pooling_refused": true
@@ -496,7 +496,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 27,
+          "explicit_unit_v1:trading_days:US": 28,
           "legacy_calendar_unstamped": 35
         },
         "pooling_refused": true
@@ -527,7 +527,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 9,
+          "explicit_unit_v1:trading_days:US": 10,
           "legacy_calendar_unstamped": 35
         },
         "pooling_refused": true
@@ -550,7 +550,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 22,
+          "explicit_unit_v1:trading_days:US": 23,
           "legacy_calendar_unstamped": 39
         },
         "pooling_refused": true
@@ -571,7 +571,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 5,
+          "explicit_unit_v1:trading_days:US": 7,
           "legacy_calendar_unstamped": 39
         },
         "pooling_refused": true
@@ -611,17 +611,17 @@
     },
     "thematic_desk": {
       "5": {
-        "n_obs": 26,
-        "n_dates": 11,
-        "hit_rate": 0.153846,
+        "n_obs": 28,
+        "n_dates": 12,
+        "hit_rate": 0.178571,
         "excess_mean": null,
-        "mean_abs_excess": 0.021055,
+        "mean_abs_excess": 0.022928,
         "excess_basis": "magnitude_only",
-        "wilson_ci_low": 0.051367,
+        "wilson_ci_low": 0.046964,
         "state": "ACCRUING",
         "excess_mean_by_direction": {
           "-1": 0.045191,
-          "1": -0.011159
+          "1": -0.009116
         },
         "excess_directions": [
           -1,
@@ -882,11 +882,11 @@
     },
     "us_importance_v0": {
       "5": {
-        "n_obs": 24640,
-        "n_dates": 79,
+        "n_obs": 25070,
+        "n_dates": 80,
         "hit_rate": null,
-        "excess_mean": 0.027926,
-        "mean_abs_excess": 0.071664,
+        "excess_mean": 0.027679,
+        "mean_abs_excess": 0.071289,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -897,17 +897,17 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 79,
+          "explicit_unit_v1:trading_days:US": 80,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
       },
       "21": {
-        "n_obs": 4297,
-        "n_dates": 56,
+        "n_obs": 4402,
+        "n_dates": 57,
         "hit_rate": null,
-        "excess_mean": -0.005502,
-        "mean_abs_excess": 0.083578,
+        "excess_mean": -0.004024,
+        "mean_abs_excess": 0.083874,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -918,7 +918,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 56,
+          "explicit_unit_v1:trading_days:US": 57,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
@@ -926,11 +926,11 @@
     },
     "us_importance_v0_pit": {
       "5": {
-        "n_obs": 24640,
-        "n_dates": 79,
+        "n_obs": 25070,
+        "n_dates": 80,
         "hit_rate": null,
-        "excess_mean": 0.027926,
-        "mean_abs_excess": 0.071664,
+        "excess_mean": 0.027679,
+        "mean_abs_excess": 0.071289,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -941,17 +941,17 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 79,
+          "explicit_unit_v1:trading_days:US": 80,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
       },
       "21": {
-        "n_obs": 4297,
-        "n_dates": 56,
+        "n_obs": 4402,
+        "n_dates": 57,
         "hit_rate": null,
-        "excess_mean": -0.005502,
-        "mean_abs_excess": 0.083578,
+        "excess_mean": -0.004024,
+        "mean_abs_excess": 0.083874,
         "excess_basis": "pooled_signed",
         "wilson_ci_low": null,
         "state": "GRADED",
@@ -962,7 +962,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 56,
+          "explicit_unit_v1:trading_days:US": 57,
           "legacy_calendar_unstamped": 44
         },
         "pooling_refused": true
@@ -1109,7 +1109,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 7,
+          "explicit_unit_v1:trading_days:US": 8,
           "legacy_calendar_unstamped": 39
         },
         "pooling_refused": true
@@ -1162,7 +1162,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 27,
+          "explicit_unit_v1:trading_days:US": 28,
           "legacy_calendar_unstamped": 35
         },
         "pooling_refused": true
@@ -1193,7 +1193,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 9,
+          "explicit_unit_v1:trading_days:US": 10,
           "legacy_calendar_unstamped": 35
         },
         "pooling_refused": true
@@ -1237,7 +1237,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 5,
+          "explicit_unit_v1:trading_days:US": 6,
           "legacy_calendar_unstamped": 18
         },
         "pooling_refused": true
@@ -1299,13 +1299,13 @@
     },
     "altdata_mid": {
       "5": {
-        "n_obs": 39,
-        "n_dates": 15,
-        "hit_rate": 0.435897,
-        "excess_mean": -0.006309,
-        "mean_abs_excess": 0.028536,
+        "n_obs": 40,
+        "n_dates": 16,
+        "hit_rate": 0.425,
+        "excess_mean": -0.007245,
+        "mean_abs_excess": 0.028916,
         "excess_basis": "pooled_signed",
-        "wilson_ci_low": 0.248092,
+        "wilson_ci_low": 0.230984,
         "state": "ACCRUING",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_bases": [
@@ -1314,7 +1314,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 15,
+          "explicit_unit_v1:trading_days:US": 16,
           "legacy_calendar_unstamped": 10
         },
         "pooling_refused": true
@@ -1335,7 +1335,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 4,
+          "explicit_unit_v1:trading_days:US": 5,
           "legacy_calendar_unstamped": 10
         },
         "pooling_refused": true
@@ -1368,7 +1368,7 @@
         ],
         "clock_basis_selection": "max_n_dates_tie_newer",
         "clock_bases_n_dates": {
-          "explicit_unit_v1:trading_days:US": 13,
+          "explicit_unit_v1:trading_days:US": 14,
           "legacy_calendar_unstamped": 19
         },
         "pooling_refused": true
@@ -1419,17 +1419,17 @@
     },
     "thematic_desk": {
       "5": {
-        "n_obs": 26,
-        "n_dates": 11,
-        "hit_rate": 0.153846,
+        "n_obs": 28,
+        "n_dates": 12,
+        "hit_rate": 0.178571,
         "excess_mean": null,
-        "mean_abs_excess": 0.021055,
+        "mean_abs_excess": 0.022928,
         "excess_basis": "magnitude_only",
-        "wilson_ci_low": 0.051367,
+        "wilson_ci_low": 0.046964,
         "state": "ACCRUING",
         "excess_mean_by_direction": {
           "-1": 0.045191,
-          "1": -0.011159
+          "1": -0.009116
         },
         "excess_directions": [
           -1,
@@ -1617,11 +1617,11 @@
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 466,
+            "n_obs": 468,
             "n_dates": 28,
             "hit_rate": null,
-            "excess_mean": 0.001305,
-            "mean_abs_excess": 0.083403,
+            "excess_mean": 0.001557,
+            "mean_abs_excess": 0.083304,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -1639,11 +1639,11 @@
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 466,
+            "n_obs": 468,
             "n_dates": 28,
             "hit_rate": null,
-            "excess_mean": 0.001305,
-            "mean_abs_excess": 0.083403,
+            "excess_mean": 0.001557,
+            "mean_abs_excess": 0.083304,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -1685,11 +1685,11 @@
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 466,
+            "n_obs": 468,
             "n_dates": 28,
             "hit_rate": null,
-            "excess_mean": 0.001305,
-            "mean_abs_excess": 0.083403,
+            "excess_mean": 0.001557,
+            "mean_abs_excess": 0.083304,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -1707,11 +1707,11 @@
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 466,
+            "n_obs": 468,
             "n_dates": 28,
             "hit_rate": null,
-            "excess_mean": 0.001305,
-            "mean_abs_excess": 0.083403,
+            "excess_mean": 0.001557,
+            "mean_abs_excess": 0.083304,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -1745,21 +1745,21 @@
       "by_desk": {
         "us_importance_v0": {
           "5": {
-            "n_obs": 24640,
-            "n_dates": 79,
+            "n_obs": 25070,
+            "n_dates": 80,
             "hit_rate": null,
-            "excess_mean": 0.027926,
-            "mean_abs_excess": 0.071664,
+            "excess_mean": 0.027679,
+            "mean_abs_excess": 0.071289,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 4297,
-            "n_dates": 56,
+            "n_obs": 4402,
+            "n_dates": 57,
             "hit_rate": null,
-            "excess_mean": -0.005502,
-            "mean_abs_excess": 0.083578,
+            "excess_mean": -0.004024,
+            "mean_abs_excess": 0.083874,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -1767,21 +1767,21 @@
         },
         "us_importance_v0_pit": {
           "5": {
-            "n_obs": 24640,
-            "n_dates": 79,
+            "n_obs": 25070,
+            "n_dates": 80,
             "hit_rate": null,
-            "excess_mean": 0.027926,
-            "mean_abs_excess": 0.071664,
+            "excess_mean": 0.027679,
+            "mean_abs_excess": 0.071289,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 4297,
-            "n_dates": 56,
+            "n_obs": 4402,
+            "n_dates": 57,
             "hit_rate": null,
-            "excess_mean": -0.005502,
-            "mean_abs_excess": 0.083578,
+            "excess_mean": -0.004024,
+            "mean_abs_excess": 0.083874,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -1848,18 +1848,18 @@
             ]
           },
           "21": {
-            "n_obs": 1971,
-            "n_dates": 7,
-            "hit_rate": 0.57166,
+            "n_obs": 2126,
+            "n_dates": 8,
+            "hit_rate": 0.579317,
             "excess_mean": null,
-            "mean_abs_excess": 0.081579,
+            "mean_abs_excess": 0.083097,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.250454,
+            "wilson_ci_low": 0.305738,
             "state": "ACCRUING",
             "excess_mean_by_direction": {
-              "-1": -0.022556,
-              "0": 0.001636,
-              "1": -0.01861
+              "-1": -0.024661,
+              "0": 0.0122,
+              "1": -0.01694
             },
             "excess_directions": [
               -1,
@@ -1870,18 +1870,18 @@
         },
         "intel_hub": {
           "5": {
-            "n_obs": 2786,
-            "n_dates": 27,
-            "hit_rate": 0.45193,
+            "n_obs": 2806,
+            "n_dates": 28,
+            "hit_rate": 0.454135,
             "excess_mean": null,
-            "mean_abs_excess": 0.041202,
+            "mean_abs_excess": 0.041073,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.275856,
+            "wilson_ci_low": 0.295313,
             "state": "GRADED",
             "excess_mean_by_direction": {
-              "-1": -0.003037,
-              "0": -0.014501,
-              "1": -0.007659
+              "-1": -0.003235,
+              "0": -0.014517,
+              "1": -0.007568
             },
             "excess_directions": [
               -1,
@@ -1890,18 +1890,18 @@
             ]
           },
           "21": {
-            "n_obs": 363,
-            "n_dates": 9,
-            "hit_rate": 0.539589,
+            "n_obs": 385,
+            "n_dates": 10,
+            "hit_rate": 0.545455,
             "excess_mean": null,
-            "mean_abs_excess": 0.06572,
+            "mean_abs_excess": 0.067964,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.266647,
+            "wilson_ci_low": 0.23659,
             "state": "ACCRUING",
             "excess_mean_by_direction": {
-              "-1": -0.028148,
+              "-1": -0.024731,
               "0": -0.024442,
-              "1": -0.022647
+              "1": -0.023043
             },
             "excess_directions": [
               -1,
@@ -1912,23 +1912,23 @@
         },
         "altdata": {
           "5": {
-            "n_obs": 144,
-            "n_dates": 22,
-            "hit_rate": 0.409722,
-            "excess_mean": -0.007976,
-            "mean_abs_excess": 0.040001,
+            "n_obs": 147,
+            "n_dates": 23,
+            "hit_rate": 0.401361,
+            "excess_mean": -0.008458,
+            "mean_abs_excess": 0.03983,
             "excess_basis": "pooled_signed",
-            "wilson_ci_low": 0.232556,
+            "wilson_ci_low": 0.221574,
             "state": "ACCRUING"
           },
           "21": {
-            "n_obs": 69,
-            "n_dates": 5,
-            "hit_rate": 0.333333,
-            "excess_mean": -0.017845,
-            "mean_abs_excess": 0.081303,
+            "n_obs": 73,
+            "n_dates": 7,
+            "hit_rate": 0.328767,
+            "excess_mean": -0.019797,
+            "mean_abs_excess": 0.079989,
             "excess_basis": "pooled_signed",
-            "wilson_ci_low": 0.117618,
+            "wilson_ci_low": 0.082217,
             "state": "ACCRUING"
           }
         },
@@ -1956,17 +1956,17 @@
         },
         "thematic_desk": {
           "5": {
-            "n_obs": 26,
-            "n_dates": 11,
-            "hit_rate": 0.153846,
+            "n_obs": 28,
+            "n_dates": 12,
+            "hit_rate": 0.178571,
             "excess_mean": null,
-            "mean_abs_excess": 0.021055,
+            "mean_abs_excess": 0.022928,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.051367,
+            "wilson_ci_low": 0.046964,
             "state": "ACCRUING",
             "excess_mean_by_direction": {
               "-1": 0.045191,
-              "1": -0.011159
+              "1": -0.009116
             },
             "excess_directions": [
               -1,
@@ -1998,21 +1998,21 @@
       "by_family": {
         "us_importance_v0": {
           "5": {
-            "n_obs": 24640,
-            "n_dates": 79,
+            "n_obs": 25070,
+            "n_dates": 80,
             "hit_rate": null,
-            "excess_mean": 0.027926,
-            "mean_abs_excess": 0.071664,
+            "excess_mean": 0.027679,
+            "mean_abs_excess": 0.071289,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 4297,
-            "n_dates": 56,
+            "n_obs": 4402,
+            "n_dates": 57,
             "hit_rate": null,
-            "excess_mean": -0.005502,
-            "mean_abs_excess": 0.083578,
+            "excess_mean": -0.004024,
+            "mean_abs_excess": 0.083874,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -2020,21 +2020,21 @@
         },
         "us_importance_v0_pit": {
           "5": {
-            "n_obs": 24640,
-            "n_dates": 79,
+            "n_obs": 25070,
+            "n_dates": 80,
             "hit_rate": null,
-            "excess_mean": 0.027926,
-            "mean_abs_excess": 0.071664,
+            "excess_mean": 0.027679,
+            "mean_abs_excess": 0.071289,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
           },
           "21": {
-            "n_obs": 4297,
-            "n_dates": 56,
+            "n_obs": 4402,
+            "n_dates": 57,
             "hit_rate": null,
-            "excess_mean": -0.005502,
-            "mean_abs_excess": 0.083578,
+            "excess_mean": -0.004024,
+            "mean_abs_excess": 0.083874,
             "excess_basis": "pooled_signed",
             "wilson_ci_low": null,
             "state": "GRADED"
@@ -2101,18 +2101,18 @@
             ]
           },
           "21": {
-            "n_obs": 1971,
-            "n_dates": 7,
-            "hit_rate": 0.57166,
+            "n_obs": 2126,
+            "n_dates": 8,
+            "hit_rate": 0.579317,
             "excess_mean": null,
-            "mean_abs_excess": 0.081579,
+            "mean_abs_excess": 0.083097,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.250454,
+            "wilson_ci_low": 0.305738,
             "state": "ACCRUING",
             "excess_mean_by_direction": {
-              "-1": -0.022556,
-              "0": 0.001636,
-              "1": -0.01861
+              "-1": -0.024661,
+              "0": 0.0122,
+              "1": -0.01694
             },
             "excess_directions": [
               -1,
@@ -2123,18 +2123,18 @@
         },
         "intel_hub": {
           "5": {
-            "n_obs": 2786,
-            "n_dates": 27,
-            "hit_rate": 0.45193,
+            "n_obs": 2806,
+            "n_dates": 28,
+            "hit_rate": 0.454135,
             "excess_mean": null,
-            "mean_abs_excess": 0.041202,
+            "mean_abs_excess": 0.041073,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.275856,
+            "wilson_ci_low": 0.295313,
             "state": "GRADED",
             "excess_mean_by_direction": {
-              "-1": -0.003037,
-              "0": -0.014501,
-              "1": -0.007659
+              "-1": -0.003235,
+              "0": -0.014517,
+              "1": -0.007568
             },
             "excess_directions": [
               -1,
@@ -2143,18 +2143,18 @@
             ]
           },
           "21": {
-            "n_obs": 363,
-            "n_dates": 9,
-            "hit_rate": 0.539589,
+            "n_obs": 385,
+            "n_dates": 10,
+            "hit_rate": 0.545455,
             "excess_mean": null,
-            "mean_abs_excess": 0.06572,
+            "mean_abs_excess": 0.067964,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.266647,
+            "wilson_ci_low": 0.23659,
             "state": "ACCRUING",
             "excess_mean_by_direction": {
-              "-1": -0.028148,
+              "-1": -0.024731,
               "0": -0.024442,
-              "1": -0.022647
+              "1": -0.023043
             },
             "excess_directions": [
               -1,
@@ -2175,13 +2175,13 @@
             "state": "ACCRUING"
           },
           "21": {
-            "n_obs": 22,
-            "n_dates": 5,
-            "hit_rate": 0.5,
-            "excess_mean": 0.002701,
-            "mean_abs_excess": 0.062936,
+            "n_obs": 25,
+            "n_dates": 6,
+            "hit_rate": 0.48,
+            "excess_mean": -0.005292,
+            "mean_abs_excess": 0.063669,
             "excess_basis": "pooled_signed",
-            "wilson_ci_low": 0.117618,
+            "wilson_ci_low": 0.187613,
             "state": "ACCRUING"
           }
         },
@@ -2209,35 +2209,35 @@
         },
         "altdata_mid": {
           "5": {
-            "n_obs": 39,
-            "n_dates": 15,
-            "hit_rate": 0.435897,
-            "excess_mean": -0.006309,
-            "mean_abs_excess": 0.028536,
+            "n_obs": 40,
+            "n_dates": 16,
+            "hit_rate": 0.425,
+            "excess_mean": -0.007245,
+            "mean_abs_excess": 0.028916,
             "excess_basis": "pooled_signed",
-            "wilson_ci_low": 0.248092,
+            "wilson_ci_low": 0.230984,
             "state": "ACCRUING"
           },
           "21": {
-            "n_obs": 28,
-            "n_dates": 4,
-            "hit_rate": 0.285714,
-            "excess_mean": -0.028185,
-            "mean_abs_excess": 0.099107,
+            "n_obs": 29,
+            "n_dates": 5,
+            "hit_rate": 0.275862,
+            "excess_mean": -0.027978,
+            "mean_abs_excess": 0.096455,
             "excess_basis": "pooled_signed",
-            "wilson_ci_low": 0.045586,
+            "wilson_ci_low": 0.036223,
             "state": "ACCRUING"
           }
         },
         "altdata_event": {
           "5": {
-            "n_obs": 37,
-            "n_dates": 13,
-            "hit_rate": 0.486486,
-            "excess_mean": 0.007509,
-            "mean_abs_excess": 0.046396,
+            "n_obs": 39,
+            "n_dates": 14,
+            "hit_rate": 0.461538,
+            "excess_mean": 0.005813,
+            "mean_abs_excess": 0.045327,
             "excess_basis": "pooled_signed",
-            "wilson_ci_low": 0.232058,
+            "wilson_ci_low": 0.213805,
             "state": "ACCRUING"
           },
           "21": {
@@ -2275,17 +2275,17 @@
         },
         "thematic_desk": {
           "5": {
-            "n_obs": 26,
-            "n_dates": 11,
-            "hit_rate": 0.153846,
+            "n_obs": 28,
+            "n_dates": 12,
+            "hit_rate": 0.178571,
             "excess_mean": null,
-            "mean_abs_excess": 0.021055,
+            "mean_abs_excess": 0.022928,
             "excess_basis": "magnitude_only",
-            "wilson_ci_low": 0.051367,
+            "wilson_ci_low": 0.046964,
             "state": "ACCRUING",
             "excess_mean_by_direction": {
               "-1": 0.045191,
-              "1": -0.011159
+              "1": -0.009116
             },
             "excess_directions": [
               -1,
@@ -3197,7 +3197,7 @@
         "legacy_calendar_unstamped"
       ],
       "clock_bases_n_grades": {
-        "explicit_unit_v1:trading_days:US": 293,
+        "explicit_unit_v1:trading_days:US": 297,
         "legacy_calendar_unstamped": 1013
       }
     },
@@ -3225,7 +3225,7 @@
         "legacy_calendar_unstamped"
       ],
       "clock_bases_n_grades": {
-        "explicit_unit_v1:trading_days:US": 131,
+        "explicit_unit_v1:trading_days:US": 136,
         "legacy_calendar_unstamped": 788
       }
     },
@@ -3254,21 +3254,21 @@
     }
   },
   "counts": {
-    "n_claims": 109534,
-    "n_grades": 160359,
+    "n_claims": 109603,
+    "n_grades": 161646,
     "n_placebo": 1240,
     "n_rejected": 19,
     "grades_by_fill_convention": {
       "asof_legacy": 2780,
-      "next_bar": 157579
+      "next_bar": 158866
     },
     "grades_by_clock_basis": {
       "legacy_calendar_unstamped": 87417,
-      "explicit_unit_v1:trading_days:US": 68729,
-      "explicit_unit_v1:calendar_days:US": 180,
+      "explicit_unit_v1:trading_days:US": 70014,
+      "explicit_unit_v1:calendar_days:US": 182,
       "explicit_unit_v1:trading_days:CN": 4033
     },
-    "n_claims_horizon_unit_declared": 62904,
+    "n_claims_horizon_unit_declared": 62973,
     "n_claims_unstamped_regime": 6673
   },
   "ladder_states": {
@@ -3349,9 +3349,9 @@
     "altdata_event": {
       "5": {
         "eligible": false,
-        "reason": "n_dates=13 < 25 required. State: ACCRUING. Need 12 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 13,
-        "wilson_ci_low": 0.232058,
+        "reason": "n_dates=14 < 25 required. State: ACCRUING. Need 11 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 14,
+        "wilson_ci_low": 0.213805,
         "current_state": "ACCRUING",
         "demote": false,
         "pinned_reason": "",
@@ -3505,9 +3505,9 @@
     "altdata_mid": {
       "5": {
         "eligible": false,
-        "reason": "n_dates=15 < 25 required. State: ACCRUING. Need 10 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 15,
-        "wilson_ci_low": 0.248092,
+        "reason": "n_dates=16 < 25 required. State: ACCRUING. Need 9 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 16,
+        "wilson_ci_low": 0.230984,
         "current_state": "ACCRUING",
         "demote": false,
         "pinned_reason": "",
@@ -3531,9 +3531,9 @@
       },
       "21": {
         "eligible": false,
-        "reason": "n_dates=4 < 25 required. State: ACCRUING. Need 21 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 4,
-        "wilson_ci_low": 0.045586,
+        "reason": "n_dates=5 < 25 required. State: ACCRUING. Need 20 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 5,
+        "wilson_ci_low": 0.036223,
         "current_state": "ACCRUING",
         "demote": false,
         "pinned_reason": "",
@@ -3609,9 +3609,9 @@
       },
       "21": {
         "eligible": false,
-        "reason": "n_dates=5 < 25 required. State: ACCRUING. Need 20 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 5,
-        "wilson_ci_low": 0.117618,
+        "reason": "n_dates=6 < 25 required. State: ACCRUING. Need 19 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 6,
+        "wilson_ci_low": 0.187613,
         "current_state": "ACCRUING",
         "demote": false,
         "pinned_reason": "",
@@ -4117,12 +4117,12 @@
     "intel_hub": {
       "5": {
         "eligible": false,
-        "reason": "Wilson CI lower bound 0.2759 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='intel_hub' horizon=5d: rolling Wilson CI lower bound=0.2759 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-24 (narrative_regime precedent). Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 27,
-        "wilson_ci_low": 0.275856,
+        "reason": "Wilson CI lower bound 0.2953 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='intel_hub' horizon=5d: rolling Wilson CI lower bound=0.2953 <= 0.5 (coin-flip null) at n_dates=28. Auto-demote one rung. Pinned as of 2026-09-25 (narrative_regime precedent). Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 28,
+        "wilson_ci_low": 0.295313,
         "current_state": "GRADED",
         "demote": true,
-        "pinned_reason": "claim_family='intel_hub' horizon=5d: rolling Wilson CI lower bound=0.2759 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-24 (narrative_regime precedent).",
+        "pinned_reason": "claim_family='intel_hub' horizon=5d: rolling Wilson CI lower bound=0.2953 <= 0.5 (coin-flip null) at n_dates=28. Auto-demote one rung. Pinned as of 2026-09-25 (narrative_regime precedent).",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_migration": true,
         "clock_prior_n_dates": {
@@ -4143,9 +4143,9 @@
       },
       "21": {
         "eligible": false,
-        "reason": "n_dates=9 < 25 required. State: ACCRUING. Need 16 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 9,
-        "wilson_ci_low": 0.266647,
+        "reason": "n_dates=10 < 25 required. State: ACCRUING. Need 15 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 10,
+        "wilson_ci_low": 0.23659,
         "current_state": "ACCRUING",
         "demote": false,
         "pinned_reason": "",
@@ -4451,9 +4451,9 @@
       },
       "21": {
         "eligible": false,
-        "reason": "n_dates=7 < 25 required. State: ACCRUING. Need 18 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 7,
-        "wilson_ci_low": 0.250454,
+        "reason": "n_dates=8 < 25 required. State: ACCRUING. Need 17 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 8,
+        "wilson_ci_low": 0.305738,
         "current_state": "ACCRUING",
         "demote": false,
         "pinned_reason": "",
@@ -4477,12 +4477,12 @@
       },
       "63": {
         "eligible": false,
-        "reason": "Wilson CI lower bound 0.3074 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=63d: rolling Wilson CI lower bound=0.3074 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-24 (narrative_regime precedent).",
+        "reason": "Wilson CI lower bound 0.3074 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=63d: rolling Wilson CI lower bound=0.3074 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-25 (narrative_regime precedent).",
         "n_dates": 27,
         "wilson_ci_low": 0.30743,
         "current_state": "LEGACY_NOT_AUTHORITY_ELIGIBLE",
         "demote": true,
-        "pinned_reason": "claim_family='radar' horizon=63d: rolling Wilson CI lower bound=0.3074 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-24 (narrative_regime precedent).",
+        "pinned_reason": "claim_family='radar' horizon=63d: rolling Wilson CI lower bound=0.3074 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-25 (narrative_regime precedent).",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
         "clock_prior_n_dates": {},
@@ -4577,9 +4577,9 @@
     "thematic_desk": {
       "5": {
         "eligible": false,
-        "reason": "n_dates=11 < 25 required. State: ACCRUING. Need 14 more independent date clusters.",
-        "n_dates": 11,
-        "wilson_ci_low": 0.051367,
+        "reason": "n_dates=12 < 25 required. State: ACCRUING. Need 13 more independent date clusters.",
+        "n_dates": 12,
+        "wilson_ci_low": 0.046964,
         "current_state": "ACCRUING",
         "demote": false,
         "pinned_reason": "",
@@ -4651,8 +4651,8 @@
     "us_importance_v0": {
       "5": {
         "eligible": false,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=79 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 79,
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=80 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 80,
         "wilson_ci_low": null,
         "current_state": "GRADED",
         "demote": false,
@@ -4677,8 +4677,8 @@
       },
       "21": {
         "eligible": false,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=56 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 56,
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=57 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 57,
         "wilson_ci_low": null,
         "current_state": "GRADED",
         "demote": false,
@@ -4729,8 +4729,8 @@
     "us_importance_v0_pit": {
       "5": {
         "eligible": false,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=79 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 79,
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=80 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 80,
         "wilson_ci_low": null,
         "current_state": "GRADED",
         "demote": false,
@@ -4755,8 +4755,8 @@
       },
       "21": {
         "eligible": false,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=56 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
-        "n_dates": 56,
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=57 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "n_dates": 57,
         "wilson_ci_low": null,
         "current_state": "GRADED",
         "demote": false,
@@ -4881,7 +4881,7 @@
       }
     }
   },
-  "ladder_states_at": "2026-09-24T12:35:33.665254+00:00",
+  "ladder_states_at": "2026-09-25T15:28:04.218589+00:00",
   "promotion_readiness": {
     "altdata": {
       "5": {
@@ -4968,7 +4968,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2026-10-06",
+        "projected_ready_date": "2026-10-09",
         "reason": "n_dates=17 < 25 required. State: ACCRUING. Need 8 more independent date clusters.",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
@@ -5108,7 +5108,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2026-12-24",
+        "projected_ready_date": "2026-12-25",
         "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=12 < 25 required. State: ACCRUING. Need 13 more independent date clusters.",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
@@ -5142,7 +5142,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2026-12-24",
+        "projected_ready_date": "2026-12-25",
         "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=12 < 25 required. State: ACCRUING. Need 13 more independent date clusters.",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
@@ -5341,8 +5341,8 @@
         "needed": 25,
         "wilson_ci_low": null,
         "hit_rate": null,
-        "excess_mean": 0.001305,
-        "mean_abs_excess": 0.083403,
+        "excess_mean": 0.001557,
+        "mean_abs_excess": 0.083304,
         "excess_basis": "pooled_signed",
         "excess_mean_by_direction": null,
         "benchmark_baseline_hit_rate": null,
@@ -5449,8 +5449,8 @@
         "needed": 25,
         "wilson_ci_low": null,
         "hit_rate": null,
-        "excess_mean": 0.001305,
-        "mean_abs_excess": 0.083403,
+        "excess_mean": 0.001557,
+        "mean_abs_excess": 0.083304,
         "excess_basis": "pooled_signed",
         "excess_mean_by_direction": null,
         "benchmark_baseline_hit_rate": null,
@@ -5636,7 +5636,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2027-01-19",
+        "projected_ready_date": "2027-01-20",
         "reason": "claim_family='demand_chain' horizon=5d: matched-control evidence has not begun accruing for this family — the control evidence clock has not started; no bench substitute is evaluated (contract C5.1). The clock starts at the first prospective, control-carrying registration (C3.1).",
         "clock_basis": null,
         "clock_migration": false,
@@ -5670,7 +5670,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2027-03-18",
+        "projected_ready_date": "2027-03-19",
         "reason": "claim_family='demand_chain' horizon=21d: matched-control evidence has not begun accruing for this family — the control evidence clock has not started; no bench substitute is evaluated (contract C5.1). The clock starts at the first prospective, control-carrying registration (C3.1).",
         "clock_basis": null,
         "clock_migration": false,
@@ -6260,7 +6260,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2027-07-15",
+        "projected_ready_date": "2027-07-16",
         "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=4 < 25 required. State: ACCRUING. Need 21 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:calendar_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:calendar_days:US",
         "clock_migration": true,
@@ -6296,7 +6296,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2027-01-05",
+        "projected_ready_date": "2027-02-26",
         "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=3 < 25 required. State: ACCRUING. Need 22 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:calendar_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:calendar_days:US",
         "clock_migration": true,
@@ -6684,7 +6684,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2026-10-01",
+        "projected_ready_date": "2026-10-02",
         "reason": "n_dates=17 < 25 required. State: ACCRUING. Need 8 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_migration": true,
@@ -6705,17 +6705,17 @@
         "unclassified": false
       },
       "21": {
-        "n_dates": 7,
+        "n_dates": 8,
         "needed": 25,
-        "wilson_ci_low": 0.250454,
-        "hit_rate": 0.57166,
+        "wilson_ci_low": 0.305738,
+        "hit_rate": 0.579317,
         "excess_mean": null,
-        "mean_abs_excess": 0.081579,
+        "mean_abs_excess": 0.083097,
         "excess_basis": "magnitude_only",
         "excess_mean_by_direction": {
-          "-1": -0.022556,
-          "0": 0.001636,
-          "1": -0.01861
+          "-1": -0.024661,
+          "0": 0.0122,
+          "1": -0.01694
         },
         "benchmark_baseline_hit_rate": null,
         "benchmark_baseline_excess_mean": null,
@@ -6724,8 +6724,8 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2026-10-30",
-        "reason": "n_dates=7 < 25 required. State: ACCRUING. Need 18 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "projected_ready_date": "2026-10-25",
+        "reason": "n_dates=8 < 25 required. State: ACCRUING. Need 17 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_migration": true,
         "clock_prior_n_dates": {
@@ -6765,7 +6765,7 @@
         "ready": false,
         "approaching": true,
         "projected_ready_date": null,
-        "reason": "Wilson CI lower bound 0.3074 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=63d: rolling Wilson CI lower bound=0.3074 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-24 (narrative_regime precedent).",
+        "reason": "Wilson CI lower bound 0.3074 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=63d: rolling Wilson CI lower bound=0.3074 <= 0.5 (coin-flip null) at n_dates=27. Auto-demote one rung. Pinned as of 2026-09-25 (narrative_regime precedent).",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
         "clock_prior_n_dates": {},
@@ -7008,7 +7008,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2026-10-16",
+        "projected_ready_date": "2026-10-17",
         "reason": "claim_family='stock_desk' horizon=5d: matched-control evidence has not begun accruing for this family — the control evidence clock has not started; no bench substitute is evaluated (contract C5.1). The clock starts at the first prospective, control-carrying registration (C3.1).",
         "clock_basis": null,
         "clock_migration": false,
@@ -7097,12 +7097,12 @@
     },
     "us_importance_v0": {
       "5": {
-        "n_dates": 79,
+        "n_dates": 80,
         "needed": 25,
         "wilson_ci_low": null,
         "hit_rate": null,
-        "excess_mean": 0.027926,
-        "mean_abs_excess": 0.071664,
+        "excess_mean": 0.027679,
+        "mean_abs_excess": 0.071289,
         "excess_basis": "pooled_signed",
         "excess_mean_by_direction": null,
         "benchmark_baseline_hit_rate": null,
@@ -7113,7 +7113,7 @@
         "ready": false,
         "approaching": false,
         "projected_ready_date": null,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=79 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=80 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_migration": false,
         "clock_prior_n_dates": {
@@ -7133,12 +7133,12 @@
         "unclassified": false
       },
       "21": {
-        "n_dates": 56,
+        "n_dates": 57,
         "needed": 25,
         "wilson_ci_low": null,
         "hit_rate": null,
-        "excess_mean": -0.005502,
-        "mean_abs_excess": 0.083578,
+        "excess_mean": -0.004024,
+        "mean_abs_excess": 0.083874,
         "excess_basis": "pooled_signed",
         "excess_mean_by_direction": null,
         "benchmark_baseline_hit_rate": null,
@@ -7149,7 +7149,7 @@
         "ready": false,
         "approaching": false,
         "projected_ready_date": null,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=56 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=57 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_migration": false,
         "clock_prior_n_dates": {
@@ -7205,12 +7205,12 @@
     },
     "us_importance_v0_pit": {
       "5": {
-        "n_dates": 79,
+        "n_dates": 80,
         "needed": 25,
         "wilson_ci_low": null,
         "hit_rate": null,
-        "excess_mean": 0.027926,
-        "mean_abs_excess": 0.071664,
+        "excess_mean": 0.027679,
+        "mean_abs_excess": 0.071289,
         "excess_basis": "pooled_signed",
         "excess_mean_by_direction": null,
         "benchmark_baseline_hit_rate": null,
@@ -7221,7 +7221,7 @@
         "ready": false,
         "approaching": false,
         "projected_ready_date": null,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=79 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=80 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_migration": false,
         "clock_prior_n_dates": {
@@ -7241,12 +7241,12 @@
         "unclassified": false
       },
       "21": {
-        "n_dates": 56,
+        "n_dates": 57,
         "needed": 25,
         "wilson_ci_low": null,
         "hit_rate": null,
-        "excess_mean": -0.005502,
-        "mean_abs_excess": 0.083578,
+        "excess_mean": -0.004024,
+        "mean_abs_excess": 0.083874,
         "excess_basis": "pooled_signed",
         "excess_mean_by_direction": null,
         "benchmark_baseline_hit_rate": null,
@@ -7257,7 +7257,7 @@
         "ready": false,
         "approaching": false,
         "projected_ready_date": null,
-        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=56 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
+        "reason": "not_applicable family (salience/descriptive) — no directional promotion basis exists; magnitude grades vs the placebo tape; n_dates=57 OK but no directional hits recorded (graded_hits=0) — cannot compute Wilson CI. Family may be salience-only (direction=0); salience families gate on |excess| > placebo instead. Evaluated on clock basis 'explicit_unit_v1:trading_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:trading_days:US",
         "clock_migration": false,
         "clock_prior_n_dates": {
@@ -7331,7 +7331,7 @@
         "benchmark_baseline_excess_mean_by_direction": null,
         "ready": false,
         "approaching": false,
-        "projected_ready_date": "2026-12-13",
+        "projected_ready_date": "2026-12-14",
         "reason": "n_dates=8 < 25 required. State: ACCRUING. Need 17 more independent date clusters. Evaluated on clock basis 'explicit_unit_v1:calendar_days:US'; 1 other basis/bases (legacy_calendar_unstamped) excluded, NOT pooled — this family's authority accrues on the clock it is now measured on.",
         "clock_basis": "explicit_unit_v1:calendar_days:US",
         "clock_migration": false,
@@ -7672,11 +7672,11 @@
         "duel_not_comparable_reason": "challenger measured on an unstamped clock, placebo on legacy_calendar_unstamped; a duel across two grading clocks is not a comparison"
       },
       "us_importance_v0": {
-        "challenger_excess_mean_5d": 0.027926,
-        "challenger_abs_excess_5d": 0.071664,
+        "challenger_excess_mean_5d": 0.027679,
+        "challenger_abs_excess_5d": 0.071289,
         "challenger_excess_basis_5d": "pooled_signed",
         "placebo_covered_abs_excess_5d": 0.066062,
-        "n_dates_5d": 79,
+        "n_dates_5d": 80,
         "wilson_ci_low_5d": null,
         "challenger_clock_basis": "explicit_unit_v1:trading_days:US",
         "placebo_clock_basis": "legacy_calendar_unstamped",
@@ -7684,11 +7684,11 @@
         "duel_not_comparable_reason": "challenger measured on explicit_unit_v1:trading_days:US, placebo on legacy_calendar_unstamped; a duel across two grading clocks is not a comparison"
       },
       "us_importance_v0_pit": {
-        "challenger_excess_mean_5d": 0.027926,
-        "challenger_abs_excess_5d": 0.071664,
+        "challenger_excess_mean_5d": 0.027679,
+        "challenger_abs_excess_5d": 0.071289,
         "challenger_excess_basis_5d": "pooled_signed",
         "placebo_covered_abs_excess_5d": 0.066062,
-        "n_dates_5d": 79,
+        "n_dates_5d": 80,
         "wilson_ci_low_5d": null,
         "challenger_clock_basis": "explicit_unit_v1:trading_days:US",
         "placebo_clock_basis": "legacy_calendar_unstamped",
@@ -7709,5 +7709,5 @@
       }
     }
   },
-  "promotion_readiness_at": "2026-09-24T12:37:45.498636+00:00"
+  "promotion_readiness_at": "2026-09-25T15:30:06.528492+00:00"
 }

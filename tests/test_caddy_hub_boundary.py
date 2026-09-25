@@ -61,7 +61,15 @@ def test_shipped_caddyfile_has_exactly_seven_backend_proxies_all_safe() -> None:
 def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
     """Pins WHICH lines classify which way, so a future edit that moves a
     block without preserving its safety property shows up as a line-number
-    diff a reviewer will actually look at."""
+    diff a reviewer will actually look at.
+
+    A-MOR-2b lane B inserted the @am_edition_live overlay handle inside
+    handle @open_html's route block — that pushed the last reverse_proxy at
+    line 772 down to line 793. The proxy COUNT (7) and the OTHER six lines
+    (121, 146, 350, 359, 392, 430) are unchanged; the topology guard itself
+    is unchanged. If you find yourself changing a count or classification
+    here, you almost certainly widened the static-access boundary — read
+    the @open_html route block commentary before doing that."""
     text = CADDYFILE_PATH.read_text(encoding="utf-8")
     proxies = {p.line: p.classification for p in classify_backend_proxies(text)}
     assert proxies == {
@@ -71,7 +79,7 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
         359: SAFE_FIXED_REWRITE,
         392: SAFE_FIXED_REWRITE,
         430: SAFE_FIXED_REWRITE,
-        772: SAFE_FIXED_REWRITE,
+        793: SAFE_FIXED_REWRITE,
     }
 
 
@@ -281,6 +289,21 @@ def test_main_exits_nonzero_when_no_backend_proxies_are_found(tmp_path: Path) ->
     caddy_path.write_text("example.com {\n\trespond \"hi\"\n}\n", encoding="utf-8")
     assert main(["--caddyfile", str(caddy_path)]) == 1
 
+
+# ---------------------------------------------------------------------------
+# A-MOR-2b lane B — AM Edition premarket overlay.
+#
+# The three B6 assertions (json is in @vps_external and NOT in
+# @vps_public_live; the html overlay handle sits inside `handle @open_html`;
+# no new top-level /live/* file_server) were MOVED to
+# ``tests/test_caddy_hub_boundary_am_edition.py``. That module-level
+# ``pytest.importorskip("fastapi")`` below this line skips the WHOLE file on
+# a venv without fastapi — including any test defined above it. Extracting
+# the AM-edition assertions is what actually lets the thin
+# Caddyfile-only venv run them (MINOR 6).
+#
+# The helper functions ``_matcher_block`` / ``_handle_block`` go with them.
+# ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Tie the topology guard to the REAL app-level property it depends on:

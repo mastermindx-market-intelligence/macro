@@ -1,0 +1,10 @@
+{
+  "ts": 1,
+  "asof": "2026-09-08T13:00:00Z",
+  "source": "yahoo",
+  "quotes": {
+    "SPY": {"price": 740.0, "prevClose": 739.0, "changePct": 0.14, "basis": "regular"},
+    "QQQ": {"price": 510.0, "prevClose": 508.5, "changePct": 0.30, "basis": "regular"}
+  },
+  "meta": {}
+}

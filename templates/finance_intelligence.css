@@ -171,6 +171,11 @@ html[data-theme="light"] .fi-rerating-steps::before {
 }
 html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
 
+/* page canvas — the page owns its canvas in both art directions. theme.css does not
+   paint body, and the shell's 1200px box alone left every gutter, the nav band and
+   the area below the content on the browser's white default in the dark direction. */
+body.fi-page { background: var(--fi-canvas); }
+
 /* shell + layout */
 .fi-shell {
   max-width: 1200px;

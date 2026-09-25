@@ -229,8 +229,8 @@
         "prior_value": 13.8
       },
       {
-        "current_value": 88.0,
-        "delta": 0.0,
+        "current_value": 85.0,
+        "delta": -3.0,
         "metric_id": "bond_desk_health_score_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 88.0
@@ -243,10 +243,12 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "national_debt_liabilities-US-14f0db2597304e30"
+    "changed_fingerprints": [
+      "bond_desk_health_score_level:bond_desk_health_score_level:d3a6b4530c1ca0f0"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "national_debt_liabilities-US-57ac058e14a9ecda"
   },
   "drivers": {
     "balance_sheet": [
@@ -367,11 +369,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-24T06:09:07Z",
+    "built_at": "2026-09-25T05:30:38Z",
     "calculation_as_of": "2026-09-23",
-    "code_version": "ef43ff17b916d11db6588309889ec28f0ecc74a6",
-    "content_sha256": "57ac058e14a9ecda412fb0ebc1c5c03188b196ad6434a6a4e57cd13ff27dd7b5",
-    "generation_id": "national_debt_liabilities-US-57ac058e14a9ecda",
+    "code_version": "d8a2f9d85b7b218faa0c63aa343be76440281481",
+    "content_sha256": "cf9e1ccbea6465550ac10d169e193e624d64ecb852d0f36eb1c3fdcb1e8eaab5",
+    "generation_id": "national_debt_liabilities-US-cf9e1ccbea646555",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
@@ -581,8 +583,8 @@
         "horizon": "current",
         "implication_id": "bond_desk_passthrough_read",
         "text": {
-          "en": "Bond-desk coverage state: health healthy (88/100), cycle phase late -- a coverage read, not a forecast this composer originates.",
-          "zh": "债券台面覆盖状态：健康度healthy（88/100），周期阶段late——此为覆盖读数，并非本组合器自行给出的预测。"
+          "en": "Bond-desk coverage state: health healthy (85/100), cycle phase late -- a coverage read, not a forecast this composer originates.",
+          "zh": "债券台面覆盖状态：健康度healthy（85/100），周期阶段late——此为覆盖读数，并非本组合器自行给出的预测。"
         },
         "trace_ref": "data/bonds/latest.json"
       },
@@ -1466,7 +1468,7 @@
           "value": null
         },
         "unit": "score_0_100",
-        "value": 88.0,
+        "value": 85.0,
         "value_type": "score_0_100"
       },
       {
