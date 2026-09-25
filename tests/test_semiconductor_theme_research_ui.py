@@ -176,6 +176,29 @@ def _bad_payloads() -> list[dict]:
     body = _envelope()
     body["evidence_refs"] = {"status": "ready"}
     bad.append({"name": "evidence_refs_object_not_array", "payload": body})
+
+    # The frozen contract pins three expectation buckets to `unavailable`.
+    body = _envelope()
+    body["expectations"]["external_consensus"]["status"] = "ready"
+    bad.append({"name": "expectations_consensus_claims_ready", "payload": body})
+
+    body = _envelope()
+    body["expectations"]["market_incorporation"]["status"] = "degraded"
+    bad.append({"name": "expectations_incorporation_claims_degraded", "payload": body})
+
+    # The management assessment's OWN authority block, attached to the only
+    # paid figures on the page.
+    body = _envelope()
+    body["economics"]["management"]["authority"]["can_rank"] = True
+    bad.append({"name": "management_authority_claims_rank", "payload": body})
+
+    body = _envelope()
+    del body["economics"]["management"]["authority"]["can_open_entry"]
+    bad.append({"name": "management_authority_flag_missing", "payload": body})
+
+    body = _envelope()
+    body["economics"]["management"]["authority"] = None
+    bad.append({"name": "management_authority_absent", "payload": body})
     return bad
 
 
@@ -187,7 +210,7 @@ _HARNESS = r"""
 %(contract)s
 
 var results = {};
-var cases = JSON.parse(process.argv[2]);
+var cases = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));
 
 /* The accepted plan's assertion, verbatim semantics: a late response for
    another epoch/user is dropped, and clearResearchState keeps payload null. */
@@ -274,8 +297,16 @@ def _run_battery(js_text: str) -> dict:
     with tempfile.TemporaryDirectory() as td:
         path = Path(td) / "theme_research_contract.js"
         path.write_text(src, encoding="utf-8")
+        # The cases go through a FILE, never argv: the valid case is the real
+        # composer envelope (~25 KB) and the battery carries one per rejection
+        # case, which overran the platform's ~1 MB argument ceiling and
+        # surfaced as an opaque node `RangeError: Maximum call stack size
+        # exceeded` with no stack — a limit that would only ever bite as the
+        # contract grows.
+        cases_path = Path(td) / "cases.json"
+        cases_path.write_text(json.dumps(cases), encoding="utf-8")
         run = subprocess.run(
-            [shutil.which("node"), str(path), json.dumps(cases)],
+            [shutil.which("node"), str(path), str(cases_path)],
             capture_output=True, text=True, timeout=60,
         )
     assert run.returncode == 0, f"node exited {run.returncode}:\n{run.stderr}\n{run.stdout}"
@@ -906,12 +937,29 @@ def test_next_disabled_when_page_holds_fewer_than_page_limit(js_text):
 _REVIEW_HARNESS = r"""
 %(contract)s
 
-var cases = JSON.parse(process.argv[2]);
+var cases = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));
 var results = {};
 
 /* optionLabelsFor under node */
 results.opt_en = optionLabelsFor('en');
 results.opt_zh = optionLabelsFor('zh');
+
+/* POSITIVE CONTROL for the closed label maps (see labelMapsSelfTest) */
+results.label_self_test = labelMapsSelfTest();
+results.label_real = {
+  status_ready: pair(L.status, 'ready'),
+  view_economics: pair(L.view, 'economics'),
+  chip_fact: pair(L.label, 'fact'),
+  econ_role: pair(TR_ECON_LABELS.role, 'prior_outlook'),
+  errcode: pair(L.errcode, 'invalid_envelope')
+};
+results.label_fallback = {
+  unknown: pair(L.status, 'no_such_status'),
+  proto: pair(L.status, '__proto__'),
+  ctor: pair(L.label, 'constructor'),
+  wrong_shape: pair({k: 'a bare string'}, 'k'),
+  three_long: pair({k: ['a', 'b', 'c']}, 'k')
+};
 
 /* limitationsModel under node */
 results.lim_ready = limitationsModel({
@@ -1035,8 +1083,16 @@ def _run_review_battery(js_text: str) -> dict:
     with tempfile.TemporaryDirectory() as td:
         path = Path(td) / "theme_research_review.js"
         path.write_text(src, encoding="utf-8")
+        # The cases go through a FILE, never argv: the valid case is the real
+        # composer envelope (~25 KB) and the battery carries one per rejection
+        # case, which overran the platform's ~1 MB argument ceiling and
+        # surfaced as an opaque node `RangeError: Maximum call stack size
+        # exceeded` with no stack — a limit that would only ever bite as the
+        # contract grows.
+        cases_path = Path(td) / "cases.json"
+        cases_path.write_text(json.dumps(cases), encoding="utf-8")
         run = subprocess.run(
-            [shutil.which("node"), str(path), json.dumps(cases)],
+            [shutil.which("node"), str(path), str(cases_path)],
             capture_output=True, text=True, timeout=60,
         )
     assert run.returncode == 0, f"node exited {run.returncode}:\n{run.stderr}\n{run.stdout}"
@@ -1274,3 +1330,63 @@ def test_render_table_prefers_the_management_triple_for_the_economics_view(js_te
     evidence = js_text[js_text.index("function renderEvidence()"):js_text.index("function renderPager()")]
     assert "evidenceRefsModel(state.payload)" in evidence
     assert "String(ref)" not in evidence
+
+
+@needs_node
+def test_every_closed_label_map_entry_resolves_to_its_own_label(js_text):
+    """POSITIVE CONTROL. Every key of every closed bilingual map must resolve
+    through `pair` to its own entry — never to the typed unmapped fallback.
+
+    Found at the seat on 2026-09-24: the lookup guard read
+    `!Array.isArray(entry)` while every entry IS a two-string array, so EVERY
+    label on the page — status words, view tabs, slice tabs, chips, time-basis
+    options, error lines and the economics role labels — rendered
+    'Unmapped label / 未映射标签'. The suite stayed green because `pair` and
+    the maps sat outside the node-executed contract block and were only ever
+    checked by source-substring assertions. Both now live inside it.
+    """
+    out = _run_review_battery(js_text)
+    assert out["label_self_test"] == [], (
+        "these label-map keys fall back instead of resolving: "
+        + ", ".join(out["label_self_test"])
+    )
+    real = out["label_real"]
+    assert real["status_ready"] == ["Ready", "就绪"]
+    assert real["view_economics"] == ["Economics", "经济性"]
+    assert real["chip_fact"] == ["Fact", "事实"]
+    assert real["econ_role"] == ["Prior outlook", "此前展望"]
+    assert real["errcode"][0].startswith("The server reply did not match")
+    for key, got in real.items():
+        assert got[0] != "Unmapped label" and got[1] != "未映射标签", key
+
+
+@needs_node
+def test_unknown_and_hostile_label_keys_still_yield_the_typed_fallback(js_text):
+    """The repair must not open the prototype or accept a foreign entry
+    shape: unknown keys, prototype keys and non-tuple entries all resolve to
+    the typed bilingual fallback."""
+    out = _run_review_battery(js_text)
+    for name, got in out["label_fallback"].items():
+        assert got == ["Unmapped label", "未映射标签"], (name, got)
+
+
+def test_label_maps_and_lookup_live_inside_the_node_executed_contract(js_text):
+    """Structural guard for the blind spot above: if the maps or the lookup
+    drift back outside the contract block, no node battery can reach them."""
+    contract = _contract(js_text)
+    for needle in ("var L = {", "function pair(map, key)", "function labelMapsSelfTest()",
+                   "var TR_ECON_LABELS = {"):
+        assert needle in contract, f"{needle} must stay inside the contract block"
+
+
+@needs_node
+def test_expectation_buckets_pinned_to_unavailable_and_nested_authority_refused(js_text):
+    """The three non-management expectation buckets are `const: unavailable`
+    in the frozen contract, and the management assessment carries its own
+    authority block over the paid figures."""
+    out = _run_battery(js_text)
+    for name in ("expectations_consensus_claims_ready", "expectations_incorporation_claims_degraded",
+                 "management_authority_claims_rank", "management_authority_flag_missing",
+                 "management_authority_absent"):
+        assert out["rejects"][name] is True, name
+    assert out["validate_ok"] is True and out["accept"] is True

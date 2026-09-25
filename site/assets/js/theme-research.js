@@ -229,6 +229,19 @@
     return typeof value === 'string' && TR_STATUS_VOCAB.indexOf(value) >= 0;
   }
 
+  /* Every authority flag present and false — the research surface's own law,
+   * applied wherever an authority block appears (top level and inside the
+   * management assessment). A missing block or a missing flag is a refusal,
+   * never a default. */
+  function _authorityAllFalse(authority) {
+    if (!authority || typeof authority !== 'object' || Array.isArray(authority)) return false;
+    for (var a = 0; a < TR_AUTHORITY_KEYS.length; a++) {
+      if (!Object.prototype.hasOwnProperty.call(authority, TR_AUTHORITY_KEYS[a])) return false;
+      if (authority[TR_AUTHORITY_KEYS[a]] !== false) return false;
+    }
+    return true;
+  }
+
   function validateEnvelope(payload) {
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
       return { ok: false, reason: 'payload is not an object' };
@@ -287,6 +300,14 @@
     if (econ.management !== null && (!econ.management || typeof econ.management !== 'object' || Array.isArray(econ.management))) {
       return { ok: false, reason: 'economics.management must be null or an object' };
     }
+    /* The management assessment carries its OWN authority block. The
+     * top-level check below would miss it, and this is the block attached to
+     * the only paid figures on the page: a payload claiming rank / gate /
+     * size / originate / entry authority here is refused exactly as at the
+     * top level. */
+    if (econ.management && !_authorityAllFalse(econ.management.authority)) {
+      return { ok: false, reason: 'economics.management.authority must carry every flag false' };
+    }
     var expectations = payload.expectations;
     if (!expectations || typeof expectations !== 'object' || Array.isArray(expectations)) {
       return { ok: false, reason: 'expectations is missing or not an object' };
@@ -300,19 +321,16 @@
       if (!_validStatus(exp.status)) {
         return { ok: false, reason: 'expectations.' + expKey + ' has an invalid status' };
       }
-    }
-    var authority = payload.authority;
-    if (!authority || typeof authority !== 'object' || Array.isArray(authority)) {
-      return { ok: false, reason: 'authority is missing or not an object' };
-    }
-    for (var a = 0; a < TR_AUTHORITY_KEYS.length; a++) {
-      var authKey = TR_AUTHORITY_KEYS[a];
-      if (!Object.prototype.hasOwnProperty.call(authority, authKey)) {
-        return { ok: false, reason: 'authority.' + authKey + ' is missing' };
+      /* The frozen contract pins these three to `unavailable` (const): this
+       * surface has no external consensus, no house forecast and no market
+       * incorporation reading, and must not render one because a payload
+       * said "ready". Only `management` varies. */
+      if (expKey !== 'management' && exp.status !== 'unavailable') {
+        return { ok: false, reason: 'expectations.' + expKey + ' must be unavailable' };
       }
-      if (authority[authKey] !== false) {
-        return { ok: false, reason: 'authority.' + authKey + ' must be false' };
-      }
+    }
+    if (!_authorityAllFalse(payload.authority)) {
+      return { ok: false, reason: 'authority must carry every flag, every one false' };
     }
     return { ok: true, reason: null };
   }
@@ -529,37 +547,15 @@
     });
     return out;
   }
-  /* THEME-RESEARCH-CONTRACT-END */
-
-  /* ---- mount + page wiring -------------------------------------------- */
-
-  var MOUNT = document.querySelector('[data-theme-research-mount]');
-  if (!MOUNT) return;  // this page did not render the section; nothing to do
-
-  var ANCHOR_THEME_ID = MOUNT.getAttribute('data-anchor-theme-id') || '';
-  var SLICES = String(MOUNT.getAttribute('data-slices') || '')
-    .split(',').map(function (s) { return s.trim(); }).filter(Boolean);
-  var apiQueryUrl = MOUNT.getAttribute('data-api-query');
-  var apiEvidenceUrl = MOUNT.getAttribute('data-api-evidence');
-
-  /* NIT-7. resolveSameOrigin lives in the contract block so the typed
-   * `endpoint_not_same_origin` code is testable under node. fetchTarget
-   * wraps it here: a `null` return means the runtime refuses the request
-   * without sending it and without attaching a bearer token. */
-  function fetchTarget(raw) {
-    var r = resolveSameOrigin(raw);
-    if (!r.ok) return null;
-    return r.url;
-  }
-  var queryUrl = fetchTarget(apiQueryUrl);
-  var evidenceUrl = fetchTarget(apiEvidenceUrl);
-
-  var VIEWS = ['composition', 'manufacturing', 'commercial', 'capacity', 'economics'];
-  var MODES = ['latest', 'source_history', 'system_replay'];
-
   /* Closed bilingual maps — static literals only, same discipline as the
-   * dossier's V2_ZH. Unknown keys fall back to the raw slug in both languages
-   * rather than being invented. */
+   * dossier's V2_ZH. Every entry is a two-string [EN, ZH] tuple; an unknown
+   * key resolves to the typed TR_UNMAPPED pair in both languages rather than
+   * rendering an internal slug. Inside the contract block since 2026-09-24:
+   * these maps and `pair` are what every visible label is made of, and while
+   * they sat on the runtime side no node battery could reach them — a guard
+   * that read `!Array.isArray(entry)` sent EVERY label to the fallback and
+   * the suite stayed green. `labelMapsSelfTest` below is the positive
+   * control. */
   var L = {
     slice: {
       hbm_packaging: ['HBM & advanced packaging', 'HBM 与先进封装'],
@@ -601,6 +597,82 @@
       request_failed: ['The request failed. Try again later.', '请求失败，请稍后重试。']
     }
   };
+
+  /* Closed bilingual lookup. A bare map[key] hits the prototype and a
+   * payload `label_kind: "constructor"` would render "undefined"; a raw
+   * internal slug would render the API name on screen. hasOwnProperty +
+   * typed bilingual fallback keeps the failure visible and identical in
+   * both languages. The entry shape is the two-string tuple every map above
+   * uses — anything else is refused. */
+  function pair(map, key) {
+    if (Object.prototype.hasOwnProperty.call(map, key)) {
+      var e = map[key];
+      if (Array.isArray(e) && e.length === 2 &&
+          typeof e[0] === 'string' && typeof e[1] === 'string') {
+        return [e[0], e[1]];
+      }
+    }
+    return [TR_UNMAPPED[0], TR_UNMAPPED[1]];
+  }
+
+  /* Positive control for the closed label maps: every key of every map must
+   * resolve through `pair` to its own entry, never to TR_UNMAPPED. Returns
+   * the list of (map, key) pairs that fell back — empty is the only passing
+   * answer. Pure; the UI never calls it, the node battery does. */
+  function labelMapsSelfTest() {
+    var maps = {
+      slice: L.slice, view: L.view, mode: L.mode, status: L.status,
+      label: L.label, expectation: L.expectation, errcode: L.errcode,
+      econ_role: TR_ECON_LABELS.role, econ_metric: TR_ECON_LABELS.metric,
+      econ_unit: TR_ECON_LABELS.unit, econ_basis: TR_ECON_LABELS.basis,
+      econ_outlook_status: TR_ECON_LABELS.outlook_status,
+      econ_comparison: TR_ECON_LABELS.comparison,
+      econ_position: TR_ECON_LABELS.position, econ_reason: TR_ECON_LABELS.reason,
+      econ_gate: TR_ECON_LABELS.gate
+    };
+    var fell_back = [];
+    var names = Object.keys(maps);
+    for (var i = 0; i < names.length; i++) {
+      var map = maps[names[i]];
+      var keys = Object.keys(map);
+      for (var j = 0; j < keys.length; j++) {
+        var got = pair(map, keys[j]);
+        if (got[0] === TR_UNMAPPED[0] && got[1] === TR_UNMAPPED[1]) {
+          fell_back.push(names[i] + '.' + keys[j]);
+        }
+      }
+    }
+    return fell_back;
+  }
+
+  /* THEME-RESEARCH-CONTRACT-END */
+
+  /* ---- mount + page wiring -------------------------------------------- */
+
+  var MOUNT = document.querySelector('[data-theme-research-mount]');
+  if (!MOUNT) return;  // this page did not render the section; nothing to do
+
+  var ANCHOR_THEME_ID = MOUNT.getAttribute('data-anchor-theme-id') || '';
+  var SLICES = String(MOUNT.getAttribute('data-slices') || '')
+    .split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+  var apiQueryUrl = MOUNT.getAttribute('data-api-query');
+  var apiEvidenceUrl = MOUNT.getAttribute('data-api-evidence');
+
+  /* NIT-7. resolveSameOrigin lives in the contract block so the typed
+   * `endpoint_not_same_origin` code is testable under node. fetchTarget
+   * wraps it here: a `null` return means the runtime refuses the request
+   * without sending it and without attaching a bearer token. */
+  function fetchTarget(raw) {
+    var r = resolveSameOrigin(raw);
+    if (!r.ok) return null;
+    return r.url;
+  }
+  var queryUrl = fetchTarget(apiQueryUrl);
+  var evidenceUrl = fetchTarget(apiEvidenceUrl);
+
+  var VIEWS = ['composition', 'manufacturing', 'commercial', 'capacity', 'economics'];
+  var MODES = ['latest', 'source_history', 'system_replay'];
+
 
   function errorCode(err) {
     var code = err && err.code;
@@ -647,21 +719,6 @@
     return frag;
   }
 
-  /* Closed bilingual lookup. A bare map[key] hits the prototype and a
-   * payload `label_kind: "constructor"` would render "undefined"; a raw
-   * internal slug would render the API name on screen. hasOwnProperty +
-   * typed bilingual fallback keeps the failure visible and identical in
-   * both languages. */
-  function pair(map, key) {
-    if (Object.prototype.hasOwnProperty.call(map, key)) {
-      var e = map[key];
-      if (e && typeof e === 'object' && !Array.isArray(e) &&
-          typeof e[0] === 'string' && typeof e[1] === 'string') {
-        return [e[0], e[1]];
-      }
-    }
-    return ['Unmapped label', '未映射标签'];
-  }
 
   function el(tag, className) {
     var node = document.createElement(tag);
