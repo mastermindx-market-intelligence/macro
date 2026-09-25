@@ -65,5 +65,66 @@ class ConstantAndClockBoundaries(unittest.TestCase):
         np.testing.assert_allclose(actual["PEI_vs_P"]["relative_interval"], np.quantile(relative, [.0125, .9875]), rtol=1e-12)
 
 
+class CompleteTrainingYearReview(unittest.TestCase):
+    """A full feature roster is not three years of usable training outcomes."""
+
+    @staticmethod
+    def run_packet(packet):
+        return c1.walk_forward(packet, "2022-01-20T00:00:00Z")
+
+    def test_one_historical_outcome_cannot_certify_three_full_years(self):
+        packet = synthetic_packet()
+        for row in packet["rows"]:
+            if row["session"] < "2020-01-01" and row["session"] != "2019-12-20":
+                row.pop("y5")
+        result = self.run_packet(packet)
+        self.assertEqual(len(result["fits"]), 0)
+        self.assertEqual(len(result["predictions"]), 0)
+
+    def test_future_known_outcomes_cannot_certify_full_training_years(self):
+        packet = synthetic_packet()
+        for row in packet["rows"]:
+            if row["session"] < "2020-01-01" and row["session"] != "2019-12-20":
+                row["label_available_at"] = "2025-01-01T00:00:00Z"
+        self.assertEqual(len(self.run_packet(packet)["fits"]), 0)
+
+    def test_interior_label_gap_invalidates_its_year_not_other_complete_years(self):
+        packet = synthetic_packet()
+        next(r for r in packet["rows"] if r["session"] == "2018-06-15").pop("y5")
+        result = self.run_packet(packet)
+        self.assertFalse(any(f["month"].startswith("2020-") for f in result["fits"]))
+        first = result["fits"][0]
+        self.assertEqual(first["month"], "2021-01")
+        self.assertEqual(first["complete_training_years"], [2017, 2019, 2020])
+
+    def test_cutoff_equal_label_does_not_qualify_year_until_next_month(self):
+        packet = synthetic_packet()
+        next(r for r in packet["rows"] if r["session"] == "2019-12-02")["label_available_at"] = "2020-01-01T00:00:00Z"
+        result = self.run_packet(packet)
+        self.assertFalse(any(f["month"] == "2020-01" for f in result["fits"]))
+        self.assertEqual(result["fits"][0]["month"], "2020-02")
+        self.assertEqual(result["fits"][0]["complete_training_years"], [2017, 2018, 2019])
+
+    def test_boundary_purge_does_not_require_unavailable_future_endpoints(self):
+        packet = synthetic_packet()
+        for row in packet["rows"]:
+            if row["session"] < "2020-01-01" <= row["label_end_session"]:
+                row.pop("y5")
+        result = self.run_packet(packet)
+        self.assertEqual(result["fits"][0]["month"], "2020-01")
+        self.assertEqual(result["fits"][0]["complete_training_years"], [2017, 2018, 2019])
+        # By February those same endpoints are historical, not boundary-purged.
+        self.assertFalse(any(f["month"] == "2020-02" for f in result["fits"]))
+
+    def test_genuine_zero_outcomes_remain_eligible(self):
+        packet = synthetic_packet()
+        for row in packet["rows"]:
+            row["y5"] = 0.
+        result = self.run_packet(packet)
+        self.assertEqual(result["fits"][0]["month"], "2020-01")
+        self.assertGreater(result["fits"][0]["n_train"], 700)
+        self.assertEqual(result["fits"][0]["reference_mean"], 0.)
+
+
 if __name__ == "__main__":
     unittest.main()
