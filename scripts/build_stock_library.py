@@ -4878,10 +4878,17 @@ def main() -> int:
     (site / "factordata").mkdir(parents=True, exist_ok=True)
     if sig_verdict:
         try:
-            sig_out = {t: signal_gate.buy_signal(v) for t, v in sig_verdict.items()}
+            sig_out = {
+                t: {**signal_gate.buy_signal(v), "asof": v.get("asof")}
+                for t, v in sig_verdict.items()
+            }
+            validity = signal_gate.validity_block(
+                alpha_asof, _PAIR_EMIT_STAMP["at_utc"],
+                _PAIR_EMIT_STAMP["pair_id"])
             (site / "factordata" / "signal_gate.json").write_text(
                 json.dumps({"as_of": alpha_asof, "verdicts": sig_out,
-                            "emit": _PAIR_EMIT_STAMP},
+                            "emit": _PAIR_EMIT_STAMP,
+                            "validity": validity},
                            separators=(",", ":"), default=str, allow_nan=False))
             log.info("wrote signal_gate.json (%d verdicts, %d buyable)", len(sig_out),
                      sum(1 for v in sig_verdict.values() if signal_gate.is_buyable(v)))

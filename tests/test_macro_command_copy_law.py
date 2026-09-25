@@ -254,7 +254,7 @@ RELOCATED_STRINGS: tuple[str, ...] = (
     "Content hash",
     "Generation id",
     "Producer",
-    "The page validated this artifact against the closed schema and recomputed its content hash before rendering.",
+    "The page checked this artifact against the closed schema and recomputed its content hash before rendering.",
     "Technical detail for whoever repairs this",
     "Owner cadence, daily republish",
     "Latest accepted print",

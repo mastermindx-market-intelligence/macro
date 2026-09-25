@@ -1,19 +1,19 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-09-22",
-  "generated_at_utc": "2026-09-22T12:58:01.444933+00:00",
+  "asof": "2026-09-24",
+  "generated_at_utc": "2026-09-24T13:26:18.948044+00:00",
   "horizon_days": 45,
   "entries": [
     {
-      "date": "2026-09-22",
+      "date": "2026-09-24",
       "window_end": null,
-      "etype": "HK_CPI",
-      "label_en": "HK CPI (composite)",
-      "label_zh": "香港 CPI（综合）",
-      "region": "hk",
+      "etype": "omo_mlf_tender",
+      "label_en": "PBoC MLF tender — 1年期, RMB 800bn",
+      "label_zh": "央行中期借贷便利（MLF）操作：1年期，8,000亿元",
+      "region": "cn",
       "impact": "high",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
+      "source_class": "feed",
+      "source": "china_omo.operations",
       "approx": false
     },
     {
@@ -366,7 +366,6 @@
     }
   ],
   "data_gaps": [
-    "china_omo store holds no announced operation inside the horizon (the tape is present; the PBoC simply has nothing pending)",
     "china_earnings store holds no reporting month inside the horizon"
   ],
   "authority": {

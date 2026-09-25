@@ -393,6 +393,28 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
 {% include "_site_nav.html.j2" %}
 
 <div class="wrap">
+  {#- F04-X1 continuation (M1 item 5). A reader who arrives from the live path
+      page keeps the step they were reading: the client fills the return link
+      from the query string the explorer wrote (from / focus / rev). The step
+      identifier travels only in the href — it is never printed. -#}
+  <p class="note tx-from" id="tx-from" hidden>{{ t('You came here from the live path page. The step you were reading is kept: ', '您从实时路径页面来到这里。您正在阅读的步骤已保留：') }}<a id="tx-from-back" href="ontology.html">{{ t('go back to that step', '返回该步骤') }}</a>{{ t('. If the path has been revised since, that page says so.', '。若该路径此后有修订，该页面会予以说明。') }}</p>
+  <script>
+  (function () {
+    try {
+      var q = new URLSearchParams(window.location.search);
+      var focus = q.get("focus"), from = q.get("from"), rev = q.get("rev");
+      if (!focus && !from) return;
+      var box = document.getElementById("tx-from");
+      var back = document.getElementById("tx-from-back");
+      if (!box || !back) return;
+      var href = "ontology.html";
+      if (rev) href += "?rev=" + encodeURIComponent(rev);
+      if (focus) href += "#ox-leg-" + encodeURIComponent(focus);
+      back.href = href;
+      box.hidden = false;
+    } catch (e) { /* no continuation context: the page reads as usual */ }
+  })();
+  </script>
   {% set S = tx.state %}
 
   {# ---- plain-language maps (Tier-1 rewrites; machine receipts stay on hover) ---- #}
