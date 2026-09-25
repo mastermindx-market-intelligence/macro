@@ -43,14 +43,14 @@ contract validation → projection → composition → route → client. Likewis
 committed identity artifacts; the unpinned case at the end patches nothing and
 asserts the Theme Graph / Data OS owners resolve the same identities.
 
-The mount test renders ``templates/_theme_research_mount.html.j2``, the
-vertical's partial. NOTE, found while proving this: no producer sets
-``theme_research_anchor`` today, so that partial emits nothing on every built
-basket page; the markup the site actually ships is an inline duplicate in
-``templates/state_of_themes.html.j2``, covered by
-``tests/test_semiconductor_theme_research_ui.py``. Two copies of one mount
-shape can drift, which is a finding for the render owner, not something this
-suite can fix.
+The mount test renders ``templates/_theme_research_mount.html.j2`` from the
+context the page builder resolves for the semiconductor basket. Shared hook 2
+closed the half of the earlier finding this suite could reach: a producer now
+sets that context (``scripts/build_theme_detail.py``), and the anchor, slices,
+schema ids and bilingual copy come from the registration rather than from the
+template. The site ALSO ships an inline copy of this mount in
+``templates/state_of_themes.html.j2``; retiring that second copy is hook 3's
+work, and until it lands the two can still drift.
 """
 from __future__ import annotations
 
@@ -262,7 +262,7 @@ def _render(payload: dict) -> dict:
     return json.loads(run.stdout.strip().splitlines()[-1])
 
 
-def _render_mount(anchor: str) -> str:
+def _render_mount(mount: object) -> str:
     import jinja2  # noqa: PLC0415
 
     env = jinja2.Environment(
@@ -270,7 +270,7 @@ def _render_mount(anchor: str) -> str:
         autoescape=True, undefined=jinja2.Undefined,
     )
     return env.get_template("_theme_research_mount.html.j2").render(
-        theme_research_anchor=anchor,
+        theme_research_mount=mount,
     )
 
 
@@ -279,15 +279,31 @@ def _render_mount(anchor: str) -> str:
 # ---------------------------------------------------------------------------
 
 def test_mount_carries_the_anchor_both_slices_and_the_served_client():
-    html = _render_mount("ai_semiconductors")
+    """The mount the semiconductor basket page carries, from the registration.
+
+    The context is the one the page builder itself resolves for this basket
+    (``mount_context_for_basket``), not one written here — so this asserts the
+    served page's mount, not a shape a test invented.
+    """
+    from engine.market_ontology.theme_research_mounts import (  # noqa: PLC0415
+        mount_context_for_basket,
+    )
+
+    mount = mount_context_for_basket("ai_semiconductors")
+    assert mount is not None, "the semiconductor basket page mounts no research"
+    html = _render_mount(mount)
     assert 'data-anchor-theme-id="ai_semiconductors"' in html
     assert 'data-slices="hbm_packaging,sic_gan_specialty"' in html
     assert 'data-api-query="/api/themes/v1/research/query"' in html
     assert 'data-api-evidence="/api/themes/v1/research/evidence"' in html
     assert "hidden" in html and "theme-research.js" in html
+    # Both witnesses' slices reach the page, each with its bilingual label.
+    assert W_A[0] in html and W_B[0] in html
     # No payload, figure or token is rendered at build time.
     assert "revenue" not in html.lower() and "0001046179" not in html
-    assert _render_mount("") == "" or _render_mount("").strip() == ""
+    # An unclaimed basket mounts nothing at all.
+    assert mount_context_for_basket("ai_infra") is None
+    assert _render_mount(None).strip() == ""
 
 
 # ---------------------------------------------------------------------------

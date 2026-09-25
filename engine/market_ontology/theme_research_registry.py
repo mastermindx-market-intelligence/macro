@@ -12,14 +12,14 @@ How a vertical registers
 A vertical (Semiconductor today; Robotics, Technology ex-Semis, Mining on
 their own carriers or via a later additive commit here) adds ONE
 :class:`VerticalRegistration` entry to :data:`REGISTRY` carrying its own
-accepted composer, evidence selector, owner-bundle loader, exact schema ids
-and definition version, and the bilingual title/note the mount renders. Nothing else changes:
-``app/theme_research.py`` resolves the registration by exact anchor after auth
-and body parsing and dispatches to it. The mount partial and build scripts
-are bound to the same registration by shared hook 2 (a separate additive
-commit); until it lands they carry their own copy of the bilingual title/note
-and slice list, and this module pins those strings so the two cannot drift
-unnoticed once wired.
+accepted composer, evidence selector, owner-bundle loader and definition
+version, and adds its mount's anchor, slice set, schema ids and bilingual
+copy to the leaf :mod:`engine.market_ontology.theme_research_mounts` module
+that this one reads. Nothing else changes: ``app/theme_research.py`` resolves
+the registration by exact anchor after auth and body parsing and dispatches
+to it, and the mount partial and the page builders render that same leaf
+module's strings (shared hook 2), so the served route and the rendered
+section cannot drift apart.
 
 Closure laws
 ------------
@@ -52,6 +52,7 @@ from engine.market_ontology.semiconductor_theme_research import (
     compose_semiconductor_research,
     select_authorized_evidence,
 )
+from engine.market_ontology.theme_research_mounts import MOUNTS as _MOUNTS
 
 __all__ = [
     "REGISTRY",
@@ -158,26 +159,30 @@ def _load_semiconductor_owner_bundle(query: Any, *, rights_snapshot: Any = None)
     return load_semiconductor_owner_bundle(query, rights_snapshot=rights_snapshot)
 
 
+# Shared hook 2: the anchor, the slice set, the schema ids and the bilingual
+# copy are the mount's own definition, read from the leaf
+# ``theme_research_mounts`` module the page builders also read. The route and
+# the rendered section can no longer disagree, and neither can be changed
+# without the other. The registration still owns what a mount never sees: the
+# composer, the evidence selector, the owner-bundle loader, and the definition
+# version the shell compares against a composed payload.
+_SEMICONDUCTOR_MOUNT = _MOUNTS["ai_semiconductors"]
+
 _SEMICONDUCTOR = VerticalRegistration(
-    anchor_theme_id="ai_semiconductors",
-    slice_keys=("hbm_packaging", "sic_gan_specialty"),
-    schema_id="semiconductor_theme_research.v1",
-    evidence_schema_id="semiconductor_theme_research.evidence.v1",
+    anchor_theme_id=_SEMICONDUCTOR_MOUNT.anchor_theme_id,
+    slice_keys=_SEMICONDUCTOR_MOUNT.slice_keys,
+    schema_id=_SEMICONDUCTOR_MOUNT.schema_id,
+    evidence_schema_id=_SEMICONDUCTOR_MOUNT.evidence_schema_id,
     definition_version=_SEMICONDUCTOR_DEFINITION_VERSION,
     compose=compose_semiconductor_research,
     select_evidence=select_authorized_evidence,
     # T08c-2: public half through the Company Intelligence reader, private
     # half declared absent (R4 pending).
     load_bundle=_load_semiconductor_owner_bundle,
-    # Bilingual copy pinned verbatim from the reviewed T10b mount
-    # (templates/_theme_research_mount.html.j2, law L5).
-    title_en="Semiconductor industry research",
-    title_zh="半导体产业研究",
-    note_en=(
-        "Paid research context for members. Nothing here ranks, gates, sizes "
-        "or times anything."
-    ),
-    note_zh="会员研究内容。此处内容不构成排序、准入、仓位或时机判断。",
+    title_en=_SEMICONDUCTOR_MOUNT.title_en,
+    title_zh=_SEMICONDUCTOR_MOUNT.title_zh,
+    note_en=_SEMICONDUCTOR_MOUNT.note_en,
+    note_zh=_SEMICONDUCTOR_MOUNT.note_zh,
 )
 
 _ENTRIES: tuple[VerticalRegistration, ...] = (_SEMICONDUCTOR,)

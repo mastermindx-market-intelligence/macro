@@ -2,9 +2,12 @@
 
 The seam is intentionally narrow: ONE `{% include %}` line in basket_detail.html.j2
 that pulls in a guarded aggregator, which in turn pulls in one partial per vertical
-with `ignore missing`. The semiconductor partial renders a hidden theme-research
-mount when (and only when) the render context provides a valid `theme_research_anchor`
-(^[a-z0-9_]+$); absent or invalid the partial is silent.
+with `ignore missing`. The theme-research entry renders a hidden mount when (and
+only when) the render context provides `theme_research_mount` — the nine-key
+context a registration produces (shared hook 2); absent or malformed the entry is
+silent. The entry names no vertical: every string in the section comes from that
+context, which is why these tests read it from the registration rather than
+retyping it.
 
 L1:  The include sits after `<a class="back">` and before `<div id="app">`, exactly
      once, and is the ONLY line of basket_detail.html.j2 that changes (`git diff
@@ -13,9 +16,10 @@ L2:  Optional verticals never break the incumbent page — `ignore missing` ever
 L3:  The base render's asset order is preserved: every <script>/<link> present in the
      base stays in the same relative order; theme.js stays LAST. New assets are
      ADDED, never reordered.
-L4:  `theme_research_anchor` absent → partial emits nothing (no mount, no assets).
-L5:  With a valid anchor → exactly one mount, hidden, both asset tags present,
-     anchor attribute equals the value, bilingual title/note via `t(...)`.
+L4:  `theme_research_mount` absent/malformed → entry emits nothing (no mount, no
+     assets); a missing section partial emits no orphan asset tag either.
+L5:  With a valid mount context → exactly one mount, hidden, both asset tags
+     present, every attribute and visible string equal to the registration's.
 L6:  Every visible string flows through `t('en','zh')`; no raw slug, no concat.
 L7:  No analytical data, payload, figure, token or URL beyond the two asset paths
      and two API paths.
@@ -34,6 +38,24 @@ import pytest
 REPO_ROOT = Path(__file__).parent.parent
 T10B_BASE_COMMIT = "b256aa6a756a"          # head pre-T10b; diff must show `1\t0`
 
+MOUNT_ANCHOR = "ai_semiconductors"
+
+
+def _mount_ctx(anchor: str = MOUNT_ANCHOR) -> dict:
+    """The render context a page builder passes, read from the registration.
+
+    Deliberately NOT retyped here: the point of shared hook 2 is that the
+    mount renders the registration's strings, so a test that hard-pinned its
+    own copy would pass while the page rendered something else. The import is
+    the leaf mounts module only — importing the registry would drag the whole
+    company-intelligence stack into this suite's CI closure.
+    """
+    from engine.market_ontology.theme_research_mounts import mount_context
+
+    context = mount_context(anchor)
+    assert context is not None, f"no registered mount for {anchor!r}"
+    return dict(context)
+
 # ---------------------------------------------------------------------------
 # Synthetic root + Jinja env (same loader/filters test_state_of_themes.py uses)
 # ---------------------------------------------------------------------------
@@ -44,6 +66,7 @@ def _make_basket_root(
     *,
     include_theme_research: bool = True,
     include_aggregator: bool = True,
+    include_section: bool = True,
     extra_partials: tuple[str, ...] = (),
 ) -> Path:
     """Build a minimal synthetic repo root for basket_detail.html.j2 rendering.
@@ -55,6 +78,8 @@ def _make_basket_root(
     Pass `include_theme_research=False` to DELETE the vertical partial (the
     "missing optional vertical" case for L2). Pass `include_aggregator=False`
     to drop the aggregator partial entirely (pure-base render for diff checks).
+    Pass `include_section=False` to keep the entry but DELETE the section it
+    includes — the half-installed vertical, which must still emit nothing.
     """
     templates_dir = tmp_path / "templates"
     templates_dir.mkdir(parents=True, exist_ok=True)
@@ -74,6 +99,11 @@ def _make_basket_root(
     if include_theme_research and (REPO_ROOT / "templates" / "_theme_research_mount.html.j2").exists():
         (templates_dir / "_theme_research_mount.html.j2").write_bytes(
             (REPO_ROOT / "templates" / "_theme_research_mount.html.j2").read_bytes()
+        )
+    section_src = REPO_ROOT / "templates" / "_theme_research_section.html.j2"
+    if include_theme_research and include_section and section_src.exists():
+        (templates_dir / "_theme_research_section.html.j2").write_bytes(
+            section_src.read_bytes()
         )
 
     # Support partials the basket page transcludes. Same set test_state_of_themes
@@ -318,7 +348,7 @@ def test_asset_order_preserved_and_theme_js_last(tmp_path):
     root_anchor = _make_basket_root(tmp_path)
     anchor_html = _render_basket_detail(
         root_anchor,
-        context={"theme_research_anchor": "ai_semiconductors"},
+        context={"theme_research_mount": _mount_ctx()},
     )
     anchor_scripts = _scripts_in_doc_order(anchor_html)
     anchor_links = _links_in_doc_order(anchor_html)
@@ -356,12 +386,16 @@ def test_asset_order_preserved_and_theme_js_last(tmp_path):
 # 5 — L4/L5: silent without anchor; mounted with anchor; rejects invalid
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("anchor", [None, ""])
-def test_partial_silent_without_anchor(tmp_path, anchor):
-    """Absent or empty `theme_research_anchor` → no mount, no asset tags,
-    no theme-research section, no anchor attribute."""
+@pytest.mark.parametrize("mount", [None, {}, "", "ai_semiconductors", 7, []])
+def test_partial_silent_without_anchor(tmp_path, mount):
+    """Absent, empty or non-mapping `theme_research_mount` → no mount, no asset
+    tags, no theme-research section, no anchor attribute.
+
+    A bare anchor STRING is in this list on purpose: the pre-hook-2 context key
+    carried one, and a page that still passes it must mount nothing rather than
+    render a section with no registration behind it."""
     root = _make_basket_root(tmp_path)
-    ctx = {} if anchor is None else {"theme_research_anchor": ""}
+    ctx = {} if mount is None else {"theme_research_mount": mount}
     html = _render_basket_detail(root, context=ctx)
     assert "data-theme-research-mount" not in html
     assert "theme-research.js" not in html
@@ -370,13 +404,15 @@ def test_partial_silent_without_anchor(tmp_path, anchor):
 
 
 def test_partial_mounted_with_valid_anchor(tmp_path):
-    """A valid `theme_research_anchor` (^[a-z0-9_]+$) renders exactly one mount,
-    with the hidden attribute, both asset tags, anchor attribute equal to the
-    value, and the bilingual title/note."""
+    """A valid mount context renders exactly one mount, hidden, with both asset
+    tags and EVERY attribute and visible string equal to the registration's.
+
+    The assertions read `mount` rather than literals, so a registration that
+    changes its anchor, slices, schema ids or copy moves this test with it —
+    and a template that goes back to hard-pinning one vertical fails it."""
     root = _make_basket_root(tmp_path)
-    html = _render_basket_detail(
-        root, context={"theme_research_anchor": "ai_semiconductors"}
-    )
+    mount = _mount_ctx()
+    html = _render_basket_detail(root, context={"theme_research_mount": mount})
     # Exactly one mount present
     n_mount = html.count("data-theme-research-mount")
     assert n_mount == 1, f"expected exactly 1 mount; got {n_mount}"
@@ -384,17 +420,33 @@ def test_partial_mounted_with_valid_anchor(tmp_path):
     assert re.search(
         r'<section[^>]*data-theme-research-mount[^>]*\bhidden\b', html
     ), "mount section must carry the hidden attribute"
-    # Anchor attribute equals the value
-    assert 'data-anchor-theme-id="ai_semiconductors"' in html
+    # Every machine-read attribute equals the registration's own string
+    assert f'data-anchor-theme-id="{mount["anchor_theme_id"]}"' in html
+    assert f'data-slices="{mount["slices"]}"' in html
+    assert f'data-schema-id="{mount["schema_id"]}"' in html
+    assert f'data-evidence-schema-id="{mount["evidence_schema_id"]}"' in html
+    # The bilingual slice copy travels as ONE escaped JSON attribute, so the
+    # client never carries a second copy of the slice names.
+    import html as _html
+    m_labels = re.search(r'data-slice-labels="([^"]*)"', html)
+    assert m_labels, "the mount must carry the registration's slice labels"
+    assert _html.unescape(m_labels.group(1)) == mount["slice_labels_json"]
+    # The section's id and its title's id are anchor-scoped and agree, so two
+    # verticals on one page cannot collide (and aria-labelledby still resolves).
+    assert f'id="theme-research-{mount["anchor_theme_id"]}"' in html
+    assert f'aria-labelledby="theme-research-{mount["anchor_theme_id"]}-title"' in html
+    assert f'id="theme-research-{mount["anchor_theme_id"]}-title"' in html
     # Both asset tags present, with defer only on the script
     assert 'rel="stylesheet" href="../assets/css/theme-research.css"' in html
     assert (
         '<script defer src="../assets/js/theme-research.js?v=20260924a">'
         '</script>' in html
     )
-    # Bilingual title (en + zh span) for the section
-    assert "Semiconductor industry research" in html
-    assert "半导体产业研究" in html
+    # Bilingual title and note (en + zh span), both halves from the registration
+    for key in ("title_en", "title_zh", "note_en", "note_zh"):
+        assert mount[key] in html, f"the mount must render the registration's {key}"
+    assert f'<span class="l-en">{mount["title_en"]}</span>' in html
+    assert f'<span class="l-zh">{mount["title_zh"]}</span>' in html
 
 
 @pytest.mark.parametrize("bad_anchor", [
@@ -406,15 +458,72 @@ def test_partial_mounted_with_valid_anchor(tmp_path):
     "<script>",         # injection attempt
 ])
 def test_partial_silent_for_invalid_anchor(tmp_path, bad_anchor):
-    """An anchor that fails ^[a-z0-9_]+$ → partial stays silent."""
+    """A mount context whose anchor fails ^[a-z0-9_]+$ → entry stays silent.
+
+    The rest of the context is a real registration's, so the only reason to
+    refuse is the anchor itself."""
     root = _make_basket_root(tmp_path)
     html = _render_basket_detail(
-        root, context={"theme_research_anchor": bad_anchor}
+        root,
+        context={"theme_research_mount": {**_mount_ctx(), "anchor_theme_id": bad_anchor}},
     )
     assert "data-theme-research-mount" not in html
     assert "theme-research.js" not in html
     assert "theme-research.css" not in html
     assert "Semiconductor industry research" not in html
+
+
+# ---------------------------------------------------------------------------
+# 5b — shared hook 2: the templates name no vertical, and a half-installed
+#      vertical emits nothing at all
+# ---------------------------------------------------------------------------
+
+def test_half_installed_vertical_emits_no_orphan_asset(tmp_path):
+    """Entry present, section partial missing → not one byte of mount or asset.
+
+    `ignore missing` protects the incumbent page from a vertical that has not
+    landed (L2). It would not protect it from a stylesheet and a client script
+    loaded for a section that never rendered, so the entry captures the
+    section's output before it emits either asset tag.
+    """
+    root = _make_basket_root(tmp_path, include_section=False)
+    html = _render_basket_detail(root, context={"theme_research_mount": _mount_ctx()})
+    assert "data-theme-research-mount" not in html
+    assert "theme-research.css" not in html
+    assert "theme-research.js" not in html
+    assert 'class="theme-research"' not in html
+
+
+@pytest.mark.parametrize("template_name", [
+    "_theme_research_mount.html.j2",
+    "_theme_research_section.html.j2",
+])
+def test_mount_templates_name_no_vertical(template_name):
+    """Neither template contains a vertical's anchor, slice or bilingual copy.
+
+    This is the whole of shared hook 2: before it, the anchor, both slice keys
+    and the bilingual title/note were typed into the template, so a second
+    vertical could not mount without editing it. A registration string
+    reappearing in either file means the drift has come back — the page would
+    then render one vertical's copy no matter which registration mounted it.
+    """
+    source = (REPO_ROOT / "templates" / template_name).read_text(encoding="utf-8")
+    mount = _mount_ctx()
+    forbidden = {
+        "anchor": mount["anchor_theme_id"],
+        "slices": mount["slices"],
+        "schema": mount["schema_id"],
+        "title_en": mount["title_en"],
+        "title_zh": mount["title_zh"],
+        "note_en": mount["note_en"],
+        "note_zh": mount["note_zh"],
+    }
+    for slice_key in mount["slices"].split(","):
+        forbidden[f"slice:{slice_key}"] = slice_key
+    leaked = sorted(name for name, value in forbidden.items() if value in source)
+    assert not leaked, (
+        f"{template_name} hard-pins registration strings again: {leaked}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -426,9 +535,7 @@ def test_partial_carries_no_data_or_payload(tmp_path):
     (stylesheet href, js src, two API paths, anchor attribute) — no digits-
     with-units, no other http(s)://, no `gen_`/`gmirca_` markers."""
     root = _make_basket_root(tmp_path)
-    html = _render_basket_detail(
-        root, context={"theme_research_anchor": "ai_semiconductors"}
-    )
+    html = _render_basket_detail(root, context={"theme_research_mount": _mount_ctx()})
     # Slice out ONLY the mount section for inspection — outside the section
     # the page legitimately renders other URLs (e.g., ../live/shock_state.json).
     m = re.search(
