@@ -924,14 +924,24 @@
 
   /* ---- mount + page wiring -------------------------------------------- */
 
-  var MOUNT = document.querySelector('[data-theme-research-mount]');
-  if (!MOUNT) return;  // this page did not render the section; nothing to do
-
-  var ANCHOR_THEME_ID = MOUNT.getAttribute('data-anchor-theme-id') || '';
-  var SLICES = String(MOUNT.getAttribute('data-slices') || '')
-    .split(',').map(function (s) { return s.trim(); }).filter(Boolean);
-  var apiQueryUrl = MOUNT.getAttribute('data-api-query');
-  var apiEvidenceUrl = MOUNT.getAttribute('data-api-evidence');
+  /* Shared hook 4b (Sol #7780 issuecomment-5813801605): ONE INSTANCE PER
+   * MOUNT. The page used to bind a single section and read its anchor, slice
+   * list and endpoints straight off the element; a page carrying two
+   * registered verticals would have bound the first and ignored the second.
+   * Everything below is now a factory over a mount's own SPEC — its anchor,
+   * its slice vocabulary, its bilingual slice labels and its schema ids — and
+   * the bootstrap at the bottom of this file walks every rendered mount.
+   *
+   * A mount that cannot say what it is renders a static bilingual note and
+   * nothing else: no fetch, no token, no section. A second mount for an
+   * anchor already instantiated on this page is refused rather than bound
+   * twice. An instance that throws marks only its own section and never stops
+   * the others. */
+  function mountInstance(MOUNT, SPEC) {
+  var ANCHOR_THEME_ID = SPEC.anchor;
+  var SLICES = SPEC.slices.slice();
+  var apiQueryUrl = SPEC.apiQuery;
+  var apiEvidenceUrl = SPEC.apiEvidence;
 
   /* NIT-7. resolveSameOrigin lives in the contract block so the typed
    * `endpoint_not_same_origin` code is testable under node. fetchTarget
@@ -1033,11 +1043,14 @@
 
   function restoreSelection() {
     try {
-      var raw = localStorage.getItem('theme_research_sel');
+      /* Per-anchor key: a selection stored by one vertical's mount is not
+       * another's to restore, and the slice vocabulary that validates it is
+       * this mount's, not a list compiled into this file. */
+      var raw = localStorage.getItem('theme_research_sel' + ':' + SPEC.anchor);
       /* parseStoredSelection refuses anything that is not EXACTLY the three
        * closed-vocabulary keys — a stored payload, generation, or token can
        * never propagate back into the runtime. */
-      var sel = parseStoredSelection(raw);
+      var sel = parseStoredSelectionFor(SPEC, raw);
       if (sel && TR_SLICE_KEYS.indexOf(sel.slice_key) >= 0 &&
           SLICES.indexOf(sel.slice_key) >= 0) currentSlice = sel.slice_key;
       if (sel && TR_VIEW_KEYS.indexOf(sel.view) >= 0) currentView = sel.view;
@@ -1049,7 +1062,7 @@
 
   function rememberSelection() {
     try {
-      localStorage.setItem('theme_research_sel', JSON.stringify({
+      localStorage.setItem('theme_research_sel' + ':' + SPEC.anchor, JSON.stringify({
         slice_key: currentSlice, view: currentView, time_mode: currentMode
       }));
     } catch (e) { /* remembering a selection is best-effort */ }
@@ -1158,7 +1171,8 @@
       .then(function (payload) {
         if (payload === null || payload === undefined) { renderAll(); return; }
         if (state.epoch !== reqEpoch || state.principalKey !== reqPrincipal) return;
-        if (applyResearchResponse(state, reqEpoch, reqPrincipal, payload)) {
+        if (applyResearchResponseFor(state, reqEpoch, reqPrincipal, SPEC, payload,
+                                     { anchor: SPEC.anchor, slice: currentSlice })) {
           offset = newOffset;
           evidenceRefreshTried = false;
         }
@@ -1266,6 +1280,17 @@
           )));
           return;
         }
+        /* The evidence envelope is a contract too: its own schema id, an
+         * all-false authority block, and the generation the reader is
+         * actually reading. Before hook 4b nothing checked any of the three
+         * here, so a reply under another schema rendered as receipt text. */
+        var evVerdict = validateEvidenceFor(SPEC, payload, state.generation);
+        if (!evVerdict.ok) {
+          var evErr = el('p', 'tr-error');
+          evErr.appendChild(errorWord('invalid_envelope'));
+          drawerBody.appendChild(evErr);
+          return;
+        }
         var pre = el('pre', 'tr-evidence-pre');
         pre.textContent = textSafe(evidenceText(payload));
         drawerBody.appendChild(pre);
@@ -1369,7 +1394,11 @@
     var sliceRow = el('div', 'tr-tabrow');
     sliceRow.setAttribute('data-tr-role', 'slices');
     SLICES.forEach(function (key) {
-      var w = pair(L.slice, key);
+      /* The mount's own bilingual label, not a map compiled into this file:
+       * that map knows one vertical's slices and would render every other
+       * vertical's chips as the typed fallback. */
+      var w = Object.prototype.hasOwnProperty.call(SPEC.labels, key)
+        ? SPEC.labels[key] : TR_UNMAPPED;
       var tab = button('tr-tab', w[0], w[1]);
       tab.setAttribute('data-tr-slice', key);
       tab.addEventListener('click', function () {
@@ -1845,5 +1874,60 @@
     window.setTimeout(function () { if (MOUNT.hidden) onAuthUser(null); }, 2500);
   } else {
     onAuthUser(null);
+  }
+  }
+
+  /* ---- bootstrap: one instance per rendered mount ---------------------- */
+
+  var MOUNTS = document.querySelectorAll('[data-theme-research-mount]');
+  if (!MOUNTS || !MOUNTS.length) return;  // this page rendered no section
+  var TR_UNCONFIGURED_NOTE = [
+    'Research mount is not configured on this page.',
+    '本页的研究模块未配置。'
+  ];
+  var bound = {};
+  for (var mi = 0; mi < MOUNTS.length; mi++) {
+    var elMount = MOUNTS[mi];
+    var built = mountSpecFrom({
+      anchor: elMount.getAttribute('data-anchor-theme-id'),
+      slices: elMount.getAttribute('data-slices'),
+      schema: elMount.getAttribute('data-schema-id'),
+      evidenceSchema: elMount.getAttribute('data-evidence-schema-id'),
+      labels: elMount.getAttribute('data-slice-labels'),
+      apiQuery: elMount.getAttribute('data-api-query'),
+      apiEvidence: elMount.getAttribute('data-api-evidence')
+    });
+    if (!built.ok) {
+      /* Static bilingual copy only — no fetch, no token, nothing about a
+       * vertical this page could not describe. */
+      elMount.setAttribute('data-tr-state', 'unconfigured');
+      var noteEn = document.createElement('span');
+      noteEn.className = 'l-en';
+      noteEn.textContent = TR_UNCONFIGURED_NOTE[0];
+      var noteZh = document.createElement('span');
+      noteZh.className = 'l-zh';
+      noteZh.textContent = TR_UNCONFIGURED_NOTE[1];
+      var noteP = document.createElement('p');
+      noteP.className = 'tr-muted';
+      noteP.appendChild(noteEn);
+      noteP.appendChild(noteZh);
+      elMount.appendChild(noteP);
+      continue;
+    }
+    if (Object.prototype.hasOwnProperty.call(bound, built.spec.anchor)) {
+      /* Two sections for one anchor would share a storage key, a request
+       * epoch and a DOM id. The second is refused, not bound. */
+      elMount.setAttribute('data-tr-state', 'duplicate');
+      continue;
+    }
+    bound[built.spec.anchor] = true;
+    try {
+      mountInstance(elMount, built.spec);
+      elMount.setAttribute('data-tr-state', 'mounted');
+    } catch (e) {
+      /* One vertical's failure is not the page's: mark this section and
+       * carry on to the next mount. */
+      elMount.setAttribute('data-tr-state', 'failed');
+    }
   }
 })();

@@ -439,7 +439,7 @@ def test_partial_mounted_with_valid_anchor(tmp_path):
     # Both asset tags present, with defer only on the script
     assert 'rel="stylesheet" href="../assets/css/theme-research.css"' in html
     assert (
-        '<script defer src="../assets/js/theme-research.js?v=20260924a">'
+        '<script defer src="../assets/js/theme-research.js?v=20260924b">'
         '</script>' in html
     )
     # Bilingual title and note (en + zh span), both halves from the registration
@@ -556,7 +556,7 @@ def test_partial_carries_no_data_or_payload(tmp_path):
     # The two API paths AND the two asset hrefs are the ONLY URLs in the block
     allowed = {
         "../assets/css/theme-research.css",
-        "../assets/js/theme-research.js?v=20260924a",
+        "../assets/js/theme-research.js?v=20260924b",
         "/api/themes/v1/research/query",
         "/api/themes/v1/research/evidence",
     }

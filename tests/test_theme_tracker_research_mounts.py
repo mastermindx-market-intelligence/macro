@@ -202,7 +202,7 @@ def test_client_assets_are_included_exactly_once_whatever_the_mount_count(
     html = _render(_root(tmp_path, theme_ids))
     assert len(_sections(html)) == expected
     assert html.count('href="assets/css/theme-research.css"') == 1
-    assert html.count('src="assets/js/theme-research.js?v=20260924a"') == 1
+    assert html.count('src="assets/js/theme-research.js?v=20260924b"') == 1
 
 
 def test_a_missing_section_partial_renders_no_mount_and_no_exception(tmp_path):

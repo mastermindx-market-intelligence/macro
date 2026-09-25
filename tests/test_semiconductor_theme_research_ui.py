@@ -540,10 +540,10 @@ def test_template_mount_renders_hidden_and_empty(tmp_path):
 def test_template_asset_includes_exactly_once(tmp_path):
     html = _render_page(tmp_path)
     assert html.count('<link rel="stylesheet" href="assets/css/theme-research.css">') == 1
-    assert html.count('<script defer src="assets/js/theme-research.js?v=20260924a"></script>') == 1
+    assert html.count('<script defer src="assets/js/theme-research.js?v=20260924b"></script>') == 1
     # includes sit immediately after their canonical siblings
     assert '<link rel="stylesheet" href="theme.css">\n<link rel="stylesheet" href="assets/css/theme-research.css">' in html
-    assert '<script src="theme.js"></script>\n<script defer src="assets/js/theme-research.js?v=20260924a"></script>' in html
+    assert '<script src="theme.js"></script>\n<script defer src="assets/js/theme-research.js?v=20260924b"></script>' in html
 
 
 def test_template_source_mounts_through_the_shared_partial():
@@ -1921,3 +1921,273 @@ def test_the_mount_driven_block_compares_schemas_only_by_identity(js_text):
     assert "/^\\s+|\\s+$/" not in contract, (
         "the block trims by character, so no regex literal survives in it"
     )
+
+
+# ---------------------------------------------------------------------------
+# 13. Shared hook 4b — one instance per mount, executed.
+#
+# The 900 lines of page wiring below the contract marker had no execution
+# coverage at all: the node batteries lift only the contract block, so every
+# statement that touches the DOM was covered by source scans alone. The stub
+# below is the smallest document/window/localStorage/fetch that lets the WHOLE
+# file run under node, which is what makes "two verticals mount on one page"
+# an executed claim rather than a described one.
+# ---------------------------------------------------------------------------
+
+_DOM_STUB = r"""
+const fs = require('fs');
+function mkEl(tag) {
+  return {
+    tagName: tag, children: [], attrs: {}, style: {}, dataset: {},
+    className: '', textContent: '', hidden: false, value: '', disabled: false,
+    classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+    appendChild(c) { this.children.push(c); return c; },
+    removeChild(c) { this.children = this.children.filter(x => x !== c); return c; },
+    setAttribute(k, v) { this.attrs[k] = String(v); },
+    getAttribute(k) {
+      return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null;
+    },
+    removeAttribute(k) { delete this.attrs[k]; },
+    addEventListener() {}, removeEventListener() {}, focus() {}, blur() {}, click() {},
+    querySelector() { return null; }, querySelectorAll() { return []; },
+    insertBefore(c) { this.children.push(c); return c; },
+    contains() { return false; }
+  };
+}
+const mounts = JSON.parse(fs.readFileSync(process.argv[3], 'utf8')).map(function (attrs) {
+  const el = mkEl('section');
+  Object.keys(attrs).forEach(function (k) {
+    /* A mount marked hostile throws the moment the instance builds its DOM —
+       the cheapest true exception, used to prove failure ISOLATION rather
+       than a stubbed one. */
+    if (k === '__throws') { el.appendChild = function () { throw new Error('hostile mount'); }; return; }
+    if (attrs[k] !== null) el.setAttribute(k, attrs[k]);
+  });
+  return el;
+});
+global.document = {
+  createElement: mkEl,
+  createDocumentFragment: function () { return mkEl('#fragment'); },
+  createTextNode: function (t) { return { nodeValue: t, textContent: t, children: [] }; },
+  querySelector: function () { return null; },
+  querySelectorAll: function (sel) {
+    return sel === '[data-theme-research-mount]' ? mounts : [];
+  },
+  addEventListener: function () {},
+  documentElement: mkEl('html'), body: mkEl('body')
+};
+global.window = {
+  setTimeout: function () { return 0; }, addEventListener: function () {},
+  location: { origin: 'https://example.test', href: 'https://example.test/x' }
+};
+global.localStorage = {
+  store: {}, reads: [],
+  getItem: function (k) {
+    this.reads.push(k);
+    return Object.prototype.hasOwnProperty.call(this.store, k) ? this.store[k] : null;
+  },
+  setItem: function (k, v) { this.store[k] = v; },
+  removeItem: function (k) { delete this.store[k]; }
+};
+global.fetch = function () {
+  return Promise.resolve({
+    ok: true, status: 200, headers: { get: function () { return 'application/json'; } },
+    json: function () { return Promise.resolve({}); }
+  });
+};
+global.AbortController = function () { this.signal = {}; this.abort = function () {}; };
+global.URL = URL;
+
+function textOf(el, out) {
+  if (!el || typeof el !== 'object') return out;
+  if (typeof el.textContent === 'string' && el.textContent) out.push(el.textContent);
+  (el.children || []).forEach(function (c) { textOf(c, out); });
+  return out;
+}
+
+var failure = null;
+try {
+  new Function(fs.readFileSync(process.argv[2], 'utf8'))();
+} catch (e) {
+  failure = String(e && e.message);
+}
+console.log(JSON.stringify({
+  bootFailure: failure,
+  states: mounts.map(function (m) { return m.getAttribute('data-tr-state'); }),
+  text: mounts.map(function (m) { return textOf(m, []); }),
+  storageKeys: Object.keys(global.localStorage.store),
+  storageReads: global.localStorage.reads
+}));
+"""
+
+
+def _run_page(mount_attrs: list[dict]) -> dict:
+    """Execute the WHOLE client — contract block and wiring — over stub mounts."""
+    assert shutil.which("node"), "node not on PATH"
+    with tempfile.TemporaryDirectory() as td:
+        stub = Path(td) / "page_stub.js"
+        stub.write_text(_DOM_STUB, encoding="utf-8")
+        cases = Path(td) / "mounts.json"
+        cases.write_text(json.dumps(mount_attrs), encoding="utf-8")
+        run = subprocess.run(
+            [shutil.which("node"), str(stub), str(JS_PATH), str(cases)],
+            capture_output=True, text=True, timeout=60,
+        )
+    assert run.returncode == 0, f"node exited {run.returncode}:\n{run.stderr}"
+    return json.loads(run.stdout.strip().splitlines()[-1])
+
+
+def _mount_element(**over) -> dict:
+    attrs = _mount_attrs()
+    element = {
+        "data-theme-research-mount": "",
+        "data-anchor-theme-id": attrs["anchor"],
+        "data-slices": attrs["slices"],
+        "data-schema-id": attrs["schema"],
+        "data-evidence-schema-id": attrs["evidenceSchema"],
+        "data-slice-labels": attrs["labels"],
+        "data-api-query": attrs["apiQuery"],
+        "data-api-evidence": attrs["apiEvidence"],
+    }
+    element.update(over)
+    return element
+
+
+_SECOND_VERTICAL = {
+    "data-theme-research-mount": "",
+    "data-anchor-theme-id": "synthetic_vertical",
+    "data-slices": "alpha_slice,beta_slice",
+    "data-schema-id": "synthetic_theme_research.v1",
+    "data-evidence-schema-id": "synthetic_theme_research.evidence.v1",
+    "data-slice-labels": json.dumps(
+        {"alpha_slice": ["Alpha slice", "甲切片"], "beta_slice": ["Beta slice", "乙切片"]},
+        ensure_ascii=False,
+    ),
+    "data-api-query": "/api/themes/v1/research/query",
+    "data-api-evidence": "/api/themes/v1/research/evidence",
+}
+
+
+@needs_node
+def test_two_verticals_mount_on_one_page():
+    """The hook's claim, executed: both sections bind, each with its OWN copy.
+
+    Before this, the page bound `querySelector` — the FIRST mount — and read
+    its anchor and slice list as the client's only configuration. A second
+    registered vertical on the same page was invisible, and its slice chips
+    would have rendered the typed "Unmapped label" fallback from a map that
+    knows one vertical's slices.
+    """
+    page = _run_page([_mount_element(), _SECOND_VERTICAL])
+    assert page["bootFailure"] is None, page["bootFailure"]
+    assert page["states"] == ["mounted", "mounted"], page["states"]
+    incumbent, second = page["text"][0], page["text"][1]
+    labels = json.loads(_mount_attrs()["labels"])
+    for pair in labels.values():
+        assert pair[0] in incumbent and pair[1] in incumbent, pair
+    assert "Alpha slice" in second and "甲切片" in second
+    assert "Beta slice" in second and "乙切片" in second
+    # Neither vertical renders the other's copy, and neither falls back.
+    assert "Alpha slice" not in incumbent
+    for pair in labels.values():
+        assert pair[0] not in second, pair
+    for rendered in (incumbent, second):
+        assert not any("Unmapped label" in line for line in rendered), rendered
+
+
+@needs_node
+def test_each_mount_reads_its_selection_under_its_own_anchor():
+    """One storage family, one key per anchor — never one shared selection.
+
+    Restoring is what happens at mount time (a write needs a click), so the
+    READ keys are what this asserts. Two verticals sharing one key would let
+    one mount restore a slice the other stored.
+    """
+    page = _run_page([_mount_element(), _SECOND_VERTICAL])
+    reads = sorted(set(page["storageReads"]))
+    assert reads == ["theme_research_sel:ai_semiconductors",
+                     "theme_research_sel:synthetic_vertical"], reads
+
+
+@needs_node
+def test_an_unconfigured_mount_renders_a_static_note_and_nothing_else():
+    """A mount that cannot say what it is fetches nothing and renders copy."""
+    page = _run_page([_mount_element(**{"data-slice-labels": "{not json"})])
+    assert page["states"] == ["unconfigured"], page["states"]
+    rendered = page["text"][0]
+    assert "Research mount is not configured on this page." in rendered
+    assert "本页的研究模块未配置。" in rendered
+    assert page["storageKeys"] == []
+    assert page["storageReads"] == [], "an unconfigured mount touches no storage"
+
+
+@needs_node
+def test_a_repeated_anchor_is_refused_not_bound_twice():
+    """Two sections for one anchor would share a storage key and an epoch."""
+    page = _run_page([_mount_element(), _mount_element()])
+    assert page["states"] == ["mounted", "duplicate"], page["states"]
+    assert page["text"][1] == []
+
+
+@needs_node
+def test_one_failing_instance_never_stops_the_others():
+    """Failure isolation, executed: the mount AFTER a thrower still binds.
+
+    The first mount throws for real while its instance builds its DOM, so
+    this asserts the loop's own try boundary — a `break` or an unguarded call
+    there would take the whole page's research down with one vertical.
+    """
+    hostile = _mount_element(**{
+        "data-anchor-theme-id": "hostile_vertical", "__throws": True,
+    })
+    page = _run_page([hostile, _SECOND_VERTICAL])
+    assert page["bootFailure"] is None, page["bootFailure"]
+    assert page["states"] == ["failed", "mounted"], page["states"]
+
+
+@needs_node
+def test_a_cross_origin_endpoint_is_refused_without_a_request():
+    """A mount pointed off-site binds but sends nothing — the existing law."""
+    page = _run_page([_mount_element(**{
+        "data-anchor-theme-id": "offsite_vertical",
+        "data-api-query": "https://elsewhere.example/api",
+    })])
+    assert page["bootFailure"] is None, page["bootFailure"]
+    assert page["states"] == ["mounted"], page["states"]
+
+
+def test_the_wiring_binds_every_mount_not_the_first(js_text):
+    wiring = _code_only(js_text[js_text.index(_END):])
+    assert "querySelectorAll('[data-theme-research-mount]')" in wiring
+    assert "querySelector('[data-theme-research-mount]')" not in wiring
+    assert js_text.count("function mountInstance(") == 1
+    for state in ("'unconfigured'", "'duplicate'", "'failed'", "'mounted'"):
+        assert state in wiring, state
+
+
+def test_the_wiring_validates_through_the_mounts_spec(js_text):
+    """The wiring must call the SPEC-driven contract, not the fixed one.
+
+    The node batteries execute only the contract block, so a wiring that kept
+    calling the single-vertical functions would leave every spec-driven test
+    green while the page still validated against one vertical's constants.
+    """
+    wiring = _code_only(js_text[js_text.index(_END):])
+    assert "applyResearchResponseFor(state," in wiring
+    assert "validateEvidenceFor(SPEC," in wiring
+    assert "parseStoredSelectionFor(SPEC," in wiring
+    assert re.search(r"(?<!For)\bapplyResearchResponse\(", wiring) is None, (
+        "the wiring must not call the fixed-vertical response applier"
+    )
+    assert re.search(r"(?<!For)\bparseStoredSelection\(", wiring) is None
+    assert "pair(L.slice" not in wiring, "slice chips must read the mount's labels"
+    assert "SPEC.labels" in wiring
+
+
+def test_every_storage_key_is_scoped_to_its_anchor(js_text):
+    wiring = _code_only(js_text[js_text.index(_END):])
+    calls = re.findall(r"localStorage\s*\.\s*(?:getItem|setItem|removeItem)\s*\([^)]*", wiring)
+    assert calls, "no localStorage call found in the wiring"
+    for call in calls:
+        assert "'theme_research_sel'" in call, call
+        assert "+ ':' + SPEC.anchor" in call, call
