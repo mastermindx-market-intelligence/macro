@@ -7,6 +7,7 @@ import functools
 import html
 import math
 import re
+import unicodedata
 from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 if TYPE_CHECKING:
@@ -50,6 +51,7 @@ _UNREAD_ELEMENTS = frozenset({
 })
 _TABLE_NAMES = frozenset({"table", "tr", "td", "th"})
 _SPAN_LIMITS = {"colspan": 1000, "rowspan": 65534}
+_READABLE = frozenset(map(chr, range(0x20, 0x7F))) | {_DASH}
 _PERIOD_LABEL = "<period>"
 _NUMERIC = "<n>"
 _ROLES = (
@@ -1070,14 +1072,18 @@ def _outcome(document: Document, pin: Pin, prior_note: bool) -> Outcome:
     return Outcome("present", value=primary_value, primary=primary[0], literal=primary[0].text, second=second[0])
 
 
+def _seen(text: str) -> str:
+    return "".join(character for character in unicodedata.normalize("NFKC", text) if character in _READABLE).strip()
+
+
 def _neighbours_admit(document: Document, cell: Cell, unit: str | None) -> bool:
     for row in document.tables[cell.table]:
         if not any(other is cell for other in row):
             continue
-        printed = sorted((other for other in row if other.text and other is not cell), key=lambda other: other.col0)
+        printed = sorted((other for other in row if _seen(other.text) and other is not cell), key=lambda other: other.col0)
         left = [other for other in printed if other.col1 <= cell.col0]
         right = [other for other in printed if other.col0 >= cell.col1]
-        nearest = ([left[-1].text] if left else []) + ([right[0].text] if right else [])
+        nearest = ([_seen(left[-1].text)] if left else []) + ([_seen(right[0].text)] if right else [])
         if not all(_unit_admits(text, unit) for text in nearest if text in _UNIT_CELLS):
             return False
     return True
