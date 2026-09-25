@@ -357,8 +357,23 @@ def test_hold_wrapper_regressions_execute_inside_the_fast_fence() -> None:
             hold.test_hold_probe_spends_no_github_quota_outside_candidate_branches(
                 monkeypatch, tmp_path
             )
+        for branch in hold.ANCHOR_REPLAY_BRANCHES:
+            with pytest.MonkeyPatch.context() as monkeypatch:
+                hold.test_hold_whose_ci_yml_run_has_not_published_waits_instead_of_parking(
+                    monkeypatch, tmp_path, branch
+                )
+        with pytest.MonkeyPatch.context() as monkeypatch:
+            hold.test_same_hold_parks_once_ci_gate_and_every_pack_concluded_success(
+                monkeypatch, tmp_path
+            )
+        for verdict in hold.UNPROVEN_ANCHOR_VERDICTS:
+            with pytest.MonkeyPatch.context() as monkeypatch:
+                hold.test_no_red_rollup_without_a_clean_anchor_verdict_never_parks(
+                    monkeypatch, tmp_path, verdict
+                )
 
     hold.test_stop_hook_routes_through_wrapper_but_keeps_original_guard_as_delegate()
+    hold.test_ci_yml_still_proves_draft_heads_so_a_hold_can_reach_parked()
 
 
 def test_agent_os_record_contract_runs_inside_the_existing_fast_fence() -> None:
