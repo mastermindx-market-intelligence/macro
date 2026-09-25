@@ -437,35 +437,40 @@ class TestReactionSensitivity:
         assert result["spy_h1_hot_pct"] == pytest.approx(-0.40, abs=1e-4)
         assert result["spy_h1_cold_pct"] == pytest.approx(0.55, abs=1e-4)
 
-    def test_prefers_regime_cell_when_n_ge_threshold(self, tmp_path: Path):
-        """Regime-conditioned cell with n>=8 is preferred over era-level cell."""
+    def test_prefers_pooled_regime_cell_when_n_ge_threshold(self, tmp_path: Path):
+        """Preregistered regime cells are era=all and beat the era-level fallback."""
         cells = _base_cells() + [
-            # Regime-conditioned Q1 cell with n=10 (>= _REGIME_MIN_N)
+            # Regime-conditioned Q1 table is pooled across eras by the frozen playbook.
             {"release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
-             "era": _ERA_LABEL, "regime": "Q1", "n": 10, "mean": 7.77, "median": 6.0,
+             "era": "all", "regime": "Q1", "n": 10, "mean": 7.77, "median": 6.0,
              "ci_lo": 2.0, "ci_hi": 12.0},
         ]
         p = _make_playbook(tmp_path, cells)
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
         assert result is not None
         assert result["regime_cells_used"] is True
-        # The Q1-conditioned cell should be used for hot dgs10
+        assert result["regime_basis"] == "all"
+        assert result["regime_labels_revision_optimistic"] is True
+        # The pooled Q1-conditioned cell should be used for hot dgs10.
         assert result["dgs10_h1_hot_bp"] == pytest.approx(7.77, abs=1e-4)
-        # Cold dgs10 falls back to era-level (no Q1 cold cell)
+        # Cold dgs10 falls back to 2021plus era-level (no qualified Q1 cold cell).
         assert result["dgs10_h1_cold_bp"] == pytest.approx(-4.1, abs=1e-4)
+        assert "revision_optimistic" in result["note"]
 
     def test_falls_back_when_regime_n_below_threshold(self, tmp_path: Path):
         """Regime-conditioned cell with n<8 is NOT used; falls back to era-level."""
         cells = _base_cells() + [
             # n=5 < _REGIME_MIN_N — should be ignored
             {"release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
-             "era": _ERA_LABEL, "regime": "Q1", "n": 5, "mean": 99.0, "median": 99.0,
+             "era": "all", "regime": "Q1", "n": 5, "mean": 99.0, "median": 99.0,
              "ci_lo": 0.0, "ci_hi": 99.0},
         ]
         p = _make_playbook(tmp_path, cells)
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
         assert result is not None
         assert result["regime_cells_used"] is False
+        assert result["regime_basis"] is None
+        assert result["regime_labels_revision_optimistic"] is False
         assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2, abs=1e-4)  # era-level
 
     def test_nfp_family_mapped_correctly(self, tmp_path: Path):
@@ -494,7 +499,8 @@ class TestReactionSensitivity:
         required = {
             "dgs10_h1_hot_bp", "dgs10_h1_cold_bp",
             "spy_h1_hot_pct", "spy_h1_cold_pct",
-            "era_basis", "regime_cells_used", "note",
+            "era_basis", "regime_basis", "regime_cells_used",
+            "regime_labels_revision_optimistic", "note",
         }
         assert required.issubset(result.keys())
 
@@ -505,6 +511,8 @@ class TestReactionSensitivity:
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q2")
         assert result is not None
         assert result["regime_cells_used"] is False
+        assert result["regime_basis"] is None
+        assert result["regime_labels_revision_optimistic"] is False
 
     def test_fail_open_on_bad_json(self, tmp_path: Path):
         """Corrupt JSON → returns None without raising."""
