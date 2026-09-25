@@ -417,8 +417,62 @@ uniformly empty content, with nothing in RBV-18 licensing it (that block makes n
 claim). Now keyed off `selection.current`. Gates on `3c7a8885042`: **B 622 passed**, **C exit
 0**, **D 20 passed / 115 xfailed carrier-alone, zero xpass**.
 
-Open question handed to the B3 reviewer, covered by NO test: `selection.current` vs
-`review_ok` as that denominator — they differ under supersession and syndication collapse.
+**The open question I handed the B3 reviewer was based on a false premise and is closed.**
+`selection.current` and `review_ok` do NOT differ under supersession: `_apply_supersession`
+ends with `self.current = list(self.review_ok)` and removes nothing, only populating
+`superseded` and trimming `live`. They diverge solely at syndication collapse, where a copy is
+dropped only when a matching ORIGINAL is found in `current` and originals are non-syndicated by
+construction — so collapse always leaves >=1 row. Therefore `not current` <=> `not review_ok`,
+identically; the reviewer's exhaustive sweep (19 fixtures x every {accepted, held, rejected,
+review-expired} assignment x 5 views = 1040 runs) found ZERO divergence. `current` stays because
+`input_refs` is built from it, so the guard and the field it describes are one expression.
+
+**B3 review nits, landed at `a1c8968f8e2`:**
+* **NIT 1 (would not ship without).** B3 had ZERO coverage — 622 passed WITH the fix and 622
+  WITHOUT it, so green proved no regression, not that the fix works.
+  `test_replay_after_review_due_expires_both_rows` already composed the exact all-excluded read
+  (`assertions=2, review_ok=0, current=0`) and asserted everything except the block B3 changes;
+  it now pins `summary.status`/`reason`/`input_refs` and `authorized_coverage.selected == 2`.
+  **Teeth proven:** reverting the B3 condition alone, keeping the assertions, fails exactly that
+  test (1 failed / 51 passed).
+* **NIT 2.** The summary reason token is renamed `no_selected_assertions` ->
+  `no_current_assertions`. The per-view token of that name is enforced by
+  `test_..._reason_tokens` to mean `selected == 0`, and after B3 the summary one could fire at
+  `selected == 2` — two meanings on one token in one document. Per-view token untouched.
+* **NITs 3 and 4 recorded, deliberately NOT shipped.** Non-empty interpretation prose under an
+  `unavailable` summary is reachable (15/1040) but a PRE-EXISTING category that B3 narrowly
+  widens from overstating to understating; the clean fix touches interpretation-block admission,
+  which is where the wide fix went wrong.
+
+**The reviewer supplied a better account of the defect than mine:**
+`semiconductor_theme_research.py` has NO review lifecycle at all, so its summary is uniformly
+pre-gate and trivially coherent in a one-cohort module. Robotics added five cohorts, correctly
+built summary CONTENT post-gate, and inherited the status line verbatim from a module where the
+distinction did not exist. That is also why the wide fix was wrong in the strongest terms: it
+would have served a HELD assertion's fact text under "What changed".
+
+## The shipped client is already generic — hook 4 is COMPLETE (measured 2026-09-25)
+
+`site/assets/js/theme-research.js` lives only on #7870's head (`6cd958e92b2`), not on `main`.
+Its `THEME-RESEARCH-CONTRACT-BEGIN/END` block (`:33`-`:923`) is a FROZEN reference
+implementation holding `TR_SCHEMA = 'semiconductor_theme_research.v1'` (`:40`),
+`validateEnvelope` (`:251`) and `applyResearchResponse` (`:354`) — and
+**`applyResearchResponse` has ZERO call sites.** The live client is `mountInstance(MOUNT, SPEC)`
+(`:940`), a factory over each mount's own SPEC from `data-schema-id` (`:1895-1903`), whose
+response path `applyResearchResponseFor(..., SPEC, ...)` (`:1179`) validates
+`payload.schema !== spec.schema` (`:477`). Our mount emits `robotics_theme_research.v1`
+(`SCHEMA_ID`, `robotics_theme_research.py:55`), so **a Robotics payload validates and there is
+NO client-side blocker to R6 / completion criterion 7.**
+
+Both I and the B3 reviewer initially read the frozen half as live — the reviewer concluded "there
+is no shipped robotics client" and I was one comment from filing that at #7870 as an R6 blocker.
+**A frozen reference implementation beside a live one answers a grep with the frozen one first,
+because the constants live there; the command that separates them is grepping CALL SITES of the
+container, not reading more of the function.** Consequence for the record: the `a1c8968f8e2`
+commit message justifies the rename with "no client consumes a robotics payload", which is
+FALSE — the rename is safe because `reason` is typed open `^[a-z0-9_]+$` and the live client
+never reads `summary.reason`, reading only `what_changed`/`why_it_matters`/`next_evidence`
+(`:1577-1581`). Corrected at #7908 issuecomment-5828150312.
 
 **Reproducing a held assertion (durable trap).** Curation assertions are content-addressed:
 mutating `review.disposition` breaks the `curation_revision` stamp, so the row is dropped as
@@ -508,9 +562,11 @@ records **zero xpass**, which is the check that every one of those markers is ho
 and when the foundation arrives, any that would pass will XPASS and fail the build, forcing the
 markers off rather than letting them rot.
 
-Remaining merge gates: **2 (independent review — B2 ACCEPTED and adjudicated; B3
-`275d726d3c0` in flight, builder != reviewer)** and **4 (CI green apart from the
-`inactive_base_context` pilot — currently satisfied)**.
+**ALL FOUR MERGE GATES ARE DISCHARGED** (#7908 issuecomment-5828129816). Gate 2 closed when
+the B3 review returned ACCEPT_WITH_NITS and both actionable nits landed at `a1c8968f8e2`.
+Gate 4 stays satisfied (CI green apart from the non-required `inactive_base_context` pilot).
+Per RULING 7 the HOLD gates label, release, live admission and `MISSION_COMPLETE` — not the
+merge — so this carrier is mergeable and NOT complete: R5, R6 and live admission stay held.
 
 ## Completion criterion 4 (public mirrors) — merging this carrier adds NO public-mirror surface. Measured, not asserted.
 
