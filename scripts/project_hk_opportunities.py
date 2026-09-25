@@ -16,11 +16,11 @@ import json
 from pathlib import Path
 import sys
 
-import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from engine import board_shadow  # noqa: E402
 from engine.hk_opportunity_projection import (  # noqa: E402
     ENTRY_OPEN,
     MONITOR,
@@ -32,7 +32,6 @@ from engine.pick_lab.hk import run_book_hk  # noqa: E402
 from engine.pick_lab.profile import HK_PROFILE  # noqa: E402
 from engine.pick_lab.registry_hk import HK_BY_ID  # noqa: E402
 from engine.pick_lab.snapshot import latest_snapshot  # noqa: E402
-from lib import config  # noqa: E402
 
 ATTENTION_ENGINE = "hklab_flagship_nogate"
 
@@ -63,60 +62,48 @@ def build_projection() -> dict:
         return _unavailable(f"incumbent_artifact_unreadable:{type(exc).__name__}")
 
     incumbent_asof = str(incumbent.get("as_of") or "")
-    discovery_path = config.data_dir() / "prophet_shadow" / "hk_discovery.parquet"
-    if not discovery_path.exists():
+    discovery_snapshot = board_shadow.read_discovery_snapshot(
+        "HK", "hk_discovery_v1"
+    )
+    if not isinstance(discovery_snapshot, dict):
         return _unavailable(
-            "discovery_store_absent",
+            "discovery_owner_unavailable:reader_contract_invalid",
             source_asof={
                 "incumbent": incumbent_asof or None,
                 "discovery": None,
                 "attention": None,
             },
         )
-    try:
-        discovery = pd.read_parquet(discovery_path)
-    except Exception as exc:
+    discovery_asof = str(discovery_snapshot.get("as_of") or "") or None
+    if discovery_snapshot.get("available") is not True:
+        owner_reason = str(discovery_snapshot.get("reason") or "unknown")
         return _unavailable(
-            f"discovery_store_unreadable:{type(exc).__name__}",
+            "discovery_owner_unavailable:" + owner_reason,
+            source_asof={
+                "incumbent": incumbent_asof or None,
+                "discovery": discovery_asof,
+                "attention": None,
+            },
+        )
+    discovery_rows = discovery_snapshot.get("records")
+    if not isinstance(discovery_rows, list):
+        return _unavailable(
+            "discovery_owner_unavailable:records_contract_invalid",
+            source_asof={
+                "incumbent": incumbent_asof or None,
+                "discovery": discovery_asof,
+                "attention": None,
+            },
+        )
+    if not discovery_asof:
+        return _unavailable(
+            "discovery_owner_unavailable:asof_missing",
             source_asof={
                 "incumbent": incumbent_asof or None,
                 "discovery": None,
                 "attention": None,
             },
         )
-    required = {
-        "session_date",
-        "security_ref_raw",
-        "challenger_definition",
-        "candidate_origin",
-        "availability_status",
-        "availability_source",
-    }
-    missing = sorted(required - set(discovery.columns))
-    if missing:
-        return _unavailable(
-            "discovery_store_missing_columns:" + ",".join(missing),
-            source_asof={
-                "incumbent": incumbent_asof or None,
-                "discovery": None,
-                "attention": None,
-            },
-        )
-    if discovery.empty:
-        return _unavailable(
-            "discovery_store_empty",
-            source_asof={
-                "incumbent": incumbent_asof or None,
-                "discovery": None,
-                "attention": None,
-            },
-        )
-
-    discovery_dates = discovery["session_date"].astype(str)
-    discovery_asof = str(discovery_dates.max())
-    discovery_rows = discovery.loc[
-        discovery_dates == discovery_asof
-    ].to_dict("records")
 
     snapshot, attention_asof = latest_snapshot(profile=HK_PROFILE)
     if snapshot is None or attention_asof is None:

@@ -331,3 +331,124 @@ def test_projection_cli_is_read_only_and_module_has_no_data_io_surface():
     assert "Path(" not in module
     assert "pandas" not in module
     assert "signal_gate" not in module
+
+
+def _load_projection_cli():
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "scripts" / "project_hk_opportunities.py"
+    spec = importlib.util.spec_from_file_location("project_hk_opportunities_under_test", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _write_incumbent(tmp_path, payload):
+    path = tmp_path / "site" / "factordata" / "hk_standouts.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(__import__("json").dumps(payload), encoding="utf-8")
+
+
+def test_projection_cli_consumes_board_shadow_owner_reader_not_store_path():
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "project_hk_opportunities.py"
+    ).read_text(encoding="utf-8")
+    assert "read_discovery_snapshot" in source
+    for forbidden in (
+        "prophet_shadow",
+        "read_parquet",
+        "config.data_dir",
+        "import pandas",
+        "from lib import config",
+    ):
+        assert forbidden not in source
+
+
+def test_projection_cli_healthy_observed_zero_keeps_owner_context(tmp_path, monkeypatch):
+    cli = _load_projection_cli()
+    _write_incumbent(
+        tmp_path,
+        {
+            "as_of": ASOF,
+            "buy": [],
+            "ripening": [
+                {
+                    "ticker": "RIPE.HK",
+                    "name": "Ripening fixture",
+                    "stance": "setup forming — no entry signal yet; watch, don't chase",
+                }
+            ],
+            "ran": [],
+            "leaders": [],
+            "watch": [],
+        },
+    )
+    monkeypatch.setattr(cli, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        cli.board_shadow,
+        "read_discovery_snapshot",
+        lambda market, definition: {
+            "available": True,
+            "reason": "observed_zero",
+            "as_of": ASOF,
+            "records": [],
+        },
+    )
+    monkeypatch.setattr(cli, "latest_snapshot", lambda profile: ({}, ASOF))
+    monkeypatch.setattr(cli, "HK_BY_ID", {cli.ATTENTION_ENGINE: object()})
+    monkeypatch.setattr(
+        cli,
+        "run_book_hk",
+        lambda book, snapshot: {
+            "picks": [_attention("RIPE.HK", 1)],
+            "n_picks": 1,
+            "disabled_stale": False,
+        },
+    )
+
+    out = cli.build_projection()
+    assert out["available"] is True
+    assert out["source_asof"] == {
+        "incumbent": ASOF,
+        "discovery": ASOF,
+        "attention": ASOF,
+    }
+    assert [row["ticker"] for row in out["lanes"][hop.PREPARING]] == ["RIPE.HK"]
+
+
+def test_projection_cli_owner_reader_failure_preserves_reason_and_epoch(
+    tmp_path, monkeypatch
+):
+    cli = _load_projection_cli()
+    _write_incumbent(tmp_path, {"as_of": ASOF, "buy": []})
+    monkeypatch.setattr(cli, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        cli.board_shadow,
+        "read_discovery_snapshot",
+        lambda market, definition: {
+            "available": False,
+            "reason": "receipt_not_successful",
+            "as_of": ASOF,
+            "records": [],
+        },
+    )
+    monkeypatch.setattr(
+        cli,
+        "latest_snapshot",
+        lambda profile: (_ for _ in ()).throw(AssertionError("attention must not run")),
+    )
+
+    out = cli.build_projection()
+    assert out["available"] is False
+    assert out["reason"] == "discovery_owner_unavailable:receipt_not_successful"
+    assert out["source_asof"] == {
+        "incumbent": ASOF,
+        "discovery": ASOF,
+        "attention": None,
+    }
