@@ -107,13 +107,25 @@ def assess(case: dict) -> dict:
     elif prior and all(item[k]==prior[k] for k in ('claim','origin','semantic')):
         result.update(status='no_delta',kind='same_source_restatement');return result
     else: kind=None
+    # R17: validate the claim independently of its presentation. A background
+    # or correction label must never bypass comparison prerequisites.
+    # Permission, source clocks, predecessor checks and no-output repeats
+    # remain above this boundary. No parser here validates natural language.
+    if item['claim_type']=='consensus_surprise' and (item['comparison']!='comparable' or item['baseline_kind']!='consensus' or item['source_kind']!='reported'):
+        return refuse('consensus_baseline_required')
+    if item['comparison']=='not_comparable':return refuse('comparison_unqualified')
+    if item['comparison']=='comparable':
+        if not item['baseline_ref'] or item['baseline_kind']=='none':return refuse('baseline_missing')
+        try: baseline_hi=_bounds(item['baseline_time'])[1]
+        except (ValueError,TypeError):return refuse('baseline_time_unknown')
+        if baseline_hi>=lower:return refuse('baseline_not_prior')
+        if item['claim_type']=='consensus_surprise' and item['baseline_kind']!='consensus':
+            return refuse('consensus_baseline_required')
     if (lower<upper and upper<=start) or (lower==upper and lower<start):
         result.update(status='background',kind='newly_learned_old_source' if recorded>=start else 'historical_context',text=text,evidence_ref=ref)
         return result
     if kind=='correction':
         result.update(status='eligible_context',kind=kind,text=text,evidence_ref=ref);return result
-    if item['claim_type']=='consensus_surprise' and (item['comparison']!='comparable' or item['baseline_kind']!='consensus' or item['source_kind']!='reported'):
-        return refuse('consensus_baseline_required')
     if item['source_kind']=='target':
         reason=None
         if item['target_end']:
@@ -124,14 +136,7 @@ def assess(case: dict) -> dict:
         return result
     if item['source_kind']=='hypothesis':
         result.update(status='eligible_context',kind='hypothesis',text=text,evidence_ref=ref);return result
-    if item['comparison']=='not_comparable':return refuse('comparison_unqualified')
     if item['comparison']=='comparable':
-        if not item['baseline_ref'] or item['baseline_kind']=='none':return refuse('baseline_missing')
-        try: baseline_hi=_bounds(item['baseline_time'])[1]
-        except (ValueError,TypeError):return refuse('baseline_time_unknown')
-        if baseline_hi>=lower:return refuse('baseline_not_prior')
-        if item['claim_type']=='consensus_surprise' and item['baseline_kind']!='consensus':
-            return refuse('consensus_baseline_required')
         result['baseline_label']=item['baseline_kind'];kind='economic_change'
     else:
         kind='separate_proposition' if prior and item['claim']!=prior['claim'] else 'new_report'
