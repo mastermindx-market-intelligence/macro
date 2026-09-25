@@ -62,11 +62,10 @@ unresolved:
   - "No accepted shared economic_change_dossier.v1 existed anywhere at pickup; ruling R-ENE-02 registers it from this carrier as the shared contract (custody notices on #7793 and #7870)."
   - "Route/private-role custody for Tasks 6-7 depends on B's T09 and R4 outcomes (see unverified)."
 next_actions:
-  - "Dispatch wave 1 on the fabric against carrier commit <this file's commit>: ene_w1_t3_adapter (mini2, glm-codex glm-5.3): contracts/market_ontology/economic_change_dossier.v1.schema.json + engine/market_ontology/energy_economic_change.py + tests + new gate:code job energy-economic-change-dossier; ene_w1_t4_witnesses (mini2, glm-5.3): engine/company_intelligence/nuclear_value_profiles.py + synthetic fixtures + source-qualification tests (no CI edits); ene_w1_t9_nonreg (mb, glm-5.3): tests/test_energy_economic_change_non_regression.py membership/ThemeState freeze (no CI edits)."
-  - "Opus READ_ONLY audit of freeze v1 DONE (FIX_REQUIRED, 12/12 accepted) — freeze v2 is binding; T3/T4 packets re-pinned to the v2 commit before dispatch."
-  - "Integrate accepted lane commits into this carrier by cherry-pick -x; seat wires the T4/T9 suites into the energy-economic-change-dossier job; rerun tests/test_ci_pack.py + scripts/check_contract_delta.py --base origin/main; push; independent exact-head review; mark ready + merge-on-green for slice 1 only after review PASS (ruling R-ENE-03)."
-  - "Fresh-read the Slack root (and #7870/#7793/#7462/#7669 for custody answers) before every substantive write; keep store.py, basket_detail.html.j2, state_of_themes.html.j2, app/theme_research.py and private_publication.py untouched until their owners' state is reconciled."
-  - "Wave 2 after slice 1: Task 2 (consume B's landed assertion), Task 5 (compose), Task 6/7 (private role + route, decision R-ENE-04), Task 8 (UI on B's generic mount), Task 9 privacy half, Task 10 real proof."
+  - "2026-09-25 wave 2 (stacked build, section 9): fabric lane ene_w2_nuclear_module (m1, glm-codex glm-5.3) builds Energy's own nuclear theme-research vertical module on the Energy-owned snapshot ref claude/energy-stack-base-b-6cd958e9 (= #7870 head 6cd958e92b259f7221690547e7076f4a0de4ed33) into branch claude/energy-nuclear-vertical-module, with a DRAFT/HOLD PR against that snapshot branch only."
+  - "Opus READ_ONLY review at the exact lane head before anything leaves the snapshot branch; fix rounds stay on the same branch."
+  - "After #7870 merges: rebase the module onto main, add the ONE VerticalRegistration + MountFacts entry for nuclear_power on an Energy carrier, then served/browser/privacy proof; Task 10 real assertion admission through the incumbent curation owner."
+  - "Fresh-read the Slack root and #7870 before every substantive write; the two-hourly scheduled watch watch-gmi-energy-fable-ceo-e2e-20260923 reports #7870 merge/close, the shared registry file landing on main, and counterpart edges."
 do_not_redo:
   - "Do not repeat R1-R6 research, the 78-requirement design, the 11-task plan or the first-vertical choice (Nuclear first, Power-Demand next)."
   - "Do not implement on #7791, #7870, #7793, #7773, #7788, #7796, #7462 or #7669; do not transplant their hunks."
@@ -218,3 +217,28 @@ Every subject's `expectations` list gets one `UNAVAILABLE` record when the owner
 ## 8. Exact next action (re-scoped by R-ENE-09, 2026-09-24 ~08:00Z)
 
 Chairman ruling relayed from Astra CEO: Semiconductors builds the base; Energy does not rebuild it and integrates later. Carrier state: T3 (shared dossier contract + adapter + job) WITHDRAWN by revert; T4 HELD (packet `ene_w1_t4_witnesses` kept in the B-kit, no dispatch); T9 freeze KEPT and wired into the existing data-gate job `unrun-subsector-themes`. All Energy fabric lanes stopped; no Energy marker active on m1/mb/mini2. NEXT: (a) land the T9-only slice — ACCEPTED after four Opus READ_ONLY rounds (ledger in `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-24-t9-slice.md`: rejects at `a753abdf`/`e4c37cff`/`51da7235`, accept-with-nits at `7111b4ae`, nits applied in the final commit); proof = local 8/6-skip, mb full checkout 14/14, CI-pack `-k` 16/16 + contract-delta 0 introduced; carrier #7881 flips DRAFT→ready with `merge-on-green` at the final head, squash-merge on CONCLUDED checks (`ci-authority/codex/merge-queue-pilot` red is the known non-binding `inactive_base_context`), live proof = the post-merge `unrun-subsector-themes` job on main (tests-only change, no render) (R-ENE-03); (b) WAIT for Semiconductor B's base on main — shared assertion (#7870 T02), `contracts/market_ontology/*` (T07/T08), private binding (R4 via the Research Vault owner), route (T09), generic mount (T10) — watched through B's #7870 checkpoints, never rebuilt here; (c) then dispatch the Energy INTEGRATION wave against B's landed contracts: adapter re-cut to B's dossier/contract shape, nuclear witness profiles, Energy dossier composition, consumption of B's private role/route/mount, browser proof. Freeze v2 (§4/§5) is retained as Energy's semantic requirement list for that integration, not as a contract to register.
+
+## 9. State 2026-09-25 — wave 2: the nuclear vertical module is built on B's shell (stacked; merges after #7870)
+
+**What changed and why.** Robotics' vertical (#7908) merged to main at 07:27Z on 2026-09-25, built on Semiconductor B's shared theme-research shell before #7870 landed. B's registry (`engine/market_ontology/theme_research_registry.py` at #7870 head `6cd958e9`) expects each vertical's module to exist first, with its one `VerticalRegistration` added afterwards on the vertical's own carrier. Waiting for #7870 before writing any Energy module (section 8 (b)/(c)) is therefore no longer the fastest lawful path. R-ENE-09 still binds: Energy rebuilds nothing of the base.
+
+**Decision (seat, 2026-09-25, after the operator's "Continue the project").**
+- Energy builds its own nuclear vertical module now, against an Energy-owned snapshot of B's head: ref `claude/energy-stack-base-b-6cd958e9` = `6cd958e92b259f7221690547e7076f4a0de4ed33`.
+- It imports B's shared types and helpers directly (no copies, no `ImportError` fallback; the identity owner `engine/theme_graph/identity.py` exists on the snapshot and on main) and edits no shared file.
+- It merges to main only after #7870 lands. Registration, mount, served/browser/privacy proof and real admission then follow on an Energy carrier.
+- Rejected: a Robotics-style early merge. It would need local copies of B's types or ship code that cannot be imported on main.
+
+**Frozen design (lane packet `ene_w2_nuclear_module`).**
+- Files: `contracts/market_ontology/nuclear_theme_research.v1.schema.json`, `engine/market_ontology/nuclear_theme_research.py` (`compose_nuclear_research`, `select_authorized_evidence`), `engine/market_ontology/nuclear_owner_bundle.py` (`load_nuclear_owner_bundle`, declared-absent in v1), and tests that mirror the Robotics suite one for one.
+- Anchor `nuclear_power`; schema ids `nuclear_theme_research.v1` / `nuclear_theme_research.evidence.v1`; definition version `2026-09-25.1`.
+- Slices are declared limited witness cohorts, never membership or rank:
+  - `reactor_technology` = SMR, OKLO
+  - `nuclear_components` = BWXT
+  - `fuel_cycle` = CCJ, LEU. These are supplemental `uranium_miners` members and are never promoted; the slice always carries the limitation `supplemental_basket_witnesses`.
+- The five views and the predicate-to-view map are identical to Robotics' (the manufacturing view stays structurally empty).
+- A milestone exists only inside the limitations of the assertion it qualifies (R-ENE-07 fallback (b)). Every response carries `milestone_predicate_unavailable`; the request for a truthful additive milestone predicate on #7870 stays open and is not re-asked.
+- Contingent backlog is never summed and never labelled funded. An equity-method investee is never consolidated. A target whose window has passed stays a retrospective target. Rights fail closed through B's shared resolver. Every authority flag is false.
+
+**Fabric note.** The shared lane kit's new-packet mode sets the executor push guard to the BASE branch instead of the lane's new branch; for ordinary lanes that base is main. This lane's base is the snapshot ref, so main is not exposed. The kit fix is filed separately and is not part of this program.
+
+**Carriers.** Slack root PROGRESS reply ts `1790322235.512429`; courtesy correction on #7870, comment `5828806957`.

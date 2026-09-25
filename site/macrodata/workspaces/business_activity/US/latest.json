@@ -138,23 +138,23 @@
   },
   "corrections": {
     "changed_fingerprints": [
-      "business_cycle:leading_tier_index:56097a28df99c816",
-      "business_cycle:leading_tier_momentum_6m:1e92f396fdce5cb4"
+      "business_cycle:leading_tier_index:9587f42c9006185d",
+      "business_cycle:leading_tier_momentum_6m:e7d672c7660d4843"
     ],
     "correction_state": "superseded",
     "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-b36f138242b16ff2"
+    "predecessor_generation_id": "business_activity-US-dc3f8e63276e79b5"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-09-24T06:09:07Z",
+    "built_at": "2026-09-25T05:30:38Z",
     "calculation_as_of": "2026-09-30",
-    "code_version": "ef43ff17b916d11db6588309889ec28f0ecc74a6",
-    "content_sha256": "dc3f8e63276e79b5777b211d1118db5ca07a5e56ff606093e00103406a63f88c",
-    "generation_id": "business_activity-US-dc3f8e63276e79b5",
+    "code_version": "d8a2f9d85b7b218faa0c63aa343be76440281481",
+    "content_sha256": "d181c3b1c836b81a08e623bf240e997a60171121db73e4e1e6a2e0372bf4d98a",
+    "generation_id": "business_activity-US-d181c3b1c836b81a",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -243,8 +243,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.7707666178468457, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.7707666178468457，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.7731496042083137, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.7731496042083137，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -414,7 +414,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 95.2726023394009,
+        "value": 95.27498532576237,
         "value_type": "index"
       },
       {
@@ -450,7 +450,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.7707666178468457,
+        "value": 0.7731496042083137,
         "value_type": "number"
       },
       {
@@ -486,7 +486,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.7586361551704167,
+        "value": 0.7593170084165505,
         "value_type": "number"
       },
       {

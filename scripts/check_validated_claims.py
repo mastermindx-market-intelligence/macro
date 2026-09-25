@@ -49,7 +49,13 @@ scan_json_copy. A claim authored in a data/ registry ROW reaches users through t
 builder that copies it into a site payload, so it is gated at the row rather than a
 nightly later on the generated half (found 2026-08-11 alongside #5413).
 
+MERGE GATE vs DATA GATE — see the SCAN SCOPE block below. `--scope source` walks only the
+PR-authored roots (templates/, engine/, lib/) and runs in every pull request's merge gate;
+the default full scan also walks the nightly-rewritten site/ tree and data registries and
+runs on the data gate.
+
 Run:  python -m scripts.check_validated_claims          # scan; exit 1 on any unearned claim
+      python -m scripts.check_validated_claims --scope source  # the merge gate's PR-tree half
       python -m scripts.check_validated_claims --list    # list every affirmative claim + status
       python -m scripts.check_validated_claims --selftest # prove the gate fires on a synthetic EN+zh
 """
@@ -87,7 +93,55 @@ SCAN_GLOBS = [
 # file — see the _COPY_BARE comment for why.
 PY_COPY_GLOBS = [
     ("engine", ("*.py",)),
+    # lib/ holds the shared page helpers — nav/page labels, freshness stamps, panel
+    # fallbacks, bilingual — that builders copy onto pages exactly as they copy engine/
+    # display fields. It was scanned by nothing: censused 2026-09-25 at 80 display-copy
+    # strings in 9 files and ZERO token-bearing ones, so it joins with no debt.
+    ("lib", ("*.py",)),
 ]
+
+
+# ── SCAN SCOPE: which tree moves each surface's verdict (--scope) ────────────────────
+#
+# WHY THIS EXISTS. BC-2 used to run only on the DATA gate. The job and the two suites
+# that ran this scan were classed `gate: data` because the full scan reads the rendered
+# site/ tree, site/prophet JSON and the DATA_COPY_SPECS registries — files the nightly
+# and wire lanes rewrite with no pull request at all — and the merge gate packs only
+# `gate: code` jobs, so a data-moved verdict cannot red somebody else's PR. The cost of
+# that classification was that NOTHING graded a claim before merge: 75 unearned claims
+# accumulated on main between 2026-08-25 and 2026-09-24 across a dozen PRs, each one
+# green at its own merge, and were healed in one batch (#7979).
+#
+# THE SPLIT. The scan roots fall on two sides of the same line the manifest's `gate:`
+# field draws:
+#
+#   SOURCE_ROOTS  authored by pull requests alone. Measured 2026-09-25 over 09-01→09-25:
+#                 zero [skip ci] commits touched templates/, engine/, lib/ or the
+#                 allowlist; the only bot writes to templates/ are the render-public
+#                 `?v=` asset re-stamps on three plain-copy pages, whose hex digests
+#                 cannot spell the token. The verdict of a source-scoped scan is
+#                 therefore a function of the PR's own tree, which is `gate: code`'s
+#                 definition — so `--scope source` runs in the merge gate.
+#   everything else  the rendered site/ tree, site/prophet JSON, and the DATA_COPY_SPECS
+#                 registries. Their verdict moves with data commits, so the full scan
+#                 (`--scope all`, the default) stays on the data gate, unchanged.
+#
+# A source-scoped scan applies the SAME matcher, negation, masks and allowlist
+# (`surfaces` enforced) as the full scan, so the merge gate is never more lenient than
+# the data gate about a source line. It differs in which roots it walks and in ONE
+# deliberate, stricter way: it does not accept artifact backing. _artifact_backed is the
+# matcher's only data read — a data/**.json citation whose `validated` a nightly can
+# rewrite — so a source claim resting on it would let a data commit flip the merge gate,
+# the exact red the gate split exists to prevent. Under `--scope source` a claim backed
+# ONLY that way is reported unearned (_refuse_artifact_backing), which makes the verdict
+# a function of the PR tree by construction rather than by today's count: the lookup
+# backs zero of the estate's 642 claims, all of which are allowlist-backed.
+#
+# Every scan root must be classified: the source-scope suite fails a new SCAN_GLOBS /
+# PY_COPY_GLOBS root that is neither a source root nor under site/, so a root added
+# without a decision cannot silently fall out of the merge gate.
+SOURCE_ROOTS = frozenset({"templates", "engine", "lib"})
+SCOPES = ("all", "source")
 
 
 class DataSpec(NamedTuple):
@@ -666,6 +720,32 @@ def _artifact_backed(line: str) -> bool:
     return False
 
 
+# The `ok` reason every scanner records for a claim _artifact_backed earned — one name,
+# because _refuse_artifact_backing keys on it.
+ARTIFACT_BACKED = "artifact validated:true"
+
+
+def _refuse_artifact_backing(rel_path: str, text: str, found: list[dict],
+                             stats: dict) -> tuple[list[dict], dict]:
+    """`--scope source`: re-grade every ARTIFACT-backed claim as unearned (SCAN SCOPE).
+
+    Allowlist-backed claims and every finding pass through untouched, so this can only
+    ADD findings — the source scope is never more lenient than the full scan."""
+    rested = [i for i, why in stats["ok"] if why == ARTIFACT_BACKED]
+    if not rested:
+        return found, stats
+    lines = text.splitlines()
+    refused = [{"file": rel_path, "line_no": i,
+                "text": _reportable(lines[i - 1] if 0 < i <= len(lines) else "")[:160]
+                + "  [backed only by a data artifact's validated:true — the merge gate "
+                  "grades PR-authored copy against the allowlist alone; add an entry to "
+                  "data/regime/validated_claims_allowlist.json]"}
+               for i in rested]
+    return (found + refused,
+            {**stats, "backed": stats["backed"] - len(rested),
+             "ok": [(i, why) for i, why in stats["ok"] if why != ARTIFACT_BACKED]})
+
+
 def _allow_match(line: str, allow: list[dict], surfs: frozenset[str]) -> dict | None:
     """First entry whose phrase appears in `line` AND whose `surfaces` list intersects
     the claiming file's surface set. Phrase alone is not enough: an entry justified for
@@ -879,7 +959,7 @@ def scan_python_copy(rel_path: str, text: str, allow: list[dict]) -> tuple[list[
             if backed:
                 stats["backed"] += 1
                 stats["ok"].append((node.lineno, ("allow:" + entry["match"]) if entry
-                                    else "artifact validated:true"))
+                                    else ARTIFACT_BACKED))
             else:
                 unearned.append({"file": rel_path, "line_no": node.lineno,
                                  "text": f"[{field}] " + node.value.strip()[:160]
@@ -974,7 +1054,7 @@ def scan_json_copy(rel_path: str, text: str, allow: list[dict],
                 if backed:
                     stats["backed"] += 1
                     stats["ok"].append((line_no, ("allow:" + entry["match"]) if entry
-                                        else "artifact validated:true"))
+                                        else ARTIFACT_BACKED))
                 else:
                     unearned.append({
                         "file": rel_path, "line_no": line_no,
@@ -1024,7 +1104,7 @@ def scan_text(rel_path: str, text: str, allow: list[dict]) -> tuple[list[dict], 
             if backed:
                 stats["backed"] += 1
                 stats["ok"].append((i, ("allow:" + entry["match"]) if entry
-                                    else "artifact validated:true"))
+                                    else ARTIFACT_BACKED))
             else:
                 unearned.append({"file": rel_path, "line_no": i,
                                  "text": _reportable(raw)[:160]
@@ -1032,9 +1112,16 @@ def scan_text(rel_path: str, text: str, allow: list[dict]) -> tuple[list[dict], 
     return unearned, stats
 
 
-def scan(list_all: bool = False) -> list[dict]:
+def scan(list_all: bool = False, scope: str = "all") -> list[dict]:
     """Return the list of UNEARNED affirmative 'validated' claims. Prints per-claim status
-    when list_all. Each unearned finding is {file, line_no, text}."""
+    when list_all. Each unearned finding is {file, line_no, text}.
+
+    `scope` "all" walks every surface (the data gate's full scan); "source" walks only
+    SOURCE_ROOTS and refuses artifact backing — the merge gate's PR-tree half (see the
+    SCAN SCOPE block comment). An unknown scope raises rather than guessing which half
+    was meant."""
+    if scope not in SCOPES:
+        raise ValueError(f"scope must be one of {SCOPES}, got {scope!r}")
     allow = _load_allowlist()
     unearned: list[dict] = []
     n_claims = n_negated = n_backed = n_tp = 0
@@ -1049,6 +1136,8 @@ def scan(list_all: bool = False) -> list[dict]:
             return
         rel = f.relative_to(ROOT).as_posix()
         found, st = scanner(rel, text, allow)
+        if scope == "source":
+            found, st = _refuse_artifact_backing(rel, text, found, st)
         n_claims += st["claims"]; n_backed += st["backed"]
         n_negated += st["negated"]; n_tp += st["third_party"]
         unearned.extend(found)
@@ -1060,6 +1149,8 @@ def scan(list_all: bool = False) -> list[dict]:
 
     surfaces = ([(sub, pats, scan_text) for sub, pats in SCAN_GLOBS]
                 + [(sub, pats, scan_python_copy) for sub, pats in PY_COPY_GLOBS])
+    if scope == "source":
+        surfaces = [s for s in surfaces if s[0] in SOURCE_ROOTS]
     for sub, pats, scanner in surfaces:
         base = ROOT / sub
         if not base.exists():
@@ -1072,8 +1163,8 @@ def scan(list_all: bool = False) -> list[dict]:
     # Registry DATA sources — one glob per spec, each with its own published-field scope.
     # A spec whose glob resolves to nothing scans nothing; tests/test_validated_claims_
     # registry_source.py pins every glob against the tree so a renamed registry reds CI
-    # instead of quietly narrowing the gate.
-    for spec in DATA_COPY_SPECS:
+    # instead of quietly narrowing the gate. They are data-gate surfaces (SCAN SCOPE).
+    for spec in (DATA_COPY_SPECS if scope == "all" else ()):
         for f in sorted(ROOT.glob(spec.glob)):
             consume(f, partial(scan_json_copy, spec=spec))
     if list_all:
@@ -1450,22 +1541,31 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", action="store_true", help="print every affirmative claim + status")
     ap.add_argument("--selftest", action="store_true", help="prove the gate fires on synthetic EN+zh")
+    ap.add_argument("--scope", choices=SCOPES, default="all",
+                    help="all (default): every surface — the data gate's full scan. "
+                         "source: only the PR-authored roots "
+                         f"({', '.join(sorted(r + '/' for r in SOURCE_ROOTS))}) — the "
+                         "merge gate's half, whose verdict no data commit can move")
     args = ap.parse_args()
 
     if args.selftest:
         sys.exit(selftest())
 
-    unearned = scan(list_all=args.list)
+    unearned = scan(list_all=args.list, scope=args.scope)
+    where = ("" if args.scope == "all" else
+             f" [scope=source: {', '.join(sorted(r + '/' for r in SOURCE_ROOTS))}]")
     if unearned:
-        print(f"\n::error:: {len(unearned)} UNEARNED 'validated' claim(s) — each must map to a "
-              f"backing artifact (validated:true) or a justified entry in "
-              f"data/regime/validated_claims_allowlist.json:", file=sys.stderr)
+        # The source scope refuses artifact backing (SCAN SCOPE), so it offers one remedy.
+        remedy = ("a justified entry in" if args.scope == "source" else
+                  "a backing artifact (validated:true) or a justified entry in")
+        print(f"\n::error:: {len(unearned)} UNEARNED 'validated' claim(s){where} — each must map "
+              f"to {remedy} data/regime/validated_claims_allowlist.json:", file=sys.stderr)
         for r in unearned[:40]:
             print(f"  {r['file']}:{r['line_no']}  {r['text']}", file=sys.stderr)
         if len(unearned) > 40:
             print(f"  ... and {len(unearned) - 40} more", file=sys.stderr)
         sys.exit(1)
-    print("check_validated_claims: OK — every affirmative 'validated' claim is backed.")
+    print(f"check_validated_claims: OK{where} — every affirmative 'validated' claim is backed.")
 
 
 if __name__ == "__main__":
