@@ -20,7 +20,10 @@ from __future__ import annotations
 
 import ast
 import dataclasses
+import importlib
 import json
+import sys
+import types
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -60,7 +63,7 @@ CIK_REF = "cik:0000320193"
 @dataclasses.dataclass(frozen=True)
 class SyntheticQuery:
     """The §8 request body: profile_id + company_ref + view + time_mode, no
-    slice_key. offset exists so a paging attempt is a typed refusal."""
+    slice_key. offset/cursor exist so a paging attempt is a typed refusal."""
 
     profile_id: str
     company_ref: str | None
@@ -68,6 +71,7 @@ class SyntheticQuery:
     time_mode: str = "latest"
     slice_key: str | None = None
     offset: int = 0
+    cursor: str | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -90,6 +94,14 @@ def _themed(assertion: dict, theme_ref: str = THEME) -> dict:
     themed = dict(assertion)
     themed["scope"] = {**assertion["scope"], "theme_ref": theme_ref}
     return themed
+
+
+def _without_authority(assertion: dict) -> dict:
+    """The envelope's copy of an assertion: verbatim minus its assertion-
+    internal authority block — the envelope states the ceiling once, at its
+    own top level, and the evidence contract forbids a second one inside the
+    open assertion object."""
+    return {key: value for key, value in assertion.items() if key != "authority"}
 
 
 def _identity_result(entity_id: str = COMPANY, **extra: Any) -> dict:
@@ -182,7 +194,6 @@ def test_registration_facts_are_the_proposed_section_8_field_set():
 
 def test_views_derive_from_the_dossier_contract_display_sections():
     schema = json.loads(DOSSIER_SCHEMA_PATH.read_text(encoding="utf-8"))
-    assert set(reg.VIEWS) <= set(schema["required"])
     # display content sections only — every plumbing section is excluded
     plumbing = {
         "schema", "definition_version", "dossier_id", "kind", "engine_version",
@@ -190,7 +201,9 @@ def test_views_derive_from_the_dossier_contract_display_sections():
         "freshness", "scope", "navigation", "classification", "selected",
         "source_version_vector", "bounds",
     }
-    assert not (set(reg.VIEWS) & plumbing)
+    # set EQUALITY, not subset: a truncated VIEWS (a view silently dropped)
+    # must fail here, not pass
+    assert set(reg.VIEWS) == set(schema["required"]) - plumbing
 
 
 def test_refusal_mirrors_the_shell_refusal_shape():
@@ -278,6 +291,21 @@ def test_view_not_registered_refused(monkeypatch):
         )
 
 
+def test_view_is_validation_only_payload_is_view_invariant(monkeypatch):
+    # view gates the request but does NOT project the payload: every
+    # registered view of the same request + bundle composes the byte-identical
+    # dossier. Projection is the shared shell's responsibility pending §8, so
+    # the day this pin breaks is the day that contract changed — loud, never
+    # silent drift.
+    _activate_synthetic_contract(monkeypatch)
+    payloads = [
+        reg.compose(dataclasses.replace(QUERY, view=view), _bundle())
+        for view in reg.VIEWS
+    ]
+    for other in payloads[1:]:
+        assert other == payloads[0]
+
+
 def test_system_replay_refused_without_as_known_identity(monkeypatch):
     query = dataclasses.replace(QUERY, time_mode="system_replay")
     _refusal(monkeypatch, query, _bundle(), "replay_identity_unavailable")
@@ -295,6 +323,15 @@ def test_system_replay_composes_with_as_known_identity(monkeypatch):
 
 def test_pagination_unsupported_refused(monkeypatch):
     _refusal(monkeypatch, dataclasses.replace(QUERY, offset=1), _bundle(), "pagination_unsupported")
+    # cursor is as much a paging attempt as offset: the dossier declares
+    # pagination_supported false, so a cursor-carrying request must refuse
+    # instead of silently answering page 1.
+    _refusal(
+        monkeypatch,
+        dataclasses.replace(QUERY, cursor="synthetic-page2-token"),
+        _bundle(),
+        "pagination_unsupported",
+    )
 
 
 def test_company_ref_required_refused(monkeypatch):
@@ -432,6 +469,19 @@ def test_native_context_unavailable_refused(monkeypatch):
     _refusal(monkeypatch, QUERY, _bundle(native_refs=()), "sealed_input_unavailable:native_context")
 
 
+def test_conflicting_native_contexts_refuse_regardless_of_order(monkeypatch):
+    # Two full-field-set native refs could carry different `generation` values
+    # — and therefore different dossier ids — so tuple order must never pick
+    # the winner: both orderings refuse with the SAME code, and the single-ref
+    # happy path is the existing compose suite above.
+    first = dict(base._native(), generation="gen-synth-conflict-a")
+    second = dict(base._native(), generation="gen-synth-conflict-b")
+    for native_refs in ((first, second), (second, first)):
+        with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+            reg.compose(QUERY, _bundle(native_refs=native_refs))
+        assert excinfo.value.code == "sealed_input_unavailable:native_context"
+
+
 def test_coverage_unavailable_refused(monkeypatch):
     _refusal(monkeypatch, QUERY, _bundle_minus("omissions"), "sealed_input_unavailable:coverage")
 
@@ -491,8 +541,9 @@ def test_select_evidence_returns_the_one_authorized_assertion(monkeypatch):
     assert envelope["schema"] == reg.EVIDENCE_SCHEMA_ID
     assert envelope["definition_version"] == reg.DEFINITION_VERSION
     assert envelope["generation"].startswith("tecd_")
-    assert envelope["assertion"] == ROLE_T
+    assert envelope["assertion"] == _without_authority(ROLE_T)
     assert envelope["assertion"] is not ROLE_T  # deep copy, never an alias
+    assert "authority" not in envelope["assertion"]  # one ceiling, top level only
     assert envelope["limitations"] == sorted(envelope["limitations"])
     assert envelope["authority"] == {
         "rank": False, "gate": False, "size": False,
@@ -536,12 +587,38 @@ def test_select_evidence_unknown_and_unselected_share_one_code(monkeypatch):
     assert codes == ["not_available", "not_available"]  # one code, no existence disclosure
 
 
+def test_select_evidence_substitution_by_shared_source_object_id_refuses(monkeypatch):
+    # B1: a rendered assertion and a never-rendered decoy sharing ONE
+    # source.object_id — the citation gate passes on the rendered row, but the
+    # bundle cannot say WHICH assertion the ref names, so the envelope must
+    # refuse rather than hand out one by tuple order.
+    _activate_synthetic_contract(monkeypatch)
+    decoy = _themed(
+        base._assertion(predicate="theme_membership", seed="decoy-shared-1",
+                        source=base._src("synthetic-doc-role-1"))
+    )
+    for assertions in ((decoy, ROLE_T), (ROLE_T, decoy)):
+        with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+            reg.select_evidence(QUERY, _bundle(assertions=assertions), "synthetic-doc-role-1")
+        assert excinfo.value.code == "not_available"
+    # the single-match happy path still returns the rendered assertion
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    assert envelope["assertion"] == _without_authority(ROLE_T)
+
+
 def test_select_evidence_deep_copies_the_assertion(monkeypatch):
+    # The expected text is snapshotted BEFORE the mutation: the bundle reuses
+    # the module-level ROLE_T, so a shallow copy would corrupt ROLE_T itself
+    # and a post-mutation comparison would compare the mutated value against
+    # itself. Against the snapshot, replacing copy.deepcopy with dict() FAILS.
     _activate_synthetic_contract(monkeypatch)
     first = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    expected = ROLE_T["observation"]["text"]
     first["assertion"]["observation"]["text"] = "mutated"
     second = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
-    assert second["assertion"]["observation"]["text"] == ROLE_T["observation"]["text"]
+    assert second["assertion"]["observation"]["text"] == expected
+    # and the mutation never leaked into the shared fixture either
+    assert ROLE_T["observation"]["text"] == expected
 
 
 def test_select_evidence_applies_the_same_query_refusals(monkeypatch):
@@ -587,11 +664,76 @@ def test_evidence_schema_rejects_mutations(monkeypatch):
     with pytest.raises(jsonschema.ValidationError):
         validator.validate(mutated)
 
+    mutated = json.loads(json.dumps(envelope))
+    mutated["definition_version"] = "1999-01-01.9"  # well-formed but NOT this revision
+    with pytest.raises(jsonschema.ValidationError):
+        validator.validate(mutated)
+
+
+def test_evidence_schema_binds_definition_version_by_identity(monkeypatch):
+    schema = json.loads(EVIDENCE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    assert schema["properties"]["definition_version"]["const"] == reg.DEFINITION_VERSION
+
+
+def test_evidence_schema_forbids_authority_inside_the_assertion(monkeypatch):
+    # N4: an assertion carrying its own authority block — let alone an
+    # all-true one with rank/recommendation/position sizing — must NOT
+    # validate. The envelope states the six-false ceiling exactly once, at its
+    # own top level.
+    _activate_synthetic_contract(monkeypatch)
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    validator = _evidence_validator()
+
+    abusive = json.loads(json.dumps(envelope))
+    abusive["assertion"]["authority"] = {
+        "rank": True, "gate": True, "size": True,
+        "veto": True, "originate": True, "open_entry": True,
+    }
+    abusive["assertion"]["recommendation"] = "overweight the theme"
+    abusive["assertion"]["rank"] = 1
+    abusive["assertion"]["position_size_pct"] = "12.5"
+    with pytest.raises(jsonschema.ValidationError):
+        validator.validate(abusive)
+
+    # even the lawful all-false block stays out: one ceiling, top level only
+    lawful_but_doubled = json.loads(json.dumps(envelope))
+    lawful_but_doubled["assertion"]["authority"] = dict(envelope["authority"])
+    with pytest.raises(jsonschema.ValidationError):
+        validator.validate(lawful_but_doubled)
+
+
+def test_validate_evidence_envelope_has_runtime_teeth(monkeypatch):
+    # N3: the same contract check the schema file carries is callable at
+    # runtime and refuses TYPED — select_evidence runs it on every envelope
+    # immediately before returning.
+    _activate_synthetic_contract(monkeypatch)
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+
+    reg.validate_evidence_envelope(envelope)  # the lawful envelope passes
+
+    abusive = json.loads(json.dumps(envelope))
+    abusive["assertion"]["authority"] = {
+        "rank": True, "gate": True, "size": True,
+        "veto": True, "originate": True, "open_entry": True,
+    }
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.validate_evidence_envelope(abusive)
+    assert excinfo.value.code.startswith("evidence_schema_violation: assertion")
+
+    unknown_top_level = json.loads(json.dumps(envelope))
+    unknown_top_level["unexpected"] = 1
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.validate_evidence_envelope(unknown_top_level)
+    assert excinfo.value.code.startswith("evidence_schema_violation: <root>:")
+
 
 def test_evidence_schema_is_closed_and_assertion_open():
     schema = json.loads(EVIDENCE_SCHEMA_PATH.read_text(encoding="utf-8"))
     assert schema["additionalProperties"] is False
-    assert schema["properties"]["assertion"]["additionalProperties"] is True
+    # open for the shared contract's shape, EXCEPT the one forbidden key
+    assertion = schema["properties"]["assertion"]
+    assert assertion["additionalProperties"] is True
+    assert assertion["not"] == {"required": ["authority"]}
     authority = schema["properties"]["authority"]
     assert set(authority["required"]) == {
         "rank", "gate", "size", "veto", "originate", "open_entry"
@@ -627,17 +769,106 @@ def test_registration_attempt_is_typed_unavailable_on_carrier_base():
     assert excinfo.value.code == "shared_shell_unavailable"
 
 
+def test_broken_present_shell_import_propagates(monkeypatch):
+    # N6: only ModuleNotFoundError means "not on this carrier" — a genuine
+    # ImportError from a present-but-broken shell must propagate, so a broken
+    # shell can never masquerade as shared_shell_unavailable.
+    def _broken_import(name: str):
+        raise ImportError(f"synthetic broken shell: {name}")
+
+    monkeypatch.setattr(importlib, "import_module", _broken_import)
+    with pytest.raises(ImportError, match="synthetic broken shell"):
+        reg._load_shared_shell()
+
+
+# --- simulated shells (injected into sys.modules; never the real one) ---------------
+
+
+class _SimulatedShellRefusal(ValueError):
+    """The shell's own refusal type, mirroring hook 1's ``ResearchRefusal``."""
+
+
+def _install_shell(monkeypatch: pytest.MonkeyPatch, vertical_registration) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.market_ontology.theme_research_registry",
+        types.SimpleNamespace(VerticalRegistration=vertical_registration),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.market_ontology.semiconductor_theme_research",
+        types.SimpleNamespace(OwnerBundle=object, ResearchQuery=object),
+    )
+
+
+def test_shell_refusal_carries_the_shells_own_exception_type(monkeypatch):
+    # B2(a): the concrete reason belongs to the shell; this adapter reports
+    # what the shell actually raised and never guesses a reason of its own.
+    def _refusing_shell(**kwargs):
+        raise _SimulatedShellRefusal("anchor theme id required by hook 1")
+
+    _install_shell(monkeypatch, _refusing_shell)
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.registration_entry_or_refusal()
+    assert excinfo.value.code == "vertical_registration_refused:_SimulatedShellRefusal"
+
+
+def test_shell_accepting_the_entry_returns_it(monkeypatch):
+    # B2(b): the XPASS path — a shell that accepts the §8 company-profile
+    # entry hands the entry back verbatim, callables and all.
+    def _accepting_shell(**kwargs):
+        return SimpleNamespace(**kwargs)
+
+    _install_shell(monkeypatch, _accepting_shell)
+    entry = reg.registration_entry_or_refusal()
+    assert entry.schema_id == reg.PROFILE_ID
+    assert entry.evidence_schema_id == reg.EVIDENCE_SCHEMA_ID
+    assert entry.definition_version == reg.DEFINITION_VERSION
+    assert entry.compose is reg.compose
+    assert entry.select_evidence is reg.select_evidence
+
+
+def test_shell_signature_drift_added_parameter_propagates_typeerror(monkeypatch):
+    # B2(c): a constructor that gained a required parameter is §8 signature
+    # drift — the TypeError PROPAGATES and is never converted into a typed
+    # refusal, so the pinned xfail becomes a hard error instead of xfailing
+    # stale.
+    def _drifted_shell_added(*, anchor_theme_id, slice_keys, schema_id,
+                             evidence_schema_id, definition_version, compose,
+                             select_evidence, title_en, title_zh, note_en,
+                             note_zh, owner_lane_required):
+        raise AssertionError("unreachable")
+
+    _install_shell(monkeypatch, _drifted_shell_added)
+    with pytest.raises(TypeError, match="owner_lane_required"):
+        reg.registration_entry_or_refusal()
+
+
+def test_shell_signature_drift_renamed_parameter_propagates_typeerror(monkeypatch):
+    # B2(d): a renamed parameter is the same drift — TypeError, uncaught.
+    def _drifted_shell_renamed(*, anchor, slice_keys, schema_id,
+                               evidence_schema_id, definition_version, compose,
+                               select_evidence, title_en, title_zh, note_en,
+                               note_zh):
+        raise AssertionError("unreachable")
+
+    _install_shell(monkeypatch, _drifted_shell_renamed)
+    with pytest.raises(TypeError, match="anchor_theme_id"):
+        reg.registration_entry_or_refusal()
+
+
 @pytest.mark.xfail(
     strict=True,
     raises=TechnologyRegistrationRefusal,
     reason=(
-        "hook 1 as integrated (#7870 @ e2f4d4909156) requires a canonical anchor "
-        "theme id and a NON-EMPTY slice tuple, so the proposed §8 company-profile "
-        "entry (anchor_theme_id=None, slice_keys=()) cannot be constructed; this "
+        "hook 1 as integrated (#7870 @ e2f4d4909156) refuses the proposed §8 "
+        "company-profile entry (anchor_theme_id=None, slice_keys=()), and this "
         "carrier base does not carry the shell at all (typed "
-        "shared_shell_unavailable / anchor_theme_id_required). XPASS means the "
-        "shell landed AND accepts a company-profile entry — §8 adjudicated — and "
-        "this pin must be re-examined, not silenced."
+        "shared_shell_unavailable; with the shell present, a shell refusal is "
+        "typed vertical_registration_refused:<ExcType>). Signature drift "
+        "surfaces as an uncaught TypeError, never a quiet xfail. XPASS means "
+        "the shell landed AND accepts a company-profile entry — §8 "
+        "adjudicated — and this pin must be re-examined, not silenced."
     ),
 )
 def test_shared_shell_registration_roundtrip_pinned_to_7870():

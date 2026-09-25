@@ -1210,9 +1210,17 @@ def compose_technology_economic_change(
         },
     }
 
+    # The digest mapping IS the dossier identity contract. Its key set is
+    # explicit and its order deliberate (identity -> scope -> sealed inputs ->
+    # bindings); canonical JSON sorts keys at serialization time, so order does
+    # not feed the digest — but a key enters or leaves this mapping only by
+    # deliberate revision, never incidentally. definition_version binds the id
+    # to the contract revision that defines this shape, so a definition bump
+    # re-ids every dossier on purpose.
     dossier_id = "tecd_" + _digest_hex(
         {
             "schema": SCHEMA_ID,
+            "definition_version": DEFINITION_VERSION,
             "scope_mode": scope_o.scope_mode,
             "theme_ref": scope_o.theme_ref,
             "company_ref": scope_o.company_ref,

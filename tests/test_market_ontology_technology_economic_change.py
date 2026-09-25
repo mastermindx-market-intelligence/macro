@@ -946,6 +946,11 @@ def test_schema_rejects_mutations(monkeypatch):
     with pytest.raises(EconomicChangeDossierError, match=r"^dossier_schema_violation:"):
         tech.validate_dossier(mutated)
 
+    mutated = json.loads(json.dumps(dossier))
+    mutated["definition_version"] = "1999-01-01.9"  # well-formed but NOT this revision
+    with pytest.raises(EconomicChangeDossierError, match=r"^dossier_schema_violation:"):
+        tech.validate_dossier(mutated)
+
 
 def test_source_version_vector_is_exact(monkeypatch):
     comparison = _comparison()

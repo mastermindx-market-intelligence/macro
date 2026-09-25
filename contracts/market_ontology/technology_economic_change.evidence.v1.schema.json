@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/market_ontology/technology_economic_change.evidence.v1.schema.json",
   "title": "GMI technology economic-change evidence envelope v1 (technology_economic_change.evidence.v1)",
-  "description": "Closed evidence envelope for the Technology ex-Semis company-first research profile (T8A, macro#7891; proposed §8 shape @ 382c0b399d5c on #7870, under Sol adjudication). Exactly ONE authorized, already-accepted shared curation assertion, deep-copied verbatim from the owner bundle; its internal shape is owned by theme_graph.curation_assertion.v1 (macro#7870) and is deliberately the only open object here. The generation is the dossier_id of the composed dossier that actually rendered the citing row/card/counter, so the envelope can never cite a projection it was not selected from. Unknown and not-selected references share one refusal code, so the envelope discloses no existence. Authority ceiling research_display_only: all six flags literally false (ECD-48); this envelope ranks, gates, sizes, vetoes, originates and opens nothing.",
+  "description": "Closed evidence envelope for the Technology ex-Semis company-first research profile (T8A, macro#7891; proposed §8 shape @ 382c0b399d5c on #7870, under Sol adjudication). Exactly ONE authorized, already-accepted shared curation assertion, deep-copied from the owner bundle with exactly one key excluded: its assertion-internal authority block — the envelope states the six-false authority ceiling once, at its own top level, and forbids a second authority surface inside the open assertion object; otherwise its internal shape is owned by theme_graph.curation_assertion.v1 (macro#7870) and is deliberately the only open object here. The generation is the dossier_id of the composed dossier that actually rendered the citing row/card/counter, so the envelope can never cite a projection it was not selected from. Unknown and not-selected references share one refusal code, so the envelope discloses no existence. Authority ceiling research_display_only: all six flags literally false (ECD-48); this envelope ranks, gates, sizes, vetoes, originates and opens nothing.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "definition_version", "generation", "assertion", "limitations", "authority"],
   "properties": {
     "schema": {"const": "technology_economic_change.evidence.v1"},
-    "definition_version": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$"},
+    "definition_version": {"const": "2026-09-24.1", "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$"},
     "generation": {
       "type": "string",
       "pattern": "^tecd_[0-9a-f]{32}$",
@@ -17,13 +17,15 @@
     "assertion": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Deep copy of the one authorized assertion, verbatim. Open on purpose: the shared assertion contract (theme_graph.curation_assertion.v1) owns this shape; restating it here would fork the shared contract."
+      "not": {"required": ["authority"]},
+      "description": "Deep copy of the one authorized assertion, verbatim except for exactly one excluded key: the assertion-internal authority block (the envelope's own top-level authority section is the single authority statement, so a smuggled second one — all-true flags, rank, sizing — can never validate). Otherwise open on purpose: the shared assertion contract (theme_graph.curation_assertion.v1) owns this shape; restating it here would fork the shared contract."
     },
     "limitations": {
       "type": "array",
       "items": {"type": "string", "minLength": 1, "maxLength": 2000},
       "uniqueItems": true,
-      "description": "Sorted dossier-level limitation texts relevant to the cited content; may be empty when the composed dossier carries none."
+      "maxItems": 8,
+      "description": "Sorted dossier-level limitation texts relevant to the cited content; may be empty when the composed dossier carries none. Explicitly bounded (today the dossier contract carries exactly one comparison primary limitation): an unbounded list never validates, and nothing is truncated to fit."
     },
     "authority": {
       "type": "object",

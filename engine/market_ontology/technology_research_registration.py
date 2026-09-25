@@ -16,9 +16,12 @@ shape for Technology exists only as the PROPOSED §8 profile mapping
   ``payload["definition_version"] == registration.definition_version`` — hold
   by construction;
 * documents the §8 dependency by execution: ``registration_entry_or_refusal``
-  lazily imports the shell and, when it appears, attempts the construction and
-  returns the typed reason hook 1 refuses it today (anchor ``None``, empty
-  slice set). Nothing here pretends the discriminator is delivered.
+  lazily imports the shell and, when it appears, attempts the construction
+  FIRST and unconditionally; a shell refusal is reported as the shell's own
+  exception type (``vertical_registration_refused:<ExcType>``) and a
+  constructor ``TypeError`` — §8 signature drift — propagates uncaught, so the
+  pinned round-trip test errors loudly instead of xfailing stale. Nothing here
+  pretends the discriminator is delivered.
 
 Duck typing: the query and bundle are read only through ``getattr``/mapping
 access on the fields §8 names, so the shell's frozen dataclasses and the
@@ -67,9 +70,11 @@ from __future__ import annotations
 import copy
 import dataclasses
 import importlib
+import json
 import re
 from collections.abc import Callable, Mapping
-from typing import Any
+from pathlib import Path
+from typing import Any, NoReturn
 
 from engine.market_ontology.technology_economic_change import (
     COMPARISON_KIND,
@@ -90,6 +95,7 @@ __all__ = [
     "TECHNOLOGY_REGISTRATION_FACTS",
     "compose",
     "select_evidence",
+    "validate_evidence_envelope",
     "registration_entry_or_refusal",
 ]
 
@@ -98,6 +104,14 @@ __all__ = [
 #: profile routing can never drift apart.
 PROFILE_ID = SCHEMA_ID
 EVIDENCE_SCHEMA_ID = "technology_economic_change.evidence.v1"
+
+#: The evidence envelope's own contract, the mirror of the composer's
+#: ``CONTRACT_PATH``: :func:`validate_evidence_envelope` reads this file so the
+#: runtime check and the shipped contract can never drift apart.
+EVIDENCE_CONTRACT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
+)
 
 #: Closed view tuple, derived by construction from THIS vertical's frozen
 #: contract (contracts/market_ontology/technology_economic_change.v1.schema.json):
@@ -153,7 +167,7 @@ class TechnologyRegistrationRefusal(ValueError):
         self.code = code
 
 
-def _refuse(code: str) -> None:
+def _refuse(code: str) -> NoReturn:
     raise TechnologyRegistrationRefusal(code)
 
 
@@ -165,7 +179,10 @@ def _load_shared_shell() -> tuple[Any, Any, Any] | None:
     ``(VerticalRegistration, OwnerBundle, ResearchQuery)``, or ``None`` when
     either module or any of the three symbols is absent — this carrier base
     carries neither module, and a partially-present shell is typed unavailable,
-    never a silent half-binding. No shell type is copied into this branch."""
+    never a silent half-binding. No shell type is copied into this branch.
+    Only ``ModuleNotFoundError`` (not on this carrier) is treated as absence:
+    a genuine ``ImportError`` from a present-but-broken shell propagates, so a
+    broken shell can never masquerade as ``shared_shell_unavailable``."""
     try:
         registry = importlib.import_module(
             "engine.market_ontology.theme_research_registry"
@@ -173,7 +190,7 @@ def _load_shared_shell() -> tuple[Any, Any, Any] | None:
         semiconductor = importlib.import_module(
             "engine.market_ontology.semiconductor_theme_research"
         )
-    except ImportError:
+    except ModuleNotFoundError:
         return None
     vertical_registration = getattr(registry, "VerticalRegistration", None)
     owner_bundle = getattr(semiconductor, "OwnerBundle", None)
@@ -234,6 +251,12 @@ def _validate_query_and_resolve(query: Any, bundle: Any) -> str:
             _refuse("replay_identity_unavailable")
     if getattr(query, "offset", 0) not in (0, None):
         _refuse("pagination_unsupported")
+    if getattr(query, "cursor", None) is not None:
+        # cursor is as much a paging attempt as offset; the sealed scope is
+        # composed cursor-less and the dossier declares pagination_supported
+        # false, so a cursor-carrying request must refuse, never silently
+        # answer page 1.
+        _refuse("pagination_unsupported")
     company_ref = getattr(query, "company_ref", None)
     if not company_ref:
         _refuse("company_ref_required")
@@ -280,12 +303,21 @@ def _theme_ref_from_assertions(assertions: list[Any]) -> str | None:
 def _native_context_from_bundle(bundle: Any) -> Mapping | None:
     """The run-context native ref (PLACEHOLDER shape: the native_refs entry
     carrying the full NativeContext field set — mode/as_of/cutoff/generation/
-    owner_program). The composer validates every value; nothing is defaulted."""
+    owner_program). The composer validates every value; nothing is defaulted.
+    More than one full-field-set ref is a CONFLICT — the refs could carry
+    different ``generation`` values and therefore different dossier ids — and
+    refuses, exactly as a conflicting comparison packet or theme_ref does;
+    tuple order never picks the winner."""
     native_refs = getattr(bundle, "native_refs", None) or ()
     required = {"mode", "as_of", "cutoff", "generation", "owner_program"}
-    for ref in native_refs:
-        if isinstance(ref, Mapping) and required <= set(ref):
-            return ref
+    matches = [
+        ref for ref in native_refs
+        if isinstance(ref, Mapping) and required <= set(ref)
+    ]
+    if len(matches) > 1:
+        _refuse("sealed_input_unavailable:native_context")
+    if len(matches) == 1:
+        return matches[0]
     return None
 
 
@@ -369,6 +401,13 @@ def compose(query: Any, bundle: Any) -> dict[str, Any]:
     """Map one §8 company-first request + owner bundle onto the sealed
     Technology composer and return its dossier unchanged.
 
+    ``query.view`` is VALIDATION-ONLY here: it must name a registered view, but
+    the composed payload is view-invariant — every registered view of the same
+    request + bundle composes the byte-identical dossier. Projection is the
+    shared shell's responsibility pending the §8 adjudication, so the day the
+    payload must stop being view-invariant is a §8 event, pinned loudly by
+    test, not a silent drift.
+
     The returned payload carries ``schema == PROFILE_ID`` and
     ``definition_version == DEFINITION_VERSION`` (emitted by the composer), so
     the shell's exact identity checks hold. Refusals at the request boundary
@@ -443,35 +482,89 @@ def _dossier_limitation_texts(payload: Mapping[str, Any]) -> set[str]:
     return texts
 
 
+_EVIDENCE_VALIDATOR: Any = None
+
+
+def _evidence_validator() -> Any:
+    global _EVIDENCE_VALIDATOR
+    if _EVIDENCE_VALIDATOR is None:
+        import jsonschema  # lazy: the contract check is a select_evidence-time concern only
+
+        schema = json.loads(EVIDENCE_CONTRACT_PATH.read_text(encoding="utf-8"))
+        _EVIDENCE_VALIDATOR = jsonschema.Draft202012Validator(schema)
+    return _EVIDENCE_VALIDATOR
+
+
+def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
+    """Validate an evidence envelope against
+    ``contracts/market_ontology/technology_economic_change.evidence.v1.schema.json``,
+    the mirror of the composer's ``validate_dossier``.
+
+    Raises :class:`TechnologyRegistrationRefusal` (code
+    ``evidence_schema_violation``) naming the first violating path. Pure; reads
+    the contract file only.
+    """
+    try:
+        errors = sorted(
+            _evidence_validator().iter_errors(payload),
+            key=lambda err: [str(p) for p in err.absolute_path],
+        )
+    except ImportError as exc:  # pragma: no cover - venv always carries jsonschema
+        raise TechnologyRegistrationRefusal(
+            "contract_validator_unavailable: jsonschema is required to validate an evidence envelope"
+        ) from exc
+    if errors:
+        first = errors[0]
+        path = "/".join(str(p) for p in first.absolute_path) or "<root>"
+        _refuse(f"evidence_schema_violation: {path}: {first.message}")
+
+
 def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, Any]:
     """Return the closed evidence envelope for ONE authorized assertion.
 
     The ref is authorized iff it equals a source_ref object_id cited by a
-    rendered row/card/counter of THAT composed dossier AND an assertion in the
-    bundle carries that source object_id. Unknown and not-selected refs share
-    the ONE code ``not_available`` — no existence disclosure. Never fetches,
-    never dereferences a locator, never widens beyond the bundle; the assertion
-    is deep-copied so the envelope can never alias bundle state."""
-    _validate_query_and_resolve(query, bundle)
+    rendered row/card/counter of THAT composed dossier AND EXACTLY ONE
+    assertion in the bundle carries that source object_id — two or more
+    carrying it share the same refusal as zero (no pick by tuple order, so the
+    envelope can never hand out an assertion the dossier never rendered).
+    Unknown, not-selected and ambiguous refs share the ONE code
+    ``not_available`` — no existence disclosure. Never fetches, never
+    dereferences a locator, never widens beyond the bundle.
+
+    The assertion is deep-copied so the envelope can never alias bundle state,
+    with exactly ONE key excluded: its assertion-internal ``authority`` block.
+    The envelope states the six-false authority ceiling once, at its own top
+    level; the evidence contract forbids a second authority surface inside the
+    open assertion object.
+
+    ``query.view`` is VALIDATION-ONLY here, exactly as in :func:`compose`: the
+    envelope is selected from the same view-invariant dossier, and projection
+    stays the shared shell's responsibility pending §8.
+
+    The envelope is validated against the evidence contract immediately before
+    it is returned (:func:`validate_evidence_envelope`), so no envelope that
+    violates its own contract can ever leave this function."""
     payload = compose(query, bundle)
-    authorized: Mapping | None = None
-    for assertion in getattr(bundle, "assertions", None) or ():
-        if not isinstance(assertion, Mapping):
-            continue
-        source = assertion.get("source")
-        if isinstance(source, Mapping) and source.get("object_id") == assertion_ref:
-            authorized = assertion
-            break
-    if assertion_ref not in _cited_source_object_ids(payload) or authorized is None:
+    matches = [
+        assertion for assertion in getattr(bundle, "assertions", None) or ()
+        if isinstance(assertion, Mapping)
+        and isinstance(assertion.get("source"), Mapping)
+        and assertion["source"].get("object_id") == assertion_ref
+    ]
+    if len(matches) != 1 or assertion_ref not in _cited_source_object_ids(payload):
         _refuse("not_available")
-    return {
+    authorized = copy.deepcopy(dict(matches[0]))
+    authorized.pop("authority", None)
+    envelope = {
         "schema": EVIDENCE_SCHEMA_ID,
         "definition_version": DEFINITION_VERSION,
         "generation": payload["dossier_id"],
-        "assertion": copy.deepcopy(dict(authorized)),
+        "assertion": authorized,
         "limitations": sorted(_dossier_limitation_texts(payload)),
         "authority": dict(_FALSE_AUTHORITY),
     }
+    validate_evidence_envelope(envelope)
+    return envelope
 
 
 # --- the §8 facts (what the foundation owner copies on adjudication) --------------
@@ -483,7 +576,11 @@ class TechnologyRegistrationFacts:
     exactly the fields §8 names, plus the two shell callables. ``anchor_theme_id``
     is ``None`` and ``slice_keys`` is empty BY PROPOSAL: under hook 1 as
     integrated these are exactly what a ``VerticalRegistration`` refuses, which
-    is why nothing is registered on this branch."""
+    is why nothing is registered on this branch. ``views`` is the closed view
+    tuple the request gate validates against; ``view`` is VALIDATION-ONLY on
+    this carrier — both callables compose a view-invariant payload, and
+    projection is the shared shell's responsibility pending the §8
+    adjudication."""
 
     entry_kind: str
     profile_id: str
@@ -537,13 +634,17 @@ def registration_entry_or_refusal() -> Any:
     perform, documenting the §8 dependency by execution.
 
     Shell absent (this carrier base) -> ``shared_shell_unavailable``. Shell
-    present -> the ``VerticalRegistration`` is constructed from the facts; when
-    hook 1 as integrated refuses the company-profile entry — anchor ``None``
-    and/or an empty slice set — the typed reason is OURS, derived
-    deterministically from the facts, never the shell's exception text. If the
-    shell ever ACCEPTS the entry (the §8 mount change, adjudicated), the entry
-    is returned — and the pinned strict-xfail round-trip test XPASSes loudly,
-    which is the designed signal that re-pinning is due."""
+    present -> the ``VerticalRegistration`` is constructed from the facts
+    FIRST and unconditionally, with no precondition against the facts: when
+    hook 1 as integrated refuses the company-profile entry (anchor ``None``,
+    empty slice set), the typed reason carries the shell's OWN exception type
+    — ``vertical_registration_refused:<ExcType>`` — because the concrete
+    reason belongs to the shell and this adapter never guesses it. A
+    ``TypeError`` from the constructor is §8 signature drift and propagates
+    UNCAUGHT, so the pinned strict-xfail round-trip turns into a hard error
+    rather than a quietly stale xfail. If the shell ever ACCEPTS the entry
+    (the §8 mount change, adjudicated), the entry is returned — and that same
+    test XPASSes loudly, which is the designed signal that re-pinning is due."""
     shell = _load_shared_shell()
     if shell is None:
         _refuse("shared_shell_unavailable")
@@ -554,9 +655,9 @@ def registration_entry_or_refusal() -> Any:
     }
     try:
         return vertical_registration(**kwargs)
-    except Exception:
-        if TECHNOLOGY_REGISTRATION_FACTS.anchor_theme_id is None:
-            _refuse("anchor_theme_id_required")
-        if not TECHNOLOGY_REGISTRATION_FACTS.slice_keys:
-            _refuse("slice_keys_nonempty_required")
-        _refuse("vertical_registration_refused")
+    except TypeError:
+        # Signature drift between the §8 facts and the shell's constructor:
+        # never relabelled, never swallowed — the pin must hear it.
+        raise
+    except Exception as exc:
+        _refuse("vertical_registration_refused:" + type(exc).__name__)
