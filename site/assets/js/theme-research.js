@@ -1051,8 +1051,13 @@
        * closed-vocabulary keys — a stored payload, generation, or token can
        * never propagate back into the runtime. */
       var sel = parseStoredSelectionFor(SPEC, raw);
-      if (sel && TR_SLICE_KEYS.indexOf(sel.slice_key) >= 0 &&
-          SLICES.indexOf(sel.slice_key) >= 0) currentSlice = sel.slice_key;
+      /* SLICES is this mount's vocabulary and is the whole check. Conjoining
+       * TR_SLICE_KEYS — one vertical's list, compiled into this file — made
+       * the test unsatisfiable for every other vertical: a VALID stored
+       * selection was silently discarded and the default tab stood, with no
+       * error and no console line. The member's remembered tab just never
+       * came back. Found by the Robotics receiver reading this wiring. */
+      if (sel && SLICES.indexOf(sel.slice_key) >= 0) currentSlice = sel.slice_key;
       if (sel && TR_VIEW_KEYS.indexOf(sel.view) >= 0) currentView = sel.view;
       if (sel && TR_MODE_KEYS.indexOf(sel.time_mode) >= 0) currentMode = sel.time_mode;
       restored = sel;

@@ -1955,7 +1955,7 @@ _DOM_STUB = r"""
 const fs = require('fs');
 function mkEl(tag) {
   return {
-    tagName: tag, children: [], attrs: {}, style: {}, dataset: {},
+    tagName: tag, children: [], attrs: {}, style: {}, dataset: {}, handlers: {},
     className: '', textContent: '', hidden: false, value: '', disabled: false,
     classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
     appendChild(c) { this.children.push(c); return c; },
@@ -1965,7 +1965,11 @@ function mkEl(tag) {
       return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null;
     },
     removeAttribute(k) { delete this.attrs[k]; },
-    addEventListener() {}, removeEventListener() {}, focus() {}, blur() {}, click() {},
+    addEventListener(type, fn) {
+      (this.handlers[type] = this.handlers[type] || []).push(fn);
+    },
+    removeEventListener() {}, focus() {}, blur() {},
+    click() { (this.handlers.click || []).forEach(function (fn) { fn({}); }); },
     querySelector() { return null; }, querySelectorAll() { return []; },
     insertBefore(c) { this.children.push(c); return c; },
     contains() { return false; }
@@ -1998,15 +2002,19 @@ global.window = {
   location: { origin: 'https://example.test', href: 'https://example.test/x' }
 };
 global.localStorage = {
-  store: {}, reads: [],
+  store: process.argv[4] ? JSON.parse(fs.readFileSync(process.argv[4], 'utf8')) : {},
+  reads: [],
   getItem: function (k) {
     this.reads.push(k);
     return Object.prototype.hasOwnProperty.call(this.store, k) ? this.store[k] : null;
   },
-  setItem: function (k, v) { this.store[k] = v; },
+  writes: [],
+  setItem: function (k, v) { this.writes.push({ key: k, value: v }); this.store[k] = v; },
   removeItem: function (k) { delete this.store[k]; }
 };
-global.fetch = function () {
+const fetchCalls = [];
+global.fetch = function (url, init) {
+  fetchCalls.push({ url: String(url), body: (init && init.body) || null });
   return Promise.resolve({
     ok: true, status: 200, headers: { get: function () { return 'application/json'; } },
     json: function () { return Promise.resolve({}); }
@@ -2028,28 +2036,56 @@ try {
 } catch (e) {
   failure = String(e && e.message);
 }
+
+/* Post-boot clicks, so a RESTORED selection can be observed behaviourally:
+   the chip handler returns early when the clicked slice is already current
+   (`if (currentSlice === key) return;`), so clicking the slice a member is
+   supposed to have remembered must issue NO request. */
+function findChip(el, key, out) {
+  if (!el || typeof el !== 'object') return out;
+  if (el.attrs && el.attrs['data-tr-slice'] === key) out.push(el);
+  (el.children || []).forEach(function (c) { findChip(c, key, out); });
+  return out;
+}
+if (process.argv[5]) {
+  JSON.parse(fs.readFileSync(process.argv[5], 'utf8')).forEach(function (c) {
+    findChip(mounts[c.mount], c.slice, []).forEach(function (chip) { chip.click(); });
+  });
+}
 console.log(JSON.stringify({
   bootFailure: failure,
   states: mounts.map(function (m) { return m.getAttribute('data-tr-state'); }),
   text: mounts.map(function (m) { return textOf(m, []); }),
   storageKeys: Object.keys(global.localStorage.store),
-  storageReads: global.localStorage.reads
+  storageReads: global.localStorage.reads,
+  storageWrites: global.localStorage.writes,
+  fetchCalls: fetchCalls
 }));
 """
 
 
-def _run_page(mount_attrs: list[dict]) -> dict:
-    """Execute the WHOLE client — contract block and wiring — over stub mounts."""
+def _run_page(mount_attrs: list[dict], seed: dict | None = None,
+              clicks: list[dict] | None = None) -> dict:
+    """Execute the WHOLE client — contract block and wiring — over stub mounts.
+
+    ``seed`` pre-populates localStorage, so a remembered selection can be shown
+    to survive (or not) a real boot rather than being reasoned about."""
     assert shutil.which("node"), "node not on PATH"
     with tempfile.TemporaryDirectory() as td:
         stub = Path(td) / "page_stub.js"
         stub.write_text(_DOM_STUB, encoding="utf-8")
         cases = Path(td) / "mounts.json"
         cases.write_text(json.dumps(mount_attrs), encoding="utf-8")
-        run = subprocess.run(
-            [shutil.which("node"), str(stub), str(JS_PATH), str(cases)],
-            capture_output=True, text=True, timeout=60,
-        )
+        argv = [shutil.which("node"), str(stub), str(JS_PATH), str(cases)]
+        if seed is not None or clicks is not None:
+            seed_file = Path(td) / "seed.json"
+            seed_file.write_text(json.dumps(seed or {}), encoding="utf-8")
+            argv.append(str(seed_file))
+        if clicks is not None:
+            click_file = Path(td) / "clicks.json"
+            click_file.write_text(json.dumps(clicks), encoding="utf-8")
+            argv.append(str(click_file))
+        run = subprocess.run(argv, capture_output=True, text=True, timeout=60)
     assert run.returncode == 0, f"node exited {run.returncode}:\n{run.stderr}"
     return json.loads(run.stdout.strip().splitlines()[-1])
 
@@ -2208,3 +2244,55 @@ def test_every_storage_key_is_scoped_to_its_anchor(js_text):
     for call in calls:
         assert "'theme_research_sel'" in call, call
         assert "+ ':' + SPEC.anchor" in call, call
+
+
+@needs_node
+def test_a_second_verticals_remembered_slice_actually_restores():
+    """A live defect only a second vertical could expose.
+
+    The restore test conjoined SLICES — the mount's own vocabulary, which is
+    the correct check — with TR_SLICE_KEYS, one vertical's list compiled into
+    this file. For every other vertical the conjunction is unsatisfiable, so a
+    VALID stored selection was silently discarded and the default tab stood.
+    No error, no console line: the member's remembered tab just never came
+    back. Found by the Robotics receiver reading the wiring.
+
+    Observed behaviourally, not by reading a variable: the chip handler
+    returns early when the clicked slice is already current, and a selection
+    change always persists. So clicking the slice a member is supposed to have
+    remembered must write NOTHING — and the control proves the probe can see a
+    write at all.
+    """
+    stored = json.dumps(
+        {"slice_key": "beta_slice", "view": "economics", "time_mode": "latest"})
+    seeded = _run_page(
+        [_mount_element(), _SECOND_VERTICAL],
+        seed={"theme_research_sel:synthetic_vertical": stored},
+        clicks=[{"mount": 1, "slice": "beta_slice"}],
+    )
+    assert seeded["states"][1] == "mounted", seeded["states"]
+    assert seeded["storageWrites"] == [], (
+        "the remembered slice was not restored: clicking it counted as a "
+        "CHANGE, which only happens when it was not already current"
+    )
+
+    # CONTROL — with nothing remembered the default (first) slice stands, so
+    # the same click IS a change and DOES persist.
+    control = _run_page(
+        [_mount_element(), _SECOND_VERTICAL],
+        clicks=[{"mount": 1, "slice": "beta_slice"}],
+    )
+    assert control["storageWrites"], "the probe cannot see a write at all"
+    assert control["storageWrites"][0]["key"] == \
+        "theme_research_sel:synthetic_vertical", control["storageWrites"]
+    assert "beta_slice" in control["storageWrites"][0]["value"]
+
+
+def test_the_wiring_never_consults_one_verticals_slice_list(js_text):
+    """The regression that made the bug above possible: a mount-scoped check
+    beside a file-scoped one. TR_SLICE_KEYS knows a single vertical, so the
+    wiring must not read it anywhere."""
+    wiring = _code_only(js_text[js_text.index(_END):])
+    assert "TR_SLICE_KEYS" not in wiring, (
+        "the wiring must validate slices against the MOUNT's vocabulary"
+    )
