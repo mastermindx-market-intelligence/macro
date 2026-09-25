@@ -25,6 +25,21 @@ MAIN_CONTROL_FILES = {
     "capture_ci_canary_receipt.py",
 }
 CONTROL_REPO_ROOT_ENV = "MASTERMIND_TRUSTED_CI_REPO_ROOT"
+# The names a ci-pack step exports for its OWN plan. The same list, and its
+# history, is tests/test_ci_pack.py::_isolate_pack_runner_planner_env.
+PACK_PLANNER_ENV = frozenset(
+    {
+        "CI_CHANGED_FILES_FILE",
+        "CI_CHANGED_FILES_JSON",
+        "CI_SCOPE_MODE",
+        "CI_DYNAMIC_MATRIX_MODE",
+        "GITHUB_EVENT_NAME",
+        "CI_SEMANTIC_ROLE",
+        "CI_TESTED_TREE_SHA",
+        "CI_SUBJECT_HEAD_SHA",
+        "CI_BASE_SHA",
+    }
+)
 CONTROL_SPARSE_PATHS = {f"scripts/{filename}" for filename in MAIN_CONTROL_FILES}
 CANDIDATE_SPARSE_PATTERNS = (
     "/*",
@@ -506,7 +521,17 @@ def test_p3ar_control_bundle_imports_without_candidate_control_modules(
     for filename in MAIN_CONTROL_FILES:
         (control_scripts / filename).write_bytes((ROOT / "scripts" / filename).read_bytes())
 
-    environment = dict(os.environ)
+    # The child below plans. Inside a PR ci-pack step the ambient environment
+    # carries that pack's own plan: CI_CHANGED_FILES_FILE plus
+    # GITHUB_EVENT_NAME=pull_request make run_ci_pack.py plan as a PR head, and
+    # with no --changed-from it refuses ("PR semantic plan changed_from must
+    # equal exact base_sha"). That red was PR #8033 ci-pack-0, job 108193042443,
+    # the first time this suite ran on the PR code gate. What the bundle
+    # imports does not depend on which lane runs the test, so the child plans
+    # with the pack's plan identity removed.
+    environment = {
+        key: value for key, value in os.environ.items() if key not in PACK_PLANNER_ENV
+    }
     environment["PYTHONPATH"] = str(control_scripts.parent)
     environment[CONTROL_REPO_ROOT_ENV] = str(ROOT)
     root_probe = subprocess.run(
