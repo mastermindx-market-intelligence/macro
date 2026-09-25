@@ -483,8 +483,9 @@ def _declared_code_gate_job_count() -> int:
     count used to be a literal (132, pinned 2026-08-26 on #6351) and rotted
     to a red every time a code-gated job was added to the manifest; nine
     landed between the pin and 2026-09-15 (last: #7164) with nothing on a PR
-    to say so, because this suite's only home is the ``gate: data`` job
-    ``workflow-yaml``. The count is derived here from the manifest so the
+    to say so, because this suite's only home was then the ``gate: data`` job
+    ``workflow-yaml`` (it runs in ``ci-control-plane-contracts``, on the code
+    gate, since 2026-09-25). The count is derived here from the manifest so the
     assertion tracks the tree, and it is derived WITHOUT importing
     ``scripts.run_ci_pack`` on purpose: reusing the module under test's own
     ``load_legacy_jobs(gate="code")`` would make the check tautological. The

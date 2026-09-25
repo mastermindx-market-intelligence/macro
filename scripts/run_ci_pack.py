@@ -216,8 +216,8 @@ GLOBAL_INVALIDATORS = (
     "scripts/ci_scope_dependencies.py",
     "scripts/check_ci_trigger_closure.py",
     "scripts/audit_unrun_tests.py",
-    "config/dag.yml",
-    "config/synapse.yml",
+    "config/dag.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "config/synapse.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
     "conftest.py",
     "**/conftest.py",
     "requirements*.txt",
@@ -407,10 +407,18 @@ SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
 
 PACK_TARGET_SECONDS = 600
 OBSERVED_COMMAND_SECONDS = {
-    "engine-render-guards": 860,
+    "engine-render-guards": 875,
     "express-render-guards": 150,
     "attested-history-guards": 60,
-    "workflow-yaml": 438,
+    # 2026-09-25 split of workflow-yaml. On a hosted pack (data-health run
+    # 36097809562, pack 1) the "hosted-runner packing contract" step took 1,122 s
+    # and the structure step 25 s (0.84x and 0.51x their local times). The later
+    # steps never ran there because the packing step failed first, so they are
+    # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
+    # render-lane contracts and the options/sparse suites: about 90 s including
+    # its data-stack install.
+    "ci-control-plane-contracts": 1400,
+    "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
     "biocatalyst-worker": 274,
