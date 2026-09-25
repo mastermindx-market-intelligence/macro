@@ -434,3 +434,22 @@ def test_build_removes_the_page_of_a_retitled_report(monkeypatch, tmp_path):
     assert old not in after                     # the stale URL is gone, not duplicated
     assert "pmi-fall-seven-times-get-up-eight-71f35b.html" in after
     assert "index.html" in after
+
+
+# --- shared workspace shell adoption ---------------------------------------
+def test_research_report_uses_workspace_shell_without_moving_paywall_contract():
+    html = _norm_render(_ITEM, excerpt_paras=_EXCERPT)
+    assert 'class="mx-workspace-shell"' in html
+    assert 'data-workspace-active="research"' in html
+    assert html.count('class="site-nav') == 1
+    assert html.count('class="nav-ctrls"') == 1
+    assert html.index('<section class="rr-x"') < html.index('<div class="rr-gate">')
+    assert '"isAccessibleForFree": false' in html
+
+
+def test_research_report_shell_keeps_nested_navigation_prefix():
+    html = _norm_render(_ITEM)
+    assert 'href="../research_vault.html"' in html
+    assert 'href="../sector_central.html"' in html
+    assert 'href="../us_stocks.html"' in html
+    assert 'href="../options.html"' in html
