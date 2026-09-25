@@ -173,3 +173,46 @@ No product code, production data, source dataset, identity/membership, worker bi
 ## Exact next action
 
 Consume the exact incumbent response to #7780/5825621672 and the Consumer R16 response to #7905/5825632041. Accept only native generation-coherence proof, bounded retention/registry implementation and a useful truth-bound source envelope. Then continue toward real permitted input -> economic explanation -> inspectable evidence -> correct company/theme workflow -> ordinary refresh/correction, followed by a genuinely different second domain and later broader theme-universe coverage.
+
+
+## Continuation delta — shared integration adjudication after 02:21Z
+
+### New durable decisions
+
+- **Semiconductor/shared mount:** #7780/5825697068 consumes the corrected publication-budget return and accepts the pure leaf-module mount architecture, subject to its in-flight independent review. `config/theme_crosswalk.yml` itself establishes that `primary_basket_id` is the only sound reverse basket→theme identity; proxy/supply-chain `basket_ids` do not mount research. Null primary stays unmounted. #7669 basket-detail custody remains untouched.
+- **Semiconductor publication coherence:** #7780/5825811888 clarifies the earlier same-generation ruling. Equal generation is a source/binder invariant **within one atomic publication domain**, not a universal equality law across unrelated NativeRefs. Company Intelligence event-workspace current/prior facts for one comparison must come from one event-workspace generation or be withheld. Independent domains keep their own coherent receipts and use an owner-created clock-compatibility receipt; their generation strings are never compared as if globally meaningful.
+- **Technology adapter:** #7891/5825752169 accepts T8A-X1's deletion of the local mirror of the shared assertion internals. T8A remains prepared/fixture-only, not shared-contract proof. Do not hand-patch the roughly 54 current-v1 fixture errors while the shared v1.1/company-first contract is still moving. When the owner revision lands, the Technology fixture must pass the **real owner validator/round trip**; the strict xfail is an action signal, not a permanent green mechanism. Independent Technology work continues.
+- **Technology private publication boundary:** #7780/5825811888 accepts 5825704423's correction that the Company Intelligence event-workspace publication map does **not** close Technology T6. T6 remains held on the existing Research Vault/private-publication owner proof: 16 KiB edge cases, aggregate/member bounds, revocation, coherent correction of prose+figures, no raw key→public URL, and unchanged small-consumer semantics.
+- **Robotics rights recognition:** #7780/5825811888 accepts the prepared eleven path-scoped family/prefix rows only as `rights_class: unresolved` recognition through the one shared registry. Recognition changes the refusal reason, not emission permission. `auth_class:keyless_public` remains explicitly an inferred no-credential descriptor, not an acquisition/retention permission receipt.
+- **Robotics count correction:** 5825701836 supersedes the earlier 71-source-block count. Serving-path truth is 66 bundle assertions: **63** from the eleven real publishers and **3** fixture-only `example.invalid`; all 63 real-publisher refs are currently unmapped. Orbbec serving-corpus count is 9, not 14. The family/prefix list is unchanged.
+- **Consumer Defensive:** #7905/5825632041 is already the active Meta-CEO direction. R16 must finish before another equivalent repair; the first release becomes a finite original-source/layout envelope with independently frozen source-cell truth and explicit refusal outside it.
+
+### Current evidence / state fences
+
+- #7870 was observed at `23cf3a70ba19567b9a41ec21321ddee133996ccc` during the architecture decision. Local H2 evidence was reported as 756 passed / 2 skipped, but current-head GitHub PR workflow lookup returned no runs; hosted-CI green is **not** claimed.
+- The item-2 budget correction from #7780/5825640745 is accepted: one witness/two periods = 4 objects / 19,082 B on disk / 3 distinct contents; two witnesses/two periods = 6 objects / 36,038 B on disk / 5 distinct contents; general object count `2N+2`. The marker and immutable manifest are byte-identical content twins, so on-disk footprint and distinct-content bytes are different measures.
+- The stale `previous_manifest_sha256` remains provenance rather than serving-path integrity on B's bounded read path unless an owner-native verifier proves otherwise.
+- #7891 was observed at `773ac0d1495b50decd984f304697472ff84d5eba` when the Technology ruling was issued; its earlier T8A checkpoint at `abfcfadc71d` is not the current carrier head.
+- No new Consumer Defensive return had appeared after the watcher-delivered 5825632041 at this checkpoint.
+- Shared rights/retention decisions are **delivered, not yet implemented**. Private research remains unbound and production coverage remains unaccepted.
+
+### DO_NOT_REDO / new non-conflation rules
+
+- Do not turn "same generation" into a global equality check across unrelated publication owners or namespaces.
+- Do not treat the event-workspace publication protocol as proof for Research Vault/private-publication semantics.
+- Do not reintroduce Technology-local copies of the shared curation-assertion schema or patch today's v1 fixture merely to silence the xfail before v1.1 lands.
+- Do not restore the superseded Robotics 71-count or Orbbec=14 count.
+- Do not infer theme identity from proxy `basket_ids`; primary-only reverse mapping is accepted.
+- Do not call H2, T8A, private serving, rights admission, hosted CI, merge, deployment or live paid-user proof complete from local gates.
+
+### Exact next actions
+
+1. Consume the independent H2 review and hook-3 single-mount convergence on #7870; accept only the actually shipped path.
+2. Consume the shared rights-owner implementation: `sec_edgar` plus the eleven Robotics recognition-only rows/prefixes, with native tests and no second registry.
+3. Consume the Company Intelligence owner result for same-generation current+prior retention and the A→B publication-flip proof on the event-workspace binder.
+4. Consume the existing Research Vault/private-publication characterization separately; only then may Technology T6 advance.
+5. Consume Consumer Defensive R16 under the finite source/layout-envelope tactic.
+6. When shared v1.1/company-first lands, require Technology's real owner-contract roundtrip before clearing that seam.
+7. Continue toward real permitted input → useful economic explanation → inspectable evidence → correct company/theme workflow → ordinary refresh/correction, then prove a materially different second domain.
+
+Known Meta-CEO effects in this delta: #7780 comments `5825697068` and `5825811888`; #7891 comment `5825752169`; this checkpoint update. No product code, production data, worker lifecycle, CI rerun, merge or deployment was performed by the Meta-CEO.
