@@ -1,0 +1,288 @@
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(navigator.language||'').slice(0,2);if(l==='zh')document.documentElement.setAttribute('data-lang','zh');}catch(e){}</script>
+<title>Finance Intelligence — sector dossier — MastermindX</title>
+{% set seo_title = "Finance Intelligence — financial system dossier — MastermindX" %}
+{% set seo_desc = "Read how the financial system moves money, settles trades and prices assets — research context, not a trade call." %}
+{% set seo_path = "finance_intelligence.html" %}
+{% include "_seo_head.html.j2" %}
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="finance_intelligence.css">
+</head>
+<body class="fi-page">
+{% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}
+{% set nav_search_placeholder_zh = "搜索任意股票 — 美股、A 股、港股、加股等…" %}
+{% include "_site_nav.html.j2" %}
+
+<main id="fi-main" class="fi-shell" data-fi-mount="shell" data-fi-read-url="{{ fi_read_url | default('') }}">
+  <header class="fi-hero" aria-labelledby="fi-hero-title">
+    <p class="fi-kicker">{{ t('Finance Intelligence', '金融情报') }}</p>
+    <h1 id="fi-hero-title">{{ t('Finance Intelligence', '金融情报') }}</h1>
+    <p class="fi-deck">{{ t('Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.', '阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。') }}</p>
+    <p class="fi-meta">
+      <span class="fi-meta-asof l-en" data-fi-mount="hero-asof" hidden></span><span class="fi-meta-asof-zh l-zh" data-fi-mount="hero-asof-zh" hidden></span>
+      <span aria-hidden="true">·</span>
+      <span class="fi-meta-cutoff l-en" data-fi-mount="hero-cutoff" hidden></span><span class="fi-meta-cutoff-zh l-zh" data-fi-mount="hero-cutoff-zh" hidden></span>
+      <span class="fi-chip" data-fi-mount="hero-freshness" data-state-freshness="" hidden></span>
+      <span class="fi-chip" data-fi-mount="hero-outer" data-state-outer-dossier="" hidden></span>
+    </p>
+  </header>
+
+  <nav class="fi-toc" aria-label="Section navigation" data-aria-en="Section navigation" data-aria-zh="章节导航">
+    <ol>
+      <li><a href="#what-changed"><span class="l-en">What changed</span><span class="l-zh">近期变化</span></a></li>
+      <li><a href="#rerating-map"><span class="l-en">Rerating map</span><span class="l-zh">重估链路</span></a></li>
+      <li><a href="#system-map"><span class="l-en">System map</span><span class="l-zh">系统图</span></a></li>
+      <li><a href="#subtheme-atlas"><span class="l-en">Subtheme atlas</span><span class="l-zh">子主题图谱</span></a></li>
+      <li><a href="#company-exposure"><span class="l-en">Company exposure</span><span class="l-zh">公司敞口</span></a></li>
+      <li><a href="#macro-matrix"><span class="l-en">Macro matrix</span><span class="l-zh">宏观矩阵</span></a></li>
+      <li><a href="#constraint-map"><span class="l-en">Constraint map</span><span class="l-zh">约束图</span></a></li>
+      <li><button type="button" class="fi-toc-evidence" aria-controls="evidence-drawer"><span class="l-en">Evidence</span><span class="l-zh">证据</span></button></li>
+    </ol>
+  </nav>
+
+  <section id="what-changed" class="fi-section fi-panel fi-changes" aria-labelledby="fi-changes-title" data-fi-mount="what-changed">
+    <header class="fi-section-head" data-state-freshness="">
+      <h2 id="fi-changes-title" class="fi-section-title">
+        <span class="l-en">What changed</span>
+        <span class="l-zh">近期变化</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Material observations, plain words</span>
+        <span class="l-zh">重要观察，直白表述</span>
+      </span>
+    </header>
+    <ul class="fi-change-list" role="list" data-fi-mount="what-changed-list"></ul>
+    <p class="fi-section-foot">
+      <span class="l-en">Read the underlying receipts before acting on any line.</span>
+      <span class="l-zh">请先查阅原始凭据再行判断。</span>
+    </p>
+  </section>
+
+  <section id="rerating-map" class="fi-section fi-panel fi-rerating" aria-labelledby="fi-rerating-title" data-fi-mount="rerating-map">
+    <header class="fi-section-head" data-state-freshness="">
+      <h2 id="fi-rerating-title" class="fi-section-title fi-section-title-answer">
+        <span class="l-en">Rerating map</span>
+        <span class="l-zh">重估链路</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">How a slice reaches per-share value</span>
+        <span class="l-zh">一个子主题如何抵达每股价值</span>
+      </span>
+    </header>
+
+    <div class="fi-slice-picker">
+      <label for="fi-slice-select"><span class="l-en">Slice</span><span class="l-zh">切片</span></label>
+      <select id="fi-slice-select" class="fi-slice-select" data-fi-mount="slice-select"></select>
+    </div>
+
+    <ol class="fi-rerating-steps" role="list" data-fi-mount="rerating-steps"></ol>
+
+    <p class="fi-rerating-bridge" data-fi-mount="rerating-bridge">
+      <span class="l-en">The chain from earnings to divergence is documented in the chips above.</span>
+      <span class="l-zh">从盈利到分化的链路已在上方标签中写明。</span>
+    </p>
+
+    <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察"></ul>
+
+    <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
+      <h3 id="fi-conflicts-title" class="fi-conflicts-title">
+        <span class="l-en">Where the planes disagree</span>
+        <span class="l-zh">各维度之间的分歧</span>
+        <span class="fi-section-eyebrow">
+          <span class="l-en">Surfaced, never averaged</span>
+          <span class="l-zh">显示差异，而非取均值</span>
+        </span>
+      </h3>
+      <ul class="fi-conflict-list" role="list" data-fi-mount="conflict-list"></ul>
+    </div>
+
+    <p class="fi-section-foot">
+      <span class="l-en">Each step shows what is on file and how recent it is.</span>
+      <span class="l-zh">每一步显示现有证据及其时效。</span>
+    </p>
+  </section>
+
+  <section id="system-map" class="fi-section fi-panel fi-system" aria-labelledby="fi-system-title" data-fi-mount="system-map">
+    <header class="fi-section-head">
+      <h2 id="fi-system-title" class="fi-section-title">
+        <span class="l-en">System map</span>
+        <span class="l-zh">系统图</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Three views, never blended</span>
+        <span class="l-zh">三种视图，永不混用</span>
+      </span>
+    </header>
+
+    <div class="fi-view-tabs" role="tablist" data-aria-en="Choose a system view" data-aria-zh="选择系统视图" data-fi-mount="view-tabs"></div>
+    <div class="fi-view-panels" data-fi-mount="view-panels"></div>
+  </section>
+
+  <section id="subtheme-atlas" class="fi-section fi-panel fi-atlas" aria-labelledby="fi-atlas-title" data-fi-mount="subtheme-atlas">
+    <header class="fi-section-head">
+      <h2 id="fi-atlas-title" class="fi-section-title">
+        <span class="l-en">Subtheme atlas</span>
+        <span class="l-zh">子主题图谱</span>
+      </h2>
+      <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow" data-state-coverage="" data-aria-en="Domains and slices mapped" data-aria-zh="已映射的子域与切片" hidden></span>
+    </header>
+
+    <div class="fi-domain-grid" data-fi-mount="domain-grid"></div>
+
+    <p class="fi-atlas-gap" data-fi-mount="atlas-gap" hidden></p>
+  </section>
+
+  <section id="company-exposure" class="fi-section fi-panel fi-exposure" aria-labelledby="fi-exposure-title" data-fi-mount="company-exposure">
+    <header class="fi-section-head">
+      <h2 id="fi-exposure-title" class="fi-section-title">
+        <span class="l-en">Company exposure</span>
+        <span class="l-zh">公司敞口</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Role, basis, materiality — never a hidden score</span>
+        <span class="l-zh">角色、口径、重要性 — 绝无暗藏分数</span>
+      </span>
+    </header>
+
+    <div class="fi-exposure-table-wrap" data-fi-mount="exposure-table-wrap">
+      <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
+        <caption id="fi-exposure-desc" class="visually-hidden">
+          <span class="l-en">Company exposure matrix. Rows are companies. Columns are slices.</span>
+          <span class="l-zh">公司敞口矩阵。行为公司，列为切片。</span>
+        </caption>
+        <thead data-fi-mount="exposure-thead">
+          <tr>
+            <th class="fi-col-company" scope="col"><span class="l-en">Company</span><span class="l-zh">公司</span></th>
+          </tr>
+        </thead>
+        <tbody data-fi-mount="exposure-rows"></tbody>
+      </table>
+    </div>
+    <details class="fi-disc fi-exposure-more" data-fi-mount="exposure-more" hidden>
+      <summary>
+        <span class="l-en">See all companies</span>
+        <span class="l-zh">查看全部公司</span>
+      </summary>
+      <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
+        <thead data-fi-mount="exposure-thead-more">
+          <tr>
+            <th class="fi-col-company" scope="col"><span class="l-en">Company</span><span class="l-zh">公司</span></th>
+          </tr>
+        </thead>
+        <tbody data-fi-mount="exposure-rows-more"></tbody>
+      </table>
+    </details>
+    <ul class="fi-exposure-cards" data-fi-mount="exposure-cards" hidden></ul>
+    <details class="fi-disc fi-exposure-cards-more" data-fi-mount="exposure-cards-more" hidden>
+      <summary>
+        <span class="l-en">See all companies</span>
+        <span class="l-zh">查看全部公司</span>
+      </summary>
+      <ul class="fi-exposure-cards" data-fi-mount="exposure-cards-list"></ul>
+    </details>
+  </section>
+
+  <section id="macro-matrix" class="fi-section fi-panel fi-macro" aria-labelledby="fi-macro-title" data-fi-mount="macro-matrix">
+    <header class="fi-section-head">
+      <h2 id="fi-macro-title" class="fi-section-title">
+        <span class="l-en">Macro matrix</span>
+        <span class="l-zh">宏观矩阵</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Mechanism and lag, never a stock verdict</span>
+        <span class="l-zh">机制与时滞 — 非个股结论</span>
+      </span>
+    </header>
+    <div class="fi-macro-table-wrap" data-fi-mount="macro-table-wrap">
+      <table class="fi-macro-table" aria-describedby="fi-macro-desc">
+        <caption id="fi-macro-desc" class="visually-hidden">
+          <span class="l-en">Macro driver matrix. Rows are slices. Columns are macro drivers.</span>
+          <span class="l-zh">宏观驱动矩阵。行为切片，列为宏观驱动。</span>
+        </caption>
+        <thead data-fi-mount="macro-thead">
+          <tr>
+            <th scope="col"><span class="l-en">Slice</span><span class="l-zh">切片</span></th>
+          </tr>
+        </thead>
+        <tbody data-fi-mount="macro-rows"></tbody>
+      </table>
+    </div>
+    <details class="fi-disc fi-macro-more" data-fi-mount="macro-more" hidden>
+      <summary>
+        <span class="l-en">See all slices</span>
+        <span class="l-zh">查看全部切片</span>
+      </summary>
+      <table class="fi-macro-table" aria-describedby="fi-macro-desc">
+        <thead data-fi-mount="macro-thead-more">
+          <tr>
+            <th scope="col"><span class="l-en">Slice</span><span class="l-zh">切片</span></th>
+          </tr>
+        </thead>
+        <tbody data-fi-mount="macro-rows-more"></tbody>
+      </table>
+    </details>
+    <ul class="fi-macro-cards" data-fi-mount="macro-cards" hidden></ul>
+  </section>
+
+  <section id="constraint-map" class="fi-section fi-panel fi-constraint" aria-labelledby="fi-constraint-title" data-fi-mount="constraint-map">
+    <header class="fi-section-head">
+      <h2 id="fi-constraint-title" class="fi-section-title">
+        <span class="l-en">Constraint map</span>
+        <span class="l-zh">约束图</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Every constraint links to its economic effect</span>
+        <span class="l-zh">每条约束都对应一个经济效应</span>
+      </span>
+    </header>
+    <ul class="fi-constraint-list" role="list" data-fi-mount="constraint-list"></ul>
+  </section>
+
+  <footer class="fi-provenance" data-fi-mount="provenance" data-aria-en="Input receipts" data-aria-zh="输入凭据"></footer>
+
+  <p class="mx-empty fi-notice" data-fi-mount="notice" hidden>
+    <span class="l-en" data-fi-mount="notice-en"></span>
+    <span class="l-zh" data-fi-mount="notice-zh"></span>
+  </p>
+</main>
+
+<aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"
+       aria-labelledby="fi-evidence-title" hidden tabindex="-1">
+  <header class="fi-drawer-head">
+    <div>
+      <p class="fi-kicker"><span class="l-en">Source receipt</span><span class="l-zh">来源凭据</span></p>
+      <h2 id="fi-evidence-title"><span class="l-en">Evidence</span><span class="l-zh">证据</span></h2>
+    </div>
+    <button class="fi-drawer-close" id="fi-close-evidence" type="button"
+            aria-label="Close evidence drawer" data-aria-en="Close evidence drawer" data-aria-zh="关闭证据抽屉">×</button>
+  </header>
+  <div class="fi-drawer-body" id="fi-evidence-body" data-fi-mount="evidence-body">
+    <p class="fi-evidence-empty" data-fi-mount="evidence-empty" hidden>
+      <span class="l-en">Choose an evidence action in any section</span>
+      <span class="l-zh">请在任一板块选择证据操作</span>
+    </p>
+    <p class="fi-evidence-empty" data-fi-mount="evidence-missing" hidden>
+      <span class="l-en">This evidence record is not on file.</span>
+      <span class="l-zh">该证据记录暂无存档。</span>
+    </p>
+    <p class="fi-evidence-private-notice" data-fi-mount="evidence-private-notice" hidden>
+      <span class="l-en">Value and excerpt withheld — source rights held.</span>
+      <span class="l-zh">数值与摘录已隐去 — 来源权利受限。</span>
+    </p>
+    <dl class="fi-evidence-fields" data-fi-mount="evidence-fields"></dl>
+  </div>
+</aside>
+<div class="fi-scrim" id="fi-scrim" hidden></div>
+
+<script>(function(){function applyAria(){var lang=document.documentElement.getAttribute('data-lang')||'en';document.querySelectorAll('[data-aria-en]').forEach(function(el){el.setAttribute('aria-label',lang==='zh'?(el.getAttribute('data-aria-zh')||el.getAttribute('data-aria-en')):el.getAttribute('data-aria-en'));});}document.addEventListener('langchange',applyAria);applyAria();})();</script>
+<script src="theme.js" defer></script>
+<script src="finance_intelligence.js"></script>
+</body>
+</html>

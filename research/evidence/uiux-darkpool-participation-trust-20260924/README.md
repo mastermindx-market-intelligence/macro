@@ -1,7 +1,7 @@
 # Dark Pool participation trust — denominator quality and physical bound
 
 ## Source identity
-Protected procedure pin: `mastermindx-market-intelligence/Mastermind@0497e28864752e3ab70fa5aa2f1567bc3c9c6aca` (Skillpack 1.0.1 / bootstrap 1). Source worktree began from Macro `4597dd8e72a64aa86d1e07ae1a76924ce9a7b5ae`; final publication is reconciled with current `origin/main` before push.
+Original implementation pin: `mastermindx-market-intelligence/Mastermind@0497e28864752e3ab70fa5aa2f1567bc3c9c6aca` (Skillpack 1.0.1 / bootstrap 1), from Macro `4597dd8e72a64aa86d1e07ae1a76924ce9a7b5ae`. Current-base reconciliation and exact-byte proof were performed under protected Mastermind `605cd056c3463c992d85ba76dbcc90fbb758da75` against merge parent `b9b714b75c4c1e28f99481229fc98fd5c151c409`; later main movement was verified path-disjoint from the Dark Pool closure before commit.
 
 ## User failure
 The Dark Pool desk publicly rendered off-exchange shares above 100%, and those impossible values fed the own-history z-score and standout ordering. The accepted browse-control UI was working; the numbers underneath it were not trustworthy enough to rank.
@@ -27,7 +27,7 @@ No FINRA source row, Yahoo/basket source parquet, ATS data, filter threshold, pa
 - Mirror/freshness suites: 40 passed.
 - Existing native browse verifier: 16/16 desktop/tablet/mobile/narrow × EN/ZH × dark/light cases passed.
 - Trust browser probe: desktop/mobile/narrow in both language/theme directions showed max rendered participation 86.8%, zero page overflow, and zero JS exceptions.
-- Candidate: 372 rows, 372 participation values, zero >100% in HTML, pane, or context; current invalid count 0; 971 impossible historical observations filtered from baselines.
+- Current-data candidate: 372 rows, 372 participation values, max valid participation 86.75%, zero >100% in HTML, pane, or context; current invalid count 0; 971 impossible historical observations filtered from baselines; HTML SHA-256 `bd29fc087ac0584384465394e990c8ea48376f0db304ce00e2ea1f5bf63b543f`.
 - Candidate context has 24 tagged names / 16 displayed standouts on the current session rather than rankings dominated by impossible denominators.
 
 Local fixture banner 404s in the inherited native verifier are fixture limitations already documented by that verifier; they are not production claims.

@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-23T23:02:18.193931+00:00",
+  "produced_at": "2026-09-24T22:43:54.844454+00:00",
   "as_of": "2026-09-23",
   "status": "degraded",
   "phase": "final",
@@ -8,7 +8,7 @@
     "cortex_status": "degraded",
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
-    "context_stale": false,
+    "context_stale": true,
     "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [],
@@ -214,6 +214,12 @@
       "area": "cortex",
       "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
       "action_type": "ops_fix"
+    },
+    {
+      "priority": 1,
+      "area": "cortex",
+      "summary": "cortex context was stale at run time — check world_state freshness",
+      "action_type": "inspect"
     },
     {
       "priority": 2,
@@ -506,7 +512,7 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-24",
     "phase": "REPAIR",
     "phase_confidence": 0.8,
     "who_controls": "mixed",
@@ -532,7 +538,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-23T21:39:27Z",
+    "asof": "2026-09-24T11:19:01Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
