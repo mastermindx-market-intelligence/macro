@@ -981,11 +981,18 @@
   }
   // shared shell: header (title + agg), breadth sub-line, scrollable row list.
   function memShellHtml(ttl, agg, count, br, unitEn, unitZh, rowsHtml, sizeLab) {
-    var tot = Math.max(1, br.adv + br.dec);
+    var tot = br ? Math.max(1, br.adv + br.dec) : 1;
     var aggCls = agg == null ? '' : (agg >= 0 ? 'up' : 'dn');
     // sizeLab (optional) names what the right-hand value column means (e.g. the
     // HK map's column is average turnover, not market cap) so it can never be misread.
+    // br=null is deliberate for partial member samples (China THS rotation only
+    // carries the leading member rows): never print a fake whole-basket breadth.
     var ct = count + ' ' + L(unitEn, unitZh) + (sizeLab ? ' · ' + esc(sizeLab) : '');
+    var brHtml = br
+      ? '<span class="hm-mem-br"><i class="up" style="width:' + (100 * br.adv / tot) + '%"></i>'
+        + '<i class="dn" style="width:' + (100 * br.dec / tot) + '%"></i></span>'
+        + '<span class="hm-mem-bn"><b class="up">' + br.adv + '▲</b> <b class="dn">' + br.dec + '▼</b></span>'
+      : '<span class="hm-mem-bn">' + L('top members shown', '显示领先成员') + '</span>';
     return ''
       + '<div class="hm-mem-hd">'
       +   '<div class="hm-mem-ttl">' + ttl + '</div>'
@@ -993,9 +1000,7 @@
       + '</div>'
       + '<div class="hm-mem-sub">'
       +   '<span class="hm-mem-ct">' + ct + '</span>'
-      +   '<span class="hm-mem-br"><i class="up" style="width:' + (100 * br.adv / tot) + '%"></i>'
-      +     '<i class="dn" style="width:' + (100 * br.dec / tot) + '%"></i></span>'
-      +   '<span class="hm-mem-bn"><b class="up">' + br.adv + '▲</b> <b class="dn">' + br.dec + '▼</b></span>'
+      +   brHtml
       + '</div>'
       + '<div class="hm-mem-list">' + rowsHtml + '</div>';
   }
@@ -1043,15 +1048,18 @@
     var lab = labs[tile.sector] || { en: tile.sector, zh: tile.sector };
     var tf = data._tf, edges = edgesFor(tf), pal = binPalette();
     var members = (tile.members || []).map(function (m) { return { t: m.t, perf: m.perf || {} }; });
-    var br = breadth(members, tf);
-    var subLabel = tile.name + (tile.desc && tile.desc !== tile.name ? ' · ' + tile.desc : '');
-    var ttl = L(esc(lab.en) + ' <span class="sub">— ' + esc(subLabel) + '</span>',
-                esc(lab.zh) + ' <span class="sub">— ' + esc(subLabel) + '</span>');
+    var br = tile.members_partial ? null : breadth(members, tf);
+    var subEn = tile.name || tile.t;
+    var subZh = tile.name_zh || subEn;
+    var ttl = L(esc(lab.en) + ' <span class="sub">— ' + esc(subEn) + '</span>',
+                esc(lab.zh) + ' <span class="sub">— ' + esc(subZh) + '</span>');
     var rows = members.slice().sort(function (a, b) {
       var av = a.perf[tf], bv = b.perf[tf];
       return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
     });
-    var cap = 22, more = Math.max(0, rows.length - cap), body = '';
+    var cap = 22;
+    var totalMembers = Math.max(rows.length, Number(tile.member_count) || rows.length);
+    var more = Math.max(0, totalMembers - Math.min(rows.length, cap)), body = '';
     rows.slice(0, cap).forEach(function (m) {
       var pc = m.perf[tf], c = pal[binIndex(pc, edges)];
       body += '<div class="hm-mem-row">'
@@ -1059,7 +1067,7 @@
         + '<span class="hm-mem-t">' + esc(m.t) + '</span></div>';
     });
     if (more) body += '<div class="hm-mem-more">+' + more + ' ' + L('more', '更多') + '</div>';
-    memShow(key, memShellHtml(ttl, tile.perf[tf], members.length, br, 'members', '成员', body), cx, cy);
+    memShow(key, memShellHtml(ttl, tile.perf[tf], totalMembers, br, 'members', '成员', body), cx, cy);
   }
   // Themes: a theme header → its subsectors (name · move · member count).
   function showThemeSubs(data, themeName, subTiles, cx, cy) {
@@ -1080,7 +1088,7 @@
       body += '<div class="hm-mem-row">'
         + '<span class="hm-mem-pc" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
         + '<span class="hm-mem-t">' + esc(t.name) + '</span>'
-        + '<span class="hm-mem-cap">' + (t.members ? t.members.length : t.size) + '</span></div>';
+        + '<span class="hm-mem-cap">' + (t.member_count || (t.members ? t.members.length : t.size)) + '</span></div>';
     });
     memShow(key, memShellHtml(L(esc(lab.en), esc(lab.zh)), agg, subTiles.length, br, 'subsectors', '子板块', body), cx, cy);
   }
@@ -1100,7 +1108,7 @@
     // board. China is measured: ~1,510 tiles of ~5,200 沪深 names. HK/CA/US carry no
     // whole-board count yet, so they keep the plain card rather than assert a coverage
     // claim we have not measured (see research/CHINA_FULL_UNIVERSE_MASTERPLAN_BY_FABLE.md §5).
-    var HAS_SAMPLE_SCOPE = data.market === 'china';
+    var HAS_SAMPLE_SCOPE = data.market === 'china' && !IS_THEMES;
     var STOCK_URL = data.stock_url || 'stock.html#';
     root.classList.add('hm-scope', 'hm-view');
     if (IS_THEMES) root.classList.add('hm-themes');
@@ -1131,7 +1139,7 @@
       + (SHOW_DASH ? '<div class="hx-pulse" aria-live="polite"></div><div class="hx-stats"></div>' : '')
       + '<div class="hm-bar">'
       +   '<div class="hm-tfs" role="tablist" aria-label="Timeframe"></div>'
-      +   (SHOW_DASH ? '<label class="hm-search"><span class="mag" aria-hidden="true">🔎</span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (isZh() ? '筛选个股…' : 'Filter…') + '"></label>' : '')
+      +   (SHOW_DASH ? '<label class="hm-search"><span class="mag" aria-hidden="true">🔎</span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (IS_THEMES ? L('Filter subsectors…', '筛选子板块…') : L('Filter names…', '筛选个股…')) + '"></label>' : '')
       +   '<div class="hm-legend"></div>'
       +   '<div class="hm-grow"></div>'
       +   '<div class="hm-read"></div>'
@@ -1193,7 +1201,9 @@
       });
     }
     function buildSort() {
-      var opts = [['cap', 'Market cap', '市值'], ['move', 'Biggest move', '涨跌幅'], ['az', 'A–Z', '字母']];
+      var opts = IS_THEMES
+        ? [['cap', 'Member count', '成员数'], ['move', 'Biggest move', '涨跌幅'], ['az', 'A–Z', '字母']]
+        : [['cap', 'Market cap', '市值'], ['move', 'Biggest move', '涨跌幅'], ['az', 'A–Z', '字母']];
       sortEl.innerHTML = '<span class="hm-sort-lab">' + L('Sort', '排序') + '</span>';
       opts.forEach(function (o) {
         var b = document.createElement('button'); b.type = 'button';
@@ -1358,12 +1368,13 @@
       var pc = t.perf[TF];
       var showName = tw >= 30 && th >= 16;
       if (!showName) return '';
+      var tileName = (isZh() && t.name_zh) ? t.name_zh : t.name;
       var nameF = Math.max(8.5, Math.min(tw / 6.2, th * 0.34, 15));
       // same Finviz rule as stock tiles: the % renders only when it fits at a
       // readable size — no forced floor pushing it past the tile edge.
       var pcText = fmtPc(pc);
       var pcF = Math.min(tw / 6.0, th * 0.30, fitTextFont(tw, pcText, 0.62, 5, 12.5), 12.5);
-      var s = '<span class="thn" style="font-size:' + nameF.toFixed(1) + 'px">' + esc(t.name) + '</span>';
+      var s = '<span class="thn" style="font-size:' + nameF.toFixed(1) + 'px">' + esc(tileName) + '</span>';
       if (tw >= 40 && th >= 28 && pcF >= 7) s += '<span class="pc" style="font-size:' + pcF.toFixed(1) + 'px">' + pcText + '</span>';
       return s;
     }
@@ -1830,8 +1841,11 @@
       var when = (data.source === 'polygon-live' ? (fmtUpdated(data) || data.asof) : data.asof) || '—';
       var pctUp = Math.round(sm.pctUp), medTxt = fmtPc(sm.med);
       var lead = _leadPhrase(sm);
-      var read = lz(pctUp + '% of names advancing · median ' + medTxt + '. ',
-                    pctUp + '% 个股上涨 · 中位数 ' + medTxt + '。')
+      var read = IS_THEMES
+        ? lz(pctUp + '% of subsectors advancing · median ' + medTxt + '. ',
+             pctUp + '% 子板块上涨 · 中位数 ' + medTxt + '。')
+        : lz(pctUp + '% of names advancing · median ' + medTxt + '. ',
+             pctUp + '% 个股上涨 · 中位数 ' + medTxt + '。')
                + (lead ? (isZh() ? ('资金流向：' + lead + '。') : (lead + '.')) : '');
       pulseEl.className = 'hx-pulse ' + st.tone;
       pulseEl.innerHTML = ''
@@ -1859,7 +1873,9 @@
       var scope = scopeOf(sm);
       var h = ''
         + '<div class="hx-stat hx-stat-br">'
-        +   '<div class="k">' + L('Breadth · advancing vs declining', '市场广度 · 涨跌家数') + '</div>'
+        +   '<div class="k">' + (IS_THEMES
+              ? L('Breadth · subsectors advancing vs declining', '广度 · 子板块涨跌')
+              : L('Breadth · advancing vs declining', '市场广度 · 涨跌家数')) + '</div>'
         +   '<div class="v">' + Math.round(sm.pctUp) + '% <span class="u">' + L('advancing', '上涨') + '</span></div>'
         +   '<div class="hx-bbar"><i class="adv" style="width:' + (100 * sm.adv / tot) + '%"></i>'
         +     '<i class="flt" style="width:' + (100 * sm.flat / tot) + '%"></i>'
@@ -2545,6 +2561,91 @@
   // label_zh,icon,url},...]' gets a map-type switcher and mounts one map at a
   // time (S&P 500 ⇄ Themes …). Absent the attribute the page behaves exactly as
   // before (single S&P map), so the scorecard/other surfaces are untouched.
+
+  // China theme view is a projection, not a second THS data plane. Reuse the
+  // existing rotation feed for concept-board performance/grouping and the
+  // existing China stock heatmap for per-member multi-timeframe returns.
+  function adaptChinaThsThemes(rotation, stocks) {
+    if (!rotation || !Array.isArray(rotation.subsectors)) throw new Error('China THS theme feed invalid');
+    if (!stocks || !Array.isArray(stocks.tiles)) throw new Error('China stock heatmap join invalid');
+
+    var stockBy = Object.create(null);
+    (stocks.tiles || []).forEach(function (t) { if (t && t.t) stockBy[t.t] = t; });
+
+    var stockTf = Object.create(null);
+    (stocks.timeframes || []).forEach(function (tf) { if (tf && tf.key) stockTf[tf.key] = tf; });
+    var tfKeys = (rotation.timeframes || []).filter(function (key) { return typeof key === 'string' && key; });
+    var timeframes = tfKeys.map(function (key) {
+      return stockTf[key] || { key: key, en: key, zh: key, group: 'daily', available: true };
+    });
+
+    var sectorBy = Object.create(null), uniqueMembers = Object.create(null);
+    var tiles = rotation.subsectors.filter(function (s) {
+      return s && s.key && s.perf && (s.theme || s.theme_zh);
+    }).map(function (s) {
+      var sectorKey = s.theme || s.theme_zh || 'Other';
+      if (!sectorBy[sectorKey]) {
+        sectorBy[sectorKey] = {
+          key: sectorKey,
+          en: s.theme || sectorKey,
+          zh: s.theme_zh || s.theme || sectorKey
+        };
+      }
+      var members = (s.members || []).filter(function (m) { return m && m.t; }).map(function (m) {
+        uniqueMembers[m.t] = true;
+        var stock = stockBy[m.t] || {};
+        return {
+          t: m.t,
+          name: m.name || stock.name || m.t,
+          name_zh: stock.name_zh || m.name || stock.name || m.t,
+          perf: stock.perf || {}
+        };
+      });
+      var memberCount = Math.max(members.length, Number(s.n_members) || 0);
+      return {
+        t: s.key,
+        name: s.name || s.key,
+        name_zh: s.name_zh || s.name || s.key,
+        sector: sectorKey,
+        size: Math.max(1, memberCount),
+        member_count: memberCount,
+        members_partial: memberCount > members.length,
+        perf: s.perf || {},
+        members: members
+      };
+    });
+
+    var firstTf = tfKeys.length ? tfKeys[0] : '1D';
+    return {
+      map_type: 'themes',
+      market: 'china',
+      label_en: 'China · THS Themes',
+      label_zh: '中国 · 同花顺主题',
+      asof: rotation.asof || stocks.asof || '',
+      generated_utc: rotation.generated_utc || stocks.generated_utc || '',
+      source: rotation.source || 'tonghuashun_concept_boards',
+      currency: 'CNY',
+      default_tf: tfKeys.indexOf('1D') >= 0 ? '1D' : firstTf,
+      timeframes: timeframes,
+      sectors: Object.keys(sectorBy).map(function (key) { return sectorBy[key]; }),
+      tiles: tiles,
+      n_tiles: tiles.length,
+      n_members: Object.keys(uniqueMembers).length,
+      size_basis: 'members',
+      size_label_en: 'Members',
+      size_label_zh: '成员数'
+    };
+  }
+
+  function loadMapPayload(m) {
+    return loadData(m.url).then(function (raw) {
+      if (m.adapter !== 'china-ths-themes') return raw;
+      return loadData(m.join_url || 'marketdata/china_heatmap.json').then(function (stocks) {
+        return adaptChinaThsThemes(raw, stocks);
+      });
+    });
+  }
+
   function mountMulti(full) {
     var maps;
     try { maps = JSON.parse(full.getAttribute('data-hm-maps') || 'null'); } catch (e) { maps = null; }
@@ -2569,7 +2670,7 @@
       });
       if (curView && curView.destroy) { curView.destroy(); curView = null; }
       host.innerHTML = _emptyHtml('…');
-      loadData(m.url).then(function (data) {
+      loadMapPayload(m).then(function (data) {
         if (curKey !== m.key) return;                 // a newer click superseded this
         if (!data.tiles || !data.tiles.length) { host.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。')); return; }
         host.innerHTML = '';
