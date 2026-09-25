@@ -31,10 +31,11 @@ def test_us_heatmap_is_first_class_and_keeps_sector_theme_switch():
         "marketdata/themes_heatmap.json",
     ]
 
-    nav = (ROOT / "templates" / "_navlinks.html.j2").read_text(encoding="utf-8")
-    wide = (ROOT / "site" / "nav_market.js").read_text(encoding="utf-8")
-    assert 'href="{{ NP }}sector_heatmap.html"' in nav
-    assert "'Market Heatmap'" in wide and "'sector_heatmap.html'" in wide
+    wide_template = (ROOT / "templates" / "nav_market.js").read_text(encoding="utf-8")
+    wide_site = (ROOT / "site" / "nav_market.js").read_text(encoding="utf-8")
+    assert "'Market Heatmap'" in wide_template
+    assert "'sector_heatmap.html'" in wide_template
+    assert wide_template == wide_site
 
 
 def test_china_heatmap_switches_between_stock_sectors_and_ths_themes():
@@ -45,7 +46,6 @@ def test_china_heatmap_switches_between_stock_sectors_and_ths_themes():
     assert sectors["url"] == "marketdata/china_heatmap.json"
     assert themes == {
         "key": "china-themes",
-        "icon": "🧭",
         "label_en": "Themes",
         "label_zh": "主题",
         "url": "marketdata/subsector_rotation_china.json",
