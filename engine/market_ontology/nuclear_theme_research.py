@@ -562,7 +562,7 @@ def _text_of(assertion: Mapping[str, Any]) -> str:
 
 def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str, Any]:
     selected_revisions = {
-        assertion["curation_revision"] for assertion in selection.assertions
+        assertion["curation_revision"] for assertion in selection.review_ok
     }
     current_revisions = {
         assertion["curation_revision"] for assertion in selection.current
@@ -666,7 +666,7 @@ def _views(selection: _Selection, response_limitations: set[str]) -> dict[str, A
             section.update(
                 status="unavailable",
                 reason="no_manufacturing_evidence" if view == "manufacturing"
-                else ("no_selected_assertions" if not selection.assertions
+                else ("no_selected_assertions" if not selection.current
                       else "no_rows_for_view"),
                 total={"value": None, "reason": None},
             )
@@ -718,7 +718,7 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
     companies = _companies(selection)
     summary = _summary(selection, response_limitations)
     companies["rows"] = companies["rows"][query.offset:query.offset + query.limit]
-    coverage_status = "unavailable" if not selection.assertions else (
+    coverage_status = "unavailable" if not selection.current else (
         "degraded" if bundle.omissions else "ready")
     return {
         "schema": SCHEMA_ID,
@@ -765,7 +765,7 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
             "status": coverage_status,
             "input_refs": sorted(assertion["curation_revision"]
                                  for assertion in selection.current),
-            "selected": len(selection.assertions),
+            "selected": len(selection.current),
             "industry_total": None,
             "note": "counts only what this principal may know exists",
         },
