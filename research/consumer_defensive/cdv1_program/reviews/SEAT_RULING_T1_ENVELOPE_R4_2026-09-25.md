@@ -1,4 +1,4 @@
-# Seat ruling — T1 envelope, audit round 4 (R154–R161)
+# Seat ruling — T1 envelope, audit round 4 (R154–R162)
 
 Adjudicator: the CDV-1 Meta-CEO seat (session 251f88c8, running Opus 5.5 under the fable-mode doctrine).
 
@@ -138,3 +138,22 @@ The bars are the commission's review standard: (a) wrong bind, (b) present fact 
     - R155's delimiting on every legitimate layout form the earlier suites build;
     - hosted CI observed on the repair head.
   - **Hold.** #7905 stays Draft/HOLD under Sol's direction (comment 5825632041, R114).
+
+- **R162 (the seat's witness audit; amends R161's freeze by addition only).** Every rule from R154 to R160, and every check in the validator's independent span check, now has a frozen case that fails when that rule alone is removed. Two checks cannot be isolated this way; they are covered under defence in depth below.
+  - **The audit.** At `d678c8a4671` the seat removed one rule at a time, in memory and never on disk, and ran the five frozen envelope suites (472 cases).
+    - Cases failed with each rule removed: R154, 4; R155, 36; R156, 1 for each half; R157, 2; R158, 3; R159, 3; R160, 1.
+    - Removing R153's unit rule, or the check that the span parses to the row's value, failed no case.
+      - R155 took over R153's frozen case. That case's target, `<!--1.63%-->`, sits in a comment, so R155 refuses it first.
+      - No frozen case moved a receipt onto a delimited literal of another value.
+  - **The witnesses.** `tests/test_pg_envelope_f1_probes_r4.py` gains four cases. Like R155's, they go through R143's seam. Each moves a present receipt onto a printed literal inside `<p>…</p>`, inserted before `</text>`, so it passes R155.
+    - The first three literals parse to their row's value but carry a marker that row's unit forbids, so only R153 refuses them:
+      - `1.63%` for Q3 diluted EPS;
+      - `$3` for Q1 reported sales growth;
+      - `$4` for the Q3 FX contribution, measured in points.
+    - The fourth, `9.99` for Q3 diluted EPS, has the wrong value, so only the value check refuses it.
+    - At `d678c8a4671` all four pass. Removing R153 fails exactly the first three. Removing the value check fails exactly the fourth. Removing any other rule fails the same cases as before and none of the four.
+  - **Defence in depth.** The raw-literal check and the decodes-to-whitespace check have no witness, because no outcome can isolate them.
+    - `html.unescape` keeps every whitespace character and every `<`. `_literal` returns nothing for text that holds whitespace, and its grammar has no `<`.
+    - So the value check refuses every span that either of these checks refuses. Removing one of them alone changes only the reason the validator gives, never whether it refuses.
+    - Both checks stay: they name the failure first, and R114 forbids relaxing the validator.
+  - The suite now holds 140 cases. Its CI job, its paths and its run line are unchanged. #7905 stays Draft/HOLD.

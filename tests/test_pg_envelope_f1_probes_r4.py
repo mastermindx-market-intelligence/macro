@@ -1,12 +1,13 @@
 """CDV-1 T1 F1-Q envelope — frozen R4 witness (seat-frozen after the independent Opus re-audit R4 of 2a8d1eb1a9c).
 
 Every case edits one of the frozen gzipped originals in memory and asserts the outcome that the bytes and the seat
-rulings R116-R153 and R154-R161 require.  The constructions are the auditor's (P1-P4, M1-M3), widened by the seat to
+rulings R116-R153 and R154-R162 require.  The constructions are the auditor's (P1-P4, M1-M3), widened by the seat to
 both narrowing directions on every present row, to the spaced forms of the M1 relocations, to the unit cell on the
-right of a per-share value and on the left of a percent value, and to the controls each ruling keeps.  Every case drives
-the public path (build_event_workspace, validate_selected_facts) except the R155 seam cases, which patch the shared
-receipts API that R143 names as the only place a wrapped receipt is minted, and the R160 census, which reads the
-vocabularies themselves (R160 names both exceptions to R131).
+right of a per-share value and on the left of a percent value, and to the controls each ruling keeps.  R162 adds the
+seat's own witnesses for the two validator checks no other frozen case isolates.  Every case drives the public path
+(build_event_workspace, validate_selected_facts) except the R155 and R162 seam cases, which patch the shared receipts
+API that R143 names as the only place a wrapped receipt is minted, and the R160 census, which reads the vocabularies
+themselves (R160 names both exceptions to R131).
 
 Rulings: research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R4_2026-09-25.md.
 Audit record: research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R4_2026-09-25.md.
@@ -318,3 +319,41 @@ def test_r160_every_vocabulary_is_the_census_of_the_three_originals():
         for role, ordinal in admission.roles.items():
             produced.setdefault(role, set()).update(pe._signature(document.tables[ordinal]))
     assert {role: set(vocabulary) for role, vocabulary in pe._VOCABULARIES.items()} == produced
+
+
+# ============================ R162: the unit rule and the value check each have a witness of their own
+MARKED = {
+    "per_share_percent": ("Q3", t.DIL, "<p>1.63%</p>", "1.63%"),
+    "percent_dollar": ("Q1", t.SALES, "<p>$3</p>", "$3"),
+    "points_dollar": ("Q3", "pg_fx_contribution_pp", "<p>$4</p>", "$4"),
+}
+
+
+def relocate(monkeypatch, q, metric, fragment, literal):
+    """Insert `fragment` before </text> and, through R143's seam, mint the row's receipt on `literal` inside it."""
+    body = src(q)
+    end = body.lower().rindex("</text>")
+    body = body[:end] + fragment + body[end:]
+    at = body.index(literal, end)
+    reseat(monkeypatch, body, spans(q)[metric], (at, at + len(literal)))
+    return build(body, q)
+
+
+@pytest.mark.parametrize("form", sorted(MARKED))
+def test_r162_a_delimited_literal_holding_a_marker_its_unit_forbids_is_refused(monkeypatch, form):
+    """R162 (witnesses R153 alone): a present receipt relocated onto a printed, delimited literal that parses to the
+    row's value but holds a marker the row's unit forbids passes R155 and the value check; only R153 refuses it."""
+    q, metric, fragment, literal = MARKED[form]
+    ws, texts, _ = relocate(monkeypatch, q, metric, fragment, literal)
+    assert r1.numeric(ws)[metric] == t.expected_values(REL[q])[metric]
+    assert excerpt(ws, metric) == literal, "wrapped receipts are minted via receipt_for_char_span"
+    assert not r1.validates(ws, texts, REL[q])
+
+
+def test_r162_a_delimited_literal_of_another_value_is_refused(monkeypatch):
+    """R162 (witnesses the value check alone): the Q3 diluted-EPS receipt relocated onto a printed, delimited '9.99'
+    passes R155 and R153; only the parse of the span against the row's value refuses it."""
+    ws, texts, _ = relocate(monkeypatch, "Q3", t.DIL, "<p>9.99</p>", "9.99")
+    assert r1.numeric(ws)[t.DIL] == t.expected_values(Q3)[t.DIL]
+    assert excerpt(ws, t.DIL) == "9.99", "wrapped receipts are minted via receipt_for_char_span"
+    assert not r1.validates(ws, texts)
