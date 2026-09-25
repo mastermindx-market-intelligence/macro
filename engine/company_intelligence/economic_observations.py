@@ -245,6 +245,13 @@ def _validate_envelope_span(row: Mapping[str, Any], *, source: str) -> None:
         raise EconomicObservationError("present envelope observation span is not UTF-8 aligned") from exc
     if "<" in raw or any(character.isspace() for character in raw):
         raise EconomicObservationError("present envelope observation span is not a raw literal")
+    gap_start = source_bytes.rfind(b">", 0, start) + 1
+    gap_end = source_bytes.find(b"<", end)
+    if gap_end < 0:
+        gap_end = len(source_bytes)
+    for gap in (source_bytes[gap_start:start], source_bytes[end:gap_end]):
+        if not all(character.isspace() for character in html.unescape(gap.decode("utf-8"))):
+            raise EconomicObservationError("present envelope observation span is not a whole literal")
     unescaped = html.unescape(raw)
     if any(character.isspace() for character in unescaped):
         raise EconomicObservationError("present envelope observation decodes to whitespace")
