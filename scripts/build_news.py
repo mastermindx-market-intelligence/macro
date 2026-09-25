@@ -151,7 +151,7 @@ def _enrich(sections: list[list[dict]]) -> str:
 
 
 # --------------------------------------------------------------------------- #
-def build(write: bool = True) -> dict:
+def build(write: bool = True, *, guidance_workspaces: dict | None = None) -> dict:
     cfg = config.load()
     now = datetime.now(timezone.utc)
     vm: dict = {"built": now.isoformat(), "built_date": now.date().isoformat(),
@@ -303,7 +303,11 @@ def build(write: bool = True) -> dict:
         _write("financial.json", _fin_to_write)
         try:
             from engine import financial_news as fnews
-            bt = fnews.mastermind_by_ticker(_fin_to_write)
+            # Optional pairs are supplied by the existing Company Intelligence
+            # owner. No new fetch/history store or implicit provider activation.
+            bt = (fnews.mastermind_by_ticker(_fin_to_write) if guidance_workspaces is None
+                  else fnews.mastermind_by_ticker(_fin_to_write,
+                      guidance_workspaces=guidance_workspaces, as_of=now))
             _write("by_ticker.json", {"schema": "news_flow.v1", "is_context_only": True,
                                       "asof": vm["built_date"], "tickers": bt})
             log.info("news by_ticker: %d tickers", len(bt))

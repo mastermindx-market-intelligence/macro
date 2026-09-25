@@ -874,7 +874,9 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
     return out
 
 
-def mastermind_by_ticker(feed_dict: dict | None) -> dict:
+def mastermind_by_ticker(feed_dict: dict | None, *,
+                         guidance_workspaces: dict | None = None,
+                         as_of: datetime | None = None) -> dict:
     """Compact per-ticker signal for the Mastermind 'news_flow' lens.
 
     Per ticker: recent headline count, a context-only sentiment lean aggregated
@@ -919,4 +921,15 @@ def mastermind_by_ticker(feed_dict: dict | None) -> dict:
                     for h in items[:4]],
             "note": "Public-record financial news flow. Context-only — informs narrative, never sizes alone.",
         }
+        # Accepted Company Intelligence pairs are supplied by their owner, never
+        # inferred from headlines. Default callers add no reads or model work.
+        pair = guidance_workspaces.get(t) if isinstance(guidance_workspaces, dict) else None
+        if isinstance(pair, dict):
+            from engine.company_intelligence.guidance_comparison import (
+                compare_guidance_workspaces, public_guidance_context,
+            )
+            out[t]["guidance_context"] = public_guidance_context(
+                compare_guidance_workspaces(pair.get("current"), pair.get("prior"),
+                                            as_of=as_of, ticker=t,
+                                            expected_security_id=pair.get("expected_security_id")))
     return out
