@@ -151,7 +151,7 @@ def _text(fragment: str) -> str:
 
 
 def _norm(value: str) -> str:
-    return "".join(html.unescape(value).replace("\xa0", " ").split()).casefold()
+    return "".join(value.replace("\xa0", " ").split()).casefold()
 
 
 def _label_token(value: str) -> str:
@@ -831,10 +831,8 @@ def _period_titles(rows: Sequence[Sequence[Cell]], cell: Cell) -> list[date | No
 
 
 def _parse_period_title(value: str) -> date | None:
-    match = re.fullmatch(
-        r"three months ended ([a-z]+) (\d{1,2})(?:, (\d{4}))?",
-        " ".join(value.replace("&#160;", " ").replace("<br/>", " ").split()).casefold(),
-    )
+    folded = " ".join(value.split()).casefold()
+    match = re.fullmatch(r"three months ended ([a-z]+) (\d{1,2})(?:, (\d{4}))?", folded)
     if match:
         month = month_number(match.group(1))
         day = int(match.group(2))
@@ -842,7 +840,7 @@ def _parse_period_title(value: str) -> date | None:
         if month is None or not _valid_day(year, month, day):
             return None
         return PeriodTitle(month, day, year)
-    match = re.fullmatch(r"([a-z]+) - ([a-z]+) (\d{4})", " ".join(value.replace("&#160;", " ").replace("<br/>", " ").split()).casefold())
+    match = re.fullmatch(r"([a-z]+) - ([a-z]+) (\d{4})", folded)
     if match:
         start = month_number(match.group(1))
         end = month_number(match.group(2))
