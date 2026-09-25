@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-09-25T21:49:48.795272+00:00",
+  "produced_at": "2026-09-25T22:39:40.163382+00:00",
   "as_of": "2026-09-25",
   "overall_status": "degraded",
   "lobes": [
@@ -3315,7 +3315,7 @@
   ],
   "cortex": {
     "cortex_source": "current_run",
-    "memo_as_of": "2026-09-25T21:49:45+00:00",
+    "memo_as_of": "2026-09-25T22:39:35+00:00",
     "run_status": {
       "status": "degraded",
       "degraded": true,
@@ -3336,7 +3336,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "auth",
-          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CfQtugKijh4QPn6b7PpCj'}"
+          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CfQxiDbnaYQHqHNSjQd6n'}"
         },
         {
           "provider": "oauth",
