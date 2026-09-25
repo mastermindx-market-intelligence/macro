@@ -36,7 +36,7 @@
 # conflict_policy  ∈ PRIMARY_ONLY | FALLBACK | DOMAIN_AUTHORITY | CROSS_VALIDATE | COMPOSITE
 # ─────────────────────────────────────────────────────────────────────────────
 schema: dataset_registry.v1
-updated: "2026-08-25"
+updated: "2026-09-20"
 
 datasets:
 
@@ -564,6 +564,79 @@ datasets:
       disclosed in _receipt.json's `pending_transition_refusals`/`listing_continuity`
       blocks, not written here — this dataset records only a REALIZED correction.
 
+  # ── China physical-gold source plane — PRODUCED after live source proof ────────
+  # Promoted 2026-09-20 after the protected-main gold_china_basis backfill landed
+  # both raw stores and the exact-main source -> engine -> rendered-panel audit
+  # bound those artifacts, machine projection, freshness and 5/30-session context.
+  - dataset_id: commodity.gold.sge_au9999.close
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: collectors/china_gold_basis.py::ChinaGoldBasisAdapter
+    storage: data/gold_china_basis/sge_au9999.parquet
+    format: parquet
+    grain: [observed_at]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: nightly
+    adjustment: none
+    vendor: tushare
+    endpoint: sge_daily
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, freshness, continuity]
+    version: "1.0.0"
+    schema:
+      rmb_per_g:
+        dtype: float64
+        unit: CNY_per_gram
+        nullable: false
+        note: >-
+          Au99.99 trade-date close, timestamped at the final 15:30 Asia/Shanghai
+          close clock for the close-aligned display proxy.
+    code_consumers: [engine/china_gold_premium.py]
+    notes: >-
+      PRODUCED 2026-09-20 after protected-main source accrual plus an exact-main
+      quality receipt bound the real parquet artifact, selected 2026-09-18
+      observation, machine projection and rendered Gold panel. TuShare compliance
+      remains Chairman-verified-private/SATISFIED under
+      DEC:CNLI-TUSHARE-COMPLIANCE-IS-CHAIRMAN-VERIFIED-PRIVATE; private agreement
+      material is deliberately not a repository input.
+
+  - dataset_id: commodity.gold.xaucny.close_ref
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: collectors/china_gold_basis.py::ChinaGoldBasisAdapter
+    storage: data/gold_china_basis/xaucny_spot.parquet
+    format: parquet
+    grain: [observed_at]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: nightly
+    adjustment: none
+    vendor: massive
+    endpoint: /v2/aggs/ticker/C:XAUCNY/range/1/minute/{from}/{to}
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, freshness, continuity]
+    version: "1.0.0"
+    schema:
+      cny_per_oz:
+        dtype: float64
+        unit: CNY_per_troy_ounce
+        nullable: false
+        note: >-
+          Global XAU/CNY minute close aligned within the configured tolerance to
+          the Shanghai 15:30 close clock.
+    code_consumers: [engine/china_gold_premium.py]
+    notes: >-
+      PRODUCED 2026-09-20 after protected-main source accrual plus an exact-main
+      quality receipt bound the real parquet artifact, selected 2026-09-18
+      observation, machine projection and rendered Gold panel. The exact-endpoint
+      technical entitlement remains wired into the incumbent Massive capability
+      manifest. The operator-level licensing record remains
+      research/licenses/MASSIVE_ENTITLEMENT_RECORD.md; dataset-specific vendor
+      conditions, if any, remain authoritative.
+
   # ── Existing Prophet inputs consumed by V4-B1 ─────────────────────────────
   # These stores retain their incumbent producers and owners. Registration as B1
   # lineage does not transfer ranking, Door, or Radar authority to B1.
@@ -657,9 +730,12 @@ datasets:
   # ── Prophet US V4-B1 canonical candidate episodes ─────────────────────────
   # BUILT_PENDING_NATURAL_ACCEPTANCE: these contracts are PROPOSED until the first
   # ordinary scheduled nightly creates and validates the production generation.
+  # NATURALLY_ACCEPTED_2026-08-28: scheduled run 33147282433 produced generation
+  # `peg:c025bb50c45f…` in durable main commit `a8ee11ba0e48`; see
+  # agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-08-28-b1-acceptance.md:37-46.
   - dataset_id: prophet.us.candidate_episode.turn_watch_input
     layer: L1
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/build_turn_watch.py
     storage: data/us_prophet_rank/episode_inputs/turn_watch/{session}.json
@@ -688,7 +764,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.events
     layer: L2
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/events/{month}.jsonl
@@ -719,7 +795,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.suppressions
     layer: L2
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/suppressions/{month}.jsonl
@@ -748,7 +824,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.current
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/current.parquet
@@ -778,7 +854,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.all_candidates
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/all_candidates.json
@@ -806,7 +882,7 @@ datasets:
 
   - dataset_id: prophet.us.candidate_episode.reconciliation_receipt
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: prophet-us-v4-b1
     producer: scripts/reconcile_us_candidate_episodes.py
     storage: data/us_prophet_rank/episodes/generations/<HEAD.generation_id>/latest_receipt.json

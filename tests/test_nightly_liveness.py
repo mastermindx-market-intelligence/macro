@@ -585,6 +585,7 @@ def test_only_the_mainland_carries_a_calendar_day_floor():
     floors = {s["market"]: s["min_calendar_days"] for s in MARKET_BOARDS}
     assert floors == {"us": None, "us_premium": None, "cn": 11, "hk": None,
                        "ca": None, "intl": None,
+                       "si_baskets": None, "si_action": None, "si_sector": None,
                        "cn_ledger": 11, "hk_ledger": None}
 
 
@@ -661,12 +662,12 @@ def test_check_d_is_silent_when_not_requested():
 
 
 # ── registry + wiring: the ways this check can ship dead ───────────────────
-def test_registry_covers_the_five_markets_and_two_ledgers():
-    """The five site/factordata boards, in their original order, plus the entitled US
-    twin beside its free board, plus the two GD-4A.1 risk-forward ledgers appended at
-    the end."""
+def test_registry_covers_markets_sector_intelligence_and_ledgers():
+    """Market boards stay ordered, followed by the three Sector Intelligence
+    generation artifacts and the two GD-4A.1 risk-forward ledgers."""
     assert [spec["market"] for spec in MARKET_BOARDS] == [
-        "us", "us_premium", "cn", "hk", "ca", "intl", "cn_ledger", "hk_ledger",
+        "us", "us_premium", "cn", "hk", "ca", "intl",
+        "si_baskets", "si_action", "si_sector", "cn_ledger", "hk_ledger",
     ]
     paths = [spec["path"] for spec in MARKET_BOARDS]
     assert len(set(paths)) == len(paths), paths
@@ -1078,3 +1079,51 @@ def test_ledger_missing_file_is_loud_not_green():
     assert report["ok"] is True, report
     assert any("INDETERMINATE [CN Risk Ledger]" in w for w in report["warnings"]), report
     assert any("INDETERMINATE [HK Risk Ledger]" in w for w in report["warnings"]), report
+
+
+# ── Sector Intelligence semantic generation ─────────────────────────────────
+
+def test_sector_intelligence_artifacts_are_registered_independently():
+    rows = {spec["market"]: spec for spec in MARKET_BOARDS}
+    expected = {
+        "si_baskets": "site/basketdata/baskets.json",
+        "si_action": "site/basketdata/action_board.json",
+        "si_sector": "site/sectordata/sector_central.json",
+    }
+    for market, path in expected.items():
+        assert market in rows
+        assert rows[market]["path"] == path
+        assert rows[market]["calendar"] == "nyse"
+        assert rows[market]["max_sessions_behind"] == 1
+
+
+def test_sector_intelligence_fresh_but_split_generation_pages():
+    report = evaluate(
+        D_RUNS,
+        D_INDEX,
+        D_NOW,
+        boards=_boards(
+            si_baskets={"as_of": "2026-08-17"},
+            si_action={"as_of": "2026-08-16"},
+            si_sector={"as_of": "2026-08-17"},
+        ),
+    )
+    assert report["ok"] is False
+    split = [reason for reason in report["fail_reasons"]
+             if "SECTOR INTELLIGENCE VINTAGE SPLIT" in reason]
+    assert len(split) == 1, report
+    assert "2026-08-16" in split[0] and "2026-08-17" in split[0]
+
+
+def test_sector_intelligence_action_board_without_stamp_pages():
+    report = evaluate(
+        D_RUNS,
+        D_INDEX,
+        D_NOW,
+        boards=_boards(si_action={"action_board": {"total": 36}}),
+    )
+    assert report["ok"] is False
+    assert any(
+        "BOARD PUBLISHED WITHOUT A STAMP [Sector Intelligence action board]" in reason
+        for reason in report["fail_reasons"]
+    ), report

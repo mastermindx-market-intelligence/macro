@@ -1,0 +1,29 @@
+{
+  "proof_class": "immutable_source_path_composition_on_previous_tested_recovery_tree",
+  "baseline_tree": "c748468aebd81340a241b97035f67327d9f9a5f7",
+  "source_amendments": [
+    [
+      "7187",
+      "0a076cedd8094e5425e782aca976820e93ed6e8e",
+      "6e766355fb047980ff7a47eba26b9abfa2e005d0",
+      [
+        ".github/ci/legacy-jobs.yml",
+        "templates/dashboard.html.j2",
+        "tests/test_p0_prophet_candidate_board.py"
+      ]
+    ],
+    [
+      "7254",
+      "0a105d9a516ece178841aa20924fda581339e8a2",
+      "72ffa974ffe7aec76f4514512cf36d52fec8a1b3",
+      [
+        ".github/ci/legacy-jobs.yml"
+      ]
+    ]
+  ],
+  "tree": "f7c7533043dd2901c4462a446c133d2cbe601aba",
+  "new_jobs": 0,
+  "new_code_steps": 2,
+  "full_PR_document_merge_claimed": false,
+  "production": false
+}
