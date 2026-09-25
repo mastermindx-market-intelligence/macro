@@ -654,6 +654,10 @@ def is_spurious_check(name: str) -> bool:
 #: ``ci-authority/main`` stays binding. Do not widen this to the active
 #: context, and do not fold it into :func:`is_spurious_check`.
 CI_AUTHORITY_INACTIVE_CONTEXT = "ci-authority/codex/merge-queue-pilot"
+# Vercel is not part of the repository-owned proof contract. The connected legacy
+# project currently posts a failing status for every commit when its build-rate
+# quota is exhausted; that external quota state must not be attributed to PR code.
+VERCEL_STATUS_CONTEXT = "Vercel"
 
 
 def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
@@ -673,11 +677,12 @@ def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
     Call this from a gate; do not re-spell the inactive literal at the call
     site — that is how ``decide_verdict`` and ``failing_check_names`` drifted.
     """
-    if is_spurious_check(str(name or "")):
+    check = str(name or "")
+    if is_spurious_check(check) or check == VERCEL_STATUS_CONTEXT:
         return True
     return (
         str(base_ref or "main") == "main"
-        and str(name or "") == CI_AUTHORITY_INACTIVE_CONTEXT
+        and check == CI_AUTHORITY_INACTIVE_CONTEXT
     )
 
 
@@ -1810,7 +1815,10 @@ class ProofFreshness:
     unreadable proof identity is ``None`` — defer without mutation, because changing
     a branch cannot repair missing control-plane evidence. A surface that silently
     resolves to "nothing changed" would turn the gate into a no-op that reviews as
-    protection, which is the single worst outcome available here.
+    protection, which is the single worst outcome available here — so "could not
+    be read" and "read, classified, and owned by no gate" are kept DISTINCT
+    (``surface_of``): the first re-proves, the second is an affirmative answer
+    that no main move inside a gate path can invalidate.
     """
 
     def __init__(
@@ -2443,19 +2451,41 @@ class ProofFreshness:
         rejected strict one: `site/**` is in the surface of a pull request that
         edits `site/`, and is not in the surface of one that does not.
 
-        None means undeterminable — which includes the empty result. A pull request
-        whose files satisfy no entry of any path-filtered gate has a surface that
-        "silently resolves to the empty set", and merging on that would be the
-        no-op this gate exists to prevent.
+        None means undeterminable: the file inventory could not be read (an
+        error status, a malformed row, a truncated page set) or names no file
+        at all — a zero-file footprint is the clobbered-head shape, and it can
+        be shown to be outside nothing.
+
+        The EMPTY SET is a different, affirmative answer and is returned as
+        such: every changed file was read and classified against every
+        path-filtered gate, and none of them is owned. That pull request's
+        proof is the exact-head checks that ran, and a main commit inside
+        `engine/**` cannot invalidate a proof that never covered `engine/**`.
+        Until 2026-09-24 this case was folded into ``None`` ("silently resolves
+        to the empty set") and re-proved, which under a main that moves every
+        few minutes with 60-110 min packs is a livelock: #7958 (files only under
+        `agentos/handoffs/` and `mockups/evidence/`) was refreshed 0ee772f1 ->
+        d3f8bd8a -> fad0e00d -> 25e4a451, the third refresh 25 s AFTER run
+        36052314696 at fad0e00d had concluded green (sweep 36064269045,
+        21:53:55Z), and had to be disarmed and merged by hand.
+
+        Returning the empty set does not reopen the no-op-that-reviews-as-
+        protection hole the ``None`` rule guards. ``stale_for`` consults the
+        surface only after the SAME matcher, over the SAME gates, has already
+        found main's files inside a gate path (a non-empty ``candidates`` set);
+        a broken matcher or an unloaded gate set therefore never reaches this
+        branch — it short-circuits earlier as "none inside any gate's path
+        filter", exactly as it did before. An empty surface here means the
+        matcher works and the pull request's files are simply outside it.
         """
         files = self.pull_files(number)
-        if files is None:
+        if not files:
             return None
         surface: set[str] = set()
         for gate in self.gates:
             for name in files:
                 surface.update(ownership_matches(name, gate["patterns"]))
-        return surface or None
+        return surface
 
     def stale_for(
         self, pull: dict[str, Any], runs: list[dict[str, Any]]
@@ -2575,6 +2605,19 @@ class ProofFreshness:
             return True, (
                 "the pull request's own changed files could not be established, so "
                 "its tested surface is unknown"
+            )
+        if not surface:
+            # Files read and classified; none owned by any path-filtered gate
+            # (the #7958 records-only shape). The exact-head checks that ran
+            # are the whole proof, and main cannot have moved inside a surface
+            # this pull request does not have. Named distinctly so a sweep log
+            # says WHY the proof is current, not merely that it is.
+            file_count = len(self.pull_files(number) or [])
+            return False, (
+                f"main took {len(window)} commit(s) since the proof, none inside this "
+                f"pull request's tested surface — its {file_count} changed file(s) own "
+                "no path-filtered gate entry, so the exact-head checks that ran are "
+                "the whole proof"
             )
         hit = sorted(candidates & surface)
         if hit:

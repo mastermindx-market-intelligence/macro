@@ -175,6 +175,22 @@ async function readJson(r) {
   return { ok: false, error: describeNonJson(r, raw) };
 }
 
+/* Bound reads, never auto-retry or abort an operator write: a timed-out write
+   may already have executed. Include body parsing in the read deadline. */
+const ADMIN_READ_TIMEOUT_MS = 30000;
+async function readAdminResponse(path, opts) {
+  const method = String((opts && opts.method) || "GET").toUpperCase();
+  const controller = method === "GET" && !(opts && opts.signal) ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), ADMIN_READ_TIMEOUT_MS) : null;
+  try {
+    const response = await fetch(path, controller ? { ...opts, signal: controller.signal } : opts);
+    return { response, value: await readJson(response) };
+  } catch (error) {
+    if (controller && controller.signal.aborted) throw new Error("The admin server took too long to respond. Try again.");
+    throw error;
+  } finally { if (timer !== null) clearTimeout(timer); }
+}
+
 async function api(path, opts) {
   const cacheable = apiCacheable(path, opts);
   if (cacheable) {
@@ -190,16 +206,20 @@ async function api(path, opts) {
 
   const generation = API_CACHE_GENERATION;
   const request = (async () => {
-    const r = await fetch(path, opts);
+    const { response: r, value } = await readAdminResponse(path, opts);
     if (r.status === 401) {
       clearApiCache();
       showLogin();
       throw new Error("auth required");
     }
-    const value = await readJson(r);
     if (cacheable && generation === API_CACHE_GENERATION) {
-      if (r.ok) apiCacheStore(path, { value, expiresAt: Date.now() + apiCacheTtl(path) });
-      else API_CACHE.delete(path);
+      const semanticFailure = value && typeof value === "object" &&
+        (value.ok === false || Boolean(value.error));
+      if (r.ok && !semanticFailure) {
+        apiCacheStore(path, { value, expiresAt: Date.now() + apiCacheTtl(path) });
+      } else {
+        API_CACHE.delete(path);
+      }
     }
     return value;
   })();
@@ -321,23 +341,15 @@ const ICONS = {
      because it counts what is on it. */
   intelligence_os:       NAV_ICO('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8.5h6M7 12h6M7 15.5h4"/><circle cx="17" cy="8.5" r="1.1"/><circle cx="17" cy="12" r="1.1"/><circle cx="17" cy="15.5" r="1.1"/>'),
 };
+/* One inventory, organized by operator task. Specialist tools stay searchable
+   and keep their route IDs; they are not deleted or presented as everyday work. */
 const NAV_GROUPS = [
-  { label: "", items: [["overview", "Overview"]] },
-  { label: "Neural Web", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"]] },
-  { label: "Research", items: [["research_tools", "Research Tools"]] },
-  /* Marketing was one flat 19-item list — "SUPER messy" (operator, 2026-07-29).
-     Split along the operator's actual loops: the nightly production line he
-     walks first, the lanes that feed it, the engine room he opens when a number
-     looks wrong, and the strategy surfaces he reads occasionally. Floor leads
-     because it is the only page that answers "is it working" without clicking. */
-  { label: "Marketing · Floor", items: [["marketing_floor", "Floor"], ["marketing_content", "Content Studio"], ["marketing_outbox", "Outbox"], ["marketing_sentinel", "Sentinel"], ["marketing_publish", "Publisher"]] },
-  { label: "Marketing · Lanes", items: [["marketing_lanes", "X Lanes"], ["marketing_radar", "Radar"], ["marketing_reply_queue", "Reply Deck"], ["marketing_seo", "SEO"]] },
-  { label: "Marketing · Engine room", items: [["marketing_models", "Model Desk"], ["marketing_health", "Desk Health"], ["marketing_learning", "Learning"], ["marketing_lab", "Lab"], ["marketing_lobes", "Engines"]] },
-  { label: "Marketing · Strategy", items: [["marketing_overview", "CMO Office"], ["marketing_departments", "Departments"], ["marketing_campaigns", "Campaigns"], ["marketing_channels", "Channels & Desks"], ["personas", "Persona Roster"], ["marketing_allies", "Allies"], ["marketing_ads", "Ad Central"], ["marketing_experiments", "Experiments"]] },
-  { label: "Growth", items: [["analytics", "Analytics"], ["users", "Users"], ["revenue", "Revenue"], ["experiments", "Experiments"], ["site_gate", "Site Access"]] },
-  { label: "Support", items: [["support_tickets", "Support Tickets"], ["email_center", "Email Center"]] },
-  { label: "System", items: [["control_room", "Control Room"], ["system", "System"], ["health", "Health"], ["deploy", "Build & Deploy"], ["metabolism", "Metabolism"], ["codex", "Codex Research"], ["cost", "AI Cost"], ["content", "Content"]] },
-  { label: "Config", items: [["features", "Features"], ["brief", "AI Brief"], ["vector", "BTC Override"]] },
+  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
+  { label: "Customers", primary: true, items: [["analytics", "Analytics"], ["users", "Users"], ["support_tickets", "Support Tickets"], ["email_center", "Email Center"], ["revenue", "Revenue"]] },
+  { label: "Publishing", primary: true, items: [["marketing_floor", "Publishing overview"], ["marketing_outbox", "Outbox"], ["marketing_content", "Content Studio"], ["marketing_publish", "Publisher"]] },
+  { label: "Intelligence & research", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"], ["research_tools", "Research Tools"], ["experiments", "Experiments"]] },
+  { label: "Publishing tools", items: [["marketing_sentinel", "Sentinel"], ["marketing_lanes", "X Lanes"], ["marketing_radar", "Radar"], ["marketing_reply_queue", "Reply Deck"], ["marketing_seo", "SEO"], ["marketing_models", "Model Desk"], ["marketing_health", "Desk Health"], ["marketing_learning", "Learning"], ["marketing_lab", "Lab"], ["marketing_lobes", "Engines"], ["marketing_overview", "CMO Office"], ["marketing_departments", "Departments"], ["marketing_campaigns", "Campaigns"], ["marketing_channels", "Channels & Desks"], ["personas", "Persona Roster"], ["marketing_allies", "Allies"], ["marketing_ads", "Ad Central"], ["marketing_experiments", "Marketing experiments"]] },
+  { label: "Platform & settings", items: [["control_room", "Control Room"], ["metabolism", "Metabolism"], ["codex", "Codex Research"], ["cost", "AI Cost"], ["content", "Site inventory"], ["site_gate", "Site Access"], ["features", "Features"], ["brief", "AI Brief"], ["vector", "BTC Override"]] },
 ];
 const TAB_LABELS = Object.fromEntries(NAV_GROUPS.flatMap(g => g.items));
 const TAB_PREFETCH_PATHS = {
@@ -368,7 +380,7 @@ const TAB_PREFETCH_PATHS = {
   /* The group's LEAD page had no prefetch entry while every sibling did, so the
      front door was the one page that always cold-loaded (defect F7). */
   marketing_floor: ["/api/marketing/floor"],
-  marketing_content: ["/api/marketing/content"],
+  marketing_content: ["/api/marketing/content?charts=metadata"],
   marketing_lab: ["/api/marketing/lab"],
   marketing_reply_queue: ["/api/marketing/reply-deck"],
   marketing_health: ["/api/marketing/health"],
@@ -603,44 +615,64 @@ function tickLoopElapsed() {
 }
 
 function renderSidebar() {
-  const nav = $("#sidenav"); if (!nav) return; nav.innerHTML = "";
-  const finder = h(`<label class="nav-finder"><input type="search" id="navSearch" placeholder="Find an admin page…" autocomplete="off" aria-label="Find an admin page"></label>`);
-  const empty = h(`<div class="nav-empty" id="navEmpty">No matching pages</div>`);
-  nav.appendChild(finder);
+  const nav = $("#sidenav"); if (!nav) return;
+  nav.innerHTML = `<div class="nav-search"><label class="admin-sr-only" for="navSearch">Find an admin page</label><input id="navSearch" type="search" placeholder="Find an admin page…" autocomplete="off"></div>`;
   NAV_GROUPS.forEach(g => {
-    const grp = h(`<div class="nav-group" data-nav-group></div>`);
-    if (g.label) grp.appendChild(h(`<div class="eyebrow">${esc(g.label)}</div>`));
+    const grp = h(g.primary
+      ? `<div class="nav-group" data-nav-group><div class="eyebrow">${esc(g.label)}</div></div>`
+      : `<details class="nav-group nav-specialist" data-nav-group><summary>${esc(g.label)}<span class="nav-count">${g.items.length}</span></summary></details>`);
+    if (!g.primary && g.items.some(([id]) => id === CURRENT)) grp.open = true;
     g.items.forEach(([id, label]) => {
-      const it = h(`<div class="nav-item" data-tab="${id}" data-nav-label="${esc(label.toLowerCase())}" tabindex="0" role="button">${ICONS[id] || ""}<span>${esc(label)}</span></div>`);
-      if (id === CURRENT) it.classList.add("active");
+      const it = h(`<button type="button" class="nav-item" data-tab="${id}" data-nav-label="${esc((label + " " + id.replaceAll("_", " ") + " " + g.label).toLowerCase())}">${ICONS[id] || ""}<span>${esc(label)}</span></button>`);
       it.addEventListener("pointerenter", () => scheduleTabPrefetch(id), { passive: true });
       it.addEventListener("pointerleave", cancelTabPrefetch, { passive: true });
       it.addEventListener("focusin", () => prefetchTab(id));
       it.onclick = () => go(id);
-      it.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(id); } };
       grp.appendChild(it);
     });
     nav.appendChild(grp);
   });
+  const empty = h(`<div class="nav-empty" role="status" hidden>No matching pages. Try another name.</div>`);
   nav.appendChild(empty);
   const input = $("#navSearch");
-  if (input) input.addEventListener("input", () => {
+  let searching = false;
+  input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase(); let visible = 0;
     nav.querySelectorAll("[data-nav-group]").forEach(grp => {
+      if (grp.tagName === "DETAILS" && q && !searching) grp.dataset.beforeSearch = String(grp.open);
       let n = 0;
       grp.querySelectorAll(".nav-item").forEach(item => {
         const match = !q || (item.dataset.navLabel || "").includes(q);
-        item.style.display = match ? "" : "none";
+        item.hidden = !match;
         if (match) { visible++; n++; }
       });
-      grp.style.display = n ? "" : "none";
+      grp.hidden = n === 0;
+      if (grp.tagName === "DETAILS") {
+        if (q) grp.open = n > 0;
+        else if (searching) grp.open = grp.dataset.beforeSearch === "true";
+      }
     });
-    empty.style.display = visible ? "none" : "block";
+    searching = !!q;
+    empty.hidden = visible > 0;
+    if (!q) setActiveNav(CURRENT);
   });
+  input.addEventListener("keydown", e => {
+    if (e.key === "Escape" && input.value) {
+      e.stopPropagation(); input.value = ""; input.dispatchEvent(new Event("input"));
+    }
+  });
+  setActiveNav(CURRENT);
 }
 function setActiveNav(id) {
   const nav = $("#sidenav"); if (!nav) return;
-  nav.querySelectorAll(".nav-item").forEach(el => el.classList.toggle("active", el.dataset.tab === id));
+  nav.querySelectorAll(".nav-item").forEach(el => {
+    const active = el.dataset.tab === id;
+    el.classList.toggle("active", active);
+    if (active) {
+      el.setAttribute("aria-current", "page");
+      const group = el.closest("details"); if (group) group.open = true;
+    } else el.removeAttribute("aria-current");
+  });
 }
 
 /* Paint a small pending-count dot on a nav item (or clear it when n<=0). Used to
@@ -682,25 +714,67 @@ async function refreshSupportNavDot() {
 }
 function setTopbarTitle(t) { const el = $("#topbar-title"); if (el) el.textContent = t; }
 
+let ADMIN_DRAWER_WIRED = false;
 function setSidebarOpen(open) {
   const sidebar = $("#sidebar"), scrim = $("#sidebarScrim"), toggle = $("#sidebarToggle");
   if (!sidebar || !scrim || !toggle) return;
-  const next = !!open;
+  const mobile = window.matchMedia("(max-width: 900px)").matches;
+  const wasOpen = sidebar.classList.contains("open");
+  const next = mobile && !!open;
   sidebar.classList.toggle("open", next); scrim.classList.toggle("show", next);
   document.body.classList.toggle("nav-open", next);
   toggle.setAttribute("aria-expanded", next ? "true" : "false");
   toggle.setAttribute("aria-label", next ? "Close navigation" : "Open navigation");
+  if (!next && wasOpen && sidebar.contains(document.activeElement)) toggle.focus();
+  sidebar.inert = mobile && !next;
+  if (mobile && !next) sidebar.setAttribute("aria-hidden", "true");
+  else sidebar.removeAttribute("aria-hidden");
+  if (next && !wasOpen) { const search = $("#navSearch"); if (search) search.focus(); }
 }
 function wireSidebarDrawer() {
+  setSidebarOpen(false);
+  if (ADMIN_DRAWER_WIRED) return;
+  ADMIN_DRAWER_WIRED = true;
   const toggle = $("#sidebarToggle"), scrim = $("#sidebarScrim");
   if (toggle) toggle.onclick = () => setSidebarOpen(!$("#sidebar").classList.contains("open"));
   if (scrim) scrim.onclick = () => setSidebarOpen(false);
-  document.addEventListener("keydown", e => { if (e.key === "Escape") setSidebarOpen(false); });
-  window.matchMedia("(min-width: 901px)").addEventListener("change", e => { if (e.matches) setSidebarOpen(false); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") setSidebarOpen(false);
+    if (e.key !== "Tab" || !$("#sidebar").classList.contains("open")) return;
+    const focusable = [toggle, ...$("#sidebar").querySelectorAll("button,input,summary,a[href]")]
+      .filter(el => el && !el.disabled && el.getClientRects().length);
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  window.matchMedia("(min-width: 901px)").addEventListener("change", () => setSidebarOpen(false));
 }
 
+let ADMIN_RENDER_EPOCH = 0;
+function adminPageFailure(id, error, retry) {
+  if ($("#login").classList.contains("show")) return;
+  const view = $("#view");
+  view.innerHTML = `<section class="card admin-page-error" role="alert"><h2>This page could not be loaded</h2><p class="sub">Check your connection, then try again. You can still open another admin page.</p><div class="admin-error-actions"><button type="button" class="btn primary" id="adminRetry">Try again</button><button type="button" class="btn" id="adminBackHome">Open overview</button></div><details class="tech-details"><summary>Technical details</summary>${esc(error && error.message || "Page unavailable")}</details></section>`;
+  $("#adminRetry").onclick = () => { clearApiCache(); retry(); };
+  $("#adminBackHome").onclick = () => go("overview");
+}
+function runAdminRender(id, render) {
+  const epoch = ++ADMIN_RENDER_EPOCH;
+  return Promise.resolve().then(render).catch(error => {
+    if (epoch === ADMIN_RENDER_EPOCH) adminPageFailure(id, error, () => route());
+  });
+}
 function go(id) {
-  if (currentLobeId() || currentEngineId() || currentMktDept() || currentAnalyticsDetail() || currentTicketId()) history.replaceState(null, "", location.pathname + location.search);
+  if (!Object.prototype.hasOwnProperty.call(RENDER, id) || typeof RENDER[id] !== "function") {
+    ++ADMIN_RENDER_EPOCH;
+    adminPageFailure("overview", new Error("This admin page does not exist."), () => go("overview"));
+    return Promise.resolve();
+  }
+  const hash = "#/page/" + encodeURIComponent(id);
+  if (location.hash !== hash) {
+    const method = location.hash ? "pushState" : "replaceState";
+    history[method](null, "", location.pathname + location.search + hash);
+  }
   CURRENT = id;
   if (RT_TIMER)   { clearInterval(RT_TIMER);   RT_TIMER   = null; }
   if (LOOP_TIMER) { clearInterval(LOOP_TIMER); LOOP_TIMER = null; }
@@ -709,7 +783,7 @@ function go(id) {
   setActiveNav(id);
   setTopbarTitle(TAB_LABELS[id] || id);
   if (window.matchMedia("(max-width: 900px)").matches) setSidebarOpen(false);
-  RENDER[id]();
+  return runAdminRender(id, RENDER[id]);
 }
 
 /* hash router — lobe detail "pages" live at #/lobe/<id> */
@@ -759,17 +833,25 @@ function backToTickets() {
 }
 
 function route() {
-  const id = currentLobeId();
-  if (id) { renderLobeDetail(id); return; }
-  const engineId = currentEngineId();
-  if (engineId) { renderEngineDetail(engineId); return; }
-  const deptId = currentMktDept();
-  if (deptId) { renderMktDept(deptId); return; }
-  const det = currentAnalyticsDetail();
-  if (det) { (det.kind === "session" ? renderSessionDetail : renderVisitorDetail)(det.id); return; }
-  const tid = currentTicketId();
-  if (tid) { renderTicketDetail(tid); return; }
-  go(CURRENT || "overview");
+  try {
+    const page = location.hash.match(/^#\/page\/([^/]+)$/);
+    if (page) return go(decodeURIComponent(page[1]));
+    const id = currentLobeId();
+    if (id) return runAdminRender("neural_web", () => renderLobeDetail(id));
+    const engineId = currentEngineId();
+    if (engineId) return runAdminRender("intelligence_os", () => renderEngineDetail(engineId));
+    const deptId = currentMktDept();
+    if (deptId) return runAdminRender("marketing_departments", () => renderMktDept(deptId));
+    const det = currentAnalyticsDetail();
+    if (det) return runAdminRender("analytics", () => (det.kind === "session" ? renderSessionDetail : renderVisitorDetail)(det.id));
+    const tid = currentTicketId();
+    if (tid) return runAdminRender("support_tickets", () => renderTicketDetail(tid));
+    if (location.hash && location.hash !== "#") throw new Error("This admin page address is not recognized.");
+    return go(CURRENT || "overview");
+  } catch (error) {
+    ++ADMIN_RENDER_EPOCH;
+    adminPageFailure("overview", error, () => go("overview"));
+  }
 }
 window.addEventListener("hashchange", route);
 
@@ -778,26 +860,22 @@ function renderHeader() {
   const m = SUMMARY.meta || {};
   const hh = SUMMARY.health || {};
   const sv = SUMMARY.services || {};
-  const allOk = hh.healthy && (!sv.available || sv.healthy);
+  const { healthKnown, serviceKnown } = adminOverviewModel(SUMMARY);
+  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy;
+  const hasIssue = (healthKnown && !hh.healthy) || (serviceKnown && !sv.healthy);
   const hhDown = hh.down_count != null ? hh.down_count : ((hh.sources && hh.sources.down) || 0);
   const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy)) ? "bad" : "warn");
   const el = $("#hmeta"); el.innerHTML = "";
-  el.appendChild(h(`<span class="pill"><span class="led ${led}"></span>${allOk ? "Healthy" : "Attention"}</span>`));
-  const ex = SUMMARY.experiments || {};
-  if (ex.available && ex.ready_count > 0) {
-    const p = h(`<span class="pill ready" title="experiment results are ready — open the Experiments tab">🔔 ${ex.ready_count} result${ex.ready_count > 1 ? "s" : ""} ready</span>`);
-    p.style.cursor = "pointer"; p.onclick = () => go("experiments");
-    el.appendChild(p);
-  }
+  el.appendChild(h(`<span class="pill"><span class="led ${led}"></span>${allOk ? "Healthy" : hasIssue ? "Attention" : "Incomplete"}</span>`));
   const sysMeta = [
     m.deployed ? "deployed" : "local",
     `repo ${m.repo || "unknown"}`,
-    m.has_token ? "GitHub actions enabled" : "GitHub read-only",
+    m.has_token ? "GitHub configured" : "GitHub read-only",
   ].join(" · ");
-  const sysPill = h(`<span class="pill" title="${esc(sysMeta)}">System</span>`);
+  const sysPill = h(`<button type="button" class="pill" title="${esc(sysMeta)}">System</button>`);
   sysPill.style.cursor = "pointer"; sysPill.onclick = () => go("system"); el.appendChild(sysPill);
   if (m.site_url) el.appendChild(h(`<a href="${esc(m.site_url)}" target="_blank" rel="noopener">Open site ↗</a>`));
-  if (SESSION.auth_enabled) { const lo = h(`<span class="logout">log out</span>`); lo.onclick = logout; el.appendChild(lo); }
+  if (SESSION.auth_enabled) { const lo = h(`<button type="button" class="logout">Log out</button>`); lo.onclick = logout; el.appendChild(lo); }
 }
 
 function renderBanner() {
@@ -820,8 +898,11 @@ async function doCommit(push) {
 }
 
 async function refresh() {
-  SUMMARY = await api("/api/summary");
-  if (SUMMARY.error) { toast(SUMMARY.error, true); return; }
+  const next = await api("/api/summary");
+  if (!next || next.error || next.ok === false || !next.meta || !next.health) {
+    throw new Error((next && next.error) || "The admin status snapshot is unavailable.");
+  }
+  SUMMARY = next; // keep the last good snapshot when a refresh fails
   renderHeader(); renderBanner();
 }
 
@@ -1133,36 +1214,66 @@ function wireProgramWatch(pw) {
 }
 
 /* ---- OVERVIEW ----------------------------------------------------------- */
+/* Operational status is not interchangeable with integration configuration.
+   Unknown stays unknown; historical research records never become site incidents. */
+function adminOverviewModel(s) {
+  const hh = s.health || {}, sv = s.services || {}, sys = s.system || {}, cost = s.cost || {};
+  const healthKnown = typeof hh.healthy === "boolean" && Number.isFinite(hh.age_hours) && hh.age_hours >= 0;
+  const serviceKnown = sv.available === true && typeof sv.healthy === "boolean";
+  const notices = [];
+  if (!healthKnown) notices.push({ page: "health", title: "Pipeline status unavailable", detail: "Open data health to inspect the latest report.", tone: "warn" });
+  else if (!hh.healthy) notices.push({ page: "health", title: "Data pipeline needs attention", detail: "Review the latest pipeline report before rebuilding.", tone: "warn" });
+  if (sv.available && sv.healthy === false) notices.push({ page: "system", title: "Background services need attention", detail: "Check service failures in System status.", tone: "bad" });
+  return { hh, sv, sys, cost, healthKnown, serviceKnown, notices };
+}
+function adminOverviewMetric(page, label, value, detail, tone = "") {
+  return `<button type="button" class="card admin-metric" data-admin-go="${page}"><span class="eyebrow">${esc(label)}</span><strong class="admin-metric-value ${tone ? "admin-tone-" + tone : ""}">${esc(value)}</strong><span class="sub">${esc(detail)}</span><span class="admin-metric-link">Open ${esc(TAB_LABELS[page])} →</span></button>`;
+}
 RENDER.overview = async () => {
   const v = $("#view"), s = SUMMARY;
-  const hh = s.health || {}, c = s.cost || {}, sys = s.system || {}, sv = s.services || {}, m = s.meta || {};
-  const flagsOn = Object.values((s.flags && s.flags.groups) || {}).flat().filter(f => f.value === true).length;
-  const mem = sys.memory || {}, disk = sys.disk || {};
-  v.innerHTML = `
-    <div class="grid">
-      ${card("Pipeline", `<div class="big" style="color:${hh.healthy ? "var(--ok)" : "var(--warn)"}">${hh.healthy ? "Healthy" : "Attention"}</div>
-        <div class="sub">last run ${fmtAge(hh.age_hours)} ago · ${(hh.sources || {}).ok || 0}/${(hh.sources || {}).total || 0} sources</div>`)}
-      ${card("Background jobs", sv.available ? `<div class="big" style="color:${sv.healthy ? "var(--ok)" : "var(--bad)"}">${sv.ok_count}/${sv.total}</div><div class="sub">running normally</div>` : `<div class="big">—</div><div class="sub">status unavailable</div>`)}
-      ${card("Server", sys.available ? `<div class="big">${mem.used_pct != null ? mem.used_pct + "%" : "—"}<span class="sub"> memory</span></div><div class="sub">disk ${disk.used_pct != null ? disk.used_pct + "%" : "—"} · load ${sys.cpu && sys.cpu.load1 != null ? sys.cpu.load1.toFixed(2) : "—"}</div>` : `<div class="big">—</div><div class="sub">server only</div>`)}
-      ${card("Est. AI cost", `<div class="big">${fmtUSD(c.monthly_usd)}<span class="sub"> /mo</span></div><div class="sub">${fmtUSD(c.effective_daily_usd)}/day</div>`)}
-      ${card("Features", `<div class="big">${flagsOn}</div><div class="sub">enabled</div>`)}
-      ${card("Analytics", `<div class="big" style="color:var(--ok);font-size:18px">Live</div><div class="sub">${m.integrations && m.integrations.umami ? "connected" : "tracking enabled"}</div>`)}
-      ${card("Experiments", `<div class="big" style="color:${(s.experiments && s.experiments.ready_count) ? "var(--ok)" : "var(--text)"}">${(s.experiments && s.experiments.ready_count) || 0}<span class="sub"> ready</span></div><div class="sub">${s.experiments && s.experiments.soonest && s.experiments.soonest.days_until > 0 ? "next in " + s.experiments.soonest.days_until + "d" : (s.experiments && s.experiments.n ? s.experiments.n + " tracked" : "—")}</div>`)}
+  const { hh, sv, sys, cost, healthKnown, serviceKnown, notices } = adminOverviewModel(s);
+  const mem = sys.memory || {}, disk = sys.disk || {}, meta = s.meta || {};
+  const sources = hh.sources || {};
+  const sourceDetail = Number.isFinite(sources.ok) && Number.isFinite(sources.total)
+    ? `${sources.ok}/${sources.total} sources · last run ${fmtAge(hh.age_hours)} ago`
+    : "No current source report";
+  const serviceCounts = Number.isFinite(sv.ok_count) && Number.isFinite(sv.total);
+  const serviceValue = !sv.available || typeof sv.healthy !== "boolean" ? "Unavailable"
+    : sv.healthy ? "Running normally" : "Needs attention";
+  const serverValue = sys.available && Number.isFinite(mem.used_pct) ? `${mem.used_pct}% memory` : "Unavailable";
+  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used` : "Host metrics are not available in this environment";
+  const costValue = Number.isFinite(cost.monthly_usd) ? `${fmtUSD(cost.monthly_usd)} /mo` : "Unavailable";
+  const costDetail = Number.isFinite(cost.effective_daily_usd) ? `${fmtUSD(cost.effective_daily_usd)} /day · estimate, not billed spend` : "No current cost estimate";
+  const alerts = s.key_alerts && Array.isArray(s.key_alerts.items) ? s.key_alerts.items.length : null;
+  v.innerHTML = `<section class="admin-home" aria-labelledby="admin-home-title">
+    <header class="admin-home-header"><div><div class="eyebrow">Operations workspace</div><h1 id="admin-home-title">Admin overview</h1><p class="sub">Check the system, handle customer work, and review publishing.</p></div><button type="button" class="btn" id="adminRefresh">Refresh status</button></header>
+    <div class="admin-status-grid">
+      ${adminOverviewMetric("health", "Data pipeline", !healthKnown ? "Unavailable" : hh.healthy ? "Healthy" : "Needs attention", sourceDetail, !healthKnown || !hh.healthy ? "warn" : "ok")}
+      ${adminOverviewMetric("system", "Background services", serviceValue, sv.available && serviceCounts ? `${sv.ok_count}/${sv.total} services running` : "Live service checks unavailable", !serviceKnown ? "" : sv.healthy ? "ok" : "bad")}
+      ${adminOverviewMetric("system", "Server resources", serverValue, serverDetail)}
+      ${adminOverviewMetric("cost", "Estimated AI cost", costValue, costDetail)}
     </div>
-    ${renderKeyAlerts(s.key_alerts)}
-    ${renderProgramWatch(s.program_watch)}
-    <div class="section">Quick actions</div>
-    <div id="qa"></div>`;
+    <section class="admin-attention" aria-labelledby="admin-attention-title"><h2 id="admin-attention-title">Operational attention</h2>
+      ${notices.length ? notices.map(n => `<button type="button" class="admin-notice" data-admin-go="${n.page}"><span class="led ${n.tone}"></span><span><strong>${esc(n.title)}</strong><span class="sub">${esc(n.detail)}</span></span><span aria-hidden="true">→</span></button>`).join("") : `<div class="admin-notice"><span class="led ok"></span><span>No issues reported by the available pipeline and service checks.</span></div>`}
+      ${!serviceKnown ? `<p class="sub admin-coverage-note">Service monitoring is unavailable; this is not a complete system health check.</p>` : ""}
+    </section>
+    <section aria-labelledby="admin-actions-title"><div class="admin-section-heading"><h2 id="admin-actions-title">Daily work</h2><span class="sub">Open the queue or control you need.</span></div><div class="admin-work-grid">
+      <button type="button" class="admin-work-link" data-admin-go="support_tickets">${ICONS.support_tickets}<span><strong>Customer support</strong><span class="sub">Review tickets and reply to customers.</span></span><span aria-hidden="true">→</span></button>
+      <button type="button" class="admin-work-link" data-admin-go="marketing_outbox">${ICONS.marketing_outbox || ICONS.content}<span><strong>Publishing queue</strong><span class="sub">Review content before it is published.</span></span><span aria-hidden="true">→</span></button>
+      <button type="button" class="admin-work-link" data-admin-go="users">${ICONS.users}<span><strong>Users & access</strong><span class="sub">Find accounts and manage customer access.</span></span><span aria-hidden="true">→</span></button>
+      <button type="button" class="admin-work-link" data-admin-go="deploy">${ICONS.deploy}<span><strong>Builds & releases</strong><span class="sub">Inspect runs before triggering a deployment.</span></span><span aria-hidden="true">→</span></button>
+    </div>${!meta.has_token ? `<p class="sub admin-coverage-note">Deploy actions are unavailable. Run history remains in Build &amp; Deploy.</p>` : ""}</section>
+    <details class="admin-secondary"><summary>Research alerts &amp; program watches<span class="sub">${alerts === null ? "Status unavailable" : `${alerts} alert records`} · not site incidents</span></summary><p class="sub">These are research records, separate from site operations. Check each record's date before acting.</p><button type="button" class="btn" data-admin-go="experiments">Review experiments</button>${renderKeyAlerts(s.key_alerts)}${renderProgramWatch(s.program_watch)}</details>
+  </section>`;
+  v.querySelectorAll("[data-admin-go]").forEach(button => { button.onclick = () => go(button.dataset.adminGo); });
+  $("#adminRefresh").onclick = async () => {
+    const button = $("#adminRefresh"); button.disabled = true; button.textContent = "Refreshing…";
+    try { clearApiCache(); await refresh(); if (CURRENT === "overview") await RENDER.overview(); }
+    catch (_) { toast("Status could not be refreshed. The previous snapshot is still shown.", true); }
+    finally { if (button.isConnected) { button.disabled = false; button.textContent = "Refresh status"; } }
+  };
   wireKeyAlertCopies(s.key_alerts);
   wireProgramWatch(s.program_watch);
-  const qa = $("#qa");
-  const rebuild = h(`<button class="btn primary">▶ Rebuild &amp; deploy now</button>`);
-  rebuild.onclick = () => dispatch("daily.yml"); rebuild.disabled = !m.has_token; qa.appendChild(rebuild);
-  const redeploy = h(`<button class="btn" style="margin-left:8px">⟳ Redeploy site only</button>`);
-  redeploy.onclick = () => dispatch("pages.yml"); redeploy.disabled = !m.has_token; qa.appendChild(redeploy);
-  const probe = h(`<button class="btn" style="margin-left:8px">◎ Check all sites are up</button>`);
-  probe.onclick = () => go("system"); qa.appendChild(probe);
-  if (!m.has_token) qa.appendChild(h(`<div class="sub" style="margin-top:8px">Deploy actions are unavailable. <details class="tech-details"><summary>Technical details</summary>Set <code>GH_TOKEN</code> on the server with Actions write permission.</details></div>`));
 };
 
 /* ---- RESEARCH TOOLS ----------------------------------------------------- */
@@ -1815,7 +1926,7 @@ function anNotReady(d) {
   const steps = isSetup
     ? `<ol class="steps" style="margin-top:10px">${(d.setup_steps || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol>`
     : `<div class="sub" style="margin-top:10px">The tracker and tables are configured — this is a
-       failed request, not a setup gap. A shorter time window is the usual fix.</div>`;
+       failed request, not a setup gap. Failures are not cached; try the panel again, and narrow the time window only if the upstream keeps timing out.</div>`;
   return `<div class="card"><h3>${esc(title)}</h3>
     <div class="sub">${esc(detail)}</div>
     ${steps}</div>`;
@@ -3087,29 +3198,88 @@ RENDER.cost = async () => {
 };
 
 /* ---- CONTENT ------------------------------------------------------------ */
+function adminInventoryPage(pages, query = "", page = 1) {
+  const needle = String(query || "").trim().toLowerCase();
+  const matches = (Array.isArray(pages) ? pages : []).filter(p => p &&
+    typeof p.name === "string" && p.name.toLowerCase().includes(needle));
+  const total = matches.length, size = 50, pagesN = Math.max(1, Math.ceil(total / size));
+  const requested = Number.isFinite(Number(page)) ? Math.floor(Number(page)) : 1;
+  const current = Math.max(1, Math.min(pagesN, requested));
+  const offset = (current - 1) * size;
+  return {rows: matches.slice(offset, offset + size), total, page: current, pages: pagesN,
+    from: total ? offset + 1 : 0, to: Math.min(offset + size, total)};
+}
+
 RENDER.content = async () => {
-  const v = $("#view"); const d = await api("/api/content");
-  v.innerHTML = `
-    <div class="grid">
-      ${card("Pages", `<div class="big">${d.total_pages}</div><div class="sub">published pages</div>`)}
-      ${card("Total size", `<div class="big">${d.total_mb} MB</div><div class="sub">${d.total_kb} KB</div>`)}
-      ${card("Is the site up?", `<div id="upBox"><button class="btn" id="upBtn2">Check live site</button></div>`)}
-      ${card("Links", `<div id="lkBox"><button class="btn" id="lkBtn">Check internal links</button></div>`)}
+  const v = $("#view"), renderEpoch = ADMIN_RENDER_EPOCH;
+  const current = () => CURRENT === "content" && renderEpoch === ADMIN_RENDER_EPOCH && v.isConnected;
+  const d = await api("/api/content");
+  if (!current()) return;
+  if (!d || !Array.isArray(d.pages) || d.pages.some(p => !p || typeof p.name !== "string")) {
+    throw new Error("The Site inventory could not be read. Try again.");
+  }
+  const number = n => typeof n === "number" && Number.isFinite(n) && n >= 0 ? String(n) : "—";
+  v.innerHTML = `<div class="grid">
+    ${card("Pages", `<div class="big">${number(d.total_pages)}</div><div class="sub">published pages</div>`)}
+    ${card("Total size", `<div class="big">${number(d.total_mb)} MB</div><div class="sub">${number(d.total_kb)} KB</div>`)}
+    ${card("Is the site up?", '<div id="upBox"><button class="btn" id="upBtn2">Check live site</button><div id="inventoryUptime" role="status"></div></div>')}
+    ${card("Links", '<div id="lkBox"><button class="btn" id="lkBtn">Check internal links</button><div id="inventoryLinks" role="status"></div></div>')}
     </div>
-    <div class="section">All pages <span class="cnt">${d.total_pages}</span></div>
-    <table><thead><tr><th>Page</th><th class="r">Size (KB)</th><th class="r">Updated</th></tr></thead><tbody>
-      ${d.pages.map(p => `<tr><td class="mono">${esc(p.name)}</td><td class="r">${p.kb}</td><td class="r sub">${fmtAge(p.age_hours)} ago</td></tr>`).join("")}
-    </tbody></table>`;
-  $("#upBtn2").onclick = async () => {
-    $("#upBox").innerHTML = "<span class='muted'>probing…</span>"; const u = await api("/api/uptime");
-    $("#upBox").innerHTML = u.ok ? `<div class="big" style="font-size:18px;color:var(--ok)">200 OK</div><div class="sub">${u.ms} ms · ${(u.bytes / 1024).toFixed(0)} KB</div>`
-      : `<div class="big" style="font-size:18px;color:var(--bad)">${esc(u.status || "down")}</div><div class="sub">${esc(u.error || "")}</div>`;
+    <div class="section">Find a page</div>
+    <div class="cs-review-controls">
+      <label for="inventorySearch">Search page names<input id="inventorySearch" type="search" placeholder="Page name or folder…" autocomplete="off"></label>
+      <button type="button" class="btn" id="inventoryClear">Clear search</button>
+    </div>
+    <div id="inventoryCount" class="sub" role="status" aria-live="polite"></div>
+    <div class="table-wrap"><table aria-label="Site inventory"><thead><tr><th>Page</th><th class="r">Size (KB)</th><th class="r">Updated</th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
+    <div class="cs-review-pager" aria-label="Inventory pages">
+      <button type="button" class="btn" id="inventoryPrev">Previous</button>
+      <span id="inventoryPage" class="sub"></span>
+      <button type="button" class="btn" id="inventoryNext">Next</button>
+    </div><div id="inventoryLinkResults"></div>`;
+  const search = $("#inventorySearch"), rows = $("#inventoryRows");
+  const prev = $("#inventoryPrev"), next = $("#inventoryNext");
+  let page = 1;
+  const draw = () => {
+    if (!current()) return;
+    const result = adminInventoryPage(d.pages, search.value, page);
+    page = result.page;
+    $("#inventoryCount").textContent = `Showing ${result.from}–${result.to} of ${result.total} matching pages`;
+    $("#inventoryPage").textContent = `Page ${page} of ${result.pages}`;
+    prev.disabled = page <= 1; next.disabled = page >= result.pages;
+    rows.innerHTML = result.rows.length ? result.rows.map(p => `<tr><td class="mono">${esc(p.name)}</td><td class="r">${number(p.kb)}</td><td class="r sub">${typeof p.age_hours === "number" && Number.isFinite(p.age_hours) && p.age_hours >= 0 ? fmtAge(p.age_hours) + " ago" : "—"}</td></tr>`).join("")
+      : `<tr><td colspan="3" class="muted">${d.pages.length ? "No matching pages. Clear or change your search." : "No published pages were returned."}</td></tr>`;
   };
-  $("#lkBtn").onclick = async () => {
-    $("#lkBox").innerHTML = "<span class='muted'>scanning…</span>"; const l = await api("/api/content/links");
-    $("#lkBox").innerHTML = `<div class="big" style="font-size:18px;color:${l.count ? "var(--warn)" : "var(--ok)"}">${l.count} broken</div><div class="sub">scanned ${l.checked_pages} of ${l.total_pages != null ? l.total_pages : l.checked_pages} pages${l.truncated ? " · TRUNCATED" : ""}${l.ci_built_count ? ` · ${l.ci_built_count} built by CI (not broken)` : ""}</div>`;
-    if (l.count) { const sec = h(`<div></div>`); sec.innerHTML = `<div class="section">Broken internal links <span class="cnt">${l.count}</span></div>
-      <table><thead><tr><th>Page</th><th>Link</th></tr></thead><tbody>${l.broken.map(b => `<tr><td class="mono">${esc(b.page)}</td><td class="mono" style="color:var(--bad)">${esc(b.link)}</td></tr>`).join("")}</tbody></table>`; $("#view").appendChild(sec); }
+  search.oninput = () => { page = 1; draw(); };
+  $("#inventoryClear").onclick = () => { search.value = ""; page = 1; draw(); search.focus(); };
+  prev.onclick = () => { page -= 1; draw(); };
+  next.onclick = () => { page += 1; draw(); };
+  draw();
+  const uptimeButton = $("#upBtn2"), uptime = $("#inventoryUptime");
+  uptimeButton.onclick = async () => {
+    if (!current() || uptimeButton.disabled) return;
+    uptimeButton.disabled = true; uptime.textContent = "Checking live site…";
+    try {
+      const u = await api("/api/uptime");
+      if (!current()) return;
+      uptime.innerHTML = u && u.ok === true
+        ? `<div class="sub">200 OK · ${number(u.ms)} ms · ${number(typeof u.bytes === "number" ? Math.round(u.bytes / 1024) : null)} KB</div>`
+        : `<div class="sub">${esc((u && (u.error || u.status)) || "Live site unavailable.")}</div>`;
+    } catch (_) { if (current()) uptime.textContent = "Live-site check unavailable. Try again."; }
+    finally { if (current()) uptimeButton.disabled = false; }
+  };
+  const linksButton = $("#lkBtn"), links = $("#inventoryLinks"), linkRows = $("#inventoryLinkResults");
+  linksButton.onclick = async () => {
+    if (!current() || linksButton.disabled) return;
+    linksButton.disabled = true; links.textContent = "Checking internal links…"; linkRows.innerHTML = "";
+    try {
+      const l = await api("/api/content/links");
+      if (!current()) return;
+      if (!l || typeof l.count !== "number" || !Number.isFinite(l.count) || l.count < 0 || !Array.isArray(l.broken)) throw new Error("Invalid link result");
+      links.innerHTML = `<div class="sub">${number(l.count)} broken · scanned ${number(l.checked_pages)} of ${number(l.total_pages == null ? l.checked_pages : l.total_pages)} pages${l.truncated ? " · partial scan" : ""}${l.ci_built_count ? ` · ${number(l.ci_built_count)} built by CI (not broken)` : ""}</div>`;
+      if (l.count) linkRows.innerHTML = `<div class="section">Broken internal links</div><div class="sub">${l.broken.length} results shown of ${number(l.count)}</div><div class="table-wrap"><table><thead><tr><th>Page</th><th>Link</th></tr></thead><tbody>${l.broken.map(b => `<tr><td class="mono">${esc(b.page)}</td><td class="mono">${esc(b.link)}</td></tr>`).join("")}</tbody></table></div>`;
+    } catch (_) { if (current()) links.textContent = "Link check unavailable. Try again."; }
+    finally { if (current()) linksButton.disabled = false; }
   };
 };
 
@@ -7154,9 +7324,8 @@ function csDropPanel(d) {
   const reasons = (c && c.drop_reasons) || {};
   const keys = Object.keys(reasons);
   if (!keys.length) {
-    return `<div class="section" id="cs-drops">Why posts died</div>
-      <div class="card">${blEmpty("Nothing was dropped tonight",
-        "Every planned post got words and survived the read.")}</div>`;
+    return `<div class="section" id="cs-drops">Generation checks</div>
+      <div class="card"><div class="sub">No drop reasons were recorded in this plan. This does not prove every draft passed; check the measured stages above.</div></div>`;
   }
 
   /* Bucket. First match wins; unmatched fall to CS_DROP_OTHER, never swallowed. */
@@ -7251,11 +7420,137 @@ function csIntelRail(stories, health, cardsHtml) {
     </details>`;
 }
 
+/* Ephemeral UI selection, never a publishing queue or source of truth. */
+let CS_REVIEW = null;
+let CS_FORCE_REFRESH = false;
+const CS_CONTENT_PATH = "/api/marketing/content?charts=metadata";
+const CS_REVIEW_PAGE_SIZE = 12;
+
+function csReviewPage(entries, selection = {}, pageSize = CS_REVIEW_PAGE_SIZE) {
+  const type = selection.type || "all", account = selection.account || "all";
+  const query = String(selection.query || "").trim().toLowerCase();
+  const size = Number.isInteger(pageSize) && pageSize > 0 ? Math.min(pageSize, 12) : 12;
+  const matches = (Array.isArray(entries) ? entries : []).filter(entry => {
+    if (!entry || !entry.post || typeof entry.post !== "object") return false;
+    const post = entry.post, desk = String(post.account || entry.acctId || "");
+    if (type !== "all" && post.type !== type) return false;
+    if (account !== "all" && desk !== account) return false;
+    const text = [post.headline, post.body, post.ticker, post.cashtag, post.type, desk]
+      .filter(value => typeof value === "string").join(" ").toLowerCase();
+    return !query || text.includes(query);
+  });
+  const pages = Math.max(1, Math.ceil(matches.length / size));
+  const requested = Number.isInteger(selection.page) ? selection.page : 1;
+  const page = Math.max(1, Math.min(requested, pages)), offset = (page - 1) * size;
+  return { rows: matches.slice(offset, offset + size), total: matches.length, page, pages,
+    from: matches.length ? offset + 1 : 0, to: Math.min(offset + size, matches.length) };
+}
+
+function csRefreshPlan() {
+  CS_FORCE_REFRESH = true; clearApiCache(); return go("marketing_content");
+}
+function csRenderReview() {
+  const state = CS_REVIEW, gallery = $("#mkt-post-gallery");
+  if (!state || !gallery || CURRENT !== "marketing_content" || state.epoch !== ADMIN_RENDER_EPOCH) return;
+  const result = csReviewPage(state.entries, state); state.page = result.page;
+  gallery.innerHTML = result.total ? result.rows.map(state.card).join("")
+    : `<div class="card"><h3>No matching posts</h3><p class="sub">Try another desk, type, or search. Clear filters to see the whole plan.</p></div>`;
+  $("#csReviewCount").textContent = `${result.from}–${result.to} of ${result.total} matching posts · ${state.entries.length} in this plan`;
+  $("#csReviewPage").textContent = `Page ${result.page} of ${result.pages}`;
+  $("#csReviewPrev").disabled = result.page <= 1;
+  $("#csReviewNext").disabled = result.page >= result.pages;
+  document.querySelectorAll("#mkt-type-filters [data-type]").forEach(button => {
+    const active = button.dataset.type === state.type;
+    button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active));
+  });
+  document.querySelectorAll("#mkt-acct-sw [data-acct]").forEach(button => {
+    const active = button.dataset.acct === state.account;
+    button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active));
+  });
+  document.querySelectorAll(".mkt-acct-section").forEach(section => {
+    section.style.display = state.account === "all" || section.dataset.acct === state.account ? "" : "none";
+  });
+  gallery.querySelectorAll("[data-cs-preview]").forEach(details => {
+    details.addEventListener("toggle", () => {
+      if (details.open && !details.dataset.previewState) csLoadPreview(details, state.revision, state.epoch);
+    });
+  });
+}
+
+async function csLoadPreview(details, revision, epoch) {
+  const body = details.querySelector(".cs-chart-body");
+  if (!body || ["loading", "loaded"].includes(details.dataset.previewState)) return;
+  details.dataset.previewState = "loading"; body.textContent = "Loading chart…";
+  const current = () => details.isConnected && CURRENT === "marketing_content" && epoch === ADMIN_RENDER_EPOCH;
+  try {
+    const id = details.dataset.chartId;
+    const response = await api(`/api/marketing/content/chart?id=${encodeURIComponent(id)}&revision=${encodeURIComponent(revision || "")}`);
+    if (!current()) return;
+    if (!response || !response.ok) {
+      const error = new Error((response && response.error) || "The chart could not be loaded.");
+      error.planChanged = response && response.reason === "plan_changed";
+      throw error;
+    }
+    const chart = response.chart;
+    if (!chart || chart.id !== id || response.content_revision !== revision || typeof chart.svg !== "string" || !chart.svg.trim()) {
+      const error = new Error("The chart does not match this plan. Refresh Content Studio.");
+      error.planChanged = true;
+      throw error;
+    }
+    const image = document.createElement("img");
+    image.alt = chart.title || "Content plan chart"; image.decoding = "async";
+    image.onload = () => { if (current()) { details.dataset.previewState = "loaded"; body.setAttribute("aria-busy", "false"); } };
+    image.onerror = () => {
+      if (!current()) return;
+      body.textContent = "This chart could not be displayed. Close and reopen the preview to retry.";
+      delete details.dataset.previewState; body.setAttribute("aria-busy", "false");
+    };
+    body.replaceChildren(image); body.setAttribute("aria-busy", "true");
+    // Use an image context, not an inline document in the admin page.
+    image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(chart.svg);
+  } catch (error) {
+    if (!current()) return;
+    details.dataset.previewState = "failed";
+    body.replaceChildren(); body.setAttribute("aria-busy", "false");
+    const message = document.createElement("p"); message.className = "sub"; message.textContent = error.message;
+    const retry = document.createElement("button"); retry.type = "button"; retry.className = "btn sm";
+    retry.textContent = error.planChanged ? "Refresh plan" : "Retry preview";
+    retry.onclick = () => {
+      if (error.planChanged) return csRefreshPlan();
+      delete details.dataset.previewState; return csLoadPreview(details, revision, epoch);
+    };
+    body.append(message, retry);
+  }
+}
+
+function csWireReview(entries, card, revision, epoch) {
+  CS_REVIEW = { entries, card, revision, epoch, type: "all", account: "all", query: "", page: 1 };
+  document.querySelectorAll("#mkt-type-filters [data-type]").forEach(button => {
+    button.onclick = () => mktFilterPosts(button.dataset.type, button);
+  });
+  document.querySelectorAll("#mkt-acct-sw [data-acct]").forEach(button => {
+    button.onclick = () => mktSwitchAcct(button.dataset.acct, button);
+  });
+  $("#csReviewSearch").oninput = event => { CS_REVIEW.query = event.target.value; CS_REVIEW.page = 1; csRenderReview(); };
+  $("#csReviewReset").onclick = () => {
+    Object.assign(CS_REVIEW, {type: "all", account: "all", query: "", page: 1});
+    $("#csReviewSearch").value = ""; csRenderReview();
+  };
+  $("#csReviewPrev").onclick = () => { CS_REVIEW.page--; csRenderReview(); };
+  $("#csReviewNext").onclick = () => { CS_REVIEW.page++; csRenderReview(); };
+  $("#csReviewRefresh").onclick = csRefreshPlan;
+  $("#csReviewOutbox").onclick = () => go("marketing_outbox");
+  csRenderReview();
+}
+
 RENDER.marketing_content = async () => {
-  const v = $("#view");
+  const v = $("#view"), renderEpoch = ADMIN_RENDER_EPOCH;
+  CS_REVIEW = null;
+  const force = CS_FORCE_REFRESH; CS_FORCE_REFRESH = false;
   v.innerHTML = `<div class="spin">loading…</div>`;
-  const d = await api("/api/marketing/content");
-  if (!d || !d.ok) { v.innerHTML = nwEmpty("Content Studio unavailable", (d && d.error) || "panel error"); return; }
+  const d = await api(CS_CONTENT_PATH + (force ? "&force=1" : ""));
+  if (CURRENT !== "marketing_content" || renderEpoch !== ADMIN_RENDER_EPOCH) return;
+  if (!d || !d.ok) throw new Error((d && d.error) || "Content Studio is unavailable.");
 
   const liveIntel = d.intelligence || {};
   const liveIntelStories = Array.isArray(liveIntel.stories) ? liveIntel.stories : [];
@@ -7282,7 +7577,7 @@ RENDER.marketing_content = async () => {
   }
 
   const contentTypes = d.content_types || [];
-  const allAccounts = d.accounts || [];
+  const allAccounts = (Array.isArray(d.accounts) ? d.accounts : []).filter(a => a && typeof a === "object");
   const featuredCharts = d.featured_charts || [];
   const summary = d.summary || {};
   const distinctness = d.distinctness || {};
@@ -7339,7 +7634,7 @@ RENDER.marketing_content = async () => {
   const plannedDesks = allAccounts.filter(a => !(a.queue || []).length);
 
   /* Build featured chart lookup by id */
-  const chartById = {};
+  const chartById = Object.create(null);
   featuredCharts.forEach(fc => { chartById[fc.id] = fc; });
 
   /* Freshness bar — plan date + produced time + fresh/stale pill. When stale,
@@ -7369,7 +7664,7 @@ RENDER.marketing_content = async () => {
      ONE AS-OF STAMP FOR THE WHOLE PAGE (Doctrine Law 4): the freshness bar. */
   const emitted = (d.funnel && d.funnel.emitted != null) ? d.funnel.emitted : null;
   const headerHtml = `<div class="section">Content Studio
-    <span class="cnt">tonight's plan · ${emitted == null ? "rail count not measured" : `${flrN(emitted)} already on the outbox rail`}</span>
+    <span class="cnt">content plan · ${emitted == null ? "rail count not measured" : `${flrN(emitted)} already on the outbox rail`}</span>
   </div>
   ${freshHtml}
   `;
@@ -7379,24 +7674,22 @@ RENDER.marketing_content = async () => {
      ("not posted externally") this page has no way to read and that the ledger
      contradicts. What replaces it is what this page can actually vouch for. */
   const tiltExplainer = `<div class="card" style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.55">
-    <b style="color:var(--text)">Mixed-tilt model:</b> every desk posts all content types — signal alerts, charts, explainers, macro notes, receipts, watchlists, and event reactions.
-    The tilt shifts emphasis so each desk feels distinct. The same Prophet signal is rendered with different copy per desk so cross-posting stays safe under platform rules.
-    Nothing on this page has been sent. A post leaves here for the Outbox, waits for your decision there, and the Publisher sends it — that page is the one that knows whether sending is switched on.
+    <b style="color:var(--text)">Plan and delivery are separate.</b> Review draft content here, make publishing decisions in the Outbox, and check the Publisher for sending status and receipts.
   </div>`;
 
   /* Content-type filter chips */
   const typeIds = contentTypes.length ? contentTypes.map(ct => ct.id) : Object.keys(MKT_TYPE_COLORS);
   const filterHtml = `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="mkt-type-filters">
-    <button class="mkt-filter-chip active" data-type="all" onclick="mktFilterPosts('all',this)">All</button>
-    ${contentTypes.map(ct => `<button class="mkt-filter-chip" data-type="${esc(ct.id)}" onclick="mktFilterPosts('${esc(ct.id)}',this)" style="--dot-color:${esc(ct.color || mktTypeColor(ct.id))}">
+    <button class="mkt-filter-chip active" data-type="all">All</button>
+    ${contentTypes.map(ct => `<button class="mkt-filter-chip" data-type="${esc(ct.id)}" style="--dot-color:${esc(ct.color || mktTypeColor(ct.id))}">
       <span class="mkt-dot" style="background:${esc(ct.color || mktTypeColor(ct.id))}"></span>${esc(ct.name || ct.id)}
     </button>`).join("")}
   </div>`;
 
   /* Account switcher */
   const acctPills = `<div class="mkt-acct-switcher" id="mkt-acct-sw">
-    <button class="mkt-acct-pill active" data-acct="all" onclick="mktSwitchAcct('all',this)">All desks</button>
-    ${accounts.map(a => `<button class="mkt-acct-pill" data-acct="${esc(a.id)}" onclick="mktSwitchAcct('${esc(a.id)}',this)">${esc(a.id)}</button>`).join("")}
+    <button class="mkt-acct-pill active" data-acct="all">All desks</button>
+    ${accounts.map(a => `<button class="mkt-acct-pill" data-acct="${esc(a.id)}">${esc(a.id)}</button>`).join("")}
   </div>`;
 
   /* §4 · NEXT TO WRITE — every desk merged into ONE list ordered by the time the
@@ -7406,7 +7699,7 @@ RENDER.marketing_content = async () => {
      uncapped cards under a plan header that has claimed 1184 before. */
   const allPosts = [];
   accounts.forEach(acct => {
-    (acct.queue || []).forEach(p => allPosts.push({ post: p, acctId: acct.id }));
+    (Array.isArray(acct.queue) ? acct.queue : []).filter(p => p && typeof p === "object").forEach(p => allPosts.push({ post: p, acctId: acct.id }));
   });
   allPosts.sort((a, b) => {
     const x = String(a.post.display_time || a.post.slot || "~");
@@ -7427,7 +7720,9 @@ RENDER.marketing_content = async () => {
       : `<span class="pc-when">time not set</span>`;
     const tickerBadge = (post.ticker && !post.cashtag) ? `<span class="statpill s-mut" style="font-size:10px">${esc(post.ticker)}</span>` : "";
     const statusBadge = csUsageBadge(post);
-    const chartEmbed = (featured && featured.svg) ? `<div class="mkt-chart-embed">${featured.svg}</div>` : "";
+    const chartEmbed = post.chart_id ? (featured && featured.preview_available
+      ? `<details class="cs-chart-preview" data-cs-preview data-chart-id="${esc(post.chart_id)}"><summary>View chart</summary><div class="cs-chart-body" aria-live="polite"></div></details>`
+      : `<div class="sub">Chart preview unavailable for this plan.</div>`) : "";
     const cashtag = post.cashtag ? `<span class="mkt-cashtag">${esc(post.cashtag)}</span>` : "";
     /* Liveness: a post already blocked or posted is DEAD on this page — nothing
        the operator does here changes it. Everything else is the machine's turn:
@@ -7450,13 +7745,23 @@ RENDER.marketing_content = async () => {
     </div>`;
   };
 
-  const queueHtml = `<div class="section" id="cs-queue">Next to write
+  const queueHtml = `<div class="section" id="cs-queue">Review content plan
       <span class="cnt">${flrN(allPosts.length)} planned · earliest first</span></div>
+    <p class="sub">Planned times are advisory. Review and approval remain in the Outbox.</p>
     ${filterHtml}${acctPills}
-    <div id="mkt-post-gallery">${allPosts.length
-      ? blList(allPosts.map(postCardHtml), 12)
-      : blEmpty("Nothing planned for tonight",
-          "Posts appear here after the nightly governor writes a plan.")}</div>`;
+    <div class="cs-review-controls">
+      <label for="csReviewSearch">Search this plan<input id="csReviewSearch" type="search" placeholder="Ticker, headline, or draft text" autocomplete="off"></label>
+      <button type="button" class="btn" id="csReviewReset">Clear filters</button>
+      <button type="button" class="btn" id="csReviewRefresh">Refresh plan</button>
+      <button type="button" class="btn" id="csReviewOutbox">Open Outbox</button>
+    </div>
+    <p class="sub" id="csReviewCount" role="status" aria-live="polite"></p>
+    <div id="mkt-post-gallery"></div>
+    <div class="cs-review-pager">
+      <button type="button" class="btn" id="csReviewPrev" aria-controls="mkt-post-gallery">Previous</button>
+      <span class="sub" id="csReviewPage"></span>
+      <button type="button" class="btn" id="csReviewNext" aria-controls="mkt-post-gallery">Next</button>
+    </div>`;
 
   /* §5 · DESK MIX — the donuts stay, ALL COLLAPSED. They answer "how is each
      desk tilted", which is a once-a-week question, not a daily one. */
@@ -7524,6 +7829,7 @@ RENDER.marketing_content = async () => {
     + plannedHtml
     + intelHtml
     + tiltExplainer;
+  csWireReview(allPosts, postCardHtml, d.content_revision, renderEpoch);
 };
 
 /* Is the content plan stale? Prefer the engine's own flag; else compare as_of to
@@ -7602,7 +7908,16 @@ const CS_INTEL_REFUSAL_LABEL = {
   outbox_unavailable:  "the outbox path",
 };
 
+function csIntelQueueOutcome(result) {
+  if (result && result.ok === true && typeof result.item_id === "string" && result.item_id
+      && typeof result.account === "string" && result.account) return result.delivered === true ? "queued" : "local_only";
+  if (result && result.ok === false && typeof result.reason === "string"
+      && Object.prototype.hasOwnProperty.call(CS_INTEL_REFUSAL_LABEL, result.reason)) return "refused";
+  return "unknown";
+}
+
 async function csQueueIntel(btn) {
+  if (!btn || btn.disabled) return;
   const card = btn && btn.closest ? btn.closest(".cs-intel-item") : null;
   if (!card) return;
   const out = card.querySelector(".cs-intel-outcome");
@@ -7630,18 +7945,30 @@ async function csQueueIntel(btn) {
   } catch (e) {
     r = null;
   }
-  if (r && r.ok) {
+  const outcome = csIntelQueueOutcome(r);
+  if (outcome === "queued") {
     btn.textContent = "Queued";
     say(`Queued as ${r.item_id} for ${r.account}. ${r.note || ""}`.trim(), "ok");
     toast(`Queued for ${r.account}`);
     return;
   }
+  if (outcome === "unknown" || outcome === "local_only") {
+    btn.textContent = outcome === "unknown" ? "Status unknown" : "Delivery unconfirmed";
+    say(outcome === "unknown"
+      ? "Queue status is unknown. The request may have completed. Check this draft in the Outbox before trying again."
+      : `Saved as ${r.item_id} for ${r.account}, but delivery to the publisher's queue is not confirmed. ${r.note || "Check the Outbox record."}`, "err");
+    if (out) {
+      const inspect = document.createElement("button");
+      inspect.type = "button"; inspect.className = "btn sm"; inspect.textContent = "Open Outbox";
+      inspect.onclick = () => go("marketing_outbox");
+      out.append(document.createTextNode(" "), inspect);
+    }
+    toast(outcome === "unknown" ? "Queue status unknown. Check Outbox before retrying."
+      : "Saved locally; delivery needs review.", true);
+    return; // keep the action disabled; a lost acknowledgement is not no effect
+  }
   btn.disabled = false;
   btn.textContent = label;
-  if (!r) {
-    say("No answer from the server, so nothing was queued. Try again.", "err");
-    return;
-  }
   /* An honest refusal names its gate. `reason` is the approve path's contract;
      `error` is what the shared route guards (bad request, auth, CSRF) return. */
   const reason = r.reason || null;
@@ -7655,28 +7982,14 @@ async function csQueueIntel(btn) {
   toast("Not queued", true);
 }
 
-/* Content Studio client-side filter helpers */
+/* Filters update one shared selection, never overwrite each other's visibility. */
 function mktFilterPosts(type, btn) {
-  document.querySelectorAll("#mkt-type-filters .mkt-filter-chip").forEach(el => el.classList.remove("active"));
-  if (btn) btn.classList.add("active");
-  document.querySelectorAll(".mkt-post-card").forEach(el => {
-    el.classList.toggle("hidden", type !== "all" && el.dataset.type !== type);
-  });
+  if (!CS_REVIEW) return;
+  CS_REVIEW.type = type; CS_REVIEW.page = 1; csRenderReview();
 }
-/* The desk pills are now a FILTER over one merged, time-ordered queue rather
-   than a section selector: "what goes out next" is not a per-desk question, so
-   the per-desk post sections were merged (spec §3.2/§3.3). The pills still work
-   exactly as the operator expects — click one and you get that desk alone — and
-   they also scope the Desk mix accordion, so nothing he had is taken away. */
 function mktSwitchAcct(acct, btn) {
-  document.querySelectorAll("#mkt-acct-sw .mkt-acct-pill").forEach(el => el.classList.remove("active"));
-  if (btn) btn.classList.add("active");
-  document.querySelectorAll(".mkt-acct-section").forEach(el => {
-    el.style.display = (acct === "all" || el.dataset.acct === acct) ? "" : "none";
-  });
-  document.querySelectorAll("#mkt-post-gallery .mkt-post-card").forEach(el => {
-    el.classList.toggle("hidden", acct !== "all" && el.dataset.acct !== acct);
-  });
+  if (!CS_REVIEW) return;
+  CS_REVIEW.account = acct; CS_REVIEW.page = 1; csRenderReview();
 }
 
 /* ---- LAB (Growth Science) ------------------------------------------------- */
@@ -10179,14 +10492,14 @@ RENDER.marketing_publish = async () => {
     armPill = `<span class="obx-shadow-pill" style="color:var(--warn)" title="${esc(as.error || "state unknown")}"><span class="obx-shadow-dot" style="background:var(--warn)"></span>Arm state unknown${srcNote}</span>`;
   }
   const header = `<div class="section">Publisher ${asOfChip}${armPill}</div>
-  <div class="obx-lede">What goes out next, what is stuck, and what already went. Approved, due posts leave through Buffer at the next slot.</div>`;
+  <div class="obx-lede">Review scheduled submissions, resolve blocked items, and inspect publisher records.</div>`;
 
   /* Status strip — one tile per publisher state. */
   const tileDefs = [
     ["queued", "Queued", null],
     ["approved", "Approved", "var(--ok)"],
     ["posting", "Posting", "var(--warn)"],
-    ["posted", "Posted", "var(--muted)"],
+    ["posted", "Publisher records", "var(--muted)"],
     ["failed", "Failed", "var(--bad)"],
     ["quarantined", "Quarantined", "var(--bad)"],
     ["recalled", "Recalled", "var(--warn)"],
@@ -10206,7 +10519,7 @@ RENDER.marketing_publish = async () => {
     failed: ["#pub-triage", "Open the triage list below"],
     posting: ["#pub-triage", "Open the stuck-sending group below"],
     approved: ["#pub-next", "Show what goes out next"],
-    posted: ["#pub-posted", "Show the recent posts and their receipts"],
+    posted: ["#pub-posted", "Show publisher records; delivery is not confirmed here"],
   };
   const tiles = `<div class="metric-tiles-row">
     ${tileDefs.map(([k, lbl, color]) => {
@@ -10281,14 +10594,15 @@ RENDER.marketing_publish = async () => {
       </tr>`;
     }).join("");
     postedCard = `<div class="card" id="pub-posted">
-      <div class="section">Recent posts <span class="cnt">last ${posted.length} · newest first</span></div>
+      <div class="section">Recent publisher records <span class="cnt">last ${posted.length} · newest first</span></div>
+      <div class="note muted">Delivery: Not confirmed here. A publisher record is not delivery confirmation or permission to resend.</div>
       <div class="table-wrap"><table class="tbl pub-tbl"><thead><tr><th>at</th><th>desk</th><th>post</th>${anyMetrics ? "<th>how it did</th>" : ""}<th>via</th><th>receipt</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
-      ${anyMetrics ? `<div class="note muted" style="margin-top:6px">Engagement is polled after the post lands — a dash means the poller has not read that post yet, not a zero.</div>` : ""}
+      ${anyMetrics ? `<div class="note muted" style="margin-top:6px">A dash means no measurement is available, not zero. Metrics alone do not establish delivery.</div>` : ""}
     </div>`;
   } else {
-    postedCard = `<div class="card" id="pub-posted"><div class="section">Recent posts</div>
-      <div class="note muted">Nothing posted yet. Live posts land here with their Buffer receipt once the publisher is armed and runs.</div></div>`;
+    postedCard = `<div class="card" id="pub-posted"><div class="section">Recent publisher records</div>
+      <div class="note muted">No publisher records yet. Submission receipts and confirmed delivery remain separate.</div></div>`;
   }
 
   /* Dry-run action + result zone. Now a disclosure: §3 answers "what goes out
@@ -10305,7 +10619,7 @@ RENDER.marketing_publish = async () => {
   const actStrip = activity.length ? `<details class="card"><summary class="section" style="cursor:pointer">Recent runs <span class="cnt">last ${activity.length}</span></summary>
     <div style="margin-top:8px">${activity.map(a => `<div class="pub-act-row"><span class="muted">${esc(a.at || "")}</span>
       <span class="pub-act-lane">${esc(a.lane || "")}</span>
-      posted ${a.posted || 0} · would_post ${a.would_post || 0} · quarantined ${a.quarantined || 0}${a.auto_approved ? ` · auto ${a.auto_approved}` : ""}${pubParkedReadout(a)}</div>`).join("")}</div>
+      recorded ${a.posted || 0} · would_post ${a.would_post || 0} · quarantined ${a.quarantined || 0}${a.auto_approved ? ` · auto ${a.auto_approved}` : ""}${pubParkedReadout(a)}</div>`).join("")}</div>
   </details>` : "";
 
   const goLive = pubGoLive(d);
@@ -15995,9 +16309,11 @@ async function boot() {
   renderSidebar();
   wireSidebarDrawer();
   startTableObserver();
-  await refresh();
-  route();
-  schedulePostBootAdvisories();
+  try {
+    await refresh();
+    await route();
+    schedulePostBootAdvisories();
+  } catch (error) { adminPageFailure("overview", error, () => boot()); }
 }
 (async function init() {
   /* The landing snapshot is the one fetch the first paint genuinely blocks on (every
@@ -16008,7 +16324,14 @@ async function boot() {
      On a logged-out load it 401s harmlessly: api() routes that to showLogin(), which is
      where the session probe was about to send us anyway. */
   const summaryWarm = api("/api/summary").catch(() => {});
-  SESSION = await fetch("/api/session").then(r => r.json()).catch(() => ({ auth_enabled: false, authenticated: true }));
+  try {
+    SESSION = await api("/api/session");
+    if (!SESSION || typeof SESSION.auth_enabled !== "boolean" || typeof SESSION.authenticated !== "boolean") throw new Error("Invalid session response");
+  } catch (_) {
+    showLogin();
+    $("#loginErr").textContent = "Unable to verify your session. Check your connection and reload this page.";
+    return; // a failed session probe is not an authenticated local session
+  }
   if (SESSION.auth_enabled && !SESSION.authenticated) { showLogin(); return; }
   hideLogin();
   void summaryWarm;   // already in flight; refresh() below joins it via the in-flight map

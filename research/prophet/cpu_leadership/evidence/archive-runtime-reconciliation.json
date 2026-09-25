@@ -1,0 +1,95 @@
+{
+  "market_session": "2026-09-18",
+  "original_run": 35409650053,
+  "engine_job": 105832792637,
+  "engine_conclusion": "cancelled",
+  "engine_steps": [
+    {
+      "number": 26,
+      "name": "run regime engine + build dashboard + daily brief (resilient)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-19T04:14:41Z",
+      "completed_at": "2026-09-19T06:18:06Z"
+    },
+    {
+      "number": 33,
+      "name": "Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-19T06:23:29Z",
+      "completed_at": "2026-09-19T06:24:02Z"
+    },
+    {
+      "number": 35,
+      "name": "checkpoint Prophet outputs to main (durable before engine tail)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-19T06:24:03Z",
+      "completed_at": "2026-09-19T06:26:11Z"
+    },
+    {
+      "number": 98,
+      "name": "Intelligence Hub (build_intel_hub)",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-09-19T09:08:33Z",
+      "completed_at": "2026-09-19T09:09:29Z"
+    },
+    {
+      "number": 137,
+      "name": "commit chronicle artifacts",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-09-19T09:15:38Z",
+      "completed_at": null
+    },
+    {
+      "number": 147,
+      "name": "commit engine outputs",
+      "status": "pending",
+      "conclusion": null,
+      "started_at": null,
+      "completed_at": null
+    }
+  ],
+  "later_run": 35412430497,
+  "later_engine": [
+    {
+      "id": 105814552774,
+      "name": "collect",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 105814553503,
+      "name": "us_scan_tier",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 105814553516,
+      "name": "engine",
+      "conclusion": "skipped"
+    }
+  ],
+  "original_run_artifacts": [
+    {
+      "id": 10577000353,
+      "name": "capital-structure-workspace-35409650053",
+      "expired": true,
+      "size_in_bytes": 33891015
+    }
+  ],
+  "producer_log_receipts": {
+    "log_time_utc": "2026-09-19T06:09:08Z",
+    "message": "us_context_vector: store now 43285 rows (stamped 2026-09-18, 963.8s)",
+    "reported_eligible_pool": 76,
+    "reported_buy_pool": 60,
+    "reported_off_board": 16
+  },
+  "interpretation": "Local producer reported stamping before successful plan-only checkpoint; final engine output commit was pending after cancellation. Published archive contains only scan-tier rows. The early checkpoint allowlist does not include data/us_prophet_rank/candidates. This narrows the publication/durability boundary, not a new admission rule.",
+  "limitations": [
+    "A log is not byte-exact proof of the local archive contents or successful publication.",
+    "This run reported 76 eligible candidates, not the 66 in the audited committed board; do not conflate build generations.",
+    "No original candidate archive is listed among this run artifacts; the sole artifact is unrelated and expired. No historical values were backfilled or re-executed."
+  ]
+}

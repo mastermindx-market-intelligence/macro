@@ -2955,21 +2955,81 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
-    subprocess.run(
-        [
-            "git",
-            "fetch",
-            "--no-recurse-submodules",
-            "--prune",
-            "--tags",
-            "--depth=2147483647",
-            "origin",
-            "+refs/heads/*:refs/remotes/origin/*",
-        ],
-        cwd=root,
-        env=_trusted_git_environment(root),
-        check=True,
-    )
+    try:
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-recurse-submodules",
+                "--prune",
+                "--tags",
+                "--depth=2147483647",
+                "origin",
+                "+refs/heads/*:refs/remotes/origin/*",
+            ],
+            cwd=root,
+            env=_trusted_git_environment(root),
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        # One broken sibling ref must not fail every fetch-depth-0 job. On
+        # 2026-09-21 an all-branches deepen died fleet-wide with "fatal:
+        # missing blob object ..." / "error: remote did not send all
+        # necessary objects" — a ref whose objects the server could not
+        # serve — and every design-governance run after it red as
+        # "infrastructure unknown". The checks behind this contract diff
+        # against main and the PR's own refs (already present in the
+        # workspace), so full main history is the part that must succeed.
+        print(
+            "::warning title=run-ci-pack::all-branches deepen failed; "
+            "retrying with refs/heads/main only",
+            flush=True,
+        )
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--tags",
+                    "--depth=2147483647",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=_trusted_git_environment(root),
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            # 2026-09-21 16:08Z: even the main-only full deepen died the same
+            # way ("fatal: missing blob object 9cd3bb31..."), while the
+            # all-branches fetch had SUCCEEDED on sibling runs minutes
+            # earlier — the failures are intermittent server-side pack
+            # assembly on these enormous full-history fetches, not one
+            # broken ref. The checks behind this contract only ever diff
+            # against a merge base that is hours-to-days old, so a bounded
+            # window is always sufficient in practice and is orders of
+            # magnitude smaller to assemble. Tags are dropped on this rung:
+            # none of the gated checks read tags, and a tag pinning
+            # unreachable history would re-break the fetch.
+            print(
+                "::warning title=run-ci-pack::main-only deepen failed; "
+                "retrying refs/heads/main with --shallow-since=30 days",
+                flush=True,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--shallow-since=30 days ago",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=_trusted_git_environment(root),
+                check=True,
+            )
 
 
 def _run_job(
@@ -3703,7 +3763,9 @@ def _hydrate_exact_base_objects(root: Path, sha: str, *, deadline: float) -> Non
     one's object database through ``objects/info/alternates``. Alternates share
     OBJECTS, never the partial-clone extension or the promisor remote that can
     go and get the omitted ones — so on a ``blob:none`` runner checkout
-    (ci.yml gives every pack ``filter: blob:none``) the borrowing repository
+    (every hosted pack's shape until 2026-09-23; see
+    DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION for why the hosted packs now fetch
+    the full tree, which makes this a no-op there) the borrowing repository
     cannot lazily fetch, and ``git checkout`` dies with "unable to read sha1
     file" on precisely the blobs the PR changed. Hydrating here, in the
     checkout that DOES hold the promisor remote and its credentials, is what
