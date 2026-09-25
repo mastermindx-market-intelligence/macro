@@ -37,16 +37,18 @@
 {% set _rr_view = (((market_state or {}).get('radar') or {}) if market_state is defined else {}) %}
 {% set _pev = (_rr_view.get('dd_evidence') or {}) %}
 {% set _pev21 = (((_pev.get('horizons') or {}).get('h21') or {}) if _pev else {}) %}
-{% set _ns = namespace(lead=none, ms=none) %}
+{% set _ns = namespace(lead=none, ms=none, rr=none) %}
 {% set _names_en = {} %}
 {% set _names_zh = {} %}
 {% for s in _prov %}
   {% if s.role == 'hazard_evidence' and s.hazard_stage == _stage and _ns.lead is none %}{% set _ns.lead = s %}{% endif %}
   {% if s.role == 'measured_state' and _ns.ms is none %}{% set _ns.ms = s %}{% endif %}
+  {% if s.source_id == 'risk-radar-us' and _ns.rr is none %}{% set _ns.rr = s %}{% endif %}
   {% if _names_en.update({s.source_id: (s.label_en or s.source_id)}) %}{% endif %}
   {% if _names_zh.update({s.source_id: (s.label_zh or s.label_en or s.source_id)}) %}{% endif %}
 {% endfor %}
 {% set _ms_detail = (_ns.ms.detail if _ns.ms else {}) or {} %}
+{% set _rr_detail = (_ns.rr.detail if _ns.rr else {}) or {} %}
 {% set _labels = {'RISK_ON': ('Risk-on', '风险偏好'), 'RISK_OFF': ('Risk-off', '避险'), 'MIXED': ('Mixed', '混合')} %}
 {% set _trend = _labels.get(_ms.get('verdict'), ('Unavailable', '暂无读数')) %}
 {% set _ms_ink = {'RISK_ON': 'var(--ink-up)', 'RISK_OFF': 'var(--ink-down)', 'MIXED': 'var(--ink-2)'}.get(_ms.get('verdict'), 'var(--ink-3)') %}
@@ -95,6 +97,12 @@
   <script type="application/json" id="gde-context-copy">{{ {'copy': _GDE_COPY, 'settled_stage': _stage}|tojson }}</script>
   <div class="gde-meta">
     <span class="gde-stamp"><span class="l-en">Settled</span><span class="l-zh">收盘</span> {{ _re.get('source_session') or '—' }}</span>
+    {% if _rr_detail.get('issued_warning_persistent') and (_rr_detail.get('issued_warning_sessions') or 0) >= (_rr_detail.get('issued_warning_floor') or 5) %}
+    <span class="gde-stamp gde-duration">
+      <span class="l-en">Risk pressure · {{ _rr_detail.get('issued_warning_sessions') }} issued sessions{% if _rr_detail.get('issued_warning_since') %} · since {{ _rr_detail.get('issued_warning_since') }}{% endif %}</span>
+      <span class="l-zh">风险压力 · 已持续 {{ _rr_detail.get('issued_warning_sessions') }} 个已发布交易日{% if _rr_detail.get('issued_warning_since') %} · 始于 {{ _rr_detail.get('issued_warning_since') }}{% endif %}</span>
+    </span>
+    {% endif %}
     {% if _pev21.get('matched') %}
     <span class="gde-prob-evidence{{ ' is-thin' if _pev21.get('thin') else '' }}">
       <span class="gde-prob-k"><span class="l-en">Odds evidence</span><span class="l-zh">概率证据</span></span>
