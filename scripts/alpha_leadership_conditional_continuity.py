@@ -29,6 +29,7 @@ HORIZON = 63
 MIN_TRAIN_DATES = 60
 TEST_BLOCK_DATES = 12
 TOP_FRACTION = 0.10
+FEATURE_COVERAGE_REFERENCE_FLOOR = 0.70  # shared US cohort-null convention; not alpha calibration
 
 
 @dataclass(frozen=True)
@@ -238,13 +239,20 @@ def build_features(data_root: Path, *, start="2002-01-01") -> tuple[pd.DataFrame
     digest_cols = ["decision", "issuer", "security", "identity_basis", "m", "c", "beta",
                    "residual_vol", "formation_start", "formation_end", "formation_returns"]
     payload = frame[digest_cols].to_json(orient="records", date_format="iso", double_precision=15).encode()
+    coverage_frame = pd.DataFrame(coverage)
+    coverage_ratio = (coverage_frame["issuer_rows"] / coverage_frame["pit_members"].replace(0, np.nan))
+    median_coverage = float(coverage_ratio.median())
     manifest = {
         "feature_sha256": hashlib.sha256(payload).hexdigest(),
         "membership": asdict(_sha(data_root / "breadth" / "sp1500_pit_membership.parquet")),
         "cik_ledger": asdict(_sha(data_root / "edgar" / "ticker_cik_ledger.json")),
         "spy_store": asdict(_sha(data_root / "yahoo" / "SPY.parquet")),
         "rows": len(frame), "dates": int(frame.decision.nunique()),
-        "coverage": pd.DataFrame(coverage).to_dict("records"),
+        "median_feature_coverage": median_coverage,
+        "coverage_reference_floor": FEATURE_COVERAGE_REFERENCE_FLOOR,
+        "coverage_status": ("below_reference_floor"
+                            if median_coverage < FEATURE_COVERAGE_REFERENCE_FLOOR else "at_or_above_reference_floor"),
+        "coverage": coverage_frame.to_dict("records"),
     }
     return frame, manifest
 
@@ -415,8 +423,18 @@ def evaluate(features: pd.DataFrame, outcomes: pd.DataFrame, predictions: dict[s
     return result
 
 
-def run(data_root: Path, output: Path, source_ref: str) -> dict:
+def run(data_root: Path, output: Path, source_ref: str, *,
+        allow_incomplete_development_panel: bool = False) -> dict:
     features, feature_manifest = build_features(data_root)
+    if (feature_manifest["median_feature_coverage"] < FEATURE_COVERAGE_REFERENCE_FLOOR
+            and not allow_incomplete_development_panel):
+        raise RuntimeError(
+            "Historical feature support is below the 70% cohort-null reference floor: "
+            f"{feature_manifest['median_feature_coverage']:.1%}. "
+            "No TrialLedger row or forward outcome was created. Repair the PIT price panel, "
+            "or pass allow_incomplete_development_panel=True only for explicitly labelled "
+            "development diagnostics."
+        )
     grid = trial_grid(feature_manifest["feature_sha256"], source_ref)
     ledger = TrialLedger(family=FAMILY)
     registration = register_trials(ledger, grid, info_cutoff=pd.Timestamp.now(tz="UTC").isoformat())
@@ -443,8 +461,11 @@ def main() -> int:
     ap.add_argument("--data-root", type=Path, required=True)
     ap.add_argument("--output", type=Path, default=Path("reports/alpha-leadership-stage2.json"))
     ap.add_argument("--source-ref", required=True)
+    ap.add_argument("--allow-incomplete-development-panel", action="store_true",
+                    help="explicitly permit a coverage-failed development diagnostic; never promotion evidence")
     args = ap.parse_args()
-    result = run(args.data_root, args.output, args.source_ref)
+    result = run(args.data_root, args.output, args.source_ref,
+                 allow_incomplete_development_panel=args.allow_incomplete_development_panel)
     print(json.dumps({"feature_rows": result["feature_manifest"]["rows"],
                       "feature_dates": result["feature_manifest"]["dates"],
                       "registration": result["trial_registration"],

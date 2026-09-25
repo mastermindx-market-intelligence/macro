@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -94,6 +95,23 @@ class AlphaLeadershipStage2Tests(unittest.TestCase):
         self.assertEqual({x["model"] for x in grid}, set(mod.MODELS))
         self.assertEqual({x["horizon"] for x in grid}, {63})
         self.assertEqual({x["fill_rule"] for x in grid}, {"next_session_close"})
+
+    def test_coverage_reference_floor_is_seventy_percent(self):
+        self.assertEqual(mod.FEATURE_COVERAGE_REFERENCE_FLOOR, 0.70)
+
+    def test_run_fails_before_trials_when_coverage_is_below_floor(self):
+        features = pd.DataFrame({
+            "decision": [pd.Timestamp("2024-01-31")], "issuer": ["i1"], "security": ["T1"],
+            "m": [.1], "c": [.2], "beta": [1.0], "residual_vol": [.2],
+        })
+        manifest = {"feature_sha256": "a" * 64, "median_feature_coverage": .65}
+        old = mod.build_features
+        mod.build_features = lambda _root: (features, manifest)
+        try:
+            with self.assertRaisesRegex(RuntimeError, "below the 70% cohort-null reference floor"):
+                mod.run(Path("/unused"), Path("/unused/report.json"), "macro@test")
+        finally:
+            mod.build_features = old
 
     def test_nonlinear_controls_precede_continuity(self):
         frame = pd.DataFrame({

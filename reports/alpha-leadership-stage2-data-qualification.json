@@ -1,0 +1,175 @@
+{
+  "ambiguous_separated_tenures_gt_180d": {
+    "count": 161,
+    "largest": [
+      {
+        "intervals": 2,
+        "max_gap_days": 10144,
+        "ticker": "BNL"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 10039,
+        "ticker": "RYAN"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 9664,
+        "ticker": "AMH"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 8601,
+        "ticker": "RAL"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 8548,
+        "ticker": "CAL"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 8428,
+        "ticker": "CG"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 8394,
+        "ticker": "AR"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 8225,
+        "ticker": "CCK"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 8090,
+        "ticker": "CHRS"
+      },
+      {
+        "intervals": 3,
+        "max_gap_days": 8090,
+        "ticker": "MIR"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 7993,
+        "ticker": "CBB"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 7910,
+        "ticker": "AL"
+      },
+      {
+        "intervals": 3,
+        "max_gap_days": 7904,
+        "ticker": "FG"
+      },
+      {
+        "intervals": 3,
+        "max_gap_days": 7372,
+        "ticker": "AIT"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 7123,
+        "ticker": "CSR"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 6960,
+        "ticker": "ENS"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 6832,
+        "ticker": "BGG"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 6679,
+        "ticker": "CR"
+      },
+      {
+        "intervals": 3,
+        "max_gap_days": 6641,
+        "ticker": "AAL"
+      },
+      {
+        "intervals": 2,
+        "max_gap_days": 6105,
+        "ticker": "HI"
+      }
+    ],
+    "note": "Not all are ticker reuse; each needs issuer-vintage disambiguation."
+  },
+  "cohorts": {
+    "ended_2010_2019": {
+      "dead_n": 11,
+      "dead_pct": 0.04044117647058824,
+      "either_n": 34,
+      "either_pct": 0.125,
+      "n": 272,
+      "yahoo_n": 25,
+      "yahoo_pct": 0.09191176470588236
+    },
+    "ended_2020_plus": {
+      "dead_n": 415,
+      "dead_pct": 0.8234126984126984,
+      "either_n": 426,
+      "either_pct": 0.8452380952380952,
+      "n": 504,
+      "yahoo_n": 104,
+      "yahoo_pct": 0.20634920634920634
+    },
+    "ended_pre_2010": {
+      "dead_n": 0,
+      "dead_pct": 0.0,
+      "either_n": 36,
+      "either_pct": 0.11726384364820847,
+      "n": 307,
+      "yahoo_n": 36,
+      "yahoo_pct": 0.11726384364820847
+    },
+    "open_or_active": {
+      "dead_n": 0,
+      "dead_pct": 0.0,
+      "either_n": 1422,
+      "either_pct": 0.9442231075697212,
+      "n": 1506,
+      "yahoo_n": 1422,
+      "yahoo_pct": 0.9442231075697212
+    }
+  },
+  "dead_prices": {
+    "date_max": "2026-07-31",
+    "date_min": "1994-11-28",
+    "path": "/Users/chriswong/Documents/Cluade/macro-main/data/edgar/dead_name_prices.parquet",
+    "sha256": "0291e0c83138d1eae2c8161d5e74b9bd2f5196eb640008bf3742d651b24fdd8d",
+    "unique_tickers": 426
+  },
+  "frozen_63d_feature_panel": {
+    "dates": 297,
+    "feature_sha256": "1e80826e6b760946208f36cee23155fdf7bd935488117a422640478ea3af54e0",
+    "median_feature_coverage": 0.6524122807017544,
+    "rows": 194903
+  },
+  "interpretation": [
+    "Do not promote or kill conditional continuity from this historical panel.",
+    "Do not run secondary horizons until historical price/identity coverage is repaired or an explicit new qualified population is preregistered.",
+    "Production engine/residual_alpha.py is unchanged."
+  ],
+  "membership": {
+    "path": "/Users/chriswong/Documents/Cluade/macro-main/data/breadth/sp1500_pit_membership.parquet",
+    "rows": 3286,
+    "sha256": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+    "start_min": "1996-01-02",
+    "unique_tickers": 2589
+  },
+  "operation": "alpha-leadership-research-20260924-sol-001",
+  "reason": "Historical price availability is strongly conditioned on continued/current resolvability; PIT membership alone does not make the feature panel survivor-clean.",
+  "schema": "alpha_leadership_stage2_data_qualification.v1",
+  "status": "FAIL_DEVELOPMENT_ONLY"
+}
