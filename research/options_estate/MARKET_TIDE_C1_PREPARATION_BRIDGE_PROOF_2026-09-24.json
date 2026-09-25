@@ -1,0 +1,74 @@
+{
+  "operation": "market-tide-research-20260924-sol-001",
+  "carrier": "macro#7929",
+  "procedure_pin": "Mastermind@a29161fa0a44cca9927afe042b5f7ea25aae1736",
+  "tested_code_head": "01a44ec96408749017ca97349f21512b78a42980",
+  "mission_complete": false,
+  "market_observations_used": 0,
+  "capability_delta": "Added a fail-closed supplied-source preparation bridge that transforms explicit dual-basis price windows plus complete event-window evidence into the unchanged C1-M1 prepared-row contract without granting source admission, publication, promotion, or trade authority.",
+  "tdd": {
+    "red_commit": "20016317321542aa9f98ea72260d5dcfa27511f4",
+    "red_process": 23422,
+    "red_result": "13/13 tests failed because the preparation module was absent",
+    "implementation_commit": "01a44ec96408749017ca97349f21512b78a42980",
+    "focused_green_process": 23615,
+    "focused_green": "13 tests passed, 0 failures/errors",
+    "full_green_process": 24453,
+    "full_green": "87 C1 tests passed, 0 failures/errors",
+    "cleanliness": "git diff --check clean; git status --short empty; exact HEAD 01a44ec96408749017ca97349f21512b78a42980"
+  },
+  "bridge_contract": {
+    "feature_window": "exact 64 supplied sessions t-63..t with close_sadj + close_tradj; each row availability >= its supplied close and <= decision; feature adjustment vintage between origin close and decision",
+    "outcome_window": "exact 6 total-return sessions t..t+5 using a separately supplied outcome vintage; label availability is max(row availability, outcome adjustment vintage)",
+    "measurement": "v20 from pre-decision feature-vintage total-return returns; trend63/momentum5 from feature-vintage split-adjusted closes; Y5 from the separate outcome-vintage total-return path normalized by pre-decision v20",
+    "events": "exact CPI/NFP/FOMC 0/1 flags, event times after decision and no later than next supplied cash close, owner-supplied complete_for_window status, and explicit negative-coverage refs for every zero flag",
+    "authority": "all output remains source_qualification=not_assessed_by_preparation_bridge, primary_cohort_admitted=false, can_publish_forecast=false, may_trade=false"
+  },
+  "source_files": [
+    {
+      "path": "research/options_estate/market_tide_c1_prepare.py",
+      "bytes": 10732,
+      "sha256": "1d7e9a31d28b992c6dcd214a9ac359cf12a88dd654e6877313839f04cc690053",
+      "git_blob": "b2483f7fbe63b922277b572b6d44f87aff1a02e7"
+    },
+    {
+      "path": "tests/test_market_tide_c1_prepare.py",
+      "bytes": 10176,
+      "sha256": "8906ab9a4647b4595201aebb217b3ef3928ef6192cdae4abb04458efcdc3c0c0",
+      "git_blob": "116906cdcf3f570c6561ac119f9d613d517fa5b6"
+    },
+    {
+      "path": "research/options_estate/market_tide_c1.py",
+      "bytes": 20788,
+      "sha256": "58557d0ea7370a36d9876933e7ec3c65ea0c2e5c19b08a665eff6587c3f7032e",
+      "git_blob": "e9a20fc3f0b1c25cd6bfe23f582451178476633d"
+    },
+    {
+      "path": "tests/test_market_tide_c1_boundaries.py",
+      "bytes": 6698,
+      "sha256": "1a70ec4f61462bf0108e58680e46d6080e2fb6560fb6b412302d0d4c27f86250",
+      "git_blob": "bc968f9621febcee164ffb0ac96d60f8db082c05"
+    }
+  ],
+  "compatibility_check": {
+    "process": 25361,
+    "prepared_rows": 1,
+    "downstream_core_fits": 0,
+    "downstream_core_predictions": 0,
+    "interpretation": "Prepared packet is accepted by the unchanged core, but the deliberately short synthetic coverage does not satisfy training eligibility and therefore issues no forecasts.",
+    "source_qualification": "not_assessed_by_preparation_bridge",
+    "primary_cohort_admitted": false,
+    "can_publish_forecast": false,
+    "may_trade": false
+  },
+  "preserved": {
+    "c1_method_changed": false,
+    "market_data_acquired": false,
+    "event_consumer_changed": false,
+    "earlier_refused_actions_retried": false,
+    "independent_review_completed": false,
+    "shared_ci_enrollment_completed": false,
+    "production_or_trade_effect": false
+  },
+  "next_action": "Adversarially review the preparation bridge and then consume owner-returned event/price evidence when available; shared-CI enrollment and independent review remain separate release gates. Real C1-M1 evaluation remains held until source/coverage eligibility is proven."
+}
