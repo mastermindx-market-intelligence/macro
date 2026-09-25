@@ -13,7 +13,7 @@ from engine.market_ontology.theme_research_mounts import MountFacts
 from engine.market_ontology.theme_research_registry import VerticalRegistration
 from tests.nuclear_research_helpers import (
     N01, N02, N03, N03B, N04, N05, N06, N07, N08, N09, N10, N11, N12,
-    nuclear_bundle, nuclear_query,
+    X08, nuclear_bundle, nuclear_query,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,6 +38,9 @@ def test_every_composed_payload_validates():
         nuclear.compose_nuclear_research(
             nuclear_query("fuel_cycle", view), nuclear_bundle(N07, N08, N09, N10, N11, N12))
         for view in nuclear.VIEWS
+    ] + [
+        nuclear.compose_nuclear_research(
+            nuclear_query("reactor_technology", "composition"), nuclear_bundle(X08))
     ]
     for payload in payloads:
         validate(payload)

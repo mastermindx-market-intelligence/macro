@@ -6,7 +6,7 @@ import re
 
 from engine.market_ontology import nuclear_theme_research as nuclear
 from tests.nuclear_research_helpers import (
-    N03, N04, X02, X02B, X04, X04B, X05, nuclear_bundle, nuclear_query,
+    N03, N04, X02, X02B, X04, X04B, X05, nuclear_bundle, nuclear_query, variant,
 )
 
 
@@ -18,14 +18,31 @@ def payloads():
     }
     for slice_key, assertions in fixtures.items():
         for view in nuclear.VIEWS:
-            for changes in ({}, {"time_mode": "source_history", "source_cutoff": "2026-12-31"}):
+            for changes in (
+                    {},
+                    {"time_mode": "source_history", "source_cutoff": "2026-12-31"},
+                    {"time_mode": "system_replay", "source_cutoff": "2026-09-19T12:00:00Z",
+                     "recorded_cutoff": "2026-12-31"},
+            ):
                 yield nuclear.compose_nuclear_research(
                     nuclear_query(slice_key, view, **changes),
                     nuclear_bundle(*assertions))
 
 
+def stale_payload():
+    stale = variant(
+        "N04", "SAMEDAY",
+        source={"observed_at": "2026-09-19T01:00:00Z",
+                "retained_at": "2026-09-19T02:00:00Z"})
+    return nuclear.compose_nuclear_research(
+        nuclear_query(
+            "nuclear_components", "economics", time_mode="system_replay",
+            source_cutoff="2026-09-19T12:00:00Z", recorded_cutoff="2026-12-31"),
+        nuclear_bundle(stale))
+
+
 def test_every_emitted_limitation_matches_exactly_one_declared_code():
-    for payload in payloads():
+    for payload in (*payloads(), stale_payload()):
         unmatched = [
             token for token in payload["limitations"]
             if sum(token == code or token.startswith(code)

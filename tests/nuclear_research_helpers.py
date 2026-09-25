@@ -296,12 +296,20 @@ X03 = _assertion(
     does_not_establish=["consolidated company revenue"],
 )
 X04 = _assertion(
-    case="X04", company="Cameco", facet="fuel_cycle",
+    case="X04", company="Cameco", facet="reactor_technology",
     predicate="REPORTED_OPERATING_MEASURE", mode="REPORTED_FACT",
-    product="Synthetic misfaceted fuel service", period="2025Q4",
+    product="Synthetic fuel service", period="2025Q4",
     observation=_observed(44, "CAD/kgU", "per_unit"),
-    establishes=["a mis-faceted synthetic value exists"],
+    establishes=["a synthetic out-of-cohort value exists"],
     does_not_establish=["primary slice membership"],
+)
+X04C = _assertion(
+    case="X04C", company="Cameco", facet="nuclear_components",
+    predicate="REPORTED_OPERATING_MEASURE", mode="REPORTED_FACT",
+    product="Synthetic in-facet out-of-cohort service", period="2025Q4",
+    observation=_observed(46, "CAD/kgU", "per_unit"),
+    establishes=["a synthetic in-facet out-of-cohort value exists"],
+    does_not_establish=["witness-cohort membership"],
 )
 X04B = _assertion(
     case="X04B", company="Centrus", facet="reactor_technology",
@@ -368,7 +376,7 @@ FIXTURES = {
     "N05": N05, "N06": N06, "N07": N07, "N08": N08, "N09": N09,
     "N10": N10, "N11": N11, "N12": N12, "N13": N13, "N14": N14,
     "N03C": N03C, "N03D": N03D, "X01": X01, "X02": X02, "X03": X03,
-    "X04": X04, "X04B": X04B, "X02B": X02B, "X05": X05,
+    "X04": X04, "X04B": X04B, "X04C": X04C, "X02B": X02B, "X05": X05,
     "X06": X06, "X07": X07, "X08": X08,
     "X09": X09, "X10": X10,
 }

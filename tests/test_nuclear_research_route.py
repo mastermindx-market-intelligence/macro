@@ -70,3 +70,19 @@ def test_route_filters_refused_rights_families_before_composition(monkeypatch):
     assert "rights_refused_families_hidden" in payload["limitations"]
     assert X02["curation_revision"] not in response.text
     assert N04["curation_revision"] in response.text
+
+
+def test_error_responses_keep_paid_private_headers(monkeypatch):
+    with client(monkeypatch) as test_client:
+        response = test_client.post("/api/themes/v1/research/query", json={
+            "anchor_theme_id": "nuclear_power", "slice_key": "nuclear_components",
+            "view": "unknown_view", "time_mode": "latest", "source_cutoff": None,
+            "recorded_cutoff": None, "offset": 0, "limit": 50,
+            "expected_generation": None,
+        })
+    assert response.status_code == 400, response.text
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+    assert "private" in response.headers["Cache-Control"]
+    assert "no-store" in response.headers["Cache-Control"]
+    assert "noindex" in response.headers["X-Robots-Tag"]
+    assert "noarchive" in response.headers["X-Robots-Tag"]

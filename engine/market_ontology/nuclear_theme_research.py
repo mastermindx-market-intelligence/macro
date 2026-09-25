@@ -73,6 +73,9 @@ LIMITATION_CODES = (
     "review_expired_present",
     "superseded_present",
     "interpretation_stale",
+    "same_day_grain_ambiguous",
+    "undatable_excluded",
+    "availability_unknown_excluded",
     "target_windows_judged_at:",
     "witness_cohort_excluded:",
     "unmapped_rights_source_excluded:",
@@ -91,8 +94,6 @@ def _subject_selector(assertion: Mapping[str, Any]) -> tuple[str | None, str | N
     subject = assertion.get("subject") or {}
     business = subject.get("source_business_label")
     product = subject.get("source_product_label")
-    if isinstance(product, str) and product and not business:
-        return _selector(product, "prd"), "product"
     if isinstance(product, str) and product and isinstance(business, str) and business:
         return f"prd:{business}/{product}", "product"
     selector = _selector(business, "biz")
@@ -222,11 +223,11 @@ class _Selection:
         self._apply_review_gate()
         self._apply_supersession()
         self._apply_syndication()
-        self.reference_day = _reference_day(self.query, self.assertions)
+        self.reference_day = _reference_day(self.query, self.current)
         if not isinstance(self.query.source_cutoff, str) \
                 and self.reference_day is not None \
                 and any(assertion.get("predicate") == "DEPLOYMENT_TARGET"
-                        for assertion in self.assertions):
+                        for assertion in self.current):
             self.limitations.add(f"target_windows_judged_at:{self.reference_day}")
         self.row_assertions = [
             assertion for assertion in self.current
@@ -495,7 +496,7 @@ def _companies(selection: _Selection) -> dict[str, Any]:
                 "statement_mode": assertion["statement_mode"],
                 "assertion_ref": source_ref_for(assertion),
             } for assertion in assertions), key=lambda role: (
-                role["assertion_ref"], role["predicate"])),
+                role["assertion_ref"], role["role"])),
             "security": state["security"],
         })
     if not rows:
@@ -608,7 +609,8 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
         "text": _text_of(assertion), "label": "interpretation",
         "input_refs": [assertion["curation_revision"]],
     } for assertion in selection.current
-        if assertion["statement_mode"] == "ATTRIBUTED_INTERPRETATION"),
+        if assertion["statement_mode"] == "ATTRIBUTED_INTERPRETATION"
+        and assertion["curation_revision"] not in selection.superseded),
         key=lambda item: (item["text"], item["input_refs"]))
     why_it_matters.extend(interpretations)
     why_it_matters.sort(key=lambda item: (item["text"], item["input_refs"]))
@@ -813,7 +815,7 @@ def select_authorized_evidence(query: ResearchQuery, bundle: OwnerBundle,
         raise ResearchRefusal("generation_changed")
     selection = _Selection(query, bundle)
     _refuse_unsupported_identity_vintage(selection)
-    for assertion in selection.assertions:
+    for assertion in selection.review_ok:
         if source_ref_for(assertion) == assertion_ref:
             source = assertion["source"]
             return {

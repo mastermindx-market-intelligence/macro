@@ -5,6 +5,7 @@ from __future__ import annotations
 import dataclasses
 
 from engine.market_ontology import nuclear_theme_research as nuclear
+from tests.nuclear_research_helpers import X01, variant
 from tests.nuclear_research_helpers import N03, N03B, N04, X08, X09, X10, clone
 from tests.nuclear_research_helpers import nuclear_bundle, nuclear_query
 
@@ -77,6 +78,7 @@ def test_resolved_company_identity_and_ownership_roles_are_reported():
             "mapping_learned_at": None,
         },)))
     roles = payload["companies"]["rows"][0]["roles"]
+    roles.sort(key=lambda role: (role["assertion_ref"], role["role"]))
     assert "owner_from:2026-02-01" in {role["role"] for role in roles}
     assert "announced_party" in {role["role"] for role in roles}
     assert payload["companies"]["status"] == "ready"
@@ -112,11 +114,29 @@ def test_milestones_never_leave_limitations_for_summary_text():
 def test_businessless_product_selector_and_application_subjects():
     payload = nuclear.compose_nuclear_research(
         nuclear_query("reactor_technology", "composition"), bundle(X08, application_assertion()))
-    assert "prd:None" not in str(payload)
     subjects = {subject["selector"]: subject for subject in payload["native_subjects"]}
-    assert subjects["prd:Synthetic product only"]["source_label"] == "Synthetic product only"
+    assert subjects["prd:Oklo/Synthetic powerhouse"]["kind"] == "product"
     assert subjects["app:Synthetic enrichment"]["kind"] == "application"
     assert subjects["app:Synthetic enrichment"]["source_label"] == "Synthetic enrichment"
+    product_only = nuclear.compose_nuclear_research(
+        nuclear_query("reactor_technology", "composition"), bundle(X08))
+    assert not any(
+        subject["selector"].startswith("prd:")
+        for subject in product_only["native_subjects"])
+    assert all(row["selector"] is None for row in product_only["industrial_views"]["composition"]["rows"])
+
+
+def test_superseded_interpretations_leave_why_it_matters():
+    corrected = variant(
+        "X01", "X01B", correction={
+            "predecessor_revision": X01["curation_revision"],
+            "reason": "synthetic correction"})
+    payload = nuclear.compose_nuclear_research(
+        nuclear_query("nuclear_components", "commercial"),
+        bundle(X01, corrected))
+    assert [item["input_refs"] for item in payload["summary"]["why_it_matters"]] == [
+        [corrected["curation_revision"]]]
+    assert "superseded_present" in payload["limitations"]
 
 
 def application_assertion():
