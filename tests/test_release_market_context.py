@@ -449,12 +449,29 @@ class TestReactionSensitivity:
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
         assert result is not None
         assert result["regime_cells_used"] is True
+        assert result["regime_requested"] == "Q1"
         assert result["regime_basis"] == "all"
         assert result["regime_labels_revision_optimistic"] is True
         # The pooled Q1-conditioned cell should be used for hot dgs10.
         assert result["dgs10_h1_hot_bp"] == pytest.approx(7.77, abs=1e-4)
+        hot_evidence = result["evidence"]["dgs10_h1_hot"]
+        assert hot_evidence == {
+            "n": 10,
+            "mean": 7.77,
+            "median": 6.0,
+            "ci_lo": 2.0,
+            "ci_hi": 12.0,
+            "era": "all",
+            "regime": "Q1",
+            "revision_optimistic": True,
+        }
         # Cold dgs10 falls back to 2021plus era-level (no qualified Q1 cold cell).
         assert result["dgs10_h1_cold_bp"] == pytest.approx(-4.1, abs=1e-4)
+        cold_evidence = result["evidence"]["dgs10_h1_cold"]
+        assert cold_evidence["n"] == 20
+        assert cold_evidence["era"] == _ERA_LABEL
+        assert cold_evidence["regime"] is None
+        assert cold_evidence["revision_optimistic"] is False
         assert "revision_optimistic" in result["note"]
 
     def test_falls_back_when_regime_n_below_threshold(self, tmp_path: Path):
@@ -469,9 +486,13 @@ class TestReactionSensitivity:
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
         assert result is not None
         assert result["regime_cells_used"] is False
+        assert result["regime_requested"] == "Q1"
         assert result["regime_basis"] is None
         assert result["regime_labels_revision_optimistic"] is False
         assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2, abs=1e-4)  # era-level
+        assert result["evidence"]["dgs10_h1_hot"]["era"] == _ERA_LABEL
+        assert result["evidence"]["dgs10_h1_hot"]["regime"] is None
+        assert result["evidence"]["dgs10_h1_hot"]["revision_optimistic"] is False
 
     def test_nfp_family_mapped_correctly(self, tmp_path: Path):
         """nfp release type maps to 'nfp' playbook family."""
@@ -499,8 +520,8 @@ class TestReactionSensitivity:
         required = {
             "dgs10_h1_hot_bp", "dgs10_h1_cold_bp",
             "spy_h1_hot_pct", "spy_h1_cold_pct",
-            "era_basis", "regime_basis", "regime_cells_used",
-            "regime_labels_revision_optimistic", "note",
+            "era_basis", "regime_requested", "regime_basis", "regime_cells_used",
+            "regime_labels_revision_optimistic", "evidence", "note",
         }
         assert required.issubset(result.keys())
 
@@ -511,8 +532,12 @@ class TestReactionSensitivity:
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q2")
         assert result is not None
         assert result["regime_cells_used"] is False
+        assert result["regime_requested"] == "Q2"
         assert result["regime_basis"] is None
         assert result["regime_labels_revision_optimistic"] is False
+        assert result["evidence"]["dgs10_h1_hot"]["n"] == 20
+        assert result["evidence"]["dgs10_h1_hot"]["era"] == _ERA_LABEL
+        assert result["evidence"]["dgs10_h1_hot"]["regime"] is None
 
     def test_fail_open_on_bad_json(self, tmp_path: Path):
         """Corrupt JSON → returns None without raising."""
