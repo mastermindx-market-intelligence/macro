@@ -164,6 +164,8 @@ def validate_selected_facts(
         raise EconomicObservationError("workspace must be a mapping")
     if not isinstance(source_texts, Mapping):
         raise EconomicObservationError("source_texts must be a mapping")
+    if any(not isinstance(key, str) or not isinstance(value, str) for key, value in source_texts.items()):
+        raise EconomicObservationError("source_texts must map document ids to text")
     current_start, current_end, prior_start, prior_end = _fiscal_scope(fiscal_scope)
     fiscal_period = workspace.get("fiscal_period")
     if not isinstance(fiscal_period, Mapping):
@@ -193,6 +195,8 @@ def validate_selected_facts(
         raise EconomicObservationError("workspace facts must be a list")
     if any(not isinstance(row, Mapping) for row in facts):
         raise EconomicObservationError("workspace facts must be mappings")
+    if any(not isinstance(row.get("metric"), str) or not row.get("metric") for row in facts):
+        raise EconomicObservationError("workspace facts must each name a metric")
     rows = [
         row for row in facts
         if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")

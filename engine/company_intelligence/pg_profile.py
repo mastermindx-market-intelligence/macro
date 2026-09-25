@@ -7,7 +7,7 @@ interval boundaries that ``FiscalPeriod`` lacks.
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 import functools
 import hashlib
@@ -15,6 +15,7 @@ import html
 import math
 import re
 from typing import Any, Sequence
+import unicodedata
 
 from engine.fundamental_forensics.disclosure_diff import BlockKind, normalize_filing
 
@@ -186,6 +187,14 @@ class _Table:
     labels: tuple[str, ...] = ()
     # The prose paragraphs around it, read per metric for a measure basis (R99).
     prose: tuple[str, ...] = ()
+    # Its own label cells -- every band row's stub cell and every label-only row above its last value row -- read
+    # positively (R107).
+    cell_labels: tuple[str, ...] = ()
+    # The paragraphs and topic headings of every section that holds it, beyond its own stretch and governing
+    # headings, read per metric for a measure basis (R108).
+    section_prose: tuple[str, ...] = ()
+    # Whether a sentence anywhere in the document declares a measure basis (R108).
+    declared_measure: bool = False
 
 
 _GROUP_ORDER = {"thead": 0, "tbody": 1, "tfoot": 2}
@@ -481,13 +490,52 @@ def parse_pg_literal(value: str, *, unit: str) -> float | None:
     return value_number if math.isfinite(value_number) else None
 
 
-_NON_GAAP_SPELLING = re.compile(r"\bnon[\s-]?gaap\b")
+_NON_GAAP_SPELLING = re.compile(r"\bnon[\s-]*gaap\b")
 _US_DOLLAR_SPELLING = re.compile(r"\bus\s+\$")
 
 
 def _normal(value: str) -> str:
     normal = " ".join(value.replace("\xa0", " ").replace("&nbsp;", " ").casefold().split())
     return _US_DOLLAR_SPELLING.sub("us$", _NON_GAAP_SPELLING.sub("non-gaap", normal))
+
+
+# Invisible format characters a renderer draws as nothing, and every dash that may join a word's parts (R106).
+_INVISIBLE_FORMAT = re.compile("[\u00ad\u034f\u115f\u1160\u17b4\u17b5\u180b-\u180f\u200b-\u200d\u2060-\u2064\ufeff]")
+_WORD_DASH = re.compile("[\u2010-\u2015\u2212\u2e3a\u2e3b\ufe58\ufe63\uff0d]")
+# Characters that reorder what is drawn: text carrying one is not read as written (R106).
+_BIDI_CONTROL = re.compile("[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]")
+
+
+# Scripts with no letter a reader could take for a Latin one: a whole word in them is a foreign word (R106).
+_FOREIGN_SCRIPTS = ("CJK UNIFIED IDEOGRAPH", "CJK COMPATIBILITY IDEOGRAPH", "IDEOGRAPHIC", "HIRAGANA", "KATAKANA", "HANGUL")
+_LETTER_RUN = re.compile(r"[^\W\d_]+")
+
+
+@functools.lru_cache(maxsize=65536)
+def _lexicon_text(text: str, *, prose: bool = False) -> str | None:
+    """Text as the closed lexicons read it (R106): NFKC-folded, invisible format characters removed, every dash read
+    as a hyphen, diacritics dropped, then ``_normal``.  None when the text cannot be read as written: it carries a
+    bidirectional control, or a letter that is not a plain Latin letter ("ʟ", a Cyrillic "а").  PROSE reads a
+    whole word of a script that has no Latin look-alike (Han, kana, Hangul) as a foreign word the lexicons do not
+    name -- "全球品牌 demand was stable" -- but never a word that mixes it with Latin letters."""
+    folded = _WORD_DASH.sub("-", _INVISIBLE_FORMAT.sub("", unicodedata.normalize("NFKC", text)))
+    if _BIDI_CONTROL.search(folded):
+        return None
+    folded = unicodedata.normalize(
+        "NFC", "".join(char for char in unicodedata.normalize("NFD", folded) if unicodedata.category(char) != "Mn")
+    )
+    words: list[str] = []
+    for run in _LETTER_RUN.finditer(folded):
+        word = run.group(0)
+        if word.isascii():
+            continue
+        if prose and all(unicodedata.name(char, "").startswith(_FOREIGN_SCRIPTS) for char in word):
+            words.append(word)
+            continue
+        return None
+    for word in words:
+        folded = folded.replace(word, " ")
+    return _normal(folded)
 
 
 def _fiscal_identity(current_start: date, current_end: date) -> tuple[int, int]:
@@ -582,9 +630,19 @@ _ROUTE_WORDS: dict[str, tuple[frozenset[str], frozenset[str]]] = {
     ),
 }
 _FORWARD_LOOKING = re.compile(
-    r"\b(?:outlooks?|guidance|forecast(?:s|ed|ing)?|expect(?:s|ed|ing|ations?)?|project(?:ed|ing|ions?)"
-    r"|target(?:s|ed|ing)?|estimat(?:e|es|ed|ing)|anticipat(?:e|es|ed|ing|ions?)|looking\s+ahead|going\s+forward)\b"
+    r"\b(?:out[\s-]*looks?|guidance|fore[\s-]*cast(?:s|ed|ing)?|expect(?:s|ed|ing|ations?)?|project(?:ed|ing|ions?)"
+    r"|target(?:s|ed|ing)?|estimat(?:e|es|ed|ing)|anticipat(?:e|es|ed|ing|ions?)|looking[\s-]+ahead|going[\s-]+forward"
+    r"|pre[\s-]*views?)\b"
 )
+
+
+def _names_forward(text: str) -> bool:
+    """A forward-looking word, read through the lexicon reading; text that cannot be read as written counts as one
+    (R106, R112)."""
+    lexicon = _lexicon_text(text)
+    return lexicon is None or _FORWARD_LOOKING.search(lexicon) is not None
+
+
 # R67 -- the tokens that make a short paragraph a period LABEL rather than prose: a year, a month, a quarter
 # number, or a period-form word.  "prior year" alone in a sentence is prose.
 _STRONG_PERIOD_TOKEN = re.compile(
@@ -923,7 +981,7 @@ def _is_admitted_heading(text: str, identity: tuple[int, int, date] | None) -> b
 def _is_forward_caption(text: str, identity: tuple[int, int, date] | None) -> bool:
     """A caption naming a forward-looking view and not the admitted quarter (R63)."""
     normal = _normal(text)
-    if not normal or _FORWARD_LOOKING.search(normal) is None:
+    if not normal or not _names_forward(text):
         return False
     return identity is None or not _has_scope_form(normal, identity)
 
@@ -951,38 +1009,104 @@ _LABEL_BASIS_WORDS = {"core_non_gaap": frozenset({"core", "non-gaap"})}
 # two closed lexicons are the only reading prose allows (R99).  A PRESENTATION basis -- another entity or another
 # accounting -- refuses the table for every metric.
 _PRESENTATION_BASIS = re.compile(
-    r"\b(?:pro[\s-]*forma|(?:combined|merged)[\s-]+(?:company|companies|results?|basis|entity|entities|group|business(?:es)?|operations)"
-    r"|as[\s-]+(?:though|if)|giv(?:e|es|en|ing)\s+effect|supplemental|illustrative|hypothetical|recast|restated|successor|predecessor)\b"
+    r"\b(?:pro[\s-]*forma|(?:combined|merged)[\s-]*(?:company|companies|results?|basis|entity|entities|group|business(?:es)?|operations)"
+    r"|(?:post|pre)[\s-]*(?:acquisitions?|mergers?|combinations?|transactions?)|as[\s-]*(?:though|if)|giv(?:e|es|en|ing)[\s-]*effect"
+    r"|supplemental|illustrative|hypothetical|re[\s-]*cast(?:s|ing)?|re[\s-]*stat(?:e|es|ed|ing|ements?)|successor|predecessor)\b"
 )
 # A MEASURE basis describes the organic and core measures and changes the basis of every reported one, so prose may
 # name it only beside a metric whose own basis it is -- as R90 reads "Core" and "Non-GAAP" in a label (R99).
 _MEASURE_BASIS = re.compile(
-    r"\b(?:non-gaap|core[\s-]+(?:basis|eps|earnings|results?|measures?)|adjusted[\s-]+(?:basis|results?|eps|earnings|amounts|figures|measures?)"
-    r"|as[\s-]+adjusted|exclud(?:e|es|ed|ing)|constant[\s-]+currency|currency[\s-]+neutral|comparable[\s-]+basis"
-    r"|before\s+(?:special|one-time|non-recurring)\s+items)\b"
+    r"\b(?:non-gaap|core[\s-]*(?:diluted[\s-]*)?(?:basis|eps|earnings|results?|measures?)"
+    r"|adjusted[\s-]*(?:diluted[\s-]*)?(?:basis|results?|eps|earnings|amounts|figures|measures?)"
+    r"|as[\s-]*adjusted|exclud(?:e|es|ed|ing)|excl\b|exclusions?|constant[\s-]*currency|currency[\s-]*neutral|comparable[\s-]*basis"
+    r"|before[\s-]+(?:special|one[\s-]*time|non[\s-]*recurring)[\s-]+items)\b"
 )
 _MEASURE_BASES = frozenset({"core_non_gaap", "core_non_gaap_reconciliation", "core_eps_growth", "organic_sales", "organic_volume"})
 
 
-def _phrase(text: str) -> str:
-    return " ".join(_normal(text).replace("&", " and ").split())
+def _names_presentation(text: str, *, prose: bool = False) -> bool:
+    """A presentation basis in ``text``, read through the lexicon reading; unreadable text names one (R106)."""
+    lexicon = _lexicon_text(text, prose=prose)
+    return lexicon is None or _PRESENTATION_BASIS.search(lexicon) is not None
 
 
-def _names_own_basis(prose: str, table: _Table) -> bool:
-    """True when every measure-basis word in ``prose`` lies inside a repetition of one of the table's own column or
-    row names: "Total P&G volume excluding acquisitions and divestitures increased 3%" names the table's "Volume
-    Excluding Acquisitions & Divestitures" column, "Core EPS increased 5%" its "Core EPS" row; "Amounts below exclude
-    the acquired business" names the table's basis (R99, frozen R32d)."""
-    normal = _phrase(prose)
+def _phrase(text: str, *, prose: bool = False) -> str | None:
+    lexicon = _lexicon_text(text, prose=prose)
+    return None if lexicon is None else " ".join(lexicon.replace("&", " and ").split())
+
+
+# A sentence that speaks about the table's presentation rather than narrating one of its figures (R107): "All per-share
+# amounts in the table below are presented as Core EPS."
+_DECLARATION_WORD = re.compile(
+    r"\b(?:tables?|below|above|following|herein|present(?:s|ed)?|shown?|shows|stated?|states|reflect(?:s|ed)?|amounts?"
+    r"|figures?|all|basis|bases)\b"
+)
+_SENTENCE_SPLIT = re.compile(r"(?<=[.!?;])\s+")
+
+
+def _measure_names(table: _Table) -> frozenset[str]:
+    """A table's measure-bearing NAMES: its band cells and its value rows' names (R99, R107, R108)."""
     names = {_phrase(cell.text) for row in table.rows[: table.depth] for cell in row}
-    names |= {_phrase(next((cell.text for cell in row if cell.text.strip()), "")) for row in table.rows[table.depth :]}
+    names |= {
+        _phrase(next((cell.text for cell in row if cell.text.strip()), ""))
+        for row in table.rows[table.depth :]
+        if _section_text(row) is None
+    }
+    return frozenset(name for name in names if name and _MEASURE_BASIS.search(name) is not None)
+
+
+def _covered(sentence: str, names: frozenset[str]) -> bool:
+    """Whether every measure-basis term in ``sentence`` lies inside a repetition of one of ``names``."""
     covered = [
         (found.start(), found.end())
         for name in names
-        if _MEASURE_BASIS.search(name) is not None
-        for found in re.finditer(r"(?<![\w-])" + re.escape(name) + r"(?![\w-])", normal)
+        for found in re.finditer(r"(?<![\w-])" + re.escape(name) + r"(?![\w-])", sentence)
     ]
-    return all(any(start <= match.start() and match.end() <= end for start, end in covered) for match in _MEASURE_BASIS.finditer(normal))
+    return all(
+        any(start <= match.start() and match.end() <= end for start, end in covered) for match in _MEASURE_BASIS.finditer(sentence)
+    )
+
+
+def _names_own_basis(prose: str, table: _Table) -> bool:
+    """True when every measure-basis term in ``prose`` lies inside a repetition of one of the table's own column
+    names or VALUE-row names, in a sentence that states a figure and declares nothing about the table's presentation:
+    "Total P&G volume excluding acquisitions and divestitures increased 3%" names the table's "Volume Excluding
+    Acquisitions & Divestitures" column, "Core EPS increased 5%" its "Core EPS" row.  "Amounts below exclude the
+    acquired business", "All per-share amounts in the table below are presented as Core EPS." and a note row
+    repeating the prose name the table's basis and refuse (R99, R107, frozen R32d)."""
+    normal = _phrase(prose, prose=True)
+    if normal is None:
+        return False
+    names = _measure_names(table)
+    for sentence in _SENTENCE_SPLIT.split(normal):
+        if _MEASURE_BASIS.search(sentence) is None:
+            continue
+        if _STATEMENT_FIGURE.search(sentence) is None or _DECLARATION_WORD.search(sentence) is not None:
+            return False
+        if not _covered(sentence, names):
+            return False
+    return True
+
+
+# The document's own parts a sentence may name as its scope ("in this release", "amounts in this section") (R108).
+_SCOPE_WORD = re.compile(r"\b(?:releases?|documents?|sections?|exhibits?|schedules?|attachments?|appendix|appendices)\b")
+
+
+def _declares_measure(text: str, *, prose: bool) -> bool:
+    """Whether ``text``, wherever it stands in the document, DECLARES a measure basis (R108): a sentence with a
+    measure-basis term that speaks about a presentation or names a part of the document -- "All amounts in this
+    release exclude restructuring charges." -- reaches every table.  Narrative about a measure ("Core EPS excludes
+    an incremental charge of 0.20") reaches only the tables of its own sections.  Unreadable text declares one."""
+    normal = _phrase(text, prose=prose)
+    if normal is None:
+        return True
+    return any(
+        _MEASURE_BASIS.search(sentence) is not None
+        and (_DECLARATION_WORD.search(sentence) is not None or _SCOPE_WORD.search(sentence) is not None)
+        for sentence in _SENTENCE_SPLIT.split(normal)
+    )
+
+
 # The closed notes a LABEL may be besides its vocabulary (R99): the dash convention, the rounding note and the
 # lead-in ("The results for the quarter were as follows:").
 _BENIGN_NOTE = re.compile(
@@ -1011,6 +1135,35 @@ def _table_label_admissible(text: str, identity: tuple[int, int, date] | None, v
     return all(word in allowed for word in words) and _PERIOD_TOKEN.search(" ".join(words)) is None
 
 
+# The profile's own row names a label row may repeat with its values left blank or dashed ("Beauty", "Total P&G")
+# (R107); basis words are never among them.
+_ROW_NAME_WORDS = frozenset({"beauty", "grooming", "health", "care", "fabric", "home", "baby", "feminine", "family", "total", "p&g", "and", "&"})
+
+
+def _cell_label_admissible(text: str, identity: tuple[int, int, date] | None, vocabulary: frozenset[str] = _ALL_ROUTE_WORDS) -> bool:
+    """A label CELL -- a band row's stub cell, or a label-only row above the table's last value row -- is read
+    positively like a label (R107): beyond its period tokens, which the band and row contexts classify (R37, R51),
+    every word must be of the label vocabularies or a profile row name, or it is a closed note.  "Pro Forma
+    Combined", "Non-GAAP" and "As Adjusted:" refuse the table."""
+    if _BENIGN_NOTE.fullmatch(_normal(text).strip().rstrip(".!:").strip()) is not None:
+        return True
+    _verdicts, words = _residual_words(text, identity)
+    allowed = _NEUTRAL_WORDS | _UNITS_WORDS | _MASTHEAD_WORDS | _ROW_NAME_WORDS | vocabulary
+    return all(word.strip(",") in allowed or _PERIOD_TOKEN.fullmatch(word) is not None for word in words)
+
+
+def _cell_labels(rows: Sequence[Sequence[_Cell]], depth: int) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """A table's own label cells (R107): every band row's stub cell and every label-only row above its last value
+    row, read positively; and its NOTE rows -- the label-only rows after its last value row -- which are read like
+    prose, by the closed lexicons, because the frozen S02 binds beside a free-text footer note."""
+    stubs = {id(row[0].origin): row[0].text for row in rows[:depth] if row and row[0].origin is not None and row[0].text.strip()}
+    body = [(_section_text(row), row) for row in rows[depth:]]
+    last = max((index for index, (text, _row) in enumerate(body) if text is None), default=-1)
+    sections = [text for index, (text, _row) in enumerate(body) if text and index < last]
+    notes = [text for index, (text, _row) in enumerate(body) if text and index > last]
+    return tuple(dict.fromkeys((*stubs.values(), *sections))), tuple(dict.fromkeys(notes))
+
+
 def _label_shaped(text: str) -> bool:
     """A paragraph around a table is a LABEL unless it ends in sentence punctuation or states a figure, whatever its
     length: "Pro Forma Combined Company Results for the Three Months Ended June 30, 2026" is a label; "Expectations
@@ -1034,7 +1187,7 @@ def _around_admissible(stretch: Sequence[tuple[str, bool]], caption: str, identi
     labels = [item for item in (caption, *(text for text, label in stretch if label)) if item and item.strip()]
     if any(not _label_admissible(item, identity) for item in labels):
         return False
-    return not any(_PRESENTATION_BASIS.search(_normal(text)) for text, label in stretch if not label)
+    return not any(_names_presentation(text, prose=True) for text, label in stretch if not label)
 
 
 def _table_labels(caption: str, items: Sequence[tuple[str, bool]]) -> tuple[str, ...]:
@@ -1042,12 +1195,16 @@ def _table_labels(caption: str, items: Sequence[tuple[str, bool]]) -> tuple[str,
     return tuple(item for item in (caption, *(text for text, label in items if label)) if item and item.strip())
 
 
-def _after_table(blocks: Sequence[Any], index: int, identity: tuple[int, int, date] | None) -> tuple[list[tuple[str, bool]], bool]:
+def _after_table(
+    blocks: Sequence[Any], index: int, identity: tuple[int, int, date] | None
+) -> tuple[list[tuple[str, bool]], bool, list[int]]:
     """The paragraphs after the table at ``index`` up to the next topic heading or table, each with whether it is a
-    label, and whether visible text the parser read into no block lies in that stretch (R100, R101)."""
+    label, whether visible text the parser read into no block lies in that stretch (R100, R101), and their block
+    indices."""
     stretch: list[tuple[str, bool]] = []
+    indices: list[int] = []
     unread = bool(getattr(blocks[index], "unread_after", False))
-    for block in blocks[index + 1:]:
+    for offset, block in enumerate(blocks[index + 1:], start=index + 1):
         unread = unread or bool(getattr(block, "unread_before", False))
         text = getattr(block, "text", "") or ""
         if getattr(block, "table", None) is not None or (_is_heading(block) and not _is_pure_period(text, identity)):
@@ -1055,7 +1212,28 @@ def _after_table(blocks: Sequence[Any], index: int, identity: tuple[int, int, da
         unread = unread or bool(getattr(block, "unread_after", False))
         if _is_paragraph(block) and identity is not None:
             stretch.append((text, _label_shaped(text) or _pure_period_label(block, identity)))
-    return stretch, unread
+            indices.append(offset)
+    return stretch, unread, indices
+
+
+def _section_owners(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -> tuple[list[int | None], dict[int, int]]:
+    """Each block's section -- the innermost open TOPIC heading before it (itself, for a topic heading), or None
+    before the first -- and where each topic heading's section ends: at the next topic heading of the same or a
+    higher level.  A pure period heading neither opens nor closes a section, as it ends no stretch (R99, R108)."""
+    owners: list[int | None] = []
+    ends: dict[int, int] = {}
+    stack: list[tuple[int, int]] = []
+    for index, block in enumerate(blocks):
+        text = getattr(block, "text", "") or ""
+        if _is_heading(block) and not _is_pure_period(text, identity):
+            level = _heading_level(block)
+            while stack and stack[-1][1] >= level:
+                ends[stack.pop()[0]] = index
+            stack.append((index, level))
+        owners.append(stack[-1][0] if stack else None)
+    for heading, _level in stack:
+        ends[heading] = len(blocks)
+    return owners, ends
 
 
 def _is_neutral_topic(text: str, identity: tuple[int, int, date] | None) -> bool:
@@ -1075,7 +1253,7 @@ def _is_non_results_section(text: str, identity: tuple[int, int, date] | None) -
     pure label of the admitted quarter, or consist of neutral topic words ("Overview", "Financial Highlights").
     A forward-looking word, a period other than the admitted quarter, or any other topic ("Ambitions",
     "Cumulative Results") opens a section no table binds from."""
-    if _FORWARD_LOOKING.search(_normal(text)) is not None:
+    if _names_forward(text):
         return True
     if _is_admitted_heading(text, identity):
         return False
@@ -1084,8 +1262,10 @@ def _is_non_results_section(text: str, identity: tuple[int, int, date] | None) -
 
 # A title's clauses: split at ";", ":", "|", a spaced dash, "and" and "&" (R93).
 _TITLE_CLAUSE = re.compile(r"\s*[;:|]\s*|\s+[-\u2014\u2013]+\s+|\s+(?:and|&)\s+")
-# A word that names reported results in a title clause (R98).
-_RESULTS_WORD = re.compile(r"\b(?:results?|earnings|reports?|reported|announces?|announced|delivers?|delivered)\b")
+# A title clause names reported results by a results NOUN (R98, R110); a clause that also names a date, a call or
+# a webcast announces an event, not results.
+_RESULTS_WORD = re.compile(r"\b(?:results?|earnings)\b")
+_SCHEDULE_WORD = re.compile(r"\b(?:dates?|calls?|webcasts?|conferences?|schedul(?:e|es|ed|ing)|timing|times?)\b")
 
 
 def _is_non_results_title(block: Any, text: str, identity: tuple[int, int, date] | None) -> bool:
@@ -1096,16 +1276,18 @@ def _is_non_results_title(block: Any, text: str, identity: tuple[int, int, date]
     if _heading_level(block) != 1:
         return _is_non_results_section(text, identity)
     normal = _normal(text)
-    if _FORWARD_LOOKING.search(normal) is not None:
+    if _names_forward(text):
         # "Fourth Quarter Fiscal Year 2026 Results and Fiscal Year 2027 Outlook" heads the quarter; "Q4 Outlook",
         # "Fourth Quarter and Fiscal Year 2026 Outlook" and "Fourth Quarter Fiscal Year 2026 -- Outlook" name a view
         # of it (R98).
         if identity is None:
             return True
         clauses = [clause for clause in _TITLE_CLAUSE.split(normal) if clause.strip()]
-        forward = [clause for clause in clauses if _FORWARD_LOOKING.search(clause) is not None]
+        forward = [clause for clause in clauses if _names_forward(clause)]
         results = any(
-            _RESULTS_WORD.search(clause) is not None and _has_scope_form(clause, identity) for clause in clauses if clause not in forward
+            _RESULTS_WORD.search(clause) is not None and _SCHEDULE_WORD.search(clause) is None and _has_scope_form(clause, identity)
+            for clause in clauses
+            if clause not in forward
         )
         if not results or any(_has_scope_form(clause, identity) for clause in forward):
             return True
@@ -1187,17 +1369,30 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
     # Everything since the last TOPIC heading or table stands before the next table; a pure period heading
     # ("Three Months Ended June 30, 2026") does not end the stretch (R99).
     before: list[tuple[str, bool]] = []
+    before_indices: list[int] = []
     before_unread = False
     section = _SectionState()
     scanned: list[_Table] = []
     blocks = tuple(blocks)
+    # A presentation basis anywhere in the document's visible text -- a heading, a paragraph, a caption or a cell of
+    # any table -- or visible text the parser read into no block anywhere in it, makes every table unreadable: "All
+    # amounts in this release are pro forma combined company results." reaches every table it names, wherever it
+    # stands (R108).
+    unreadable = identity is not None and any(
+        getattr(block, "unread_before", False)
+        or getattr(block, "unread_after", False)
+        or _names_presentation(getattr(block, "text", "") or "", prose=_is_paragraph(block))
+        or (getattr(block, "table", None) is not None and _names_presentation(getattr(block.table, "caption", "") or ""))
+        for block in blocks
+    )
+    owners, ends = _section_owners(blocks, identity)
     for index, block in enumerate(blocks):
         text = getattr(block, "text", "") or ""
         if _is_heading(block):
             immediate = text
             if not _is_pure_period(text, identity):
                 topic = text
-                before, before_unread = [], False
+                before, before_indices, before_unread = [], [], False
             else:
                 before_unread = before_unread or bool(getattr(block, "unread_before", False))
             section.heading(block, text, identity)
@@ -1213,6 +1408,7 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
                 period.prose(text)
                 item = (text, _label_shaped(text))
             before.append(item)
+            before_indices.append(index)
             before_unread = before_unread or bool(getattr(block, "unread_before", False))
         elif getattr(block, "table", None) is not None:
             rows = _grid(block)
@@ -1223,24 +1419,53 @@ def _table_scan(blocks: Sequence[Any], identity: tuple[int, int, date] | None) -
                 band = "unknown"
             # Labels around the table are read positively and prose by closed lexicons; visible text the parser read
             # into no block -- before it, inside it or after it -- makes it unreadable (R99, R100, R101).
-            after, after_unread = _after_table(blocks, index, identity)
+            after, after_unread, after_indices = _after_table(blocks, index, identity)
             around = (*before, *after)
             labels = _table_labels(caption, around)
             prose = tuple(text for text, label in around if not label)
             unread = before_unread or bool(getattr(block, "unread_before", False)) or after_unread
-            if identity is not None and (unread or not _around_admissible(around, caption, identity)):
+            cell_labels, notes = _cell_labels(rows, depth)
+            if identity is not None and (
+                unreadable
+                or unread
+                or not _around_admissible((*around, *((note, False) for note in notes)), caption, identity)
+                or not all(_cell_label_admissible(text, identity) for text in cell_labels)
+            ):
                 band = "unknown"
-            before, before_unread = [], False
+            stretch_indices = {*before_indices, *after_indices}
+            before, before_indices, before_unread = [], [], False
             row_context = _row_contexts(rows, depth, identity) if identity is not None else tuple([None] * len(rows))
             governing = tuple(dict.fromkeys(item for item in (immediate, topic) if item))
+            # Every paragraph and topic heading of a section holding the table, beyond its stretch and its governing
+            # headings: the title's section holds every table; a sibling section none (R108).
+            section_prose = tuple(
+                getattr(other, "text", "") or ""
+                for position, other in enumerate(blocks)
+                if position not in stretch_indices
+                and (_is_paragraph(other) or (_is_heading(other) and position == owners[position]))
+                and (getattr(other, "text", "") or "") not in governing
+                and (owners[position] is None or owners[position] < index < ends[owners[position]])
+            ) if identity is not None else ()
             scanned.append(
                 _Table(
                     block, rows, depth, caption, governing, band if band in _EXCLUDED else period.context, row_context,
-                    section.active or _is_forward_caption(caption, identity), labels, prose,
+                    section.active or _is_forward_caption(caption, identity), labels, (*prose, *notes), cell_labels,
+                    section_prose,
                 )
             )
             immediate = None
             topic = None
+    if identity is not None and scanned:
+        # A sentence DECLARING a measure basis anywhere -- a heading, a paragraph, a caption, a stub cell, a section
+        # row or a note row of any table -- reaches every table (R108).
+        units = [
+            (getattr(block, "text", "") or "", _is_paragraph(block)) for block in blocks if _is_heading(block) or _is_paragraph(block)
+        ]
+        for table in scanned:
+            cells, notes = _cell_labels(table.rows, table.depth)
+            units.extend([(table.caption, False), *((cell, False) for cell in cells), *((note, True) for note in notes)])
+        if any(_declares_measure(text, prose=prose) for text, prose in units if text and text.strip()):
+            scanned = [replace(table, declared_measure=True) for table in scanned]
     return scanned
 
 
@@ -1336,7 +1561,8 @@ def _candidate_tables(
     """The in-scope tables a route admits: a governing heading must decompose into recognised period forms plus
     that route's vocabulary (R27, R73), every label of the table into the route's vocabulary plus the words of the
     metric's ``basis`` (R90), and no prose around it may name a measure basis the metric does not have, outside a
-    repetition of the table's own row or column names (R99)."""
+    repetition of the table's own row or column names (R99), nor may any section that holds it, nor a declaration
+    anywhere in the document (R108)."""
     route = _route_for(headings)
     vocabulary = _ROUTE_WORDS[route][1] | _LABEL_BASIS_WORDS.get(basis or "", frozenset())
     return [
@@ -1345,7 +1571,12 @@ def _candidate_tables(
         if _admissible_table(table)
         and any(_admits(heading, route, identity) for heading in table.governing)
         and (identity is None or all(_label_admissible(label, identity, vocabulary) for label in table.labels))
-        and (basis is None or basis in _MEASURE_BASES or all(_names_own_basis(text, table) for text in table.prose))
+        and (identity is None or all(_cell_label_admissible(label, identity, vocabulary) for label in table.cell_labels))
+        and (
+            basis is None
+            or basis in _MEASURE_BASES
+            or (not table.declared_measure and all(_names_own_basis(text, table) for text in (*table.prose, *table.section_prose)))
+        )
     ]
 
 
@@ -1783,7 +2014,6 @@ _TOTAL_PG = re.compile(r"\btotal p&g\b")
 _VOLUME_DECREASE = {"decreased", "declined", "fell", "was down", "down"}
 # Whole words only: "previously announced" and "priorities" are not prior-period qualifiers (R47).
 _PRIOR_PERIOD = re.compile(r"\b(?:prior|previous|year[\s-]+ago|last year|a year earlier)\b")
-_SENTENCE_SPLIT = re.compile(r"(?<=[.!?;])\s+")
 _VOLUME_COLUMN_QUALIFIERS = ("excluding", "organic", "mix")
 
 
