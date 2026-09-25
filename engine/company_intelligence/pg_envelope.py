@@ -46,7 +46,7 @@ _RAW_TEXT_CLOSE = {
     for name in ("script", "style", "title", "textarea", "xmp", "iframe", "noembed", "noframes", "noscript")
 }
 _UNREAD_ELEMENTS = frozenset({
-    "plaintext", "template", "svg", "math", "select", "object", "embed", "frameset", "frame",
+    "plaintext", "template", "svg", "math", "select", "object", "embed", "frameset", "frame", "isindex",
     "caption", "colgroup", "col", "thead", "tbody", "tfoot",
 })
 _TABLE_NAMES = frozenset({"table", "tr", "td", "th"})
@@ -343,7 +343,7 @@ def _unreadable_markup(source: str) -> str | None:
                 state = "table"
             elif name == cell_name:
                 state = "row"
-            elif name in _TABLE_NAMES:
+            elif name in _TABLE_NAMES or name in _UNREAD_ELEMENTS:
                 return "table"
     return "table" if state is not None else None
 
