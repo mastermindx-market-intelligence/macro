@@ -1,0 +1,435 @@
+# Finviz theme/subtheme → Sector Intelligence re-rating integration
+
+Date: 2026-09-24
+Owner/parent: #7749 `sector-strength-measurement-20260922-sol-001`
+This note is research + architecture, not trading authority.
+
+## Executive finding
+
+Finviz themes are **not fully integrated** into Sector Intelligence.
+
+The estate already has a strong source-local Finviz plane:
+- 40 themes
+- 268 source subthemes
+- ~941 unique tickers
+- current multi-horizon subtheme/member performance
+- PIT subtheme-performance history
+- PIT tree-change history
+- whole-market subtheme rotation / turn computation
+
+What is missing is the higher-order interpretation the Chairman is asking for:
+1. explicit single-stock vs narrow vs broad re-pricing shape;
+2. a universal leader read that distinguishes raw price leadership from validated alpha;
+3. cross-subtheme diffusion / rotation inside a broad theme;
+4. fundamental/event/valuation confirmation of whether a price move is a durable re-rating;
+5. a validated exit / rotate-out framework;
+6. full semantic promotion from source-local Finviz concepts into the canonical GMI theme graph;
+7. one coherent Sector Central workflow spanning Sector → Theme → Subtheme → Stock.
+
+The implementation must extend existing owners. It must not mint another membership store,
+rotation engine, theme-state plane, event system, ranking plane, or trade-authority plane.
+
+## Current-source census
+
+Observed code/source base for this slice:
+`macro@1c58ce366754998c02a34109196ab1a7be8586ba`.
+Later main movement through `5600bb63b27978031769eb428911fe9b46572a92`
+did not touch this slice's owned paths when reconciled.
+
+Existing source/owner chain:
+- `scripts/fetch_finviz_themes.py`
+  - source-local tree → `data/themes_heatmap/themes_tree.json`
+  - current perf → `data/themes_heatmap/perf_snapshot.json`
+  - PIT subtheme perf → `data/themes_heatmap/subsector_perf_history.jsonl`
+  - PIT tree changes → `data/themes_heatmap/tree_history.jsonl`
+- `engine/themes_heatmap.py`
+  - owner projection → `site/marketdata/themes_heatmap.json`
+- `engine/subsector_rotation.py` + `engine/subsector_turn.py`
+  - owner rotation state → `site/marketdata/subsector_rotation.json`
+- GMI source-local graph
+  - Finviz local nodes exist at `ltheme:finviz:<subtheme_key>`
+  - company → Finviz-local-theme membership exists with provenance
+
+Important PIT limitation:
+- member horizon returns are **not archived** in git.
+- the collector intentionally archives only subtheme aggregates; member returns are
+  reconstructable from the whole-market store.
+- historical participation/concentration must reconstruct member returns against PIT tree
+  membership rather than pretending today's member snapshot was historical truth.
+- theme historical rollups in the incumbent rotation engine currently use today's subtheme
+  membership when replaying the subtheme archive; `tree_history.jsonl` exists, so PIT
+  re-derivation is possible but is a separate repair.
+
+A stale collector module header incorrectly said `member_perf_history.jsonl` existed;
+this slice corrects that documentation to the actual `subsector_perf_history.jsonl` contract.
+
+## Rights boundary
+
+`config/theme_sources.yml` marks `finviz_themes` as
+`rights_class: unresolved` for NEW GMI public emission. Internal GMI computation is
+allowed; new public GMI surfaces must fail closed until the rights decision is resolved.
+
+Two owner products predate GMI and are explicitly grandfathered by path:
+- `site/marketdata/themes_heatmap.json`
+- `site/marketdata/subsector_rotation.json`
+
+This first slice enriches the existing owner heatmap projection rather than creating a
+new GMI public dataset. Future canonical semantic work remains internal until the rights
+gate permits public emission.
+
+## External research: why the hierarchy matters
+
+### 1. Finviz itself has moved from sectors toward structural themes
+
+Finviz's 2026-01-23 launch note says its Themes Map organizes stocks by structural themes
+instead of sectors and exposes theme + sub-theme screening. Its AI example breaks the
+theme into narrower categories such as Databases, DevOps, Compute and Models.
+
+Source:
+https://finviz.com/blog/new-stock-market-maps-for-market-cap-52-week-highs-lows-themes-and-insider-trading/
+
+Finviz's 2026-09-08 Matrix launch makes the participation question explicit: the product
+is designed to show whether strength is concentrated in the largest names or spreading
+to smaller companies inside the same market area.
+
+Source:
+https://finviz.com/blog/the-finviz-matrix-market-breadth-visualized/
+
+Implication for Mastermind:
+taxonomy alone is not enough. A subtheme state needs participation and concentration
+alongside return.
+
+### 2. Group / industry momentum is economically meaningful
+
+Moskowitz & Grinblatt (1999), "Do Industries Explain Momentum?", documents a strong
+industry component to momentum and finds individual-stock momentum is substantially
+reduced after controlling for industry momentum.
+
+Sources:
+https://www.jstor.org/stable/798005
+https://onlinelibrary.wiley.com/doi/abs/10.1111/0022-1082.00146
+
+Implication:
+a stock leader should be evaluated relative to its subtheme, parent theme and market.
+Raw stock return alone confounds stock-specific leadership with a group beta tailwind.
+
+### 3. Relatedness is richer than static sectors
+
+Cohen & Frazzini, "Economic Links and Predictable Returns", documents delayed information
+incorporation across economically linked customer/supplier firms.
+
+Source:
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2758776
+
+Ali & Hirshleifer, "Shared Analyst Coverage: Unifying Momentum Spillover Effects", finds
+a connected-stock relation that subsumes several industry/geographic/customer/
+supplier/technology momentum effects in their tests and interprets the pattern through
+linked-firm information diffusion.
+
+Source:
+https://www.nber.org/papers/w25201
+
+Hoberg & Phillips' TNIC work uses firm-centric product-similarity networks whose composition
+updates over time; their data library argues that static fixed classifications miss dynamic
+product-market relationships.
+
+Source:
+https://hobergphillips.tuck.dartmouth.edu/
+
+Implication:
+Finviz source-local subthemes are a strong observable taxonomy but should sit inside the
+existing GMI relationship graph, not replace it. The graph needs multi-membership and typed
+relations (product peers, supply chain, common bottleneck, customer exposure, technology,
+competition) with vintage/provenance.
+
+### 4. A price re-rating is not automatically a durable fundamental re-rating
+
+Kovacs (2016) finds subsequent peer earnings announcements matter when they confirm an
+initial earnings surprise and the industry has positive common-effect information transfer.
+
+Source:
+https://onlinelibrary.wiley.com/doi/10.1111/1911-3846.12210
+
+Koo, Wu & Yeung (2017) finds the direction of peer information transfer depends on the
+economic attribution: industry-wide trends / structural changes can transfer positively,
+while competitive moves can transfer negatively.
+
+Source:
+https://onlinelibrary.wiley.com/doi/abs/10.1111/1911-3846.12308
+
+Implication:
+"peers went up too" is evidence of diffusion, not proof of durable earnings power.
+Mastermind should join price participation to explicit event, revisions, earnings,
+orders/backlog/capex and valuation evidence before calling a move fundamentally confirmed.
+
+### 5. Leader detection should separate residual leadership from factor/group beta
+
+Blitz, Huij & Martens' residual-momentum research reports stronger risk-adjusted performance
+for momentum built from residual rather than total returns in their sample.
+
+Source:
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2319883
+
+Implication:
+the eventual validated leader layer should estimate leader residuals vs market, sector,
+theme and subtheme—not just pick the highest raw return.
+
+### 6. Rotation/exit must be regime-aware
+
+Daniel & Moskowitz documents momentum crashes concentrated in panic/high-volatility rebound
+states.
+
+Source:
+https://www.nber.org/papers/w20439
+
+Implication:
+relative-strength rollover and breadth deterioration should be conditioned by macro/tape
+regime. A violent rebound can punish simplistic continuation/exit logic.
+
+## Desired product model
+
+The user should be able to traverse:
+
+`Sector → Theme → Subtheme → Stock`
+
+and answer five different questions without conflating them:
+
+1. **Strength** — what is already outperforming?
+2. **Formation** — where is acceleration / diffusion beginning?
+3. **Durability** — is price confirmation supported by fundamentals/events/revisions?
+4. **Leader** — which stock is leading after removing group/market tailwind?
+5. **Exit / handoff** — is breadth narrowing, leadership breaking, or relative strength
+   migrating to an adjacent subtheme?
+
+Those are separate evidence axes. Do not collapse them into one opaque score before
+point-in-time evaluation proves that doing so improves decisions.
+
+## Repricing state model
+
+First deterministic descriptive states:
+
+- `single_name_impulse`
+  - positive subtheme aggregate but one positive member dominates the positive-return
+    magnitude and participation is weak.
+- `narrow_leadership`
+  - positive group move with limited participation and/or high move concentration.
+- `early_diffusion`
+  - broad 1-week participation, but 1-month participation/history has not confirmed.
+- `broad_price_repricing`
+  - broad participation across 1-week and 1-month with no single-name domination.
+- `mixed_positive`
+- `mixed_negative`
+- `leadership_break`
+  - recent group weakness + participation break after positive 1-month group trend.
+- `fading`
+- `range`
+- `insufficient_data`
+
+These labels are descriptive. Thresholds are interpretable, not fitted.
+
+## Leader model
+
+### Now: price leader
+
+The first slice exposes `price_leader`:
+- observed horizons;
+- number of horizons above member median;
+- number of positive horizons;
+- horizon returns.
+
+It deliberately does **not** call this an `alpha_leader`.
+
+### Required before "alpha leader"
+
+A validated leader layer should add:
+- market residual return;
+- broad-sector residual return;
+- parent-theme residual return;
+- subtheme residual return;
+- multi-horizon persistence;
+- leadership breadth context (is the leader dragging or riding the cohort?);
+- earnings/revision surprise vs peers;
+- event/catalyst specificity;
+- valuation re-underwriting vs earnings delivery;
+- liquidity / tradability / coverage quality;
+- forward walk-forward evaluation.
+
+Only the evaluation ledger can promote the word "alpha".
+
+## Durable re-rating evidence
+
+Do not create a monolithic buy score. Keep named legs:
+
+**Price**
+- relative strength vs market/sector/theme/subtheme
+- acceleration / turn state
+- breadth and diffusion
+- move concentration
+- leader persistence / leadership handoff
+
+**Fundamental**
+- earnings surprise breadth
+- estimate-revision breadth and acceleration
+- revenue / bookings / orders / backlog
+- capex / capacity / utilization
+- gross-margin / operating-leverage inflection
+- customer / supplier read-through
+
+**Catalyst / structure**
+- product cycle
+- policy/regulatory
+- supply bottleneck
+- channel or pricing evidence
+- customer capex / deployment evidence
+- structural vs competitive event attribution
+
+**Valuation**
+- multiple change decomposed from earnings change
+- peer-relative valuation
+- own-history valuation
+- implied growth / estimate delivery
+
+**Crowding / fragility**
+- extension
+- options/call-skew/speculation
+- concentration
+- correlation spike
+- liquidity/short-interest where owned
+- regime risk
+
+Evidence state can be:
+`forming | confirming | mixed | fragile | weakening | insufficient`.
+
+That state is still context-only until validated.
+
+## Exit / rotate-out evidence
+
+A rotate-out watch should fire evidence, not an order:
+
+- participation deteriorates while group price remains elevated;
+- top-name move concentration rises;
+- leader residual turns down;
+- incumbent turn engine moves to topping / turn-down;
+- revisions breadth rolls over;
+- peer earnings stop confirming;
+- event narrative becomes competitive rather than industry-wide;
+- valuation expands while earnings delivery stalls;
+- crowding/extension rises;
+- adjacent subtheme RS turns up while the current subtheme RS rolls over.
+
+The existing relationship graph should identify plausible adjacent recipient subthemes;
+the system must not infer "capital flowed from A to B" merely because A fell and B rose.
+
+## Semantic integration
+
+Current GMI fact:
+Finviz local themes exist as `ltheme:finviz:<subtheme_key>`, but the Finviz plane has
+zero accepted `local_theme → canonical_theme` expression edges. THS owns the currently
+accepted local→canonical mappings.
+
+Required path:
+1. use the existing probation/adjudication owner;
+2. propose Finviz local→canonical relationships with evidence;
+3. permit unmapped as a legal state;
+4. never fuzzy-map labels mechanically;
+5. preserve PIT membership vintages;
+6. expose public canonical derivatives only after the rights gate permits the intended use.
+
+Do not create another crosswalk or theme identity plane.
+
+## This PR slice
+
+Carrier: `sol/sector-theme-rerating-shape-20260924`
+
+Owned changes:
+- new pure `engine/theme_repricing_context.py`
+- existing `engine/themes_heatmap.py` consumes it
+- new `tests/test_theme_repricing_context.py`
+- stale collector PIT-header correction
+- this research note
+
+Projection:
+`site/marketdata/themes_heatmap.json` remains the only output path. Each existing subtheme
+tile gains a nested `repricing` context, and the payload gains theme-level repricing
+summaries. No new store, scheduler, publication plane or UI path is created.
+
+Authority:
+- context/display only
+- no rank authority
+- no gate authority
+- no sizing authority
+- no trade authority
+- price leader != validated alpha leader
+- price participation confirmation != fundamental investment durability
+- move concentration != market-cap contribution
+
+## Real-snapshot smoke read
+
+Against the committed 2026-09-24 Finviz snapshot at the slice base:
+- 40 themes
+- 268 subthemes
+- shape counts:
+  - 59 broad_price_repricing
+  - 41 early_diffusion
+  - 43 narrow_leadership
+  - 12 single_name_impulse
+  - 9 leadership_break
+  - 65 fading
+  - 18 mixed_positive
+  - 21 mixed_negative
+- theme rollups:
+  - 16 broad_subtheme_diffusion
+  - 13 isolated_subtheme_move
+  - 7 mixed
+  - 4 theme_fading
+
+Semiconductors specifically:
+- advancing subtheme share (1W): 1.00
+- 7/9 subthemes = `broad_price_repricing`
+- 1/9 = `early_diffusion`
+- 1/9 = narrow/single-name
+- theme state = `broad_subtheme_diffusion`
+
+Examples:
+- Memory: broad_price_repricing, 1W +18.77%, 100% observed members up.
+- Design Tools: broad_price_repricing, 1W +18.02%, 100% observed members up.
+- Packaging: broad_price_repricing, 1W +17.11%, 100% observed members up.
+- Compute: broad_price_repricing, 1W +14.34%, 100% observed members up.
+- Foundries: narrow_leadership, 1W +11.41%; current price leader = INTC.
+
+These are diagnostics from descriptive thresholds, not a historical claim of alpha and not
+a recommendation.
+
+## Evaluation gate
+
+Before any of these fields influence ranking, gating, sizing, or a buy/exit recommendation:
+
+1. reconstruct member horizon returns from the whole-market price store;
+2. join to PIT Finviz tree membership by each decision date;
+3. replay the cohort-shape labels without leakage;
+4. define forward outcomes separately:
+   - group relative return 5/10/21/63 sessions
+   - max drawdown / adverse excursion
+   - breadth persistence
+   - leader persistence / handoff
+   - earnings/revision confirmation
+5. compare:
+   - incumbent rotation alone
+   - incumbent + cohort shape
+   - residual-leader features
+   - fundamental confirmation legs
+   - regime-conditioned variants
+6. publish coverage, abstentions, confidence intervals and failure slices;
+7. only then request authority promotion, if warranted.
+
+## Next bounded verticals
+
+1. PIT breadth replay from whole-market returns + `tree_history.jsonl`, consumed by the
+   incumbent subsector track-record ledger.
+2. residual price-leader context that reuses existing market/sector/theme owners.
+3. fundamental durability join (revisions, earnings/event read-through, valuation) as named
+   evidence legs, no fused trade score.
+4. internal GMI Finviz semantic-probation expansion; no public emission while rights remain
+   unresolved.
+5. Sector Central consumer integration once the active redesign/heatmap PRs reconcile,
+   preserving the Sectors / Themes / Subsectors hierarchy and avoiding collided UI paths.
