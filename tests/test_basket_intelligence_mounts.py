@@ -445,8 +445,16 @@ def test_partial_mounted_with_valid_anchor(tmp_path):
     # Bilingual title and note (en + zh span), both halves from the registration
     for key in ("title_en", "title_zh", "note_en", "note_zh"):
         assert mount[key] in html, f"the mount must render the registration's {key}"
-    assert f'<span class="l-en">{mount["title_en"]}</span>' in html
-    assert f'<span class="l-zh">{mount["title_zh"]}</span>' in html
+    # BOTH visible strings flow through t('en','zh') — substring presence is
+    # not enough: an independent review mutated the note to two bare escaped
+    # values, putting both languages on screen at once, and every test still
+    # passed because only the title's spans were asserted (L6).
+    for key_en, key_zh in (("title_en", "title_zh"), ("note_en", "note_zh")):
+        assert f'<span class="l-en">{mount[key_en]}</span>' in html, key_en
+        assert f'<span class="l-zh">{mount[key_zh]}</span>' in html, key_zh
+    assert f'{mount["note_en"]} {mount["note_zh"]}' not in html, (
+        "the two languages must never sit adjacent outside their toggle spans"
+    )
 
 
 @pytest.mark.parametrize("bad_anchor", [

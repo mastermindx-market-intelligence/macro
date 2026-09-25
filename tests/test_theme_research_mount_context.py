@@ -25,7 +25,10 @@ g. The registration and the mount are ONE definition, by identity.
 h. A SECOND vertical mounts with no template edit at all (the whole point).
 i. The leaf module's import surface stays free of the data/web stack, so the
    page builders can read it without dragging the research stack into their
-   CI closure (measured: 52 files for the registry, 2 for this leaf).
+   CI closure (measured 2026-09-24: 55 repo files for the registry, 2 for
+   this leaf).
+j. The client's own copy of the slice labels still agrees with the
+   registration, until hook 4 binds the client to the registration's.
 """
 from __future__ import annotations
 
@@ -134,9 +137,29 @@ def test_slice_labels_json_labels_exactly_the_declared_slices():
         # Bilingual, not a copy: the Chinese half carries Han characters
         # unless the label is an identifier both languages share.
         assert any(ord(ch) in _HAN for ch in chinese) or chinese != english, slice_key
-    # Compact and sorted: one attribute, stable bytes across builds.
+    # Compact and sorted: one attribute, stable bytes across builds. The
+    # incumbent's two keys are already alphabetical, so sortedness is proven
+    # on a synthetic vertical whose keys are not.
     assert context["slice_labels_json"] == json.dumps(
         labels, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+    )
+    unsorted = MountFacts(**_facts(
+        slice_keys=("zeta_slice", "alpha_slice"),
+        slice_labels={"zeta_slice": ("Zeta", "戊"), "alpha_slice": ("Alpha", "甲")},
+    ))
+    from types import MappingProxyType  # noqa: PLC0415
+
+    import engine.market_ontology.theme_research_mounts as mounts_module  # noqa: PLC0415
+
+    original = mounts_module.MOUNTS
+    mounts_module.MOUNTS = MappingProxyType({unsorted.anchor_theme_id: unsorted})
+    try:
+        emitted = mounts_module.mount_context(unsorted.anchor_theme_id)
+    finally:
+        mounts_module.MOUNTS = original
+    assert emitted["slices"] == "zeta_slice,alpha_slice", "declaration order"
+    assert list(json.loads(emitted["slice_labels_json"])) == ["alpha_slice", "zeta_slice"], (
+        "the label object must be key-sorted whatever the declaration order"
     )
 
 
@@ -308,11 +331,26 @@ def test_the_builder_passes_the_mount_into_the_render():
 # ---------------------------------------------------------------------------
 
 def test_the_registration_and_the_mount_are_one_definition():
-    """By identity, not by equality: two equal copies can still drift apart."""
+    """By identity, not by equality: two equal copies can still drift apart.
+
+    Identity alone is not enough for the identifier-shaped strings — CPython
+    interns them, so `registration.anchor_theme_id is facts.anchor_theme_id`
+    would hold even if the registration re-typed the literal (an independent
+    review proved exactly that). The source scan below is what covers those;
+    the four copy strings are long enough that identity is real.
+    """
     from engine.market_ontology.theme_research_registry import REGISTRY  # noqa: PLC0415
 
     registration = REGISTRY[ANCHOR]
     facts = MOUNTS[ANCHOR]
+    registry_source = (
+        REPO_ROOT / "engine" / "market_ontology" / "theme_research_registry.py"
+    ).read_text(encoding="utf-8")
+    for literal in (facts.anchor_theme_id, facts.schema_id, facts.evidence_schema_id,
+                    *facts.slice_keys):
+        assert registry_source.count(f'"{literal}"') <= 1, (
+            f"the registration re-types {literal!r} instead of reading the mount"
+        )
     assert registration.anchor_theme_id is facts.anchor_theme_id
     assert registration.slice_keys is facts.slice_keys
     assert registration.schema_id is facts.schema_id
@@ -323,30 +361,28 @@ def test_the_registration_and_the_mount_are_one_definition():
     assert registration.note_zh is facts.note_zh
 
 
-def test_a_second_vertical_mounts_with_no_template_edit():
-    """The hook's whole claim, executed.
+def test_a_second_vertical_mounts_with_no_template_edit(monkeypatch):
+    """The hook's whole claim, executed: REGISTERING is sufficient.
 
-    A synthetic registration's context renders a complete, correct section
-    through the SHIPPED templates: its own anchor, its own slices, its own
-    bilingual copy, its own schema ids — and not one string of the incumbent
-    vertical.
+    The synthetic vertical is registered into MOUNTS and its context comes
+    back from the production `mount_context`, not from a context this test
+    assembles — otherwise it would prove the templates are generic without
+    proving that registering is all a second vertical has to do. The rendered
+    section carries its own anchor, slices, schema ids and bilingual copy, and
+    not one string of the incumbent.
     """
+    from types import MappingProxyType  # noqa: PLC0415
+
+    import engine.market_ontology.theme_research_mounts as mounts_module  # noqa: PLC0415
+
     facts = MountFacts(**_facts())
-    labels = {key: list(facts.slice_labels[key]) for key in facts.slice_keys}
-    context = {
-        "anchor_theme_id": facts.anchor_theme_id,
-        "slices": ",".join(facts.slice_keys),
-        "schema_id": facts.schema_id,
-        "evidence_schema_id": facts.evidence_schema_id,
-        "slice_labels_json": json.dumps(
-            labels, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-        ),
-        "title_en": facts.title_en,
-        "title_zh": facts.title_zh,
-        "note_en": facts.note_en,
-        "note_zh": facts.note_zh,
-    }
-    html = _render_entry(context)
+    monkeypatch.setattr(
+        mounts_module, "MOUNTS",
+        MappingProxyType({**dict(MOUNTS), facts.anchor_theme_id: facts}),
+    )
+    context = mounts_module.mount_context(facts.anchor_theme_id)
+    assert context is not None, "registering a vertical must be enough"
+    html = _render_entry(dict(context))
     assert html.count("data-theme-research-mount") == 1
     assert 'data-anchor-theme-id="synthetic_vertical"' in html
     assert 'data-slices="alpha_slice,beta_slice"' in html
@@ -357,6 +393,93 @@ def test_a_second_vertical_mounts_with_no_template_edit():
     incumbent = mount_context(ANCHOR)
     for key in ("anchor_theme_id", "slices", "schema_id", "title_en", "title_zh"):
         assert incumbent[key] not in html, f"the incumbent's {key} leaked into a foreign mount"
+
+
+# ---------------------------------------------------------------------------
+# j — the client's own copy, until hook 4 binds it
+# ---------------------------------------------------------------------------
+
+def _client_slice_labels() -> dict:
+    """The slice label map the shipped client still carries of its own."""
+    js = (REPO_ROOT / "site" / "assets" / "js" / "theme-research.js").read_text(
+        encoding="utf-8"
+    )
+    block = re.search(r"var L = \{\s*slice:\s*\{(.*?)\n\s*\},", js, re.DOTALL)
+    assert block, "the client's slice label map moved or was renamed"
+    return {
+        key: [english, chinese]
+        for key, english, chinese in re.findall(
+            r"(\w+)\s*:\s*\['([^']*)',\s*'([^']*)'\]", block.group(1)
+        )
+    }
+
+
+def test_client_slice_labels_match_the_registration():
+    """Two copies of the slice copy exist; this is what stops them drifting.
+
+    The mount emits ``data-slice-labels`` but the shipped client does not read
+    it yet — it renders slice chips from its own map and gates stored
+    selections on its own key list. Hook 4 binds the client to the attribute
+    and deletes this duplication; until then the registration and the client
+    must agree exactly, or a member sees one name in the tab and another in
+    the panel.
+    """
+    registration = json.loads(mount_context(ANCHOR)["slice_labels_json"])
+    client = _client_slice_labels()
+    assert client == registration, (
+        "the client's slice labels and the registration's have drifted; "
+        "hook 4 removes this copy, until then they move together"
+    )
+    js = (REPO_ROOT / "site" / "assets" / "js" / "theme-research.js").read_text(
+        encoding="utf-8"
+    )
+    keys = re.search(r"var TR_SLICE_KEYS = \[([^\]]*)\]", js)
+    assert keys, "the client's closed slice-key list moved"
+    assert re.findall(r"'([^']+)'", keys.group(1)) == mount_context(ANCHOR)["slices"].split(","), (
+        "the client's closed slice vocabulary and the registration's differ"
+    )
+
+
+def test_the_mount_attribute_the_client_will_read_is_present_and_parses():
+    """``data-slice-labels`` is markup hook 4 needs; it must already be valid."""
+    labels = json.loads(mount_context(ANCHOR)["slice_labels_json"])
+    assert set(labels) == set(mount_context(ANCHOR)["slices"].split(","))
+
+
+# ---------------------------------------------------------------------------
+# e (cont.) — an unreadable crosswalk is loud and recoverable
+# ---------------------------------------------------------------------------
+
+def test_an_unreadable_crosswalk_warns_once_and_does_not_poison_the_cache(
+    monkeypatch, capsys,
+):
+    """Silence here would mount nothing for a whole build with no line saying why.
+
+    The repo already paid for this one file over: a silently empty crosswalk
+    map once shipped as a baffling "0 > 7", which is why
+    scripts/build_state_of_themes.py emits a theme-crosswalk-unreadable
+    annotation. A failed read must therefore say so, exactly once, and must
+    NOT be cached — otherwise the file coming back changes nothing until the
+    process restarts.
+    """
+    import engine.market_ontology.theme_research_mounts as mounts_module  # noqa: PLC0415
+
+    monkeypatch.setattr(mounts_module, "_CROSSWALK_CACHE", {})
+    monkeypatch.setattr(mounts_module, "_CROSSWALK_WARNED", False)
+    monkeypatch.setattr(
+        mounts_module, "_CROSSWALK_PATH", Path("/nonexistent/theme_crosswalk.yml"),
+    )
+    assert mounts_module.registered_anchor_for_basket("ai_semiconductors") is None
+    assert mounts_module.registered_anchor_for_basket("ai_semiconductors") is None
+    out = capsys.readouterr().out
+    assert out.count("::warning title=theme-crosswalk-unreadable::") == 1, out
+    assert "themes" not in mounts_module._CROSSWALK_CACHE, "a failed read was cached"
+    # The file coming back recovers inside the same process.
+    monkeypatch.setattr(
+        mounts_module, "_CROSSWALK_PATH",
+        REPO_ROOT / "config" / "theme_crosswalk.yml",
+    )
+    assert mounts_module.registered_anchor_for_basket("ai_semiconductors") == ANCHOR
 
 
 # ---------------------------------------------------------------------------

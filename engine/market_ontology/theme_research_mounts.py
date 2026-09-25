@@ -11,13 +11,14 @@ with nothing covering their agreement.
 Why this is a separate leaf module rather than more fields on
 :class:`~engine.market_ontology.theme_research_registry.VerticalRegistration`:
 the registry binds a vertical's composer and owner-bundle loader, so its
-import closure is the whole company-intelligence stack (measured: 52 files,
-including the frozen theme-graph store). ``scripts/build_theme_detail.py``
-renders every basket page and must not drag that in — three curated CI jobs
-declare the builder and would each have to re-run on any change to the
-research stack. So the strings live here, where the only imports are the
-standard library, and the registry reads them from this module. One
-definition, two consumers, no duplication, no widened build closure.
+import closure is the whole company-intelligence stack (measured 2026-09-24:
+55 repo files, including the frozen theme-graph store).
+``scripts/build_theme_detail.py`` renders every basket page and
+``scripts/build_state_of_themes.py`` renders the Theme Tracker; neither must
+drag that in, and four curated CI jobs declare one of them and would have to
+re-run on any change to the research stack. So the strings live here, where
+the only imports are the standard library (closure: 2 files), and the registry
+reads them from this module. One definition, three consumers.
 
 Laws
 ----
@@ -73,11 +74,13 @@ class MountFacts:
     """One vertical's mount-time strings — the whole of what a page renders.
 
     ``slice_labels`` carries the bilingual name of every slice in
-    ``slice_keys``: the mount used to render slice chips from copy typed into
-    the template, so a vertical with different slices could not mount without
-    editing the template. Both halves of every pair are required — a mount
-    that renders an English label where Chinese is owed is a drift the toggle
-    cannot hide.
+    ``slice_keys``. The shipped client still renders its slice chips from its
+    OWN hard-coded label map, so today this is the registration's copy of the
+    same strings and hook 4 is what binds the client to it; until then
+    ``test_client_slice_labels_match_the_registration`` reconciles the two
+    rather than leaving them to drift. Both halves of every pair are required
+    — a mount that renders an English label where Chinese is owed is a drift
+    the toggle cannot hide.
     """
 
     anchor_theme_id: str
@@ -154,11 +157,13 @@ def mount_context(anchor_theme_id: object) -> Mapping[str, str] | None:
     """The exact strings the mount renders for ``anchor_theme_id``, or None.
 
     Nine keys, every value a non-empty string, so a template can render the
-    mount without a single hard-pinned vertical name.  ``slice_labels_json``
-    is one compact sorted JSON object the client reads from a single
-    attribute, rather than a second copy of the slice copy inside the client.
+    mount without a single hard-pinned vertical name. ``slice_labels_json`` is
+    one compact sorted JSON object carrying the bilingual slice copy. The
+    shipped client does NOT read it yet — it keeps its own label map, and hook
+    4 is what binds it — so today this attribute is what a second vertical's
+    client binding will need, reconciled against the client's copy by a test.
     """
-    import json  # noqa: PLC0415 — stdlib, kept off this module's import surface
+    import json  # noqa: PLC0415 — used only here
 
     facts = MOUNTS.get(anchor_theme_id) if isinstance(anchor_theme_id, str) else None
     if facts is None:
@@ -181,6 +186,7 @@ def mount_context(anchor_theme_id: object) -> Mapping[str, str] | None:
 
 _CROSSWALK_PATH = Path(__file__).resolve().parents[2] / "config" / "theme_crosswalk.yml"
 _CROSSWALK_CACHE: dict[str, list[Mapping[str, Any]]] = {}
+_CROSSWALK_WARNED = False
 
 
 def _crosswalk_themes(crosswalk: Mapping[str, Any] | None) -> list[Mapping[str, Any]]:
@@ -194,13 +200,29 @@ def _crosswalk_themes(crosswalk: Mapping[str, Any] | None) -> list[Mapping[str, 
     if crosswalk is not None:
         rows = crosswalk.get("themes") if isinstance(crosswalk, Mapping) else None
         return [row for row in rows if isinstance(row, Mapping)] if isinstance(rows, list) else []
+    global _CROSSWALK_WARNED
     if "themes" not in _CROSSWALK_CACHE:
         try:
             import yaml  # noqa: PLC0415 — the builders already depend on it
 
             document = yaml.safe_load(_CROSSWALK_PATH.read_text(encoding="utf-8"))
-        except (OSError, ValueError, ImportError):
-            document = None
+        except (OSError, ValueError, ImportError) as exc:
+            # A failed read is NOT cached. Caching emptiness here would mount
+            # nothing for the rest of the process and survive the file coming
+            # back, with no line anywhere saying why — the failure this repo
+            # already paid for one file over (build_state_of_themes.py carries
+            # a theme-crosswalk-unreadable annotation because a silently empty
+            # map once shipped as a baffling "0 > 7"). Bare print, not a
+            # logger: an annotation that does not START the line is dropped.
+            if not _CROSSWALK_WARNED:
+                _CROSSWALK_WARNED = True
+                print(
+                    f"::warning title=theme-crosswalk-unreadable::{_CROSSWALK_PATH} "
+                    f"could not be read ({exc}); no page mounts theme research "
+                    f"in this build",
+                    flush=True,
+                )
+            return []
         rows = document.get("themes") if isinstance(document, Mapping) else None
         _CROSSWALK_CACHE["themes"] = (
             [row for row in rows if isinstance(row, Mapping)] if isinstance(rows, list) else []
@@ -228,16 +250,19 @@ def registered_anchor_for_basket(
     """
     if not isinstance(basket_id, str) or not basket_id:
         return None
-    claimants = {
+    # Claiming ROWS, not claiming ids: two rows sharing one theme id and both
+    # naming this basket is a malformed crosswalk, and a malformed crosswalk
+    # mounts nothing rather than resolving to whichever row won a set.
+    claimants = [
         row["id"]
         for row in _crosswalk_themes(crosswalk)
         if isinstance(row.get("id"), str)
         and row["id"]
         and row.get("primary_basket_id") == basket_id
-    }
+    ]
     if len(claimants) != 1:
         return None
-    anchor_theme_id = claimants.pop()
+    anchor_theme_id = claimants[0]
     return anchor_theme_id if anchor_theme_id in MOUNTS else None
 
 
