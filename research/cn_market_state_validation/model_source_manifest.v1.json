@@ -1,0 +1,63 @@
+{
+  "base_sha": "d5eb16f3b3a093afb053efe275be62778729dcf4",
+  "entries": [
+    {
+      "git_blob_sha": "0e31ebbced710de614269d8da4ed2ac76215c0a2",
+      "path": "config.yml"
+    },
+    {
+      "git_blob_sha": "2140084e3b63d9d68fc67351a540a6e504536e85",
+      "path": "engine/china_conditions.py"
+    },
+    {
+      "git_blob_sha": "c9b33c9662f50cad48dd220c2410638918a7030a",
+      "path": "engine/china_inputs.py"
+    },
+    {
+      "git_blob_sha": "33b50324a0823887a9b547b7e48fc870588458ea",
+      "path": "engine/china_regime.py"
+    },
+    {
+      "git_blob_sha": "37f552a488b98cdc841a0e55e44e30e3d7d40635",
+      "path": "engine/china_run.py"
+    },
+    {
+      "git_blob_sha": "9c682f1251ffd48abf4f78238df74ae3d5879479",
+      "path": "engine/cycles.py"
+    },
+    {
+      "git_blob_sha": "b944d777ba284276cb11060efd1b20b743b26e08",
+      "path": "engine/indicators.py"
+    },
+    {
+      "git_blob_sha": "d375d69c5f361e348a8f85e73f2da1bc43b71aec",
+      "path": "engine/market_state.py"
+    },
+    {
+      "git_blob_sha": "041df8912f7d9cc154da18f2c9f5e4c0c62cc70e",
+      "path": "engine/market_state_cn.py"
+    },
+    {
+      "git_blob_sha": "0cfc9857cd240788542f1dc6d94eb55d4a68a513",
+      "path": "engine/session_anchor.py"
+    },
+    {
+      "git_blob_sha": "b6fc888269876242597da354aaa726c20ed95802",
+      "path": "lib/config.py"
+    },
+    {
+      "git_blob_sha": "70aa80ccf92527e19f77c15407510dba472af532",
+      "path": "lib/store.py"
+    },
+    {
+      "git_blob_sha": "d39798356f209bde778c0dd9309ef1124e4d7c6a",
+      "path": "scripts/build_china.py"
+    }
+  ],
+  "mapping_sha256": "4c7e9e7e4abdce13d8447affd3d8cca9c57fbd2e85264ccc6a44945c065cbe20",
+  "note": "Exact source/config closure for the current-formula China Market State reconstruction. Production behavior is not modified.",
+  "operation": "cn-risk-p3-market-state-validation-20260923-solpro-001",
+  "repository": "mastermindx-market-intelligence/macro",
+  "sample_end": "2026-09-24",
+  "schema": "cn_market_state_p3_model_source_manifest.v1"
+}
