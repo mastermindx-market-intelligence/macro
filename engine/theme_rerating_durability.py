@@ -1,16 +1,18 @@
 """Named durability evidence for Finviz source-local subthemes.
 
-This module joins two already-owned, separable observations:
+This module joins already-owned, separable observations:
 - price participation / concentration from engine.theme_repricing_context;
-- analyst estimate-revision breadth from engine.theme_revisions.
+- analyst estimate-revision breadth from engine.theme_revisions;
+- earnings/guidance context from engine.group_earnings;
+- optional crowding/extension + valuation distributions assembled from their owners.
 
-It deliberately does NOT collapse them into a score. The output is a matrix-style
-descriptive state that tells a consumer whether price and revisions agree, disagree, or
-remain unmeasured. It creates no theme identity, member roster, event truth, ranking,
-entry gate, sizing, escalation, exit order or trade authority.
+It deliberately does NOT collapse them into a score. The price+revision joint_state stays
+a named two-axis read; events and fragility are parallel evidence legs. It creates no theme
+identity, member roster, event truth, ranking, entry gate, sizing, escalation, exit order
+or trade authority.
 
-Catalysts, valuation, bottlenecks, options/crowding and macro regime remain independent
-evidence legs owned elsewhere. Their absence here must not be read as a negative.
+Catalyst structure, bottlenecks, options positioning and macro regime remain independent
+evidence legs owned elsewhere. Missing evidence must not be read as negative evidence.
 """
 from __future__ import annotations
 
@@ -182,6 +184,7 @@ def build_durability(
     latest_revisions: pd.DataFrame,
     revision_history: pd.DataFrame | None,
     event_context_by_key: Mapping[str, Mapping] | None = None,
+    fragility_context_by_key: Mapping[str, Mapping] | None = None,
 ) -> dict:
     """Join Finviz subthemes to incumbent revision breadth using the same member roster.
 
@@ -190,6 +193,7 @@ def build_durability(
     """
     by_key = _repricing_by_key(repricing)
     event_context_by_key = event_context_by_key or {}
+    fragility_context_by_key = fragility_context_by_key or {}
     rows: list[dict] = []
 
     for theme_row in tree:
@@ -219,6 +223,7 @@ def build_durability(
             state = joint_state(price.get("shape"), rev_state)
             event = event_context_by_key.get(key) or {}
             event_state = event_confirmation_state(event)
+            fragility = fragility_context_by_key.get(key) or {}
             rows.append({
                 "key": key,
                 "theme": theme,
@@ -254,30 +259,34 @@ def build_durability(
                     "guidance": event.get("guidance"),
                     "limits": event.get("limits"),
                 },
+                "fragility": fragility or None,
                 "joint_state": state,
                 "joint_scope": "price_plus_revisions_only",
                 "decision_authority": {
                     "can_support_buy_decision": False,
                     "can_support_exit_decision": False,
                 },
-                "missing_named_legs": [
-                    "catalyst_structure",
-                    "valuation",
-                    "crowding_fragility",
-                    "macro_regime",
-                ],
+                "missing_named_legs": (
+                    ["catalyst_structure", "macro_regime"]
+                    + ([] if fragility else ["valuation", "crowding_fragility"])
+                ),
             })
 
     return {
         "schema": SCHEMA,
         "authority": dict(AUTHORITY),
         "method": {
-            "composition": "named_price_revision_event_legs_no_fused_score",
+            "composition":
+                "named_price_revision_event_fragility_legs_no_fused_score",
             "revision_owner": "engine.theme_revisions.theme_revisions_for",
             "price_owner": "engine.theme_repricing_context",
             "event_owner": "engine.group_earnings.member_event_context",
+            "crowding_owner": "engine.theme_crowding.basket_crowding",
+            "valuation_owner": "engine.valuation.read",
             "revision_role": "confirmation_and_runway_not_entry",
             "event_role": "earnings_and_guidance_confirmation_not_entry",
+            "fragility_role":
+                "late_cycle_context_and_deescalation_watch_not_exit_order",
         },
         "joint_state_counts": dict(sorted(Counter(
             row["joint_state"] for row in rows
@@ -287,6 +296,16 @@ def build_durability(
         ).items())),
         "event_state_counts": dict(sorted(Counter(
             row["events"]["state"] for row in rows
+        ).items())),
+        "crowding_state_counts": dict(sorted(Counter(
+            (((row.get("fragility") or {}).get("crowding") or {}).get("state")
+             or "unavailable")
+            for row in rows
+        ).items())),
+        "extension_state_counts": dict(sorted(Counter(
+            (((row.get("fragility") or {}).get("extension") or {}).get("state")
+             or "unavailable")
+            for row in rows
         ).items())),
         "subthemes": rows,
         "n_subthemes": len(rows),

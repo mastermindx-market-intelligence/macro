@@ -671,3 +671,111 @@ This is the beginning of an honest "rotate inside the theme vs rotate out of the
 workflow: leader turnover is now machine-visible separately from breadth, revisions and
 earnings confirmation. The eventual decision layer still needs PIT validation and the
 existing rotation/turn owner before any action authority is considered.
+
+
+## Continuation 5 — crowding / extension / valuation fragility
+
+The durability read now carries a separate **fragility** leg rather than treating
+"price is up" as equivalent to "there is still attractive runway."
+
+Owner reuse is explicit:
+
+- current price panel: engine.equity_factors._closes plus engine.baskets._basket_extras;
+- market residuals: engine.narrative_rotation._market_residuals;
+- member extension: engine.extension.extension_signals;
+- group crowding: engine.theme_crowding.basket_crowding;
+- per-name valuation blocks: engine.stock_fundamentals.valuation_context_for_tickers;
+- valuation bands: engine.valuation.read.
+
+No crowding formula, extension formula or valuation formula was copied into a new owner.
+
+### Authority boundary
+
+The fragility leg is display/context only.
+
+theme_crowding's incumbent owner describes its own result as asymmetric size_down_only
+texture. This Finviz durability contract does **not** adopt even that sizing authority:
+the owner payload is evidence only, with may_rank=false, may_gate=false, may_size=false,
+may_escalate=false, may_trade=false, and explicit can_support_exit_decision=false /
+can_support_rotate_decision=false.
+
+Likewise, valuation is a distribution of the incumbent per-name bands, never a new
+subtheme valuation score. Missing names remain missing; they are not imputed cheap,
+fair or expensive.
+
+### Important PIT limitation
+
+The live crowding/extension leg is a **current-roster historical texture**. It answers
+"how the subtheme as constituted today looks against its own recent price history."
+
+It is **not** the historical experiment. The PIT experiment continues to require
+tree_history.jsonl + exact decision-date roster + point-in-time price reconstruction.
+The output stamps current_finviz_roster_historical_texture_not_pit_backtest so the
+live diagnostic cannot be mistaken for forward-validation evidence.
+
+### Current-source runtime / coverage read
+
+Read-only current-source probe against Macro main
+90704bbea8f0fd3aabf28d07c315737d4caa8838 and the tracked 2026-09-24 Finviz /
+valuation inputs:
+
+- 268 subthemes processed;
+- 256 / 268 had a usable crowding read;
+- 52 / 268 met the incumbent crowding owner's crowded threshold;
+- 242 / 268 had valuation coverage for at least three members;
+- 66 subthemes had at least one currently parabolic member;
+- 61 additional subthemes had stretched members without a parabolic member;
+- the shared, once-per-universe computation completed in ~17.1 seconds on the local
+  development Mac, materially faster than the earlier per-subtheme ~50s probe.
+
+The extension owner also emitted its existing marginal-anchor warning: the 2026-09-23
+shared anchor had 62.2% coverage versus its 60% floor. That warning is preserved rather
+than hidden.
+
+### Semiconductors — fragility is not uniform
+
+On the same current snapshot:
+
+| Subtheme | Crowding | Extension texture | Valuation coverage / distribution |
+|---|---:|---|---|
+| Compute | z 0.98, not crowded | no stretched/parabolic members in covered set | 6/8 covered: 1 cheap, 2 fair, 2 stretched, 1 extreme; 5 forward-P/E names, median 38.6x |
+| Memory | z 0.66, not crowded | not extended | 3/5: 2 cheap, 1 fair; forward-P/E median 6.8x on 2 names |
+| Analog | z 0.31, not crowded | not extended | 6/7: 1 cheap, 1 fair, 4 stretched |
+| Wireless | z 0.87, not crowded | **20% parabolic / 20% stretched** among covered members | 6/6: 3 cheap, 2 fair, 1 stretched |
+| Foundries | crowding unavailable — only 1/4 names had sufficient history in this price panel | unavailable | valuation only 1/4, that one extreme; insufficient for a group claim |
+| Design Tools | z 0.42, not crowded | not extended | 5/6: 3 fair, 2 stretched |
+| Lithography | z -0.23, not crowded | not extended | 4/5: 1 cheap, 2 fair, 1 stretched |
+| Packaging | **z 1.81, crowded** | extension breadth unavailable at the owner floor | 4/6: 1 cheap, 2 stretched, 1 extreme |
+| Next-Gen | **z 1.22, crowded** | not extended | 7/14: 1 cheap, 4 stretched, 2 extreme; 4 forward-P/E names, median 39.0x |
+
+This is precisely why "Semiconductors is risk-on" is too coarse. Packaging and
+Next-Gen currently carry materially more crowding/valuation fragility than Memory or
+Lithography, while Wireless has a different hazard: per-name parabolic extension
+without the basket-level crowding flag.
+
+### Rotation / exit interpretation law
+
+The eventual rotate-out workflow should not fire because any one fragility leg is high.
+
+The defensible evidence sequence to evaluate is:
+
+1. **theme/subtheme health** — participation and relative-strength shape;
+2. **leader continuity** — stable leader, internal handoff, fragmented leadership;
+3. **fundamental confirmation** — revisions + earnings/guidance;
+4. **late-cycle fragility** — crowding, extension, valuation;
+5. **incumbent turn/rotation owner** — topping / turn-down / adjacent relative-strength
+   improvement;
+6. **macro/tape regime** — because momentum failure behaves differently in rebound /
+   panic regimes.
+
+That creates the distinction the product needs:
+
+- **healthy theme + leader handoff** → possible rotate *within* the theme;
+- **healthy theme + high fragility** → late-cycle / do-not-chase context, not automatic exit;
+- **theme weakening + revisions/events weakening + fragility elevated** → candidate
+  de-escalation evidence;
+- **adjacent subtheme strengthening** may identify a relative-performance handoff watch,
+  but never proves literal capital flow.
+
+No action authority is promoted until those combinations are evaluated point-in-time
+against forward returns, drawdown and false-exit cost.
