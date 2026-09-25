@@ -464,11 +464,36 @@ def run(now: datetime | None = None, root: Path | None = None) -> int:
 
 
 def selftest() -> int:
-    """Synthetic assertions — used by `--selftest` and the test suite."""
+    """Synthetic assertions — used by `--selftest` and the test suite.
+
+    BOTH scenarios run under a stdout capture. Every ``::warning::`` this fixture
+    provokes is about the mkdtemp tree — including the hk-discovery receipt, which
+    is absent from every fixture by construction — and GitHub's annotation
+    collector scrapes workflow commands out of a step's stdout regardless of the
+    step's exit status. An uncaptured run here would put a warning annotation on a
+    PR about a directory that no longer exists by the time anyone reads it. That
+    is the shape scripts/sync_chat_nav.py and scripts/check_template_site_sync.py
+    were shipping as a RED annotation from a green step until 2026-09-25.
+
+    Captured, never discarded: ``_echo`` re-prints what the fixture said with the
+    ``::`` prefix de-fanged, so the text stays visible and checkable in the log,
+    and each scenario now ASSERTS on that text rather than only on the exit code
+    (``run`` is warn-only and always returns 0, so the code alone proved little).
+    """
     from datetime import date
 
+    import contextlib, io
     root_tmp = None
     import tempfile, os
+
+    def _echo(buf: io.StringIO) -> str:
+        """Re-print captured fixture output, minus any annotation prefix."""
+        text = buf.getvalue()
+        for line in text.splitlines():
+            print(f"selftest: fixture {line[2:]}" if line.startswith("::") else line,
+                  flush=True)
+        return text
+
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
 
@@ -481,20 +506,23 @@ def selftest() -> int:
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(json.dumps({spec.as_of_key: expected}))
 
-        rc = run(now=datetime(2026, 7, 9, 3, 0, tzinfo=timezone.utc), root=tmp)
+        _buf = io.StringIO()
+        with contextlib.redirect_stdout(_buf):
+            rc = run(now=datetime(2026, 7, 9, 3, 0, tzinfo=timezone.utc), root=tmp)
+        fresh_out = _echo(_buf)
         assert rc == 0, f"fresh scenario returned {rc}"
+        assert "SURFACE STALE" not in fresh_out, (
+            f"fresh scenario must report no stale artifact, got: {fresh_out!r}")
 
         # Poison one artifact — should still return 0 (warn-only).
-        # Capture stdout so the synthetic ::warning:: line doesn't surface as a real GHA
-        # annotation if --selftest is ever wired into a CI step.
-        import io, contextlib
         spec0 = _ARTIFACTS[0]
         (tmp / spec0.path).write_text(json.dumps({"as_of": "2020-01-01"}))
         _buf = io.StringIO()
         with contextlib.redirect_stdout(_buf):
             rc = run(now=datetime(2026, 7, 9, 3, 0, tzinfo=timezone.utc), root=tmp)
+        stale_out = _echo(_buf)
         assert rc == 0, f"stale scenario must still exit 0 (warn-only), got {rc}"
-        assert "SURFACE STALE" in _buf.getvalue(), "stale scenario should have printed a warning"
+        assert "SURFACE STALE" in stale_out, "stale scenario should have printed a warning"
 
     log.info("check_surface_freshness selftest passed")
     return 0
