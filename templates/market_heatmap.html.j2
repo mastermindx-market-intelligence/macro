@@ -193,7 +193,14 @@
       entitled build with a genuinely missing file, and a lie on a walled one where
       the read exists and is paid. The gate state is never inferred from the fetch
       result — a network error would then read as a paywall. #}
+  {# China gets the same one-renderer map switch used by the US heatmap.
+     The THS view is a browser-side projection of the existing China rotation
+     + stock-map feeds: no second THS publisher, taxonomy or lifecycle plane. #}
+  {% if mk.key == 'china' %}
+  <div id="heatmap-full"{% if gated %} data-hm-gated="1"{% endif %} data-hm-maps='[{"key":"china-sectors","icon":"🔥","label_en":"Sectors","label_zh":"板块","url":"marketdata/china_heatmap.json"},{"key":"china-themes","icon":"🧭","label_en":"Themes","label_zh":"主题","url":"marketdata/subsector_rotation_china.json","adapter":"china-ths-themes","join_url":"marketdata/china_heatmap.json"}]'></div>
+  {% else %}
   <div id="heatmap-full"{% if gated %} data-hm-gated="1"{% endif %} data-hm-maps='[{"key":"{{ mk.key }}","icon":"{{ mk.icon }}","label_en":"{{ mk.label_en }}","label_zh":"{{ mk.label_zh }}","url":"{{ mk.json }}"}]'></div>
+  {% endif %}
 
 {%- if gated %}
   {#- The ONE gate note on this page. A heatmap of market performance is almost
