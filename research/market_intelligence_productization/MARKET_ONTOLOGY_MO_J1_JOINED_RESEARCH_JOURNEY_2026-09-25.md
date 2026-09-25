@@ -49,6 +49,7 @@ Already exists:
 - Theme Graph identity-resolution sidecar;
 - Data OS security-master identity;
 - `lib.dataos.identity.parse_listing_key` for immutable listing-key validation only;
+- `engine.theme_graph.store.read_identity_resolution(latest=True)` as the existing collapsed Theme Graph→Data OS identity sidecar reader;
 - `engine.intelligence_workspace.entity.load_current_symbol_map` / `VendorAliasTable` as the existing current-symbol owner for Terminal navigation;
 - house precedent for Macro → Terminal Company Intelligence links in Stage Analysis and Company Intelligence dossier surfaces.
 
@@ -152,7 +153,7 @@ The immutable `listing_key` is an identity receipt, **not necessarily the ticker
 
 The Terminal navigation symbol MUST instead come from the existing Data OS current-symbol owner for the resolved `security_id`: `engine.intelligence_workspace.entity.load_current_symbol_map` / `VendorAliasTable.vendor_symbol_for` (or its accepted current-owner equivalent), at the current effective date. The current symbol must resolve back to the same `security_id`. TXI's bare ticker array and display labels remain non-authoritative for this join.
 
-If current-symbol resolution is missing, ambiguous or refused — including a rename where only the immutable inception code is available — render the honest exposure state but **no security deep link**. A rename regression such as immutable `US-XNYS-MMC` / current symbol `MRSH` must prove that the URL uses `MRSH`, never stale inception code `MMC`.
+If current-symbol resolution is missing, ambiguous or refused — including a rename where only the immutable inception code is available — render the honest exposure state but **no security deep link**. The current-repository rename regression `US-XNYS-EQR` → current store symbol `VMRK` must prove that the URL uses `VMRK`, never stale inception code `EQR`. A historical rename fixture may be used only if its alias rows are present in the candidate's exact source.
 
 If any gate fails, render the honest exposure state but **no security deep link**.
 
@@ -543,11 +544,12 @@ Fresh source adjudication against Data OS established:
 
 - a listing key is mint-once identity and intentionally preserves the inception code across symbol renames;
 - `parse_listing_key` validates and parses that immutable identity; it is not the current-symbol resolver;
+- Theme Graph identity rows are generation sidecars, so consumers use the existing collapsed `engine.theme_graph.store.read_identity_resolution(latest=True)` reader rather than treating raw parquet generations as independent current identities;
 - the existing current-symbol owner is the time-aware alias layer, exposed to consumers through `engine.intelligence_workspace.entity.load_current_symbol_map` / `VendorAliasTable.vendor_symbol_for`;
 - therefore MO-J1 must join TXI → Theme Graph/Data OS on `security_id`, then obtain the current navigation symbol from that owner;
 - if the current symbol cannot be resolved uniquely to the same `security_id`, the product keeps the exposure row and withholds the Terminal CTA.
 
-Required mutation/falsifier: an immutable listing whose ticker was renamed (the house MMC→MRSH case or an equivalent fixture) must deep-link to the **current** symbol, while deletion/bypass of the current-symbol lookup must make the test fail. A stale inception-code URL is a blocking identity defect.
+Required mutation/falsifier: use the current-repository EQR→VMRK seam (immutable `security_id=SEC:US-XNYS-EQR`, `listing_key=US-XNYS-EQR`; current `store` alias `VMRK`) or an equivalent exact-source rename fixture. The deep link must use the **current** symbol; deleting/bypassing the current-symbol lookup must make the test fail. A stale inception-code URL is a blocking identity defect.
 
 This correction changes no identity authority, store, schema or persistence plane. It only prevents a consumer from confusing immutable identity with current display/navigation naming.
 
