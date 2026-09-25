@@ -753,20 +753,15 @@ def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *,
     title = titles[0]
     if title is None:
         return False
-    header_year = _parse_year(value) if (value := _matching_header(rows, cell)) is not None else None
-    year = title.year if title.year is not None else header_year
+    years = _header_years(rows, cell)
+    if title.year is not None:
+        years.add(title.year)
     day_matches = title.day is None or title.day == period.day
-    return title.month == period.month and day_matches and (
-        growth or year == period.year
-    )
+    return title.month == period.month and day_matches and (growth or years == {period.year})
 
 
-def _matching_header(rows: Sequence[Sequence[Cell]], cell: Cell) -> str | None:
-    years = {_parse_year(value) for value in _headers_over(rows, cell) if _parse_year(value) is not None}
-    if len(years) != 1:
-        return None
-    year = next(iter(years))
-    return next((value for value in _headers_over(rows, cell) if _parse_year(value) == year), None)
+def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int]:
+    return {year for value in _headers_over(rows, cell) if (year := _parse_year(value)) is not None}
 
 
 def _parse_year(value: str) -> int | None:
@@ -815,6 +810,9 @@ def _locate(document: Document, locator: tuple[str, str, str | None]) -> list[Ce
                 hits.append(cell)
             continue
         if _norm(header) in {_norm(value) for value in _headers_over(rows, cell)}:
+            pin_year = _parse_year(header)
+            if pin_year is not None and _header_years(rows, cell) != {pin_year}:
+                continue
             required = role in {
                 "earnings", "drivers", "core_reconciliation", "prior_core_reconciliation",
                 "segment_drivers", "organic_reconciliation",
