@@ -629,25 +629,46 @@ and the spec:
   only `engine.theme_graph` members in the closure are `theme_graph` and
   `theme_graph.curation_assertion`.
   **The one real gap was that nothing ASSERTED that absence** — a negative case satisfied by
-  construction regresses silently the day someone adds a convenient import. **DISCHARGED** at
-  `d10028d1bce`: `test_robotics_product_modules_reach_no_qledger` measures the closure of both
-  product modules in a FRESH subprocess (an in-process `sys.modules` read would attribute a
-  sibling test's import to the composer, and that false red gets "fixed" by loosening the very
-  assertion this pins) and asserts no member matches `qledger`. Re-measured 2026-09-25: **205
-  `sys.modules` entries, 12 of them repo modules, ZERO qledger**, and exactly the two permitted
-  `engine.theme_graph` members. The earlier "145" counted on a different basis; the invariant is
-  unchanged, and the guard pins the invariant and never a count, which would be brittle against
-  any dependency change.
-  **The guard carries its own positive control, asserted BEFORE the null**: importing
-  `engine.qledger_desk_adapter` must load a qledger module (it loads three), or the matcher has
-  lost reach and the null below proves nothing — a matcher that has quietly stopped matching
-  reads exactly like a clean tree, which is the instrument failure this operation has already
-  paid for twice. Control and assertion are deliberately ONE test: split out, the control would
-  pass on a carrier-alone base and **xpass** against the module's strict-xfail marker, breaking
-  gate D's zero-xpass requirement.
-  **Teeth proved, not assumed** (the NIT-1 lesson — green proves no regression, not that the
-  test works): appending `import engine.qledger` to the composer turns the guard red on its own
-  RBV-14 message; reverting turns it green again.
+  construction regresses silently the day someone adds a convenient import. Discharged at
+  `d10028d1bce`, **REJECTED on independent review**, and rebuilt at `5fcc898e794`. The first
+  version is worth recording because it failed in the exact way the case itself warns about.
+
+  **v1 measured only the IMPORT-TIME closure.** Both product modules deliberately import lazily
+  inside functions — `robotics_theme_research.py:68` reaches `engine.theme_graph.identity`,
+  `robotics_owner_bundle.py:197` reaches `engine.theme_graph.rights` under the comment "lazy by
+  design". So a QLedger reach planted with **the same idiom the modules already use** was
+  invisible. The READ_ONLY reviewer built an integrated base and demonstrated three working
+  evasions, one of which defeated v1's own teeth proof. It was a guard that looked like coverage
+  and was not — worse than no guard, because it reads as a discharged obligation.
+
+  **One sentence in my own record was false.** v1 asserted exact equality on the two import-time
+  `engine.theme_graph` members under the comment *"the composer's only permitted reach into the
+  shared theme graph."* The composer also reaches `engine.theme_graph.identity`, lazily. A strong
+  claim asserted from a narrow measurement — the same error class as the nit-4 and
+  client-refuses-robotics reversals earlier in this operation.
+
+  **v2 closes all of it:**
+  * Closure measured **as exercised** — the probe composes every fixture across three views and
+    calls `select_authorized_evidence` — so function-local imports are captured. Reach checks on
+    the measurement itself (`composed > 0`, closure `> 50` modules) stop it degrading silently
+    back to the import-time answer.
+  * A **source-text assertion** over both product modules catches a plant on a path no fixture
+    exercises (precedent: `test_rbv22_module_source_contains_no_multiplication`).
+  * Subprocess cwd derived from **the module pytest actually imported**, not
+    `Path(__file__).resolve()` — `resolve()` follows symlinks out of the tree under test, so the
+    old form could measure a different tree and still report green (`/tmp` -> `/private/tmp`
+    makes that live, not hypothetical).
+  * Positive control moved to `engine.qledger_validity` (stdlib-only, 84 modules) from
+    `engine.qledger_desk_adapter` (654 modules, pulls pandas), which would have redded this
+    Robotics test over someone else's packaging.
+  * The theme-graph assertion is now a correctly labelled **subset tripwire** over the exercised
+    closure, explicitly marked a DIFFERENT invariant from RBV-14.
+
+  **Teeth re-proved on every channel**, not just the one v1 used: top-level import, function-local
+  import in a reached path, a plant in a lazily-reached third module, and a plant on an
+  unexercised path — all red; clean tree green. In the reviewer's symlinked overlay, where v1
+  falsely passed, v2 fails. Gates after the rebuild: **B 623, C exit 0, D 20 passed / 116
+  xfailed, zero xpass** — unchanged.
 * **RBV-29** — "Unauthorized/forbidden/error responses preserve incumbent auth and
   private-no-store behavior." §6, the shared paid API boundary (Task 5 / T09). Not mine; held.
 * **RBV-30** — "Desktop/mobile, EN/ZH and dark/light preserve identical quantities, units,
