@@ -2598,11 +2598,18 @@
       var members = (s.members || []).filter(function (m) { return m && m.t; }).map(function (m) {
         uniqueMembers[m.t] = true;
         var stock = stockBy[m.t] || {};
+        // Rotation carries 1W/1M for its displayed leaders. Seed those values
+        // before applying the full stock-map series so an out-of-sample ticker
+        // still has honest member context instead of an empty move column.
+        var perf = {};
+        if (m['1W'] != null) perf['1W'] = m['1W'];
+        if (m['1M'] != null) perf['1M'] = m['1M'];
+        Object.keys(stock.perf || {}).forEach(function (tf) { perf[tf] = stock.perf[tf]; });
         return {
           t: m.t,
           name: m.name || stock.name || m.t,
           name_zh: stock.name_zh || m.name || stock.name || m.t,
-          perf: stock.perf || {}
+          perf: perf
         };
       });
       var memberCount = Math.max(members.length, Number(s.n_members) || 0);
