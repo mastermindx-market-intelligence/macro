@@ -49,13 +49,46 @@ authority changed.
 
 `green.txt` records the affected consumer suites after repair:
 
-- 110 tests passed;
+- the two load-bearing recommendation-reason and basket-entry suites: **111 passed**;
+- the broader affected detail/template/chrome surface: **252 passed** across nine focused suites;
 - fresh-initial, continuation/no-initial-entry, final HOLD, and missing-entry display
   behavior are pinned;
 - existing stock-entry missingness and zero-qualified-member behavior remain covered.
 
-A broader local suite request was platform-refused before dispatch and was not retried
-through another route. Hosted CI on the new source head remains the full repository gate.
+No full-repository local run is claimed; hosted exact-head CI remains the repository gate.
+
+## Exact cross-component continuation contract
+
+`cross_component_proof.py` closes the review's action-card-to-detail identity gap with
+immutable source and input rather than a synthetic continuation flag:
+
+- accepted China action-card source: PR #7567 head
+  `6e0beeec8f720333dd72ab47a9e7c39fed6238a1`,
+  `engine/china_act_now.py` SHA-256
+  `fcb9c8996294e1f9cf0fe5e6835c27785ef4006cf43b9aba58cebff0b05cc8f7`;
+- frozen input: commit `88a3f1cfd18f391d2802e9086dc00f6fe5545607`,
+  `site/chinabasketdata/baskets.json` SHA-256
+  `69c46ef1ec0c60f450dfe6c443d2d01c70da81a91f34c8763c04f747edbb4040`;
+- frozen qualification clock: `2026-09-23T05:00:00Z`;
+- actual producer result for `cn_pharma_cxo`: `buy_now`,
+  `entry_route=continuation`, `theme_decision.status=CURRENT`, final
+  `dominant / accumulate`;
+- the producer's only raw source read is `wait_pullback`; no bottoming-watch
+  observation is present, proving the continuation route does not require another bottom;
+- the same immutable input's compiled detail payload is September 22,
+  `dominant / accumulate`, with `clean_entry=false`;
+- rendering that exact payload through the repaired template preserves ACCUMULATE,
+  prints initial-entry context separately and never emits a blanket WAIT instruction.
+
+`cross-component-receipt.json` binds those identities and eight real Chromium cells
+(dark/light × EN/ZH × 1440/390). All return HTTP 200, preserve the native rating,
+show the separate initial-entry context, and have zero page errors, request failures or
+page-wide overflow.
+
+The frozen input predates the later per-stock entry-check payload. The separate
+32-state current-page control matrix therefore owns the zero-qualified-stock-table,
+fresh-initial, final-demoted and stale/missing-entry controls. The two receipts are
+complementary; neither invents stock permission or claims production/current-market proof.
 
 ## Generated-page preservation
 

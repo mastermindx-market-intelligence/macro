@@ -1,7 +1,23 @@
-[Reading 4 new lines (total: 4 lines)]
+$ python3 -m pytest -q --disable-warnings tests/test_theme_recommendation_reasons.py tests/test_basket_entry_explanations.py
+........................................................................ [ 64%]
+.......................................                                  [100%]
+111 passed, 16 warnings in 8.45s
 
-........................................................................ [ 65%]
-......................................                                   [100%]
-110 passed in 6.10s
+$ python3 research/sector_pulse/recommendation_reasons_20260921/continuation_20260924/cross_component_proof.py
+{
+  "theme_id": "cn_pharma_cxo",
+  "display_lane": "buy_now",
+  "entry_route": "continuation",
+  "source_session": "2026-09-22",
+  "clean_entry": false,
+  "qualified_count": null,
+  "browser_captures": 8,
+  "template_sha256": "47f077352c62df68fcf98cc868683e6d8d4ab52e29781049b07cd97f04fae280"
+}
 
-✅ Process completed with exit code 0 (runtime: 7.33s)
+$ python3 -m pytest -q --disable-warnings tests/test_theme_recommendation_reasons.py tests/test_basket_entry_explanations.py tests/test_basket_detail_glance_copy.py tests/test_theme_detail_cycles.py tests/test_ftr_w1_template_markup.py tests/test_ftr_w3_ui.py tests/test_group_read_surface.py tests/test_product_chrome.py tests/test_subdir_nav_prefix.py
+........................................................................ [ 28%]
+........................................................................ [ 57%]
+........................................................................ [ 85%]
+....................................                                     [100%]
+252 passed, 16 warnings in 23.72s

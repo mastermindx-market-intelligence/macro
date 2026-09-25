@@ -506,10 +506,10 @@ The repair is presentation-only:
   sizing, alert, or trade authority was added.
 
 A discriminating RED receipt captured the old `WAIT FOR ENTRY` replacement.
-After repair, the affected consumer suites passed **110 tests**. A broader local
-test command was platform-refused before dispatch and was not retried through
-another route; the new remote head must therefore rely on normal hosted CI for
-the full repository gate.
+After repair, the two load-bearing recommendation/stock-entry suites pass **111
+tests** and the broader affected detail/template/chrome surface passes **252 tests**
+across nine focused suites. No full-repository local run is claimed; normal hosted
+exact-head CI remains the repository gate.
 
 All 121 regional detail pages were regenerated only from their own embedded
 inputs. The preservation receipt covers **1,917 member rows / 1,878 assessed
@@ -519,13 +519,29 @@ observation dates and generation stamps unchanged. The real compiled
 0 qualified / 14 waiting; the page now displays the native theme rating and
 initial-entry context separately and contains no detail-hero WAIT literal.
 
-New browser proof contains **32 states**: continuation/zero-qualified,
-fresh-initial, final-demoted, stale+missing-entry × dark/light × EN/ZH ×
-1440/390. All 32 have the expected native rating, no blanket WAIT instruction,
-stock checks preserved, zero page exceptions and no page-wide overflow. Evidence:
-`research/sector_pulse/recommendation_reasons_20260921/continuation_20260924/`.
+The action-card/detail identity is now bound by an additional exact-source contract.
+It executes the separately accepted #7567 action-card source at
+`6e0beeec8f720333dd72ab47a9e7c39fed6238a1` against immutable input
+`88a3f1cfd18f391d2802e9086dc00f6fe5545607:site/chinabasketdata/baskets.json`
+(SHA-256 `69c46ef1ec0c60f450dfe6c443d2d01c70da81a91f34c8763c04f747edbb4040`).
+At the frozen clock it produces `buy_now / continuation / CURRENT` for
+`cn_pharma_cxo`, with only a raw `wait_pullback` source read and no bottoming event.
+The same input's compiled detail remains dominant/accumulate and clean-entry false;
+rendering it through the repaired template preserves the native rating and separates
+the initial-entry context. Eight real browser cells bind this exact route with HTTP
+200, zero page/request errors and no overflow. The frozen page predates stock-entry
+checks, so the existing 32-state current-page controls separately own zero-qualified,
+fresh-initial, final-demoted and stale/missing-entry behavior.
 
-Still owed: commit/push on the same carrier, exact-head hosted CI, independent
-repair re-review, current-base integration, normal publication and served-path
-proof. This closes only the bounded detail contradiction; the parent leadership,
-Prophet and semiconductor intelligence missions remain incomplete.
+New browser proof therefore comprises **40 cells**: eight exact cross-component
+cells plus 32 controls across dark/light, EN/ZH and desktop/mobile. Evidence:
+`research/sector_pulse/recommendation_reasons_20260921/continuation_20260924/`.
+The original presentation repair is already pushed at
+`5c246a7ad6e3b4bf768d546f7afa65ee5cabb27d`; this same-carrier successor adds the
+cross-component contract and stronger regression receipt without changing the
+presentation source or any recommendation/entry/trade policy.
+
+Still owed: exact-successor hosted CI, independent repair re-review, current-base
+integration, normal publication and served-path proof. This closes only the bounded
+detail contradiction; the parent leadership, Prophet and semiconductor intelligence
+missions remain incomplete.

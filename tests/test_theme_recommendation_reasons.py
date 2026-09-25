@@ -239,6 +239,95 @@ const badge=(cls,c,en,zh)=>`<span class="${cls}">${L(en,zh)}</span>`;
     assert "Check individual stocks" in source and "查看具体个股" in source
 
 
+def test_continuation_action_card_contract_reaches_compiled_detail():
+    import hashlib
+
+    evidence = (ROOT / "research/sector_pulse/recommendation_reasons_20260921"
+                / "continuation_20260924")
+    contract = json.loads((evidence / "cross-component-receipt.json").read_text())
+    assert contract["schema"] == "theme_continuation_detail_contract.v1"
+    assert contract["theme_id"] == "cn_pharma_cxo"
+
+    action = contract["action_card"]
+    detail = contract["detail"]
+    identity = contract["identity"]
+    assert action["source_head"] == "6e0beeec8f720333dd72ab47a9e7c39fed6238a1"
+    assert action["source_path"] == "engine/china_act_now.py"
+    assert action["source_sha256"] == "fcb9c8996294e1f9cf0fe5e6835c27785ef4006cf43b9aba58cebff0b05cc8f7"
+    assert action["input_head"] == "88a3f1cfd18f391d2802e9086dc00f6fe5545607"
+    assert action["input_path"] == "site/chinabasketdata/baskets.json"
+    assert action["input_sha256"] == "69c46ef1ec0c60f450dfe6c443d2d01c70da81a91f34c8763c04f747edbb4040"
+    assert action["display_lane"] == "buy_now"
+    assert action["entry_route"] == "continuation"
+    assert action["observed_lanes"] == ["wait_pullback"]
+    assert action["source_read_lanes"] == ["wait_pullback"]
+    assert action["theme_decision"] == {
+        "source_as_of": "2026-09-22",
+        "final_reco": "accumulate",
+        "final_label": "dominant",
+        "status": "CURRENT",
+        "source_status": "CURRENT",
+        "source_conflict": False,
+        "scope": "theme_presentation_only",
+        "stock_entry_permission": False,
+    }
+
+    assert detail["input_page_head"] == action["input_head"]
+    assert detail["input_page_path"] == "site/basket_china/cn_pharma_cxo.html"
+    assert detail["input_page_sha256"] == "69a2d8f9bfb49552e01da251bf7e30d8cc778f0dcdcfa8e0c67570dc492282a6"
+    template = ROOT / detail["template_path"]
+    assert hashlib.sha256(template.read_bytes()).hexdigest() == detail["template_sha256"]
+    assert detail["source_as_of"] == action["theme_decision"]["source_as_of"]
+    assert detail["recommendation"] == action["theme_decision"]["final_reco"]
+    assert detail["label"] == action["theme_decision"]["final_label"]
+    assert detail["clean_entry"] is False
+    assert detail["native_rating_preserved"] is True
+    assert detail["initial_entry_context_separate"] is True
+    assert detail["blanket_wait_literal_absent"] is True
+    assert identity == {
+        "same_theme_id": True,
+        "same_source_session": True,
+        "same_final_recommendation": True,
+        "continuation_without_bottoming_event": True,
+        "stock_entry_permission_widened": False,
+    }
+
+    browser = contract["browser"]
+    assert browser["captures"] == 8
+    expected = {(theme, lang, width)
+                for theme in ("dark", "light")
+                for lang in ("en", "zh")
+                for width in (1440, 390)}
+    actual = {(row["theme"], row["language"], row["width"])
+              for row in browser["records"]}
+    assert actual == expected
+    assert all(row["http_status"] == 200 for row in browser["records"])
+    assert all(row["rating_visible"] and row["initial_context_visible"]
+               and row["blanket_wait_absent"] for row in browser["records"])
+    assert all(not row["page_errors"] and not row["request_failures"]
+               and not row["page_overflow"] for row in browser["records"])
+    for row in browser["records"]:
+        screenshot = evidence / row["screenshot"]
+        assert screenshot.is_file()
+        assert hashlib.sha256(screenshot.read_bytes()).hexdigest() == row["screenshot_sha256"]
+
+    controls = json.loads((evidence / "browser-receipt.json").read_text())
+    assert controls["captures"] == 32
+    assert {row["scenario"] for row in controls["records"]} == {
+        "continuation_zero_qualified", "fresh_initial",
+        "final_demoted", "stale_missing_entry",
+    }
+    assert {row["language"] for row in controls["records"]} == {"en", "zh"}
+    assert all(row["rating_visible"] and row["wait_instruction_absent"]
+               and row["stock_checks_opened"] for row in controls["records"])
+    assert all(not row["page_errors"] and not row["page_overflow"]
+               for row in controls["records"])
+    for row in controls["records"]:
+        screenshot = evidence / "browser" / row["screenshot"]
+        assert screenshot.is_file()
+        assert hashlib.sha256(screenshot.read_bytes()).hexdigest() == row["sha256"]
+
+
 def test_desk_and_detail_use_identical_nonentry_explanation_contract():
     import re
     sources = [(ROOT / name).read_text() for name in ("templates/baskets_desk.js", "templates/basket_detail.html.j2")]
