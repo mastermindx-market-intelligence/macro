@@ -356,6 +356,20 @@ jobs:
       - "tests/fixtures/am_edition_fixture/site/master_brief.json"
       - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
+      # 2026-09-24 A-MOR-2b lane B (VPS premarket owner): the live lane wraps
+      # the producer and shares its import graph (scripts.build_am_edition) so
+      # it rides the producer gate. The contract-delta differential gate refuses
+      # a head that would let GitHub allocate a duplicate runner alongside the
+      # packed trusted-executor dispatch, so both suites must complete here.
+      - "scripts/am_edition_live.py"
+      - "tests/test_am_edition_live.py"
+      # MINOR 6 fix: the three B6 Caddy-boundary assertions used to live
+      # below tests/test_caddy_hub_boundary.py's module-level
+      # pytest.importorskip("fastapi") and so were skipped on a thin venv.
+      # Extracting them to a sibling module lets the thin venv — and the
+      # packed trusted-executor dispatch — pick them up; the suite still
+      # imports scripts.check_caddy_hub_boundary, same env.
+      - "tests/test_caddy_hub_boundary_am_edition.py"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
     # execution like every sibling job in this family — contract-delta's
@@ -370,8 +384,8 @@ jobs:
       - name: install test deps
         # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
         run: pip install pytest pyyaml jinja2
-      - name: AM Edition producer contract (per-source clocks, six states, no laundering)
-        run: python -m pytest tests/test_am_edition_producer.py -q
+      - name: AM Edition producer + lane-B live contract (per-source clocks, six states, no laundering, served-artifact chmod 0o644, freshest-wins under Z/naive ISO stamps)
+        run: python -m pytest tests/test_am_edition_producer.py tests/test_am_edition_live.py -q
 
   all-exports-resolve:
     if: ${{ false }}
