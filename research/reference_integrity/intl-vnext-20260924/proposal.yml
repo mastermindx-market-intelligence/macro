@@ -1,7 +1,7 @@
 schema: mastermind.rig_proposal.v1
 reference_id: intl-vnext-20260924
 proposed_artifact:
-  frozen_sha: bdeb338372bf4ef29cb8d683e07ea840acdb4681
+  frozen_sha: 007d88824cb6831eb534685371ffa5999d577d91
   paths:
   - mockups/refs/institutionalize/intl/reference-r3.html
   screenshots:
@@ -192,6 +192,16 @@ proposed_artifact:
     theme: light
     locale: zh
     state: intl-stocks-preservation
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-fixed-charts-desktop-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+    state: fixed-84-session-price-paths
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-dark-zh-initial-locale.png
+    viewport: mobile
+    theme: dark
+    locale: zh
+    state: direct-initial-locale
 dispositions:
 - id: global.regime-verdict
   disposition: IMPROVE
@@ -207,8 +217,8 @@ dispositions:
   rationale: Every published state remains visible with its accepted stance; no market is suppressed.
 - id: market.performance-usd
   disposition: IMPROVE
-  target: Act 2 seven-market cards with 1M/3M/6M/12M/YTD controls, sparklines, local return, FX contribution, and USD return
-  rationale: Preserves currency-aware comparison and change shape while making the selected horizon explicit.
+  target: Act 2 seven-market cards with 1M/3M/6M/12M/YTD controls, fixed 84-session price paths, local return, FX contribution, and USD return
+  rationale: Preserves currency-aware comparison while making the selected return horizon explicit and separate from the fixed price path.
 - id: market.macro-comparison
   disposition: RETAIN
   target: Act 5 seven-economy comparison table plus country inspector tabs
@@ -241,8 +251,8 @@ dispositions:
   target: Act 3 RRG table, Act 5 regime comparison, and Act 6 correlation/regime/ranks desk
 - id: action.sector-rotation
   disposition: RELOCATE
-  destination: Act 6 honest-null sector card plus sector_central.html and cycle destinations
-  reachability: The section remains visible even when zero rows qualify and links to established sector routes.
+  destination: Act 6 preservation card plus intl_stocks.html, sector_central.html, and cycle destinations
+  reachability: The populated 3-month regional sector board remains on intl_stocks.html; the overview links to it without duplicating or reinterpreting rows.
 - id: action.prophet-stocks
   disposition: RELOCATE
   destination: Act 6 preserved-route contract plus intl_stocks.html
@@ -270,10 +280,10 @@ user_tasks:
   task: Identify leaders, weakening markets, and changed states across useful horizons without losing FX context.
   critical: true
   production: Turn tiles, a USD leaderboard, horizon controls, sparklines, and RRG answer the job in separate panels.
-  proposal: Act 2 keeps every horizon, decomposition, sparkline, ten-market state, and stance; Act 3 keeps rotation rank and
+  proposal: Act 2 keeps every return horizon, decomposition, fixed 84-session price path, ten-market state, and stance; Act 3 keeps rotation rank and
     RRG separate.
   verdict: BETTER
-  notes: The proposal removes no horizon or change-shape evidence.
+  notes: The proposal preserves every return horizon and labels the fixed price path as horizon-independent.
 - id: task-diagnose-risk
   task: Distinguish local stress, global transmission, dollar pressure, and structural fragility.
   critical: true
@@ -293,7 +303,7 @@ user_tasks:
   task: Reach central banks, credit, curves, correlation, sector intelligence, and international stock candidates.
   critical: true
   production: Each capability is a first-level panel or linked route.
-  proposal: Act 6 retains compact inspectable desks with real routes; sector zero rows are disclosed and the stock route is
+  proposal: Act 6 retains compact inspectable desks with real routes; populated regional sector rotation remains on the preserved stock route and the stock mode is
     separately proven.
   verdict: EQUIVALENT
   notes: The jobs remain reachable while the L1 hierarchy is reduced.
@@ -344,12 +354,12 @@ information_economics:
       deep routes.
   findings:
   - The proposal reduces the first-level hierarchy without deleting a baseline capability.
-  - Change shape remains visual through seven sparklines; RRG remains a distinct relative-leadership table.
+  - Fixed 84-session price paths remain visual and explicitly horizon-independent; RRG remains a distinct relative-leadership table.
   - Full populations are printed for turn states, economies, pressure flow, fragility, and central banks.
   - Organ-local degraded states prevent one failed producer from blanking unrelated intelligence.
   - The exact international stock route remains outside the redesign and is browser-proven in eight cells.
   preserved:
   - Engine-owned 66/100 verdict, coverage receipt, drags, US-versus-world read, and four vitals.
-  - Five horizons, local/FX/USD decomposition, sparklines, rotation result, RRG, and dated events.
+  - Five return horizons, local/FX/USD decomposition, fixed 84-session price paths, rotation result, RRG, and dated events.
   - Contagion, Dollar Drivers, structural fragility, pressure flow, macro comparison, and deep desks.
   - Dark/light, EN/ZH, desktop/mobile, keyboard tabs, and real destination links.
