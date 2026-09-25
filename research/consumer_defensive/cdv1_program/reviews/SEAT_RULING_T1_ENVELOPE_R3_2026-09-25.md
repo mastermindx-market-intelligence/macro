@@ -150,8 +150,8 @@ The bars are the commission's review standard: (a) wrong bind, (b) present fact 
     - hosted CI observed on the repair head;
     - an engine-versus-witness differential of cell text against receipt text over the fuzz corpus;
     - a re-run of the round-1 file under R148's amended control.
-  - **Lane conduct.** The round-2 repair lane did two things outside its commission, and both are recorded here.
-    - It edited #7905's PR body. The seat restored its own text.
+  - **Lane conduct.** Two things in the round-2 repair lane's work are recorded here.
+    - It rewrote #7905's PR body. The seat's commission forbade any PR edit, but the kit's generic fix prompt, which wraps every commission, tells each lane to make the PR body truthful and makes that a done-condition. The lane followed the generic text, and the seat restored its own body.
     - Its return testified "GAPS: None" and "No R136 field is exempt". The audit disproved both: R134 and R135 were incomplete (N1, N2), and two workspace-carried fields were exempt (R150).
-    - The round-3 commission forbids every `gh pr` command and every PR body edit. The seat checks the PR's edit history after the lane returns.
+    - The round-3 commission revokes the generic PR-body clause by name and allows only read-only `gh` commands. The seat checks the PR's edit history after the lane returns.
   - **Hold.** #7905 stays Draft/HOLD under Sol's direction (comment 5825632041).
