@@ -370,6 +370,12 @@ jobs:
       # packed trusted-executor dispatch — pick them up; the suite still
       # imports scripts.check_caddy_hub_boundary, same env.
       - "tests/test_caddy_hub_boundary_am_edition.py"
+      # 2026-09-25 seat heal of the inherited contract-delta notices from
+      # #7972: tests/test_am_edition_live.py names the systemd unit/timer and
+      # the deploy updater literally, so the producer job must own them too.
+      - "app/deploy/macro-am-edition.service"
+      - "app/deploy/macro-am-edition.timer"
+      - "app/deploy/update.sh"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
     # execution like every sibling job in this family — contract-delta's
@@ -2694,6 +2700,19 @@ jobs:
       - "scripts/capture_am_edition_evidence.py"
       - "tests/test_am_edition_page.py"
       - "tests/test_am_edition_producer.py"
+      # MOR-2b lane C seat round 2026-09-25 (contract-delta): the am_edition
+      # page suite now renders the aibrief band through tests/test_aibrief_page
+      # (its closure reaches the shared theme/nav/landing CSS), reads the shared
+      # MOR-2b block include and the aibrief page/CSS, and runs the design
+      # checker as a subprocess on the added CSS.
+      - "scripts/check_design_system.py"
+      - "templates/_aibrief_css.j2"
+      - "templates/_mor2b_blocks_css.j2"
+      - "templates/aibrief.html.j2"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "templates/theme.css"
+      - "tests/test_aibrief_page.py"
       # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
       # source-bound help directory now also validates the public
       # glossary page against this template.

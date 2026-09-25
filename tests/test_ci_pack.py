@@ -3561,6 +3561,10 @@ CURATED_EXCLUSIVE = {
     # collectors/ and engine.market_state chains), so exclusivity loses no
     # owner and contract-delta stays at 0 introduced.
     "markets-regime-strip",
+    # #7971 (2026-09-25) split two curated jobs out without pinning them here;
+    # pure main failed this test until #7970 carried the pin.
+    "markets-regime-strip-bake-parity",
+    "p0b-receipt-closure",
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
     # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
     # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
