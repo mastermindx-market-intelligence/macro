@@ -2728,9 +2728,10 @@
     }
     var host = document.createElement('div'); host.className = 'hm-host';
     full.appendChild(host);
-    var curView = null, curKey = null, curMap = null, btns = {};
+    var curView = null, curKey = null, curMap = null, selectEpoch = 0, btns = {};
     function select(m, force) {
       if (curKey === m.key && !force) return;
+      var epoch = ++selectEpoch;
       curKey = m.key; curMap = m;
       Object.keys(btns).forEach(function (k) {
         var on = k === m.key;
@@ -2739,13 +2740,13 @@
       if (curView && curView.destroy) { curView.destroy(); curView = null; }
       host.innerHTML = _emptyHtml('…');
       mapAccessAllows(m).then(function (allowed) {
-        if (curKey !== m.key) return;
+        if (epoch !== selectEpoch || curKey !== m.key) return;
         if (!allowed) {
           showMemberMapGate(host, function () { select(m, true); });
           return;
         }
         return loadMapPayload(m).then(function (data) {
-          if (curKey !== m.key) return;               // a newer click superseded this
+          if (epoch !== selectEpoch || curKey !== m.key) return; // a newer selection/auth edge superseded this
           if (!data.tiles || !data.tiles.length) {
             host.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。'));
             return;
@@ -2754,8 +2755,13 @@
           curView = createFullView(host, data);
         });
       }).catch(function (e) {
-        if (curKey !== m.key) return;
-        host.innerHTML = _emptyHtml(L('Could not load heatmap data.', '无法加载热力图数据。'));
+        if (epoch !== selectEpoch || curKey !== m.key) return;
+        if (m.access === 'member') {
+          resetMapAccess(m);
+          showMemberMapGate(host, function () { select(m, true); });
+        } else {
+          host.innerHTML = _emptyHtml(L('Could not load heatmap data.', '无法加载热力图数据。'));
+        }
         if (window.console) console.error('heatmap load failed', e);
       });
     }
