@@ -190,15 +190,20 @@ def label_of(row, cell: Cell) -> str | None:
 
 
 def headers_over(rows, cell: Cell) -> list[str]:
-    """Texts above the cell: cells covering its first grid column, and title rows (one filled cell) over all of them."""
-    out = []
-    for row in rows[: cell.row]:
-        filled = [o for o in row if o.text and o.row < cell.row]
-        if len({id(o) for o in filled}) == 1:
-            out.append(filled[0].text)
-            continue
-        out.extend(o.text for o in filled if o.col0 <= cell.col0 < o.col1)
-    return out
+    """Texts above the cell that stand over every grid column it occupies: covering cells, and title rows (one filled
+    cell) over all of them (R168)."""
+    def column(index: int) -> list[str]:
+        out = []
+        for row in rows[: cell.row]:
+            filled = [o for o in row if o.text and o.row < cell.row]
+            if len({id(o) for o in filled}) == 1:
+                out.append(filled[0].text)
+                continue
+            out.extend(o.text for o in filled if o.col0 <= index < o.col1)
+        return out
+
+    first, *others = (column(index) for index in range(cell.col0, cell.col1))
+    return [h for h in first if all(norm(h) in {norm(x) for x in other} for other in others)]
 
 
 def own_cells(source: str, ordinal: int):
