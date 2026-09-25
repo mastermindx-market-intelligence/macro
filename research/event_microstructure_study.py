@@ -259,6 +259,16 @@ def repricing_first_pass(
         anchor + timedelta(minutes=impulse_minutes),
         tolerance_minutes=post_tolerance_minutes,
     )
+    response_event = _last_at_or_before(
+        response,
+        anchor,
+        tolerance_minutes=pre_tolerance_minutes,
+    )
+    benchmark_event = _last_at_or_before(
+        benchmark,
+        anchor,
+        tolerance_minutes=pre_tolerance_minutes,
+    )
     response_start = _first_at_or_after(
         response,
         anchor + timedelta(minutes=impulse_minutes),
@@ -295,6 +305,20 @@ def repricing_first_pass(
             _return_bps(event_causal[1], causal_at_impulse_end[1]),
             6,
         )
+
+    first_response = first_benchmark = first_residual = None
+    if response_event is not None and response_start is not None:
+        first_response = round(
+            _return_bps(response_event[1], response_start[1]),
+            6,
+        )
+    if benchmark_event is not None and benchmark_start is not None:
+        first_benchmark = round(
+            _return_bps(benchmark_event[1], benchmark_start[1]),
+            6,
+        )
+    if first_response is not None and first_benchmark is not None:
+        first_residual = round(first_response - first_benchmark, 6)
 
     response_windows: dict[str, dict[str, float | str | None]] = {}
     for horizon in response_horizons_minutes:
@@ -336,6 +360,8 @@ def repricing_first_pass(
     required = (
         event_causal,
         causal_at_impulse_end,
+        response_event,
+        benchmark_event,
         response_start,
         benchmark_start,
     )
@@ -371,6 +397,14 @@ def repricing_first_pass(
             ),
         },
         "pre_event_causal": pre,
+        "first_impulse": {
+            "end_target": _iso(
+                anchor + timedelta(minutes=impulse_minutes)
+            ),
+            "response_return_bps": first_response,
+            "benchmark_return_bps": first_benchmark,
+            "residual_return_bps": first_residual,
+        },
         "response_from_impulse_end": response_windows,
         "interpretation": (
             "descriptive_only; thresholds and first-impulse rules remain owned "
