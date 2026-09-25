@@ -90,7 +90,7 @@ The Chairman continued this exact mission with Extra High enabled after R18. Tha
 - Fresh worktree: `/Users/chriswong/lanes/wt/basic-materials-core-v0`.
 - Local implementation branch: `claude/basic-materials-core-v0`.
 - Exact base: `22094843f4042db6d9d77ad8847bcdbf9a27faa9` (`origin/main` at worktree creation).
-- Branch is LOCAL ONLY / NOT PUSHED / no product PR exists yet. No merge, CI, release, deployment or browser proof.
+- Implementation branch was subsequently committed/pushed and opened as **Macro PR #7984**, Draft/HOLD, branch `claude/basic-materials-core-v0`, head `36f330b1f7829a289a44937bca0007c734d6df5e`. The PR body records the deliberate RED and DO-NOT-MERGE condition. No merge, release, deployment or browser proof.
 - Protected procedure for this unit: Mastermind `a29161fa0a44cca9927afe042b5f7ea25aae1736`, Skillpack 1.0.1/bootstrap1; same-pin ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT loaded. Current Macro AGENTS/CLAUDE and GMI workstream were read at the implementation base.
 
 ### TDD effects actually observed
@@ -107,7 +107,7 @@ TDD uses `$HOME/lanes/venv/bin/python` (Python3.12). M1 `/usr/bin/python3` is Py
 Current local-only files:
 - `engine/market_ontology/materials_economics.py` — 292 lines, SHA256 `97894a46a91b583be942214e48372791a86302c344db368755e34860af23b5c8`.
 - `tests/test_market_ontology_materials_economics.py` — 168 lines, SHA256 `8967aaf2f816e6e0f06c32bbe5e97d2fde3ee9bbf259676390132f07c5f41652`.
-- Both are untracked. `git diff --check` returned 0, but ordinary `git diff` excludes them; no empty diff hash is accepted as their content identity.
+- These exact files were committed together in RED checkpoint commit `36f330b1f7829a289a44937bca0007c734d6df5e` and pushed to `origin/claude/basic-materials-core-v0`; the worktree was clean immediately after push. Their pre-commit SHA256 values above remain content receipts.
 
 Fresh verification immediately before this checkpoint:
 `$HOME/lanes/venv/bin/python -m pytest tests/test_market_ontology_materials_economics.py -q` -> **2 passed / 1 failed**, with the one expected cash-reconciliation RED. This is deliberately not a green-suite or completion claim.
@@ -116,9 +116,9 @@ Fresh verification immediately before this checkpoint:
 
 Blocked patch call: `TOOL_DEGRADED / EFFECT_NONE` for that exact cash-production write. It is not `EFFECT_UNKNOWN`. The denial is not retry permission. Do not route the same patch through GitHub, another device/tool/provider, or a differently worded call merely to bypass it.
 
-The existing local worktree contains known partial product work; it has not been committed or pushed because the current TDD state is deliberately red. Do not interpret the local branch name as a GitHub carrier or accepted implementation child.
+The known partial product work is durably pinned on PR #7984, but the carrier remains an **intentional RED checkpoint**, not an accepted implementation. Do not mark Ready, arm merge-on-green, merge, or call it built while the cash case is red. Research PR #7796 remains separate and holds the complete program requirements.
 
-Independent safe lanes remain research/read-only reconciliation and durable continuity. Once the platform permits the blocked write class in a later turn/session, resume at the existing RED: implement only cash reconciliation, run it green, then continue commercial-progression and contractual-participation cases before schema/identity-link work. Re-read current main and target-path collisions before any eventual commit/push; do not rebuild the existing unit-economics code from scratch unless its exact local files are lost or source materially invalidates them.
+Independent safe lanes remain research/read-only reconciliation and durable continuity. Once the platform permits the blocked write class in a later turn/session, resume **the same PR #7984 / branch / RED test**: implement only cash reconciliation, run it green, then continue commercial-progression and contractual-participation cases before schema/identity-link work. Reconcile current main and target-path collisions before the next push; do not create a second carrier or rebuild the existing unit-economics code from scratch unless its exact source is materially invalidated.
 
 R1–R18 research, all44 requirements, eight tasks, five originals/four company journeys and V0–V4 ambition remain intact. Shared/private/native T7/T8 gates remain open. No source admission, identity/rights change, ranking, entry, sizing, trade, publication, worker or autonomous wake occurred.
 
