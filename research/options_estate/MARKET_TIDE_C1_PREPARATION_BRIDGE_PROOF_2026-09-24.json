@@ -35,14 +35,14 @@
   "source_files": [
     {
       "path": "research/options_estate/market_tide_c1_prepare.py",
-      "bytes": null,
-      "sha256": null,
+      "bytes": 11902,
+      "sha256": "289b28548d57754f5b910ce8b60db22a6ee18b5a9d62800749258fcdb6e52b6a",
       "git_blob": "b83f64d023d004c852ba709eb4616828b6e13258"
     },
     {
       "path": "tests/test_market_tide_c1_prepare.py",
-      "bytes": null,
-      "sha256": null,
+      "bytes": 12330,
+      "sha256": "ce0bc2ba701697ae9a61c5548b898e3b1b56d5c3e5fdf36e4a230f4437b43936",
       "git_blob": "1ad91c79963e8c410b11b04020c6aac33b9488fa"
     },
     {
