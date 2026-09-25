@@ -191,6 +191,8 @@ def validate_selected_facts(
     facts = workspace.get("facts")
     if not isinstance(facts, list):
         raise EconomicObservationError("workspace facts must be a list")
+    if any(not isinstance(row, Mapping) for row in facts):
+        raise EconomicObservationError("workspace facts must be mappings")
     rows = [
         row for row in facts
         if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")
