@@ -153,8 +153,9 @@ def walk_forward(packet, evaluation_at):
 
     Fit cutoff is 00:00 UTC on the first of each test month: a computational
     boundary, NOT an inferred publication clock. Full years require supplied
-    calendar coverage and an eligible origin at every supplied session before
-    normal five-session label purging. No shorter-training fallback.
+    calendar coverage, eligible inputs and mature labels at every historical
+    session except the ordinary five-session boundary purge. No shorter-training
+    fallback; missing historical outcomes are not a complete training year.
     """
     if packet.get("study") != "C1-M1" or packet.get("instrument") not in ("SPY", "QQQ", "IWM"):
         raise ValueError("unsupported_study_or_instrument")
@@ -224,18 +225,26 @@ def walk_forward(packet, evaluation_at):
     for d in days:
         if START <= d <= END:
             by_year[d.year].add(d)
-    complete = [year for year, expected in sorted(by_year.items())
-                if lo <= date(year, 1, 1) and hi >= date(year, 12, 31) and expected <= valid.keys()]
+    covered_years = [year for year, expected in sorted(by_year.items())
+                     if lo <= date(year, 1, 1) and hi >= date(year, 12, 31) and expected <= valid.keys()]
     months = sorted({(d.year, d.month) for d in valid})
     fits, predictions, skipped_months = [], [], []
     for year, month in months:
-        years = [y for y in complete if y < year]
-        if len(years) < 3:
-            skipped_months.append({"month": f"{year:04}-{month:02}", "reason": "three_complete_training_years_unavailable"}); continue
         cutoff = datetime(year, month, 1, tzinfo=timezone.utc)
         prior = [d for d in valid if d < cutoff.date()]
         train = [d for d in prior if valid[d]["ready"] is not None and valid[d]["ready"] < cutoff
                  and valid[d]["endpoint"] < cutoff]
+        # Calendar/feature coverage alone must not count as usable training
+        # history. Only ordinary boundary-crossing labels may be unavailable.
+        # Determine that boundary from the supplied roster, never from an
+        # untrusted or missing label endpoint. Re-evaluate at each fit cutoff.
+        boundary_purged = {d for d in prior if valid[d]["decision"] < cutoff
+                           and positions[d] + 5 < len(days)
+                           and calendar[days[positions[d] + 5]] >= cutoff}
+        eligible_coverage = set(train) | boundary_purged
+        years = [y for y in covered_years if y < year and by_year[y] <= eligible_coverage]
+        if len(years) < 3:
+            skipped_months.append({"month": f"{year:04}-{month:02}", "reason": "three_complete_training_years_unavailable"}); continue
         test = [d for d in valid if (d.year, d.month) == (year, month)]
         if not train:
             skipped_months.append({"month": f"{year:04}-{month:02}", "reason": "no_mature_training_labels"}); continue
