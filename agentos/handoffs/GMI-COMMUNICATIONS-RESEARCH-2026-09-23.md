@@ -163,3 +163,29 @@ cycle merely because the user has not yet handed the packet off.
 Resume from this cumulative checkpoint, frozen index revision4, A1 plan and proof companion in a new
 review/integration context at the user's chosen boundary. A new chat itself supplies no source lease or
 START receipt. The parent mission remains incomplete until actual product and required learning proof.
+
+## Recovery after thinking failure — 2026-09-25
+
+The preceding implementation attempt ended in a ChatGPT "Thinking failed" interruption. Reconciliation
+shows Macro PR #7794 remained at `e29aaf035a1e56654429fc0cb89577c1963bd917` before this recovery write; therefore no GitHub product,
+research, or checkpoint mutation from the failed turn is outstanding. No EFFECT_UNKNOWN GitHub write
+exists from that failure.
+
+The failed turn verbally reported a local comparison-module run with 59 passing unit tests, but no
+durable artifact, commit, native readback, or recoverable canonical worktree for that candidate was
+established during recovery. Treat that result as NOT_CANONICALLY_PERSISTED and do not cite it as
+application proof, DO_NOT_REDO implementation, or accepted code. The approved Phase-18 author baseline,
+plan revision2, proof companion revision2, and sixty CRV obligations remain the current durable
+starting point.
+
+Current Chairman intent is to retain Sol leadership and postpone the new-Fable manual handoff while
+Fable credits are scarce. A fresh Extra High turn was used only to reconcile effects and restore a
+durable frontier; it does not create a new receiver, child, Attempt, watcher, source lease, or runtime
+admission. The Semiconductor program remains an upstream shared-foundation dependency only.
+
+**Exact next action:** return to Pro for principal-level reconciliation of the frozen author baseline
+against the current shared GMI implementation, then define the smallest self-owned implementation
+slice that can lawfully proceed without duplicating shared-owner work. When an implementation write
+is actually required, switch back to a write-capable mode and create/use a separately admitted
+current-main product carrier after fresh custody/effect reconciliation. Do not silently convert PR
+#7794 into the product branch.
