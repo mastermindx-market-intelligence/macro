@@ -14,12 +14,11 @@ T09 of operation gmi-semiconductors-fable-cee-20260923-chairman-001
   ``main.py`` honest: a :class:`RequestValidationError` handler would need a
   third touchpoint;
 * no reader, bundle, locator or filesystem path is constructed or read before
-  auth resolves. The default :func:`load_authorized_owner_bundle` dispatches to
-  the registration's ``load_bundle`` (T08c-2: the semiconductor owner-bundle
-  loader — public half through the Company Intelligence reader, private half
-  declared absent) and names no vertical; a loader that cannot serve raises
-  :class:`BundleUnavailable` → the private 503; tests inject a bundle via the
-  seam;
+  auth resolves. :func:`load_authorized_owner_bundle` dispatches to whatever
+  the resolved registration carries as its ``load_bundle`` and names no
+  vertical, no owner surface and no store; a loader that cannot serve raises
+  :class:`BundleUnavailable` and gets the fixed private 503, and tests inject
+  a bundle through the same seam;
 * rights filtering is done against a FRESH :func:`load_registry_snapshot` — no
   process cache, so a rights decision that moves between two same-process
   requests reaches the route without a watcher or a restart (the

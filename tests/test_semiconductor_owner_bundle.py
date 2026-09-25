@@ -289,7 +289,18 @@ def test_tampered_preceding_object_through_the_real_reader_is_workspace_unverifi
     files = build_witness_nest(tmp_path)
     targets = [url for url in files if "0001046179_2026q1" in url and "/workspaces/" in url]
     assert len(targets) == 1, targets
-    files[targets[0]] = files[targets[0]] + b" "  # still JSON; not the receipted bytes
+    original = files[targets[0]]
+    # A SAME-LENGTH mutation: the reader checks `len(body) != expected_bytes or
+    # sha256(body) != expected_hash` and Python short-circuits, so appending a
+    # byte would only ever exercise the length half. Swapping two digits inside
+    # a figure keeps the length identical and forces the digest comparison.
+    for a, b in ((b"16", b"61"), (b"12", b"21"), (b"20", b"02"), (b"34", b"43")):
+        if a in original:
+            files[targets[0]] = original.replace(a, b, 1)
+            break
+    else:  # pragma: no cover - the fixture always carries one of these
+        pytest.fail("no same-length mutation available in the preceding object")
+    assert len(files[targets[0]]) == len(original) and files[targets[0]] != original
     wire_witness_nest(monkeypatch, files)
     _pin_scope(monkeypatch, _TSM)
     bundle = load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
@@ -505,6 +516,47 @@ def test_source_history_proceeds_like_latest_for_public_workspaces(monkeypatch, 
     bundle = load_semiconductor_owner_bundle(query, rights_snapshot=_SNAPSHOT)
     assert len(bundle.event_workspaces) == 2
     assert compose_semiconductor_research(query, bundle)["economics"]["status"] == "ready"
+
+
+def test_coverage_absence_literals_are_notes_the_reader_can_actually_raise() -> None:
+    """DRIFT GUARD. The preceding-period classification turns on two literal
+    reader notes. Unlike the current-period note the reader exports as
+    ``_NOT_COVERED_NOTE``, these are raise-site strings: if one is reworded,
+    every genuinely-unpublished period would silently start reporting
+    ``workspace_unverified`` (tampering) instead of ``workspace_unavailable``
+    (absence), and every test here would stay green because they hardcode the
+    same two strings. So assert them against the reader's own source.
+    """
+    reader_source = Path(reader.__file__).read_text(encoding="utf-8")
+    raised: set[str] = set()
+    for node in ast.walk(ast.parse(reader_source)):
+        if not isinstance(node, ast.Raise) or node.exc is None:
+            continue
+        call = node.exc
+        if not isinstance(call, ast.Call) or not call.args:
+            continue
+        name = call.func.id if isinstance(call.func, ast.Name) else getattr(call.func, "attr", "")
+        if name != "CompanyIntelligenceReadError":
+            continue
+        first = call.args[0]
+        if isinstance(first, ast.Constant) and isinstance(first.value, str):
+            raised.add(first.value)
+    assert raised, "no CompanyIntelligenceReadError literals found — the guard is void"
+    missing = loader_module._PRECEDING_ABSENT_NOTES - raised
+    assert not missing, (
+        f"the loader treats {sorted(missing)} as the reader's coverage-absence notes, "
+        "but the reader no longer raises them — a reword would silently reclassify "
+        "every unpublished preceding period as unverified"
+    )
+
+
+def test_an_unpublished_alias_really_returns_a_coverage_absence_note(monkeypatch, served_nest) -> None:
+    """The other half of the guard, live: ask the real reader for an alias the
+    published manifest does not carry and confirm the note it hands back is one
+    the loader classifies as absence."""
+    envelope = reader.read_event_workspace({"event_id": "TSM/2019Q3"})
+    assert envelope.get("available") is not True
+    assert envelope.get("note") in loader_module._PRECEDING_ABSENT_NOTES, envelope
 
 
 # ─────────────────────────────────────────────────────────────────────────────

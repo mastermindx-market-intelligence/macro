@@ -148,8 +148,10 @@ def _load_semiconductor_owner_bundle(query: Any, *, rights_snapshot: Any = None)
     the Company Intelligence reader (requests, pandas, pyarrow) which this
     registry must not drag into ``scripts/`` / ``templates/`` producers that
     import it for the mount (module law: no web framework, no template engine,
-    and — measured — a 149-module closure, not 800). Resolved on the first
-    served request, never at import."""
+    and no data/network stack). ``test_registry_import_closure_stays_light``
+    is what enforces that — it names the forbidden modules rather than a
+    count, which is interpreter-dependent. Resolved on the first served
+    request, never at import."""
     from engine.market_ontology.semiconductor_owner_bundle import (  # noqa: PLC0415 — lazy by design
         load_semiconductor_owner_bundle,
     )
