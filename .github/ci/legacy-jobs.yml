@@ -13572,6 +13572,7 @@ jobs:
       - "engine/earnings_narrative/public_wire.py"
       - "engine/earnings_narrative/story.py"
       - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/__init__.py"
       - "engine/earnings_release/binding.py"
       - "engine/earnings_release/figures.py"
       - "engine/earnings_release/filing_key.py"
@@ -13601,8 +13602,9 @@ jobs:
       - "tests/test_pg_envelope_f1.py"
       - "tests/test_pg_envelope_f1_probes_r1.py"
       - "tests/test_pg_envelope_f1_probes_r2.py"
+      - "tests/test_pg_envelope_f1_probes_r3.py"
       - "tests/fixtures/pg_envelope/**"
-    timeout-minutes: 6
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13612,7 +13614,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: PG source-scoped economic observations
-        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py -q
+        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py tests/test_pg_envelope_f1_probes_r3.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
