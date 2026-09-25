@@ -74,8 +74,12 @@ def css_text() -> str:
 # Synthetic envelope (FROZEN contract — every closed top-level key present)
 # ---------------------------------------------------------------------------
 
-ENVELOPE_FIXTURE = (REPO_ROOT / "tests" / "fixtures" / "semiconductor_theme_research"
-                    / "client_contract_envelope.json")
+# A COMPOSED RESPONSE, deliberately outside the composer's input-case corpus
+# (`tests/fixtures/semiconductor_theme_research/`, whose roster law pins that
+# directory to exactly the twenty-eight named input cases). This is the
+# composer's OUTPUT, pinned by the composition suite.
+ENVELOPE_FIXTURE = (REPO_ROOT / "tests" / "fixtures" / "theme_research_client"
+                    / "composed_envelope.json")
 
 
 @functools.lru_cache(maxsize=1)

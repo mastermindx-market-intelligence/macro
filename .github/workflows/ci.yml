@@ -1872,6 +1872,7 @@ on:
       - "tests/test_theme_research_rights_refresh.py"
       - "tests/test_theme_research_private_binding.py"
       - "tests/fixtures/semiconductor_theme_research/**"
+      - "tests/fixtures/theme_research_client/**"
       - "engine/company_intelligence/issuer_profiles.py"
       - "scripts/refresh_event_workspaces.py"
       - "engine/company_intelligence/guidance_history.py"

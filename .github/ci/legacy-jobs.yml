@@ -2233,6 +2233,7 @@ jobs:
       - "templates/basket_detail.html.j2"
       - "tests/semiconductor_research_helpers.py"
       - "tests/fixtures/semiconductor_theme_research/**"
+      - "tests/fixtures/theme_research_client/**"
       # T10: the paid client's node-shelled contract. It ran only in the
       # `gate: data` job `unrun-subsector-themes` — the exact gap this job
       # exists to close. It has teeth: on 2026-09-24 its new label positive

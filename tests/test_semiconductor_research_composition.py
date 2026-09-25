@@ -523,14 +523,14 @@ def test_client_contract_envelope_fixture_is_the_composer_output() -> None:
         from engine.market_ontology.semiconductor_theme_research import compose_semiconductor_research;\
         from tests.semiconductor_research_helpers import load_bundle_case;\
         q,b=load_bundle_case('witness_hbm_packaging');\
-        Path('tests/fixtures/semiconductor_theme_research/client_contract_envelope.json')\
+        Path('tests/fixtures/theme_research_client/composed_envelope.json')\
         .write_text(json.dumps(compose_semiconductor_research(q,b),indent=2,sort_keys=True)+chr(10))"
     """
     import json as _json
     from pathlib import Path as _Path
 
     fixture = (_Path(__file__).resolve().parents[1] / "tests" / "fixtures"
-               / "semiconductor_theme_research" / "client_contract_envelope.json")
+               / "theme_research_client" / "composed_envelope.json")
     assert fixture.is_file(), f"pinned client envelope missing: {fixture}"
     query, bundle = load_bundle_case("witness_hbm_packaging")
     assert _json.loads(fixture.read_text(encoding="utf-8")) == compose_semiconductor_research(
