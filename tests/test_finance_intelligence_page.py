@@ -814,3 +814,83 @@ def test_shell_ships_the_not_connected_binding_until_integration():
     # the page-local ARIA swapper stays the inline template script (asserted above)
     css = (root / "templates" / "finance_intelligence.css").read_text(encoding="utf-8")
     assert '.fi-shell[data-state="not-connected"] .fi-meta { display: none; }' in css
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# T11 round 2 — seat rulings from the browser probe (8 cells + keyboard)
+# ──────────────────────────────────────────────────────────────────────────
+def test_light_chip_base_rule_cannot_outrank_the_state_chip_rules():
+    """Seat erratum: at (0,2,1) the light base rule painted every state chip white.
+
+    `:where()` drops the theme selector's weight, so the base is (0,1,0) and every
+    per-state chip rule (0,2,0) wins in the light theme as it does in the dark one.
+    """
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    assert ':where(html[data-theme="light"]) .fi-chip { background: var(--fi-panel); }' in css
+    assert not re.search(r'(?m)^html\[data-theme="light"\] \.fi-chip\s*\{', css)
+
+
+def test_identity_chip_is_a_state_chip_not_an_evidence_trigger():
+    """Seat erratum: company_exposures[].identity carries no evidence reference.
+
+    A trigger there would open nothing, and a click-bound span can take neither
+    focus nor an accessible name, so the chip keeps its state binding only.
+    """
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "{ classes: 'fi-identity-chip', stateIdentity: identity, stateMarker: identity }" in js
+    assert "'fi-identity-chip fi-evidence-trigger'" not in js
+
+
+def test_fallback_placeholders_never_render_inside_lang_en():
+    """F7a: lang="en" marks payload prose only, never a localized fallback."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "function enLang(value) { return value ? ' lang=\"en\"' : ''; }" in js
+    # every remaining literal lang="en" is a comment, the helper, a query, or wraps a
+    # value that is present by construction (a guarded retained_risk, a prose-flagged row)
+    lines = [line.strip() for line in js.splitlines() if 'lang="en"' in line]
+    allowed = ("//", "function enLang(", "(cell.retained_risk ?", "(opts.prose && value ?")
+    stray = [line for line in lines if not line.startswith(allowed) and "querySelector('[lang=\"en\"]')" not in line]
+    assert not stray, stray
+    for fallback in ("'尚未描述。'", "'尚无可观察陈述。'", "'尚无经济效应记录。'", "'尚无操作启示。'"):
+        start = js.index(fallback)
+        assert 'lang="en">' not in js[js.rindex("\n", 0, start):start]
+
+
+def test_drawer_marks_only_scope_excerpt_and_limitations_as_english():
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "rec.business_scope || '', { prose: true });" in js
+    assert "|| '', { prose: !!rec.excerpt });" in js
+    assert "asArray(rec.limitations).join(' · '), { prose: true });" in js
+    assert js.count("{ prose:") == 3
+
+
+def test_source_language_notes_follow_the_section_header_without_a_lang_attribute():
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "setAttribute('lang', 'zh')" not in js
+    # Seat erratum: `.fi-sowhat` never existed, so the note anchors on the section header
+    assert "'.fi-sowhat'" not in js  # no selector literal (the erratum comment may name it)
+    assert "if (head) sectionEl.insertBefore(note, head.nextSibling);" in js
+    tpl = (TEMPLATES / "finance_intelligence.html.j2").read_text(encoding="utf-8")
+    sections = re.findall(r'<section id="[^"]+" class="fi-section [^"]*".*?</section>', tpl, re.S)
+    assert len(sections) == 7
+    for body in sections:
+        # the anchor exists as the section's first element child, exactly once
+        assert re.match(r'<section[^>]*>\s*<header class="fi-section-head"', body)
+        assert body.count('class="fi-section-head"') == 1
+    # the drawer note appears only when the record holds English prose
+    assert "if (isZh() && fields.querySelector('[lang=\"en\"]')) {" in js
+    # removal is parent-agnostic, so a repaint never throws on a nested note
+    assert "sectionEl.removeChild(" not in js and "drawer.removeChild(" not in js
+
+
+def test_what_changed_rows_are_the_house_decision_row():
+    """Spec §B.1 pins `<li class="fi-change-row mx-chg-row">`: the canonical DecisionRow
+    (theme.css), not a bulleted run where the slice name abuts the English clause."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "'<li class=\"fi-change-row mx-chg-row\" data-change-id=\"'" in js
+    assert "'<span class=\"fi-change-name mx-chg-name\">'" in js
+    assert "'<span class=\"fi-change-clause mx-chg-what\"' + enLang(row.operating_implication)" in js
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    rule = re.search(r"^\.fi-change-list \{([^}]*)\}", css, re.M)
+    assert rule is not None
+    assert "list-style: none" in rule.group(1) and "padding: 0" in rule.group(1)
