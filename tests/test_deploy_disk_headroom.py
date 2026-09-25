@@ -73,3 +73,8 @@ def test_setup_installs_daily_git_maintenance_cron() -> None:
     text = SETUP.read_text()
     assert '23 6 * * * $APP_DIR/app/deploy/git-maintenance.sh' in text
     assert "grep -v 'macro-git-maintenance'" in text
+
+
+def test_maintenance_log_is_owned_by_existing_logrotate_policy() -> None:
+    policy = (ROOT / "app" / "deploy" / "logrotate-macro-vps").read_text()
+    assert "/var/log/macro-git-maintenance.log" in policy
