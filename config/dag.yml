@@ -325,6 +325,24 @@ lanes:
           domestic-substitution (onshoring). No composite across themes.
           FENCE: SEPARATE display leg — never fused into fused_obs_z.
           Always exits 0 (tolerant; absent parquet → honest null written).
+      - id: collect_usgs_mcs
+        module: collectors.usgs_mcs
+        note: >
+          MO-B F09-10 USGS Mineral Commodity Summaries ingest (ScienceBase NMIC).
+          Off the render critical path. Nightly step is if:-gated on
+          vars.USGS_MCS_ENABLED; the checker still sees the python -m
+          invocation in the run body. Keyless public-domain annual release.
+          Ingests only the newest T7-shaped edition. Always exits 0.
+          Output: data/usgs_mcs/mcs_rows.parquet (nightly-advanced).
+      - id: build_critical_minerals_supply
+        module: engine.critical_minerals_supply
+        note: >
+          MO-B F09-10 critical-minerals supply-concentration context rollup.
+          Reads data/usgs_mcs/mcs_rows.parquet. Pure in-memory, no network.
+          Produces data/neuralweb/critical_minerals_supply.json and
+          site/basketdata/critical_minerals_supply.json.
+          Display/context only — never fused into fused_obs_z.
+          Always exits 0 (absent parquet → honest null).
       - id: collect_clinicaltrials_themes
         module: collectors.clinicaltrials_themes
         note: >
@@ -649,6 +667,13 @@ lanes:
           so the declaration lands here.
       - id: build_site
         module: scripts.build_site
+      - id: build_research_screener
+        module: scripts.build_research_screener
+        note: >
+          B-F06-4 research-priority screener. AFTER build_site (stock library
+          writes site/stockdata/*.json). Reads security_state.v1 +
+          valuation_scenario.v1, writes site/research_screener.json +
+          site/research_screener.html. Display-tier; research_priority_only.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
@@ -840,6 +865,9 @@ lanes:
         cluster:
           cl_markets:
             - scripts.build_commodities
+            # China physical-premium source→VM→render receipt; runs immediately
+            # after the commodity page and writes only the existing quality plane.
+            - scripts.audit_china_gold_premium --strict-render
             - scripts.build_spr
             - scripts.build_forex
             - scripts.build_bonds
@@ -981,6 +1009,33 @@ lanes:
             # emits a ::notice per fired tripwire; it never blocks the nightly.
             - scripts.build_program_watch
       # serial post-band
+      # Early durable core publication checkpoint. The incumbent
+      # daily_engine_commit_outputs.sh performs the same two normalization passes
+      # as the final publisher: once before its first commit attempt and once after
+      # a successful rebase before push. Declare both invocations here so the DAG
+      # contract tracks the new pre-tail publisher without creating a second
+      # publication implementation.
+      - id: checkpoint_core_precommit_inject_data_base
+        module: scripts.inject_data_base
+      - id: checkpoint_core_precommit_externalize_css
+        module: scripts.externalize_css
+      - id: checkpoint_core_precommit_optimize_assets
+        module: scripts.optimize_assets
+      - id: checkpoint_core_precommit_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
+      - id: checkpoint_core_gold_render_audit
+        module: scripts.audit_china_gold_premium
+        args: [--strict-render]
+      - id: checkpoint_core_postrebase_inject_data_base
+        module: scripts.inject_data_base
+      - id: checkpoint_core_postrebase_externalize_css
+        module: scripts.externalize_css
+      - id: checkpoint_core_postrebase_optimize_assets
+        module: scripts.optimize_assets
+      - id: checkpoint_core_postrebase_check_template_site_sync
+        module: scripts.check_template_site_sync
+        args: [--fix]
       - id: check_builder_failstreaks
         module: scripts.check_builder_failstreaks
         note: >
@@ -1065,6 +1120,16 @@ lanes:
           trading, publication, training, Neural Web, and Prophet authority remains
           false. The normal nightly lane is the sole advancer; non-nightly invocation
           fails closed.
+      - id: build_options_catalyst_links
+        module: scripts.build_options_catalyst_links
+        note: >
+          A-F03-W3-1a (2026-09-23, #7774): first production caller of
+          engine/options_catalyst_link.bind_events. Reads only the date-keyed
+          live_flow/events/{DATE}.jsonl stage the episode step already consumes,
+          binds each event to earnings (earnings_blackout) and FOMC (event_calendar)
+          catalysts, and writes site/options_catalyst_links/ (envelope + JSONL) with
+          the binding-state histogram. Context-only: every authority field false,
+          no rank/size/gate, no data/ writes. Non-fatal (continue-on-error).
       - id: build_us_sector_rotation
         module: scripts.build_us_sector_rotation
         note: >
@@ -1288,6 +1353,9 @@ lanes:
           latched windows. Fail-soft (absent creds/tables -> typed
           READ_UNAVAILABLE, 0 rows, exit 0). Dormant unless
           THESIS_MONITOR_ENABLE=1. Delivery is F08's drain, never this step.
+      # MO-PAID-032 recurring briefs producer (non-fatal step; daily_after_us_close cadence)
+      - id: recurring_briefs_producer
+        module: scripts.build_recurring_briefs
       - id: notify
         module: scripts.notify
       - id: push_alerts
@@ -1789,6 +1857,13 @@ lanes:
   - workflow: .github/workflows/daily.yml
     job: stock_briefs
     steps:
+      - id: fetch_r2_stockdata
+        module: scripts.fetch_r2
+        args: [--dirs, stockdata]
+        note: >
+          Restore the existing R2-only stockdata context before stock-brief
+          generation. Input materialization only; no ranking, admission,
+          publication, or trade authority originates here.
       - id: build_stock_briefs
         module: scripts.build_stock_briefs
       - id: publish_r2_stockdata
@@ -2281,6 +2356,15 @@ lanes:
       # in-process build_china_library ProcessPool also gets the box to itself here.
       - id: build_china
         module: scripts.build_china
+      - id: publish_china_heatmap
+        module: scripts.build_market_heatmap
+        args: [--market, china, --render-page]
+        note: >
+          Publish the China heatmap payload and its matching crawler-visible SSR
+          shell from the settled Asia close through the same JSON-to-page owner
+          used by build_site. This advances no analytical ledger and creates no
+          second publication plane; asia-close.yml keeps the step resilient so a
+          failed heatmap publish cannot erase other settled CN/HK outputs.
       - id: build_cn_live_pack
         module: scripts.build_cn_live_pack
         note: >
@@ -2527,6 +2611,10 @@ lanes:
             # manifest, which that builder rewrites (daily.yml cl_gex order mirrored).
             - scripts.build_flow_desk
             - scripts.build_options_skew
+            # A-F03-W2-5b (2026-09-23, #7763): emit the store-host payoff lab (W2-5a producer,
+            # hydrated from R2 before the band) into site/options_payoff_lab/latest.json for
+            # the options.html fold. Pure function of the restored artifact, zero network.
+            - scripts.build_options_payoff_lab
             - scripts.build_options_ivspread
             - scripts.build_options_dislocation
             # OIP E8 (2026-07-29): options_screener.html had NO express coverage in
@@ -2735,6 +2823,18 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_ontology_explorer
+        module: scripts.build_ontology_explorer
+        note: >
+          F04-X1 WTI Live Path public shell (site/ontology.html + the paired
+          ontology.css/js copies). A nav-only static shell with zero current
+          values; it sits in the render lane so a shared-nav change re-bakes it
+          with every other committed page. Not in daily.yml: no data input.
+      - id: build_research_screener
+        module: scripts.build_research_screener
+        note: >
+          B-F06-4 research-priority screener. AFTER build_site (stock library
+          writes site/stockdata/*.json). Display-tier; research_priority_only.
       - id: build_congress
         module: scripts.build_congress
       # parallel band (scope=all)
@@ -3176,6 +3276,9 @@ lanes:
         module: scripts.build_vector
       - id: build_aibrief
         module: scripts.build_aibrief
+      # MO-PAID-032 recurring briefs producer (non-fatal step; weekly cadence)
+      - id: recurring_briefs_producer
+        module: scripts.build_recurring_briefs
       - id: quarterly_cortex_fdr
         module: scripts.quarterly_cortex_fdr
         note: >

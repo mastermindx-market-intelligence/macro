@@ -1,0 +1,191 @@
+name: sector-intelligence
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: "Runner label (render-linux primary; macstudio recovery)"
+        type: choice
+        default: render-linux
+        options: [render-linux, macstudio]
+  schedule:
+    - cron: "15 3,12,17,22 * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - "data/breadth/**"
+      - "data/smallcap_breadth/**"
+      - "data/midcap_breadth/**"
+      - "data/yahoo/SPY.parquet"
+      - "data/regime/latest.json"
+      - "data/baskets/**"
+      - "site/basketdata/**"
+      - "site/sectordata/sector_central.json"
+      - "scripts/build_baskets.py"
+      - "scripts/build_sector_action_board.py"
+      - "scripts/build_sector_central.py"
+      - "scripts/build_sector_intelligence.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "engine/baskets.py"
+      - "engine/theme_scoring.py"
+      - "templates/sector_central.html.j2"
+      - "templates/_us_act_now_board.html.j2"
+
+permissions:
+  contents: write
+
+concurrency:
+  # GitHub keeps only one pending run per group. The loop-suppressed push from this
+  # workflow therefore needs a separate key or it can evict a real input-change run
+  # that arrived while the current build was publishing.
+  group: >-
+    ${{ github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message, 'sector-intelligence: publish') &&
+        'pipeline-sector-intelligence-self-publish' ||
+        'pipeline-sector-intelligence' }}
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    if: >-
+      github.event_name != 'push' ||
+      !startsWith(github.event.head_commit.message, 'sector-intelligence: publish')
+    runs-on: ${{ github.event.inputs.runner || 'render-linux' }}
+    timeout-minutes: 90
+    steps:
+      # Self-hosted runners reuse workspaces. A sibling sparse checkout can leave
+      # every later build looking green while required producers are absent.
+      - name: clear any sparse checkout inherited from a sibling job
+        if: runner.environment != 'github-hosted'
+        shell: bash
+        run: |
+          set -u
+          if [ -d "${{ github.workspace }}/.git" ]; then
+            if ! git -C "${{ github.workspace }}" sparse-checkout disable; then
+              echo "::error title=Sector Intelligence workspace hygiene::sparse-checkout disable failed"
+              exit 1
+            fi
+            rc=0
+            git -C "${{ github.workspace }}" config --unset-all core.sparseCheckout || rc=$?
+            if [ "$rc" != 0 ] && [ "$rc" != 5 ]; then
+              echo "::error title=Sector Intelligence workspace hygiene::core.sparseCheckout unset exited $rc"
+              exit "$rc"
+            fi
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Python 3.12 venv
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$(command -v python3.12 || command -v python3)"
+          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-sector-intelligence}"
+          [ -x "$VENV/bin/python" ] || "$PY" -m venv "$VENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+
+      - name: install dependencies
+        run: pip install -r requirements.txt
+
+      - name: scheduled semantic preflight
+        id: preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "schedule" ] && \
+             python -m scripts.check_sector_intelligence_freshness --quiet; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Sector Intelligence is already coherent and within freshness budget."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: build coherent Sector Intelligence generation
+        if: steps.preflight.outputs.skip != 'true'
+        env:
+          RENDER_NO_DRIP: "1"
+        run: python -m scripts.build_sector_intelligence
+
+      - name: revalidate before publication
+        if: steps.preflight.outputs.skip != 'true'
+        run: python -m scripts.check_sector_intelligence_freshness
+
+      - name: publish scoped generation to main
+        if: steps.preflight.outputs.skip != 'true'
+        env:
+          ADMIN_GH_TOKEN: ${{ secrets.ADMIN_GH_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          git config user.name "dashboard-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git remote set-url origin \
+            "https://x-access-token:${ADMIN_GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          # normalize the pages this step stages (P0 2026-08-04, 9a997e9da3f; heal 2026-09-23):
+          # a lane that commits site/ HTML without the shim/externalize/stamp chain publishes
+          # RAW pages - inline <style>, no assets/css/<hash>.css ref, stale ?v= - and every PR
+          # merge-ref reds ci-pack-11 (test_basket_detail_glance_copy fingerprint guard) until
+          # the next render-public re-stamp. All three passes are idempotent and non-blocking.
+          python -m scripts.inject_data_base || echo "data-base shim inject skipped (additive)"
+          python -m scripts.externalize_css || echo "::warning title=externalize::pre-commit css externalize FAILED — pages may ship un-externalized (9a997e9da3f)"
+          python -m scripts.optimize_assets || echo "::warning title=stamp::asset optimize FAILED — ?v= stamps may be stale"
+          # `site/basket/` is regenerated by build_baskets' detail-page pass.
+          # `site/sectors/` is regenerated by build_sector_action_board through the
+          # canonical build_site.build_sector_pages producer; both directories are
+          # tracked on main, so the pathspecs remain valid even when a run is byte-stable.
+          git add -- \
+            site/basketdata \
+            site/basket \
+            site/sectors \
+            site/sector_central.html \
+            site/sector_central_data.js \
+            site/sectordata/sector_central.json \
+            site/premiumdata/sector_central.json
+          # ...and the content-hashed assets the pages now link (externalize_css rewrites the
+          # pages to <link> site/assets/css/<hash>.css; staging pages without the asset ships a
+          # 404 stylesheet). --ignore-removal never stages a deletion. Separate lines:
+          # `git add a b` exits 128 when either pathspec matches nothing.
+          git add --ignore-removal site/assets/css 2>/dev/null || true
+          git add --ignore-removal site/assets/js 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No Sector Intelligence changes to publish."
+            exit 0
+          fi
+
+          PARENT="$(git rev-parse HEAD)"
+          AS_OF="$(python -c 'import json; print(json.load(open("site/basketdata/baskets.json"))["as_of"])')"
+          git commit -m "sector-intelligence: publish ${AS_OF}"
+          CANDIDATE="$(git rev-parse HEAD)"
+          MESSAGE="$(git log -1 --format=%B "$CANDIDATE")"
+
+          PUSH_ALARM=600
+          push_retry_init "sector intelligence generation"
+          while push_attempt; do
+            git fetch origin +refs/heads/main:refs/remotes/origin/main || true
+            if PUBLISH="$(push_metadata_replay_commit \
+                "$PARENT" origin/main "$CANDIDATE" "$MESSAGE" \
+                "${RUNNER_TEMP:-/tmp}/sector-intelligence-replay.idx")"; then
+              if [ "$(git rev-parse "$PUBLISH^{tree}")" = \
+                   "$(git rev-parse origin/main^{tree})" ]; then
+                echo "Sector Intelligence generation already present on main."
+                push_won
+                exit 0
+              fi
+              if push_do origin "$PUBLISH:refs/heads/main"; then
+                echo "Published Sector Intelligence generation ${AS_OF}."
+                push_won
+                exit 0
+              fi
+            else
+              echo "::warning title=Sector Intelligence replay conflict::main changed an owned output path; retrying without merging generations"
+              PUSH_FAIL_CLASS="rebase-conflict"
+            fi
+            push_backoff
+          done
+          push_lost
+          exit 1

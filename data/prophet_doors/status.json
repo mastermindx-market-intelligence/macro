@@ -1,15 +1,15 @@
 {
-  "appended": 2,
-  "asof": "2026-09-17",
+  "appended": 0,
+  "asof": "2026-09-23",
   "candidates": {
     "R": 0,
-    "T": 0,
+    "T": 10,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 0,
-    "W": 2
+    "T": 10,
+    "W": 4
   },
   "dry_run": false,
   "feature_source": {
@@ -53,14 +53,9 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 2,
-      "n_covered": 2,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -83,52 +78,49 @@
   "flag_tickers": {
     "R": [],
     "T": [],
-    "W": [
-      "AZN",
-      "ECHO"
-    ]
+    "W": []
   },
-  "n_universe": 1496,
+  "n_universe": 1494,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-18 20:37:42",
-  "runtime_s": 121.3,
+  "run_utc": "2026-09-25 10:11:17",
+  "runtime_s": 214.8,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-09-18",
-    "n_members": 75,
+    "asof": "2026-09-24",
+    "n_members": 140,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.655,
+        "emerging_score": 5.366,
         "rank": 1,
-        "theme": "Education Technology"
+        "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.544,
+        "emerging_score": 2.061,
         "rank": 2,
-        "theme": "Cybersecurity"
+        "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 1.301,
+        "emerging_score": 1.558,
         "rank": 3,
-        "theme": "Biometrics"
+        "theme": "Crypto & Blockchain"
       },
       {
-        "emerging_score": 1.154,
+        "emerging_score": 1.528,
         "rank": 4,
-        "theme": "Mega-Cap"
+        "theme": "Nanotechnology"
       },
       {
-        "emerging_score": 1.045,
+        "emerging_score": 1.255,
         "rank": 5,
-        "theme": "Space Tech"
+        "theme": "Electric Vehicles"
       }
     ]
   },
@@ -138,18 +130,18 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-18",
-    "asof_mismatch": 4,
-    "asof_run": "2026-09-17",
+    "asof_max": "2026-09-23",
+    "asof_mismatch": 0,
+    "asof_run": "2026-09-23",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 22.3,
+    "runtime_s": 30.4,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 77,
+    "state_turn": 76,
     "universe_n": 717
   }
 }

@@ -1,35 +1,31 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-09-18",
-  "data_session": "2026-09-18",
-  "built": "2026-09-18T17:28:46Z",
+  "asof": "2026-09-25",
+  "data_session": "2026-09-23",
+  "built": "2026-09-25T07:20:07Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
   "target_stage_week": "2026-09-18",
-  "target_week_source": "population_mode_benchmark_lagging",
+  "target_week_source": "spy_benchmark",
   "stage_week_end": "2026-09-18",
   "population": {
-    "status": "warn",
+    "status": "ready",
     "target_stage_week": "2026-09-18",
-    "target_week_source": "population_mode_benchmark_lagging",
-    "spy_stage_week": "2026-09-11",
+    "target_week_source": "spy_benchmark",
+    "spy_stage_week": "2026-09-18",
     "population_modal_week": "2026-09-18",
-    "current": 2695,
-    "stale": 52,
+    "current": 2713,
+    "stale": 37,
     "unknown": 0,
-    "total": 2747,
-    "current_coverage_pct": 98.1,
-    "data_session": "2026-09-18",
-    "data_session_all": "2026-09-18",
+    "total": 2750,
+    "current_coverage_pct": 98.7,
+    "data_session": "2026-09-23",
+    "data_session_all": "2026-09-23",
     "week_histogram": [
       {
         "week": "2026-09-18",
-        "n": 2695
-      },
-      {
-        "week": "2026-09-11",
-        "n": 17
+        "n": 2713
       },
       {
         "week": "2026-07-10",
@@ -54,147 +50,47 @@
       {
         "week": "2026-08-28",
         "n": 4
+      },
+      {
+        "week": "2026-08-14",
+        "n": 3
       }
     ],
-    "issues": [
-      "benchmark_week_divergence"
-    ]
+    "issues": []
   },
   "counts": {
-    "total": 2695,
+    "total": 2713,
     "stage1": 126,
-    "stage2": 1377,
-    "stage2_fresh": 294,
-    "stage3": 288,
-    "stage4": 904,
-    "too_young": 343,
-    "new_today": 9
+    "stage2": 1387,
+    "stage2_fresh": 297,
+    "stage3": 290,
+    "stage4": 910,
+    "too_young": 368,
+    "new_today": 12
   },
   "market": {
     "pct_stage2": 51.1,
     "pct_stage4": 33.5,
     "weather": "advancing",
     "spy_stage": 2,
-    "spy_weeks": 20
+    "spy_weeks": 21
   },
   "top_stage2": [
-    {
-      "ticker": "PRAA",
-      "company": "PRA Group, Inc.",
-      "sector": "Financials",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 79,
-      "ma30_slope_pct5w": 7.012,
-      "pct_vs_ma30": 14.39,
-      "mansfield_rs": 13.74,
-      "vol_ratio": 0.63,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.65,
-        "performance": 7.0,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "buyback_or_dividend",
-          "margin_expansion",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "PRA Group reported Q2 2026 cash collections of $559 million, up 4% year-over-year, and total revenues up 29% to $372 million. Net income was $58 million. The company increased European ERC by $349 million due to over-performance, and highlighted continued cost discipline with …"
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.0864,
-      "atr_ext": 1.249,
-      "atr_pct_price": 0.10074,
-      "sata_score": 7,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 85.7
-    },
-    {
-      "ticker": "KODK",
-      "company": "Eastman Kodak Co",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 6,
-      "fresh": true,
-      "sga_score": 71,
-      "ma30_slope_pct5w": 3.359,
-      "pct_vs_ma30": -0.93,
-      "mansfield_rs": 1.09,
-      "vol_ratio": 0.69,
-      "event": null,
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.325,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 8.5,
-        "tone_word": "confident",
-        "tags": [
-          "demand_acceleration",
-          "margin_expansion",
-          "buyback_or_dividend",
-          "new_product"
-        ],
-        "quarter": "Q2",
-        "summary": "Kodak delivered a strong Q2 2026 with revenue of $311 million, up 18% YoY, and Operational EBITDA of $36 million, up 300% from $9 million. Gross profit rose 61% to $82 million, with gross margin expanding to 26% from 19%. The company achieved its fourth consecutive quarter of …"
-      },
-      "why": [
-        "Early in its climb — 6 weeks up so far",
-        "Still near its 30-week line — not clear of it yet",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 6 周",
-        "仍接近 30 周均线 — 尚未站稳",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.8556,
-      "atr_ext": -0.105,
-      "atr_pct_price": 0.08992,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 26.7
-    },
     {
       "ticker": "SDGR",
       "company": "Schrödinger, Inc.",
       "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 67,
-      "ma30_slope_pct5w": 9.81,
-      "pct_vs_ma30": 91.15,
-      "mansfield_rs": 66.29,
-      "vol_ratio": 1.17,
+      "sga_score": 71,
+      "ma30_slope_pct5w": 9.784,
+      "pct_vs_ma30": 90.5,
+      "mansfield_rs": 65.58,
+      "vol_ratio": 1.31,
       "event": "pullback_resume",
       "gate_tier": "T1",
       "blackout": false,
@@ -222,8 +118,8 @@
         "其他多项验证同样给出强确认"
       ],
       "atr_14w": 2.7194,
-      "atr_ext": 5.107,
-      "atr_pct_price": 0.09337,
+      "atr_ext": 5.07,
+      "atr_pct_price": 0.09371,
       "sata_score": 9,
       "sata_change_1w": 1,
       "stage_detailed": "2A_strong_breakout",
@@ -233,17 +129,17 @@
       "ticker": "ABUS",
       "company": "Arbutus Biopharma Corp",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 4,
       "fresh": true,
       "sga_score": 64,
-      "ma30_slope_pct5w": 4.026,
-      "pct_vs_ma30": 10.19,
-      "mansfield_rs": 3.4,
-      "vol_ratio": 1.8,
+      "ma30_slope_pct5w": 4.015,
+      "pct_vs_ma30": 9.88,
+      "mansfield_rs": 3.02,
+      "vol_ratio": 1.89,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -265,178 +161,29 @@
         "上升初期 — 已上行 4 周",
         "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 0.3743,
-      "atr_ext": 1.242,
-      "atr_pct_price": 0.07448,
+      "atr_14w": 0.3771,
+      "atr_ext": 1.194,
+      "atr_pct_price": 0.07528,
       "sata_score": 6,
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 61.1
-    },
-    {
-      "ticker": "PLUS",
-      "company": "ePlus, Inc.",
-      "sector": "Information Technology",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 61,
-      "ma30_slope_pct5w": 1.1,
-      "pct_vs_ma30": 8.51,
-      "mansfield_rs": 0.89,
-      "vol_ratio": 0.85,
-      "event": null,
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.1,
-        "performance": 5.0,
-        "tone_word": "mixed",
-        "tags": [
-          "margin_contraction",
-          "demand_acceleration",
-          "macro_sensitivity",
-          "buyback_or_dividend"
-        ],
-        "quarter": "Q1",
-        "summary": "ePlus reported Q1 FY2027 net sales of $649.1 million, up 1% year-over-year, with product revenue up 0.6% and managed services up over 15% to exceed $50 million for the first time. However, professional services declined 5.1%, gross margin fell to 23.3% from 23.9%, and non-GAAP…"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 6.2526,
-      "atr_ext": 1.145,
-      "atr_pct_price": 0.06851,
-      "sata_score": 6,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 52.2
-    },
-    {
-      "ticker": "WAT",
-      "company": "Waters Corporation",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 61,
-      "ma30_slope_pct5w": 2.578,
-      "pct_vs_ma30": 19.7,
-      "mansfield_rs": 9.26,
-      "vol_ratio": 0.59,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.85,
-        "performance": 8.5,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "beat_and_raise",
-          "demand_acceleration",
-          "margin_expansion",
-          "new_product"
-        ],
-        "quarter": "Q2",
-        "summary": "Waters delivered Q2 FY2026 organic revenue of $828 million, up 9% constant currency, exceeding guidance by ~100 bps, with total revenue of $1.645 billion including $817 million from acquired BD businesses that grew 4% as reported, a 400 bps acceleration from Q1. Adjusted EPS g…"
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 23.7843,
-      "atr_ext": 2.951,
-      "atr_pct_price": 0.05575,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": 36.4
-    },
-    {
-      "ticker": "CV",
-      "company": "CapsoVision Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 59,
-      "ma30_slope_pct5w": 2.879,
-      "pct_vs_ma30": -1.57,
-      "mansfield_rs": -8.97,
-      "vol_ratio": 0.69,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Still near its 30-week line — not clear of it yet",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "仍接近 30 周均线 — 尚未站稳",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.8667,
-      "atr_ext": -0.119,
-      "atr_pct_price": 0.13417,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": null
+      "industry_percentile": 61.8
     },
     {
       "ticker": "ITIC",
       "company": "Investors Title Co",
       "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 10,
       "fresh": true,
       "sga_score": 59,
-      "ma30_slope_pct5w": 2.768,
-      "pct_vs_ma30": 13.16,
-      "mansfield_rs": 4.95,
-      "vol_ratio": 1.65,
+      "ma30_slope_pct5w": 2.745,
+      "pct_vs_ma30": 12.52,
+      "mansfield_rs": 4.26,
+      "vol_ratio": 1.71,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -459,8 +206,8 @@
         "位于 30 周均线之上 — 趋势向好"
       ],
       "atr_14w": 16.6852,
-      "atr_ext": 2.026,
-      "atr_pct_price": 0.05739,
+      "atr_ext": 1.927,
+      "atr_pct_price": 0.05773,
       "sata_score": 8,
       "sata_change_1w": 0,
       "stage_detailed": "2D_extended_run",
@@ -470,17 +217,17 @@
       "ticker": "KURA",
       "company": "Kura Oncology Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 5,
       "fresh": true,
-      "sga_score": 57,
-      "ma30_slope_pct5w": 6.938,
-      "pct_vs_ma30": 16.26,
-      "mansfield_rs": 8.46,
-      "vol_ratio": 1.15,
+      "sga_score": 58,
+      "ma30_slope_pct5w": 6.974,
+      "pct_vs_ma30": 17.22,
+      "mansfield_rs": 9.29,
+      "vol_ratio": 1.21,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
@@ -507,75 +254,91 @@
         "已明显高于 30 周均线 — 可能需要回踩"
       ],
       "atr_14w": 1.3845,
-      "atr_ext": 1.175,
-      "atr_pct_price": 0.11905,
-      "sata_score": 6,
-      "sata_change_1w": 0,
+      "atr_ext": 1.245,
+      "atr_pct_price": 0.11803,
+      "sata_score": 7,
+      "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 70.6
+      "industry_percentile": 71.8
     },
     {
-      "ticker": "ARCT",
-      "company": "Arcturus Therapeutics Holdings Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "PI",
+      "company": "Impinj, Inc.",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 56,
+      "ma30_slope_pct5w": 5.188,
+      "pct_vs_ma30": 31.86,
+      "mansfield_rs": 11.15,
+      "vol_ratio": 0.77,
+      "event": "pullback_resume",
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8333333333333334,
+        "performance": 10.0,
+        "tone_word": "confident",
+        "tags": [
+          "food_market",
+          "supply_chain_logistics",
+          "solutions_strategy",
+          "gen2x",
+          "custom_asic",
+          "retail_demand",
+          "tariffs",
+          "ai_ml",
+          "semiconductors",
+          "rfid",
+          "iot",
+          "supply_chain_tech",
+          "retail_tech",
+          "asset_tracking",
+          "data_collection",
+          "embedded_systems"
+        ],
+        "quarter": "Q2",
+        "summary": "...endpoint IC bookings...hit an all-time high, driven by strong demand across retail apparel, general merchandise and supply chain and logistics."
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 19.3903,
+      "atr_ext": 2.258,
+      "atr_pct_price": 0.10699,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 71.7
+    },
+    {
+      "ticker": "AFCG",
+      "company": "Advanced Flower Capital Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 5,
       "fresh": true,
       "sga_score": 55,
-      "ma30_slope_pct5w": 17.438,
-      "pct_vs_ma30": 96.29,
-      "mansfield_rs": 70.06,
-      "vol_ratio": 1.77,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3125,
-      "earnings": {
-        "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
-        "tags": [
-          "miss_and_cut",
-          "guidance_lowered"
-        ],
-        "quarter": "Q2",
-        "summary": "Arcturus Therapeutics reported a significant revenue miss for Q2 FY2026, with revenue of $3 million compared to the prior year's $28.3 million due to the termination and settlement of its CSL Seqirus collaboration agreement which ended cash flow from that partnership. While R&…"
-      },
-      "why": [
-        "Early in its climb — 5 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 5 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 2.115,
-      "atr_ext": 3.972,
-      "atr_pct_price": 0.1235,
-      "sata_score": 9,
-      "sata_change_1w": 0,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 95.4
-    },
-    {
-      "ticker": "AFCG",
-      "company": "Advanced Flower Capital Inc",
-      "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 5,
-      "fresh": true,
-      "sga_score": 54,
-      "ma30_slope_pct5w": 7.654,
-      "pct_vs_ma30": 15.69,
-      "mansfield_rs": 8.86,
-      "vol_ratio": 0.47,
+      "ma30_slope_pct5w": 7.601,
+      "pct_vs_ma30": 14.29,
+      "mansfield_rs": 7.44,
+      "vol_ratio": 0.49,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -602,91 +365,86 @@
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Trading above its 30-week line — the trend is with it"
       ],
       "why_zh": [
         "上升初期 — 已上行 5 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 0.2753,
-      "atr_ext": 1.711,
-      "atr_pct_price": 0.07927,
+      "atr_14w": 0.2761,
+      "atr_ext": 1.554,
+      "atr_pct_price": 0.08048,
       "sata_score": 7,
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 100.0
     },
     {
-      "ticker": "RDNT",
-      "company": "RadNet, Inc.",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "ARCT",
+      "company": "Arcturus Therapeutics Holdings Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 2,
+      "weeks_in_stage": 5,
       "fresh": true,
-      "sga_score": 54,
-      "ma30_slope_pct5w": 1.345,
-      "pct_vs_ma30": 21.59,
-      "mansfield_rs": 3.25,
-      "vol_ratio": 0.81,
+      "sga_score": 55,
+      "ma30_slope_pct5w": 16.947,
+      "pct_vs_ma30": 84.51,
+      "mansfield_rs": 59.38,
+      "vol_ratio": 1.81,
       "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration",
-          "new_product",
-          "buyback_or_dividend"
-        ],
-        "quarter": "Q2",
-        "summary": "RadNet reported record Q2 FY2026 revenue of $622.7 million (up 25% YoY) and adjusted EBITDA of $99.7 million (up 22.7%), driven by strong volume growth in advanced imaging modalities like PET CT (+31%) and MRI/CT, alongside significant Digital Health ARR expansion to over $105…"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 6.5641,
-      "atr_ext": 2.071,
-      "atr_pct_price": 0.08573,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": 52.2
-    },
-    {
-      "ticker": "BRBS",
-      "company": "Blue Ridge Bankshares Inc (VA)",
-      "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 53,
-      "ma30_slope_pct5w": 1.407,
-      "pct_vs_ma30": 11.05,
-      "mansfield_rs": 1.01,
-      "vol_ratio": 2.3,
-      "event": null,
       "gate_tier": null,
       "blackout": false,
-      "arc_pos": 0.2875,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
+        "tags": [
+          "miss_and_cut",
+          "guidance_lowered"
+        ],
+        "quarter": "Q2",
+        "summary": "Arcturus Therapeutics reported a significant revenue miss for Q2 FY2026, with revenue of $3 million compared to the prior year's $28.3 million due to the termination and settlement of its CSL Seqirus collaboration agreement which ended cash flow from that partnership. While R&…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.115,
+      "atr_ext": 3.471,
+      "atr_pct_price": 0.13194,
+      "sata_score": 9,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 94.7
+    },
+    {
+      "ticker": "XNCR",
+      "company": "Xencor Inc",
+      "sector": "Health Care",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 55,
+      "ma30_slope_pct5w": 16.927,
+      "pct_vs_ma30": 53.1,
+      "mansfield_rs": 50.88,
+      "vol_ratio": 1.51,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
       "earnings": {
         "present": false,
         "sentiment": null,
@@ -697,36 +455,36 @@
         "summary": null
       },
       "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Early in its climb — 8 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
       ],
       "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "上升初期 — 已上行 8 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
       ],
-      "atr_14w": 0.1941,
-      "atr_ext": 2.014,
-      "atr_pct_price": 0.0494,
+      "atr_14w": 3.0477,
+      "atr_ext": 2.813,
+      "atr_pct_price": 0.12329,
       "sata_score": 8,
       "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": 57.5
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 93.9
     },
     {
       "ticker": "PNRG",
       "company": "PrimeEnergy Resources Corp",
       "sector": "Energy",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 6,
       "fresh": true,
-      "sga_score": 53,
-      "ma30_slope_pct5w": 2.598,
-      "pct_vs_ma30": 3.73,
-      "mansfield_rs": 3.97,
-      "vol_ratio": 1.33,
+      "sga_score": 54,
+      "ma30_slope_pct5w": 2.555,
+      "pct_vs_ma30": 2.51,
+      "mansfield_rs": 2.66,
+      "vol_ratio": 1.37,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
@@ -749,8 +507,8 @@
         "位于 30 周均线之上 — 趋势向好"
       ],
       "atr_14w": 16.7207,
-      "atr_ext": 0.459,
-      "atr_pct_price": 0.07821,
+      "atr_ext": 0.31,
+      "atr_pct_price": 0.07917,
       "sata_score": 5,
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
@@ -760,17 +518,17 @@
       "ticker": "AVAH",
       "company": "Aveanna Healthcare Holdings Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 8,
       "fresh": true,
-      "sga_score": 52,
-      "ma30_slope_pct5w": 11.826,
-      "pct_vs_ma30": 58.4,
-      "mansfield_rs": 47.12,
-      "vol_ratio": 1.45,
+      "sga_score": 53,
+      "ma30_slope_pct5w": 11.729,
+      "pct_vs_ma30": 55.92,
+      "mansfield_rs": 44.65,
+      "vol_ratio": 1.57,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -796,82 +554,73 @@
         "上升初期 — 已上行 8 周",
         "已明显高于 30 周均线 — 可能需要回踩"
       ],
-      "atr_14w": 1.1548,
-      "atr_ext": 4.438,
-      "atr_pct_price": 0.08308,
+      "atr_14w": 1.1704,
+      "atr_ext": 4.189,
+      "atr_pct_price": 0.08562,
       "sata_score": 9,
       "sata_change_1w": 0,
       "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 93.5
+      "industry_percentile": 91.3
     },
     {
-      "ticker": "BWIN",
-      "company": "Baldwin Insurance Group Inc",
+      "ticker": "BRBS",
+      "company": "Blue Ridge Bankshares Inc (VA)",
       "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 9,
+      "weeks_in_stage": 3,
       "fresh": true,
-      "sga_score": 51,
-      "ma30_slope_pct5w": 8.09,
-      "pct_vs_ma30": 29.45,
-      "mansfield_rs": 19.72,
-      "vol_ratio": 2.02,
-      "event": "pullback_resume",
+      "sga_score": 53,
+      "ma30_slope_pct5w": 1.426,
+      "pct_vs_ma30": 11.59,
+      "mansfield_rs": 1.43,
+      "vol_ratio": 2.46,
+      "event": null,
       "gate_tier": null,
       "blackout": false,
-      "arc_pos": 0.3625,
+      "arc_pos": 0.2875,
       "earnings": {
-        "present": true,
-        "sentiment": 0.6111111111111112,
-        "performance": 2.0833333333333335,
-        "tone_word": "confident",
-        "tags": [
-          "insurance_brokerage",
-          "property_and_casualty",
-          "risk_management",
-          "m&a_advisory",
-          "employee_benefits",
-          "reinsurance",
-          "insurtech",
-          "specialty_insurance"
-        ],
-        "quarter": "Q2",
-        "summary": "Excluding idiosyncratic noise... and including new partnerships, organic revenue growth would have been 8% in the second quarter."
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
       },
       "why": [
-        "Early in its climb — 9 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Early in its climb — 3 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
       ],
       "why_zh": [
-        "上升初期 — 已上行 9 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "上升初期 — 已上行 3 周",
+        "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 3.2046,
-      "atr_ext": 2.267,
-      "atr_pct_price": 0.10033,
+      "atr_14w": 0.1941,
+      "atr_ext": 2.114,
+      "atr_pct_price": 0.04915,
       "sata_score": 8,
-      "sata_change_1w": 1,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 98.0
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 55.1
     },
     {
       "ticker": "DYN",
       "company": "Dyne Therapeutics Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 10,
       "fresh": true,
-      "sga_score": 51,
-      "ma30_slope_pct5w": 4.833,
-      "pct_vs_ma30": -13.83,
-      "mansfield_rs": -15.98,
-      "vol_ratio": 1.35,
+      "sga_score": 53,
+      "ma30_slope_pct5w": 4.776,
+      "pct_vs_ma30": -15.41,
+      "mansfield_rs": -17.6,
+      "vol_ratio": 1.44,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -893,29 +642,78 @@
         "上升初期 — 已上行 10 周",
         "仍接近 30 周均线 — 尚未站稳"
       ],
-      "atr_14w": 2.6945,
-      "atr_ext": -1.038,
-      "atr_pct_price": 0.1545,
+      "atr_14w": 2.7038,
+      "atr_ext": -1.153,
+      "atr_pct_price": 0.15802,
       "sata_score": 4,
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 32.1
+      "industry_percentile": 27.5
+    },
+    {
+      "ticker": "PRAA",
+      "company": "PRA Group, Inc.",
+      "sector": "Financials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 53,
+      "ma30_slope_pct5w": 7.069,
+      "pct_vs_ma30": 15.93,
+      "mansfield_rs": 15.21,
+      "vol_ratio": 0.7,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.65,
+        "performance": 7.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "buyback_or_dividend",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "PRA Group reported Q2 2026 cash collections of $559 million, up 4% year-over-year, and total revenues up 29% to $372 million. Net income was $58 million. The company increased European ERC by $349 million due to over-performance, and highlighted continued cost discipline with …"
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.12,
+      "atr_ext": 1.361,
+      "atr_pct_price": 0.10095,
+      "sata_score": 7,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 85.7
     },
     {
       "ticker": "ZYME",
       "company": "Zymeworks BC Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 51,
-      "ma30_slope_pct5w": 3.491,
-      "pct_vs_ma30": 6.92,
-      "mansfield_rs": 4.11,
-      "vol_ratio": 1.14,
+      "sga_score": 53,
+      "ma30_slope_pct5w": 3.448,
+      "pct_vs_ma30": 5.73,
+      "mansfield_rs": 2.85,
+      "vol_ratio": 1.21,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
@@ -954,456 +752,29 @@
         "位于 30 周均线之上 — 趋势向好"
       ],
       "atr_14w": 2.8811,
-      "atr_ext": 0.604,
-      "atr_pct_price": 0.10718,
+      "atr_ext": 0.499,
+      "atr_pct_price": 0.10843,
       "sata_score": 5,
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 64.9
-    },
-    {
-      "ticker": "ANF",
-      "company": "Abercrombie & Fitch",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 7.647,
-      "pct_vs_ma30": 40.83,
-      "mansfield_rs": 32.74,
-      "vol_ratio": 1.73,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6,
-        "performance": 8.0,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "beat_and_raise",
-          "buyback_or_dividend",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "Abercrombie & Fitch reported Q2 FY2026 net sales of $1.27 billion, up 5% YoY, with operating margin of 19.9% and EPS of $4.17, beating its outlook. Results included a $100 million IEEPA tariff refund benefit; excluding this, EPS still beat guidance. The company raised full-yea…"
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 13.18,
-      "atr_ext": 3.026,
-      "atr_pct_price": 0.0958,
-      "sata_score": 8,
-      "sata_change_1w": -1,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 93.5
-    },
-    {
-      "ticker": "ASMB",
-      "company": "Assembly Biosciences Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 3.004,
-      "pct_vs_ma30": -10.49,
-      "mansfield_rs": -20.77,
-      "vol_ratio": 1.62,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Still near its 30-week line — not clear of it yet"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "仍接近 30 周均线 — 尚未站稳"
-      ],
-      "atr_14w": 3.9671,
-      "atr_ext": -0.748,
-      "atr_pct_price": 0.15677,
-      "sata_score": 4,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "EXPE",
-      "company": "Expedia Group",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 5,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 4.454,
-      "pct_vs_ma30": 9.55,
-      "mansfield_rs": 2.74,
-      "vol_ratio": 0.91,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3125,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.8,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "Expedia Group reported Q2 FY26 results with gross bookings up 12% and revenue rising 14%, exceeding the high end of prior guidance for both metrics. Adjusted EBITDA grew 23% to $1.1 billion, representing a margin expansion of nearly two points compared to the prior year quarte…"
-      },
-      "why": [
-        "Early in its climb — 5 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 5 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 27.075,
-      "atr_ext": 0.908,
-      "atr_pct_price": 0.09598,
-      "sata_score": 6,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 76.3
-    },
-    {
-      "ticker": "FDS",
-      "company": "FactSet",
-      "sector": "Financials",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 4.488,
-      "pct_vs_ma30": 14.54,
-      "mansfield_rs": 1.34,
-      "vol_ratio": 0.94,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6666666666666666,
-        "performance": 8.75,
-        "tone_word": "confident",
-        "tags": [
-          "ai_strategy",
-          "asv_acceleration",
-          "margin_pressure",
-          "strategic_partnerships",
-          "enterprise_agreements",
-          "financial_data",
-          "analytics_software",
-          "investment_management_tools",
-          "ai_platforms",
-          "capital_markets_tech",
-          "wealth_management_tech",
-          "data_as_a_service"
-        ],
-        "quarter": "Q3",
-        "summary": "Overall ASP growth among clients using our AI solutions was 50% higher than for the rest of the book."
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 26.9913,
-      "atr_ext": 1.31,
-      "atr_pct_price": 0.0969,
-      "sata_score": 7,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 66.7
-    },
-    {
-      "ticker": "FIGS",
-      "company": "Figs Inc",
-      "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 5,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 4.38,
-      "pct_vs_ma30": -2.58,
-      "mansfield_rs": 0.86,
-      "vol_ratio": 0.72,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3125,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 9.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "FIGS reported Q2 FY26 net revenues of $197 million (up 29% YoY), beating the prior guidance range and marking a third consecutive quarter with growth above 25%. Adjusted EBITDA margin surged to 18.6%, driven by pricing power, lower returns, and tariff refunds, while active cus…"
-      },
-      "why": [
-        "Early in its climb — 5 weeks up so far",
-        "Still near its 30-week line — not clear of it yet"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 5 周",
-        "仍接近 30 周均线 — 尚未站稳"
-      ],
-      "atr_14w": 1.6408,
-      "atr_ext": -0.209,
-      "atr_pct_price": 0.12685,
-      "sata_score": 4,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 93.8
-    },
-    {
-      "ticker": "RUM",
-      "company": "RUM Group Inc",
-      "sector": "Communication Services",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 5,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 7.109,
-      "pct_vs_ma30": 35.28,
-      "mansfield_rs": 26.81,
-      "vol_ratio": 1.66,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3125,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "demand_acceleration",
-          "new_product",
-          "margin_contraction"
-        ],
-        "quarter": "Q2",
-        "summary": "RUM Group reported record Q2 FY2026 revenue of $40.4 million (up 61% YoY) following the closure of its Northern Data acquisition and formation of Quake AI. The company issued formal guidance for Q3 2026, expecting revenue between $87M-$93M as it transitions to segment reportin…"
-      },
-      "why": [
-        "Early in its climb — 5 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 5 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 1.278,
-      "atr_ext": 1.872,
-      "atr_pct_price": 0.13929,
-      "sata_score": 8,
-      "sata_change_1w": 3,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 100.0
-    },
-    {
-      "ticker": "SMHI",
-      "company": "SEACOR Marine Holdings Inc",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 10,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 5.354,
-      "pct_vs_ma30": 16.12,
-      "mansfield_rs": 15.92,
-      "vol_ratio": 0.73,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.375,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 10 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 10 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 0.7856,
-      "atr_ext": 1.644,
-      "atr_pct_price": 0.08448,
-      "sata_score": 7,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "VALU",
-      "company": "Value Line Inc",
-      "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 50,
-      "ma30_slope_pct5w": 0.75,
-      "pct_vs_ma30": 10.66,
-      "mansfield_rs": 0.98,
-      "vol_ratio": 1.57,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 3.5751,
-      "atr_ext": 1.072,
-      "atr_pct_price": 0.0898,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "AFRI",
-      "company": "Forafric Global PLC",
-      "sector": "Consumer Defensive",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 49,
-      "ma30_slope_pct5w": 1.729,
-      "pct_vs_ma30": 9.09,
-      "mansfield_rs": 2.43,
-      "vol_ratio": 1.31,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 0.9019,
-      "atr_ext": 1.034,
-      "atr_pct_price": 0.0806,
-      "sata_score": 6,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
+      "industry_percentile": 61.1
     },
     {
       "ticker": "BOX",
       "company": "Box, Inc.",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 6,
       "fresh": true,
-      "sga_score": 49,
-      "ma30_slope_pct5w": 6.152,
-      "pct_vs_ma30": 22.34,
-      "mansfield_rs": 9.86,
-      "vol_ratio": 1.18,
-      "event": "pullback_resume",
+      "sga_score": 52,
+      "ma30_slope_pct5w": 6.13,
+      "pct_vs_ma30": 21.75,
+      "mansfield_rs": 9.24,
+      "vol_ratio": 1.25,
+      "event": null,
       "gate_tier": null,
       "blackout": false,
       "arc_pos": 0.325,
@@ -1430,91 +801,29 @@
         "上升初期 — 已上行 6 周",
         "已明显高于 30 周均线 — 可能需要回踩"
       ],
-      "atr_14w": 2.2723,
-      "atr_ext": 2.724,
-      "atr_pct_price": 0.06705,
+      "atr_14w": 2.2787,
+      "atr_ext": 2.644,
+      "atr_pct_price": 0.06758,
       "sata_score": 8,
       "sata_change_1w": 0,
       "stage_detailed": "2D_extended_run",
       "industry_percentile": 71.8
     },
     {
-      "ticker": "PAYX",
-      "company": "Paychex",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 49,
-      "ma30_slope_pct5w": 4.161,
-      "pct_vs_ma30": 12.53,
-      "mansfield_rs": 1.1,
-      "vol_ratio": 0.64,
-      "event": null,
-      "gate_tier": null,
-      "blackout": true,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6666666666666666,
-        "performance": 6.25,
-        "tone_word": "confident",
-        "tags": [
-          "ai",
-          "paycor_integration",
-          "peo/aso_growth",
-          "bookings_momentum",
-          "margin_expansion",
-          "organic_growth_acceleration",
-          "record_retention",
-          "hcm_software",
-          "payroll_services",
-          "hr_outsourcing",
-          "peo_services",
-          "smb_tech",
-          "enterprise_tech",
-          "ai_in_hr",
-          "benefits_administration"
-        ],
-        "quarter": "Q4",
-        "summary": "Management Solutions revenue grew 14%... driven by product penetration, price realization, and approximately 8 percentage points of growth from Paycor."
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Earnings soon — wait, don't chase"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "财报临近 — 先等待，不要追高"
-      ],
-      "atr_14w": 7.1587,
-      "atr_ext": 1.792,
-      "atr_pct_price": 0.06212,
-      "sata_score": 7,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 67.6
-    },
-    {
       "ticker": "QNST",
       "company": "QuinStreet, Inc.",
       "sector": "Communication Services",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 10,
       "fresh": true,
-      "sga_score": 49,
-      "ma30_slope_pct5w": 7.79,
-      "pct_vs_ma30": 19.89,
-      "mansfield_rs": 12.9,
-      "vol_ratio": 1.0,
+      "sga_score": 52,
+      "ma30_slope_pct5w": 7.786,
+      "pct_vs_ma30": 19.79,
+      "mansfield_rs": 12.72,
+      "vol_ratio": 1.11,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -1545,32 +854,32 @@
         "最近一次财报电话会语气积极"
       ],
       "atr_14w": 1.9893,
-      "atr_ext": 1.465,
-      "atr_pct_price": 0.11325,
+      "atr_ext": 1.458,
+      "atr_pct_price": 0.11335,
       "sata_score": 7,
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 88.9
+      "industry_percentile": 89.5
     },
     {
-      "ticker": "XNCR",
-      "company": "Xencor Inc",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "AFRI",
+      "company": "Forafric Global PLC",
+      "sector": "Consumer Defensive",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 8,
+      "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 49,
-      "ma30_slope_pct5w": 16.944,
-      "pct_vs_ma30": 53.51,
-      "mansfield_rs": 51.39,
-      "vol_ratio": 1.3,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 1.716,
+      "pct_vs_ma30": 8.71,
+      "mansfield_rs": 1.99,
+      "vol_ratio": 1.4,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
-      "arc_pos": 0.35,
+      "arc_pos": 0.3,
       "earnings": {
         "present": false,
         "sentiment": null,
@@ -1581,36 +890,192 @@
         "summary": null
       },
       "why": [
-        "Early in its climb — 8 weeks up so far",
+        "Early in its climb — 4 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 0.9019,
+      "atr_ext": 0.991,
+      "atr_pct_price": 0.08089,
+      "sata_score": 6,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "ATRC",
+      "company": "Atricure Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 8.703,
+      "pct_vs_ma30": 67.45,
+      "mansfield_rs": 50.29,
+      "vol_ratio": 1.59,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.7222222222222222,
+        "performance": 10.0,
+        "tone_word": "confident",
+        "tags": [
+          "medtech",
+          "cardiac_surgery",
+          "pain_management",
+          "profitability_improvement",
+          "clinical_trials",
+          "product_launches",
+          "medical_devices",
+          "surgical_tools",
+          "cardiac_care",
+          "pain_management_devices",
+          "ablation_technology",
+          "appendage_management",
+          "clinical_trial_data",
+          "strong_guidance"
+        ],
+        "quarter": "Q2",
+        "summary": "Our strong gross margin was once again primarily driven by favorable product and geographic mix, along with manufacturing efficiencies."
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
         "Already stretched well above its 30-week line — may need a rest"
       ],
       "why_zh": [
-        "上升初期 — 已上行 8 周",
+        "上升初期 — 已上行 5 周",
         "已明显高于 30 周均线 — 可能需要回踩"
       ],
-      "atr_14w": 3.0425,
-      "atr_ext": 2.84,
-      "atr_pct_price": 0.12273,
-      "sata_score": 8,
-      "sata_change_1w": 0,
+      "atr_14w": 4.1186,
+      "atr_ext": 5.682,
+      "atr_pct_price": 0.07089,
+      "sata_score": 10,
+      "sata_change_1w": 1,
       "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 93.1
+      "industry_percentile": 98.5
+    },
+    {
+      "ticker": "BWIN",
+      "company": "Baldwin Insurance Group Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 9,
+      "fresh": true,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 8.088,
+      "pct_vs_ma30": 29.41,
+      "mansfield_rs": 19.59,
+      "vol_ratio": 2.12,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.6111111111111112,
+        "performance": 2.0833333333333335,
+        "tone_word": "confident",
+        "tags": [
+          "insurance_brokerage",
+          "property_and_casualty",
+          "risk_management",
+          "m&a_advisory",
+          "employee_benefits",
+          "reinsurance",
+          "insurtech",
+          "specialty_insurance"
+        ],
+        "quarter": "Q2",
+        "summary": "Excluding idiosyncratic noise... and including new partnerships, organic revenue growth would have been 8% in the second quarter."
+      },
+      "why": [
+        "Early in its climb — 9 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 9 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 3.2046,
+      "atr_ext": 2.264,
+      "atr_pct_price": 0.10036,
+      "sata_score": 8,
+      "sata_change_1w": 1,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 95.9
+    },
+    {
+      "ticker": "SMHI",
+      "company": "SEACOR Marine Holdings Inc",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 10,
+      "fresh": true,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 5.266,
+      "pct_vs_ma30": 13.72,
+      "mansfield_rs": 13.4,
+      "vol_ratio": 0.79,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.375,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 10 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 10 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 0.8078,
+      "atr_ext": 1.359,
+      "atr_pct_price": 0.08877,
+      "sata_score": 7,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
     },
     {
       "ticker": "AII",
       "company": "American Integrity Insurance Group Inc",
       "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 6,
       "fresh": true,
-      "sga_score": 48,
-      "ma30_slope_pct5w": 7.773,
-      "pct_vs_ma30": 31.11,
-      "mansfield_rs": 21.22,
-      "vol_ratio": 1.41,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 7.809,
+      "pct_vs_ma30": 32.07,
+      "mansfield_rs": 22.02,
+      "vol_ratio": 1.56,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
@@ -1637,124 +1102,77 @@
         "已明显高于 30 周均线 — 可能需要回踩"
       ],
       "atr_14w": 1.7765,
-      "atr_ext": 3.502,
-      "atr_pct_price": 0.06775,
+      "atr_ext": 3.611,
+      "atr_pct_price": 0.06724,
       "sata_score": 9,
       "sata_change_1w": 0,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": null
     },
     {
-      "ticker": "GPN",
-      "company": "Global Payments",
-      "sector": "Financials",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "ANF",
+      "company": "Abercrombie & Fitch",
+      "sector": "Consumer Discretionary",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 6,
+      "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 48,
-      "ma30_slope_pct5w": 3.802,
-      "pct_vs_ma30": 12.18,
-      "mansfield_rs": 2.37,
-      "vol_ratio": 0.66,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 7.58,
+      "pct_vs_ma30": 39.05,
+      "mansfield_rs": 30.93,
+      "vol_ratio": 1.77,
       "event": null,
       "gate_tier": null,
       "blackout": false,
-      "arc_pos": 0.325,
+      "arc_pos": 0.3,
       "earnings": {
         "present": true,
-        "sentiment": -0.2,
-        "performance": 7.5,
-        "tone_word": "cautious",
-        "tags": [
-          "guidance_lowered",
-          "margin_expansion",
-          "demand_slowdown"
-        ],
-        "quarter": "Q2",
-        "summary": "Global Payments reported Q2 FY26 adjusted net revenue of $3.16 billion (4% normalized growth) and adjusted EPS of $3.46 (+12%), beating expectations despite a ~100 bps headwind from the Middle East conflict on travel volumes. Management updated its full-year 2026 guidance to c…"
-      },
-      "why": [
-        "Early in its climb — 6 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 6 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 6.7208,
-      "atr_ext": 1.372,
-      "atr_pct_price": 0.07913,
-      "sata_score": 7,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 77.5
-    },
-    {
-      "ticker": "NWSA",
-      "company": "News Corp (Class A)",
-      "sector": "Communication Services",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 8,
-      "fresh": true,
-      "sga_score": 48,
-      "ma30_slope_pct5w": 3.715,
-      "pct_vs_ma30": 10.99,
-      "mansfield_rs": 3.63,
-      "vol_ratio": 0.78,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.35,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
+        "sentiment": 0.6,
+        "performance": 8.0,
         "tone_word": "confident",
         "tags": [
+          "guidance_raised",
           "beat_and_raise",
-          "margin_expansion",
+          "buyback_or_dividend",
           "demand_acceleration"
         ],
-        "quarter": "Q4",
-        "summary": "News Corp reported record Q4 FY26 results with revenue of $2.3 billion (up 11% YoY) and total segment EBITDA soaring to $423 million (up 31%). Adjusted EPS was $0.35 compared to $0.19 in the prior year, while full-year margins expanded from 16.7% to 18%. Management raised guid…"
+        "quarter": "Q2",
+        "summary": "Abercrombie & Fitch reported Q2 FY2026 net sales of $1.27 billion, up 5% YoY, with operating margin of 19.9% and EPS of $4.17, beating its outlook. Results included a $100 million IEEPA tariff refund benefit; excluding this, EPS still beat guidance. The company raised full-yea…"
       },
       "why": [
-        "Early in its climb — 8 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Early in its climb — 4 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
       ],
       "why_zh": [
-        "上升初期 — 已上行 8 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "上升初期 — 已上行 4 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
       ],
-      "atr_14w": 1.756,
-      "atr_ext": 1.667,
-      "atr_pct_price": 0.05938,
-      "sata_score": 7,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 63.2
+      "atr_14w": 13.2371,
+      "atr_ext": 2.88,
+      "atr_pct_price": 0.0975,
+      "sata_score": 8,
+      "sata_change_1w": -1,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 93.5
     },
     {
-      "ticker": "CHPT",
-      "company": "ChargePoint Holdings Inc",
-      "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "ASMB",
+      "company": "Assembly Biosciences Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 3,
       "fresh": true,
-      "sga_score": 47,
-      "ma30_slope_pct5w": 5.522,
-      "pct_vs_ma30": 56.98,
-      "mansfield_rs": 27.42,
-      "vol_ratio": 3.96,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 2.963,
+      "pct_vs_ma30": -11.64,
+      "mansfield_rs": -21.87,
+      "vol_ratio": 1.9,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -1770,171 +1188,39 @@
       },
       "why": [
         "Early in its climb — 3 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Still near its 30-week line — not clear of it yet"
       ],
       "why_zh": [
         "上升初期 — 已上行 3 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "仍接近 30 周均线 — 尚未站稳"
       ],
-      "atr_14w": 1.4506,
-      "atr_ext": 2.54,
-      "atr_pct_price": 0.14292,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "CRD-A",
-      "company": "Crawford & Co",
-      "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 6,
-      "fresh": true,
-      "sga_score": 47,
-      "ma30_slope_pct5w": 3.794,
-      "pct_vs_ma30": 15.68,
-      "mansfield_rs": 8.41,
-      "vol_ratio": 0.96,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.325,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 6 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 6 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 1.1173,
-      "atr_ext": 1.56,
-      "atr_pct_price": 0.08688,
-      "sata_score": 7,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "IDYA",
-      "company": "Ideaya Biosciences Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 47,
-      "ma30_slope_pct5w": 3.54,
-      "pct_vs_ma30": 15.0,
-      "mansfield_rs": 7.97,
-      "vol_ratio": 0.59,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 3.2775,
-      "atr_ext": 1.54,
-      "atr_pct_price": 0.08474,
-      "sata_score": 7,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 69.5
-    },
-    {
-      "ticker": "SAFX",
-      "company": "XCF Global Inc",
-      "sector": "Utilities",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 47,
-      "ma30_slope_pct5w": 9.416,
-      "pct_vs_ma30": 12.89,
-      "mansfield_rs": -13.67,
-      "vol_ratio": 0.28,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 0.1034,
-      "atr_ext": 0.511,
-      "atr_pct_price": 0.22319,
-      "sata_score": 5,
-      "sata_change_1w": 1,
+      "atr_14w": 3.9864,
+      "atr_ext": -0.825,
+      "atr_pct_price": 0.15965,
+      "sata_score": 4,
+      "sata_change_1w": -1,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": null
     },
     {
-      "ticker": "ZIP",
-      "company": "ZipRecruiter Inc",
-      "sector": "Communication Services",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "EXPE",
+      "company": "Expedia Group",
+      "sector": "Consumer Discretionary",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 6,
+      "weeks_in_stage": 5,
       "fresh": true,
-      "sga_score": 47,
-      "ma30_slope_pct5w": 9.686,
-      "pct_vs_ma30": 8.61,
-      "mansfield_rs": -5.27,
-      "vol_ratio": 0.95,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 4.417,
+      "pct_vs_ma30": 8.53,
+      "mansfield_rs": 1.68,
+      "vol_ratio": 0.99,
       "event": null,
       "gate_tier": null,
       "blackout": false,
-      "arc_pos": 0.325,
+      "arc_pos": 0.3125,
       "earnings": {
         "present": true,
         "sentiment": 0.5,
@@ -1942,10 +1228,191 @@
         "tone_word": "confident",
         "tags": [
           "beat_and_raise",
-          "margin_expansion"
+          "margin_expansion",
+          "demand_acceleration"
         ],
         "quarter": "Q2",
-        "summary": "ZipRecruiter reported Q2 FY2026 revenue of $118.1 million (up 5% YoY) and Adjusted EBITDA margin expansion to 12%, beating the midpoint of guidance by $6M on both metrics. Management raised full-year outlook from flat growth expectations to low single-digit growth, projecting …"
+        "summary": "Expedia Group reported Q2 FY26 results with gross bookings up 12% and revenue rising 14%, exceeding the high end of prior guidance for both metrics. Adjusted EBITDA grew 23% to $1.1 billion, representing a margin expansion of nearly two points compared to the prior year quarte…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 27.3715,
+      "atr_ext": 0.802,
+      "atr_pct_price": 0.09798,
+      "sata_score": 6,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 76.3
+    },
+    {
+      "ticker": "FIGS",
+      "company": "Figs Inc",
+      "sector": "Consumer Cyclical",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 4.413,
+      "pct_vs_ma30": -1.67,
+      "mansfield_rs": 1.73,
+      "vol_ratio": 0.75,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 9.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "FIGS reported Q2 FY26 net revenues of $197 million (up 29% YoY), beating the prior guidance range and marking a third consecutive quarter with growth above 25%. Adjusted EBITDA margin surged to 18.6%, driven by pricing power, lower returns, and tariff refunds, while active cus…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Still near its 30-week line — not clear of it yet"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "仍接近 30 周均线 — 尚未站稳"
+      ],
+      "atr_14w": 1.6408,
+      "atr_ext": -0.135,
+      "atr_pct_price": 0.12563,
+      "sata_score": 4,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 93.8
+    },
+    {
+      "ticker": "MNPR",
+      "company": "Monopar Therapeutics Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 10,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 11.15,
+      "pct_vs_ma30": 21.03,
+      "mansfield_rs": 15.22,
+      "vol_ratio": 0.76,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.375,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 10 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 10 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 15.7002,
+      "atr_ext": 1.068,
+      "atr_pct_price": 0.16275,
+      "sata_score": 6,
+      "sata_change_1w": -2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "VALU",
+      "company": "Value Line Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 0.862,
+      "pct_vs_ma30": 13.84,
+      "mansfield_rs": 3.85,
+      "vol_ratio": 1.67,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 3.5751,
+      "atr_ext": 1.394,
+      "atr_pct_price": 0.0872,
+      "sata_score": 7,
+      "sata_change_1w": 3,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "CRD-A",
+      "company": "Crawford & Co",
+      "sector": "Financial",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 3.635,
+      "pct_vs_ma30": 11.26,
+      "mansfield_rs": 4.11,
+      "vol_ratio": 1.07,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
       },
       "why": [
         "Early in its climb — 6 weeks up so far",
@@ -1955,370 +1422,46 @@
         "上升初期 — 已上行 6 周",
         "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 0.7072,
-      "atr_ext": 0.41,
-      "atr_pct_price": 0.19349,
-      "sata_score": 5,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 55.6
-    },
-    {
-      "ticker": "ANGO",
-      "company": "Angiodynamic Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 46,
-      "ma30_slope_pct5w": 6.71,
-      "pct_vs_ma30": 20.71,
-      "mansfield_rs": 15.3,
-      "vol_ratio": 0.83,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5555555555555556,
-        "performance": 6.666666666666667,
-        "tone_word": "confident",
-        "tags": [
-          "nanoknife",
-          "mechanical_thrombectomy",
-          "auryon",
-          "clinical_trials",
-          "reimbursement",
-          "tariffs",
-          "guidance",
-          "medical_devices",
-          "cardiovascular_devices",
-          "interventional_oncology",
-          "atherectomy",
-          "thrombectomy",
-          "electroporation",
-          "surgical_tools"
-        ],
-        "quarter": "Q4",
-        "summary": "Total NanoKnife revenue was $11.8 million, an increase of 64.5%... primarily driven by demand for NanoKnife in prostate care."
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 1.1121,
-      "atr_ext": 2.353,
-      "atr_pct_price": 0.07293,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 74.6
-    },
-    {
-      "ticker": "BRZE",
-      "company": "Braze Inc",
-      "sector": "Technology",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 46,
-      "ma30_slope_pct5w": 7.125,
-      "pct_vs_ma30": 2.78,
-      "mansfield_rs": -10.95,
-      "vol_ratio": 1.03,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6666666666666666,
-        "performance": 6.666666666666667,
-        "tone_word": "confident",
-        "tags": [
-          "ai_dominance",
-          "guidance_raise",
-          "competitive_wins",
-          "customer_growth",
-          "margin_pressure",
-          "application_software",
-          "marketing_tech",
-          "customer_engagement_platform",
-          "ai_software",
-          "b2c_saas",
-          "data_platform",
-          "cloud_native"
-        ],
-        "quarter": "Q1",
-        "summary": "Q1 bookings were robust, driven by competitive takeaways particularly in the enterprise."
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 3.9289,
-      "atr_ext": 0.168,
-      "atr_pct_price": 0.16082,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 38.8
-    },
-    {
-      "ticker": "CRVL",
-      "company": "CorVel Corporation",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 46,
-      "ma30_slope_pct5w": 3.425,
-      "pct_vs_ma30": 15.74,
-      "mansfield_rs": 0.5,
-      "vol_ratio": 0.82,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "demand_acceleration"
-        ],
-        "quarter": "Q1",
-        "summary": "CorVel reported Q1 FY2026 revenue of $260 million (up 11% YoY) and EPS of $0.63 (up 22% YoY), driven by an 8% increase in claims volume for Patient Management and strong growth across Network Solutions segments including CERIS. The company highlighted a disciplined capital all…"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 4.8986,
-      "atr_ext": 1.938,
-      "atr_pct_price": 0.07019,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "NWS",
-      "company": "News Corp (Class B)",
-      "sector": "Communication Services",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 8,
-      "fresh": true,
-      "sga_score": 46,
-      "ma30_slope_pct5w": 3.28,
-      "pct_vs_ma30": 7.72,
-      "mansfield_rs": 0.48,
-      "vol_ratio": 0.74,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.35,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration"
-        ],
-        "quarter": "Q4",
-        "summary": "News Corp reported record Q4 FY26 results with revenue of $2.3 billion (up 11% YoY) and total segment EBITDA soaring to $423 million (a 31% increase). Net income surged 167% on a continuing operations basis, while free cash flow rose 42% year-over-year to $811 million. Managem…"
-      },
-      "why": [
-        "Early in its climb — 8 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 8 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 1.9991,
-      "atr_ext": 1.169,
-      "atr_pct_price": 0.06129,
+      "atr_14w": 1.118,
+      "atr_ext": 1.118,
+      "atr_pct_price": 0.09053,
       "sata_score": 6,
-      "sata_change_1w": 0,
+      "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": null
     },
     {
-      "ticker": "SLP",
-      "company": "Simulations Plus Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 46,
-      "ma30_slope_pct5w": 3.408,
-      "pct_vs_ma30": 15.18,
-      "mansfield_rs": 3.56,
-      "vol_ratio": 0.46,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.3888888888888889,
-        "performance": 6.666666666666667,
-        "tone_word": "confident",
-        "tags": [
-          "pharma_tech",
-          "biosimulation",
-          "saas",
-          "ai_strategy",
-          "cross_selling",
-          "renewal_rates",
-          "guidance",
-          "regulatory_tailwinds",
-          "pharma_tech_software"
-        ],
-        "quarter": "Q2",
-        "summary": "...we're seeing a pickup in client spending reflected in solid software renewal rates, increased new logo activity and strengthened service bookings."
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 0.2979,
-      "atr_ext": 8.157,
-      "atr_pct_price": 0.01616,
-      "sata_score": 9,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": 72.7
-    },
-    {
-      "ticker": "ADP",
-      "company": "Automatic Data Processing",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 5,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.597,
-      "pct_vs_ma30": 16.39,
-      "mansfield_rs": 3.38,
-      "vol_ratio": 0.64,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3125,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6666666666666666,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "ai",
-          "hcm_software",
-          "peo",
-          "outsourcing",
-          "payroll",
-          "enterprise_sales",
-          "client_retention",
-          "human_capital_management",
-          "payroll_services",
-          "professional_employer_organization",
-          "hr_tech",
-          "workforce_management",
-          "compliance_software",
-          "business_outsourcing",
-          "enterprise_software"
-        ],
-        "quarter": "Q4",
-        "summary": "We saw a record-high seller productivity in fiscal 2026 and we believe The Zone was a key contributor."
-      },
-      "why": [
-        "Early in its climb — 5 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 5 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 14.5991,
-      "atr_ext": 2.603,
-      "atr_pct_price": 0.05411,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": 73.0
-    },
-    {
-      "ticker": "AFRM",
-      "company": "Affirm Holdings, Inc.",
-      "sector": "Financials",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "DSP",
+      "company": "Viant Technology Inc",
+      "sector": "Technology",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 4.152,
-      "pct_vs_ma30": 6.11,
-      "mansfield_rs": -3.88,
-      "vol_ratio": 1.19,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 2.859,
+      "pct_vs_ma30": 1.29,
+      "mansfield_rs": -1.39,
+      "vol_ratio": 1.5,
       "event": null,
       "gate_tier": null,
       "blackout": false,
       "arc_pos": 0.3,
       "earnings": {
         "present": true,
-        "sentiment": 0.5,
+        "sentiment": 0.92,
         "performance": 8.5,
         "tone_word": "confident",
         "tags": [
-          "guidance_raised",
+          "beat_and_raise",
           "demand_acceleration",
-          "new_product"
+          "new_product",
+          "margin_contraction"
         ],
-        "quarter": "Q4",
-        "summary": "Affirm reported its most profitable quarter ever, even without a tax allowance release, with strong growth across products including 41% growth in Pay in X and robust card adoption. The company guided to fiscal 2027 revenue less transaction costs above the midterm target at 4.…"
+        "quarter": "Q2",
+        "summary": "Viant reported a strong Q2 FY2026 with revenue up 34% YoY and adjusted EBITDA of $14.2 million, both exceeding the high end of guidance. CTV spend surged nearly 50%, accounting for over half of total ad spend, driven by new customer acquisition via ViantAI and TVision integrat…"
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
@@ -2328,224 +1471,29 @@
         "上升初期 — 已上行 4 周",
         "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 8.6401,
-      "atr_ext": 0.467,
-      "atr_pct_price": 0.12322,
+      "atr_14w": 1.7091,
+      "atr_ext": 0.089,
+      "atr_pct_price": 0.14386,
       "sata_score": 5,
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 47.5
-    },
-    {
-      "ticker": "BULL",
-      "company": "Webull Corp",
-      "sector": "Technology",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 6.087,
-      "pct_vs_ma30": 17.8,
-      "mansfield_rs": -5.57,
-      "vol_ratio": 1.2,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 9.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "demand_acceleration",
-          "margin_expansion"
-        ],
-        "quarter": "Q2",
-        "summary": "Webull reported record Q2 FY26 revenue of $198.8 million (up 51% YoY) and adjusted operating profit of $62.6 million (up 169% YoY), driven by the successful navigation of the SEC's elimination of the Pattern Day Trader Rule which boosted options volume to a top-five industry p…"
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 1.1079,
-      "atr_ext": 1.106,
-      "atr_pct_price": 0.13663,
-      "sata_score": 6,
-      "sata_change_1w": -2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "ETD",
-      "company": "Ethan Allen Interiors, Inc.",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 1.45,
-      "pct_vs_ma30": 12.53,
-      "mansfield_rs": 0.57,
-      "vol_ratio": 1.23,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": -0.05555555555555555,
-        "performance": 2.5,
-        "tone_word": "steady",
-        "tags": [
-          "furniture",
-          "retail",
-          "manufacturing",
-          "dividends",
-          "tariffs",
-          "north_america",
-          "interior_design",
-          "share_buyback",
-          "furniture_home_furnishings",
-          "specialty_retail",
-          "consumer_discretionary",
-          "home_improvement_retail",
-          "building_products",
-          "vertically_integrated_mfg"
-        ],
-        "quarter": "Q4",
-        "summary": "Retail written orders decreased 10.8%... as lower traffic and macroeconomic uncertainty created near term pressure."
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 1.3505,
-      "atr_ext": 1.761,
-      "atr_pct_price": 0.06322,
-      "sata_score": 7,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 72.7
-    },
-    {
-      "ticker": "HNVR",
-      "company": "Hanover Bancorp Inc",
-      "sector": "Financial",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 8,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.06,
-      "pct_vs_ma30": 11.4,
-      "mansfield_rs": 5.77,
-      "vol_ratio": 0.85,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.35,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 8 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 8 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 1.4874,
-      "atr_ext": 1.821,
-      "atr_pct_price": 0.05619,
-      "sata_score": 7,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "IMMR",
-      "company": "Immersion Corp",
-      "sector": "Technology",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 8,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.135,
-      "pct_vs_ma30": 11.62,
-      "mansfield_rs": 3.79,
-      "vol_ratio": 0.64,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.35,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 8 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 8 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 0.5855,
-      "atr_ext": 1.304,
-      "atr_pct_price": 0.07988,
-      "sata_score": 7,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 33.3
+      "industry_percentile": 55.3
     },
     {
       "ticker": "LH",
       "company": "Labcorp",
       "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 10,
       "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.157,
-      "pct_vs_ma30": 13.57,
-      "mansfield_rs": 7.41,
-      "vol_ratio": 0.99,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 3.165,
+      "pct_vs_ma30": 13.81,
+      "mansfield_rs": 7.55,
+      "vol_ratio": 1.11,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
@@ -2583,28 +1531,484 @@
         "位于 30 周均线之上 — 趋势向好"
       ],
       "atr_14w": 18.1406,
-      "atr_ext": 2.108,
-      "atr_pct_price": 0.05668,
+      "atr_ext": 2.145,
+      "atr_pct_price": 0.05656,
       "sata_score": 8,
       "sata_change_1w": 1,
       "stage_detailed": "2D_extended_run",
       "industry_percentile": 65.2
     },
     {
-      "ticker": "ORIC",
-      "company": "ORIC Pharmaceuticals Inc",
+      "ticker": "PAYX",
+      "company": "Paychex",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 4.191,
+      "pct_vs_ma30": 13.37,
+      "mansfield_rs": 1.79,
+      "vol_ratio": 0.76,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.6666666666666666,
+        "performance": 6.25,
+        "tone_word": "confident",
+        "tags": [
+          "ai",
+          "paycor_integration",
+          "peo/aso_growth",
+          "bookings_momentum",
+          "margin_expansion",
+          "organic_growth_acceleration",
+          "record_retention",
+          "hcm_software",
+          "payroll_services",
+          "hr_outsourcing",
+          "peo_services",
+          "smb_tech",
+          "enterprise_tech",
+          "ai_in_hr",
+          "benefits_administration"
+        ],
+        "quarter": "Q4",
+        "summary": "Management Solutions revenue grew 14%... driven by product penetration, price realization, and approximately 8 percentage points of growth from Paycor."
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 7.1608,
+      "atr_ext": 1.913,
+      "atr_pct_price": 0.06166,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 64.9
+    },
+    {
+      "ticker": "RUM",
+      "company": "RUM Group Inc",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 49,
+      "ma30_slope_pct5w": 7.065,
+      "pct_vs_ma30": 34.08,
+      "mansfield_rs": 25.57,
+      "vol_ratio": 1.78,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "demand_acceleration",
+          "new_product",
+          "margin_contraction"
+        ],
+        "quarter": "Q2",
+        "summary": "RUM Group reported record Q2 FY2026 revenue of $40.4 million (up 61% YoY) following the closure of its Northern Data acquisition and formation of Quake AI. The company issued formal guidance for Q3 2026, expecting revenue between $87M-$93M as it transitions to segment reportin…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 1.278,
+      "atr_ext": 1.808,
+      "atr_pct_price": 0.14059,
+      "sata_score": 8,
+      "sata_change_1w": 3,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 94.7
+    },
+    {
+      "ticker": "FDS",
+      "company": "FactSet",
+      "sector": "Financials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 48,
+      "ma30_slope_pct5w": 4.563,
+      "pct_vs_ma30": 16.62,
+      "mansfield_rs": 3.13,
+      "vol_ratio": 1.0,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": true,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.6666666666666666,
+        "performance": 8.75,
+        "tone_word": "confident",
+        "tags": [
+          "ai_strategy",
+          "asv_acceleration",
+          "margin_pressure",
+          "strategic_partnerships",
+          "enterprise_agreements",
+          "financial_data",
+          "analytics_software",
+          "investment_management_tools",
+          "ai_platforms",
+          "capital_markets_tech",
+          "wealth_management_tech",
+          "data_as_a_service"
+        ],
+        "quarter": "Q3",
+        "summary": "Overall ASP growth among clients using our AI solutions was 50% higher than for the rest of the book."
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
+      ],
+      "atr_14w": 27.1192,
+      "atr_ext": 1.492,
+      "atr_pct_price": 0.09555,
+      "sata_score": 7,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 66.7
+    },
+    {
+      "ticker": "GPN",
+      "company": "Global Payments",
+      "sector": "Financials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 48,
+      "ma30_slope_pct5w": 3.808,
+      "pct_vs_ma30": 12.34,
+      "mansfield_rs": 2.44,
+      "vol_ratio": 0.74,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.2,
+        "performance": 7.5,
+        "tone_word": "cautious",
+        "tags": [
+          "guidance_lowered",
+          "margin_expansion",
+          "demand_slowdown"
+        ],
+        "quarter": "Q2",
+        "summary": "Global Payments reported Q2 FY26 adjusted net revenue of $3.16 billion (4% normalized growth) and adjusted EPS of $3.46 (+12%), beating expectations despite a ~100 bps headwind from the Middle East conflict on travel volumes. Management updated its full-year 2026 guidance to c…"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 6.7208,
+      "atr_ext": 1.39,
+      "atr_pct_price": 0.07901,
+      "sata_score": 7,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 77.5
+    },
+    {
+      "ticker": "HTFL",
+      "company": "Heartflow Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 48,
+      "ma30_slope_pct5w": 13.218,
+      "pct_vs_ma30": 59.36,
+      "mansfield_rs": 48.73,
+      "vol_ratio": 1.31,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "HeartFlow reported Q2 FY26 revenue of $64.1 million, up 48% year-over-year and ahead of expectations, driven by accelerating plaque adoption and durable FF-CT utilization. Management raised full-year 2026 total revenue guidance to a range of $246-$250 million (representing 40%…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 5.1719,
+      "atr_ext": 3.655,
+      "atr_pct_price": 0.10191,
+      "sata_score": 9,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "MARA",
+      "company": "MARA Holdings, Inc.",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 48,
+      "ma30_slope_pct5w": 4.383,
+      "pct_vs_ma30": 16.38,
+      "mansfield_rs": 1.98,
+      "vol_ratio": 1.02,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
+        "tags": [
+          "guidance_lowered",
+          "miss_and_cut",
+          "demand_slowdown"
+        ],
+        "quarter": "Q2",
+        "summary": "MARA reported Q2 FY2026 revenue of $174.9 million and a net loss of $611.3 million (-$1.6 EPS), driven by a 28% decline in Bitcoin prices which reduced revenue by approximately $65.9 million compared to the prior year period's income of $808.2 million (+$1.84 EPS). Management …"
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.3336,
+      "atr_ext": 0.798,
+      "atr_pct_price": 0.17625,
+      "sata_score": 6,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 62.1
+    },
+    {
+      "ticker": "NWSA",
+      "company": "News Corp (Class A)",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 48,
+      "ma30_slope_pct5w": 3.743,
+      "pct_vs_ma30": 11.75,
+      "mansfield_rs": 4.27,
+      "vol_ratio": 0.92,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q4",
+        "summary": "News Corp reported record Q4 FY26 results with revenue of $2.3 billion (up 11% YoY) and total segment EBITDA soaring to $423 million (up 31%). Adjusted EPS was $0.35 compared to $0.19 in the prior year, while full-year margins expanded from 16.7% to 18%. Management raised guid…"
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.756,
+      "atr_ext": 1.783,
+      "atr_pct_price": 0.05897,
+      "sata_score": 7,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 63.2
+    },
+    {
+      "ticker": "ALEC",
+      "company": "Alector Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 2.607,
+      "pct_vs_ma30": -6.67,
+      "mansfield_rs": -10.88,
+      "vol_ratio": 1.47,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
+        "tags": [
+          "guidance_raised",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Alector reported Q2 FY2025 financial results with $307.3 million in cash on hand and updated guidance for collaboration revenue between $13M-$18M, R&D of $130M-$140M, and G&A of $55M-$65M. The company highlighted the upcoming mid-Q4 readout from Phase III INFRONT-3 but noted a…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Still near its 30-week line — not clear of it yet"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "仍接近 30 周均线 — 尚未站稳"
+      ],
+      "atr_14w": 0.4161,
+      "atr_ext": -0.328,
+      "atr_pct_price": 0.21784,
+      "sata_score": 4,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "CHPT",
+      "company": "ChargePoint Holdings Inc",
+      "sector": "Consumer Cyclical",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 5.614,
+      "pct_vs_ma30": 59.47,
+      "mansfield_rs": 29.39,
+      "vol_ratio": 4.02,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "ChargePoint reported Q2 FY2027 revenue of $116 million, above its $100-$110 million guidance range, up 18% year-over-year and 14% sequentially, marking a fourth consecutive quarter of YoY growth. Non-GAAP gross margin was 38%, including ~$4 million of one-time tariff refunds; …"
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 1.4799,
+      "atr_ext": 2.601,
+      "atr_pct_price": 0.1434,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "DSGR",
+      "company": "Distribution Solutions Group Inc",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 9,
       "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.569,
-      "pct_vs_ma30": 16.44,
-      "mansfield_rs": 6.64,
-      "vol_ratio": 0.65,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 2.786,
+      "pct_vs_ma30": 18.55,
+      "mansfield_rs": 10.53,
+      "vol_ratio": 1.26,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
@@ -2626,144 +2030,100 @@
         "上升初期 — 已上行 9 周",
         "已明显高于 30 周均线 — 可能需要回踩"
       ],
-      "atr_14w": 1.5729,
-      "atr_ext": 1.145,
-      "atr_pct_price": 0.12336,
-      "sata_score": 6,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 67.9
+      "atr_14w": 1.1064,
+      "atr_ext": 4.926,
+      "atr_pct_price": 0.03177,
+      "sata_score": 9,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": null
     },
     {
-      "ticker": "SIBN",
-      "company": "SI-BONE Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.135,
-      "pct_vs_ma30": 14.94,
-      "mansfield_rs": 2.17,
-      "vol_ratio": 0.81,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.7,
-        "performance": 8.0,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "margin_expansion",
-          "demand_acceleration",
-          "new_product",
-          "regulatory_headwind"
-        ],
-        "quarter": "Q2",
-        "summary": "SI-BONE reported Q2 2026 revenue of $56 million, up 15.2% globally and 14.7% in the U.S., with strong procedure volume growth and 178% improvement in adjusted EBITDA to $2.8 million. The company submitted a 510(k) for a third breakthrough device expected to launch as early as …"
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 1.4207,
-      "atr_ext": 1.652,
-      "atr_pct_price": 0.07869,
-      "sata_score": 7,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 61.2
-    },
-    {
-      "ticker": "TARS",
-      "company": "Tarsus Pharmaceuticals Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "ETD",
+      "company": "Ethan Allen Interiors, Inc.",
+      "sector": "Consumer Discretionary",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 3,
       "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.48,
-      "pct_vs_ma30": 16.41,
-      "mansfield_rs": 3.68,
-      "vol_ratio": 0.95,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 1.458,
+      "pct_vs_ma30": 12.79,
+      "mansfield_rs": 0.72,
+      "vol_ratio": 1.29,
       "event": null,
       "gate_tier": null,
       "blackout": false,
       "arc_pos": 0.2875,
       "earnings": {
         "present": true,
-        "sentiment": 0.8,
-        "performance": 7.5,
-        "tone_word": "confident",
+        "sentiment": -0.05555555555555555,
+        "performance": 2.5,
+        "tone_word": "steady",
         "tags": [
-          "guidance_raised",
-          "beat_and_raise",
-          "margin_expansion"
+          "furniture",
+          "retail",
+          "manufacturing",
+          "dividends",
+          "tariffs",
+          "north_america",
+          "interior_design",
+          "share_buyback",
+          "furniture_home_furnishings",
+          "specialty_retail",
+          "consumer_discretionary",
+          "home_improvement_retail",
+          "building_products",
+          "vertically_integrated_mfg"
         ],
-        "quarter": "Q2",
-        "summary": "Tarsus reported Q2 FY2026 XDEMVY net product sales of $173.9 million, representing more than 69% year-over-year growth and approximately 20% quarter-over-quarter growth. The company raised its full-year 2026 net product sales guidance to $685-$705 million from the prior range …"
+        "quarter": "Q4",
+        "summary": "Retail written orders decreased 10.8%... as lower traffic and macroeconomic uncertainty created near term pressure."
       },
       "why": [
         "Early in its climb — 3 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Trading above its 30-week line — the trend is with it"
       ],
       "why_zh": [
         "上升初期 — 已上行 3 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 8.3677,
-      "atr_ext": 1.309,
-      "atr_pct_price": 0.10769,
+      "atr_14w": 1.3505,
+      "atr_ext": 1.797,
+      "atr_pct_price": 0.06308,
       "sata_score": 7,
-      "sata_change_1w": 0,
+      "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 63.3
+      "industry_percentile": 77.3
     },
     {
-      "ticker": "ACAD",
-      "company": "Acadia Pharmaceuticals",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "IDYA",
+      "company": "Ideaya Biosciences Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 44,
-      "ma30_slope_pct5w": 2.863,
-      "pct_vs_ma30": 12.93,
-      "mansfield_rs": 3.93,
-      "vol_ratio": 0.74,
-      "event": null,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 3.513,
+      "pct_vs_ma30": 14.25,
+      "mansfield_rs": 7.16,
+      "vol_ratio": 0.7,
+      "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
       "arc_pos": 0.3,
       "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 8.0,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "beat_and_raise",
-          "demand_acceleration",
-          "new_product"
-        ],
-        "quarter": "Q2",
-        "summary": "ACADIA reported Q2 2026 total revenues of $308 million, up 17% year-over-year on an adjusted basis, with DAYBUE at $125 million (up 30%) and NUPLAZID at $183 million (up 10%). The company raised DAYBUE full-year guidance to $480-$510 million, reaffirmed NUPLAZID guidance at $7…"
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
@@ -2773,29 +2133,216 @@
         "上升初期 — 已上行 4 周",
         "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 2.1079,
-      "atr_ext": 1.477,
-      "atr_pct_price": 0.07749,
+      "atr_14w": 3.2775,
+      "atr_ext": 1.461,
+      "atr_pct_price": 0.08533,
+      "sata_score": 7,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 69.5
+    },
+    {
+      "ticker": "SAFX",
+      "company": "XCF Global Inc",
+      "sector": "Utilities",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 9.504,
+      "pct_vs_ma30": 15.21,
+      "mansfield_rs": -11.94,
+      "vol_ratio": 0.3,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 0.1048,
+      "atr_ext": 0.596,
+      "atr_pct_price": 0.22153,
+      "sata_score": 5,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "WEAV",
+      "company": "Weave Communications Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 3.473,
+      "pct_vs_ma30": 24.2,
+      "mansfield_rs": 8.69,
+      "vol_ratio": 1.42,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.45,
+        "performance": 7.0,
+        "tone_word": "confident",
+        "tags": [
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Weave reported Q2 FY26 revenue of $67.5 million, up 15.5% year over year, with payments revenue growing roughly double that rate. The company added record gross and net new locations, especially in dental, and expanded adjusted operating margin to nearly 5%, up from roughly br…"
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 0.7979,
+      "atr_ext": 1.781,
+      "atr_pct_price": 0.10945,
       "sata_score": 7,
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 63.4
+      "industry_percentile": 69.9
     },
     {
-      "ticker": "AQST",
-      "company": "Aquestive Therapeutics Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-18",
+      "ticker": "ZIP",
+      "company": "ZipRecruiter Inc",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 9.735,
+      "pct_vs_ma30": 9.9,
+      "mansfield_rs": -4.19,
+      "vol_ratio": 1.0,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.8,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion"
+        ],
+        "quarter": "Q2",
+        "summary": "ZipRecruiter reported Q2 FY2026 revenue of $118.1 million (up 5% YoY) and Adjusted EBITDA margin expansion to 12%, beating the midpoint of guidance by $6M on both metrics. Management raised full-year outlook from flat growth expectations to low single-digit growth, projecting …"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 0.7072,
+      "atr_ext": 0.471,
+      "atr_pct_price": 0.19114,
+      "sata_score": 5,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 63.2
+    },
+    {
+      "ticker": "AFRM",
+      "company": "Affirm Holdings, Inc.",
+      "sector": "Financials",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 44,
-      "ma30_slope_pct5w": 5.316,
-      "pct_vs_ma30": 6.62,
-      "mansfield_rs": -12.3,
-      "vol_ratio": 1.09,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 4.21,
+      "pct_vs_ma30": 7.7,
+      "mansfield_rs": -2.49,
+      "vol_ratio": 1.22,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q4",
+        "summary": "Affirm reported its most profitable quarter ever, even without a tax allowance release, with strong growth across products including 41% growth in Pay in X and robust card adoption. The company guided to fiscal 2027 revenue less transaction costs above the midterm target at 4.…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 8.6508,
+      "atr_ext": 0.588,
+      "atr_pct_price": 0.12148,
+      "sata_score": 5,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 55.0
+    },
+    {
+      "ticker": "AQST",
+      "company": "Aquestive Therapeutics Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 5.391,
+      "pct_vs_ma30": 8.66,
+      "mansfield_rs": -10.66,
+      "vol_ratio": 1.15,
       "event": null,
       "gate_tier": null,
       "blackout": false,
@@ -2820,177 +2367,78 @@
         "位于 30 周均线之上 — 趋势向好"
       ],
       "atr_14w": 0.5544,
-      "atr_ext": 0.506,
-      "atr_pct_price": 0.12265,
+      "atr_ext": 0.663,
+      "atr_pct_price": 0.12025,
       "sata_score": 5,
       "sata_change_1w": -1,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": 40.8
     },
     {
-      "ticker": "AVPT",
-      "company": "AvePoint Inc",
+      "ticker": "BRZE",
+      "company": "Braze Inc",
       "sector": "Technology",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 4,
       "fresh": true,
-      "sga_score": 44,
-      "ma30_slope_pct5w": 3.296,
-      "pct_vs_ma30": 16.69,
-      "mansfield_rs": 0.81,
-      "vol_ratio": 0.75,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 7.125,
+      "pct_vs_ma30": 2.78,
+      "mansfield_rs": -11.02,
+      "vol_ratio": 1.06,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
       "arc_pos": 0.3,
       "earnings": {
         "present": true,
-        "sentiment": 0.8,
-        "performance": 9.5,
+        "sentiment": 0.5,
+        "performance": 7.5,
         "tone_word": "confident",
         "tags": [
-          "beat_and_raise",
           "guidance_raised",
+          "margin_expansion",
+          "buyback_or_dividend",
+          "new_product",
           "demand_acceleration"
         ],
         "quarter": "Q2",
-        "summary": "Q2 FY26 revenue was $124.5 million (up 22% YoY), exceeding the high end of guidance with a specific beat of $3.7M on top-line and non-GAAP operating income beating by $1.2M. Management raised full-year ARR guidance to a midpoint range of $522.1-$528.1 million (a raise of ~$1M)…"
+        "summary": "Braze reported Q2 FY2027 revenue of $227 million, up 26% year-over-year and 8% sequentially, with non-GAAP operating income of $22 million (9.7% margin) versus $6 million (3.4%) a year ago. Non-GAAP EPS was $0.19 versus $0.15, and record Q2 free cash flow was $22 million. Mana…"
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 1.2188,
-      "atr_ext": 1.561,
-      "atr_pct_price": 0.09164,
-      "sata_score": 7,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 61.2
-    },
-    {
-      "ticker": "CNMD",
-      "company": "CONMED Corporation",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 44,
-      "ma30_slope_pct5w": 2.892,
-      "pct_vs_ma30": 13.62,
-      "mansfield_rs": 2.04,
-      "vol_ratio": 0.55,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5555555555555556,
-        "performance": 9.166666666666668,
-        "tone_word": "confident",
-        "tags": [
-          "medtech",
-          "divestiture",
-          "guidance_raise",
-          "supply_chain_improvement",
-          "orthopedics",
-          "debt_refinancing",
-          "medical_devices",
-          "surgical_instruments",
-          "orthopedic_implants",
-          "medical_technology",
-          "healthcare_equipment",
-          "sports_medicine"
-        ],
-        "quarter": "Q1",
-        "summary": "Adjusted gross margin... was 100 basis points higher than the prior year quarter, driven by favorable product mix and positive foreign currency impact."
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
         "Trading above its 30-week line — the trend is with it"
       ],
       "why_zh": [
-        "上升初期 — 已上行 7 周",
+        "上升初期 — 已上行 4 周",
         "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 4.159,
-      "atr_ext": 1.32,
-      "atr_pct_price": 0.09079,
-      "sata_score": 7,
+      "atr_14w": 3.9289,
+      "atr_ext": 0.168,
+      "atr_pct_price": 0.16082,
+      "sata_score": 4,
       "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 59.7
-    },
-    {
-      "ticker": "DSGR",
-      "company": "Distribution Solutions Group Inc",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-09-18",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 9,
-      "fresh": true,
-      "sga_score": 44,
-      "ma30_slope_pct5w": 2.788,
-      "pct_vs_ma30": 18.62,
-      "mansfield_rs": 10.67,
-      "vol_ratio": 1.18,
-      "event": "pullback_resume",
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3625,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 9 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 9 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
-      ],
-      "atr_14w": 1.1064,
-      "atr_ext": 4.944,
-      "atr_pct_price": 0.03175,
-      "sata_score": 9,
-      "sata_change_1w": 0,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": null
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 35.9
     },
     {
       "ticker": "DV",
       "company": "DoubleVerify Holdings Inc.",
       "sector": "Communication Services",
-      "stage_source_asof": "2026-09-18",
+      "stage_source_asof": "2026-09-23",
       "stage_week_end": "2026-09-18",
       "stage_current": true,
       "stage": 2,
       "weeks_in_stage": 7,
       "fresh": true,
-      "sga_score": 44,
-      "ma30_slope_pct5w": 5.262,
-      "pct_vs_ma30": 20.64,
-      "mansfield_rs": 13.06,
-      "vol_ratio": 1.01,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 5.263,
+      "pct_vs_ma30": 20.69,
+      "mansfield_rs": 13.01,
+      "vol_ratio": 1.06,
       "event": "pullback_resume",
       "gate_tier": null,
       "blackout": false,
@@ -3029,26 +2477,585 @@
         "已明显高于 30 周均线 — 可能需要回踩"
       ],
       "atr_14w": 0.6971,
-      "atr_ext": 3.302,
-      "atr_pct_price": 0.05181,
+      "atr_ext": 3.309,
+      "atr_pct_price": 0.05179,
       "sata_score": 8,
       "sata_change_1w": 0,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": 68.4
+    },
+    {
+      "ticker": "EOLS",
+      "company": "Evolus Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 11.508,
+      "pct_vs_ma30": 24.86,
+      "mansfield_rs": 17.06,
+      "vol_ratio": 1.02,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "Evolus reported Q2 FY26 revenue of $84.1 million, representing a 21% year-over-year increase and exceeding the pace implied by original guidance for the first half. The company delivered its third consecutive quarter of positive adjusted EBITDA ($4.7M) while raising full-year …"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 0.9332,
+      "atr_ext": 1.677,
+      "atr_pct_price": 0.11873,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 81.6
+    },
+    {
+      "ticker": "KODK",
+      "company": "Eastman Kodak Co",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.372,
+      "pct_vs_ma30": -0.58,
+      "mansfield_rs": 1.38,
+      "vol_ratio": 0.8,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "demand_acceleration",
+          "margin_expansion",
+          "buyback_or_dividend",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Kodak delivered a strong Q2 2026 with revenue of $311 million, up 18% YoY, and Operational EBITDA of $36 million, up 300% from $9 million. Gross profit rose 61% to $82 million, with gross margin expanding to 26% from 19%. The company achieved its fourth consecutive quarter of …"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Still near its 30-week line — not clear of it yet"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "仍接近 30 周均线 — 尚未站稳"
+      ],
+      "atr_14w": 0.8557,
+      "atr_ext": -0.065,
+      "atr_pct_price": 0.0896,
+      "sata_score": 4,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 26.7
+    },
+    {
+      "ticker": "NWS",
+      "company": "News Corp (Class B)",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.288,
+      "pct_vs_ma30": 7.92,
+      "mansfield_rs": 0.59,
+      "vol_ratio": 0.9,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q4",
+        "summary": "News Corp reported record Q4 FY26 results with revenue of $2.3 billion (up 11% YoY) and total segment EBITDA soaring to $423 million (a 31% increase). Net income surged 167% on a continuing operations basis, while free cash flow rose 42% year-over-year to $811 million. Managem…"
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 2.0059,
+      "atr_ext": 1.196,
+      "atr_pct_price": 0.06138,
+      "sata_score": 6,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "PAY",
+      "company": "Paymentus Holdings Inc",
+      "sector": "Technology",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 6.688,
+      "pct_vs_ma30": 23.21,
+      "mansfield_rs": 9.98,
+      "vol_ratio": 1.11,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Q2 FY2026 revenue was a record $360.7 million, up 28.8% YoY, with adjusted EBITDA of $48.8 million, up 54% YoY and a 41.3% margin. Contribution profit rose 26.3% to $118.1 million. Management raised full-year 2026 guidance for revenue, contribution profit, and adjusted EBITDA,…"
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 4.0571,
+      "atr_ext": 1.627,
+      "atr_pct_price": 0.11578,
+      "sata_score": 7,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 85.0
+    },
+    {
+      "ticker": "SLP",
+      "company": "Simulations Plus Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.409,
+      "pct_vs_ma30": 15.21,
+      "mansfield_rs": 3.5,
+      "vol_ratio": 0.47,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.3888888888888889,
+        "performance": 6.666666666666667,
+        "tone_word": "confident",
+        "tags": [
+          "pharma_tech",
+          "biosimulation",
+          "saas",
+          "ai_strategy",
+          "cross_selling",
+          "renewal_rates",
+          "guidance",
+          "regulatory_tailwinds",
+          "pharma_tech_software"
+        ],
+        "quarter": "Q2",
+        "summary": "...we're seeing a pickup in client spending reflected in solid software renewal rates, increased new logo activity and strengthened service bookings."
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 0.2979,
+      "atr_ext": 8.173,
+      "atr_pct_price": 0.01615,
+      "sata_score": 9,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 72.7
+    },
+    {
+      "ticker": "SWKS",
+      "company": "Skyworks Solutions",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 4.811,
+      "pct_vs_ma30": 34.04,
+      "mansfield_rs": 24.72,
+      "vol_ratio": 1.6,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.6111111111111112,
+        "performance": 3.75,
+        "tone_word": "confident",
+        "tags": [
+          "android_win",
+          "merger_progress",
+          "gross_margin_pressure",
+          "broad_markets_growth",
+          "ai_demand",
+          "seasonal_outlook",
+          "rf_content",
+          "rf_semiconductors",
+          "mobile_components",
+          "5g_and_6g",
+          "wifi_components",
+          "automotive_electronics",
+          "data_center_components",
+          "iot_devices",
+          "power_management"
+        ],
+        "quarter": "Q2",
+        "summary": "Secured a significant multigenerational design win with a leading Android OEM expected to generate over $1 billion in revenue through 2030."
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 8.5879,
+      "atr_ext": 2.625,
+      "atr_pct_price": 0.09675,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 81.1
+    },
+    {
+      "ticker": "ADP",
+      "company": "Automatic Data Processing",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 3.618,
+      "pct_vs_ma30": 16.99,
+      "mansfield_rs": 3.84,
+      "vol_ratio": 0.73,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.6666666666666666,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "ai",
+          "hcm_software",
+          "peo",
+          "outsourcing",
+          "payroll",
+          "enterprise_sales",
+          "client_retention",
+          "human_capital_management",
+          "payroll_services",
+          "professional_employer_organization",
+          "hr_tech",
+          "workforce_management",
+          "compliance_software",
+          "business_outsourcing",
+          "enterprise_software"
+        ],
+        "quarter": "Q4",
+        "summary": "We saw a record-high seller productivity in fiscal 2026 and we believe The Zone was a key contributor."
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 14.5991,
+      "atr_ext": 2.698,
+      "atr_pct_price": 0.05383,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 73.0
+    },
+    {
+      "ticker": "ALRM",
+      "company": "Alarm.Com, Inc.",
+      "sector": "Financials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 2.999,
+      "pct_vs_ma30": 9.94,
+      "mansfield_rs": 0.15,
+      "vol_ratio": 0.88,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.8,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "demand_acceleration",
+          "margin_expansion",
+          "new_product",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q2",
+        "summary": "Alarm.com reported Q2 FY26 SaaS and license revenue of $188.8 million (up 11% YoY), exceeding the midpoint of guidance by approximately $3.2 million. The company raised its full-year 2026 outlook for total revenue to between $1.079 billion and $1.089 billion, an increase of ro…"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 3.3311,
+      "atr_ext": 1.464,
+      "atr_pct_price": 0.06173,
+      "sata_score": 7,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 59.2
+    },
+    {
+      "ticker": "BETA",
+      "company": "BETA Technologies Inc",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 1.826,
+      "pct_vs_ma30": 14.28,
+      "mansfield_rs": null,
+      "vol_ratio": 1.91,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 9.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "guidance_raised"
+        ],
+        "quarter": "Q2",
+        "summary": "BETA Technologies reported Q2 FY2026 revenue of $14.7 million, significantly beating the guidance range of $8-$11 million and showing year-over-year growth of 146%. The company raised its full-year revenue guidance to a new high-end range of $42-$50 million following strong ex…"
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 3.1561,
+      "atr_ext": 0.828,
+      "atr_pct_price": 0.15101,
+      "sata_score": 6,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "GEN",
+      "company": "Gen Digital",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 4.522,
+      "pct_vs_ma30": 18.78,
+      "mansfield_rs": 6.97,
+      "vol_ratio": 0.95,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q1",
+        "summary": "Gen delivered Q1 FY2027 with bookings and revenue both up 11% year-over-year, above the high end of guidance, and non-GAAP EPS grew 19%. The company raised full-year FY2027 guidance to 9%-11% revenue growth and 14%-18% EPS growth. Cyber Safety grew mid-single digits, while Tru…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.1019,
+      "atr_ext": 2.182,
+      "atr_pct_price": 0.07245,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "HNVR",
+      "company": "Hanover Bancorp Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 3.083,
+      "pct_vs_ma30": 12.05,
+      "mansfield_rs": 6.32,
+      "vol_ratio": 0.9,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.4874,
+      "atr_ext": 1.925,
+      "atr_pct_price": 0.05585,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": null
     }
   ],
   "warnings_stage3": [
     {
-      "ticker": "EGBN",
-      "company": "Eagle Bancorp Inc",
-      "weeks_in_stage": 1,
-      "sga_score": 35
-    },
-    {
       "ticker": "GNRC",
       "company": "Generac",
       "weeks_in_stage": 1,
-      "sga_score": 34
+      "sga_score": 37
+    },
+    {
+      "ticker": "CORZ",
+      "company": "Core Scientific Inc",
+      "weeks_in_stage": 3,
+      "sga_score": 25
     },
     {
       "ticker": "NXPI",
@@ -3060,13 +3067,31 @@
       "ticker": "DBRG",
       "company": "DigitalBridge Group Inc",
       "weeks_in_stage": 4,
-      "sga_score": 22
+      "sga_score": 23
     },
     {
       "ticker": "GOLD",
       "company": "Gold.com Inc",
       "weeks_in_stage": 3,
-      "sga_score": 19
+      "sga_score": 22
+    },
+    {
+      "ticker": "BMRC",
+      "company": "Bank of Marin Bancorp",
+      "weeks_in_stage": 2,
+      "sga_score": 18
+    },
+    {
+      "ticker": "SIG",
+      "company": "Signet Jewelers",
+      "weeks_in_stage": 5,
+      "sga_score": 18
+    },
+    {
+      "ticker": "ACGL",
+      "company": "Arch Capital Group",
+      "weeks_in_stage": 3,
+      "sga_score": 15
     },
     {
       "ticker": "GHC",
@@ -3075,113 +3100,95 @@
       "sga_score": 15
     },
     {
-      "ticker": "SIG",
-      "company": "Signet Jewelers",
-      "weeks_in_stage": 5,
+      "ticker": "GIII",
+      "company": "G-III Apparel Group, Ltd.",
+      "weeks_in_stage": 1,
       "sga_score": 15
     },
     {
       "ticker": "MCFT",
       "company": "MasterCraft Boat Holdings Inc",
       "weeks_in_stage": 2,
-      "sga_score": 14
-    },
-    {
-      "ticker": "ACGL",
-      "company": "Arch Capital Group",
-      "weeks_in_stage": 3,
-      "sga_score": 13
-    },
-    {
-      "ticker": "GIII",
-      "company": "G-III Apparel Group, Ltd.",
-      "weeks_in_stage": 1,
-      "sga_score": 13
+      "sga_score": 15
     },
     {
       "ticker": "NX",
       "company": "Quanex Building Products Corporation",
       "weeks_in_stage": 1,
-      "sga_score": 13
+      "sga_score": 15
     },
     {
       "ticker": "WOR",
       "company": "Worthington Enterprises",
       "weeks_in_stage": 1,
-      "sga_score": 12
+      "sga_score": 15
     },
     {
-      "ticker": "AMTX",
-      "company": "Aemetis Inc",
-      "weeks_in_stage": 16,
-      "sga_score": 11
-    },
-    {
-      "ticker": "DNOW",
-      "company": "NOW Inc",
-      "weeks_in_stage": 2,
-      "sga_score": 10
+      "ticker": "WRB",
+      "company": "W. R. Berkley Corporation",
+      "weeks_in_stage": 4,
+      "sga_score": 15
     },
     {
       "ticker": "ELE",
       "company": "Elemental Royalty Corp",
       "weeks_in_stage": 1,
-      "sga_score": 10
+      "sga_score": 14
     },
     {
-      "ticker": "GILD",
-      "company": "Gilead Sciences",
-      "weeks_in_stage": 2,
-      "sga_score": 10
-    },
-    {
-      "ticker": "IAG",
-      "company": "IAG",
-      "weeks_in_stage": 2,
-      "sga_score": 10
-    },
-    {
-      "ticker": "IRWD",
-      "company": "Ironwood Pharmaceuticals Inc",
-      "weeks_in_stage": 5,
-      "sga_score": 10
-    },
-    {
-      "ticker": "MHK",
-      "company": "Mohawk Industries",
-      "weeks_in_stage": 1,
-      "sga_score": 10
-    },
-    {
-      "ticker": "PANL",
-      "company": "Pangaea Logistics Solutions Ltd",
+      "ticker": "FBK",
+      "company": "FB Financial Corp.",
       "weeks_in_stage": 3,
-      "sga_score": 10
+      "sga_score": 14
+    },
+    {
+      "ticker": "TRC",
+      "company": "Tejon Ranch Co",
+      "weeks_in_stage": 5,
+      "sga_score": 13
+    },
+    {
+      "ticker": "BFS",
+      "company": "Saul Centers, Inc.",
+      "weeks_in_stage": 2,
+      "sga_score": 12
+    },
+    {
+      "ticker": "DMRA",
+      "company": "Damora Therapeutics Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 12
+    },
+    {
+      "ticker": "MAMA",
+      "company": "Mama's Creations Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 12
     }
   ],
   "sectors": [
     {
       "sector": "Financial",
-      "n": 240,
-      "pct_stage2": 75.8,
+      "n": 242,
+      "pct_stage2": 76.4,
       "trend": "up"
     },
     {
       "sector": "Information Technology",
       "n": 186,
-      "pct_stage2": 69.9,
+      "pct_stage2": 70.4,
       "trend": "up"
     },
     {
       "sector": "Energy",
       "n": 119,
-      "pct_stage2": 67.2,
+      "pct_stage2": 65.5,
       "trend": "up"
     },
     {
       "sector": "Financials",
       "n": 219,
-      "pct_stage2": 61.2,
+      "pct_stage2": 62.1,
       "trend": "up"
     },
     {
@@ -3192,50 +3199,50 @@
     },
     {
       "sector": "Healthcare",
-      "n": 342,
-      "pct_stage2": 56.4,
+      "n": 343,
+      "pct_stage2": 56.3,
       "trend": "up"
     },
     {
       "sector": "Technology",
-      "n": 175,
-      "pct_stage2": 47.4,
+      "n": 176,
+      "pct_stage2": 47.7,
       "trend": "flat"
     },
     {
       "sector": "Real Estate",
-      "n": 151,
-      "pct_stage2": 45.7,
+      "n": 152,
+      "pct_stage2": 45.4,
       "trend": "up"
     },
     {
       "sector": "Communication Services",
-      "n": 104,
-      "pct_stage2": 45.2,
-      "trend": "down"
-    },
-    {
-      "sector": "Consumer Cyclical",
-      "n": 98,
-      "pct_stage2": 42.9,
+      "n": 105,
+      "pct_stage2": 44.8,
       "trend": "down"
     },
     {
       "sector": "Industrials",
       "n": 365,
-      "pct_stage2": 42.5,
+      "pct_stage2": 42.7,
+      "trend": "down"
+    },
+    {
+      "sector": "Consumer Cyclical",
+      "n": 101,
+      "pct_stage2": 42.6,
+      "trend": "down"
+    },
+    {
+      "sector": "Basic Materials",
+      "n": 59,
+      "pct_stage2": 37.3,
       "trend": "down"
     },
     {
       "sector": "Consumer Staples",
       "n": 66,
       "pct_stage2": 36.4,
-      "trend": "down"
-    },
-    {
-      "sector": "Basic Materials",
-      "n": 59,
-      "pct_stage2": 35.6,
       "trend": "down"
     },
     {
@@ -3247,7 +3254,7 @@
     {
       "sector": "Consumer Discretionary",
       "n": 162,
-      "pct_stage2": 31.5,
+      "pct_stage2": 30.9,
       "trend": "down"
     },
     {
@@ -3621,8 +3628,8 @@
       6
     ],
     "AIN": [
-      3,
-      1
+      2,
+      20
     ],
     "AIOT": [
       4,
@@ -3905,8 +3912,8 @@
       41
     ],
     "AMTX": [
-      3,
-      16
+      2,
+      1
     ],
     "AMZN": [
       2,
@@ -4329,8 +4336,8 @@
       3
     ],
     "AVO": [
-      4,
-      1
+      3,
+      4
     ],
     "AVPT": [
       2,
@@ -4456,6 +4463,10 @@
       4,
       32
     ],
+    "BBBY": [
+      4,
+      10
+    ],
     "BBCP": [
       2,
       21
@@ -4469,8 +4480,8 @@
       3
     ],
     "BBSI": [
-      4,
-      1
+      3,
+      7
     ],
     "BBT": [
       2,
@@ -4839,6 +4850,10 @@
     "BRT": [
       3,
       6
+    ],
+    "BRUN": [
+      2,
+      23
     ],
     "BRZE": [
       2,
@@ -5300,6 +5315,10 @@
       2,
       53
     ],
+    "CHCI": [
+      2,
+      23
+    ],
     "CHCO": [
       2,
       16
@@ -5541,8 +5560,8 @@
       4
     ],
     "CNR": [
-      2,
-      1
+      1,
+      4
     ],
     "CNS": [
       2,
@@ -5803,6 +5822,10 @@
     "CSIQ": [
       4,
       15
+    ],
+    "CSPI": [
+      4,
+      32
     ],
     "CSR": [
       4,
@@ -6489,8 +6512,8 @@
       21
     ],
     "EGBN": [
-      3,
-      1
+      2,
+      40
     ],
     "EGHT": [
       4,
@@ -6560,13 +6583,17 @@
       3,
       1
     ],
+    "EML": [
+      2,
+      14
+    ],
     "EMR": [
       3,
       1
     ],
     "ENOV": [
-      4,
-      1
+      3,
+      3
     ],
     "ENR": [
       3,
@@ -6663,6 +6690,10 @@
     "ES": [
       3,
       2
+    ],
+    "ESCA": [
+      2,
+      32
     ],
     "ESE": [
       2,
@@ -7008,6 +7039,10 @@
       2,
       5
     ],
+    "FINW": [
+      4,
+      27
+    ],
     "FIP": [
       4,
       8
@@ -7251,6 +7286,10 @@
     "FTK": [
       2,
       118
+    ],
+    "FTLF": [
+      4,
+      26
     ],
     "FTNT": [
       2,
@@ -8109,8 +8148,8 @@
       16
     ],
     "IBCP": [
-      3,
-      1
+      2,
+      44
     ],
     "IBEX": [
       2,
@@ -8457,7 +8496,7 @@
       58
     ],
     "IT": [
-      1,
+      2,
       1
     ],
     "ITGR": [
@@ -8643,6 +8682,10 @@
     "KFY": [
       2,
       15
+    ],
+    "KG": [
+      4,
+      43
     ],
     "KGC": [
       4,
@@ -9365,8 +9408,8 @@
       3
     ],
     "MCO": [
-      1,
-      11
+      2,
+      1
     ],
     "MCRI": [
       2,
@@ -9477,8 +9520,8 @@
       23
     ],
     "MGY": [
-      2,
-      32
+      3,
+      1
     ],
     "MH": [
       4,
@@ -10545,8 +10588,8 @@
       2
     ],
     "ORCL": [
-      4,
-      34
+      1,
+      1
     ],
     "ORGO": [
       4,
@@ -10873,8 +10916,8 @@
       28
     ],
     "PG": [
-      4,
-      1
+      1,
+      20
     ],
     "PGC": [
       2,
@@ -11416,12 +11459,20 @@
       2,
       51
     ],
+    "RDDT": [
+      4,
+      29
+    ],
     "RDN": [
       2,
       11
     ],
     "RDNT": [
       2,
+      2
+    ],
+    "RDNW": [
+      3,
       2
     ],
     "RDVT": [
@@ -11836,6 +11887,10 @@
       2,
       1
     ],
+    "SBFG": [
+      2,
+      21
+    ],
     "SBGI": [
       1,
       5
@@ -11927,6 +11982,10 @@
     "SEZL": [
       2,
       19
+    ],
+    "SFBC": [
+      2,
+      8
     ],
     "SFBS": [
       3,
@@ -12028,6 +12087,10 @@
       4,
       7
     ],
+    "SIEB": [
+      4,
+      44
+    ],
     "SIG": [
       3,
       5
@@ -12117,8 +12180,8 @@
       38
     ],
     "SLNH": [
-      1,
-      2
+      2,
+      1
     ],
     "SLP": [
       2,
@@ -12231,6 +12294,10 @@
     "SNPS": [
       4,
       9
+    ],
+    "SNWV": [
+      4,
+      34
     ],
     "SO": [
       3,
@@ -12425,8 +12492,8 @@
       54
     ],
     "STOK": [
-      3,
-      11
+      4,
+      1
     ],
     "STRA": [
       3,
@@ -12495,6 +12562,10 @@
     "SVCO": [
       2,
       26
+    ],
+    "SVIA": [
+      2,
+      1
     ],
     "SVM": [
       2,
@@ -13028,6 +13099,10 @@
       2,
       23
     ],
+    "TVGN": [
+      4,
+      58
+    ],
     "TVRD": [
       4,
       46
@@ -13173,8 +13248,8 @@
       20
     ],
     "UMH": [
-      2,
-      3
+      3,
+      1
     ],
     "UNB": [
       3,
@@ -13496,6 +13571,10 @@
       2,
       5
     ],
+    "VRM": [
+      4,
+      47
+    ],
     "VRNS": [
       2,
       12
@@ -13669,8 +13748,8 @@
       178
     ],
     "WEN": [
-      2,
-      3
+      3,
+      1
     ],
     "WERN": [
       2,
@@ -14084,11 +14163,6 @@
       },
       {
         "kind": "topping",
-        "ticker": "AIN",
-        "detail": "Advance is stalling — topping out"
-      },
-      {
-        "kind": "topping",
         "ticker": "ALLO",
         "detail": "Advance is stalling — topping out"
       },
@@ -14118,6 +14192,11 @@
         "detail": "Rolled over into a declining stage"
       },
       {
+        "kind": "entered_stage2",
+        "ticker": "AMTX",
+        "detail": "Moved into an advancing stage"
+      },
+      {
         "kind": "topping",
         "ticker": "APEI",
         "detail": "Advance is stalling — topping out"
@@ -14141,16 +14220,6 @@
         "kind": "topping",
         "ticker": "AUB",
         "detail": "Advance is stalling — topping out"
-      },
-      {
-        "kind": "entered_stage4",
-        "ticker": "AVO",
-        "detail": "Rolled over into a declining stage"
-      },
-      {
-        "kind": "entered_stage4",
-        "ticker": "BBSI",
-        "detail": "Rolled over into a declining stage"
       },
       {
         "kind": "topping",
@@ -14186,6 +14255,11 @@
         "kind": "topping",
         "ticker": "BOH",
         "detail": "Advance is stalling — topping out"
+      },
+      {
+        "kind": "entered_stage2",
+        "ticker": "BRUN",
+        "detail": "Now in an advancing stage"
       },
       {
         "kind": "entered_stage4",
@@ -14255,11 +14329,6 @@
       {
         "kind": "entered_stage2",
         "ticker": "CNDT",
-        "detail": "Moved into an advancing stage"
-      },
-      {
-        "kind": "entered_stage2",
-        "ticker": "CNR",
         "detail": "Moved into an advancing stage"
       },
       {
@@ -14359,11 +14428,6 @@
       },
       {
         "kind": "topping",
-        "ticker": "EGBN",
-        "detail": "Advance is stalling — topping out"
-      },
-      {
-        "kind": "topping",
         "ticker": "ELE",
         "detail": "Advance is stalling — topping out"
       },
@@ -14376,11 +14440,6 @@
         "kind": "topping",
         "ticker": "EMR",
         "detail": "Advance is stalling — topping out"
-      },
-      {
-        "kind": "entered_stage4",
-        "ticker": "ENOV",
-        "detail": "Rolled over into a declining stage"
       },
       {
         "kind": "topping",
@@ -14446,6 +14505,26 @@
         "kind": "topping",
         "ticker": "FTV",
         "detail": "Advance is stalling — topping out"
+      },
+      {
+        "kind": "entered_stage2",
+        "ticker": "FWDI",
+        "detail": "Moved into an advancing stage"
+      },
+      {
+        "kind": "entered_stage4",
+        "ticker": "GATX",
+        "detail": "Rolled over into a declining stage"
+      },
+      {
+        "kind": "topping",
+        "ticker": "GD",
+        "detail": "Advance is stalling — topping out"
+      },
+      {
+        "kind": "entered_stage2",
+        "ticker": "GDYN",
+        "detail": "Moved into an advancing stage"
       }
     ],
     "n": 80
@@ -28255,7 +28334,7 @@
     "ABM": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "ABNB": {
       "stage": 2,
@@ -28305,7 +28384,7 @@
     "ACCO": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "ACDC": {
       "stage": 3,
@@ -28330,7 +28409,7 @@
     "ACHC": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "ACHR": {
       "stage": 4,
@@ -28633,7 +28712,7 @@
       "event": "pullback_resume"
     },
     "AIN": {
-      "stage": 3,
+      "stage": 2,
       "fresh": false,
       "event": null
     },
@@ -28655,7 +28734,7 @@
     "AIRJ": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "AIRO": {
       "stage": 4,
@@ -28988,9 +29067,9 @@
       "event": "pullback_resume"
     },
     "AMTX": {
-      "stage": 3,
-      "fresh": false,
-      "event": null
+      "stage": 2,
+      "fresh": true,
+      "event": "trendline_recapture"
     },
     "AMZN": {
       "stage": 2,
@@ -29025,7 +29104,7 @@
     "ANGO": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "ANGPY": {
       "stage": 1,
@@ -29035,7 +29114,7 @@
     "ANIK": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "ANIP": {
       "stage": 4,
@@ -29130,7 +29209,7 @@
     "APLE": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "APO": {
       "stage": 1,
@@ -29530,7 +29609,7 @@
     "AVIR": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "AVNS": {
       "stage": 2,
@@ -29548,7 +29627,7 @@
       "event": null
     },
     "AVO": {
-      "stage": 4,
+      "stage": 3,
       "fresh": false,
       "event": null
     },
@@ -29728,7 +29807,7 @@
       "event": "pullback_resume"
     },
     "BBSI": {
-      "stage": 4,
+      "stage": 3,
       "fresh": false,
       "event": null
     },
@@ -29885,7 +29964,7 @@
     "BGC": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "BGS": {
       "stage": 4,
@@ -29925,7 +30004,7 @@
     "BIIB": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "BIOA": {
       "stage": 4,
@@ -30130,7 +30209,7 @@
     "BOX": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "BPOP": {
       "stage": 2,
@@ -30140,7 +30219,7 @@
     "BPRN": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "BR": {
       "stage": 4,
@@ -30200,7 +30279,7 @@
     "BSET": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "BSRR": {
       "stage": 2,
@@ -30275,7 +30354,7 @@
     "BVFL": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "BVS": {
       "stage": 2,
@@ -30490,7 +30569,7 @@
     "CATY": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CB": {
       "stage": 2,
@@ -30505,7 +30584,7 @@
     "CBFV": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "CBIO": {
       "stage": 2,
@@ -30520,7 +30599,7 @@
     "CBL": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CBLL": {
       "stage": 2,
@@ -30530,7 +30609,7 @@
     "CBNA": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CBNK": {
       "stage": 2,
@@ -30745,7 +30824,7 @@
     "CFFN": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CFG": {
       "stage": 2,
@@ -30775,7 +30854,7 @@
     "CHCI": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CHCO": {
       "stage": 2,
@@ -30795,7 +30874,7 @@
     "CHEF": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CHMG": {
       "stage": 2,
@@ -30870,7 +30949,7 @@
     "CLAR": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "CLB": {
       "stage": 4,
@@ -30880,12 +30959,12 @@
     "CLBK": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CLDT": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CLDX": {
       "stage": 2,
@@ -31025,7 +31104,7 @@
     "CMT": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CMTG": {
       "stage": 4,
@@ -31065,7 +31144,7 @@
     "CNO": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CNOB": {
       "stage": 2,
@@ -31078,8 +31157,8 @@
       "event": null
     },
     "CNR": {
-      "stage": 2,
-      "fresh": true,
+      "stage": 1,
+      "fresh": false,
       "event": null
     },
     "CNS": {
@@ -31115,7 +31194,7 @@
     "CNXN": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "COCO": {
       "stage": 3,
@@ -31145,12 +31224,12 @@
     "COHR": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "trendline_recapture"
     },
     "COHU": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "COIN": {
       "stage": 1,
@@ -31260,7 +31339,7 @@
     "CPSS": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "CPT": {
       "stage": 3,
@@ -31290,17 +31369,17 @@
     "CRCL": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "CRCT": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "CRD-A": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "CRDF": {
       "stage": 4,
@@ -31495,7 +31574,7 @@
     "CTOS": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CTRE": {
       "stage": 3,
@@ -31515,7 +31594,7 @@
     "CTS": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "trendline_recapture"
     },
     "CTSH": {
       "stage": 4,
@@ -31565,7 +31644,7 @@
     "CVEO": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CVGI": {
       "stage": 2,
@@ -31605,7 +31684,7 @@
     "CVSA": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "CVX": {
       "stage": 2,
@@ -31695,7 +31774,7 @@
     "CZR": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "CZWI": {
       "stage": 2,
@@ -31730,7 +31809,7 @@
     "DAVE": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "DBD": {
       "stage": 4,
@@ -31770,7 +31849,7 @@
     "DCOM": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "DCTH": {
       "stage": 2,
@@ -32060,7 +32139,7 @@
     "DRH": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "DRI": {
       "stage": 3,
@@ -32115,7 +32194,7 @@
     "DUOL": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "DUOT": {
       "stage": 4,
@@ -32288,9 +32367,9 @@
       "event": null
     },
     "EGBN": {
-      "stage": 3,
+      "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "EGHT": {
       "stage": 4,
@@ -32315,7 +32394,7 @@
     "EIG": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "EIX": {
       "stage": 3,
@@ -32380,7 +32459,7 @@
     "EML": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "EMR": {
       "stage": 3,
@@ -32388,7 +32467,7 @@
       "event": null
     },
     "ENOV": {
-      "stage": 4,
+      "stage": 3,
       "fresh": false,
       "event": null
     },
@@ -32535,7 +32614,7 @@
     "ESP": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "ESPR": {
       "stage": 3,
@@ -32685,7 +32764,7 @@
     "EXPE": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "EXPO": {
       "stage": 1,
@@ -32830,12 +32909,12 @@
     "FCX": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "FDBC": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "FDMT": {
       "stage": 2,
@@ -32890,7 +32969,7 @@
     "FF": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "FFAI": {
       "stage": 4,
@@ -32970,7 +33049,7 @@
     "FISI": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "FITB": {
       "stage": 2,
@@ -33070,7 +33149,7 @@
     "FMAO": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "FMBH": {
       "stage": 2,
@@ -33100,7 +33179,7 @@
     "FNLC": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "FNRN": {
       "stage": 2,
@@ -33125,7 +33204,7 @@
     "FORM": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "trendline_recapture"
     },
     "FORR": {
       "stage": 2,
@@ -33165,7 +33244,7 @@
     "FRAF": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "FRBA": {
       "stage": 2,
@@ -33400,7 +33479,7 @@
     "GCMG": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "GCO": {
       "stage": 2,
@@ -33555,7 +33634,7 @@
     "GL": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "GLIBA": {
       "stage": 4,
@@ -33755,7 +33834,7 @@
     "GRPN": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "GS": {
       "stage": 2,
@@ -33975,7 +34054,7 @@
     "HG": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "HGV": {
       "stage": 4,
@@ -34110,7 +34189,7 @@
     "HOPE": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "HOV": {
       "stage": 3,
@@ -34175,7 +34254,7 @@
     "HRTG": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "HRTX": {
       "stage": 4,
@@ -34200,7 +34279,7 @@
     "HSTM": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "HSY": {
       "stage": 4,
@@ -34215,7 +34294,7 @@
     "HTFL": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "HTH": {
       "stage": 3,
@@ -34230,7 +34309,7 @@
     "HTO": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "HTZ": {
       "stage": 4,
@@ -34348,7 +34427,7 @@
       "event": null
     },
     "IBCP": {
-      "stage": 3,
+      "stage": 2,
       "fresh": false,
       "event": null
     },
@@ -34500,7 +34579,7 @@
     "IMAX": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "IMKTA": {
       "stage": 3,
@@ -34550,7 +34629,7 @@
     "INBX": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "INCY": {
       "stage": 2,
@@ -34590,12 +34669,12 @@
     "INN": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "INNV": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "INOD": {
       "stage": 3,
@@ -34695,7 +34774,7 @@
     "IPAR": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "IPI": {
       "stage": 2,
@@ -34783,9 +34862,9 @@
       "event": null
     },
     "IT": {
-      "stage": 1,
-      "fresh": false,
-      "event": null
+      "stage": 2,
+      "fresh": true,
+      "event": "pullback_resume"
     },
     "ITGR": {
       "stage": 2,
@@ -34920,7 +34999,7 @@
     "JMSB": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "JNJ": {
       "stage": 2,
@@ -34990,7 +35069,7 @@
     "KEEL": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "trendline_recapture"
     },
     "KELYA": {
       "stage": 2,
@@ -35010,7 +35089,7 @@
     "KFRC": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "KFY": {
       "stage": 2,
@@ -35365,7 +35444,7 @@
     "LCNB": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "LCTX": {
       "stage": 4,
@@ -35405,7 +35484,7 @@
     "LEGH": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "LEN": {
       "stage": 4,
@@ -35520,7 +35599,7 @@
     "LITE": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "LIVN": {
       "stage": 2,
@@ -35645,7 +35724,7 @@
     "LQDT": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "LRCX": {
       "stage": 2,
@@ -35750,7 +35829,7 @@
     "LXRX": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "trendline_recapture"
     },
     "LXU": {
       "stage": 2,
@@ -35805,7 +35884,7 @@
     "MAC": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "MAGN": {
       "stage": 4,
@@ -35925,7 +36004,7 @@
     "MCHB": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "MCHP": {
       "stage": 3,
@@ -35938,8 +36017,8 @@
       "event": null
     },
     "MCO": {
-      "stage": 1,
-      "fresh": false,
+      "stage": 2,
+      "fresh": true,
       "event": null
     },
     "MCRI": {
@@ -36083,7 +36162,7 @@
       "event": "pullback_resume"
     },
     "MGY": {
-      "stage": 2,
+      "stage": 3,
       "fresh": false,
       "event": null
     },
@@ -36260,7 +36339,7 @@
     "MOV": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "MP": {
       "stage": 4,
@@ -36355,7 +36434,7 @@
     "MSBI": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "MSCI": {
       "stage": 3,
@@ -36575,7 +36654,7 @@
     "NBN": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "NBR": {
       "stage": 2,
@@ -36775,7 +36854,7 @@
     "NL": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "NLOP": {
       "stage": 2,
@@ -36830,7 +36909,7 @@
     "NODK": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "NOG": {
       "stage": 2,
@@ -36935,7 +37014,7 @@
     "NSP": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "NSSC": {
       "stage": 4,
@@ -37000,7 +37079,7 @@
     "NUVB": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "NUVL": {
       "stage": 2,
@@ -37030,7 +37109,7 @@
     "NVEC": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "NVGS": {
       "stage": 2,
@@ -37075,7 +37154,7 @@
     "NWFL": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "NWL": {
       "stage": 2,
@@ -37170,7 +37249,7 @@
     "OBT": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "OC": {
       "stage": 2,
@@ -37365,7 +37444,7 @@
     "OPBK": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "OPCH": {
       "stage": 4,
@@ -37423,7 +37502,7 @@
       "event": null
     },
     "ORCL": {
-      "stage": 4,
+      "stage": 1,
       "fresh": false,
       "event": null
     },
@@ -37535,7 +37614,7 @@
     "OVLY": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "OXM": {
       "stage": 4,
@@ -37615,7 +37694,7 @@
     "PARR": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "PATH": {
       "stage": 2,
@@ -37640,7 +37719,7 @@
     "PAYO": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "PAYS": {
       "stage": 2,
@@ -37650,7 +37729,7 @@
     "PAYX": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "PBF": {
       "stage": 2,
@@ -37670,7 +37749,7 @@
     "PBI": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "PBYI": {
       "stage": 2,
@@ -37720,7 +37799,7 @@
     "PD": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "PDD": {
       "stage": 4,
@@ -37815,7 +37894,7 @@
     "PFG": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "PFIS": {
       "stage": 2,
@@ -37833,7 +37912,7 @@
       "event": null
     },
     "PG": {
-      "stage": 4,
+      "stage": 1,
       "fresh": false,
       "event": null
     },
@@ -37995,7 +38074,7 @@
     "PLSE": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "PLTK": {
       "stage": 4,
@@ -38105,7 +38184,7 @@
     "POWW": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "PPG": {
       "stage": 4,
@@ -38170,7 +38249,7 @@
     "PRGS": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "PRIM": {
       "stage": 4,
@@ -38220,7 +38299,7 @@
     "PRSU": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "PRTA": {
       "stage": 1,
@@ -38440,7 +38519,7 @@
     "RBB": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "RBBN": {
       "stage": 4,
@@ -38585,7 +38664,7 @@
     "REPL": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "REPX": {
       "stage": 2,
@@ -38715,7 +38794,7 @@
     "RLAY": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "RLGT": {
       "stage": 2,
@@ -38745,7 +38824,7 @@
     "RMBI": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "RMBS": {
       "stage": 4,
@@ -38780,7 +38859,7 @@
     "RNST": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "ROAD": {
       "stage": 4,
@@ -39040,12 +39119,12 @@
     "SBET": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "SBFG": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "SBGI": {
       "stage": 1,
@@ -39110,7 +39189,7 @@
     "SDRL": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "SEAT": {
       "stage": 4,
@@ -39260,7 +39339,7 @@
     "SHO": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "SHOE": {
       "stage": 4,
@@ -39390,7 +39469,7 @@
     "SLAB": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "SLB": {
       "stage": 2,
@@ -39423,9 +39502,9 @@
       "event": null
     },
     "SLNH": {
-      "stage": 1,
-      "fresh": false,
-      "event": null
+      "stage": 2,
+      "fresh": true,
+      "event": "trendline_recapture"
     },
     "SLP": {
       "stage": 2,
@@ -39590,7 +39669,7 @@
     "SOLV": {
       "stage": 2,
       "fresh": true,
-      "event": null
+      "event": "pullback_resume"
     },
     "SONO": {
       "stage": 1,
@@ -39625,7 +39704,7 @@
     "SPG": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "trendline_recapture"
     },
     "SPGI": {
       "stage": 1,
@@ -39635,7 +39714,7 @@
     "SPHR": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "SPIR": {
       "stage": 2,
@@ -39690,7 +39769,7 @@
     "SRBK": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "SRCE": {
       "stage": 2,
@@ -39740,7 +39819,7 @@
     "SSRM": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "SSTI": {
       "stage": 4,
@@ -39760,7 +39839,7 @@
     "STBA": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "STC": {
       "stage": 1,
@@ -39818,7 +39897,7 @@
       "event": "pullback_resume"
     },
     "STOK": {
-      "stage": 3,
+      "stage": 4,
       "fresh": false,
       "event": null
     },
@@ -39850,7 +39929,7 @@
     "STRW": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "STRZ": {
       "stage": 2,
@@ -39875,7 +39954,7 @@
     "STX": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "STXS": {
       "stage": 4,
@@ -39940,7 +40019,7 @@
     "SWK": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "SWKS": {
       "stage": 2,
@@ -39995,7 +40074,7 @@
     "SYRE": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "SYY": {
       "stage": 3,
@@ -40080,7 +40159,7 @@
     "TCBK": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "TCI": {
       "stage": 4,
@@ -40250,7 +40329,7 @@
     "TILE": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "TIPT": {
       "stage": 3,
@@ -40300,7 +40379,7 @@
     "TMCI": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "TMDX": {
       "stage": 4,
@@ -40320,7 +40399,7 @@
     "TMP": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "TMUS": {
       "stage": 4,
@@ -40350,7 +40429,7 @@
     "TNK": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "TNXP": {
       "stage": 4,
@@ -40375,7 +40454,7 @@
     "TOWN": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "TOYO": {
       "stage": 4,
@@ -40430,7 +40509,7 @@
     "TRGP": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "TRI": {
       "stage": 2,
@@ -40615,7 +40694,7 @@
     "TWIN": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "TWO": {
       "stage": 2,
@@ -40783,9 +40862,9 @@
       "event": null
     },
     "UMH": {
-      "stage": 2,
-      "fresh": true,
-      "event": "pullback_resume"
+      "stage": 3,
+      "fresh": false,
+      "event": null
     },
     "UNB": {
       "stage": 3,
@@ -40810,7 +40889,7 @@
     "UNH": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "UNIT": {
       "stage": 2,
@@ -41095,7 +41174,7 @@
     "VIR": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "VIRC": {
       "stage": 1,
@@ -41230,7 +41309,7 @@
     "VSAT": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "VSEC": {
       "stage": 4,
@@ -41400,7 +41479,7 @@
     "WEAV": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "WEC": {
       "stage": 3,
@@ -41413,8 +41492,8 @@
       "event": null
     },
     "WEN": {
-      "stage": 2,
-      "fresh": true,
+      "stage": 3,
+      "fresh": false,
       "event": null
     },
     "WERN": {
@@ -41430,7 +41509,7 @@
     "WEYS": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "WFC": {
       "stage": 1,
@@ -41460,7 +41539,7 @@
     "WHG": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "WHWK": {
       "stage": 2,
@@ -41605,7 +41684,7 @@
     "WTBA": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "WTFC": {
       "stage": 3,
@@ -41625,7 +41704,7 @@
     "WTTR": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "WTW": {
       "stage": 2,
@@ -41690,7 +41769,7 @@
     "XHR": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "XMAX": {
       "stage": 2,
@@ -41750,12 +41829,12 @@
     "XRN": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "XRX": {
       "stage": 2,
       "fresh": false,
-      "event": "pullback_resume"
+      "event": null
     },
     "XYL": {
       "stage": 4,
@@ -41820,7 +41899,7 @@
     "ZETA": {
       "stage": 2,
       "fresh": false,
-      "event": null
+      "event": "pullback_resume"
     },
     "ZGN": {
       "stage": 2,
@@ -41905,7 +41984,7 @@
     "BETA": {
       "stage": 2,
       "fresh": true,
-      "event": "pullback_resume"
+      "event": null
     },
     "EVMN": {
       "stage": 4,
@@ -41921,6 +42000,21 @@
       "stage": 4,
       "fresh": false,
       "event": null
+    },
+    "BRUN": {
+      "stage": 2,
+      "fresh": false,
+      "event": null
+    },
+    "RDDT": {
+      "stage": 4,
+      "fresh": false,
+      "event": null
+    },
+    "SVIA": {
+      "stage": 2,
+      "fresh": true,
+      "event": "pullback_resume"
     }
   }
 }

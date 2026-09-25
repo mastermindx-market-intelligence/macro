@@ -1,0 +1,47 @@
+<script data-dbase>(function () {
+  window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
+  var B = window.DATA_BASE;
+  if (!B) return;                                         // no-op when unset -> zero behavior change
+  B = B.replace(/\/+$/, "");                              // strip trailing slash
+  // the per-ticker stores that live in R2 (mirror scripts/publish_r2.py DEFAULT_DIRS)
+  var RE = /^(ohlc|chinaohlc|hkohlc|intlohlc|canadaohlc|subsectorohlc(?:_china|_russell|_nasdaq)?|stockdata|chinastockdata|hkstockdata|canadastockdata|intlstockdata|intraday)\//;
+  var orig = window.fetch;
+  window.fetch = function (u, o) {
+    try {
+      if (typeof u === "string") {
+        /* theme.js resolves shared assets from its own script URL, so its stock
+           libraries arrive here as absolute same-origin URLs.  The old shim only
+           recognized bare/../ paths, leaving those requests on the protected HTML
+           origin (401 on Start) and the search spinner alive forever.  Normalize
+           every same-origin string to a root-relative key before matching; preserve
+           query/hash cache keys, and never rewrite an already-external URL. */
+        var a = new URL(u, location.href);
+        if (a.origin === location.origin) {
+          var rel = a.pathname.replace(/^\/+/, "") + a.search + a.hash;
+          if (RE.test(rel)) u = B + "/" + rel;            // -> https://<data-host>/ohlc/AAPL.json
+        }
+      }
+    } catch (e) { /* never let the shim break a fetch */ }
+    return orig.call(this, u, o);
+  };
+})();</script>
+
+
+<div class="mc-move" data-mc-move data-mc-fragment>
+  <ul class="mc-move-list">
+    <li class="mx-chg-row mc-move-row">
+      <a class="mx-chg-name mc-move-name" href="../../macro_inflation_system.html"><span class="l-en">Speed of price rises</span><span class="l-zh">物价上涨速度</span></a>
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current"><span class="l-en">50.42 pts</span><span class="l-zh">50.42 点</span></strong><span class="mc-move-words mq-delta-flat"><span class="l-en">unchanged since the last reading</span><span class="l-zh">较上次读数持平</span></span>
+      </span>
+    </li>
+    <li class="mx-chg-row mc-move-row">
+      <a class="mx-chg-name mc-move-name" href="../../macro_inflation_system.html"><span class="l-en">Spread of price rises</span><span class="l-zh">涨价的广度</span></a>
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current"><span class="l-en">58.61 pts</span><span class="l-zh">58.61 点</span></strong><span class="mc-move-words mq-delta-flat"><span class="l-en">unchanged since the last reading</span><span class="l-zh">较上次读数持平</span></span>
+      </span>
+    </li>
+  </ul><p class="mc-move-count"><span class="l-en">2 readings compared against the previous publication.</span><span class="l-zh">与上一次发布相比，共对比 2 项读数。</span></p>
+</div>
+
+<script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>

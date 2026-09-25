@@ -18,6 +18,7 @@ Run: python -m pytest tests/test_caddy_hub_boundary.py -q
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -60,17 +61,25 @@ def test_shipped_caddyfile_has_exactly_seven_backend_proxies_all_safe() -> None:
 def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
     """Pins WHICH lines classify which way, so a future edit that moves a
     block without preserving its safety property shows up as a line-number
-    diff a reviewer will actually look at."""
+    diff a reviewer will actually look at.
+
+    A-MOR-2b lane B inserted the @am_edition_live overlay handle inside
+    handle @open_html's route block — that pushed the last reverse_proxy at
+    line 772 down to line 793. The proxy COUNT (7) and the OTHER six lines
+    (121, 146, 350, 359, 392, 430) are unchanged; the topology guard itself
+    is unchanged. If you find yourself changing a count or classification
+    here, you almost certainly widened the static-access boundary — read
+    the @open_html route block commentary before doing that."""
     text = CADDYFILE_PATH.read_text(encoding="utf-8")
     proxies = {p.line: p.classification for p in classify_backend_proxies(text)}
     assert proxies == {
         121: SAFE_PEER_STAMPED,
         146: SAFE_PEER_STAMPED,
-        349: SAFE_FIXED_REWRITE,
-        358: SAFE_FIXED_REWRITE,
-        391: SAFE_FIXED_REWRITE,
-        429: SAFE_FIXED_REWRITE,
-        771: SAFE_FIXED_REWRITE,
+        350: SAFE_FIXED_REWRITE,
+        359: SAFE_FIXED_REWRITE,
+        392: SAFE_FIXED_REWRITE,
+        430: SAFE_FIXED_REWRITE,
+        793: SAFE_FIXED_REWRITE,
     }
 
 
@@ -282,6 +291,21 @@ def test_main_exits_nonzero_when_no_backend_proxies_are_found(tmp_path: Path) ->
 
 
 # ---------------------------------------------------------------------------
+# A-MOR-2b lane B — AM Edition premarket overlay.
+#
+# The three B6 assertions (json is in @vps_external and NOT in
+# @vps_public_live; the html overlay handle sits inside `handle @open_html`;
+# no new top-level /live/* file_server) were MOVED to
+# ``tests/test_caddy_hub_boundary_am_edition.py``. That module-level
+# ``pytest.importorskip("fastapi")`` below this line skips the WHOLE file on
+# a venv without fastapi — including any test defined above it. Extracting
+# the AM-edition assertions is what actually lets the thin
+# Caddyfile-only venv run them (MINOR 6).
+#
+# The helper functions ``_matcher_block`` / ``_handle_block`` go with them.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
 # Tie the topology guard to the REAL app-level property it depends on:
 # loopback peer + absent X-MM-Peer is denied by _hub_prophet_authorized.
 # Same request-stub style as tests/test_prophet_lab_api.py.
@@ -325,3 +349,24 @@ def test_loopback_peer_carrying_the_edge_stamped_header_is_denied() -> None:
 def test_loopback_peer_with_no_peer_header_is_authorized() -> None:
     request = _hub_request(client_host="127.0.0.1")
     assert prophet_lab_api._hub_prophet_authorized(request) is True  # noqa: SLF001
+
+
+def test_ontology_trace_assets_are_static_only_and_cannot_select_a_backend() -> None:
+    """F04-X1 asset admission must not touch the proxy topology this file guards.
+
+    ``/ontology.css`` and ``/ontology.js`` were added to four path matchers so a
+    logged-out visitor can render the shell. That is a STATIC concern; if either
+    literal ever appeared inside a ``reverse_proxy``/``rewrite`` block it would
+    become a caller-controlled path into the backend, which is exactly the shape
+    ``_hub_prophet_authorized`` depends on never existing.
+    """
+    caddy = CADDYFILE_PATH.read_text(encoding="utf-8")
+    assert "/ontology.css" in caddy and "/ontology.js" in caddy
+
+    for block in re.findall(r"(reverse_proxy[^\n]*\{.*?^\s*\}|rewrite[^\n]*)", caddy, flags=re.S | re.M):
+        assert "/ontology." not in block, f"ontology asset leaked into a proxy/rewrite block: {block[:120]}"
+
+    # And the topology itself is unchanged by the admission.
+    proxies = classify_backend_proxies(caddy)
+    assert len(proxies) == 7
+    assert not [p for p in proxies if p.classification == UNSAFE]

@@ -19,7 +19,12 @@ ALLOWLIST = {
                 f"{REPOSITORY}/.github/workflows/selfhosted-ci-canary.yml@{MAIN_REF}",
                 job,
             )
-            for job in ("selfhosted-pack", "cache-negative-control", "contamination-probe")
+            for job in (
+                "selfhosted-pack",
+                "four-slot-preflight",
+                "cache-negative-control",
+                "contamination-probe",
+            )
         },
         (
             "workflow_dispatch",
