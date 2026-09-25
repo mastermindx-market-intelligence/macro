@@ -3076,6 +3076,8 @@ _CHART_STATE_TTL = 600.0
 _CHART_STATE_CAP = 4000
 _CHART_ACK_HISTORY_CAP = 64
 _CHART_ACK_ERROR_MAX = 120
+_CHART_ACK_WAIT_SECONDS = 2.0
+_CHART_ACK_POLL_SECONDS = 0.05
 _chart_state_store: dict[tuple[str, str, str], dict] = {}
 _chart_state_lock = threading.Lock()
 
@@ -3209,6 +3211,186 @@ def get_chart_state(user_id: str, client: str, origin_id: str = "") -> dict | No
     """Backward-compatible session-only read; origin defaults to the legacy empty mount."""
     rec = get_chart_state_record(user_id, client, origin_id=origin_id)
     return rec.get("session") if rec else None
+
+
+def _compact_chart_state_for_receipt(record: dict | None) -> dict | None:
+    """Bound the chart-state facts a command receipt can hand back to the model."""
+    if not isinstance(record, dict):
+        return None
+    session = record.get("session")
+    if not isinstance(session, dict):
+        return None
+
+    out: dict[str, Any] = {}
+    symbol = session.get("symbol")
+    tf = session.get("tf")
+    pane_id = session.get("pane_id")
+    if isinstance(symbol, str) and symbol:
+        out["symbol"] = symbol[:32]
+    if isinstance(tf, str) and tf:
+        out["tf"] = tf[:16]
+    if isinstance(pane_id, int) and not isinstance(pane_id, bool) and pane_id >= 0:
+        out["pane_id"] = pane_id
+
+    for key in ("visible_range", "data_range"):
+        value = session.get(key)
+        if isinstance(value, dict):
+            start = value.get("from")
+            end = value.get("to")
+            if (
+                isinstance(start, (int, float)) and not isinstance(start, bool)
+                and isinstance(end, (int, float)) and not isinstance(end, bool)
+                and math.isfinite(float(start)) and math.isfinite(float(end))
+            ):
+                out[key] = {"from": float(start), "to": float(end)}
+
+    indicators = session.get("indicators")
+    if isinstance(indicators, list):
+        names: list[str] = []
+        for item in indicators[:32]:
+            name = item.get("name") if isinstance(item, dict) else item
+            if isinstance(name, str) and name and name not in names:
+                names.append(name[:64])
+        out["indicator_names"] = names
+
+    drawings = session.get("drawings")
+    if isinstance(drawings, list):
+        drawing_ids: list[str] = []
+        for item in drawings[:128]:
+            drawing_id = item.get("id") if isinstance(item, dict) else None
+            if isinstance(drawing_id, str) and drawing_id and drawing_id not in drawing_ids:
+                drawing_ids.append(drawing_id[:64])
+        out["drawing_ids"] = drawing_ids
+        out["drawing_count"] = len(drawings)
+
+    return out
+
+
+def _unverified_chart_command_receipt(wire: dict, reason: str) -> dict:
+    """Model-visible truth when client execution has not been verified."""
+    out: dict[str, Any] = {
+        "command_status": "unverified",
+        "reason": reason,
+        "note": (
+            "Do not claim this chart action executed. The command was prepared for the "
+            "Terminal client, but no matching Terminal execution ACK is available."
+        ),
+        "op": wire.get("op"),
+        "batch_id": wire.get("batch_id"),
+        "seq": wire.get("seq"),
+    }
+    if isinstance(wire.get("id"), str):
+        out["id"] = wire["id"]
+    return out
+
+
+def _verified_chart_command_receipt(
+    wire: dict,
+    ack: dict,
+    record: dict,
+    *,
+    expected_context_revision: int | None,
+) -> dict:
+    """Model-visible result of an exact Terminal batch/seq acknowledgement."""
+    ok = ack.get("ok") is True
+    compact_ack: dict[str, Any] = {"ok": ok}
+    if not ok and isinstance(ack.get("error"), str) and ack["error"]:
+        compact_ack["error"] = ack["error"]
+
+    observed_revision = record.get("context_revision")
+    context_changed = (
+        isinstance(expected_context_revision, int)
+        and isinstance(observed_revision, int)
+        and observed_revision != expected_context_revision
+    )
+    out: dict[str, Any] = {
+        "command_status": "accepted" if ok else "rejected",
+        "verified_by": "terminal_ack",
+        "op": wire.get("op"),
+        "batch_id": wire.get("batch_id"),
+        "seq": wire.get("seq"),
+        "ack": compact_ack,
+        "expected_context_revision": expected_context_revision,
+        "observed_context_revision": observed_revision,
+        "context_changed": context_changed,
+        "observed_state": _compact_chart_state_for_receipt(record),
+        "note": (
+            "Terminal acknowledged the chart command. This verifies client command "
+            "acceptance/application, not pixel-level render correctness."
+            if ok else
+            "Terminal rejected the chart command. Do not claim the requested chart effect occurred."
+        ),
+    }
+    if isinstance(wire.get("id"), str):
+        out["id"] = wire["id"]
+    return out
+
+
+def _wait_for_chart_command_acks(
+    user_id: str,
+    origin_id: str,
+    expected_context_revision: int | None,
+    wires: list[dict],
+) -> list[dict]:
+    """Wait once per streamed model round for exact host batch/seq ACKs.
+
+    The existing origin-scoped chart-state record remains the sole receipt owner. A
+    context-changing command may advance context_revision before its ACK arrives; exact
+    (batch_id, seq) under the same origin identifies the effect across that transition.
+    """
+    if not wires:
+        return []
+    origin = _chart_origin_id(origin_id)
+    if not origin:
+        return [_unverified_chart_command_receipt(wire, "origin_not_bound") for wire in wires]
+
+    keys = [(str(wire.get("batch_id") or ""), wire.get("seq")) for wire in wires]
+    found: dict[tuple[str, int], tuple[dict, dict]] = {}
+    deadline = time.monotonic() + max(0.0, float(_CHART_ACK_WAIT_SECONDS))
+    last_record: dict | None = None
+
+    while True:
+        record = get_chart_state_record(user_id, "terminal", origin_id=origin)
+        if record is not None:
+            last_record = record
+            ack_map: dict[tuple[str, int], dict] = {}
+            for raw in record.get("acks") or []:
+                ack = _sanitize_chart_ack(raw)
+                if ack is not None:
+                    ack_map[(ack["batch_id"], ack["seq"])] = ack
+            for batch_id, seq in keys:
+                if not isinstance(seq, int) or isinstance(seq, bool):
+                    continue
+                key = (batch_id, seq)
+                if key in ack_map:
+                    found[key] = (ack_map[key], record)
+
+        if len(found) == len(wires):
+            break
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        time.sleep(min(max(0.0, float(_CHART_ACK_POLL_SECONDS)), remaining))
+
+    receipts: list[dict] = []
+    for wire, (batch_id, seq) in zip(wires, keys):
+        key = (batch_id, seq) if isinstance(seq, int) and not isinstance(seq, bool) else None
+        hit = found.get(key) if key is not None else None
+        if hit is None:
+            receipt = _unverified_chart_command_receipt(wire, "ack_timeout")
+            if last_record is not None:
+                receipt["observed_context_revision"] = last_record.get("context_revision")
+                receipt["observed_state"] = _compact_chart_state_for_receipt(last_record)
+            receipts.append(receipt)
+            continue
+        ack, record = hit
+        receipts.append(_verified_chart_command_receipt(
+            wire,
+            ack,
+            record,
+            expected_context_revision=expected_context_revision,
+        ))
+    return receipts
 
 
 def _tool_read_chart_state(
@@ -6692,16 +6874,22 @@ def _run_brain_loop(
             tool_name = block.name
             tool_id = block.id
             evidence_observations.append((tool_name, result))
+            model_result = _model_visible_tool_result(tool_name, result)
 
             # Collect annotate_chart payloads for the response
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
 
             # Collect chart-command payloads (W6b). v2 wire identity is host-owned.
+            # Non-stream chat cannot receive a client ACK before the HTTP response carrying
+            # this command exists, so the model must see an explicit unverified receipt.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
                 if result.get("v") == 2:
-                    commands.append(_flat_command(result, batch_id=command_batch_id, seq=command_seq))
+                    wire = _flat_command(result, batch_id=command_batch_id, seq=command_seq)
                     command_seq += 1
+                    commands.append(wire)
+                    model_result = _unverified_chart_command_receipt(
+                        wire, "nonstream_client_not_yet_received")
                 else:
                     commands.append(_flat_command(result))
 
@@ -6718,9 +6906,7 @@ def _run_brain_loop(
             tool_results.append({
                 "type": "tool_result",
                 "tool_use_id": tool_id,
-                "content": json.dumps(
-                    _json_safe(_model_visible_tool_result(tool_name, result)),
-                    default=str),
+                "content": json.dumps(_json_safe(model_result), default=str),
             })
 
         _timing_round(timing, _round_model_ms, _round_tools)
@@ -7745,22 +7931,27 @@ def _run_brain_loop_stream(
             _tools_ms_by_id.get(str(getattr(b, "id", "")),
                                 {"name": str(getattr(b, "name", "")), "ms": 0})
             for b in tool_blocks)
+        pending_v2_receipts: list[tuple[int, dict]] = []
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
             evidence_observations.append((tool_name, result))
+            model_result = _model_visible_tool_result(tool_name, result)
 
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
                 # Emit annotate event immediately
                 yield f"data: {json.dumps({'type': 'annotate', 'symbol': result.get('symbol', ''), 'annotations': result.get('annotations', [])})}\n\n"
 
-            # Chart-command bus (W6b): emit FLAT 'command' SSE event immediately.
-            # v2 transport identity is generated by this Brain turn, never by model prose.
+            # Chart-command bus (W6b): emit every command before waiting for ACKs so
+            # the Terminal can execute the whole round. The collective wait below has
+            # one bounded deadline regardless of how many v2 commands the round carries.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
                 if result.get("v") == 2:
                     wire = _flat_command(result, batch_id=command_batch_id, seq=command_seq)
                     command_seq += 1
+                    pending_v2_receipts.append((len(tool_results), wire))
+                    model_result = _unverified_chart_command_receipt(wire, "ack_pending")
                 else:
                     wire = _flat_command(result)
                 yield f"data: {json.dumps(wire)}\n\n"
@@ -7782,14 +7973,23 @@ def _run_brain_loop_stream(
                 # ignores an svg-less chart event (it tests `j.svg`), so this is additive.
                 yield f"data: {json.dumps(chart_payload)}\n\n"
 
-            # The CLIENT event above keeps the whole picture; the model gets a receipt.
+            # The CLIENT event above keeps the whole picture; the model gets a compact receipt.
             tool_results.append({
                 "type": "tool_result",
                 "tool_use_id": tool_id,
-                "content": json.dumps(
-                    _json_safe(_model_visible_tool_result(tool_name, result)),
-                    default=str),
+                "content": json.dumps(_json_safe(model_result), default=str),
             })
+
+        if pending_v2_receipts:
+            verified = _wait_for_chart_command_acks(
+                user_id,
+                chart_origin_id,
+                chart_context_revision,
+                [wire for _, wire in pending_v2_receipts],
+            )
+            for (tool_result_index, _wire), receipt in zip(pending_v2_receipts, verified):
+                tool_results[tool_result_index]["content"] = json.dumps(
+                    _json_safe(receipt), default=str)
 
         _timing_round(timing, _round_model_ms, _round_tools)
         tool_call_count += 1

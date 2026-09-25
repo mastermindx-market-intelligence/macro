@@ -4456,6 +4456,254 @@ def test_v2_batch_rejects_bad_member():
 
 # ── emit_chart_command in the tool loop → 'command' SSE event ─────────────────
 
+
+def _cmx_terminal_context(origin_id: str = "cmx-stream-origin", revision: int = 7) -> dict:
+    return {
+        "page": "terminal",
+        "ai_context": {
+            "schema": "ai_context_client.v1",
+            "origin_id": origin_id,
+            "context_revision": revision,
+            "captured_at": "2026-09-25T09:10:00Z",
+            "pinned": [],
+            "active": {"type": "security", "id": "NVDA"},
+            "ambient": {
+                "symbol": "NVDA",
+                "timeframe": "D",
+                "page": "terminal",
+                "panel": None,
+            },
+        },
+    }
+
+
+def _tool_result_payload(client: _MockClient, call_index: int = 1, result_index: int = 0) -> dict:
+    """Find the user tool-result message in the provider call, not the preceding assistant block."""
+    for message in reversed(client.calls[call_index]["messages"]):
+        if not isinstance(message, dict):
+            continue
+        content = message.get("content")
+        if not isinstance(content, list):
+            continue
+        rows = [
+            row for row in content
+            if isinstance(row, dict) and row.get("type") == "tool_result"
+        ]
+        if rows:
+            return json.loads(rows[result_index]["content"])
+    raise AssertionError("provider call contains no tool_result message")
+
+
+def test_v2_stream_tool_result_waits_for_exact_terminal_ack(tmp_path):
+    """The next model round sees Terminal ACK truth, not the pre-client validation result."""
+    root = _make_temp_root()
+    origin = "cmx-stream-accept"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_ack_h1", "args": {"p": 112.5}}, id_="ack1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Verified. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        events = []
+                        for event in gw.chat_stream(
+                            "mark the prior high", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            events.append(event)
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {"symbol": "NVDA", "tf": "D", "pane_id": 0,
+                                     "drawings": [{"id": "ai_ack_h1", "by": "ai"}]},
+                                    origin_id=origin,
+                                    context_revision=7,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"], "seq": parsed["seq"],
+                                        "id": "ai_ack_h1", "ok": True,
+                                    }],
+                                )
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "accepted"
+    assert receipt["verified_by"] == "terminal_ack"
+    assert receipt["batch_id"].startswith("brain_")
+    assert receipt["seq"] == 0
+    assert receipt["ack"]["ok"] is True
+    assert receipt["observed_state"]["drawing_ids"] == ["ai_ack_h1"]
+    assert receipt["context_changed"] is False
+
+
+def test_v2_stream_tool_result_reports_terminal_rejection(tmp_path):
+    root = _make_temp_root()
+    origin = "cmx-stream-reject"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "chart.set_tf", "args": {"tf": "7D"}}, id_="rej1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Rejected. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "switch to 7D", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal", {"symbol": "NVDA", "tf": "D"},
+                                    origin_id=origin, context_revision=7,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"], "seq": parsed["seq"],
+                                        "id": None, "ok": False, "error": "unsupported_tf",
+                                    }],
+                                )
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "rejected"
+    assert receipt["ack"] == {"ok": False, "error": "unsupported_tf"}
+    assert receipt["verified_by"] == "terminal_ack"
+
+
+def test_v2_stream_ack_survives_expected_context_revision_transition(tmp_path):
+    """Symbol/TF setters may ACK on the new revision; exact batch/seq still identifies the command."""
+    root = _make_temp_root()
+    origin = "cmx-stream-revision"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "chart.set_tf", "args": {"tf": "W"}}, id_="rev1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Weekly is active. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "switch weekly", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {"symbol": "NVDA", "tf": "W", "pane_id": 0},
+                                    origin_id=origin, context_revision=8,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"], "seq": parsed["seq"],
+                                        "id": None, "ok": True,
+                                    }],
+                                )
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "accepted"
+    assert receipt["observed_context_revision"] == 8
+    assert receipt["expected_context_revision"] == 7
+    assert receipt["context_changed"] is True
+    assert receipt["observed_state"]["tf"] == "W"
+
+
+def test_v2_stream_timeout_is_explicitly_unverified(tmp_path):
+    root = _make_temp_root()
+    origin = "cmx-stream-timeout"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_timeout", "args": {"p": 100}}, id_="tmo1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Unverified. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_CHART_ACK_WAIT_SECONDS", 0.01, create=True):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=providers):
+                with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                    with patch.object(gw, "_ensure_thread", return_value=None):
+                        with patch("lib.ai_costs.record_usage", return_value=True):
+                            list(gw.chat_stream(
+                                "mark 100", "userX", lane="fast",
+                                context=_cmx_terminal_context(origin, 7), root=root,
+                            ))
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "unverified"
+    assert receipt["reason"] == "ack_timeout"
+    assert receipt["note"].startswith("Do not claim")
+
+
+def test_v2_ack_wait_uses_one_collective_deadline_for_full_batch():
+    """Twenty-four missing ACKs consume one bounded wait, not 24 serial waits."""
+    clock = [0.0]
+
+    def fake_monotonic():
+        return clock[0]
+
+    def fake_sleep(seconds):
+        clock[0] += seconds
+
+    wires = [
+        {"v": 2, "on": True, "batch_id": "brain_collective", "seq": i,
+         "op": "draw.hline", "id": f"ai_collective_{i}", "args": {"p": 100 + i}}
+        for i in range(24)
+    ]
+    with patch.object(gw, "_CHART_ACK_WAIT_SECONDS", 2.0):
+        with patch.object(gw, "_CHART_ACK_POLL_SECONDS", 0.05):
+            with patch.object(gw.time, "monotonic", side_effect=fake_monotonic):
+                with patch.object(gw.time, "sleep", side_effect=fake_sleep):
+                    receipts = gw._wait_for_chart_command_acks(
+                        "u-collective", "origin-collective", 4, wires)
+
+    assert len(receipts) == 24
+    assert all(row["reason"] == "ack_timeout" for row in receipts)
+    assert 2.0 <= clock[0] < 2.051
+
+
+def test_v2_nonstream_model_result_is_deferred_not_executed(tmp_path):
+    """chat() cannot receive a client ACK before the HTTP response carrying the command exists."""
+    root = _make_temp_root()
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_nonstream", "args": {"p": 101}}, id_="ns1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Deferred. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        out = gw.chat(
+                            "mark 101", "userX", lane="fast",
+                            context=_cmx_terminal_context("cmx-nonstream", 3), root=root,
+                        )
+
+    assert out["commands"][0]["v"] == 2
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "unverified"
+    assert receipt["reason"] == "nonstream_client_not_yet_received"
+    assert receipt["note"].startswith("Do not claim")
+
+
+
 def test_v2_command_emitted_as_sse_event_in_stream(tmp_path):
     """emit_chart_command on the terminal page emits a v2 'command' SSE event."""
     root = _make_temp_root()
