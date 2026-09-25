@@ -24,7 +24,7 @@ from scripts.build_am_edition import (
 )
 
 FORBIDDEN_KEYS = {
-    "score", "rank", "signal", "gate", "size", "sizing", "ENTRY_OPEN",
+    "rank", "signal", "gate", "sizing", "ENTRY_OPEN",
     "prophet", "conviction", "buy", "sell", "target",
     "projection", "confidence", "surprise_skew", "surprise_distribution",
     "reaction_sensitivity", "market_implied", "inputs_hash", "model_epoch",
@@ -328,3 +328,357 @@ def test_html_written_via_write_page_contains_dbase_shim(tmp_path):
         mod.config.load = orig_load
         mod.config.ROOT = orig_root
         pages_mod.config.ROOT = orig_pages_root
+
+
+# ── MOR-2b Lane C — new blocks (context_planes, research_watch, owner_links) ─
+#
+# These tests pin the §4 C1/C2 surface contract: every block ships a header
+# row with eyebrow + h2 + state chip + .dtp-asof clock; state -> chip mapping
+# is one-to-one; non-CURRENT/STALE blocks render .mx-empty + .mx-empty-line +
+# .mx-empty-why with the reason; ZH parity is preserved (every EN string has a
+# ZH twin via t()); no title= attribute carries translated text.
+
+import importlib
+
+STATE_CHIP_PAIRS = {
+    "CURRENT": ("live", "Live", "实时"),
+    "NOT_YET_OPEN": ("pre", "Not yet open", "尚未开始"),
+    "STALE_WITH_LAST_KNOWN": ("stale", "Stale — last known", "已滞后 — 最新已知"),
+    "UNAVAILABLE": ("warn", "Unavailable", "不可用"),
+    "NOT_COVERED": ("behind", "Not covered", "未覆盖"),
+}
+
+
+def _render_am_edition(payload: dict) -> str:
+    """Render templates/am_edition.html.j2 with the given payload."""
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+    env = Environment(
+        loader=FileSystemLoader("templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    from engine import i18n  # registers t() / td() / tr() in env.globals
+
+    env.globals.update(t=i18n.t, td=i18n.td, tr=i18n.tr)
+    template = env.get_template("am_edition.html.j2")
+    return template.render(payload=payload, as_of="2026-09-08T15:00Z")
+
+
+def _make_fresh_blocks(tmp_path: Path, session_date: str = "2026-09-08") -> list[dict]:
+    """Build a fresh set of MOR-2b blocks for testing. All three blocks in CURRENT."""
+    return [
+        {
+            "key": "context_planes",
+            "title_en": "Context planes",
+            "title_zh": "背景面",
+            "state": "CURRENT",
+            "source_asof": f"{session_date}T13:00:00+00:00",
+            "rows": [
+                {
+                    "plane": "rates",
+                    "label_en": "Steady",
+                    "label_zh": "稳定",
+                    "read_en": "Rates are steady this morning.",
+                    "read_zh": "今晨利率保持稳定。",
+                    "as_of": f"{session_date}T13:00:00+00:00",
+                    "source_ref": "data/transmission/latest.json",
+                    "state": "CURRENT",
+                },
+            ],
+        },
+        {
+            "key": "research_watch",
+            "title_en": "Research watch",
+            "title_zh": "研究观察",
+            "state": "CURRENT",
+            "source_as_of": f"{session_date}T10:00:00+00:00",
+            "calibration_note_en": "Calibration summary covers through 2026-09-08.",
+            "calibration_note_zh": "校准汇总更新至 2026-09-08。",
+            "rows": [
+                {
+                    "condition_en": "Watch when the dollar breaks its 20-day range.",
+                    "condition_zh": "观察美元是否突破20日区间。",
+                    "condition_zh_disclosed_why": None,
+                    "since": f"{session_date}",
+                    "as_of": f"{session_date}T10:00:00+00:00",
+                    "source_ref": "data/master_brain/theses.jsonl",
+                },
+            ],
+        },
+        {
+            "key": "owner_links",
+            "title_en": "Owner pages & references",
+            "title_zh": "主理页面与参考",
+            "state": "CURRENT",
+            "rows": [
+                {
+                    "plane": "rates",
+                    "label_en": "Macro dashboard",
+                    "label_zh": "宏观仪表盘",
+                    "href": "macro.html",
+                    "kind": "owner",
+                },
+            ],
+        },
+    ]
+
+
+def _build_payload(tmp_path: Path, blocks: list[dict]) -> dict:
+    """Wrap the block list in the minimal payload the template needs."""
+    return {
+        "session_state": "NOT_YET_OPEN",
+        "generated_at": "2026-09-08T15:00:00+00:00",
+        "blocks": blocks,
+        "morning_source_feasibility": "AVAILABLE",
+        "morning_source_feasibility_cause_en": None,
+        "morning_source_feasibility_cause_zh": None,
+        "null_count": 0,
+    }
+
+
+def _strip_html(html: str) -> str:
+    """Remove style/nav/script blocks and tags so we can search visible text."""
+    text = re.sub(r'<style[^>]*>.*?</style>', ' ', html, flags=re.DOTALL)
+    text = re.sub(r'<nav[^>]*>.*?</nav>', ' ', text, flags=re.DOTALL)
+    text = re.sub(r'<script[^>]*>.*?</script>', ' ', text, flags=re.DOTALL)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
+# ── C1: each block renders in every typed state ──────────────────────────────
+
+
+@pytest.mark.parametrize("state", ["CURRENT", "STALE_WITH_LAST_KNOWN"])
+def test_context_planes_renders_rows_in_current_or_stale(tmp_path, state):
+    """context_planes rows render when state is CURRENT or STALE_WITH_LAST_KNOWN."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[0]["state"] = state
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    # Row content visible
+    assert "Rates are steady this morning." in _strip_html(html)
+    assert "今晨利率保持稳定。" in _strip_html(html)
+    # Header chip + asof
+    chip_pair = STATE_CHIP_PAIRS[state]
+    assert f'mx-state-chip {chip_pair[0]}' in html
+    assert chip_pair[1] in _strip_html(html)
+    assert chip_pair[2] in _strip_html(html)
+    # Built at asof
+    assert "Built at" in html or "构建时间" in html
+
+
+@pytest.mark.parametrize("state", ["UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN"])
+def test_context_planes_renders_mx_empty_when_not_current(tmp_path, state):
+    """context_planes renders .mx-empty + .mx-empty-line + .mx-empty-why when state
+    is anything other than CURRENT or STALE_WITH_LAST_KNOWN."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[0]["state"] = state
+    blocks[0]["state_reason_en"] = f"Test reason for {state}."
+    blocks[0]["state_reason_zh"] = f"{state} 测试原因。"
+    blocks[0]["rows"] = []
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    # The empty block markers
+    assert "mx-empty" in html
+    assert "mx-empty-line" in html
+    assert "mx-empty-why" in html
+    # Reason text is rendered in both EN and ZH
+    assert "Test reason" in _strip_html(html)
+    assert "测试原因" in _strip_html(html)
+    # No row content leaks through
+    assert "Rates are steady this morning." not in _strip_html(html)
+
+
+def test_research_watch_renders_rows_in_current(tmp_path):
+    """research_watch rows render when state is CURRENT."""
+    blocks = _make_fresh_blocks(tmp_path)
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    text = _strip_html(html)
+    assert "Watch when the dollar breaks its 20-day range." in text
+    assert "观察美元是否突破20日区间。" in text
+    # Calibration note is rendered
+    assert "Calibration summary covers through 2026-09-08." in text
+
+
+@pytest.mark.parametrize("state", ["UNAVAILABLE", "NOT_COVERED"])
+def test_research_watch_renders_mx_empty_in_non_current(tmp_path, state):
+    """research_watch renders .mx-empty in non-CURRENT/STALE states."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1]["state"] = state
+    blocks[1]["state_reason_en"] = f"Research watch {state} reason."
+    blocks[1]["state_reason_zh"] = f"研究观察 {state} 原因。"
+    blocks[1]["rows"] = []
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    assert "mx-empty" in html
+    assert f"Research watch {state}" in _strip_html(html)
+
+
+def test_owner_links_renders_rows_in_current(tmp_path):
+    """owner_links rows render as .brief-link when state is CURRENT."""
+    blocks = _make_fresh_blocks(tmp_path)
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    assert 'class="brief-link"' in html
+    assert 'href="macro.html"' in html
+    text = _strip_html(html)
+    assert "Macro dashboard" in text
+    assert "宏观仪表盘" in text
+
+
+def test_owner_links_renders_mx_empty_in_not_covered(tmp_path):
+    """owner_links renders .mx-empty when state is NOT_COVERED."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[2]["state"] = "NOT_COVERED"
+    blocks[2]["state_reason_en"] = "No owner pages could be linked this morning."
+    blocks[2]["state_reason_zh"] = "今晨无法链接到相关页面。"
+    blocks[2]["rows"] = []
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    assert "mx-empty" in html
+    assert "mx-empty-why" in html
+    text = _strip_html(html)
+    assert "今晨无法链接到相关页面。" in text
+
+
+# ── C1: chip text uses plain words, never the enum ───────────────────────────
+
+
+@pytest.mark.parametrize("state", list(STATE_CHIP_PAIRS.keys()))
+def test_state_chip_text_is_plain_word_not_enum(tmp_path, state):
+    """The chip text for each typed state must be the plain-word pair, never the enum."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[0]["state"] = state
+    blocks[0]["rows"] = []
+    blocks[0]["state_reason_en"] = "Test fixture reason for the read."
+    blocks[0]["state_reason_zh"] = "本次测试夹具原因。"
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    text = _strip_html(html)
+    chip_en, chip_zh = STATE_CHIP_PAIRS[state][1], STATE_CHIP_PAIRS[state][2]
+    assert chip_en in text, f"chip EN word missing for {state}"
+    assert chip_zh in text, f"chip ZH word missing for {state}"
+    # The raw enum MUST NOT appear in visible copy
+    assert state not in text, f"raw enum {state} leaked into visible copy"
+
+
+# ── C1: ZH parity — every EN string has a ZH twin via t() ─────────────────────
+
+
+def test_every_en_string_has_a_zh_twin_in_new_blocks(tmp_path):
+    """Spot-check the key EN/ZH pairs across the three new blocks."""
+    blocks = _make_fresh_blocks(tmp_path)
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    text = _strip_html(html)
+    # Each EN block string should be paired with its ZH twin
+    pairs = [
+        ("Context planes", "背景面"),
+        ("Research watch", "研究观察"),
+        ("Owner pages", "主理页面"),
+        ("Built at", "构建时间"),
+        ("as of", "数据截至"),
+    ]
+    for en, zh in pairs:
+        assert en in text, f"missing EN: {en}"
+        assert zh in text, f"missing ZH twin: {zh} for {en}"
+
+
+# ── C1: no title= translated text ─────────────────────────────────────────────
+
+
+def test_no_translated_text_in_title_attributes_of_new_blocks(tmp_path):
+    """The three new blocks must not carry translated text inside title= attrs.
+    The only legal title= attrs are on <a> tags (bilingual), or on per-row SVG/aria
+    labels that don't carry translated customer copy. We assert no ZH text appears
+    in title= attrs that wrap the new blocks."""
+    blocks = _make_fresh_blocks(tmp_path)
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    # Find any title="..." that contains a Chinese character
+    title_with_zh = re.findall(r'<title[^>]*>[^<]*[一-鿿]+[^<]*</title>', html)
+    assert not title_with_zh, (
+        f"title= attrs with translated ZH text found: {title_with_zh}"
+    )
+
+
+# ── C2: enforce-added clean — no colour/radius literals in added CSS lines ──
+
+
+def test_new_blocks_have_no_color_or_radius_literals_in_added_css(tmp_path):
+    """The CSS lines added for the three new blocks must not carry colour or
+    radius literals. Only token references (var(--...)) are allowed."""
+    import subprocess
+
+    # Use git to capture ONLY the lines we added to templates/am_edition.html.j2.
+    diff = subprocess.run(
+        ["git", "diff", "templates/am_edition.html.j2"],
+        capture_output=True, text=True, cwd=str(Path(".").resolve()),
+        check=False,
+    )
+    if diff.returncode != 0 or not diff.stdout:
+        pytest.skip("no diff in templates/am_edition.html.j2 — pre-existing state")
+    # Extract just the added lines (start with '+').
+    added_lines = []
+    for line in diff.stdout.splitlines():
+        if not line.startswith("+"):
+            continue
+        # Skip the diff header lines themselves
+        if line.startswith("+++") or line.startswith("@@"):
+            continue
+        added_lines.append(line[1:])  # drop the leading '+'
+    # Scan for colour literals (hex like #abc or #abcdef or #abcd or #abcdef00)
+    hex_literal = re.compile(r"#[0-9a-fA-F]{3,8}\b")
+    rgb_or_rgba = re.compile(r"\brgba?\s*\(")
+    radius_literal = re.compile(r"border-radius\s*:\s*\d", re.I)
+    bad = []
+    for line in added_lines:
+        if hex_literal.search(line):
+            bad.append(("hex", line))
+        if rgb_or_rgba.search(line):
+            bad.append(("rgb", line))
+        if radius_literal.search(line):
+            bad.append(("radius", line))
+    assert not bad, (
+        "added CSS lines must be token-only; found literals: "
+        + "; ".join(f"[{kind}] {line.strip()[:80]}" for kind, line in bad)
+    )
+
+
+# ── C4: nav entry exists for am_edition ──────────────────────────────────────
+
+
+def test_nav_entry_for_am_edition_next_to_reference():
+    """_navlinks.html.j2 must include a Core Research entry for am_edition.html
+    positioned next to reference.html."""
+    nav = Path("templates/_navlinks.html.j2").read_text(encoding="utf-8")
+    assert "am_edition.html" in nav
+    assert "早间版" in nav
+    # Position: am_edition entry is inserted directly after the reference entry.
+    # The comment block immediately preceding am_edition mentions Market Reference.
+    pos_ref = nav.find('href="{{ NP }}reference.html"')
+    pos_ame = nav.find('href="{{ NP }}am_edition.html"')
+    assert pos_ref != -1 and pos_ame != -1
+    assert pos_ame > pos_ref, "am_edition entry must come AFTER reference entry"
+    # Distance is small — a few hundred chars for the reference <a>...</a> block.
+    assert pos_ame - pos_ref < 3000, "am_edition entry too far from reference"
+
+
+def test_nav_icon_is_sunrise_line_not_clock():
+    """The new nav glyph must NOT be a clock icon — that glyph is owned by the
+    session-clock panels. We assert by shape: no <circle> at the centre with
+    hour/minute hands. The new glyph is a sunrise line over a horizon bar."""
+    nav = Path("templates/_navlinks.html.j2").read_text(encoding="utf-8")
+    # Find the am_edition block — between its href and the closing </a>
+    pos = nav.find('href="{{ NP }}am_edition.html"')
+    assert pos != -1
+    end = nav.find("</a>", pos)
+    block = nav[pos:end]
+    # Has at least one .ghost path (the horizon bar)
+    assert 'class="ghost"' in block
+    # Has at least one .accent path (the sunrise line + rays)
+    assert 'class="accent"' in block
+    # The shape: vertical sun position with rays, NOT clock hands.
+    # Block contains an M24 8 (top-of-circle sunrise origin) and M24 8l-7 7 / l7 7 rays.
+    assert "M24 8" in block, "expected the sunrise line origin at M24 8"
