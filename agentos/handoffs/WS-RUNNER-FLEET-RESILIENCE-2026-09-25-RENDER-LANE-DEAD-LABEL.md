@@ -252,6 +252,27 @@ next_actions:
     <id> --interval 60`) and expect the 35819881039 dossier-integrity red to
     resurface; fix that guard red separately.
   - >
+    PR #8011's two reds are MAIN's, proven by name on main's own baseline
+    `36115669812` (ref main, 6c9465c7e) which concluded `failure` 2026-09-25T11:44:44Z:
+    job 108011795656 = `nyse-calendar-freshness` / "nyse + tsx calendar rules,
+    first-party imported-name resolution"; job 108011795620 =
+    `market-os-macro-suite-pages` / "Market OS macro suite pages - shell, labels,
+    view model, builder". Both match #8011's Stop-hook evidence on LOGICAL JOB and
+    PROOF ID, which is the identity the guard keys on - never compare ci-pack-N,
+    run_ci_pack.py rebalances. Do NOT re-derive this; read the two
+    `check-runs/<job>/annotations` payloads.
+  - >
+    CRITICAL PATH for #8011 and every other full-suite PR, in strict order:
+    #7870 (`[DRAFT/HOLD]` Semiconductor Theme Intelligence B) lands or Robotics
+    #7908's imports are healed -> ci-pack-4 greens on main -> #6930 (armed +
+    merge-blocked, itself the ci-pack-3 heal) can land -> main greens -> pinned PRs
+    merge. Nothing downstream self-clears while #7870 is held. Receipts posted on
+    #7870 (5831855744) and #6930 (5831860668). Do NOT open a `main-red-repair`
+    carrying these two heals: pack-4 needs the Semiconductors shared BASE (mint-
+    forbidden per the ASTRA CEO ruling) or a revert of another program's merged
+    work, and pack-3 is #6930's copy decision. Allowlisting the import sweep is
+    recorded as the wrong remedy.
+  - >
     The `codex` lane's wedge itself is still open and still operator-owned: the
     declaration was corrected, the carrier was not. Expect 35994988547 to be killed
     at 2026-09-25T11:46:30Z and 36109614790 to be promoted and re-wedge seconds
