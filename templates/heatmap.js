@@ -2657,6 +2657,63 @@
     });
   }
 
+  // Access is declared by the map contract, not inferred from a failed data fetch.
+  // The THS rotation feed remains on the existing registration wall; the public
+  // China sector map never fetches it until the canonical wall grants this asset.
+  var _mapAccessGranted = Object.create(null);
+  var _mapAccessPromises = Object.create(null);
+  function mapAccessAllows(m) {
+    if (!m || m.access !== 'member') return Promise.resolve(true);
+    var key = m.url || '';
+    if (_mapAccessGranted[key]) return Promise.resolve(true);
+    if (_mapAccessPromises[key]) return _mapAccessPromises[key];
+    var path = key.charAt(0) === '/' ? key : '/' + key;
+    var pending;
+    try {
+      pending = fetch('/api/regwall/check', {
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { 'X-Original-Uri': path, 'X-Original-Kind': 'asset' }
+      }).then(function (r) {
+        var ok = !!r && r.status === 204;
+        if (ok) _mapAccessGranted[key] = true;
+        delete _mapAccessPromises[key];              // never cache a denial
+        return ok;
+      }, function () {
+        delete _mapAccessPromises[key];
+        return false;
+      });
+    } catch (e) {
+      return Promise.resolve(false);
+    }
+    _mapAccessPromises[key] = pending;
+    return pending;
+  }
+  function resetMapAccess(m) {
+    if (!m || m.access !== 'member') return;
+    delete _mapAccessGranted[m.url || ''];
+    delete _mapAccessPromises[m.url || ''];
+    delete _dataPromises[m.url || ''];              // do not retain protected bytes across auth changes
+  }
+  function showMemberMapGate(host, retry) {
+    host.innerHTML = _emptyHtml(
+      '<strong>' + L('THS Themes is a member view.', '同花顺主题为会员视图。') + '</strong>'
+      + '<div>' + L('Sign in to open it. If you are already signed in, retry.',
+                    '登录后即可打开。如果已经登录，请重试。') + '</div>'
+      + '<div><button type="button" class="hm-mt" data-hm-member-signin>'
+      + L('Sign in', '登录') + '</button> '
+      + '<button type="button" class="hm-mt" data-hm-member-retry>'
+      + L('Retry', '重试') + '</button></div>'
+    );
+    var signIn = host.querySelector('[data-hm-member-signin]');
+    var again = host.querySelector('[data-hm-member-retry]');
+    if (signIn) signIn.addEventListener('click', function () {
+      if (window.MDXAuth && typeof window.MDXAuth.open === 'function') window.MDXAuth.open('signin');
+      else window.location.href = 'plans.html';
+    });
+    if (again) again.addEventListener('click', retry);
+  }
+
   function mountMulti(full) {
     var maps;
     try { maps = JSON.parse(full.getAttribute('data-hm-maps') || 'null'); } catch (e) { maps = null; }
@@ -2671,21 +2728,31 @@
     }
     var host = document.createElement('div'); host.className = 'hm-host';
     full.appendChild(host);
-    var curView = null, curKey = null, btns = {};
-    function select(m) {
-      if (curKey === m.key) return;
-      curKey = m.key;
+    var curView = null, curKey = null, curMap = null, btns = {};
+    function select(m, force) {
+      if (curKey === m.key && !force) return;
+      curKey = m.key; curMap = m;
       Object.keys(btns).forEach(function (k) {
         var on = k === m.key;
         btns[k].classList.toggle('on', on); btns[k].setAttribute('aria-selected', on ? 'true' : 'false');
       });
       if (curView && curView.destroy) { curView.destroy(); curView = null; }
       host.innerHTML = _emptyHtml('…');
-      loadMapPayload(m).then(function (data) {
-        if (curKey !== m.key) return;                 // a newer click superseded this
-        if (!data.tiles || !data.tiles.length) { host.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。')); return; }
-        host.innerHTML = '';
-        curView = createFullView(host, data);
+      mapAccessAllows(m).then(function (allowed) {
+        if (curKey !== m.key) return;
+        if (!allowed) {
+          showMemberMapGate(host, function () { select(m, true); });
+          return;
+        }
+        return loadMapPayload(m).then(function (data) {
+          if (curKey !== m.key) return;               // a newer click superseded this
+          if (!data.tiles || !data.tiles.length) {
+            host.innerHTML = _emptyHtml(L('No heatmap data available.', '暂无热力图数据。'));
+            return;
+          }
+          host.innerHTML = '';
+          curView = createFullView(host, data);
+        });
       }).catch(function (e) {
         if (curKey !== m.key) return;
         host.innerHTML = _emptyHtml(L('Could not load heatmap data.', '无法加载热力图数据。'));
@@ -2701,6 +2768,14 @@
         btns[m.key] = b; bar.appendChild(b);
       });
     }
+    // A member view that was open must disappear when auth changes. Re-run the
+    // canonical wall before restoring it; an INITIAL_SESSION/PREFS_SAVED event
+    // also makes a just-completed sign-in advance without a manual page reload.
+    window.addEventListener('mdx-auth', function () {
+      if (!curMap || curMap.access !== 'member') return;
+      resetMapAccess(curMap);
+      select(curMap, true);
+    });
     select(maps[0]);
     return true;
   }
