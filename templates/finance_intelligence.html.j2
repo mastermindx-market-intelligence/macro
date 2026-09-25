@@ -26,11 +26,11 @@
     <h1 id="fi-hero-title">{{ t('Finance Intelligence', '金融情报') }}</h1>
     <p class="fi-deck">{{ t('Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.', '阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。') }}</p>
     <p class="fi-meta">
-      <span class="fi-meta-asof l-en" data-fi-mount="hero-asof" data-aria-en="As of {{ '{' }}common_as_of{{ '}' }}" data-aria-zh="截至 {{ '{' }}common_as_of{{ '}' }}" hidden></span><span class="fi-meta-asof-zh l-zh" data-fi-mount="hero-asof-zh" hidden></span>
+      <span class="fi-meta-asof l-en" data-fi-mount="hero-asof" hidden></span><span class="fi-meta-asof-zh l-zh" data-fi-mount="hero-asof-zh" hidden></span>
       <span aria-hidden="true">·</span>
-      <span class="fi-meta-cutoff l-en" data-fi-mount="hero-cutoff" data-aria-en="Knowledge cutoff {{ '{' }}knowledge_cutoff{{ '}' }}" data-aria-zh="知识截止 {{ '{' }}knowledge_cutoff{{ '}' }}" hidden></span><span class="fi-meta-cutoff-zh l-zh" data-fi-mount="hero-cutoff-zh" hidden></span>
-      <span class="fi-chip" data-fi-mount="hero-freshness" data-state-freshness="" data-aria-en="Evidence freshness: {{ '{' }}§D.12 label of freshness.state{{ '}' }}" data-aria-zh="证据新鲜度：{{ '{' }}§D.12 label of freshness.state{{ '}' }}" hidden></span>
-      <span class="fi-chip" data-fi-mount="hero-outer" data-state-outer-dossier="" data-aria-en="Outer dossier: {{ '{' }}§D.14 label of outer_dossier_ref.state{{ '}' }}" data-aria-zh="外部报告：{{ '{' }}§D.14 label of outer_dossier_ref.state{{ '}' }}" hidden></span>
+      <span class="fi-meta-cutoff l-en" data-fi-mount="hero-cutoff" hidden></span><span class="fi-meta-cutoff-zh l-zh" data-fi-mount="hero-cutoff-zh" hidden></span>
+      <span class="fi-chip" data-fi-mount="hero-freshness" data-state-freshness="" hidden></span>
+      <span class="fi-chip" data-fi-mount="hero-outer" data-state-outer-dossier="" hidden></span>
     </p>
   </header>
 
@@ -268,6 +268,10 @@
       <span class="l-en">Choose an evidence action in any section</span>
       <span class="l-zh">请在任一板块选择证据操作</span>
     </p>
+    <p class="fi-evidence-empty" data-fi-mount="evidence-missing" hidden>
+      <span class="l-en">This evidence record is not on file.</span>
+      <span class="l-zh">该证据记录暂无存档。</span>
+    </p>
     <p class="fi-evidence-private-notice" data-fi-mount="evidence-private-notice" hidden>
       <span class="l-en">Value and excerpt withheld — source rights held.</span>
       <span class="l-zh">数值与摘录已隐去 — 来源权利受限。</span>
@@ -278,6 +282,7 @@
 <div class="fi-scrim" id="fi-scrim" hidden></div>
 
 <script>(function(){function applyAria(){var lang=document.documentElement.getAttribute('data-lang')||'en';document.querySelectorAll('[data-aria-en]').forEach(function(el){el.setAttribute('aria-label',lang==='zh'?(el.getAttribute('data-aria-zh')||el.getAttribute('data-aria-en')):el.getAttribute('data-aria-en'));});}document.addEventListener('langchange',applyAria);applyAria();})();</script>
+<script src="theme.js" defer></script>
 <script src="finance_intelligence.js"></script>
 </body>
 </html>

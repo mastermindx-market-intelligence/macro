@@ -9,6 +9,7 @@ contract safe at every state.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -304,3 +305,26 @@ def test_template_and_site_assets_remain_byte_equivalent() -> None:
         site_path = site / name
         if site_path.exists():
             assert site_path.read_bytes() == template_bytes
+
+
+@needs_node
+def test_hydrated_controls_are_named_in_the_page_language() -> None:
+    """Hydrated controls are created AFTER the inline ARIA swapper has run (first
+    paint, slice change, the langchange re-render), so each must be born with its
+    accessible name in the current language, or 中文 readers hear English on
+    every evidence control."""
+    route = {"__default__": {"status": 200, "body": _json(VALID_DOC),
+                             "contentType": "application/json"}}
+    zh_snap = _run({"lang": "zh", "routes": route})["first"]
+    en_snap = _run({"lang": "en", "routes": route})["first"]
+    zh, en = zh_snap["evidenceAriaLabels"], en_snap["evidenceAriaLabels"]
+    assert zh and len(zh) == len(en), (zh, en)
+    assert all(re.search(r"[\u4e00-\u9fff]", label) for label in zh), zh
+    assert all(label.startswith("Open evidence") for label in en), en
+    # The hero chips are named from the label they paint, never a placeholder.
+    zh_chips, en_chips = zh_snap["heroChipAria"], en_snap["heroChipAria"]
+    assert en_chips[0].startswith("Evidence freshness: "), en_chips
+    assert en_chips[1].startswith("Outer dossier: "), en_chips
+    assert zh_chips[0].startswith("证据新鲜度："), zh_chips
+    assert zh_chips[1].startswith("外部报告："), zh_chips
+    assert not any("{" in label for label in zh_chips + en_chips), (zh_chips, en_chips)

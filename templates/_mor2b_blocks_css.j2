@@ -1,0 +1,41 @@
+/* MOR-2b Lane C — Morning Orientation surface: block header, state-chip slot,
+   the three block row idioms and the aibrief band. Included inside the <style>
+   of BOTH templates/am_edition.html.j2 and templates/aibrief.html.j2, so no page
+   depends on rules another page defines. Chips are the seat-pinned .dtp-chip
+   primitives from templates/theme.css; this file only scopes their art
+   direction inside the MOR-2b headers:
+     DARK  — tinted text on a transparent fill, hairline --line border; the
+             .dtp-dot pulse exists only on --live (the template emits the dot
+             only for CURRENT / OPEN);
+     LIGHT — a soft tint of the chip's own state colour (a currentColor
+             pseudo-element at 10 % opacity — the design checker forbids colour
+             functions, so the pinned "currentColor 10 %" is built from geometry
+             and opacity, not color-mix), no pulse, .eyebrow in --muted; depth is
+             the white --panel on the cool canvas plus 1 px --line hairlines,
+             never a shadow.
+   Token form only — no colour or radius literals, no var() fallback literals. */
+.mx-block-header { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.mx-block-header h2 { margin:0; font-size:var(--fs-md); font-weight:600; }
+.mx-block-header .eyebrow { color:var(--muted); }
+.mx-block-header .dtp-asof { margin-left:auto; }
+.mx-chip-slot { display:inline-flex; align-items:center; gap:6px; }
+.mx-block-header .dtp-chip { background:transparent; position:relative; isolation:isolate; }
+html[data-theme="light"] .mx-block-header .dtp-chip::before { content:""; position:absolute; inset:0; border-radius:inherit; background:currentColor; opacity:.1; pointer-events:none; z-index:-1; }
+html[data-theme="light"] .mx-block-header .dtp-dot { animation:none; }
+.mx-stale-why { font-size:var(--fs-sm); color:var(--muted); margin:0 0 6px; }
+
+.mx-cp-row, .mx-rw-row, .mx-ol-row { padding:12px 0; border-top:1px solid var(--line); }
+.mx-block-header + .mx-cp-row, .mx-block-header + .mx-rw-row, .mx-block-header + .mx-ol-row,
+.mx-stale-why + .mx-cp-row, .mx-stale-why + .mx-rw-row, .mx-stale-why + .mx-ol-row { border-top:none; padding-top:0; }
+.mx-cp-row { display:flex; flex-direction:column; gap:2px; }
+.mx-cp-row .mx-cp-read { font-size:var(--fs-body); line-height:1.5; }
+.mx-cp-row .mx-cp-meta, .mx-rw-row .mx-rw-meta { font-size:var(--fs-sm); color:var(--muted); }
+.mx-rw-row { display:flex; flex-direction:column; gap:4px; }
+.mx-rw-row .mx-rw-text { font-size:var(--fs-body); line-height:1.5; }
+.mx-ol-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; }
+.mx-ol-row .mx-ol-label { font-size:var(--fs-label); color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+
+/* aibrief band — one .panel directly under the brief's h1. */
+.mx-band { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; }
+.mx-band .mx-band-lead { flex:1 1 auto; min-width:0; font-size:var(--fs-body); line-height:1.5; }
+.mx-band .brief-link { color:var(--ink-link, var(--link)); font-weight:600; }

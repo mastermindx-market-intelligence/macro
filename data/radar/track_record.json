@@ -1,16 +1,16 @@
 {
   "schema": "ai_desk_track_record.v1",
-  "as_of": "2026-09-23",
-  "scored_total": 44,
-  "open": 239,
+  "as_of": "2026-09-25",
+  "scored_total": 53,
+  "open": 242,
   "unscored_soft": 1,
   "expired": 0,
   "overall": {
-    "n": 44,
-    "hits": 21,
-    "misses": 23,
-    "hit_rate": 0.477,
-    "dir_accuracy": 0.273
+    "n": 53,
+    "hits": 26,
+    "misses": 27,
+    "hit_rate": 0.491,
+    "dir_accuracy": 0.283
   },
   "by_conviction": {
     "high": {
@@ -37,11 +37,11 @@
   },
   "by_kind": {
     "rel_return": {
-      "n": 44,
-      "hits": 21,
-      "misses": 23,
-      "hit_rate": 0.477,
-      "dir_accuracy": 0.273
+      "n": 53,
+      "hits": 26,
+      "misses": 27,
+      "hit_rate": 0.491,
+      "dir_accuracy": 0.283
     },
     "level": {
       "n": 0,
@@ -53,15 +53,96 @@
   },
   "by_regime": {
     "Goldilocks": {
-      "n": 32,
-      "hits": 16,
-      "misses": 16,
-      "hit_rate": 0.5,
-      "dir_accuracy": 0.281
+      "n": 41,
+      "hits": 21,
+      "misses": 20,
+      "hit_rate": 0.512,
+      "dir_accuracy": 0.293
     }
   },
-  "calibration_note": "44 scored, hit-rate 0.477 (directional accuracy 0.273).",
+  "calibration_note": "53 scored, hit-rate 0.491 (directional accuracy 0.283).",
   "recent": [
+    {
+      "id": "2026-06-25-radar-reshoring",
+      "subject": "reshoring",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "miss",
+      "realized": -0.1208,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-mag7",
+      "subject": "mag7",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "hit",
+      "realized": -0.005,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-ai_software",
+      "subject": "ai_software",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "hit",
+      "realized": 0.0213,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-retail",
+      "subject": "retail",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "miss",
+      "realized": -0.0883,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-non_ai_software",
+      "subject": "non_ai_software",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "hit",
+      "realized": 0.1599,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-payments_fintech",
+      "subject": "payments_fintech",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "hit",
+      "realized": -0.0335,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-ai_agents",
+      "subject": "ai_agents",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "hit",
+      "realized": 0.1599,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-defensives",
+      "subject": "defensives",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "miss",
+      "realized": -0.0842,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-06-25-radar-housing",
+      "subject": "housing",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "miss",
+      "realized": -0.2132,
+      "check_by": "2026-09-24"
+    },
     {
       "id": "2026-06-24-radar-ai_software",
       "subject": "ai_software",
@@ -70,88 +151,7 @@
       "outcome": "hit",
       "realized": 0.0151,
       "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-mag7",
-      "subject": "mag7",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "hit",
-      "realized": -0.0078,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-reshoring",
-      "subject": "reshoring",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "miss",
-      "realized": -0.0999,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-non_ai_software",
-      "subject": "non_ai_software",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "hit",
-      "realized": 0.2041,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-payments_fintech",
-      "subject": "payments_fintech",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "hit",
-      "realized": -0.0256,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-retail",
-      "subject": "retail",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "miss",
-      "realized": -0.0857,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-ai_agents",
-      "subject": "ai_agents",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "hit",
-      "realized": 0.2041,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-defensives",
-      "subject": "defensives",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "miss",
-      "realized": -0.0672,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-defense",
-      "subject": "defense",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "miss",
-      "realized": -0.1367,
-      "check_by": "2026-09-23"
-    },
-    {
-      "id": "2026-06-24-radar-housing",
-      "subject": "housing",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "miss",
-      "realized": -0.1851,
-      "check_by": "2026-09-23"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 44 \u6761\uff0c\u547d\u4e2d\u7387 0.477\uff08\u65b9\u5411\u51c6\u786e\u7387 0.273\uff09\u3002"
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 53 \u6761\uff0c\u547d\u4e2d\u7387 0.491\uff08\u65b9\u5411\u51c6\u786e\u7387 0.283\uff09\u3002"
 }
