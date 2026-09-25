@@ -976,7 +976,7 @@ def _receipt(document: Document, cell: Cell) -> Any | None:
             return None
     if any(max(start, span_start) < min(end, span_end) for start, end in markup_spans):
         return None
-    if first > 0 and extents[first - 1][0] < extents[first][0] and extents[first - 1][1] > extents[first][0]:
+    if first > 0 and extents[first - 1][1] > extents[first][0]:
         return None
     if last + 1 < len(extents) and extents[last][1] > extents[last + 1][0]:
         return None
