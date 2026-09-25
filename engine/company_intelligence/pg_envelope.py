@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import date
 import functools
 import html
+import math
 import re
 from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
@@ -859,9 +860,13 @@ def _literal(printed: str) -> float | None:
         return None
     match = re.fullmatch(r"\((\d+(?:\.\d+)?)\)%?", printed)
     if match:
-        return -float(match.group(1))
+        return _finite(-float(match.group(1)))
     match = re.fullmatch(r"[+$]?(\d+(?:\.\d+)?)%?", printed)
-    return float(match.group(1)) if match else None
+    return _finite(float(match.group(1))) if match else None
+
+
+def _finite(value: float) -> float | None:
+    return value if math.isfinite(value) else None
 
 
 def _pins(document: Document, fiscal_year: int, calendar_year: int, has_prior_reconciliation: bool) -> tuple[Pin, ...]:
