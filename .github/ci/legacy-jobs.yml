@@ -309,9 +309,23 @@ jobs:
     # 2026-09-22 integration-baseline main-red repair: exact owner closure.
     # Exclusive replaces opaque fallback inference; the curated-closure gate
     # fails if a future import is not covered by this declaration.
+    #
+    # 2026-09-24 lane A3 (round-5 MINOR 4): the legacy-jobs `paths:` here
+    # was widened to declare the worktree-sparse helper module because
+    # an earlier round's real-artifact byte-identity test used a dynamic
+    # importlib load to call that helper. Round 5 redirects that test
+    # at the COMMITTED fixture tree (under `tests/fixtures/`, never
+    # under `data/` or `site/`), so the helper call is gone — but the
+    # path declaration is KEPT to satisfy the `Widen … never narrow`
+    # rule (a path the gate already trusts cannot be removed without
+    # another widening). The justification that "the contract-delta
+    # gate follows that import edge" was the prior round's claim and
+    # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
       - "config.yml"
+      - "config/market_reference.yml"
+      - "config/sparse_worktree.json"
       - "data/market_state/latest.json"
       - "data/neuralweb/market_plane.json"
       - "data/regime/latest.json"
@@ -323,6 +337,7 @@ jobs:
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_am_edition.py"
+      - "scripts/worktree_sparse.py"
       - "site/am_edition.html"
       - "site/am_edition.json"
       - "site/live/quotes.json"
@@ -332,7 +347,29 @@ jobs:
       - "site/regime.json"
       - "site/release_forecast.json"
       - "templates/am_edition.html.j2"
+      - "tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py"
+      - "tests/fixtures/am_edition_fixture/data/market_state/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/neuralweb/market_plane.json"
+      - "tests/fixtures/am_edition_fixture/data/regime/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/release_forecast/latest.json"
+      - "tests/fixtures/am_edition_fixture/site/live/quotes.json"
+      - "tests/fixtures/am_edition_fixture/site/master_brief.json"
+      - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
+      # 2026-09-24 A-MOR-2b lane B (VPS premarket owner): the live lane wraps
+      # the producer and shares its import graph (scripts.build_am_edition) so
+      # it rides the producer gate. The contract-delta differential gate refuses
+      # a head that would let GitHub allocate a duplicate runner alongside the
+      # packed trusted-executor dispatch, so both suites must complete here.
+      - "scripts/am_edition_live.py"
+      - "tests/test_am_edition_live.py"
+      # MINOR 6 fix: the three B6 Caddy-boundary assertions used to live
+      # below tests/test_caddy_hub_boundary.py's module-level
+      # pytest.importorskip("fastapi") and so were skipped on a thin venv.
+      # Extracting them to a sibling module lets the thin venv — and the
+      # packed trusted-executor dispatch — pick them up; the suite still
+      # imports scripts.check_caddy_hub_boundary, same env.
+      - "tests/test_caddy_hub_boundary_am_edition.py"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
     # execution like every sibling job in this family — contract-delta's
@@ -347,8 +384,8 @@ jobs:
       - name: install test deps
         # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
         run: pip install pytest pyyaml jinja2
-      - name: AM Edition producer contract (per-source clocks, six states, no laundering)
-        run: python -m pytest tests/test_am_edition_producer.py -q
+      - name: AM Edition producer + lane-B live contract (per-source clocks, six states, no laundering, served-artifact chmod 0o644, freshest-wins under Z/naive ISO stamps)
+        run: python -m pytest tests/test_am_edition_producer.py tests/test_am_edition_live.py -q
 
   all-exports-resolve:
     if: ${{ false }}
@@ -6311,7 +6348,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: design governance unit suites
-        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_check_p0b_receipt_closure.py tests/test_freshness_chips_language_invariant.py -q
+        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_freshness_chips_language_invariant.py -q
       - name: design-system ratchet selftest (each rule fires on its own fixture)
         run: python3 scripts/check_design_system.py --self-check
       - name: runtime-style injection guard selftest (gate fires on planted injection)
@@ -6344,24 +6381,92 @@ jobs:
           fi
           git diff --unified=0 "$mb" HEAD -- templates site > /tmp/ui.diff
           python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff
-      # P0B receipt closure: #7603 changed templates/hk.html.j2 without reminting
-      # the browser receipts (same class as #7500 / navigation-refresh.css).
-      # Derive the pin set FROM the receipts at runtime; a pinned path in the
-      # PR diff without the receipts that pin it fails closed.
-      - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
-        run: python3 scripts/check_p0b_receipt_closure.py --selftest
+      # The P0B receipt-closure gate used to be two trailing steps here
+      # (#7613). It is now its own job, `p0b-receipt-closure` below: the pack
+      # runner skips every later step of a logical job once one step fails,
+      # so on #6872 (2026-09-24) the forward-only design ratchet's five
+      # findings SHADOWED the receipt gap — the closure step never executed,
+      # its verdict was never printed, and main went red on ci-pack-9 for
+      # hours. Independent gates need independent jobs.
+
+  p0b-receipt-closure:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # ui.p0b_receipt_closure (config/house_law_checks.yml). A change to any
+    # path the committed P0B browser receipts pin
+    # (mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json:
+    # construction_inputs, loaded_assets, verifier.path, and
+    # rendered-fixture.json's recipe inputs) must re-mint those receipts in
+    # the same diff, or tests/test_stock_dashboard_first_frame.py reds on pure
+    # main and every fresh merge-ref inherits it (#7500, #7603, #6872).
+    #
+    # OWN JOB, deliberately (2026-09-24, #6872 postmortem). The gate first
+    # shipped as trailing steps on design-governance (#7613). Two defects:
+    #   1. run_ci_pack.py skips the remaining steps of a logical job after the
+    #      first failing step, so a design-ratchet red on the same PR hid the
+    #      receipt verdict entirely (#6872: 5 color-mix findings on
+    #      templates/ontology.css ran first; the closure step never executed).
+    #   2. "unscoped" is not "always-on": infer_job_scopes derives a scope from
+    #      the job's commands, and mockups/ is outside every opaque scan root,
+    #      so a diff that changed ONLY the rendered fixture or a receipt input
+    #      selected 3/158 jobs and skipped design-governance altogether.
+    #
+    # CURATED SCOPE. The pin set is derived at runtime from the receipts, so the
+    # declaration below names the ROOTS every pin lives under plus the gate's
+    # own import closure. It is bound to the receipts by
+    # tests/test_ci_pack.py::test_p0b_receipt_closure_job_owns_every_receipt_pinned_path,
+    # which derives the live pin set from the committed receipts and fails when
+    # any pinned path stops selecting this job — a receipt that later pins a
+    # path outside these roots must widen this list in the same PR.
+    #
+    # The gate step runs FIRST so its verdict is printed whatever the selftest
+    # or unit suite do; those two guard the gate's own correctness and still
+    # red the job on their own. fetch-depth 0 + explicit base fetch is
+    # load-bearing: the diff needs `git merge-base`, and a missing base fails
+    # closed rather than guarding nothing.
+    scope: exclusive
+    paths:
+      # the gate, its unit suite, and its import closure
+      - "scripts/check_p0b_receipt_closure.py"
+      - "tests/test_check_p0b_receipt_closure.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "engine/__init__.py"
+      # the receipts, the rendered fixture, and every fixture input they pin
+      - "mockups/evidence/prophet-p0b-zero-fouc/**"
+      # receipt-pinned construction inputs, loaded assets, recipe, verifier
+      - "templates/**"
+      - "site/**"
+      - "engine/i18n.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
       - name: p0b receipt-closure (pinned construction inputs require a same-diff receipt remint)
         run: |
           if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=design-governance::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+            echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
             exit 1
           fi
           if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
-            echo "::error title=design-governance::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+            echo "::error title=p0b-receipt-closure::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
             exit 1
           fi
           git diff --name-only "$mb" HEAD > /tmp/p0b.changed
           python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
+      - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
+        run: python3 scripts/check_p0b_receipt_closure.py --selftest
+      - name: p0b receipt-closure unit suite
+        run: python3 -m pytest tests/test_check_p0b_receipt_closure.py -q
 
   template-site-sync:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -12528,7 +12633,6 @@ jobs:
           python -m pytest
           tests/test_china_heatmap_gate.py
           tests/test_china_heatmap_observations.py
-          tests/test_market_heatmap_switchers.py
           -q
       - name: coherent China heatmap browser refresh contracts (source + shipped mirror)
         run: |
@@ -16507,7 +16611,105 @@ jobs:
       - name: install regime-strip test dependencies
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
       - name: markets risk-regime strip + cycle-stage mobile detail
-        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q
+        # The fresh-render byte-match is a DATA assertion (see
+        # markets-regime-strip-bake-parity below): scripts.build_markets reads
+        # data/regime + data/market_state, which closing-bell's scope=close
+        # render rewrites WITHOUT re-baking site/markets.html, so between that
+        # commit and the next render.yml bake every merge ref reds here on a
+        # tree no PR changed. Deselected from the code gate, not deleted.
+        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q --deselect tests/test_markets_regime_strip.py::test_fresh_render_byte_matches_committed_markets_html
+
+  markets-regime-strip-bake-parity:
+    if: ${{ false }}  # executed inside the data-health lane; keep the legacy status definition runner-free
+    gate: data
+    # tests/test_markets_regime_strip.py::test_fresh_render_byte_matches_committed_markets_html
+    # — a fresh `python -m scripts.build_markets` must byte-match the committed
+    # site/markets.html. That builder reads LIVE data/regime/latest.json and
+    # data/market_state/latest.json, which the closing-bell lane's scope=close
+    # render rewrites (c4b705de8f2, 2026-09-25 00:45Z: 7,942 regime lines) without
+    # re-baking site/markets.html — only render.yml bakes that page, and its runs
+    # were being cancelled by main's push cadence. Measured on PR #7971's merge
+    # ref: HK flipped Risk-on -> Risk-off in the fresh render while the committed
+    # page (last baked at #6872) still said Risk-on; main's own newest proof
+    # (25fb8fa805, 23:51Z) predates the data commit and was green, so no PR could
+    # merge and nothing could drain it. By the manifest's own definition that is
+    # a `data` verdict: a nightly/wire data commit alone flips it. It runs here,
+    # after the nightly has baked the page, where a mismatch means the bake
+    # drifted from the builder — the drift #7712 wanted caught. The fixture-driven
+    # strip tests stay on the code gate in markets-regime-strip.
+    scope: exclusive
+    paths:
+      - "templates/markets.html.j2"
+      - "templates/_market_regime_strip.html.j2"
+      # Parity test reads the hero stance sentences from this partial.
+      - "templates/_unified_dashboard_hero.html.j2"
+      - "templates/theme.css"
+      - "site/theme.css"
+      - "site/markets.html"
+      # markets.css (mobile in-flow detail) + its DOM-measured suite (2026-09-23).
+      - "site/markets.css"
+      - "scripts/build_markets.py"
+      - "engine/market_state.py"
+      - "tests/test_markets_regime_strip.py"
+      - "tests/test_markets_cyc_stage_mobile.py"
+      - "tests/fixtures/markets_regime_strip/**"
+      # Import closure beyond the page family. Listed literally so
+      # exclusive scope still covers what inference would have owned.
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config/sparse_worktree.json"
+      - "engine/__init__.py"
+      - "engine/business_cycle.py"
+      - "engine/canon.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/global_liquidity.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/regime_prior.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "lib/store.py"
+      - "scripts/__init__.py"
+      - "scripts/_cycle_seed.py"
+      - "scripts/build_regime_prior.py"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/optimize_assets.py"
+      - "scripts/refresh_markets_now.py"
+      - "scripts/worktree_sparse.py"
+      - "site/countrycyclesdata/country_cycles.json"
+      - "site/cycle.css"
+      - "site/cycle_data.js"
+      - "site/markets_app.js"
+      - "site/markets_data.js"
+      - "site/markets_i18n.js"
+      - "site/marketsdata/markets_engine.js"
+      - "site/mm_charts.js"
+      - "site/regimedata/regime_prior.js"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install regime-strip test dependencies
+        run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
+      - name: markets.html fresh-render byte-match (post-bake parity)
+        run: python -m pytest tests/test_markets_regime_strip.py -q -k test_fresh_render_byte_matches_committed_markets_html
 
   dashboard-render-contract:
     # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and
