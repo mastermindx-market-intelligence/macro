@@ -433,3 +433,116 @@ Before any of these fields influence ranking, gating, sizing, or a buy/exit reco
    unresolved.
 5. Sector Central consumer integration once the active redesign/heatmap PRs reconcile,
    preserving the Sectors / Themes / Subsectors hierarchy and avoiding collided UI paths.
+
+
+## Continuation 2 — PIT breadth replay + revision durability
+
+The next implementation slice closes two more gaps without touching the active
+subsector-rotation carriers.
+
+### PIT membership / price replay
+
+New `engine/theme_repricing_pit.py` reuses the existing Finviz vintage owner
+(`engine.theme_graph.local_sources`) rather than creating another membership history.
+For any archived Finviz session it:
+
+- chooses only the newest structure vintage known on or before that session;
+- refuses dates before the first observed vintage;
+- requires an actual NYSE session date;
+- reconstructs 1W/1M/3M member returns on exact exchange-session endpoints;
+- never forward-fills a missing member close;
+- feeds those PIT members/returns back through the same repricing classifier.
+
+New `scripts/replay_theme_repricing_pit.py` is a read-only harness over the canonical
+`data/massive_stock_day` store. It uses the existing
+`scripts.replay_standout_pipeline.split_adjust` repair and truncates the raw store at
+the replay study's maximum date before adjustment. It checks local-mirror freshness and
+refuses a missing/stale heavy store by default. No ledger or publication path is created.
+
+A controlled end-to-end fixture includes a synthetic 10:1 split and proves the replay
+uses the repaired price series, the correct structure vintage and exact session endpoints.
+
+### Current real-data limitation
+
+The MacBook worktree and the checked M1 Studio mirror contain the committed Massive
+manifest but **zero local Massive parquet files**. The M1 manifest reports 21,593 tickers,
+coverage 2021-07-06 through 2026-09-21 and zero recent missing runs, but that manifest is
+not the R2 data itself. A real historical breadth replay is therefore deliberately
+**not claimed** in this continuation.
+
+The harness is now buildable and fail-closed; the real replay requires a legitimate
+R2-restored runner/mirror. Do not substitute a stale or manifest-only checkout.
+
+### Revision durability — named leg, not fused score
+
+New `engine/theme_rerating_durability.py` generalizes the incumbent
+`engine.theme_revisions.theme_revisions_for` rollup to the Finviz subtheme roster and
+joins it to price participation without inventing a score.
+
+The revision owner remains authoritative for:
+- analyst coverage floors;
+- revision breadth;
+- coverage-normalized breadth where available;
+- PIT broadening state;
+- proxy broadening disclosure when history is insufficient;
+- 90-day estimate drift.
+
+The new join emits named two-axis states such as:
+- `price_and_revisions_confirming`
+- `price_leads_positive_revisions`
+- `price_revision_divergence`
+- `revisions_ahead_of_price_diffusion`
+- `joint_weakening`
+- `fragile_price_unconfirmed`
+
+Every state remains display/context only. "Divergence" means the two observed axes
+disagree; it is not a short/sell call.
+
+The existing `scripts/build_themes_heatmap.py` now attaches this revision leg to the
+same grandfathered owner heatmap payload when the revision store is present. When the
+revision store is absent the join is an honest no-op and the price heatmap still builds.
+No new public path or publisher exists.
+
+### Real 2026-09-24 revision + price read
+
+Read-only reconstruction used current Macro main
+`773be812b89ccff610a248f187f8ac98b057fbbf` with exact tracked blobs:
+
+- revisions latest: `2440f5dc809eafec7522aa061fd8d4993cd8565e` (1,542 rows)
+- revisions history: `aae9bb4132da65b0faf512c02e9fb88dc216a4ca` (20,347 rows)
+- Finviz perf snapshot: `d1a3ea82c4730684e8680122646473f390ff19d0`
+- Finviz tree: `65b0e9e3f5f938aaf224130f0af14cd6922aafed`
+
+Across all 268 source subthemes the revision states were:
+- 98 broadening_confirmed
+- 80 positive_but_rolling
+- 23 negative
+- 19 flat
+- 37 insufficient
+- 5 positive_level
+- 6 positive_level_proxy_broadening
+
+This immediately demonstrates why one sector score is too coarse: the same broad price
+tape can contain confirming, rolling, flat and unmeasured fundamental revision states.
+
+Semiconductor subthemes on that same snapshot:
+
+| Subtheme | Price shape | Revision state | Revision breadth | Revision coverage | Joint read |
+|---|---|---:|---:|---:|---|
+| Compute | broad_price_repricing | positive_but_rolling | +0.364 | 6/8 | price_revision_divergence |
+| Memory | broad_price_repricing | positive_but_rolling | +0.575 | 5/5 | price_revision_divergence |
+| Analog | broad_price_repricing | positive_but_rolling | +0.829 | 6/7 | price_revision_divergence |
+| Wireless | broad_price_repricing | flat | +0.041 | 6/6 | mixed |
+| Foundries | narrow_leadership | insufficient | +0.600 raw level | 1/4 | fragile_price_unconfirmed |
+| Design Tools | broad_price_repricing | positive_but_rolling | +0.698 | 5/6 | price_revision_divergence |
+| Lithography | early_diffusion | broadening_confirmed | +0.644 | 3/5 | price_and_revisions_confirming |
+| Packaging | broad_price_repricing | positive_level | +0.958 | 3/6 | price_leads_positive_revisions |
+| Next-Gen | broad_price_repricing | positive_but_rolling | +0.784 | 7/14 | price_revision_divergence |
+
+Interpretation guard: `positive_but_rolling` is still a positive revision level whose
+PIT breadth derivative has rolled over. It is **not** "fundamentals are bad." Conversely,
+Lithography's current price/revision agreement is confirmation evidence, not a buy call.
+
+This is the granularity the Chairman asked for: Semiconductors can be broadly repricing
+while the most durable evidence differs materially by Compute, Memory, Foundries,
+Lithography, Packaging and the other subthemes.

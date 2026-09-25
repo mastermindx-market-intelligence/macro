@@ -21,6 +21,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine import theme_rerating_durability as trd  # noqa: E402
+from engine import theme_revisions as tr  # noqa: E402
 from engine import themes_heatmap as th  # noqa: E402
 from lib import config  # noqa: E402
 
@@ -29,6 +31,35 @@ log = logging.getLogger("build_themes_heatmap")
 
 def _data(*parts: str) -> Path:
     return config.data_dir().joinpath(*parts)
+
+
+_AUTO = object()
+
+
+def _attach_revision_durability(payload: dict, tree: list, *, latest=_AUTO, hist=_AUTO) -> bool:
+    """Attach named revision confirmation to the EXISTING owner heatmap payload.
+
+    Missing revision stores are an honest no-op; the heatmap keeps its price context.
+    Tests can inject frames directly without touching the data plane.
+    """
+    if latest is _AUTO:
+        latest = tr._latest()
+    if latest is None:
+        return False
+    if hist is _AUTO:
+        hist = tr._history()
+    price_context = {
+        "subthemes": [tile["repricing"] for tile in payload.get("tiles", [])
+                      if isinstance(tile.get("repricing"), dict)]
+    }
+    durability = trd.build_durability(tree, price_context, latest, hist)
+    by_key = {row["key"]: row for row in durability["subthemes"]}
+    for tile in payload.get("tiles", []):
+        tile["durability"] = by_key.get(tile.get("t"))
+    payload["durability"] = {
+        key: value for key, value in durability.items() if key != "subthemes"
+    }
+    return True
 
 
 def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict:
@@ -56,6 +87,10 @@ def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict
         asof=asof,
         source=snap.get("source") or "finviz-themes",
     )
+    try:
+        _attach_revision_durability(payload, tree)
+    except Exception as exc:  # noqa: BLE001 — optional named leg, never kills price map
+        log.warning("theme repricing revision durability unavailable: %s", exc)
 
     outdir = site / "marketdata"
     outdir.mkdir(parents=True, exist_ok=True)

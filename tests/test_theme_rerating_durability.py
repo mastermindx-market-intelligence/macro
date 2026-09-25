@@ -1,0 +1,198 @@
+"""Named price + analyst-revision durability evidence, never a fused score."""
+import pandas as pd
+
+from engine import theme_repricing_context as price
+from engine import theme_rerating_durability as dur
+
+
+def _tree():
+    return [{
+        "theme": "Semiconductors",
+        "subsectors": [
+            {"key": "compute", "name": "Compute", "members": ["A", "B", "C", "D"]},
+            {"key": "foundry", "name": "Foundry", "members": ["E", "F", "G", "H"]},
+        ],
+    }]
+
+
+def _price_context():
+    group = {
+        "compute": {"1W": 5.0, "1M": 9.0, "3M": 12.0},
+        "foundry": {"1W": 3.0, "1M": 5.0, "3M": 6.0},
+    }
+    members = {
+        "A": {"1W": 7.0, "1M": 12.0, "3M": 15.0},
+        "B": {"1W": 5.0, "1M": 9.0, "3M": 12.0},
+        "C": {"1W": 4.0, "1M": 8.0, "3M": 10.0},
+        "D": {"1W": 3.0, "1M": 6.0, "3M": 8.0},
+        "E": {"1W": 12.0, "1M": 8.0, "3M": 5.0},
+        "F": {"1W": -1.0, "1M": 4.0, "3M": 4.0},
+        "G": {"1W": -1.0, "1M": 3.0, "3M": 3.0},
+        "H": {"1W": -1.0, "1M": 2.0, "3M": 2.0},
+    }
+    return price.build_context(_tree(), group, members)
+
+
+def _latest(breadths):
+    rows = []
+    for ticker, breadth in breadths.items():
+        rows.append({
+            "ticker": ticker,
+            "n_analysts": 6,
+            "n_covering": 8,
+            "breadth": breadth,
+            "breadth_cov": breadth,
+            "est_chg_30d": 3.0,
+            "est_chg_90d": 3.0,
+            "net_up_30d": 2.0,
+            "asof": "2026-01-16",
+        })
+    return pd.DataFrame(rows).set_index("ticker")
+
+
+def _history(prior, current):
+    rows = []
+    for stamp, vals in [("2025-12-22", prior), ("2026-01-16", current)]:
+        for ticker, breadth in vals.items():
+            rows.append({
+                "ticker": ticker,
+                "asof": stamp,
+                "n_analysts": 6,
+                "breadth": breadth,
+            })
+    return pd.DataFrame(rows)
+
+
+def test_broad_price_plus_rising_revisions_is_confirming_not_a_buy_signal():
+    latest = _latest({
+        "A": 0.8, "B": 0.7, "C": 0.6, "D": 0.5,
+        "E": 0.2, "F": 0.1, "G": 0.0, "H": -0.1,
+    })
+    hist = _history(
+        {"A": 0.1, "B": 0.1, "C": 0.0, "D": 0.0,
+         "E": 0.1, "F": 0.1, "G": 0.0, "H": 0.0},
+        latest["breadth"].to_dict(),
+    )
+    out = dur.build_durability(_tree(), _price_context(), latest, hist)
+    compute = next(row for row in out["subthemes"] if row["key"] == "compute")
+
+    assert compute["price"]["shape"] == "broad_price_repricing"
+    assert compute["revisions"]["state"] == "broadening_confirmed"
+    assert compute["joint_state"] == "price_and_revisions_confirming"
+    assert compute["decision_authority"]["can_support_buy_decision"] is False
+    assert out["authority"]["may_trade"] is False
+
+
+def test_narrow_price_can_have_revisions_ahead_of_diffusion():
+    latest = _latest({
+        "A": 0.0, "B": 0.0, "C": 0.0, "D": 0.0,
+        "E": 0.8, "F": 0.7, "G": 0.6, "H": 0.5,
+    })
+    hist = _history(
+        {"A": 0.0, "B": 0.0, "C": 0.0, "D": 0.0,
+         "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0},
+        latest["breadth"].to_dict(),
+    )
+    out = dur.build_durability(_tree(), _price_context(), latest, hist)
+    foundry = next(row for row in out["subthemes"] if row["key"] == "foundry")
+
+    assert foundry["price"]["shape"] == "single_name_impulse"
+    assert foundry["revisions"]["state"] == "broadening_confirmed"
+    assert foundry["joint_state"] == "revisions_ahead_of_price_diffusion"
+
+
+def test_price_strength_with_negative_revisions_surfaces_divergence():
+    latest = _latest({
+        "A": -0.8, "B": -0.7, "C": -0.6, "D": -0.5,
+        "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0,
+    })
+    hist = _history(
+        {"A": -0.4, "B": -0.3, "C": -0.2, "D": -0.1,
+         "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0},
+        latest["breadth"].to_dict(),
+    )
+    out = dur.build_durability(_tree(), _price_context(), latest, hist)
+    compute = next(row for row in out["subthemes"] if row["key"] == "compute")
+
+    assert compute["revisions"]["state"] == "negative"
+    assert compute["joint_state"] == "price_revision_divergence"
+
+
+def test_thin_revision_coverage_is_insufficient_not_negative():
+    latest = _latest({"A": 0.9, "B": 0.8})
+    latest["n_analysts"] = 2
+    out = dur.build_durability(_tree(), _price_context(), latest, None)
+    compute = next(row for row in out["subthemes"] if row["key"] == "compute")
+
+    assert compute["revisions"]["state"] == "insufficient"
+    assert compute["joint_state"] == "price_only_unconfirmed"
+    assert "catalyst_structure" in compute["missing_named_legs"]
+
+
+def test_revision_proxy_never_impersonates_pit_broadening_confirmation():
+    latest = _latest({
+        "A": 0.6, "B": 0.5, "C": 0.4, "D": 0.3,
+        "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0,
+    })
+    latest.loc[["A", "B", "C", "D"], "est_chg_30d"] = 6.0
+    latest.loc[["A", "B", "C", "D"], "est_chg_90d"] = 3.0
+
+    out = dur.build_durability(_tree(), _price_context(), latest, None)
+    compute = next(row for row in out["subthemes"] if row["key"] == "compute")
+
+    assert compute["revisions"]["broadening_state"] == "INSUFFICIENT_HISTORY"
+    assert compute["revisions"]["broadening_proxy"] is True
+    assert compute["revisions"]["state"] == "positive_level_proxy_broadening"
+    assert compute["joint_state"] == "price_leads_positive_revisions"
+
+
+def test_existing_heatmap_owner_projection_can_attach_named_revision_leg():
+    from engine import themes_heatmap as th
+    from scripts import build_themes_heatmap as builder
+
+    tree = _tree()
+    group = {
+        "compute": {"1D": 1.0, "1W": 5.0, "1M": 9.0, "3M": 12.0},
+        "foundry": {"1D": 1.0, "1W": 3.0, "1M": 5.0, "3M": 6.0},
+    }
+    member = {
+        "A": {"1W": 7.0, "1M": 12.0, "3M": 15.0},
+        "B": {"1W": 5.0, "1M": 9.0, "3M": 12.0},
+        "C": {"1W": 4.0, "1M": 8.0, "3M": 10.0},
+        "D": {"1W": 3.0, "1M": 6.0, "3M": 8.0},
+        "E": {"1W": 12.0, "1M": 8.0, "3M": 5.0},
+        "F": {"1W": -1.0, "1M": 4.0, "3M": 4.0},
+        "G": {"1W": -1.0, "1M": 3.0, "3M": 3.0},
+        "H": {"1W": -1.0, "1M": 2.0, "3M": 2.0},
+    }
+    payload = th.build_themes_heatmap(tree, group, member)
+    latest = _latest({
+        "A": 0.8, "B": 0.7, "C": 0.6, "D": 0.5,
+        "E": 0.2, "F": 0.1, "G": 0.0, "H": -0.1,
+    })
+    hist = _history(
+        {"A": 0.1, "B": 0.1, "C": 0.0, "D": 0.0,
+         "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0},
+        latest["breadth"].to_dict(),
+    )
+
+    assert builder._attach_revision_durability(
+        payload, tree, latest=latest, hist=hist
+    ) is True
+    compute = next(tile for tile in payload["tiles"] if tile["t"] == "compute")
+    assert compute["durability"]["joint_state"] == "price_and_revisions_confirming"
+    assert payload["durability"]["schema"] == dur.SCHEMA
+    assert payload["durability"]["authority"]["may_trade"] is False
+
+
+def test_heatmap_revision_leg_is_honest_noop_when_owner_store_absent():
+    from engine import themes_heatmap as th
+    from scripts import build_themes_heatmap as builder
+
+    payload = th.build_themes_heatmap(_tree(), {}, {})
+    before = set(payload)
+    assert builder._attach_revision_durability(
+        payload, _tree(), latest=None, hist=None
+    ) is False
+    assert set(payload) == before
+    assert "durability" not in payload
