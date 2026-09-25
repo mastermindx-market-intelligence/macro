@@ -193,8 +193,50 @@ const L=(en,zh)=>`<span class="l-en">${en}</span><span class="l-zh">${zh}</span>
     assert "<img" not in outputs[5] and "<script>" not in outputs[5]
     assert "&lt;img" in outputs[5] and "&lt;script&gt;" in outputs[5]
     subject = "th" if path.endswith(".j2") else "t"
-    assert f"recoNoEntry({subject})?RECO_NOENTRY_WHY({subject})" in source
+    if path.endswith(".j2"):
+        assert f"recoNoEntry({subject})?L('Initial entry context: ','初始入场条件：')+RECO_NOENTRY_WHY({subject})" in source
+        assert "WAIT FOR ENTRY" not in source
+        assert "${L('theme rating','主题评级')}" in source
+    else:
+        assert f"recoNoEntry({subject})?RECO_NOENTRY_WHY({subject})" in source
     assert "no member has a clean entry" not in source
+
+
+def test_detail_hero_preserves_native_theme_rating_when_initial_entry_is_not_confirmed():
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node required to execute the actual detail recommendation chip")
+    source = (ROOT / "templates/basket_detail.html.j2").read_text()
+    chip = re.search(r"const recoChip = t => .*?;\n", source, re.S)
+    assert chip
+    rows = [
+        {"reco": "accumulate", "reco_en": "ACCUMULATE", "reco_zh": "增持",
+         "textures": {"clean_entry": {"flag": False}}},
+        {"reco": "accumulate", "reco_en": "ACCUMULATE", "reco_zh": "增持",
+         "textures": {"clean_entry": {"flag": True}}},
+        {"reco": "hold", "reco_en": "HOLD", "reco_zh": "持有",
+         "textures": {"clean_entry": {"flag": False}}},
+        {"reco": "enter", "reco_en": "ENTER", "reco_zh": "入场", "textures": {}},
+    ]
+    script = r"""
+const L=(en,zh)=>`<span class="l-en">${en}</span><span class="l-zh">${zh}</span>`;
+const RECO_COLOR={accumulate:['','',''],enter:['','',''],hold:['','','']};
+const RECO_NOENTRY=['','',''];
+const recoNoEntry=t=>(t.reco==='accumulate'||t.reco==='enter')&&!(((t.textures||{}).clean_entry)||{}).flag;
+const badge=(cls,c,en,zh)=>`<span class="${cls}">${L(en,zh)}</span>`;
+""" + chip.group(0) + "\nconst rows=" + json.dumps(rows, ensure_ascii=False) + ";\nconsole.log(JSON.stringify(rows.map(recoChip)));"
+    outputs = json.loads(subprocess.check_output([node, "-e", script], text=True))
+    assert "ACCUMULATE" in outputs[0] and "WAIT FOR ENTRY" not in outputs[0]
+    assert "ACCUMULATE" in outputs[1] and "WAIT FOR ENTRY" not in outputs[1]
+    assert "HOLD" in outputs[2] and "WAIT FOR ENTRY" not in outputs[2]
+    assert "ENTER" in outputs[3] and "WAIT FOR ENTRY" not in outputs[3]
+    assert "${L('theme rating','主题评级')}" in source
+    assert "L('Initial entry context: ','初始入场条件：')" in source
+    assert "Check individual stocks" in source and "查看具体个股" in source
 
 
 def test_desk_and_detail_use_identical_nonentry_explanation_contract():
@@ -220,7 +262,11 @@ def test_legacy_relative_strength_texture_is_not_presented_as_price_stretch(path
     assert actual == ["high relative strength · breadth narrowing", "相对强势偏高", ""]
     assert "very extended (RS ≥95%ile)" not in source
     assert "not an own-price extension measure" in source
-    assert "${L('WAIT FOR ENTRY','等待入场')}" in source
+    if path.endswith(".j2"):
+        assert "${L('WAIT FOR ENTRY','等待入场')}" not in source
+        assert "${L('theme rating','主题评级')}" in source
+    else:
+        assert "${L('WAIT FOR ENTRY','等待入场')}" in source
 
 
 # Real-source attribution reuses the native owner; this suite is already in CI.

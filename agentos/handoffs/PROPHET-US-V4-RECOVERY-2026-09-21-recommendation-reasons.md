@@ -476,3 +476,56 @@ the documentation/evidence successor's exact head and remote effect.
 The separate generic guarded basket-intelligence include seam is permitted to
 the existing #7870 source writer by #7669 comment5808986207; all #7669 JS and
 source custody remain protected. Do not add separate global controllers/planes.
+
+
+## September 24 continuation/detail integration repair
+
+Independent review `5307123386` on exact source
+`6942b2b62bad2dfc9d3b50eb7042e0a126b708c4` found one bounded integration
+contradiction against the separately accepted China action-card continuation
+contract: a dominant/accumulate theme could remain actionable on the card through
+`entry_route=continuation`, while the shared detail hero replaced the native
+theme recommendation with **WAIT FOR ENTRY** solely because the initial
+`clean_entry.flag` was false.
+
+Before repairing, two abandoned dirty files were reconciled. No live process held
+the worktree. Their exact 5,142-byte patch is preserved in #7669 comment
+`5824203418`, SHA-256
+`638c1d0caa4bd8d53f3c7e76902f6b814e79fd21cbf1cae4dcf1cb6fe6785319`.
+It re-projected explanation copy but did not close the continuation/detail
+contradiction; both files were restored to exact HEAD before the accepted repair.
+
+The repair is presentation-only:
+- the detail hero always displays the native producer recommendation as **Theme
+  rating**;
+- when the initial clean-entry texture is not confirmed, a separate **Initial
+  entry context** line explains that state;
+- the existing stock-entry table remains the only constituent-eligibility
+  projection;
+- no JavaScript continuation classifier, score/rank/recommendation mutation,
+  sizing, alert, or trade authority was added.
+
+A discriminating RED receipt captured the old `WAIT FOR ENTRY` replacement.
+After repair, the affected consumer suites passed **110 tests**. A broader local
+test command was platform-refused before dispatch and was not retried through
+another route; the new remote head must therefore rely on normal hosted CI for
+the full repository gate.
+
+All 121 regional detail pages were regenerated only from their own embedded
+inputs. The preservation receipt covers **1,917 member rows / 1,878 assessed
+rows** with status, buys, coverage, all non-explanation DETAIL fields,
+observation dates and generation stamps unchanged. The real compiled
+`cn_pharma_cxo` witness remains dominant/accumulate, clean-entry false,
+0 qualified / 14 waiting; the page now displays the native theme rating and
+initial-entry context separately and contains no detail-hero WAIT literal.
+
+New browser proof contains **32 states**: continuation/zero-qualified,
+fresh-initial, final-demoted, stale+missing-entry × dark/light × EN/ZH ×
+1440/390. All 32 have the expected native rating, no blanket WAIT instruction,
+stock checks preserved, zero page exceptions and no page-wide overflow. Evidence:
+`research/sector_pulse/recommendation_reasons_20260921/continuation_20260924/`.
+
+Still owed: commit/push on the same carrier, exact-head hosted CI, independent
+repair re-review, current-base integration, normal publication and served-path
+proof. This closes only the bounded detail contradiction; the parent leadership,
+Prophet and semiconductor intelligence missions remain incomplete.

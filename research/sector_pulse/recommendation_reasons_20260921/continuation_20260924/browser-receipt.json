@@ -1,0 +1,589 @@
+{
+  "source_page": "site/basket_china/cn_pharma_cxo.html",
+  "source_page_sha256": "6b3711339955e6554c29bc59b0244641c2693950f616090c0faa51a562e90865",
+  "captures": 32,
+  "records": [
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-en-1440.png",
+      "sha256": "f0fa9d8a6fa30e44b321b5fcfe5044455760e3bc9889b2599fa3c0729bbcc078"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-en-390.png",
+      "sha256": "6c5bd1e5ec74d796471017db5d1d31d9f396be1a9506182fc4a73654f6407198"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-zh-1440.png",
+      "sha256": "216b3b54faf08d09f8d2b37aa1e9a8500b32cfe663aca12e8cc46e69157e9a76"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-zh-390.png",
+      "sha256": "20070ada941842709b3622eb57f7390fe46e26cf9ea18291c0a6cfa869c65089"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-en-1440.png",
+      "sha256": "80540039d1fdb813995f1280d8907787a7c74a8febd096c8e058ef02c0a56f00"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-en-390.png",
+      "sha256": "8a80f532fe956716d083f5772e7163b1b3800fb56750515b24cee9414e1266af"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-zh-1440.png",
+      "sha256": "97a1243e479e6a1bf0be69a39a62a7b56cf69d31464c917e8715bcdaf12307c3"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-zh-390.png",
+      "sha256": "de6bca230877454e4e15914bc702ecbe2fcf150a8e2aee17d14a1b0c9043d601"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-en-1440.png",
+      "sha256": "09786fb4ff3e8d5f649143bb314fb37f225b84750e204421e345ec2bb15a86d1"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-en-390.png",
+      "sha256": "f9e656baaab46020ad8aabe8bf36f25018476ca1eaa9fc6541c1636fd8fa5142"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-zh-1440.png",
+      "sha256": "4d5fa0a48150e0ca2d5c4465b0806951b70017e2f4e29d0da1007f057ff02438"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-zh-390.png",
+      "sha256": "3c6eb3a65c29b0c02c479a9d46171847b72c46cb1adcbccfb80aef4b0025af8e"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-en-1440.png",
+      "sha256": "918e3afa497a54d43b491cc5dbdba6369c1d99b50eb3dad5191f5f85f0a533ef"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-en-390.png",
+      "sha256": "2da311b1cf9be381d477bbd4a758244177088933c44b94caf085c08b37514a46"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-zh-1440.png",
+      "sha256": "e7c32b5a445ad463563cfc5847d1c27f53ea60ea18703a0b892d4697a0669bb6"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-zh-390.png",
+      "sha256": "f2ac4fa9afd215663b8f0f99021f09494df6be4f53a6fec3551b8ca17fb61c9b"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-en-1440.png",
+      "sha256": "c9c92dea4686e885ef6cb53a9e6eb0a3901dd57cffd0b4b65ff05740583dbbec"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-en-390.png",
+      "sha256": "c2260d4ab5adbac596283d849ee9f3a92b733345654c1c80701057ff959b19c5"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-zh-1440.png",
+      "sha256": "aa6031ab66d8a525b27d03d7b7c27f8b9f08d06e24a1b1d784dcfcb79424f774"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-zh-390.png",
+      "sha256": "6ef20662a7cb7a4f0f931c9a5f26a05106e591b2c0a8c4c7ddac0e19f46c8075"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-en-1440.png",
+      "sha256": "e453561fc01f0c7bb7050a4feda7c49ca3dfcfd494088df8bfbfc897e64394bd"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-en-390.png",
+      "sha256": "37b28cfd92659db104098905940cd69ce3beec9493c965ccc43644dd7a2069e4"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-zh-1440.png",
+      "sha256": "bd44bc37220553574af4fc5f3b2c5135b3ccec3f54ce44b9006a89fb4e025559"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-zh-390.png",
+      "sha256": "4573a08cb31418b94609b2f0190fe9f03993c09fda62c6ac230811b15bc7aa4f"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-en-1440.png",
+      "sha256": "90ce42814fda6230593d84cb7b7fe8c50fe85c215f5750fe8df26c8965ada416"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-en-390.png",
+      "sha256": "4b2d0bd180763d3edb0813c5f0821862b39b1e144fe549f478c5e9912dacb1ec"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-zh-1440.png",
+      "sha256": "64c81244b178766ec8f13f69b00168ed973d155e0a32e0defece0295d3030fc6"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-zh-390.png",
+      "sha256": "2675fe1d4c4d708473a242c30398fb014a84499b8516f5d674f95bf4b405e929"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-en-1440.png",
+      "sha256": "a377567ac27e9f93c57c5ee75a2b638fdeb8a13c06ad350673e76eae8685ae57"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-en-390.png",
+      "sha256": "f060dc69fb82acf0b7f5f2233f4fb32fb60da1bfab1e1bd0126729b5f74be540"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-zh-1440.png",
+      "sha256": "cac9ac516e08c110e5c4ca76fd6a2436937a71aa3ba7fc18bc0a4523852aa611"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-zh-390.png",
+      "sha256": "b673072d65f44261d445b7016e5adc5260322f12e3ab0899abb34a4732470e01"
+    }
+  ],
+  "production": false,
+  "limitations": [
+    "Synthetic controls modify only DETAIL data inside the compiled current source page.",
+    "No new market data, action-card decision, score, or trade permission is created.",
+    "Local Chromium proof only; production/authenticated proof remains separate."
+  ]
+}
