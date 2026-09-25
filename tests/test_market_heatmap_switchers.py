@@ -5,7 +5,7 @@ does not rebuild that accepted renderer. China reuses the same multi-map rendere
 while projecting the existing THS rotation + stock-map owner feeds in the browser.
 Navigation exposure is sequenced behind the incumbent nav release carrier so this
 PR does not create a concurrent writer for the immutable nav asset chain.
-""
+"""
 from __future__ import annotations
 
 import html
