@@ -283,7 +283,7 @@
     {
       "event_id": "2026-08-26-hormuz-terms-and-revenue-conflict-cluster",
       "available_at": "2026-08-26T11:27:00Z",
-      "direction": "mixed",
+      "direction": "mixed_conflict",
       "family": "iran_oman_hormuz_navigation",
       "source_title": "Iran reiterates Hormuz remains closed unless US accepts terms; one minute later IRGC says Iran and Oman agreed on share of Hormuz revenues",
       "canonical_url": "https://www.newsquawk.com/headlines/-iran-reiterates-that-hormuz-will-remain-closed-unless-the-us-accepts-its-terms-of-the-mou",
@@ -297,7 +297,9 @@
       "timing_primary_eligible": true,
       "imported_from": "wave3",
       "previously_inspected": false,
-      "outcome_context_exposed": false
+      "outcome_context_exposed": false,
+      "source_direction_original": "mixed",
+      "normalization_note": "Normalized legacy Wave 3 direction to the frozen cross-session census vocabulary; event identity, timestamp, source evidence, and outcome state unchanged."
     },
     {
       "event_id": "2026-08-31-trump-weighing-limited-iran-strikes",
