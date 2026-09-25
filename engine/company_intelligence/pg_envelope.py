@@ -56,6 +56,7 @@ _YEAR = re.compile(r"(?<![0-9])20[0-9]{2}(?![0-9])")
 _FOOTNOTE_MARKER = re.compile(r"\([0-9]\)")
 _FIGURE = re.compile(r"\(?\$?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?\)?%?")
 _ODD_CHARACTER = re.compile(r"[^\S \t\n\r\f\xa0]|[\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]")
+_RAW_TEXT_ELEMENT = re.compile(rf"<({'|'.join(_RAW_TEXT_CLOSE)})\b[^>]*>.*?</\1{_HTML_SPACE}*>", re.I | re.S)
 _PERIOD_LABEL = "<period>"
 _NUMERIC = "<n>"
 _ROLES = (
@@ -1124,7 +1125,7 @@ def _prior_note_present(document: Document, prior_end: date) -> bool:
         f"(1) For the three months ended {_ENGLISH_MONTHS[prior_end.month - 1]} {prior_end.day}, {prior_end.year}, "
         "there were no adjustments to or reconciling items for Core EPS."
     )
-    return _norm(sentence) in _norm(_text(document.source[end:following]))
+    return _norm(sentence) in _norm(_text(_RAW_TEXT_ELEMENT.sub(" ", document.source[end:following])))
 
 
 def _table_start(source: str, ordinal: int) -> int:
