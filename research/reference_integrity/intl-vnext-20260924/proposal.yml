@@ -1,203 +1,203 @@
 schema: mastermind.rig_proposal.v1
 reference_id: intl-vnext-20260924
 proposed_artifact:
-  frozen_sha: 007d88824cb6831eb534685371ffa5999d577d91
+  frozen_sha: a8c85c9bc9a463301654475f8e140443118b3753
   paths:
   - mockups/refs/institutionalize/intl/reference-r3.html
   screenshots:
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-light-en.png
     viewport: desktop
     theme: light
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-dark-en.png
     viewport: mobile
     theme: dark
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-dark-zh.png
     viewport: mobile
     theme: dark
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-light-en.png
     viewport: mobile
     theme: light
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-light-zh.png
     viewport: mobile
     theme: light
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-desktop-dark-en-horizon-12m.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-dark-en-horizon-12m.png
     viewport: desktop
     theme: dark
     locale: en
     state: horizon-12m
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-light-zh-horizon-1m.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-light-zh-horizon-1m.png
     viewport: mobile
     theme: light
     locale: zh
     state: horizon-1m
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-jp-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-gb-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-kr-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-kr-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-kr
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-tw-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-tw-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-tw
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-in-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-in-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-in
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-au-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-au-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-au
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-country-ez-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-ez-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-ez
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-loading-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-loading-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-loading
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-loading-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-loading-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-loading
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-empty-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-empty-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-empty
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-empty-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-empty-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-empty
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-stale-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-stale-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-stale
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-stale-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-stale-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-stale
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-error-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-error-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-error
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-organ-error-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-error-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-error
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-desktop-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-dark-en.png
     viewport: mobile
     theme: dark
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-dark-zh.png
     viewport: mobile
     theme: dark
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-light-en.png
     viewport: mobile
     theme: light
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-preservation-mobile-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-light-zh.png
     viewport: mobile
     theme: light
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-fixed-charts-desktop-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-fixed-paths-desktop-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: fixed-84-session-price-paths
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-mobile-dark-zh-initial-locale.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-dark-zh-initial-locale.png
     viewport: mobile
     theme: dark
     locale: zh
@@ -209,11 +209,11 @@ dispositions:
   rationale: Keeps the canonical overview and gives the international engine-owned 66/100 verdict a bounded first answer.
 - id: global.us-world-rotation
   disposition: IMPROVE
-  target: Act 1 US-versus-world beam and Act 3 separate RRG reference
+  target: Act 1 US-versus-world beam and Act 3 separate RRG scatter plus reference table
   rationale: Retains leadership versus the US without fusing RRG vocabulary into turn state.
 - id: market.turn-state
   disposition: IMPROVE
-  target: Act 2 full ten-market turn-state board and Act 3 current order
+  target: Act 2 ten-market turn cards with metrics, pullback-risk state, driver, evidence receipt, plus Act 3 current order
   rationale: Every published state remains visible with its accepted stance; no market is suppressed.
 - id: market.performance-usd
   disposition: IMPROVE
@@ -224,10 +224,10 @@ dispositions:
   target: Act 5 seven-economy comparison table plus country inspector tabs
 - id: rates.curve-desk
   disposition: RETAIN
-  target: Act 6 rates and curve desk with a real bonds.html destination
+  target: Act 6 eight-market rates and curve desk with long-yield drift, carry versus the US, a typed Taiwan null, and a real bonds.html destination
 - id: risk.contagion
   disposition: IMPROVE
-  target: Act 4 contagion board with connectedness, named transmitters, US receiving share, and non-causal disclosure
+  target: Act 4 International Risk Desk plus contagion board with connectedness, named transmitters, US receiving share, funding state, and non-causal disclosure
   rationale: Makes transmission readable while preserving the explicit no-causation boundary.
 - id: policy.central-banks
   disposition: RETAIN
@@ -241,14 +241,14 @@ dispositions:
   rationale: Restores the accepted rate-driven read and its window/confirmation receipts without inventing a new score.
 - id: risk.fragility-map
   disposition: IMPROVE
-  target: Act 4 seven-economy structural fragility ledger
-  rationale: Accounts for every economy and keeps threshold, source, cadence, base-rate, and honest-null law in place.
+  target: Act 4 seven-economy structural fragility ledger plus the US anchor
+  rationale: Accounts for every declared economy plus the US anchor and retains valued breaches, thresholds, source, cadence, base-rate, and honest-null law.
 - id: risk.pressure-flow
   disposition: RETAIN
-  target: Act 4 complete ten-row production pressure population with qualitative severity and named sources
+  target: Act 4 complete ten-row production pressure population with source-backed magnitude plus at least three named contributors and shares per market
 - id: reference.regime-correlation-ranks
   disposition: RETAIN
-  target: Act 3 RRG table, Act 5 regime comparison, and Act 6 correlation/regime/ranks desk
+  target: Act 3 RRG scatter plus table and Act 6 growth-inflation map, pairwise correlation heatmap, and comparable league table
 - id: action.sector-rotation
   disposition: RELOCATE
   destination: Act 6 preservation card plus intl_stocks.html, sector_central.html, and cycle destinations
@@ -330,20 +330,19 @@ authority_delta:
   evidence: mockups/refs/institutionalize/intl/reference-r3.html#rotation-turns; engine/intl_rotation.py
 - id: auth.transmission
   production_claim: Connectedness, receiving share, and pressure links are transmission reads, not causal shares.
-  proposal_claim: The same read is labelled non-causal and no decorative quantitative pressure magnitude is introduced.
-  direction: weaker
+  proposal_claim: The same read is labelled non-causal; source-backed pressure magnitude and contributor shares are retained, and no unsourced decorative magnitude is introduced.
+  direction: equal
   warranted: true
   evidence: mockups/refs/institutionalize/intl/reference-r3.html#transmission-fragility
 - id: auth.posture
   production_claim: Market-state engines publish plain-language stance fields without position sizing.
-  proposal_claim: Act 6 repeats those accepted stance fields and explicitly says it never originates, sizes, or upgrades a
-    trade.
+  proposal_claim: Accepted stance remains on the market and turn surfaces that already own it; Act 6 does not mint or redundantly project another posture layer, and nothing originates, sizes, or upgrades a trade.
   direction: equal
   warranted: true
   evidence: mockups/refs/institutionalize/intl/reference-r3.html#deep-desks
 - id: auth.fragility
   production_claim: Structural flags disclose thresholds, annual source/cadence, and a high false-positive base rate.
-  proposal_claim: The same thresholds and caveats are kept while every economy is accounted for.
+  proposal_claim: The same thresholds and caveats are kept while every declared economy plus the US anchor is accounted for with valued breaches.
   direction: equal
   warranted: true
   evidence: mockups/refs/institutionalize/intl/reference-r3.html#transmission-fragility
@@ -354,8 +353,8 @@ information_economics:
       deep routes.
   findings:
   - The proposal reduces the first-level hierarchy without deleting a baseline capability.
-  - Fixed 84-session price paths remain visual and explicitly horizon-independent; RRG remains a distinct relative-leadership table.
-  - Full populations are printed for turn states, economies, pressure flow, fragility, and central banks.
+  - Fixed 84-session price paths remain visual and explicitly horizon-independent; RRG remains a distinct relative-leadership scatter plus reference table.
+  - Full populations are printed for turn states, economies, pressure flow, fragility including the US anchor, and central banks.
   - Organ-local degraded states prevent one failed producer from blanking unrelated intelligence.
   - The exact international stock route remains outside the redesign and is browser-proven in eight cells.
   preserved:
