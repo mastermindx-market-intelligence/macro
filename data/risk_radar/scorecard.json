@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-09-25T16:56:59+00:00",
+  "generated_at": "2026-09-25T20:49:25+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-09-24",
@@ -555,14 +555,14 @@
       }
     },
     "ca": {
-      "asof_last_row": "2026-09-23",
+      "asof_last_row": "2026-09-25",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 2,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 17,
+        "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
-        "graded_n": 27
+        "graded_n": 30
       },
       "windows": {
         "full": {
@@ -579,9 +579,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 6,
+            "n": 9,
             "dd_missed": 0,
-            "quiet": 6,
+            "quiet": 9,
             "quiet_rate": 1.0
           },
           "by_scare": {},
@@ -601,9 +601,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 6,
+            "n": 9,
             "dd_missed": 0,
-            "quiet": 6,
+            "quiet": 9,
             "quiet_rate": 1.0
           },
           "by_scare": {},

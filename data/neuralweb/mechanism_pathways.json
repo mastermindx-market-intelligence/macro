@@ -47,7 +47,7 @@
             "zh": "利率/通胀冲击"
           },
           "direction": "",
-          "value": 80.7,
+          "value": 86.6,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -218,7 +218,7 @@
             "zh": ""
           },
           "direction": "",
-          "value": 1.54,
+          "value": 1.56,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
