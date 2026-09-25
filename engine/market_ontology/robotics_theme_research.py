@@ -35,7 +35,6 @@ importable (and its tests green) on a base without #7870.
 from __future__ import annotations
 
 import copy
-import re
 import hashlib
 import json
 import math
