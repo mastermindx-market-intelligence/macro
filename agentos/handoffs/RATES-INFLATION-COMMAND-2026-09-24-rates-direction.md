@@ -492,3 +492,39 @@ Next scientific/product action: freeze a generic forward-only month-end DGS10 sh
 from the known aggregate sign, with quarter-end merely tagged diagnostically rather
 than changing the sign, so current relevance is resolved without backfitting the
 2022-2026/quarter-end cuts.
+
+
+## Continuation: generic month-end DGS10 prospective shadow is frozen and registered
+
+Following the context-only ruling, the ORIGINAL aggregate month-end sign was frozen
+forward without selecting the attractive post-result non-quarter subset.
+
+Freeze commit 3dde99f9fb784cf74e625e497b7757e66ca0cd8e,
+freeze timestamp 2026-09-25T01:40:25.269311Z.
+TrialLedger family remains d2_rates_calendar_flows; exactly1 prospective config
+8c3ba77ccc47b7bd was appended, moving family literal width21->22.
+
+The exact24-event schedule is frozen from incumbent engine.rebalance_calendar:
+2026-09-30,10-30,11-30,12-31; monthly through2028-08-31. Generic signal is DOWN
+DGS10 on EVERY frozen month-end. Quarter-end is diagnostic only and cannot alter
+the sign. There is no subgroup repair, threshold grid or backfill.
+
+Freeze source state: DGS10 latest2026-09-22, canonical finite date/value prefix digest
+8f3f8e7ced9629996a187a1db319f40a18b8f2260d6ef308c087d214e07dc93b.
+Initial registered report:24 scheduled /0 matured /24 pending; prefix unchanged;
+no eligible outcome was opened before freeze/registration. First event2026-09-30.
+
+Outcome per event: exact frozen event-date DGS10 close vs prior finite close, plus
+excess vs prior same-month daily changes. Missing frozen event date is never
+substituted. Descriptive floor12 events; promotion-review floor24. At24, unchanged
+retrospective gate requires raw+excess negative means, HAC t<=-2 and both
+chronological halves negative. authority=false.
+
+No new scheduler/collector/evidence ledger was created. Current future DGS correction
+vintages are not yet first-observation-custodied; stronger promotion will additionally
+need an accepted first-capture/prospective evidence owner, preferably through the
+existing RIC forward path rather than a new ledger.
+
+DO_NOT_REDO/SELECT: do not switch v1 to non-quarter month-ends after seeing the
+post-result diagnostic. Do not alter signal based on Sep30 being quarter-end/PCE.
+Those facts are context for interpretation, not permission to change the frozen rule.

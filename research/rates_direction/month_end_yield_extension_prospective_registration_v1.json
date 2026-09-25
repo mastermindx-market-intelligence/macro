@@ -1,0 +1,10 @@
+{
+  "schema": "ric.month_end_yield_extension.prospective_registration.v1",
+  "family": "d2_rates_calendar_flows",
+  "registered": 1,
+  "literal_n": 22,
+  "config_hash": "8c3ba77ccc47b7bd",
+  "freeze_sha256": "8241c5b87bb2aa9ca2ad56aed88ffb7db68a0d71ca3ef458be3973df84f81b4a",
+  "ledger_after_sha256": "4a31decce97577334370860e23765a1fe74a7700d81794a0bf6736d0545a8b77",
+  "authority": false
+}
