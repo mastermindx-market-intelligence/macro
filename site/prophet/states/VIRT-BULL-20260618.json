@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VIRT-BULL-20260618",
-  "asof": "2026-09-24",
+  "asof": "2026-09-25",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.3,
@@ -10,23 +10,23 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 100.0,
-    "progress": 0.2,
-    "pace": 14.0,
-    "retention": 0.1,
-    "overlay": 67.0
+    "validity": 68.9,
+    "progress": 0.0,
+    "pace": 12.7,
+    "retention": 0.0,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.0,
+    "dist_to_stop_r": 0.759,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 126.7,
-    "p1": 0.0003,
-    "p2": 0.0002,
+    "horizon_pct_used": 128.9,
+    "p1": -0.1608,
+    "p2": -0.0804,
     "p3": null,
-    "move_r": 0.0,
+    "move_r": -0.241,
     "mfe_r": 0.458,
-    "mae_r": -0.103
+    "mae_r": -0.241
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 10.000000305175782,
-  "_mae": -2.260001831054687,
+  "_mae": -5.27000015258789,
   "_max_p1": 0.3051106119046768,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667
+  "days_elapsed": 58,
+  "tau": 1.2889
 }

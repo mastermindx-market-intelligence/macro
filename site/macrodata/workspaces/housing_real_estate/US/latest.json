@@ -92,12 +92,16 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [],
-    "reasons": [],
+    "degraded": [
+      "mortgage_rate"
+    ],
+    "reasons": [
+      "worst_required_source_freshness=LATE_WITHIN_TOLERANCE"
+    ],
     "required": [
       {
         "component_id": "mortgage_rate",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "30-year fixed mortgage rate",
           "zh": "30年期固定抵押贷款利率"
@@ -105,7 +109,7 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-09-17",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "housing_starts",
@@ -156,8 +160,8 @@
         "status": "PRESENT"
       }
     ],
-    "state": "CURRENT",
-    "worst_freshness": "CURRENT"
+    "state": "LATE_WITHIN_TOLERANCE",
+    "worst_freshness": "LATE_WITHIN_TOLERANCE"
   },
   "axes": {
     "items": []
@@ -204,7 +208,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "housing_real_estate-US-945261da9289ed45"
+    "predecessor_generation_id": "housing_real_estate-US-fad3e7ba097b580a"
   },
   "drivers": {
     "balance_sheet": [
@@ -311,11 +315,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-24T06:09:07Z",
+    "built_at": "2026-09-25T05:30:38Z",
     "calculation_as_of": "2026-09-17",
-    "code_version": "ef43ff17b916d11db6588309889ec28f0ecc74a6",
-    "content_sha256": "fad3e7ba097b580aec20dcb0d7c5f761d1b859767559432ee498265085098a72",
-    "generation_id": "housing_real_estate-US-fad3e7ba097b580a",
+    "code_version": "d8a2f9d85b7b218faa0c63aa343be76440281481",
+    "content_sha256": "e63ad475e807e7c81a08aae42adbf3e31bb47644ccc205b509fb59d55222d2de",
+    "generation_id": "housing_real_estate-US-e63ad475e807e7c8",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },
@@ -380,7 +384,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -402,7 +406,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -424,7 +428,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -446,7 +450,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -468,7 +472,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -490,7 +494,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -512,7 +516,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -535,7 +539,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -558,7 +562,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -580,7 +584,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -618,7 +622,7 @@
         "definition_id": "fred.MORTGAGE30US.mortgage_30y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive_financing",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "mortgage_30y_rate_level",
         "model_version": "housing_real_estate.compose.v1",
@@ -654,7 +658,7 @@
         "definition_id": "fred.MORTGAGE30US.mortgage_30y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive_financing",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "mortgage_30y_rate_change_13w",
         "model_version": "housing_real_estate.compose.v1",
@@ -2067,7 +2071,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "30-year fixed mortgage rate (Freddie Mac PMMS, via FRED)",
           "zh": "30年期固定抵押贷款利率（Freddie Mac PMMS，经FRED）"

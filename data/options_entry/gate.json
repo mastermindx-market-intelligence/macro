@@ -1,6 +1,6 @@
 {
  "schema": "options_entry.gate.v3",
- "generated_at": "2026-09-23 21:04 UTC",
+ "generated_at": "2026-09-25 08:43 UTC",
  "scored": false,
  "status": "building_history",
  "weight": 0.0,
@@ -19,11 +19,11 @@
    "ticker"
   ],
   "declared_lane": "buy",
-  "raw_rows": 12718,
+  "raw_rows": 12726,
   "raw_events_all_lanes": 5485,
-  "declared_lane_rows": 6015,
+  "declared_lane_rows": 6017,
   "declared_lane_stamped_rows": 1267,
-  "excluded_non_buy_rows": 6703,
+  "excluded_non_buy_rows": 6709,
   "canonical_events": 2662,
   "canonical_dates": 46,
   "horizon_mapping": {
@@ -34,7 +34,7 @@
    "terminal_state_clean8_21": "sole non-null repeated event value"
   }
  },
- "n_ledger_rows": 12718,
+ "n_ledger_rows": 12726,
  "n_canonical_events": 2662,
  "n_stamped_rows": 1267,
  "n_stamped_events": 523,

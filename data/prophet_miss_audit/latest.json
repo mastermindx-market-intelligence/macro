@@ -114,16 +114,18 @@
     "present_counts": {
      "buy": 1,
      "ran": 0,
-     "leaders": 0
+     "leaders": 1
     },
     "present": {
      "buy": [
       "NVDA"
      ],
      "ran": [],
-     "leaders": []
+     "leaders": [
+      "NET"
+     ]
     },
-    "represented_n": 1,
+    "represented_n": 2,
     "days_since_top5_entry": null
    },
    {
@@ -134,7 +136,7 @@
     "present_counts": {
      "buy": 1,
      "ran": 1,
-     "leaders": 0
+     "leaders": 1
     },
     "present": {
      "buy": [
@@ -143,9 +145,11 @@
      "ran": [
       "IREN"
      ],
-     "leaders": []
+     "leaders": [
+      "CRM"
+     ]
     },
-    "represented_n": 2,
+    "represented_n": 3,
     "days_since_top5_entry": null
    },
    {
@@ -210,7 +214,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 1,
-  "n_unrepresented": 8,
+  "n_unrepresented": 10,
   "misses": [],
   "baskets": [
    {
@@ -221,8 +225,9 @@
     "n_members": 12,
     "n_members_live": 10,
     "n_members_read": 12,
-    "n_members_on_board": 3,
+    "n_members_on_board": 4,
     "members_on_board": [
+     "NET",
      "OKTA",
      "QLYS",
      "ZS"
@@ -230,7 +235,7 @@
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 2,
+     "leaders": 3,
      "ran": 1
     },
     "pctile": 0.9583,
@@ -319,15 +324,17 @@
     "n_members": 17,
     "n_members_live": 17,
     "n_members_read": 17,
-    "n_members_on_board": 2,
+    "n_members_on_board": 4,
     "members_on_board": [
      "APP",
+     "CRM",
+     "NET",
      "PLTR"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 1,
-     "leaders": 0,
+     "leaders": 2,
      "ran": 0
     },
     "pctile": 0.752,
@@ -368,15 +375,16 @@
     "n_members": 8,
     "n_members_live": 8,
     "n_members_read": 8,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
      "APP",
+     "CRM",
      "PLTR"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 1,
-     "leaders": 0,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.7163,
@@ -393,12 +401,13 @@
     "n_members": 74,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 12,
+    "n_members_on_board": 13,
     "members_on_board": [
      "ADI",
      "AKAM",
      "APP",
      "CIEN",
+     "CRM",
      "KEYS",
      "MU",
      "NVDA",
@@ -411,7 +420,7 @@
     "present_counts": {
      "buy": 5,
      "watch": 7,
-     "leaders": 0,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.7163,
@@ -500,15 +509,16 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
+     "CRM",
      "GTLB",
      "TEAM"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 2,
+     "leaders": 3,
      "ran": 0
     },
     "pctile": 0.6845,
@@ -597,12 +607,10 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "VKTX"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -723,15 +731,14 @@
     "n_members": 22,
     "n_members_live": 21,
     "n_members_read": 22,
-    "n_members_on_board": 4,
+    "n_members_on_board": 3,
     "members_on_board": [
-     "AVAV",
      "LMT",
      "RKLB",
      "TDY"
     ],
     "present_counts": {
-     "buy": 2,
+     "buy": 1,
      "watch": 2,
      "leaders": 0,
      "ran": 0
@@ -774,12 +781,13 @@
     "n_members": 15,
     "n_members_live": 15,
     "n_members_read": 15,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "BKSY",
      "RKLB"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1175,12 +1183,10 @@
     "n_members": 9,
     "n_members_live": 9,
     "n_members_read": 9,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "OKLO"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1199,16 +1205,15 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 5,
+    "n_members_on_board": 4,
     "members_on_board": [
      "FIX",
      "GNRC",
-     "OKLO",
      "POWL",
      "PWR"
     ],
     "present_counts": {
-     "buy": 5,
+     "buy": 4,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1273,10 +1278,12 @@
     "n_members": 10,
     "n_members_live": 10,
     "n_members_read": 10,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "EU"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1317,15 +1324,14 @@
     "n_members": 22,
     "n_members_live": 22,
     "n_members_read": 22,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "DINO",
-     "MPC"
+     "DINO"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 2,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.0813,
@@ -1342,14 +1348,12 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "MPC"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 1,
+     "leaders": 0,
      "ran": 0
     },
     "pctile": 0.0615,
@@ -1440,7 +1444,7 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 156506,
+  "n_calls": 156507,
   "n_frozen_echoes_excluded": 232,
   "n_stamp_dates": 65,
   "stamp_dates": {
@@ -2058,24 +2062,24 @@
   "thin_min_n": 20,
   "available": true,
   "coverage": {
-   "n_episodes": 12718,
-   "n_with_status": 11612,
+   "n_episodes": 12726,
+   "n_with_status": 11619,
    "status_coverage_pct": 91.3,
-   "n_excess": 12718,
+   "n_excess": 12726,
    "n_dates": 46,
    "as_of": {
     "first": "2026-06-15",
     "last": "2026-09-14"
    },
    "n_by_status": {
-    "bounce_wait": 3119,
-    "extended": 1879,
-    "await_confluence": 1066,
+    "bounce_wait": 3121,
+    "extended": 1880,
+    "await_confluence": 1067,
     "hold": 1034,
     "blocked": 978,
     "partial": 931,
-    "buy_soon": 900,
-    "buy_now": 539,
+    "buy_soon": 902,
+    "buy_now": 540,
     "wait_pullback": 502,
     "topping": 366,
     "watch": 261,
@@ -2084,7 +2088,7 @@
    "price_basis_era": {
     "column": "price_basis",
     "n_by_basis": {
-     "adjusted": 9940,
+     "adjusted": 9948,
      "unverified_pre_20260806": 1342,
      "unadjusted": 486
     },
@@ -2098,11 +2102,11 @@
   "cohort_split": {
    "column": "lane",
    "n_by_cohort": {
-    "buy": 6015,
-    "watch": 3946,
-    "laggards": 1262,
-    "leaders": 910,
-    "ran": 585
+    "buy": 6017,
+    "watch": 3948,
+    "laggards": 1263,
+    "leaders": 912,
+    "ran": 586
    },
    "n_unlaned": 0,
    "note": "board lanes are DIFFERENT POPULATIONS and are never pooled: every statistic below is computed inside one lane. A row with no lane is reported under 'unlaned', never folded into 'buy'"
@@ -2516,9 +2520,9 @@
     },
     "21d": {
      "horizon_d": 21,
-     "n_episodes": 1324,
-     "n_excess": 1324,
-     "n_with_status": 1324,
+     "n_episodes": 1326,
+     "n_excess": 1326,
+     "n_with_status": 1326,
      "n_dates": 26,
      "n_dates_marked": 26,
      "as_of_marked_first": "2026-06-30",
@@ -2555,33 +2559,33 @@
        "thin": false
       },
       "bounce_wait": {
-       "n": 417,
-       "n_excess": 417,
+       "n": 418,
+       "n_excess": 418,
        "as_of_first": "2026-07-17",
        "as_of_last": "2026-08-21",
-       "loser_rate": 0.6379,
-       "loser_rate_wilson_lo": 0.5907,
-       "loser_rate_wilson_hi": 0.6826,
-       "win_rate": 0.3621,
-       "win_rate_wilson_lo": 0.3174,
-       "win_rate_wilson_hi": 0.4093,
-       "median_excess": -0.0352,
-       "mean_excess": -0.01928,
+       "loser_rate": 0.6388,
+       "loser_rate_wilson_lo": 0.5916,
+       "loser_rate_wilson_hi": 0.6834,
+       "win_rate": 0.3612,
+       "win_rate_wilson_lo": 0.3166,
+       "win_rate_wilson_hi": 0.4084,
+       "median_excess": -0.03573,
+       "mean_excess": -0.01949,
        "thin": false
       },
       "buy_now": {
-       "n": 109,
-       "n_excess": 109,
+       "n": 110,
+       "n_excess": 110,
        "as_of_first": "2026-06-30",
        "as_of_last": "2026-08-21",
-       "loser_rate": 0.6422,
-       "loser_rate_wilson_lo": 0.5488,
-       "loser_rate_wilson_hi": 0.7259,
-       "win_rate": 0.3578,
-       "win_rate_wilson_lo": 0.2741,
-       "win_rate_wilson_hi": 0.4512,
-       "median_excess": -0.03678,
-       "mean_excess": -0.02163,
+       "loser_rate": 0.6455,
+       "loser_rate_wilson_lo": 0.5525,
+       "loser_rate_wilson_hi": 0.7286,
+       "win_rate": 0.3545,
+       "win_rate_wilson_lo": 0.2714,
+       "win_rate_wilson_hi": 0.4475,
+       "median_excess": -0.03735,
+       "mean_excess": -0.02291,
        "thin": false
       },
       "buy_soon": {
@@ -3060,9 +3064,9 @@
     },
     "21d": {
      "horizon_d": 21,
-     "n_episodes": 306,
-     "n_excess": 306,
-     "n_with_status": 306,
+     "n_episodes": 307,
+     "n_excess": 307,
+     "n_with_status": 307,
      "n_dates": 26,
      "n_dates_marked": 26,
      "as_of_marked_first": "2026-06-30",
@@ -3099,18 +3103,18 @@
        "thin": false
       },
       "bounce_wait": {
-       "n": 38,
-       "n_excess": 38,
+       "n": 39,
+       "n_excess": 39,
        "as_of_first": "2026-07-14",
        "as_of_last": "2026-08-21",
-       "loser_rate": 0.7895,
-       "loser_rate_wilson_lo": 0.6365,
-       "loser_rate_wilson_hi": 0.8893,
-       "win_rate": 0.2105,
-       "win_rate_wilson_lo": 0.1107,
-       "win_rate_wilson_hi": 0.3635,
-       "median_excess": -0.09209,
-       "mean_excess": -0.08298,
+       "loser_rate": 0.7949,
+       "loser_rate_wilson_lo": 0.6447,
+       "loser_rate_wilson_hi": 0.8922,
+       "win_rate": 0.2051,
+       "win_rate_wilson_lo": 0.1078,
+       "win_rate_wilson_hi": 0.3553,
+       "median_excess": -0.09692,
+       "mean_excess": -0.08561,
        "thin": false
       },
       "buy_now": {
@@ -3346,9 +3350,9 @@
     },
     "10d": {
      "horizon_d": 10,
-     "n_episodes": 327,
-     "n_excess": 327,
-     "n_with_status": 327,
+     "n_episodes": 329,
+     "n_excess": 329,
+     "n_with_status": 329,
      "n_dates": 22,
      "n_dates_marked": 22,
      "as_of_marked_first": "2026-07-28",
@@ -3387,33 +3391,33 @@
        "thin_reason": "8 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "buy_soon": {
-       "n": 37,
-       "n_excess": 37,
+       "n": 38,
+       "n_excess": 38,
        "as_of_first": "2026-07-28",
        "as_of_last": "2026-09-08",
-       "loser_rate": 0.8378,
-       "loser_rate_wilson_lo": 0.6886,
-       "loser_rate_wilson_hi": 0.9235,
-       "win_rate": 0.1622,
-       "win_rate_wilson_lo": 0.0765,
-       "win_rate_wilson_hi": 0.3114,
-       "median_excess": -0.05293,
-       "mean_excess": -0.0542,
+       "loser_rate": 0.8421,
+       "loser_rate_wilson_lo": 0.6958,
+       "loser_rate_wilson_hi": 0.9256,
+       "win_rate": 0.1579,
+       "win_rate_wilson_lo": 0.0744,
+       "win_rate_wilson_hi": 0.3042,
+       "median_excess": -0.0565,
+       "mean_excess": -0.05492,
        "thin": false
       },
       "extended": {
-       "n": 177,
-       "n_excess": 177,
+       "n": 178,
+       "n_excess": 178,
        "as_of_first": "2026-07-28",
        "as_of_last": "2026-09-08",
-       "loser_rate": 0.6215,
-       "loser_rate_wilson_lo": 0.5481,
-       "loser_rate_wilson_hi": 0.6896,
-       "win_rate": 0.3785,
-       "win_rate_wilson_lo": 0.3104,
-       "win_rate_wilson_hi": 0.4519,
-       "median_excess": -0.01743,
-       "mean_excess": -0.01508,
+       "loser_rate": 0.618,
+       "loser_rate_wilson_lo": 0.5448,
+       "loser_rate_wilson_hi": 0.6862,
+       "win_rate": 0.382,
+       "win_rate_wilson_lo": 0.3138,
+       "win_rate_wilson_hi": 0.4552,
+       "median_excess": -0.01661,
+       "mean_excess": -0.01491,
        "thin": false
       },
       "hold": {
@@ -3596,8 +3600,8 @@
     },
     "21d": {
      "horizon_d": 21,
-     "n_episodes": 106,
-     "n_excess": 106,
+     "n_episodes": 107,
+     "n_excess": 107,
      "n_with_status": 0,
      "n_dates": 9,
      "n_dates_marked": 9,
@@ -3813,9 +3817,9 @@
     },
     "10d": {
      "horizon_d": 10,
-     "n_episodes": 1367,
-     "n_excess": 1367,
-     "n_with_status": 1359,
+     "n_episodes": 1368,
+     "n_excess": 1368,
+     "n_with_status": 1360,
      "n_dates": 35,
      "n_dates_marked": 35,
      "as_of_marked_first": "2026-06-30",
@@ -3883,18 +3887,18 @@
        "thin_reason": "6 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "buy_soon": {
-       "n": 109,
-       "n_excess": 109,
+       "n": 110,
+       "n_excess": 110,
        "as_of_first": "2026-06-30",
        "as_of_last": "2026-09-08",
-       "loser_rate": 0.5872,
-       "loser_rate_wilson_lo": 0.4933,
-       "loser_rate_wilson_hi": 0.6751,
-       "win_rate": 0.4128,
-       "win_rate_wilson_lo": 0.3249,
-       "win_rate_wilson_hi": 0.5067,
-       "median_excess": -0.01635,
-       "mean_excess": -0.017,
+       "loser_rate": 0.5818,
+       "loser_rate_wilson_lo": 0.4884,
+       "loser_rate_wilson_hi": 0.6697,
+       "win_rate": 0.4182,
+       "win_rate_wilson_lo": 0.3303,
+       "win_rate_wilson_hi": 0.5116,
+       "median_excess": -0.01607,
+       "mean_excess": -0.01639,
        "thin": false
       },
       "exit": {
@@ -4017,27 +4021,27 @@
     },
     "21d": {
      "horizon_d": 21,
-     "n_episodes": 935,
-     "n_excess": 935,
-     "n_with_status": 927,
+     "n_episodes": 936,
+     "n_excess": 936,
+     "n_with_status": 928,
      "n_dates": 26,
      "n_dates_marked": 26,
      "as_of_marked_first": "2026-06-30",
      "as_of_marked_last": "2026-08-21",
      "by_entry_status": {
       "await_confluence": {
-       "n": 134,
-       "n_excess": 134,
+       "n": 135,
+       "n_excess": 135,
        "as_of_first": "2026-06-30",
        "as_of_last": "2026-08-21",
-       "loser_rate": 0.6119,
-       "loser_rate_wilson_lo": 0.5274,
-       "loser_rate_wilson_hi": 0.6902,
-       "win_rate": 0.3881,
-       "win_rate_wilson_lo": 0.3098,
-       "win_rate_wilson_hi": 0.4726,
-       "median_excess": -0.03121,
-       "mean_excess": -0.01505,
+       "loser_rate": 0.6148,
+       "loser_rate_wilson_lo": 0.5306,
+       "loser_rate_wilson_hi": 0.6926,
+       "win_rate": 0.3852,
+       "win_rate_wilson_lo": 0.3074,
+       "win_rate_wilson_hi": 0.4694,
+       "median_excess": -0.03033,
+       "mean_excess": -0.01498,
        "thin": false
       },
       "blocked": {
