@@ -1,15 +1,15 @@
 {
   "schema": "thematic_desk.v1",
   "as_of": "2026-09-25",
-  "scored_total": 248,
-  "open": 126,
-  "unscored_soft": 66,
+  "scored_total": 252,
+  "open": 135,
+  "unscored_soft": 68,
   "overall": {
-    "n": 248,
-    "hits": 169,
+    "n": 252,
+    "hits": 173,
     "misses": 79,
-    "hit_rate": 0.681,
-    "dir_accuracy": 0.46
+    "hit_rate": 0.687,
+    "dir_accuracy": 0.456
   },
   "by_market": {
     "us": {
@@ -27,34 +27,34 @@
       "dir_accuracy": 0.361
     },
     "hk": {
-      "n": 18,
-      "hits": 17,
+      "n": 19,
+      "hits": 18,
       "misses": 1,
-      "hit_rate": 0.944,
-      "dir_accuracy": 0.889
+      "hit_rate": 0.947,
+      "dir_accuracy": 0.895
     },
     "canada": {
-      "n": 83,
-      "hits": 58,
+      "n": 86,
+      "hits": 61,
       "misses": 25,
-      "hit_rate": 0.699,
-      "dir_accuracy": 0.386
+      "hit_rate": 0.709,
+      "dir_accuracy": 0.372
     }
   },
   "by_conviction": {
     "low": {
-      "n": 246,
-      "hits": 168,
+      "n": 249,
+      "hits": 171,
       "misses": 78,
-      "hit_rate": 0.683,
-      "dir_accuracy": 0.459
+      "hit_rate": 0.687,
+      "dir_accuracy": 0.454
     },
     "medium": {
-      "n": 2,
-      "hits": 1,
+      "n": 3,
+      "hits": 2,
       "misses": 1,
-      "hit_rate": 0.5,
-      "dir_accuracy": 0.5
+      "hit_rate": 0.667,
+      "dir_accuracy": 0.667
     },
     "high": {
       "n": 0,
@@ -64,8 +64,48 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "248 scored, hit-rate 0.681 (directional accuracy 0.46). Chance alone would land a hit-rate near 0.8423 (directional accuracy near 0.5078) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "252 scored, hit-rate 0.687 (directional accuracy 0.456). Chance alone would land a hit-rate near 0.842 (directional accuracy near 0.5082) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "canada-2026-08-28-20260829084010-1",
+      "market": "canada",
+      "subject": "Gold Miners",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0278,
+      "check_by": "2026-09-25"
+    },
+    {
+      "id": "canada-2026-08-28-20260829115325-1",
+      "market": "canada",
+      "subject": "Gold Miners",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0278,
+      "check_by": "2026-09-25"
+    },
+    {
+      "id": "hk-2026-08-28-20260831050221-1",
+      "market": "hk",
+      "subject": "China Platform Megacaps",
+      "lean": "underweight",
+      "conviction": "medium",
+      "outcome": "hit",
+      "realized": -0.0233,
+      "check_by": "2026-09-25"
+    },
+    {
+      "id": "canada-2026-08-28-20260831050307-1",
+      "market": "canada",
+      "subject": "Gold Miners",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0278,
+      "check_by": "2026-09-25"
+    },
     {
       "id": "us-2026-08-13-20260814043608-3",
       "market": "us",
@@ -144,46 +184,6 @@
       "conviction": "medium",
       "outcome": "hit",
       "realized": 0.0938,
-      "check_by": "2026-09-18"
-    },
-    {
-      "id": "us-2026-08-07-20260808153238-1",
-      "market": "us",
-      "subject": "Silver Miners",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.1514,
-      "check_by": "2026-09-18"
-    },
-    {
-      "id": "china-2026-08-07-20260808153507-2",
-      "market": "china",
-      "subject": "Innovative Pharma & CXO",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0468,
-      "check_by": "2026-09-18"
-    },
-    {
-      "id": "canada-2026-08-07-20260808154136-2",
-      "market": "canada",
-      "subject": "Gold Miners",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0938,
-      "check_by": "2026-09-18"
-    },
-    {
-      "id": "us-2026-08-07-20260808212654-2",
-      "market": "us",
-      "subject": "Cybersecurity",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0356,
       "check_by": "2026-09-18"
     }
   ]

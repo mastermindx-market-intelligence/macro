@@ -127,9 +127,9 @@
         "value": 1,
         "weight": 0.5,
         "freshness": {
-          "asof": "2026-09-12",
+          "asof": "2026-09-19",
           "expected_cadence": "W",
-          "age_days": 12,
+          "age_days": 5,
           "state": "fresh"
         },
         "release": {
