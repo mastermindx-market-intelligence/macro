@@ -2187,7 +2187,7 @@ jobs:
     # roots and the job would select on templates/index.html and every other
     # ordinary code PR it never reads (the packing-ceiling probe caught exactly
     # that: +1 job on all three probes). The paths below are the files these
-    # fourteen suites import, open or render — the vertical's own subjects, the
+    # fifteen suites import, open or render — the vertical's own subjects, the
     # shared owners it consumes (Theme Graph rights/contracts, Earnings
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
@@ -2213,6 +2213,19 @@ jobs:
       - "tests/test_workspace_projection.py"
       - "engine/market_ontology/semiconductor_witness_scope.py"
       - "tests/test_semiconductor_witness_scope.py"
+      # T08c-2: the registered owner-bundle loader (public half through the
+      # Company Intelligence reader, private half declared absent) and the one
+      # exception a loader raises, with their suite. The registry binds the
+      # loader LAZILY (first served request), so a static closure walk from
+      # app.main reaches the binding leaf but not the loader — it is named
+      # here explicitly so an edit to it re-runs this job.
+      - "engine/market_ontology/semiconductor_owner_bundle.py"
+      - "engine/market_ontology/theme_research_binding.py"
+      - "tests/test_semiconductor_owner_bundle.py"
+      # That suite reaches its helpers as `from tests.semiconductor_research_helpers
+      # import ...` — a PACKAGE import, so the closure audit counts the package
+      # initialiser too (two other exclusive jobs declare it for the same reason).
+      - "tests/__init__.py"
       - "scripts/refresh_event_workspaces.py"
       - "scripts/build_theme_detail.py"
       - "templates/_theme_research_mount.html.j2"
@@ -2318,6 +2331,8 @@ jobs:
         run: python -m pytest tests/test_semiconductor_research_inputs.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
       - name: binder read-side primitives (workspace projection; declared witness scope + owner identity join)
         run: python -m pytest tests/test_workspace_projection.py tests/test_semiconductor_witness_scope.py -q
+      - name: registered owner-bundle loader (public half through the reader; private half declared absent)
+        run: python -m pytest tests/test_semiconductor_owner_bundle.py -q
       - name: basket-intelligence mount partial
         run: python -m pytest tests/test_basket_intelligence_mounts.py -q
 
@@ -2395,6 +2410,10 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -8257,6 +8276,10 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -8891,6 +8914,10 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -10979,6 +11006,10 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
       # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
       - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
@@ -11354,6 +11385,10 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -14856,6 +14891,10 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
+      - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
+      - "engine/market_ontology/workspace_projection.py"  # owner-bundle loader -> workspace projection (T08b-fix, #7870)
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
