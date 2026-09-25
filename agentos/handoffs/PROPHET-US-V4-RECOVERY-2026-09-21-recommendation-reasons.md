@@ -542,7 +542,8 @@ cross-component contract and stronger regression receipt without changing the
 presentation source or any recommendation/entry/trade policy.
 
 Protected main `72038badf7e309dfbdd00120fd0f0e523623fe75` was then integrated on
-the original carrier. Source files auto-merged; the only conflicts were 84 generated
+the original carrier in merge commit `495f02c9e6fbdc452cc848d018874d6d79e02c42`, whose first parent is
+`a7362d01e3b7609c7c7b59c6ad61ba0cccbf6b8a`. Source files auto-merged; the only conflicts were 84 generated
 detail pages. The incumbent renderer retained exact protected-main embedded inputs for
 those 84 pages and exact candidate inputs for the other 37, yielding 121 pages with
 **1,858 member rows / 1,827 assessed rows / 1,858 entry checks**. Status, buys,
