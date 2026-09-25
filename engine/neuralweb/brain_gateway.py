@@ -39,6 +39,7 @@ import base64
 import fcntl
 import json
 import logging
+import math
 import os
 import re
 import threading
@@ -7987,9 +7988,23 @@ def _run_brain_loop_stream(
                 chart_context_revision,
                 [wire for _, wire in pending_v2_receipts],
             )
+            observed_revisions: list[int] = []
             for (tool_result_index, _wire), receipt in zip(pending_v2_receipts, verified):
                 tool_results[tool_result_index]["content"] = json.dumps(
                     _json_safe(receipt), default=str)
+                observed_revision = receipt.get("observed_context_revision")
+                if (
+                    isinstance(observed_revision, int)
+                    and not isinstance(observed_revision, bool)
+                    and observed_revision >= 0
+                ):
+                    observed_revisions.append(observed_revision)
+            # The mount origin is immutable for this Brain turn, but the mounted chart's
+            # revision legitimately advances after symbol/TF changes (or a concurrent user
+            # context change). Subsequent tools must bind to the newest exact-origin state
+            # rather than keep requesting the stale revision captured at turn start.
+            if observed_revisions:
+                chart_context_revision = max(observed_revisions)
 
         _timing_round(timing, _round_model_ms, _round_tools)
         tool_call_count += 1

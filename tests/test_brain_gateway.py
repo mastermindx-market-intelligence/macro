@@ -4477,8 +4477,14 @@ def _cmx_terminal_context(origin_id: str = "cmx-stream-origin", revision: int = 
     }
 
 
-def _tool_result_payload(client: _MockClient, call_index: int = 1, result_index: int = 0) -> dict:
-    """Find the user tool-result message in the provider call, not the preceding assistant block."""
+def _tool_result_payload(
+    client: _MockClient,
+    call_index: int = 1,
+    result_index: int = 0,
+    *,
+    tool_use_id: str | None = None,
+) -> dict:
+    """Find a tool result robustly even though the mock retains the mutable messages list."""
     for message in reversed(client.calls[call_index]["messages"]):
         if not isinstance(message, dict):
             continue
@@ -4487,11 +4493,13 @@ def _tool_result_payload(client: _MockClient, call_index: int = 1, result_index:
             continue
         rows = [
             row for row in content
-            if isinstance(row, dict) and row.get("type") == "tool_result"
+            if isinstance(row, dict)
+            and row.get("type") == "tool_result"
+            and (tool_use_id is None or row.get("tool_use_id") == tool_use_id)
         ]
         if rows:
             return json.loads(rows[result_index]["content"])
-    raise AssertionError("provider call contains no tool_result message")
+    raise AssertionError(f"provider call contains no tool_result for {tool_use_id!r}")
 
 
 def test_v2_stream_tool_result_waits_for_exact_terminal_ack(tmp_path):
@@ -4620,6 +4628,64 @@ def test_v2_stream_ack_survives_expected_context_revision_transition(tmp_path):
     assert receipt["expected_context_revision"] == 7
     assert receipt["context_changed"] is True
     assert receipt["observed_state"]["tf"] == "W"
+
+
+
+def test_v2_stream_verified_context_change_advances_followup_chart_read(tmp_path):
+    """After an ACKed TF change, later tools in the SAME Brain turn read the new revision."""
+    root = _make_temp_root()
+    origin = "cmx-stream-followup"
+    set_tf = _MockBlock(
+        "tool_use", name="emit_chart_command",
+        input_={"op": "chart.set_tf", "args": {"tf": "W"}}, id_="set-tf",
+    )
+    read = _MockBlock("tool_use", name="read_chart_state", input_={}, id_="read-new")
+    turn1 = _MockResponse([set_tf], "tool_use")
+    turn2 = _MockResponse([read], "tool_use")
+    turn3 = _MockResponse([
+        _MockBlock("text", "Weekly confirmed. is_context_only: true — display-tier pending FDR.")
+    ], "end_turn")
+    client = _MockClient([turn1, turn2, turn3])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={
+                "tier": "pro", "status": "active", "current_period_end": None,
+            }):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "switch weekly then verify", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {
+                                        "symbol": "NVDA", "tf": "W", "pane_id": 0,
+                                        "visible_range": {"from": 1.0, "to": 2.0},
+                                    },
+                                    origin_id=origin,
+                                    context_revision=8,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"],
+                                        "seq": parsed["seq"],
+                                        "id": None,
+                                        "ok": True,
+                                    }],
+                                )
+
+    first_receipt = _tool_result_payload(client, 1, tool_use_id="set-tf")
+    assert first_receipt["command_status"] == "accepted"
+    assert first_receipt["observed_context_revision"] == 8
+    second_receipt = _tool_result_payload(client, 2, tool_use_id="read-new")
+    assert second_receipt["connected"] is True
+    assert second_receipt["context_revision"] == 8
+    assert second_receipt["session"]["tf"] == "W"
 
 
 def test_v2_stream_timeout_is_explicitly_unverified(tmp_path):
