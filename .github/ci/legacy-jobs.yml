@@ -309,9 +309,23 @@ jobs:
     # 2026-09-22 integration-baseline main-red repair: exact owner closure.
     # Exclusive replaces opaque fallback inference; the curated-closure gate
     # fails if a future import is not covered by this declaration.
+    #
+    # 2026-09-24 lane A3 (round-5 MINOR 4): the legacy-jobs `paths:` here
+    # was widened to declare the worktree-sparse helper module because
+    # an earlier round's real-artifact byte-identity test used a dynamic
+    # importlib load to call that helper. Round 5 redirects that test
+    # at the COMMITTED fixture tree (under `tests/fixtures/`, never
+    # under `data/` or `site/`), so the helper call is gone — but the
+    # path declaration is KEPT to satisfy the `Widen … never narrow`
+    # rule (a path the gate already trusts cannot be removed without
+    # another widening). The justification that "the contract-delta
+    # gate follows that import edge" was the prior round's claim and
+    # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
       - "config.yml"
+      - "config/market_reference.yml"
+      - "config/sparse_worktree.json"
       - "data/market_state/latest.json"
       - "data/neuralweb/market_plane.json"
       - "data/regime/latest.json"
@@ -323,6 +337,7 @@ jobs:
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_am_edition.py"
+      - "scripts/worktree_sparse.py"
       - "site/am_edition.html"
       - "site/am_edition.json"
       - "site/live/quotes.json"
@@ -332,6 +347,14 @@ jobs:
       - "site/regime.json"
       - "site/release_forecast.json"
       - "templates/am_edition.html.j2"
+      - "tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py"
+      - "tests/fixtures/am_edition_fixture/data/market_state/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/neuralweb/market_plane.json"
+      - "tests/fixtures/am_edition_fixture/data/regime/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/release_forecast/latest.json"
+      - "tests/fixtures/am_edition_fixture/site/live/quotes.json"
+      - "tests/fixtures/am_edition_fixture/site/master_brief.json"
+      - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
@@ -2214,6 +2237,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -5206,6 +5230,38 @@ jobs:
       - name: transmission proposals — W5 Loop-C (pack + ingest + gate + Article 1/2)
         run: python -m pytest tests/test_transmission_proposals.py -q
 
+  ontology-explorer:
+    if: ${{ false }}
+    gate: code
+    # F04-X1 WTI Live Trace: the request-time composer
+    # (engine/ontology_explorer.py), its authenticated router
+    # (app/ontology_explorer.py) and the public-safe shell builder. Placed
+    # beside the transmission-chains owner because the trace it composes reads
+    # that chain library; scope is INFERRED, not curated, and that is
+    # deliberate — see the note below.
+    #
+    # NOT `scope: exclusive`. app/ontology_explorer.py resolves shared auth via
+    # `from app.main import require_user` (function-scoped, but scope inference
+    # walks the AST scope-insensitively), so this job's honest import closure is
+    # most of app/, engine/ and lib/ — measured at roughly 500 files. A curated
+    # exclusive scope would therefore have to enumerate ~500 paths and would
+    # re-select the job on nearly every change in the repository, which is the
+    # opposite of what exclusive scoping is for. `gate: code` keeps these four
+    # suites ON the merge gate: they are this feature's entire proof.
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx
+      - name: ontology explorer — composer contract, owner episode, receipts
+        run: python -m pytest tests/test_ontology_explorer_contract.py -q
+      - name: ontology explorer — identity, private transport, public shell
+        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
+
   research-factory-authority:
     if: ${{ false }}
     gate: code
@@ -5544,6 +5600,12 @@ jobs:
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
       - "tests/test_finance_intelligence_projection.py"
+      # FIN-T9 entry points — sector deep-dive card on the Theme Tracker
+      # + Financials launch module (skip-mode while PR #7669 is OPEN).
+      - "templates/_finance_sector_deep_dive.html.j2"
+      - "templates/_finance_financials_launch.html.j2"
+      - "templates/state_of_themes.html.j2"
+      - "tests/test_finance_entry_points.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
       # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
@@ -5573,6 +5635,21 @@ jobs:
       - "engine/research_vault/r2_store.py"
       - "engine/sector_intelligence/__init__.py"
       - "engine/sector_intelligence/launch_slo_verifier.py"
+      # import closure of tests/test_finance_entry_points.py — exercises
+      # scripts.build_state_of_themes (theme Tracker live render) to assert the
+      # canonical theme count is unchanged; that build module imports engine/
+      # theme_graph/store.py and lib/pages.py transitively. Widening is the
+      # safe direction per tests/test_ci_pack.py::test_curated_exclusive_scopes
+      # _cover_their_own_import_closure.
+      - "engine/__init__.py"
+      - "engine/research_priority_ordering.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "scripts/build_state_of_themes.py"
+      - "site/basketdata/foresight_cascade.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5580,9 +5657,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest jsonschema referencing pyyaml
+        run: pip install pytest jsonschema referencing pyyaml jinja2
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
 
 
   consumer-cyclical-economic-change:
@@ -8184,6 +8261,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -8815,6 +8893,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -11262,6 +11341,10 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # F04-X1 closure widening 2026-09-24 (contract-delta): app/main.py mounts the
+      # ontology explorer router, so this curated job's app import closure now
+      # reaches the F04 engine module.
+      - "engine/ontology_explorer.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
@@ -14742,6 +14825,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"

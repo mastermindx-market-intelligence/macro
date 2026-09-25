@@ -123,3 +123,34 @@ underlying canonical membership and close coverage and projects 14 configured / 
 14-name feature projection was therefore retained; no recommendation, scoring, entry, or sizing source was
 changed. The new regression suite was also wired into the incumbent `engine-render-guards` data/render lane,
 closing the exact `contract-delta` failure without creating another CI job or waiver.
+
+## Sol Meta-CEO current-base integration — 2026-09-25 UTC
+
+This continuation is governed by the freshly pinned protected Skillpack
+`mastermindx-market-intelligence/Mastermind@a29161fa0a44cca9927afe042b5f7ea25aae1736`
+(Skillpack 1.0.1, bootstrap major 1). It continues the existing operation and carrier;
+no replacement branch, PR, basket engine, score plane, publisher, or control plane was created.
+
+The unchanged semantic head was integrated normally with protected Macro main
+`5600bb63b27978031769eb428911fe9b46572a92`. The merge had one content conflict:
+`site/basket/cybersecurity.html`. Current main's generated payload still projected the
+incomplete 10-configured / 8-observed Cybersecurity panel, while this carrier's accepted
+source/data repair projected 14 configured / 14 observed members for the same canonical
+2026-09-23 close. The resolution therefore retained the exact 14-name `DETAIL` payload and
+its honest generation stamp while taking current main's surrounding page chrome, including
+the later WTI Live Path navigation. It did not combine differently dated observations or
+recompute recommendation, entry, sizing, or trade-policy semantics in browser code.
+
+Fresh current-base verification after that resolution:
+
+- focused source/PIT/generated-page suite: **68 passed** (14 inherited Pandas warnings);
+- quantitative verifier reproduced `results.json` byte-for-byte;
+- browser matrix: **8/8** desktop/mobile × dark/light × EN/ZH, HTTP 200, 14 rows,
+  no overflow, no missing/forbidden names, only `SAIL`/`NTSK` honestly uncovered,
+  zero console errors, and zero request failures;
+- CI YAML parses and the regression remains wired into the incumbent
+  `engine-render-guards` lane.
+
+These are source/integration receipts, not release or production acceptance. Independent
+review, exact-head hosted CI, normal aggregate publication, and served-route readback remain
+binding before Draft/HOLD can be released.
