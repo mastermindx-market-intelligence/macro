@@ -1904,8 +1904,11 @@ on:
       - "docs/**"
       - "tests/test_house_law_registry.py"
       - "tests/test_append_only_assertions.py"
-      # validated-claims guard: wire as PR gate so unearned 'validated' claims
-      # are caught before merge (not just in the nightly calibration run).
+      # validated-claims guard (BC-2): an edit to the checker or its allowlist
+      # re-proves the gate. The PR-gate wiring is the gate:code pack jobs
+      # validated-claims-source (the --scope source scan of templates/, engine/,
+      # lib/) and validated-claims-contract (the checker's suites), 2026-09-25;
+      # the full scan of the rendered tree stays on the data gate.
       - "scripts/check_validated_claims.py"
       - "data/regime/validated_claims_allowlist.json"
       # The third-party-sink exemption's own suite (#3770). Named so an edit to
@@ -2431,6 +2434,10 @@ on:
       # engine/marketing/** and the scripts entries cover the rest.
       - "mockups/x-ads-2026-07/**"
       - "mockups/x-mobile-ads-2026-07/**"
+      # The P0B browser receipts: p0b-receipt-closure (#7971) selects on this root,
+      # but no trigger matched it, so a receipt-only PR never started the run that
+      # grades those receipts (the pack suite's startability audit, red since #7971).
+      - "mockups/evidence/prophet-p0b-zero-fouc/**"
       - "tests/test_marketing_ad_plane_o.py"
       - "tests/test_marketing_persona_model.py"
       - "tests/test_marketing_reply_arming.py"
