@@ -123,8 +123,12 @@ registered asset.
 
 The overlay widens neither the public surface (`/am_edition.json` is NOT in
 `@vps_public_live`) nor the static-access boundary; the only file_server the
-lane adds is scoped to `/am_edition.html` and lives inside the existing
-authenticated-html route, so the gate still runs before the file is served.
+lane adds is scoped to `/am_edition.html` and lives inside
+`handle @open_html`'s route body — `@open_html` is the deliberate non-walled
+html family (every remaining `*.html` after `@gate_html`'s public-funnel list
+was retired; readable by anyone, deliberately still `noindex`), so the gate the
+handle runs first is the same fail-open IP/country gate the open_html family
+already served, not an authentication wall.
 
 ## Lanes and resource controls
 
