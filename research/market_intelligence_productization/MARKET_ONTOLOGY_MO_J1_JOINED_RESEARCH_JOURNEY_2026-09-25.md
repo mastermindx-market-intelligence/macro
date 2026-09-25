@@ -4,7 +4,7 @@ Date: 2026-09-25
 Parent: `marketontology-complete-parity-fanout-20260826-sol-001` / macro#6819  
 Ruling: `marketontology-mo-j1-integration-first-20260924-sol-001`  
 Meta-CEO: Sol under current Chairman direction  
-Status: **FROZEN FOR IMPLEMENTATION AFTER CURRENT A/B ACTIVE CARRIERS CLOSE**  
+Status: **FROZEN; A-SIDE IMPLEMENTATION MAY START AFTER THIS CORRECTION MERGES + FRESH SOURCE/COLLISION RECONCILIATION; B-SIDE WAITS FOR #746 CLOSE**  
 Capability state: **NOT_BUILT AS ONE JOINED JOURNEY**; constituent owners are already substantially built.
 
 ## Procedure / source pins used for this freeze
@@ -109,8 +109,8 @@ If the selected path is dormant and no owner-backed per-name output exists, the 
 
 ## 4. MO-J1A — Macro affected-company continuation
 
-Owner: CEO A / F04 delivery side after current #7970 closes.  
-No implementation START is claimed by this records freeze.
+Owner: CEO A / F04 delivery side. #7970 is merged, so this side is no longer blocked by the former A carrier.  
+No implementation START is claimed by this records freeze; source work may start after the current-symbol correction carrier merges and the builder re-reads current source/collisions.
 
 ### 4.1 Projection law — owner order
 
@@ -280,7 +280,7 @@ A separate identity-upgrade decision is required if product owners later want th
 
 ## 7. MO-J1B — Terminal continuation and thesis continuity
 
-Owner: CEO B / F11 side after #747 shared heal and #746 close.
+Owner: CEO B / F11 side after #746 closes. #747 shared heal is already merged and is DO_NOT_REDO.
 
 Smallest expected product surface:
 
@@ -385,15 +385,17 @@ No new design tokens unless an incumbent token gap is proven.
 
 Do not exceed current product WIP merely to start MO-J1 early.
 
-### Gate 0 — current work closes
+### Gate 0 — edge-local predecessor gates
 
 A:
-- finish/release/prove #7970 under its current owner.
+- #7970 is merged; A-side MO-J1 source work may proceed independently after this packet's current-symbol correction merges and a fresh current-source/collision read is clean.
 
 B:
-- preserve/finish #747 shared CI heal;
+- #747 shared CI heal is merged and must not be replayed;
 - finish #746 under the evidence-recapture ruling;
 - prepare #744 signed-in proof.
+
+B's active carrier blocks only the B-side Thesis/Analysis paths. It does **not** serialize the disjoint Macro/F04 half.
 
 ### Gate 1 — design / contract
 
@@ -484,13 +486,11 @@ R2 transmission-method research should not block the descriptive/read-only expos
 
 ## 15. Exact next action
 
-After current A/B active carriers close:
-
-1. run a fresh collision census on the Macro consumer paths and Terminal Analysis/Thesis paths;
-2. consume the Paper connective design;
-3. commission MO-J1A and MO-J1B as two disjoint implementation units under their incumbent A/B delivery principals;
-4. keep the exposed cross-app contract frozen unless a builder proves a concrete incompatibility;
-5. batch F04 entitled proof + #744 thesis proof + final joined MO-J1 proof into the smallest possible Chairman acceptance windows.
+1. **A-side now:** after the current-symbol correction carrier merges, run a fresh Macro consumer collision census and commission MO-J1A under CEO A. The Paper connective design is already accepted as the implementation reference.
+2. **B-side independently:** keep #746 on its incumbent carrier through evidence recapture/release; only after #746 closes commission MO-J1B on the Terminal Analysis/Thesis paths.
+3. Keep the exposed cross-app contract frozen unless a builder proves a concrete incompatibility.
+4. Do not wait for B to start A, and do not widen B's active #746 with MO-J1 code.
+5. Batch F04 entitled proof + #744 thesis proof + final joined MO-J1 proof into the smallest possible Chairman acceptance windows.
 
 Parent mission remains incomplete after MO-J1. MO-J1 is the first coherent integrated product milestone, followed by portfolio/capital-impact and continuous-decision-loop waves toward full parity and beyond-parity.
 
@@ -578,4 +578,18 @@ Therefore:
 6. Historical/replayed per-name blast is NOT assumed available. No replayed company list may be claimed unless the existing TXI/substrate owners prove point-in-time per-name resolution at that exact replay date.
 
 This correction narrows authority while improving the implementation path: reuse current TXI per-name output first; close Theme Map honestly on its own evidence.
+
+
+## 19. Concurrency correction — block the edge, not the mission
+
+The original freeze was authored while A and B both had active predecessor carriers and therefore used a whole-program "after current A/B carriers close" sentence. That sentence is superseded.
+
+Current accepted state at this correction:
+- A's #7970 predecessor is merged;
+- B's #747 shared heal is merged;
+- B #746 remains the incumbent Thesis carrier.
+
+The A-side F04 consumer paths and B-side Terminal Thesis/Analysis paths are disjoint. Under the active-execution law, B's open carrier blocks only B's overlapping edge. It does not justify leaving A idle.
+
+Therefore MO-J1A may start after this correction merges plus a fresh source/collision read. MO-J1B still waits for #746 to close. This changes scheduling only; it grants no new source authority, persistence plane, deployment privilege or acceptance shortcut.
 
