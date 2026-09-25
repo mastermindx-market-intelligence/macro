@@ -2,10 +2,10 @@
 key: MARKET-TIDE-RESEARCH-FOUNDATION-20260924
 claim: "Time decay and falling implied volatility do not imply uniformly supportive dealer hedging: a fixed-price short-put model reverses hedge-flow signs between out-of-the-money and in-the-money positions."
 falsifier: "Inspect #7929 and run git show 8de2d6b386ba2b9102c708caf6db71af84929167:agentos/discoveries/DSC-MARKET-TIDE-RESEARCH-FOUNDATION-20260924.md; execute the contained Python short-put example. Incorrect signs or arithmetic falsify this specific model illustration."
-so_what: "Keep hedge mechanics, numerical correctness, eligible historical evidence and trading usefulness separate; the C1 runner must not mistake complete feature rows for complete training outcomes."
+so_what: "Keep hedge mechanics, numerical correctness, source qualification, eligible historical evidence and trading usefulness separate; the preparation bridge may transform supplied evidence but never authenticate or admit it."
 kind: constraint
 verified_at: 2026-09-24
-verified_by: "Original illustration at 8de2d6b386ba2b9102c708caf6db71af84929167. MARKET_TIDE_C1_TRAINING_COVERAGE_REVIEW_2026-09-24.md records 74 native focused tests at 565aa68c386671715289f7405a654d5735c59098 and synthetic-only equivalence; no independent review or empirical edge is claimed."
+verified_by: "Original illustration at 8de2d6b386ba2b9102c708caf6db71af84929167. Training-coverage review records 74 focused tests at 565aa68c386671715289f7405a654d5735c59098; MARKET_TIDE_C1_PREPARATION_BRIDGE_PROOF_2026-09-24.json records 87 focused tests at 01a44ec96408749017ca97349f21512b78a42980. All evidence is synthetic/software-only; no independent review or empirical edge is claimed."
 scope:
   - macro
   - WS:ADVANCED-DATA-OPTIONS
@@ -76,3 +76,44 @@ Exact next primary action: obtain an admitted independent review of the fixed co
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION only after immutable review/record and current PR readback. MISSION_COMPLETE:false. Boundary: the substantive training-eligibility review, six-case repair and unchanged-normal-path verification are complete, with accumulated source/native context. This is continuity, not completion or source release. Resume in a fresh accountable Sol conversation from #7929 and this exact Agent OS candidate; never the stale issue comment alone.
 
 DO_NOT_REDO: programme/branch/PR/workspace, prior audits/measurements/literature/A4, rejected panel/profiles/GEX, unchanged event/diagnostic modules, repaired training-year defect, passed tests absent a material source invalidator, refused effects or any existing data/learning/control plane.
+
+
+## Source-to-measurement bridge tranche — supersedes the previous unbuilt-bridge next action
+
+The previously named independent implementation dependency is now built as research software at exact tested code head **`01a44ec96408749017ca97349f21512b78a42980`**.
+
+New module: `research/options_estate/market_tide_c1_prepare.py`. It consumes only supplied evidence and produces the unchanged C1-M1 prepared-row contract. It creates no collector, event resolver, calendar, source store, qualification switch, forecast ledger, runtime or trading path.
+
+The bridge deliberately separates **pre-decision measurement vintage** from **ex-post outcome vintage**:
+
+- Feature window: exact 64 supplied sessions t-63..t with `close_sadj` and `close_tradj`; every supplied row must claim availability no earlier than its session close and no later than the decision; feature adjustment vintage must be no earlier than the origin close and no later than the decision.
+- Outcome window: exact t..t+5 total-return closes from a separately supplied later vintage. Y5 is measured only within that outcome vintage, while v20 remains the pre-decision feature-vintage RMS. This prevents a later level rescaling from entering the predictor.
+- Event window: exact CPI/NFP/FOMC 0/1 features, each positive event timestamp strictly after the decision and no later than the next supplied cash-session close. Every zero flag requires an explicit supplied known-negative coverage reference. The event packet must claim `complete_for_window` and be known by the decision.
+- Price naming reuses Data OS basis law; ambiguous names such as bare `close` are rejected.
+- Output always states `source_qualification=not_assessed_by_preparation_bridge`, `primary_cohort_admitted=false`, `can_publish_forecast=false`, and `may_trade=false`. Source references cannot authenticate themselves.
+
+### TDD and native proof
+
+Test-first commit `20016317321542aa9f98ea72260d5dcfa27511f4`; native process23422: **13/13 tests failed** because the bridge module was absent. Implementation commit/tested head `01a44ec96408749017ca97349f21512b78a42980`; process23615: **13 tests passed**. Full process24453: **87 focused C1 tests passed, zero failures/errors**, `git diff --check` clean, `git status --short` empty.
+
+Exact bridge source: blob `b2483f7fbe63b922277b572b6d44f87aff1a02e7`, SHA256 `1d7e9a31d28b992c6dcd214a9ac359cf12a88dd654e6877313839f04cc690053`. Test blob `116906cdcf3f570c6561ac119f9d613d517fa5b6`, SHA256 `8906ab9a4647b4595201aebb217b3ef3928ef6192cdae4abb04458efcdc3c0c0`.
+
+Process25361 passed the prepared packet into the unchanged numerical core: one synthetic prepared row was accepted structurally, but the deliberately short supplied calendar yielded **0 fits / 0 predictions**. The bridge remained non-admitted and non-trading. This is the expected fail-closed integration result, not empirical evidence.
+
+Durable proof: `research/options_estate/MARKET_TIDE_C1_PREPARATION_BRIDGE_PROOF_2026-09-24.json`, first commit `2ad177329271369e62ffb34599bfe422159fa89b`.
+
+### Remaining gates after the bridge
+
+The missing dependency is no longer arithmetic plumbing; it is **real owner-qualified evidence** and independent acceptance.
+
+Existing requests MAS-204 `fffe9f72-7379-40e9-a117-580bbb26d404` and MAS-94 `356dafb3-8370-486c-b768-7db190757188` remain the bounded requests for revision-aware event coverage and a sufficiently long dual-basis price history. Do not replace absent owner evidence with bridge booleans, a current calendar snapshot, a raw/unadjusted profile, or a new acquisition path.
+
+Independent non-author review remains unproven. The exposed Executive connector previously projected fixture mode with no production runtime DB; no fixture intent was submitted. Shared CI enrollment also remains held on current custody evidence; do not restart parked C2 or repeat the failed global-collision census.
+
+The four prior action-scoped pre-dispatch refusals remain EFFECT_NONE and unretired, including the blocked issue-comment update. None was retried or routed through the bridge.
+
+**Exact next primary action:** adversarially review the bridge/core/diagnostics as one prepared-input boundary and consume genuine MAS-204/MAS-94 returns if they exist. If owner-qualified source evidence is still absent, continue independent non-data acceptance work (review/CI coordination) rather than fabricating an empirical cohort. Only after source and coverage gates pass may C1-M1 touch real market outcomes.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION only after this updated record, bridge proof and current PR metadata are read back. MISSION_COMPLETE:false. The bridge is BUILT_NOT_EMPIRICALLY_ADMITTED; Market Tide remains an unfinished research-to-product programme.
+
+DO_NOT_REDO additionally includes the preparation bridge/TDD/full87-test proof absent a material source or method invalidator.
