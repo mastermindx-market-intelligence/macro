@@ -2,6 +2,18 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-25",
+      "tickers": [
+        "ATO",
+        "COHU",
+        "GLW",
+        "QCOM",
+        "VTRS",
+        "WFC",
+        "XRAY"
+      ]
+    },
+    {
       "as_of": "2026-09-24",
       "tickers": [
         "ALHC",
@@ -123,38 +135,6 @@
         "SIG",
         "SRE",
         "WULF"
-      ]
-    },
-    {
-      "as_of": "2026-09-18",
-      "tickers": [
-        "AAP",
-        "ALGT",
-        "ARDC",
-        "CLH",
-        "COF",
-        "DAL",
-        "ELV",
-        "F",
-        "GLW",
-        "IPGP",
-        "KBDC",
-        "MMS",
-        "MUSA",
-        "NX",
-        "OI",
-        "PLAB",
-        "RBLX",
-        "SGI",
-        "SIG",
-        "TFC",
-        "UTHR",
-        "VICR",
-        "WFC",
-        "WHR",
-        "WULF",
-        "XBI",
-        "XBP"
       ]
     }
   ]

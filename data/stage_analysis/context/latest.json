@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-09-24",
+  "asof": "2026-09-25",
   "data_session": "2026-09-23",
-  "built": "2026-09-24T08:02:51Z",
+  "built": "2026-09-25T07:20:07Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -77,108 +77,6 @@
   },
   "top_stage2": [
     {
-      "ticker": "PRAA",
-      "company": "PRA Group, Inc.",
-      "sector": "Financials",
-      "stage_source_asof": "2026-09-23",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 78,
-      "ma30_slope_pct5w": 7.069,
-      "pct_vs_ma30": 15.93,
-      "mansfield_rs": 15.21,
-      "vol_ratio": 0.7,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.65,
-        "performance": 7.0,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "buyback_or_dividend",
-          "margin_expansion",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "PRA Group reported Q2 2026 cash collections of $559 million, up 4% year-over-year, and total revenues up 29% to $372 million. Net income was $58 million. The company increased European ERC by $349 million due to over-performance, and highlighted continued cost discipline with …"
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.12,
-      "atr_ext": 1.361,
-      "atr_pct_price": 0.10095,
-      "sata_score": 7,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 85.7
-    },
-    {
-      "ticker": "KODK",
-      "company": "Eastman Kodak Co",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-09-23",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 6,
-      "fresh": true,
-      "sga_score": 71,
-      "ma30_slope_pct5w": 3.372,
-      "pct_vs_ma30": -0.58,
-      "mansfield_rs": 1.38,
-      "vol_ratio": 0.8,
-      "event": null,
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.325,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 8.5,
-        "tone_word": "confident",
-        "tags": [
-          "demand_acceleration",
-          "margin_expansion",
-          "buyback_or_dividend",
-          "new_product"
-        ],
-        "quarter": "Q2",
-        "summary": "Kodak delivered a strong Q2 2026 with revenue of $311 million, up 18% YoY, and Operational EBITDA of $36 million, up 300% from $9 million. Gross profit rose 61% to $82 million, with gross margin expanding to 26% from 19%. The company achieved its fourth consecutive quarter of …"
-      },
-      "why": [
-        "Early in its climb — 6 weeks up so far",
-        "Still near its 30-week line — not clear of it yet",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 6 周",
-        "仍接近 30 周均线 — 尚未站稳",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.8557,
-      "atr_ext": -0.065,
-      "atr_pct_price": 0.0896,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 26.7
-    },
-    {
       "ticker": "SDGR",
       "company": "Schrödinger, Inc.",
       "sector": "Health Care",
@@ -226,67 +124,6 @@
       "sata_change_1w": 1,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": 100.0
-    },
-    {
-      "ticker": "BBNX",
-      "company": "Beta Bionics Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-23",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 65,
-      "ma30_slope_pct5w": 6.631,
-      "pct_vs_ma30": 56.22,
-      "mansfield_rs": 12.45,
-      "vol_ratio": 1.22,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6111111111111112,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "new_patient_starts",
-          "pharmacy_channel",
-          "product_pipeline",
-          "guidance",
-          "margin_expansion",
-          "type_2_diabetes",
-          "commercial_launch",
-          "diabetes_care",
-          "medical_devices",
-          "insulin_pumps",
-          "patch_pumps",
-          "healthcare_technology",
-          "fda_regulation",
-          "pharmacy_benefit_manager"
-        ],
-        "quarter": "Q2",
-        "summary": "We continued to expand the insulin pump market as approximately 69% of our new patient starts came from people utilizing multiple daily injections."
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.9946,
-      "atr_ext": 2.631,
-      "atr_pct_price": 0.1368,
-      "sata_score": 8,
-      "sata_change_1w": 2,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 73.1
     },
     {
       "ticker": "ABUS",
@@ -814,6 +651,55 @@
       "industry_percentile": 27.5
     },
     {
+      "ticker": "PRAA",
+      "company": "PRA Group, Inc.",
+      "sector": "Financials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 53,
+      "ma30_slope_pct5w": 7.069,
+      "pct_vs_ma30": 15.93,
+      "mansfield_rs": 15.21,
+      "vol_ratio": 0.7,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.65,
+        "performance": 7.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "buyback_or_dividend",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "PRA Group reported Q2 2026 cash collections of $559 million, up 4% year-over-year, and total revenues up 29% to $372 million. Net income was $58 million. The company increased European ERC by $349 million due to over-performance, and highlighted continued cost discipline with …"
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.12,
+      "atr_ext": 1.361,
+      "atr_pct_price": 0.10095,
+      "sata_score": 7,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 85.7
+    },
+    {
       "ticker": "ZYME",
       "company": "Zymeworks BC Inc",
       "sector": "Healthcare",
@@ -974,66 +860,6 @@
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 89.5
-    },
-    {
-      "ticker": "VKTX",
-      "company": "Viking Therapeutics, Inc.",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-23",
-      "stage_week_end": "2026-09-18",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 52,
-      "ma30_slope_pct5w": 1.238,
-      "pct_vs_ma30": -12.54,
-      "mansfield_rs": -20.16,
-      "vol_ratio": 0.86,
-      "event": null,
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6111111111111112,
-        "performance": 6.25,
-        "tone_word": "confident",
-        "tags": [
-          "clinical_trials",
-          "obesity",
-          "glp-1",
-          "drug_development",
-          "biotech",
-          "phase_3",
-          "obesity_therapeutics",
-          "glp_1_agonists",
-          "oral_formulations",
-          "clinical_stage_biotech",
-          "metabolic_disorders",
-          "peptide_therapeutics",
-          "amylin_agonists"
-        ],
-        "quarter": "Q2",
-        "summary": "With this timing, we believe that VK2735 is positioned to become the first oral formulation of a dual GLP-1 GIP agonist to reach the market."
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Still near its 30-week line — not clear of it yet",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "仍接近 30 周均线 — 尚未站稳",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 4.1078,
-      "atr_ext": -1.012,
-      "atr_pct_price": 0.1417,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 23.7
     },
     {
       "ticker": "AFRI",
@@ -1838,7 +1664,7 @@
       "vol_ratio": 1.0,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.2875,
       "earnings": {
         "present": true,
@@ -1864,11 +1690,13 @@
       },
       "why": [
         "Early in its climb — 3 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Already stretched well above its 30-week line — may need a rest",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 3 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 27.1192,
       "atr_ext": 1.492,
@@ -2704,6 +2532,55 @@
       "industry_percentile": 81.6
     },
     {
+      "ticker": "KODK",
+      "company": "Eastman Kodak Co",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.372,
+      "pct_vs_ma30": -0.58,
+      "mansfield_rs": 1.38,
+      "vol_ratio": 0.8,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "demand_acceleration",
+          "margin_expansion",
+          "buyback_or_dividend",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Kodak delivered a strong Q2 2026 with revenue of $311 million, up 18% YoY, and Operational EBITDA of $36 million, up 300% from $9 million. Gross profit rose 61% to $82 million, with gross margin expanding to 26% from 19%. The company achieved its fourth consecutive quarter of …"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Still near its 30-week line — not clear of it yet"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "仍接近 30 周均线 — 尚未站稳"
+      ],
+      "atr_14w": 0.8557,
+      "atr_ext": -0.065,
+      "atr_pct_price": 0.0896,
+      "sata_score": 4,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 26.7
+    },
+    {
       "ticker": "NWS",
       "company": "News Corp (Class B)",
       "sector": "Communication Services",
@@ -3071,6 +2948,100 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": null
+    },
+    {
+      "ticker": "GEN",
+      "company": "Gen Digital",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 4.522,
+      "pct_vs_ma30": 18.78,
+      "mansfield_rs": 6.97,
+      "vol_ratio": 0.95,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q1",
+        "summary": "Gen delivered Q1 FY2027 with bookings and revenue both up 11% year-over-year, above the high end of guidance, and non-GAAP EPS grew 19%. The company raised full-year FY2027 guidance to 9%-11% revenue growth and 14%-18% EPS growth. Cyber Safety grew mid-single digits, while Tru…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.1019,
+      "atr_ext": 2.182,
+      "atr_pct_price": 0.07245,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "HNVR",
+      "company": "Hanover Bancorp Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-09-23",
+      "stage_week_end": "2026-09-18",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 3.083,
+      "pct_vs_ma30": 12.05,
+      "mansfield_rs": 6.32,
+      "vol_ratio": 0.9,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.4874,
+      "atr_ext": 1.925,
+      "atr_pct_price": 0.05585,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": null
     }
   ],
   "warnings_stage3": [
@@ -3081,27 +3052,15 @@
       "sga_score": 37
     },
     {
-      "ticker": "IRWD",
-      "company": "Ironwood Pharmaceuticals Inc",
-      "weeks_in_stage": 5,
-      "sga_score": 35
-    },
-    {
-      "ticker": "INOD",
-      "company": "Innodata Inc",
+      "ticker": "CORZ",
+      "company": "Core Scientific Inc",
       "weeks_in_stage": 3,
-      "sga_score": 30
+      "sga_score": 25
     },
     {
       "ticker": "NXPI",
       "company": "NXP Semiconductors",
       "weeks_in_stage": 5,
-      "sga_score": 25
-    },
-    {
-      "ticker": "RDNW",
-      "company": "RideNow Group Inc",
-      "weeks_in_stage": 2,
       "sga_score": 25
     },
     {
@@ -3192,6 +3151,18 @@
       "ticker": "BFS",
       "company": "Saul Centers, Inc.",
       "weeks_in_stage": 2,
+      "sga_score": 12
+    },
+    {
+      "ticker": "DMRA",
+      "company": "Damora Therapeutics Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 12
+    },
+    {
+      "ticker": "MAMA",
+      "company": "Mama's Creations Inc",
+      "weeks_in_stage": 1,
       "sga_score": 12
     }
   ],

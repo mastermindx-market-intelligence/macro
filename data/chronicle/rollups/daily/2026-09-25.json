@@ -1,0 +1,246 @@
+{
+  "as_of": "2026-09-25",
+  "coverage": {
+    "end": "2026-09-24",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-15 to 2026-09-24; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-15"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-09-24",
+      "events": []
+    },
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": []
+    },
+    {
+      "date": "2026-09-21",
+      "events": []
+    },
+    {
+      "date": "2026-09-20",
+      "events": []
+    },
+    {
+      "date": "2026-09-19",
+      "events": []
+    },
+    {
+      "date": "2026-09-18",
+      "events": [
+        {
+          "date": "2026-09-18",
+          "id": "cev-research_vault-5afdefc17403",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fip581gs8cw-ae1704",
+          "tickers": [],
+          "title": "S&T: GS Mourad post Fed what's working what's not working 17 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-17",
+      "events": [
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-cf288ca2fb96",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-g3bugkjjgib-77331c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-16",
+      "events": [
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-c656772232b3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ifvweti4bl0-81ed6e",
+          "tickers": [],
+          "title": "S&T: GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "events": [
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-cd03d89da006",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xm8agt8ub0p-04ec2a",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Equity Strategy Equity",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-bef8629e1820",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-pwhjp6taul7-33f197",
+          "tickers": [],
+          "title": "Goldman Sachs: Asia Pacific Portfolio Strategy Asian equity market daily update",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-bf81e3ab89f4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-u5zefwi75ln-e24dbc",
+          "tickers": [],
+          "title": "Bank of America: BofA European Fund Manager Survey",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-c186c591926b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-w6tz4cnnfj0-c0e56c",
+          "tickers": [],
+          "title": "Goldman Sachs: Trex Company Inc. (TREX) Global Consumer and Retail Conference 2026 — Key Takeaways",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-c20cb80fb43b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-mig1dgpeory-7642d2",
+          "tickers": [],
+          "title": "Goldman Sachs: Tracking U.S. Supply Chain Congestion Sept 14",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-c3069f702e52",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2154grzixhr-463a3c",
+          "tickers": [],
+          "title": "Goldman Sachs: China Better industrial production, sluggish investment, slower retail sales growth",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-cf0030965430",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-gtrts72xyja-125235",
+          "tickers": [],
+          "title": "Goldman Sachs: UK—Pay Growth Slightly Firmer Than Expected but Payrolls Remain Weak",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-cf22e1e8f8bc",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-li3loaosovk-c5632f",
+          "tickers": [],
+          "title": "Goldman Sachs: Canada Economics Comment Headline and Core Inflation In Line With Expectations",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-d14803f7539b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xt0gsapcnyt-5ae3ec",
+          "tickers": [],
+          "title": "Rabobank: Global daily coalition of the exceedingly reluctant",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-e6fc7b27cd3e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zxhqnetqnxt-a1f951",
+          "tickers": [],
+          "title": "UBS: How can investors find income",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-ebdd4c991f83",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-uyt59bcphd3-006bfc",
+          "tickers": [],
+          "title": "Nomura: GS McElligott UPDATE THE STRAW THAT STIRS THE DRINK 15 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-f10ea02c54ab",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-kde0lhgesh8-78970a",
+          "tickers": [],
+          "title": "SYZ: Equity Weekly 4 11 September 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-f2232aba989e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-hiognmiaa40-046837",
+          "tickers": [],
+          "title": "S&T: GS Soria Chart of the Day Momentum Make Up Is Changing 14 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-f258e5faebcc",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-rbrkw9ih8yh-1b98e1",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM JPM Daily Credit",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-fd1fe91c53bb",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-9a8b3ric8vy-4b8724",
+          "tickers": [],
+          "title": "LSEG: IC STORIES",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

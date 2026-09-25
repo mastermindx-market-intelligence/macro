@@ -70,15 +70,19 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [],
+    "degraded": [
+      "event_coverage_census",
+      "issuer_records"
+    ],
     "reasons": [
+      "worst_required_source_freshness=LATE_WITHIN_TOLERANCE",
       "owner_coverage_state=partial",
       "owner_horizon_state=degraded_discovery"
     ],
     "required": [
       {
         "component_id": "event_coverage_census",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Event & issuer coverage census",
           "zh": "事件与发行人覆盖普查"
@@ -86,11 +90,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-09-23T16:22:16.651464Z",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "issuer_records",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Issuer capital-structure event records",
           "zh": "发行人资本结构事件记录"
@@ -98,11 +102,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-09-23T16:22:16.651464Z",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       }
     ],
-    "state": "CURRENT",
-    "worst_freshness": "CURRENT"
+    "state": "LATE_WITHIN_TOLERANCE",
+    "worst_freshness": "LATE_WITHIN_TOLERANCE"
   },
   "axes": {
     "items": []
@@ -156,18 +160,18 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "capital_structure-US-7f14a6b60cdf7336"
+    "predecessor_generation_id": "capital_structure-US-26d6319e45e372aa"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-09-24T06:09:07Z",
+    "built_at": "2026-09-25T05:30:38Z",
     "calculation_as_of": "2026-09-23T16:55:34.935912Z",
-    "code_version": "ef43ff17b916d11db6588309889ec28f0ecc74a6",
-    "content_sha256": "26d6319e45e372aa50bcef8233c510a837ebd77ca4cdc647145b1e75c6091bf3",
-    "generation_id": "capital_structure-US-26d6319e45e372aa",
+    "code_version": "d8a2f9d85b7b218faa0c63aa343be76440281481",
+    "content_sha256": "63b4c817a7b15cb8cf43bb30eed2ee3c7219198b8c4971300524167a648a2ea5",
+    "generation_id": "capital_structure-US-63b4c817a7b15cb8",
     "producer": "engine.market_os.macro_workspaces.capital_structure",
     "rendered_at": null
   },
@@ -231,7 +235,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -253,7 +257,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -276,7 +280,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -298,7 +302,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -320,7 +324,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -342,7 +346,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -364,7 +368,7 @@
           "evidence_breadth": "LOW",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -402,7 +406,7 @@
         "definition_id": "coverage.issuer_count",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_count",
         "model_version": "capital_structure.compose.v1",
@@ -438,7 +442,7 @@
         "definition_id": "coverage.event_count",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_event_count",
         "model_version": "capital_structure.compose.v1",
@@ -474,7 +478,7 @@
         "definition_id": "coverage.classified_event_count",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_classified_event_count",
         "model_version": "capital_structure.compose.v1",
@@ -510,7 +514,7 @@
         "definition_id": "coverage.deferred_event_count",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_deferred_event_count",
         "model_version": "capital_structure.compose.v1",
@@ -546,7 +550,7 @@
         "definition_id": "coverage.review_count",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_review_count",
         "model_version": "capital_structure.compose.v1",
@@ -582,7 +586,7 @@
         "definition_id": "coverage.edge_count",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_edge_count",
         "model_version": "capital_structure.compose.v1",
@@ -618,7 +622,7 @@
         "definition_id": "coverage.generation_age_hours",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_owner_generation_age_hours",
         "model_version": "capital_structure.compose.v1",
@@ -654,7 +658,7 @@
         "definition_id": "coverage.state",
         "definition_version": "1.0.0",
         "direction_semantics": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_coverage_state",
         "model_version": "capital_structure.compose.v1",
@@ -690,7 +694,7 @@
         "definition_id": "coverage.freshness",
         "definition_version": "1.0.0",
         "direction_semantics": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_event_detection_freshness_state",
         "model_version": "capital_structure.compose.v1",
@@ -726,7 +730,7 @@
         "definition_id": "coverage.generation_freshness",
         "definition_version": "1.0.0",
         "direction_semantics": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_generation_freshness_state",
         "model_version": "capital_structure.compose.v1",
@@ -762,7 +766,7 @@
         "definition_id": "coverage.source_status",
         "definition_version": "1.0.0",
         "direction_semantics": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_source_status",
         "model_version": "capital_structure.compose.v1",
@@ -798,7 +802,7 @@
         "definition_id": "coverage.horizon_state",
         "definition_version": "1.0.0",
         "direction_semantics": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_horizon_state",
         "model_version": "capital_structure.compose.v1",
@@ -834,7 +838,7 @@
         "definition_id": "coverage.classified_event_count / coverage.event_count",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_classified",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_event_classification_rate",
         "model_version": "capital_structure.compose.v1",
@@ -870,7 +874,7 @@
         "definition_id": "coverage.review_count / coverage.event_count",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_backlog",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_review_backlog_ratio",
         "model_version": "capital_structure.compose.v1",
@@ -906,7 +910,7 @@
         "definition_id": "records[*]",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_records_count",
         "model_version": "capital_structure.compose.v1",
@@ -942,7 +946,7 @@
         "definition_id": "records[*].latest_observed_event.classification_state",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_latest_event_classified_count",
         "model_version": "capital_structure.compose.v1",
@@ -978,7 +982,7 @@
         "definition_id": "records[*].latest_observed_event.classification_state",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_classified",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_latest_event_classified_share",
         "model_version": "capital_structure.compose.v1",
@@ -1014,7 +1018,7 @@
         "definition_id": "records[*].latest_observed_event.review.state",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_pending_review_count",
         "model_version": "capital_structure.compose.v1",
@@ -1050,7 +1054,7 @@
         "definition_id": "records[*].latest_observed_event.family",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_shelf_registration_count",
         "model_version": "capital_structure.compose.v1",
@@ -1086,7 +1090,7 @@
         "definition_id": "records[*].latest_observed_event.family",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_shelf_activity",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_shelf_registration_share",
         "model_version": "capital_structure.compose.v1",
@@ -1122,7 +1126,7 @@
         "definition_id": "records[*].latest_observed_event.relationships",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_with_relationships_count",
         "model_version": "capital_structure.compose.v1",
@@ -1158,7 +1162,7 @@
         "definition_id": "records[*].latest_observed_event.correction_of",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_correction_present_count",
         "model_version": "capital_structure.compose.v1",
@@ -1194,7 +1198,7 @@
         "definition_id": "records[*].coverage.contradiction_ids",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "cs_issuer_contradiction_flagged_count",
         "model_version": "capital_structure.compose.v1",
@@ -2761,7 +2765,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Capital-structure event & filing classification projection",
           "zh": "资本结构事件与文件分类投影"
@@ -2782,7 +2786,7 @@
         "definition_id": null,
         "definition_version": "capital-structure-sec-form-policy/1.2.0",
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Underlying SEC form-policy source ledger receipt",
           "zh": "底层SEC表格政策数据源清单回执"

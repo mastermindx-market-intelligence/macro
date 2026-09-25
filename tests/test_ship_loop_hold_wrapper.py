@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
+import io
 import json
 import re
 import subprocess
@@ -69,17 +71,18 @@ def test_exact_sol_hold_protocol_is_recognized():
     assert "Sol review approval" in WRAPPER._field(combined, "Release condition")
 
 
-@pytest.mark.parametrize(
-    "mutation",
-    [
-        {"draft": False},
-        {"labels": [{"name": "merge-on-green"}]},
-        {"auto_merge": {"merge_method": "SQUASH"}},
-        {"title": "please hold this for later"},
-        {"body": "HOLD-FOR-SOL. Do not merge. Authority: session. Release condition: session."},
-        {"body": "HOLD-FOR-SOL. Do not merge. Authority: Sol. Release condition: CI green."},
-    ],
+#: Each single edit that must void an otherwise exact hold (fence-pack iterates these).
+UNSAFE_HOLD_MUTATIONS = (
+    {"draft": False},
+    {"labels": [{"name": "merge-on-green"}]},
+    {"auto_merge": {"merge_method": "SQUASH"}},
+    {"title": "please hold this for later"},
+    {"body": "HOLD-FOR-SOL. Do not merge. Authority: session. Release condition: session."},
+    {"body": "HOLD-FOR-SOL. Do not merge. Authority: Sol. Release condition: CI green."},
 )
+
+
+@pytest.mark.parametrize("mutation", UNSAFE_HOLD_MUTATIONS)
 def test_incomplete_or_unsafe_hold_fails_closed(mutation):
     assert not WRAPPER._hold_protocol_is_complete(_pull(**mutation), [])
 
@@ -308,7 +311,7 @@ def test_red_ordinary_claude_hold_repairs_the_check_and_never_merges(monkeypatch
     assert "squash-merge" not in reason
 
 
-def test_hold_block_still_refuses_branches_outside_the_two_sanctioned_namespaces(monkeypatch, tmp_path):
+def test_hold_block_still_refuses_branches_outside_the_two_sanctioned_namespaces():
     """The codex/* branch-law repair must survive this widening."""
     # A probe shape that would otherwise qualify, but on a forbidden namespace.
     for kind, branch in (("ordinary_unmerged", "codex/forbidden"), ("sol_authority", "claude/not-sol")):
@@ -543,8 +546,12 @@ def test_parked_message_is_pure_and_needs_no_probe_or_network(monkeypatch):
     assert "SHIP LOOP PARKED" in WRAPPER._parked_message(PARKED_PROBE)["systemMessage"]
 
 
-def test_main_parked_branch_emits_exactly_the_composed_message(monkeypatch, tmp_path, capsys):
-    """`main()` must print the helper's message, not a second divergent copy."""
+def test_main_parked_branch_emits_exactly_the_composed_message(monkeypatch, tmp_path):
+    """`main()` must print the helper's message, not a second divergent copy.
+
+    Stdout is captured here rather than through `capsys`: fence-pack calls this function
+    directly (tests/test_fence_checkout_contract.py), where no pytest fixture exists.
+    """
     _stub_clean_pushed_git(monkeypatch)
     guard, _ = _fake_guard(tmp_path)
     monkeypatch.setattr(WRAPPER, "_load_guard", lambda _path: guard)
@@ -557,9 +564,11 @@ def test_main_parked_branch_emits_exactly_the_composed_message(monkeypatch, tmp_
         WRAPPER, "_relay", lambda *_a, **_k: pytest.fail("a lawful green hold must not delegate")
     )
 
-    WRAPPER.main()
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        WRAPPER.main()
 
-    emitted = json.loads(capsys.readouterr().out)
+    emitted = json.loads(out.getvalue())
     probe = WRAPPER._hold_probe(guard, {"hook_event_name": "Stop"})
     assert emitted == WRAPPER._parked_message(probe)
 
