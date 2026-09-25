@@ -43,28 +43,60 @@ def _months_diff(cy: int, cm: int, dy: int, dm: int) -> int:
 
 def gen_contracts(symbol_root: str, exchanges: list[str], cadence: str,
                   n: int, asof: date) -> list[dict]:
-    """The next `n` live delivery months as Yahoo candidate symbols.
+    """The next `n` live contract months as Yahoo candidate symbols.
 
-    Returns one dict per (year, month) with the candidate Yahoo symbols (one per
-    exchange suffix, e.g. ``ZQF26.CBT``). Monthly cadence walks every month;
-    quarterly walks only the IMM months (Mar/Jun/Sep/Dec). Rolls off `asof`, so
-    the strip is always current — no contract is ever hard-coded.
+    Monthly cadence walks every calendar month from `asof`. For the incumbent
+    SR3 quarterly family, contract names identify the month in which the
+    reference quarter BEGINS, so April/May still need the March contract and
+    July/August still need June. Use the existing reference-period owner to
+    locate the active quarter instead of rolling at civil month boundaries.
     """
+    if cadence not in ("monthly", "quarterly"):
+        raise ValueError("unsupported_contract_cadence")
+
     out: list[dict] = []
-    y, m = asof.year, asof.month
-    steps = 0
-    # walk forward month-by-month until we have n contracts of the right cadence
-    while len(out) < n and steps < 60:
-        if cadence == "monthly" or (cadence == "quarterly" and m in (3, 6, 9, 12)):
+    if cadence == "quarterly":
+        from engine.rate_futures_repricing import reference_period
+
+        # Start from the latest quarterly named month not after the civil month.
+        quarter_months = (3, 6, 9, 12)
+        prior = [month for month in quarter_months if month <= asof.month]
+        if prior:
+            y, m = asof.year, prior[-1]
+        else:
+            y, m = asof.year - 1, 12
+
+        # Before that quarter's third-Wednesday reference start, the previous
+        # quarterly contract is still the active reference-quarter contract.
+        start, _ = reference_period(symbol_root, y, m)
+        if asof < date.fromisoformat(start):
+            m -= 3
+            if m <= 0:
+                m += 12
+                y -= 1
+
+        for _ in range(n):
             code = f"{symbol_root}{_MONTH_CODE[m]}{y % 100:02d}"
             out.append({
                 "year": y, "month": m,
                 "symbols": [f"{code}.{ex}" for ex in exchanges],
             })
+            m += 3
+            if m > 12:
+                m -= 12
+                y += 1
+        return out
+
+    y, m = asof.year, asof.month
+    for _ in range(n):
+        code = f"{symbol_root}{_MONTH_CODE[m]}{y % 100:02d}"
+        out.append({
+            "year": y, "month": m,
+            "symbols": [f"{code}.{ex}" for ex in exchanges],
+        })
         m += 1
         if m > 12:
             m, y = 1, y + 1
-        steps += 1
     return out
 
 

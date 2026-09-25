@@ -1084,3 +1084,114 @@ def test_rd2_contract_strip_uses_new_york_calendar_date(monkeypatch):
         adapter.fetch()
 
     assert observed_asof == [date(2026, 9, 30)]
+
+
+@pytest.mark.parametrize(
+    'asof,expected',
+    [
+        ('2026-03-17', (2025, 12)),
+        ('2026-03-18', (2026, 3)),
+        ('2026-04-01', (2026, 3)),
+        ('2026-05-15', (2026, 3)),
+        ('2026-06-16', (2026, 3)),
+        ('2026-06-17', (2026, 6)),
+        ('2026-07-01', (2026, 6)),
+        ('2026-08-15', (2026, 6)),
+        ('2026-09-15', (2026, 6)),
+        ('2026-09-16', (2026, 9)),
+    ],
+)
+def test_rd2_sr3_strip_starts_with_active_reference_quarter(asof, expected):
+    from datetime import date
+    from collectors import rate_futures as rf
+    from engine.rate_futures_repricing import reference_period
+
+    d = date.fromisoformat(asof)
+    contracts = rf.gen_contracts('SR3', ['CME'], 'quarterly', 4, d)
+    first = (contracts[0]['year'], contracts[0]['month'])
+    assert first == expected
+
+    start, end = reference_period('SR3', *first)
+    assert date.fromisoformat(start) <= d < date.fromisoformat(end)
+    assert [(c['year'], c['month']) for c in contracts[1:]] == [
+        ((expected[0] + (expected[1] + step - 1) // 12),
+         ((expected[1] + step - 1) % 12) + 1)
+        for step in (3, 6, 9)
+    ]
+
+
+def test_rd2_sr3_active_quarter_survives_collector_store_and_ric(monkeypatch, tmp_path):
+    from copy import deepcopy
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    from collectors import base, rate_futures as rf
+    from engine import rates_inflation_command as ric
+    from lib import config
+
+    # April is inside the March SR3 reference quarter. The collector must retain
+    # the March-named contract instead of starting the strip at June.
+    moment = datetime(2026, 4, 2, 13, 0, tzinfo=timezone.utc)
+    monkeypatch.setattr(rf, 'datetime', SimpleNamespace(now=lambda tz: moment))
+    requested = []
+    idx = pd.DatetimeIndex(['2026-03-31', '2026-04-01'])
+
+    def vendor_download(symbols, **kwargs):
+        requested[:] = list(symbols)
+        entries = {}
+        for i, symbol in enumerate(symbols):
+            entries[symbol] = pd.DataFrame(
+                {'Close': [96.0 - .05 * i, 95.9 - .05 * i]},
+                index=idx,
+            )
+        return pd.concat(entries, axis=1)
+
+    monkeypatch.setitem(sys.modules, 'yfinance', SimpleNamespace(download=vendor_download))
+    adapter = rf.RateFuturesAdapter()
+    adapter.retries, adapter.backoff = 1, 0
+    adapter.cfg = {
+        'horizons_m': [1, 3, 6, 12],
+        'max_months': 18,
+        'roots': {
+            'sofr': {
+                'symbol_root': 'SR3',
+                'exchanges': ['CME'],
+                'cadence': 'quarterly',
+                'months': 6,
+            }
+        },
+    }
+
+    cfg = deepcopy(config.load())
+    cfg['storage']['run_status_file'] = 'run_status.json'
+    cfg['storage']['data_dir'] = 'data'
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: cfg)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(base, 'datetime', rf.datetime)
+    monkeypatch.setattr(
+        ric,
+        'datetime',
+        SimpleNamespace(now=lambda tz: datetime(2026, 4, 2, 14, 0, tzinfo=timezone.utc)),
+    )
+
+    result = base.run_adapter(adapter)
+    assert result.status == 'ok', result.error
+    assert requested[0].startswith('SR3H26.')
+
+    out = ric.build_board(root=tmp_path / 'data')['policy_path_repricing']
+    sofr = out['families']['sofr']
+    assert sofr['status'] == 'partial'
+    assert sofr['horizons']['m1']['status'] == 'unavailable'
+    assert sofr['horizons']['m1']['reason'] == 'unbracketed_horizon'
+    for horizon in ('m3', 'm6', 'm12'):
+        assert sofr['horizons'][horizon]['status'] == 'available'
+    assert sofr['historical_availability_qualified'] is False
+    assert out['authority'] is False and out['can_trade'] is False
+    json.dumps(out, allow_nan=False)
+
+    evidence = pd.read_parquet(tmp_path / 'data' / 'rate_futures' / 'sofr_constituents.parquet')
+    last = json.loads(evidence.iloc[-1]['snapshot_json'])['payload']
+    assert '2026-03' in last['quotes']
+    assert last['quotes']['2026-03']['reference_period'] == [
+        '2026-03-18', '2026-06-17'
+    ]
