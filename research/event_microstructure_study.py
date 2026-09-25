@@ -174,6 +174,211 @@ def forward_return_bps(
     return round(_return_bps(start_price, ends[-1][1]), 6)
 
 
+def _last_at_or_before(
+    points: Sequence[tuple[datetime, float]],
+    target: datetime,
+    *,
+    tolerance_minutes: int,
+) -> tuple[datetime, float] | None:
+    if tolerance_minutes < 0:
+        raise StudyContractError("tolerance_minutes cannot be negative")
+    eligible = [row for row in points if row[0] <= target]
+    if not eligible:
+        return None
+    row = eligible[-1]
+    if target - row[0] > timedelta(minutes=tolerance_minutes):
+        return None
+    return row
+
+
+def _first_at_or_after(
+    points: Sequence[tuple[datetime, float]],
+    target: datetime,
+    *,
+    tolerance_minutes: int,
+) -> tuple[datetime, float] | None:
+    if tolerance_minutes < 0:
+        raise StudyContractError("tolerance_minutes cannot be negative")
+    for row in points:
+        if row[0] >= target:
+            if row[0] - target <= timedelta(minutes=tolerance_minutes):
+                return row
+            return None
+    return None
+
+
+def repricing_first_pass(
+    *,
+    known_at: str | datetime,
+    causal_points: Sequence[Mapping[str, Any]],
+    response_points: Sequence[Mapping[str, Any]],
+    benchmark_points: Sequence[Mapping[str, Any]],
+    causal_direction: int,
+    pre_windows_minutes: Sequence[int] = (60, 240),
+    impulse_minutes: int = 5,
+    response_horizons_minutes: Sequence[int] = (15, 30, 60),
+    pre_tolerance_minutes: int = 5,
+    post_tolerance_minutes: int = 2,
+) -> dict[str, Any]:
+    """Measure the frozen V2 descriptive first-pass windows.
+
+    The function is intentionally source- and calendar-agnostic: callers supply
+    already-admitted PIT observations. Pre-event features use only observations
+    at or before their target clocks. Post-event features use the first
+    observation at or after each target clock within a bounded tolerance.
+
+    This is measurement, not threshold selection or signal admission.
+    """
+    if causal_direction not in (-1, 1):
+        raise StudyContractError("causal_direction must be -1 or 1")
+    if impulse_minutes <= 0:
+        raise StudyContractError("impulse_minutes must be positive")
+    if any(int(v) <= 0 for v in pre_windows_minutes):
+        raise StudyContractError("pre_windows_minutes entries must be positive")
+    if any(int(v) <= 0 for v in response_horizons_minutes):
+        raise StudyContractError(
+            "response_horizons_minutes entries must be positive"
+        )
+
+    anchor = (
+        _utc(known_at, "known_at")
+        if isinstance(known_at, str)
+        else known_at.astimezone(timezone.utc)
+    )
+    causal = _points(causal_points)
+    response = _points(response_points)
+    benchmark = _points(benchmark_points)
+
+    event_causal = _last_at_or_before(
+        causal,
+        anchor,
+        tolerance_minutes=pre_tolerance_minutes,
+    )
+    causal_at_impulse_end = _first_at_or_after(
+        causal,
+        anchor + timedelta(minutes=impulse_minutes),
+        tolerance_minutes=post_tolerance_minutes,
+    )
+    response_start = _first_at_or_after(
+        response,
+        anchor + timedelta(minutes=impulse_minutes),
+        tolerance_minutes=post_tolerance_minutes,
+    )
+    benchmark_start = _first_at_or_after(
+        benchmark,
+        anchor + timedelta(minutes=impulse_minutes),
+        tolerance_minutes=post_tolerance_minutes,
+    )
+
+    pre: dict[str, dict[str, float | str | None]] = {}
+    for window in pre_windows_minutes:
+        target = anchor - timedelta(minutes=int(window))
+        start = _last_at_or_before(
+            causal,
+            target,
+            tolerance_minutes=pre_tolerance_minutes,
+        )
+        raw = None
+        if start is not None and event_causal is not None:
+            raw = round(_return_bps(start[1], event_causal[1]), 6)
+        pre[f"{int(window)}m"] = {
+            "start_known_at": None if start is None else _iso(start[0]),
+            "raw_return_bps": raw,
+            "signed_expected_direction_bps": (
+                None if raw is None else round(raw * causal_direction, 6)
+            ),
+        }
+
+    impulse_raw = None
+    if event_causal is not None and causal_at_impulse_end is not None:
+        impulse_raw = round(
+            _return_bps(event_causal[1], causal_at_impulse_end[1]),
+            6,
+        )
+
+    response_windows: dict[str, dict[str, float | str | None]] = {}
+    for horizon in response_horizons_minutes:
+        target = anchor + timedelta(
+            minutes=impulse_minutes + int(horizon)
+        )
+        response_end = _first_at_or_after(
+            response,
+            target,
+            tolerance_minutes=post_tolerance_minutes,
+        )
+        benchmark_end = _first_at_or_after(
+            benchmark,
+            target,
+            tolerance_minutes=post_tolerance_minutes,
+        )
+        response_ret = benchmark_ret = residual = None
+        if response_start is not None and response_end is not None:
+            response_ret = round(
+                _return_bps(response_start[1], response_end[1]),
+                6,
+            )
+        if benchmark_start is not None and benchmark_end is not None:
+            benchmark_ret = round(
+                _return_bps(benchmark_start[1], benchmark_end[1]),
+                6,
+            )
+        if response_ret is not None and benchmark_ret is not None:
+            residual = round(response_ret - benchmark_ret, 6)
+        response_windows[f"{int(horizon)}m"] = {
+            "end_known_at": (
+                None if response_end is None else _iso(response_end[0])
+            ),
+            "response_return_bps": response_ret,
+            "benchmark_return_bps": benchmark_ret,
+            "residual_return_bps": residual,
+        }
+
+    required = (
+        event_causal,
+        causal_at_impulse_end,
+        response_start,
+        benchmark_start,
+    )
+    return {
+        "schema": "research.narrative_repricing_first_pass.v1",
+        "authority": dict(AUTHORITY),
+        "known_at": _iso(anchor),
+        "status": (
+            "measured"
+            if all(value is not None for value in required)
+            else "data_gap"
+        ),
+        "causal_event_point": (
+            None if event_causal is None else {
+                "known_at": _iso(event_causal[0]),
+                "price": event_causal[1],
+            }
+        ),
+        "causal_impulse": {
+            "end_target": _iso(
+                anchor + timedelta(minutes=impulse_minutes)
+            ),
+            "end_known_at": (
+                None
+                if causal_at_impulse_end is None
+                else _iso(causal_at_impulse_end[0])
+            ),
+            "raw_return_bps": impulse_raw,
+            "signed_expected_direction_bps": (
+                None
+                if impulse_raw is None
+                else round(impulse_raw * causal_direction, 6)
+            ),
+        },
+        "pre_event_causal": pre,
+        "response_from_impulse_end": response_windows,
+        "interpretation": (
+            "descriptive_only; thresholds and first-impulse rules remain owned "
+            "by the frozen preregistration/evaluation split"
+        ),
+    }
+
+
 def publication_ladder(
     claims: Sequence[Mapping[str, Any]],
     *,
