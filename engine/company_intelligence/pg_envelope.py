@@ -301,7 +301,6 @@ _VOCABULARIES = {
     }),
     'earnings': frozenset({
         '%chg',
-        '<period>',
         'three<period>',
         'amountsinmillionsexceptpershareamounts',
         'basic',
@@ -331,7 +330,6 @@ _VOCABULARIES = {
     }),
     'drivers': frozenset({
         'three<period>',
-        '<period>,<period>',
         'baby,feminine&familycare',
         'beauty',
         'fabric&homecare',
@@ -349,7 +347,6 @@ _VOCABULARIES = {
     }),
     'core_reconciliation': frozenset({
         'three<period>',
-        '<period>,<period>',
         'amountsinmillionsexceptpershareamounts',
         'asreported(gaap)',
         'asreported(gaap)<n>)',
@@ -413,7 +410,6 @@ _VOCABULARIES = {
     }),
     'prior_core_reconciliation': frozenset({
         'three<period>',
-        '<period>,<period>',
         'amountsinmillionsexceptpershareamounts',
         'asreported(gaap)',
         'core(non-gaap)',
@@ -430,12 +426,10 @@ _VOCABULARIES = {
         'operatingmargin',
         'selling,generalandadministrativeexpense',
         'selling,generalandadministrativeexpenseasa%ofnetsales',
-        'othernon-operatingincome/(expense),net',
         'theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures',
     }),
     'cash_flows': frozenset({
         '(gain)/lossonsaleofassets',
-        '<period>',
         'six<period>',
         'nine<period>',
         'three<period>',
@@ -515,7 +509,6 @@ _VOCABULARIES = {
     'segment_results': frozenset({
         'three<period>',
         '%changeversusyearago',
-        '<period>,<period>',
         'amountsinmillions',
         'baby,feminine&familycare',
         'beauty',
@@ -551,7 +544,6 @@ _VOCABULARIES = {
     }),
     'cash_flow': frozenset({
         'three<period>',
-        '<period>,<period>',
         '<period>u.s.taxactpayments',
         'adjustedfreecashflow',
         'capitalspending',
@@ -559,7 +551,6 @@ _VOCABULARIES = {
     }),
     'cash_flow_reconciliation': frozenset({
         'three<period>',
-        '<period>,<period>',
         'adjustedfreecashflow',
         'adjustedfreecashflowproductivity',
         'adjustmentstonetearnings<n>)',
