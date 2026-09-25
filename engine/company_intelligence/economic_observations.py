@@ -8,6 +8,7 @@ from numbers import Real
 from typing import Any, Mapping
 
 from .documents import ABSENCE_SCHEMA, TypedAbsence
+from . import pg_envelope as _pg_envelope
 from .pg_profile import (
     PG_COMBINED_VOLUME_MIX_METRICS,
     PG_DEFINITIONS,
@@ -84,6 +85,102 @@ def _fiscal_scope(value: Any) -> tuple[date, date, date, date]:
 def _fact_id(event_id: Any, metric: Any, period: Any, basis: Any) -> str:
     identity = "|".join(str(item) for item in (event_id, metric, period, basis))
     return f"fact_{hashlib.sha256(identity.encode('utf-8')).hexdigest()[:16]}"
+
+
+def _validate_envelope_rows(
+    *,
+    rows: list[Mapping[str, Any]],
+    source: str,
+    fiscal_scope: tuple[str, str, str, str],
+    event_id: Any,
+    workspace_document_id: str,
+) -> list[dict[str, Any]]:
+    from .pg_profile import _scope
+
+    admission = _pg_envelope.admit(source, fiscal_scope)
+    definitions = {definition.metric: definition for definition in PG_DEFINITIONS}
+    if admission.code != "F1-Q" or admission.roles is None:
+        expected_rows = {metric: ("refused", f"envelope_refused:{admission.code}", None) for metric in definitions}
+    else:
+        expected_rows = {
+            metric: (
+                outcome.kind,
+                (
+                    f"envelope_excluded:{metric}" if metric == "pg_core_reconciliation_context"
+                    else f"envelope_{outcome.kind}:{metric}"
+                ),
+                outcome.value,
+            )
+            for metric, outcome in _pg_envelope.derive_outcomes(source, fiscal_scope, admission).items()
+        }
+        expected_rows["pg_core_reconciliation_context"] = ("excluded", "envelope_excluded:pg_core_reconciliation_context", None)
+
+    checked: list[dict[str, Any]] = []
+    seen: set[Any] = set()
+    for row in rows:
+        metric = row.get("metric")
+        definition = definitions[metric]
+        if metric in seen:
+            raise EconomicObservationError("selected metric is duplicate")
+        seen.add(metric)
+        if row.get("event_id") != event_id:
+            raise EconomicObservationError("selected row belongs to another event")
+        fact_id = row.get("fact_id")
+        period = row.get("period") if "value" in row else metric
+        if fact_id != _fact_id(event_id, metric, period, definition.basis):
+            raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
+        expected = expected_rows[metric]
+        kind = expected[0]
+        if "value" in row:
+            if kind != "present":
+                raise EconomicObservationError("selected observation is present but the envelope does not agree")
+            current_start, current_end, _prior_start, prior_end = _scope(fiscal_scope)
+            expected_period = (
+                prior_end.isoformat()
+                if metric in {"pg_prior_diluted_eps", "pg_prior_core_eps"}
+                else current_end.isoformat()
+            )
+            if row.get("unit") != definition.unit or row.get("basis") != definition.basis or row.get("period") != expected_period:
+                raise EconomicObservationError("selected observation metadata is not recognized")
+            span = row.get("source_span")
+            receipt = (span or {}).get("receipt", {}) if isinstance(span, Mapping) else {}
+            source_bytes = source.encode("utf-8")
+            start, end = receipt.get("span_start_byte"), receipt.get("span_end_byte")
+            if not isinstance(start, int) or not isinstance(end, int) or not (0 <= start < end <= len(source_bytes)):
+                raise EconomicObservationError("selected observation byte span is invalid")
+            outcome = _pg_envelope.derive_outcomes(source, fiscal_scope, admission)[metric]
+            primary = outcome.primary
+            if primary is None:
+                raise EconomicObservationError("selected observation has no primary cell")
+            primary_start = len(source[:primary.start].encode("utf-8"))
+            primary_end = len(source[:primary.end].encode("utf-8"))
+            if not (primary_start <= start < end <= primary_end):
+                raise EconomicObservationError("selected observation does not span its own primary cell")
+            try:
+                replayed = source_bytes[start:end].decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise EconomicObservationError("selected observation span is not UTF-8 aligned") from exc
+            literal = _pg_envelope._text(replayed)
+            if _pg_envelope._literal(literal) != row.get("value") or row.get("value") != expected[2]:
+                raise EconomicObservationError("selected observation value is not its cell literal")
+            if receipt.get("source_sha256") != _sha256(source):
+                raise EconomicObservationError("selected observation source digest does not replay")
+            if span.get("document_id") != workspace_document_id or span.get("rights_profile") != PG_PRIVATE_RIGHTS_PROFILE:
+                raise EconomicObservationError("selected observation source identity is invalid")
+        else:
+            absence = row.get("typed_absence") or {}
+            reason = "cross_check_conflict" if kind == "conflict" else "no_span_addressable_evidence"
+            detail = f"envelope_conflict:{metric}" if kind == "conflict" else expected[1]
+            if kind == "present":
+                raise EconomicObservationError("selected absence hides an agreed observation")
+            if absence.get("reason") != reason or absence.get("detail") != detail:
+                raise EconomicObservationError("selected absence does not match the envelope")
+            if absence.get("event_id") != event_id or absence.get("document_id") != workspace_document_id:
+                raise EconomicObservationError("selected absence identity is invalid")
+        checked.append(dict(row))
+    if seen != set(definitions):
+        raise EconomicObservationError("selected metric key set is not exact")
+    return checked
 
 
 def _verify_pg_replay(
@@ -189,6 +286,13 @@ def validate_selected_facts(
     workspace_document_id = release.get("document_id") if isinstance(release, Mapping) else None
     if not isinstance(workspace_document_id, str) or not workspace_document_id:
         raise EconomicObservationError("workspace has no release document identity")
+    release_text = source_texts.get(workspace_document_id)
+    if isinstance(release_text, str) and _pg_envelope._wrapped(release_text):
+        facts = workspace.get("facts")
+        if not isinstance(facts, list):
+            raise EconomicObservationError("workspace facts must be a list")
+        envelope_rows = [row for row in facts if isinstance(row, Mapping) and str(row.get("metric", "")).startswith("pg_")]
+        return _validate_envelope_rows(rows=envelope_rows, source=release_text, fiscal_scope=fiscal_scope, event_id=workspace.get("event_id"), workspace_document_id=workspace_document_id)
 
     facts = workspace.get("facts")
     if not isinstance(facts, list):
