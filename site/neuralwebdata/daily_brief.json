@@ -1,14 +1,14 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-25T09:16:10.392332+00:00",
+  "produced_at": "2026-09-25T09:58:57.845464+00:00",
   "as_of": "2026-09-24",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
     "cortex_status": "degraded",
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
-    "context_stale": true,
+    "context_stale": false,
     "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [
@@ -666,12 +666,6 @@
       "action_type": "ops_fix"
     },
     {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex context was stale at run time — check world_state freshness",
-      "action_type": "inspect"
-    },
-    {
       "priority": 2,
       "area": "government-revenue-latest",
       "summary": "lobe government-revenue-latest is warn — age 585.27h vs SLA 36h",
@@ -1046,7 +1040,7 @@
     {
       "priority": 3,
       "area": "evidence_clock",
-      "summary": "55 evidence-clock items overdue — see admin Observatory",
+      "summary": "70 evidence-clock items overdue — see admin Observatory",
       "action_type": "follow_up"
     }
   ],
@@ -1055,24 +1049,24 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-25",
     "counts": {
-      "overdue": 55,
-      "due": 24,
+      "overdue": 70,
+      "due": 10,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 234,
+      "accruing": 233,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "55 overdue, 24 due, 1 missing, 1 stale, 2 blocked, 234 accruing. Top due: qledger:placebo."
+    "morning_line": "70 overdue, 10 due, 1 missing, 1 stale, 2 blocked, 233 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
@@ -1102,7 +1096,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-24T11:19:01Z",
+    "asof": "2026-09-25T09:52:44Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
