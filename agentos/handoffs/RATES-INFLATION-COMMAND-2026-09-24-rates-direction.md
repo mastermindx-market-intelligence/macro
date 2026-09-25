@@ -306,3 +306,29 @@ duplicate its forward-ledger retention implementation. Independent research may
 continue on disjoint hypotheses. The next medium-term scientific lane is a
 curve-system forecast (dynamic level/slope/curvature versus no-change), not another
 oscillator or post-impulse state-stack variant.
+
+
+## Continuation: dynamic Treasury curve model reconciled and null
+
+Same carrier PR7909. An in-flight dynamic-curve operation was reconciled before any
+new research effect: freeze commit 08ddb2c550ec84a4de9c780121a938dc0d02a1cf had
+already registered its 12 TrialLedger rows and written complete evidence to
+/Volumes/Mastermind/evidence/rates-direction-20260924-sol-001/curve-system-dns-v1/frozen-08ddb2c5.
+No matching process remained active; the operation had completed rather than being
+restarted.
+
+Primary 2021-2025 h20 level MSE: no-change740.153, direct AR774.234, DNS diagonal
+798.870, DNS-VAR PRIMARY881.014. Primary relative MSE reduction=-19.03%, therefore
+failed. H5 and h60 also lost on MSE; 2010-2020 context likewise favored no-change.
+Same-author integrity verified131464 unique horizon/model/origin rows, finite normalized
+probabilities, purged fit/calibration clocks, exact primary MSEs, TrialLedger prefix
+and exactly12 appended configs. Independent review absent.
+
+Preserve DEC:RIC-CURVE-SYSTEM-NO-PROMOTION. Do not retune lambda/lags or switch the
+governing objective on the seen primary period. No live forecast/risk/trade authority.
+
+The highest-leverage frontier remains catalyst expectation and market response plus
+RD2 constituent-qualified policy repricing. A prospective CPI catalyst shadow is
+already frozen/registered under this carrier; do not duplicate it. Next recover its
+exact rule/clock and build the complementary event-response/driver consumer or advance
+RD2 if that prospective lane is waiting for natural-time outcomes.
