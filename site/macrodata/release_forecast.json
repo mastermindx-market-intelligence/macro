@@ -1,6 +1,6 @@
 {
   "schema": "release_forecast.v2",
-  "asof": "2026-09-25T09:07:10Z",
+  "asof": "2026-09-25T21:26:14Z",
   "display_only": true,
   "authority": {
     "can_score": false,
@@ -185,30 +185,30 @@
       "schema": 2,
       "row_type": "scored",
       "model": null,
-      "asof_night": "2026-09-23",
+      "asof_night": "2026-09-25",
       "release": "claims",
-      "period": "2026-09-17",
-      "release_date": "2026-09-17",
-      "actual": 196.0,
-      "actual_first": 196.0,
-      "raw_initial_print": 196000.0,
-      "actual_basis": "official_published_metric",
-      "actual_source": "official_release_document",
-      "actual_source_url": "https://www.dol.gov/index.php/newsroom/releases/eta/eta20260917",
-      "actual_source_sha256": "c09a60fffab9f916c68c7bad20a3d2ee8efa5ed1f9d842338656e736b1fe7ffe",
-      "actual_observed_at": "2026-09-22T15:00:26.389065+00:00",
-      "actual_receipt_id": "official_actual:64978946866fee89560bba18",
-      "exact_target_id": "claims_initial_printed_first",
-      "frozen_asof_night": "2026-09-16",
+      "period": "2026-09-24",
+      "release_date": "2026-09-24",
+      "actual": 197.0,
+      "actual_first": 197.0,
+      "raw_initial_print": 197000.0,
+      "actual_basis": "official_initial_level",
+      "actual_source": "alfred_initial_level",
+      "actual_source_url": "https://fred.stlouisfed.org/",
+      "actual_source_sha256": null,
+      "actual_observed_at": "2026-09-25",
+      "actual_receipt_id": null,
+      "exact_target_id": null,
+      "frozen_asof_night": "2026-09-23",
       "frozen_projection_point": null,
       "frozen_projection_p10": null,
       "frozen_projection_p25": null,
       "frozen_projection_p75": null,
       "frozen_projection_p90": null,
       "our_surprise": null,
-      "surprise_vs_naive": -10.0,
-      "surprise_vs_trailing": -9.25,
-      "surprise_vs_ar": -1.7,
+      "surprise_vs_naive": 1.0,
+      "surprise_vs_trailing": -5.75,
+      "surprise_vs_ar": 15.22,
       "surprise_vs_cleveland": null,
       "interval_hit": null,
       "skew_hit": null,
@@ -224,11 +224,8 @@
         "excluded_defect_ids": [],
         "basis": "structured_defect_notices_v1"
       },
-      "frozen_prediction_id": "CLAIMS:2026-09-17:first:2026-09-16:v1",
-      "score_receipt_id": "score:9764ccf9ec4967cce7f2ecc0",
-      "supersedes_score_receipt_ids": [
-        "score:a57ed71afc0302caf22d6695"
-      ]
+      "frozen_prediction_id": "CLAIMS:2026-09-24:first:2026-09-23:v1",
+      "score_receipt_id": "score:420c034f499c29ccd6745e7f"
     },
     {
       "schema": 2,
@@ -757,11 +754,18 @@
       "confidence": null,
       "input_completeness": null,
       "benchmark_set": {
-        "naive_prior": 196.0,
-        "trailing_4w": 202.75,
-        "ar_model": 181.78,
+        "naive_prior": 197.0,
+        "trailing_4w": 201.25,
+        "ar_model": 195.66,
         "cleveland_nowcast": null,
-        "market_implied": null
+        "market_implied": {
+          "source": "kalshi",
+          "event_ticker": "KXJOBLESSCLAIMS-26OCT01",
+          "implied_median": 201886.79245283018,
+          "p_above_lowest_strike": 0.97,
+          "n_brackets": 11,
+          "asof": "2026-09-25"
+        }
       },
       "surprise_skew": {},
       "pit": {
@@ -794,7 +798,14 @@
       "target_epoch": "official_initial_level_v1",
       "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
       "surprise_distribution": null,
-      "market_implied": null,
+      "market_implied": {
+        "source": "kalshi",
+        "event_ticker": "KXJOBLESSCLAIMS-26OCT01",
+        "implied_median": 201886.79245283018,
+        "p_above_lowest_strike": 0.97,
+        "n_brackets": 11,
+        "asof": "2026-09-25"
+      },
       "expectation_read": null,
       "reaction_sensitivity": null,
       "quirk_flags": [],
@@ -844,13 +855,20 @@
         "p90": 348.0816
       },
       "confidence": null,
-      "input_completeness": 0.8571,
+      "input_completeness": 1.0,
       "benchmark_set": {
         "naive_prior": 217.0,
         "trailing_3m": 24.67,
         "ar_model": -125.64,
         "cleveland_nowcast": null,
-        "market_implied": null
+        "market_implied": {
+          "source": "kalshi",
+          "event_ticker": "KXPAYROLLS-26SEP",
+          "implied_median": 89615.38461538461,
+          "p_above_lowest_strike": 0.935,
+          "n_brackets": 13,
+          "asof": "2026-09-25"
+        }
       },
       "surprise_skew": {
         "sigma": null,
@@ -874,22 +892,21 @@
           "withheld_tax_yoy"
         ],
         "absent_legs": [
-          "claims_survey_week_ccsa",
           "adp_change"
         ],
         "display_only": true,
         "authority": false,
         "withheld_tax_start": "2023-02-14",
         "n_train": 356,
-        "n_features_used": 6
+        "n_features_used": 7
       },
-      "inputs_hash": "e33c51c9638f47452f5cfb9ef6e80b68194e4f8646d058735dbc4f9e5bbe1d22",
+      "inputs_hash": "e9790ffcc38179787166460111f26cb9f2ebacf7c993e803b16acc1bc7547c4a",
       "input_manifest": {
         "nfp_change_lag1": 217.0,
         "nfp_change_lag2": -126.0,
         "nfp_change_lag3": -17.0,
         "claims_survey_week_icsa": -13000.0,
-        "claims_survey_week_ccsa": null,
+        "claims_survey_week_ccsa": -80000.0,
         "withheld_tax_yoy": 4.512820903249382,
         "awhman_mom": 0.0,
         "adp_change": null
@@ -923,7 +940,14 @@
       "target_epoch": "legacy_cross_vintage_initial_levels_v0",
       "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
       "surprise_distribution": null,
-      "market_implied": null,
+      "market_implied": {
+        "source": "kalshi",
+        "event_ticker": "KXPAYROLLS-26SEP",
+        "implied_median": 89615.38461538461,
+        "p_above_lowest_strike": 0.935,
+        "n_brackets": 13,
+        "asof": "2026-09-25"
+      },
       "expectation_read": null,
       "reaction_sensitivity": {
         "dgs10_h1_hot_bp": 6.6364,
@@ -981,15 +1005,15 @@
       },
       "input_snapshot_ref": "data/release_forecast/input_snapshots/NFP_2026-09_first_2026-09-25_v1.json",
       "coverage_flags": {
-        "weight_coverage": 0.75,
-        "fresh_proxy_coverage": 0.5,
-        "non_vintaged_share": 0.5,
+        "weight_coverage": 0.875,
+        "fresh_proxy_coverage": 0.625,
+        "non_vintaged_share": 0.375,
         "model_maturity": 0
       },
       "shadows": {
         "v3_factor": {
           "display_only": true,
-          "inputs_hash": "ca60bfb63504e5457e296bd4922cbbb74d8d462f3e1e20ef83a9d3849c8d3f47",
+          "inputs_hash": "9dcc27f36f230a5b4b7de9b08884d5b5aeede67c9c1de980d11fe555ea00383b",
           "model_epoch": "v3_factor_legacy_target_v1",
           "target_epoch": "legacy_cross_vintage_initial_levels_v0",
           "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
@@ -1000,7 +1024,7 @@
           "p75": 185.9164,
           "p90": 373.3699,
           "confidence": null,
-          "input_completeness": 0.7778,
+          "input_completeness": 0.8889,
           "warning": "trails champion; sub-naive on full-window backtest (2010+ MAE v3=527.9 vs naive=459.8), catastrophic 2020-recovery error \u2014 do not read as an improvement (MRI-R21 shadow, champion keeps the card)"
         }
       },
@@ -1020,9 +1044,9 @@
       "confidence": null,
       "input_completeness": null,
       "benchmark_set": {
-        "naive_prior": 196.0,
-        "trailing_4w": 202.75,
-        "ar_model": 181.78,
+        "naive_prior": 197.0,
+        "trailing_4w": 201.25,
+        "ar_model": 195.66,
         "cleveland_nowcast": null,
         "market_implied": null
       },
@@ -1113,7 +1137,14 @@
         "trailing_3m": 0.0157,
         "ar_model": -0.4212,
         "cleveland_nowcast": 0.499733447951985,
-        "market_implied": null
+        "market_implied": {
+          "source": "kalshi",
+          "event_ticker": "KXCPI-26SEP",
+          "implied_median": 0.5329411764705883,
+          "p_above_lowest_strike": 0.995,
+          "n_brackets": 14,
+          "asof": "2026-09-25"
+        }
       },
       "surprise_skew": {
         "sigma": -0.2865,
@@ -1213,16 +1244,24 @@
         "p_cold": 0.13,
         "p_inline": 0.24
       },
-      "market_implied": null,
+      "market_implied": {
+        "source": "kalshi",
+        "event_ticker": "KXCPI-26SEP",
+        "implied_median": 0.5329411764705883,
+        "p_above_lowest_strike": 0.995,
+        "n_brackets": 14,
+        "asof": "2026-09-25"
+      },
       "expectation_read": {
         "tag": "below_expectations",
-        "delta_pp": -0.1629,
-        "standardized": -0.79,
-        "expectation_median": 0.4997,
+        "delta_pp": -0.1795,
+        "standardized": -0.87,
+        "expectation_median": 0.5163,
         "sources": [
-          "cleveland_nowcast"
+          "cleveland_nowcast",
+          "kalshi"
         ],
-        "n_sources": 1
+        "n_sources": 2
       },
       "reaction_sensitivity": {
         "dgs10_h1_hot_bp": 3.2,
@@ -1856,9 +1895,9 @@
       "confidence": null,
       "input_completeness": null,
       "benchmark_set": {
-        "naive_prior": 196.0,
-        "trailing_4w": 202.75,
-        "ar_model": 181.78,
+        "naive_prior": 197.0,
+        "trailing_4w": 201.25,
+        "ar_model": 195.66,
         "cleveland_nowcast": null,
         "market_implied": null
       },
@@ -1941,9 +1980,9 @@
       "confidence": null,
       "input_completeness": null,
       "benchmark_set": {
-        "naive_prior": 196.0,
-        "trailing_4w": 202.75,
-        "ar_model": 181.78,
+        "naive_prior": 197.0,
+        "trailing_4w": 201.25,
+        "ar_model": 195.66,
         "cleveland_nowcast": null,
         "market_implied": null
       },
@@ -2267,9 +2306,9 @@
       "confidence": null,
       "input_completeness": null,
       "benchmark_set": {
-        "naive_prior": 196.0,
-        "trailing_4w": 202.75,
-        "ar_model": 181.78,
+        "naive_prior": 197.0,
+        "trailing_4w": 201.25,
+        "ar_model": 195.66,
         "cleveland_nowcast": null,
         "market_implied": null
       },
@@ -2435,30 +2474,30 @@
       "schema": 2,
       "row_type": "scored",
       "model": null,
-      "asof_night": "2026-09-23",
+      "asof_night": "2026-09-25",
       "release": "claims",
-      "period": "2026-09-17",
-      "release_date": "2026-09-17",
-      "actual": 196.0,
-      "actual_first": 196.0,
-      "raw_initial_print": 196000.0,
-      "actual_basis": "official_published_metric",
-      "actual_source": "official_release_document",
-      "actual_source_url": "https://www.dol.gov/index.php/newsroom/releases/eta/eta20260917",
-      "actual_source_sha256": "c09a60fffab9f916c68c7bad20a3d2ee8efa5ed1f9d842338656e736b1fe7ffe",
-      "actual_observed_at": "2026-09-22T15:00:26.389065+00:00",
-      "actual_receipt_id": "official_actual:64978946866fee89560bba18",
-      "exact_target_id": "claims_initial_printed_first",
-      "frozen_asof_night": "2026-09-16",
+      "period": "2026-09-24",
+      "release_date": "2026-09-24",
+      "actual": 197.0,
+      "actual_first": 197.0,
+      "raw_initial_print": 197000.0,
+      "actual_basis": "official_initial_level",
+      "actual_source": "alfred_initial_level",
+      "actual_source_url": "https://fred.stlouisfed.org/",
+      "actual_source_sha256": null,
+      "actual_observed_at": "2026-09-25",
+      "actual_receipt_id": null,
+      "exact_target_id": null,
+      "frozen_asof_night": "2026-09-23",
       "frozen_projection_point": null,
       "frozen_projection_p10": null,
       "frozen_projection_p25": null,
       "frozen_projection_p75": null,
       "frozen_projection_p90": null,
       "our_surprise": null,
-      "surprise_vs_naive": -10.0,
-      "surprise_vs_trailing": -9.25,
-      "surprise_vs_ar": -1.7,
+      "surprise_vs_naive": 1.0,
+      "surprise_vs_trailing": -5.75,
+      "surprise_vs_ar": 15.22,
       "surprise_vs_cleveland": null,
       "interval_hit": null,
       "skew_hit": null,
@@ -2474,11 +2513,8 @@
         "excluded_defect_ids": [],
         "basis": "structured_defect_notices_v1"
       },
-      "frozen_prediction_id": "CLAIMS:2026-09-17:first:2026-09-16:v1",
-      "score_receipt_id": "score:9764ccf9ec4967cce7f2ecc0",
-      "supersedes_score_receipt_ids": [
-        "score:a57ed71afc0302caf22d6695"
-      ]
+      "frozen_prediction_id": "CLAIMS:2026-09-24:first:2026-09-23:v1",
+      "score_receipt_id": "score:420c034f499c29ccd6745e7f"
     }
   ],
   "scoreboard_ref": "data/release_forecast/scoreboard.json",
@@ -2486,21 +2522,13 @@
     "asof": "2026-09-25",
     "last_nightly_asof": "2026-09-25",
     "nightly_gap_days": 0,
-    "past_due_unscored": [
-      {
-        "release": "claims",
-        "period": "2026-09-24",
-        "release_date": "2026-09-24",
-        "model": null,
-        "reason": "api_key_absent"
-      }
-    ],
+    "past_due_unscored": [],
     "enricher_staleness": {
-      "kalshi_releases_asof": "2026-09-24",
-      "cleveland_nowcast_asof": "2026-09-24",
+      "kalshi_releases_asof": "2026-09-25",
+      "cleveland_nowcast_asof": "2026-09-25",
       "work_stoppages_asof": "2024-10-01",
       "print_integrity_asof": "2024-01-01"
     },
-    "past_due_unscored_count": 1
+    "past_due_unscored_count": 0
   }
 }
