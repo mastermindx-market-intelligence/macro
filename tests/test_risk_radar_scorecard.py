@@ -18,6 +18,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+import pandas as pd
 
 from engine import risk_radar_scorecard as sc
 
@@ -493,3 +494,501 @@ def test_corrupt_graded_row_dropped_not_whole_market(tmp_path):
     assert alerts["n"] == 5
     assert alerts["tp"] == 5
     assert alerts["hit_rate"] == pytest.approx(1.0)
+
+# Fixed-protocol issued-probability audit (display only, not model promotion).
+def _prob_rows(n=5, p=.2, base=.1, outcome=False):
+    rows = []
+    for i in range(n):
+        row = _row("caution", "credit", 100 + i, "tn_watch")
+        row["asof"] = (date(2026, 6, 1) + timedelta(days=i)).isoformat()
+        row["logged_at"] = row["asof"] + "T21:00:00+00:00"
+        row["graded"]["graded_at"] = "2026-08-01T12:00:00+00:00"
+        row["drawdown_prob"] = {"measure": sc._PROBABILITY_TARGET}
+        for h in ("h5", "h10", "h21"):
+            row["drawdown_prob"][h] = p
+            row["drawdown_prob"]["base_" + h] = base
+            row["graded"]["hit"][h]["dd5"] = outcome
+        rows.append(row)
+    return rows
+
+
+def _audit(rows):
+    return sc.probability_audit(rows, today=date(2026, 9, 20))
+
+
+def test_probability_oracle_and_no_input_mutation():
+    from copy import deepcopy
+    rows = _prob_rows(); before = deepcopy(rows); audit = _audit(rows)
+    h = audit["horizons"]["h21"]
+    assert (h["n"], h["mean_forecast"], h["observed_rate"], h["brier"]) == (5, .2, 0., .04)
+    assert (h["paired_n"], h["paired_model_brier"], h["paired_base_brier"], h["paired_brier_delta"]) == (5, .04, .01, .03)
+    assert rows == before and audit["current_model_validated"] is False
+
+
+@pytest.mark.parametrize("n", [0, 1, 4])
+def test_probability_small_sample_is_not_zero(n):
+    h = _audit(_prob_rows(n))["horizons"]["h5"]
+    assert h["n"] == n
+    for key in ("mean_forecast", "observed_rate", "brier", "paired_brier_delta"):
+        assert h[key] is None
+
+
+@pytest.mark.parametrize("bad", [None, True, False, "0.2", -.1, 1.1, float("nan"), float("inf"), 10**400])
+def test_probability_rejects_invalid_numbers_per_horizon(bad):
+    rows = _prob_rows(); rows[0]["drawdown_prob"]["h5"] = bad
+    a = _audit(rows)["horizons"]
+    assert a["h5"]["n"] == 4 and a["h5"]["excluded"] == {"invalid_probability": 1}
+    assert a["h21"]["n"] == 5
+
+
+def test_probability_matched_baseline_never_uses_different_rows():
+    rows = _prob_rows(6)
+    rows[-1]["drawdown_prob"].update(h21=.9, base_h21=None)
+    h = _audit(rows)["horizons"]["h21"]
+    assert h["n"] == 6 and h["paired_n"] == 5 and h["missing_baseline_n"] == 1
+    assert h["brier"] == pytest.approx(1.01 / 6, abs=1e-6)
+    assert h["paired_model_brier"] == .04 and h["paired_brier_delta"] == .03
+    for r in rows: r["drawdown_prob"].pop("base_h5")
+    h = _audit(rows)["horizons"]["h5"]
+    assert h["n"] == 6 and h["paired_n"] == 0 and h["paired_base_brier"] is None
+
+
+@pytest.mark.parametrize("field,value", [
+    ("asof", "2026-02-30"), ("asof", "2026-09-21"), ("asof", "20260601"),
+    ("logged_at", "2026-06-01T21:00:00"), ("logged_at", "2026-08-02T00:00:00Z"),
+    ("logged_at", None), ("graded_at", "2026-09-21T00:00:00Z"),
+    ("graded_at", "2026-05-01T00:00:00Z"), ("graded_at", "bad"),
+])
+def test_probability_excludes_unusable_dates_and_receipts(field, value):
+    rows = _prob_rows()
+    target = rows[0]["graded"] if field == "graded_at" else rows[0]
+    target[field] = value
+    for h in _audit(rows)["horizons"].values():
+        assert h["n"] == 4 and h["excluded_n"] == 1
+
+
+def test_probability_duplicate_conflict_is_order_independent():
+    from copy import deepcopy
+    rows = _prob_rows(); rows.append(deepcopy(rows[0]))
+    h = _audit(rows)["horizons"]["h21"]
+    assert h["n"] == 5 and h["excluded"] == {"identical_duplicate": 1}
+    rows[-1]["drawdown_prob"]["h21"] = .8
+    h = _audit(rows)["horizons"]["h21"]
+    assert h["n"] == 4 and h["excluded"] == {"conflicting_duplicate_date": 2}
+    assert _audit(rows) == _audit(list(reversed(rows)))
+
+
+def test_probability_requires_boolean_not_rounded_drawdown():
+    rows = _prob_rows(); rows[0]["graded"]["hit"]["h5"]["dd5"] = "false"
+    assert _audit(rows)["horizons"]["h5"]["n"] == 4
+
+
+@pytest.mark.parametrize("value", [None, "other instrument", ">=8% SPY pullback"])
+def test_probability_does_not_mix_targets(value):
+    rows = _prob_rows(); rows[0]["drawdown_prob"]["measure"] = value
+    assert _audit(rows)["horizons"]["h21"]["excluded"] == {"unmatched_target": 1}
+
+
+def test_probability_bins_have_disjoint_closed_endpoint():
+    rows = _prob_rows(7)
+    for r, p in zip(rows, [0, .099, .1, .2, .4, .6, 1.]):
+        r["drawdown_prob"]["h21"] = p
+    bins = _audit(rows)["horizons"]["h21"]["bins"]
+    assert [b["n"] for b in bins] == [2, 1, 1, 1, 2]
+    assert all(b["observed_rate"] is None for b in bins)
+
+
+def test_probability_existing_producer_uses_same_rows_without_advancing_ledger(tmp_path):
+    import hashlib
+    rows = _prob_rows(); p = tmp_path / "data/risk_radar/forward_log.jsonl"
+    _write_jsonl(p, rows); before = hashlib.sha256(p.read_bytes()).hexdigest()
+    result = sc.build(tmp_path, today=date(2026, 9, 20))
+    assert result["markets"]["us"]["probability_audit"] == _audit(rows)
+    assert "probability_audit" not in result["markets"]["cn"]
+    assert result["markets"]["us"]["windows"]["full"] == sc._window(rows, [])
+    assert hashlib.sha256(p.read_bytes()).hexdigest() == before
+    assert not (tmp_path / "site/riskdata/scorecard.json").exists()
+
+
+def test_probability_corrupt_and_ungraded_rows_are_accounted():
+    a = _audit([None, 3, {"asof": "2026-06-01", "drawdown_prob": {"measure": sc._PROBABILITY_TARGET}}])
+    assert a["horizons"]["h21"]["excluded"] == {"invalid_row": 2, "ungraded": 1}
+
+
+@pytest.mark.parametrize("event_count", [0, 1, 5])
+def test_probability_event_coverage_is_not_validation(event_count):
+    rows = _prob_rows()
+    for r in rows[:event_count]:
+        for h in ("h5", "h10", "h21"): r["graded"]["hit"][h]["dd5"] = True
+    result = _audit(rows)
+    assert result["horizons"]["h21"]["both_outcomes_present"] is (0 < event_count < 5)
+    assert result["current_model_validated"] is False
+    assert result["publication_timing_verified"] is False
+    assert result["sample_unit"] == "overlapping_daily_forecast"
+
+
+def test_probability_denominators_account_for_every_parsed_row():
+    from copy import deepcopy
+    rows = _prob_rows(7); rows.append(deepcopy(rows[0])); rows.append(None)
+    rows[1]["graded"] = None
+    rows[2]["graded"]["hit"]["h5"]["dd5"] = 1
+    rows[3]["drawdown_prob"]["h10"] = None
+    rows[4]["drawdown_prob"].pop("base_h21")
+    a = _audit(rows)
+    for h in a["horizons"].values():
+        assert h["n"] + h["excluded_n"] == len(rows)
+        assert h["paired_n"] + h["missing_baseline_n"] == h["n"]
+        assert sum(b["n"] for b in h["bins"]) == h["n"]
+
+
+
+def test_caution_persistence_requires_five_known_consecutive_sessions():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=8)
+    caution = pd.Series([1, 1, 1, 1, 1, 1, 1, 1], index=idx, dtype=bool)
+    known = pd.Series([1, 1, 1, 1, 1, 1, 0, 1], index=idx, dtype=bool)
+    persistent, eligible = cp.persistent_caution(caution, known, 5)
+    assert persistent.iloc[4] and persistent.iloc[5]
+    assert not eligible.iloc[6] and not eligible.iloc[7]
+    assert not persistent.iloc[6] and not persistent.iloc[7]
+
+
+def test_caution_persistence_rejects_invalid_streak_length():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=5)
+    s = pd.Series(True, index=idx)
+    for bad in (0, -1, True, 1.5):
+        with pytest.raises(ValueError):
+            cp.persistent_caution(s, s, bad)
+
+
+
+def test_caution_persistence_daily_result_uses_one_population():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=8)
+    state = pd.Series(
+        ["calm", "caution", "caution", "caution", "caution", "caution", "caution", "calm"],
+        index=idx,
+    )
+    known = pd.Series(True, index=idx)
+    labels = pd.DataFrame({
+        "end": idx,
+        "loss": [-.01, -.01, -.01, -.01, -.06, -.06, -.06, -.01],
+        "event": [False, False, False, False, True, True, True, False],
+    }, index=idx)
+    out = cp.daily_result(state, known, labels)
+    assert out["n"] == 4  # only dates with a complete 5-session state history
+    assert out["events"] == 3
+    assert out["caution_plus"]["confusion"] == {"tp": 3, "fp": 0, "fn": 0, "tn": 1}
+    assert out["persistent_caution_5"]["confusion"] == {"tp": 2, "fp": 0, "fn": 1, "tn": 1}
+    assert out["caution_plus"]["n"] == out["persistent_caution_5"]["n"] == 4
+
+
+
+def test_caution_persistence_native_labels_refuse_missing_price_window():
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=6)
+    spy = pd.Series([100., 99., float("nan"), 94., 100., 100.], index=idx)
+    out = cp.native_forward_labels(spy, idx, horizon=2, depth=.05)
+    assert idx[0] not in out.index
+    assert idx[1] not in out.index
+    assert idx[3] in out.index
+
+
+def test_caution_persistence_event_view_records_pre_breach_persistence(monkeypatch):
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=50)
+    anchor = idx[25]
+    spy = pd.Series(100., index=idx)
+    spy.iloc[29:] = 94.
+    state = pd.Series("calm", index=idx)
+    state.iloc[17:27] = "caution"
+    known = pd.Series(True, index=idx)
+    monkeypatch.setattr(cp, "detect_events", lambda *a, **k: [anchor])
+    out = cp.event_result(spy, idx, state, known)
+    row = out["rows"][0]
+    assert row["persistent_offset"] == -4
+    assert row["persistent_before_breach"] is True
+    assert out["persistent_by_t0"] == 1
+
+
+
+def test_caution_persistence_event_view_marks_left_censored_window(monkeypatch):
+    from scripts.research import risk_radar_caution_persistence as cp
+    idx = pd.bdate_range("2026-01-01", periods=50)
+    anchor = idx[25]
+    spy = pd.Series(100., index=idx)
+    spy.iloc[29:] = 94.
+    state = pd.Series("caution", index=idx)
+    known = pd.Series(True, index=idx)
+    monkeypatch.setattr(cp, "detect_events", lambda *a, **k: [anchor])
+    out = cp.event_result(spy, idx, state, known)
+    row = out["rows"][0]
+    assert row["persistent_offset"] == -21
+    assert row["persistent_left_censored"] is True
+    assert out["persistent_left_censored_n"] == 1
+    assert out["persistent_exact_lead_n"] == 0
+    assert out["persistent_median_lead_uncensored_sessions"] is None
+
+
+
+def _attach_prospective_issue(row, *, engine_tag="a", calibration_tag="b",
+                              epoch="2026-09-23-prospective-v1"):
+    import hashlib
+    source_files = {
+        "engine/risk_radar.py": engine_tag * 64,
+        "engine/indicators.py": "1" * 64,
+        "lib/nyse_calendar.py": "2" * 64,
+        "lib/store.py": "3" * 64,
+        "lib/config.py": "4" * 64,
+    }
+    bundle = hashlib.sha256(
+        json.dumps(source_files, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    identity = {
+        "model_contract": "risk_radar_forward_model.v1",
+        "risk_schema": "risk_radar.v2",
+        "engine_source_sha256": engine_tag * 64,
+        "source_bundle_sha256": bundle,
+        "source_files_sha256": source_files,
+        "calibration_sha256": calibration_tag * 64,
+    }
+    fingerprint = hashlib.sha256(
+        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    row["forecast_issue"] = {
+        "contract": "risk_radar_forward_issue.v1",
+        "epoch": epoch,
+        "issued_at": row["logged_at"],
+        "ledger_lane": "nightly",
+        "first_writer_wins": True,
+        **identity,
+        "model_fingerprint": fingerprint,
+    }
+    return fingerprint
+
+
+def test_prospective_probability_never_backfills_legacy_rows():
+    rows = _prob_rows()
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "not_started"
+    assert p["ledger_issue_timing_verified"] is False
+    assert p["current_model_validated"] is False
+    assert p["same_model_issued_n"] == 0
+    assert p["issue_excluded"] == {"missing_issue_receipt": len(rows)}
+
+
+def test_prospective_probability_tracks_latest_exact_model_only():
+    rows = _prob_rows(10)
+    first_fp = None
+    latest_fp = None
+    for i, row in enumerate(rows):
+        fp = _attach_prospective_issue(
+            row,
+            engine_tag="a" if i < 5 else "c",
+            calibration_tag="b" if i < 5 else "d",
+        )
+        if i == 0:
+            first_fp = fp
+        if i == len(rows) - 1:
+            latest_fp = fp
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["public_publication_timing_verified"] is False
+    assert p["current_model_validated"] is False
+    assert p["model_fingerprints_seen"] == 2
+    assert p["prior_model_issued_n"] == 5
+    assert p["same_model_issued_n"] == 5
+    assert p["same_model_graded_n"] == 5
+    assert p["awaiting_maturity"] == 0
+    assert p["latest_model_fingerprint"] == latest_fp
+    assert latest_fp != first_fp
+    assert p["horizons"]["h21"]["n"] == 5
+    assert p["horizons"]["h21"]["mean_forecast"] == .2
+    assert p["horizons"]["h21"]["brier"] == .04
+
+
+def test_prospective_probability_rejects_tampered_and_tardy_receipts():
+    rows = _prob_rows(7)
+    for row in rows:
+        _attach_prospective_issue(row)
+    rows[0]["forecast_issue"]["model_fingerprint"] = "0" * 64
+    rows[1]["forecast_issue"]["issued_at"] = "2026-06-10T21:00:00+00:00"
+    rows[1]["logged_at"] = rows[1]["forecast_issue"]["issued_at"]
+    p = _audit(rows)["prospective"]
+    assert p["same_model_issued_n"] == 5
+    assert p["issue_excluded"]["model_fingerprint_mismatch"] == 1
+    assert p["issue_excluded"]["issue_not_session_timely"] == 1
+    assert p["horizons"]["h21"]["n"] == 5
+
+
+def test_prospective_ungraded_rows_accrue_without_validation():
+    rows = _prob_rows(5)
+    for row in rows:
+        _attach_prospective_issue(row)
+        row["graded"] = None
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["same_model_issued_n"] == 5
+    assert p["same_model_graded_n"] == 0
+    assert p["awaiting_maturity"] == 5
+    assert p["current_model_validated"] is False
+    for h in ("h5", "h10", "h21"):
+        assert p["horizons"][h]["n"] == 0
+        assert p["horizons"][h]["brier"] is None
+
+
+def test_prospective_issue_clock_must_match_first_write_clock():
+    rows = _prob_rows(5)
+    for row in rows:
+        _attach_prospective_issue(row)
+    rows[0]["forecast_issue"]["issued_at"] = "2026-06-01T22:00:00+00:00"
+    p = _audit(rows)["prospective"]
+    assert p["same_model_issued_n"] == 4
+    assert p["issue_excluded"]["issue_clock_mismatch"] == 1
+    assert p["current_model_validated"] is False
+
+
+
+def test_prospective_real_issue_receipt_roundtrips_into_scorecard(tmp_path):
+    from engine import risk_radar_audit as rra
+
+    issued_at = "2026-09-23T21:00:00+00:00"
+    snap = {
+        "asof": "2026-09-23",
+        "state": "caution",
+        "alert": False,
+        "dominant_scare": "credit",
+        "top_score": 72.0,
+        "scares": [],
+        "drawdown_prob": {
+            "measure": sc._PROBABILITY_TARGET,
+            "h5": .03, "h10": .08, "h21": .16,
+            "base_h5": .036, "base_h10": .086, "base_h21": .178,
+            "conjunction_n": 1,
+        },
+    }
+    receipt = rra._forward_issue_receipt(root=tmp_path, issued_at=issued_at)
+    assert receipt and receipt["source_bundle_sha256"]
+    row = rra._entry_from_snapshot(
+        snap, issue_receipt=receipt, logged_at=issued_at
+    )
+    assert row is not None
+    p = sc.probability_audit(
+        [row], today=date(2026, 9, 23)
+    )["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["same_model_issued_n"] == 1
+    assert p["same_model_graded_n"] == 0
+    assert p["awaiting_maturity"] == 1
+    assert p["latest_source_bundle_sha256"] == receipt["source_bundle_sha256"]
+    assert p["current_model_validated"] is False
+
+
+
+def _readiness_fixture(*, n_issued=300, n_graded=250, candidate=.10, baseline=.60,
+                       event_positions=None):
+    event_positions = set(event_positions or [
+        *range(10, 15), *range(60, 65), *range(110, 115),
+        *range(160, 165), *range(210, 215),
+    ])
+    start = date(2025, 1, 1)
+    cohort = [
+        (start + timedelta(days=2 * i), {}, {})
+        for i in range(n_issued)
+    ]
+    sample = []
+    for i in range(n_graded):
+        y = 1 if i in event_positions else 0
+        sample.append((
+            (start + timedelta(days=2 * i)).isoformat(),
+            candidate, y, baseline,
+        ))
+    samples = {h: list(sample) for h in ("h5", "h10", "h21")}
+    horizons = {
+        h: {
+            "paired_n": len(sample),
+            "missing_baseline_n": 0,
+            "excluded_n": 0,
+        }
+        for h in ("h5", "h10", "h21")
+    }
+    return cohort, samples, horizons
+
+
+def test_prospective_validation_event_clusters_do_not_count_overlapping_days_as_episodes():
+    sample = [
+        ("d0", .1, 1, .2), ("d1", .1, 1, .2),
+        ("d2", .1, 0, .2), ("d3", .1, 0, .2),
+        ("d4", .1, 0, .2), ("d5", .1, 1, .2),
+        ("d6", .1, 0, .2), ("d7", .1, 0, .2),
+        ("d8", .1, 0, .2), ("d9", .1, 0, .2),
+        ("d10", .1, 0, .2), ("d11", .1, 1, .2),
+        ("d12", .1, 1, .2),
+    ]
+    assert sc._event_cluster_count(sample, 5) == 2
+
+
+def test_prospective_validation_is_not_mature_before_frozen_sample_floor():
+    cohort, samples, horizons = _readiness_fixture(n_issued=100, n_graded=80)
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "not_mature"
+    assert out["promotion_review_eligible"] is False
+    assert out["current_model_validated"] is False
+    assert out["public_validation_ready"] is False
+    assert all(not h["mature"] for h in out["horizons"].values())
+
+
+def test_prospective_validation_supportive_sample_only_earns_review_eligibility():
+    cohort, samples, horizons = _readiness_fixture()
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "mature_supportive"
+    assert out["promotion_review_eligible"] is True
+    assert out["full_surface_supportive"] is True
+    assert out["authority_h21_supportive"] is True
+    assert out["current_model_validated"] is False
+    assert out["public_validation_ready"] is False
+    for h in ("h5", "h10", "h21"):
+        row = out["horizons"][h]
+        assert row["mature"] is True
+        assert row["event_clusters"] == 5
+        assert row["brier_supportive"] is True
+        assert row["calibration_supportive"] is True
+        assert row["paired_brier_delta_ci90"][1] < 0
+        assert row["calibration_gap_ci90"][0] <= 0 <= row["calibration_gap_ci90"][1]
+
+
+def test_prospective_validation_mature_bad_probabilities_are_refuted():
+    cohort, samples, horizons = _readiness_fixture(candidate=.60, baseline=.10)
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "mature_refuting"
+    assert out["promotion_review_eligible"] is False
+    assert out["full_surface_supportive"] is False
+    assert out["current_model_validated"] is False
+    for h in ("h5", "h10", "h21"):
+        assert out["horizons"][h]["mature"] is True
+        assert out["horizons"][h]["brier_supportive"] is False
+
+
+def test_prospective_validation_requires_complete_paired_baseline():
+    cohort, samples, horizons = _readiness_fixture()
+    horizons["h21"]["paired_n"] -= 1
+    horizons["h21"]["missing_baseline_n"] = 1
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "not_mature"
+    assert out["horizons"]["h21"]["baseline_complete"] is False
+    assert out["horizons"]["h21"]["mature"] is False
+
+
+def test_prospective_audit_publishes_frozen_readiness_without_validating_legacy_rows():
+    p = _audit(_prob_rows())["prospective"]
+    r = p["validation_readiness"]
+    assert r["definition"] == sc._PROSPECTIVE_VALIDATION_PROTOCOL
+    assert r["protocol_commit"] == sc._PROSPECTIVE_VALIDATION_PROTOCOL_COMMIT
+    assert r["status"] == "not_started"
+    assert r["promotion_review_eligible"] is False
+    assert r["current_model_validated"] is False
+    assert r["public_validation_ready"] is False

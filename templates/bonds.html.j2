@@ -414,14 +414,14 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
   .mx-chg-what{flex-basis:100%;order:3}
 }
 
-/* LIVE / as-of chips — same contract as theme.css .dtp-*, page-scoped because
+/* Snapshot / as-of chips — same contract as theme.css .dtp-*, page-scoped because
    bonds does not load that sheet. */
 .dtp-chip{display:inline-flex;align-items:center;gap:5px;flex:none;font-size:11px;
   font-weight:700;letter-spacing:.035em;color:var(--muted);padding:4px 8px;
   border:1px solid var(--line);border-radius:var(--r-sm);
   background:color-mix(in srgb,var(--panel2) 70%,transparent)}
 .dtp-chip>i{width:6px;height:6px;border-radius:var(--r-sm);flex:none;background:currentColor}
-.dtp-chip--live{color:var(--ink-up,var(--green))}
+.dtp-chip--snapshot{color:var(--ink-link,var(--blue))}
 .dtp-asof{font-size:11px;color:var(--muted)}
 
 /* Skeleton plates at true geometry. Reduced-motion kills the shimmer, not the box. */
@@ -500,9 +500,9 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
     'macro': ('Macro impulse (reflation)', '宏观动能（再通胀）')
   } %}
   {% set VG_TIP = {
-    'measured': ('Measured — this factor has been calibrated against forward drawdowns.', '已校准——该分项已通过前瞻回撤校准。'),
-    'directional': ('Directional — the sign has held up; the size has not been calibrated.', '有方向——方向性成立，但幅度未经校准。'),
-    'context': ('Context only — this factor has not been calibrated against forward drawdowns.', '仅供参考——该分项未经前瞻回撤校准。')
+    'measured': ('Backtested — this factor has been checked against later drawdowns.', '历史回测——该分项已对后续回撤进行检验。'),
+    'directional': ('Directional — the relationship has held up, but its size is not calibrated.', '方向有效——关系方向较稳定，但幅度尚未校准。'),
+    'context': ('Context only — this factor has not been tested against later drawdowns.', '仅供参考——该分项尚未对后续回撤进行检验。')
   } %}
 
   <!-- ===================== L1-1 HERO ===================== -->
@@ -518,7 +518,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         {% if vm.health.drawdown_risk is not none %}
         <span class="pill">{% if hero.dd_rail %}{{ t('Drawdown risk', '回撤风险') }}{% else %}{{ t('Drawdown risk: ' ~ (hero.dd_band_en or ''), '回撤风险：' ~ (hero.dd_band_zh or '')) }}{% endif %}{% if hero.dd_score is not none %}{{ lens('Scored ' ~ hero.dd_score ~ ' out of 100, where 100 is the highest risk this model measures.', '评分 ' ~ hero.dd_score ~ '/100，100 为该模型可测的最高风险。') }}{% endif %}</span>
         {% endif %}
-        <span class="dtp-chip dtp-chip--live"><i></i><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
+        <span class="dtp-chip dtp-chip--snapshot"><i></i><span class="l-en">Latest bond snapshot</span><span class="l-zh">最新债券快照</span></span>
         <span class="dtp-asof"><span class="l-en">As of {{ hero.as_of or as_of }}</span><span class="l-zh">截至 {{ hero.as_of_zh or as_of_zh or as_of }}</span></span>
       </div>
       {% if hero.caveat_en %}<div class="mx-callout"><b class="l-en">Read the score with care:</b><b class="l-zh">读数注意：</b>
@@ -651,11 +651,11 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         </div>
         {% endif %}
         {% if vm.health.calib %}
-        <div class="measured-edge"><span class="pill">{{ t('Measured', '已校准') }}{% if vm.health.calib.ic_recession is not none and vm.health.calib.span and vm.health.calib.n %}{{ lens('Recession-IC ' ~ vm.health.calib.ic_recession ~ ' — rank correlation between this stress reading and recessions ' ~ vm.health.calib.ic_horizon_en ~ ' ahead. 1.0 = perfect ordering, 0 = none. Window ' ~ vm.health.calib.span ~ ', n=' ~ vm.health.calib.n ~ '.', '衰退IC ' ~ vm.health.calib.ic_recession ~ ' — 该压力读数与未来' ~ vm.health.calib.ic_horizon_zh ~ '衰退的秩相关。1.0=完全一致，0=无关。样本区间' ~ vm.health.calib.span ~ '，n=' ~ vm.health.calib.n ~ '。') }}{% else %}{{ lens('Recession-IC ' ~ vm.health.calib.ic_recession ~ ' — a rank-correlation score for how well this reading has ordered recession risk. Higher is better; 1.0 is perfect.', '衰退IC ' ~ vm.health.calib.ic_recession ~ ' — 该读数对衰退风险排序能力的秩相关评分。数值越高越好，1.0 为完全准确。') }}{% endif %}</span>
+        <div class="measured-edge"><span class="pill">{{ t('Backtested', '历史回测') }}{% if vm.health.calib.ic_recession is not none and vm.health.calib.span and vm.health.calib.n %}{{ lens('Historical recession ordering: ' ~ vm.health.calib.ic_recession ~ '. Higher means this stress read more consistently ranked later recession periods above non-recession periods. Sample window ' ~ vm.health.calib.span ~ '; ' ~ vm.health.calib.n ~ ' observations.', '历史衰退排序：' ~ vm.health.calib.ic_recession ~ '。数值越高，表示该压力读数越能稳定地把后续衰退期排在非衰退期之前。样本区间' ~ vm.health.calib.span ~ '；' ~ vm.health.calib.n ~ '个观测。') }}{% else %}{{ lens('Historical recession ordering: ' ~ vm.health.calib.ic_recession ~ '. Higher means this stress read has more consistently ranked later recession periods above non-recession periods.', '历史衰退排序：' ~ vm.health.calib.ic_recession ~ '。数值越高，表示该压力读数越能稳定地把后续衰退期排在非衰退期之前。') }}{% endif %}</span>
           {{ t('top-stress readings were followed by a 10%+ S&P drawdown within 63 days', '压力最高档读数之后，63天内出现标普10%+回撤的概率为') }}
           <b>{{ vm.health.calib.hi_dd10 }}%</b> {{ t('of the time vs a', '，而基准为') }} <b>{{ vm.health.calib.base_dd10 }}%</b><span class="l-en"> baseline</span>
           (<b>{% if (vm.health.calib.edge_pp or 0) >= 0 %}+{% endif %}{{ vm.health.calib.edge_pp }}pp</b>).
-          <span class="faint">{{ t('Glyphs: ✓ measured · ~ directional · · context.', '符号：✓ 已校准 · ~ 有方向 · · 仅背景。') }}</span></div>
+          <span class="faint">{{ t('Glyphs: ✓ backtested · ~ directional · · context.', '符号：✓ 历史回测 · ~ 有方向 · · 仅背景。') }}</span></div>
         {% endif %}
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
       </div>
@@ -859,7 +859,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
   <div class="sec-head">{{ t('Credit & real rates — detail', '信用与实际利率 · 详情') }}</div>
   <div class="grid cols-2">
     <div class="card">
-      <h2>{{ t('Credit — the "smart money" canary', '信用 · “聪明钱”预警') }}</h2>
+      <h2>{{ t('Credit — early stress signal', '信用 · 早期压力信号') }}</h2>
       <div style="margin:6px 0 4px"><span class="band-chip" style="background:{{ vm.credit.band_color }}">{{ t(vm.credit.band_en, vm.credit.band_zh) }}</span>
         {% if vm.credit.direction %}<span class="pill"><span class="l-en">{{ vm.credit.direction }}</span><span class="l-zh">{{ vm.credit.direction_zh }}</span></span>{% endif %}</div>
       <div class="kpis">
@@ -1228,10 +1228,10 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
 {# END CCW-W4 corporate credit desk #}
 
   <!-- ===================== STRESS + CROSS-ASSET ===================== -->
-  <div class="sec-head">{{ t('Stress, plumbing & the stock-bond hedge — detail', '压力、资金管道与股债对冲 · 详情') }}</div>
+  <div class="sec-head">{{ t('Stress & funding · the stock-bond hedge', '压力与资金状况 · 股债对冲') }}</div>
   <div class="grid cols-2">
     <div class="card">
-      <h2>{{ t('Rates volatility & funding plumbing', '利率波动与资金管道') }}</h2>
+      <h2>{{ t('Rates volatility & funding stress', '利率波动与资金压力') }}</h2>
       <div style="margin:6px 0 4px"><span class="band-chip" style="background:{{ vm.stress.color }}">MOVE {{ vm.stress.move }} · {{ t(vm.stress.band_en, vm.stress.band_zh) }}</span></div>
       <div class="kpis">
         {{ kpi('MOVE %ile (1y)', 'MOVE百分位(1年)', vm.stress.pctile, '%') }}
@@ -1239,7 +1239,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
         {{ kpi('Repo spike (SOFR99)', '回购跳升(SOFR99)', vm.stress.repo_spike_bp, 'bp') }}
       </div>
       {% if vm.stress.move_leads_vix %}<div class="flag warn">⚑ {{ t('Rates vol (MOVE) leading equity vol (VIX) — stress often transmits this way.', '利率波动（MOVE）领先股票波动（VIX）——压力常以此路径传导。') }}</div>{% endif %}
-      {% if vm.stress.repo_stress %}<div class="flag alarm">⚑ {{ t('Repo-stress spike — funding plumbing under strain.', '回购市场承压——资金管道紧张。') }}</div>
+      {% if vm.stress.repo_stress %}<div class="flag alarm">⚑ {{ t('Repo-stress spike — short-term funding is under strain.', '回购市场承压——短期资金面趋紧。') }}</div>
       {% elif vm.stress.reserve_scarcity %}<div class="flag warn">⚑ {{ t('SOFR drifting above IORB — creeping reserve scarcity.', 'SOFR持续高于准备金利率——准备金趋于稀缺。') }}</div>{% endif %}
       <div style="margin-top:14px">{{ charts.move | safe }}</div>
       <div class="sub faint" style="margin-top:6px">{{ t('MOVE is rates stress. SOFR−IORB and SOFR spikes flag funding pressure.', 'MOVE衡量利率压力。SOFR−准备金利率与SOFR跳升提示资金压力。') }}</div>
@@ -1332,7 +1332,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
 
   {% if credit_cycle %}
   <div class="card">
-    <h2>{{ t('Global credit cycle — the crisis early-warning (BIS)', '全球信用周期 · 危机预警 (BIS)') }}</h2>
+    <h2>{{ t('Global credit cycle — leverage risk (BIS)', '全球信用周期 · 杠杆风险 (BIS)') }}</h2>
     <div class="sub faint" style="margin:4px 0 8px">{{ t('Private-sector leverage vs trend.', '私人部门杠杆相对趋势。') }} <b>{{ t('Latest read', '最新读数') }}</b> · {{ t('as of', '截至') }} {{ credit_cycle.asof }}</div>
     <div class="table-wrap">
     <table class="credit-cycle-tbl">
@@ -1437,7 +1437,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     </table>
     </div>
     <div class="sub faint" style="margin-top:8px">{{ t('Auction demand is scored versus recent same-tenor auctions. Higher bid-to-cover and indirect share are stronger; higher dealer share is weaker.', '拍卖需求相对近期同期限拍卖评分。认购倍数与间接占比越高越强；交易商占比越高越弱。') }}</div>
-    <div class="sub faint" style="margin-top:6px">{{ t('Supply context only; not scored.', '仅为供给背景，不参与评分。') }}</div>
+    <div class="sub faint" style="margin-top:6px">{{ t('Supply context only; does not affect the bond-health score.', '仅作供给背景，不影响债券健康度评分。') }}</div>
   </div>
   {% endif %}
 
@@ -1456,7 +1456,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       {% endfor %}
     {% endfor %}
     </div>
-    <div class="sub faint" style="margin-top:10px">{{ t('Daily state changes, debounced to reduce whipsaw. Context only.', '每日状态变化，经去抖以减少噪音。仅供参考。') }}</div>
+    <div class="sub faint" style="margin-top:10px">{{ t('Daily state changes with repeat flips filtered out. Context only.', '每日状态变化，已过滤重复翻转。仅供参考。') }}</div>
   </div>
   {% endif %}
 

@@ -215,9 +215,9 @@
     #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads,
     .mmb-tk-row,.mmb-tk-h .lb.mmb-swap,.mmb-tk-h .mmb-tk-ic::after,
     .mmb-recap.on .mmb-recap-list,.mmb-cards .mmb-cardp,.mmb-hero h1,.mmb-hero p,
-    .mmb-sugg .mmb-sug,.mmb-rpill.on svg .dv{animation:none}
+    .mmb-sugg .mmb-sug{animation:none}
     #mmb-panel{transition:opacity .18s ease!important}
-    .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,.mmb-rpill,
+    .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,
     .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}}
   #mmb-launch .ll{font:650 13.5px/1 var(--mmb-font);color:var(--mmb-text);white-space:nowrap}
   #mmb-launch .lk{font:600 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;white-space:nowrap}
@@ -317,72 +317,6 @@
   @keyframes mmb-dotpulse{0%,100%{opacity:1}50%{opacity:.45}}
   @media(prefers-reduced-motion:reduce){.mmb-head .dot.busy{animation:none}}
   .mmb-head .sp{flex:1}
-  /* Research mode is NOT a fourth stop on the depth axis — the gateway forces
-     lane='pro' for mode='research', so it is a grounding mode that rides on Pro, and
-     arming it still lights the Pro stop in the signature blue (that is the "which
-     bucket is being spent" half of the old pairing, and it is unchanged). It holds
-     its own row on the composer, and the row READS the ceiling sentence that
-     PR 7100 puts on the end of every research answer — in both languages,
-     at every width (W9B F11-8).
-     The compact mark it replaces carried that disclosure in a hover tip, and this
-     sheet hides a hover tip below 560px, so on a phone the control said nothing at
-     all. A disclosure only a pointer can reach is not a disclosure: the sentence is
-     the label, the price sits under it, aria-pressed carries on/off, and the
-     accessible name is the same text the eye reads — no short stand-in.
-     Two art directions, one mechanism:
-       DARK  instrument calm. At rest a faint ink field with no edge; armed a violet
-             field under a violet hairline ring plus this widget's restrained glow.
-             Luminance carries the state and the type stays quiet — a solid violet
-             block the size of a sentence would shout, and the row is read, not
-             glanced at.
-       LIGHT paper discipline. At rest a near-opaque white row on the cool box, edged
-             by the hairline this theme draws heavier than dark does; armed the same
-             white material under a violet hairline and a soft LIFT — a shadow, not a
-             glow, because that is how this theme says "raised". No violet field:
-             over white it reads as a bruise rather than as a selection. */
-  .mmb-rrow{padding:0 10px 2px}
-  .mmb-rpill{display:flex;align-items:flex-start;gap:7px;width:100%;text-align:left;
-    font:600 11.5px/1.55 var(--mmb-font);cursor:pointer;white-space:normal;
-    color:var(--mmb-muted);background:color-mix(in srgb,var(--mmb-ink) 4%,transparent);
-    border:none;border-radius:var(--r-card,12px);padding:8px 12px;
-    transition:color .16s var(--mmb-ease-tint),background .16s var(--mmb-ease-tint),box-shadow .16s var(--mmb-ease-tint)}
-  .mmb-rpill svg{width:14px;height:14px;margin-top:2px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-  .mmb-rpill .mmb-rtext{display:block;flex:1 1 auto;min-width:0}
-  .mmb-rpill .mmb-rcost{display:block;margin-top:4px;font-weight:500}
-  .mmb-rpill:hover{color:color-mix(in srgb,var(--mmb-text) 80%,var(--mmb-muted));background:color-mix(in srgb,var(--mmb-ink) 7%,transparent)}
-  .mmb-rpill.on,.mmb-rpill.on:hover{color:var(--mmb-text);
-    background:color-mix(in srgb,var(--mmb-violet) 16%,transparent);
-    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mmb-violet) 44%,transparent),
-      0 2px 12px -6px color-mix(in srgb,var(--mmb-violet) 70%,transparent)}
-  .mmb-rpill.on .mmb-rcost{color:color-mix(in srgb,var(--mmb-text) 74%,var(--mmb-violet))}
-  .mmb-rpill.on svg{color:color-mix(in srgb,var(--mmb-violet) 78%,var(--mmb-hi))}
-  .mmb-rpill:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info) 70%,transparent);outline-offset:2px}
-  html[data-theme="light"] #mmb-root .mmb-rpill{background:var(--mmb-panel);
-    box-shadow:inset 0 0 0 1px var(--mmb-line)}
-  html[data-theme="light"] #mmb-root .mmb-rpill:hover{background:var(--mmb-panel);
-    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mmb-ink) 24%,transparent)}
-  html[data-theme="light"] #mmb-root .mmb-rpill.on,
-  html[data-theme="light"] #mmb-root .mmb-rpill.on:hover{background:var(--mmb-panel);
-    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mmb-violet) 40%,transparent),
-      0 1px 2px color-mix(in srgb,var(--mmb-ink) 8%,transparent),
-      0 8px 18px -12px color-mix(in srgb,var(--mmb-ink) 30%,transparent)}
-  /* phones: the sentence stays — it IS the disclosure — the row only tightens */
-  @media(max-width:560px){.mmb-rpill{padding:7px 10px;gap:6px;font:600 11px/1.5 var(--mmb-font)}
-    .mmb-rrow{padding:0 8px 2px}}
-  /* Arming it plays the mark's own meaning once: the two chevrons travel down through
-     the rule they sit under. One 520ms gesture on a deliberate click, never a loop. */
-  .mmb-rpill.on svg .dv{animation:mmb-dive .52s var(--mmb-ease) both}
-  @keyframes mmb-dive{0%{transform:translateY(-3px);opacity:.25}100%{transform:none;opacity:1}}
-  .mmb-rpill.mmb-off{display:none}
-  /* The row goes with it. .mmb-rrow owns the composer inset (10px, 8px on
-     phones) and the 2px gap under the toggle, so with the button display:none
-     that padding alone still painted an empty band between the textarea and the
-     depth control — on the widget's first paint before quotas land, and on every
-     settled session that is not Pro-eligible. :has() is this estate's own idiom
-     for showing a wrapper only when the thing inside it is there (theme.css gates
-     .lst-more the same way); where it is unsupported the rule simply drops and
-     the row degrades to that 2px band, never to a visible pill. */
-  .mmb-rrow:has(> .mmb-rpill.mmb-off){display:none}
   #mmb-panel.max .mmb-menu,#mmb-panel.max .mmb-sidescrim{display:none}
   #mmb-panel:not(.max) .mmb-rail{display:none}
   #mmb-panel:not(.max) .mmb-threads{position:absolute;left:0;top:0;bottom:0;width:236px;z-index:6;display:block;
@@ -945,34 +879,12 @@
   var CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4 4 10-10"/></svg>';
   function ic(p) { return '<svg viewBox="0 0 24 24">' + p + '</svg>'; }
 
-  /* ── depth marks ─────────────────────────────────────────────────────────────
-     Fast and Pro are not two prices — they are two depths on ONE axis: how far down
-     the desk goes for a single question. All three marks are drawn as a
-     family rather than picked out of the emoji table (⚡ / ◈, which read as two
-     unrelated stickers and rendered as somebody else's typeface on every OS):
-
-       Fast      one strike — a single pass over the tape
-       Pro       a cut stone — the same question turned to several faces
-       Research  a descent — through the surface line and down two levels below it
-
-     Fast/Pro are solid: at 12px a 1.8-stroke mark silts up, and these two are identity
-     badges rather than affordances. Research keeps the outline language, and it now
-     rides on its own sentence row on the composer: research is a grounding mode that
-     runs on Pro, not a third depth (W9B F11-8). */
+  /* Fast and Pro share the depth-control glyph family. Research keeps its
+     own glyph in the answer activity ledger, not a banner in the composer. */
   var MARK_FAST = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.9 2 5 13.6h4.9L8.6 22l8.8-11.9h-4.9z"/></svg>';
   var MARK_PRO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.3 20.5 9 12 21.7 3.5 9z"/>' +
     '<path class="fc" d="M3.5 9h17M12 2.3 9.1 9 12 21.7 14.9 9z"/></svg>';
   var MARK_RESEARCH = '<path d="M4.8 5.2h14.4"/><g class="dv"><path d="M8 10.1 12 13.9l4-3.8"/><path d="M8 15.3 12 19.1l4-3.8"/></g>';
-  /* The research mode's own sentence (W9B F11-8). Frozen verbatim by the F11 contract
-     (research/market_intelligence_productization/MARKET_ONTOLOGY_F11_POST_VERTICAL_CONTRACT_2026-09-06.md
-     §MO-PAID-031, "Authority ceiling") and byte-identical to the pair the gateway
-     stamps on the end of every research answer once PR 7100 lands — at this head the
-     gateway stamps nothing yet, so the pair lives in the contract, here, and in
-     tests/test_mm_brain_asset.py. The toggle says up front what the answer will say
-     about itself. Defined once, here, so the visible mark and the accessible name
-     can never disagree with each other or drift from the contract. */
-  var RESEARCH_CEILING_EN = 'This is a reading of what we already published. It is not a signal, not a rating, and not advice — nothing here changes any board, rank, or alert.';
-  var RESEARCH_CEILING_ZH = '这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——这里的任何内容都不会改变任何看板、排名或提醒。';
   function laneMark(l) { return l === 'pro' ? MARK_PRO : MARK_FAST; }
 
   /* Ledger glyphs. PHASE_IC keys the pipeline stage the wire reports; FAM keys the KIND
@@ -1140,31 +1052,8 @@
             '<div class="mmb-thumbs" id="mmb-thumbs"></div>' +
             '<textarea class="mmb-ta" id="mmb-ta" rows="1" maxlength="2000" data-ph-en="Ask about any dashboard, signal, or ticker…" data-ph-zh="询问任意看板、信号或标的…" placeholder="' + L('Ask about any dashboard, signal, or ticker…', '询问任意看板、信号或标的…') + '"></textarea>' +
             '<input type="file" id="mmb-file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>' +
-            /* ── the research row ──────────────────────────────────────────────────
-               Research mode is not a third depth, so it does not sit in the depth
-               group below: it is a grounding mode that rides on Pro, and its mark
-               READS the ceiling sentence PR 7100 puts on the end of every
-               answer (W9B F11-8) — the whole sentence, in both languages, at every
-               width. Nothing here collapses to a compact mark on a phone, because
-               the disclosure the compact mark leaned on was a hover tip this sheet
-               hides below 560px.
-               The sentence is also the accessible name — no aria-label stand-in —
-               and aria-pressed carries on/off. The price stays visible under the
-               sentence instead of being discovered afterwards. */
-            '<div class="mmb-rrow">' +
-              '<button class="mmb-rpill mmb-off" data-act="research" aria-pressed="false">' +
-                ic(MARK_RESEARCH) +
-                '<span class="mmb-rtext">' + LB(RESEARCH_CEILING_EN, RESEARCH_CEILING_ZH) +
-                '<span class="mmb-rcost">' + LB('Runs on Pro · uses one Pro message', '走 Pro 通道 · 消耗一条 Pro 消息') + '</span></span>' +
-              '</button></div>' +
             '<div class="mmb-tools">' +
-              /* ── one control, one axis ────────────────────────────────────────────
-                 Fast and Pro are two stops on the same question — how deep should the
-                 desk go — so they are one control, not two separate buttons. Two things
-                 got better by grouping them: the depth marks read as the family they
-                 are, and the header stopped truncating its own title ("Mastermin…") to
-                 make room. Research used to be the third stop here; it is a mode, not a
-                 depth, and it now reads as a sentence on the row above. */
+              /* One control, one axis: Fast and Pro choose answer depth. */
               '<div class="mmb-seg" id="mmb-lane" role="group" aria-label="' + L('Answer depth', '回答深度') + '">' +
                 '<button data-lane="fast" class="on" aria-pressed="true">' + MARK_FAST + LB('Fast', '快速') + '</button>' +
                 '<button data-lane="pro" aria-pressed="false">' + MARK_PRO + '<span>Pro</span></button>' +
@@ -1187,7 +1076,7 @@
   var scrim = $('#mmb-scrim'), panel = $('#mmb-panel'), scroll = $('#mmb-scroll'),
       ta = $('#mmb-ta'), sendBtn = $('#mmb-send'), qEl = $('#mmb-q'), ctxEl = $('#mmb-ctx'),
       upgradeEl = $('#mmb-upgrade'), tlist = $('#mmb-tlist'), launch = $('#mmb-launch'),
-      researchBtn = $('.mmb-rpill'), thumbsEl = $('#mmb-thumbs'), fileEl = $('#mmb-file'),
+      thumbsEl = $('#mmb-thumbs'), fileEl = $('#mmb-file'),
       searchWrap = $('#mmb-search'), searchIn = $('#mmb-search-in'), boxEl = $('.mmb-box'),
       ctxInspEl = $('#mmb-ctxinsp'), ctxInspBody = $('#mmb-ctxinsp-body'), ctxInspRev = $('#mmb-ctxinsp-rev');
 
@@ -2054,7 +1943,6 @@
         if (!authed) enterGuest(d.tier === 'guest');
         /* limit < 0 = unlimited (operator allowlist) → Pro eligible; limit 0 = lane locked. */
         proEligible = !!(quotas.pro && quotas.pro.limit !== 0);
-        researchBtn.classList.toggle('mmb-off', !proEligible);
         restorePrefs();   /* re-apply the remembered lane (or clear it if Pro just lapsed) */
         renderQuota();
       }).catch(function () { if (!authed) enterGuest(false); });
@@ -3087,16 +2975,13 @@
      it costs Pro quota — so it is remembered rather than reset to Fast on the next
      page load. */
   function paintLane() {
-    /* [data-lane] only. The research row is not a depth stop and no longer lives in
-       this group, but the attribute selector is what keeps the sweep on the two stops
-       it owns — so a button parked in the group later cannot be painted by accident. */
+    /* Keep the depth paint scoped to its two data-lane controls. */
     root.querySelectorAll('#mmb-lane button[data-lane]').forEach(function (b) {
       var on = b.dataset.lane === lane;
       b.classList.toggle('on', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
-  function paintResearch() { researchBtn.classList.toggle('on', researchMode); researchBtn.setAttribute('aria-pressed', researchMode ? 'true' : 'false'); }
   /* The composer says what the armed mode expects of it. A research pass is a question you
      ask once and come back to — not a one-line follow-up — and the box is the only surface
      that can say so at the moment it matters. Sourced from the data-ph-* pair when off, so
@@ -3109,12 +2994,12 @@
   function setLane(next) {
     lane = next === 'pro' ? 'pro' : 'fast';
     if (lane === 'fast' && researchMode) researchMode = false;   /* mutually exclusive */
-    paintLane(); paintResearch(); paintPlaceholder(); savePrefs(); renderQuota();
+    paintLane(); paintPlaceholder(); savePrefs(); renderQuota();
   }
   function setResearch(on) {
     researchMode = !!on;
     if (researchMode) lane = 'pro';                              /* research IS the Pro lane */
-    paintLane(); paintResearch(); paintPlaceholder(); savePrefs(); renderQuota();
+    paintLane(); paintPlaceholder(); savePrefs(); renderQuota();
   }
 
   /* Lane + Deep Research are USER choices, not per-page defaults. The widget is
@@ -3135,7 +3020,7 @@
   }
   function restorePrefs() {
     if (!proEligible) {
-      if (lane === 'pro' || researchMode) { lane = 'fast'; researchMode = false; paintLane(); paintResearch(); savePrefs(); }
+      if (lane === 'pro' || researchMode) { lane = 'fast'; researchMode = false; paintLane(); savePrefs(); }
       return;
     }
     var p = null; try { p = JSON.parse(localStorage.getItem(PREF_KEY) || 'null'); } catch (e) {}
@@ -3320,7 +3205,6 @@
     var a = t.dataset.act;
     if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
-    else if (a === 'research') { if (guestMode) showUpgrade({ feature: 'pro' }); else setResearch(!researchMode); }
     else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
     else if (a === 'search') toggleSearch();
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }
