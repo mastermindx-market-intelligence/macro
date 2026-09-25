@@ -178,12 +178,18 @@ def _document(source: str) -> Document:
     return Document(source, tuple(tables))
 
 
+@functools.lru_cache(maxsize=8)
+def _structure(source: str) -> str:
+    return _COMMENT.sub(lambda match: " " * len(match.group(0)), source)
+
+
 def _table_spans(source: str) -> tuple[tuple[int, int], ...]:
+    view = _structure(source)
     stack: list[tuple[int, int]] = []
     out: list[tuple[int, int]] = []
     events = sorted(
-        [(match.start(), 1, match.end()) for match in _TABLE_OPEN.finditer(source)]
-        + [(match.start(), 0, match.end()) for match in _TABLE_CLOSE.finditer(source)]
+        [(match.start(), 1, match.end()) for match in _TABLE_OPEN.finditer(view)]
+        + [(match.start(), 0, match.end()) for match in _TABLE_CLOSE.finditer(view)]
     )
     for _position, kind, end in events:
         if kind == 1:
@@ -196,17 +202,19 @@ def _table_spans(source: str) -> tuple[tuple[int, int], ...]:
 
 
 def _nested_tables(source: str) -> frozenset[int]:
+    view = _structure(source)
     return frozenset(
         ordinal
         for ordinal, (start, end) in enumerate(_table_spans(source))
-        if _TABLE_OPEN.search(source, start + 1, end) is not None
+        if _TABLE_OPEN.search(view, start + 1, end) is not None
     )
 
 
 def _grid(source: str, ordinal: int, start: int, end: int) -> tuple[tuple[Cell, ...], ...]:
+    view = _structure(source)
     rows: list[tuple[Cell, ...]] = []
     carry: dict[int, tuple[int, Cell]] = {}
-    for row_number, row_match in enumerate(_ROW.finditer(source, start, end)):
+    for row_number, row_match in enumerate(_ROW.finditer(view, start, end)):
         row: list[Cell] = []
         col = 0
         pending, carry = dict(carry), {}
@@ -229,15 +237,9 @@ def _grid(source: str, ordinal: int, start: int, end: int) -> tuple[tuple[Cell, 
                 match = _SPAN_PATTERNS[key].search(attributes)
                 widths.append(int(match.group(1)) if match else 1)
             colspan, rowspan = widths
-            cell = Cell(
-                ordinal,
-                row_number,
-                col,
-                col + colspan,
-                row_match.start(1) + cell_match.start(3),
-                row_match.start(1) + cell_match.end(3),
-                _text(cell_match.group(3)),
-            )
+            cell_start = row_match.start(1) + cell_match.start(3)
+            cell_end = row_match.start(1) + cell_match.end(3)
+            cell = Cell(ordinal, row_number, col, col + colspan, cell_start, cell_end, _text(source[cell_start:cell_end]))
             row.append(cell)
             if rowspan > 1:
                 for span_col in range(col, col + colspan):
