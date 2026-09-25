@@ -319,6 +319,9 @@ class NormalizedTable:
     # True when the table was written inside another table's markup: it is emitted as its own block ahead of
     # the outer table and carries none of the outer caption or band, so consumers treat it as unreadable (R83).
     nested: bool = False
+    # True when another table was written inside this table's markup: the nested table's text is not part of
+    # this table's cells, so its band and labels are incomplete and consumers treat it as unreadable too (R91).
+    contains_nested: bool = False
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -644,6 +647,7 @@ class _RawTable:
     row_layout: list[tuple[int, int, str]] = field(default_factory=list)
     group_layout: list[tuple[int, str]] = field(default_factory=list)
     nested: bool = False
+    contains_nested: bool = False
 
 
 @dataclass
@@ -658,6 +662,7 @@ class _RawBlock:
     table_layout: tuple[tuple[int, int, str], ...] = ()
     table_groups: tuple[tuple[int, str], ...] = ()
     table_nested: bool = False
+    table_contains_nested: bool = False
 
 
 @dataclass
@@ -758,6 +763,9 @@ class _HtmlBlockExtractor(HTMLParser):
             return
         if tag == "table":
             self._mark_block_child()
+            # Every table already open holds this one and loses its text, so each is flagged too (R91).
+            for open_table in self.tables:
+                open_table.contains_nested = True
             self.tables.append(_RawTable(start=start, nested=bool(self.tables)))
             return
         if self.tables:
@@ -865,7 +873,7 @@ class _HtmlBlockExtractor(HTMLParser):
                     " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
                 )
                 if _compact_text(text):
-                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested))
+                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested, table_contains_nested=table.contains_nested))
                 return
             return
         matching_index = next(
@@ -894,7 +902,7 @@ class _HtmlBlockExtractor(HTMLParser):
                 " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
             )
             if _compact_text(text):
-                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested))
+                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested, table_contains_nested=table.contains_nested))
         for capture in self.captures:
             text = _compact_text("".join(capture.text_parts))
             if text and not (capture.tag == "div" and capture.has_block_child):
@@ -1182,7 +1190,7 @@ def normalize_filing(
                     rows.append(tuple(cells))
             table = NormalizedTable(
                 table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption, row_layout=raw_block.table_layout,
-                group_layout=raw_block.table_groups, nested=raw_block.table_nested,
+                group_layout=raw_block.table_groups, nested=raw_block.table_nested, contains_nested=raw_block.table_contains_nested,
             )
             text = table.text()
         block_id = stable_id(
