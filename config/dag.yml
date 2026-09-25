@@ -2823,6 +2823,13 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_ontology_explorer
+        module: scripts.build_ontology_explorer
+        note: >
+          F04-X1 WTI Live Path public shell (site/ontology.html + the paired
+          ontology.css/js copies). A nav-only static shell with zero current
+          values; it sits in the render lane so a shared-nav change re-bakes it
+          with every other committed page. Not in daily.yml: no data input.
       - id: build_research_screener
         module: scripts.build_research_screener
         note: >

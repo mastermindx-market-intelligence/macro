@@ -7943,6 +7943,19 @@ def main() -> int:
     except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
         log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
 
+    # Finance Intelligence dossier — render only the registered preview shell.
+    # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships
+    # no private store, no publish lane, and no serving route — the read model
+    # is consumed at runtime from the same-origin foundation route behind the
+    # site_full access policy; this static renderer never reads or republishes
+    # any read-model payload.
+    try:
+        from scripts.build_finance_intelligence_page import render_from_state as _render_finance
+        _fi_page = _render_finance(config.ROOT)
+        log.info("wrote %s", _fi_page)
+    except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
+
     # F01 Macro & Monetary suite — server-rendered workspace pages over the
     # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
     # fails CLOSED on its own (a refused snapshot renders the typed refusal page,
