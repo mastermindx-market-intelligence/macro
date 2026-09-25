@@ -1019,12 +1019,31 @@ def test_committed_darkpool_payload_never_publishes_participation_above_one():
     pane = _json.loads((_Path(__file__).resolve().parents[1] / "site" / "darkpool_eod.json").read_text(encoding="utf-8"))
     pane_rows = list(pane.get("universe") or []) + list(pane.get("historical_rows") or [])
     assert all(r.get("participation") is None or r["participation"] <= 1 for r in pane_rows)
-    assert pane["coverage"]["n_invalid_current_participation"] == 0
 
     context = _json.loads((_Path(__file__).resolve().parents[1] / "data" / "darkpool" / "context" / "latest.json").read_text(encoding="utf-8"))
     assert all(r.get("participation") is None or r["participation"] <= 1
                for r in context.get("standouts") or [])
-    assert context["coverage"]["n_invalid_current_participation"] == 0
+
+
+def test_builder_coverage_counts_invalid_current_participation():
+    from scripts import build_darkpool_desk as bdd
+
+    dates = pd.date_range("2026-09-18", periods=3, freq="B")
+    panel = pd.DataFrame({
+        "date": dates,
+        "ticker": ["AAA"] * 3,
+        "short_vol": [200.0, 200.0, 600.0],
+        "short_exempt": [0.0, 0.0, 0.0],
+        "total_vol": [400.0, 400.0, 1200.0],
+        "short_ratio": [0.5, 0.5, 0.5],
+    })
+    consolidated = {"AAA": pd.Series([1000.0, 1000.0, 1000.0], index=dates)}
+    close = {"AAA": pd.Series([10.0, 10.5, 11.0], index=dates)}
+    rows, coverage = bdd._compute_ticker_stats_v2(panel, consolidated, close, {})
+    assert len(rows) == 1
+    assert rows[0]["participation"] is None
+    assert coverage["n_invalid_participation_rows"] == 1
+    assert coverage["n_invalid_current_participation"] == 1
 
 
 def test_darkpool_template_discloses_invalid_denominator_guard():

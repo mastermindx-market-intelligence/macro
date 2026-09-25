@@ -270,6 +270,8 @@ def test_participation_rejects_impossible_current_ratio_without_backfilling_yest
     assert m.participation_5d is None
     assert m.participation_trend_pp is None
     assert m.pattern is None
+    assert m.extras["participation_invalid_rows"] == 1
+    assert m.extras["participation_current_invalid"] is True
 
 
 def test_participation_excludes_impossible_history_from_baseline():
@@ -285,6 +287,8 @@ def test_participation_excludes_impossible_history_from_baseline():
     assert dirty.participation_norm == reference.participation_norm
     assert dirty.participation_trend_pp == reference.participation_trend_pp
     assert dirty.n_usable == reference.n_usable
+    assert dirty.extras["participation_invalid_rows"] == 1
+    assert dirty.extras["participation_current_invalid"] is False
 
 
 # ---------------------------------------------------------------------------
