@@ -155,6 +155,11 @@ def test_css_has_two_art_directions_and_zero_colour_literals():
     assert re.search(r"\brgb\(", css) is None
     assert re.search(r"\brgba\(", css) is None
 
+    # The page owns its canvas in both art directions: theme.css does not paint
+    # body, and the shell's 1200px box alone left the gutters, the nav band and
+    # the area below the content on the browser's white default in dark mode.
+    assert "body.fi-page { background: var(--fi-canvas); }" in css
+
     # Tier 1 (fi-panel) and tier 2 (fi-panel2) elevation rules both exist.
     assert ".fi-panel" in css
     assert ".fi-panel2" in css
