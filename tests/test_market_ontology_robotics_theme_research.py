@@ -795,3 +795,74 @@ def test_no_authority_key_in_any_composed_response():
         keys = set(walk_keys(response))
         assert not keys & FORBIDDEN_KEYS, (name, keys & FORBIDDEN_KEYS)
         assert response["authority"] == robotics.AUTHORITY
+
+
+# ---------------------------------------------------------------------------
+# RBV-14 — the registered QLedger forward claim is not product evidence
+# ---------------------------------------------------------------------------
+
+
+def _fresh_import_closure(*module_names: str) -> list[str]:
+    """Every module a FRESH interpreter loads in order to import ``module_names``.
+
+    A subprocess rather than this process's ``sys.modules``: by the time this
+    test runs a sibling may already have imported anything at all, and an
+    in-process read would then attribute to the composer a qledger it never
+    touches. That false red gets "fixed" by loosening the assertion below,
+    which is the opposite of what RBV-14 wants pinned.
+    """
+    import subprocess
+    import sys
+
+    probe = (
+        "import sys, json\n"
+        + "".join(f"__import__({name!r})\n" for name in module_names)
+        + "print(json.dumps(sorted(m for m in sys.modules if m)))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-B", "-c", probe],
+        capture_output=True, text=True,
+        cwd=str(Path(__file__).resolve().parents[1]),
+    )
+    assert result.returncode == 0, result.stderr[-2000:]
+    return json.loads(result.stdout)
+
+
+def _qledger_members(closure: list[str]) -> list[str]:
+    return [name for name in closure if "qledger" in name.lower()]
+
+
+def test_robotics_product_modules_reach_no_qledger():
+    """RBV-14 is a NEGATIVE case: QLedger's absence IS the compliance.
+
+    The spec's only mention of QLedger is rejected alternative B — "put factual
+    bodies in K1/QLedger. Rejected. ... the registered QLedger object is a
+    forward claim." So no Robotics product module should ever reach one. That
+    holds by construction today, which is precisely why it needs pinning: a
+    negative case satisfied by construction regresses silently the day someone
+    adds a convenient import, and nothing else in this suite would notice.
+    """
+    # Positive control FIRST. ``engine.qledger*`` exists and is reachable in
+    # principle, so this same helper and this same matcher must find it here.
+    # Checking reach BEFORE reading the null is the whole point: a matcher that
+    # has quietly stopped matching reads exactly like a clean tree.
+    control = _qledger_members(_fresh_import_closure("engine.qledger_desk_adapter"))
+    assert control, (
+        "instrument has no reach: importing engine.qledger_desk_adapter loaded no "
+        "module matching 'qledger', so the assertion below cannot fail and would "
+        "prove nothing"
+    )
+
+    closure = _fresh_import_closure(
+        "engine.market_ontology.robotics_theme_research",
+        "engine.market_ontology.robotics_owner_bundle",
+    )
+    assert _qledger_members(closure) == [], (
+        "a Robotics product module now reaches QLedger; RBV-14 forbids substituting "
+        "the registered forward-claim object for factual product evidence"
+    )
+    # The composer's only permitted reach into the shared theme graph.
+    assert sorted(m for m in closure if m.startswith("engine.theme_graph")) == [
+        "engine.theme_graph",
+        "engine.theme_graph.curation_assertion",
+    ]
