@@ -1,11 +1,11 @@
-"""Sector/theme heatmap route wiring guards.
+"""Sector/theme heatmap renderer and China toggle wiring guards.
 
-The US owner page already had the Finviz-derived Themes renderer but was orphaned
-from the product navigation. China now reuses that same multi-map renderer while
-projecting the existing THS rotation + stock-map owner feeds in the browser.
-These tests pin the user-visible routes and the one-plane/no-second-publisher
-architecture.
-"""
+The US owner page already carries the S&P 500 / Finviz Themes switch; this wave
+does not rebuild that accepted renderer. China reuses the same multi-map renderer
+while projecting the existing THS rotation + stock-map owner feeds in the browser.
+Navigation exposure is sequenced behind the incumbent nav release carrier so this
+PR does not create a concurrent writer for the immutable nav asset chain.
+""
 from __future__ import annotations
 
 import html
@@ -23,19 +23,16 @@ def _maps(page: str) -> list[dict]:
     return json.loads(html.unescape(match.group(1)))
 
 
-def test_us_heatmap_is_first_class_and_keeps_sector_theme_switch():
+def test_us_heatmap_owner_keeps_sector_theme_switch_without_rebuild():
     maps = _maps("sector_heatmap.html")
     assert [m["key"] for m in maps] == ["sp500", "themes"]
     assert [m["url"] for m in maps] == [
         "marketdata/sp500_heatmap.json",
         "marketdata/themes_heatmap.json",
     ]
-
-    wide_template = (ROOT / "templates" / "nav_market.js").read_text(encoding="utf-8")
-    wide_site = (ROOT / "site" / "nav_market.js").read_text(encoding="utf-8")
-    assert "'Market Heatmap'" in wide_template
-    assert "'sector_heatmap.html'" in wide_template
-    assert wide_template == wide_site
+    template = (ROOT / "templates" / "sector_heatmap.html.j2").read_text(encoding="utf-8")
+    assert '"key":"sp500"' in template
+    assert '"key":"themes"' in template
 
 
 def test_china_heatmap_switches_between_stock_sectors_and_ths_themes():
@@ -68,9 +65,3 @@ def test_china_theme_view_reuses_owner_feeds_without_a_second_publisher():
     assert "china_themes_heatmap.json" not in template_js
     assert "china_themes_heatmap.json" not in (ROOT / "templates" / "market_heatmap.html.j2").read_text(encoding="utf-8")
 
-
-def test_navigation_runtime_source_and_shipped_mirror_stay_identical():
-    assert (
-        (ROOT / "templates" / "nav_market.js").read_text(encoding="utf-8")
-        == (ROOT / "site" / "nav_market.js").read_text(encoding="utf-8")
-    )
