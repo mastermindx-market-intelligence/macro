@@ -964,3 +964,69 @@ def test_unknown_modal_rows_do_not_advertise_activation():
     assert re.search(r"\.hk-v37-modal-table tbody tr\[data-hk-modal-id\]\s*\{\s*cursor:\s*pointer", css)
     assert ".hk-v37-modal-table tbody tr[data-hk-modal-id]:hover" in css
     assert ".hk-v37-modal-table tbody tr:hover" not in css
+
+
+# ---------------------------------------------------------------------------
+# Complete owner-stage population — Top ⊂ All, watch remains separate
+# ---------------------------------------------------------------------------
+
+def test_complete_stage_population_collects_every_current_owner_renderer_family():
+    """All Candidates must bind to the same stage denominator the server proves.
+
+    HK intentionally renders current-stage identities through four owner families.
+    The composer may not equate "All" with only the actionable .pvcard family.
+    """
+    text = _composer_text()
+    m = re.search(r"function collectStagePopulation\b.*?(?=\n  function )", text, re.S)
+    assert m, "composer needs one collectStagePopulation() owner-manifest reader"
+    body = m.group(0)
+    for selector in (
+        '.pvcard[data-ticker]',
+        '.rip-card[href]',
+        ".pbr[data-stage='ran'] .pbr-r[href]",
+        ".pbv[data-stage='blocked'] .pbr-r[href]",
+    ):
+        assert selector in body, f"complete HK stage population omits {selector}"
+    assert "watch-strip" not in body, (
+        "watch is an independent non-actionable owner lane and must not be folded "
+        "into All Candidates"
+    )
+
+
+def test_top_is_featured_buy_subset_while_all_admits_the_complete_stage_population():
+    text = _composer_text()
+    m = re.search(r"function sourceAllowsStageEntry\b.*?(?=\n  function )", text, re.S)
+    assert m, "composer needs one sourceAllowsStageEntry() population rule"
+    body = m.group(0)
+    assert 'state.source === "all"' in body
+    assert 'entry.kind === "buy"' in body
+    assert "pv-featured" in body
+    assert "ripening" not in body and "ran" not in body and "blocked" not in body, (
+        "Top Picks must be only the owner-featured BUY subset; later-stage families "
+        "must never be promoted into Top merely because they are visible in All"
+    )
+
+
+def test_population_application_controls_non_buy_stage_sections_and_counts_all_rows():
+    text = _composer_text()
+    m = re.search(r"function applyStagePopulation\b.*?(?=\n  function )", text, re.S)
+    assert m, "composer needs one applyStagePopulation() controller"
+    body = m.group(0)
+    for token in ("state.stagePopulation", "sourceAllowsStageEntry", "visible++"):
+        assert token in body
+    for selector in (".rip-shelf[data-stage='setting_up']", ".pbr[data-stage='ran']", ".pbv[data-stage='blocked']"):
+        assert selector in body
+    assert "state.source === \"top\"" in body
+    assert "state.filter" in body, (
+        "when a sector filter is active, non-buy stages with no canonical sector "
+        "membership in the client must fail closed instead of pretending to match"
+    )
+
+
+def test_enhanced_population_copy_names_stage_rows_not_only_actionable_cards():
+    text = _composer_text()
+    m = re.search(r"function populationCopy\b.*?(?=\n  function )", text, re.S)
+    assert m
+    body = m.group(0)
+    assert "current stage names shown" in body
+    assert "actionable cards shown" not in body
