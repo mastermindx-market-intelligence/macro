@@ -4793,15 +4793,32 @@ jobs:
     # (research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md): manifest
     # structure, pack ceilings, trigger startability, exclusive-curation closure,
     # CURATED_EXCLUSIVE equality, and the unrun, skip-only and trigger-closure
-    # censuses. Measured before the move with an audit hook on every step: no step
-    # reads data/ or makes a network call, and the only subprocesses are git against
-    # temporary local repositories.
+    # censuses. Measured with an audit hook on every step, test_ci_pack.py's 135
+    # tests included: no step makes a Python-level network call, and the only
+    # opens under data/ or site/ are audit_unrun_tests.py's report tier reading a
+    # few site/ files. No verdict depends on them: that script's exit code comes
+    # only from the unrun, baseline and waiver sets. Every step also passes with
+    # GIT_ALLOW_PROTOCOL=file, so no git subprocess reaches a remote: they run
+    # against temporary local repositories or against this checkout itself.
     # EXCLUSIVE, not inferred. These suites read most of the repository, so an
     # inferred job would be selected by nearly every PR and add one job to every
     # packing probe, and those probes sit at their ceilings. The paths below are
-    # the suites' import closure plus the files they read.
+    # the suites' import closure plus the files they read directly.
     # check_ci_trigger_closure.py and test_ci_pack.py's curated-closure test (both
     # run below) red when that list falls behind.
+    # WHAT THE PATHS CANNOT COVER. Some verdicts here depend on the whole tree, not
+    # on the files listed below. The packing probes, the always-on list, the
+    # inference checks and the unrun, skip-only and trigger-closure censuses walk
+    # every job and suite through the planner, and no exclusive list can name
+    # every suite. So a PR that moves one of those verdicts without touching a
+    # path below merges without running this job. Each such shape has another
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
+    # curated-closure check differentially. integration-baseline.yml runs
+    # test_ci_pack.py and the skip-only census on every source push to main and
+    # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
+    # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
+    # one when its main proof goes stale. A PR that edits the manifest or the
+    # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
       - ".github/ci/legacy-jobs.yml"
