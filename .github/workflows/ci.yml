@@ -1904,8 +1904,11 @@ on:
       - "docs/**"
       - "tests/test_house_law_registry.py"
       - "tests/test_append_only_assertions.py"
-      # validated-claims guard: wire as PR gate so unearned 'validated' claims
-      # are caught before merge (not just in the nightly calibration run).
+      # validated-claims guard (BC-2): an edit to the checker or its allowlist
+      # re-proves the gate. The PR-gate wiring is the gate:code pack jobs
+      # validated-claims-source (the --scope source scan of templates/, engine/,
+      # lib/) and validated-claims-contract (the checker's suites), 2026-09-25;
+      # the full scan of the rendered tree stays on the data gate.
       - "scripts/check_validated_claims.py"
       - "data/regime/validated_claims_allowlist.json"
       # The third-party-sink exemption's own suite (#3770). Named so an edit to
@@ -2431,6 +2434,10 @@ on:
       # engine/marketing/** and the scripts entries cover the rest.
       - "mockups/x-ads-2026-07/**"
       - "mockups/x-mobile-ads-2026-07/**"
+      # The P0B browser receipts: p0b-receipt-closure (#7971) selects on this root,
+      # but no trigger matched it, so a receipt-only PR never started the run that
+      # grades those receipts (the pack suite's startability audit, red since #7971).
+      - "mockups/evidence/prophet-p0b-zero-fouc/**"
       - "tests/test_marketing_ad_plane_o.py"
       - "tests/test_marketing_persona_model.py"
       - "tests/test_marketing_reply_arming.py"
@@ -4843,7 +4850,26 @@ jobs:
           # (It rode a job output into this step's `env:` until 2026-08-14, when
           # 350,264 bytes of paths met execve's 131,072-byte MAX_ARG_STRLEN and
           # killed all twelve packs at launch — run 31775693780.)
-          filter: blob:none
+          #
+          # NO `filter: blob:none` here — on purpose (2026-09-23,
+          # DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION). A pack materialises every
+          # tracked file (105k blobs, ~5 GiB — legacy suites read committed site/
+          # artifacts), so a blobless fetch saves nothing: `git checkout` then
+          # lazily fetches the whole tree's blobs in ONE unretried, unresumable
+          # promisor request (an explicit --stdin want-list of every OID). Three
+          # such requests died at 65–67 minutes on 2026-09-23 — "N bytes of body
+          # are still expected / early EOF / fetch-pack: invalid index-pack
+          # output", then "could not fetch 20ced735… from promisor remote" —
+          # runs 35876013221 (ci-pack-0), 35885173966 (ci-pack-4), 35886408213
+          # (ci-pack-11). The OID named is merely the FIRST index entry
+          # (.agents/skills/macro-sparse-worktree/SKILL.md, 2,349 bytes, intact):
+          # git dies on the first still-missing promisor object once the batch
+          # fails. Unfiltered, the same bytes ride `git fetch`, which
+          # actions/checkout retries (RetryHelper 3×, 10–20 s) and which the
+          # server packs as an ordinary single-commit want; `git checkout` then
+          # touches no network. scripts/run_ci_pack.py's base-replay hydration
+          # is a no-op without a promisor remote — its exact-base
+          # `fetch --depth=1` brings the base's differing blobs itself.
           fetch-depth: 1
       - uses: actions/setup-python@v5
         if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')

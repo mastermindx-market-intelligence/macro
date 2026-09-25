@@ -1,26 +1,26 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMKR-BULL-20260917",
-  "asof": "2026-09-24",
+  "asof": "2026-09-25",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 69.0,
-  "raw_confidence": 69.1,
-  "delta_vs_base": 9.0,
-  "recommended_action": "hold",
+  "management_confidence": 68.8,
+  "raw_confidence": 68.6,
+  "delta_vs_base": 8.8,
+  "recommended_action": null,
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
     "progress": 15.8,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
     "dist_to_stop_r": 1.214,
     "dist_to_t1_r": 1.286,
     "dist_to_t2_r": 2.786,
-    "horizon_pct_used": 13.3,
+    "horizon_pct_used": 15.6,
     "p1": 0.1424,
     "p2": 0.0712,
     "p3": null,
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "paused \u2014 no closing print since 2026-09-21; a stale price frame carries no current action authority",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.8899986267089872,
@@ -45,6 +45,14 @@
   "_first_trigger_ts": "2026-09-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 6,
-  "tau": 0.1333
+  "days_elapsed": 7,
+  "tau": 0.1556,
+  "price_frame": {
+    "state": "stale",
+    "last_close_date": "2026-09-21",
+    "run_asof": "2026-09-25",
+    "lag": 4,
+    "lag_basis": "business_days",
+    "max_lag": 3
+  }
 }

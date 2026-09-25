@@ -1160,7 +1160,7 @@ The chip is bound via `<span class="fi-chip fi-comparability-chip" data-comparab
 | NONE | `No membership recorded` | `未记录成员` |
 | CURRENT_MEMBERSHIP_ONLY | `Current membership only — not a history` | `仅为当前成员 — 非历史口径` |
 | PIT_MEMBERSHIP_INCOMPLETE | `Point-in-time membership incomplete` | `时点成员数据不完整` |
-| PIT_MEMBERSHIP_VALIDATED | `Point-in-time membership validated` | `时点成员数据已校验` |
+| PIT_MEMBERSHIP_VALIDATED | `Point-in-time membership checked` | `时点成员数据已校验` |
 
 ### D.5 Materiality chips (company exposure)
 
@@ -1371,7 +1371,7 @@ The chip is bound via `<span class="fi-macro-cell-state" data-state="{macro_matr
 
 | enum | EN | ZH |
 |---|---|---|
-| IDENTITY_VALIDATED | `Identity validated` | `身份已确认` |
+| IDENTITY_VALIDATED | `Identity confirmed` | `身份已确认` |
 | IDENTITY_UNRESOLVED | `Identity unresolved` | `身份尚未确认` |
 | RESEARCH_HINT_UNVALIDATED | `Research hint, not validated` | `研究线索，尚未确认` |
 
