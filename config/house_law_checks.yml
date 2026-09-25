@@ -3184,7 +3184,7 @@ checks:
     check_script: scripts/check_p0b_receipt_closure.py
     ci_wiring:
       - workflow: .github/ci/legacy-jobs.yml
-        job: design-governance
+        job: p0b-receipt-closure
         lane: pr_ci
     selftest: true
     allowlist: null
@@ -3205,11 +3205,19 @@ checks:
         a vacuous pass over receipts it cannot see.
     owner_program: prophet-us-eyes-open
     notes: >
-      Wired as extra steps on design-governance (unscoped, gate: code,
-      fetch-depth 0) so a pinned loaded_asset outside
-      stock-dashboard-first-frame's exclusive paths — the #7500
-      navigation-refresh.css shape — still starts the gate. The checker never
-      shells out to git; the caller hands it `git diff --name-only`.
+      Its own legacy job, p0b-receipt-closure (gate: code, scope: exclusive,
+      fetch-depth 0), since the #6872 postmortem (2026-09-24). It first shipped
+      as trailing steps on design-governance (#7613), which failed twice on
+      #6872: run_ci_pack.py skips a logical job's remaining steps after the
+      first failing one, so the design ratchet's own red hid this verdict; and
+      "unscoped" is not always-on — inference derives a scope from the job's
+      commands and mockups/ sits outside every opaque scan root, so a diff
+      touching only the rendered fixture or a receipt input skipped the job.
+      The curated paths name the roots every pin lives under and are bound to
+      the committed receipts by tests/test_ci_pack.py::
+      test_p0b_receipt_closure_job_owns_every_receipt_pinned_path. The gate
+      step runs first in the job. The checker never shells out to git; the
+      caller hands it `git diff --name-only`.
   - law_id: data.append_only_assertions
     summary: >
       A historical assertion over an append-only store must not become false
