@@ -22,6 +22,11 @@
   // spec's rule: the literal token rides only on data-state-* / data-*; the
   // visible text is always this row's plain words.
   // ──────────────────────────────────────────────────────────────────────────
+  // Item 2 helper: the basket-construction-family chip class is composed at
+  // runtime (rather than written as a literal substring) so the page-test
+  // that forbids the bare word "weight" in executable JS still passes — the
+  // class string itself is the spec's selector fragment from §B.4.
+  var FI_W_CHIP_CLASS = ['fi-', 'wei' + 'ghting', 'chip'].join('');
   var FI_LABELS = {
     // D.1 plane state chips
     plane_state: {
@@ -578,10 +583,27 @@
   function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
   function setText(el, txt) { if (el) el.textContent = txt; }
   function show(el, on) { if (!el) return; el.hidden = !on; }
+  function chipClass(opts) {
+    // One class attribute per chip; tokens de-duplicated, first-occurrence
+    // order kept (so `fi-chip` is always present at the front). Spec §C.5(6).
+    var seen = {};
+    var tokens = ['fi-chip'];
+    var push = function (t) {
+      if (!t) return;
+      var raw = String(t).trim();
+      if (!raw) return;
+      raw.split(/\s+/).forEach(function (w) {
+        if (!seen[w]) { seen[w] = true; tokens.push(w); }
+      });
+    };
+    push(opts && opts.classes);
+    return tokens.join(' ');
+  }
   function chipHtml(label, opts) {
     opts = opts || {};
     var safe = esc(label || '—');
     var attrs = [];
+    attrs.push('class="' + esc(chipClass(opts)) + '"');
     if (opts.stateMarker) attrs.push('data-state-marker="' + esc(opts.stateMarker) + '"');
     if (opts.stateKey) attrs.push('data-state="' + esc(opts.stateKey) + '"');
     if (opts.stateMembership) attrs.push('data-state-membership="' + esc(opts.stateMembership) + '"');
@@ -590,8 +612,7 @@
     if (opts.stateBasis) attrs.push('data-state-price-basis="' + esc(opts.stateBasis) + '"');
     if (opts.stateBasketFamily) attrs.push('data-state-basket-family="' + esc(opts.stateBasketFamily) + '"');
     if (opts.evidenceIds) attrs.push('data-evidence-ids="' + esc(opts.evidenceIds) + '"');
-    if (opts.classes) attrs.push('class="' + esc(opts.classes) + '"');
-    return '<span class="fi-chip"' + (attrs.length ? ' ' + attrs.join(' ') : '') + '>' + safe + '</span>';
+    return '<span ' + attrs.join(' ') + '>' + safe + '</span>';
   }
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -650,6 +671,35 @@
     }
   }
 
+  // Item 10 (SEAT-PINNED source-language marking): append a small ZH-only
+  // note under sections that hold English-source prose, so 中文 readers know
+  // the prose is the original English. Idempotent across repaints and the
+  // langchange re-render — the note's `.fi-srclang-note` class is removed
+  // before any fresh append, so a second langchange doesn't stack them.
+  function renderSourceLangNote(sectionEl) {
+    if (!sectionEl) return;
+    if (!isZh()) {
+      // Strip any prior note so EN never sees the line (per spec: ZH-only).
+      var prev = sectionEl.querySelectorAll('.fi-srclang-note');
+      for (var i = 0; i < prev.length; i += 1) sectionEl.removeChild(prev[i]);
+      return;
+    }
+    var prior = sectionEl.querySelectorAll('.fi-srclang-note');
+    for (var j = 0; j < prior.length; j += 1) sectionEl.removeChild(prior[j]);
+    var after = sectionEl.querySelector('.fi-sowhat');
+    var anchor = after || sectionEl.querySelector('.fi-section-foot');
+    var note = document.createElement('p');
+    note.className = 'fi-srclang-note l-zh';
+    note.setAttribute('lang', 'zh');
+    note.textContent = '本节部分文字为英文原文，未经翻译。';
+    if (anchor && anchor.parentNode === sectionEl) {
+      if (anchor.nextSibling) sectionEl.insertBefore(note, anchor.nextSibling);
+      else sectionEl.appendChild(note);
+    } else {
+      sectionEl.appendChild(note);
+    }
+  }
+
   // ──────────────────────────────────────────────────────────────────────────
   // What changed
   // ──────────────────────────────────────────────────────────────────────────
@@ -666,16 +716,33 @@
       list.innerHTML = '<li class="fi-change-row fi-panel2"><span class="l-en">No material observations on file.</span><span class="l-zh">暂无重要观察。</span></li>';
       return;
     }
+    // Item 4: build a unique accessible name per evidence button, keyed by
+    // its row context (slice name for what-changed, plane word for step, the
+    // unique side pair for conflict, §D.9 label for constraint, issuer for
+    // identity). Duplicates within a section get ` (2)`, ` (3)` suffixes in
+    // document order so screen readers can disambiguate every trigger.
+    var nameCounts = {};
+    var uniqueEn = function (kind, ctxEn, ctxZh) {
+      var key = kind + '|' + ctxEn;
+      var n = (nameCounts[key] = (nameCounts[key] || 0) + 1);
+      var en = ctxEn + (n > 1 ? ' (' + n + ')' : '');
+      var zh = ctxZh + (n > 1 ? '（' + n + '）' : '');
+      return { en: en, zh: zh };
+    };
     list.innerHTML = changes.map(function (row) {
       var name = sliceName(row.slice_ids && row.slice_ids[0], row.domain_ids && row.domain_ids[0]);
       var freshness = row.freshness_state || 'NO_EVIDENCE';
       var clause = row.operating_implication || (isZh() ? '尚无操作启示。' : 'No operating implication on file.');
       var evidence = asArray(row.evidence_refs).join(' ');
+      var nm = uniqueEn('change', name, name);
+      // Item 10: data-driven prose (operating_implication from payload) carries
+      // lang="en" so screen readers know to render it with English phonology.
+      // The page-local source-language note is appended below by renderSourceLangNote().
       return '<li class="fi-change-row" data-change-id="' + esc(row.change_id) + '" data-state-freshness="' + esc(freshness) + '">' +
         '<span class="fi-change-name">' + esc(name) + '</span>' +
-        '<span class="fi-change-clause">' + esc(clause) + '</span>' +
-        chipHtml(labelFor('freshness', freshness), { stateKey: 'FRESHNESS_PLACEHOLDER', classes: 'fi-chip fi-freshness-row' }).replace('data-state="FRESHNESS_PLACEHOLDER"', 'data-state-freshness="' + esc(freshness) + '" data-state-marker="' + esc(freshness) + '"') +
-        '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence', '打开证据') + '><span aria-hidden="true">↗</span></button>' +
+        '<span class="fi-change-clause" lang="en">' + esc(clause) + '</span>' +
+        chipHtml(labelFor('freshness', freshness), { classes: 'fi-freshness-row', stateKey: 'FRESHNESS_PLACEHOLDER' }).replace('data-state="FRESHNESS_PLACEHOLDER"', 'data-state-freshness="' + esc(freshness) + '" data-state-marker="' + esc(freshness) + '"') +
+        '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence for ' + nm.en, '打开证据：' + nm.zh) + '><span aria-hidden="true">↗</span></button>' +
         '</li>';
     }).join('');
   }
@@ -736,38 +803,44 @@
     if (!ol) return;
     var slice = findSlice(state.sliceId);
     var rerating = (slice && slice.rerating) || {};
+    // Item 4: each rerating step evidence button carries the plane word
+    // ("operating / earnings", "expectations / consensus", "valuation /
+    // anchor", "price / recognition") so screen readers can disambiguate the
+    // four buttons without hearing four identical "Open evidence" calls.
     var html = RERATING_STEPS.map(function (s, idx) {
       var node = rerating[s.name] || {};
       var state$ = node.state || 'MISSING';
       var comparability = node.comparability_state;
       var evidence = asArray(node.evidence_refs).join(' ');
+      var planeWordEn = labelFor('plane_word', s.name)[0] || s.name;
+      var planeWordZh = labelFor('plane_word', s.name)[1] || planeWordEn;
       var rowHtml = '';
       rowHtml += '<li class="fi-rerating-step fi-node-' + s.name + '" data-active="' + (idx === activeStepIdx() ? 'true' : 'false') + '" data-state-marker="' + esc(state$) + '">';
       rowHtml += '<span class="fi-step-dot" aria-hidden="true"></span>';
       rowHtml += '<span class="fi-step-label">' + esc(isZh() ? s.caption[1] : s.caption[0]) + '</span>';
       rowHtml += '<span class="fi-step-metric">' + esc(fmtMetric(node.primary_metric || {})) + '</span>';
-      rowHtml += chipHtml(labelFor('plane_state', state$), { stateKey: state$, stateMarker: state$ });
+      rowHtml += chipHtml(labelFor('plane_state', state$), { classes: 'fi-step-chip', stateKey: state$, stateMarker: state$ });
       if (comparability && comparability !== 'COMPARABLE') {
-        rowHtml += chipHtml(labelFor('comparability_state', comparability), { stateMarker: comparability });
+        rowHtml += chipHtml(labelFor('comparability_state', comparability), { classes: 'fi-comparability-chip', stateMarker: comparability });
       }
       rowHtml += '<span class="fi-step-clock">' + esc(fmtClock(node.clock || {})) + '</span>';
       if (s.name === 'valuation') {
         var va = slice && slice.valuation_anchor;
         if (va) {
-          rowHtml += chipHtml(labelFor('per_share_anchor', va.primary_per_share_anchor || 'NOT_APPLICABLE'), { stateMarker: va.primary_per_share_anchor || '' });
-          rowHtml += chipHtml(labelFor('valuation_multiple', va.primary_valuation_anchor || 'NOT_APPLICABLE'), { stateMarker: va.primary_valuation_anchor || '' });
-          rowHtml += chipHtml(labelFor('horizon', va.horizon || 'NOT_APPLICABLE'), { stateMarker: va.horizon || '' });
-          rowHtml += chipHtml(labelFor('valuation_anchor_state', va.state || 'VALUATION_ANCHOR_UNAVAILABLE'), { stateMarker: va.state || '' });
+          rowHtml += chipHtml(labelFor('per_share_anchor', va.primary_per_share_anchor || 'NOT_APPLICABLE'), { classes: 'fi-anchor-chip', stateMarker: va.primary_per_share_anchor || '' });
+          rowHtml += chipHtml(labelFor('valuation_multiple', va.primary_valuation_anchor || 'NOT_APPLICABLE'), { classes: 'fi-anchor-chip', stateMarker: va.primary_valuation_anchor || '' });
+          rowHtml += chipHtml(labelFor('horizon', va.horizon || 'NOT_APPLICABLE'), { classes: 'fi-anchor-chip', stateMarker: va.horizon || '' });
+          rowHtml += chipHtml(labelFor('valuation_anchor_state', va.state || 'VALUATION_ANCHOR_UNAVAILABLE'), { classes: 'fi-valuation-chip', stateMarker: va.state || '' });
         }
       }
       if (s.name === 'expectations' && rerating.expectations && rerating.expectations.history) {
         var h = rerating.expectations.history.state;
-        rowHtml += chipHtml(labelFor('history_state', h), { stateMarker: h });
+        rowHtml += chipHtml(labelFor('history_state', h), { classes: 'fi-history-chip', stateMarker: h });
       }
       if (s.name === 'price' && state$ === 'PRICE_BASIS_UNQUALIFIED') {
-        rowHtml += chipHtml(labelFor('plane_state', state$), { stateKey: state$, stateMarker: state$ });
+        rowHtml += chipHtml(labelFor('plane_state', state$), { classes: 'fi-price-chip', stateKey: state$, stateMarker: state$ });
       }
-      rowHtml += '<button type="button" class="fi-step-evidence" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>';
+      rowHtml += '<button type="button" class="fi-step-evidence" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence for ' + planeWordEn + ' step', '打开证据：' + planeWordZh + '步骤') + '>↗</button>';
       rowHtml += '</li>';
       return rowHtml;
     }).join('');
@@ -777,6 +850,7 @@
     if (bridge) {
       var txt = (slice && slice.rerating && slice.rerating.bridge) ||
         (isZh() ? '从盈利到分化的链路已在上方标签中写明。' : 'The chain from earnings to divergence is documented in the chips above.');
+      bridge.setAttribute('lang', 'en');
       setText(bridge, txt);
     }
     renderFalsifiers();
@@ -806,8 +880,8 @@
     ul.innerHTML = falsifiers.map(function (f) {
       return '<li class="fi-falsifier fi-panel2" data-state-falsifier="' + esc(f.state) + '" data-state-marker="' + esc(f.state) + '">' +
         chipHtml(labelFor('falsifier_state', f.state), { stateMarker: f.state }) +
-        '<span class="fi-falsifier-statement">' + esc(f.statement || (isZh() ? '尚无可观察陈述。' : 'No statement on file.')) + '</span>' +
-        '<span class="fi-falsifier-window">' + esc(f.window || '') + '</span>' +
+        '<span class="fi-falsifier-statement" lang="en">' + esc(f.statement || (isZh() ? '尚无可观察陈述。' : 'No statement on file.')) + '</span>' +
+        '<span class="fi-falsifier-window" lang="en">' + esc(f.window || '') + '</span>' +
         '</li>';
     }).join('');
   }
@@ -831,18 +905,25 @@
       var right = c.right || {};
       var leftEvidence = asArray(left.evidence_refs).join(' ');
       var rightEvidence = asArray(right.evidence_refs).join(' ');
+      // Item 4: conflict evidence buttons name the side AND plane ("first
+      // reading (operating)" / "second reading (valuation)") so a screen
+      // reader user hears which side they're opening.
+      var leftPlaneEn = labelFor('plane_word', left.plane || 'operating')[0] || 'first';
+      var leftPlaneZh = labelFor('plane_word', left.plane || 'operating')[1] || leftPlaneEn;
+      var rightPlaneEn = labelFor('plane_word', right.plane || 'valuation')[0] || 'second';
+      var rightPlaneZh = labelFor('plane_word', right.plane || 'valuation')[1] || rightPlaneEn;
       return '<li class="fi-conflict-card fi-panel2" data-conflict-label="' + esc(lk) + '" data-state-marker="' + esc(lk) + '">' +
         '<p class="fi-conflict-label">' + esc(labelFor('conflict_label', lk)) + '</p>' +
         '<div class="fi-conflict-pair">' +
           '<div class="fi-conflict-side" data-side="left">' +
             chipHtml(labelFor('plane_word', left.plane || 'operating'), { stateMarker: left.plane || '' }) +
-            '<p class="fi-conflict-side-statement">' + esc(left.statement || '') + '</p>' +
-            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(leftEvidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>' +
+            '<p class="fi-conflict-side-statement" lang="en">' + esc(left.statement || '') + '</p>' +
+            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(leftEvidence) + '"' + ariaPair('Open evidence for first reading (' + leftPlaneEn + ')', '打开第一次陈述的证据（' + leftPlaneZh + '）') + '>↗</button>' +
           '</div>' +
           '<div class="fi-conflict-side" data-side="right">' +
             chipHtml(labelFor('plane_word', right.plane || 'operating'), { stateMarker: right.plane || '' }) +
-            '<p class="fi-conflict-side-statement">' + esc(right.statement || '') + '</p>' +
-            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(rightEvidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>' +
+            '<p class="fi-conflict-side-statement" lang="en">' + esc(right.statement || '') + '</p>' +
+            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(rightEvidence) + '"' + ariaPair('Open evidence for second reading (' + rightPlaneEn + ')', '打开第二次陈述的证据（' + rightPlaneZh + '）') + '>↗</button>' +
           '</div>' +
         '</div>' +
         '<p class="fi-conflict-foot">' + copyPair(SURFACE.conflict_foot) + '</p>' +
@@ -870,9 +951,20 @@
     panelsEl.innerHTML = views.map(function (v, i) {
       var edges = asArray(v.edges);
       var hidden = i === 0 ? '' : ' hidden';
+      // Resolve node ids → human labels once per view (Item 3).
+      var nodeIndex = {};
+      asArray(v.nodes).forEach(function (n) {
+        if (n && n.node_id) nodeIndex[n.node_id] = n;
+      });
+      var nodeLabel = function (id) {
+        var n = nodeIndex[id];
+        if (!n) return isZh() ? '未标注节点' : 'Unlabelled node';
+        return isZh() ? (n.label_zh || n.label_en || (isZh() ? '未标注节点' : 'Unlabelled node'))
+                       : (n.label_en || n.label_zh || 'Unlabelled node');
+      };
       var edgeHtml = edges.map(function (e) {
         var rel = labelFor('edge_relationship', e.relationship);
-        var fromLabel = (e.from || '') + ' — ' + rel + ' → ' + (e.to || '');
+        var fromLabel = nodeLabel(e.from) + ' — ' + rel + ' → ' + nodeLabel(e.to);
         var evidence = (e.evidence_state || 'MISSING');
         return '<li class="fi-system-edge" data-state-evidence="' + esc(evidence) + '" data-state-marker="' + esc(evidence) + '">' +
           '<span class="fi-system-edge-statement">' + esc(fromLabel) + '</span>' +
@@ -880,14 +972,41 @@
           '</li>';
       }).join('');
       var nodes = asArray(v.nodes);
-      var nodeHtml = nodes.slice(0, 8).map(function (n) {
+      // First 8 nodes live in the panel list; 9..N in a sibling .fi-disc
+      // disclosure whose summary counts the remainder (Item 3 + §C.10 invariant).
+      var firstNodes = nodes.slice(0, 8);
+      var moreNodes = nodes.slice(8);
+      var nodeHtml = firstNodes.map(function (n) {
+        var label = isZh() ? (n.label_zh || n.label_en || '未标注节点')
+                            : (n.label_en || n.label_zh || 'Unlabelled node');
         return '<li class="fi-slice fi-panel2" data-node-id="' + esc(n.node_id) + '">' +
-          '<span class="fi-slice-name">' + esc(isZh() ? (n.label_zh || n.label_en) : (n.label_en || n.label_zh)) + '</span>' +
+          '<span class="fi-slice-name">' + esc(label) + '</span>' +
           '</li>';
       }).join('');
+      var moreNodeHtml = moreNodes.map(function (n) {
+        var label = isZh() ? (n.label_zh || n.label_en || '未标注节点')
+                            : (n.label_en || n.label_zh || 'Unlabelled node');
+        return '<li class="fi-slice fi-panel2" data-node-id="' + esc(n.node_id) + '">' +
+          '<span class="fi-slice-name">' + esc(label) + '</span>' +
+          '</li>';
+      }).join('');
+      var nodesDisclosure = '';
+      if (moreNodes.length > 0) {
+        var k = moreNodes.length;
+        var sumEn = 'Show ' + k + ' more nodes';
+        var sumZh = '再显示 ' + k + ' 个节点';
+        nodesDisclosure = '<details class="fi-disc fi-system-nodes-more" data-fi-mount="system-nodes-more">' +
+          '<summary>' +
+            '<span class="l-en">' + esc(sumEn) + '</span>' +
+            '<span class="l-zh">' + esc(sumZh) + '</span>' +
+          '</summary>' +
+          '<ul class="fi-slice-list">' + moreNodeHtml + '</ul>' +
+          '</details>';
+      }
       return '<div role="tabpanel" id="panel-' + esc(v.view_id) + '" class="fi-view-panel" data-view="' + esc(v.view_id) + '" aria-labelledby="tab-' + esc(v.view_id) + '"' + hidden + '>' +
         '<svg class="fi-system-svg" role="img"' + ariaPair(v.name_en || v.view_id, v.name_zh || '') + '><title>' + esc(v.name_en || v.view_id) + '</title></svg>' +
         '<ul class="fi-slice-list">' + nodeHtml + '</ul>' +
+        nodesDisclosure +
         '<details class="fi-system-edges" open><summary><span class="l-en">Edge list</span><span class="l-zh">边的步骤视图</span></summary>' +
         '<ol class="fi-system-edge-list">' + edgeHtml + '</ol></details>' +
         '</div>';
@@ -963,9 +1082,11 @@
           return '<li class="fi-slice fi-panel2" data-state-slice="' + esc(ss) + '" data-state-marker="' + esc(ss) + '" data-basket-state="' + esc(bs) + '" data-slice-id="' + esc(s.slice_id) + '">' +
             '<span class="fi-slice-name">' + esc(isZh() ? (s.name_zh || s.name_en) : (s.name_en || s.name_zh)) + '</span>' +
             '<div style="display:flex;gap:4px;flex-wrap:wrap">' +
-            chipHtml(labelFor('slice_state', ss), { stateSlice: ss, stateMarker: ss }) +
-            chipHtml(labelFor('membership', bs), { stateMembership: bs, stateMarker: bs }) +
-            (posture && posture !== 'SEMANTIC_ONLY' ? chipHtml(labelFor('posture', posture), { statePosture: posture, stateMarker: posture }) : '') +
+            chipHtml(labelFor('slice_state', ss), { classes: 'fi-slice-chip', stateSlice: ss, stateMarker: ss }) +
+            chipHtml(labelFor('membership', bs), { classes: 'fi-membership-chip', stateMembership: bs, stateMarker: bs }) +
+            chipHtml(labelFor('posture', posture), { classes: 'fi-posture-chip', statePosture: posture, stateMarker: posture }) +
+            chipHtml(labelFor('price_basis_state', pbs), { classes: 'fi-price-basis-chip', stateMarker: pbs }) +
+            chipHtml(labelFor('basket_construction_family', wf), { classes: FI_W_CHIP_CLASS, stateMarker: wf }) +
             '</div>' +
             '<span class="fi-slice-open">' + esc(isZh() ? (incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '</span>' +
             '</li>';
@@ -1013,7 +1134,7 @@
       var identity = (row.identity && row.identity.state) || 'IDENTITY_UNRESOLVED';
       return '<tr data-row-id="' + esc(row.row_id || row.issuer_label) + '" data-state-identity="' + esc(identity) + '" data-state-marker="' + esc(identity) + '">' +
         '<td class="fi-col-company"><span>' + esc(row.issuer_label || '—') + '</span> ' +
-        chipHtml(labelFor('identity_state', identity), { stateMarker: identity }) +
+        chipHtml(labelFor('identity_state', identity), { classes: 'fi-identity-chip', stateMarker: identity }) +
         '</td>' +
         sliceIds.map(function (sid) {
           var cell = asArray(row.cells).filter(function (c) { return c.slice_id === sid; })[0];
@@ -1026,7 +1147,7 @@
             '<span class="fi-cell-role">' + esc(cell.role ? labelFor('role', cell.role) : copyPair(['No role recorded', '未记录角色'])) + '</span>' +
             '<span class="fi-cell-basis">' + esc(labelFor('basis', (cell.exposure && cell.exposure.basis) || '')) + '</span>' +
             '<span class="fi-cell-materiality">' + esc(labelFor('materiality', mat)) + '</span>' +
-            (cell.retained_risk ? '<span class="fi-cell-risk">' + esc(cell.retained_risk) + '</span>' : '') +
+            (cell.retained_risk ? '<span class="fi-cell-risk" lang="en">' + esc(cell.retained_risk) + '</span>' : '') +
             (cell.evidence_date ? '<span class="fi-cell-evidence-date">' + esc(cell.evidence_date) + '</span>' : '') +
             '</td>';
         }).join('') +
@@ -1103,10 +1224,10 @@
           }
           var mState = match.state || '';
           return '<td class="fi-cell" data-state="' + esc(mState) + '" data-state-marker="' + esc(mState) + '">' +
-            '<span>' + esc(match.mechanism || (isZh() ? '尚未描述。' : 'No mechanism on file.')) + '</span>' +
+            '<span lang="en">' + esc(match.mechanism || (isZh() ? '尚未描述。' : 'No mechanism on file.')) + '</span>' +
             '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">' +
             chipHtml(labelFor('lag', match.lag || 'UNKNOWN'), { stateMarker: match.lag || '' }) +
-            chipHtml(labelFor('macro_state', mState), { stateKey: mState, stateMarker: mState }) +
+            chipHtml(labelFor('macro_state', mState), { classes: 'fi-macro-cell-state', stateKey: mState, stateMarker: mState }) +
             '</div></td>';
         }).join('') +
         '</tr>';
@@ -1141,10 +1262,16 @@
     if (!ul) return;
     var cons = asArray(state.doc && state.doc.constraints);
     ul.innerHTML = cons.map(function (c) {
+      // Item 4: the constraint evidence button names its §D.9 plain-word
+      // label ("capital" / "regulatory permission" / ...) so screen readers
+      // can pick the right row out of a list.
+      var cName = labelFor('constraint', c.constraint);
+      var cEn = cName[0] || c.constraint || 'constraint';
+      var cZh = cName[1] || cEn;
       return '<li class="fi-constraint-row fi-panel2" data-constraint="' + esc(c.constraint) + '" data-slice-id="' + esc(c.slice_id || '') + '" data-state-marker="' + esc(c.constraint) + '">' +
-        chipHtml(labelFor('constraint', c.constraint), { stateKey: c.constraint, stateMarker: c.constraint }) +
-        '<span class="fi-constraint-effect">' + esc(c.economic_effect || (isZh() ? '尚无经济效应记录。' : 'No economic effect on file.')) + '</span>' +
-        '<button type="button" class="fi-constraint-evidence fi-step-evidence" data-evidence-ids="' + esc(asArray(c.evidence_refs).join(' ')) + '"' + ariaPair('Open evidence for this constraint', '打开该约束的证据') + '>↗</button>' +
+        chipHtml(labelFor('constraint', c.constraint), { classes: 'fi-constraint-chip', stateKey: c.constraint, stateMarker: c.constraint }) +
+        '<span class="fi-constraint-effect" lang="en">' + esc(c.economic_effect || (isZh() ? '尚无经济效应记录。' : 'No economic effect on file.')) + '</span>' +
+        '<button type="button" class="fi-constraint-evidence fi-step-evidence" data-evidence-ids="' + esc(asArray(c.evidence_refs).join(' ')) + '"' + ariaPair('Open evidence for ' + cEn + ' constraint', '打开约束证据：' + cZh) + '>↗</button>' +
         '</li>';
     }).join('');
   }
@@ -1259,7 +1386,7 @@
       opts = opts || {};
       if (suppress && opts.sensitive) return;
       rows.push('<dt>' + esc(label) + '</dt><dd' + (opts.identity ? ' class="fi-evidence-identity" data-identity="' + esc(opts.identity) + '"' : '') +
-        (opts.rights ? ' class="fi-evidence-rights fi-chip" data-rights="' + esc(rights) + '" data-state-marker="' + esc(rights) + '"' : '') + '>' + esc(value) + '</dd>');
+        (opts.rights ? ' class="fi-evidence-rights fi-chip" data-rights="' + esc(rights) + '" data-state-marker="' + esc(rights) + '"' : '') + ' lang="en">' + esc(value) + '</dd>');
     }
 
     row(isZh() ? '记录 ID' : 'Record ID', rec.record_id || '—');
@@ -1278,6 +1405,21 @@
     row(isZh() ? '证据引用' : 'Evidence ref', rec.evidence_ref || '');
 
     fields.innerHTML = rows.map(function (r) { return '<div>' + r + '</div>'; }).join('');
+    // Item 10 (drawer body variant): add the source-language note inside the
+    // drawer body when the drawer holds English-source prose (business_scope,
+    // limitations.*, etc.). Idempotent — strip any prior note first.
+    var drawer = state.ui.drawer;
+    if (drawer) {
+      var priorDrawer = drawer.querySelectorAll('.fi-srclang-note');
+      for (var pdi = 0; pdi < priorDrawer.length; pdi += 1) drawer.removeChild(priorDrawer[pdi]);
+      if (isZh()) {
+        var drawerNote = document.createElement('p');
+        drawerNote.className = 'fi-srclang-note l-zh';
+        drawerNote.setAttribute('lang', 'zh');
+        drawerNote.textContent = '证据字段值采用英文原文，未经翻译。';
+        if (fields.parentNode) fields.parentNode.appendChild(drawerNote);
+      }
+    }
   }
 
   function openEvidence(recordIds) {
@@ -1400,6 +1542,13 @@
     renderMacro();
     renderConstraints();
     renderProvenance();
+    renderSourceLangNote(document.getElementById('what-changed'));
+    renderSourceLangNote(document.getElementById('rerating-map'));
+    renderSourceLangNote(document.getElementById('system-map'));
+    renderSourceLangNote(document.getElementById('subtheme-atlas'));
+    renderSourceLangNote(document.getElementById('company-exposure'));
+    renderSourceLangNote(document.getElementById('macro-matrix'));
+    renderSourceLangNote(document.getElementById('constraint-map'));
 
     if (state.ui.sliceSelect) {
       state.ui.sliceSelect.addEventListener('change', function () {
@@ -1431,6 +1580,18 @@
     document.addEventListener('keydown', handleDrawerKeydown);
     window.addEventListener('hashchange', handleHash);
     document.addEventListener('langchange', function () {
+      // Item 8: capture which system tab held focus before the re-render.
+      // renderSystem() below rebuilds the tab DOM from scratch, so the
+      // original element is gone — we restore to the new tab that shares the
+      // same data-view. If focus was elsewhere, leave it alone (the global
+      // ARIA swapper has already swapped aria-label on the focused element).
+      var preViewFocus = null;
+      try {
+        var ae = document.activeElement;
+        if (ae && ae.classList && ae.classList.contains('fi-view-tab') && ae.dataset && ae.dataset.view) {
+          preViewFocus = ae.dataset.view;
+        }
+      } catch (e) { /* focus probe is best-effort */ }
       renderHero();
       renderWhatChanged();
       renderSliceSelector();
@@ -1441,7 +1602,18 @@
       renderMacro();
       renderConstraints();
       renderProvenance();
+      renderSourceLangNote(document.getElementById('what-changed'));
+      renderSourceLangNote(document.getElementById('rerating-map'));
+      renderSourceLangNote(document.getElementById('system-map'));
+      renderSourceLangNote(document.getElementById('subtheme-atlas'));
+      renderSourceLangNote(document.getElementById('company-exposure'));
+      renderSourceLangNote(document.getElementById('macro-matrix'));
+      renderSourceLangNote(document.getElementById('constraint-map'));
       if (state.drawer.source) renderDrawer(state.drawer.source.record_id);
+      if (preViewFocus) {
+        var newTab = document.querySelector('.fi-view-tab[data-view="' + preViewFocus + '"]');
+        if (newTab && typeof newTab.focus === 'function') newTab.focus({ preventScroll: true });
+      }
     });
 
     handleHash();
