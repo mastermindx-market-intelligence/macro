@@ -74,6 +74,36 @@ SOURCE_PREFIX_FAMILY: tuple[tuple[str, str], ...] = (
     ("data/baskets_canada/", "mastermind_curated"),
     ("data/baskets_intl/", "mastermind_curated"),
     ("config/theme_crosswalk.yml", "mastermind_curated"),
+    # --- https origins ------------------------------------------------------
+    # Sol #7780 issuecomment-5825621672 item 5 (sec_edgar) and item 6 (the
+    # eleven publishers), applied ONCE here by the shared rights owner rather
+    # than by each vertical — 5825811888 item 5.
+    #
+    # RECOGNITION IS NOT PERMISSION. Every row below except sec_edgar carries
+    # ``rights_class: unresolved`` in the registry, which REFUSES emission.
+    # What these prefixes change is the REASON a source is refused: from
+    # unmapped (refused through ignorance, which the emission path must do but
+    # should not have to) to a named family with inspected terms attached. The
+    # served result is unchanged: still nothing from these eleven publishers.
+    ("https://www.sec.gov/Archives/", "sec_edgar"),
+    ("https://www2.jpx.co.jp/disc/", "jpx_tdnet_issuer_disclosure"),
+    ("https://www1.hkexnews.hk/listedco/", "hkexnews_issuer_disclosure"),
+    ("https://www.orbbec.com/case-studies/", "orbbec_vendor_case_study"),
+    ("https://discover.parker.com/K-Series", "parker_vendor_catalogue"),
+    ("https://www.robotis.com/en/product/", "robotis_vendor_catalogue"),
+    ("https://www.1x.tech/discover/", "onex_vendor_product_page"),
+    (
+        "https://robotics.hexagon.com/hexagon-robotics-and-schaeffler-deploy-"
+        "a-fleet-of-aeon-humanoids/",
+        "hexagon_robotics_press",
+    ),
+    ("https://www.zebra.com/us/en/about-zebra/newsroom/press-releases/", "zebra_press"),
+    ("https://www.ptc.com/en/news/", "ptc_press"),
+    ("https://investors.teradyne.com/sec-filings/", "teradyne_ir_sec_wrapper"),
+    (
+        "https://group.stabilus.com/news-and-events/press-releases/",
+        "stabilus_press",
+    ),
 )
 
 

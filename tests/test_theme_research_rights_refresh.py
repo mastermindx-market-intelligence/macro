@@ -240,7 +240,7 @@ def test_an_unmapped_source_ref_is_withheld_not_emitted():
     This is an EMISSION path: material no rights row covers is exactly what
     the registry exists to decide about, so it is not published."""
     bundle = _bundle([
-        _assertion("gmirca_" + "a" * 32, source_uri="https://www.sec.gov/Archives/x.htm"),
+        _assertion("gmirca_" + "a" * 32, source_uri="https://unmapped.example/x.htm"),
         _assertion("gmirca_" + "b" * 32, source_uri="s3://somewhere/private.json"),
         _assertion("gmirca_" + "c" * 32),  # no source ref at all
     ])
@@ -266,7 +266,7 @@ def test_an_interpretation_block_is_withheld_with_the_assertion_it_reads():
     kept_rev, refused_rev = "gmirca_" + "e" * 32, "gmirca_" + "f" * 32
     bundle = _bundle(
         [_assertion(kept_rev, source_uri="data/baskets/x.json"),
-         _assertion(refused_rev, source_uri="https://www.sec.gov/Archives/y.htm")],
+         _assertion(refused_rev, source_uri="https://unmapped.example/y.htm")],
         [{"interpretation_id": "i1", "mechanism": "reads the served one",
           "input_revisions": [kept_rev], "freshness": "current"},
          {"interpretation_id": "i2", "mechanism": "reads the withheld one",
@@ -447,27 +447,45 @@ def test_a_non_mapping_interpretation_block_is_withheld_and_never_raises(block):
     assert dropped is True and filtered.interpretation_blocks == ()
 
 
-def test_the_admitted_sec_edgar_family_is_not_reachable_from_a_filing_url():
-    """THE OPEN QUESTION, pinned so it cannot be forgotten or misdescribed.
+def test_an_edgar_filing_url_now_attributes_to_the_admitted_sec_edgar_family():
+    """The gap this test used to PIN is closed, by ruling, not by inference.
 
-    ``sec_edgar`` is an ADMITTED family (``b256aa6a756``, qualified by
-    ``7d456cd37d8``); its own review outcome names the Semiconductor B
-    witnesses. It is ``direct_display_ok``. But no ``https://`` prefix exists
-    in the owner's table, so a filing URL attributes to nothing and the
-    fail-closed rule withholds it — the witnesses' own evidence, refused for
-    want of a mapping rather than for want of a right.
-
-    Binding the URI shape to the admitted row is a one-line table change in
-    the RIGHTS OWNER's module and is returned to Sol and that owner rather
-    than taken here. When it lands, this test is the thing that must be
-    updated, which is the point of pinning it."""
+    ``sec_edgar`` was admitted (b256aa6a756, qualified by 7d456cd37d8) and is
+    ``direct_display_ok``, but no ``https://`` prefix existed, so a filing URL
+    attributed to nothing and the fail-closed rule withheld the witnesses' own
+    evidence — refused for want of a mapping rather than for want of a right.
+    Sol #7780 issuecomment-5825621672 item 5 bound the exact recognition prefix
+    ``https://www.sec.gov/Archives/`` to that family. This transport asks the
+    owner and does not restate the decision.
+    """
     from engine.theme_graph.rights import family_for_source_ref, load_registry_snapshot
 
     _revision, families = load_registry_snapshot()
     assert families["sec_edgar"]["rights_class"] == "direct_display_ok"
+
+    rev = "gmirca_" + "7" * 32
+    bundle = _bundle([_assertion(
+        rev, source_uri="https://www.sec.gov/Archives/edgar/data/1046179/tsmc-6k.htm",
+    )])
     assert family_for_source_ref(
         "https://www.sec.gov/Archives/edgar/data/1046179/tsmc-6k.htm"
-    ) is None
+    ) == "sec_edgar"
+    filtered, dropped = _filter(bundle)
+    assert dropped is False, "an EDGAR-sourced assertion is no longer withheld"
+    assert [a["curation_revision"] for a in filtered.assertions] == [rev]
+
+
+def test_a_recognition_only_publisher_is_named_and_still_withheld():
+    """Sol item 6: recognition changes the refusal reason, not the result. The
+    transport must withhold an ``unresolved`` family exactly as it withholds an
+    unmapped one — the caller sees the same response either way."""
+    bundle = _bundle([_assertion(
+        "gmirca_" + "0" * 32,
+        source_uri="https://www2.jpx.co.jp/disc/some-issuer/disclosure.html",
+    )])
+    filtered, dropped = _filter(bundle)
+    assert dropped is True
+    assert filtered.assertions == ()
 
 
 def test_the_private_half_is_unbound_so_both_rules_are_inert_today():
