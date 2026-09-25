@@ -671,6 +671,58 @@ def test_ownership_side_comes_from_the_curated_object_label_only():
         == "announced_party"
 
 
+def test_ownership_direction_comes_only_from_a_closed_curated_parenthetical():
+    # Review 8 blocker 1: the direction slot is a CLOSED grammar, not a search
+    # for any "to"/"from" in the label. Each label below once supplied a
+    # direction through a greedy scan with no head-noun check, and served a side
+    # against what the label actually says; all of them must now refuse. The
+    # prose is the one that would match if a direction were extracted, so these
+    # pin the served role, not just the parse.
+    for label, sentence in (
+        # a second relation in the same parenthetical records no single direction
+        ("Robotics Automation business (divestiture to Skild AI, carved out from Fanuc)",
+         "an announced acquisition of the Robotics Automation business from Fanuc"),
+        ("Robotics Automation business (acquisition from Fanuc, later resold to Skild AI)",
+         "an announced sale of the Robotics Automation business to Skild AI"),
+        # the head noun is not an ownership transfer at all
+        ("Robotics Automation business (change of name to Skild Robotics)",
+         "an announced change of the Robotics Automation business to Skild Robotics"),
+        ("Robotics Automation business (licensed to Skild AI)",
+         "an announced transfer of the Robotics Automation business to Skild AI"),
+        ("Robotics Automation business (formerly known as Robotics to Go)",
+         "an announced sale of the Robotics Automation business to Go"),
+        # the parenthetical is not the label's trailing slot
+        ("Robotics Automation business (sale to Skild AI) pending approval",
+         "an announced sale of the Robotics Automation business to Skild AI"),
+        # a curated product NAME embedding an agent phrase is a curation defect,
+        # refused rather than served (review 8 nit 2)
+        ("Robotics Automation business by Fanuc (sale to Skild AI)",
+         "an announced sale of the Robotics Automation business by Fanuc to Skild AI"),
+        ("Robotics Automation business for a client (sale to Skild AI)",
+         "an announced sale of the Robotics Automation business for a client to Skild AI"),
+        # a label that is only the parenthetical names no product
+        ("(sale to Skild AI)", "an announced sale of the  to Skild AI"),
+    ):
+        assert _zebra_role(**{"object.source_product_label": label,
+                              "limitations.establishes": [sentence]}) == "announced_party", label
+    # the shapes the curated corpus does use, including a status word, a
+    # product that itself contains parentheses, and a capitalised slot
+    for label, sentence, role in (
+        ("Robotics Automation business (sale to Skild AI)",
+         "an announced sale of the Robotics Automation business to Skild AI", "announced_seller"),
+        ("Robotics Automation business (completed sale to Skild AI)",
+         "an announced sale of the Robotics Automation business to Skild AI", "announced_seller"),
+        ("Robotics Automation business (Sale To Skild AI)",
+         "an announced sale of the Robotics Automation business to Skild AI", "announced_seller"),
+        ("Robotics (EMEA) business (sale to Skild AI)",
+         "an announced sale of the Robotics (EMEA) business to Skild AI", "announced_seller"),
+        ("perception assets (acquisition from Skild AI)",
+         "an announced acquisition of the perception assets from Skild AI", "announced_acquirer"),
+    ):
+        assert _zebra_role(**{"object.source_product_label": label,
+                              "limitations.establishes": [sentence]}) == role, label
+
+
 def test_ownership_side_requires_the_closed_curated_sentence_grammar():
     # The guard sentence must name the curated PRODUCT after one of a few fixed
     # ownership heads, then the curated PREPOSITION and the curated

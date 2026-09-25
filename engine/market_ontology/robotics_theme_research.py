@@ -764,7 +764,25 @@ _DATE = (r"(?:[0-9]{1,2}\s+" + _MONTH + r"\s+[0-9]{4}|"
 # third party is outside the grammar and serves no side.
 _CLOSED_TAIL = (r"(?:,?\s+(?:on|in|effective|as of|with effect from|dated)\s+"
                 + _DATE + r")?\.?$")
-_CURATED_SLOT = re.compile(r"\([^()]*\b(?P<prep>to|from)\s+(?P<party>[^()]+?)\s*\)")
+# The curated direction slot is a CLOSED grammar too, not a search for any
+# "to"/"from". Review 8 blocker 1: a greedy scan let the parenthetical's LAST
+# preposition win and never checked the head noun, so "(licensed to X)",
+# "(change of name to X)", "(formerly known as Robotics to Go)" and
+# "(divestiture to X, carved out from Y)" all supplied a direction — an
+# inference, which is exactly what this design abolishes. The slot must be the
+# label's trailing parenthetical, an optional status word, ONE ownership head
+# noun, the preposition and a counterparty naming no further preposition.
+_OWNERSHIP_HEAD = (r"(?:sale|divestiture|transfer|acquisition|purchase|ownership change|"
+                   r"change of control|change of ownership)")
+_CURATED_SLOT = re.compile(
+    r"\(\s*(?:completed|announced|agreed|pending|proposed)?\s*" + _OWNERSHIP_HEAD
+    + r"\s+(?P<prep>to|from)\s+(?P<party>[^()]+?)\s*\)\s*$", re.IGNORECASE)
+# a second preposition in the counterparty means the parenthetical carries more
+# than one relation, so it records no single direction
+_SLOT_DIRTY = re.compile(r"\b(?:to|from)\b", re.IGNORECASE)
+# a curated product NAME that embeds an agent phrase is a curation defect
+# (review 8 nit 2); refuse it rather than serve a side the phrase contradicts
+_PRODUCT_DIRTY = re.compile(r"\b(?:by|for|via|through|behalf)\b", re.IGNORECASE)
 
 
 def _subject_mentions(label: object) -> frozenset[str]:
@@ -796,17 +814,21 @@ def _normalised_sentence(piece: str) -> str:
 
 
 def _curated_direction(object_label: str) -> tuple[str, str, str] | None:
-    """``(product, preposition, counterparty)`` exactly as the curated object
-    label records them: "Robotics Automation business (sale to Skild AI)" ->
-    ``("Robotics Automation business", "to", "Skild AI")``. ``None`` when the
-    label carries no direction, which is the only place a direction may come
-    from."""
+    """``(product, preposition, counterparty)`` as the curated object label
+    records them in its trailing ownership parenthetical: "Robotics Automation
+    business (sale to Skild AI)" -> ``("Robotics Automation business", "to",
+    "Skild AI")``. ``None`` — i.e. no side is ever served — when the label has
+    no such parenthetical, when the counterparty names a second preposition, or
+    when the product name embeds an agent phrase. This is the ONLY place a
+    direction may come from, so every one of those is a refusal, never a guess."""
     slot = _CURATED_SLOT.search(object_label)
     if not slot:
         return None
     product = object_label[: slot.start()].strip()
     party = slot.group("party").strip()
     if not product or not party:
+        return None
+    if _SLOT_DIRTY.search(party) or _PRODUCT_DIRTY.search(product):
         return None
     return product, slot.group("prep").lower(), party
 
