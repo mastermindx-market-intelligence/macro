@@ -51,3 +51,25 @@ def test_guard_runs_before_fetch_and_runtime_mutation() -> None:
     gate = text.index('"$APP_DIR/app/deploy/disk-headroom.sh"')
     assert gate < text.index('git -C "$APP_DIR" fetch --depth 1 -q origin main')
     assert gate < text.index('rm -f "$OPTIONS_API_FENCE_MARKER"')
+
+
+MAINT = ROOT / "app" / "deploy" / "git-maintenance.sh"
+SETUP = ROOT / "app" / "deploy" / "setup.sh"
+
+
+def test_maintenance_uses_same_update_lock_and_verified_reclaim_sequence() -> None:
+    text = MAINT.read_text()
+    assert "exec 9>/var/lock/macro-update.lock" in text
+    assert "flock -w 1800 9" in text
+    expire = text.index("reflog expire --expire=now --expire-unreachable=now --all")
+    repack = text.index("repack -adq --window=10 --depth=50")
+    prune = text.index("prune --expire=now")
+    assert expire < repack < prune
+    assert 'pack.threads=1' in text
+    assert 'pack.windowMemory=256m' in text
+
+
+def test_setup_installs_daily_git_maintenance_cron() -> None:
+    text = SETUP.read_text()
+    assert '23 6 * * * $APP_DIR/app/deploy/git-maintenance.sh' in text
+    assert "grep -v 'macro-git-maintenance'" in text
