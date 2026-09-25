@@ -100,33 +100,37 @@ def _theme_intel_for_act_now(
     baskets_json_path: Path,
     *,
     observed_at: datetime | None = None,
+    refresh: bool = True,
 ) -> dict | None:
-    """Return current settled China theme intelligence for the Act Now consumer.
+    """Return the China theme-intelligence generation for the Act Now consumer.
 
-    The China page is built before build_baskets_china in the Asia lane, so its
-    persisted baskets artifact can legitimately still describe the prior
-    session. Reuse it when current; otherwise recompute through the existing
-    theme_scoring owner. Never restamp or widen authority: if recomputation is
-    stale/invalid, the downstream action-board freshness gate still withholds.
+    The Asia data-refresh lane owns the fresh close, so it recomputes through
+    the existing theme_scoring owner even when the persisted artifact has the
+    same session date; this catches same-session corrections. Site-only and
+    no-network rerenders reuse the persisted artifact. Nothing is restamped:
+    stale or malformed evidence still fails closed in china_act_now.
     """
-    from lib import cn_calendar
-
     persisted_doc = _load_json(baskets_json_path) or {}
     persisted = persisted_doc.get("theme_intel")
-    now = observed_at if observed_at is not None else datetime.now(timezone.utc)
-    expected = cn_calendar.expected_last_session(now).isoformat()
-    if (
-        isinstance(persisted, dict)
-        and persisted.get("as_of") == expected
-        and persisted.get("stale") is not True
-    ):
-        return persisted
+    if not refresh:
+        return persisted if isinstance(persisted, dict) else None
 
     try:
         from engine.theme_scoring import compute_theme_intel
 
         current = compute_theme_intel("china")
         if isinstance(current, dict):
+            if observed_at is not None:
+                from lib import cn_calendar
+
+                expected = cn_calendar.expected_last_session(observed_at).isoformat()
+                if current.get("as_of") != expected:
+                    log.warning(
+                        "china Act Now recompute is not on expected settled session "
+                        "(have=%s expected=%s); downstream freshness gate will withhold",
+                        current.get("as_of"),
+                        expected,
+                    )
             return current
     except Exception as exc:  # noqa: BLE001 — optional refresh, downstream fails closed
         log.error(
@@ -135,7 +139,6 @@ def _theme_intel_for_act_now(
         )
 
     return persisted if isinstance(persisted, dict) else None
-
 
 def _no_network_render() -> bool:
     """True for site-only rerender lanes that must reuse committed China caches.
@@ -1413,7 +1416,10 @@ def main() -> int:
             baskets_json_path = site_dir / "chinabasketdata" / "baskets.json"
             data_dir = Path(cfg["storage"].get("data_dir", "data"))
             forward_log_path = data_dir / "china_sector_cycles" / "forward_log.parquet"
-            theme_intel = _theme_intel_for_act_now(baskets_json_path)
+            theme_intel = _theme_intel_for_act_now(
+                baskets_json_path,
+                refresh=not _no_network_render(),
+            )
             cycle_rows = load_cycle_rows(str(forward_log_path))
             # W8-R7 rider: load basket_turn_cn artifact for bottoming-watch organ chips
             _basket_turn_cn: dict | None = None

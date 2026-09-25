@@ -164,7 +164,9 @@ def test_act_now_theme_intel_reuses_current_persisted_generation(tmp_path, monke
         raise AssertionError("current settled theme intel must be reused")
 
     monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", should_not_recompute)
-    got = build_china._theme_intel_for_act_now(p, observed_at=_cn_after_settle())
+    got = build_china._theme_intel_for_act_now(
+        p, observed_at=_cn_after_settle(), refresh=False
+    )
     assert got["as_of"] == "2026-09-23"
 
 
@@ -212,3 +214,25 @@ def test_act_now_theme_intel_compute_failure_preserves_source_evidence(tmp_path,
     monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", fail)
     got = build_china._theme_intel_for_act_now(p, observed_at=_cn_after_settle())
     assert got["as_of"] == "2026-09-22"
+
+
+def test_act_now_data_lane_refreshes_even_same_session_artifact(tmp_path, monkeypatch):
+    from scripts import build_china
+    p = tmp_path / "chinabasketdata" / "baskets.json"
+    _write_theme_intel(p, "2026-09-23")
+    calls = []
+
+    def corrected(region):
+        calls.append(region)
+        return {
+            "as_of": "2026-09-23",
+            "revision": "same-session-correction",
+            "themes": [{"id": "cn_semis", "reco": "accumulate"}],
+        }
+
+    monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", corrected)
+    got = build_china._theme_intel_for_act_now(
+        p, observed_at=_cn_after_settle(), refresh=True
+    )
+    assert calls == ["china"]
+    assert got["revision"] == "same-session-correction"
