@@ -221,6 +221,7 @@ def test_v2_first_pass_measures_pre_state_impulse_and_plus5_residual():
         ),
         response_points=_points(
             [
+                ("2026-09-24T16:15:00Z", 198.0),
                 ("2026-09-24T16:20:00Z", 200.0),
                 ("2026-09-24T16:35:00Z", 202.0),
                 ("2026-09-24T16:50:00Z", 206.0),
@@ -229,6 +230,7 @@ def test_v2_first_pass_measures_pre_state_impulse_and_plus5_residual():
         ),
         benchmark_points=_points(
             [
+                ("2026-09-24T16:15:00Z", 399.0),
                 ("2026-09-24T16:20:00Z", 400.0),
                 ("2026-09-24T16:35:00Z", 401.0),
                 ("2026-09-24T16:50:00Z", 402.0),
@@ -239,6 +241,8 @@ def test_v2_first_pass_measures_pre_state_impulse_and_plus5_residual():
     assert out["status"] == "measured"
     assert out["causal_impulse"]["raw_return_bps"] == -200.0
     assert out["causal_impulse"]["signed_expected_direction_bps"] == 200.0
+    assert out["first_impulse"]["response_return_bps"] > 0
+    assert out["first_impulse"]["residual_return_bps"] > 0
     assert out["pre_event_causal"]["60m"]["raw_return_bps"] == -909.090909
     assert (
         out["response_from_impulse_end"]["30m"]["residual_return_bps"]
