@@ -225,7 +225,9 @@
           // Baskets + Subsector Rotation are ONE page now (the old URLs are redirect
           // stubs) — one menu row, matching the collapsed _navlinks flyout.
           ['Sector Intelligence', 'Sectors, themes & rotation in one read', 'sector_central.html', 'sectors',
-            '行业情报', '板块、主题与轮动一页读']
+            '行业情报', '板块、主题与轮动一页读'],
+          ['Market Heatmap', 'S&P 500 sectors + narrative themes · multi-timeframe treemap',
+            'sector_heatmap.html', 'heatmap', '市场热力图', '标普500板块 + 叙事主题 · 多周期树图']
         ], '市场总览'],
         ['Signals & strategy', [
           ['Subsector Confluence', 'Entry-ready subsectors and stocks to review', 'sector_central.html#confluence', 'confluence',
