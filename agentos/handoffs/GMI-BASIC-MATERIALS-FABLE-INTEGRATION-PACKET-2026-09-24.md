@@ -10,12 +10,22 @@ implementation_authority: none
 
 # Basic Materials Economics — current Fable integration packet
 
-Updated 2026-09-24 through R17. This updates the existing packet; it does not create another handoff or discard the referenced specifications. The prior R16 packet remains at `b694754e7e2f2f3013b19ddaa88d071e75a13715`, blob `d79395535ad3a7cf5deffba81f9e349e3405c3c4`.
+Updated 2026-09-24 through R18. This updates the existing packet; it does not create another handoff or discard the referenced specifications. The prior R17 packet remains at `1474e14f6bb220efdd77f556f70e18040a78f1d6`, blob `ab11564b902c0e9959abb3ae4eeea0bd2c6ec2d1`.
 
 **Prepared for principal integration and independent review, not an unblocked production build.** Preferred avenue Fable for consequential shared-owner integration and acceptance; routine implementation uses the least-scarce capable avenue. CAPACITY_SELECTABLE / WAITING_CAPACITY / needs_placement. No Materials receiver, ACK, START, Executive Attempt or autonomous wake is established. The Semiconductor Fable assignment does not assign Materials.
 
 
-## R17 review result — read before implementation
+## R18 sequencing refinement — read before assigning implementation
+
+Read `research/basic_materials/BASIC_MATERIALS_R18_NUMERIC_CORE_AND_SHARED_CONTRACT_BOUNDARY_2026-09-24.md` and `R18_EXISTING_CONTRACT_QUALIFICATION_2026-09-24.json`. Current main at `5600bb63b27978031769eb428911fe9b46572a92` has a Consumer Cyclical read-model scalar convention supporting signed exact decimal text. Twelve actual schema-fragment checks confirmed its representation and its sector-specific limits. Its SEC-only source shape, revenue/expense kinds and comparison scope are NOT a Materials record. Do not copy that contract ID, invent SEC provenance or switch Materials to another evidence owner.
+
+Refine T4 internally: a pure Materials calculation-and-explanation core can be implemented and independently reviewed after a lawful bounded implementation assignment without waiting for private publication. It receives immutable, explicitly scoped arguments and returns economics, explanation and limitations; no I/O, persisted state, source/identity allocation, permission flags, provider calls or routing. Reuse the already-planned F04 consumer/output paths and existing R12–R17 cases. Do not import the research helper as a finished production engine. Native input adaptation still requires accepted GMI/FIF/K1/identity/rights contracts and actual references. A correct arithmetic result is not permission to publish. T7/T8 still require all five originals/four real company journeys and private-browser proof; core-only progress does not become a completed V0 release. No product writes are granted on #7796.
+
+R18 independent-review disposition: full-packet operator selection returned no eligible operator. A separately bounded fixed-invariant audit reached native MiniMax remote selection and a successful dry run, but its actual launch was blocked by OpenAI safety checks BEFORE dispatch. No reviewer process, ACK, START, output or served-model proof exists. Do not retry, rephrase, change tools/providers or use another host to get that blocked effect through; platform-permitted recovery is required. The separate R13 browser/identity-action and `.local/bin/pool` file-read denials remain intact. No review verdict is inferred from the 12 schema checks.
+
+The R17 local-Qwen failure and R18 platform launch denial are different facts. The permitted kit's remote-placement policy explains why local execution is inappropriate; it does not override the later platform denial. Routine placement still belongs to the existing owner. A later actual implementation assignment must preserve the current source and runtime gates rather than silently converting this research packet into a worker grant.
+
+## R17 review result — preserved correction
 
 Principal review found and repaired one actual R16 reference-code defect: background/correction return paths bypassed R16-C07's comparison prerequisites. The updated existing `R16_CHANGE_CONTENT_EXERCISE_2026-09-24.py` applies those prerequisites before any text-bearing path. See `research/basic_materials/BASIC_MATERIALS_R17_REVIEW_FINDING_AND_DISPOSITION_2026-09-24.md`, `R17_COMPARISON_GUARD_TESTS_2026-09-24.py` and `R17_REVIEW_AND_REPAIR_VERIFICATION_2026-09-24.json`. Twenty regression failures on the parent become zero; the original38 complete outputs are unchanged. This corrects a research utility, not production behavior. R17 also removes the packet's mistaken Chairman-only delivery sentence: the existing authorized Sol/placement paths remain valid, without creating any actual assignment.
 
@@ -33,7 +43,7 @@ Preserve all44 core requirements, eight tasks, seven open/partial gates, ten res
 
 ## Read only the necessary exact sources
 
-1. Current cumulative frontier: `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md`. It owns last effects, denials, source pins and exact next action.
+1. R18 sequencing/contract qualification above, then current cumulative frontier: `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md`. It owns last effects, denials, source pins and exact next action.
 2. R16 consumer decisions: `research/basic_materials/BASIC_MATERIALS_R16_ECONOMIC_CHANGE_TO_EXISTING_CONSUMERS_2026-09-24.md`, with its38 synthetic-case exercise/tests/verification. No native permission or model performance is implied.
 3. R11 foundation-adoption amendment and `R11_FOUNDATION_ADOPTION_MATRIX_2026-09-24.json` (blob `443a29e64069c029e48aed14a2ea11f51e705257`) BEFORE the older implementation steps. They supersede the standalone Materials API/client and shared-code duplication.
 4. Saved plan: `docs/superpowers/plans/2026-09-23-basic-materials-economics-v0-implementation.md`, blob `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R9 matrix blob `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9` preserves all44 core requirements.
@@ -52,7 +62,7 @@ Consume #7870, not another Materials base. R17 inspection: `e2f4d490915660fc6db6
 | T1 | Consume one shared curation contract; close exact/signed/fractional measurement and original-input rights mapping through its owner. |
 | T2 | Consume accepted private publication and fresh rights snapshot; prove strict failure states, complete source dependencies and current permission at emission. |
 | T3 | Consume the same K1 subtype without losing source/recorded clocks or inventing a unified security recipe. |
-| T4 | Implement only the Materials F04 explanation/comparison consumer under accepted contracts; preserve company/financial-right and economic scope. |
+| T4 | Implement the pure Materials F04 calculation/explanation core after lawful assignment; qualify its native-input adapter separately under accepted contracts. Preserve company/financial-right and economic scope. Core-only success is not V0 acceptance. |
 | T5 | Extend the accepted shared POST research query/evidence interface with a closed Materials profile; no standalone Materials endpoint or auth path. |
 | T6 | Extend the shared theme-research client and accepted mounts; no duplicated network client, template or global theme identity. |
 | T7 | Rehearse all five real sources/four company journeys, including missing-data cases, native review and actual identity/route evidence. |
@@ -78,4 +88,4 @@ R12/R15/R16 tests are research exercises, not independent semantic review or pre
 
 ## Exact next action
 
-Obtain the accepted shared exact-measure/private/profile signatures and a bounded independent review of this packet; resolve concrete findings and then execute the real selected-case rehearsal. When that lane is held, progress must be an actual independent review finding or accepted interface decision, not another equivalent source worksheet or fixture rerun. No response grants takeover of the shared writer. Materials still requires its own deliberate bounded assignment and separate START; this packet does not create either.
+After an actual bounded implementation assignment, build and review the T4 pure calculation-and-explanation core against the existing cases and current F04 ownership. In parallel, resolve the accepted shared exact-measure/private/profile and native-input adapter decisions; only then rehearse real admitted cases through private delivery. The blocked R18 review launch cannot be retried or rerouted without permitted recovery. Full-packet independent review and all T7/T8 proof remain owed. Do not repeat source worksheets or equivalent fixture expansion. No response grants takeover of the shared writer. This packet itself creates no receiver, START or product-write grant.
