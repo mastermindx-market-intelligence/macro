@@ -263,3 +263,46 @@ policy repricing versus roll; PR7940 stacks prospective retention into the incum
 rates_command forward ledger and MUST NOT be duplicated here. Continue by reviewing
 that existing lane rather than building another policy path, while future CPI outcomes
 accrue through the incumbent Release Radar producer. Parent mission remains incomplete.
+
+
+## Continuation: independent RD2 review found SR3 source blocker
+
+Same procedure pin: Mastermind 819abc8c23609cdded2b33f6e1bfc7854bd5c847,
+Skillpack1.0.1/bootstrap1. The parent #7909 carrier was clean and exact local/remote
+at 034264fce90d04770a871132cc9a842f2d49dba0 before this record update.
+
+Independent CEO review of sibling PR7923 exact head
+dbf8d03ed4f2a29ea349bb37a23b9048f18bc2db found a release-blocking SR3
+contract-identity error. collectors/rate_futures.gen_contracts starts quarterly
+generation from the civil as-of month and therefore drops the still-live March SR3
+contract throughout April and May. The same candidate's
+engine/rate_futures_repricing.reference_period correctly reports March2026 SR3 as
+2026-03-18 through 2026-06-17. Exact-head reproduction showed:
+- 2026-03-19 -> first requested 2026-03
+- 2026-04-01 -> first requested 2026-06 while March reference quarter remains active
+- 2026-05-15 -> first requested 2026-06 while March reference quarter remains active
+- 2026-06-16 -> first requested 2026-06 while March reference quarter remains active
+
+Because producer and verifier share the omitted contract set, digest/weight
+reconstruction can remain internally consistent while the live quarterly strip is
+incomplete. ZQ is not rejected by this finding; the blocker is SR3 quarterly contract
+identity and any claim that the full two-family source is qualified.
+
+REQUEST_REPAIR was posted on the existing #7923 GitHub carrier:
+https://github.com/mastermindx-market-intelligence/macro/pull/7923#issuecomment-5824269359
+No #7923 source edit was made by this reviewer. Required repair is to retain the
+active SR3 reference-quarter contract through its actual third-Wednesday interval,
+with boundary regressions, while preserving ZQ, New York/capture clocks and authority
+ceilings.
+
+Current-base compatibility was independently checked against macro main
+25fb8fa805d611727078f65626f2c3b0388070b3. A conflict-free local merge tree
+274e03b7ccee56eefbf28c44d3a3910e744706cd was produced and the selected
+test_rates_command + test_fed_path + test_yield_momentum suite passed147 tests with
+301 warnings. This does not waive the semantic blocker.
+
+Downstream PR7940 must remain dependency-held on an accepted #7923 repair. Do not
+duplicate its forward-ledger retention implementation. Independent research may
+continue on disjoint hypotheses. The next medium-term scientific lane is a
+curve-system forecast (dynamic level/slope/curvature versus no-change), not another
+oscillator or post-impulse state-stack variant.
