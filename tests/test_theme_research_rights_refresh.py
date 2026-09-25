@@ -305,6 +305,171 @@ def test_a_block_with_a_malformed_input_list_is_withheld(inputs):
     assert dropped is True and filtered.interpretation_blocks == ()
 
 
+# ---------------------------------------------------------------------------
+# T04b review fold — the four holes an independent READ_ONLY review found in
+# the attribution the fail-closed rule depends on.
+# ---------------------------------------------------------------------------
+
+def test_a_traversing_source_ref_is_not_attributed_by_its_prefix():
+    """THE LEAK. ``family_for_source_ref`` matches a literal prefix, so
+    ``data/baskets/../finviz_themes/private.json`` resolved to
+    ``mastermind_curated`` — a permitted family — and was SERVED while naming
+    a file in another family's directory. The first two asserts prove the leak
+    was real rather than theoretical: the owner's table does map it, and the
+    owner does permit that family."""
+    from engine.theme_graph.rights import (
+        assert_current_emission_allowed, family_for_source_ref, load_registry_snapshot,
+    )
+
+    ref = "data/baskets/../finviz_themes/private.json"
+    assert family_for_source_ref(ref) == "mastermind_curated"
+    assert_current_emission_allowed(["mastermind_curated"], snapshot=load_registry_snapshot())
+
+    bundle = _bundle([_assertion("gmirca_" + "1" * 32, source_uri=ref)])
+    filtered, dropped = _filter(bundle)
+    assert dropped is True
+    assert filtered.assertions == ()
+
+
+@pytest.mark.parametrize("ref", [
+    pytest.param("data/baskets/../finviz_themes/x.json", id="parent-segment"),
+    pytest.param("data/baskets/./x.json", id="current-segment"),
+    pytest.param("data/baskets/sub/../../baskets_hk/x.json", id="two-parents"),
+    pytest.param("data/baskets\\..\\finviz_themes\\x.json", id="backslash"),
+    pytest.param("..", id="bare-parent"),
+])
+def test_a_non_canonical_ref_is_never_attributed(ref):
+    """The transport declines to attribute; it does NOT normalize. Resolving
+    what a path really means would be this route forming a second opinion
+    about someone else's namespace."""
+    from app.theme_research import _attributable_family
+
+    assert _attributable_family({"source_uri": ref}) is None
+
+
+def test_two_refs_that_disagree_withhold_the_row():
+    """``source_uri`` used to win outright, so a permitted uri silently
+    overrode a locator pointing at a different family. A contradiction the
+    transport cannot resolve is not an attribution."""
+    from app.theme_research import _attributable_family
+
+    assert _attributable_family({
+        "source_uri": "data/baskets/x.json",          # mastermind_curated
+        "locator": "finviz_themes/x.json",            # finviz_themes
+    }) is None
+
+    bundle = _bundle([_assertion(
+        "gmirca_" + "2" * 32,
+        source_uri="data/baskets/x.json", locator="finviz_themes/x.json",
+    )])
+    filtered, dropped = _filter(bundle)
+    assert dropped is True and filtered.assertions == ()
+
+
+def test_a_ref_the_table_has_no_opinion_about_is_not_a_disagreement():
+    """Only opinions can conflict. An unmapped locator alongside a mapped uri
+    leaves exactly one attribution, so the row is still attributable — the
+    fail-closed rule must not collapse into serving nothing."""
+    from app.theme_research import _attributable_family
+
+    assert _attributable_family({
+        "source_uri": "data/baskets/x.json", "locator": "s3://nobody/knows.json",
+    }) == "mastermind_curated"
+    assert _attributable_family({
+        "source_uri": "data/baskets/x.json", "locator": "data/baskets_hk/y.json",
+    }) == "mastermind_curated"  # two refs, ONE family: agreement, not conflict
+
+
+@pytest.mark.parametrize("row", ["a string", 7, None, ["list"], ("tuple",)])
+def test_a_non_mapping_assertion_is_withheld_and_never_raises(row):
+    """It used to raise ``AttributeError`` into the route's catch-all, so ONE
+    malformed row from the owner returned a 503 for the WHOLE request and
+    denied the caller every row it was entitled to. The row withholds itself;
+    its neighbours are still served."""
+    good = "gmirca_" + "3" * 32
+    bundle = _bundle([_assertion(good, source_uri="data/baskets/x.json"), row])
+    filtered, dropped = _filter(bundle)
+    assert dropped is True
+    assert [a["curation_revision"] for a in filtered.assertions] == [good]
+
+
+@pytest.mark.parametrize("source", ["a string", 7, ["list"]])
+def test_a_non_mapping_source_is_withheld_and_never_raises(source):
+    bundle = _bundle([{"curation_revision": "gmirca_" + "4" * 32, "source": source}])
+    filtered, dropped = _filter(bundle)
+    assert dropped is True and filtered.assertions == ()
+
+
+def test_a_revision_is_compared_as_a_string_and_never_coerced():
+    """``str()`` on both sides made the integer 12 and the string "12" the
+    same revision, so a block naming a revision that was never served could
+    survive. A curation revision is a string by its own contract."""
+    bundle = _bundle(
+        [{"curation_revision": 12, "source": {"source_uri": "data/baskets/x.json"}}],
+        [{"interpretation_id": "i1", "mechanism": "m", "input_revisions": ["12"],
+          "freshness": "current"}],
+    )
+    filtered, dropped = _filter(bundle)
+    assert dropped is True
+    assert filtered.interpretation_blocks == ()
+
+
+def test_a_non_string_input_revision_never_matches_a_served_one():
+    """The mirror image: a served revision "12" must not satisfy a block that
+    names the integer 12."""
+    bundle = _bundle(
+        [_assertion("12", source_uri="data/baskets/x.json")],
+        [{"interpretation_id": "i1", "mechanism": "m", "input_revisions": [12],
+          "freshness": "current"}],
+    )
+    filtered, dropped = _filter(bundle)
+    assert dropped is True and filtered.interpretation_blocks == ()
+
+
+def test_a_tuple_input_list_is_read_exactly_like_a_list():
+    """The ``tuple`` half of the accepted-shapes check had no coverage: an
+    owner handing back an immutable input list must be read, not withheld."""
+    rev = "gmirca_" + "5" * 32
+    bundle = _bundle(
+        [_assertion(rev, source_uri="data/baskets/x.json")],
+        [{"interpretation_id": "i1", "mechanism": "m", "input_revisions": (rev,),
+          "freshness": "current"}],
+    )
+    filtered, dropped = _filter(bundle)
+    assert dropped is False and filtered is bundle
+
+
+@pytest.mark.parametrize("block", ["a string", 7, None, ["list"]])
+def test_a_non_mapping_interpretation_block_is_withheld_and_never_raises(block):
+    rev = "gmirca_" + "6" * 32
+    bundle = _bundle([_assertion(rev, source_uri="data/baskets/x.json")], [block])
+    filtered, dropped = _filter(bundle)
+    assert dropped is True and filtered.interpretation_blocks == ()
+
+
+def test_the_admitted_sec_edgar_family_is_not_reachable_from_a_filing_url():
+    """THE OPEN QUESTION, pinned so it cannot be forgotten or misdescribed.
+
+    ``sec_edgar`` is an ADMITTED family (``b256aa6a756``, qualified by
+    ``7d456cd37d8``); its own review outcome names the Semiconductor B
+    witnesses. It is ``direct_display_ok``. But no ``https://`` prefix exists
+    in the owner's table, so a filing URL attributes to nothing and the
+    fail-closed rule withholds it — the witnesses' own evidence, refused for
+    want of a mapping rather than for want of a right.
+
+    Binding the URI shape to the admitted row is a one-line table change in
+    the RIGHTS OWNER's module and is returned to Sol and that owner rather
+    than taken here. When it lands, this test is the thing that must be
+    updated, which is the point of pinning it."""
+    from engine.theme_graph.rights import family_for_source_ref, load_registry_snapshot
+
+    _revision, families = load_registry_snapshot()
+    assert families["sec_edgar"]["rights_class"] == "direct_display_ok"
+    assert family_for_source_ref(
+        "https://www.sec.gov/Archives/edgar/data/1046179/tsmc-6k.htm"
+    ) is None
+
+
 def test_the_private_half_is_unbound_so_both_rules_are_inert_today():
     """Stated plainly: with R4 open the served bundle carries no assertion and
     no interpretation block, so neither rule changes a served response. They

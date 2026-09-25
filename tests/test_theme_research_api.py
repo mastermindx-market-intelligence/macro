@@ -905,6 +905,48 @@ def test_owner_permitting_keeps_assertions_with_no_rights_limitation(
     assert "rights_refused_families_hidden" not in payload["limitations"]
 
 
+def test_one_unreadable_row_withholds_itself_instead_of_503ing_the_request(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """T04b review fold, end to end. A row the transport cannot read used to
+    raise ``AttributeError`` inside the rights filter; the route's catch-all
+    turned that into the fixed private 503, so ONE malformed row from the
+    owner denied the caller every row it was entitled to. The row must
+    withhold itself and the rest of the response must be served."""
+    fixture = _install_warm_owner_state(monkeypatch, tmp_path)
+    good_loader = theme_research.load_authorized_owner_bundle
+
+    from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+
+    def poisoned(*a, **kw):
+        bundle = good_loader(*a, **kw)
+        return OwnerBundle(
+            revision_tuple=bundle.revision_tuple,
+            rights_revision=bundle.rights_revision,
+            assertions=bundle.assertions + ("not-a-mapping",),
+            identity_results=bundle.identity_results,
+            event_workspaces=bundle.event_workspaces,
+            financial_packets=bundle.financial_packets,
+            interpretation_blocks=bundle.interpretation_blocks,
+            native_refs=bundle.native_refs,
+            omissions=bundle.omissions,
+        )
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", poisoned)
+
+    response = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    payload = response.json()
+    # Every legitimate row still served, and the caller is told something was
+    # withheld — without being told what.
+    assert payload["authorized_coverage"]["selected"] == \
+        fixture["expected_first_selected"]
+    assert "rights_refused_families_hidden" in payload["limitations"]
+
+
 def test_transport_carries_no_local_rights_restatement():
     """No-restatement source scan: the transport asks the owner, so
     ``app/theme_research.py`` must carry neither the owner's permission-set

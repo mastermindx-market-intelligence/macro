@@ -228,6 +228,55 @@ def _body_to_query(body: _QueryBody | _EvidenceBody) -> ResearchQuery:
 # family disclosure
 # ---------------------------------------------------------------------------
 
+def _canonically_attributable(ref: str) -> bool:
+    """False when a LITERAL-PREFIX match cannot be trusted to name where the
+    ref really points.
+
+    ``family_for_source_ref`` matches a prefix and nothing else, so
+    ``data/baskets/../finviz_themes/private.json`` starts with
+    ``data/baskets/``, resolves to ``mastermind_curated`` and gets SERVED
+    while naming a file in another family's directory. This transport does
+    not normalize the ref — normalizing would be this route forming a second
+    opinion about what a path means, which it is forbidden to do — it simply
+    declines to attribute a ref carrying a relative segment or a backslash.
+    """
+    if "\\" in ref:
+        return False
+    return not any(segment in (".", "..") for segment in ref.split("/"))
+
+
+def _attributable_family(source: object) -> str | None:
+    """The ONE rights family this transport can attribute a row's source to.
+
+    None means "cannot attribute", which on this EMISSION path means withhold.
+    Four ways to get None, all fail-closed:
+
+    * ``source`` is not a mapping — a row whose source this transport cannot
+      even read is not a row it can publish;
+    * no readable ref (missing, empty, or not a string);
+    * a ref that is not canonically attributable (see
+      :func:`_canonically_attributable`);
+    * the two readable refs DISAGREE. ``source_uri`` used to win outright, so
+      a permissive uri silently overrode a restrictive locator. A
+      disagreement this transport cannot resolve is not an attribution. A
+      locator the table has no opinion about is NOT a disagreement — the
+      owner's None means "no opinion", and only opinions can conflict.
+    """
+    if not isinstance(source, Mapping):
+        return None
+    families: list[str] = []
+    for key in ("source_uri", "locator"):
+        ref = source.get(key)
+        if not isinstance(ref, str) or not ref.strip():
+            continue
+        if not _canonically_attributable(ref):
+            return None
+        family = family_for_source_ref(ref)
+        if family is not None and family not in families:
+            families.append(family)
+    return families[0] if len(families) == 1 else None
+
+
 def _filter_bundle_for_rights(
     bundle: OwnerBundle, *, snapshot: tuple[str, dict] | None = None,
 ) -> tuple[OwnerBundle, bool]:
@@ -248,14 +297,25 @@ def _filter_bundle_for_rights(
       warns on a DISAGREEMENT and must not manufacture one out of ignorance;
       but this is an EMISSION path, and emitting material no rights row
       covers is exactly the decision the registry exists to make. An
-      unattributable assertion is not published.
+      unattributable assertion is not published;
+    * a row whose ``source`` this transport cannot READ, or whose two refs
+      contradict each other, or whose ref cannot be attributed by a literal
+      prefix at all, is withheld — :func:`_attributable_family` is the single
+      place that decides, and it never normalizes a path or resolves a
+      contradiction on the owner's behalf;
+    * a row that is not a mapping is withheld by itself. It used to raise
+      ``AttributeError`` into the route's catch-all and return a 503 for the
+      WHOLE request, which is how one malformed row from the owner denied a
+      caller every row it was entitled to.
 
     Interpretation blocks are withheld alongside the assertions they read.
     A block names its inputs in ``input_revisions``; prose derived from a
     withheld assertion is that assertion reaching the wire in another form,
     and the composer would otherwise still emit it (marked stale, but
     emitted). A block referencing no revision present in the served
-    assertions is withheld as well.
+    assertions is withheld as well, and revisions are compared as the
+    strings they are — never coerced, so "12" and 12 stay different
+    revisions.
 
     Returns the rewritten bundle and a flag telling the caller whether
     anything was withheld — the route turns that into the
@@ -278,11 +338,18 @@ def _filter_bundle_for_rights(
     kept: list[Mapping[str, Any]] = []
     dropped = False
     for assertion in bundle.assertions:
-        source = assertion.get("source") or {}
-        source_ref = source.get("source_uri") or source.get("locator") or ""
-        family = family_for_source_ref(source_ref)
+        if not isinstance(assertion, Mapping):
+            # A row this transport cannot read is WITHHELD, never fatal.
+            # Before this, ``assertion.get(...)`` raised AttributeError, the
+            # route's catch-all turned it into a 503, and one malformed row
+            # from the owner took down the entire request instead of dropping
+            # itself. Withholding is the fail-closed answer; 503 is not.
+            dropped = True
+            continue
+        family = _attributable_family(assertion.get("source"))
         if family is None:
-            # Unmapped or absent source ref: fail closed (see the docstring).
+            # Unmapped, unreadable, non-canonical or self-contradicting source
+            # ref: fail closed (see :func:`_attributable_family`).
             dropped = True
             continue
         if family not in verdicts:
@@ -296,14 +363,28 @@ def _filter_bundle_for_rights(
             kept.append(assertion)
         else:
             dropped = True
+    # Compared as the strings they are, never coerced: ``str()`` on both sides
+    # made the integer 12 and the string "12" the same revision, so a block
+    # naming a revision that was NOT served could survive. A curation revision
+    # is a string by its own contract
+    # (``engine.theme_graph.curation_assertion.curation_revision``), so a
+    # non-string here is a malformed row, not a value to convert.
     served_revisions = {
-        str(a.get("curation_revision")) for a in kept if a.get("curation_revision")
+        a["curation_revision"] for a in kept
+        if isinstance(a.get("curation_revision"), str) and a["curation_revision"]
     }
     blocks: list[Mapping[str, Any]] = []
     for block in bundle.interpretation_blocks:
+        if not isinstance(block, Mapping):
+            dropped = True
+            continue
         inputs = block.get("input_revisions")
-        inputs = list(inputs) if isinstance(inputs, (list, tuple)) else []
-        if inputs and all(str(rev) in served_revisions for rev in inputs):
+        if not isinstance(inputs, (list, tuple)) or not inputs:
+            # No readable input list (absent, empty, or a bare string, which
+            # would otherwise iterate as characters): withheld.
+            dropped = True
+            continue
+        if all(isinstance(rev, str) and rev in served_revisions for rev in inputs):
             blocks.append(block)
         else:
             dropped = True
