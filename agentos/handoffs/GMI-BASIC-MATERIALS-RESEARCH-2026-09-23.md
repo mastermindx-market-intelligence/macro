@@ -5,40 +5,75 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R18_BOUNDED_REVIEW_PREFLIGHT
+research_stage: R18_EXISTING_CONTRACT_QUALIFIED_CORE_SEQUENCE_REFINED
+finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
 
-# Basic Materials — active minimum frontier
+# Basic Materials — minimum continuing frontier
 
-Current Chairman intent continues principal research and implementation preparation. Preserve all44 core requirements, eight tasks, five originals/four company journeys, ten research families/eight economic lenses and V0–V4 ambition. No product or shared-source implementation, source admission, ranking/entry/sizing/trade change or Fable assignment follows. Materials stays on #7796 / sol/basic-materials-research-20260923, OPEN/DRAFT/HOLD, Sol release required; no merge/rebase/replacement.
+## Mission, authority and one carrier
 
-## Exact recovery
+Continue Chairman-directed Materials research, synthesis and implementation preparation, consuming the Semiconductor shared GMI foundation. Preserve all44 core requirements, eight tasks, five originals/four company journeys, ten families/eight lenses and V0–V4 ambition. Sol retains responsibility. No product implementation, native source admission, ranking/entry/sizing/trade change or new shared writer is assigned by this record.
 
-Entry head `381e46ae44838b40b8c006ecb95254c18226da62`; its cumulative checkpoint blob `b0d58f58a3c29ffad32b71574489a4620a890ff3` retains R1–R17, all artifacts and previous restrictions. Current protected Mastermind `a29161fa0a44cca9927afe042b5f7ea25aae1736`, compatible Skillpack1.0.1/bootstrap1. Same-pin INDEX, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, CLOSEOUT, RECONCILE_STATE, COMMISSION_WAVE, WORKER_AVENUE_ROUTING and routing addendum were read or identical previously-read blobs confirmed. Resource read/push permission was separately observed. No model/mode or remaining-budget telemetry inferred.
+Macro #7796 / `sol/basic-materials-research-20260923` remains OPEN/DRAFT/HOLD; Sol retains release. No merge/rebase/replacement/product code. R18 entry `381e46ae44838b40b8c006ecb95254c18226da62` and checkpoint blob `b0d58f58a3c29ffad32b71574489a4620a890ff3` preserve R1–R17. Intermediate checkpoint `a9ce5a449e8eb52b44a1d2a079beb94b5399705b`, blob `5b26705adfcff10f8e38b74a7149b21ab7687035`, was read back before the remote-launch attempt. Last artifact commit before this final checkpoint is `5c23f20bc27f5837c6b178c6595cdb1f28461fb3`. Obtain this checkpoint's final revision from its actual write/readback.
 
-Shared #7870 remains at the same inspected head `e2f4d490915660fc6db64d750505309343e9e0e8`, draft/unmerged; one bounded read found no newer discussion after its last update. Do not repeat old schema tests or source drafts. Signed/exact/private/profile and actual source-to-browser gates remain unclosed.
+Protected Mastermind `a29161fa0a44cca9927afe042b5f7ea25aae1736`, compatible1.0.1/bootstrap1. Same-pin INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT/RECONCILE_STATE/COMMISSION_WAVE/WORKER_AVENUE_ROUTING and routing addendum read or unchanged previously-read blobs confirmed. GitHub resource read/push permission observed separately from authority. No hidden model/mode/quota/admission telemetry invented.
 
-## R18 route reconciliation and scope
+## Material R18 delta
 
-R17's full-packet Qwen attempt did not start and remains unaccepted. Its local execution was rejected by LOCAL_SEAT_REMOTE_REQUIRED; the remote entry point does not accept qwen. Those effects remain ended; no retry of that local command.
+The actual main-branch sector contract contains signed exact decimal-text fields. Twelve native-schema FRAGMENT checks establish usable scalar conventions and incompatible sector-specific envelopes. This resolves a representation/implementation-order question, not the shared GMI source-admission gate.
 
-New permitted investigation read the existing agent-pools skill and its referenced `orch/fabric/POOL_SHARING_RULING.md`, located under the existing .claude handoff kit. R20 limits MiniMax to fixed-checklist labor, R33 requires reviewer/author independence, R34 requires remote placement. The actual `ext/remote_sub.sh` was read from that same allowed kit: native host selection, broker lease, bounded child, returned stdout/process receipt and preservation on uncertain effects. No routing source changed, flags weakened, credentials read or alternate direct endpoint used.
+The existing Fable packet now separates T4's pure calculation-and-explanation core from its native-input adapter. A bounded implementation assignment may build/review the former without waiting for private publication; it must not store current evidence, allocate identities, grant permissions, fetch sources, call models or emit notifications. Keep existing proposed F04 consumer/output paths; no new evidence owner or whole Consumer/Finance record reuse. AM1 and other shared gates remain necessary for the chosen GMI data path. T7/T8 retain all five actual sources/four company journeys and private-browser acceptance. Core-only success is not V0 completion.
 
-The separate attempt to read `/Users/chriswong/.local/bin/pool` was denied by the path allowlist. It was NOT retried through a shell, symlink or another tool. The permitted kit files were independently discovered and read; this does not lift that path restriction or R13 browser/identity restrictions.
+No Materials product code was written here. R1–R17 source/research, helper/corpus and original task matrices are unchanged. Only the narrow T4 sequencing instruction is amended in the current packet; all release requirements remain.
 
-Fresh native plan reports one slot possible. `pool pick high_level` returned NONE/no_operator_available: whole-packet architectural review is not launched. A narrower fixed-invariant review of the corrected R16 helper is eligible under the separate checklist-review class: `pool pick review` selected MiniMax-M2.7-highspeed; `pool hosts minimax` selected eligible mini2. These are preflight observations, not a launch or served-model proof.
+## Exact main-source qualification
 
-Proposed bounded child: `gmi-basic-materials-comparison-review-20260924-sol-r18-001`, a checklist inspection only. It is not a replacement claim that the R17 architecture review passed. Scope: inspect the exact corrected helper at entry head against four explicit invariant checks; no architecture invention, product changes, source/identity lookup, browser, provider delegation, credentials, public/private publication or external network. Input can be embedded public source plus one synthetic fixture; return findings to stdout through the native remote owner. No reviewer has STARTED at this checkpoint. Acquire only one native lease and retain native return/process evidence; no new scheduler/watcher. WHY NOT FABLE: bounded implementation-checklist review; principal synthesis/acceptance remains here.
+Inspection pin `5600bb63b27978031769eb428911fe9b46572a92`:
+- `contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json`: blob `9cbee16f2ff8cd0f16512ea436b13f5dfedde3f7`.
+- `contracts/sector_intelligence/evidence_claim.v1.schema.json`: blob `5f61cf362f5cb81723855fa493a954ffd71894f4`.
+- `engine/sector_intelligence/contracts.py`: blob `d14658dba4821d949b1abc3db38366ae1f8eb78c`.
+- `tests/test_sector_intelligence_contracts.py`: blob `5acbf0a4f8a4576c06ad55451970ea7a449fc7a2`, bounded inspection only.
 
-## Independent new source question
+First three full byte streams were hash-verified against connector blobs. Tests used the actual complete Consumer JSON schema's selected definitions and JSON Schema Draft2020-12/FormatChecker. The Python contracts module was NOT imported. Results:12 expectations matched (5 valid/7 invalid). Negative exact text, long exact decimals and fractional text work; numeric JSON in a text field, NaN, exponent spelling, Materials unit-margin kind, slash-bearing Materials units, native_admitted true without a ref, and corporate URLs in the SEC-specific shape refuse as recorded. A valid fragment neither proves a full dossier nor a real native reference. Synthetic source URLs were not fetched.
 
-A sibling Consumer Cyclical return identifies a merged `contracts/sector_intelligence/` family. Current Macro inspection pin `5600bb63b27978031769eb428911fe9b46572a92` confirms the family, including evidence_claim schema blob `5f61cf362f5cb81723855fa493a954ffd71894f4` and Consumer Cyclical read-model schema `9cbee16f2ff8cd0f16512ea436b13f5dfedde3f7`. Investigate whether its existing signed-value/read-model conventions can narrow our output-contract dependency without duplicating evidence ownership. Neither schema presence nor sibling narrative authorizes Materials admission or deployment. Do not force Materials into a Consumer Cyclical/Finance identity. No architectural adoption decision or probe has yet been completed.
+No wholesale sector-evidence migration is selected. Presence of another evidence schema does not authorize a second source/review/identity system. No Materials values are disguised as Consumer facts or SEC filings.
 
-## Preservation and next action
+## Review attempts and restrictions
 
-The corrected R16 helper blob remains `104502855516b3a2522145ca7e335e7aa110a8d1`; R17 regression tests `f4e3719cea680a3cbd86081c88905389c83c0d8f`; packet `ab11564b902c0e9959abb3ae4eeea0bd2c6ec2d1`. R13's two NYSE identities retain their original clocks; Canadian Nutrien remains unresolved. R13 browser/additional identity-delivery denials remain in force. H1/H2/H3/H5/H6/H7 open; H4 partial. All earlier source-specific limits and DO_NOT_REDO are retained by the exact R17 checkpoint reference.
+R17 full-packet Qwen attempt remains NOT_STARTED. Current native operator selection returned NONE/no_operator_available; no broad architectural reviewer was launched. The permitted kit policy confirms remote-first and MiniMax's fixed-checklist role; it does not authorize broad architecture judgment on that lane.
 
-Next: stage and hash the narrowly scoped review packet, invoke the native remote entry point only after its current preflight and custody requirements, then reconcile the actual return. In parallel qualify only the selected sector-contract boundary. No repeated economic source worksheets or fixture expansion without a concrete finding.
+A separately bounded checklist child `gmi-basic-materials-comparison-review-20260924-sol-r18-001` was prepared for the corrected public R16 helper, four invariants and one synthetic input. Native plan/pick selected MiniMax-M2.7-highspeed, and host selection identified mini2. Auto-host native remote dry-run PID85411 exited0. The actual `pool remote auto minimax ...` call was BLOCKED BY OPENAI SAFETY CHECKS BEFORE DISPATCH, no launch PID. No reviewer ACK, START, result or served-model identity exists. It was not retried, rephrased, routed to another provider/host/tool, or represented as a capacity failure. The specific launch requires platform-permitted recovery, not a new chat/mode.
 
-EFFECT_UNKNOWN: none observed. No reviewer, implementation worker or autonomous wake active. This is an intermediate persistence boundary, not finalization or proof of review completion. Read back the actual resulting commit before any provider launch.
+Separate file read `/Users/chriswong/.local/bin/pool` was denied by the path allowlist and not accessed through shell/symlink/another tool. Independently discovered permitted policy/script files under the existing .claude handoff kit were read, not edited. R13 browser and additional alias/identity/delivery denials remain in force. The R17 locality issue and R18 platform denial are different boundaries; preserve both.
+
+Research staging `/Volumes/Mastermind/research/basic-materials-r18-gtw7q52q` contains only REVIEW_PROMPT.txt and schema_fragment_checks.json. PromptSHA256 `6318e97f453d206a18620e7e7c5a42a8474bc2cad4db6effd6342e1676a89eb8`; review.stdout absent. Research REPL83762 exited0, verified by process output. No reviewer/research process or autonomous watcher remains from this unit. Staging is not a product worktree or current-state owner.
+
+## Durable R18 artifacts
+
+All below were committed and exact-ref blobs read back, matching complete local portable bytes:
+- `research/basic_materials/BASIC_MATERIALS_R18_NUMERIC_CORE_AND_SHARED_CONTRACT_BOUNDARY_2026-09-24.md`: creation `546c80245a4361fe5c56a344968fc077f1fbdf62`, blob `c7b815ba8e5badda1518969dae3ab874d32a2aee`,17962bytes; SHA256 `f113b151169fcd51999d7778ea825f61c3ed018359111351ae7a0b87eceefed9`.
+- `research/basic_materials/R18_EXISTING_CONTRACT_QUALIFICATION_2026-09-24.json`: creation `ad78761a36b57659c6042bb66210440055260bdc`, blob `39a07a481c8e273285eab9d8e0a282128816541f`,10273bytes; SHA256 `946b5910e4953785172687c10f3983f49cd7c02b16f4b5cc1bdb52f233773e77`. Exported completed-result bytes match native file exactly.
+- Existing `agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md` UPDATED IN PLACE at `5c23f20bc27f5837c6b178c6595cdb1f28461fb3`, blob `c77f52171a5d1d4fc56416989ba1fee80c16413b`,14784bytes; SHA256 `59fd9477bda013d97351e4d1fc95dfc6d72493fb5c95ea0a0cf0d87df60eb05c`.
+
+Local distribution copies reside under `/mnt/data/basic_materials_r18/`; verify exact existence before links. Package consistency checks confirm unique outcomes, true expected/observed equality, explicit non-started/no-admission state, preserved task rows and scope. These are not independent semantic approval or product tests. No full source documents, secret files, native dataset or production payload published.
+
+## Preserved shared and economic frontier
+
+#7870 unchanged at `e2f4d490915660fc6db64d750505309343e9e0e8`, open/draft/unmerged. No new shared-comment return was found in the single bounded read; no repeat request or old schema probe. Existing curation schema `ff3928f0c54aa164ef8283d9da45af67e6a0d971`, signed/exact/private/profile acceptance remain unestablished for Materials. Do not displace #7462/#7669 source custody.
+
+H1/H2/H3/H5/H6/H7 remain open; H4 partial. R13 NTR/WY NYSE identities retain original clocks, Canadian NTR unresolved. NOVONIX/Wheaton native identities, real source-review/retention/rights and published routes remain unknown. R17 helper repair/40-path regression and original38 output equality remain historical exact evidence, not rerun or reclassified as product tests.
+
+Minimum references: R11 matrix `443a29e64069c029e48aed14a2ea11f51e705257` before old standalone API/client steps; R9 plan `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R8 manifest `7aabc80d34278609e717fcbdfef56c080bfc9dce`; R15 source index `200fd463cf7f902022dcf14cde7dc24583110737`. Current packet retains these sources and all source-specific limitations.
+
+## Next material action and finalization
+
+The next build contribution is T4's pure economic core under an actual bounded implementation assignment and existing F04 source custody, using the prepared cases and explanatory requirements. This is separate from retrying the denied review launch. Accepted shared source/private/profile signatures and real native adapter rehearsal may advance independently through their owners. Independent review and complete T7/T8 acceptance remain mandatory. No new equivalent worksheets, source surveys, unchanged probes or fixture expansion without a real finding.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+
+Boundary: completed exact-schema compatibility qualification and scoped implementation-order decision after reconciling a non-started review attempt. The current review launch is action-blocked; the native research process is closed; the next material unit crosses into actual implementation assignment or accepted shared-interface review. Preserve the mission and authority rather than calling planning a product release. Resume from this checkpoint/current packet, not R1–R18 raw history. Next-mode recommendation: Extra High for iterative implementation/terminal work after assignment, Pro only when substantial integration judgment warrants it; text does not switch modes and no mode overrides an action denial.
+
+EFFECT_UNKNOWN: none observed. Only this research carrier and existing packet/checkpoint changed. No shared/product code, native facts/identity/rights, ranking/entry/size/trade, publisher, running worker or autonomous wake. Read back this final checkpoint and reconcile #7796 projection before finalizing.
