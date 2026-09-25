@@ -55,6 +55,7 @@ _READABLE = frozenset(map(chr, range(0x20, 0x7F))) | {_DASH}
 _YEAR = re.compile(r"(?<![0-9])20[0-9]{2}(?![0-9])")
 _FOOTNOTE_MARKER = re.compile(r"\([0-9]\)")
 _FIGURE = re.compile(r"\(?\$?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?\)?%?")
+_ODD_CHARACTER = re.compile(r"[^\S \t\n\r\f\xa0]|[\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]")
 _PERIOD_LABEL = "<period>"
 _NUMERIC = "<n>"
 _ROLES = (
@@ -276,6 +277,11 @@ def _unreadable_markup(source: str) -> str | None:
             return "gt"
         if state in ("table", "row") and text.strip(" \t\n\r\f"):
             return "table"
+        if state == "cell" and any(
+            kind == "reference" and not decoded or _ODD_CHARACTER.search(decoded)
+            for kind, decoded, _start, _end in _units(text)
+        ):
+            return "character"
         if lt < 0:
             break
         if source.startswith("<!--", lt):
