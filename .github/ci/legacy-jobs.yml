@@ -6343,8 +6343,9 @@ jobs:
     # including the rendered site/ tree, site/prophet JSON and the registry rows
     # the nightly rewrites, so a data commit alone can move its verdict: it stays
     # `gate: data` and runs on the data-health lane after the nightly. The PR-tree
-    # half (templates/, engine/, lib/ + the allowlist) is graded before merge by
-    # validated-claims-source below, which is `gate: code`.
+    # half (templates/, engine/, lib/, the top-level page builders
+    # scripts/build_*.py + scripts/render_*.py, and the allowlist) is graded
+    # before merge by validated-claims-source below, which is `gate: code`.
     # Law source: CLAUDE.md ("The word 'validated' in user-facing text is CI-enforced").
     runs-on: ubuntu-latest
     steps:
@@ -6375,23 +6376,30 @@ jobs:
     # scan), and the merge gate packs only `gate: code` jobs, so NOTHING graded a
     # claim before merge: 75 unearned claims merged green across a dozen PRs
     # between 2026-08-25 and 2026-09-24 and were healed in one batch (#7979).
-    # `--scope source` walks only templates/, engine/ and lib/ — roots no data
-    # commit writes (the render-public `?v=` re-stamps on three plain-copy pages
-    # cannot spell the token) — through the SAME matcher, negation, masks and
+    # `--scope source` walks only templates/, engine/, lib/ and the top-level
+    # page builders scripts/build_*.py + scripts/render_*.py (never the rest of
+    # scripts/ — PAGE BUILDERS in the checker) — roots no data commit writes
+    # (the render-public `?v=` re-stamps on three plain-copy pages cannot spell
+    # the token) — through the SAME matcher, negation, masks and
     # `surfaces`-enforced allowlist as the full scan, and refuses the one backing
     # that reads data (a cited artifact's validated:true), so its verdict is a
     # function of the PR's own tree (see the SCAN SCOPE block in the checker).
-    # Deliberately scan-only: this job rides every templates/** and engine/** PR
-    # by design — those PRs are its subject — so it carries only the two cheap
-    # checker steps, and the checker's unit suites ride validated-claims-contract
-    # below, selected by the files that can change their verdict. CURATED SCOPE:
-    # the scanned roots, the checker, the allowlist, and the literal files the
-    # checker names (inference's closure); site/** and data/** edits otherwise do
-    # not select it, because they cannot move its verdict.
+    # Deliberately scan-only: this job rides every templates/**, engine/** and
+    # page-builder PR by design — those PRs are its subject — so it carries only
+    # the two cheap checker steps, and the checker's unit suites ride
+    # validated-claims-contract below, selected by the files that can change
+    # their verdict. CURATED SCOPE: the scanned roots, the checker, the
+    # allowlist, and the literal files the checker names (inference's closure);
+    # site/** and data/** edits otherwise do not select it, because they cannot
+    # move its verdict.
     paths:
       - "templates/**"
       - "engine/**"
       - "lib/**"
+      # Top level only: a single `*` never crosses `/`, the same cut as the
+      # checker's glob (not rglob) walk of scripts/.
+      - "scripts/build_*.py"
+      - "scripts/render_*.py"
       - "scripts/check_validated_claims.py"
       - "data/regime/validated_claims_allowlist.json"
       # Closure: rendered pages the checker names literally (the registry
@@ -6412,7 +6420,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: validated-claims selftest (gate fires on synthetic unearned claim)
         run: python3 scripts/check_validated_claims.py --selftest
-      - name: no unearned 'validated' claims in PR-authored source copy (templates/, engine/, lib/)
+      - name: no unearned 'validated' claims in PR-authored source copy (templates/, engine/, lib/, page builders)
         run: python3 scripts/check_validated_claims.py --scope source
 
   validated-claims-contract:

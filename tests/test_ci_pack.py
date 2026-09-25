@@ -1511,7 +1511,10 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     move them, ``validated-claims-contract`` runs the checker's suites when the
     checker, the allowlist or a suite changes, and ``validated-claims`` keeps the
     FULL scan on the data gate — the rendered site and the registries move with
-    nightly commits, so they must never red somebody else's PR.
+    nightly commits, so they must never red somebody else's PR. scripts/ joins the
+    PR-authored roots at its top-level page builders only (``build_*``/``render_*``),
+    the same cut the checker walks, so a checker or a research script never selects
+    the source job.
     """
     manifest = _yaml(MANIFEST)
     checker = "scripts/check_validated_claims.py"
@@ -1521,7 +1524,8 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     source_runs = [str(step.get("run") or "") for step in source_job["steps"]]
     assert source_job["gate"] == "code"
     assert source_job["scope"] == "exclusive"
-    assert {"templates/**", "engine/**", "lib/**", checker, allowlist} <= set(source_job["paths"])
+    assert {"templates/**", "engine/**", "lib/**", "scripts/build_*.py", "scripts/render_*.py",
+            checker, allowlist} <= set(source_job["paths"])
     assert f"python3 {checker} --scope source" in source_runs
     assert f"python3 {checker} --selftest" in source_runs
 
@@ -1544,6 +1548,8 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
         (["templates/dashboard.html.j2"], {"validated-claims-source"}),
         (["engine/flow_signing.py"], {"validated-claims-source"}),
         (["lib/pages.py"], {"validated-claims-source"}),
+        (["scripts/build_spvector.py"], {"validated-claims-source"}),
+        (["scripts/render_china_fast.py"], {"validated-claims-source"}),
         ([checker], {"validated-claims-source", "validated-claims-contract"}),
         ([allowlist], {"validated-claims-source", "validated-claims-contract"}),
         (["tests/test_validated_claims_source_scope.py"], {"validated-claims-contract"}),
@@ -1551,6 +1557,11 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
         selected, reason = PACK.select_jobs(code_jobs, changed)
         assert owners <= {job.job_id for job in selected}, (changed, reason)
         assert "unowned path" not in reason, reason
+    for changed in (["scripts/check_design_system.py"], ["scripts/capture_page_evidence.py"],
+                    ["scripts/research/build_delivery_waterfall.py"]):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert "validated-claims-source" not in {job.job_id for job in selected}, (
+            changed, reason)
 
 
 def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
