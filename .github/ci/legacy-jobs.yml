@@ -13540,8 +13540,10 @@ jobs:
         run: python -m pytest tests/test_b4_entry_policy_calibration_prereg.py -q
 
   earnings-economic-dossier:
-    # CDV-1 Task 1: private PG issuer-profile economics at source scope. The suite
-    # uses only original synthetic HTML, so no live PG values enter CI evidence.
+    # CDV-1 Task 1: private PG issuer-profile economics at source scope. The fifteen
+    # frozen suites use only original synthetic HTML. The F1-Q envelope suite reads
+    # exact public SEC EDGAR exhibits, committed gzipped under tests/fixtures/pg_envelope/
+    # by the decision owner's direction on #7905; nothing read from them is published.
     if: ${{ false }}
     gate: code
     scope: exclusive
@@ -13593,6 +13595,8 @@ jobs:
       - "tests/test_pg_economic_observations_probes_r13.py"
       - "tests/test_pg_economic_observations_probes_r14.py"
       - "tests/test_pg_economic_observations_probes_r15.py"
+      - "tests/test_pg_envelope_f1.py"
+      - "tests/fixtures/pg_envelope/**"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -13603,7 +13607,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: PG source-scoped economic observations
-        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py -q
+        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
