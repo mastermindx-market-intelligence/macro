@@ -11303,6 +11303,9 @@ jobs:
       - "engine/flow_regime.py"
       - "engine/hk_global.py"
       - "engine/hk_global_beta.py"
+      # #7277 closure widening: HK native intelligence is imported by the
+      # picks/boards family; curated exclusive scope must cover its own closure.
+      - "engine/hk_native_intelligence.py"
       - "engine/international_macro_dashboard.py"
       - "engine/intl_bonds.py"
       - "engine/intl_compare.py"
