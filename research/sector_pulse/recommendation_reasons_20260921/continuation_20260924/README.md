@@ -49,12 +49,21 @@ authority changed.
 
 `green.txt` records the affected consumer suites after repair:
 
-- the two load-bearing recommendation-reason and basket-entry suites: **111 passed**;
-- the broader affected detail/template/chrome surface: **252 passed** across nine focused suites;
+- before current-main integration, the two load-bearing recommendation-reason and
+  basket-entry suites passed **111 tests** and the broader nine-suite affected surface
+  passed **252 tests**;
+- after integrating protected main `72038badf7e309dfbdd00120fd0f0e523623fe75`,
+  the load-bearing suites pass **111 tests** and the candidate-relevant affected surface
+  passes **238 tests**;
 - fresh-initial, continuation/no-initial-entry, final HOLD, and missing-entry display
   behavior are pinned;
 - existing stock-entry missingness and zero-qualified-member behavior remain covered.
 
+The wider product-chrome suite has one exact protected-main failure in the newly added
+`finance_intelligence.html.j2`: the page takes the shared product header but omits
+`theme.js`. The integrated candidate carries the exact main blob
+`782cf7a1cc304da5cce5b120f1de3746a6637e45`, and an isolated archive of protected main
+fails the same test. This separate defect is neither repaired nor waived here.
 No full-repository local run is claimed; hosted exact-head CI remains the repository gate.
 
 ## Exact cross-component continuation contract
@@ -128,6 +137,32 @@ All 32 controls:
 - have zero observed page exceptions and no page-wide horizontal overflow.
 
 These are local compiled-source proofs, not authenticated production acceptance.
+
+## Current protected-main integration
+
+The candidate pre-merge head
+`a7362d01e3b7609c7c7b59c6ad61ba0cccbf6b8a` was integrated with protected main
+`72038badf7e309dfbdd00120fd0f0e523623fe75` on the original PR #7669 carrier.
+Source files auto-merged without semantic conflict. The only conflicts were 84 generated
+basket-detail pages.
+
+`current_base_integration.py` resolves those generated artifacts through the incumbent
+renderer and act-now owner:
+
+- 84 conflicted pages retain exact protected-main embedded inputs;
+- 37 non-conflicted pages retain exact candidate embedded inputs;
+- all 121 pages render through the auto-merged canonical template;
+- **1,858 member rows / 1,827 assessed rows** are preserved from the selected inputs;
+- status, buys, uncovered, every non-explanation DETAIL field, observation dates and
+  generation stamps remain unchanged;
+- the incumbent owner materializes **1,858 stock-entry checks** without adding a new
+  classifier, state store or publisher.
+
+`current-base-integration-proof.json` binds every input ref/hash and every generated-page
+hash. `current-base-verification.txt` records the focused tests, the 40 browser cells and
+the exact inherited current-main failure. The exact-source eight-cell continuation proof
+and the 32 control cells were recaptured after integration; all have zero page errors,
+zero request failures and no page-wide overflow.
 
 ## Acceptance boundary
 

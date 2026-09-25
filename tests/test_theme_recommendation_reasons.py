@@ -320,8 +320,8 @@ def test_continuation_action_card_contract_reaches_compiled_detail():
     assert {row["language"] for row in controls["records"]} == {"en", "zh"}
     assert all(row["rating_visible"] and row["wait_instruction_absent"]
                and row["stock_checks_opened"] for row in controls["records"])
-    assert all(not row["page_errors"] and not row["page_overflow"]
-               for row in controls["records"])
+    assert all(not row["page_errors"] and not row.get("request_failures")
+               and not row["page_overflow"] for row in controls["records"])
     for row in controls["records"]:
         screenshot = evidence / "browser" / row["screenshot"]
         assert screenshot.is_file()

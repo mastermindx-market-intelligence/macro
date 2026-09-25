@@ -1,6 +1,6 @@
 {
   "schema": "theme_continuation_detail_contract.v1",
-  "generated_at_utc": "2026-09-25T00:23:35.695013+00:00",
+  "generated_at_utc": "2026-09-25T00:33:33.227066+00:00",
   "theme_id": "cn_pharma_cxo",
   "action_card": {
     "source_head": "6e0beeec8f720333dd72ab47a9e7c39fed6238a1",
@@ -100,7 +100,7 @@
           "/live/shock_state.json"
         ],
         "screenshot": "browser-cross-component/exact-continuation-dark-en-390.png",
-        "screenshot_sha256": "7cbee67a1d9e73e712b7e0a6dbb1eea66be4604d99901e272b4d6af4e1dfb41e"
+        "screenshot_sha256": "7a50bf50c42c7020cc394c4d558acfdbd3a1b243a2bcb6875b1d158af59b0857"
       },
       {
         "theme": "dark",
@@ -180,7 +180,7 @@
           "/live/shock_state.json"
         ],
         "screenshot": "browser-cross-component/exact-continuation-light-en-390.png",
-        "screenshot_sha256": "d01a18e984c14d6d1d5de15eb786b9c7ff1983dfea199ad1ea06e95f253fc50d"
+        "screenshot_sha256": "048c3d97e1a6c1e218f0376f9199cf2641e94afa015636859355ec3749b411cc"
       },
       {
         "theme": "light",
@@ -200,7 +200,7 @@
           "/live/shock_state.json"
         ],
         "screenshot": "browser-cross-component/exact-continuation-light-zh-1440.png",
-        "screenshot_sha256": "c6e611be1aecdc8ea2ce99714f490cd915f55eb83ead9fe7b2efa1113b1b0a10"
+        "screenshot_sha256": "9b018bfd7fda9fbea0e9a901aad2ef397bd86eb7b91abf531059298411489000"
       },
       {
         "theme": "light",

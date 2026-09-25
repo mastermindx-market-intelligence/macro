@@ -541,7 +541,23 @@ The original presentation repair is already pushed at
 cross-component contract and stronger regression receipt without changing the
 presentation source or any recommendation/entry/trade policy.
 
-Still owed: exact-successor hosted CI, independent repair re-review, current-base
-integration, normal publication and served-path proof. This closes only the bounded
-detail contradiction; the parent leadership, Prophet and semiconductor intelligence
-missions remain incomplete.
+Protected main `72038badf7e309dfbdd00120fd0f0e523623fe75` was then integrated on
+the original carrier. Source files auto-merged; the only conflicts were 84 generated
+detail pages. The incumbent renderer retained exact protected-main embedded inputs for
+those 84 pages and exact candidate inputs for the other 37, yielding 121 pages with
+**1,858 member rows / 1,827 assessed rows / 1,858 entry checks**. Status, buys,
+uncovered, all non-explanation DETAIL data, source dates and generation stamps remain
+unchanged. All page hashes are bound in `current-base-integration-proof.json`.
+
+After current-base integration, the load-bearing suites pass **111 tests** and the
+candidate-relevant affected surface passes **238 tests**. The wider product-chrome test
+has one exact inherited protected-main failure: newly added
+`finance_intelligence.html.j2` omits `theme.js`; candidate and protected-main blob are
+both `782cf7a1cc304da5cce5b120f1de3746a6637e45`, and an isolated protected-main
+reproduction fails identically. This unrelated Finance defect is not repaired or waived
+on #7669.
+
+Still owed: exact-integrated-head hosted CI, independent repair re-review, normal
+publication and served-path proof. This closes only the bounded detail contradiction;
+the parent leadership, Prophet and semiconductor intelligence missions remain
+incomplete.

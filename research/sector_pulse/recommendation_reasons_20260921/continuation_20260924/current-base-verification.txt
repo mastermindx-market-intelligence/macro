@@ -1,0 +1,41 @@
+PR #7669 current-base integration verification
+
+Candidate pre-merge head:
+  a7362d01e3b7609c7c7b59c6ad61ba0cccbf6b8a
+Protected main integrated:
+  72038badf7e309dfbdd00120fd0f0e523623fe75
+
+Generated-page integration
+- 121 regional basket-detail pages rendered through the auto-merged canonical template.
+- 84 conflicting generated pages retained exact protected-main embedded inputs.
+- 37 non-conflicting pages retained exact candidate embedded inputs.
+- 1,858 member rows and 1,827 assessed rows preserved from those selected inputs.
+- Existing status, buys, uncovered, observation dates, generation stamps and every non-explanation DETAIL field remained unchanged.
+- The incumbent act-now owner materialized 1,858 stock-entry checks; no second classifier or publisher was introduced.
+- All 121 committed page hashes match current-base-integration-proof.json.
+
+Cross-component and browser proof
+- Accepted action source: #7567 head 6e0beeec8f720333dd72ab47a9e7c39fed6238a1.
+- Immutable input: 88a3f1cfd18f391d2802e9086dc00f6fe5545607:site/chinabasketdata/baskets.json.
+- Actual producer result: cn_pharma_cxo -> buy_now / continuation / CURRENT, final dominant / accumulate, raw source lane wait_pullback only.
+- Same frozen detail input remains accumulate with clean_entry=false; the repaired detail preserves the native rating and separates initial-entry context.
+- Eight exact cross-component Chromium cells and 32 control cells passed across dark/light, EN/ZH and 1440/390.
+- All 40 cells return HTTP 200, contain no blanket WAIT instruction, have zero page errors, zero request failures and no page-wide overflow.
+- All 40 screenshot hashes match their committed receipts.
+
+Tests on the integrated candidate
+- Load-bearing recommendation/stock-entry suites: 111 passed, 16 warnings.
+- Broader candidate-relevant detail/template surface, excluding the inherited current-main product-chrome defect: 238 passed, 16 warnings.
+- Python compile, JSON parsing, receipt/page hash readback and git diff --check passed.
+
+Inherited current-main failure — not introduced by #7669
+- tests/test_product_chrome.py::test_shared_header_always_has_its_behavior fails because templates/finance_intelligence.html.j2 omits theme.js.
+- The candidate worktree file and exact protected-main file have the same blob:
+  782cf7a1cc304da5cce5b120f1de3746a6637e45
+- That path did not exist at candidate pre-merge head a7362d01e3b; an exact git-archive reproduction of protected main 72038badf7e fails identically.
+- This separate finance-intelligence defect is not repaired or waived on the theme-recommendation carrier.
+
+Capability boundary
+- No theme score, rank, native recommendation, clean-entry computation, stock eligibility, position sizing, alert or trade authority changed.
+- No JavaScript continuation classifier was added.
+- This is source/current-base integration evidence only; hosted exact-head CI, independent re-review, normal publication and served-path production proof remain required.
