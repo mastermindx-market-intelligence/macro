@@ -25,6 +25,12 @@ changed:
     what: "Citable seat rulings record for wave 1 (R-ENE-01..06) with the evidence each ruling rests on."
   - path: research/energy/nuclear_program/reviews/OPUS-AUDIT-2026-09-24-freeze-v1.md
     what: "Opus READ_ONLY audit of freeze v1: 9 BLOCKING + 3 ADVISORY findings, all accepted by the seat; freeze v2 in checkpoint sections 4-5."
+  - path: research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r1.md
+    what: "Opus READ_ONLY review of the nuclear vertical module (#8002 at 1071dd9de3e9), verbatim: FIX_REQUIRED with 1 blocker, 5 major, 7 minor and 3 nits; shell fit and registration shape hold."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r1.md
+    what: "Citable seat rulings R-ENE-10..16 adjudicating that review, plus the binding text exactly as issued to the fix round."
+  - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
+    what: "Section 10: round-1 review adjudicated, fix round running, shell route-pattern defect reported, Power-Demand census prepared behind the plan gate, live rung held by the VPS pull hold."
 verified:
   - claim: "Current protected procedure is compatible and loaded from one pin."
     command: "cd Mastermind && git fetch origin master && git rev-parse origin/master; git show <sha>:docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, CLOSEOUT, COMMISSION_WAVE, WORKER_AVENUE_ROUTING, WATCHER_ACTION_LOOP, REVIEW_RETURN, docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md, docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md at that sha"
@@ -50,6 +56,18 @@ verified:
   - claim: "Lane hosts and pools are available for wave 1."
     command: "ssh m1|mb|mini2 'ls ~/lanes/ext/active; uptime'; python3 $K/ext/pool_status.py"
     result: "05:01Z: m1 2/2 markers (load 7.5), mb 1/2 (load 3.3), mini2 0/2 (load 1.2); glm PASS, minimax DEMOTE (executor 0.10), cursor 0/3, grok 1/6."
+  - claim: "The round-1 module review ran at the exact PR head and returned FIX_REQUIRED."
+    command: "gh pr view 8002 --json headRefOid; Opus reviewer (MODE READ_ONLY) at that head, including a FastAPI TestClient probe with only registration_for patched"
+    result: "head 1071dd9de3e9857278424e06b6270bb82161b9e2; 1 blocker, 5 major, 7 minor, 3 nits; POST /api/themes/v1/research/query 200 and /research/evidence 400 string_pattern_mismatch, with Cache-Control private, no-store and X-Robots-Tag noindex, noarchive on both."
+  - claim: "The fix round delivered one commit on the same branch and touched nothing else."
+    command: "lane LANE_DONE line; git ls-remote origin refs/heads/claude/energy-stack-base-b-6cd958e9 refs/heads/claude/energy-nuclear-vertical-module; gh pr view 8002 --json state,isDraft,headRefOid,baseRefName,labels; git log --since 2026-09-25T09:00:00Z origin/main -- <nuclear module files>"
+    result: "LANE_DONE verdict REVIEW_DEFERRED checked_head 9e3237efdef67ce7a8659bbe50f98b3e75d2a957 (09:37Z); snapshot ref 6cd958e92b25; #8002 OPEN draft=true base=claude/energy-stack-base-b-6cd958e9 labels=none head=9e3237efdef6; no main commit touches the nuclear files."
+  - claim: "The plan gates Power-Demand behind nuclear acceptance."
+    command: "git cat-file -p f7dc93621532b06e2478f90ef3876d6c31236242 | sed -n '491,504p'"
+    result: "Section 19 ends with: 'Task 11 starts only after first vertical accepted.'"
+  - claim: "Production does not advance on merges while the VPS pull cron is held."
+    command: "ssh <vps> 'crontab -l'; production health endpoint checkout/commit"
+    result: "The pull line is commented with '# MMX-DISK-TRIAGE-HOLD' (disk 93%, macro#6902); production reports checkout ad38f308945 / commit 3a29e6145ce, while #8001 merged at 6c9465c7ed7d."
 unverified:
   - claim: "Semiconductor B's theme-research response envelope can carry a shared economic-change dossier section without a second route."
     what_would_verify: "B's T08/T09 landed shape on #7870 (schema semiconductor_theme_research.v1 top-level fields, /api/themes/v1/research/query request schema) read at its exact head; decision reserved to Task 7 (ruling R-ENE-04)."
@@ -61,9 +79,9 @@ unresolved:
   - "#7462 has not answered B's one-line EVIDENCE_COLUMNS custody question; Energy never touches engine/theme_graph/store.py in wave 1, so this gates only Task 2 (consume-the-assertion) and Task 5's evidence refs."
   - "No accepted shared economic_change_dossier.v1 existed anywhere at pickup; ruling R-ENE-02 registers it from this carrier as the shared contract (custody notices on #7793 and #7870)."
   - "Route/private-role custody for Tasks 6-7 depends on B's T09 and R4 outcomes (see unverified)."
+  - "The shell's evidence route refuses every theme:-scoped assertion_ref (app/theme_research.py:207 at #7870 @6cd958e92b25); the owner's choice between widening the pattern and bare crosswalk ids is pending on #7870 comment 5829675838 (R-ENE-15)."
 next_actions:
-  - "2026-09-25 wave 2 (stacked build, section 9): fabric lane ene_w2_nuclear_module (m1, glm-codex glm-5.3) builds Energy's own nuclear theme-research vertical module on the Energy-owned snapshot ref claude/energy-stack-base-b-6cd958e9 (= #7870 head 6cd958e92b259f7221690547e7076f4a0de4ed33) into branch claude/energy-nuclear-vertical-module, with a DRAFT/HOLD PR against that snapshot branch only."
-  - "Opus READ_ONLY review at the exact lane head before anything leaves the snapshot branch; fix rounds stay on the same branch."
+  - "Adjudicate the Opus READ_ONLY round-2 re-review of #8002 at 9e3237efdef6 (running since ~09:50Z). It must show the route test executing, not skipped. Any residue gets another fix round on the same branch, with the same post-lane checks: snapshot ref unchanged, no lane commit on main, #8002 still DRAFT with no labels."
   - "After #7870 merges: rebase the module onto main, add the ONE VerticalRegistration + MountFacts entry for nuclear_power on an Energy carrier, then served/browser/privacy proof; Task 10 real assertion admission through the incumbent curation owner."
   - "Fresh-read the Slack root and #7870 before every substantive write; the two-hourly scheduled watch watch-gmi-energy-fable-ceo-e2e-20260923 reports #7870 merge/close, the shared registry file landing on main, and counterpart edges."
 do_not_redo:
@@ -72,6 +90,10 @@ do_not_redo:
   - "Do not create an Energy-specific graph, evidence ledger, assertion contract, energy_economic_change_dossier.v1, estimate warehouse, private bucket/pointer/publisher/scheduler, route family /api/energy/*, ranker, entry, sizing or trade authority."
   - "Do not re-adjudicate the resolved Cameco Q1/Q2 source-link mismatch (S01 excluded, S02 is the Q2 Fuel Services source), the EOG July-24 chronology or the EQT/CPV commencement semantics."
   - "Do not fork Semiconductor B's shared curation assertion or its generic theme-research client/mount into Energy variants; consume the accepted versions (rulings R-ENE-01, R-ENE-04)."
+  - "Do not re-review #8002 at 1071dd9de3e9 or re-adjudicate R-ENE-10..16; the next review is at the fix round's new head."
+  - "Do not change the evidence-ref form or add an evidence-route test before the shell owner rules on #7870 comment 5829675838 (R-ENE-15)."
+  - "Do not redo the Power-Demand scope census (PR #8016), and do not design or build Power-Demand before nuclear ACCEPTANCE (R-ENE-16)."
+  - "Do not change nuclear VIEWS: they already equal the shared client's TR_VIEW_KEYS, which Robotics' #7870 comment 5828876066 showed to be hard-pinned."
 danger_areas:
   - "Macro is public: no full-fidelity paid research bodies, source PDFs, credentials or private production captures on this carrier; fixtures are SYNTHETIC and never copies of live Cameco/Centrus/BWXT/NuScale/Oklo values."
   - "A synthetic-fixture green is not native admission; a schema, a fixture pass, a page shell, green CI or a merge is not first-vertical completion (15-point law, packet section 16)."
@@ -79,7 +101,8 @@ danger_areas:
   - "Unknown stays unknown, unavailable never becomes zero/false: expectations.status=UNAVAILABLE carries estimate=null; milestones (NuScale SDA E04, Oklo Groves criticality E05) never become operating/commercial generation; Centrus nested backlog (O05) is never summed; Westinghouse equity-method sales (O04) are never added to consolidated revenue."
   - "Fabric executor first-pass acceptance is low (glm-5.3 ~0.29 on the last 20): every child carries an executable deterministic gate (RED/GREEN/mutants) and gets independent review before integration; executor self-reports are navigation, not acceptance."
   - "This is a SPARSE worktree (data/, site/ omitted): never git add -A; a write under data/ or site/ truncates committed artifacts."
-prs: [7791]
+  - "The lane executor's gh shim refuses ready/merge/create/close, force-push and foreign-branch pushes, but NOT gh pr edit: #8002 must stay DRAFT with no labels until #7870 merges (the scheduled watch checks it)."
+prs: [7791, 7881, 8001, 8002, 8016]
 ---
 
 # GMI Energy — Nuclear Value Capture first vertical: implementation operation working checkpoint
@@ -242,3 +265,39 @@ Chairman ruling relayed from Astra CEO: Semiconductors builds the base; Energy d
 **Fabric note.** The shared lane kit's new-packet mode sets the executor push guard to the BASE branch instead of the lane's new branch; for ordinary lanes that base is main. This lane's base is the snapshot ref, so main is not exposed. The kit fix is filed separately and is not part of this program.
 
 **Carriers.** Slack root PROGRESS reply ts `1790322235.512429`; courtesy correction on #7870, comment `5828806957`.
+
+## 10. State 2026-09-25 ~10:00Z — round-1 review adjudicated; fix delivered; round-2 re-review running
+
+**Module PR.** #8002 is DRAFT against the snapshot ref `claude/energy-stack-base-b-6cd958e9` and carries no labels. At `1071dd9de3e9` it holds the contract, the pure composer, the declared-absent owner-bundle loader and the synthetic-fixture tests (lane commits `3bf11062fc`, `37ece12659`, `1071dd9de3`).
+
+**Review round 1.** The Opus READ_ONLY review at that head returned FIX_REQUIRED. Record: `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r1.md`.
+- B1: republished copies were not collapsed, although the contract says they are.
+- M1–M5: a passed target was judged only when the caller sent a cutoff; the temporal test keyed rows by value; the order test could not see a sort by size; L7 was proven only on the composer's backup path; drop counts were hard-coded.
+- m1–m7 and three nits.
+- What held: shell fit (direct imports, no mirror) and the registration shape.
+
+**Seat rulings R-ENE-10..16.** Record: `research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r1.md`.
+- R-ENE-10: accept the review; one fix round on the same branch; an Opus re-review at the new head decides.
+- R-ENE-11: the milestone leak is promoted to MAJOR. The summary reads `limitations.coverage` only and drops passed targets from `next_evidence`.
+- R-ENE-12: a passed target is judged with no clock and without depending on the caller: the caller's cutoff, else the evidence frontier, disclosed as `target_windows_judged_at:<day>`.
+- R-ENE-13: the contract's limitations field stays pattern-only; the codes are pinned by `LIMITATION_CODES` and two tests.
+- R-ENE-14: the loader imports stay as Robotics has them.
+- R-ENE-15: evidence refs keep the `theme:` form until the shell owner rules.
+- R-ENE-16: Power-Demand stays preparation-only until nuclear acceptance.
+
+**Fix round.** Lane `ene_w2_nuclear_module_r1fix` ran from 09:06Z to 09:37Z (m1, glm-codex glm-5.3, existing-PR mode on #8002, one round, seat review). Its ruling text carried the reviewer's findings verbatim, because the lane parser drops findings written in bold.
+- Delivered: one commit, `9e3237efdef6` ("fix(energy): complete nuclear research composition", 9 files, +730/−117); lane verdict `REVIEW_DEFERRED`, meaning the seat reviews.
+- Post-lane checks (09:40Z): the snapshot ref still resolves to `6cd958e92b25`; #8002 is DRAFT on the snapshot base with no labels and head `9e3237efdef6`; main has no commit touching the nuclear files.
+- The fixer reports every finding addressed, but that is navigation, not acceptance. Its new route test SKIPPED in its environment (no `httpx`), so the M4 production-path proof has not yet run.
+- An Opus READ_ONLY round-2 re-review at `9e3237efdef6` is RUNNING. It must execute the route test (this host has `httpx` and `fastapi`) and re-run every ruling mutant itself.
+
+**Shell defect reported, not fixed.** #7870 comment 5829675838 reports that the evidence route's `assertion_ref` pattern refuses every `theme:`-scoped ref — the form Robotics mints on main. The comment includes the reproduction and two consistent resolutions. Energy edits no shell file. The same comment consumes Robotics' 5828876066: nuclear `VIEWS` already equal the shared client's hard-pinned `TR_VIEW_KEYS`.
+
+**Power-Demand preparation.** PR #8016 records a read-only scope census, `research/energy/power_demand_program/CENSUS-2026-09-25-power-demand-scope.md`, pinned at main `daa6a2e1`, #7870 `6cd958e9` and #7791 `68e815d8`.
+- Candidate identities: `theme:data_center_power` (primary basket `data_center_power`, supplemental demand-driver basket `ai_neoclouds`) and `theme:grid_electrification` (primary basket `power_grid`). `power_grid` is a basket, not a theme.
+- Collisions to respect: #7462, #7284, and Industrials #7789/#7924. No DNR rows apply.
+- Design and build wait for nuclear acceptance (R-ENE-16).
+
+**Live rung.** #8001 merged at `6c9465c7ed7d`, but production stays at `3a29e6145ce` because the VPS pull cron is held (`# MMX-DISK-TRIAGE-HOLD`, macro#6902). Lifting that hold is an operator act. Energy never touches it and reports the live rung as blocked, not live.
+
+**Carriers.** The Slack root had no counterpart edge after ts `1790253062.808389` (read 2026-09-25, before 09:35Z). The scheduled watch now also checks that #8002 keeps its DRAFT / no-label / snapshot-base shape. It counts #7870 comments addressed to Energy and excludes only Energy's own posts, identified by their opening line.
