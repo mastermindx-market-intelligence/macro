@@ -1,0 +1,293 @@
+{
+  "schema": "cybersecurity_basket_integrity.v1",
+  "as_of": "2026-09-23",
+  "construction": "equal-weight daily returns; available members; no future rows beyond as_of",
+  "sets": {
+    "current_10": {
+      "members": [
+        "CRWD",
+        "PANW",
+        "FTNT",
+        "OKTA",
+        "QLYS",
+        "ZS",
+        "S",
+        "NET",
+        "RBRK",
+        "TENB"
+      ],
+      "n_members": 10,
+      "latest_session": "2026-09-23",
+      "latest_equal_weight_return_pct": 3.85,
+      "latest_advance_decline": {
+        "advance": 10,
+        "decline": 0,
+        "flat": 0
+      },
+      "latest_top3_absolute_contribution_share": 0.538,
+      "proxy_fit": {
+        "CIBR": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.935,
+            "tracking_error_annualized": 0.212
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.933,
+            "tracking_error_annualized": 0.182
+          },
+          "full": {
+            "n": 2820,
+            "correlation": 0.897,
+            "tracking_error_annualized": 0.195
+          }
+        },
+        "BUG": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.968,
+            "tracking_error_annualized": 0.134
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.958,
+            "tracking_error_annualized": 0.133
+          },
+          "full": {
+            "n": 1730,
+            "correlation": 0.94,
+            "tracking_error_annualized": 0.165
+          }
+        },
+        "WCBR": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.968,
+            "tracking_error_annualized": 0.126
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.968,
+            "tracking_error_annualized": 0.11
+          },
+          "full": {
+            "n": 1419,
+            "correlation": 0.957,
+            "tracking_error_annualized": 0.13
+          }
+        }
+      }
+    },
+    "expanded_14": {
+      "members": [
+        "CRWD",
+        "PANW",
+        "FTNT",
+        "OKTA",
+        "QLYS",
+        "ZS",
+        "S",
+        "NET",
+        "RBRK",
+        "TENB",
+        "CHKP",
+        "SAIL",
+        "VRNS",
+        "NTSK"
+      ],
+      "n_members": 14,
+      "latest_session": "2026-09-23",
+      "latest_equal_weight_return_pct": 3.44,
+      "latest_advance_decline": {
+        "advance": 14,
+        "decline": 0,
+        "flat": 0
+      },
+      "latest_top3_absolute_contribution_share": 0.43,
+      "proxy_fit": {
+        "CIBR": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.926,
+            "tracking_error_annualized": 0.207
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.926,
+            "tracking_error_annualized": 0.172
+          },
+          "full": {
+            "n": 2820,
+            "correlation": 0.914,
+            "tracking_error_annualized": 0.161
+          }
+        },
+        "BUG": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.972,
+            "tracking_error_annualized": 0.12
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.966,
+            "tracking_error_annualized": 0.112
+          },
+          "full": {
+            "n": 1730,
+            "correlation": 0.952,
+            "tracking_error_annualized": 0.134
+          }
+        },
+        "WCBR": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.966,
+            "tracking_error_annualized": 0.12
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.967,
+            "tracking_error_annualized": 0.102
+          },
+          "full": {
+            "n": 1419,
+            "correlation": 0.96,
+            "tracking_error_annualized": 0.112
+          }
+        }
+      }
+    },
+    "expanded_15_with_rpd": {
+      "members": [
+        "CRWD",
+        "PANW",
+        "FTNT",
+        "OKTA",
+        "QLYS",
+        "ZS",
+        "S",
+        "NET",
+        "RBRK",
+        "TENB",
+        "CHKP",
+        "SAIL",
+        "VRNS",
+        "NTSK",
+        "RPD"
+      ],
+      "n_members": 15,
+      "latest_session": "2026-09-23",
+      "latest_equal_weight_return_pct": 3.62,
+      "latest_advance_decline": {
+        "advance": 15,
+        "decline": 0,
+        "flat": 0
+      },
+      "latest_top3_absolute_contribution_share": 0.392,
+      "proxy_fit": {
+        "CIBR": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.92,
+            "tracking_error_annualized": 0.217
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.921,
+            "tracking_error_annualized": 0.177
+          },
+          "full": {
+            "n": 2820,
+            "correlation": 0.913,
+            "tracking_error_annualized": 0.164
+          }
+        },
+        "BUG": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.97,
+            "tracking_error_annualized": 0.127
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.966,
+            "tracking_error_annualized": 0.114
+          },
+          "full": {
+            "n": 1730,
+            "correlation": 0.956,
+            "tracking_error_annualized": 0.131
+          }
+        },
+        "WCBR": {
+          "1y": {
+            "n": 252,
+            "correlation": 0.966,
+            "tracking_error_annualized": 0.125
+          },
+          "2y": {
+            "n": 504,
+            "correlation": 0.967,
+            "tracking_error_annualized": 0.103
+          },
+          "full": {
+            "n": 1419,
+            "correlation": 0.962,
+            "tracking_error_annualized": 0.109
+          }
+        }
+      }
+    }
+  },
+  "candidates": {
+    "CHKP": {
+      "first_session": "2014-01-02",
+      "last_session": "2026-09-23",
+      "price_rows": 3199,
+      "corr_to_current_core": 0.47,
+      "downside_corr_to_current_core": 0.336
+    },
+    "SAIL": {
+      "first_session": "2025-02-13",
+      "last_session": "2026-09-23",
+      "price_rows": 404,
+      "corr_to_current_core": 0.701,
+      "downside_corr_to_current_core": 0.551
+    },
+    "VRNS": {
+      "first_session": "2014-02-28",
+      "last_session": "2026-09-23",
+      "price_rows": 3161,
+      "corr_to_current_core": 0.57,
+      "downside_corr_to_current_core": 0.448
+    },
+    "NTSK": {
+      "first_session": "2025-09-18",
+      "last_session": "2026-09-23",
+      "price_rows": 254,
+      "corr_to_current_core": 0.661,
+      "downside_corr_to_current_core": 0.37
+    },
+    "RPD": {
+      "first_session": "2015-07-17",
+      "last_session": "2026-09-23",
+      "price_rows": 2813,
+      "corr_to_current_core": 0.639,
+      "downside_corr_to_current_core": 0.511
+    }
+  },
+  "decision": {
+    "core_additions": [
+      "CHKP",
+      "SAIL",
+      "VRNS",
+      "NTSK"
+    ],
+    "watch_not_core": [
+      "RPD"
+    ],
+    "reason": "The four-name expansion fills missing network, identity-governance, data-security and SSE/SASE sleeves and improves BUG/WCBR tracking error. RPD adds little incremental proxy fit and would receive an outsized equal weight for its liquidity."
+  }
+}

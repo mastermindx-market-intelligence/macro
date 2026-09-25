@@ -1,8 +1,8 @@
 {
-  "version": "2026-08-07",
+  "version": "2026-09-23",
   "note": "Curated US theme baskets for monitoring rotation. Descriptive only, not a buy list.",
   "seed_date": "2023-05-09",
-  "curated": "2026-08-07",
+  "curated": "2026-09-23",
   "baskets": {
     "mag7": {
       "name": "Magnificent Seven",
@@ -3529,7 +3529,7 @@
     "cybersecurity": {
       "name": "Cybersecurity",
       "name_zh": "网络安全",
-      "theme": "Endpoint, network, identity and cloud security software.",
+      "theme": "Endpoint, network, identity, data, cloud and cyber-resilience software.",
       "category": "Software",
       "parent": "Software",
       "tags": [
@@ -3537,12 +3537,14 @@
         "software",
         "cloud",
         "identity",
-        "endpoint"
+        "endpoint",
+        "data-security",
+        "sase"
       ],
       "etf_proxy": "CIBR",
       "etf_proxy_note": "loose — basket is a subset of CIBR's holdings",
       "created": "2026-06-19",
-      "curated": "2026-06-19",
+      "curated": "2026-09-23",
       "members": [
         {
           "ticker": "CRWD",
@@ -3566,11 +3568,25 @@
           "rationale": "Fortinet — firewall/SD-WAN scale player with custom-ASIC network security"
         },
         {
+          "ticker": "CHKP",
+          "added": "2023-05-09",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "Check Point — mature network/firewall security pure play; broadens the network-security sleeve beyond PANW and FTNT"
+        },
+        {
           "ticker": "OKTA",
           "added": "2023-05-09",
           "curated_added": "2026-06-19",
           "removed": null,
           "rationale": "Okta — identity and access management; workforce and customer SSO/auth"
+        },
+        {
+          "ticker": "SAIL",
+          "added": "2025-02-13",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "SailPoint — identity governance and administration; complements OKTA access management with entitlement and lifecycle controls"
         },
         {
           "ticker": "QLYS",
@@ -3601,6 +3617,13 @@
           "rationale": "Zscaler — zero-trust secure web gateway and cloud SASE proxy"
         },
         {
+          "ticker": "NTSK",
+          "added": "2025-09-18",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "Netskope — cloud-native security service edge and SASE platform; completes the modern cloud-network security sleeve"
+        },
+        {
           "ticker": "S",
           "added": "2023-05-09",
           "curated_added": "2026-06-19",
@@ -3622,6 +3645,13 @@
           "rationale": "Rubrik — cyber-resilience and data security; backup/recovery vs ransomware"
         },
         {
+          "ticker": "VRNS",
+          "added": "2023-05-09",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "Varonis — data security, DSPM and data-access intelligence; adds the data-security control plane"
+        },
+        {
           "ticker": "TENB",
           "added": "2023-05-09",
           "curated_added": "2026-06-19",
@@ -3629,7 +3659,7 @@
           "rationale": "Tenable — exposure management and vulnerability scanning (Nessus)"
         }
       ],
-      "thesis": "Security software across endpoint, network, identity, vulnerability and cloud protection.",
+      "thesis": "Cybersecurity-focused software across endpoint/XDR, network firewalls, identity and access governance, vulnerability and exposure management, cloud/SASE, data security and cyber-resilience.",
       "weighting": "equal",
       "changelog": [
         {
@@ -3646,11 +3676,17 @@
           "action": "remove",
           "date": "2026-06-21",
           "note": "YOU: removed after coherence audit; driver no longer matched the basket."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "add",
+          "note": "Added CHKP, SAIL, VRNS and NTSK after coverage, downside-co-movement and proxy-fit audit. The expansion fills mature network security, identity governance, data security and SSE/SASE gaps while preserving an equal-weight cybersecurity-focused monitoring basket."
         }
       ],
       "omitted": [
         "NSSC Napco Security  and downside (-0.05) correlation).",
-        "YOU Clear Secure (removed 2026-06-18: consumer biometric travel-lane subscription, a different sub-industry/driver from enterprise security software; structurally low co-movement across every window, corr 0.28 vs 0.63)."
+        "YOU Clear Secure (removed 2026-06-18: consumer biometric travel-lane subscription, a different sub-industry/driver from enterprise security software; structurally low co-movement across every window, corr 0.28 vs 0.63).",
+        "RPD Rapid7 (reviewed 2026-09-23: coherent SecOps/vulnerability candidate, but kept outside the core because its smaller-cap/lower-liquidity profile would be overstated by equal weighting and added little incremental BUG/WCBR proxy fit)."
       ]
     },
     "nuclear_power": {

@@ -2995,6 +2995,11 @@ jobs:
       # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
       # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
       # engine.capital_need plus the same debt-maturity render boundary. No new job.
+      # tests/test_cybersecurity_basket_integrity.py (Cybersecurity universe integrity,
+      # 2026-09-24 contract-delta repair) rides this data/render lane: it pins the
+      # canonical membership and PIT stamps, reads the incumbent parquet close/OHLCV
+      # stores, and verifies the generated basket detail payload. pandas/pyarrow are
+      # already installed by this job; no new job or dependency plane.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -3063,6 +3068,7 @@ jobs:
           tests/test_stance_matrix.py
           tests/test_theme_scoring_conflicted.py
           tests/test_basket_score_rollover_w4.py
+          tests/test_cybersecurity_basket_integrity.py
           tests/test_index_momentum.py
           tests/test_cohort_flow_chips.py
           tests/test_statement_tape.py
