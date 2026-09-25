@@ -3146,6 +3146,16 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
     suites inspect committed site/ artifacts, not historical blobs). Do not
     replace the PACK checkout with sparse checkout. W3 contains only ci-plan's
     working tree; ci-pack materialization remains W4.
+
+    And no ``filter: blob:none`` on the pack checkout (2026-09-23,
+    DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION): a pack materialises the whole
+    tree anyway, so the filter only moved ~5 GiB of blobs out of the retried
+    ``git fetch`` into one unretried promisor request issued by ``git
+    checkout``. Three of those died at 65–67 minutes ("N bytes of body are
+    still expected" / "could not fetch 20ced735… from promisor remote" — the
+    first index entry, not a corrupt object): runs 35876013221, 35885173966,
+    35886408213. An unfiltered depth-1 fetch is retried by actions/checkout
+    and leaves the checkout step with no network to fail on.
     """
     workflow = _yaml(WORKFLOW)
     pack = workflow["jobs"]["ci-pack"]
@@ -3154,7 +3164,7 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
         for step in pack["steps"]
         if str(step.get("uses", "")).startswith("actions/checkout@")
     )
-    assert checkout["with"]["filter"] == "blob:none"
+    assert "filter" not in checkout["with"]
     assert checkout["with"]["fetch-depth"] == 1
     assert "sparse-checkout" not in checkout["with"]
     plan = workflow["jobs"]["ci-plan"]
@@ -4330,11 +4340,47 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and 10 packs; measured 5,763 / 5,530 / 5,536, packs 10 / 10 / 10) —
     they bound the incident, and this wave's 47-weight cut on the index
     probe is the honest size of four small smears, not a re-base.
+
+    2026-09-24 (#6872 postmortem — the p0b receipt-closure gate moves out of
+    ``design-governance`` into its own curated job ``p0b-receipt-closure``,
+    w7, ``scope: exclusive`` over templates/**, site/**, engine/i18n.py, the
+    recipe, the verifier and mockups/evidence/prophet-p0b-zero-fouc/**).
+    B-CUR-DESIGN-GOVERNANCE-P0B-1 above is thereby resolved at the source:
+    with the gate gone from ``design-governance`` its closure no longer
+    carries check_p0b_receipt_closure.py:100's ``evidence.glob`` root claim,
+    so the unearned engine/** fallback disappears and design-governance
+    stops riding the plan_book probe (w23 -> w18). Re-measured, full
+    manifest, inference on:
+
+        templates/index.html          131 -> 132 jobs, 5,790 -> 5,792 weight
+                    (+1: p0b-receipt-closure rides templates/** by design)
+        scripts/build_free_content.py 129 -> 129 jobs, 5,543 -> 5,538 weight
+        engine/prophet/plan_book.py   126 -> 125 jobs, 5,549 -> 5,526 weight
+
+    JOB ceilings re-based to measurement + 1 (133 / 130 / 126): the index
+    probe's +1 is a gate entering on the PRs that are its subject, which the
+    wave-7 note names as the correct-risk response ("ratcheting the ceiling
+    is the correct-risk response, not curation"). Said explicitly: the
+    PRE-change tree already measured 131 / 129 / 126 — over, at, and at the
+    old bounds — and that is not this PR's doing. #6872 (merged 2026-09-24
+    17:54Z) added ``ontology-explorer`` (w11) with an INFERRED scope: 614
+    owned paths plus a whole-tree fallback smear (admin/**, app/**,
+    collectors/**, config/**, ...), so it rides all three probes. Measured
+    on main's manifest with that one job removed: 130 / 128 / 125, i.e. the
+    old bounds' exact headroom. Nobody saw it because this suite's host job
+    ``workflow-yaml`` is ``gate: data`` — off the merge gate — and the
+    data-health lane had not run a post-#6872 tree by 2026-09-25 00:55Z
+    (its last run, 17:54:26Z, predates the merge). Identical under Python
+    3.12 and 3.14, full checkout. Curating ontology-explorer's smear is a
+    follow-on (B-CUR-ONTOLOGY-EXPLORER-1); re-basing here keeps the ratchet
+    honest instead of leaving it red-on-arrival. WEIGHT and PACK ceilings
+    stay unmoved (5,800 / 5,600 / 5,600 and 10 packs; measured 5,792 /
+    5,538 / 5,526, packs 10 / 10 / 10).
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 130, 5_800),
-        ("scripts/build_free_content.py", 129, 5_600),
+        ("templates/index.html", 133, 5_800),
+        ("scripts/build_free_content.py", 130, 5_600),
         ("engine/prophet/plan_book.py", 126, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
@@ -4904,3 +4950,199 @@ def test_no_hash_token_inside_folded_run_scalar_in_legacy_jobs_manifest() -> Non
             for _indent, ln, _body, bl in offenders
         )
     )
+
+
+# ---------------------------------------------------------------------------
+# p0b-receipt-closure: own job, curated scope bound to the committed receipts
+# (2026-09-24, #6872 postmortem — DSC:PACK-RUNNER-SKIPS-STEPS-AFTER-FIRST-RED)
+# ---------------------------------------------------------------------------
+
+P0B_JOB = "p0b-receipt-closure"
+P0B_GATE_NEEDLE = "check_p0b_receipt_closure.py --diff-file"
+# The exact pinned paths #6872 (merge ac61896da96c) changed without the receipts.
+P0B_6872_PINNED_MOVES = (
+    "templates/_navlinks.html.j2",
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+)
+
+
+def _p0b_run_commands(definition: dict) -> list[str]:
+    return [
+        str(step["run"])
+        for step in definition.get("steps", [])
+        if isinstance(step, dict) and "run" in step
+        and "pip install" not in str(step["run"])
+    ]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_p0b_receipt_closure_job_owns_every_receipt_pinned_path() -> None:
+    """Every path the committed P0B receipts pin selects ``p0b-receipt-closure``.
+
+    #6872 (2026-09-24) changed templates/_navlinks.html.j2 and the rendered
+    fixture without re-minting mockups/evidence/prophet-p0b-zero-fouc/
+    mobile-layout*.json, and main went red on ci-pack-9 for hours. The gate
+    existed (#7613) but as trailing steps on ``design-governance``, and
+    "unscoped" there was NOT always-on: ``infer_job_scopes`` derived a scope
+    from the job's commands, ``mockups/`` sits outside every opaque scan root,
+    and a diff touching only the fixture selected 3/158 jobs with the job
+    skipped (measured on the pre-fix manifest, inference on).
+
+    The job is now ``scope: exclusive`` over the ROOTS the pins live under.
+    ``scope: exclusive`` replaces inference (``infer_job_scopes`` keeps the
+    declared paths and clears the fallback tier), so ``select_jobs`` on the
+    loaded manifest is exactly what ``ci-plan`` computes for this job — no
+    minute-long inference pass is needed to pin it. The pin set is DERIVED
+    from the receipts here, the same way the gate derives it at runtime, so a
+    receipt that later pins a path outside the curated roots reds this test
+    and names the path: widen ``paths:`` in the same PR, never narrow the
+    receipts.
+    """
+    import scripts.check_p0b_receipt_closure as guard
+
+    jobs = PACK.load_legacy_jobs(MANIFEST)
+    by_id = {job.job_id: job for job in jobs}
+    job = by_id.get(P0B_JOB)
+    assert job is not None, f"{P0B_JOB} missing from {MANIFEST.name}"
+    assert job.gate == "code", "the verdict is a function of the PR tree only"
+    assert job.exclusive, (
+        "curated scope must REPLACE inference — a unioned fallback tier is "
+        "what let mockups-only diffs skip the gate on #6872")
+
+    pin_sets, refuse = guard.derive_pin_sets(ROOT)
+    assert refuse is None, refuse
+    pinned: set[str] = set(pin_sets)
+    for pins in pin_sets.values():
+        pinned |= pins
+    assert len(pinned) >= 20, sorted(pinned)  # receipts, fixture, inputs, assets
+
+    unowned = sorted(
+        path for path in pinned
+        if P0B_JOB not in {j.job_id for j in PACK.select_jobs(jobs, [path])[0]}
+    )
+    assert not unowned, (
+        f"{len(unowned)} receipt-pinned path(s) would not select {P0B_JOB}; "
+        f"widen its paths: in .github/ci/legacy-jobs.yml: {unowned}")
+
+    # The gate's own inputs re-run the gate too.
+    for own in ("scripts/check_p0b_receipt_closure.py",
+                "tests/test_check_p0b_receipt_closure.py"):
+        assert P0B_JOB in {j.job_id for j in PACK.select_jobs(jobs, [own])[0]}, own
+
+
+def test_p0b_receipt_closure_gate_runs_first_and_has_one_home() -> None:
+    """The closure verdict is the job's FIRST run step, and nothing else hosts it.
+
+    ``run_ci_pack.py`` skips a logical job's remaining steps once one fails
+    (``ALLOWED_STEP_KEYS`` carries no per-step ``if``), so on #6872 the
+    forward-only design ratchet's five ``color-mix(`` findings on
+    templates/ontology.css ran first and the closure step NEVER EXECUTED —
+    ci run 36036232964, ci-pack-3: no p0b step group follows the ratchet's
+    ``exited 1``. Gate first means its verdict is printed whatever the
+    selftest and unit suite do; one home means no sibling gate can shadow it
+    again. The house-law registry must point at that home, or the textual
+    wiring check would pass against a job that no longer runs the script.
+    """
+    manifest = _yaml(MANIFEST)["jobs"]
+    commands = _p0b_run_commands(manifest[P0B_JOB])
+    assert commands, "p0b-receipt-closure has no run steps"
+    assert P0B_GATE_NEEDLE in commands[0], (
+        "the receipt-closure gate must be the first run step; a red selftest "
+        "or unit suite ahead of it would hide the verdict")
+    assert "check_p0b_receipt_closure.py --selftest" in "\n".join(commands)
+    assert "tests/test_check_p0b_receipt_closure.py" in "\n".join(commands)
+
+    other_homes = sorted(
+        job_id for job_id, definition in manifest.items()
+        if job_id != P0B_JOB and isinstance(definition, dict)
+        and "check_p0b_receipt_closure" in "\n".join(_p0b_run_commands(definition))
+    )
+    assert not other_homes, (
+        f"the p0b closure gate has a second home {other_homes}; trailing steps "
+        "on a sibling gate are exactly what shadowed it on #6872")
+
+    registry = yaml.safe_load(
+        (ROOT / "config" / "house_law_checks.yml").read_text(encoding="utf-8"))
+    entries = registry["checks"] if isinstance(registry, dict) else registry
+    law = next(e for e in entries if e.get("law_id") == "ui.p0b_receipt_closure")
+    wired = {w.get("job") for w in law.get("ci_wiring", []) if w.get("lane") == "pr_ci"}
+    assert wired == {P0B_JOB}, wired
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_p0b_receipt_closure_job_would_block_6872_diff_shape(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Reproduction: #6872's diff shape is selected AND fails the gate.
+
+    Selection: the two pinned paths that merge ``ac61896da96c`` moved without
+    the receipts each select ``p0b-receipt-closure`` on their own — including
+    the fixture, which lives under ``mockups/`` and selected nothing that
+    runs the gate before this job existed. Verdict: fed that diff, the gate
+    names both paths against BOTH committed receipts (four findings) and
+    exits 1, which is the ``::error`` the PR's pack would now print as its
+    own logical job instead of being skipped behind a sibling gate's red.
+    """
+    import scripts.check_p0b_receipt_closure as guard
+
+    jobs = PACK.load_legacy_jobs(MANIFEST)
+    for path in P0B_6872_PINNED_MOVES:
+        selected = {j.job_id for j in PACK.select_jobs(jobs, [path])[0]}
+        assert P0B_JOB in selected, (path, sorted(selected))
+    selected, _reason = PACK.select_jobs(jobs, list(P0B_6872_PINNED_MOVES))
+    assert P0B_JOB in {j.job_id for j in selected}
+
+    pin_sets, refuse = guard.derive_pin_sets(ROOT)
+    assert refuse is None, refuse
+    changed = set(P0B_6872_PINNED_MOVES) | {
+        "templates/ontology.css", "site/ontology.html", "app/main.py",
+    }
+    findings = guard.evaluate(changed, pin_sets)
+    assert len(findings) >= 4, findings
+    for path in P0B_6872_PINNED_MOVES:
+        assert any(path in f for f in findings), (path, findings)
+    for receipt in pin_sets:
+        assert any(receipt in f for f in findings), (receipt, findings)
+
+    # End to end, the way the job's step invokes it: exit 1 and line-start
+    # ``::error`` annotations naming the moves and the remint command.
+    diff_file = tmp_path / "p0b.changed"
+    diff_file.write_text("\n".join(sorted(changed)) + "\n", encoding="utf-8")
+    rc = guard.main(["--diff-file", str(diff_file), "--repo-root", str(ROOT)])
+    out = capsys.readouterr().out
+    assert rc == 1, out
+    errors = [line for line in out.splitlines()
+              if line.startswith("::error title=p0b-receipt-closure::")]
+    assert sum("PINNED PATH CHANGED WITHOUT RECEIPT" in e for e in errors) >= 4, out
+    assert any("re-mint with:" in e for e in errors), out
+
+
+def test_markets_fresh_render_byte_match_is_data_gated_and_still_wired() -> None:
+    """The markets.html fresh-render byte-match lives on the DATA gate, once.
+
+    ``scripts.build_markets`` reads live data/regime + data/market_state; the
+    closing-bell lane's scope=close render rewrites both without re-baking
+    site/markets.html (c4b705de8f2, 2026-09-25 00:45Z), so a ``gate: code``
+    byte-match reds every merge ref cut before the next render.yml bake on a
+    tree no PR changed — measured on PR #7971 (ci-pack-3, HK Risk-on ->
+    Risk-off in the fresh render only). By GATE_VALUES' own definition that
+    verdict is ``data``. Pin both halves of the split: the code-gated strip
+    job deselects exactly that node, and the data-gated twin selects exactly
+    it — so the assertion is neither on the merge gate nor silently dropped.
+    """
+    manifest = _yaml(MANIFEST)["jobs"]
+    node = ("tests/test_markets_regime_strip.py::"
+            "test_fresh_render_byte_matches_committed_markets_html")
+    strip = manifest["markets-regime-strip"]
+    twin = manifest["markets-regime-strip-bake-parity"]
+    assert strip["gate"] == "code" and twin["gate"] == "data"
+    strip_cmds = "\n".join(str(s["run"]) for s in strip["steps"] if "run" in s)
+    twin_cmds = "\n".join(str(s["run"]) for s in twin["steps"] if "run" in s)
+    assert f"--deselect {node}" in strip_cmds, strip_cmds
+    assert "tests/test_markets_regime_strip.py" in strip_cmds  # the fixture suite stays
+    assert "-k test_fresh_render_byte_matches_committed_markets_html" in twin_cmds, twin_cmds
+    # Same curated scope on both halves: the twin must re-run whenever the
+    # strip job would, or a builder/template change could drift unnoticed.
+    assert twin.get("scope") == "exclusive"
+    assert set(twin["paths"]) == set(strip["paths"]), (
+        set(twin["paths"]) ^ set(strip["paths"]))
