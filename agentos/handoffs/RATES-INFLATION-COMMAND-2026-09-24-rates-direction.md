@@ -332,3 +332,52 @@ RD2 constituent-qualified policy repricing. A prospective CPI catalyst shadow is
 already frozen/registered under this carrier; do not duplicate it. Next recover its
 exact rule/clock and build the complementary event-response/driver consumer or advance
 RD2 if that prospective lane is waiting for natural-time outcomes.
+
+
+## Continuation: dynamic curve-system point forecast rejected; direction-only lead isolated
+
+Same procedure pin: Mastermind 819abc8c23609cdded2b33f6e1bfc7854bd5c847,
+Skillpack1.0.1/bootstrap1. Parent carrier remains #7909 /
+claude/rates-direction-20260924-sol-001.
+
+A materially distinct curve-system hypothesis was frozen before opening its outcomes
+at commit 08ddb2c550ec84a4de9c780121a938dc0d02a1cf,
+2026-09-25T00:04:18.258662Z. It uses fixed Nelson-Siegel lambda0.0609/month on
+DGS1/2/3/5/7/10, direct horizon factor dynamics at5/20/60 common observed-date
+intervals, strict fit/calibration purging, and a no-change benchmark. No parameter
+search or regime/oscillator input is included.
+
+TrialLedger family ric_curve_system_dns_v1 registered exactly12 configurations
+(4 models x3 horizons). Private evidence:
+ /Volumes/Mastermind/evidence/rates-direction-20260924-sol-001/curve-system-dns-v1/frozen-08ddb2c5/ .
+Prediction SHA29fd579355ff8d9b3424ecc5ef3e65822780ee7a5376b914483917ef65666594;
+summary SHA8614e219879331571fca6dd9e07df4d3777eaadbb4497c420542026b8bf2dcde.
+
+Predeclared primary 2021-2025 h20 result is a null: no-change MSE740.153bp^2,
+DNS-VAR881.014, a19.03% deterioration. Every nontrivial point model lost to
+no-change at h5/h20/h60. Preserve DEC:RIC-CURVE-SYSTEM-NO-PROMOTION and do not
+retune lambda/lags/windows on the opened primary period.
+
+A predeclared secondary direction-probability diagnostic produced one narrower
+hypothesis only: direct AR and DNS-diagonal residual-calibrated direction Brier
+improved at h20/h60 in BOTH declared periods, despite worse point MSE. DNS-diagonal
+h20 improvement was+0.80% in2021-25 and+0.81% in2010-20 context; h60 was+9.10% and
++6.97%. h60 has only20 primary and45 context non-overlapping windows, so this cannot
+be promoted. At h5 the same DNS direction diagnostic worsened in both periods.
+
+Same-author integrity recomputed both period summaries exactly from131,464 saved
+prediction rows, verified unique model/horizon/origin identities, finite normalized
+probabilities, fit target end < calibration start < calibration target end < origin,
+the pre-registration TrialLedger prefix, and exact12-row family suffix. Independent
+review remains absent.
+
+Scientific interpretation: random-walk remains the stronger yield-LEVEL baseline;
+the remaining curve lead is only whether longer-horizon factor state improves
+DIRECTIONAL probabilities after magnitude calibration. A successor must be selected
+prospectively and use an existing lawful forward-evidence owner; do not create a
+second generic forecast ledger to rescue the retrospective result.
+
+Latest retrospective model output at corrected-history origin2026-09-22 is research
+context only, not an issued/accepted forecast. Do not cite it as live direction
+authority. Parent mission remains incomplete. Short-term catalyst/policy lanes remain
+the higher-priority path for actual near-term direction.
