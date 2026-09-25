@@ -3,12 +3,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "mockups/refs/reference_integrity/intl-vnext-20260924"
 PROOF = EVIDENCE / "proposal-r3-browser-proof.json"
-ARTIFACT = ROOT / "mockups/refs/institutionalize/intl/reference-r3.html"
+ARTIFACT_REL = "mockups/refs/institutionalize/intl/reference-r3.html"
+ARTIFACT = ROOT / ARTIFACT_REL
 STOCKS = ROOT / "site/intl_stocks.html"
 SOURCE_COMMIT = "007d88824cb6831eb534685371ffa5999d577d91"
 
@@ -21,11 +23,21 @@ def _proof() -> dict:
     return json.loads(PROOF.read_text(encoding="utf-8"))
 
 
+def _git_blob_sha256(commit: str, path: str) -> str:
+    completed = subprocess.run(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
+    return hashlib.sha256(completed.stdout).hexdigest()
+
+
 def test_r3_browser_receipt_binds_to_exact_source_and_preserved_stocks():
     proof = _proof()
     assert proof["schema"] == "mastermind.intl_r3_browser_evidence.v2"
     assert proof["source_commit"] == SOURCE_COMMIT
-    assert proof["artifact_sha256"] == _sha256(ARTIFACT)
+    assert proof["artifact_sha256"] == _git_blob_sha256(SOURCE_COMMIT, ARTIFACT_REL)
     assert proof["stocks_artifact"] == "site/intl_stocks.html"
     assert proof["stocks_sha256"] == _sha256(STOCKS)
     assert len(proof["captures"]) == 41

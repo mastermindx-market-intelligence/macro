@@ -1,0 +1,1141 @@
+{
+  "schema": "mastermind.intl_r3_browser_evidence.v3",
+  "source_commit": "UNFROZEN_WORKTREE",
+  "artifact": "mockups/refs/institutionalize/intl/reference-r3.html",
+  "artifact_sha256": "68eceb7fe3574cb16d887f58bd6fb3e767d0f20d31733c675f7d85f53d8e171b",
+  "stocks_artifact": "site/intl_stocks.html",
+  "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+  "stocks_preservation_basis": "Separate production-mode non-regression surface; R3 repair changes no production source and does not reinterpret Prophet signals.",
+  "checks": {
+    "status_locale_invariant": true,
+    "direction_ink_locale_switches": true,
+    "light_theme_contrast_en": {
+      "--ink-up": 6.12,
+      "--ink-down": 6.77,
+      "--ink-warn": 7.36,
+      "--status-danger-ink": 8.42,
+      "--status-caution-ink": 7.86,
+      "--status-good-ink": 6.66,
+      "--status-neutral-ink": 7.43,
+      "--text": 15.31,
+      "--muted": 4.96
+    },
+    "canonical_light_ink_tokens": true,
+    "no_invented_quantitative_displays": true,
+    "zero_score_disclosed": true,
+    "observed_scores_per_100": [
+      0,
+      61,
+      66,
+      81
+    ],
+    "forbidden_quantitative_phrases": [],
+    "semantic_console_errors": [],
+    "semantic_request_failures": [],
+    "semantic_external_requests": [],
+    "zero_external_dependencies": true,
+    "resolved_link_count": 43,
+    "unresolved_links": [],
+    "all_links_resolved": true,
+    "fixed_chart_horizon_independent": true,
+    "direct_initial_zh_synchronized": true,
+    "zero_page_overflow": true,
+    "overflow_failures": [],
+    "zero_console_errors": true,
+    "zero_request_failures": true,
+    "organ_state_locality": true,
+    "stocks_mode_non_regression": true,
+    "minimum_paint_dynamic_range": 199
+  },
+  "captures": [
+    {
+      "kind": "r3-repair-default",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "file": "proposal-r3-repair-desktop-dark-en.png",
+      "sha256": "a652643dcd19bea991167f982688f4c8bf1cdfa50330d00575a56c9e76084d01",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 7833
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-default",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "file": "proposal-r3-repair-desktop-dark-zh.png",
+      "sha256": "a3cbd635502ea15496ee3d7f8b1c9d4e05c83ea9b045ab2362bf562e95ce7287",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7512,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 7512
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-default",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "file": "proposal-r3-repair-desktop-light-en.png",
+      "sha256": "d8e846fafa53466d4e66bd50473ab5c0017084767e97830d5a9a032762c0743c",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 7833
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-default",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "file": "proposal-r3-repair-desktop-light-zh.png",
+      "sha256": "23a7fdca978ea49546f80e95ca68b521c353bea2ca4e518cea0af68ce4c0ab2a",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7512,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 7512
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-default",
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "file": "proposal-r3-repair-mobile-dark-en.png",
+      "sha256": "0e7b55062fdbfdf4c61f1741ab9d3bdded356c030227aa76b95a4d4b860c79d4",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 17851,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 17851
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-default",
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "file": "proposal-r3-repair-mobile-dark-zh.png",
+      "sha256": "51a2c5274614bf7d24c5fbb80f9ec2fdb6ac376b21505754ba732779a9acb75a",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 16645,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 16645
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-default",
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "file": "proposal-r3-repair-mobile-light-en.png",
+      "sha256": "0513481fbaa191dcdea143cf1c679115f6d2f2719274f08e34bfc5889ea1eade",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 17851,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 17851
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-default",
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "file": "proposal-r3-repair-mobile-light-zh.png",
+      "sha256": "ae3aee5ba913cd62c797a15ee673f2c42db6f2716fc47546587ef7cfaf09ade8",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 16645,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 16645
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "country": "JP",
+      "keyboard_next": "KR",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-jp-dark-en.png",
+      "sha256": "6f47c45ac250ad48379493801a5ab8cbb4d61bd8010af525ebe8a5c1b928a334",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "country": "KR",
+      "keyboard_next": "TW",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-kr-dark-en.png",
+      "sha256": "21a92a08afb0124223e728acadd87f279bab7b9a575d1b371f98c28d64659d99",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "country": "TW",
+      "keyboard_next": "IN",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-tw-dark-en.png",
+      "sha256": "796d39e2f9b38edcaaeb5b49a4173a31990e555b3e7e975adfcdbe75af0b0b4a",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "country": "IN",
+      "keyboard_next": "AU",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-in-dark-en.png",
+      "sha256": "5d5decb09295d05358dfbd9c4f0ec3d1205594d8d8fc501055a569f52bfb5d7a",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "country": "AU",
+      "keyboard_next": "GB",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-au-dark-en.png",
+      "sha256": "5b5e37261ce99aea5b54b6e21d70215e4ed4f6bca5ea495d1555055e5a2738e3",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "country": "GB",
+      "keyboard_next": "EZ",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-gb-dark-en.png",
+      "sha256": "f30d95136bc1320d2235dc56ed42591908e5e4f5cbed7a21d88e28b54d5a4bef",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "country": "EZ",
+      "keyboard_next": "JP",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-ez-dark-en.png",
+      "sha256": "f4fd270fe07e8b7221997163ebe64b68f5beff273729550b998e92f407a5a17f",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "country": "JP",
+      "keyboard_next": "KR",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-jp-dark-zh.png",
+      "sha256": "7e1f6d12771b12c1c21f983dc426dfe3f94ad05ac11acf41083b3fe8b99b6264",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7512,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1043
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "country": "JP",
+      "keyboard_next": "KR",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-jp-light-en.png",
+      "sha256": "83c4fc322db8db296354b865a4fe5267f2bb8c5b0f7e7d73c55a28aed8a44a7c",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 225
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "country": "JP",
+      "keyboard_next": "KR",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-jp-light-zh.png",
+      "sha256": "66918522e3314d3e5bcde8f99d64576dd0a6236d7712135eac5291c2dbba4372",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7512,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1043
+      },
+      "paint_dynamic_range": 225
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "country": "GB",
+      "keyboard_next": "EZ",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-gb-dark-zh.png",
+      "sha256": "5e0681412912909c90f826ccb7acfe0502974c8a63845c57620042f9dbe9c99d",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7512,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1043
+      },
+      "paint_dynamic_range": 244
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "country": "GB",
+      "keyboard_next": "EZ",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-gb-light-en.png",
+      "sha256": "c191d658c916330ffc7086d4ee547c87cea7d759f1f9da293b51d6140c883fcd",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1060
+      },
+      "paint_dynamic_range": 225
+    },
+    {
+      "kind": "r3-repair-country",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "country": "GB",
+      "keyboard_next": "EZ",
+      "selected_panel_visible": true,
+      "file": "proposal-r3-repair-country-gb-light-zh.png",
+      "sha256": "7eeff7b3e13f2e3260c64c24e5a41fba3441278f734879c0984e90933e2dfa4c",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7512,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1404,
+        "height": 1043
+      },
+      "paint_dynamic_range": 225
+    },
+    {
+      "kind": "r3-repair-horizon",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "horizon": "12m",
+      "before": "+4.5%",
+      "after": "+93.1%",
+      "file": "proposal-r3-repair-desktop-dark-en-horizon-12m.png",
+      "sha256": "f759789f6c870a8834b947c0745b1ae291c2d9ec1ecbd860ec84af107bef413b",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 7833
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-horizon",
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "horizon": "1m",
+      "before": "+4.5%",
+      "after": "+4.8%",
+      "file": "proposal-r3-repair-mobile-light-zh-horizon-1m.png",
+      "sha256": "15de700ea286f17bf95099fb11adb379d89a581cba03221ccec58dbdacfa3dac",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 16645,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 16645
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-fixed-paths",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "market_count": 7,
+      "horizons_verified": [
+        "1m",
+        "3m",
+        "6m",
+        "12m",
+        "ytd"
+      ],
+      "horizon_independent": true,
+      "semantic_direction_ink": true,
+      "file": "proposal-r3-repair-fixed-paths-desktop-dark-en.png",
+      "sha256": "60a478f8af59f3b7d0ba51e7cb41bf8b4d66f13bd553136f64792e803c415dc9",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7833,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1370,
+        "height": 292
+      },
+      "paint_dynamic_range": 237
+    },
+    {
+      "kind": "r3-repair-initial-locale",
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "selected_horizon_labels": [
+        "3月"
+      ],
+      "english_leaks": [],
+      "missing_chinese": [],
+      "file": "proposal-r3-repair-mobile-dark-zh-initial-locale.png",
+      "sha256": "51a2c5274614bf7d24c5fbb80f9ec2fdb6ac376b21505754ba732779a9acb75a",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 16645,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 16645
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "state": "loading",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-loading-dark-en.png",
+      "sha256": "b9f24b2ab61b2a482d80eeeece7059cdc106c42f7c7b9be1712a34f97742e358",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 6639,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 6639
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "state": "loading",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-loading-light-en.png",
+      "sha256": "05fa573ce413729ac0e7563131ff5bfa09b9f17f9ebb2973e203ca485d138c2c",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 6639,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 6639
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "state": "empty",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-empty-dark-en.png",
+      "sha256": "ff55f74745db38029c802192399bff41b3b16213b4e9d79942d37c19fc00ade8",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 6588,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 6588
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "state": "empty",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-empty-light-en.png",
+      "sha256": "d1946f724fdbfb7cda6c4b3063b68ac18e17f21a7bde914343bdcaf02bf19c00",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 6588,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 6588
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "state": "stale",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-stale-dark-en.png",
+      "sha256": "43e1dfdbd0c5dd2f6c572399a0815cde8bbecba1b2f583666c3351d9ade9a687",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7962,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 7962
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "state": "stale",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-stale-light-en.png",
+      "sha256": "2235ab6ad79fa27103b23e8528f7f40896ab76b6d279837fd07307a118b30a66",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 7962,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 7962
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "state": "error",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-error-dark-en.png",
+      "sha256": "58422e11d828dd56e3c00ede41ab19ce551dac376ace899a2585ba3b418b13ae",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 6601,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 6601
+      },
+      "paint_dynamic_range": 253
+    },
+    {
+      "kind": "r3-repair-organ-state",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "state": "error",
+      "capture_scope": "full-page",
+      "act_count": 6,
+      "all_acts_visible": true,
+      "unrelated_rotation_visible": true,
+      "unrelated_country_visible": true,
+      "unrelated_deep_desks_visible": true,
+      "active_state_visible": true,
+      "file": "proposal-r3-repair-organ-error-light-en.png",
+      "sha256": "519e6c4be7938a0c286e9dccdb50b36b41846052b2d4d8db81b91a4efed6333a",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 6601,
+        "actCount": 6
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 6601
+      },
+      "paint_dynamic_range": 250
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 1688,
+        "textLength": 3051,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-desktop-dark-en.png",
+      "sha256": "6e4f79cf7ef7bea60f94d5089827ed36d60db5550c027ab36600372b6413195d",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1688,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 1688
+      },
+      "paint_dynamic_range": 248
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 1691,
+        "textLength": 2129,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-desktop-dark-zh.png",
+      "sha256": "690822ead1b7b35b6ee05da93dbfc50fd843b2708a47d7a5dc75d24fedd30a0c",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1691,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 1691
+      },
+      "paint_dynamic_range": 248
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 1688,
+        "textLength": 3051,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-desktop-light-en.png",
+      "sha256": "da4d4ce8cb28e9eff55373b9ff7072d405b243cc43d7d569f1cdf59e9707b967",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1688,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 1688
+      },
+      "paint_dynamic_range": 221
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 1691,
+        "textLength": 2129,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-desktop-light-zh.png",
+      "sha256": "d47ef2851a2c8250aa828f60378547f8b1a6bd05d081247e80a6c73fb816c187",
+      "dimensions": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "scrollHeight": 1691,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 1440,
+        "height": 1691
+      },
+      "paint_dynamic_range": 221
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 2382,
+        "textLength": 1417,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-mobile-dark-en.png",
+      "sha256": "a188fb96ef99c54790e3ad989c646cad3ee55018b0f561e1e411cb35e856edbc",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 2382,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 2382
+      },
+      "paint_dynamic_range": 243
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 2297,
+        "textLength": 1061,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-mobile-dark-zh.png",
+      "sha256": "77973cd94c90d687aee4d66a65901fc55e9828c0e5f81215136568d9accd425f",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 2297,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 2297
+      },
+      "paint_dynamic_range": 243
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 2382,
+        "textLength": 1417,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-mobile-light-en.png",
+      "sha256": "efd9a7ebcf1406d9c9c2d397a41739b8f6a744eff0ef01642671a3e002f28274",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 2382,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 2382
+      },
+      "paint_dynamic_range": 199
+    },
+    {
+      "kind": "stocks-repair-preservation",
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "settled": true,
+      "stable_samples": 3,
+      "busy_visible": 0,
+      "loading_visible": 0,
+      "settle_observation": {
+        "scrollHeight": 2297,
+        "textLength": 1061,
+        "incompleteImages": 0,
+        "fontStatus": "loaded",
+        "busyVisible": 0,
+        "loadingVisible": 0
+      },
+      "stocks_sha256": "77d44314b73f26b2f265e2071343494720dcb91feeb81dde569599ff57c8be2d",
+      "file": "stocks-r3-repair-mobile-light-zh.png",
+      "sha256": "a539ad34bd20fe4f9f9765a8387b802b1644436b5fe3d4601d13f481c0d44dd8",
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "scrollHeight": 2297,
+        "actCount": 0
+      },
+      "console_errors": [],
+      "request_failures": [],
+      "image_dimensions": {
+        "width": 390,
+        "height": 2297
+      },
+      "paint_dynamic_range": 199
+    }
+  ]
+}

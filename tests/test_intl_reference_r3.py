@@ -82,7 +82,7 @@ def test_r3_covers_full_market_and_economy_universes():
         "US", "CN", "HK", "CA", "TW", "JP", "EZ", "GB", "IN", "AU"
     }
     assert _attr_values(html, "data-fragility-country") == {
-        "KR", "TW", "JP", "EZ", "GB", "IN", "AU"
+        "US", "KR", "TW", "JP", "EZ", "GB", "IN", "AU"
     }
 
 
@@ -186,26 +186,40 @@ def test_r3_removes_ambiguous_or_duplicate_receipts():
     assert "a transmission read, not a statement of cause" in html
 
 
-def test_r3_fixed_price_paths_are_neutral_and_separate_from_return_horizons():
+def test_r3_fixed_price_paths_are_semantic_and_visually_separate_from_return_horizons():
     html = _html()
     pulse = re.search(r'<section[^>]+id="global-pulse".*?</section>', html, re.S)
     assert pulse
     block = pulse.group(0)
-    cards = re.findall(r'<article class="market-card".*?</article>', block, re.S)
-    assert len(cards) == 7
-    for card in cards:
+    path_cards = re.findall(r'<article class="path-card".*?</article>', block, re.S)
+    return_cards = re.findall(r'<article class="market-card".*?</article>', block, re.S)
+    assert len(path_cards) == 7
+    assert len(return_cards) == 7
+    expected_directions = {
+        "KR": "up", "TW": "up", "JP": "up", "EZ": "up",
+        "GB": "up", "IN": "down", "AU": "up",
+    }
+    for card in path_cards:
+        market = re.search(r'data-path-market="([^"]+)"', card)
+        assert market
+        direction = expected_directions[market.group(1)]
         assert 'data-window-sessions="84"' in card
         assert 'data-horizon-independent="true"' in card
+        assert f'data-path-direction="{direction}"' in card
         spark = re.search(r'<div class="sparkline".*?</div>', card, re.S)
         assert spark
-        assert "var(--up)" not in spark.group(0)
-        assert "var(--down)" not in spark.group(0)
-        assert "var(--link)" in spark.group(0)
+        assert "var(--link)" not in spark.group(0)
+        assert f"var(--ink-{direction})" in spark.group(0)
+    for card in return_cards:
+        assert "sparkline" not in card
     visible = html_lib.unescape(block)
-    assert "Selected return window" in visible
-    assert "84-session price path · fixed" in visible
-    assert "所选收益周期" in visible
-    assert "84个交易日价格路径 · 固定" in visible
+    assert "Fixed 84-session price paths" in visible
+    assert "Selected return decomposition" in visible
+    assert "固定84个交易日价格路径" in visible
+    assert "所选收益周期拆分" in visible
+    assert 'data-chart-role="fixed-84-session"' in block
+    assert 'data-control-scope="return-decomposition-only"' in block
+    assert "rotation-spark" not in html
     whole_visible = html_lib.unescape(html)
     assert 'data-leadership-horizon="3m"' in html
     assert "3M relative leadership" in whole_visible
@@ -314,3 +328,188 @@ def test_r3_initial_locale_synchronizes_selected_horizon_labels_and_controls():
     assert "syncInitialControls();" in html
     assert "const initialHorizon = document.querySelector('[data-horizon][aria-pressed=\"true\"]');" in html
     assert "if (initialHorizon) syncHorizonLabels(initialHorizon);" in html
+
+
+def test_r3_shell_matches_canonical_product_chrome_jobs():
+    html = _html()
+    assert "MASTERMINDX" in html
+    assert 'class="nav-search"' in html
+    assert 'aria-label="Search stocks"' in html
+    assert "Search any stock" in html
+    assert 'class="terminal-link"' in html
+    assert 'class="shell-settings"' in html
+    assert _attr_values(html, "data-shell-market") == {
+        "US", "CN", "HK", "CA", "INTL", "RESEARCH"
+    }
+    assert 'data-theme-button="dark"' in html
+    assert 'data-theme-button="light"' in html
+    assert 'data-lang-button="en"' in html
+    assert 'data-lang-button="zh"' in html
+
+
+def test_r3_preserves_the_full_upstream_overview_job():
+    html = _html()
+    overview = re.search(r'<section[^>]+class="overview".*?</section>', html, re.S)
+    assert overview
+    block = html_lib.unescape(overview.group(0))
+    assert set(re.findall(r'data-overview-market="([^"]+)"', block)) == {
+        "US", "HK", "CN", "BONDS", "COMMODITIES"
+    }
+    assert len(re.findall(r'data-overview-signal="[^"]+"', block)) == 4
+    assert len(re.findall(r'data-overview-why="[^"]+"', block)) == 3
+    assert len(re.findall(r'data-overview-watch="[^"]+"', block)) == 3
+    for route in (
+        "macro_context.html", "sector_central.html", "signal_lab.html",
+        "macro_signals.html", "news.html", "macro_monetary.html",
+    ):
+        assert f'href="{route}"' in overview.group(0)
+    assert "One scale, five markets" in block
+    assert "同一标尺，五个市场" in block
+    assert "61/100" in block and "US-only" in block
+
+
+def test_r3_restores_international_risk_desk_synthesis_and_hot_channel():
+    html = _html()
+    risk = re.search(r'<article[^>]+id="international-risk-desk".*?</article>', html, re.S)
+    assert risk
+    block = html_lib.unescape(risk.group(0))
+    assert set(re.findall(r'data-risk-desk-domain="([^"]+)"', block)) == {
+        "EM", "CONTAGION", "USD", "FUNDING"
+    }
+    assert "Elevated: 1 of 6 stress signals hot" in block
+    assert "1 of 5 US transmission channels are hot" in block
+    assert "Dollar moving on rate differences, not fear" in block
+    assert "Swap lines ~$0.1bn outstanding" in block
+    assert len(re.findall(r'data-transmission-hot="true"', html)) == 1
+    assert len(re.findall(r'data-transmission-channel="[^"]+"', html)) == 5
+
+
+def test_r3_fragility_map_restores_anchor_market_and_valued_breaches():
+    html = _html()
+    fragility = re.search(
+        r'(<div class="fragility-row" data-fragility-country="GB".*?)(?=<div class="fragility-row"|</div>\s*<p class="caveat")',
+        html,
+        re.S,
+    )
+    united_states = re.search(
+        r'(<div class="fragility-row" data-fragility-country="US".*?)(?=<div class="fragility-row"|</div>\s*<p class="caveat")',
+        html,
+        re.S,
+    )
+    assert fragility and united_states
+    gb = html_lib.unescape(fragility.group(1))
+    us = html_lib.unescape(united_states.group(1))
+    for block, values in (
+        (gb, ("102%", "-3.1%", "-5.4%")),
+        (us, ("124%", "-3.6%", "-6.8%")),
+    ):
+        assert 'data-warning-count="3/4"' in block
+        assert all(value in block for value in values)
+        assert block.count('data-fragility-breach=') == 3
+    assert "8 / 8" in html
+    assert "Every declared economy and the US anchor are accounted for" in html
+
+
+def test_r3_turn_cards_preserve_metrics_risk_driver_and_receipt_depth():
+    html = _html()
+    cards = re.findall(
+        r'(<article class="turn-cell" data-turn-market="([^"]+)".*?</article>)',
+        html,
+        re.S,
+    )
+    assert len(cards) == 10
+    assert {market for _card, market in cards} == {
+        "US", "CN", "HK", "KR", "TW", "JP", "EZ", "GB", "IN", "AU"
+    }
+    for card, market in cards:
+        assert 'class="turn-metrics"' in card, market
+        assert 'class="turn-risk"' in card, market
+        assert 'class="turn-driver"' in card, market
+        assert 'class="turn-receipt"' in card, market
+        assert 'data-turn-evidence=' in card, market
+        assert "20d" in html_lib.unescape(card), market
+        assert "Off high" in html_lib.unescape(card), market
+    for market in ("US", "CN"):
+        card = next(card for card, code in cards if code == market)
+        assert 'data-risk-state="unavailable"' in card
+        assert "Not published for this market" in html_lib.unescape(card)
+
+
+def test_r3_restores_rrg_plot_and_reference_depth_views():
+    html = _html()
+    assert len(re.findall(r'data-rrg-point="(?:GB|TW|EZ|AU|KR|IN|JP)"', html)) == 7
+    assert len(re.findall(r'data-regime-point="(?:KR|TW|JP|EZ|GB|IN|AU)"', html)) == 7
+    assert len(re.findall(r'data-correlation-cell="[^"]+"', html)) >= 49
+    assert len(re.findall(r'data-league-row="(?:KR|TW|JP|EZ|GB|IN|AU)"', html)) == 7
+    visible = html_lib.unescape(html)
+    assert "Growth × inflation map" in visible
+    assert "Pairwise correlation heatmap" in visible
+    assert "Comparable league tables" in visible
+    assert "Average correlation" in visible
+
+
+def test_r3_pressure_flow_keeps_source_backed_magnitudes():
+    html = _html()
+    rows = re.findall(
+        r'(<div class="pressure-row" data-pressure-market="([^"]+)".*?)(?=<div class="pressure-row" data-pressure-market=|</div>\s*<p class="caveat")',
+        html,
+        re.S,
+    )
+    assert len(rows) == 10
+    for row, market in rows:
+        assert 'data-pressure-magnitude=' in row, market
+        assert row.count('class="pressure-source"') >= 3, market
+        assert row.count('data-pressure-share=') >= 3, market
+    assert "source-backed pressure magnitude" in html
+    assert 'data-unsourced-magnitude="true"' not in html
+
+
+def test_r3_macro_table_uses_semantic_state_ink_and_mobile_row_identity():
+    html = _html()
+    macro = re.search(r'<table class="macro-table".*?</table>', html, re.S)
+    assert macro
+    block = macro.group(0)
+    for state_class in ("state-danger", "state-caution", "state-good", "state-neutral"):
+        assert state_class in block
+    assert 'class="sticky-market"' in block
+    assert ".macro-table .sticky-market" in html
+    assert "position:sticky" in html
+    assert "left:0" in html.replace(" ", "")
+
+
+def test_r3_rates_desk_restores_full_comparison_contract():
+    html = _html()
+    desk = re.search(r'<article[^>]+id="rates-curves".*?</article>', html, re.S)
+    assert desk
+    block = html_lib.unescape(desk.group(0))
+    assert set(re.findall(r'data-rate-market="([^"]+)"', desk.group(0))) == {
+        "US", "JP", "KR", "TW", "IN", "AU", "GB", "EZ"
+    }
+    assert "Long-yield drift" in block
+    assert "Carry vs US" in block
+    assert 'data-rate-market="TW" data-null-series="true"' in desk.group(0)
+    assert "typed null" in block.lower()
+
+
+def test_r3_removes_redundant_posture_projection_and_compresses_structural_nulls():
+    html = _html()
+    assert 'id="desk-posture"' not in html
+    assert 'class="posture-list"' not in html
+    assert html.count("Projection of the accepted stance field only") == 0
+    assert html.count("No concurrent structural warning") <= 1
+
+
+def test_r3_organ_controls_fail_with_the_organ_and_errors_are_distinct():
+    html = _html()
+    organ = re.search(r'<div class="panel organ" data-organ="global-pulse".*?</div>\s*</section>', html, re.S)
+    assert organ
+    block = organ.group(0)
+    assert 'class="organ-content"' in block
+    assert 'class="organ-controls"' in block
+    assert block.index('class="organ-controls"') > block.index('class="organ-content"')
+    error = re.search(r'data-organ-state="error"[^>]*>(.*?)</div>', block, re.S)
+    empty = re.search(r'data-organ-state="empty"[^>]*>(.*?)</div>', block, re.S)
+    assert error and empty
+    assert "status-danger" in error.group(1)
+    assert "Retry data organ" in html_lib.unescape(error.group(1))
+    assert "status-danger" not in empty.group(1)
