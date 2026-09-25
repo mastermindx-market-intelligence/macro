@@ -4932,11 +4932,14 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     two.
 
     #8010 then landed ``finance-intelligence-site-wiring`` (w4, ``gate:
-    code``, no declared scope). Its INFERRED scope reaches all three
-    probes, +1 job / +4 weight each. On its own, that put main one job over
-    all three ceilings as they stood (133 / 130 / 126). Nothing in the
-    merge gate runs this file, so the breach showed only in the data lane.
-    Re-measured on main 7c22f6c5b79 with this change:
+    code``, no declared scope). Its one suite reads scripts/build_site.py
+    as text, and inference follows that file's import closure: 560 owned
+    paths, none of them a probe, plus a whole-tree fallback smear
+    (admin/**, app/**, collectors/**, config/**, ...). It rides all three
+    probes on that FALLBACK tier only, +1 job / +4 weight each. On its own,
+    that put main one job over all three ceilings as they stood (133 / 130
+    / 126). Nothing in the merge gate runs this file, so the breach showed
+    only in the data lane. Re-measured on main 7c22f6c5b79 with this change:
 
         templates/index.html          134 jobs, 5,800 weight
         scripts/build_free_content.py 132 jobs, 5,585 weight
@@ -4945,10 +4948,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     The ceilings above are NOT raised for it. They are this change's
     measurement + 1, and the #8010 entrant fills that headroom exactly. All
     three probes now sit AT their job bound, and templates/index.html sits
-    AT its 5,800 weight bound. Said explicitly: the next entrant on any of
-    the three, including any further widening of that job, is a curation
-    event (a declared ``scope: exclusive`` for the job that caused it), not
-    a ceiling bump.
+    AT its 5,800 weight bound. Said explicitly: no headroom is left, so the
+    next entrant on any of the three needs a decision recorded here, not a
+    reflexive bump. The rule this file already follows: curate a
+    fallback-tier smear away (a declared ``scope: exclusive`` for the job
+    that caused it); ratchet a job that enters on its own declared subject
+    (wave 7). By that rule finance-intelligence-site-wiring's own smear is
+    a curation candidate, left to its owner. An exclusive declaration for it
+    would have to cover that closure (#8010's manifest comment: 538
+    uncovered paths), which is why it has none.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
