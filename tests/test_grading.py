@@ -325,6 +325,7 @@ def test_prophet_discovery_refuses_duplicate_observation_identity(monkeypatch):
 def test_prophet_discovery_store_upserts_maturation_without_duplicate(tmp_path, monkeypatch):
     from engine import prophet_discovery_grade as pdg
     from lib import config
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     src = tmp_path / "prophet_shadow"
     src.mkdir(parents=True)
@@ -372,6 +373,7 @@ def test_prophet_discovery_grade_market_reports_current_source_receipt(
 ):
     from engine import prophet_discovery_grade as pdg
     from lib import config
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
 
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     src = tmp_path / "prophet_shadow"
@@ -420,6 +422,7 @@ def test_prophet_discovery_expected_source_receipt_fails_closed(
 ):
     from engine import prophet_discovery_grade as pdg
     from lib import config
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
 
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     src = tmp_path / "prophet_shadow"
@@ -448,6 +451,7 @@ def test_prophet_discovery_replay_refuses_source_revision_or_deletion(
 ):
     from engine import prophet_discovery_grade as pdg
     from lib import config
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
 
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     src = tmp_path / "prophet_shadow"
@@ -519,7 +523,7 @@ def test_prophet_discovery_cli_runs_both_markets_once(monkeypatch):
         return {"HK": {"n_rows": 1}, "CA": {"n_rows": 2}}
 
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", fake)
-    assert runner.main() == 0
+    assert runner.main(["--nightly"]) == 0
     assert called["n"] == 1
 
 
@@ -539,7 +543,7 @@ def test_prophet_discovery_cli_market_scope_calls_only_selected_market(monkeypat
 
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
 
-    assert runner.main(["--market", "HK", "--source-asof", "2026-01-12"]) == 0
+    assert runner.main(["--nightly", "--market", "HK", "--source-asof", "2026-01-12"]) == 0
     assert calls == [("HK", "2026-01-12")]
     assert json.loads(capsys.readouterr().out) == {
         "HK": {"market": "HK", "available": True, "state": "UPDATED", "n_rows": 7}
@@ -557,7 +561,7 @@ def test_prophet_discovery_cli_market_scope_preserves_error_receipt(monkeypatch,
 
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
 
-    assert runner.main(["--market", "HK", "--source-asof", "2026-01-12"]) == 1
+    assert runner.main(["--nightly", "--market", "HK", "--source-asof", "2026-01-12"]) == 1
     assert calls == [("HK", "2026-01-12")]
     assert json.loads(capsys.readouterr().out) == {
         "HK": {
@@ -574,7 +578,7 @@ def test_prophet_discovery_cli_market_scope_requires_source_asof():
     import scripts.grade_prophet_discovery as runner
 
     with pytest.raises(SystemExit) as exc:
-        runner.main(["--market", "HK"])
+        runner.main(["--nightly", "--market", "HK"])
     assert exc.value.code == 2
 
 
@@ -591,7 +595,7 @@ def test_prophet_discovery_cli_source_asof_is_forwarded_to_selected_market(
 
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
 
-    assert runner.main(["--market", "CA", "--source-asof", "2026-01-12"]) == 0
+    assert runner.main(["--nightly", "--market", "CA", "--source-asof", "2026-01-12"]) == 0
     assert calls == [("CA", "2026-01-12")]
     assert json.loads(capsys.readouterr().out)["CA"]["state"] == "UNCHANGED"
 
@@ -603,7 +607,7 @@ def test_prophet_discovery_cli_reports_structured_failure(monkeypatch, capsys):
         raise RuntimeError("source continuity violated")
 
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", fail)
-    assert runner.main() == 1
+    assert runner.main(["--nightly"]) == 1
     payload = json.loads(capsys.readouterr().out)
     assert payload == {
         "available": False,
@@ -659,7 +663,7 @@ def test_prophet_discovery_cli_returns_nonzero_with_partial_market_receipt(
     }
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", lambda: result)
 
-    assert runner.main() == 1
+    assert runner.main(["--nightly"]) == 1
     assert json.loads(capsys.readouterr().out) == result
 
 
@@ -756,6 +760,7 @@ def test_prophet_discovery_summary_names_missing_benchmark_coverage(monkeypatch)
 def test_prophet_discovery_grade_market_receipt_includes_candidate_summary(tmp_path, monkeypatch):
     from engine import prophet_discovery_grade as pdg
     from lib import config
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
 
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     src = tmp_path / "prophet_shadow"
@@ -957,6 +962,7 @@ def test_prophet_discovery_grade_market_receipt_includes_board_admission_bridge(
 ):
     from engine import prophet_discovery_grade as pdg
     from lib import config
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
 
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     src = tmp_path / "prophet_shadow"
@@ -1247,3 +1253,120 @@ def test_prophet_rank_race_store_refuses_foreign_market_rows(tmp_path, monkeypat
         "reason": "rank_pair_store_foreign_market",
         "metric_semantics": "same_population_same_outcomes_shadow_rank_race",
     }
+
+
+# Packet 3 / 2026-09-25: same-carrier writer gate + reporting-only maturity reasons.
+def test_prophet_discovery_cli_requires_explicit_nightly_before_dispatch(monkeypatch):
+    import scripts.grade_prophet_discovery as runner
+
+    monkeypatch.setattr(
+        runner.prophet_discovery_grade,
+        "grade_all",
+        lambda: pytest.fail("missing --nightly must refuse before evaluator dispatch"),
+    )
+    with pytest.raises(SystemExit) as exc:
+        runner.main([])
+    assert exc.value.code == 2
+
+
+def test_prophet_discovery_grade_market_refuses_off_nightly_lane_before_source_access(
+    tmp_path, monkeypatch,
+):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setenv("COLLECT_LANE", "render")
+    monkeypatch.delenv("US_LANE", raising=False)
+    with pytest.raises(RuntimeError, match="nightly"):
+        pdg.grade_market("CA")
+    assert not (tmp_path / "prophet_shadow" / "ca_discovery_outcomes.parquet").exists()
+
+
+def test_prophet_discovery_maturity_reasons_use_market_clock_without_mutating_grades(
+    monkeypatch,
+):
+    from engine import prophet_discovery_grade as pdg
+
+    idx = pd.bdate_range("2026-01-02", periods=8)
+    short = pd.Series(np.arange(8.0), index=idx)
+    benchmark = short.copy()
+    frame = pd.DataFrame([
+        {
+            "session_date": str(idx[4].date()),
+            "security_ref": "0001.HK",
+            "outcome_state": pdg.SUSPENDED,
+            "fill_date": str(idx[5].date()),
+        },
+        {
+            "session_date": str(idx[-1].date()),
+            "security_ref": "0002.HK",
+            "outcome_state": pdg.NO_FILL,
+            "fill_date": None,
+        },
+        {
+            "session_date": str(idx[2].date()),
+            "security_ref": "0003.HK",
+            "outcome_state": pdg.UNAVAILABLE_PRICE,
+            "fill_date": None,
+        },
+        {
+            "session_date": str(idx[2].date()),
+            "security_ref": "0004.HK",
+            "outcome_state": pdg.ACCRUING,
+            "fill_date": str(idx[3].date()),
+        },
+        {
+            "session_date": str(idx[1].date()),
+            "security_ref": "0005.HK",
+            "outcome_state": pdg.MATURED,
+            "fill_date": str(idx[2].date()),
+        },
+    ])
+    before = frame.copy(deep=True)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: benchmark)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: short)
+
+    result = pdg.summarize_maturity_reasons("HK", frame)
+    assert result["semantics"] == "derived_reporting_only_no_grade_authority"
+    assert result["counts"] == {
+        "fully_matured": 1,
+        "horizon_accruing": 1,
+        "insufficient_followup": 1,
+        "short_name_history_after_market_mature": 0,
+        "canonical_suspension_not_reproduced": 0,
+        "followup_clock_unavailable": 0,
+        "no_next_bar_observed": 1,
+        "missing_price_store": 1,
+        "unknown_state": 0,
+    }
+    assert result["confirmed_exchange_suspension_evidence"] == "NOT_EVALUATED"
+    pd.testing.assert_frame_equal(frame, before)
+
+
+def test_prophet_discovery_maturity_reasons_do_not_call_market_mature_name_short_a_halt(
+    monkeypatch,
+):
+    from engine import prophet_discovery_grade as pdg
+
+    name_idx = pd.bdate_range("2026-01-02", periods=8)
+    bench_idx = pd.bdate_range("2026-01-02", periods=20)
+    frame = pd.DataFrame([{
+        "session_date": str(name_idx[4].date()),
+        "security_ref": "0001.HK",
+        "outcome_state": pdg.SUSPENDED,
+        "fill_date": str(name_idx[5].date()),
+    }])
+    monkeypatch.setattr(
+        pdg.board_ledger, "_bench_close",
+        lambda *_a, **_k: pd.Series(np.arange(20.0), index=bench_idx),
+    )
+    monkeypatch.setattr(
+        pdg.board_ledger, "_name_close",
+        lambda *_a, **_k: pd.Series(np.arange(8.0), index=name_idx),
+    )
+
+    result = pdg.summarize_maturity_reasons("HK", frame)
+    assert result["counts"]["short_name_history_after_market_mature"] == 1
+    assert result["counts"]["insufficient_followup"] == 0
+    assert result["confirmed_exchange_suspension_evidence"] == "NOT_EVALUATED"

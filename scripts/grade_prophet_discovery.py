@@ -18,6 +18,14 @@ def _parser() -> argparse.ArgumentParser:
         description="Grade governed HK/CA Prophet discovery observations."
     )
     parser.add_argument(
+        "--nightly",
+        action="store_true",
+        help=(
+            "Explicitly request the persistent nightly grading path. The engine "
+            "still independently requires the canonical nightly ledger lane."
+        ),
+    )
+    parser.add_argument(
         "--market",
         type=str.upper,
         choices=prophet_discovery_grade.MARKETS,
@@ -36,6 +44,8 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args([] if argv is None else argv)
+    if not args.nightly:
+        parser.error("--nightly is required for persistent discovery grading")
     if args.source_asof and not args.market:
         parser.error("--source-asof requires --market")
     if args.market and not args.source_asof:

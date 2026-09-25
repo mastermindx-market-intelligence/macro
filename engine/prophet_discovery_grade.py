@@ -15,7 +15,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from engine import board_ledger, board_shadow, grading, validation
+from engine import board_ledger, board_shadow, grading, ledger_lane, validation
 from lib import config
 
 MARKETS = ("HK", "CA")
@@ -415,6 +415,94 @@ def summarize_outcomes(frame: pd.DataFrame) -> dict[str, Any]:
         "by_origin_token": by_origin_token,
     })
     return summary
+
+
+def summarize_maturity_reasons(
+    market: str,
+    frame: pd.DataFrame,
+) -> dict[str, Any]:
+    """Explain outcome maturity without changing canonical outcome rows.
+
+    ``SUSPENDED`` is the shared board-ledger predicate, not proof of an exchange
+    halt. This reporting seam uses the native market benchmark only to tell
+    whether enough market sessions have elapsed to evaluate that predicate. It
+    never changes a stored outcome, price, fill, rank, entry gate, or authority.
+    """
+    m = str(market or "").upper()
+    if m not in MARKETS:
+        raise ValueError(f"unsupported market {market!r}")
+
+    counts = {
+        "fully_matured": 0,
+        "horizon_accruing": 0,
+        "insufficient_followup": 0,
+        "short_name_history_after_market_mature": 0,
+        "canonical_suspension_not_reproduced": 0,
+        "followup_clock_unavailable": 0,
+        "no_next_bar_observed": 0,
+        "missing_price_store": 0,
+        "unknown_state": 0,
+    }
+    if frame is None or frame.empty:
+        return {
+            "semantics": "derived_reporting_only_no_grade_authority",
+            "canonical_suspended_semantics": (
+                "shared_board_ledger_predicate_not_exchange_halt_proof"
+            ),
+            "confirmed_exchange_suspension_evidence": "NOT_EVALUATED",
+            "counts": counts,
+        }
+
+    bench = board_ledger._bench_close(m)
+    cache: dict = {}
+    min_followup = int(board_ledger.SUSPENSION_SESSIONS)
+    for _, row in frame.iterrows():
+        state = str(row.get("outcome_state") or "UNKNOWN")
+        if state == MATURED:
+            counts["fully_matured"] += 1
+            continue
+        if state == ACCRUING:
+            counts["horizon_accruing"] += 1
+            continue
+        if state == NO_FILL:
+            counts["no_next_bar_observed"] += 1
+            continue
+        if state == UNAVAILABLE_PRICE:
+            counts["missing_price_store"] += 1
+            continue
+        if state != SUSPENDED:
+            counts["unknown_state"] += 1
+            continue
+
+        fill = pd.to_datetime(row.get("fill_date"), errors="coerce")
+        if pd.isna(fill) or bench is None or bench.empty:
+            counts["followup_clock_unavailable"] += 1
+            continue
+        market_after = int((bench.index > fill).sum())
+        if market_after < min_followup:
+            counts["insufficient_followup"] += 1
+            continue
+
+        ticker = str(row.get("security_ref") or "")
+        close = board_ledger._name_close(m, ticker, ca_cache=cache)
+        if close is None or close.empty:
+            counts["followup_clock_unavailable"] += 1
+            continue
+        name_after = int((close.index > fill).sum())
+        if name_after < min_followup:
+            counts["short_name_history_after_market_mature"] += 1
+        else:
+            counts["canonical_suspension_not_reproduced"] += 1
+
+    return {
+        "semantics": "derived_reporting_only_no_grade_authority",
+        "canonical_suspended_semantics": (
+            "shared_board_ledger_predicate_not_exchange_halt_proof"
+        ),
+        "confirmed_exchange_suspension_evidence": "NOT_EVALUATED",
+        "minimum_followup_sessions": min_followup,
+        "counts": counts,
+    }
 
 
 def _bridge_unavailable(reason: str) -> dict[str, Any]:
@@ -1016,6 +1104,10 @@ def grade_market(
     m = str(market or "").upper()
     if m not in MARKETS:
         raise ValueError(f"unsupported market {market!r}")
+    if not ledger_lane.nightly_advance_enabled():
+        raise RuntimeError(
+            f"{m} discovery outcome write refused: nightly ledger lane not armed"
+        )
     source_receipt = _discovery_source_receipt(m)
     if expected_source_asof is not None:
         _require_source_receipt_asof(m, source_receipt, expected_source_asof)
@@ -1114,6 +1206,7 @@ def grade_market(
         "terminal_clean8_21": terminal8,
         "terminal_clean15_126": terminal15,
         "candidate_metrics": summarize_outcomes(fresh),
+        "maturity_reasons": summarize_maturity_reasons(m, fresh),
         "board_admission_bridge": board_admission_bridge,
         "rank_races": evaluate_rank_races(m),
     }
