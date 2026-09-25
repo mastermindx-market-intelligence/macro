@@ -191,11 +191,48 @@ def _without_lane_owned_asset_markup(page: bytes) -> bytes:
     committed bytes, and this guard -- a raw byte comparison -- went red on
     main with no template change behind it. The template drift it exists to
     catch (markup, copy, structure) survives the normalisation; only the
-    lane-owned asset markup is ignored."""
+    lane-owned asset markup is ignored.
+
+    The full build's White House ticker pass (scripts/inject_wh_banner) is
+    lane-owned in the same way. It inserts its ``data-whb`` <script> before
+    </body> in every generated page that lacks one, so the 2026-09-25 nightly
+    (a374fd96646, ``engine: regime update``) added it to this hand-committed
+    page and the guard went red on main, again with no template change behind
+    it. Both sides are run through the injector itself rather than through a
+    hand-written pattern that could drift from the tag it has to match. The
+    injector is idempotent, so a copy that already carries the tag is left
+    unchanged."""
+    from scripts.inject_wh_banner import inject_text
+
     page = _STAMP.sub(b"", page)
     page = _PRELOAD_LINE.sub(b"", page)
     page = _DEFER.sub(rb"\1\2", page)
-    return page
+    return inject_text(page.decode("utf-8")).encode("utf-8")
+
+
+def test_the_drift_guard_ignores_the_ticker_pass_but_not_template_drift(tmp_path):
+    """Pins both halves of the normalisation above. The ticker tag, stamped as
+    the render-public lane leaves it, must normalise away. A real change to the
+    page must not."""
+    from jinja2 import Environment, FileSystemLoader
+    from scripts.build_ontology_explorer import build_shell
+    from scripts.inject_wh_banner import inject_text
+
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True)
+    build_shell(env, tmp_path)
+    rendered = (tmp_path / "ontology.html").read_bytes()
+
+    as_the_lanes_leave_it = inject_text(rendered.decode("utf-8")).encode(
+        "utf-8").replace(b'src="wh_banner.js"', b'src="wh_banner.js?v=b1207f44"')
+    assert b"data-whb" in as_the_lanes_leave_it
+    assert b"data-whb" not in rendered
+    assert _without_lane_owned_asset_markup(as_the_lanes_leave_it) == \
+        _without_lane_owned_asset_markup(rendered)
+
+    drifted = rendered.replace(b"</body>", b"<p>drift</p>\n</body>", 1)
+    assert _without_lane_owned_asset_markup(drifted) != \
+        _without_lane_owned_asset_markup(rendered)
 
 
 def test_a_missing_paired_asset_raises_instead_of_reporting_success(tmp_path,
