@@ -4920,7 +4920,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     130 jobs / 5,577 weight for build_free_content.py (+1 / +39 against its
     129 / 5,538) — an inferred scope widened as the tree moved (the
     selection code did not change), which left that probe AT its bound too.
-    Re-measured, full manifest, inference on:
+    Re-measured, full manifest, inference on, before #8010:
 
         templates/index.html          133 jobs, 5,796 weight
         scripts/build_free_content.py 130 -> 131 jobs, 5,579 -> 5,581 weight
@@ -4929,9 +4929,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     JOB ceilings re-based to measurement + 1 (134 / 132 / 127). WEIGHT and
     PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs) — the
     builder root adds 2 weight-seconds to one probe and none to the other
-    two. Said explicitly: templates/index.html sits 4 weight-seconds under
-    its bound (unchanged here), so the next entrant there is a curation
-    event, not a ceiling bump.
+    two.
+
+    #8010 then landed ``finance-intelligence-site-wiring`` (w4, ``gate:
+    code``, no declared scope). Its INFERRED scope reaches all three
+    probes, +1 job / +4 weight each. On its own, that put main one job over
+    all three ceilings as they stood (133 / 130 / 126). Nothing in the
+    merge gate runs this file, so the breach showed only in the data lane.
+    Re-measured on main 7c22f6c5b79 with this change:
+
+        templates/index.html          134 jobs, 5,800 weight
+        scripts/build_free_content.py 132 jobs, 5,585 weight
+        engine/prophet/plan_book.py   127 jobs, 5,534 weight
+
+    The ceilings above are NOT raised for it. They are this change's
+    measurement + 1, and the #8010 entrant fills that headroom exactly. All
+    three probes now sit AT their job bound, and templates/index.html sits
+    AT its 5,800 weight bound. Said explicitly: the next entrant on any of
+    the three, including any further widening of that job, is a curation
+    event (a declared ``scope: exclusive`` for the job that caused it), not
+    a ceiling bump.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
