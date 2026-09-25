@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: confluence-screener-paper-r1
 scope: full
-status: draft
+status: in_review
 
 surface:
   route: confluence_screener.html
@@ -49,4 +49,4 @@ files:
 # No prior RIG cycle exists for confluence_screener.html on the captured main tree.
 # This remains one full cycle. The original defective freeze is preserved in Git
 # history; this manifest points only at the refreshed candidate evidence.
-# No migration is authorized by this draft.
+# No migration is authorized while this candidate is in review.
