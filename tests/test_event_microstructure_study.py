@@ -205,3 +205,103 @@ def test_event_vs_control_summary_keeps_missingness_visible():
     assert out["controls"]["n"] == 2
     assert out["delta_mean"] == 20.0
     assert out["inference"].startswith("descriptive_only")
+
+
+def test_v2_first_pass_measures_pre_state_impulse_and_plus5_residual():
+    out = s.repricing_first_pass(
+        known_at="2026-09-24T16:15:00Z",
+        causal_direction=-1,
+        causal_points=_points(
+            [
+                ("2026-09-24T12:15:00Z", 120.0),
+                ("2026-09-24T15:15:00Z", 110.0),
+                ("2026-09-24T16:15:00Z", 100.0),
+                ("2026-09-24T16:20:00Z", 98.0),
+            ]
+        ),
+        response_points=_points(
+            [
+                ("2026-09-24T16:20:00Z", 200.0),
+                ("2026-09-24T16:35:00Z", 202.0),
+                ("2026-09-24T16:50:00Z", 206.0),
+                ("2026-09-24T17:20:00Z", 208.0),
+            ]
+        ),
+        benchmark_points=_points(
+            [
+                ("2026-09-24T16:20:00Z", 400.0),
+                ("2026-09-24T16:35:00Z", 401.0),
+                ("2026-09-24T16:50:00Z", 402.0),
+                ("2026-09-24T17:20:00Z", 403.0),
+            ]
+        ),
+    )
+    assert out["status"] == "measured"
+    assert out["causal_impulse"]["raw_return_bps"] == -200.0
+    assert out["causal_impulse"]["signed_expected_direction_bps"] == 200.0
+    assert out["pre_event_causal"]["60m"]["raw_return_bps"] == -909.090909
+    assert (
+        out["response_from_impulse_end"]["30m"]["residual_return_bps"]
+        == 250.0
+    )
+
+
+def test_v2_first_pass_pre_event_window_never_uses_future_bar():
+    out = s.repricing_first_pass(
+        known_at="2026-09-24T16:15:00Z",
+        causal_direction=-1,
+        causal_points=_points(
+            [
+                ("2026-09-24T15:14:00Z", 110.0),
+                ("2026-09-24T15:16:00Z", 90.0),
+                ("2026-09-24T16:15:00Z", 100.0),
+                ("2026-09-24T16:20:00Z", 99.0),
+            ]
+        ),
+        response_points=_points(
+            [
+                ("2026-09-24T16:20:00Z", 200.0),
+                ("2026-09-24T16:50:00Z", 201.0),
+            ]
+        ),
+        benchmark_points=_points(
+            [
+                ("2026-09-24T16:20:00Z", 400.0),
+                ("2026-09-24T16:50:00Z", 401.0),
+            ]
+        ),
+    )
+    assert out["pre_event_causal"]["60m"]["start_known_at"] == (
+        "2026-09-24T15:14:00Z"
+    )
+    assert out["pre_event_causal"]["60m"]["raw_return_bps"] == -909.090909
+
+
+def test_v2_first_pass_missing_plus5_response_stays_data_gap():
+    out = s.repricing_first_pass(
+        known_at="2026-09-24T16:15:00Z",
+        causal_direction=-1,
+        causal_points=_points(
+            [
+                ("2026-09-24T16:15:00Z", 100.0),
+                ("2026-09-24T16:20:00Z", 99.0),
+            ]
+        ),
+        response_points=_points(
+            [
+                ("2026-09-24T16:30:00Z", 200.0),
+                ("2026-09-24T16:50:00Z", 201.0),
+            ]
+        ),
+        benchmark_points=_points(
+            [
+                ("2026-09-24T16:20:00Z", 400.0),
+                ("2026-09-24T16:50:00Z", 401.0),
+            ]
+        ),
+    )
+    assert out["status"] == "data_gap"
+    assert (
+        out["response_from_impulse_end"]["30m"]["residual_return_bps"]
+        is None
+    )
