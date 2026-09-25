@@ -464,19 +464,16 @@ class TestDeadConstantsDeleted:
         assert uet.STAGE_EARLY == "EARLY"
 
 
-# ── the field ships DARK ──────────────────────────────────────────────────────
+# ── lifecycle adoption stays scoped to the plan-record migration ──────────────
 
-def test_no_prophet_surface_renders_lifecycle_state_yet():
-    """§9: "Explicitly not in PR-0(c): any template/rail change... The field ships
-    dark; surfaces adopt at migration."  This fails loudly if a Prophet surface starts
-    reading the field before the Board migration lands its ladder + same-PR rail
-    retirement (§10.1) — two lifecycle vocabularies may never co-render on one card.
+def test_prophet_lifecycle_surface_adoption_is_scoped_to_plan_records():
+    """§10.1 migration gate after board adoption.
 
-    Scoped to PROPHET surfaces on purpose.  `lifecycle_state` is not a unique token in
-    this estate: templates/capital_structure.js reads an unrelated
-    `event.lifecycle_state` off the capital-structure event payload, a different
-    program with a different contract.  Scoping by "does this file mention Prophet at
-    all" separates the two namespaces without an exemption list to rot.
+    The old PR-0(c) guard required the field to stay dark until a surface adopted it
+    together with the record-card rail retirement.  That migration is now present on
+    the US plan-record partial: it reads `lifecycle_state` and opts into the shared
+    card's `record_only` anatomy.  Keep the consumer closed to that one surface so a
+    second Prophet template cannot silently start a competing lifecycle vocabulary.
     """
     hits = []
     for path in sorted((_REPO / "templates").rglob("*")):
@@ -485,8 +482,17 @@ def test_no_prophet_surface_renders_lifecycle_state_yet():
         text = path.read_text(encoding="utf-8", errors="ignore")
         if "prophet" in text.lower() and "lifecycle_state" in text:
             hits.append(path.relative_to(_REPO).as_posix())
-    assert not hits, (
-        f"lifecycle_state is rendered by Prophet surface(s) {hits} — PR-0(c) ships the "
-        f"field DARK; a surface adopting it must also retire the 4-dot rail in the "
-        f"SAME PR (§10.1)"
+
+    assert hits == ["templates/_us_prophet_plan_cards.html.j2"]
+
+    plan_partial = (_REPO / "templates" / "_us_prophet_plan_cards.html.j2").read_text(
+        encoding="utf-8"
     )
+    shared_card = (_REPO / "templates" / "_prophet_card.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert "p.get('lifecycle_state')" in plan_partial
+    assert "'record_only': true" in plan_partial
+    assert "if _record_only" in shared_card
+    assert '{% if _record_only %}<article{% else %}<a{% endif %} class="pvcard' in shared_card
+    assert "{% if _record_only %}</article>{% else %}</a>{% endif %}" in shared_card
