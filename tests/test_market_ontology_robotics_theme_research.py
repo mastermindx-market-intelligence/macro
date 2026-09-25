@@ -730,6 +730,21 @@ def test_rbv27_rights_partial_never_names_families():
     assert "omitted:withheld-family" not in response["limitations"]
     assert "withheld-family" not in json.dumps(response["limitations"])
     assert response["authorized_coverage"]["status"] == "degraded"
+    # ...and the token needs something selected to be partial ABOUT.
+    # ``later_retained_backdate`` is the corpus's own zero-selection case: with
+    # the same omission applied it must stay ``unavailable`` and stay silent,
+    # or an empty read would tell a paying member their entitlements were cut
+    # AND disclose that withheld content exists. This leg is also the positive
+    # control for the suppression asserted in
+    # tests/test_robotics_owner_bundle.py — the ``degraded`` + token assertions
+    # above prove the token is alive, this one proves it is gated.
+    empty_query, empty_bundle = load_bundle_case("later_retained_backdate")
+    baseline = robotics.compose_robotics_research(empty_query, empty_bundle)
+    assert baseline["authorized_coverage"]["selected"] == 0
+    withheld = robotics.compose_robotics_research(
+        empty_query, dataclasses.replace(empty_bundle, omissions=("withheld-family",)))
+    assert withheld["authorized_coverage"]["status"] == "unavailable"
+    assert "rights_partial" not in withheld["limitations"]
     assert response["authorized_coverage"]["selected"] == 2
     assert response["authorized_coverage"]["industry_total"] is None
     assert response["authorized_coverage"]["note"] == \

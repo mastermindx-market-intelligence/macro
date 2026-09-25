@@ -29,36 +29,50 @@ surface in v1:
   specific store, ledger, publisher or scheduler).
 
 The honest consequence, measured through the real composer: the response
-carries ``authorized_coverage.status = "degraded"`` with ``selected: 0`` and
-``input_refs: []``, ``companies.rows`` empty, ``evidence_refs`` empty, every
-``authority`` flag false, and ``limitations`` ``["rights_partial",
-"slice_scope_unowned"]``. Every CONTENT section states its own emptiness
+carries ``authorized_coverage.status = "unavailable"`` with ``selected: 0``
+and ``input_refs: []``, ``companies.rows`` empty, ``evidence_refs`` empty,
+every ``authority`` flag false, and ``limitations`` ``["slice_scope_unowned"]``.
+Every CONTENT section states its own emptiness
 truthfully (``companies.status: unavailable`` / ``reason: no_companies``; all
 five ``industrial_views`` and all four ``expectations`` ``unavailable``;
 ``native_subjects: []``). Nothing here ranks, gates, sizes, times or
 originates anything.
 
-Two shared-composer misstatements ride on that status, and they are why this
-mount MUST NOT be admitted to a member-facing page in this state (R4-reg
-independent review; the claim that formerly stood here -- "a member sees a
-mount that states it is serving nothing yet" -- was refuted on the served
-bytes):
+Two misstatements used to ride on that status, and they are why this mount
+was held out of a member-facing page (R4-reg independent review; the claim
+that formerly stood here -- "a member sees a mount that states it is serving
+nothing yet" -- was refuted on the served bytes):
 
-* the shipped client renders ``degraded`` as "Degraded - partial data" /
-  "降级——部分数据", and there is no partial data here: there is none;
+* ``degraded`` is the PARTIAL state and the shipped client renders it
+  "Degraded - partial data" / "降级——部分数据"; there was no partial data
+  here, there was none;
 * ``rights_partial`` tells a member their ENTITLEMENTS are partial, which on a
-  paid-research surface is a false commercial signal. Neither omission is a
-  rights matter -- ``private_assertions_unbound`` is an unbound store and
-  ``public_cohort_unowned`` an undeclared cohort.
+  paid-research surface is a false commercial signal -- and the client renders
+  limitation slugs verbatim, so the raw token IS the member-facing sentence.
+  Neither omission is a rights matter: ``private_assertions_unbound`` is an
+  unbound store and ``public_cohort_unowned`` an undeclared cohort.
 
-Both live in shared code this lane must not fork: the ladder maps any
-non-empty ``omissions`` to ``degraded``, and RBV-27 collapses every omission
-to ``rights_partial`` unconditionally. Dropping this loader's two omissions
-WOULD buy an honest "Unavailable" headline, and is refused deliberately --
-that trades the diagnosis of WHICH half is absent for a cosmetic fix to
-another owner's mapping. So the omissions stay and live admission stays held
-until the composer owner either maps zero-input omissions to ``unavailable``
-or stops emitting ``rights_partial`` for non-rights omissions.
+Both are FIXED, in this lane's OWN composer. The checkpoint that first
+recorded them attributed the fix to "the composer owner" and held live
+admission on that party; the attribution was wrong and is withdrawn.
+``robotics_theme_research.py`` is the only theme-research composer on this
+carrier, no other module under ``engine/market_ontology`` computes a coverage
+ladder, and ``git log -L`` attributes the ladder to this operation's own R2
+commit (37fd0bd35471) -- there was no other owner to wait for. What IS shared
+and stays untouched is the client's ``degraded`` label: it is correct for a
+genuinely partial payload, and the fix simply stops sending ``degraded`` when
+nothing arrived.
+
+Dropping this loader's two omissions would ALSO have bought an honest
+"Unavailable" headline, and is still refused -- that trades the diagnosis of
+WHICH half is absent for a cosmetic fix. The omissions stay on the bundle,
+where tests and operators read them. What changed is that the composer no
+longer turns them into a member-facing claim: emptiness outranks omission in
+the ladder, and ``rights_partial`` now needs a selection to be partial ABOUT.
+One consequence is deliberate and load-bearing -- the served payload for this
+bundle is now byte-identical to one composed with ``omissions=()``, so an
+empty read cannot disclose that withheld content exists, pinned by
+``test_rbv27_the_response_never_names_a_withheld_family``.
 
 Why coverage absence is an omission and not a 503
 -------------------------------------------------
@@ -70,12 +84,15 @@ served with omissions rather than refused. A 503 would tell a member the
 service is broken when it is merely empty, and would hide the mount instead of
 letting it state its own emptiness.
 
-Per RBV-27 the Robotics composer collapses EVERY omission into the single
-limitation ``rights_partial`` and never names a withheld family (a deliberate
-divergence from the shared owner's ``omitted:<name>`` grammar, recorded at
-``robotics_theme_research._Selection``). So the two tokens below change the
-served payload only via that one token and the ``degraded`` status; they are
-not a wire vocabulary and no consumer may branch on them.
+Per RBV-27 the Robotics composer collapses every omission that NARROWS a real
+answer into the single limitation ``rights_partial``, and never names a
+withheld family (a deliberate divergence from the shared owner's
+``omitted:<name>`` grammar, recorded at
+``robotics_theme_research._Selection``). Because this bundle selects nothing,
+neither that token nor a ``degraded`` status is emitted for it at all: the two
+tokens below change the served payload in NO way. They are not a wire
+vocabulary, no consumer may branch on them, and they exist for the bundle's
+own readers -- tests and operators -- to tell which half is absent.
 
 Why there is no ``system_replay`` refusal here
 ----------------------------------------------

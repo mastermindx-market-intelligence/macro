@@ -196,10 +196,10 @@ def test_the_served_response_states_its_own_emptiness():
     claims no authority while doing so."""
     response = robotics.compose_robotics_research(_query(), _bundle())
     coverage = response["authorized_coverage"]
-    assert coverage["status"] == "degraded"
+    assert coverage["status"] == "unavailable"
     assert coverage["selected"] == 0
     assert coverage["input_refs"] == []
-    assert response["limitations"] == ["rights_partial", "slice_scope_unowned"]
+    assert response["limitations"] == ["slice_scope_unowned"]
     assert response["companies"]["rows"] == []
     assert response["evidence_refs"] == []
     assert set(response["authority"].values()) == {False}
@@ -208,17 +208,37 @@ def test_the_served_response_states_its_own_emptiness():
 
 
 def test_rbv27_the_response_never_names_a_withheld_family():
-    """RBV-27: a partial-rights state shows that it is partial and NEVER names
-    what is withheld. The composer collapses every omission into the single
-    ``rights_partial`` token, so neither of the loader's tokens may appear
-    anywhere in the served bytes."""
+    """RBV-27: never name what is withheld — and on a read that serves nothing,
+    never disclose that anything IS withheld.
+
+    The loader's two omission tokens must not reach the served bytes under any
+    view. The stronger half is byte identity: this bundle and the same bundle
+    with ``omissions=()`` must compose to the SAME payload, so a member cannot
+    tell a declared absence from an ordinary empty read. Measured before the
+    gate landed, the two differed in exactly two fields —
+    ``authorized_coverage.status`` (degraded vs unavailable) and ``limitations``
+    (``rights_partial`` present vs absent) — so both are also asserted by name:
+    a future ladder change is exactly how this would regress, and a bare
+    whole-payload compare would not say which half moved.
+
+    Suppression here is NOT evidence the token died — its positive control is
+    ``test_rbv27_rights_partial_never_names_families`` in
+    tests/test_market_ontology_robotics_theme_research.py, which pins that a
+    real selection plus an omission still yields ``degraded`` + the token."""
     for view in robotics.VIEWS:
-        served = json.dumps(
-            robotics.compose_robotics_research(_query(view=view), _bundle()),
-            ensure_ascii=False, sort_keys=True)
+        response = robotics.compose_robotics_research(_query(view=view), _bundle())
+        served = json.dumps(response, ensure_ascii=False, sort_keys=True)
         assert loader.PRIVATE_ASSERTIONS_UNBOUND not in served
         assert loader.PUBLIC_COHORT_UNOWNED not in served
-        assert "rights_partial" in served
+        assert "rights_partial" not in served, (
+            f"{view}: an empty read claimed partial rights — nothing was withheld "
+            f"and nothing was selected for a withholding to narrow")
+        silent = robotics.compose_robotics_research(
+            _query(view=view), dataclasses.replace(_bundle(), omissions=()))
+        assert response["authorized_coverage"] == silent["authorized_coverage"]
+        assert response["limitations"] == silent["limitations"]
+        assert served == json.dumps(silent, ensure_ascii=False, sort_keys=True), (
+            f"{view}: the served payload discloses that content is withheld")
 
 
 def test_the_response_is_pagination_stable_while_empty():

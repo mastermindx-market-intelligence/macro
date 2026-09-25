@@ -407,7 +407,20 @@ class _Selection:
         # RBV-27: partial rights show a partial state and NEVER name the
         # withheld families (deliberate divergence from the shared owner's
         # ``omitted:<name>`` limitation).
-        if bundle.omissions:
+        #
+        # "Partial" is a claim about a real answer that arrived NARROWED, so it
+        # needs something selected to be partial ABOUT. Three reasons the gate
+        # is not just cosmetic on a zero-selection read: the v1 contract
+        # reserves this token for rights ("Rights partiality is recorded as
+        # 'rights_partial'"), and both of this vertical's own omissions are
+        # store-binding facts rather than withholdings; the shipped client
+        # renders limitation slugs verbatim to the member, so the raw token IS
+        # the member-facing sentence and it asserts entitlements were cut;
+        # and announcing an omission over a payload that carries nothing
+        # discloses that withheld content EXISTS, which is the disclosure
+        # RBV-27 exists to prevent. ``authorized_coverage.status`` already
+        # says ``unavailable`` there.
+        if bundle.omissions and self.assertions:
             self.limitations.add("rights_partial")
 
         self._apply_review_gate()
@@ -1157,11 +1170,16 @@ def compose_robotics_research(query: ResearchQuery,
          "kind": "native"}
         for ref in bundle.native_refs)
 
+    # Emptiness outranks omission. ``degraded`` is the PARTIAL state and the
+    # shipped client renders it "Degraded — partial data" / "降级——部分数据"
+    # (site/assets/js/theme-research.js), so claiming it over a zero-selection
+    # read tells a paying member that part of their data arrived when none did.
+    # An omission never ADDS data, so it can never lift an empty read above
+    # ``unavailable``. ``selected`` is ``len(selection.assertions)`` just below,
+    # so the status and the count can no longer disagree.
     coverage_status = "unavailable"
-    if bundle.omissions:
-        coverage_status = "degraded"
-    elif selection.assertions:
-        coverage_status = "ready"
+    if selection.assertions:
+        coverage_status = "degraded" if bundle.omissions else "ready"
 
     return {
         "schema": SCHEMA_ID,
