@@ -29,8 +29,28 @@ per generation, so a served production panel still needs #7870 merged, a
 nightly that has seen two consecutive releases per witness, and the
 publication-retention answer. The nest here is built by the PRODUCTION writer
 from real issuer metadata, in a temporary directory, and reached through the
-real reader — no base-URL override, no producer surface, no fixture standing
-in for the transport.
+reader's model-facing surfaces — no producer surface, no predecessor walk.
+
+Stated precisely, because a proof that overstates its own reach is worse than
+a narrow one: the reader's HTTP layer IS replaced. ``wire_witness_nest``
+substitutes ``_public_base_url`` and ``_fetch_bytes``, so this suite does not
+exercise the reader's public-hostname guard, its redirect refusal, its origin
+pinning or its size bound — those are the reader owner's own suite
+(``tests/test_company_intelligence_neural_reader.py``). What runs here is
+everything above the socket: marker → immutable generation → sha256 receipt →
+contract validation → projection → composition → route → client. Likewise
+``_pin`` fixes the witness cohort for the render cases so they run without the
+committed identity artifacts; the unpinned case at the end patches nothing and
+asserts the Theme Graph / Data OS owners resolve the same identities.
+
+The mount test renders ``templates/_theme_research_mount.html.j2``, the
+vertical's partial. NOTE, found while proving this: no producer sets
+``theme_research_anchor`` today, so that partial emits nothing on every built
+basket page; the markup the site actually ships is an inline duplicate in
+``templates/state_of_themes.html.j2``, covered by
+``tests/test_semiconductor_theme_research_ui.py``. Two copies of one mount
+shape can drift, which is a finding for the render owner, not something this
+suite can fix.
 """
 from __future__ import annotations
 
@@ -52,7 +72,11 @@ from engine.market_ontology.semiconductor_witness_scope import (
     WitnessIdentity,
     WitnessScope,
 )
-from tests.semiconductor_research_helpers import build_witness_nest, wire_witness_nest
+from tests.semiconductor_research_helpers import (
+    build_witness_nest,
+    wire_witness_nest,
+    witness_workspace_payloads,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 JS_PATH = ROOT / "site" / "assets" / "js" / "theme-research.js"
@@ -114,6 +138,57 @@ def nest_files(tmp_path_factory):
 @pytest.fixture
 def served_nest(monkeypatch, nest_files):
     return wire_witness_nest(monkeypatch, nest_files)
+
+
+@pytest.fixture(scope="module")
+def expected():
+    """The figures each witness SHOULD show, read from the workspace payloads
+    that went INTO the nest — never from the response under test.
+
+    Without this the proof only established that the client faithfully renders
+    whatever the route returned: the independent review swapped W-B's
+    economics for W-A's, and scaled every figure by ten, and the suite stayed
+    green both times. Fidelity is not correctness.
+    """
+    payloads = witness_workspace_payloads()
+    out: dict[str, dict] = {}
+    for cik in ("0001046179", "0001097864"):
+        events = sorted(k for k in payloads if cik in k)
+        assert len(events) == 2, (cik, events)
+        prior_event, current_event = events
+        current = payloads[current_event]
+        fiscal = current["fiscal_period"]
+        current_label = f"{fiscal['year']}Q{fiscal['quarter']}"
+        facts = [f for f in current.get("facts") or []
+                 if f.get("metric") == "revenue" and isinstance(f.get("value"), (int, float))]
+        assert len(facts) == 1, (cik, [f.get("fact_id") for f in facts])
+        prior_guidance = [g for g in payloads[prior_event].get("guidance") or []
+                          if g.get("horizon") == current_label]
+        new_guidance = [g for g in current.get("guidance") or []
+                        if g.get("horizon") != current_label]
+        assert len(prior_guidance) == 1 and len(new_guidance) == 1, cik
+        out[cik] = {
+            "events": events,
+            "actual": facts[0],
+            "prior_outlook": prior_guidance[0],
+            "new_outlook": new_guidance[0],
+            "period": current_label,
+        }
+    return out
+
+
+_UNIT_LABEL = {"usd_billions": "US$ bn", "usd_millions": "US$ m"}
+
+
+def _number_tokens(text: str) -> set[str]:
+    """The numbers a rendered cell shows, as whole tokens — a substring test
+    would let "13" satisfy a cell that only ever showed "13.5"."""
+    return set(re.findall(r"(?<![\d.])\d+(?:\.\d+)?(?![\d.])", text))
+
+
+def _spelled(value) -> str:
+    """How the client's `String(n)` spells a JSON number (15.0 → "15")."""
+    return str(int(value)) if isinstance(value, float) and value.is_integer() else str(value)
 
 
 def _pin(monkeypatch, slice_key, identity):
@@ -225,7 +300,7 @@ def test_mount_carries_the_anchor_both_slices_and_the_served_client():
     ("W-B SiC / GaN specialty devices (onsemi)", W_B[0], W_B[1]),
 ])
 def test_served_witness_panel_is_non_empty_and_readable(
-    monkeypatch, entitled_client, served_nest, witness, slice_key, identity,
+    monkeypatch, entitled_client, served_nest, expected, witness, slice_key, identity,
 ):
     _pin(monkeypatch, slice_key, identity)
     payload = _serve(entitled_client, slice_key)
@@ -238,26 +313,57 @@ def test_served_witness_panel_is_non_empty_and_readable(
     assert roles == ["prior_outlook", "actual", "new_outlook",
                      "prior_vs_actual", "witness_gate"], (witness, roles)
 
-    # The panel is READ, not merely present: every cell carries text in both
-    # languages and no cell fell back to the unmapped label.
+    # The panel is READ, not merely present: every cell — NOTES INCLUDED —
+    # carries text in both languages and nothing fell back to the unmapped
+    # label. The note cells were unchecked until the independent review broke
+    # the economics lookup for `basis` and `outlook_status` alone and every
+    # note read "Unmapped label" with this suite still green.
     for row in view["rows"]:
-        for key in ("label_en", "label_zh", "value_en", "value_zh"):
+        for key in ("label_en", "label_zh", "value_en", "value_zh", "note_en", "note_zh"):
+            if key.startswith("note") and row["role"] == "prior_vs_actual":
+                continue  # the comparison row's note is legitimately empty
             assert row[key].strip(), (witness, row["role"], key)
-        assert row["label_en"] != "Unmapped label", (witness, row["role"])
-        assert "Unmapped label" not in row["value_en"], (witness, row)
+            assert "Unmapped label" not in row[key], (witness, row["role"], key, row[key])
         assert _HAN.search(row["label_zh"]), (witness, row["role"], row["label_zh"])
+        # The Chinese column must be a Chinese READING, not the English string
+        # repeated — a join that returned `en` twice passed before. An
+        # identifier list (the gate's event ids) is correctly untranslated and
+        # must then be IDENTICAL, not silently half-rendered.
+        for en, zh in ((row["value_en"], row["value_zh"]), (row["note_en"], row["note_zh"])):
+            if not en.strip():
+                continue
+            if "evt_" in en:
+                assert zh == en, (witness, row["role"], en, zh)
+            else:
+                assert _HAN.search(zh), (witness, row["role"], en, zh)
 
-    # The management sequence the composer actually built, verbatim from the
-    # served bytes — the figures pass through as text, never recomputed.
-    mgmt = payload["economics"]["management"]["roles"]
+    # THE CORRECTNESS CHECK. Everything above proves the client renders what
+    # the route returned; this proves the route returned THIS issuer's real
+    # figures. The expectation comes from the workspace payloads that went
+    # into the nest, never from the response.
+    truth = expected[identity.cik]
     by_role = {row["role"]: row for row in view["rows"]}
-    for role, field in (("prior_outlook", "low"), ("new_outlook", "low")):
-        spelled = str(mgmt[role][field]).rstrip("0").rstrip(".") or "0"
-        assert spelled in by_role[role]["value_en"], (witness, role, by_role[role])
-        assert mgmt[role]["horizon"] in by_role[role]["note_en"], (witness, role)
-    actual = str(mgmt["actual"]["value"]).rstrip("0").rstrip(".") or "0"
-    assert actual in by_role["actual"]["value_en"], (witness, by_role["actual"])
-    assert mgmt["actual"]["fiscal_period"] in by_role["actual"]["note_en"], witness
+    assert payload["economics"]["input_refs"] == truth["events"], (witness, payload["economics"])
+
+    for role in ("prior_outlook", "new_outlook"):
+        want = truth[role]
+        shown = _number_tokens(by_role[role]["value_en"])
+        assert {_spelled(want["low"]), _spelled(want["high"])} == shown, (
+            witness, role, want, by_role[role]["value_en"])
+        assert _UNIT_LABEL[want["unit"]] in by_role[role]["value_en"], (witness, role)
+        assert want["horizon"] in by_role[role]["note_en"], (witness, role)
+
+    want_actual = truth["actual"]
+    assert _number_tokens(by_role["actual"]["value_en"]) == {_spelled(want_actual["value"])}, (
+        witness, want_actual, by_role["actual"]["value_en"])
+    assert _UNIT_LABEL[want_actual["unit"]] in by_role["actual"]["value_en"], witness
+    assert truth["period"] in by_role["actual"]["note_en"], witness
+
+    # And the other witness's distinctive figure must be nowhere on this panel
+    # — the cheapest, bluntest guard against a swapped payload.
+    other = next(v for k, v in expected.items() if k != identity.cik)
+    other_actual = _spelled(other["actual"]["value"])
+    assert other_actual not in " ".join(view["screen"]), (witness, other_actual)
 
     # The two outlooks are DIFFERENT reads, not the same guidance shown twice.
     # The synthetic issuer repeats its range across releases, so the figures
@@ -265,9 +371,17 @@ def test_served_witness_panel_is_non_empty_and_readable(
     # guidance for the period that was then reported, and the new outlook is
     # the reported release's guidance for the period after it. Their horizons
     # must therefore differ, and the prior must name the reported period.
+    mgmt = payload["economics"]["management"]["roles"]
     assert mgmt["prior_outlook"]["horizon"] != mgmt["new_outlook"]["horizon"], witness
     assert mgmt["prior_outlook"]["horizon"] == mgmt["actual"]["fiscal_period"], witness
     assert by_role["prior_outlook"]["note_en"] != by_role["new_outlook"]["note_en"], witness
+    # Stronger than the horizons: the two outlooks were read from DIFFERENT
+    # source documents, so a reader that returned one guidance object twice
+    # fails here even if the horizons were somehow equal.
+    assert (truth["prior_outlook"]["source_span"]["document_id"]
+            != truth["new_outlook"]["source_span"]["document_id"]), witness
+    assert (mgmt["prior_outlook"].get("source_span", {}).get("document_id")
+            != mgmt["new_outlook"].get("source_span", {}).get("document_id")), witness
 
     # The comparison the reader's guidance-history owner returned, in words.
     comparison = payload["economics"]["management"]["comparisons"]["prior_vs_actual"]
@@ -275,10 +389,13 @@ def test_served_witness_panel_is_non_empty_and_readable(
     if comparison["status"] == "comparable":
         assert rendered.startswith("Comparable"), (witness, rendered)
         assert comparison["position"].replace("_", " ").split()[0] in rendered.lower()
-    else:
+    elif comparison["status"] == "refused":
         assert "refused" in rendered.lower(), (witness, rendered)
+    else:  # not_comparable — the owner's third verdict, rendered in words
+        assert rendered.startswith("Not comparable"), (witness, comparison, rendered)
 
     # Both event ids back the gate; the limitations SAY what is missing.
+    assert payload["economics"]["input_refs"], "an unbacked witness gate is not a gate"
     for event_id in payload["economics"]["input_refs"]:
         assert event_id in by_role["witness_gate"]["note_en"], (witness, event_id)
     assert view["limitations_status"] == "ready"
@@ -315,9 +432,14 @@ def test_the_two_witnesses_are_different_issuers_and_one_is_not_an_ai_slice(
     b = _serve(entitled_client, W_B[0])
     assert a["request"]["slice_key"] == "hbm_packaging"
     assert b["request"]["slice_key"] == "sic_gan_specialty"
+    assert a["economics"]["input_refs"] and b["economics"]["input_refs"]
     assert a["economics"]["input_refs"] != b["economics"]["input_refs"]
     assert all("0001046179" in ref for ref in a["economics"]["input_refs"])
     assert all("0001097864" in ref for ref in b["economics"]["input_refs"])
+    # Different issuers must also show different FIGURES — identical numbers
+    # under different event ids is the swapped-payload case.
+    assert (a["economics"]["management"]["roles"]["actual"]["value"]
+            != b["economics"]["management"]["roles"]["actual"]["value"])
     for payload in (a, b):
         assert _render(payload)["rows"], "an empty economics panel fails this proof"
 
