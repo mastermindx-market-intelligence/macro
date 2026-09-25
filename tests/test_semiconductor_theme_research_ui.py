@@ -562,9 +562,26 @@ def test_template_source_mounts_through_the_shared_partial():
     assert "data-theme-research-mount" not in tpl, (
         "the mount literal belongs to the section partial, not to this page"
     )
-    assert "ai_semiconductors" not in tpl and "hbm_packaging" not in tpl, (
-        "the page must not name a vertical"
-    )
+    # ALL NINE registration strings, not a sample. An independent review
+    # re-inserted the vertical's bilingual title and both schema ids above the
+    # loop and every test stayed green, because only the anchor and one slice
+    # key were forbidden here — while the partial suite forbade all nine.
+    mount = _mount_attrs()
+    forbidden = {
+        "anchor": mount["anchor"], "schema": mount["schema"],
+        "evidence_schema": mount["evidenceSchema"],
+    }
+    for slice_key in mount["slices"].split(","):
+        forbidden[f"slice:{slice_key}"] = slice_key
+    for key, pair in json.loads(mount["labels"]).items():
+        forbidden[f"label_en:{key}"], forbidden[f"label_zh:{key}"] = pair[0], pair[1]
+    from engine.market_ontology.theme_research_mounts import mount_context  # noqa: PLC0415
+
+    registration = mount_context(mount["anchor"])
+    for key in ("title_en", "title_zh", "note_en", "note_zh"):
+        forbidden[key] = registration[key]
+    leaked = sorted(name for name, value in forbidden.items() if value in tpl)
+    assert not leaked, f"the page hard-pins registration strings again: {leaked}"
 
 
 # ---------------------------------------------------------------------------

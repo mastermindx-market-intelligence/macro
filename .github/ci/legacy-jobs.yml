@@ -2207,7 +2207,7 @@ jobs:
       # Shared hook 2 (same ruling): the leaf module that owns what a mount
       # renders — anchor, slices, schema ids, bilingual copy — read by BOTH
       # the registration and the page builders. It is a leaf on purpose: the
-      # registry's own closure is 52 files (composer, reader, theme-graph
+      # registry's own closure is 55 files (composer, reader, theme-graph
       # store), which a page builder must not inherit.
       - "engine/market_ontology/theme_research_mounts.py"
       - "templates/_theme_research_section.html.j2"

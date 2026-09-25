@@ -28,6 +28,8 @@ from __future__ import annotations
 import json
 import logging
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -180,6 +182,7 @@ def test_the_research_layer_raising_never_fails_the_page(tmp_path, monkeypatch, 
 
 
 def test_a_missing_engine_checkout_renders_the_board(tmp_path, monkeypatch, caplog):
+    """And SAYS so: a silent empty board is the failure this warning exists for."""
     import scripts.build_state_of_themes as sot
 
     monkeypatch.setattr(sot, "_research_mount_context", None)
@@ -188,6 +191,45 @@ def test_a_missing_engine_checkout_renders_the_board(tmp_path, monkeypatch, capl
         html = _render(_root(tmp_path, [ANCHOR]))
     assert "data-theme-research-mount" not in html
     assert "theme-row" in html
+    assert any("engine/ not in this checkout" in record.getMessage()
+               for record in caplog.records), (
+        "a build with no research layer must say so, not silently drop the mount"
+    )
+
+
+def test_a_research_layer_that_raises_at_import_never_darks_the_board():
+    """The guarded import must catch MORE than ImportError.
+
+    The import first executes engine/market_ontology/__init__.py, which pulls
+    the exposure map, and a malformed registration raises ValueError out of
+    MountFacts.__post_init__ at import time. An independent review proved a
+    ValueError there killed the WHOLE Theme Tracker page — the board, not just
+    the mount — because the guard caught ImportError alone.
+
+    Run in a fresh interpreter: the failure is an IMPORT-time one, and
+    simulating it inside this process would leave the module cache in a state
+    later tests inherit (it did, when this test first patched sys.modules).
+    """
+    probe = (
+        "import sys\n"
+        "class RaisingFinder:\n"
+        "    def find_spec(self, name, path=None, target=None):\n"
+        "        if name == 'engine.market_ontology.theme_research_mounts':\n"
+        "            raise ValueError('MountFacts.title_zh must be non-empty text')\n"
+        "        return None\n"
+        "sys.meta_path.insert(0, RaisingFinder())\n"
+        "import scripts.build_state_of_themes as m\n"
+        "print(m._research_mount_context is None, m._theme_research_mounts([{'theme_id': 'ai_semiconductors'}]) == [])\n"
+    )
+    run = subprocess.run(
+        [sys.executable, "-B", "-c", probe], cwd=str(REPO_ROOT),
+        capture_output=True, text=True, timeout=300,
+    )
+    assert run.returncode == 0, (
+        "a research layer that raises at import took the whole page down:\n"
+        + run.stderr[-2000:]
+    )
+    assert run.stdout.strip() == "True True", run.stdout
 
 
 # ----------------------------------------------------------------------- g/h

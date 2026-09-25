@@ -56,7 +56,13 @@ try:
         MOUNTS as _RESEARCH_MOUNTS,
         mount_context as _research_mount_context,
     )
-except ImportError:  # pragma: no cover — sparse checkout without engine/
+except Exception:  # noqa: BLE001 — the page must build whatever the research layer does
+    # NOT just ImportError. This import first executes
+    # engine/market_ontology/__init__.py, which imports exposure_map, so the
+    # page is exposed to that whole package's import health — and a malformed
+    # registration raises ValueError from MountFacts.__post_init__ at import
+    # time. An independent review proved a ValueError here kills the entire
+    # page, not just the mount.
     _RESEARCH_MOUNTS = None
     _research_mount_context = None
 

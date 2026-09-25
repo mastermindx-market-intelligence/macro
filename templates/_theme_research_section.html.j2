@@ -8,14 +8,19 @@
   this file names no vertical, no slice and no schema.
 
   Context (set by the caller, e.g. with `{% raw %}{% with %}{% endraw %}`):
-    tr_mount — the nine-key mount context. Rendered verbatim; already
-               validated by the caller (the entry partial re-checks).
+    tr_mount — the nine-key mount context, rendered verbatim. Two callers
+               reach this file by different routes: the basket page's entry
+               partial re-checks the nine keys and the anchor grammar before
+               including it, and the Theme Tracker includes it directly from a
+               list its page builder composed. Neither route lets a payload
+               reach here — both read a registration.
 
   Laws:
     L5 — Mount shape, hidden attribute and API paths stay as reviewed. The
-         section carries NO asset tag: the page's entry partial emits the CSS
-         and the script once, so a page with more than one section still
-         loads one client.
+         section carries NO asset tag: each page emits the stylesheet and the
+         client once of its own — the basket page through its entry partial,
+         the Theme Tracker through its own head and tail — so a page with more
+         than one section still loads one client.
     L6 — Every visible string flows through `t('en','zh')`; no raw slug ever
          renders, and both halves are escaped whatever the environment's
          autoescape setting is.

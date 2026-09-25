@@ -309,6 +309,51 @@ def test_the_page_builder_resolves_the_mount_for_us_baskets_only():
     assert _theme_research_mount("no_such_basket", "us") is None
 
 
+def test_a_research_layer_that_raises_at_import_never_darks_a_basket_page():
+    """The basket builder's guard must catch more than ImportError too.
+
+    Same defect, same fix as the Theme Tracker's: the import executes the
+    package __init__ and a malformed registration raises ValueError, which
+    would take every basket page down with it rather than the mount alone.
+    """
+    probe = (
+        "import sys\n"
+        "class RaisingFinder:\n"
+        "    def find_spec(self, name, path=None, target=None):\n"
+        "        if name == 'engine.market_ontology.theme_research_mounts':\n"
+        "            raise ValueError('MountFacts.title_zh must be non-empty text')\n"
+        "        return None\n"
+        "sys.meta_path.insert(0, RaisingFinder())\n"
+        "import scripts.build_theme_detail as m\n"
+        "print(m.mount_context_for_basket is None, m._theme_research_mount('ai_semiconductors', 'us') is None)\n"
+    )
+    run = subprocess.run(
+        [sys.executable, "-B", "-c", probe], cwd=str(REPO_ROOT),
+        capture_output=True, text=True, timeout=300,
+    )
+    assert run.returncode == 0, (
+        "a research layer that raises at import took the whole page down:\n"
+        + run.stderr[-2000:]
+    )
+    assert run.stdout.strip() == "True True", run.stdout
+
+
+def test_the_client_schema_constant_matches_the_registration():
+    """The client's own schema constant is a fourth copy; it must agree.
+
+    `TR_SCHEMA` hard-refuses any other schema id, so a registration whose
+    schema changed without it would have every real response refused. Hook 4a
+    made the spec-driven validator read the mount's id instead; this constant
+    still governs the single-vertical path until that path retires.
+    """
+    js = (REPO_ROOT / "site" / "assets" / "js" / "theme-research.js").read_text(
+        encoding="utf-8"
+    )
+    declared = re.search(r"var TR_SCHEMA = '([^']+)'", js)
+    assert declared, "the client's schema constant moved"
+    assert declared.group(1) == mount_context(ANCHOR)["schema_id"]
+
+
 def test_the_builder_passes_the_mount_into_the_render():
     """The keyword reaches the template call — the half that was missing.
 
@@ -490,7 +535,7 @@ def test_the_leaf_mount_module_imports_no_data_or_web_stack():
     """Measured in a fresh interpreter: importing the leaf costs nothing.
 
     This is why the mount strings do not live on the registration — that
-    import pulls the composer, the reader and the theme-graph store (52 repo
+    import pulls the composer, the reader and the theme-graph store (55 repo
     files) into every CI job that declares a page builder.
     """
     probe = (

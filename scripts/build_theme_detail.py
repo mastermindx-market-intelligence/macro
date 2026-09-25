@@ -29,7 +29,13 @@ log = logging.getLogger("build_theme_detail")
 # still writes every page.
 try:
     from engine.market_ontology.theme_research_mounts import mount_context_for_basket
-except ImportError:  # pragma: no cover — sparse checkout without engine/
+except Exception:  # noqa: BLE001 — the page must build whatever the research layer does
+    # NOT just ImportError. This import first executes
+    # engine/market_ontology/__init__.py, which imports exposure_map, so the
+    # page is exposed to that whole package's import health — and a malformed
+    # registration raises ValueError from MountFacts.__post_init__ at import
+    # time. An independent review proved a ValueError here kills the entire
+    # page, not just the mount.
     mount_context_for_basket = None
 
 _MOUNT_WARNED = False

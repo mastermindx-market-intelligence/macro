@@ -17,8 +17,11 @@ import closure is the whole company-intelligence stack (measured 2026-09-24:
 ``scripts/build_state_of_themes.py`` renders the Theme Tracker; neither must
 drag that in, and four curated CI jobs declare one of them and would have to
 re-run on any change to the research stack. So the strings live here, where
-the only imports are the standard library (closure: 2 files), and the registry
-reads them from this module. One definition, three consumers.
+the only imports of its own are the standard library, and the registry reads
+them from this module. Its curated CI closure is 2 files, this one and the
+crosswalk; importing it at RUNTIME also executes this package's ``__init__``
+and the exposure map that pulls, which is cheap and free of the data stack but
+is not nothing. One definition, three consumers.
 
 Laws
 ----
