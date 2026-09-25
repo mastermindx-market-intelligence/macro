@@ -74,6 +74,10 @@
     'invalidation': p.get('invalidation'),
     't1': (_rd_targets[0] if _rd_targets|length > 0 else none),
     't2': (_rd_targets[1] if _rd_targets|length > 1 else none),
+    # Outcome history intentionally stays unavailable until the existing private
+    # effective-ledger producer (#7399) is accepted and wired by its consumer.
+    # This is presentation state only; it creates no history computation/store.
+    'history_available': false,
     'management_available': p.get('management_status') == 'available' and not p.get('management_error')
   }
 }, allow_no_read=true) }}

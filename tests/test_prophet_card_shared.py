@@ -333,4 +333,7 @@ def test_record_only_plan_detail_is_scoped_and_source_bound():
     assert "'lifecycle_en': _LIFE_LABEL_EN.get(_life, 'State unavailable')" in plan_partial
     assert "p.get('management_status') == 'available'" in plan_partial
     assert "does not restate management actions or infer a user position" in _SRC
+    assert "'history_available': false" in plan_partial
+    assert 'data-history-state="unavailable"' in _SRC
+    assert "Not connected in this view yet." in _SRC
     assert "fetch(" not in plan_partial and "XMLHttpRequest" not in plan_partial
