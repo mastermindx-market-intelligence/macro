@@ -5633,6 +5633,14 @@ jobs:
       - "templates/_finance_financials_launch.html.j2"
       - "templates/state_of_themes.html.j2"
       - "tests/test_finance_entry_points.py"
+      # Finance T8 page + hydration suites: unwired since #7952 (contract-delta listed both as inherited gaps)
+      - "templates/finance_intelligence.html.j2"
+      - "templates/finance_intelligence.js"
+      - "templates/finance_intelligence.css"
+      - "scripts/build_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_hydration.py"
+      - "tests/finance_intelligence_hydration_harness.js"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
       # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
@@ -5685,6 +5693,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml jinja2
+      - name: finance intelligence page + hydration tests
+        run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
         run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
 
