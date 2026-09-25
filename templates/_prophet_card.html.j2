@@ -651,6 +651,25 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
     <div class="pv-stp">{% for _i in [1,2,3,4] %}{% if _i > 1 %}<span class="pv-seg{% if _stage >= _i %} pa{% endif %}"></span>{% endif %}<span class="pv-dot{% if _stage == _i %} on{% elif _stage > _i %} pa{% endif %}"></span>{% endfor %}</div>
     <div class="pv-stl"><span{% if _stage == 1 %} class="on"{% endif %}>{{ t('Bottoming','筑底') }}</span><span{% if _stage == 2 %} class="on"{% endif %}>{{ t('Turning','转向') }}</span><span{% if _stage == 3 %} class="on"{% endif %}>{{ t('Ready','就绪') }}</span><span{% if _stage == 4 %} class="on"{% endif %}>{{ t('Trend','趋势') }}</span></div>
     {%- endif %}
+    {%- if _record_only and cx.get('record_detail') %}{% set _rd = cx.record_detail %}
+    <details class="pv-record-detail" data-plan-id="{{ _rd.plan_id|e }}" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px">{{ t('Plan details','计划详情') }}</summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div>{{ t('System model plan — not your holdings or fills.','系统模型计划——并非您的实际持仓或成交。') }}</div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)">{{ t('Plan ID','计划 ID') }}</b><br>{{ _rd.plan_id|e }}</span>
+          <span><b style="color:var(--text)">{{ t('Horizon','周期') }}</b><br>{% if _rd.horizon_days is number and _rd.horizon_days is not boolean %}{{ _rd.horizon_days|int }} {{ t('days','天') }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original entry','原始入场') }}</b><br>{% if _rd.entry is number and _rd.entry is not boolean %}${{ '%.2f'|format(_rd.entry) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original invalidation','原始失效位') }}</b><br>{% if _rd.invalidation is number and _rd.invalidation is not boolean %}${{ '%.2f'|format(_rd.invalidation) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">T1</b><br>{% if _rd.t1 is number and _rd.t1 is not boolean %}${{ '%.2f'|format(_rd.t1) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">T2</b><br>{% if _rd.t2 is number and _rd.t2 is not boolean %}${{ '%.2f'|format(_rd.t2) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+        </div>
+        {% if _rd.pulse_en %}<div><b style="color:var(--text)">{{ t('Recorded state','记录状态') }}</b><br>{{ t(_rd.pulse_en|e, (_rd.pulse_zh or _rd.pulse_en)|e) }}</div>{% endif %}
+        {% if _rd.next_en %}<div><b style="color:var(--text)">{{ t('Model-plan note','模型计划说明') }}</b><br>{{ t(_rd.next_en|e, (_rd.next_zh or _rd.next_en)|e) }}</div>{% endif %}
+        {% if not _rd.management_available %}<div>{{ t('Management state unavailable for this record.','此记录的管理状态暂缺。') }}</div>{% endif %}
+      </div>
+    </details>
+    {%- endif %}
   </div>
   <div class="pv-zn">
     {%- set _zk = cx.get('zone_kind') or 'none' -%}

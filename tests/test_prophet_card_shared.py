@@ -314,3 +314,20 @@ def test_the_partial_really_is_shared_beyond_the_us_page():
     expected = {"dashboard.html.j2", "china.html.j2", "hk.html.j2",
                 "canada.html.j2", "intl.html.j2"}
     assert expected <= set(consumers), consumers
+
+
+# --------------------------------------------------------------------------- #
+# Packet 2 — record-only plan detail must stay presentation-only and collapsed
+# --------------------------------------------------------------------------- #
+def test_record_only_plan_detail_is_scoped_and_source_bound():
+    plan_partial = (ROOT / "templates" / "_us_prophet_plan_cards.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert "{%- if _record_only and cx.get('record_detail') %}" in _SRC
+    assert '<details class="pv-record-detail"' in _SRC
+    assert 'data-plan-id="{{ _rd.plan_id|e }}"' in _SRC
+    assert "System model plan — not your holdings or fills." in _SRC
+    assert "'record_detail': {" in plan_partial
+    assert "p.get('what_to_do_now')" in plan_partial
+    assert "p.get('management_status') == 'available'" in plan_partial
+    assert "fetch(" not in plan_partial and "XMLHttpRequest" not in plan_partial
