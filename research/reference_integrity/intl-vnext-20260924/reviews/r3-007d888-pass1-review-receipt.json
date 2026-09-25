@@ -1,0 +1,71 @@
+{
+  "schema": "mastermind.rig_independent_reviews.v1",
+  "reference_id": "intl-vnext-20260924",
+  "source_commit": "007d88824cb6831eb534685371ffa5999d577d91",
+  "artifact_sha256": "2499706c70bf916eb854ef8956f53b5fb0c7ff0b82117397ec3c6667a2580d1a",
+  "evidence_commit": "0001995c4dab11564408cfa01223912da57b94b4",
+  "browser_proof_sha256": "a7f55fb03492c6307c0555cb50df8fcfc5b99716fac48dc784d40353b2c4581f",
+  "rig_binding_commit": "926fbace44570c7ff6d5d0d025786a624c414ea5",
+  "published_branch": "sol/intl-vnext-implementation-20260924",
+  "published_head_at_review": "926fbace44570c7ff6d5d0d025786a624c414ea5",
+  "production_source_custody": {
+    "declared_commit": "48dc431c2d0ece76e6e1b5510ff1f57f7dad1d8b",
+    "github_reachable": false,
+    "local_partial_clone_object_present": false,
+    "newer_source_substituted": false,
+    "available_baseline": "baseline.yml plus eight frozen desktop/mobile x dark/light x EN/ZH screenshots",
+    "gap_disclosed_to_reviewers": true
+  },
+  "reviews": [
+    {
+      "review_kind": "product_regression",
+      "pass": 1,
+      "verdict": "BLOCK",
+      "finding_counts": {
+        "blocker": 2,
+        "major": 6,
+        "minor": 3
+      },
+      "reviewer_identity": "R3-007d fresh Opus product critic A",
+      "reviewer_model": "claude-opus-5",
+      "session_id": "508b7c6b-3be4-43ad-a5d0-4eb83e9ba6ac",
+      "num_turns": 29,
+      "total_cost_usd": 3.1735535,
+      "frozen_at": "2026-09-25T04:01:25Z",
+      "rationale_quarantined": true,
+      "other_critic_output_disclosed": false,
+      "packet_read_only": true,
+      "packet_tree_sha256": "9a36977b3eb7594d209931529957b996c66cb77d06dcd546d099ea7558cd900c",
+      "raw_review_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-007d888-product-regression-pass1.raw.md",
+      "raw_review_sha256": "41fc7c1a2efc9132dcbda978e51448e23444fae7042f3cf09e3f74627bb003f9",
+      "session_receipt_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-007d888-product-regression-pass1.session.json",
+      "session_receipt_sha256": "2db212140779ced1ff7044d62782e930bbe023689f6d3a4880ffc1d1b6dceff8",
+      "output_contract_note": "The reviewer returned one fenced YAML document despite the bare-YAML request. The raw result is preserved verbatim; a deterministic fence removal parsed and validated the declared role, identity, pass, verdict, unique finding ids, severities, counts, and strengths."
+    },
+    {
+      "review_kind": "visual_taste",
+      "pass": 1,
+      "verdict": "PASS_WITH_CONDITIONS",
+      "finding_counts": {
+        "blocker": 0,
+        "major": 6,
+        "minor": 4
+      },
+      "reviewer_identity": "R3-007d fresh Opus visual critic B",
+      "reviewer_model": "claude-opus-5",
+      "session_id": "f61f66c8-65dd-461b-83c8-4e2f1b6ec7e1",
+      "num_turns": 45,
+      "total_cost_usd": 2.9741805000000014,
+      "frozen_at": "2026-09-25T03:59:31Z",
+      "rationale_quarantined": true,
+      "other_critic_output_disclosed": false,
+      "packet_read_only": true,
+      "packet_tree_sha256": "35512b9ca8adf51944fa78d12c1f028e1c32976bd47d85220005f42415de8b8b",
+      "raw_review_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-007d888-visual-taste-pass1.raw.md",
+      "raw_review_sha256": "50556749a59ec721e873d09bf4331a76263621cdecc7e69b7968d153ca0a5134",
+      "session_receipt_path": "research/reference_integrity/intl-vnext-20260924/reviews/r3-007d888-visual-taste-pass1.session.json",
+      "session_receipt_sha256": "ed193c67b71fdf74f0b82edd65fa4d63e127ca54b3bc8be0f4eac1cb114c4357",
+      "output_contract_note": "The reviewer returned one fenced YAML document despite the bare-YAML request. The raw result is preserved verbatim; a deterministic fence removal parsed and validated the declared role, identity, pass, verdict, unique finding ids, severities, counts, and strengths."
+    }
+  ]
+}
