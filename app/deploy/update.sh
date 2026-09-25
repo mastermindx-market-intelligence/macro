@@ -15,6 +15,13 @@ APP_DIR="/opt/macro"
 # rename. Skipping is free: the next cron tick picks up whatever this run got.
 exec 9>/var/lock/macro-update.lock
 flock -n 9 || exit 0
+
+# The live checkout is intentionally high-frequency and may receive many large
+# data/artifact commits. Never let a deploy fetch/reset consume the root
+# filesystem's emergency reserve. Cleanup is an explicit operator action; this
+# guard only fails closed before any updater mutation.
+"$APP_DIR/app/deploy/disk-headroom.sh"
+
 source "$APP_DIR/app/deploy/market-memory-options-unit-boundary.sh"
 source "$APP_DIR/app/deploy/market-memory-options-runtime-fence.sh"
 source "$APP_DIR/app/deploy/market-memory-options-dropin-migration.sh"
