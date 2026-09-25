@@ -381,8 +381,8 @@
   };
 
   var LABEL_FALLBACKS = {
-    plane_state:        ['On file', '有据可查'],
-    comparability_state:['Comparable', '可比'],
+    plane_state:        ['State not recorded', '未记录状态'],
+    comparability_state:['Comparability not recorded', '未记录可比性'],
     slice_state:        ['Definition only', '仅完成定义'],
     posture:            ['No price basket yet', '暂无价格组合'],
     membership:         ['No membership recorded', '未记录成员'],
@@ -419,7 +419,7 @@
     plane_word:         ['Operating', '经营'],
     edge_relationship:  ['—', '—'],
     receipt_owner:      ['—', '—'],
-    receipt_state:      ['ready', '就绪'],
+    receipt_state:      ['state not recorded', '未记录状态'],
     degraded_section_state:['available', '可用'],
     conflict_label:     ['Disagreement on file', '存在分歧']
   };
@@ -738,7 +738,7 @@
     var rerating = (slice && slice.rerating) || {};
     var html = RERATING_STEPS.map(function (s, idx) {
       var node = rerating[s.name] || {};
-      var state$ = node.state || 'NOT_APPLICABLE';
+      var state$ = node.state || 'MISSING';
       var comparability = node.comparability_state;
       var evidence = asArray(node.evidence_refs).join(' ');
       var rowHtml = '';
@@ -911,8 +911,11 @@
         }
       });
     });
+    // Keep the reader's chosen view across the langchange re-render.
+    if (state.viewId && views.some(function (v) { return v.view_id === state.viewId; })) activateView(state.viewId);
   }
   function activateView(viewId) {
+    state.viewId = viewId;
     $$('.fi-view-tab').forEach(function (t) {
       var sel = t.dataset.view === viewId;
       t.setAttribute('aria-selected', sel ? 'true' : 'false');
@@ -936,8 +939,8 @@
     if (ey && d && d.coverage) {
       var c = d.coverage;
       ey.textContent = (isZh()
-        ? ('已映射 ' + (c.domains_populated || 0) + ' 个子域 · 共 ' + (c.slices_populated || 0) + ' 个切片（' + (c.slices_total || 0) + ' 个总）')
-        : (c.domains_populated + ' of ' + c.domains_total + ' domains · ' + c.slices_populated + ' of ' + c.slices_total + ' slices mapped'));
+        ? ('已映射 ' + (c.domains_populated || 0) + ' / ' + (c.domains_total || 0) + ' 个子域 · ' + (c.slices_populated || 0) + ' / ' + (c.slices_total || 0) + ' 个切片')
+        : ((c.domains_populated || 0) + ' of ' + (c.domains_total || 0) + ' domains · ' + (c.slices_populated || 0) + ' of ' + (c.slices_total || 0) + ' slices mapped'));
       show(ey, true);
     }
     if (!domains.length) {
@@ -964,7 +967,7 @@
             chipHtml(labelFor('membership', bs), { stateMembership: bs, stateMarker: bs }) +
             (posture && posture !== 'SEMANTIC_ONLY' ? chipHtml(labelFor('posture', posture), { statePosture: posture, stateMarker: posture }) : '') +
             '</div>' +
-            '<span class="fi-slice-open" title="' + esc(isZh() ? ('已加入 ' + incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '">' + esc(isZh() ? (incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '</span>' +
+            '<span class="fi-slice-open">' + esc(isZh() ? (incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '</span>' +
             '</li>';
         }).join('') + '</ul>' +
         '</section>';
@@ -1018,10 +1021,10 @@
             return '<td class="fi-cell" data-state-materiality="UNMEASURED"><span class="fi-cell-role">' + esc(copyPair(SURFACE.no_role)) + '</span></td>';
           }
           var mat = cell.materiality || 'UNMEASURED';
-          var expState = (cell.exposure && cell.exposure.state) || 'MEASURED';
+          var expState = (cell.exposure && cell.exposure.state) || '';
           return '<td class="fi-cell" data-state-exposure="' + esc(expState) + '" data-state-materiality="' + esc(mat) + '" data-state-marker="' + esc(expState) + '">' +
-            '<span class="fi-cell-role">' + esc(labelFor('role', cell.role || 'SECOND_ORDER_BENEFICIARY')) + '</span>' +
-            '<span class="fi-cell-basis">' + esc(labelFor('basis', (cell.exposure && cell.exposure.basis) || 'QUALITATIVE')) + '</span>' +
+            '<span class="fi-cell-role">' + esc(cell.role ? labelFor('role', cell.role) : copyPair(['No role recorded', '未记录角色'])) + '</span>' +
+            '<span class="fi-cell-basis">' + esc(labelFor('basis', (cell.exposure && cell.exposure.basis) || '')) + '</span>' +
             '<span class="fi-cell-materiality">' + esc(labelFor('materiality', mat)) + '</span>' +
             (cell.retained_risk ? '<span class="fi-cell-risk">' + esc(cell.retained_risk) + '</span>' : '') +
             (cell.evidence_date ? '<span class="fi-cell-evidence-date">' + esc(cell.evidence_date) + '</span>' : '') +
@@ -1098,7 +1101,7 @@
           if (!match) {
             return '<td class="fi-cell"><span>' + esc(copyPair(SURFACE.not_mapped)) + '</span></td>';
           }
-          var mState = match.state || 'DESCRIBED';
+          var mState = match.state || '';
           return '<td class="fi-cell" data-state="' + esc(mState) + '" data-state-marker="' + esc(mState) + '">' +
             '<span>' + esc(match.mechanism || (isZh() ? '尚未描述。' : 'No mechanism on file.')) + '</span>' +
             '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">' +
@@ -1236,13 +1239,19 @@
     state.drawer.source = rec;
     if (!rec) {
       fields.innerHTML = '';
-      show(state.ui.evidenceEmpty, true);
+      // A named record that is not in source_records says so; only the bare
+      // drawer asks the reader to choose an evidence action.
+      show(state.ui.evidenceEmpty, !recordId);
+      show(state.ui.evidenceMissing, !!recordId);
       show(state.ui.evidencePrivate, false);
       return;
     }
-    var rights = rec.rights_state || 'DIRECT_DISPLAY_OK';
-    var suppress = (rights === 'SOURCE_RIGHTS_HELD' || rights === 'INTERNAL_ONLY');
+    // D.23 fails CLOSED: a missing or unrecognised rights_state never displays
+    // value/excerpt (its label falls back to "Source rights restrict display").
+    var rights = rec.rights_state || '';
+    var suppress = !(rights === 'DIRECT_DISPLAY_OK' || rights === 'DERIVED_DISPLAY_OK');
     show(state.ui.evidenceEmpty, false);
+    show(state.ui.evidenceMissing, false);
     show(state.ui.evidencePrivate, suppress);
 
     var rows = [];
@@ -1262,7 +1271,7 @@
     row(isZh() ? '披露时点' : 'Published at', rec.source && rec.source.published_at ? String(rec.source.published_at).slice(0, 10) : '', { sensitive: false });
     row(isZh() ? '披露粒度' : 'Published grain', rec.source && rec.source.published_at_grain ? labelFor('published_at_grain', rec.source.published_at_grain) : '');
     row(isZh() ? '陈述方式' : 'Statement mode', rec.statement_mode ? labelFor('statement_mode', rec.statement_mode) : '');
-    row(isZh() ? '身份状态' : 'Identity state', labelFor('identity_state', rec.identity_state || 'IDENTITY_VALIDATED'), { identity: rec.identity_state });
+    row(isZh() ? '身份状态' : 'Identity state', labelFor('identity_state', rec.identity_state || ''), { identity: rec.identity_state });
     row(isZh() ? '来源权利' : 'Rights', labelFor('rights_state', rights), { rights: true });
     row(isZh() ? '限制' : 'Limitations', asArray(rec.limitations).join(' · '));
     row(isZh() ? '修正' : 'Correction', rec.correction || '—');
@@ -1275,7 +1284,13 @@
     if (!recordIds) return;
     var first = String(recordIds).split(' ').filter(Boolean)[0];
     if (!first) return;
-    location.hash = '#evidence=' + first;
+    var target = '#evidence=' + encodeURIComponent(first);
+    if (location.hash === target) { handleHash(); return; }
+    location.hash = target;
+  }
+
+  function hashPart(raw) {
+    try { return decodeURIComponent(raw); } catch (e) { return null; }
   }
 
   function handleHash() {
@@ -1283,14 +1298,14 @@
     if (!h) return;
     var m1 = h.match(/^slice=([^&]+)/);
     var m2 = h.match(/^evidence=([^&]+)/);
-    if (m1) {
-      state.sliceId = decodeURIComponent(m1[1]);
+    if (m1 && hashPart(m1[1]) !== null) {
+      state.sliceId = hashPart(m1[1]);
       if (state.ui.sliceSelect) state.ui.sliceSelect.value = state.sliceId;
       mirrorFreshness();
       renderRerating();
     }
-    if (m2) {
-      var id = decodeURIComponent(m2[1]);
+    if (m2 && hashPart(m2[1]) !== null) {
+      var id = hashPart(m2[1]);
       renderDrawer(id);
       setDrawer(true);
     }
@@ -1313,6 +1328,7 @@
       generation_torn: ['Generation interrupted — partial context only', '生成中断 — 仅展示部分背景'],
       contract_invalid: ['Contract mismatch — showing public shell only', '契约不一致 — 仅展示公开外壳'],
       network: ["Couldn't load — try again", '未能加载 — 请重试'],
+      source_outage: ['Evidence source temporarily unavailable — try again later', '证据来源暂不可用 — 请稍后重试'],
       unknown: ['Read failed', '读取失败']
     };
     var pair = map[kind] || map.unknown;
@@ -1367,6 +1383,7 @@
     state.ui.constraintList = document.querySelector('[data-fi-mount="constraint-list"]');
     state.ui.evidenceFields = document.querySelector('[data-fi-mount="evidence-fields"]');
     state.ui.evidenceEmpty = document.querySelector('[data-fi-mount="evidence-empty"]');
+    state.ui.evidenceMissing = document.querySelector('[data-fi-mount="evidence-missing"]');
     state.ui.evidencePrivate = document.querySelector('[data-fi-mount="evidence-private-notice"]');
     state.ui.notice = document.querySelector('[data-fi-mount="notice"]');
     state.ui.noticeEn = document.querySelector('[data-fi-mount="notice-en"]');
