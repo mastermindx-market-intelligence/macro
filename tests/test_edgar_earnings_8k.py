@@ -547,3 +547,289 @@ class TestDeterministicDedup:
         assert len(result) == 1
         # The non-empty acceptance is earlier lexicographically → should be kept
         assert result.iloc[0]["acceptance_datetime"] == "2023-01-27T16:00:00.000Z"
+
+
+# ---------------------------------------------------------------------------
+# Canonical filing-identity rehydration
+# ---------------------------------------------------------------------------
+
+class TestCanonicalIdentityRehydration:
+    def _legacy(self, rows):
+        return pd.DataFrame(
+            rows,
+            columns=[
+                "ticker", "cik", "filing_date",
+                "acceptance_datetime", "items",
+            ],
+        )
+
+    def _keyed_row(
+        self,
+        *,
+        ticker="AAA",
+        cik=1,
+        accession="0000000001-20-000001",
+        form="8-K",
+        filing_date="2020-01-02",
+        acceptance_datetime="2020-01-02T20:00:00Z",
+        report_date="2019-12-31",
+    ):
+        return {
+            "ticker": ticker,
+            "cik": cik,
+            "accession": accession,
+            "form": form,
+            "filing_date": filing_date,
+            "acceptance_datetime": acceptance_datetime,
+            "report_date": report_date,
+            "items": "2.02,9.01",
+        }
+
+    def test_targets_find_legacy_rows(self):
+        legacy = self._legacy([
+            ("AAA", 1, "2020-01-02", "", "2.02"),
+            ("BBB", 2, "2020-01-03", "", "2.02"),
+        ])
+        assert e8k.canonical_identity_targets(legacy) == [1, 2]
+
+    def test_targets_ignore_fully_keyed_rows(self):
+        keyed = pd.DataFrame([
+            self._keyed_row(cik=1),
+            self._keyed_row(
+                ticker="BBB",
+                cik=2,
+                accession="0000000002-20-000001",
+            ),
+        ])
+        assert e8k.canonical_identity_targets(keyed) == []
+
+    def test_upgrade_replaces_legacy_row_across_ticker_rename(self):
+        legacy = self._legacy([
+            ("OLD", 1, "2020-01-02", "2020-01-02T20:00:00Z", "2.02"),
+        ])
+        fresh = [
+            self._keyed_row(
+                ticker="NEW",
+                cik=1,
+                filing_date="2020-01-02",
+            )
+        ]
+        result = e8k.append_and_dedup(legacy, fresh)
+        assert len(result) == 1
+        assert result.iloc[0]["ticker"] == "NEW"
+        assert result.iloc[0]["accession"] == "0000000001-20-000001"
+
+    def test_same_day_distinct_accessions_survive_rehydration(self):
+        legacy = self._legacy([
+            ("TOL", 794170, "2020-12-07", "2020-12-07T21:49:27.000Z", "2.02,9.01"),
+        ])
+        fresh = [
+            self._keyed_row(
+                ticker="TOL",
+                cik=794170,
+                accession="0000794170-20-000060",
+                filing_date="2020-12-07",
+                acceptance_datetime="2020-12-07T21:49:27.000Z",
+                report_date="2020-12-07",
+            ),
+            self._keyed_row(
+                ticker="TOL",
+                cik=794170,
+                accession="0000794170-20-000061",
+                filing_date="2020-12-07",
+                acceptance_datetime="2020-12-07T21:52:10.000Z",
+                report_date="2020-12-07",
+            ),
+        ]
+
+        def fetcher(ticker, cik):
+            assert ticker == "TOL"
+            assert cik == 794170
+            return fresh, 0
+
+        result, receipt = e8k.rehydrate_canonical_filing_identity(
+            legacy, [794170], fetcher=fetcher
+        )
+        assert receipt["safe_to_apply"] is True
+        assert receipt["failed_ciks"] == 0
+        assert receipt["residual_target_legacy_rows"] == 0
+        assert receipt["details"][0]["same_day_multi_groups"] == 1
+        assert set(result["accession"]) == {
+            "0000794170-20-000060",
+            "0000794170-20-000061",
+        }
+
+    def test_missing_shard_refuses_cik_and_preserves_legacy(self):
+        legacy = self._legacy([
+            ("AAA", 1, "2020-01-02", "", "2.02"),
+        ])
+
+        def fetcher(ticker, cik):
+            return [self._keyed_row(cik=1)], 1
+
+        result, receipt = e8k.rehydrate_canonical_filing_identity(
+            legacy, [1], fetcher=fetcher
+        )
+        assert receipt["safe_to_apply"] is False
+        assert receipt["failed_ciks"] == 1
+        assert receipt["failures"][0]["reason"] == "missing_sec_shards"
+        assert "accession" not in result.columns
+
+    def test_missing_accession_refuses_cik(self):
+        legacy = self._legacy([
+            ("AAA", 1, "2020-01-02", "", "2.02"),
+        ])
+        bad = self._keyed_row(cik=1, accession="")
+
+        result, receipt = e8k.rehydrate_canonical_filing_identity(
+            legacy, [1], fetcher=lambda ticker, cik: ([bad], 0)
+        )
+        assert receipt["safe_to_apply"] is False
+        assert receipt["failures"][0]["reason"] == (
+            "fresh_rows_missing_canonical_filing_identity"
+        )
+        assert "accession" not in result.columns
+
+    def test_uncovered_legacy_date_refuses_cik(self):
+        legacy = self._legacy([
+            ("AAA", 1, "2019-01-02", "", "2.02"),
+            ("AAA", 1, "2020-01-02", "", "2.02"),
+        ])
+        fresh = [self._keyed_row(cik=1, filing_date="2020-01-02")]
+
+        _result, receipt = e8k.rehydrate_canonical_filing_identity(
+            legacy, [1], fetcher=lambda ticker, cik: (fresh, 0)
+        )
+        assert receipt["safe_to_apply"] is False
+        assert receipt["failures"][0]["reason"] == "residual_legacy_rows_after_merge"
+
+    def test_blank_report_date_is_visible_but_filing_key_can_migrate(self):
+        legacy = self._legacy([
+            ("AAA", 1, "2020-01-02", "", "2.02"),
+        ])
+        fresh = [self._keyed_row(cik=1, report_date="")]
+
+        result, receipt = e8k.rehydrate_canonical_filing_identity(
+            legacy, [1], fetcher=lambda ticker, cik: (fresh, 0)
+        )
+        assert receipt["safe_to_apply"] is True
+        assert receipt["details"][0]["report_date_missing_rows"] == 1
+        assert result.iloc[0]["accession"] == "0000000001-20-000001"
+
+    def test_unknown_cik_is_not_invented(self):
+        legacy = self._legacy([
+            ("AAA", 1, "2020-01-02", "", "2.02"),
+        ])
+        _result, receipt = e8k.rehydrate_canonical_filing_identity(
+            legacy, [999], fetcher=lambda ticker, cik: ([], 0)
+        )
+        assert receipt["safe_to_apply"] is False
+        assert receipt["failures"][0] == {
+            "cik": 999,
+            "reason": "cik_not_in_existing_store",
+        }
+
+
+class TestCanonicalIdentityApply:
+    def _legacy(self):
+        return pd.DataFrame(
+            [
+                {
+                    "ticker": "AAA",
+                    "cik": 1,
+                    "filing_date": "2020-01-02",
+                    "acceptance_datetime": "2020-01-02T20:00:00Z",
+                    "items": "2.02,9.01",
+                }
+            ]
+        )
+
+    def _fresh(self, accession="0000000001-20-000001"):
+        return {
+            "ticker": "AAA",
+            "cik": 1,
+            "accession": accession,
+            "form": "8-K",
+            "filing_date": "2020-01-02",
+            "acceptance_datetime": "2020-01-02T20:00:00Z",
+            "report_date": "2019-12-31",
+            "items": "2.02,9.01",
+        }
+
+    def test_duplicate_canonical_key_refuses_cik(self):
+        legacy = self._legacy()
+        row = self._fresh()
+        _candidate, receipt = e8k.rehydrate_canonical_filing_identity(
+            legacy,
+            [1],
+            fetcher=lambda ticker, cik: ([row, dict(row)], 0),
+        )
+        assert receipt["safe_to_apply"] is False
+        assert receipt["failures"][0]["reason"] == "duplicate_canonical_filing_key"
+
+    def test_apply_updates_canonical_store_and_incumbent_manifest(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.setattr(
+            e8k,
+            "config",
+            type("C", (), {"data_dir": staticmethod(lambda: tmp_path)})(),
+        )
+        edgar = tmp_path / "edgar"
+        edgar.mkdir(parents=True)
+        self._legacy().to_parquet(edgar / "earnings_8k_dates.parquet")
+        (edgar / "earnings_8k_dates_manifest.json").write_text(
+            e8k.json.dumps({
+                "1": {
+                    "ticker": "AAA",
+                    "status": "ok",
+                    "n_filings": 1,
+                    "n_shards_missing": 0,
+                    "ts": "2026-07-05T00:00:00+00:00",
+                }
+            })
+        )
+
+        candidate, receipt = e8k.run_identity_rehydration(
+            ciks=[1],
+            apply=True,
+            fetcher=lambda ticker, cik: ([self._fresh()], 0),
+        )
+
+        assert receipt["safe_to_apply"] is True
+        assert receipt["applied"] is True
+        assert receipt["manifest_entries_updated"] == 1
+        stored = pd.read_parquet(edgar / "earnings_8k_dates.parquet")
+        assert stored.to_dict("records") == candidate.to_dict("records")
+        assert stored.iloc[0]["accession"] == "0000000001-20-000001"
+
+        manifest = e8k.json.loads(
+            (edgar / "earnings_8k_dates_manifest.json").read_text()
+        )
+        assert manifest["1"]["identity_schema"] == "cik_accession_v1"
+        assert manifest["1"]["n_filings"] == 1
+        assert manifest["1"]["n_shards_missing"] == 0
+
+    def test_apply_refuses_partial_candidate_and_writes_nothing(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.setattr(
+            e8k,
+            "config",
+            type("C", (), {"data_dir": staticmethod(lambda: tmp_path)})(),
+        )
+        edgar = tmp_path / "edgar"
+        edgar.mkdir(parents=True)
+        legacy = self._legacy()
+        legacy.to_parquet(edgar / "earnings_8k_dates.parquet")
+        before = (edgar / "earnings_8k_dates.parquet").read_bytes()
+
+        with pytest.raises(RuntimeError, match="rehydration refused"):
+            e8k.run_identity_rehydration(
+                ciks=[1],
+                apply=True,
+                fetcher=lambda ticker, cik: ([self._fresh()], 1),
+            )
+
+        assert (edgar / "earnings_8k_dates.parquet").read_bytes() == before
+        assert not (edgar / "earnings_8k_dates_manifest.json").exists()
