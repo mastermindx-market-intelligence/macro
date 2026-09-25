@@ -201,3 +201,114 @@ def test_real_registry_posture_under_the_current_snapshot():
             assert_current_emission_allowed([family], snapshot=(revision, families))
         assert family in str(ei.value)
         assert current[family] in str(ei.value)
+
+
+# ---------------------------------------------------------------------------
+# T04b — the transport withholds what it cannot attribute, and the
+# interpretations derived from it. Sol #7780 issuecomment-5813801605:
+# unmapped rights fail CLOSED. Robotics #7908 issuecomment-5815643294 (a)/(b).
+# ---------------------------------------------------------------------------
+
+def _bundle(assertions=(), blocks=()):
+    from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+
+    return OwnerBundle(
+        revision_tuple=(), rights_revision="r", assertions=tuple(assertions),
+        identity_results=(), event_workspaces=(), financial_packets=(),
+        interpretation_blocks=tuple(blocks), native_refs=(), omissions=(),
+    )
+
+
+def _assertion(revision, source_uri=None, locator=None):
+    source = {}
+    if source_uri is not None:
+        source["source_uri"] = source_uri
+    if locator is not None:
+        source["locator"] = locator
+    return {"curation_revision": revision, "source": source}
+
+
+def _filter(bundle):
+    from app.theme_research import _filter_bundle_for_rights
+    from engine.theme_graph.rights import load_registry_snapshot
+
+    return _filter_bundle_for_rights(bundle, snapshot=load_registry_snapshot())
+
+
+def test_an_unmapped_source_ref_is_withheld_not_emitted():
+    """The owner's ``None`` means "no opinion" for its own disagreement guard.
+    This is an EMISSION path: material no rights row covers is exactly what
+    the registry exists to decide about, so it is not published."""
+    bundle = _bundle([
+        _assertion("gmirca_" + "a" * 32, source_uri="https://www.sec.gov/Archives/x.htm"),
+        _assertion("gmirca_" + "b" * 32, source_uri="s3://somewhere/private.json"),
+        _assertion("gmirca_" + "c" * 32),  # no source ref at all
+    ])
+    filtered, dropped = _filter(bundle)
+    assert dropped is True
+    assert filtered.assertions == ()
+
+
+def test_a_mapped_and_permitted_family_still_passes():
+    """The fail-closed rule must not swallow the families the registry does
+    cover — otherwise the route would serve nothing whatever the rights say."""
+    bundle = _bundle([_assertion("gmirca_" + "d" * 32, source_uri="data/baskets/x.json")])
+    filtered, dropped = _filter(bundle)
+    assert dropped is False
+    assert filtered is bundle
+    assert len(filtered.assertions) == 1
+
+
+def test_an_interpretation_block_is_withheld_with_the_assertion_it_reads():
+    """Prose derived from a withheld assertion is that assertion reaching the
+    wire in another form. The composer would otherwise still emit it, marked
+    stale but emitted."""
+    kept_rev, refused_rev = "gmirca_" + "e" * 32, "gmirca_" + "f" * 32
+    bundle = _bundle(
+        [_assertion(kept_rev, source_uri="data/baskets/x.json"),
+         _assertion(refused_rev, source_uri="https://www.sec.gov/Archives/y.htm")],
+        [{"interpretation_id": "i1", "mechanism": "reads the served one",
+          "input_revisions": [kept_rev], "freshness": "current"},
+         {"interpretation_id": "i2", "mechanism": "reads the withheld one",
+          "input_revisions": [refused_rev], "freshness": "current"},
+         {"interpretation_id": "i3", "mechanism": "reads both",
+          "input_revisions": [kept_rev, refused_rev], "freshness": "current"},
+         {"interpretation_id": "i4", "mechanism": "names no input at all",
+          "input_revisions": [], "freshness": "current"}],
+    )
+    filtered, dropped = _filter(bundle)
+    assert dropped is True
+    assert [a["curation_revision"] for a in filtered.assertions] == [kept_rev]
+    assert [b["interpretation_id"] for b in filtered.interpretation_blocks] == ["i1"]
+
+
+def test_a_block_whose_inputs_are_all_served_survives_an_untouched_bundle():
+    rev = "gmirca_" + "9" * 32
+    bundle = _bundle(
+        [_assertion(rev, source_uri="data/baskets/x.json")],
+        [{"interpretation_id": "i1", "mechanism": "m", "input_revisions": [rev],
+          "freshness": "current"}],
+    )
+    filtered, dropped = _filter(bundle)
+    assert dropped is False and filtered is bundle
+
+
+@pytest.mark.parametrize("inputs", [None, "not-a-list", 7, {}])
+def test_a_block_with_a_malformed_input_list_is_withheld(inputs):
+    """An input list this transport cannot read is not an attribution."""
+    rev = "gmirca_" + "8" * 32
+    bundle = _bundle(
+        [_assertion(rev, source_uri="data/baskets/x.json")],
+        [{"interpretation_id": "i1", "mechanism": "m", "input_revisions": inputs}],
+    )
+    filtered, dropped = _filter(bundle)
+    assert dropped is True and filtered.interpretation_blocks == ()
+
+
+def test_the_private_half_is_unbound_so_both_rules_are_inert_today():
+    """Stated plainly: with R4 open the served bundle carries no assertion and
+    no interpretation block, so neither rule changes a served response. They
+    are the fail-closed default for the moment R4 binds them."""
+    filtered, dropped = _filter(_bundle())
+    assert dropped is False and filtered.assertions == ()
+    assert filtered.interpretation_blocks == ()

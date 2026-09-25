@@ -231,17 +231,41 @@ def _body_to_query(body: _QueryBody | _EvidenceBody) -> ResearchQuery:
 def _filter_bundle_for_rights(
     bundle: OwnerBundle, *, snapshot: tuple[str, dict] | None = None,
 ) -> tuple[OwnerBundle, bool]:
-    """Strip assertions whose source-ref family is REFUSED by the rights
-    OWNER's verdict on a FRESH snapshot. The verdict is asked of
-    :func:`engine.theme_graph.rights.assert_current_emission_allowed` — the
-    single veto — so tightening the owner's rule reaches this route without a
-    transport change. Unknown families (``family_for_source_ref`` returns
-    None) pass through: the registry has no opinion, so we have none either.
+    """Withhold assertions the rights OWNER refuses, and assertions whose
+    source this transport cannot attribute at all.
 
-    Returns the rewritten bundle and a flag telling the caller whether any
-    assertions were dropped — the route turns that into the
+    Two rules, both fail-closed:
+
+    * a MAPPED family is withheld when
+      :func:`engine.theme_graph.rights.assert_current_emission_allowed`
+      refuses it on a FRESH snapshot — the single veto, so tightening the
+      owner's rule reaches this route without a transport change;
+    * an UNMAPPED source ref (``family_for_source_ref`` returns None, which
+      includes an assertion carrying no source ref at all) is withheld too.
+      This reverses the earlier "no opinion, so no opinion here" reading, on
+      Sol #7780 issuecomment-5813801605: unmapped rights fail CLOSED. The
+      owner's None genuinely means "no opinion" for its own guard, which
+      warns on a DISAGREEMENT and must not manufacture one out of ignorance;
+      but this is an EMISSION path, and emitting material no rights row
+      covers is exactly the decision the registry exists to make. An
+      unattributable assertion is not published.
+
+    Interpretation blocks are withheld alongside the assertions they read.
+    A block names its inputs in ``input_revisions``; prose derived from a
+    withheld assertion is that assertion reaching the wire in another form,
+    and the composer would otherwise still emit it (marked stale, but
+    emitted). A block referencing no revision present in the served
+    assertions is withheld as well.
+
+    Returns the rewritten bundle and a flag telling the caller whether
+    anything was withheld — the route turns that into the
     ``rights_refused_families_hidden`` limitation string without naming which
-    families were refused.
+    families or sources were refused.
+
+    The private half is unbound today (R4 open), so ``assertions`` and
+    ``interpretation_blocks`` are empty on every served request and both
+    rules are currently inert. They are the fail-closed default the moment R4
+    binds them, which is the only safe direction for a default to have.
 
     ``snapshot`` is the request's ONE rights read (the route loads it once and
     hands the same object to the registered loader, whose fingerprinted
@@ -258,7 +282,8 @@ def _filter_bundle_for_rights(
         source_ref = source.get("source_uri") or source.get("locator") or ""
         family = family_for_source_ref(source_ref)
         if family is None:
-            kept.append(assertion)
+            # Unmapped or absent source ref: fail closed (see the docstring).
+            dropped = True
             continue
         if family not in verdicts:
             try:
@@ -271,6 +296,17 @@ def _filter_bundle_for_rights(
             kept.append(assertion)
         else:
             dropped = True
+    served_revisions = {
+        str(a.get("curation_revision")) for a in kept if a.get("curation_revision")
+    }
+    blocks: list[Mapping[str, Any]] = []
+    for block in bundle.interpretation_blocks:
+        inputs = block.get("input_revisions")
+        inputs = list(inputs) if isinstance(inputs, (list, tuple)) else []
+        if inputs and all(str(rev) in served_revisions for rev in inputs):
+            blocks.append(block)
+        else:
+            dropped = True
     if not dropped:
         return bundle, False
     new_bundle = OwnerBundle(
@@ -280,7 +316,7 @@ def _filter_bundle_for_rights(
         identity_results=bundle.identity_results,
         event_workspaces=bundle.event_workspaces,
         financial_packets=bundle.financial_packets,
-        interpretation_blocks=bundle.interpretation_blocks,
+        interpretation_blocks=tuple(blocks),
         native_refs=bundle.native_refs,
         omissions=bundle.omissions,
     )
