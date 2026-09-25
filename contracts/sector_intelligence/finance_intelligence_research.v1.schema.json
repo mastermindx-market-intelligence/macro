@@ -2,12 +2,6 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/sector_intelligence/finance_intelligence_research.v1.schema.json",
   "title": "Finance Intelligence Research v1 (envelope)",
-  "contract_id": {
-    "const": "finance_intelligence_research.v1"
-  },
-  "schema": {
-    "const": "finance_intelligence_research.v1"
-  },
   "type": "object",
   "additionalProperties": false,
   "required": [

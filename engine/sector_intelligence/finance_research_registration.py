@@ -34,15 +34,15 @@ external ``engine.sector_intelligence.finance_projection`` composer.
 
 from __future__ import annotations
 
+import copy
 import dataclasses
 import hashlib
 import importlib
-import importlib.util
 import json
 import re
-import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any, Mapping
 
 # ---------------------------------------------------------------------------
@@ -54,25 +54,24 @@ SCHEMA_ID: str = "finance_intelligence_research.v1"
 PROFILE_ID: str = SCHEMA_ID  # §8 dispatches on profile_id (entry_kind=sector_profile)
 EVIDENCE_SCHEMA_ID: str = "finance_intelligence_research.evidence.v1"
 DEFINITION_VERSION: str = "2026-09-25.1"
+# PROPOSED — §8 sector_profile, pending adjudication (#7780 5828668393)
 ENTRY_KIND: str = "sector_profile"
+# PLACEHOLDER — point (a), pending the owner's loader seam
 RUN_CONTEXT_KIND: str = "finance_run_context"
 VIEWS: tuple[str, ...] = ("dossier",)
 TIME_MODES: tuple[str, ...] = ("latest",)
 
-# Mirror the closure of the projection's authority caps (read at import so
-# the two surfaces cannot disagree; Finance projection is the canonical
-# source of these eight names).
-_PROJECTION_AUTHORITY_CAPS: dict[str, bool] = {
-    "rank": False,
-    "gate": False,
-    "size": False,
-    "trade": False,
-    "create_theme": False,
-    "change_membership": False,
-    "write_graph": False,
-    "admit_source": False,
-}
-AUTHORITY: Mapping[str, bool] = dict(_PROJECTION_AUTHORITY_CAPS)  # type: ignore[assignment]
+# Mirror the closure of the projection's authority caps. Constructed on first
+# use after :data:`engine.sector_intelligence.finance_projection` is importable
+# (which it always is on the carrier because the projection is one of this
+# adapter's imports). Frozen as a MappingProxyType so call sites cannot mutate
+# the eight caps without modifying the projection's source of truth.
+def _build_authority() -> Mapping[str, bool]:
+    import engine.sector_intelligence.finance_projection as fp
+    return MappingProxyType({cap: False for cap in fp._AUTHORITY_CAPS})
+
+
+AUTHORITY: Mapping[str, bool] = _build_authority()
 
 # Resolve the sector_ref from the T1 read-model contract so the two contracts
 # can never disagree.
@@ -110,12 +109,7 @@ _LIMIT_MAX: int = 100
 
 
 class FinanceRegistrationRefusal(ValueError):
-    """Codes raised by the finance registration adapter; ``str(exc) == exc.code``.
-
-    The shell's :class:`ResearchRefusal` exists for the wider research
-    system; this adapter owns its own refusal surface so a §8 draft stub
-    cannot collide with a real Finance registration.
-    """
+    """Codes raised by the finance registration adapter; ``str(exc) == exc.code``."""
 
     def __init__(self, code: str) -> None:
         super().__init__(code)
@@ -130,16 +124,46 @@ class FinanceRegistrationRefusal(ValueError):
 # ---------------------------------------------------------------------------
 
 
+#: The module names whose OWN absence means "shell not on this carrier" — a
+#: ``ModuleNotFoundError`` naming anything else is a missing dependency of a
+#: PRESENT shell and propagates (see :func:`_import_shell_module`).
+_SHELL_REGISTRY_MODULE = "engine.market_ontology.theme_research_registry"
+_SHELL_SIBLING_MODULE = "engine.market_ontology.semiconductor_theme_research"
+_SHELL_BINDING_MODULE = "engine.market_ontology.theme_research_binding"
+_SHELL_RESOLVER_MODULE = "engine.theme_graph.curation_assertion"
+_SHELL_MODULE_NAMES = frozenset({
+    _SHELL_REGISTRY_MODULE,
+    _SHELL_SIBLING_MODULE,
+    _SHELL_BINDING_MODULE,
+    _SHELL_RESOLVER_MODULE,
+})
+
+
+def _import_shell_module(name: str) -> Any:
+    """Import one shared-shell module, treating ``ModuleNotFoundError`` as
+    absence ONLY when the missing module IS ``name`` (``exc.name`` matches
+    one of the two shell module names). A ``ModuleNotFoundError`` raised
+    from INSIDE a present shell — a missing third-party dependency of the
+    shell itself — carries a different ``exc.name`` and propagates, so a
+    broken shell can never masquerade as ``shared_shell_unavailable``. A
+    genuine non-module ``ImportError`` from a present-but-broken shell
+    propagates too.
+    """
+    try:
+        return importlib.import_module(name)
+    except ModuleNotFoundError as exc:
+        if exc.name in _SHELL_MODULE_NAMES:
+            return None
+        raise
+
+
 def _import_shell_research_refusal() -> type[ValueError] | None:
     """The shell's :class:`ResearchRefusal` is preferred when present (it
     matches the wider research system's contract); otherwise the adapter's
     own :class:`FinanceRegistrationRefusal` is used.
     """
-    try:
-        module = importlib.import_module(
-            "engine.market_ontology.semiconductor_theme_research"
-        )
-    except Exception:
+    module = _import_shell_module(_SHELL_SIBLING_MODULE)
+    if module is None:
         return None
     refusal_type = getattr(module, "ResearchRefusal", None)
     if isinstance(refusal_type, type) and issubclass(refusal_type, ValueError):
@@ -147,10 +171,34 @@ def _import_shell_research_refusal() -> type[ValueError] | None:
     return None
 
 
+#: Codes the shared shell categorizes as research contracts (see
+#: app/theme_research._RESEARCH_REFUSAL_MAP and "not_available" handler).
+#: Every code on this set raises the shell's :class:`ResearchRefusal` when
+#: the shell is importable, and the adapter's :class:`FinanceRegistrationRefusal`
+#: otherwise. Codes absent from this set — ``shared_shell_unavailable``,
+#: ``sealed_input_unavailable:*``, ``vertical_registration_refused:*``,
+#: ``finance_owner_loader_pending`` — stay typed as the adapter refusal.
+_SHELL_SHARED_REFUSAL_CODES: frozenset[str] = frozenset({
+    "generation_changed",
+    "not_available",
+    "identity_vintage_unsupported",
+    "offset_negative",
+    "limit_out_of_range",
+    "expected_generation_required",
+    "replay_cutoffs_required",
+})
+
+
 def _refuse(code: str) -> None:
-    """Adapter codes ALWAYS raise :class:`FinanceRegistrationRefusal`. This
-    helper exists for symmetry with the shell — the spec uses ``_refuse`` as
-    the single failure site."""
+    """The single refusal site used by every shared code in
+    :data:`_SHELL_SHARED_REFUSAL_CODES`. When the shell's
+    :class:`ResearchRefusal` resolves, raise it as the carrier-compatible
+    type; otherwise raise the adapter's own typed refusal. The single site
+    is the one place the registry can swap refs without re-architecting the
+    raise sites scattered through query, generation and composition."""
+    shell_type = _import_shell_research_refusal()
+    if shell_type is not None and code in _SHELL_SHARED_REFUSAL_CODES:
+        raise shell_type(code)
     raise FinanceRegistrationRefusal(code)
 
 
@@ -159,12 +207,12 @@ def _import_resolver():
 
     Returns the callable when available, or ``None`` when the shell is
     absent (the fixture-only contract). The caller picks: ``compose`` is
-    allowed to swallow a missing resolver (it just emits an empty
-    ``assertion_refs`` list); ``select_evidence`` strictly refuses it.
+    allowed to swallow a missing resolver only when the bundle carries no
+    assertions (see :data:`_SHELL_SHARED_REFUSAL_CODES` and the compose
+    locus in :func:`compose`); ``select_evidence`` strictly refuses it.
     """
-    try:
-        module = importlib.import_module("engine.theme_graph.curation_assertion")
-    except Exception:
+    module = _import_shell_module(_SHELL_RESOLVER_MODULE)
+    if module is None:
         return None
     resolver = getattr(module, "source_ref_for", None)
     if not callable(resolver):
@@ -195,20 +243,36 @@ def _try_resolve_assertion(resolver, assertion: Mapping[str, Any]) -> str | None
 
 
 def _parse_seal_clock(value: Any) -> datetime | None:
-    """Parse an ISO-8601 instant into a NAIVE :class:`datetime` so the
-    projection's ``_to_iso`` (which adds ``Z`` when ``tzinfo`` is None)
-    preserves the round-trip shape the sealed-in wire uses.
+    """Parse an ISO-8601 instant STRICTLY into one timezone-aware
+    :class:`datetime` so both ``Z`` and ``+HH:MM`` forms normalise to the
+    same UTC-instant comparison surface. NO whitespace stripping (the
+    sealed wire never carries stray spaces; whitespace would be contract
+    drift). One representation — the parsed UTC instant — for both shapes
+    so the interval check below can never disagree on a round-trip.
     """
     if not isinstance(value, str):
         return None
-    text = value.strip()
-    if not _ISO_8601_RE.match(text):
+    if not _ISO_8601_RE.match(value):
         return None
-    body = text[:-1] if text.endswith("Z") else text
+    body = value[:-1] + "+00:00" if value.endswith("Z") else value
     try:
-        return datetime.fromisoformat(body)
+        moment = datetime.fromisoformat(body)
     except ValueError:
         return None
+    if moment.tzinfo is None:
+        return None
+    return moment.astimezone(timezone.utc)
+
+
+def _seal_clock_interval(generated_at: datetime, knowledge_cutoff: datetime) -> None:
+    """Refuse when ``knowledge_cutoff`` is later than ``generated_at`` so the
+    typed ``sealed_input_unavailable:run_context`` carries the inconsistency
+    instead of letting it escape as a generic ``ContractValidationError`` once
+    the envelope lands in the registry. The interval check is the same one
+    :func:`engine.sector_intelligence.contracts._interval_issues` performs
+    recursively across nested objects."""
+    if knowledge_cutoff > generated_at:
+        raise FinanceRegistrationRefusal("sealed_input_unavailable:run_context")
 
 
 def _is_seal_clock(value: Any) -> bool:
@@ -243,29 +307,29 @@ def _validate_query(query: Any) -> dict[str, Any]:
     expected_generation = getattr(query, "expected_generation", None)
 
     if not isinstance(profile_id, str) or profile_id != PROFILE_ID:
-        raise FinanceRegistrationRefusal("not_available")
+        _refuse("not_available")
     if not isinstance(sector_ref, str) or sector_ref != SECTOR_REF:
-        raise FinanceRegistrationRefusal("not_available")
+        _refuse("not_available")
     if view not in VIEWS:
-        raise FinanceRegistrationRefusal("not_available")
+        _refuse("not_available")
     if time_mode not in TIME_MODES:
         if time_mode == "system_replay":
-            raise FinanceRegistrationRefusal("identity_vintage_unsupported")
-        raise FinanceRegistrationRefusal("not_available")
+            _refuse("identity_vintage_unsupported")
+        _refuse("not_available")
     if time_mode == "latest":
         if source_cutoff is not None:
-            raise FinanceRegistrationRefusal("not_available")
+            _refuse("not_available")
         if recorded_cutoff is not None:
-            raise FinanceRegistrationRefusal("not_available")
+            _refuse("not_available")
     if not isinstance(offset, int) or isinstance(offset, bool) or offset < 0:
-        raise FinanceRegistrationRefusal("offset_negative")
+        _refuse("offset_negative")
     if (
         not isinstance(limit, int)
         or isinstance(limit, bool)
         or limit < _LIMIT_MIN
         or limit > _LIMIT_MAX
     ):
-        raise FinanceRegistrationRefusal("limit_out_of_range")
+        _refuse("limit_out_of_range")
 
     return {
         "profile_id": profile_id,
@@ -289,27 +353,22 @@ def _generation(request: Mapping[str, Any], bundle: Any) -> str:
     """Compute the gen_ fingerprint. Insensitive to the seal clock
     (generated_at/knowledge_cutoff live on the dossier, not the identity),
     the assertion list (routed through the resolver), and the bundle's
-    ordering of revision_tuple pairs (sorted on read)."""
+    ordering of revision_tuple pairs (sorted via :func:`list` on read).
+
+    The shell's recipe is verbatim — ``sorted(list(pair) for pair in
+    bundle.revision_tuple)`` — and that recipe is the source of truth here:
+    a malformed entry propagates as the underlying ``TypeError``/struct
+    error rather than being silently swallowed. Two revisions that round-
+    trip identically under :func:`json.dumps` (e.g. ``("k", 1)`` vs.
+    ``("k", "1")``) deliberately differ.
+    """
     rights_revision = getattr(bundle, "rights_revision", "")
-    revision_pairs: list[tuple[str, str]] = []
     raw_revision_tuple = getattr(bundle, "revision_tuple", ()) or ()
-    for entry in raw_revision_tuple:
-        if not isinstance(entry, (tuple, list)) or len(entry) != 2:
-            continue
-        key, value = entry[0], entry[1]
-        key_text = key if isinstance(key, str) else json.dumps(
-            key, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False
-        )
-        value_text = value if isinstance(value, str) else json.dumps(
-            value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False
-        )
-        revision_pairs.append((key_text, value_text))
-    revision_pairs.sort()
 
     canonical = {
         "definition_version": DEFINITION_VERSION,
         "rights_revision": rights_revision,
-        "revision_tuple": revision_pairs,
+        "revision_tuple": sorted(list(pair) for pair in raw_revision_tuple),
         "profile_id": request["profile_id"],
         "sector_ref": request["sector_ref"],
         "view": request["view"],
@@ -346,12 +405,18 @@ _OWNER_INPUT_FIELDS: tuple[str, ...] = (
     "source_records",
     "regime_breaks",
     "slice_catalog",
+    "rights_snapshot",
 )
 
 # Owner-bundle fields that the adapter deliberately does NOT map to a
 # FinanceOwnerInputs field. When the bundle carries a non-empty entry in
 # any of these, the limitations list records an ``owner_field_unmapped``
 # marker for the field (once each).
+#
+# ``native_refs`` is counted ONLY when at least one entry has kind !=
+# :data:`RUN_CONTEXT_KIND` — the run-context ref is the lawful home for
+# it on every carrier, so a foreign entry is the only thing actually
+# unmapped to Finance.
 _OWNER_BUNDLE_UNMAPPED_FIELDS: tuple[str, ...] = (
     "identity_results",
     "event_workspaces",
@@ -367,11 +432,17 @@ def _owner_inputs_from_bundle(bundle: Any) -> tuple[Any, datetime, datetime]:
     Returns ``(inputs, generated_at, knowledge_cutoff)``. Refusals:
 
     * ``sealed_input_unavailable:run_context`` — the run-context native ref
-      is absent, present more than once, or has unparseable seal clocks.
+      is absent, present more than once, has unparseable seal clocks, or
+      carries an interval inconsistency (knowledge_cutoff later than
+      generated_at — see :func:`_seal_clock_interval`).
 
-    Every :class:`FinanceOwnerInputs` field other than ``theme_evidence`` is
-    DECLARED ABSENT (R4 fixture-only contract). The projection is allowed
-    to receive those as empty / ``None`` and renders them as such.
+    ``theme_evidence`` is the bundle's ``assertions`` LIST VERBATIM
+    (M6) — the composer's ``_curation_revisions`` already withholds any
+    non-:class:`Mapping` row when extracting the revision set, so the
+    adapter does not pre-filter. Every :class:`FinanceOwnerInputs` field
+    other than ``theme_evidence`` is DECLARED ABSENT (R4 fixture-only
+    contract); the projection is allowed to receive those as empty /
+    ``None`` and renders them as such.
     """
     fp_module = importlib.import_module(
         "engine.sector_intelligence.finance_projection"
@@ -380,10 +451,7 @@ def _owner_inputs_from_bundle(bundle: Any) -> tuple[Any, datetime, datetime]:
     if not isinstance(inputs_cls, type):
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
-    theme_evidence = [
-        dict(a) for a in (getattr(bundle, "assertions", ()) or ())
-        if isinstance(a, Mapping)
-    ]
+    theme_evidence = list(getattr(bundle, "assertions", ()) or ())
 
     rc_entries: list[dict] = []
     for entry in getattr(bundle, "native_refs", ()) or ():
@@ -395,6 +463,7 @@ def _owner_inputs_from_bundle(bundle: Any) -> tuple[Any, datetime, datetime]:
     knowledge_cutoff_dt = _parse_seal_clock(rc_entries[0].get("knowledge_cutoff"))
     if generated_at_dt is None or knowledge_cutoff_dt is None:
         raise FinanceRegistrationRefusal("sealed_input_unavailable:run_context")
+    _seal_clock_interval(generated_at_dt, knowledge_cutoff_dt)
 
     inputs = inputs_cls(
         sector_dossier=None,
@@ -425,9 +494,18 @@ def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
       fixture mapping gets an ``owner_input_absent:<field>`` marker.
     * Each owner-bundle field this adapter explicitly does NOT map, when
       present in the bundle, gets an ``owner_field_unmapped:<field>`` marker
-      (once per field per compose).
-    * Each non-empty :attr:`bundle.omissions` entry produces an
-      ``owner_omission:<reason>`` marker.
+      (once per field per compose). ``native_refs`` is special — see
+      :data:`_OWNER_BUNDLE_UNMAPPED_FIELDS`; it counts only when at least
+      one entry has kind != :data:`RUN_CONTEXT_KIND`.
+    * Each :attr:`bundle.omissions` entry produces an
+      ``owner_omission:<reason>`` marker. A blank string or a non-string
+      omission is NEVER silently dropped (M7): it surfaces as the single
+      limitation ``owner_omission:unnamed`` — deduplicated across any
+      number of such entries — when that string satisfies the envelope
+      contract's limitations pattern (``type: string, minLength: 1``).
+      ``owner_omission:unnamed`` is exactly such a string, so the
+      fallback is always valid; no sealed-input refusal is ever raised
+      from the omissions source alone.
 
     The result is sorted and de-duplicated — same source produces the same
     bytes regardless of build order.
@@ -439,11 +517,26 @@ def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
             limitations.add(f"owner_input_absent:{field_name}")
     bundle_value = getattr(bundle, "omissions", ()) or ()
     if bundle_value:
+        unnamed_present = False
         for omission in bundle_value:
             if isinstance(omission, str) and omission:
                 limitations.add(f"owner_omission:{omission}")
+            else:
+                unnamed_present = True
+        if unnamed_present:
+            limitations.add("owner_omission:unnamed")
     for bundle_field in _OWNER_BUNDLE_UNMAPPED_FIELDS:
         value = getattr(bundle, bundle_field, None)
+        if bundle_field == "native_refs":
+            if isinstance(value, (list, tuple)) and len(value) > 0:
+                if any(
+                    not (isinstance(entry, Mapping) and entry.get("kind") == RUN_CONTEXT_KIND)
+                    for entry in value
+                ):
+                    limitations.add(f"owner_field_unmapped:{bundle_field}")
+            elif isinstance(value, Mapping) and len(value) > 0:
+                limitations.add(f"owner_field_unmapped:{bundle_field}")
+            continue
         if isinstance(value, (list, tuple)) and len(value) > 0:
             limitations.add(f"owner_field_unmapped:{bundle_field}")
         elif isinstance(value, Mapping) and len(value) > 0:
@@ -474,12 +567,47 @@ def _dossier(inputs: Any, generated_at: datetime, knowledge_cutoff: datetime) ->
     )
 
 
-def _compose_assertion_refs(
-    resolver, assertions: tuple[Mapping[str, Any], ...]
-) -> list[dict[str, str]]:
-    """Build the closed ``assertion_refs`` list. Skips any assertion whose
-    resolver call raises or returns a non-conforming ref.
+def _consumed_revision_set(dossier: Mapping[str, Any]) -> set[str]:
+    """Extract the dossier's consumed ``curation_revision`` set verbatim.
+
+    The composer emits this set under ``dossier.snapshot_identity`` and it
+    is the ONLY authority on which revisions the dossier consumed. The
+    adapter never infers or rebuilds it.
     """
+    snapshot = dossier.get("snapshot_identity") if isinstance(dossier, Mapping) else None
+    if not isinstance(snapshot, Mapping):
+        return set()
+    raw = snapshot.get("curation_revision_set")
+    if not isinstance(raw, (list, tuple)):
+        return set()
+    return {str(item) for item in raw if isinstance(item, str) and item}
+
+
+def _compose_assertion_refs(
+    resolver,
+    assertions: tuple[Mapping[str, Any], ...],
+    consumed: set[str] | None = None,
+) -> list[dict[str, str]]:
+    """Build the closed ``assertion_refs`` list, restricted to revisions the
+    dossier actually consumed.
+
+    Behaviour:
+
+    * Keep only assertions whose ``curation_revision`` is a STR AND appears
+      in the consumed set (``dossier.snapshot_identity.curation_revision_set``).
+      An assertion whose revision is non-string (e.g. an integer) is
+      dropped here — it could never have reached the dossier.
+    * Skip any assertion whose resolver call raises or returns a non-
+      conforming ref.
+    * When the bundle carries any assertion AND the resolver is absent,
+      ``shared_shell_unavailable`` is raised — a present assertion list
+      with no resolver is the documented "the dossier could be wrong"
+      case; a silent empty list is forbidden.
+    * Return the result SORTED by ``curation_revision`` so the bytes are
+      byte-identical across compose calls on the same inputs.
+    """
+    if resolver is None and assertions:
+        raise FinanceRegistrationRefusal("shared_shell_unavailable")
     out: list[dict[str, str]] = []
     for assertion in assertions:
         if not isinstance(assertion, Mapping):
@@ -487,34 +615,48 @@ def _compose_assertion_refs(
         curation_revision = assertion.get("curation_revision")
         if not isinstance(curation_revision, str):
             continue
+        if consumed is not None and curation_revision not in consumed:
+            continue
         ref = _try_resolve_assertion(resolver, assertion)
         if ref is None:
             continue
         out.append(
             {"curation_revision": curation_revision, "assertion_ref": ref}
         )
+    out.sort(key=lambda r: r["curation_revision"])
     return out
 
 
-def _validate_envelope(envelope: dict[str, Any]) -> None:
-    """Re-validate the envelope against the on-disk contract. The project's
-    :func:`validate_contract` resolves ``$ref`` through an in-memory
-    registry of owned contracts (the absolute ``$id`` URIs are stable
-    identifiers, never network endpoints) — direct ``Draft202012Validator``
-    use would attempt HTTP for those URIs and is intentionally avoided.
-    """
-    from engine.sector_intelligence.contracts import validate_contract
+#: A lazily-built, module-level :class:`ContractRegistry` reused across
+#: every compose/select_evidence call — :func:`validate_contract` mints a
+#: fresh registry per call and re-discovers every owned schema, which is
+#: wasted on this adapter's tight loop. The registry is built on first use
+#: and never rebuilt.
+_contract_registry: Any | None = None
 
-    validate_contract(
-        envelope,
-        contract_id=SCHEMA_ID,
-        repo_root=Path(__file__).resolve().parents[2],
-    )
-    validate_contract(
-        envelope["dossier"],
-        contract_id="finance_intelligence_read_model.v1",
-        repo_root=Path(__file__).resolve().parents[2],
-    )
+
+def _registry() -> Any:
+    global _contract_registry
+    if _contract_registry is None:
+        from engine.sector_intelligence.contracts import ContractRegistry
+
+        _contract_registry = ContractRegistry(Path(__file__).resolve().parents[2])
+    return _contract_registry
+
+
+def _validate_envelope(envelope: dict[str, Any]) -> None:
+    """Re-validate the envelope against the on-disk contract. The cached
+    :class:`ContractRegistry` is the ONE source of ``$ref`` truth for
+    every compose/select_evidence call.
+
+    A nested-body interval check (``knowledge_cutoff`` later than
+    ``generated_at`` in any sub-object) is reached by the registry's
+    recursive :func:`_interval_issues` pass — that single envelope
+    validation is therefore sufficient and the legacy separate dossier
+    re-validation is dropped (B8 seat ruling; see
+    ``tests/test_finance_research_registration.py::test_envelope_validation_rejects_late_knowledge_cutoff_in_nested_body``).
+    """
+    _registry().validate(SCHEMA_ID, envelope)
 
 
 def compose(query: Any, bundle: Any) -> dict[str, Any]:
@@ -523,21 +665,25 @@ def compose(query: Any, bundle: Any) -> dict[str, Any]:
     Refusals mirror :func:`_validate_query` plus:
 
     * ``generation_changed`` — ``expected_generation`` was supplied and does
-      not match the recomputed fingerprint.
+      not match the recomputed fingerprint. The check runs BEFORE building
+      owner inputs (M1) so a stale generation with a missing run-context
+      refuses here rather than after the projection runs.
     * ``sealed_input_unavailable:run_context`` — see
       :func:`_owner_inputs_from_bundle`.
     * ``shared_shell_unavailable`` — projection or its ``FinanceOwnerInputs``
-      dtype is missing.
+      dtype is missing, OR the bundle carries assertions but the resolver
+      is absent (B3 (c)).
     """
     request = _validate_query(query)
-    inputs, generated_at, knowledge_cutoff = _owner_inputs_from_bundle(bundle)
-    dossier = _dossier(inputs, generated_at, knowledge_cutoff)
     gen = _generation(request, bundle)
     if request["expected_generation"] is not None and request["expected_generation"] != gen:
-        raise FinanceRegistrationRefusal("generation_changed")
+        _refuse("generation_changed")
+    inputs, generated_at, knowledge_cutoff = _owner_inputs_from_bundle(bundle)
+    dossier = _dossier(inputs, generated_at, knowledge_cutoff)
     resolver = _import_resolver()
+    consumed = _consumed_revision_set(dossier)
     assertion_refs = _compose_assertion_refs(
-        resolver, tuple(getattr(bundle, "assertions", ()) or ())
+        resolver, tuple(getattr(bundle, "assertions", ()) or ()), consumed
     )
     limitations = _build_limitations(inputs, bundle)
 
@@ -560,14 +706,26 @@ def _find_assertion_by_ref(
     resolver,
     assertions: tuple[Mapping[str, Any], ...],
     target_ref: str,
+    consumed: set[str],
 ) -> Mapping[str, Any] | None:
     """Walk ``assertions`` in order; the first one whose resolver call
     matches ``target_ref`` is returned. Resolver failures are skipped.
 
-    Returns ``None`` if nothing matches (caller raises ``not_available``).
+    The selection rule (B2):
+
+    * The assertion is selected only when ``curation_revision`` is a STR
+      AND ``curation_revision in consumed`` (the dossier's published
+      ``curation_revision_set``). A non-string revision is never
+      selectable, even when the resolver would echo a ref for it.
+    * Returns ``None`` if nothing matches (caller raises ``not_available``).
     """
     for assertion in assertions:
         if not isinstance(assertion, Mapping):
+            continue
+        curation_revision = assertion.get("curation_revision")
+        if not isinstance(curation_revision, str):
+            continue
+        if curation_revision not in consumed:
             continue
         ref = _try_resolve_assertion(resolver, assertion)
         if ref is None:
@@ -577,13 +735,17 @@ def _find_assertion_by_ref(
     return None
 
 
-def _collect_source_records(dossier: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """The T1 dossier's ``source_records`` is already a list of closed
-    source_record objects; pass them through with a defensive copy.
+def _collect_source_records(
+    dossier: Mapping[str, Any], selected_ref: str
+) -> list[dict[str, Any]]:
+    """The evidence envelope's ``source_records`` is filtered to entries
+    whose ``evidence_ref`` resolves to ``selected_ref`` (B4). When no
+    source record names that ref, the list is EMPTY — never the full
+    dossier's records.
     """
     out: list[dict[str, Any]] = []
     for value in dossier.get("source_records", ()) or ():
-        if isinstance(value, Mapping):
+        if isinstance(value, Mapping) and value.get("evidence_ref") == selected_ref:
             out.append(dict(value))
     return out
 
@@ -603,18 +765,12 @@ def _evidence_envelope(
         "generation": gen,
         "request": {field: query_dict[field] for field in _REQUEST_FIELDS},
         "assertion_ref": assertion_ref,
-        "assertion": dict(assertion),
+        "assertion": copy.deepcopy(dict(assertion)),
         "source_records": list(source_records),
         "limitations": list(limitations),
         "authority": dict(AUTHORITY),
     }
-    from engine.sector_intelligence.contracts import validate_contract
-
-    validate_contract(
-        envelope,
-        contract_id=EVIDENCE_SCHEMA_ID,
-        repo_root=Path(__file__).resolve().parents[2],
-    )
+    _registry().validate(EVIDENCE_SCHEMA_ID, envelope)
     return envelope
 
 
@@ -627,34 +783,37 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
     * ``expected_generation_required`` — the caller did not pin a
       ``expected_generation``; the evidence route is generation-bound and
       we will not guess.
-    * ``generation_changed`` — ``expected_generation`` mismatches.
+    * ``generation_changed`` — ``expected_generation`` mismatches. The
+      check runs BEFORE building owner inputs (M1).
     * ``shared_shell_unavailable`` — the resolver or projection module is
       absent (fixture-only: nothing to query against).
     * ``not_available`` — the ref is not a well-formed ``assertion_ref`` or
-      no assertion in the bundle resolves to it.
+      no assertion in the bundle resolves to it AFTER the consumed-set
+      filter (B2).
     * ``sealed_input_unavailable:run_context`` — see compose.
     """
     request = _validate_query(query)
     if request["expected_generation"] is None:
-        raise FinanceRegistrationRefusal("expected_generation_required")
+        _refuse("expected_generation_required")
     if not isinstance(assertion_ref, str) or not _ASSERTION_REF_PATTERN.match(assertion_ref):
-        raise FinanceRegistrationRefusal("not_available")
-    inputs, generated_at, knowledge_cutoff = _owner_inputs_from_bundle(bundle)
-    dossier = _dossier(inputs, generated_at, knowledge_cutoff)
+        _refuse("not_available")
     gen = _generation(request, bundle)
     if request["expected_generation"] != gen:
-        raise FinanceRegistrationRefusal("generation_changed")
+        _refuse("generation_changed")
+    inputs, generated_at, knowledge_cutoff = _owner_inputs_from_bundle(bundle)
+    dossier = _dossier(inputs, generated_at, knowledge_cutoff)
 
     resolver = _import_resolver()
     if resolver is None:
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
+    consumed = _consumed_revision_set(dossier)
     assertions = tuple(getattr(bundle, "assertions", ()) or ())
-    matched = _find_assertion_by_ref(resolver, assertions, assertion_ref)
+    matched = _find_assertion_by_ref(resolver, assertions, assertion_ref, consumed)
     if matched is None:
-        raise FinanceRegistrationRefusal("not_available")
+        _refuse("not_available")
 
-    source_records = _collect_source_records(dossier)
+    source_records = _collect_source_records(dossier, assertion_ref)
     limitations = _build_limitations(inputs, bundle)
     return _evidence_envelope(
         request, gen, assertion_ref, matched, source_records, limitations
@@ -668,34 +827,31 @@ def load_bundle(query: Any, *, rights_snapshot: Mapping[str, str] | None = None)
 
     * ``shared_shell_unavailable`` — the binding module
       ``engine.market_ontology.theme_research_binding`` is not on the
-      carrier (fixture-only contract; §8 has not been merged yet).
-    * ``finance_owner_loader_pending`` — when the binding IS present, raise
-      the binding's :class:`BundleUnavailable` for a still-not-landed owner
-      loader. The message MUST start with the refusal prefix so the carrier
-      can classify it.
+      carrier (fixture-only contract; §8 has not been merged yet), or the
+      module is present but exports no usable ``BundleUnavailable`` type.
+    * ``finance_owner_loader_pending`` — when the binding IS present and
+      its loader is the still-not-landed fixture-only placeholder. The
+      message MUST start with the refusal prefix so the carrier can
+      classify it, and MUST name (point (a) of PR #7780 comment
+      5828668393) AND R4 so the carrier can route the hold.
     """
-    try:
-        binding_module = importlib.import_module(
-            "engine.market_ontology.theme_research_binding"
-        )
-    except Exception:
+    binding_module = _import_shell_module(_SHELL_BINDING_MODULE)
+    if binding_module is None:
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
     unavailable_type = getattr(binding_module, "BundleUnavailable", None)
     if not (isinstance(unavailable_type, type) and issubclass(unavailable_type, Exception)):
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
-    try:
-        raise unavailable_type(
-            "finance_owner_loader_pending: Finance owner loader not wired into "
-            "the shared shell yet (T10 fixture-only contract). The §8 "
-            "sector_profile dispatcher must land before this returns a bundle."
-        )
-    except unavailable_type as exc:
-        msg = str(exc)
-        if not msg.startswith("finance_owner_loader_pending"):
-            raise FinanceRegistrationRefusal("shared_shell_unavailable") from exc
-        raise
+    # Direct raise (M3) — the prefix is part of the message itself, no
+    # raise/catch/re-raise indirection. The carrier classifies the refusal
+    # by the prefix; the message body names the source comment + R4.
+    raise FinanceRegistrationRefusal(
+        "finance_owner_loader_pending: Finance owner loader not wired into "
+        "the shared shell yet (T10 fixture-only contract, PR #7780 "
+        "comment 5828668393 point (a), R4). The §8 sector_profile "
+        "dispatcher must land before this returns a bundle."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -773,11 +929,8 @@ _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
 def _resolve_vertical_registration_class() -> Any:
     """Resolve ``VerticalRegistration`` from the shared shell module. Returns
     ``None`` when the shell is absent (the fixture-only contract)."""
-    try:
-        module = importlib.import_module(
-            "engine.market_ontology.theme_research_registry"
-        )
-    except Exception:
+    module = _import_shell_module(_SHELL_REGISTRY_MODULE)
+    if module is None:
         return None
     cls = getattr(module, "VerticalRegistration", None)
     if not isinstance(cls, type):
