@@ -4,6 +4,22 @@
 {% macro help(en, zh='') -%}
 <span class="help">?<span class="tip">{{ t(en, zh) }}</span></span>
 {%- endmacro %}
+{# ── Plane slug → plain-word EN/ZH (BLOCKER 5 round 2). The producer emits
+   machine slugs (rates / dollar / credit / commodity / international /
+   rates_and_credit); we surface them as glance-tier labels with both
+   EN and ZH so the row reads as words, not internals. Reference rows
+   (plane=None) render without a tag — the link label alone is the read.
+   Implemented as a top-level {% set %} dict (NOT a Jinja macro) because
+   macros stringify their return value when assigned via {% set %}, which
+   would break the [0]/[1] tuple index the consumer uses below. #}
+{% set _PLANE_WORDS = {
+  'rates':             ('Rates',          '利率'),
+  'dollar':            ('Dollar',         '美元'),
+  'credit':            ('Credit',         '信用'),
+  'commodity':         ('Commodity',      '商品'),
+  'international':     ('International',  '国际'),
+  'rates_and_credit':  ('Rates & Credit', '利率与信用'),
+} %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,60 +76,10 @@
   .state-closed { border-color:var(--muted); color:var(--muted); }
   .state-pre    { border-color:var(--link); color:var(--ink-link, var(--link)); }
   .feasibility-note { font-size:12px; color:var(--muted); margin-top:4px; }
-  /* ── MOR-2b Lane C: context_planes / research_watch / owner_links (token-only) ──
-     Seat-pinned per §4 C2: dark keeps tinted text on transparent fill with the
-     .dtp-dot pulse only on --live; light gains a soft token-only fill and no
-     pulse. The .eyebrow stays in --muted in both themes. Hairline --line borders
-     in both themes; no shadows. */
-  .mx-block-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
-  .mx-block-header h2 { margin:0; }
-  .mx-block-header .eyebrow { font-size:var(--fs-label); }
-  .mx-block-header .mx-chip-slot { display:inline-flex; align-items:center; gap:6px; }
-  .mx-state-chip { display:inline-flex; align-items:center; gap:5px;
-                   padding:4px 9px; border:1px solid var(--line);
-                   border-radius:var(--r-pill,999px);
-                   background:transparent; font-size:var(--fs-label);
-                   font-weight:600; letter-spacing:.04em; }
-  /* light theme: chips gain a soft token-only fill, no pulse */
-  html[data-theme="light"] .mx-state-chip {
-    background:var(--panel2);
-  }
-  html[data-theme="light"] .mx-state-chip .dtp-dot { animation:none; opacity:.55; }
-  .mx-state-chip .dtp-dot { width:6px; height:6px; border-radius:var(--r-pill,999px);
-                             background:currentColor; flex:none; }
-  .mx-state-chip.live  { color:var(--ink-up);   border-color:var(--line); }
-  .mx-state-chip.pre   { color:var(--ink-link, var(--link)); border-color:var(--line); }
-  .mx-state-chip.stale { color:var(--muted); border-color:var(--line); }
-  .mx-state-chip.warn  { color:var(--ink-warn); border-color:var(--line); }
-  .mx-state-chip.behind{ color:var(--muted); border-color:var(--line); }
-  .mx-block-asof { font-size:var(--fs-micro); color:var(--muted); margin-left:auto;
-                   font-variant-numeric:tabular-nums; flex:none; }
-  /* context_planes rows reuse the .ctx-row / .ctx-label idiom. */
-  .mx-cp-row { display:flex; flex-direction:column; gap:2px;
-               padding:var(--sp-3,12px) 0; border-top:1px solid var(--line); }
-  .mx-cp-row:first-of-type { border-top:none; padding-top:0; }
-  .mx-cp-row .ctx-label { color:var(--muted); font-size:var(--fs-label);
-                          font-weight:600; text-transform:uppercase;
-                          letter-spacing:.06em; }
-  .mx-cp-row .mx-cp-read { font-size:var(--fs-body); line-height:1.5; }
-  .mx-cp-row .mx-cp-meta  { font-size:var(--fs-sm); color:var(--muted); }
-  /* research_watch rows — conditions in plain words. */
-  .mx-rw-row { display:flex; flex-direction:column; gap:4px;
-               padding:var(--sp-3,12px) 0; border-top:1px solid var(--line); }
-  .mx-rw-row:first-of-type { border-top:none; padding-top:0; }
-  .mx-rw-row .mx-rw-text { font-size:var(--fs-body); line-height:1.5; }
-  .mx-rw-row .mx-rw-meta { font-size:var(--fs-sm); color:var(--muted); }
-  /* owner_links rows reuse the brief-link idiom. */
-  .mx-ol-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px var(--sp-4,16px);
-               padding:var(--sp-3,12px) 0; border-top:1px solid var(--line); }
-  .mx-ol-row:first-of-type { border-top:none; padding-top:0; }
-  .mx-ol-row .mx-ol-label { font-size:var(--fs-label); color:var(--muted);
-                            text-transform:uppercase; letter-spacing:.06em;
-                            font-weight:600; }
-  /* band-on-aibrief */
-  .mx-band { display:flex; flex-wrap:wrap; align-items:center; gap:8px var(--sp-4,16px); }
-  .mx-band .mx-band-lead { flex:1 1 auto; min-width:0; font-size:var(--fs-body); line-height:1.5; }
-  .mx-band .mx-band-meta { font-size:var(--fs-sm); color:var(--muted); }
+  /* Lane C band + 3 new block rows + chip primitives live in the SHARED
+     templates/_aibrief_css.j2 — the same stylesheet aibrief.html.j2 includes,
+     so the band is never a page-local <style>. The seat-pinned chip class is
+     .dtp-chip (theme.css:1930-1942); no .mx-state-chip family exists. */
 </style>
 </head>
 <body>
@@ -331,15 +297,15 @@
 <div class="panel">
   <div class="mx-block-header">
     <span class="eyebrow">{{ t('Context planes', '背景面') }}</span>
-    <h2>{{ block.title_en if block.title_en else t('Context planes', '背景面') }}</h2>
+    <h2>{{ t(block.title_en or 'Context planes', block.title_zh or '背景面') }}</h2>
     <span class="mx-chip-slot">
-      <span class="mx-state-chip {{ _cp_state_chip[0] }}">
+      <span class="dtp-chip dtp-chip--{{ _cp_state_chip[0] }}">
         {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
         {{ _cp_state_chip[1] }}
       </span>
     </span>
-    {% if block.source_asof %}
-    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_asof[:16] }}</span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
     {% endif %}
     {{ help(
       'Five cross-asset planes (rates, dollar, credit, commodities, international) read from their own owner artifacts. Stale rows show last-known values with a dated reason.',
@@ -348,9 +314,14 @@
   </div>
   {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
     {% for row in block.rows %}
+    {% set _plane_tag = _PLANE_WORDS.get(row.plane, ('', '')) %}
     <div class="mx-cp-row">
-      <span class="ctx-row"><span class="ctx-label">{{ t(row.plane|capitalize if row.plane else 'Plane', row.plane|capitalize if row.plane else '背景面') }}</span>
+      <span class="ctx-row">
+        <span class="ctx-label">{{ _plane_tag[0] }}</span>
+        <span class="l-zh">{{ _plane_tag[1] }}</span>
+        {% if row.label_en or row.label_zh %}
         <span>{{ t(row.label_en or '', row.label_zh or row.label_en or '') }}</span>
+        {% endif %}
       </span>
       {% if row.read_en or row.read_zh %}
       <div class="mx-cp-read">
@@ -386,9 +357,9 @@
 <div class="panel">
   <div class="mx-block-header">
     <span class="eyebrow">{{ t('Research watch', '研究观察') }}</span>
-    <h2>{{ block.title_en if block.title_en else t('Research watch', '研究观察') }}</h2>
+    <h2>{{ t(block.title_en or 'Research watch', block.title_zh or '研究观察') }}</h2>
     <span class="mx-chip-slot">
-      <span class="mx-state-chip {{ _rw_state_chip[0] }}">
+      <span class="dtp-chip dtp-chip--{{ _rw_state_chip[0] }}">
         {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
         {{ _rw_state_chip[1] }}
       </span>
@@ -480,26 +451,31 @@
 <div class="panel">
   <div class="mx-block-header">
     <span class="eyebrow">{{ t('Owner pages', '主理页面') }}</span>
-    <h2>{{ block.title_en if block.title_en else t('Owner pages & references', '主理页面与参考') }}</h2>
+    <h2>{{ t(block.title_en or 'Owner pages & references', block.title_zh or '主理页面与参考') }}</h2>
     <span class="mx-chip-slot">
-      <span class="mx-state-chip {{ _ol_state_chip[0] }}">
+      <span class="dtp-chip dtp-chip--{{ _ol_state_chip[0] }}">
         {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
         {{ _ol_state_chip[1] }}
       </span>
     </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    {% endif %}
     {{ help(
       'Pages and references that own each plane — the canonical destinations for the dashboards behind the read.',
       '每个背景面所属的主理页面与参考——读数背后的看板的标准入口。'
     ) }}
   </div>
-  {% if block.state == 'CURRENT' and block.rows %}
+  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
     {% for row in block.rows %}
+    {% set _plane_tag = _PLANE_WORDS.get(row.plane, ('', '')) %}
     <div class="mx-ol-row">
       <a class="brief-link" href="{{ row.href }}">
         {{ t(row.label_en or '', row.label_zh or row.label_en or '') }}
       </a>
       {% if row.plane %}
-      <span class="mx-ol-label">{{ t(row.plane|capitalize, row.plane|capitalize) }}</span>
+      <span class="mx-ol-label">{{ _plane_tag[0] }}</span>
+      <span class="mx-ol-label" style="margin-left:6px">{{ _plane_tag[1] }}</span>
       {% endif %}
     </div>
     {% endfor %}

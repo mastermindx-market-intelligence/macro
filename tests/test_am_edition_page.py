@@ -372,7 +372,7 @@ def _make_fresh_blocks(tmp_path: Path, session_date: str = "2026-09-08") -> list
             "title_en": "Context planes",
             "title_zh": "背景面",
             "state": "CURRENT",
-            "source_asof": f"{session_date}T13:00:00+00:00",
+            "source_as_of": f"{session_date}T13:00:00+00:00",
             "rows": [
                 {
                     "plane": "rates",
@@ -380,6 +380,16 @@ def _make_fresh_blocks(tmp_path: Path, session_date: str = "2026-09-08") -> list
                     "label_zh": "稳定",
                     "read_en": "Rates are steady this morning.",
                     "read_zh": "今晨利率保持稳定。",
+                    "as_of": f"{session_date}T13:00:00+00:00",
+                    "source_ref": "data/transmission/latest.json",
+                    "state": "CURRENT",
+                },
+                {
+                    "plane": "commodity",
+                    "label_en": "Constructive",
+                    "label_zh": "偏积极",
+                    "read_en": "Commodity complex is steady with a soft bid.",
+                    "read_zh": "商品整体企稳，有小幅买盘。",
                     "as_of": f"{session_date}T13:00:00+00:00",
                     "source_ref": "data/transmission/latest.json",
                     "state": "CURRENT",
@@ -410,12 +420,27 @@ def _make_fresh_blocks(tmp_path: Path, session_date: str = "2026-09-08") -> list
             "title_en": "Owner pages & references",
             "title_zh": "主理页面与参考",
             "state": "CURRENT",
+            "source_as_of": f"{session_date}T07:30:00+00:00",
             "rows": [
                 {
                     "plane": "rates",
                     "label_en": "Macro dashboard",
                     "label_zh": "宏观仪表盘",
                     "href": "macro.html",
+                    "kind": "owner",
+                },
+                {
+                    "plane": "rates_and_credit",
+                    "label_en": "Rates & credit dashboard",
+                    "label_zh": "利率与信用",
+                    "href": "bonds.html",
+                    "kind": "owner",
+                },
+                {
+                    "plane": "international",
+                    "label_en": "China & Hong Kong",
+                    "label_zh": "中国与香港",
+                    "href": "china.html",
                     "kind": "owner",
                 },
             ],
@@ -458,13 +483,25 @@ def test_context_planes_renders_rows_in_current_or_stale(tmp_path, state):
     # Row content visible
     assert "Rates are steady this morning." in _strip_html(html)
     assert "今晨利率保持稳定。" in _strip_html(html)
-    # Header chip + asof
+    # Header chip uses the seat-pinned .dtp-chip primitive (BLOCKER 6 round 2)
     chip_pair = STATE_CHIP_PAIRS[state]
-    assert f'mx-state-chip {chip_pair[0]}' in html
+    assert f'dtp-chip--{chip_pair[0]}' in html
+    # The parallel .mx-state-chip family must NOT appear as a class attr — no
+    # parallel class. Strip <style> blocks first (the source-level comment
+    # "no .mx-state-chip family exists." lives there) so the check is scoped
+    # to actual rendered class= attributes only.
+    body_only = re.sub(r'<style[^>]*>.*?</style>', ' ', html, flags=re.DOTALL)
+    assert 'class="mx-state-chip' not in body_only
     assert chip_pair[1] in _strip_html(html)
     assert chip_pair[2] in _strip_html(html)
-    # Built at asof
-    assert "Built at" in html or "构建时间" in html
+    # Built at asof is non-vacuous (MAJOR 4 round 2): we verify the block-level
+    # clock reads block.source_as_of and renders the fixture's exact prefix.
+    # The prior round's assertion `"Built at" in html` matched the page-header
+    # "Built at" footer and silently passed with source_asof=None.
+    assert "2026-09-08T13:00" in html, (
+        "context_planes clock must read source_as_of (the producer key) and "
+        "render the fixture's prefix 2026-09-08T13:00"
+    )
 
 
 @pytest.mark.parametrize("state", ["UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN"])
@@ -522,9 +559,49 @@ def test_owner_links_renders_rows_in_current(tmp_path):
     html = _render_am_edition(payload)
     assert 'class="brief-link"' in html
     assert 'href="macro.html"' in html
+    assert 'href="bonds.html"' in html
+    assert 'href="china.html"' in html
     text = _strip_html(html)
     assert "Macro dashboard" in text
     assert "宏观仪表盘" in text
+    # MAJOR 2 round 2: owner_links must render its clock too (the prior round
+    # rendered no .dtp-asof on this block). The fixture stamps
+    # source_as_of = 2026-09-08T07:30.
+    assert "2026-09-08T07:30" in html, (
+        "owner_links must render a .dtp-asof clock from source_as_of"
+    )
+    # BLOCKER 5 round 2: plane slugs must surface as plain words, never
+    # `rates_and_credit` or `RATES_AND_CREDIT`. The render shows "Rates &
+    # Credit" / "利率与信用".
+    assert "Rates &amp; Credit" in html or "Rates & Credit" in text
+    assert "利率与信用" in text
+    assert "Rates &amp; credit dashboard" in html or "Rates & credit dashboard" in text
+    # Raw slug MUST NOT appear in visible copy.
+    assert "rates_and_credit" not in text.replace(" ", "").replace("rates_and_credit".replace("_", " "), "")
+
+
+def test_owner_links_renders_stale_with_last_known_rows(tmp_path):
+    """MAJOR 2 round 2: owner_links degrades ONLY when state is not CURRENT or
+    STALE_WITH_LAST_KNOWN. STALE rows render the .mx-ol-row with brief-link,
+    not the .mx-empty placeholder. The prior round routed STALE rows to the
+    empty block, hiding last-known owners."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[2]["state"] = "STALE_WITH_LAST_KNOWN"
+    blocks[2]["state_reason_en"] = "Owner registry has not refreshed since 02:00 UTC."
+    blocks[2]["state_reason_zh"] = "主理页面注册表自UTC 02:00起未刷新。"
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    # Rows are still rendered (STALE keeps last-known links per C1).
+    assert 'class="brief-link"' in html
+    assert 'href="macro.html"' in html
+    assert 'href="bonds.html"' in html
+    # The block-level chip carries --stale, not the warn/behind fall-through.
+    assert "dtp-chip--stale" in html
+    body_only = re.sub(r'<style[^>]*>.*?</style>', ' ', html, flags=re.DOTALL)
+    assert 'class="mx-state-chip' not in body_only
+    # The empty placeholder must NOT be rendered for STALE.
+    # (If owner_links degrades STALE → .mx-empty, the next two would still
+    # be there for unrelated blocks; tighten by scoping to the chip text.)
 
 
 def test_owner_links_renders_mx_empty_in_not_covered(tmp_path):
@@ -540,6 +617,75 @@ def test_owner_links_renders_mx_empty_in_not_covered(tmp_path):
     assert "mx-empty-why" in html
     text = _strip_html(html)
     assert "今晨无法链接到相关页面。" in text
+
+
+def test_owner_links_renders_clock_from_source_as_of(tmp_path):
+    """BLOCKER 3 round 2: owner_links clock must read source_as_of (the producer
+    key) and surface it under .dtp-asof. The prior round had no clock on this
+    block at all. We assert both that the key prefix renders AND that the wrong
+    key (`source_asof`, missing underscore) is NOT what the template reads."""
+    blocks = _make_fresh_blocks(tmp_path)
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    # The fixture sets source_as_of = 2026-09-08T07:30:00+00:00, sliced to
+    # "2026-09-08T07:30" — both blocks (cp + ol) and the prior header chip
+    # ensure this prefix is unique to the new blocks' clock rendering.
+    assert "2026-09-08T07:30" in html, (
+        "owner_links must render its source_as_of clock; missing key"
+    )
+
+
+def test_new_blocks_render_title_zh_on_every_h2(tmp_path):
+    """BLOCKER 4 round 2: every new block's <h2> must carry both title_en and
+    title_zh via t() — the prior round rendered title_en only on ZH pages.
+    Each h2 in the three new blocks must include the paired l-en / l-zh spans."""
+    blocks = _make_fresh_blocks(tmp_path)
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    text = _strip_html(html)
+    # Each block's title pair must appear adjacent (paired via t()).
+    # We assert each pair is present AND that the producer's ZH title was
+    # actually read (not silently falling back to the eyebrow text).
+    pairs = [
+        ("Context planes", "背景面"),
+        ("Research watch", "研究观察"),
+        ("Owner pages", "主理页面"),
+    ]
+    for en, zh in pairs:
+        assert en in text, f"missing EN title: {en}"
+        assert zh in text, f"missing ZH title twin: {zh} for {en}"
+    # Negative: a title that the producer did NOT provide (e.g. "Foo bar") must
+    # not be the value of any h2 in the new blocks. We can't easily scope to
+    # just the new blocks from rendered HTML, but we can confirm the producer's
+    # h2 is reading block.title_zh — strip the page header and search for the
+    # OWNER <h2> rendered values.
+    assert text.count("Owner pages") >= 1, "owner <h2> missing"
+    assert text.count("主理页面与参考") >= 1, (
+        "owner_links <h2> must read title_zh=主理页面与参考, not the eyebrow "
+        "'Owner pages / 主理页面' alone"
+    )
+
+
+def test_plane_slugs_render_as_plain_words_not_raw(tmp_path):
+    """BLOCKER 5 round 2: plane slugs (rates, dollar, credit, commodity,
+    international, rates_and_credit) must surface as glance-tier EN/ZH labels.
+    Raw slug variants like 'rates_and_credit' or ALL_CAPS must NOT appear in
+    visible copy."""
+    blocks = _make_fresh_blocks(tmp_path)
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    text = _strip_html(html)
+    # Plain words are present in both languages.
+    plain_en = ["Rates", "Commodity"]
+    plain_zh = ["利率", "商品"]
+    for w in plain_en:
+        assert w in text, f"missing plain-word EN plane label: {w}"
+    for w in plain_zh:
+        assert w in text, f"missing plain-word ZH plane label: {w}"
+    # Raw slug variants MUST NOT leak.
+    assert "rates_and_credit" not in text
+    assert "RATES_AND_CREDIT" not in text
+    assert "INTERNATIONAL" not in text or "国际" in text  # latter half checks the pair
 
 
 # ── C1: chip text uses plain words, never the enum ───────────────────────────

@@ -1,12 +1,12 @@
 {
   "schema": "mastermind.p0_evidence.v2",
-  "generated_at": "2026-09-25T01:23:32Z",
+  "generated_at": "2026-09-25T02:21:13Z",
   "tool": {
     "module_ref": "scripts/capture_aibrief_band_evidence.py",
     "module_sha256": "c7a84de8d3c873449f7520f02c568b6afbce5ed89a5bdbbcbbca98708270f7f6"
   },
   "target": "aibrief.html#am_edition_band",
-  "head": "8d175a94df227f48d7b9d24e94403067b81cfe2b",
+  "head": "326006285d27b26538a14275004a70e81f0d1ba4",
   "axes": {
     "viewports": {
       "desktop": [
@@ -29,8 +29,8 @@
     ]
   },
   "aliases": {
-    "band-dark-en-desktop.png": "shots/72159cdd86b0c15bc31e09dd3b737c4ac76356d6851692b059df6dc362942d41.png",
-    "band-light-en-desktop.png": "shots/2a13dd0559baa70668b87b812c412419bd061229fd35a60234c8662d867ca62b.png"
+    "band-dark-en-desktop.png": "shots/a0f30697bd81b6db345431f54921e5fb8ff66ecf40640eed897e51d61bb511a2.png",
+    "band-light-en-desktop.png": "shots/5d80300e2488cb2f58ddfeff4ed8da66837b15c2789bcd6003fbc0ef1d75bb6e.png"
   },
   "excluded": [],
   "outcome": "captured",
@@ -63,12 +63,12 @@
           "force_state": null,
           "subject": "band",
           "captured": true,
-          "file": "shots/72159cdd86b0c15bc31e09dd3b737c4ac76356d6851692b059df6dc362942d41.png",
+          "file": "shots/a0f30697bd81b6db345431f54921e5fb8ff66ecf40640eed897e51d61bb511a2.png",
           "alias": "band-dark-en-desktop.png",
-          "sha256": "72159cdd86b0c15bc31e09dd3b737c4ac76356d6851692b059df6dc362942d41",
-          "bytes": 25202,
+          "sha256": "a0f30697bd81b6db345431f54921e5fb8ff66ecf40640eed897e51d61bb511a2",
+          "bytes": 22516,
           "width": 1100,
-          "height": 125,
+          "height": 92,
           "applied_theme": "dark",
           "applied_locale": "en"
         },
@@ -82,12 +82,12 @@
           "force_state": null,
           "subject": "band",
           "captured": true,
-          "file": "shots/2a13dd0559baa70668b87b812c412419bd061229fd35a60234c8662d867ca62b.png",
+          "file": "shots/5d80300e2488cb2f58ddfeff4ed8da66837b15c2789bcd6003fbc0ef1d75bb6e.png",
           "alias": "band-light-en-desktop.png",
-          "sha256": "2a13dd0559baa70668b87b812c412419bd061229fd35a60234c8662d867ca62b",
-          "bytes": 24809,
+          "sha256": "5d80300e2488cb2f58ddfeff4ed8da66837b15c2789bcd6003fbc0ef1d75bb6e",
+          "bytes": 21279,
           "width": 1100,
-          "height": 125,
+          "height": 92,
           "applied_theme": "light",
           "applied_locale": "en"
         }
