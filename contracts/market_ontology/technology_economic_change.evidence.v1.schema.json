@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/market_ontology/technology_economic_change.evidence.v1.schema.json",
   "title": "GMI technology economic-change evidence envelope v1 (technology_economic_change.evidence.v1)",
-  "description": "Closed evidence envelope for the Technology ex-Semis company-first research profile (T8A, macro#7891; proposed §8 shape @ 382c0b399d5c on #7870, under Sol adjudication). Exactly ONE authorized, already-accepted shared curation assertion, deep-copied from the owner bundle with exactly one key excluded: its assertion-internal authority block — the envelope states the six-false authority ceiling once, at its own top level, and forbids a second authority surface inside the open assertion object; otherwise its internal shape is owned by theme_graph.curation_assertion.v1 (macro#7870) and is deliberately the only open object here. The generation is the dossier_id of the composed dossier that actually rendered the citing row/card/counter, so the envelope can never cite a projection it was not selected from. Unknown and not-selected references share one refusal code, so the envelope discloses no existence. Authority ceiling research_display_only: all six flags literally false (ECD-48); this envelope ranks, gates, sizes, vetoes, originates and opens nothing.",
+  "description": "Closed evidence envelope for the Technology ex-Semis company-first research profile (T8A, macro#7891; proposed §8 shape @ 382c0b399d5c on #7870, under Sol adjudication). Exactly ONE authorized, already-accepted shared curation assertion, deep-copied VERBATIM from the owner bundle — its assertion-internal authority block included, exactly as theme_graph.curation_assertion.v1 (macro#7870) itself requires that block: the six authority flags are pinned literally false in place, the same six the envelope's own top-level authority ceiling states, so a smuggled all-true block (rank, gate, sizing) can never validate while the assertion remains a contract-valid curation assertion instead of forking the shared contract by omission. Apart from that pin the assertion's internal shape is owned by the shared assertion contract and is deliberately the only open object here. The generation is the dossier_id of the composed dossier that actually rendered the citing row/card/counter, so the envelope can never cite a projection it was not selected from. Unknown and not-selected references share one refusal code, so the envelope discloses no existence. Authority ceiling research_display_only: all six flags literally false (ECD-48); this envelope ranks, gates, sizes, vetoes, originates and opens nothing.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "definition_version", "generation", "assertion", "limitations", "authority"],
@@ -17,8 +17,23 @@
     "assertion": {
       "type": "object",
       "additionalProperties": true,
-      "not": {"required": ["authority"]},
-      "description": "Deep copy of the one authorized assertion, verbatim except for exactly one excluded key: the assertion-internal authority block (the envelope's own top-level authority section is the single authority statement, so a smuggled second one — all-true flags, rank, sizing — can never validate). Otherwise open on purpose: the shared assertion contract (theme_graph.curation_assertion.v1) owns this shape; restating it here would fork the shared contract."
+      "required": ["authority"],
+      "properties": {
+        "authority": {
+          "type": "object",
+          "required": ["rank", "gate", "size", "veto", "originate", "open_entry"],
+          "properties": {
+            "rank": {"const": false},
+            "gate": {"const": false},
+            "size": {"const": false},
+            "veto": {"const": false},
+            "originate": {"const": false},
+            "open_entry": {"const": false}
+          },
+          "description": "The shared curation assertion's own authority block, required by theme_graph.curation_assertion.v1 and pinned here to the same six literally-false flags the envelope's own top-level ceiling carries. The block is otherwise left open: the shared contract owns its full shape, and restating it would fork that contract exactly as the deleted forbid-rule did."
+        }
+      },
+      "description": "Deep copy of the one authorized assertion, VERBATIM — its authority block included, because the shared contract (theme_graph.curation_assertion.v1, macro#7870) itself requires that key; an earlier draft excluded it and thereby forked the shared contract by omission. The in-place six-false pin achieves what the old forbid-rule was for: a smuggled authority block — all-true flags, rank, sizing — still cannot validate. Otherwise open on purpose: the shared assertion contract owns this shape; restating it here would fork the shared contract."
     },
     "limitations": {
       "type": "array",

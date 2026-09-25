@@ -96,14 +96,6 @@ def _themed(assertion: dict, theme_ref: str = THEME) -> dict:
     return themed
 
 
-def _without_authority(assertion: dict) -> dict:
-    """The envelope's copy of an assertion: verbatim minus its assertion-
-    internal authority block — the envelope states the ceiling once, at its
-    own top level, and the evidence contract forbids a second one inside the
-    open assertion object."""
-    return {key: value for key, value in assertion.items() if key != "authority"}
-
-
 def _identity_result(entity_id: str = COMPANY, **extra: Any) -> dict:
     """One owner-side identity result: the native receipt plus the fields the
     §8 bundle contract is expected to carry (node_id / cik / as_known — all
@@ -541,9 +533,12 @@ def test_select_evidence_returns_the_one_authorized_assertion(monkeypatch):
     assert envelope["schema"] == reg.EVIDENCE_SCHEMA_ID
     assert envelope["definition_version"] == reg.DEFINITION_VERSION
     assert envelope["generation"].startswith("tecd_")
-    assert envelope["assertion"] == _without_authority(ROLE_T)
+    # X1: VERBATIM deep copy — the assertion-internal authority block stays,
+    # exactly as the shared curation contract requires it, and the evidence
+    # contract pins its flags false in place
+    assert envelope["assertion"] == ROLE_T
     assert envelope["assertion"] is not ROLE_T  # deep copy, never an alias
-    assert "authority" not in envelope["assertion"]  # one ceiling, top level only
+    assert envelope["assertion"]["authority"] == envelope["authority"]
     assert envelope["limitations"] == sorted(envelope["limitations"])
     assert envelope["authority"] == {
         "rank": False, "gate": False, "size": False,
@@ -603,7 +598,51 @@ def test_select_evidence_substitution_by_shared_source_object_id_refuses(monkeyp
         assert excinfo.value.code == "not_available"
     # the single-match happy path still returns the rendered assertion
     envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
-    assert envelope["assertion"] == _without_authority(ROLE_T)
+    assert envelope["assertion"] == ROLE_T
+
+
+def test_two_rendered_assertions_from_one_document_both_refuse(monkeypatch):
+    # X5(b) pin: source.object_id is DOCUMENT-grained while the evidence unit
+    # is assertion-grained. Two legitimately distinct, BOTH-RENDERED
+    # assertions from ONE filing (same object_id, different selector) share a
+    # single document key, so the exactly-one gate refuses and the ref comes
+    # back not_available. Fail-closed and deliberate — the durable fix
+    # (authorize on the full source ref including the selector, or an
+    # assertion-level id) is owed to §8 and not taken here. The day §8 names
+    # the finer key, THIS pin fails loudly and must be re-examined, never
+    # silently re-passed.
+    _activate_synthetic_contract(monkeypatch)
+    page_one = _themed(base.ROLE)
+    page_seven = _themed(
+        base._assertion(
+            predicate="buyer_paid_unit",
+            seed="one-doc-two-assertions-buyer",
+            source=base._src(
+                "synthetic-doc-role-1", selector="synthetic/synthetic-doc-role-1#p7"
+            ),
+        )
+    )
+    bundle = _bundle(assertions=(page_one, page_seven))
+    dossier = reg.compose(QUERY, bundle)
+    # both are real, rendered evidence from that one document...
+    assert dossier["business"].get("refused") is not True
+    assert len(dossier["business"]["rows"]) == 2
+    assert "synthetic-doc-role-1" in reg._cited_source_object_ids(dossier)
+    # ...and yet the document-grained key cannot name EITHER one
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.select_evidence(QUERY, bundle, "synthetic-doc-role-1")
+    assert excinfo.value.code == "not_available"
+    # control: the same second assertion on its OWN document is selectable,
+    # so the shared document key — not the assertion — is what refused above
+    own_doc = _themed(
+        base._assertion(
+            predicate="buyer_paid_unit",
+            seed="one-doc-two-assertions-buyer",
+            source=base._src("synthetic-doc-buyer-1"),
+        )
+    )
+    selected = reg.select_evidence(QUERY, _bundle(assertions=(page_one, own_doc)), "synthetic-doc-role-1")
+    assert selected["assertion"] == page_one
 
 
 def test_select_evidence_deep_copies_the_assertion(monkeypatch):
@@ -675,11 +714,11 @@ def test_evidence_schema_binds_definition_version_by_identity(monkeypatch):
     assert schema["properties"]["definition_version"]["const"] == reg.DEFINITION_VERSION
 
 
-def test_evidence_schema_forbids_authority_inside_the_assertion(monkeypatch):
-    # N4: an assertion carrying its own authority block — let alone an
-    # all-true one with rank/recommendation/position sizing — must NOT
-    # validate. The envelope states the six-false ceiling exactly once, at its
-    # own top level.
+def test_evidence_schema_rejects_an_all_true_authority_inside_the_assertion(monkeypatch):
+    # X1(a): a smuggled assertion-internal authority block — all-six-true,
+    # with rank/recommendation/position sizing riding along — must NOT
+    # validate. This held under the deleted forbid-rule too; it is the half of
+    # the old guarantee the inversion must keep.
     _activate_synthetic_contract(monkeypatch)
     envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
     validator = _evidence_validator()
@@ -695,17 +734,47 @@ def test_evidence_schema_forbids_authority_inside_the_assertion(monkeypatch):
     with pytest.raises(jsonschema.ValidationError):
         validator.validate(abusive)
 
-    # even the lawful all-false block stays out: one ceiling, top level only
-    lawful_but_doubled = json.loads(json.dumps(envelope))
-    lawful_but_doubled["assertion"]["authority"] = dict(envelope["authority"])
+
+def test_evidence_schema_accepts_the_lawful_all_false_authority(monkeypatch):
+    # X1(b): a verbatim, contract-valid curation assertion carries its own
+    # six-false authority block, and the shipped evidence contract MUST accept
+    # it — under the deleted forbid-rule ("not: required authority") this
+    # validation failed, which is the fork the inversion closes.
+    _activate_synthetic_contract(monkeypatch)
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    assert envelope["assertion"]["authority"] == dict(envelope["authority"])
+    _evidence_validator().validate(envelope)  # no raise: lawful and verbatim
+
+
+def test_evidence_schema_rejects_an_assertion_missing_authority(monkeypatch):
+    # X1(c): authority is REQUIRED by theme_graph.curation_assertion.v1, so an
+    # assertion WITHOUT it must not validate — an evidence envelope may never
+    # hand out an assertion its own shared contract would refuse.
+    _activate_synthetic_contract(monkeypatch)
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    missing = json.loads(json.dumps(envelope))
+    missing["assertion"].pop("authority")
     with pytest.raises(jsonschema.ValidationError):
-        validator.validate(lawful_but_doubled)
+        _evidence_validator().validate(missing)
+
+
+def test_selected_assertion_passes_the_shared_curation_contract_verbatim(monkeypatch):
+    # X1(d): the envelope's assertion, EXACTLY as select_evidence emits it,
+    # validates against the shared curation contract (synthetic stand-in for
+    # theme_graph.curation_assertion.v1). This is the regression that
+    # motivated the inversion: under the old pop-the-required-key-out rule the
+    # same call failed with missing ['authority'].
+    _activate_synthetic_contract(monkeypatch)
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    validated = base.SYNTHETIC_CURATION_CONTRACT.validate_assertion(envelope["assertion"])
+    assert validated == envelope["assertion"]
 
 
 def test_validate_evidence_envelope_has_runtime_teeth(monkeypatch):
     # N3: the same contract check the schema file carries is callable at
     # runtime and refuses TYPED — select_evidence runs it on every envelope
-    # immediately before returning.
+    # immediately before returning. X3: the code carries the violating PATH
+    # only, never the validator's instance-rendering message.
     _activate_synthetic_contract(monkeypatch)
     envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
 
@@ -724,20 +793,116 @@ def test_validate_evidence_envelope_has_runtime_teeth(monkeypatch):
     unknown_top_level["unexpected"] = 1
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
         reg.validate_evidence_envelope(unknown_top_level)
-    assert excinfo.value.code.startswith("evidence_schema_violation: <root>:")
+    assert excinfo.value.code == "evidence_schema_violation: <root>"
+
+
+def test_evidence_schema_violation_code_leaks_no_payload(monkeypatch):
+    # X3: a refusal code is a snake_case identifier, and this is a SELECTION
+    # path — the jsonschema message for a const/not violation renders the
+    # whole offending instance, so the validator's message must never enter
+    # the code. Path only, canary absent, hard length bound.
+    _activate_synthetic_contract(monkeypatch)
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    canary = "LEAK-CANARY-7c31ab9e-assertion-content"
+    smuggled = json.loads(json.dumps(envelope))
+    smuggled["assertion"]["authority"]["rank"] = canary  # const-false violation
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.validate_evidence_envelope(smuggled)
+    code = excinfo.value.code
+    assert canary not in code
+    assert ROLE_T["observation"]["text"] not in code
+    assert code == "evidence_schema_violation: assertion/authority/rank"
+    assert len(code) <= 120  # stated bound: a path, never a rendered instance
+
+
+# --- X4: pins for two previously unpinned fixes --------------------------------------
+
+
+def test_dossier_id_digest_binds_the_definition_version(monkeypatch):
+    # X4(a): deleting "definition_version" from the dossier_id digest mapping
+    # in technology_economic_change.py must FAIL here — before this pin the
+    # deletion left both suites green. The dossier contract pins
+    # definition_version by const, so a changed version would be refused at
+    # validate_dossier time; validation is stubbed for this binding
+    # experiment only — the digest is the thing under test, not the contract.
+    monkeypatch.setattr(tech, "validate_dossier", lambda dossier: None)
+    monkeypatch.setattr(tech, "DEFINITION_VERSION", "2026-09-24.2")
+    bumped = base._compose_happy(monkeypatch)
+    monkeypatch.setattr(tech, "DEFINITION_VERSION", "2026-09-24.3")
+    bumped_again = base._compose_happy(monkeypatch)
+    monkeypatch.setattr(tech, "DEFINITION_VERSION", "2026-09-24.2")
+    same_version_as_bumped = base._compose_happy(monkeypatch)
+    assert bumped["dossier_id"] != bumped_again["dossier_id"]
+    assert bumped["dossier_id"] == same_version_as_bumped["dossier_id"]
+
+
+def test_select_evidence_runs_the_contract_check_before_returning(monkeypatch):
+    # X4(b): the validate_evidence_envelope call at the tail of select_evidence
+    # is load-bearing — deleting it left the suite green before this pin. Both
+    # limbs fail without the call: the recorder records nothing, and the
+    # refusal the validator would raise is never surfaced.
+    _activate_synthetic_contract(monkeypatch)
+    recorded = []
+    monkeypatch.setattr(
+        reg, "validate_evidence_envelope",
+        lambda envelope: recorded.append(envelope),
+    )
+    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    assert len(recorded) == 1
+    assert recorded[0] is envelope  # checked before return, on the returned object
+
+    def _refusing(envelope):
+        raise TechnologyRegistrationRefusal("evidence_schema_violation: <root>")
+
+    monkeypatch.setattr(reg, "validate_evidence_envelope", _refusing)
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    assert excinfo.value.code == "evidence_schema_violation: <root>"
+
+
+# --- X6: the contract file's own failure modes are typed ------------------------------
+
+
+def test_missing_or_corrupt_contract_file_refuses_typed(monkeypatch, tmp_path):
+    # X6: a missing or corrupt evidence contract file must surface through the
+    # module's OWN typed refusal vocabulary, not as a raw
+    # FileNotFoundError/JSONDecodeError out of the lazy validator loader.
+    monkeypatch.setattr(reg, "_EVIDENCE_VALIDATOR", None)
+    monkeypatch.setattr(
+        reg, "EVIDENCE_CONTRACT_PATH", tmp_path / "absent-evidence-contract.json"
+    )
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.validate_evidence_envelope({"schema": reg.EVIDENCE_SCHEMA_ID})
+    assert excinfo.value.code == "evidence_contract_unavailable"
+
+    corrupt = tmp_path / "corrupt-evidence-contract.json"
+    corrupt.write_text("{not-json", encoding="utf-8")
+    monkeypatch.setattr(reg, "_EVIDENCE_VALIDATOR", None)
+    monkeypatch.setattr(reg, "EVIDENCE_CONTRACT_PATH", corrupt)
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.validate_evidence_envelope({"schema": reg.EVIDENCE_SCHEMA_ID})
+    assert excinfo.value.code == "evidence_contract_corrupt"
 
 
 def test_evidence_schema_is_closed_and_assertion_open():
     schema = json.loads(EVIDENCE_SCHEMA_PATH.read_text(encoding="utf-8"))
     assert schema["additionalProperties"] is False
-    # open for the shared contract's shape, EXCEPT the one forbidden key
+    # X1: the assertion object stays open for the shared contract's shape, but
+    # its authority block is REQUIRED and pinned six-false in place — the same
+    # six the envelope's own top-level ceiling carries — so the assertion can
+    # never fork the shared contract by omitting what that contract requires.
     assertion = schema["properties"]["assertion"]
     assert assertion["additionalProperties"] is True
-    assert assertion["not"] == {"required": ["authority"]}
-    authority = schema["properties"]["authority"]
-    assert set(authority["required"]) == {
+    assert "not" not in assertion
+    assert assertion["required"] == ["authority"]
+    inner = assertion["properties"]["authority"]
+    assert set(inner["required"]) == {
         "rank", "gate", "size", "veto", "originate", "open_entry"
     }
+    for flag in inner["required"]:
+        assert inner["properties"][flag] == {"const": False}
+    authority = schema["properties"]["authority"]
+    assert set(authority["required"]) == set(inner["required"])
     for flag in authority["required"]:
         assert authority["properties"][flag] == {"const": False}
 
@@ -781,6 +946,27 @@ def test_broken_present_shell_import_propagates(monkeypatch):
         reg._load_shared_shell()
 
 
+def test_shell_internal_dependency_loss_propagates_not_unavailable(monkeypatch):
+    # X2, second limb: a ModuleNotFoundError raised from INSIDE a present
+    # shell — a missing third-party dependency of the shell itself — carries a
+    # different exc.name and must propagate, never be reported as
+    # shared_shell_unavailable.
+    real_import = importlib.import_module
+
+    def _missing_shell_dependency(name: str):
+        if name == "engine.market_ontology.theme_research_registry":
+            raise ModuleNotFoundError(
+                "synthetic shell dependency absent", name="synthetic_shell_dep"
+            )
+        return real_import(name)
+
+    monkeypatch.setattr(importlib, "import_module", _missing_shell_dependency)
+    with pytest.raises(ModuleNotFoundError, match="synthetic shell dependency absent"):
+        reg.registration_entry_or_refusal()
+    with pytest.raises(ModuleNotFoundError, match="synthetic shell dependency absent"):
+        reg._load_shared_shell()
+
+
 # --- simulated shells (injected into sys.modules; never the real one) ---------------
 
 
@@ -799,6 +985,45 @@ def _install_shell(monkeypatch: pytest.MonkeyPatch, vertical_registration) -> No
         "engine.market_ontology.semiconductor_theme_research",
         types.SimpleNamespace(OwnerBundle=object, ResearchQuery=object),
     )
+
+
+def _install_shell_with_renamed_sibling_symbols(
+    monkeypatch: pytest.MonkeyPatch, vertical_registration
+) -> None:
+    """X2 first limb's fixture: the registry module is intact, but the sibling
+    module's OwnerBundle/ResearchQuery symbols have been renamed away — the
+    full three-symbol resolver types this shell unavailable, and the
+    registration path must not."""
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.market_ontology.theme_research_registry",
+        types.SimpleNamespace(VerticalRegistration=vertical_registration),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.market_ontology.semiconductor_theme_research",
+        types.SimpleNamespace(OwnerBundleV2=object, ResearchQueryV2=object),
+    )
+
+
+def test_accepting_shell_with_renamed_sibling_symbols_still_returns_the_entry(monkeypatch):
+    # X2, first limb: the registration path depends ONLY on
+    # VerticalRegistration. A shell whose registry ACCEPTS the §8 entry while
+    # the sibling module's bundle/query symbols have drifted must still return
+    # the entry — the strict-xfail round-trip exists to hear exactly this
+    # acceptance, and a full-shell gate would drown it in
+    # shared_shell_unavailable. The FULL resolver keeps its three-symbol gate:
+    # the bundle/query consumers are not weakened here.
+    def _accepting_shell(**kwargs):
+        return SimpleNamespace(**kwargs)
+
+    _install_shell_with_renamed_sibling_symbols(monkeypatch, _accepting_shell)
+    entry = reg.registration_entry_or_refusal()
+    assert entry.schema_id == reg.PROFILE_ID
+    assert entry.compose is reg.compose
+    assert entry.select_evidence is reg.select_evidence
+    # the full resolver still types the drifted shell unavailable
+    assert reg._load_shared_shell() is None
 
 
 def test_shell_refusal_carries_the_shells_own_exception_type(monkeypatch):

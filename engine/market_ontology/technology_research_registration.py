@@ -173,6 +173,45 @@ def _refuse(code: str) -> NoReturn:
 
 # --- the shared shell, imported lazily (NOT on this carrier base) ---------------
 
+_SHELL_REGISTRY_MODULE = "engine.market_ontology.theme_research_registry"
+_SHELL_SIBLING_MODULE = "engine.market_ontology.semiconductor_theme_research"
+#: The two module names whose OWN absence means "shell not on this carrier" —
+#: a ``ModuleNotFoundError`` naming anything else is a missing dependency of a
+#: PRESENT shell and propagates (see :func:`_import_shell_module`).
+_SHELL_MODULE_NAMES = frozenset({_SHELL_REGISTRY_MODULE, _SHELL_SIBLING_MODULE})
+
+
+def _import_shell_module(name: str) -> Any:
+    """Import one shared-shell module, treating ``ModuleNotFoundError`` as
+    absence ONLY when the missing module IS ``name`` (``exc.name`` matches one
+    of the two shell module names): a ``ModuleNotFoundError`` raised from
+    INSIDE a present shell — a missing third-party dependency of the shell
+    itself — carries a different ``exc.name`` and propagates, so a broken
+    shell can never masquerade as ``shared_shell_unavailable``. A genuine
+    non-module ``ImportError`` from a present-but-broken shell propagates too."""
+    try:
+        return importlib.import_module(name)
+    except ModuleNotFoundError as exc:
+        if exc.name in _SHELL_MODULE_NAMES:
+            return None
+        raise
+
+
+def _resolve_vertical_registration() -> Any:
+    """The REGISTRATION-ONLY resolver: the ``VerticalRegistration`` symbol from
+    the registry module, or ``None`` when the module or the symbol is absent.
+    The registration path (:func:`registration_entry_or_refusal`) depends on
+    VerticalRegistration alone — gating it on the sibling module's
+    ``OwnerBundle``/``ResearchQuery`` symbols would type
+    ``shared_shell_unavailable`` for a shell whose registry ACCEPTS the §8
+    entry, losing exactly the XPASS signal the pinned round-trip exists to
+    detect. The full three-symbol resolver below stays for consumers that
+    genuinely need the bundle/query shapes."""
+    registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
+    if registry is None:
+        return None
+    return getattr(registry, "VerticalRegistration", None)
+
 
 def _load_shared_shell() -> tuple[Any, Any, Any] | None:
     """Lazily import the #7870 shared shell and return
@@ -180,17 +219,15 @@ def _load_shared_shell() -> tuple[Any, Any, Any] | None:
     either module or any of the three symbols is absent — this carrier base
     carries neither module, and a partially-present shell is typed unavailable,
     never a silent half-binding. No shell type is copied into this branch.
-    Only ``ModuleNotFoundError`` (not on this carrier) is treated as absence:
-    a genuine ``ImportError`` from a present-but-broken shell propagates, so a
-    broken shell can never masquerade as ``shared_shell_unavailable``."""
-    try:
-        registry = importlib.import_module(
-            "engine.market_ontology.theme_research_registry"
-        )
-        semiconductor = importlib.import_module(
-            "engine.market_ontology.semiconductor_theme_research"
-        )
-    except ModuleNotFoundError:
+    Absence means ONLY the two shell module names themselves
+    (:func:`_import_shell_module`); a missing dependency of a present shell
+    and any other import failure propagate. The registration path does NOT
+    use this resolver — it needs only VerticalRegistration and resolves it
+    through :func:`_resolve_vertical_registration` so sibling-symbol drift
+    cannot drown the acceptance signal."""
+    registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
+    semiconductor = _import_shell_module(_SHELL_SIBLING_MODULE)
+    if registry is None or semiconductor is None:
         return None
     vertical_registration = getattr(registry, "VerticalRegistration", None)
     owner_bundle = getattr(semiconductor, "OwnerBundle", None)
@@ -490,7 +527,14 @@ def _evidence_validator() -> Any:
     if _EVIDENCE_VALIDATOR is None:
         import jsonschema  # lazy: the contract check is a select_evidence-time concern only
 
-        schema = json.loads(EVIDENCE_CONTRACT_PATH.read_text(encoding="utf-8"))
+        try:
+            schema = json.loads(EVIDENCE_CONTRACT_PATH.read_text(encoding="utf-8"))
+        except FileNotFoundError as exc:
+            # typed, content-free: a raw FileNotFoundError out of this lazy
+            # loader is a failure mode of THIS module's refusal vocabulary
+            raise TechnologyRegistrationRefusal("evidence_contract_unavailable") from exc
+        except json.JSONDecodeError as exc:
+            raise TechnologyRegistrationRefusal("evidence_contract_corrupt") from exc
         _EVIDENCE_VALIDATOR = jsonschema.Draft202012Validator(schema)
     return _EVIDENCE_VALIDATOR
 
@@ -501,8 +545,14 @@ def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
     the mirror of the composer's ``validate_dossier``.
 
     Raises :class:`TechnologyRegistrationRefusal` (code
-    ``evidence_schema_violation``) naming the first violating path. Pure; reads
-    the contract file only.
+    ``evidence_schema_violation: <path>``) naming the first violating PATH
+    only — never the validator's message, which renders the offending
+    instance and would embed assertion content inside a typed refusal code.
+    Every failure mode of the check itself is likewise typed: a missing or
+    unreadable contract file (``evidence_contract_unavailable`` /
+    ``evidence_contract_corrupt``) and an absent jsonschema
+    (``contract_validator_unavailable: …``). Pure; reads the contract file
+    only.
     """
     try:
         errors = sorted(
@@ -516,7 +566,7 @@ def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
     if errors:
         first = errors[0]
         path = "/".join(str(p) for p in first.absolute_path) or "<root>"
-        _refuse(f"evidence_schema_violation: {path}: {first.message}")
+        _refuse(f"evidence_schema_violation: {path}")
 
 
 def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, Any]:
@@ -525,17 +575,30 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
     The ref is authorized iff it equals a source_ref object_id cited by a
     rendered row/card/counter of THAT composed dossier AND EXACTLY ONE
     assertion in the bundle carries that source object_id — two or more
-    carrying it share the same refusal as zero (no pick by tuple order, so the
-    envelope can never hand out an assertion the dossier never rendered).
+    carrying it share the same refusal as zero, so no pick by tuple order and
+    the envelope can never hand out an assertion the dossier never rendered.
     Unknown, not-selected and ambiguous refs share the ONE code
     ``not_available`` — no existence disclosure. Never fetches, never
     dereferences a locator, never widens beyond the bundle.
 
-    The assertion is deep-copied so the envelope can never alias bundle state,
-    with exactly ONE key excluded: its assertion-internal ``authority`` block.
-    The envelope states the six-false authority ceiling once, at its own top
-    level; the evidence contract forbids a second authority surface inside the
-    open assertion object.
+    That exactly-one gate is fail-closed and deliberate, but the ambiguity it
+    guards against is NOT inherent to the evidence: ``source.object_id`` is
+    DOCUMENT-grained while the evidence unit is assertion-grained, so two
+    legitimately distinct, both-rendered assertions from ONE filing (same
+    object_id, different ``selector``) both refuse ``not_available`` today.
+    The durable fix — authorizing on the full source ref including the
+    ``selector``, or naming an assertion-level id — is owed to §8 and
+    deliberately NOT taken here; the behaviour is pinned by test so the day
+    §8 names the finer key, the pin fails loudly instead of silently
+    re-passing.
+
+    The assertion is deep-copied VERBATIM — its assertion-internal
+    ``authority`` block included, exactly as the shared curation assertion
+    contract requires that key. The evidence contract pins the six authority
+    flags literally false IN PLACE (the same six the envelope's own top-level
+    ceiling states), so a smuggled all-true block still cannot validate while
+    the assertion stays a contract-valid curation assertion rather than a
+    fork of the shared contract by omission.
 
     ``query.view`` is VALIDATION-ONLY here, exactly as in :func:`compose`: the
     envelope is selected from the same view-invariant dossier, and projection
@@ -554,7 +617,6 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
     if len(matches) != 1 or assertion_ref not in _cited_source_object_ids(payload):
         _refuse("not_available")
     authorized = copy.deepcopy(dict(matches[0]))
-    authorized.pop("authority", None)
     envelope = {
         "schema": EVIDENCE_SCHEMA_ID,
         "definition_version": DEFINITION_VERSION,
@@ -644,11 +706,16 @@ def registration_entry_or_refusal() -> Any:
     UNCAUGHT, so the pinned strict-xfail round-trip turns into a hard error
     rather than a quietly stale xfail. If the shell ever ACCEPTS the entry
     (the §8 mount change, adjudicated), the entry is returned — and that same
-    test XPASSes loudly, which is the designed signal that re-pinning is due."""
-    shell = _load_shared_shell()
-    if shell is None:
+    test XPASSes loudly, which is the designed signal that re-pinning is due.
+
+    Only ``VerticalRegistration`` is resolved here
+    (:func:`_resolve_vertical_registration`): the sibling module's
+    ``OwnerBundle``/``ResearchQuery`` symbols are the bundle/query consumers'
+    concern, and a shell that accepts the entry while those symbols drift
+    must not be typed ``shared_shell_unavailable``."""
+    vertical_registration = _resolve_vertical_registration()
+    if vertical_registration is None:
         _refuse("shared_shell_unavailable")
-    vertical_registration = shell[0]
     kwargs = {
         name: getattr(TECHNOLOGY_REGISTRATION_FACTS, name)
         for name in _VERTICAL_REGISTRATION_FIELDS

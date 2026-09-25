@@ -1210,13 +1210,23 @@ def compose_technology_economic_change(
         },
     }
 
-    # The digest mapping IS the dossier identity contract. Its key set is
-    # explicit and its order deliberate (identity -> scope -> sealed inputs ->
-    # bindings); canonical JSON sorts keys at serialization time, so order does
-    # not feed the digest — but a key enters or leaves this mapping only by
-    # deliberate revision, never incidentally. definition_version binds the id
-    # to the contract revision that defines this shape, so a definition bump
-    # re-ids every dossier on purpose.
+    # The digest mapping is the dossier identity contract for exactly the
+    # inputs it names: schema, definition_version, the scope identity
+    # (scope_mode/theme_ref/company_ref), comparison_id, cutoff, the curation
+    # revisions and the bound input vector. Its key set is explicit and its
+    # order deliberate (identity -> scope -> sealed inputs -> bindings);
+    # canonical JSON sorts keys at serialization time, so order does not feed
+    # the digest — but a key enters or leaves this mapping only by deliberate
+    # revision, never incidentally. definition_version binds the id to the
+    # contract revision that defines this shape, so a definition bump re-ids
+    # every dossier on purpose.
+    # KNOWN LIMITATION (pre-dating this mapping's definition_version binding):
+    # mode, as_of, owner_program (and the other owner fields) and the
+    # coverage/omissions input do NOT enter the digest, so a `latest` and a
+    # `system_replay` dossier over the same cutoff and generation share ONE
+    # dossier_id, and complete vs incomplete coverage likewise. Binding any of
+    # those four is a separate identity-design decision, deliberately not
+    # taken here.
     dossier_id = "tecd_" + _digest_hex(
         {
             "schema": SCHEMA_ID,
