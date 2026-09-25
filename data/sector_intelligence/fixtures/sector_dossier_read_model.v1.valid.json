@@ -1,0 +1,379 @@
+{
+  "contract_id": "sector_dossier_read_model.v1",
+  "schema_version": "1.0.0",
+  "dossier_id": "dossier:sector:xlk:0123456789abcdef01234567",
+  "dossier_version": 1,
+  "generated_at": "2026-09-18T20:00:01Z",
+  "knowledge_cutoff": "2026-09-18T19:59:00Z",
+  "common_as_of": "2026-09-18",
+  "identity": {
+    "entity_id": "sector:xlk",
+    "native_id": "xlk",
+    "ticker": "XLK",
+    "name_en": "Technology",
+    "name_zh": "科技",
+    "representation": "spdr_sector_etf",
+    "benchmark_ticker": "SPY",
+    "page_href": "sectors/XLK.html",
+    "source_refs": [
+      "config/rotation_universe.json#/instruments/xlk",
+      "site/sectordata/sector_central.json#/sectors/xlk"
+    ]
+  },
+  "headline": {
+    "state": "selective_leadership",
+    "summary_en": "Technology has a constructive fast tape but a cautious slow clock.",
+    "summary_zh": "科技板块快线偏强，但慢周期仍保持谨慎。",
+    "posture_en": "Selective leadership — do not treat it as broad sector confirmation.",
+    "posture_zh": "选择性领涨——勿视为板块全面确认。",
+    "reason_codes": [
+      "FAST_TAPE_CONSTRUCTIVE",
+      "SLOW_CLOCK_CAUTIOUS"
+    ]
+  },
+  "dimensions": [
+    {
+      "dimension_id": "sector_slow_clock",
+      "owner": "engine.sector_central",
+      "scope": "sector",
+      "horizon": "multi_year_cycle",
+      "state": "cautious",
+      "label_en": "Slow clock",
+      "label_zh": "慢时钟",
+      "summary_en": "Cautious slow-clock state.",
+      "summary_zh": "慢周期保持谨慎。",
+      "value": 40,
+      "as_of": "2026-09-18",
+      "coverage_state": "complete",
+      "source_ref": "site/sectordata/sector_central.json#/sectors/xlk/conviction",
+      "authority": {
+        "is_context_only": true,
+        "may_rank": false,
+        "may_gate": false,
+        "may_size": false,
+        "may_escalate": false,
+        "may_trade": false,
+        "may_modify_prophet": false
+      }
+    },
+    {
+      "dimension_id": "sector_fast_tape",
+      "owner": "engine.sector_central",
+      "scope": "sector",
+      "horizon": "fast_rotation",
+      "state": "constructive",
+      "label_en": "Fast tape",
+      "label_zh": "快线",
+      "summary_en": "Fast rotation is constructive.",
+      "summary_zh": "快线轮动偏强。",
+      "value": "TOP WATCH",
+      "as_of": "2026-09-18",
+      "coverage_state": "complete",
+      "source_ref": "site/sectordata/sector_central.json#/sectors/xlk/rotation",
+      "authority": {
+        "is_context_only": true,
+        "may_rank": false,
+        "may_gate": false,
+        "may_size": false,
+        "may_escalate": false,
+        "may_trade": false,
+        "may_modify_prophet": false
+      }
+    }
+  ],
+  "material_changes": [],
+  "children": [
+    {
+      "child_id": "subsector:semiconductors",
+      "native_key": "semiconductors",
+      "name_en": "Semiconductors",
+      "name_zh": "半导体",
+      "href": "../subsector/semiconductors.html",
+      "relationship_basis": "structural_child",
+      "class": "entry_now",
+      "entry_tier": "T1",
+      "regime_state": "EXTENDED",
+      "reliability": "high",
+      "n_priced": 14,
+      "n_members": 14,
+      "as_of": "2026-09-18",
+      "source_ref": "site/marketdata/subsector_confluence.json#/subsectors/semiconductors"
+    }
+  ],
+  "connected_themes": [
+    {
+      "theme_id": "ai_semiconductors",
+      "name_en": "AI Semiconductors",
+      "name_zh": "AI半导体",
+      "href": "../basket/ai_semiconductors.html",
+      "relationship_basis": "theme_crosswalk.subsector_keys",
+      "matched_child_key": "Semiconductors",
+      "primary_basket_id": "ai_semiconductors",
+      "stage": "WATCH",
+      "entry_ready": false,
+      "as_of": "2026-09-18",
+      "source_refs": [
+        "config/theme_crosswalk.yml#/themes/ai_semiconductors",
+        "site/neuralwebdata/theme_state.json#/themes/ai_semiconductors"
+      ]
+    }
+  ],
+  "participation": {
+    "method": "advancing_member_share",
+    "state": "measured",
+    "value_pct": 40.8163265306,
+    "n_advancing": 20,
+    "n_declining": 29,
+    "n_total": 49,
+    "as_of": "2026-09-18",
+    "source_ref": "site/sectordata/sector_central.json#/sectors/xlk/heat",
+    "display_only": true
+  },
+  "concentration": {
+    "method": "market_cap_top5_share",
+    "state": "measured",
+    "value": 0.9,
+    "n_members": 9,
+    "source_ref": "site/marketdata/sp500_heatmap.json#/sectors/Technology",
+    "display_only": true
+  },
+  "conflicts": [
+    {
+      "conflict_id": "conflict:xlk:slow-vs-fast",
+      "class": "TIMEFRAME_SPLIT",
+      "status": "open",
+      "left_ref": "dimension:sector_slow_clock",
+      "right_ref": "dimension:sector_fast_tape",
+      "summary_en": "The fast tape is constructive while the slow clock remains cautious.",
+      "summary_zh": "快线偏强，但慢周期仍保持谨慎。",
+      "why_en": "The reads cover different horizons; neither invalidates the other.",
+      "why_zh": "两项读数覆盖不同周期，彼此并不相互否定。",
+      "source_refs": [
+        "site/sectordata/sector_central.json#/sectors/xlk/conviction",
+        "site/sectordata/sector_central.json#/sectors/xlk/rotation"
+      ]
+    }
+  ],
+  "watch_conditions": [],
+  "freshness": {
+    "state": "fresh",
+    "common_as_of": "2026-09-18",
+    "oldest_required_source_at": "2026-09-18T19:55:00Z",
+    "evaluated_at": "2026-09-18T20:00:00Z",
+    "stale_source_ids": [],
+    "degraded_source_ids": [],
+    "unknown_source_ids": [],
+    "future_source_ids": []
+  },
+  "quality": {
+    "state": "degraded",
+    "required_completeness": 1.0,
+    "optional_dimensions_available": 0,
+    "optional_dimensions_total": 2,
+    "point_in_time_safe": false,
+    "warnings": [
+      "Subsector historical calculations use current membership and are descriptive, not PIT backtests."
+    ]
+  },
+  "input_receipts": [
+    {
+      "source_id": "site-sector-central",
+      "path": "site/sectordata/sector_central.json",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:55:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available"
+    },
+    {
+      "source_id": "site-subsector-confluence",
+      "path": "site/marketdata/subsector_confluence.json",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:56:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available"
+    }
+  ],
+  "governance": {
+    "packet": {
+      "contract_id": "sector_intelligence_packet.v1",
+      "schema_version": "1.0.0",
+      "packet_id": "packet:sector:xlk:0123456789abcdef01234567",
+      "packet_version": 1,
+      "sector": "xlk",
+      "producer": {
+        "service": "sector-federation",
+        "code_version": "fixture",
+        "owner": "neural_web"
+      },
+      "generated_at": "2026-09-18T20:00:00Z",
+      "knowledge_cutoff": "2026-09-18T19:59:00Z",
+      "entity_refs": [
+        "sector:xlk"
+      ],
+      "security_refs": [
+        "XLK"
+      ],
+      "portfolio_exposure": [],
+      "current_fact_refs": [
+        "dossier:sector:xlk:0123456789abcdef01234567#/dimensions/sector_slow_clock",
+        "dossier:sector:xlk:0123456789abcdef01234567#/dimensions/sector_fast_tape"
+      ],
+      "material_change_event_refs": [],
+      "upcoming_event_refs": [],
+      "contradictions": [],
+      "freshness": {
+        "state": "fresh",
+        "oldest_required_source_at": "2026-09-18T19:55:00Z",
+        "evaluated_at": "2026-09-18T20:00:00Z",
+        "stale_source_ids": [],
+        "unknown_source_ids": []
+      },
+      "quality": {
+        "state": "degraded",
+        "completeness": 1.0,
+        "point_in_time_safe": false,
+        "warnings": [
+          "Synthetic contract fixture; current-membership history is not a PIT backtest."
+        ]
+      },
+      "feature_snapshot_refs": [],
+      "prediction_refs": [],
+      "evidence_claim_refs": [],
+      "source_record_refs": [],
+      "lobe_run_ref": "run:sector-federation:xlk:0123456789abcdef01234567",
+      "authority_manifest_ref": "authority:sector-dossier:xlk:0123456789abcdef01234567",
+      "authority_caps": {
+        "max_authority": "A1_EXPLAIN",
+        "allowed_actions": [
+          "observe",
+          "explain"
+        ],
+        "forbidden_actions": [
+          "originate_signal",
+          "raise_authority_from_llm",
+          "rank_security",
+          "select_security",
+          "size_position",
+          "gate_decision",
+          "execute_trade"
+        ],
+        "llm_may_originate_signals": false
+      },
+      "hash_scope": "canonical_payload_excluding_packet_hash",
+      "packet_hash": "64f357c22a44b214fdd86f617dbbff4d0a11d2c9990c7e643f101e46fb0ea857"
+    },
+    "lobe_run": {
+      "contract_id": "lobe_run.v1",
+      "schema_version": "1.0.0",
+      "run_id": "run:sector-federation:xlk:0123456789abcdef01234567",
+      "sector": "xlk",
+      "lobe_id": "sector_federation",
+      "producer": {
+        "service": "sector-federation",
+        "code_version": "fixture",
+        "owner": "neural_web"
+      },
+      "started_at": "2026-09-18T19:59:59Z",
+      "finished_at": "2026-09-18T20:00:00Z",
+      "knowledge_cutoff": "2026-09-18T19:59:00Z",
+      "source_watermarks": [
+        {
+          "source_id": "site-sector-central",
+          "watermark": "2026-09-18",
+          "observed_at": "2026-09-18T19:55:00Z",
+          "state": "current"
+        },
+        {
+          "source_id": "site-subsector-confluence",
+          "watermark": "2026-09-18",
+          "observed_at": "2026-09-18T19:56:00Z",
+          "state": "current"
+        }
+      ],
+      "input_hashes": [
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "2222222222222222222222222222222222222222222222222222222222222222"
+      ],
+      "output_artifacts": [
+        {
+          "artifact_ref": "packet:sector:xlk:0123456789abcdef01234567",
+          "content_sha256": "64f357c22a44b214fdd86f617dbbff4d0a11d2c9990c7e643f101e46fb0ea857",
+          "row_count": 1
+        }
+      ],
+      "warnings": [
+        {
+          "code": "CURRENT_MEMBERSHIP_HISTORY",
+          "source_id": "site-subsector-confluence",
+          "detail": "Subsector history uses current membership and is descriptive, not PIT.",
+          "retryable": false
+        }
+      ],
+      "failures": [],
+      "status": "degraded",
+      "completeness": 1.0,
+      "model_versions": [],
+      "authority_manifest_ref": "authority:sector-dossier:xlk:0123456789abcdef01234567"
+    },
+    "authority_manifest": {
+      "contract_id": "authority_manifest.v1",
+      "schema_version": "1.0.0",
+      "manifest_id": "authority:sector-dossier:xlk:0123456789abcdef01234567",
+      "sector": "xlk",
+      "artifact_ref": "packet:sector:xlk:0123456789abcdef01234567",
+      "artifact_type": "sector_intelligence_packet.v1",
+      "publication_tier": "DISPLAY",
+      "max_authority": "A1_EXPLAIN",
+      "allowed_actions": [
+        "observe",
+        "explain"
+      ],
+      "denied_actions": [
+        "originate_signal",
+        "raise_authority_from_llm",
+        "rank_security",
+        "select_security",
+        "size_position",
+        "gate_decision",
+        "execute_trade"
+      ],
+      "consumers": [
+        "sector_detail"
+      ],
+      "issued_by": "neural_web_governance",
+      "issued_at": "2026-09-18T20:00:00Z",
+      "valid_from": "2026-09-18T20:00:00Z",
+      "valid_to": null,
+      "expires_at": "2026-09-21T20:00:00Z",
+      "promotion_evidence_refs": [],
+      "governance_decision_refs": [],
+      "kill_switch": {
+        "enabled": false,
+        "owner": "neural_web_governance",
+        "reason": null,
+        "activated_at": null
+      },
+      "transaction_from": "2026-09-18T20:00:01Z",
+      "transaction_to": null
+    }
+  },
+  "authority_caps": {
+    "is_context_only": true,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_escalate": false,
+    "may_trade": false,
+    "may_modify_prophet": false
+  },
+  "hash_scope": "canonical_payload_excluding_dossier_hash",
+  "dossier_hash": "1cddd5b79a7144f8c4c73e67c38dc56c0dfabb4167af2d335d42a9e3945f0f7e"
+}

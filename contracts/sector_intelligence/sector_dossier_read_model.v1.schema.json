@@ -1,0 +1,1063 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json",
+  "title": "Sector Dossier Read Model v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "schema_version",
+    "dossier_id",
+    "dossier_version",
+    "generated_at",
+    "knowledge_cutoff",
+    "common_as_of",
+    "identity",
+    "headline",
+    "dimensions",
+    "material_changes",
+    "children",
+    "connected_themes",
+    "participation",
+    "concentration",
+    "conflicts",
+    "watch_conditions",
+    "freshness",
+    "quality",
+    "input_receipts",
+    "governance",
+    "authority_caps",
+    "hash_scope",
+    "dossier_hash"
+  ],
+  "properties": {
+    "contract_id": {
+      "const": "sector_dossier_read_model.v1"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "dossier_id": {
+      "type": "string",
+      "pattern": "^dossier:sector:[a-z][a-z0-9_-]*:[0-9a-f]{24}$"
+    },
+    "dossier_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "knowledge_cutoff": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "common_as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "identity": {
+      "$ref": "#/$defs/identity"
+    },
+    "headline": {
+      "$ref": "#/$defs/headline"
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dimension"
+      }
+    },
+    "material_changes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/material_change"
+      }
+    },
+    "children": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/child"
+      }
+    },
+    "connected_themes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/connected_theme"
+      }
+    },
+    "participation": {
+      "$ref": "#/$defs/participation"
+    },
+    "concentration": {
+      "$ref": "#/$defs/concentration"
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/conflict"
+      }
+    },
+    "watch_conditions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/watch_condition"
+      }
+    },
+    "freshness": {
+      "$ref": "#/$defs/freshness"
+    },
+    "quality": {
+      "$ref": "#/$defs/quality"
+    },
+    "input_receipts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/input_receipt"
+      }
+    },
+    "governance": {
+      "$ref": "#/$defs/governance"
+    },
+    "authority_caps": {
+      "$ref": "#/$defs/authority"
+    },
+    "hash_scope": {
+      "const": "canonical_payload_excluding_dossier_hash"
+    },
+    "dossier_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_id",
+        "native_id",
+        "ticker",
+        "name_en",
+        "name_zh",
+        "representation",
+        "benchmark_ticker",
+        "page_href",
+        "source_refs"
+      ],
+      "properties": {
+        "entity_id": {
+          "type": "string",
+          "pattern": "^sector:[a-z][a-z0-9_-]*$"
+        },
+        "native_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "ticker": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9._-]*$"
+        },
+        "name_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name_zh": {
+          "type": "string"
+        },
+        "representation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "benchmark_ticker": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9._-]*$"
+        },
+        "page_href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "headline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "summary_en",
+        "summary_zh",
+        "posture_en",
+        "posture_zh",
+        "reason_codes"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "broad_confirmation",
+            "selective_leadership",
+            "early_improvement",
+            "late_or_crowded",
+            "deteriorating",
+            "mixed_or_incomplete",
+            "unavailable"
+          ]
+        },
+        "summary_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary_zh": {
+          "type": "string"
+        },
+        "posture_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "posture_zh": {
+          "type": "string"
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "dimension_value": {
+      "oneOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      ]
+    },
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dimension_id",
+        "owner",
+        "scope",
+        "horizon",
+        "state",
+        "label_en",
+        "label_zh",
+        "summary_en",
+        "summary_zh",
+        "value",
+        "as_of",
+        "coverage_state",
+        "source_ref",
+        "authority"
+      ],
+      "properties": {
+        "dimension_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "sector",
+            "subsector",
+            "theme",
+            "group",
+            "structural"
+          ]
+        },
+        "horizon": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label_zh": {
+          "type": "string"
+        },
+        "summary_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary_zh": {
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/dimension_value"
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "coverage_state": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "thin",
+            "low",
+            "unavailable"
+          ]
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority": {
+          "$ref": "#/$defs/authority"
+        }
+      }
+    },
+    "child": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "child_id",
+        "native_key",
+        "name_en",
+        "name_zh",
+        "href",
+        "relationship_basis",
+        "class",
+        "entry_tier",
+        "regime_state",
+        "reliability",
+        "n_priced",
+        "n_members",
+        "as_of",
+        "source_ref"
+      ],
+      "properties": {
+        "child_id": {
+          "type": "string",
+          "pattern": "^subsector:[a-z][a-z0-9_-]*$"
+        },
+        "native_key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "name_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name_zh": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "relationship_basis": {
+          "const": "structural_child"
+        },
+        "class": {
+          "type": "string",
+          "enum": [
+            "entry_now",
+            "tailwind",
+            "watch",
+            "neutral",
+            "headwind",
+            "unavailable"
+          ]
+        },
+        "entry_tier": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "T1",
+            "T2",
+            "T3",
+            null
+          ]
+        },
+        "regime_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reliability": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unknown"
+          ]
+        },
+        "n_priced": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "n_members": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "connected_theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "theme_id",
+        "name_en",
+        "name_zh",
+        "href",
+        "relationship_basis",
+        "matched_child_key",
+        "primary_basket_id",
+        "stage",
+        "entry_ready",
+        "as_of",
+        "source_refs"
+      ],
+      "properties": {
+        "theme_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "name_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name_zh": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "relationship_basis": {
+          "const": "theme_crosswalk.subsector_keys"
+        },
+        "matched_child_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "primary_basket_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "WATCH",
+            "EARLY",
+            "CONFIRMED",
+            "MATURE",
+            "DETERIORATING",
+            "UNAVAILABLE"
+          ]
+        },
+        "entry_ready": {
+          "type": "boolean"
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "participation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "state",
+        "value_pct",
+        "n_advancing",
+        "n_declining",
+        "n_total",
+        "as_of",
+        "source_ref",
+        "display_only"
+      ],
+      "properties": {
+        "method": {
+          "const": "advancing_member_share"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "measured",
+            "unavailable"
+          ]
+        },
+        "value_pct": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "n_advancing": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "n_declining": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "n_total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_only": {
+          "const": true
+        }
+      }
+    },
+    "concentration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "state",
+        "value",
+        "n_members",
+        "source_ref",
+        "display_only"
+      ],
+      "properties": {
+        "method": {
+          "const": "market_cap_top5_share"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "measured",
+            "unavailable"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "n_members": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_only": {
+          "const": true
+        }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflict_id",
+        "class",
+        "status",
+        "left_ref",
+        "right_ref",
+        "summary_en",
+        "summary_zh",
+        "why_en",
+        "why_zh",
+        "source_refs"
+      ],
+      "properties": {
+        "conflict_id": {
+          "type": "string",
+          "pattern": "^conflict:[a-z0-9:_-]+$"
+        },
+        "class": {
+          "type": "string",
+          "enum": [
+            "ALIGNED",
+            "TIMEFRAME_SPLIT",
+            "SCOPE_SPLIT",
+            "FRESHNESS_SPLIT",
+            "COVERAGE_SPLIT",
+            "AUTHORITY_SPLIT",
+            "GENUINE_CONTRADICTION",
+            "UNAVAILABLE"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "resolved",
+            "unavailable"
+          ]
+        },
+        "left_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "right_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary_zh": {
+          "type": "string"
+        },
+        "why_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_zh": {
+          "type": "string"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "material_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_id",
+        "change_type",
+        "entity_ref",
+        "observed_at",
+        "summary_en",
+        "summary_zh",
+        "source_ref",
+        "authority"
+      ],
+      "properties": {
+        "change_id": {
+          "type": "string",
+          "pattern": "^change:[a-z0-9:_-]+$"
+        },
+        "change_type": {
+          "type": "string",
+          "enum": [
+            "CYCLE_TURN",
+            "ROTATION_STATE_CHANGE",
+            "ENTRY_REFRESH",
+            "LEADERSHIP_CHANGE",
+            "THEME_STATE_CHANGE",
+            "EVIDENCE_CORRECTION"
+          ]
+        },
+        "entity_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "summary_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary_zh": {
+          "type": "string"
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority": {
+          "const": "context_only"
+        }
+      }
+    },
+    "watch_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "condition_id",
+        "state",
+        "label_en",
+        "label_zh",
+        "condition_en",
+        "condition_zh",
+        "source_refs",
+        "authority"
+      ],
+      "properties": {
+        "condition_id": {
+          "type": "string",
+          "pattern": "^watch:[a-z0-9:_-]+$"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "open",
+            "satisfied",
+            "unavailable"
+          ]
+        },
+        "label_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label_zh": {
+          "type": "string"
+        },
+        "condition_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition_zh": {
+          "type": "string"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "authority": {
+          "const": "observation_only"
+        }
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "common_as_of",
+        "oldest_required_source_at",
+        "evaluated_at",
+        "stale_source_ids",
+        "degraded_source_ids",
+        "unknown_source_ids",
+        "future_source_ids"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "fresh",
+            "degraded",
+            "stale",
+            "unknown"
+          ]
+        },
+        "common_as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "oldest_required_source_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "evaluated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "stale_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "degraded_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "unknown_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "future_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "maxItems": 0
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "required_completeness",
+        "optional_dimensions_available",
+        "optional_dimensions_total",
+        "point_in_time_safe",
+        "warnings"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "degraded",
+            "insufficient"
+          ]
+        },
+        "required_completeness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "optional_dimensions_available": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "optional_dimensions_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "point_in_time_safe": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "input_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "path",
+        "sha256",
+        "as_of",
+        "observed_at",
+        "clock_grain",
+        "freshness_role",
+        "freshness_state",
+        "required",
+        "state"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "clock_grain": {
+          "type": "string",
+          "enum": [
+            "session",
+            "intraday",
+            "event",
+            "static"
+          ]
+        },
+        "freshness_role": {
+          "type": "string",
+          "enum": [
+            "market_observation",
+            "structural_context",
+            "optional_context"
+          ]
+        },
+        "freshness_state": {
+          "type": "string",
+          "enum": [
+            "fresh",
+            "degraded",
+            "stale",
+            "unknown"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "available",
+            "unavailable"
+          ]
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packet",
+        "lobe_run",
+        "authority_manifest"
+      ],
+      "properties": {
+        "packet": {
+          "$ref": "https://mastermind-x.com/contracts/sector_intelligence/sector_intelligence_packet.v1.schema.json"
+        },
+        "lobe_run": {
+          "$ref": "https://mastermind-x.com/contracts/sector_intelligence/lobe_run.v1.schema.json"
+        },
+        "authority_manifest": {
+          "$ref": "https://mastermind-x.com/contracts/sector_intelligence/authority_manifest.v1.schema.json"
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "is_context_only",
+        "may_rank",
+        "may_gate",
+        "may_size",
+        "may_escalate",
+        "may_trade",
+        "may_modify_prophet"
+      ],
+      "properties": {
+        "is_context_only": {
+          "const": true
+        },
+        "may_rank": {
+          "const": false
+        },
+        "may_gate": {
+          "const": false
+        },
+        "may_size": {
+          "const": false
+        },
+        "may_escalate": {
+          "const": false
+        },
+        "may_trade": {
+          "const": false
+        },
+        "may_modify_prophet": {
+          "const": false
+        }
+      }
+    }
+  }
+}
