@@ -5480,7 +5480,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
                              if k in ("setups", "leaders", "ran", "actnow", "tape",
-                                      "plv_names", "leader_observations")}
+                                      "plv_names", "leader_observations", "candidate_pool")}
         payload.update(panel_blocks)
     # P-MP1-SHELL §8b — the Setups grid's OWN locked remainder, independent of
     # `gate`/`cards_html` above. Always present in the payload shape (empty
@@ -5605,6 +5605,16 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
     locked: dict = {}
     overrides: dict = {}
 
+    # The complete eligible pool uses the SAME protected row split and payload.
+    # No withheld ticker is copied into the anonymous shell, search index or JS.
+    pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
+        vm.get("us_candidate_visibility"), preview, gated=True
+    )
+    if pool_gate:
+        overrides["us_candidate_visibility"] = pool_shell
+        pgate["candidate_pool"] = {key: pool_gate[key] for key in ("preview", "locked", "total")}
+        locked["candidate_pool"] = pool_locked
+
     # ── Leader observations — a separate display population, never Candidates/Plans.
     leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
         vm.get("us_leader_observations"), preview, gated=True
@@ -5722,6 +5732,15 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
             log.error("us_stocks: locked %s render failed (%s)", key, e)
             out[key] = ""
 
+    if locked.get("candidate_pool"):
+        _render("candidate_pool_html", "_us_candidate_pool_rows.html.j2",
+                rows=locked["candidate_pool"])
+        candidate_view = vm.get("us_candidate_visibility") or {}
+        out["candidate_pool_source"] = {
+            "as_of": candidate_view.get("as_of"),
+            "digest": candidate_view.get("source_digest"),
+            "total": (candidate_view.get("counts") or {}).get("eligible"),
+        }
     if locked.get("leader_observations"):
         _render(
             "leader_observations_html",
@@ -6012,6 +6031,10 @@ def main() -> int:
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
     us_standouts = _attach_board_display_chips(site, us_standouts)
+    # Read the existing lossless pool; never rescore or re-admit a candidate here.
+    from engine.us_candidate_lanes import project_candidate_visibility, load_candidate_archive_status
+    us_candidate_visibility = project_candidate_visibility(
+        us_standouts, archive=load_candidate_archive_status(us_standouts))
     # ANTICIPATION §6.9 R5 — the per-name "why not" shelf under the board. Derived from
     # the SAME board dict the cards render from; see _us_prophet_refusals for the
     # build-order reason it cannot read the published prophet index for its reason list.
@@ -6908,6 +6931,7 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
         us_prophet_refusals=us_prophet_refusals,
@@ -7584,10 +7608,17 @@ def main() -> int:
                 site, json.loads(_us_path.read_text())) if _us_path.exists() else None
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
+            _fresh_candidate_visibility = project_candidate_visibility(
+                _fresh_su, archive=load_candidate_archive_status(_fresh_su))
             if _fresh_su and (
                     _fresh_su.get("as_of") != _prior_as_of
-                    or (_fresh_su.get("staleness") or {}) != _prior_stale):
+                    or (_fresh_su.get("staleness") or {}) != _prior_stale
+                    # A same-session correction can change names, exclusion reasons,
+                    # or availability without advancing the date/freshness clock.
+                    # Compare the existing allowlisted view, not unrelated raw fields.
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")):
                 vm["us_standouts"] = _fresh_su
+                vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
                 # it moves with it for the same reason the Theme Tape below does — the
                 # whole point of deriving it from us_standouts (rather than from the
@@ -7911,6 +7942,19 @@ def main() -> int:
         log.info("wrote %s", _cs_page)
     except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
         log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
+
+    # Finance Intelligence dossier — render only the registered preview shell.
+    # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships
+    # no private store, no publish lane, and no serving route — the read model
+    # is consumed at runtime from the same-origin foundation route behind the
+    # site_full access policy; this static renderer never reads or republishes
+    # any read-model payload.
+    try:
+        from scripts.build_finance_intelligence_page import render_from_state as _render_finance
+        _fi_page = _render_finance(config.ROOT)
+        log.info("wrote %s", _fi_page)
+    except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
 
     # F01 Macro & Monetary suite — server-rendered workspace pages over the
     # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
