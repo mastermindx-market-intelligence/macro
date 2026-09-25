@@ -370,6 +370,12 @@ jobs:
       # packed trusted-executor dispatch — pick them up; the suite still
       # imports scripts.check_caddy_hub_boundary, same env.
       - "tests/test_caddy_hub_boundary_am_edition.py"
+      # 2026-09-25 seat heal of the inherited contract-delta notices from
+      # #7972: tests/test_am_edition_live.py names the systemd unit/timer and
+      # the deploy updater literally, so the producer job must own them too.
+      - "app/deploy/macro-am-edition.service"
+      - "app/deploy/macro-am-edition.timer"
+      - "app/deploy/update.sh"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
     # execution like every sibling job in this family — contract-delta's
@@ -2673,6 +2679,19 @@ jobs:
       - "scripts/capture_am_edition_evidence.py"
       - "tests/test_am_edition_page.py"
       - "tests/test_am_edition_producer.py"
+      # MOR-2b lane C seat round 2026-09-25 (contract-delta): the am_edition
+      # page suite now renders the aibrief band through tests/test_aibrief_page
+      # (its closure reaches the shared theme/nav/landing CSS), reads the shared
+      # MOR-2b block include and the aibrief page/CSS, and runs the design
+      # checker as a subprocess on the added CSS.
+      - "scripts/check_design_system.py"
+      - "templates/_aibrief_css.j2"
+      - "templates/_mor2b_blocks_css.j2"
+      - "templates/aibrief.html.j2"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "templates/theme.css"
+      - "tests/test_aibrief_page.py"
       # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
       # source-bound help directory now also validates the public
       # glossary page against this template.
@@ -9356,6 +9375,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_sector_intelligence_contracts.py
+          tests/test_sector_dossier_contract.py
           tests/test_launch_slo_evidence_verifier.py
           tests/test_biocatalyst_d0a_design_contract.py
           tests/test_biocatalyst_acceptance_v2.py
@@ -16613,105 +16633,26 @@ jobs:
       - name: install regime-strip test dependencies
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
       - name: markets risk-regime strip + cycle-stage mobile detail
-        # The fresh-render byte-match is a DATA assertion (see
-        # markets-regime-strip-bake-parity below): scripts.build_markets reads
-        # data/regime + data/market_state, which closing-bell's scope=close
-        # render rewrites WITHOUT re-baking site/markets.html, so between that
-        # commit and the next render.yml bake every merge ref reds here on a
-        # tree no PR changed. Deselected from the code gate, not deleted.
-        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q --deselect tests/test_markets_regime_strip.py::test_fresh_render_byte_matches_committed_markets_html
-
-  markets-regime-strip-bake-parity:
-    if: ${{ false }}  # executed inside the data-health lane; keep the legacy status definition runner-free
-    gate: data
-    # tests/test_markets_regime_strip.py::test_fresh_render_byte_matches_committed_markets_html
-    # — a fresh `python -m scripts.build_markets` must byte-match the committed
-    # site/markets.html. That builder reads LIVE data/regime/latest.json and
-    # data/market_state/latest.json, which the closing-bell lane's scope=close
-    # render rewrites (c4b705de8f2, 2026-09-25 00:45Z: 7,942 regime lines) without
-    # re-baking site/markets.html — only render.yml bakes that page, and its runs
-    # were being cancelled by main's push cadence. Measured on PR #7971's merge
-    # ref: HK flipped Risk-on -> Risk-off in the fresh render while the committed
-    # page (last baked at #6872) still said Risk-on; main's own newest proof
-    # (25fb8fa805, 23:51Z) predates the data commit and was green, so no PR could
-    # merge and nothing could drain it. By the manifest's own definition that is
-    # a `data` verdict: a nightly/wire data commit alone flips it. It runs here,
-    # after the nightly has baked the page, where a mismatch means the bake
-    # drifted from the builder — the drift #7712 wanted caught. The fixture-driven
-    # strip tests stay on the code gate in markets-regime-strip.
-    scope: exclusive
-    paths:
-      - "templates/markets.html.j2"
-      - "templates/_market_regime_strip.html.j2"
-      # Parity test reads the hero stance sentences from this partial.
-      - "templates/_unified_dashboard_hero.html.j2"
-      - "templates/theme.css"
-      - "site/theme.css"
-      - "site/markets.html"
-      # markets.css (mobile in-flow detail) + its DOM-measured suite (2026-09-23).
-      - "site/markets.css"
-      - "scripts/build_markets.py"
-      - "engine/market_state.py"
-      - "tests/test_markets_regime_strip.py"
-      - "tests/test_markets_cyc_stage_mobile.py"
-      - "tests/fixtures/markets_regime_strip/**"
-      # Import closure beyond the page family. Listed literally so
-      # exclusive scope still covers what inference would have owned.
-      - "collectors/__init__.py"
-      - "collectors/base.py"
-      - "collectors/fred.py"
-      - "config/sparse_worktree.json"
-      - "engine/__init__.py"
-      - "engine/business_cycle.py"
-      - "engine/canon.py"
-      - "engine/china_pboc_stance.py"
-      - "engine/conditions.py"
-      - "engine/cycles.py"
-      - "engine/global_liquidity.py"
-      - "engine/i18n.py"
-      - "engine/indicators.py"
-      - "engine/neuralweb/envelope.py"
-      - "engine/neuralweb/synapse.py"
-      - "engine/regime_prior.py"
-      - "engine/risk_radar_market_catalysts.py"
-      - "engine/risk_radar_recovery.py"
-      - "engine/session_anchor.py"
-      - "engine/technicals.py"
-      - "engine/vol_forecast.py"
-      - "engine/vol_regime.py"
-      - "lib/__init__.py"
-      - "lib/config.py"
-      - "lib/nyse_calendar.py"
-      - "lib/pages.py"
-      - "lib/site_assets.py"
-      - "lib/store.py"
-      - "scripts/__init__.py"
-      - "scripts/_cycle_seed.py"
-      - "scripts/build_regime_prior.py"
-      - "scripts/check_template_site_sync.py"
-      - "scripts/optimize_assets.py"
-      - "scripts/refresh_markets_now.py"
-      - "scripts/worktree_sparse.py"
-      - "site/countrycyclesdata/country_cycles.json"
-      - "site/cycle.css"
-      - "site/cycle_data.js"
-      - "site/markets_app.js"
-      - "site/markets_data.js"
-      - "site/markets_i18n.js"
-      - "site/marketsdata/markets_engine.js"
-      - "site/mm_charts.js"
-      - "site/regimedata/regime_prior.js"
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: install regime-strip test dependencies
-        run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
-      - name: markets.html fresh-render byte-match (post-bake parity)
-        run: python -m pytest tests/test_markets_regime_strip.py -q -k test_fresh_render_byte_matches_committed_markets_html
+        # The whole suite runs here, fresh-render byte guard included.
+        # That guard baked IN PLACE and compared the live result against the
+        # committed site/markets.html, so it read data/regime + data/market_state
+        # — which closing-bell's scope=close render rewrites WITHOUT re-baking
+        # the page. Between that commit and the next render.yml bake it reddened
+        # every merge ref on a tree no PR had touched, so #7971 deselected it
+        # here and ran it on a `gate: data` twin instead.
+        #
+        # #7986 removed the live read. The guard now recovers the branch each
+        # strip row took from the committed page's own mx-stance modifiers,
+        # bakes into tmp_path with those views pinned in place of the three
+        # _persisted_ms_view reads, and normalises the lane-owned optimize_assets
+        # markup (`?v=` stamps, preload hints, `defer`) on both sides. A
+        # data-only commit can no longer flip it; what fails it is a template,
+        # partial or scripts/build_markets.py edit shipped without re-baking the
+        # page. That is a CODE verdict, so it belongs on the merge gate, where
+        # the PR that caused it can act on it. The data-gated twin is retired,
+        # not moved: post-#7986 it would assert exactly what this step asserts,
+        # because it no longer reads the feeds it was split out for.
+        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q
 
   dashboard-render-contract:
     # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and
