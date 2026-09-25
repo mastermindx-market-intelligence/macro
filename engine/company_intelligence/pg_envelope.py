@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .pg_profile import PGDefinition
 
 from ..earnings_release.binding import BoundRelease
-from ..earnings_release.receipts import ReceiptError, receipt_for_char_span
+from ..earnings_release.receipts import ReceiptError, mask_markup, receipt_for_char_span
 
 
 _TABLE_OPEN = re.compile(r"<table\b", re.I)
@@ -25,8 +25,10 @@ _LETTERS = re.compile(r"[A-Za-z].*[A-Za-z]", re.S)
 _NOT_A_LABEL = {"n/a", "na", "nm", "bps"}
 _UNIT_CELLS = {"$", "%"}
 _DASH = "\u2014"
+_COMMENT = re.compile(r"<!--.*?-->", re.S)
+_FOLD_NUMBERS = re.compile(rf"(?:{_DASH}%?|[-+%$(]?\d+(?:[.,]\d+)*%?)")
 _PERIOD_LABEL = "<period>"
-_YEAR = r"20\d{2}"
+_NUMERIC = "<n>"
 _ROLES = (
     "highlights",
     "segment_drivers",
@@ -36,7 +38,6 @@ _ROLES = (
     "change_versus_year_ago",
     "organic_reconciliation",
     "prior_core_reconciliation",
-    "other_core_reconciliation",
     "cash_flows",
     "balance_sheet",
     "masthead",
@@ -69,6 +70,7 @@ class Document:
     admission_roles: Mapping[str, int] | None = None
     source_sha256: str | None = None
     fiscal_scope: Sequence[str | date] | None = None
+    prior_metrics: frozenset[str] = frozenset()
 
     @functools.cached_property
     def signatures(self) -> tuple[frozenset[str], ...]:
@@ -94,12 +96,12 @@ class Outcome:
 @dataclass(frozen=True)
 class Pin:
     metric: str
-    primary: tuple[str, str, str | None]
-    second: tuple[str, str, str | None]
+    primary: tuple[str, str, str | None, str]
+    second: tuple[str, str, str | None, str]
 
 
 def _text(fragment: str) -> str:
-    return " ".join(html.unescape(_TAG.sub("", fragment)).replace("\xa0", " ").split())
+    return " ".join(html.unescape(_TAG.sub("", _COMMENT.sub("", fragment))).replace("\xa0", " ").split())
 
 
 def _norm(value: str) -> str:
@@ -108,10 +110,15 @@ def _norm(value: str) -> str:
 
 def _label_token(value: str) -> str:
     folded = _norm(value)
-    folded = re.sub(rf"(?:fy|fiscalyear)?{_YEAR}(?:,?{_YEAR})?", _PERIOD_LABEL, folded)
-    folded = re.sub(rf"(?:three|six|nine|twelve)monthsended[a-z]*\.?\d{{1,2}},{_YEAR}", _PERIOD_LABEL, folded)
-    folded = re.sub(rf"[a-z]+-[a-z]+{_YEAR}", _PERIOD_LABEL, folded)
-    return folded
+    folded = re.sub(
+        r"(?:three|six|nine|twelve)monthsended[a-z]*\.?\d{1,2},20\d{2}",
+        "three<period>",
+        folded,
+    )
+    folded = re.sub(r"(?:three|six|nine|twelve)monthsended[a-z]*\.?\d{1,2}", "<period>", folded)
+    folded = re.sub(r"[a-z]+-[a-z]+20\d{2}", "<period>", folded)
+    folded = re.sub(r"(?:fy|fiscalyear)?20\d{2}(?:,?20\d{2})?", _PERIOD_LABEL, folded)
+    return _FOLD_NUMBERS.sub(_NUMERIC, folded)
 
 
 def _is_label(value: str) -> bool:
@@ -127,7 +134,7 @@ def _signature(rows: Sequence[Sequence[Cell]]) -> frozenset[str]:
     )
 
 
-def _document(source: str) -> Document | None:
+def _document(source: str) -> Document:
     tables: list[tuple[tuple[Cell, ...], ...]] = []
     for ordinal, (start, end) in enumerate(_table_spans(source)):
         tables.append(_grid(source, ordinal, start, end))
@@ -135,13 +142,36 @@ def _document(source: str) -> Document | None:
 
 
 def _table_spans(source: str) -> tuple[tuple[int, int], ...]:
+    events = sorted(
+        [(match.start(), 1, match.end()) for match in _TABLE_OPEN.finditer(source)]
+        + [(match.start(), 0, match.end()) for match in _TABLE_CLOSE.finditer(source)]
+    )
     out: list[tuple[int, int]] = []
-    for match in _TABLE_OPEN.finditer(source):
-        close = _TABLE_CLOSE.search(source, match.end())
-        if close is None or _TABLE_OPEN.search(source, match.end(), close.start()) is not None:
-            return ()
-        out.append((match.start(), close.end()))
+    depth = 0
+    start = -1
+    for position, kind, end in events:
+        if kind == 1:
+            if depth == 0:
+                start = position
+            depth += 1
+        elif depth:
+            depth -= 1
+            if depth == 0 and start >= 0:
+                out.append((start, end))
+                start = -1
     return tuple(out)
+
+
+def _nested_table_ordinal(source: str) -> int | None:
+    opens = tuple(match.start() for match in _TABLE_OPEN.finditer(source))
+    for ordinal, start in enumerate(opens):
+        close = _TABLE_CLOSE.search(source, start + 1)
+        if close is None:
+            return ordinal
+        following = _TABLE_OPEN.search(source, start + 1, close.start())
+        if following is not None:
+            return ordinal
+    return None
 
 
 def _grid(source: str, ordinal: int, start: int, end: int) -> tuple[tuple[Cell, ...], ...]:
@@ -190,18 +220,13 @@ def _grid(source: str, ordinal: int, start: int, end: int) -> tuple[tuple[Cell, 
 
 
 @functools.lru_cache(maxsize=8)
-def _cached_document(source: str) -> Document | None:
+def _cached_document(source: str) -> Document:
     return _document(source)
 
 
 def _wrapped(source: str) -> bool:
-    if not source.startswith("<DOCUMENT>\n"):
-        return False
-    text_start = source.find("<TEXT>")
-    if text_start < 0:
-        return False
-    header = source[:text_start]
-    return re.search(r"<TYPE>([^\n<]+)\n", header) is not None
+    body = source.lstrip("\ufeff \t\r\n")
+    return body.casefold().startswith("<document>")
 
 
 def _labels(rows: Sequence[Sequence[Cell]]) -> set[str]:
@@ -221,218 +246,365 @@ def _reported_quarter(document: Document, drivers_ordinal: int) -> str | None:
     return match.group(1) if match else None
 
 
-def _visible_text(markup: str) -> str:
-    return _text(markup)
-
-
-def _anchor(anchor: str, mask: str = _PERIOD_LABEL) -> str:
-    return _label_token(anchor)
-
-
 _VOCABULARIES = {
-    "highlights": frozenset({
-        "%change", "coreeps", "dilutedeps", "firstquarter($billions,excepteps)",
-        "gaap", "netsales", "non-gaap*", "organicsales",
-        "secondquarter($billions,excepteps)", "thirdquarter($billions,excepteps)",
+    'highlights': frozenset({
+        '%change',
+        'coreeps',
+        'dilutedeps',
+        'firstquarter($billions,excepteps)',
+        'gaap',
+        'netsales',
+        'non-gaap*',
+        'organicsales',
+        'secondquarter($billions,excepteps)',
+        'thirdquarter($billions,excepteps)',
     }),
-    "segment_drivers": frozenset({
-        "baby,feminine&familycare", "beauty", "fabric&homecare", "foreignexchange", "grooming",
-        "healthcare", "january-march<period>", "july-september<period>", "mix", "netsales",
-        "netsalesdrivers(1)", "october-december<period>", "organicsales", "organicvolume",
-        "other(2)", "price", "totalp&g", "volume",
+    'segment_drivers': frozenset({
+        '<period>',
+        'baby,feminine&familycare',
+        'beauty',
+        'fabric&homecare',
+        'foreignexchange',
+        'grooming',
+        'healthcare',
+        'january-march<period>',
+        'july-september<period>',
+        'mix',
+        'netsales',
+        'netsalesdrivers<n>)',
+        'october-december<period>',
+        'organicsales',
+        'organicvolume',
+        'other<n>)',
+        'price',
+        'totalp&g',
+        'volume',
     }),
-    "earnings": frozenset({
-        "%chg", "amountsinmillionsexceptpershareamounts", "basic", "basisptchg",
-        "comparisonsasa%ofnetsales", "consolidatedearningsinformation", "costofproductssold",
-        "diluted", "dilutedweightedaveragecommonsharesoutstanding", "dividendspercommonshare",
-        "earningsbeforeincometaxes", "effectivetaxrate", "grossprofit", "incometaxes",
-        "interestexpense", "interestincome", "less:netearningsattributabletononcontrollinginterests",
-        "netearnings", "netearningsattributabletoprocter&gamble", "netearningspercommonshare(1)",
-        "netsales", "operatingincome", "otheroperatingincome,net",
-        "otheroperatingincome/(expense),net", "selling,generalandadministrativeexpense",
-        "theprocter&gamblecompanyandsubsidiaries", "threemonthsendeddecember31",
-        "threemonthsendedmarch31", "threemonthsendedseptember30",
+    'earnings': frozenset({
+        '%chg',
+        '<period>',
+        'amountsinmillionsexceptpershareamounts',
+        'basic',
+        'basisptchg',
+        'comparisonsasa%ofnetsales',
+        'consolidatedearningsinformation',
+        'costofproductssold',
+        'diluted',
+        'dilutedweightedaveragecommonsharesoutstanding',
+        'dividendspercommonshare',
+        'earningsbeforeincometaxes',
+        'effectivetaxrate',
+        'grossprofit',
+        'incometaxes',
+        'interestexpense',
+        'interestincome',
+        'less:netearningsattributabletononcontrollinginterests',
+        'netearnings',
+        'netearningsattributabletoprocter&gamble',
+        'netearningspercommonshare<n>)',
+        'netsales',
+        'operatingincome',
+        'otheroperatingincome,net',
+        'otheroperatingincome/(expense),net',
+        'selling,generalandadministrativeexpense',
+        'theprocter&gamblecompanyandsubsidiaries',
     }),
-    "drivers": frozenset({
-        "baby,feminine&familycare", "beauty", "fabric&homecare", "foreignexchange", "grooming",
-        "healthcare", "mix", "netsales", "netsalesdrivers(1)", "organicvolume", "other(2)",
-        "price", "threemonthsendeddecember31,<period>", "threemonthsendedmarch31,<period>",
-        "threemonthsendedseptember30,<period>", "totalcompany", "volume",
+    'drivers': frozenset({
+        'three<period>',
+        '<period>,<period>',
+        'baby,feminine&familycare',
+        'beauty',
+        'fabric&homecare',
+        'foreignexchange',
+        'grooming',
+        'healthcare',
+        'mix',
+        'netsales',
+        'netsalesdrivers<n>)',
+        'organicvolume',
+        'other<n>)',
+        'price',
+        'totalcompany',
+        'volume',
     }),
-    "core_reconciliation": frozenset({
-        "amountsinmillionsexceptpershareamounts", "asreported(gaap)", "asreported(gaap)(1)",
-        "core(non-gaap)", "coreeps", "costofproductssold", "currency-neutralcoreeps",
-        "currency-neutralcoregrossmargin", "currency-neutralcoreoperatingmargin",
-        "currency-neutralcoreselling,generalandadministrativeexpenseasa%ofnetsales",
-        "currency-neutraleps", "currencyimpacttocoreeps", "currencyimpacttocoregrossmargin",
-        "currencyimpacttocoreoperatingmargin", "currencyimpacttocoreselling,generalandadministrativeexpenseasa%ofnetsales",
-        "currencyimpacttoearnings", "dilutednetearningspercommonshare(1)",
-        "dilutednetearningspercommonshare(2)", "dilutedweightedaveragecommonsharesoutstanding",
-        "gladjointventureagreement", "grossmargin", "grossprofit", "incometaxes",
-        "incrementalrestructuring", "less:netearningsattributabletononcontrollinginterests",
-        "netearnings", "netearningsattributabletop&g", "operatingincome", "operatingmargin",
-        "othernon-operatingincome/(expense),net", "selling,generalandadministrativeexpense",
-        "selling,generalandadministrativeexpenseasa%ofnetsales",
-        "theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures",
-        "threemonthsendeddecember31,<period>", "threemonthsendedmarch31,<period>",
-        "threemonthsendedseptember30,<period>",
+    'core_reconciliation': frozenset({
+        'three<period>',
+        '<period>,<period>',
+        'amountsinmillionsexceptpershareamounts',
+        'asreported(gaap)',
+        'asreported(gaap)<n>)',
+        'core(non-gaap)',
+        'coreeps',
+        'costofproductssold',
+        'currency-neutralcoreeps',
+        'currency-neutralcoregrossmargin',
+        'currency-neutralcoreoperatingmargin',
+        'currency-neutralcoreselling,generalandadministrativeexpenseasa%ofnetsales',
+        'currency-neutraleps',
+        'currencyimpacttocoreeps',
+        'currencyimpacttocoregrossmargin',
+        'currencyimpacttocoreoperatingmargin',
+        'currencyimpacttocoreselling,generalandadministrativeexpenseasa%ofnetsales',
+        'currencyimpacttoearnings',
+        'dilutednetearningspercommonshare<n>)',
+        'dilutedweightedaveragecommonsharesoutstanding',
+        'gladjointventureagreement',
+        'grossmargin',
+        'grossprofit',
+        'incometaxes',
+        'incrementalrestructuring',
+        'less:netearningsattributabletononcontrollinginterests',
+        'netearnings',
+        'netearningsattributabletop&g',
+        'operatingincome',
+        'operatingmargin',
+        'othernon-operatingincome/(expense),net',
+        'selling,generalandadministrativeexpense',
+        'selling,generalandadministrativeexpenseasa%ofnetsales',
+        'theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures',
     }),
-    "change_versus_year_ago": frozenset({
-        "changeversusyearago", "coreeps", "coregrossmargin", "coreoperatingmargin",
-        "coreselling,generalandadministrativeexpenseasa%ofnetsales", "currency-neutralcoreeps",
-        "currency-neutralcoregrossmargin", "currency-neutralcoreoperatingmargin",
-        "currency-neutralcoreselling,generalandadministrativeasa%ofnetsales", "dilutedeps",
-        "grossmargin", "operatingmargin", "selling,generalandadministrativeexpenseasa%ofnetsales",
+    'change_versus_year_ago': frozenset({
+        'changeversusyearago',
+        'coreeps',
+        'coregrossmargin',
+        'coreoperatingmargin',
+        'coreselling,generalandadministrativeexpenseasa%ofnetsales',
+        'currency-neutralcoreeps',
+        'currency-neutralcoregrossmargin',
+        'currency-neutralcoreoperatingmargin',
+        'currency-neutralcoreselling,generalandadministrativeasa%ofnetsales',
+        'dilutedeps',
+        'grossmargin',
+        'operatingmargin',
+        'selling,generalandadministrativeexpenseasa%ofnetsales',
     }),
-    "organic_reconciliation": frozenset({
-        "acquisition&divestitureimpact/other(1)", "baby,feminine&familycare", "beauty",
-        "fabric&homecare", "foreignexchangeimpact", "grooming", "healthcare",
-        "january-march<period>", "july-september<period>", "netsalesgrowth",
-        "october-december<period>", "organicsalesgrowth", "totalcompany",
+    'organic_reconciliation': frozenset({
+        '<period>',
+        'acquisition&divestitureimpact/other<n>)',
+        'baby,feminine&familycare',
+        'beauty',
+        'fabric&homecare',
+        'foreignexchangeimpact',
+        'grooming',
+        'healthcare',
+        'january-march<period>',
+        'july-september<period>',
+        'netsalesgrowth',
+        'october-december<period>',
+        'organicsalesgrowth',
+        'totalcompany',
     }),
-    "prior_core_reconciliation": frozenset({
-        "amountsinmillionsexceptpershareamounts", "asreported(gaap)", "core(non-gaap)", "coreeps",
-        "costofproductssold", "dilutednetearningspercommonshare(1)",
-        "dilutedweightedaveragecommonsharesoutstanding", "grossmargin", "grossprofit", "incometaxes",
-        "incrementalrestructuring", "netearningsattributabletop&g", "operatingincome",
-        "operatingmargin", "selling,generalandadministrativeexpense",
-        "selling,generalandadministrativeexpenseasa%ofnetsales",
-        "theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures",
-        "threemonthsendedseptember30,<period>",
+    'prior_core_reconciliation': frozenset({
+        'three<period>',
+        '<period>,<period>',
+        'amountsinmillionsexceptpershareamounts',
+        'asreported(gaap)',
+        'core(non-gaap)',
+        'coreeps',
+        'costofproductssold',
+        'dilutednetearningspercommonshare<n>)',
+        'dilutedweightedaveragecommonsharesoutstanding',
+        'grossmargin',
+        'grossprofit',
+        'incometaxes',
+        'incrementalrestructuring',
+        'netearningsattributabletop&g',
+        'operatingincome',
+        'operatingmargin',
+        'selling,generalandadministrativeexpense',
+        'selling,generalandadministrativeexpenseasa%ofnetsales',
+        'othernon-operatingincome/(expense),net',
+        'currency-neutraleps',
+        'currencyimpacttoearnings',
+        'currencyimpacttocoregrossmargin',
+        'currencyimpacttocoreoperatingmargin',
+        'currencyimpacttocoreselling,generalandadministrativeexpenseasa%ofnetsales',
+        'currency-neutralcoregrossmargin',
+        'currency-neutralcoreoperatingmargin',
+        'currency-neutralcoreselling,generalandadministrativeexpenseasa%ofnetsales',
+        'currencyimpacttocoreeps',
+        'currency-neutralcoreeps',
+        'theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures',
     }),
-    "other_core_reconciliation": frozenset({
-        "amountsinmillionsexceptpershareamounts", "asreported(gaap)", "core(non-gaap)", "coreeps",
-        "costofproductssold", "dilutednetearningspercommonshare(1)",
-        "dilutedweightedaveragecommonsharesoutstanding", "grossmargin", "grossprofit", "incometaxes",
-        "incrementalrestructuring", "netearningsattributabletop&g", "operatingincome",
-        "operatingmargin", "selling,generalandadministrativeexpense",
-        "selling,generalandadministrativeexpenseasa%ofnetsales",
-        "theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures",
-        "threemonthsendedseptember30,<period>",
+    'cash_flows': frozenset({
+        '(gain)/lossonsaleofassets',
+        '<period>',
+        'acquisitions,netofcashacquired',
+        'additionstolong-termdebt',
+        'additionstoshort-termdebtwithoriginalmaturitiesofmorethanthreemonths',
+        'amountsinmillions',
+        'capitalexpenditures',
+        'cash,cashequivalentsandrestrictedcash,beginningofperiod',
+        'cash,cashequivalentsandrestrictedcash,endofperiod',
+        'changeinaccountspayable',
+        'changeinaccountsreceivable',
+        'changeincash,cashequivalentsandrestrictedcash',
+        'changeininventories',
+        'consolidatedstatementsofcashflows',
+        'deferredincometaxes',
+        'depreciationandamortization',
+        'dividendstoshareholders',
+        'effectofexchangeratechangesoncash,cashequivalentsandrestrictedcash',
+        'financingactivities',
+        'impactofstockoptionsandother',
+        'investingactivities',
+        'loss/(gain)onsaleofassets',
+        'netadditions/(reductions)toothershort-termdebt',
+        'netearnings',
+        'operatingactivities<n>)',
+        'other',
+        'otherinvestingactivity',
+        'proceedsfromassetsales',
+        'reductionsinlong-termdebt',
+        'reductionsinshort-termdebtwithoriginalmaturitiesofmorethanthreemonths',
+        'share-basedcompensationexpense',
+        'theprocter&gamblecompanyandsubsidiaries',
+        'totalfinancingactivities',
+        'totalinvestingactivities',
+        'totaloperatingactivities',
+        'treasurystockpurchases',
     }),
-    "cash_flows": frozenset({
-        "(gain)/lossonsaleofassets", "acquisitions,netofcashacquired", "additionstolong-termdebt",
-        "additionstoshort-termdebtwithoriginalmaturitiesofmorethanthreemonths", "amountsinmillions",
-        "capitalexpenditures", "cash,cashequivalentsandrestrictedcash,beginningofperiod",
-        "cash,cashequivalentsandrestrictedcash,endofperiod", "changeinaccountspayable",
-        "changeinaccountsreceivable", "changeincash,cashequivalentsandrestrictedcash",
-        "changeininventories", "consolidatedstatementsofcashflows", "deferredincometaxes",
-        "depreciationandamortization", "dividendstoshareholders",
-        "effectofexchangeratechangesoncash,cashequivalentsandrestrictedcash", "financingactivities",
-        "impactofstockoptionsandother", "investingactivities", "loss/(gain)onsaleofassets",
-        "netadditions/(reductions)toothershort-termdebt", "netearnings",
-        "ninemonthsendedmarch31", "operatingactivities(1)", "other", "otherinvestingactivity",
-        "proceedsfromassetsales", "reductionsinlong-termdebt",
-        "reductionsinshort-termdebtwithoriginalmaturitiesofmorethanthreemonths",
-        "share-basedcompensationexpense", "sixmonthsendeddecember31",
-        "theprocter&gamblecompanyandsubsidiaries", "threemonthsendedseptember30",
-        "totalfinancingactivities", "totalinvestingactivities", "totaloperatingactivities",
-        "treasurystockpurchases",
+    'balance_sheet': frozenset({
+        'accountspayable',
+        'accountsreceivable',
+        'accruedandotherliabilities',
+        'amountsinmillions',
+        'cashandcashequivalents',
+        'condensedconsolidatedbalancesheets',
+        'debtduewithinoneyear',
+        'december<n>,<period>',
+        'deferredincometaxes',
+        'goodwill',
+        'inventories',
+        'june<n>,<period>',
+        'long-termdebt',
+        'march<n>,<period>',
+        'othernoncurrentassets',
+        'othernoncurrentliabilities',
+        'prepaidexpensesandothercurrentassets',
+        'property,plantandequipment,net',
+        'september<n>,<period>',
+        'theprocter&gamblecompanyandsubsidiaries',
+        'totalassets',
+        'totalcurrentassets',
+        'totalcurrentliabilities',
+        'totalliabilities',
+        "totalliabilitiesandshareholders'equity",
+        "totalshareholders'equity",
+        'trademarksandotherintangibleassets,net',
     }),
-    "balance_sheet": frozenset({
-        "accountspayable", "accountsreceivable", "accruedandotherliabilities", "amountsinmillions",
-        "cashandcashequivalents", "condensedconsolidatedbalancesheets", "debtduewithinoneyear",
-        "december31,<period>", "deferredincometaxes", "goodwill", "inventories", "june30,<period>",
-        "long-termdebt", "march31,<period>", "othernoncurrentassets", "othernoncurrentliabilities",
-        "prepaidexpensesandothercurrentassets", "property,plantandequipment,net",
-        "september30,<period>", "theprocter&gamblecompanyandsubsidiaries", "totalassets",
-        "totalcurrentassets", "totalcurrentliabilities", "totalliabilities",
-        "totalliabilitiesandshareholders'equity", "totalshareholders'equity",
-        "trademarksandotherintangibleassets,net",
+    'masthead': frozenset({'cincinnati,oh<n>', 'newsrelease', 'onep&gplaza', 'theprocter&gamblecompany'}),
+    'headline': frozenset({
+        'dilutedeps<n>,<n>;coreeps<n>',
+        'dilutedeps<n>,<n>;coreeps<n>,<n>',
+        'maintainsfiscalyearsales,coreepsgrowthandcashreturnguidance',
+        'maintainsfiscalyearsales,epsgrowthandcashreturnguidance',
+        'netsales<n>;organicsales<n>',
+        'p&gannounces<period>firstquarterresults',
+        'p&gannounces<period>secondquarterresults',
+        'p&gannounces<period>thirdquarterresults',
+        'updatesgaapepsforrestructuringoutlook',
     }),
-    "masthead": frozenset({
-        "cincinnati,oh45202", "newsrelease", "onep&gplaza", "theprocter&gamblecompany",
+    'segment_results': frozenset({
+        'three<period>',
+        '%changeversusyearago',
+        '<period>,<period>',
+        'amountsinmillions',
+        'baby,feminine&familycare',
+        'beauty',
+        'consolidatedearningsinformation',
+        'corporate',
+        'earnings/(loss)beforeincometaxes',
+        'fabric&homecare',
+        'grooming',
+        'healthcare',
+        'netearnings',
+        'netearnings/(loss)',
+        'netsales',
+        'theprocter&gamblecompanyandsubsidiaries',
+        'totalcompany',
     }),
-    "headline": frozenset({
-        "dilutedeps$1.63,+6%;coreeps$1.59,+3%", "dilutedeps$1.78,-5%;coreeps$1.88,0%",
-        "dilutedeps$1.95,+21%;coreeps$1.99,+3%",
-        "maintainsfiscalyearsales,coreepsgrowthandcashreturnguidance",
-        "maintainsfiscalyearsales,epsgrowthandcashreturnguidance", "netsales+1%;organicsales0%",
-        "netsales+3%;organicsales+2%", "netsales+7%;organicsales3%",
-        "p&gannounces<period>firstquarterresults", "p&gannounces<period>secondquarterresults",
-        "p&gannounces<period>thirdquarterresults", "updatesgaapepsforrestructuringoutlook",
+    'sales_guidance': frozenset({
+        '-%to<n>',
+        '<n>to<n>',
+        '<period>(estimate)',
+        'combinedforeignexchange&acquisition/divestitureimpact/other<n>)',
+        'netsalesgrowth',
+        'organicsalesgrowth',
+        'totalcompany',
     }),
-    "segment_results": frozenset({
-        "%changeversusyearago", "amountsinmillions", "baby,feminine&familycare", "beauty",
-        "consolidatedearningsinformation", "corporate", "earnings/(loss)beforeincometaxes",
-        "fabric&homecare", "grooming", "healthcare", "netearnings", "netearnings/(loss)", "netsales",
-        "theprocter&gamblecompanyandsubsidiaries", "threemonthsendeddecember31,<period>",
-        "threemonthsendedmarch31,<period>", "threemonthsendedseptember30,<period>", "totalcompany",
+    'eps_guidance': frozenset({
+        '-%to<n>',
+        '<n>to<n>',
+        '<period>(estimate)',
+        'coreepsgrowth',
+        'dilutedepsgrowth',
+        'impactofincrementalnon-coreitems<n>)',
+        'totalcompany',
     }),
-    "sales_guidance": frozenset({
-        "+1%to+5%", "-%to+4%", "<period>(estimate)",
-        "combinedforeignexchange&acquisition/divestitureimpact/other(1)", "netsalesgrowth",
-        "organicsalesgrowth", "totalcompany",
+    'cash_flow': frozenset({
+        'three<period>',
+        '<period>,<period>',
+        '<period>u.s.taxactpayments',
+        'adjustedfreecashflow',
+        'capitalspending',
+        'operatingcashflow',
     }),
-    "eps_guidance": frozenset({
-        "+1%to+6%", "+3%to+9%", "-%to+4%", "-1%to-2%", "-3%to-5%", "<period>(estimate)",
-        "coreepsgrowth", "dilutedepsgrowth", "impactofincrementalnon-coreitems(1)", "totalcompany",
-    }),
-    "cash_flow": frozenset({
-        "<period>u.s.taxactpayments", "adjustedfreecashflow", "capitalspending", "operatingcashflow",
-        "threemonthsendeddecember31,<period>", "threemonthsendedmarch31,<period>",
-        "threemonthsendedseptember30,<period>",
-    }),
-    "cash_flow_reconciliation": frozenset({
-        "adjustedfreecashflowproductivity", "adjustmentstonetearnings(1)", "netearnings", "netearningsasadjusted",
-        "netearnings", "netearningsasadjusted", "threemonthsendeddecember31,<period>",
-        "threemonthsendedmarch31,<period>", "threemonthsendedseptember30,<period>",
+    'cash_flow_reconciliation': frozenset({
+        'three<period>',
+        '<period>,<period>',
+        'adjustedfreecashflow',
+        'adjustedfreecashflowproductivity',
+        'adjustmentstonetearnings<n>)',
+        'netearnings',
+        'netearningsasadjusted',
     }),
 }
-
 
 _ANCHORS = {
-    "highlights": frozenset({"dilutedeps", "coreeps", "gaap", "%change"}),
-    "segment_drivers": frozenset({"totalp&g", "organicsales", "organicvolume", "netsalesdrivers(1)"}),
-    "earnings": frozenset({"consolidatedearningsinformation", "diluted", "netearningspercommonshare(1)", "%chg"}),
-    "drivers": frozenset({"totalcompany", "netsalesdrivers(1)", "organicvolume"}),
-    "core_reconciliation": frozenset({"coreeps", "asreported(gaap)", "core(non-gaap)", "incrementalrestructuring"}),
-    "change_versus_year_ago": frozenset({"changeversusyearago", "dilutedeps", "coreeps"}),
-    "organic_reconciliation": frozenset({"totalcompany", "netsalesgrowth", "organicsalesgrowth"}),
-    "prior_core_reconciliation": frozenset({
-        "dilutednetearningspercommonshare(1)", "asreported(gaap)", "core(non-gaap)",
-        "threemonthsendedseptember30,<period>",
-    }),
-    "other_core_reconciliation": frozenset({"dilutednetearningspercommonshare(1)", "coreeps", "asreported(gaap)", "core(non-gaap)", "threemonthsendedseptember30,<period>"}),
-    "cash_flows": frozenset({"consolidatedstatementsofcashflows", "totaloperatingactivities"}),
-    "balance_sheet": frozenset({"condensedconsolidatedbalancesheets", "totalassets"}),
-    "masthead": frozenset({"newsrelease", "theprocter&gamblecompany"}),
-    "segment_results": frozenset({"consolidatedearningsinformation", "%changeversusyearago", "totalcompany"}),
-    "sales_guidance": frozenset({"<period>(estimate)", "organicsalesgrowth", "totalcompany"}),
-    "eps_guidance": frozenset({"<period>(estimate)", "coreepsgrowth", "totalcompany"}),
-    "cash_flow": frozenset({"operatingcashflow", "capitalspending", "adjustedfreecashflow"}),
-    "cash_flow_reconciliation": frozenset({"adjustedfreecashflow", "adjustedfreecashflowproductivity", "netearningsasadjusted"}),
-    "__cash_flow_reconciliation": frozenset(),
+    'highlights': frozenset({'%change', 'coreeps', 'dilutedeps', 'gaap'}),
+    'segment_drivers': frozenset({'netsalesdrivers<n>)', 'organicsales', 'organicvolume', 'totalp&g'}),
+    'earnings': frozenset({'%chg', 'consolidatedearningsinformation', 'diluted', 'netearningspercommonshare<n>)'}),
+    'drivers': frozenset({'netsalesdrivers<n>)', 'organicvolume', 'totalcompany'}),
+    'core_reconciliation': frozenset({'coreeps', 'incrementalrestructuring', 'currencyimpacttocoreeps', 'currency-neutralcoreeps'}),
+    'change_versus_year_ago': frozenset({'changeversusyearago', 'coreeps', 'dilutedeps'}),
+    'organic_reconciliation': frozenset({'netsalesgrowth', 'organicsalesgrowth', 'totalcompany'}),
+    'prior_core_reconciliation': frozenset({'asreported(gaap)', 'dilutednetearningspercommonshare<n>)', 'three<period>', 'incrementalrestructuring', 'costofproductssold', 'grossprofit', 'incometaxes', 'operatingincome', 'selling,generalandadministrativeexpense', 'selling,generalandadministrativeexpenseasa%ofnetsales', 'grossmargin', 'operatingmargin', 'dilutedweightedaveragecommonsharesoutstanding', 'netearningsattributabletop&g', 'amountsinmillionsexceptpershareamounts', 'theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures'}),
+    'cash_flows': frozenset({'consolidatedstatementsofcashflows', 'totaloperatingactivities'}),
+    'balance_sheet': frozenset({'condensedconsolidatedbalancesheets', 'totalassets'}),
+    'masthead': frozenset({'newsrelease', 'theprocter&gamblecompany'}),
+    'segment_results': frozenset({'%changeversusyearago', 'consolidatedearningsinformation', 'totalcompany'}),
+    'sales_guidance': frozenset({'<period>(estimate)', 'organicsalesgrowth', 'totalcompany'}),
+    'eps_guidance': frozenset({'<period>(estimate)', 'coreepsgrowth', 'totalcompany'}),
+    'cash_flow': frozenset({'adjustedfreecashflow', 'capitalspending', 'operatingcashflow'}),
+    'cash_flow_reconciliation': frozenset({'adjustedfreecashflow', 'adjustedfreecashflowproductivity'}),
+    'headline': frozenset({'netsales<n>;organicsales<n>'}),
 }
 
 
-_ANCHORS["headline"] = frozenset()
-
-
-_ANCHORS["cash_flow_reconciliation"] = frozenset({"netearningsasadjusted", "adjustedfreecashflowproductivity"})
-
-_VOCABULARIES["cash_flow_reconciliation"] |= frozenset({"adjustedfreecashflow"})
-_ANCHORS["cash_flow_reconciliation"] = frozenset({"adjustedfreecashflow", "adjustedfreecashflowproductivity"})
-
 def _match_role(signature: frozenset[str]) -> str | None:
+    core_anchor = (
+        {"coreeps", "incrementalrestructuring", "currencyimpacttocoreeps", "currency-neutralcoreeps"}
+        if "currencyimpacttocoreeps" in signature
+        else {"coreeps", "incrementalrestructuring", "currency-neutraleps", "currencyimpacttoearnings"}
+    )
+    has_currency_impact = bool(signature & {
+        "currency-neutraleps", "currencyimpacttoearnings",
+        "currency-neutralcoreeps", "currencyimpacttocoreeps",
+    })
     hits = [
         role for role in _ROLES
-        if _ANCHORS.get(role, frozenset()) <= signature
+        if (core_anchor if role == "core_reconciliation" else _ANCHORS.get(role, frozenset())) <= signature
         and signature <= _VOCABULARIES.get(role, frozenset())
+        and not (role == "prior_core_reconciliation" and has_currency_impact)
     ]
     if len(hits) == 1:
         return hits[0]
-    if {"core_reconciliation", "prior_core_reconciliation"} == set(hits):
-        return "core_reconciliation"
-    if {"core_reconciliation", "prior_core_reconciliation", "other_core_reconciliation"} == set(hits):
-        return "prior_core_reconciliation"
     return None
 
 
 def admit(source: str, fiscal_scope: Sequence[str | date]) -> Admission:
     document = _cached_document(source)
-    if document is None:
-        return Admission("unknown_table:t0")
     admission = _admission(document, fiscal_scope)
     if admission.roles is None:
         return admission
@@ -444,24 +616,36 @@ def _admission(document: Document, fiscal_scope: Sequence[str | date]) -> Admiss
     from .pg_profile import _scope
     current_start, current_end, _prior_start, _prior_end = _scope(fiscal_scope)
     source = document.source
-    type_match = re.search(r"<TYPE>([^\n<]+)\n", source[:source.find("<TEXT>")])
-    if type_match is None or type_match.group(1).strip() != "EX-99.1":
+    text_match = re.search(r"<text>", source, re.I)
+    if text_match is None:
         return Admission("not_ex_99_1")
+    header = source[:text_match.start()]
+    type_lines = re.findall(r"(?im)^<TYPE>.*$", header)
+    if len(type_lines) != 1 or type_lines[0].rstrip("\r") != "<TYPE>EX-99.1":
+        return Admission("not_ex_99_1")
+    nested = _nested_table_ordinal(source)
+    if nested is not None:
+        return Admission(f"unknown_table:t{nested}")
     if "\n<!-- Document created using Wdesk -->\n" not in source:
         return Admission("generator_not_workiva")
     if not document.tables or "The Procter & Gamble Company" not in _table_text(document.tables[0]):
         return Admission("issuer_not_pg")
-    assignments: list[str | None] = []
-    roles: dict[str, int] = {}
+    role_tables: list[tuple[str, int]] = []
     for ordinal, signature in enumerate(document.signatures):
         role = _match_role(signature)
         if role is None:
             return Admission(f"unknown_table:t{ordinal}")
-        if role in roles:
-            return Admission(f"required_table_repeated:{role}")
-        roles[role] = ordinal
-        assignments.append(role)
-    for role in _REQUIRED_ROLES:
+        role_tables.append((role, ordinal))
+    required_roles = _REQUIRED_ROLES | {"prior_core_reconciliation"} if current_end.month == 9 else _REQUIRED_ROLES
+    counts = {role: sum(candidate == role for candidate, _ordinal in role_tables) for role in required_roles}
+    repeated = [role for role in required_roles if counts[role] > 1]
+    if repeated:
+        return Admission(f"required_table_repeated:{repeated[0]}")
+    roles = {role: ordinal for role, ordinal in role_tables}
+    missing = [role for role in required_roles if counts[role] == 0]
+    if missing:
+        return Admission(f"required_table_missing:{missing[0]}")
+    for role in required_roles:
         if role not in roles:
             return Admission(f"required_table_missing:{role}")
     reported = _reported_quarter(document, roles["drivers"])
@@ -489,8 +673,15 @@ def _label_of(row: Sequence[Cell], cell: Cell) -> str | None:
 
 def _headers_over(rows: Sequence[Sequence[Cell]], cell: Cell) -> list[str]:
     out: list[str] = []
-    for row in rows[: cell.row]:
-        filled = [other for other in row if other.text and other.row < cell.row]
+    for row_index, row in enumerate(rows[: cell.row]):
+        own = [other for other in row if other.text and other.row == row_index]
+        if len({other.col0 for other in own}) == 1 and all(other.col1 >= cell.col0 for other in own):
+            out.append(own[0].text)
+            continue
+        if any(_parse_period_title(other.text) is not None for other in own):
+            out.extend(other.text for other in own if other.col0 <= cell.col0 < other.col1)
+            continue
+        filled = own
         if len({id(other) for other in filled}) == 1:
             out.append(filled[0].text)
             continue
@@ -498,8 +689,80 @@ def _headers_over(rows: Sequence[Sequence[Cell]], cell: Cell) -> list[str]:
     return out
 
 
+def _period_titles(rows: Sequence[Sequence[Cell]], cell: Cell) -> list[date | None]:
+    governing = [
+        parsed
+        for value in _headers_over(rows, cell)
+        if (parsed := _parse_period_title(value)) is not None
+    ]
+    if governing:
+        return governing
+    return [
+        parsed
+        for row in rows
+        for other in row
+        if (parsed := _parse_period_title(other.text)) is not None
+    ]
+
+
+def _parse_period_title(value: str) -> date | None:
+    match = re.fullmatch(
+        r"Three Months Ended ([A-Z][a-z]+) (\d{1,2})(?:, (\d{4}))?",
+        value.strip(),
+    )
+    if match:
+        month, day = match.group(1), int(match.group(2))
+        if match.group(3) is not None:
+            try:
+                return date.fromisoformat(f"{int(match.group(3)):04d}-{month_number(month):02d}-{day:02d}")
+            except ValueError:
+                return None
+        return date(2000, month_number(month), day)
+    match = re.fullmatch(r"([A-Z][a-z]+) - ([A-Z][a-z]+) (\d{4})", value.strip())
+    if match:
+        try:
+            return date.fromisoformat(f"{int(match.group(3)):04d}-{month_number(match.group(2)):02d}-01")
+        except ValueError:
+            return None
+    return None
+
+
+def month_number(name: str) -> int:
+    return [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
+    ].index(name) + 1
+
+
+def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *, growth: bool, required: bool) -> bool:
+    titles = _period_titles(rows, cell)
+    if not titles:
+        return not required
+    if len(titles) != 1:
+        return False
+    title = titles[0]
+    if title.year == 2000:
+        return title.month == period.month and title.day == period.day and (
+            growth or _year_over(rows, cell, period)
+        )
+    return title.month == period.month and title.year == period.year
+
+
+def _year_over(rows: Sequence[Sequence[Cell]], cell: Cell, period: date) -> bool:
+    return any(_parse_year(value) == period.year for value in _headers_over(rows, cell))
+
+
+def _parse_year(value: str) -> int | None:
+    match = re.search(r"(?<!\d)(20\d{2})(?!\d)", value)
+    return int(match.group(1)) if match else None
+
+
+def _as_date(value: str | date) -> date:
+    return value if isinstance(value, date) else date.fromisoformat(value)
+
+
 def _locate(document: Document, locator: tuple[str, str, str | None]) -> list[Cell]:
-    role, row_label, header = locator
+    role, row_label, header, pin_metric = locator
     ordinal = document.admission_roles[role]
     rows = document.tables[ordinal]
     hits: list[Cell] = []
@@ -513,10 +776,23 @@ def _locate(document: Document, locator: tuple[str, str, str | None]) -> list[Ce
                 (other for other in rows[row_number] if other.row == row_number and other.col0 >= cell.col1 and other.text),
                 key=lambda other: other.col0,
             )
-            if after and after[0].text == "%":
+            literal = _literal(cell.text)
+            if literal is None and cell.text == _DASH and after and after[0].text == "%":
+                literal = 0.0
+            if literal is not None and after and after[0].text == "%":
                 hits.append(cell)
             continue
         if _norm(header) in {_norm(value) for value in _headers_over(rows, cell)}:
+            required = role in {
+                "earnings", "drivers", "core_reconciliation", "prior_core_reconciliation",
+                "segment_drivers", "organic_reconciliation",
+            }
+            current_end = _as_date(document.fiscal_scope[1])
+            prior_end = _as_date(document.fiscal_scope[3])
+            period = prior_end if pin_metric in document.prior_metrics else current_end
+            growth = _norm(header) in {"%chg", "%change"}
+            if not _period_matches(rows, cell, period, growth=growth, required=required):
+                continue
             hits.append(cell)
     return hits
 
@@ -531,18 +807,21 @@ def _eps_row(document: Document, role: str) -> str:
         }
     )
     if len(candidates) != 1:
-        raise ValueError("the core reconciliation does not carry exactly one pinned EPS row")
+        return ""
     return candidates[0]
 
 
 def _literal(printed: str) -> float | None:
-    value = printed.replace(" ", "")
-    if value in {_DASH, _DASH + "%"}:
+    if printed != printed.strip() or any(character.isspace() for character in printed):
+        return None
+    if printed == _DASH + "%":
         return 0.0
-    match = re.fullmatch(r"\((\d+(?:\.\d+)?)\)%?", value)
+    if not all(ord(character) < 128 for character in printed):
+        return None
+    match = re.fullmatch(r"\((\d+(?:\.\d+)?)\)%?", printed)
     if match:
         return -float(match.group(1))
-    match = re.fullmatch(r"[+$]?(\d+(?:\.\d+)?)%?", value)
+    match = re.fullmatch(r"[+$]?(\d+(?:\.\d+)?)%?", printed)
     return float(match.group(1)) if match else None
 
 
@@ -561,17 +840,17 @@ def _pins(document: Document, fiscal_year: int, calendar_year: int, has_prior_re
         "pg_other_contribution_pp": "Other (2)",
     }
     for metric, column in total_metrics.items():
-        pins.append(Pin(metric, (drivers, "Total P&G", column), (statement_drivers, "Total Company", column)))
+        pins.append(Pin(metric, (drivers, "Total P&G", column, metric), (statement_drivers, "Total Company", column, metric)))
     pins.extend((
-        Pin("pg_organic_sales_growth_pct", ("organic_reconciliation", "Total Company", "Organic Sales Growth"), (drivers, "Total P&G", "Organic Sales")),
-        Pin("pg_diluted_eps", ("earnings", "Diluted", str(calendar_year)), ("highlights", "Diluted EPS", str(fiscal_year))),
-        Pin("pg_prior_diluted_eps", ("earnings", "Diluted", str(calendar_year - 1)), ("highlights", "Diluted EPS", str(fiscal_year - 1))),
-        Pin("pg_reported_eps_growth_pct", ("earnings", "Diluted", "% Chg"), ("highlights", "Diluted EPS", "% Change")),
-        Pin("pg_core_eps", ("core_reconciliation", eps_row, "Core(Non-GAAP)"), ("highlights", "Core EPS", str(fiscal_year))),
-        Pin("pg_prior_core_eps", ("highlights", "Core EPS", str(fiscal_year - 1)),
-            (("prior_core_reconciliation", "Diluted net earnings per common share (1)", "Core(Non-GAAP)")
-             if has_prior_reconciliation else ("core_reconciliation", eps_row, "As Reported (GAAP) (1)"))),
-        Pin("pg_core_eps_growth_pct", ("highlights", "Core EPS", "% Change"), ("change_versus_year_ago", "Core EPS", None)),
+        Pin("pg_organic_sales_growth_pct", ("organic_reconciliation", "Total Company", "Organic Sales Growth", "pg_organic_sales_growth_pct"), (drivers, "Total P&G", "Organic Sales", "pg_organic_sales_growth_pct")),
+        Pin("pg_diluted_eps", ("earnings", "Diluted", str(calendar_year), "pg_diluted_eps"), ("highlights", "Diluted EPS", str(fiscal_year), "pg_diluted_eps")),
+        Pin("pg_prior_diluted_eps", ("earnings", "Diluted", str(calendar_year - 1), "pg_prior_diluted_eps"), ("highlights", "Diluted EPS", str(fiscal_year - 1), "pg_prior_diluted_eps")),
+        Pin("pg_reported_eps_growth_pct", ("earnings", "Diluted", "% Chg", "pg_reported_eps_growth_pct"), ("highlights", "Diluted EPS", "% Change", "pg_reported_eps_growth_pct")),
+        Pin("pg_core_eps", ("core_reconciliation", eps_row, "Core(Non-GAAP)", "pg_core_eps"), ("highlights", "Core EPS", str(fiscal_year), "pg_core_eps")),
+        Pin("pg_prior_core_eps", ("highlights", "Core EPS", str(fiscal_year - 1), "pg_prior_core_eps"),
+            (("prior_core_reconciliation", "Diluted net earnings per common share (1)", "Core(Non-GAAP)", "pg_prior_core_eps")
+             if has_prior_reconciliation else ("core_reconciliation", eps_row, "As Reported (GAAP) (1)", "pg_prior_core_eps"))),
+        Pin("pg_core_eps_growth_pct", ("highlights", "Core EPS", "% Change", "pg_core_eps_growth_pct"), ("change_versus_year_ago", "Core EPS", None, "pg_core_eps_growth_pct")),
     ))
     for metric, segment in {
         "pg_beauty_organic_sales_growth_pct": "Beauty",
@@ -580,7 +859,7 @@ def _pins(document: Document, fiscal_year: int, calendar_year: int, has_prior_re
         "pg_fabric_home_organic_sales_growth_pct": "Fabric & Home Care",
         "pg_baby_feminine_family_organic_sales_growth_pct": "Baby, Feminine & Family Care",
     }.items():
-        pins.append(Pin(metric, ("organic_reconciliation", segment, "Organic Sales Growth"), (drivers, segment, "Organic Sales")))
+        pins.append(Pin(metric, ("organic_reconciliation", segment, "Organic Sales Growth", metric), (drivers, segment, "Organic Sales", metric)))
     return tuple(pins)
 
 
@@ -593,6 +872,14 @@ def _outcome(document: Document, pin: Pin, prior_note: bool) -> Outcome:
         return Outcome("unlocated")
     primary_value = _literal(primary[0].text)
     second_value = _literal(second[0].text)
+    if second_value is None and second[0].text == _DASH:
+        following = sorted(
+            (other for other in document.tables[second[0].table][second[0].row]
+             if other.row == second[0].row and other.col0 >= second[0].col1 and other.text),
+            key=lambda other: other.col0,
+        )
+        if following and following[0].text == "%":
+            second_value = 0.0
     if primary_value is None or second_value is None:
         return Outcome("unlocated")
     if primary_value != second_value:
@@ -623,11 +910,32 @@ def _table_end(source: str, ordinal: int) -> int:
 
 
 def _receipt(document: Document, cell: Cell):
+    window = mask_markup(document.source[cell.start:cell.end])
+    relative = window.find(cell.text)
+    if relative >= 0:
+        char_start = cell.start + relative
+        return receipt_for_char_span(
+            source=document.source,
+            source_sha256=document.source_sha256,
+            char_start=char_start,
+            char_end=char_start + len(cell.text),
+        )
+
+    decoded = html.unescape(window)
+    literal_start = decoded.find(cell.text)
+    if literal_start < 0:
+        raise ReceiptError("the cell has no printed literal")
+    prefix = html.unescape(window[:window.find("&", 0)])
+    char_start = cell.start + len(prefix) + (literal_start - len(prefix))
+    entity_end = window.find(";", char_start - cell.start)
+    percent_end = window.find("%", entity_end)
+    if entity_end < 0 or percent_end < 0:
+        raise ReceiptError("the cell has no printed literal")
     return receipt_for_char_span(
         source=document.source,
         source_sha256=document.source_sha256,
-        char_start=cell.start,
-        char_end=cell.end,
+        char_start=char_start,
+        char_end=cell.start + percent_end + 1,
     )
 
 
@@ -636,12 +944,19 @@ def derive_outcomes(source: str, fiscal_scope: Sequence[str | date], admission: 
     from .pg_profile import _fiscal_identity, _scope
 
     base = _cached_document(source)
-    if base is None or admission.roles is None:
+    if admission.roles is None:
         raise ValueError("an admitted document cannot be read")
     current_start, current_end, _prior_start, prior_end = _scope(fiscal_scope)
     fiscal_year, _quarter = _fiscal_identity(current_start, current_end)
-    document = Document(source, base.tables, admission.roles, fiscal_scope=fiscal_scope)
-    has_prior = "prior_core_reconciliation" in admission.roles
+    document = Document(
+        source,
+        base.tables,
+        admission.roles,
+        fiscal_scope=fiscal_scope,
+        prior_metrics=frozenset({"pg_prior_diluted_eps", "pg_prior_core_eps"}),
+    )
+    current_end = _as_date(fiscal_scope[1])
+    has_prior = current_end.month == 9 and "prior_core_reconciliation" in admission.roles
     prior_note = has_prior or _prior_note_present(document, prior_end)
     return {
         pin.metric: _outcome(document, pin, prior_note)
@@ -667,10 +982,12 @@ def extract(document: Document, admission: Admission, definitions: Sequence["PGD
         admission.roles,
         bound.revision.source_sha256,
         fiscal_scope,
+        frozenset({"pg_prior_diluted_eps", "pg_prior_core_eps"}),
     )
     current_start, current_end, _prior_start, prior_end = _scope(document.fiscal_scope)
     fiscal_year, _quarter = _fiscal_identity(current_start, current_end)
-    has_prior = "prior_core_reconciliation" in admission.roles
+    current_end = _as_date(fiscal_scope[1])
+    has_prior = current_end.month == 9 and "prior_core_reconciliation" in admission.roles
     prior_note = has_prior or _prior_note_present(document, prior_end)
     outcomes = {
         pin.metric: _outcome(document, pin, prior_note)
@@ -695,7 +1012,4 @@ def extract(document: Document, admission: Admission, definitions: Sequence["PGD
 def wrapped_admit(source: str, fiscal_scope: Sequence[str | date]) -> Admission | None:
     if not _wrapped(source):
         return None
-    document = _cached_document(source)
-    if document is None:
-        return Admission("unknown_table:t0")
-    return _admission(document, fiscal_scope)
+    return _admission(_cached_document(source), fiscal_scope)
