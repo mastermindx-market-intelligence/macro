@@ -11,6 +11,7 @@ Network-free: the per-source fetchers are monkeypatched. Invariants:
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
@@ -66,6 +67,40 @@ def test_resilient_all_blocked(monkeypatch, tmp_path):
     assert seen["AAA"]["source"] is None and seen["AAA"]["n"] == 0        # recorded as a miss
 
 
+def test_zero_row_miss_retries_on_weekly_cadence(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path, resolved=("AAA",))
+    old = (datetime.now(timezone.utc) - timedelta(days=8)).isoformat()
+    (tmp_path / "edgar" / "_dead_name_prices_seen.json").write_text(
+        json.dumps({"AAA": {"at": old, "source": None, "n": 0}}))
+    monkeypatch.setattr(dp, "_stooq_daily", lambda t: _series())
+    monkeypatch.setattr(dp, "_polygon_daily", lambda t, s, e: pytest.fail("Stooq should win"))
+    out = dp.fetch_dead_prices(force=False)
+    assert out["ticker"].nunique() == 1
+    assert set(out["source"]) == {"stooq"}
+
+
+def test_polygon_daily_accepts_massive_key_alias(monkeypatch):
+    monkeypatch.delenv("POLYGON_API_KEY", raising=False)
+    monkeypatch.setenv("MASSIVE_API_KEY", "massive-test-key")
+    monkeypatch.setattr(dp.config, "load", dict)
+    seen = {}
+
+    class Resp:
+        status_code = 200
+        def json(self):
+            return {"results": [{"c": 10.0, "t": 1_600_000_000_000},
+                                {"c": 11.0, "t": 1_600_086_400_000}]}
+
+    import requests
+    def fake_get(url, timeout):
+        seen["url"] = url
+        return Resp()
+    monkeypatch.setattr(requests, "get", fake_get)
+    out = dp._polygon_daily("AAA", "2020-01-01", "2020-01-03")
+    assert out is not None and len(out) == 2
+    assert "apiKey=massive-test-key" in seen["url"]
+
+
 def test_resumable_skips_fresh(monkeypatch, tmp_path):
     _setup(monkeypatch, tmp_path, resolved=("AAA",))
     calls = {"n": 0}
@@ -101,3 +136,10 @@ def test_price_coverage_math_and_caveat(monkeypatch, tmp_path):
     assert cov["price_coverage_frac"] == pytest.approx(0.5)
     assert cov["by_source"] == {"stooq": 1}
     assert "ACQUISITION" in cov["residual_bias"]      # the up-bias is always stamped
+
+
+def test_weekly_exposes_dead_name_vendor_credentials():
+    from pathlib import Path
+    text = (Path(__file__).resolve().parents[1] / ".github" / "workflows" / "weekly.yml").read_text()
+    assert "POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}" in text
+    assert "MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}" in text
