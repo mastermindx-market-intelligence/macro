@@ -157,7 +157,25 @@ verified:
       options/sector_central/crypto/ai_desk/aibrief/mastermind and every
       `strategy_*`), 41 under `sectors/`, 76 basket families, 4 under `basket/`.
       The nav entry is only the probe - every template/CSS/builder change merged
-      since 2026-09-23T12:05Z is equally unpropagated.
+      since 2026-09-23T12:05Z is equally unpropagated. COUNT VERIFIED BY SET
+      DIFFERENCE, not subtraction: `comm -23` over the two sorted lists gives 1,479
+      (the 5,441 figure is the INTERSECTION; the full `am_edition.html` population is
+      11,150, because many carriers use a different nav family).
+  - claim: "The 1,479 pages are NOT the render lane's exclusive estate - the proximate cause is a PARTIAL 2026-09-25 nightly."
+    command: "git show --format='' --name-only 969883bc973 -- site/stocks | grep -c '^site/stocks/'; git show --format='' --name-only fab3ad33b72 -- site/stocks | grep -c '^site/stocks/'; ls site/stocks/*.html | wc -l"
+    result: >
+      The 2026-09-25 nightly `969883bc973` rewrote 1,485 of 2,736 `site/stocks/`
+      pages; the 2026-09-24 nightly `fab3ad33b72` rewrote 2,687 of the same 2,736.
+      `2736 - 1485 = 1251` is EXACTLY the stale `stocks/` count, and the prior night
+      covered 2,687 of them, so these pages are inside `daily.yml`'s estate, not the
+      render lane's. Sampled stale dossiers ABAT/ABEO/ABOS last baked at
+      `fab3ad33b72` (09-24T09:39Z); A/AA at `969883bc973` (09-25T07:52Z). A
+      content-identity optimisation cannot explain the gap, because #7970's nav entry
+      changes every rebuilt page's bytes. WHY the 09-25 nightly went partial is NOT
+      established here and belongs to the `daily.yml` lane. The render outage explains
+      why the split PERSISTS (only `scope=all` sweeps the whole estate in one act),
+      not why each page is behind. An earlier revision of the postmortem asserted the
+      opposite and is corrected in this PR.
   - claim: "The new guard flags the real 2026-09-25 hostage and passes its own selftest."
     command: "python3 scripts/check_runner_queue_hostage.py --selftest; python3 -m pytest tests/test_runner_queue_hostage.py -q"
     result: "selftest OK; 14 passed."
@@ -172,9 +190,28 @@ unverified:
     what_would_verify: >
       An operator `POST /orgs/mastermindx-market-intelligence/actions/runners/15/labels`
       with `render-linux`, then one render.yml run concluding success and a fresh
-      `grep -rl am_edition.html site --include='*.html' | wc -l` reaching 6,920.
+      set difference (`comm -23`) over the nav/am_edition lists reaching 0.
       The mechanism is render.yml's per-region `(scope=X, from=SHA)` watermarks in
-      its `pick` step, which union the dirty scopes of every skipped push.
+      its `pick` step, which union the dirty scopes of every skipped push; a watermark
+      this far behind forces the defensive `scope=all` at render.yml:583, and scope=all
+      is what rewrites the whole estate in one act. NOTE the justification is "one act
+      sweeps everything", NEVER "these pages have no other baker" - the nightly bakes
+      them too, just partially (see the partial-nightly claim under `verified`).
+  - claim: "The live www surface is staler than the committed tree, so a restored render alone would not reach users."
+    what_would_verify: >
+      Committed `site/advanced.html` is 106,475 bytes with the am_edition entry; live
+      `https://www.mastermind-x.com/advanced.html` returns 200 at 105,775 bytes with
+      ZERO am_edition hits, and that page last baked at `969883bc973` 2026-09-25T07:52Z
+      - so the VPS is serving bytes from before 07:52Z. Consistent with the recorded
+      `# MMX-DISK-TRIAGE-HOLD` on the VPS pull cron since 2026-09-25T04:00Z, but this
+      session did NOT open a VPS shell, so the hold itself is unconfirmed here. Verify
+      with `crontab -l` on the VPS. Meanwhile `/live/staleness.json` (served from the
+      separate `/var/lib/macro-live/public` root, generated_at 2026-09-25T10:12:05Z)
+      reports `ok:false`, stale `hub`/`r2_massive_stock_day`/`us_stocks` and blind
+      `entry_radar_live`/`prophet_us`/`us_standouts`, with `hub` at bake_age 36.6h
+      against a 26h budget - the site's own content sentinels ARE firing, which is
+      independent corroboration and does not contradict the workflow-liveness watchdog
+      being correctly silent.
   - claim: "The guard's live path (`main()`, not the imported functions) behaves correctly end to end."
     what_would_verify: >
       Its first scheduled run inside nightly-liveness.yml. It was deliberately NOT
@@ -288,7 +325,7 @@ a render.yml run whose single job could never be assigned: the run stayed alive
 holding the `pipeline-render` concurrency group until GitHub's 24-hour queued-job
 kill, and each firing behind it was superseded and concluded `cancelled`. Two days of
 that produced exactly one `queued` run, a rolling `pending` successor, ~25 `cancelled`
-predecessors, zero reds, and 1,479 committed pages frozen at pre-2026-09-23 template
+predecessors, zero reds, and 1,479 committed pages holding the pre-#7970 nav (at the 2026-09-24T09:39Z nightly bake, not frozen at the outage - see the partial-nightly correction) template
 bytes. The same shape wedged engine-render.yml and sector-intelligence.yml;
 codex-research.yml is wedged the same way on a different dead label. daily.yml stayed
 healthy because it routes `macstudio`, which is why the nightly kept baking data and

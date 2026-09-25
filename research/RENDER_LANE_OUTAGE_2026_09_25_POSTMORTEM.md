@@ -4,7 +4,7 @@
 operator-owned and still open.**
 **Lanes down:** `render.yml`, `engine-render.yml`, `sector-intelligence.yml` (and
 `codex-research.yml`, independently, on the same mechanism).
-**Blast radius:** 1,479 committed `site/**.html` pages stale.
+**Blast radius:** 1,479 committed `site/**.html` pages carry the pre-#7970 nav. See the CORRECTION in §"Why the site went stale anyway" — the proximate cause is a PARTIAL 2026-09-25 nightly, not the render lane's estate; the outage explains why the split persists.
 **Prior art:** `research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md` —
 `DSC:QUEUED-JOB-HOSTAGE-HOLDS-THE-NIGHTLY-CRON-GROUP`. Same mechanism, five weeks later,
 reached through a door the fix for the first one did not cover.
@@ -75,8 +75,7 @@ the last job released the runner.
 `daily.yml` is unaffected (it routes `[self-hosted, macstudio]`, a live label) and so are
 `closing-bell` / `asia-close`. That is why the site kept getting a partial nightly bake and
 the outage looked like nothing: the nav entry PR #7970 merged at `04:38Z` did reach most
-pages via `969883bc973 engine: regime update 2026-09-25` at `07:52Z`. What the nightly does
-**not** cover is the estate the render lane's scope-union owns. Probing with the
+pages via `969883bc973 engine: regime update 2026-09-25` at `07:52Z`. Probing with the
 `am_edition.html` nav entry that #7970 added — pages carrying `<nav class="site-nav">` but
 lacking the entry:
 
@@ -88,6 +87,34 @@ lacking the entry:
 | `site/basket_china,_intl,_hk,_canada/` | 72 |
 | `site/basket/` | 4 |
 | **total** | **1,479** |
+
+**CORRECTION — this table is NOT the render lane's blast radius.** An earlier revision of
+this section claimed the 1,479 pages are "the estate the render lane's scope-union owns",
+i.e. pages the nightly cannot reach. That attribution is false, and the arithmetic falsifies
+it exactly:
+
+| commit | lane | `site/stocks/` files rewritten |
+|---|---|---|
+| `fab3ad33b72` nightly 2026-09-24 | `daily.yml` (live `macstudio`) | 2,687 of 2,736 |
+| `969883bc973` nightly 2026-09-25 | `daily.yml` (live `macstudio`) | **1,485** of 2,736 |
+
+`2736 - 1485 = 1251`, which is exactly the stale `site/stocks/` count in the table above —
+not approximately, exactly. And the 09-24 nightly rewrote 2,687 of those same pages, so they
+are unambiguously **inside** the nightly's estate, not the render lane's. Three sampled stale
+dossiers (`ABAT`, `ABEO`, `ABOS`) last baked at `fab3ad33b72` (2026-09-24T09:39Z) while
+`A`/`AA` baked at `969883bc973` (2026-09-25T07:52Z).
+
+So the proximate cause of the nav split is that the **2026-09-25 nightly delivered a partial
+site bake** — 1,485 stocks pages where the night before did 2,687 — while concluding success.
+A content-identity optimisation cannot explain it: #7970's nav entry changes every page's
+bytes, so any page the run rebuilt would carry it. **Why the 09-25 nightly went partial is
+NOT established by this evidence and is an open question owned by the `daily.yml` lane, not
+by this postmortem.** What the render outage explains is why the split PERSISTS: `render.yml`'s
+`scope=all` pass (the defensive full render at `.github/workflows/render.yml:583`, which a
+watermark this far behind forces) is the one act that rewrites the whole estate at once, and
+that act is the thing the dead label has made impossible. The restore lever below is unchanged;
+its justification is "sweeps the whole estate in one act", never "these pages have no other
+baker".
 
 The 111 top-level pages include `china.html`, `hk.html`, `intl.html`, `canada.html`,
 `start.html`, `options.html`, `sector_central.html`, `crypto.html`, `ai_desk.html`,
