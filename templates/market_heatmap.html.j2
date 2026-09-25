@@ -229,8 +229,8 @@
           dishonest one. #}
       {%- set n_txt = "{:,}".format(n_tiles) %}
       {% if mk.key == 'china' %}
-      <span class="l-en"><b>The sector map is free, and stays free.</b> Members unlock the THS Themes view plus our nightly read on all {{ n_txt }} names here.</span>
-      <span class="l-zh"><b>板块热力图免费，且将持续免费。</b>会员可解锁同花顺主题视图，并获取我们对全部 {{ n_txt }} 只个股的每晚解读。</span>
+      <span class="l-en"><b>The sector map is free, and stays free.</b> Members unlock the THS Themes view plus our nightly read on all {{ n_txt }} names here{% if siblings %} — and the same sector maps for {{ siblings.en }}{% endif %}.</span>
+      <span class="l-zh"><b>板块热力图免费，且将持续免费。</b>会员可解锁同花顺主题视图，并获取我们对全部 {{ n_txt }} 只个股的每晚解读{% if siblings %} —— 以及{{ siblings.zh }}的同款板块热力图{% endif %}。</span>
       {% else %}
       <span class="l-en"><b>The map is free, and stays free.</b> Members get our nightly read on all {{ n_txt }} names here{% if siblings %} — plus the same maps for {{ siblings.en }}{% endif %}.</span>
       <span class="l-zh"><b>热力图免费，且将持续免费。</b>会员可获取我们对全部 {{ n_txt }} 只个股的每晚解读{% if siblings %} —— 以及{{ siblings.zh }}的同款热力图{% endif %}。</span>
