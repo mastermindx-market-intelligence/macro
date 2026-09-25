@@ -56,6 +56,8 @@ It has three strata. Only one depends on nuclear's review contract.
 - When a predecessor is not visible, the walk emits the pointer the LAST SERVED record carries. That is the existing `prefix/prior` branch, and the field is already published in that record's own served body (round-5 probe: `A body carries B revision: True`). Then the walk stops. Nothing is ever read out of a withheld record.
 - Why `review_ok` and not `current`: a collapsed syndicated copy is served by the selector (R-ENE-11, the `corroboration_refs` round trip), so the walk must be able to pass through it. The new test `test_a_collapsed_copy_is_walked_because_the_selector_serves_it` pins this, and mutant `r29_current` dies on it.
 - Unchanged: the cycle guard, an all-accepted chain walked to its root (RBV-17 shape), and the correction pair's `[N04]` lineage.
+- **Documented cost: lineage is slice-local.** This was the round-5 reviewer's amendment. An accepted predecessor in another slice is cut to a pointer, because this query may not serve it.
+- The alternative was rejected: walking records that are servable under their own facet would keep cross-slice chains, but it duplicates the whole filter pipeline for a completeness gain only.
 
 **Tests (append-only, R-ENE-19).** `tests/test_nuclear_research_lineage.py` is a new file with 4 tests and 9 cases. No existing test or fixture changes.
 
