@@ -3561,9 +3561,14 @@ CURATED_EXCLUSIVE = {
     # collectors/ and engine.market_state chains), so exclusivity loses no
     # owner and contract-delta stays at 0 introduced.
     "markets-regime-strip",
-    # #7971 (2026-09-25) split two curated jobs out without pinning them here;
-    # pure main failed this test until #7970 carried the pin.
-    "markets-regime-strip-bake-parity",
+    # #7971 (2026-09-25) declared two curated `scope: exclusive` jobs and
+    # registered neither, so pure main failed this set-equality assertion from
+    # 02:46Z until #7970 carried both pins. This PR retires one of those two —
+    # `markets-regime-strip-bake-parity`, the `gate: data` twin that re-ran the
+    # fresh-render byte guard — so its pin leaves with the job it named: a
+    # registered name with no declaration fails this same assertion from the
+    # other side. `p0b-receipt-closure` stays, bound to the live receipts by
+    # test_p0b_receipt_closure_job_owns_every_receipt_pinned_path.
     "p0b-receipt-closure",
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
     # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
@@ -3769,24 +3774,6 @@ CURATED_EXCLUSIVE = {
     # suites (scripts/build_site.py pulls most of engine/ and lib/), so
     # exclusivity loses no owner and contract-delta stays at 0 introduced.
     "dashboard-render-contract",
-    # 2026-09-25 #6872 postmortem follow-up. #7971 lifted the P0B receipt
-    # closure gate out of design-governance into its own job so a sibling red
-    # could not shadow its verdict, and curated its scope in the same act (the
-    # pin set is derived at runtime from the receipts, and mockups/ is outside
-    # every opaque scan root, so inference selected the job on 3/158 diffs).
-    # It declared `scope: exclusive` in the manifest for BOTH new jobs and
-    # registered neither here, so this fixture's own set-equality assertion has
-    # been red on pure main since 02:46Z. The other half of that mismatch was
-    # `markets-regime-strip-bake-parity`, which the same PR as this entry
-    # RETIRES — so only this one is left to register. Bound to the live
-    # receipts by test_p0b_receipt_closure_job_owns_every_receipt_pinned_path.
-    #
-    # Overlap, deliberate: PR #7970 (HOLD-FOR-SOL, so parked) carries the same
-    # heal and registers BOTH names. Whichever lands second must drop the
-    # `markets-regime-strip-bake-parity` entry — the job it names no longer
-    # exists, and a registered name with no declaration fails this same
-    # assertion from the other side.
-    "p0b-receipt-closure",
 }
 
 
