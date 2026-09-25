@@ -48,7 +48,7 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-09-22",
+    "board_as_of": "2026-09-23",
     "coverage": {
       "identical": 0,
       "matured": 0,
@@ -67,13 +67,13 @@
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 1165,
+    "n_paired_rows": 1226,
     "paired": {
-      "identical": 1061,
-      "matured": 0,
+      "identical": 1120,
+      "matured": 2,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 61
+      "stamps": 2,
+      "written": 63
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -87,10 +87,10 @@
       "2026-09-15",
       "2026-09-18"
     ],
-    "require_stamp": "2026-09-22",
+    "require_stamp": "2026-09-23",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
-      "identical": 19,
+      "identical": 20,
       "matured": 0,
       "refused": 0,
       "written": 1
@@ -99,13 +99,13 @@
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-09-22"
+    "stamp_date": "2026-09-23"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [],
   "n_degraded_or_unpaired": 10,
   "n_missing": 0,
-  "paired_sessions_accrued": 20,
+  "paired_sessions_accrued": 21,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -4115,10 +4115,10 @@
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 160,
-    "n_family_rows": 160,
+    "n_coverage_rows": 168,
+    "n_family_rows": 168,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 19
+  "unmatured_sessions": 20
 }
