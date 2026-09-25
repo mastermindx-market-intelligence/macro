@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-09-24",
-  "built": "2026-09-25T09:09:02.343052+00:00",
+  "built": "2026-09-25T21:27:37.062715+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -12,9 +12,9 @@
         "m1": 3.82,
         "m3": 4.12,
         "m6": 4.42,
-        "m12": 4.79
+        "m12": 4.78
       },
-      "implied_bp_12m": 91,
+      "implied_bp_12m": 90,
       "implied_cuts_12m": -4,
       "path_plain": {
         "en": "about 4 hikes",
@@ -47,10 +47,10 @@
         "lean_en": "market ≈ the Fed",
         "lean_zh": "市场与美联储基本一致"
       },
-      "headline_en": "Market prices ~4 hikes over the next 12m (funds 3.88% → 4.79%)",
-      "headline_zh": "市场为未来12个月定价约加息4次（基金利率 3.88% → 4.79%）",
-      "read_en": "At end-2026 the market implies 4.12% vs the Fed's 4.10% median dot (+3bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.90pp).",
-      "read_zh": "在end-2026，市场隐含 4.12% 对比美联储 4.10% 的中位点（+3基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+0.90个百分点）。",
+      "headline_en": "Market prices ~4 hikes over the next 12m (funds 3.88% → 4.78%)",
+      "headline_zh": "市场为未来12个月定价约加息4次（基金利率 3.88% → 4.78%）",
+      "read_en": "At end-2026 the market implies 4.12% vs the Fed's 4.10% median dot (+3bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+1.11pp).",
+      "read_zh": "在end-2026，市场隐含 4.12% 对比美联储 4.10% 的中位点（+3基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+1.11个百分点）。",
       "source_en": "ZQ fed-funds futures",
       "source_zh": "ZQ 联邦基金期货"
     },
@@ -61,8 +61,8 @@
       "vs_target_pp": 1.34,
       "regime": "above target",
       "direction": "cooling",
-      "breakeven_10y": 2.35,
-      "breakeven_5y5y": 2.36,
+      "breakeven_10y": 2.33,
+      "breakeven_5y5y": 2.33,
       "anchoring": "anchored",
       "nearest_cpi": {
         "release_type": "cpi_headline",
@@ -75,7 +75,7 @@
       }
     },
     "risk_row": {
-      "real_speed_pctile": 0.77,
+      "real_speed_pctile": 0.86,
       "real_speed_note_en": "Flags risk, not return — high percentile = fast real-rate moves, not directional signal.",
       "real_speed_note_zh": "标记风险而非收益——高百分位表示实际利率快速波动，并非方向性信号。",
       "curve_regime_key": "bear_flattener",
@@ -85,10 +85,10 @@
       "term_premium_chg_bp": 28.0,
       "term_premium_note_en": "Kim-Wright model (FRED THREEFYTP10); ACM pending",
       "term_premium_note_zh": "Kim-Wright模型（FRED THREEFYTP10）；ACM待接入",
-      "front2y_speed_bp": 61.0,
-      "real10y_speed_bp": 47.0,
-      "recession_ntfs": 0.9,
-      "nyfed_prob": 13.0
+      "front2y_speed_bp": 75.0,
+      "real10y_speed_bp": 60.0,
+      "recession_ntfs": 1.11,
+      "nyfed_prob": 12.0
     },
     "policy_row": {
       "state": "QUIET",
@@ -123,18 +123,18 @@
         "key": "H1_path_repricing",
         "active": true,
         "weight": 2,
-        "value": 56.5,
-        "detail_en": "Futures added +56.5bp of 12-month rate over the last month.",
-        "detail_zh": "期货在过去一个月内将12个月利率上调了+56.5个基点。",
+        "value": 51.8,
+        "detail_en": "Futures added +51.8bp of 12-month rate over the last month.",
+        "detail_zh": "期货在过去一个月内将12个月利率上调了+51.8个基点。",
         "null_reason": null
       },
       {
         "key": "H2_breakeven_momentum",
         "active": false,
         "weight": 1,
-        "value": 2.0,
-        "detail_en": "10y breakeven moved +2.0bp over 20 days (threshold: +8bp).",
-        "detail_zh": "10年期盈亏平衡点20天变动+2.0个基点（阈值：+8bp）。",
+        "value": 0.0,
+        "detail_en": "10y breakeven moved +0.0bp over 20 days (threshold: +8bp).",
+        "detail_zh": "10年期盈亏平衡点20天变动+0.0个基点（阈值：+8bp）。",
         "null_reason": null
       },
       {
@@ -142,8 +142,8 @@
         "active": true,
         "weight": 1,
         "value": "up",
-        "detail_en": "Oil trending up (+8.6% 20d) with shock/oil-driven breakeven pressure.",
-        "detail_zh": "原油趋势up（20天涨跌+8.6%），叠加冲击/油价驱动的盈亏平衡压力。",
+        "detail_en": "Oil trending up (+8.0% 20d) with shock/oil-driven breakeven pressure.",
+        "detail_zh": "原油趋势up（20天涨跌+8.0%），叠加冲击/油价驱动的盈亏平衡压力。",
         "null_reason": null
       },
       {
@@ -204,9 +204,9 @@
         "key": "E4_credit_stress",
         "active": false,
         "weight": 1,
-        "value": -0.8,
-        "detail_en": "HY OAS z-score: -0.80 (threshold: +1.0).",
-        "detail_zh": "高收益利差z分数：-0.80（阈值：+1.0）。",
+        "value": -0.64,
+        "detail_en": "HY OAS z-score: -0.64 (threshold: +1.0).",
+        "detail_zh": "高收益利差z分数：-0.64（阈值：+1.0）。",
         "null_reason": null
       },
       {
@@ -238,22 +238,22 @@
     {
       "key": "D2_projection_vs_breakeven",
       "active": false,
-      "detail_en": "No projection-breakeven wedge: CPI tag=inline, 20d breakeven=+2bp.",
-      "detail_zh": "无预测-盈亏平衡楔形：CPI标签=inline，20天盈亏平衡点=+2bp。"
+      "detail_en": "No projection-breakeven wedge: CPI tag=inline, 20d breakeven=+0bp.",
+      "detail_zh": "无预测-盈亏平衡楔形：CPI标签=inline，20天盈亏平衡点=+0bp。"
     },
     {
       "key": "D3_pressure_vs_market",
       "active": false,
-      "detail_en": "Pressure-vs-market gap not active (net_state=two_sided, implied=+91bp).",
-      "detail_zh": "压力与市场背离未激活（net_state=two_sided，隐含=+91bp）。"
+      "detail_en": "Pressure-vs-market gap not active (net_state=two_sided, implied=+90bp).",
+      "detail_zh": "压力与市场背离未激活（net_state=two_sided，隐含=+90bp）。"
     }
   ],
   "conditions": [
     {
       "key": "H1_path_repricing",
       "direction": "hawkish",
-      "en": "Futures added +56.5bp of 12-month rate over the last month.",
-      "zh": "期货在过去一个月内将12个月利率上调了+56.5个基点。",
+      "en": "Futures added +51.8bp of 12-month rate over the last month.",
+      "zh": "期货在过去一个月内将12个月利率上调了+51.8个基点。",
       "watch_en": "If this pressure persists, upward rate repricing stays at risk; a deepening equity correction historically pulls the other way.",
       "watch_zh": "若该压力持续，利率上调风险上升；股市进一步下跌历史上会起到反向对冲作用。"
     },
@@ -279,13 +279,13 @@
       "m1": 3.82,
       "m3": 4.12,
       "m6": 4.42,
-      "m12": 4.79,
-      "implied_bp_12m": 91,
-      "plain_read_en": "Market prices ~4 hikes over the next 12m (funds 3.88% → 4.79%)",
-      "plain_read_zh": "市场为未来12个月定价约加息4次（基金利率 3.88% → 4.79%）"
+      "m12": 4.78,
+      "implied_bp_12m": 90,
+      "plain_read_en": "Market prices ~4 hikes over the next 12m (funds 3.88% → 4.78%)",
+      "plain_read_zh": "市场为未来12个月定价约加息4次（基金利率 3.88% → 4.78%）"
     },
     "prediction_markets": {
-      "as_of": "2026-09-23",
+      "as_of": "2026-09-25",
       "source": "Polymarket",
       "events": [
         {
@@ -294,7 +294,7 @@
           "label_zh": "下次美联储决议",
           "top_outcome": "25 bps increase",
           "top_prob": 64.5,
-          "chg_pp": 15.0,
+          "chg_pp": 0.0,
           "source": "Polymarket",
           "type": "market_implied_benchmark"
         },
@@ -303,8 +303,8 @@
           "label_en": "Fed cuts this year",
           "label_zh": "今年降息次数",
           "top_outcome": "0 (0 bps)",
-          "top_prob": 96.5,
-          "chg_pp": 0.3,
+          "top_prob": 97.0,
+          "chg_pp": 0.5,
           "source": "Polymarket",
           "type": "market_implied_benchmark"
         },
@@ -313,8 +313,8 @@
           "label_en": "US recession",
           "label_zh": "美国衰退",
           "top_outcome": "US recession by end of 2026?",
-          "top_prob": 8.5,
-          "chg_pp": -1.0,
+          "top_prob": 9.5,
+          "chg_pp": 1.0,
           "source": "Polymarket",
           "type": "market_implied_benchmark"
         }
@@ -343,7 +343,7 @@
         "source_column": "us2y",
         "source_id": "DGS2",
         "status": "stale",
-        "as_of": "2026-09-22",
+        "as_of": "2026-09-23",
         "frame_as_of": "2026-09-24",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
@@ -353,22 +353,22 @@
         "path_qualified": false,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 2,
+        "unexpected_carried_grid_rows": 1,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
         "horizon_basis": "fixed_weekday_grid_intervals",
         "level": null,
-        "carried_level": 4.71,
+        "carried_level": 4.85,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-09-22",
-          "level": 4.71,
-          "previous_as_of": "2026-09-21",
-          "previous_level": 4.76,
-          "change_bp": -5.0,
+          "as_of": "2026-09-23",
+          "level": 4.85,
+          "previous_as_of": "2026-09-22",
+          "previous_level": 4.71,
+          "change_bp": 14.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 2,
-          "age_grid_intervals": 2,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -386,13 +386,13 @@
         "turn_watch": null,
         "null_reason": "latest grid value is missing, nonfinite or carried; no new measured momentum",
         "source_basis": "captured_source_rows",
-        "source_digest": "d0e7f89e2566ec3ee6985c5a816251706a9fbb2bf2f3914b4cba6214cc6155e1"
+        "source_digest": "0a33fbe8ea60f0fc9790187d4d828bcdcb0c71d9cbb67484e5b4feca50e7e2c3"
       },
       "5y": {
         "source_column": "us5y",
         "source_id": "DGS5",
         "status": "stale",
-        "as_of": "2026-09-22",
+        "as_of": "2026-09-23",
         "frame_as_of": "2026-09-24",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
@@ -402,22 +402,22 @@
         "path_qualified": false,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 2,
+        "unexpected_carried_grid_rows": 1,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
         "horizon_basis": "fixed_weekday_grid_intervals",
         "level": null,
-        "carried_level": 4.83,
+        "carried_level": 4.99,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-09-22",
-          "level": 4.83,
-          "previous_as_of": "2026-09-21",
+          "as_of": "2026-09-23",
+          "level": 4.99,
+          "previous_as_of": "2026-09-22",
           "previous_level": 4.83,
-          "change_bp": 0.0,
+          "change_bp": 16.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 2,
-          "age_grid_intervals": 2,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -435,13 +435,13 @@
         "turn_watch": null,
         "null_reason": "latest grid value is missing, nonfinite or carried; no new measured momentum",
         "source_basis": "captured_source_rows",
-        "source_digest": "ddfa05d4435717df149e0479310309027936e319a00effd2aeabde497ae3352a"
+        "source_digest": "7fc2364081dccf9e787c9bf26da0b3004f7861ffe80bc7869c25a856951e1193"
       },
       "10y": {
         "source_column": "us10y",
         "source_id": "DGS10",
         "status": "stale",
-        "as_of": "2026-09-22",
+        "as_of": "2026-09-23",
         "frame_as_of": "2026-09-24",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
@@ -451,22 +451,22 @@
         "path_qualified": false,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 2,
+        "unexpected_carried_grid_rows": 1,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
         "horizon_basis": "fixed_weekday_grid_intervals",
         "level": null,
-        "carried_level": 4.96,
+        "carried_level": 5.11,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-09-22",
-          "level": 4.96,
-          "previous_as_of": "2026-09-21",
+          "as_of": "2026-09-23",
+          "level": 5.11,
+          "previous_as_of": "2026-09-22",
           "previous_level": 4.96,
-          "change_bp": 0.0,
+          "change_bp": 15.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 2,
-          "age_grid_intervals": 2,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -484,13 +484,13 @@
         "turn_watch": null,
         "null_reason": "latest grid value is missing, nonfinite or carried; no new measured momentum",
         "source_basis": "captured_source_rows",
-        "source_digest": "629f41a703ba7bb78a7ffdb78aca7dfdc73b6f6ba19e5aa9fadb0ba71ad5b40a"
+        "source_digest": "c33a8761e8504394060254b650440739b9434ec00b537463602251f565a83665"
       },
       "20y": {
         "source_column": "us20y",
         "source_id": "DGS20",
         "status": "stale",
-        "as_of": "2026-09-22",
+        "as_of": "2026-09-23",
         "frame_as_of": "2026-09-24",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
@@ -500,22 +500,22 @@
         "path_qualified": false,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 2,
+        "unexpected_carried_grid_rows": 1,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
         "horizon_basis": "fixed_weekday_grid_intervals",
         "level": null,
-        "carried_level": 5.33,
+        "carried_level": 5.45,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-09-22",
-          "level": 5.33,
-          "previous_as_of": "2026-09-21",
+          "as_of": "2026-09-23",
+          "level": 5.45,
+          "previous_as_of": "2026-09-22",
           "previous_level": 5.33,
-          "change_bp": 0.0,
+          "change_bp": 12.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 2,
-          "age_grid_intervals": 2,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -533,13 +533,13 @@
         "turn_watch": null,
         "null_reason": "latest grid value is missing, nonfinite or carried; no new measured momentum",
         "source_basis": "captured_source_rows",
-        "source_digest": "27977508e8919f09f46ccf3e1472529b812d4bd9935dfc53fdaebe39dfe4b0a1"
+        "source_digest": "e057d739c5d13558d7adace66376401afffebaf3abf788ae27417a8dbda2c245"
       },
       "30y": {
         "source_column": "us30y",
         "source_id": "DGS30",
         "status": "stale",
-        "as_of": "2026-09-22",
+        "as_of": "2026-09-23",
         "frame_as_of": "2026-09-24",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
@@ -549,22 +549,22 @@
         "path_qualified": false,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 2,
+        "unexpected_carried_grid_rows": 1,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
         "horizon_basis": "fixed_weekday_grid_intervals",
         "level": null,
-        "carried_level": 5.29,
+        "carried_level": 5.4,
         "last_observed": {
           "basis": "latest_two_captured_source_rows_on_retained_grid",
-          "as_of": "2026-09-22",
-          "level": 5.29,
-          "previous_as_of": "2026-09-21",
+          "as_of": "2026-09-23",
+          "level": 5.4,
+          "previous_as_of": "2026-09-22",
           "previous_level": 5.29,
-          "change_bp": 0.0,
+          "change_bp": 11.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 2,
-          "age_grid_intervals": 2,
+          "age_calendar_days": 1,
+          "age_grid_intervals": 1,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -582,7 +582,7 @@
         "turn_watch": null,
         "null_reason": "latest grid value is missing, nonfinite or carried; no new measured momentum",
         "source_basis": "captured_source_rows",
-        "source_digest": "865b3e8a6bd6ec6e22b7dd8777107fd6aafc53015fb49ed21f3e96267aec0e7a"
+        "source_digest": "d5595bb90043e9878c09dbd1f2ba4b9c22e1b527e9c73727158898242b06a58a"
       }
     }
   },
