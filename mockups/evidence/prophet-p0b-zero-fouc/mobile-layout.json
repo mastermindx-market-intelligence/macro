@@ -13,7 +13,7 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "151.0.7922.34"
+    "version": "153.0.8010.54"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -521,6 +521,7 @@
     "site/charts.js": "5372d2a229f4d2b16319a2d02c9fb2bfba19ad65c680d415796b12103aeff6ff",
     "site/dashboard-icons.css": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
     "site/dashboard-icons.js": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
+    "site/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
     "site/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
     "site/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
     "site/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
@@ -539,7 +540,7 @@
     "site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819",
-    "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
+    "site/tablesort.js": "1a0413a7a49b7acb91f992fc28c51ed2bfe7947548cb300657407bb775841693",
     "site/theme.css": "d58d35e93758ada2123553f88ea6652e66ec11c116b031679a82b80951f8a478",
     "site/theme.js": "3ffc953ffc84a76ac09687034b428004e7c7cfde70b43db5c35ac1da16c98b10"
   },
