@@ -1855,6 +1855,7 @@ on:
       - "site/assets/css/theme-research.css"
       - "site/assets/js/theme-research.js"
       - "tests/test_semiconductor_theme_research_ui.py"
+      - "tests/test_semiconductor_witness_served_proof.py"
       - "tests/test_semiconductor_earnings_witnesses.py"
       - "tests/test_semiconductor_earnings_intake_integration.py"
       - "app/theme_research.py"

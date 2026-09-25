@@ -2187,7 +2187,7 @@ jobs:
     # roots and the job would select on templates/index.html and every other
     # ordinary code PR it never reads (the packing-ceiling probe caught exactly
     # that: +1 job on all three probes). The paths below are the files these
-    # sixteen suites import, open or render — the vertical's own subjects, the
+    # seventeen suites import, open or render — the vertical's own subjects, the
     # shared owners it consumes (Theme Graph rights/contracts, Earnings
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
@@ -2242,6 +2242,21 @@ jobs:
       # own definition. The nightly step stays where it is.
       - "site/assets/js/theme-research.js"
       - "tests/test_semiconductor_theme_research_ui.py"
+      # T12: the served proof — real app + real reader + the mount partial +
+      # the checked-in client executed by node, for BOTH mandated witnesses.
+      - "tests/test_semiconductor_witness_served_proof.py"
+      # The client suite also asserts the BUILT Theme Tracker page carries the
+      # mount and that template and site stay in sync, so its closure reaches
+      # the render pair, the sync checker and the sparse helper. Named by the
+      # curated-exclusive closure audit; widening is the safe direction.
+      - "site/assets/css/theme-research.css"
+      - "templates/state_of_themes.html.j2"
+      - "site/state_of_themes.html"
+      - "tests/test_state_of_themes.py"
+      - "templates/chat.html"
+      - "site/chat.html"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/worktree_sparse.py"
       - "tests/test_theme_research_api.py"
       - "tests/test_theme_research_rights_refresh.py"
       - "tests/test_theme_research_private_binding.py"
@@ -2350,6 +2365,8 @@ jobs:
         run: node --version
       - name: paid theme-research client contract (envelope validation, label maps, economics triple)
         run: python -m pytest tests/test_semiconductor_theme_research_ui.py -q
+      - name: served witness proof W-A (HBM/TSMC) + W-B (SiC-GaN/onsemi) — mount, route, node render
+        run: python -m pytest tests/test_semiconductor_witness_served_proof.py -q
       - name: basket-intelligence mount partial
         run: python -m pytest tests/test_basket_intelligence_mounts.py -q
 
@@ -14802,6 +14819,9 @@ jobs:
       - "site/assets/css/theme-research.css"
       - "site/assets/js/theme-research.js"
       - "tests/test_semiconductor_theme_research_ui.py"
+      # The client suite validates its envelope against the frozen contract
+      # (curated-exclusive closure audit, 2026-09-24).
+      - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
       - "templates/_basket_intelligence_mounts.html.j2"
       - "templates/_theme_research_mount.html.j2"
       - "templates/basket_detail.html.j2"
