@@ -1113,11 +1113,13 @@ def test_exact_base_checkout_pins_origin_main_even_after_source_advances(
 
 
 def _blobless_partial_clone(tmp_path: Path) -> tuple[Path, str, str]:
-    """Build the runner's own checkout shape: a ``blob:none`` partial clone.
+    """Build a ``blob:none`` partial-clone runner checkout.
 
-    ci.yml hands every pack ``filter: blob:none`` + ``fetch-depth: 1``, so the
-    tree the replay borrows objects from is missing exactly the blobs the PR
-    changed. Reproducing that needs a server that honours the filter — a bare
+    ci.yml handed every hosted pack ``filter: blob:none`` + ``fetch-depth: 1``
+    until 2026-09-23 (DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION); the replay must
+    still survive that shape wherever it persists (a partial-clone runner
+    borrows objects that are missing exactly the blobs the PR changed).
+    Reproducing that needs a server that honours the filter — a bare
     repo without ``uploadpack.allowFilter`` answers "filtering not recognized
     by server, ignoring" and hands back a COMPLETE clone, which is how this
     trap hides from a test that looks correct.

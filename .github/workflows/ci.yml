@@ -4843,7 +4843,26 @@ jobs:
           # (It rode a job output into this step's `env:` until 2026-08-14, when
           # 350,264 bytes of paths met execve's 131,072-byte MAX_ARG_STRLEN and
           # killed all twelve packs at launch — run 31775693780.)
-          filter: blob:none
+          #
+          # NO `filter: blob:none` here — on purpose (2026-09-23,
+          # DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION). A pack materialises every
+          # tracked file (105k blobs, ~5 GiB — legacy suites read committed site/
+          # artifacts), so a blobless fetch saves nothing: `git checkout` then
+          # lazily fetches the whole tree's blobs in ONE unretried, unresumable
+          # promisor request (an explicit --stdin want-list of every OID). Three
+          # such requests died at 65–67 minutes on 2026-09-23 — "N bytes of body
+          # are still expected / early EOF / fetch-pack: invalid index-pack
+          # output", then "could not fetch 20ced735… from promisor remote" —
+          # runs 35876013221 (ci-pack-0), 35885173966 (ci-pack-4), 35886408213
+          # (ci-pack-11). The OID named is merely the FIRST index entry
+          # (.agents/skills/macro-sparse-worktree/SKILL.md, 2,349 bytes, intact):
+          # git dies on the first still-missing promisor object once the batch
+          # fails. Unfiltered, the same bytes ride `git fetch`, which
+          # actions/checkout retries (RetryHelper 3×, 10–20 s) and which the
+          # server packs as an ordinary single-commit want; `git checkout` then
+          # touches no network. scripts/run_ci_pack.py's base-replay hydration
+          # is a no-op without a promisor remote — its exact-base
+          # `fetch --depth=1` brings the base's differing blobs itself.
           fetch-depth: 1
       - uses: actions/setup-python@v5
         if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
