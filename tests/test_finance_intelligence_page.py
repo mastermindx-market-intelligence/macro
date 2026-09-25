@@ -474,6 +474,46 @@ def test_shell_loads_the_shared_theme_runtime():
         assert re.search(r'<script src="theme\.js(\?v=[0-9a-f]{8})?" defer></script>', committed)
 
 
+def test_hero_meta_carries_no_unfilled_aria_placeholder():
+    """No static aria pair may carry a spec placeholder. The frozen spec wrote
+    `{common_as_of}` / `{§D.12 label of freshness.state}` as instructions; the
+    template shipped them literally, so the hero as-of/cutoff spans and the
+    freshness/outer chips announced the placeholder next to the real value.
+    The as-of/cutoff spans are named by their visible text; the chips are named
+    by the runtime from the same label row it paints."""
+    placeholder = re.compile(r'data-aria-(?:en|zh)="[^"]*\{')
+    html = _render()
+    assert placeholder.search(html) is None
+    site = ROOT / "site" / "finance_intelligence.html"
+    if site.exists():
+        assert placeholder.search(site.read_text(encoding="utf-8")) is None
+
+
+def test_runtime_never_turns_a_missing_state_into_a_positive_fact():
+    """Product law: missing states are rendered as words. The runtime used to
+    default absent tokens to positive facts: a missing rights_state displayed the
+    licensed excerpt, a missing identity read "validated", an absent role became
+    "second-order beneficiary", and unknown plane or comparability tokens read
+    "on file" or "comparable". Review response 2026-09-25 (independent Opus
+    review, confirmed in headless Chromium)."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    for fabricated in (
+        "|| 'DIRECT_DISPLAY_OK'", "|| 'IDENTITY_VALIDATED'", "|| 'SECOND_ORDER_BENEFICIARY'",
+        "|| 'QUALITATIVE'", "|| 'DESCRIBED'", "|| 'MEASURED'",
+        "['On file', '有据可查']", "['Comparable', '可比']", "['ready', '就绪']",
+    ):
+        assert fabricated not in js, fabricated
+    assert "var state$ = node.state || 'MISSING';" in js
+    # D.23 fails CLOSED: only the two display states may show value/excerpt.
+    assert "var suppress = !(rights === 'DIRECT_DISPLAY_OK' || rights === 'DERIVED_DISPLAY_OK');" in js
+    # A source outage has its own words, never the generic "Read failed".
+    assert "source_outage: ['Evidence source temporarily unavailable" in js
+    # A malformed deep link is ignored instead of blanking the dossier.
+    assert "try { return decodeURIComponent(raw); } catch (e) { return null; }" in js
+    # A named record missing from source_records says so.
+    assert 'data-fi-mount="evidence-missing"' in _render()
+
+
 def test_shell_ships_the_not_connected_binding_until_integration():
     """T8 seat ruling: the read-model endpoint is bound only through
     ``<main data-fi-read-url>``; an empty value must render the bilingual
