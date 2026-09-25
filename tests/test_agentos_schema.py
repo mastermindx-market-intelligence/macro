@@ -15,6 +15,7 @@ print, never through a logger.
 from __future__ import annotations
 
 import datetime as _dt
+import importlib.util
 import json
 import os
 import shutil
