@@ -42,9 +42,10 @@ The first release is **research continuity**, not ranking, recommendation, trade
 Already exists:
 
 - live WTI explorer and private owner-data path from F04 #6872;
-- `engine.market_ontology.exposure_map`;
-- contract `market_ontology.exposure_map/v1`;
-- Theme Graph membership/exposure edges;
+- TXI chain library + per-name exposure screens in `engine.transmission_chains.resolve_blast`;
+- TXI `chain_state.json` blast outputs for genuinely active chains;
+- `engine.market_ontology.exposure_map` + `market_ontology.exposure_map/v1` as the separate Theme Map owner once an explicit reviewed shock→theme declaration and rights-admitted theme relation exist;
+- Theme Graph identity-resolution + Data OS security-master identity for any automatic company deep link;
 - Theme Graph identity-resolution sidecar;
 - Data OS security-master identity;
 - `lib.dataos.identity.parse_listing_key`;
@@ -93,61 +94,70 @@ No new research store or thesis store is permitted.
 
 ## 3. Current missing seam
 
-The live WTI path currently preserves context into Macro’s transmission page, but does **not** yet produce the complete:
+The live WTI path currently preserves context into Macro’s transmission page, but does **not** yet produce the complete company→Terminal continuation.
 
-```
-transmission/theme
-→ resolved affected company
-→ Terminal Company Intelligence
-```
+There are TWO distinct owner paths and they must not be collapsed:
 
-product continuation.
+1. **TXI native per-name exposure path — lawful now when the selected chain is active.** The chain YAML already declares structured per-company exposure screens. `engine.transmission_chains.resolve_blast` resolves them over the per-ticker substrate only for `arming|propagating|expressed` episodes and emits named channels with counts, cuts, unevaluable counts and sorted ticker arrays. This is display-only context and originates no score/rank/trade authority.
+2. **Theme Map path — separate capability closure.** `engine.market_ontology.exposure_map` composes shock→theme→company, but its `ShockSpec.theme_node_ids` are deliberately CALLER-SUPPLIED. It must never infer which themes a shock hits. The obvious Finviz local oil themes are presently rights-unresolved for new GMI emissions. MO-J1 MUST NOT silently supply a guessed shock→theme mapping or bypass the rights gate merely to obtain company rows.
 
-The exposure-map producer already composes shock → theme → company. The missing work is a consumer projection plus a bounded cross-app context carrier.
+Therefore MO-J1's first automatic company continuation uses **existing TXI blast output when owner-backed output exists**. Full MO-DELTA-004 Theme Map closure remains separately honest until an explicit reviewed shock/path→theme declaration plus rights-admitted owner edges exist.
 
-Therefore the first MO-J1 implementation must consume the existing exposure map; it must not derive a new company mapping in page code.
+If the selected path is dormant and no owner-backed per-name output exists, the product shows the declared exposure-screen context and an honest unavailable/dormant state. It MUST NOT fabricate an affected-company list.
 
 ## 4. MO-J1A — Macro affected-company continuation
 
 Owner: CEO A / F04 delivery side after current #7970 closes.  
 No implementation START is claimed by this records freeze.
 
-### 4.1 Projection law
+### 4.1 Projection law — owner order
 
-For the selected supported shock/path, the consumer calls the existing exposure-map owner with caller-supplied theme ids and the relevant `asof` / `knowledge_cutoff`.
+For the selected supported path, the consumer follows this precedence:
 
-Render each theme in the producer’s deterministic order.
+**A. TXI current owner output (preferred first slice).**
 
-For each company:
+- Read the exact selected chain from the existing TXI state owner.
+- Only `arming|propagating|expressed` chain states may supply automatic per-name exposure rows.
+- Consume the existing `blast` channel output; do not re-evaluate screen clauses in page code.
+- Preserve each channel’s bilingual label, `cuts`, `unevaluable`, `resolved` and note.
+- Names remain deterministic/alphabetical owner output; no magnitude/rank is introduced.
+- A dormant chain with `blast={}` produces **no automatic affected-company rows**.
 
-- display only data already admitted by `market_ontology.exposure_map/v1`;
-- preserve the path kind and source/evidence provenance already present;
-- never derive magnitude, score, rank or “top beneficiary” semantics;
-- never silently drop typed abstentions.
+**B. Future accepted Theme Map output.**
+
+Once an explicit reviewed shock/path→theme declaration exists and the relevant GMI source family is rights-admitted, an accepted `market_ontology.exposure_map/v1` result may supply theme→company rows. Until then, MO-J1 cannot use this route as a substitute for TXI output.
+
+**C. No owner-backed output.**
+
+Show the path’s declared exposure-screen definitions and typed absence. A user may still navigate to ordinary company research through existing search/navigation, but that company MUST NOT be labelled “affected,” “beneficiary,” “at risk,” or equivalent merely because the user chose it.
 
 ### 4.2 Security-link gate
 
-A company can receive an **Open company research** CTA only when all are true:
+A company can receive an **Open company research** CTA only when the exposure relationship is owner-backed **and** current identity resolves safely.
 
-1. the exposure-map company is present after the owner’s rights gate;
-2. `identity.state == "RESOLVED"`;
-3. `security_id` is non-null;
-4. `listing_key` is non-null;
-5. the identity row has no unresolved/refusal state;
-6. there is no ambiguous identity collision that makes the company→security continuation unsafe;
+For a TXI blast name:
+
+1. the selected chain is `arming|propagating|expressed`;
+2. the name appears in an existing resolved TXI `blast.<channel>.names` list;
+3. the candidate maps to a real existing Theme Graph company node for the same market/listing scope — never mint a graph node from the ticker;
+4. the existing Theme Graph/Data OS identity resolver returns `resolution_state == "RESOLVED"`;
+5. `security_id` and `listing_key` are non-null;
+6. no entity-type/cross-market/alias ambiguity or refusal exists;
 7. the canonical listing parser can parse the exact owner-supplied `listing_key`.
 
-The symbol used for the Terminal navigation link MUST come from canonical `lib.dataos.identity.parse_listing_key(listing_key)`, not by reparsing the Theme Graph company node id and not by matching a display ticker string.
+For a future Theme Map row, use the identity block already emitted by `market_ontology.exposure_map/v1` and apply the same non-ambiguous RESOLVED gate.
 
-If any gate fails, render the honest company/exposure state but **no security deep link**.
+The symbol used for the Terminal navigation link MUST come from canonical `lib.dataos.identity.parse_listing_key(listing_key)`, never by treating TXI’s bare ticker array as durable identity and never by reparsing a display label.
+
+If any gate fails, render the honest exposure state but **no security deep link**.
 
 ### 4.3 Deterministic display
 
-Exposure-map v1 forbids ordering by magnitude. The consumer therefore may:
+TXI and exposure-map owners both forbid MO-J1 from inventing magnitude ordering. The consumer therefore may:
 
-- use the existing deterministic company-node ordering;
-- group by theme;
-- expose a bounded “show more”/search interaction if needed for density;
+- preserve the TXI owner’s sorted ticker order or exposure-map deterministic company-node order;
+- group TXI rows by named exposure channel, or future Theme Map rows by theme;
+- expose bounded “show more” / search interactions for dense channels;
 
 but it MUST NOT call the first displayed name “top,” “best,” “most affected,” “leader,” “beneficiary,” or equivalent unless a separately accepted owner actually supplies that semantic.
 
@@ -176,8 +186,9 @@ mo_from=ontology
 mo_chain=<TXI chain id>
 mo_focus=<path node id, if present>
 mo_path_rev=<WTI path revision, if present>
-mo_theme=<theme node id>
-mo_company=<company node id>
+mo_channel=<TXI exposure-screen id, when the company came from TXI blast>
+mo_theme=<theme node id, only when a future accepted Theme Map result supplied it>
+mo_company=<existing Theme Graph company node id>
 mo_security=<Data OS security_id>
 mo_asof=YYYY-MM-DD
 mo_kc=YYYY-MM-DD
@@ -192,7 +203,9 @@ Rules:
 - duplicate values for an identity-bearing `mo_*` field invalidate the **context**, not the company route;
 - every value is bounded in length;
 - dates use the existing strict date vocabulary;
-- `mo_company` uses the existing Theme Graph company-id grammar;
+- `mo_channel` is a bounded owner-emitted TXI screen id; it is descriptive context only;
+- `mo_company` uses the existing Theme Graph company-id grammar and must name an existing graph node;
+- `mo_theme` is optional and is accepted only from a future rights-admitted Theme Map result;
 - `mo_security` is a bounded opaque identifier, never reparsed to mint identity;
 - `mo_from` is a closed enum whose first value is `ontology`;
 - malformed context fails closed to **company research with no MarketOntology context**;
@@ -406,8 +419,8 @@ Do not create a new context database or service.
 A permitted signed-in user:
 
 1. starts on ordinary Macro navigation;
-2. opens WTI Live Path;
-3. reaches a populated owner-backed exposure;
+2. opens a supported current transmission path;
+3. reaches a real owner-backed per-name exposure from an active TXI chain (or, later, an accepted rights-admitted Theme Map result);
 4. chooses a canonically resolved company;
 5. arrives in Terminal Company Intelligence with context visible;
 6. opens Your theses with context retained;
@@ -516,4 +529,30 @@ The storyboard is a connective product contract, not a replacement visual system
 Paper edits were applied through the guarded adapter with observed responses. A wrapper error occurred only after the Stage-2 write response had returned; the artboard was read back before any further edit, confirming the Stage-2 frame existed. No ambiguous Paper effect remains. The final storyboard was screenshot-reviewed for spacing, hierarchy, contrast, alignment and failure-state clarity; the affected-company action lane was then aligned to a fixed trailing slot before the artboard was released with `finish_working_on_nodes`.
 
 This design receipt does not prove implementation or production acceptance.
+
+## 17. Semantic correction — TXI-first company continuation
+
+**This section supersedes any earlier reading of this packet that makes `market_ontology.exposure_map` a prerequisite for the first MO-J1 automatic company list.**
+
+Fresh source adjudication after the initial freeze established:
+
+- `market_ontology.exposure_map` is merged and useful, but has no production caller today;
+- its shock→theme input is deliberately caller-supplied because inferring that edge is a causal claim;
+- the natural Finviz oil local themes are currently rights-unresolved for new GMI public emission;
+- house-curated broad energy baskets are explicitly not canonical themes and cannot be laundered into `ShockSpec.theme_node_ids`;
+- the WTI chain already has structured, reviewed per-name exposure screens over real stockdata fields;
+- TXI already resolves those screens into `blast` names when a chain is active;
+- current WTI chain state at the adjudication read (`data/transmission/chain_state.json`, as-of 2026-09-23) is `dormant`, so its `blast` is honestly empty;
+- at that same read, `real_rate_peak_gold_rerate` is `arming` and has an owner-backed `real_rate_beneficiary` blast, proving the existing owner can supply live per-name exposure when the state permits.
+
+Therefore:
+
+1. MO-J1 is a **generic joined transmission→company research journey**, not a promise that dormant WTI always has affected-company rows.
+2. WTI remains the shipped F04 live-path exemplar. When dormant, it shows path/exposure-screen context and no fabricated automatic company list.
+3. The first real joined proof MAY use another currently active TXI chain whose owner emits a nonempty blast, provided the ordinary user can reach that chain and all identity/context gates in this packet pass.
+4. The Paper storyboard’s company row is a **target state conditioned on owner-backed per-name output**, not evidence that the current WTI episode has such a row.
+5. MO-DELTA-004 Theme Map remains separately incomplete until its explicit shock→theme declaration, GMI rights, PIT and product-surface acceptance are satisfied. MO-J1 must not falsely close it.
+6. Historical/replayed per-name blast is NOT assumed available. No replayed company list may be claimed unless the existing TXI/substrate owners prove point-in-time per-name resolution at that exact replay date.
+
+This correction narrows authority while improving the implementation path: reuse current TXI per-name output first; close Theme Map honestly on its own evidence.
 
