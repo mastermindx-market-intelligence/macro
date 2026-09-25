@@ -57,7 +57,7 @@ files:
 
     '
 - path: config/fable_mode_core.md
-  sha256: d43bae902a58b1eb881e15cecc0488a1a65a4fba54d11d1cf9c2aace4393e0fb
+  sha256: f8fcebc8f3b44eccc54214a7364637a2fc826220d497cedb0b29bf4e74d36913
   role: doctrine
   notes: 'V2-A vendored Fable-mode doctrine (R-V2-2): ten commitments + pre-send gate,
     near the R-V2-2 byte budget. Injected into orchestrator system prompt when model is Opus-class. IMMUTABLE
@@ -67,6 +67,8 @@ files:
     ladder / state lives on disk), and gate items 8–12
     (ladder, ownership, durable state, quiet, session end). Synced with
     .claude/skills/fable-mode/SKILL.md Revision 3; injection semantics unchanged.
+    2026-09-25 Revision 3.1 candidate updates ownership and quiet gates to require a verified
+    return path rather than infer a wake. No grader or injection logic changed.
 
     '
 - path: config/metabolism_schedule.yml

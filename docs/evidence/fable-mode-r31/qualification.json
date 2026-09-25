@@ -1,0 +1,87 @@
+{
+  "schema": "fable_mode.qualification_evidence.v1",
+  "observed_at_utc": "2026-09-25T04:38:25.228093+00:00",
+  "baseline_commit": "ad38f308945cdcd36a01111e88009ab895f9367c",
+  "candidate_files": {
+    ".agents/skills/fable-mode/SKILL.md": {
+      "sha256": "f406217325dd87d866f0ba12c3c000bbf04258cdedd49d37e000423ba1d47ee6",
+      "git_blob_sha": "cd85c9c670be1ca30286d0c56295f01f3f4dbae2",
+      "bytes": 1823
+    },
+    ".claude/skills/fable-mode/SKILL.md": {
+      "sha256": "0fd573ca40952a53089a40c7ae2dc8c64b77b48c1bcd829eedd9dd90a5365864",
+      "git_blob_sha": "4e15b84c959a8b9f61266cef8a591a1391139acf",
+      "bytes": 38677
+    },
+    ".claude/skills/fable-mode/references/harness-adapters.md": {
+      "sha256": "7a6e41f32e5180c6af585f47d6237f30a1afff42c1166ffe6d4893f6d3e8b7ee",
+      "git_blob_sha": "1c6526568a9d9d3aadeac214fb9717f88df908f9",
+      "bytes": 13012
+    },
+    ".claude/skills/fable-mode/references/long-horizon.md": {
+      "sha256": "e1ebab436e8cb3ae9b32aa8761d31842c905825ebff1b126b70a037e64633227",
+      "git_blob_sha": "99a02c97b3fbfdc7764d1dd76dd4119a5aac6a1a",
+      "bytes": 17520
+    },
+    ".claude/skills/fable-mode/references/orchestration.md": {
+      "sha256": "3480c42092e8110fa3897e0d6a8b37bf22384a9d613690af0eac2e2c5493cceb",
+      "git_blob_sha": "b88cdc80bad85c2039cff2f0755f7ebc54baba91",
+      "bytes": 16384
+    },
+    ".github/ci/legacy-jobs.yml": {
+      "sha256": "6578883a488526225ae779ec7c129706ed7c325969b01e8ed65e2ee1c7fbf606",
+      "git_blob_sha": "730bc01832131eaa3911179eb060bbed5aafb924",
+      "bytes": 996141
+    },
+    "config/fable_mode_core.md": {
+      "sha256": "f8fcebc8f3b44eccc54214a7364637a2fc826220d497cedb0b29bf4e74d36913",
+      "git_blob_sha": "a0e093f87f479600a4559f16dd8a77aaaca908cb",
+      "bytes": 5526
+    },
+    "config/grader_manifest.yml": {
+      "sha256": "84dd2b70f002a3a392f1647e8551943138f48303fa1817215afd242520d85d3d",
+      "git_blob_sha": "2c9f71d26c4613e8ab2231c9ab4522dc473f1a8e",
+      "bytes": 6430
+    },
+    "tests/test_fable_mode_contract.py": {
+      "sha256": "beb76a29ae7afd303e77368a6c659fc19caecdc8b6e42d193a98f7fb85095019",
+      "git_blob_sha": "8fb2c826bcb4ac6a6176dec282d58e406e4cf118",
+      "bytes": 3323
+    }
+  },
+  "source_contract_tests": {
+    "cases": 8,
+    "baseline_failed": 7,
+    "candidate_failed": 0,
+    "candidate_pytest": "8 passed",
+    "kind": "SOURCE_CONTRACT_ONLY"
+  },
+  "codex": {
+    "reported_cli_version": "0.154.0",
+    "method": "skills/list",
+    "forceReload": true,
+    "scope": "isolated qualification workspace",
+    "name": "fable-mode",
+    "enabled": true,
+    "loader_errors": [],
+    "pointer": ".agents/skills/fable-mode/SKILL.md",
+    "canonical_core": ".claude/skills/fable-mode/SKILL.md",
+    "model_turns_started": 0
+  },
+  "not_proven": [
+    "fresh-model behavior",
+    "independent model review",
+    "user-global installation",
+    "live orchestrator acceptance"
+  ],
+  "deployment_blocker": {
+    "action": "access user-global Codex skill directory",
+    "target": "~/.agents/skills",
+    "result": "Studio Direct explicitly returned Path not allowed; no retry or permission expansion"
+  },
+  "review_execution_blocker": {
+    "surface": "connected Executive",
+    "result": "fixture mode; backend_unavailable; no submission attempted"
+  },
+  "source_publication": "This evidence does not assert CI, merge, deployment or acceptance."
+}

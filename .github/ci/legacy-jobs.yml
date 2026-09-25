@@ -6680,7 +6680,7 @@ jobs:
       - name: grader-manifest live check (hash drift is a hard failure)
         run: python3 scripts/check_grader_manifest.py
       - name: grader-manifest test suite
-        run: python -m pytest tests/test_grader_manifest.py -q
+        run: python -m pytest tests/test_grader_manifest.py tests/test_fable_mode_contract.py -q
 
   self-mod-fence:
     if: ${{ false }}
