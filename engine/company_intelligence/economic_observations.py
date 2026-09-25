@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import date
 import hashlib
+import json
 import math
 from numbers import Real
 from typing import Any, Mapping
@@ -217,100 +218,76 @@ def _validate_envelope_rows(
     event_id: Any,
     workspace_document_id: str,
 ) -> list[dict[str, Any]]:
-    from .pg_profile import _scope
-    fact_ids: set[str] = set()
-    metric_scope_periods: set[tuple[Any, Any, Any, Any, Any]] = set()
+    from ..earnings_release.binding import bind_release_document
 
     admission = _pg_envelope.admit(source, fiscal_scope)
     definitions = {definition.metric: definition for definition in PG_DEFINITIONS}
-    if admission.code != "F1-Q" or admission.roles is None:
-        expected_rows = {metric: ("refused", f"envelope_refused:{admission.code}", None) for metric in definitions}
-    else:
-        expected_rows = {
-            metric: (
-                outcome.kind,
-                (
-                    f"envelope_excluded:{metric}" if metric == "pg_core_reconciliation_context"
-                    else f"envelope_{outcome.kind}:{metric}"
-                ),
-                outcome.value,
-            )
-            for metric, outcome in _pg_envelope.derive_outcomes(source, fiscal_scope, admission).items()
+    if admission.code == "F1-Q" and admission.roles is not None:
+        bound = bind_release_document(
+            cik=80424,
+            accession="0000080424-26-000056",
+            body=source,
+        )
+        document = _pg_envelope._document(source)
+        replayed_facts = _pg_envelope.extract(
+            document,
+            admission,
+            PG_DEFINITIONS,
+            bound=bound,
+            document_id=workspace_document_id,
+            event_id=event_id,
+            fiscal_period={"calendar_end": fiscal_scope[1]},
+            fiscal_scope=fiscal_scope,
+        )
+        replayed = {
+            row["metric"]: json.loads(json.dumps(row))
+            for row in replayed_facts
         }
-        expected_rows["pg_core_reconciliation_context"] = ("excluded", "envelope_excluded:pg_core_reconciliation_context", None)
+    else:
+        replayed = {
+            metric: json.loads(json.dumps(row))
+            for metric in definitions
+            for row in [{
+                "schema": "event_fact.v1",
+                "fact_id": _fact_id(event_id, metric, metric, definitions[metric].basis),
+                "event_id": event_id,
+                "metric": metric,
+                "typed_absence": {
+                    "schema": ABSENCE_SCHEMA,
+                    "authority": "context_only",
+                    "reason": "no_span_addressable_evidence",
+                    "subject": metric,
+                    "detail": f"envelope_refused:{admission.code}",
+                    "missing_fields": [],
+                    "event_id": event_id,
+                    "document_id": workspace_document_id,
+                },
+            }]
+        }
 
+    if any(row.get("metric") not in definitions for row in rows):
+        raise EconomicObservationError("selected metric is not defined")
+    if len(rows) != len({row.get("metric") for row in rows}):
+        raise EconomicObservationError("selected metric is duplicate")
+    if {row.get("metric") for row in rows} != set(definitions):
+        raise EconomicObservationError("selected metric key set is not exact")
+
+    fact_ids: set[str] = set()
+    metric_scope_periods: set[tuple[Any, Any, Any, Any, Any]] = set()
     checked: list[dict[str, Any]] = []
-    seen: set[Any] = set()
     for row in rows:
-        if not isinstance(row, Mapping):
-            raise EconomicObservationError("selected row must be a mapping")
-        metric, definition, period, expected_keys = _validate_fact_structure(
+        _validate_fact_structure(
             row,
             event_id=event_id,
             fact_ids=fact_ids,
             metric_scope_periods=metric_scope_periods,
             duplicate_scope=False,
         )
-        if metric in seen:
-            raise EconomicObservationError("selected metric is duplicate")
-        seen.add(metric)
-        expected = expected_rows[metric]
-        kind = expected[0]
-        if "value" in row:
-            if expected_keys is not PRESENT_KEYS:
-                raise EconomicObservationError("selected observation fields conflict")
-            if kind != "present":
-                raise EconomicObservationError("selected observation is present but the envelope does not agree")
-            current_start, current_end, _prior_start, prior_end = _scope(fiscal_scope)
-            expected_period = (
-                prior_end.isoformat()
-                if metric in {"pg_prior_diluted_eps", "pg_prior_core_eps"}
-                else current_end.isoformat()
-            )
-            if row.get("unit") != definition.unit or row.get("basis") != definition.basis or row.get("period") != expected_period:
-                raise EconomicObservationError("selected observation metadata is not recognized")
-            span = row.get("source_span")
-            receipt = (span or {}).get("receipt", {}) if isinstance(span, Mapping) else {}
-            source_bytes = source.encode("utf-8")
-            start, end = receipt.get("span_start_byte"), receipt.get("span_end_byte")
-            if not isinstance(start, int) or not isinstance(end, int) or not (0 <= start < end <= len(source_bytes)):
-                raise EconomicObservationError("selected observation byte span is invalid")
-            outcome = _pg_envelope.derive_outcomes(source, fiscal_scope, admission)[metric]
-            primary = outcome.primary
-            if primary is None:
-                raise EconomicObservationError("selected observation has no primary cell")
-            primary_start = len(source[:primary.start].encode("utf-8"))
-            primary_end = len(source[:primary.end].encode("utf-8"))
-            if not (primary_start <= start < end <= primary_end):
-                raise EconomicObservationError("selected observation does not span its own primary cell")
-            try:
-                replayed = source_bytes[start:end].decode("utf-8")
-            except UnicodeDecodeError as exc:
-                raise EconomicObservationError("selected observation span is not UTF-8 aligned") from exc
-            literal = _pg_envelope._text(replayed)
-            if _pg_envelope._literal(literal) != row.get("value") or row.get("value") != expected[2]:
-                raise EconomicObservationError("selected observation value is not its cell literal")
-            if receipt.get("source_sha256") != _sha256(source):
-                raise EconomicObservationError("selected observation source digest does not replay")
-            if span.get("document_id") != workspace_document_id or span.get("rights_profile") != PG_PRIVATE_RIGHTS_PROFILE:
-                raise EconomicObservationError("selected observation source identity is invalid")
-            _validate_source_span(span, source=source)
-        else:
-            if expected_keys is not ABSENT_KEYS:
-                raise EconomicObservationError("selected observation fields conflict")
-            absence = row.get("typed_absence") or {}
-            reason = "cross_check_conflict" if kind == "conflict" else "no_span_addressable_evidence"
-            detail = f"envelope_conflict:{metric}" if kind == "conflict" else expected[1]
-            if kind == "present":
-                raise EconomicObservationError("selected absence hides an agreed observation")
-            if absence.get("reason") != reason or absence.get("detail") != detail:
-                raise EconomicObservationError("selected absence does not match the envelope")
-            if absence.get("event_id") != event_id or absence.get("document_id") != workspace_document_id:
-                raise EconomicObservationError("selected absence identity is invalid")
-            span = None
+        metric = row.get("metric")
+        normalized = json.loads(json.dumps(dict(row)))
+        if normalized != replayed[metric]:
+            raise EconomicObservationError("selected observation does not replay from source bytes")
         checked.append(dict(row))
-    if seen != set(definitions):
-        raise EconomicObservationError("selected metric key set is not exact")
     return checked
 
 
@@ -424,6 +401,8 @@ def validate_selected_facts(
             raise EconomicObservationError("workspace facts must be a list")
         if any(not isinstance(row, Mapping) for row in facts):
             raise EconomicObservationError("workspace facts must be mappings")
+        if any(not isinstance(row.get("metric"), str) or not row.get("metric") for row in facts):
+            raise EconomicObservationError("workspace facts must each name a metric")
         envelope_rows = [
             row for row in facts if str(row.get("metric", "")).startswith("pg_")
         ]
