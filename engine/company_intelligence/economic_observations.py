@@ -249,6 +249,8 @@ def _validate_envelope_span(row: Mapping[str, Any], *, source: str) -> None:
     if any(character.isspace() for character in unescaped):
         raise EconomicObservationError("present envelope observation decodes to whitespace")
     unit = row.get("unit")
+    if (unit == "usd_per_share" and "%" in unescaped) or (unit in {"percent", "percentage_points"} and "$" in unescaped):
+        raise EconomicObservationError("present envelope observation literal holds a marker its unit forbids")
     value = 0.0 if unescaped == "\u2014%" and unit in {"percent", "percentage_points"} else _pg_envelope._literal(unescaped)
     if value is None or value != row.get("value"):
         raise EconomicObservationError("present envelope observation value does not parse from its span")
