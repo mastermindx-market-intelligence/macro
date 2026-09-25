@@ -48,7 +48,8 @@ Already exists:
 - Theme Graph identity-resolution + Data OS security-master identity for any automatic company deep link;
 - Theme Graph identity-resolution sidecar;
 - Data OS security-master identity;
-- `lib.dataos.identity.parse_listing_key`;
+- `lib.dataos.identity.parse_listing_key` for immutable listing-key validation only;
+- `engine.intelligence_workspace.entity.load_current_symbol_map` / `VendorAliasTable` as the existing current-symbol owner for Terminal navigation;
 - house precedent for Macro → Terminal Company Intelligence links in Stage Analysis and Company Intelligence dossier surfaces.
 
 The exposure-map contract already provides:
@@ -147,7 +148,11 @@ For a TXI blast name:
 
 For a future Theme Map row, use the identity block already emitted by `market_ontology.exposure_map/v1` and apply the same non-ambiguous RESOLVED gate.
 
-The symbol used for the Terminal navigation link MUST come from canonical `lib.dataos.identity.parse_listing_key(listing_key)`, never by treating TXI’s bare ticker array as durable identity and never by reparsing a display label.
+The immutable `listing_key` is an identity receipt, **not necessarily the ticker a user should navigate with today**. `lib.dataos.identity.parse_listing_key(listing_key)` may validate the exact owner-supplied listing grammar, but its `.code` is the **inception code** and MUST NOT be promoted to the current Terminal symbol.
+
+The Terminal navigation symbol MUST instead come from the existing Data OS current-symbol owner for the resolved `security_id`: `engine.intelligence_workspace.entity.load_current_symbol_map` / `VendorAliasTable.vendor_symbol_for` (or its accepted current-owner equivalent), at the current effective date. The current symbol must resolve back to the same `security_id`. TXI's bare ticker array and display labels remain non-authoritative for this join.
+
+If current-symbol resolution is missing, ambiguous or refused — including a rename where only the immutable inception code is available — render the honest exposure state but **no security deep link**. A rename regression such as immutable `US-XNYS-MMC` / current symbol `MRSH` must prove that the URL uses `MRSH`, never stale inception code `MMC`.
 
 If any gate fails, render the honest exposure state but **no security deep link**.
 
@@ -529,6 +534,22 @@ The storyboard is a connective product contract, not a replacement visual system
 Paper edits were applied through the guarded adapter with observed responses. A wrapper error occurred only after the Stage-2 write response had returned; the artboard was read back before any further edit, confirming the Stage-2 frame existed. No ambiguous Paper effect remains. The final storyboard was screenshot-reviewed for spacing, hierarchy, contrast, alignment and failure-state clarity; the affected-company action lane was then aligned to a fixed trailing slot before the artboard was released with `finish_working_on_nodes`.
 
 This design receipt does not prove implementation or production acceptance.
+
+## 18. Semantic correction — immutable listing identity is not the current navigation symbol
+
+**This section supersedes any earlier wording in this packet that could be read as deriving a current Terminal ticker from `ListingKey.code`.**
+
+Fresh source adjudication against Data OS established:
+
+- a listing key is mint-once identity and intentionally preserves the inception code across symbol renames;
+- `parse_listing_key` validates and parses that immutable identity; it is not the current-symbol resolver;
+- the existing current-symbol owner is the time-aware alias layer, exposed to consumers through `engine.intelligence_workspace.entity.load_current_symbol_map` / `VendorAliasTable.vendor_symbol_for`;
+- therefore MO-J1 must join TXI → Theme Graph/Data OS on `security_id`, then obtain the current navigation symbol from that owner;
+- if the current symbol cannot be resolved uniquely to the same `security_id`, the product keeps the exposure row and withholds the Terminal CTA.
+
+Required mutation/falsifier: an immutable listing whose ticker was renamed (the house MMC→MRSH case or an equivalent fixture) must deep-link to the **current** symbol, while deletion/bypass of the current-symbol lookup must make the test fail. A stale inception-code URL is a blocking identity defect.
+
+This correction changes no identity authority, store, schema or persistence plane. It only prevents a consumer from confusing immutable identity with current display/navigation naming.
 
 ## 17. Semantic correction — TXI-first company continuation
 
