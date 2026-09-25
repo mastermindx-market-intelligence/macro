@@ -375,6 +375,19 @@ if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
 	fi
 fi
 
+# Keep the separately locked maintenance runner on a stable installed inode.
+# Its cron must never execute the repo copy while git reset can rewrite that
+# path in place. install preserves an already-running predecessor inode.
+if ! cmp -s "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance; then
+	if bash -n "$APP_DIR/app/deploy/git-maintenance.sh"; then
+		install -m 0755 "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance
+		RECONCILED=1
+		echo "macro-update: git maintenance runner updated from repo"
+	else
+		echo "macro-update: refusing git maintenance runner update — bash -n failed" >&2
+	fi
+fi
+
 # Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
 # config can never take the site down — reload is gated on `caddy validate`).
 if ! cmp -s "$APP_DIR/app/deploy/Caddyfile" /etc/caddy/Caddyfile; then

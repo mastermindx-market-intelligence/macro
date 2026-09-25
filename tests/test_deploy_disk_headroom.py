@@ -71,8 +71,16 @@ def test_maintenance_uses_same_update_lock_and_verified_reclaim_sequence() -> No
 
 def test_setup_installs_daily_git_maintenance_cron() -> None:
     text = SETUP.read_text()
-    assert '23 6 * * * $APP_DIR/app/deploy/git-maintenance.sh' in text
+    assert 'install -m 0755 "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance' in text
+    assert '23 6 * * * /usr/local/bin/macro-git-maintenance' in text
     assert "grep -v 'macro-git-maintenance'" in text
+
+
+def test_updater_self_heals_stable_git_maintenance_runner() -> None:
+    text = UPDATE.read_text()
+    assert 'cmp -s "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance' in text
+    assert 'bash -n "$APP_DIR/app/deploy/git-maintenance.sh"' in text
+    assert 'install -m 0755 "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance' in text
 
 
 def test_maintenance_log_is_owned_by_existing_logrotate_policy() -> None:
