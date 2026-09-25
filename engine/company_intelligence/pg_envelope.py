@@ -1,7 +1,7 @@
 """Finite-source envelope for wrapped P&G quarterly release exhibits."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 import functools
 import html
@@ -924,7 +924,8 @@ def _locate(document: Document, locator: tuple[str, str, str | None]) -> list[Ce
     for row_number, cell in _own_cells(rows):
         if not cell.text or cell.text in _UNIT_CELLS:
             continue
-        if not row_label or _norm(_label_of(rows[row_number], cell) or "") != _norm(row_label):
+        occupied = [number for number, row in enumerate(rows) if any(other is cell for other in row)]
+        if not row_label or any(_norm(_label_of(rows[number], cell) or "") != _norm(row_label) for number in occupied):
             continue
         if header is None:
             after = sorted(
@@ -937,22 +938,29 @@ def _locate(document: Document, locator: tuple[str, str, str | None]) -> list[Ce
             if literal is not None and after and after[0].text == "%":
                 hits.append(cell)
             continue
-        if _norm(header) in {_norm(value) for value in _headers_over(rows, cell)}:
-            pin_year = _parse_year(header)
-            if pin_year is not None and _header_years(rows, cell) != {pin_year}:
-                continue
-            required = role in {
-                "earnings", "drivers", "core_reconciliation", "prior_core_reconciliation",
-                "segment_drivers", "organic_reconciliation",
-            }
-            current_end = _as_date(document.fiscal_scope[1])
-            prior_end = _as_date(document.fiscal_scope[3])
-            period = prior_end if pin_metric in document.prior_metrics else current_end
-            growth = _norm(header) in {"%chg", "%change"}
-            if not _period_matches(rows, cell, period, growth=growth, required=required):
-                continue
+        if all(
+            _reads_under(document, rows, replace(cell, col0=column, col1=column + 1), role, header, pin_metric)
+            for column in range(cell.col0, cell.col1)
+        ):
             hits.append(cell)
     return hits
+
+
+def _reads_under(document: Document, rows: Sequence[Sequence[Cell]], view: Cell, role: str, header: str, pin_metric: str) -> bool:
+    if _norm(header) not in {_norm(value) for value in _headers_over(rows, view)}:
+        return False
+    pin_year = _parse_year(header)
+    if pin_year is not None and _header_years(rows, view) != {pin_year}:
+        return False
+    required = role in {
+        "earnings", "drivers", "core_reconciliation", "prior_core_reconciliation",
+        "segment_drivers", "organic_reconciliation",
+    }
+    current_end = _as_date(document.fiscal_scope[1])
+    prior_end = _as_date(document.fiscal_scope[3])
+    period = prior_end if pin_metric in document.prior_metrics else current_end
+    growth = _norm(header) in {"%chg", "%change"}
+    return _period_matches(rows, view, period, growth=growth, required=required)
 
 
 def _eps_row(document: Document, role: str) -> str:
