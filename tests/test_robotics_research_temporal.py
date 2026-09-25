@@ -142,6 +142,14 @@ def test_replay_after_review_due_expires_both_rows():
     assert len(refs) == 2
     assert response["companies"]["status"] == "unavailable"
     assert response["companies"]["reason"] == "no_companies"
+    # Summary describes CURRENT applicability, and nothing is current here even
+    # though two assertions were selected and stay retained as evidence above.
+    # Before B3 this block alone served "ready" over five empty fields, while
+    # companies and every industrial view already said unavailable.
+    assert response["summary"]["status"] == "unavailable"
+    assert response["summary"]["reason"] == "no_current_assertions"
+    assert response["summary"]["input_refs"] == []
+    assert response["authorized_coverage"]["selected"] == 2
 
 
 # ---------------------------------------------------------------------------

@@ -208,7 +208,7 @@ def test_empty_bundle_composes_unavailable_not_refused():
     assert response["companies"]["status"] == "unavailable"
     assert response["companies"]["reason"] == "no_companies"
     assert response["summary"]["status"] == "unavailable"
-    assert response["summary"]["reason"] == "no_selected_assertions"
+    assert response["summary"]["reason"] == "no_current_assertions"
     assert response["native_subjects"] == []
     _RESPONSE_SCHEMA.validate(response)
 

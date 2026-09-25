@@ -978,8 +978,13 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
     # no retention claim, so its status must describe the content beside it.
     # Keying it off ``assertions`` served "ready" over uniformly empty lists.
     if not selection.current:
+        # NOT ``no_selected_assertions``: that token is the per-view one below,
+        # and ``test_..._reason_tokens`` enforces it to mean ``selected == 0``.
+        # Here assertions CAN have been selected and retained as evidence while
+        # none is currently applicable, so reusing it would put two meanings on
+        # one token in a single document.
         summary.update({"status": "unavailable",
-                        "reason": "no_selected_assertions"})
+                        "reason": "no_current_assertions"})
     elif stale_blocks:
         summary.update({"status": "degraded", "reason": "interpretation_stale"})
     else:
