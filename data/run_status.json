@@ -1868,12 +1868,12 @@
     },
     "flow_signals": {
       "status": "ok",
-      "n_new": 2319,
-      "n_graded_ok": 487,
+      "n_new": 2544,
+      "n_graded_ok": 3,
       "n_scored_this_run": 0,
-      "elapsed_sec": 14.1,
+      "elapsed_sec": 9.5,
       "last_date": "2026-09-25",
-      "checked_at": "2026-09-25T08:15:01.981274+00:00"
+      "checked_at": "2026-09-25T20:49:20.918375+00:00"
     },
     "cboe_cor_vol": {
       "source": "cboe_cor_vol",

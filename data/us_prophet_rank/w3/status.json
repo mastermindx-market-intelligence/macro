@@ -48,32 +48,32 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-09-23",
+    "board_as_of": "2026-09-24",
     "coverage": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
-      "revisions_refused": 4,
-      "stamps": 0,
-      "written": 0
+      "revisions_refused": 0,
+      "stamps": 1,
+      "written": 8
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 8,
+      "identical": 0,
       "matured": 0,
-      "revisions_refused": 5,
-      "stamps": 0,
-      "written": 0
+      "revisions_refused": 0,
+      "stamps": 1,
+      "written": 8
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 1226,
+    "n_paired_rows": 1289,
     "paired": {
-      "identical": 1183,
-      "matured": 0,
+      "identical": 1059,
+      "matured": 124,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 4,
+      "written": 187
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -87,357 +87,25 @@
       "2026-09-15",
       "2026-09-18"
     ],
-    "require_stamp": "2026-09-23",
-    "same_stamp_revisions_refused": [
-      {
-        "changed_fields": [
-          {
-            "existing": 37,
-            "field": "rows_contributing",
-            "incoming": 35
-          },
-          {
-            "existing": 0.3243243243,
-            "field": "modal_value",
-            "incoming": 0.3428571429
-          },
-          {
-            "existing": 0.6216216216,
-            "field": "modal_share",
-            "incoming": 0.6571428571
-          },
-          {
-            "existing": 0.2424913303,
-            "field": "dispersion",
-            "incoming": 0.2373321104
-          },
-          {
-            "existing": 1.8064516129,
-            "field": "mean_abs_rank_delta",
-            "incoming": 2.0333333333
-          },
-          {
-            "existing": 9,
-            "field": "max_abs_rank_delta",
-            "incoming": 10
-          },
-          {
-            "existing": 0,
-            "field": "top30_churn",
-            "incoming": 2
-          }
-        ],
-        "existing_fingerprint": "3bc98d1b137366e32080eb1145d2d3f32367142f9b5b1137207118c3aafb0db5",
-        "grain": "family",
-        "incoming_fingerprint": "4c00ff191fe5f8af3746b94f2ea4b198b0fa1d68cc070ed0595ebc5190890dde",
-        "key": [
-          "2026-09-23",
-          "F1_TECHNICAL_CONFLUENCE"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 53,
-            "field": "distinct_values",
-            "incoming": 51
-          },
-          {
-            "existing": 0.1370967742,
-            "field": "modal_value",
-            "incoming": 0.4333333333
-          },
-          {
-            "existing": 0.0322580645,
-            "field": "modal_share",
-            "incoming": 0.05
-          },
-          {
-            "existing": 0.2303265356,
-            "field": "dispersion",
-            "incoming": 0.2280033605
-          },
-          {
-            "existing": 3.4193548387,
-            "field": "mean_abs_rank_delta",
-            "incoming": 3.3666666667
-          },
-          {
-            "existing": 12,
-            "field": "max_abs_rank_delta",
-            "incoming": 11
-          },
-          {
-            "existing": 48,
-            "field": "rows_moved",
-            "incoming": 52
-          }
-        ],
-        "existing_fingerprint": "6985f7faaf07d06d3ce129346b34eec27d8cbb8dda481beb51583827b98016fd",
-        "grain": "family",
-        "incoming_fingerprint": "c2c376a3e10b2df270ce5cbad81b03604724c1c7b589609fb53facdf233da690",
-        "key": [
-          "2026-09-23",
-          "F2_MOMENTUM_EXTENSION"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 0.4032258065,
-            "field": "modal_value",
-            "incoming": 0.4
-          },
-          {
-            "existing": 0.7903225806,
-            "field": "modal_share",
-            "incoming": 0.7833333333
-          },
-          {
-            "existing": 0.2035391849,
-            "field": "dispersion",
-            "incoming": 0.2059867849
-          },
-          {
-            "existing": 1.8064516129,
-            "field": "mean_abs_rank_delta",
-            "incoming": 1.8
-          },
-          {
-            "existing": 40,
-            "field": "rows_moved",
-            "incoming": 36
-          }
-        ],
-        "existing_fingerprint": "adc59176edfa2c31501a955eaa48e70dfafee71b5064a1b3c65eaa02b6c5d585",
-        "grain": "family",
-        "incoming_fingerprint": "516da573af0eaace21dadd254dc8545945d020cef11b87bab9103718635e9f80",
-        "key": [
-          "2026-09-23",
-          "F4_CATALYST_EVENT"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 5,
-            "field": "distinct_values",
-            "incoming": 7
-          },
-          {
-            "existing": 0.4838709677,
-            "field": "modal_value",
-            "incoming": 0.4791666667
-          },
-          {
-            "existing": 0.435483871,
-            "field": "modal_share",
-            "incoming": 0.4333333333
-          },
-          {
-            "existing": 0.0794126503,
-            "field": "dispersion",
-            "incoming": 0.0905414895
-          },
-          {
-            "existing": 0.6451612903,
-            "field": "mean_abs_rank_delta",
-            "incoming": 0.9333333333
-          },
-          {
-            "existing": 26,
-            "field": "rows_moved",
-            "incoming": 31
-          },
-          {
-            "existing": 0,
-            "field": "top30_churn",
-            "incoming": 2
-          }
-        ],
-        "existing_fingerprint": "bb317bd4ad1b4fe4e1bbefa95edc5121d822898a4ab1b880a7ec36ad4591bcb8",
-        "grain": "family",
-        "incoming_fingerprint": "c9fcc2481bacc66af7a60710cbf749625e0a264a51951fb13c7eadaaf6b083a8",
-        "key": [
-          "2026-09-23",
-          "F5_FLOW_POSITIONING"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 0.4596774194,
-            "field": "modal_value",
-            "incoming": 0.4583333333
-          },
-          {
-            "existing": 0.9032258065,
-            "field": "modal_share",
-            "incoming": 0.9
-          },
-          {
-            "existing": 0.1478250224,
-            "field": "dispersion",
-            "incoming": 0.15
-          },
-          {
-            "existing": 0.9032258065,
-            "field": "mean_abs_rank_delta",
-            "incoming": 0.8666666667
-          },
-          {
-            "existing": 9,
-            "field": "max_abs_rank_delta",
-            "incoming": 8
-          },
-          {
-            "existing": 29,
-            "field": "rows_moved",
-            "incoming": 26
-          }
-        ],
-        "existing_fingerprint": "69111e42313979ea60eb6a363744d6929553de73d24eafc0991aa2c982c9e974",
-        "grain": "family",
-        "incoming_fingerprint": "a957f8acfbead4a5ad530a9eed364ca28d96dcc7d4975a05f52c6af133bb7b89",
-        "key": [
-          "2026-09-23",
-          "F8_ATTENTION_CROWDING"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 56,
-            "field": "distinct_values",
-            "incoming": 54
-          }
-        ],
-        "existing_fingerprint": "6575ca0b4198ed2e515974dea8773ac9070306cd9217be37d6fa1ffc80d4c19c",
-        "grain": "coverage",
-        "incoming_fingerprint": "438a61aa67f6bddd9b492f903d9c4c04d2052219f3351cf34f6a924436ff01f7",
-        "key": [
-          "2026-09-23",
-          "alpha"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 0.516129,
-            "field": "coverage",
-            "incoming": 0.516667
-          },
-          {
-            "existing": 2,
-            "field": "distinct_values",
-            "incoming": 3
-          }
-        ],
-        "existing_fingerprint": "10db1f8ca3c29674e402e46278fd035ba49599dd0846b4ccff1e220e261925b1",
-        "grain": "coverage",
-        "incoming_fingerprint": "4e603979fe025481048d4869766bb4ef089d5c191254b949d3864523c10b7b96",
-        "key": [
-          "2026-09-23",
-          "gex_confirm_verdict"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 59,
-            "field": "distinct_values",
-            "incoming": 57
-          }
-        ],
-        "existing_fingerprint": "d70a5d924c81877b0046b738e0974a54896c96666d1cdf6aba66b0230f4b4db6",
-        "grain": "coverage",
-        "incoming_fingerprint": "1d63b77e44ce736c5196d9feb7a5663bbf279a1ac6565cbd7e5e98a569d7b787",
-        "key": [
-          "2026-09-23",
-          "off_high"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 0.596774,
-            "field": "coverage",
-            "incoming": 0.583333
-          }
-        ],
-        "existing_fingerprint": "cb93e22fa3b230094e818556b622e03f496b02568b671db7b845999a56f4eaf3",
-        "grain": "coverage",
-        "incoming_fingerprint": "644d021ac58953bcbcfbbaf0b5616a3399f21821a3879e8e0fa43a8ba67a0759",
-        "key": [
-          "2026-09-23",
-          "tier_cascade"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      }
-    ],
+    "require_stamp": "2026-09-24",
+    "same_stamp_revisions_refused": [],
     "sessions_written": {
       "identical": 21,
       "matured": 0,
       "refused": 0,
-      "written": 0
+      "written": 1
     }
   },
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-09-23"
+    "stamp_date": "2026-09-24"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [],
   "n_degraded_or_unpaired": 10,
   "n_missing": 0,
-  "paired_sessions_accrued": 21,
+  "paired_sessions_accrued": 22,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -4760,10 +4428,10 @@
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 168,
-    "n_family_rows": 168,
+    "n_coverage_rows": 176,
+    "n_family_rows": 176,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 20
+  "unmatured_sessions": 21
 }
