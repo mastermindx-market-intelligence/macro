@@ -381,3 +381,60 @@ Latest retrospective model output at corrected-history origin2026-09-22 is resea
 context only, not an issued/accepted forecast. Do not cite it as live direction
 authority. Parent mission remains incomplete. Short-term catalyst/policy lanes remain
 the higher-priority path for actual near-term direction.
+
+
+## Continuation: prospective official inflation catalyst -> rates response shadow frozen
+
+Procedure pin advanced compatibly to Mastermind
+a29161fa0a44cca9927afe042b5f7ea25aae1736, Skillpack1.0.1/bootstrap1.
+Parent carrier remains PR7909 / claude/rates-direction-20260924-sol-001.
+
+A distinct prospective transmission shadow was frozen before any eligible outcome at
+commit 41d16e1ecfd877f95871d2b8bdb116a97c0d53f4,
+freeze timestamp 2026-09-25T01:25:00.250611Z, then registered exactly once in
+TrialLedger family ric_inflation_catalyst_rate_response_v1
+(config 675da315accb83ab).
+
+Question: after an official CPI/PCE print is actually known, does the initial print
+relative to the exact T-1 Release Radar expectation context provide a useful
+same-session / near-term DGS10 directional prior?
+
+The shadow creates no source or ledger. It reads the incumbent
+data/release_forecast/forward_ledger.jsonl and data/fred/DGS10.parquet. Expectations
+must be exact calendar T-1 champion rows with finite expectation median and sigma.
+Actuals must be official_published_metric / official_release_document receipts,
+deduped across model score rows, with timezone-aware observation no later than
+16:00 America/New_York on release day. Late-captured historically correct actuals
+cannot masquerade as an actionable h0 signal.
+
+CPI and PCE each form one headline+core announcement event. Component standardized
+actual surprise uses the incumbent +/-0.35 expectation scale; conflicting headline/
+core or both-inline events abstain. Only releases strictly after 2026-09-24 count.
+Primary outcome is release-day DGS10 close vs prior close at +/-2bp; h1/h5 cumulative
+moves are secondary. Daily h0 is explicitly a release-day close proxy, not an
+08:30 intraday causal impulse. Baseline is prior five-observation DGS10 direction on
+the same active events. Floors:12 signal-observable prospective events and8 active
+for descriptive review;24 signal-observable before any promotion review request.
+
+Initial post-registration report correctly has0 prospective events /0 observable /0
+active; five joined pre-freeze source-sanity events are excluded. Thus no eligible
+outcome was opened before freeze/registration.
+
+Material source discovery: Release Radar already owns append-only row_type=reaction
+rows, so do NOT create another generic reaction ledger. However its current reaction
+producer intentionally emits a partial row when any reaction field is available;
+recent rows often preserve null DGS10 h0/h1 while SPY/spread fields are present.
+Because the row is then idempotently keep-first by release/period, those null DGS10
+fields are not a sufficient rates-response evidence owner for this new shadow. The
+shadow therefore reads the incumbent DGS10 series directly after maturity without
+modifying or replacing Release Radar's reaction rows.
+
+The pre-release CPI catalyst shadow remains separate/immutable. RD2 PR7923 has an
+independent repaired-head PASS review receipt at comment5825034742; downstream
+prospective-retention PR7940 has semantic PASS / dependency-hold at comment5825046561.
+No merge/deploy was performed here. Future policy-repricing confirmation is a
+separate candidate only after that source is lawfully live.
+
+DO_NOT_REDO: RD1 endpoint models, uploaded crossover study, phase/reset study,
+post-shock categorical driver stack and DNS point forecast remain null. Do not tune
+those opened histories or backfill this prospective shadow to meet its floor.
