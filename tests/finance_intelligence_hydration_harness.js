@@ -393,6 +393,10 @@ function snapshot() {
       });
       return count;
     })(),
+    heroChipAria: ['hero-freshness', 'hero-outer'].map(function (mount) {
+      var el = document.querySelector('[data-fi-mount="' + mount + '"]');
+      return (el && el.getAttribute('aria-label')) || '';
+    }),
     evidenceAriaLabels: (function () {
       var labels = [];
       ['rerating-steps', 'what-changed-list', 'conflict-list', 'constraint-list'].forEach(function (mount) {

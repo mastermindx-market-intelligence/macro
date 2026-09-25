@@ -446,10 +446,18 @@
     return ' aria-label="' + esc(isZh() ? (zh || en) : en) + '" data-aria-en="' + esc(en) + '" data-aria-zh="' + esc(zh) + '"';
   }
   function copyPair(pair) { return isZh() ? (pair[1] || pair[0]) : pair[0]; }
-  function labelFor(map, key) {
-    if (!key) return copyPair(FI_LABELS[map] && FI_LABELS[map][''] || LABEL_FALLBACKS[map] || ['—', '—']);
-    var row = (FI_LABELS[map] && FI_LABELS[map][key]) || LABEL_FALLBACKS[map];
-    return copyPair(row);
+  function labelRow(map, key) {
+    if (!key) return FI_LABELS[map] && FI_LABELS[map][''] || LABEL_FALLBACKS[map] || ['—', '—'];
+    return (FI_LABELS[map] && FI_LABELS[map][key]) || LABEL_FALLBACKS[map];
+  }
+  function labelFor(map, key) { return copyPair(labelRow(map, key)); }
+  // Static chips are named "<what>: <current label>"; the runtime writes the
+  // EN/ZH pair (the inline swapper re-applies it on langchange) plus the name
+  // in the current language, since the swapper ran before hydration.
+  function nameChip(el, en, zh) {
+    el.setAttribute('data-aria-en', en);
+    el.setAttribute('data-aria-zh', zh);
+    el.setAttribute('aria-label', isZh() ? zh : en);
   }
   function esc(value) {
     return String(value === null || value === undefined ? '' : value)
@@ -608,13 +616,17 @@
       show(heroCutoff, true); show(heroCutoffZh, true);
     }
     if (d.freshness && freshnessChip) {
+      var freshRow = labelRow('freshness', d.freshness.state);
       freshnessChip.setAttribute('data-state-freshness', d.freshness.state);
-      setText(freshnessChip, labelFor('freshness', d.freshness.state));
+      setText(freshnessChip, copyPair(freshRow));
+      nameChip(freshnessChip, 'Evidence freshness: ' + freshRow[0], '证据新鲜度：' + (freshRow[1] || freshRow[0]));
       show(freshnessChip, true);
     }
     if (d.outer_dossier_ref && outerChip) {
+      var outerRow = labelRow('outer_dossier_state', d.outer_dossier_ref.state);
       outerChip.setAttribute('data-state-outer-dossier', d.outer_dossier_ref.state);
-      setText(outerChip, labelFor('outer_dossier_state', d.outer_dossier_ref.state));
+      setText(outerChip, copyPair(outerRow));
+      nameChip(outerChip, 'Outer dossier: ' + outerRow[0], '外部报告：' + (outerRow[1] || outerRow[0]));
       show(outerChip, true);
     }
   }

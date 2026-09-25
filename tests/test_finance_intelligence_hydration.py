@@ -315,8 +315,16 @@ def test_hydrated_controls_are_named_in_the_page_language() -> None:
     every evidence control."""
     route = {"__default__": {"status": 200, "body": _json(VALID_DOC),
                              "contentType": "application/json"}}
-    zh = _run({"lang": "zh", "routes": route})["first"]["evidenceAriaLabels"]
-    en = _run({"lang": "en", "routes": route})["first"]["evidenceAriaLabels"]
+    zh_snap = _run({"lang": "zh", "routes": route})["first"]
+    en_snap = _run({"lang": "en", "routes": route})["first"]
+    zh, en = zh_snap["evidenceAriaLabels"], en_snap["evidenceAriaLabels"]
     assert zh and len(zh) == len(en), (zh, en)
     assert all(re.search(r"[\u4e00-\u9fff]", label) for label in zh), zh
     assert all(label.startswith("Open evidence") for label in en), en
+    # The hero chips are named from the label they paint, never a placeholder.
+    zh_chips, en_chips = zh_snap["heroChipAria"], en_snap["heroChipAria"]
+    assert en_chips[0].startswith("Evidence freshness: "), en_chips
+    assert en_chips[1].startswith("Outer dossier: "), en_chips
+    assert zh_chips[0].startswith("证据新鲜度："), zh_chips
+    assert zh_chips[1].startswith("外部报告："), zh_chips
+    assert not any("{" in label for label in zh_chips + en_chips), (zh_chips, en_chips)
