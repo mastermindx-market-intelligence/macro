@@ -29,7 +29,7 @@ changed:
   - path: "contracts/market_ontology/robotics_theme_research.v1.schema.json"
     what: "R2 closed served contract for the Robotics research envelope -- deliberately the same 14-key shape as the semiconductor composer so ONE generic paid route and ONE generic client serve both. Pins section_status to ready|degraded|unavailable|refused, and records that top-level limitations carry 'rights_partial' and NEVER name the withheld family (RBV-27)."
   - path: "engine/market_ontology/robotics_theme_research.py"
-    what: "R2 the Robotics composer: two slices (precision_motion, perception), five views, evidence selection and the coverage ladder. B2 fix at 23055bc5f89 -- emptiness now outranks omission, so a zero-selection read serves 'unavailable' instead of the PARTIAL state 'degraded'; and 'rights_partial' now requires a selection to be partial ABOUT, because the shipped client renders limitation slugs verbatim and the old token was therefore a member-facing claim of cut entitlements on a paid surface. Both lines were authored by this operation's own R2 commit 37fd0bd35471."
+    what: "R2 the Robotics composer: two slices (precision_motion, perception), five views, evidence selection and the coverage ladder. B2 fix at 23055bc5f89 -- emptiness now outranks omission, so a zero-selection read serves 'unavailable' instead of the PARTIAL state 'degraded'; and 'rights_partial' now requires a selection to be partial ABOUT, because the shipped client renders limitation slugs verbatim and the old token was therefore a member-facing claim of cut entitlements on a paid surface. Both lines were authored by this operation's own R2 commit 37fd0bd35471. B3 at 275d726d3c0 keys _summary's status off selection.current, the same post-gate projection its own fields already render, so an all-held read no longer serves 'ready' over uniformly empty content; the pre-gate reads in authorized_coverage are CORRECT under RBV-18 and were left alone."
   - path: "tests/test_market_ontology_robotics_theme_research.py"
     what: "R2 composer battery including the RBV-27 leg, extended at the B2 fix with a zero-selection positive control proving the suppression fires on an EMPTY read and not only on a partial one."
   - path: "tests/test_robotics_research_composition.py"
@@ -380,11 +380,54 @@ accounting for all 35 changed files, nothing unaccounted. `validate`: 12 errors 
 `codex/merge-queue-pilot` and this carrier's base is `main`. GitHub's `mergeable_state` for
 #7908 is `unstable`, not `blocked`, i.e. mergeable with a non-required check failing.
 
-**B2 is not yet proven.** I authored both B2 lines, so builder != reviewer forbids me from
-closing it. A READ_ONLY independent review of `23055bc5f89` is commissioned with an
-adversarial brief (own byte-identity probe, reachability enumeration of the coverage states,
-strongest case AGAINST the suppression ruling, mutation of both edited lines). B2 stays
-unintegrated-as-proven until it returns and I adjudicate.
+**B2 is ACCEPTED** (#7908 issuecomment-5827789792). The READ_ONLY independent review of
+`23055bc5f89` returned ACCEPT_WITH_NITS, zero blockers: 320 compositions byte-identical,
+240/320 differing against pre-B2 in exactly the two claimed fields, all 7 mutations caught,
+and genuine rights partiality proven never to travel through `bundle.omissions`. `git log -L
+1174,1186` shows the `ready` branch is substantively unchanged from the original R2 commit
+`37fd0bd35471`, so B2 introduced nothing.
+
+**Where B2's tests actually ran (review nit 1).** The carrier-alone command is **vacuous for
+B2** — 59 xfailed, 0 executed, because the shared `engine.theme_graph.curation_assertion`
+foundation is absent on this carrier. B2's suites execute only on the **integrated base**
+`rob-review-...` head **`3c7a8885042`** (#7870 merged), where the composer file is proven
+byte-identical to the carrier's by `cmp`. A gate that cannot fail is not a gate; every B2 and
+B3 number in this document is from that base unless it says "carrier alone".
+
+**Review nit 4 was adjudicated WRONG by me and retracted** (#7908 `5827789792` asserted it;
+`5827889145` retracts). The finding — `selected`/`status` in `authorized_coverage` count
+pre-review-gate assertions — is a correct MEASUREMENT whose premise I never tested. **RBV-18:
+"Withdrawal or overdue review affects current applicability, not historical retention."** A
+held, rejected or review-expired assertion is DESIGNED to lose row eligibility and keep
+evidence retention: listed in `evidence_refs` and `input_refs`, counted in `selected`,
+fetchable from the evidence endpoint, disclosed by `held_present`. Moving that cohort post-gate
+took the battery from 1 red to 3 — `test_rbv18_held_review_is_excluded_but_retained`,
+`test_held_assertion_is_still_selectable_evidence`,
+`test_replay_after_review_due_expires_both_rows` — and was reverted. `authorized_coverage`
+reports retention; `_summary` reports current applicability; they differ by design, and reading
+them as a self-contradiction was the same error one layer down.
+
+## B3 — the summary block's status must describe its own content (`275d726d3c0`, 2026-09-25)
+
+The one true residue of nit 4. `_summary` renders every field from the post-gate projection
+(`current_revisions` / `selection.current`) but set its **status** from pre-gate
+`selection.assertions`, so an all-held read served `status: "ready"` over `input_refs: []`,
+`what_changed: []`, `why_it_matters: []`, `next_evidence: []` — a healthy headline over
+uniformly empty content, with nothing in RBV-18 licensing it (that block makes no retention
+claim). Now keyed off `selection.current`. Gates on `3c7a8885042`: **B 622 passed**, **C exit
+0**, **D 20 passed / 115 xfailed carrier-alone, zero xpass**.
+
+Open question handed to the B3 reviewer, covered by NO test: `selection.current` vs
+`review_ok` as that denominator — they differ under supersession and syndication collapse.
+
+**Reproducing a held assertion (durable trap).** Curation assertions are content-addressed:
+mutating `review.disposition` breaks the `curation_revision` stamp, so the row is dropped as
+`assertion_invalid` and the gate under test never runs — a false clean that reads as a pass.
+Re-stamp from the hash the validator prints in its own error. Valid dispositions are
+`['accepted','held','rejected']`; the gate also excludes review-EXPIRED. The
+review-disposition gate is **robotics-only** — `semiconductor_theme_research.py` contains zero
+`held|rejected|disposition` (positive control: `review` appears twice), so its `selected`
+already equals its post-gate count and correcting ours would not have forked the envelope.
 
 ## RULING 7 — the carrier's HOLD gated itself; it gates release, not merge (#7908 issuecomment-5827514263, 2026-09-25)
 
@@ -465,8 +508,9 @@ records **zero xpass**, which is the check that every one of those markers is ho
 and when the foundation arrives, any that would pass will XPASS and fail the build, forcing the
 markers off rather than letting them rot.
 
-Remaining merge gates: **2 (independent review of B2 — in flight, builder != reviewer)** and
-**4 (CI green apart from the `inactive_base_context` pilot — currently satisfied)**.
+Remaining merge gates: **2 (independent review — B2 ACCEPTED and adjudicated; B3
+`275d726d3c0` in flight, builder != reviewer)** and **4 (CI green apart from the
+`inactive_base_context` pilot — currently satisfied)**.
 
 ## Completion criterion 4 (public mirrors) — merging this carrier adds NO public-mirror surface. Measured, not asserted.
 
