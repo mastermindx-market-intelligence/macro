@@ -10,15 +10,24 @@ implementation_authority: none
 
 # Basic Materials Economics — current Fable integration packet
 
-Updated 2026-09-24 through R16. This compacts the existing packet; it does not create another handoff or discard the referenced specifications. The prior R15 packet remains at `4a26348c628809631652249c12245ca9ecb0e456`, blob `453427b72b01013e67d2e3620619bb541c1c7ae6`.
+Updated 2026-09-24 through R17. This updates the existing packet; it does not create another handoff or discard the referenced specifications. The prior R16 packet remains at `b694754e7e2f2f3013b19ddaa88d071e75a13715`, blob `d79395535ad3a7cf5deffba81f9e349e3405c3c4`.
 
 **Prepared for principal integration and independent review, not an unblocked production build.** Preferred avenue Fable for consequential shared-owner integration and acceptance; routine implementation uses the least-scarce capable avenue. CAPACITY_SELECTABLE / WAITING_CAPACITY / needs_placement. No Materials receiver, ACK, START, Executive Attempt or autonomous wake is established. The Semiconductor Fable assignment does not assign Materials.
+
+
+## R17 review result — read before implementation
+
+Principal review found and repaired one actual R16 reference-code defect: background/correction return paths bypassed R16-C07's comparison prerequisites. The updated existing `R16_CHANGE_CONTENT_EXERCISE_2026-09-24.py` applies those prerequisites before any text-bearing path. See `research/basic_materials/BASIC_MATERIALS_R17_REVIEW_FINDING_AND_DISPOSITION_2026-09-24.md`, `R17_COMPARISON_GUARD_TESTS_2026-09-24.py` and `R17_REVIEW_AND_REPAIR_VERIFICATION_2026-09-24.json`. Twenty regression failures on the parent become zero; the original38 complete outputs are unchanged. This corrects a research utility, not production behavior. R17 also removes the packet's mistaken Chairman-only delivery sentence: the existing authorized Sol/placement paths remain valid, without creating any actual assignment.
+
+An independent worker review was attempted through the existing pool owner but did **not** start. Native planning/pick offered Qwen; local `pool run qwen` ended78 with `LOCAL_SEAT_REMOTE_REQUIRED`, while the remote host selector does not support qwen. No reviewer ACK/START/result exists, no alternative provider was used to evade that gate, and the seven staged input files remained unchanged. Independent review therefore remains owed, not replaced by the author's repair. Its routing recovery belongs to the existing pool/placement owner, not a new queue or direct provider call.
+
+R16-C07 now explicitly applies to background/corrections as well as current observations. Preserve an independent noncomparative fact only through separately reviewed wording; do not remove a comparison tag while retaining unsupported comparative language. All44 core requirements and the shared-foundation holds remain unchanged. Review the corrected current packet rather than the staged pre-correction snapshot.
 
 ## Mission and preserved scope
 
 Deliver Materials Economics inside the existing Themes/sector-to-company workflow: what changed, which operating business or financial right captures it, what can reach retained cash/per-share economics, what was expected, and what evidence matters next. The five selected originals across Nutrien, NOVONIX (two), Wheaton/Antamina and Weyerhaeuser must each retain their correct scope. Full acceptance includes lawful company navigation and actual source-to-private-browser proof, not source-only fallback.
 
-Sol retains Materials principal responsibility. Macro #7796 / `sol/basic-materials-research-20260923` remains research-only Draft/HOLD; no merge, rebase, replacement or product code on this carrier. Re-pin protected procedure and actual shared source/custody before effects. This packet creates no worker or authority grant. The current user must deliberately deliver a bounded implementation assignment before a receiver acts.
+Sol retains Materials principal responsibility. Macro #7796 / `sol/basic-materials-research-20260923` remains research-only Draft/HOLD; no merge, rebase, replacement or product code on this carrier. Re-pin protected procedure and actual shared source/custody before effects. This packet creates no worker or authority grant. A receiver needs a current bounded assignment through live Chairman delivery, an authorized Sol direct handoff, or the existing canonical placement owner, with the applicable admission and custody gates. Merely reading this packet grants none. Routine placement does not require another Chairman ceremony.
 
 Preserve all44 core requirements, eight tasks, seven open/partial gates, ten research navigation families, eight economic lenses and V0–V4 ambition: explanation, comparable changes, conditional economics, evaluated discovery, broader global coverage/learning. Research context does not rank, gate, originate, size or open trades. No new evidence/identity/correction/permissions/store/publisher/client/evaluation/queue control system.
 
@@ -36,7 +45,7 @@ All research filenames not otherwise qualified are under `research/basic_materia
 
 ## Shared foundation and revised eight tasks
 
-Consume #7870, not another Materials base. Last R16 inspection: `3e3a7956d014b8c50be7b197fdbea847cecfa641`, open/draft/unmerged. Schema `ff3928f0c54aa164ef8283d9da45af67e6a0d971` remains unchanged. Owner checkpoint reports R4 architecture accepted with qualifications; private-publication/projection review blockers and current-rights mapping qualification remain. These are candidate reports, not deployed acceptance or independently reproduced leaks. AM1–AM4 acceptance is unestablished; original same-discussion request5809093547 remains, not a new dispatch.
+Consume #7870, not another Materials base. R17 inspection: `e2f4d490915660fc6db64d750505309343e9e0e8`, open/draft/unmerged. Schema `ff3928f0c54aa164ef8283d9da45af67e6a0d971` remains unchanged. The prior R16 owner checkpoint reported R4 architecture accepted with qualifications and private-publication/projection/rights findings. Those detailed findings were not requalified in R17 and must not be projected as newly verified defects. Current Materials compatibility and deployed private acceptance remain unestablished. AM1–AM4 acceptance is unestablished; original same-discussion request5809093547 remains, not a new dispatch.
 
 | Task | Required action |
 |---|---|
@@ -59,7 +68,7 @@ Current source pin `ee908cb8f0b591a693d6de18fdf6e7ad314f1108` identifies `engine
 
 Source novelty is not a fresh build ID. Old evidence found late is background; corrections target exact predecessors; unrelated propositions and common-source repeats remain separate. A consensus-surprise claim needs actual earlier comparable consensus. A target window passing is not completion. Date-only actual source calendars need qualification; the synthetic exercise's UTC dates do not supply it.
 
-Keep global stance, Prophet selection/rank/entry/weights and membership projection unchanged. The16 mapped R16 requirements refine T3–T8; later brief/notification adoption is not an excuse to withhold the V0 private dossier. The offline helper is a development oracle, not production code or another permissions gate.
+Keep global stance, Prophet selection/rank/entry/weights and membership projection unchanged. The16 mapped R16 requirements refine T3–T8; later brief/notification adoption is not an excuse to withhold the V0 private dossier. The offline helper is a development reference exercise, not production code or another permissions gate.
 
 ## Acceptance and current limits
 
