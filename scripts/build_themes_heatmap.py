@@ -16,15 +16,19 @@ import argparse
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine import group_earnings as ge  # noqa: E402
+from engine import guidance_gap as gg  # noqa: E402
 from engine import theme_rerating_durability as trd  # noqa: E402
 from engine import theme_revisions as tr  # noqa: E402
 from engine import themes_heatmap as th  # noqa: E402
-from lib import config  # noqa: E402
+from lib import config, nyse_calendar  # noqa: E402
 
 log = logging.getLogger("build_themes_heatmap")
 
@@ -34,9 +38,82 @@ def _data(*parts: str) -> Path:
 
 
 _AUTO = object()
+_EVENT_LOOKBACK_CALENDAR_DAYS = 450
 
 
-def _attach_revision_durability(payload: dict, tree: list, *, latest=_AUTO, hist=_AUTO) -> bool:
+def _event_context_by_key(
+    tree: list,
+    asof: str,
+    *,
+    earn=_AUTO,
+    eightk=_AUTO,
+    hits=_AUTO,
+) -> dict[str, dict]:
+    """Group-Earnings owner rules projected onto Finviz source-local rosters.
+
+    No new event classifier is introduced: this adapter supplies each subtheme roster to
+    group_earnings.member_event_context. Missing source stores return an empty mapping.
+    """
+    if earn is _AUTO:
+        earn = ge._earnings_store()
+    if eightk is _AUTO:
+        eightk = ge._eightk_results()
+    if hits is _AUTO:
+        try:
+            hits = gg._hits()
+        except Exception:  # noqa: BLE001 — guidance is optional context
+            hits = None
+    if earn is None and eightk is None and hits is None:
+        return {}
+
+    day = datetime.strptime(asof, "%Y-%m-%d").date()
+    sessions = nyse_calendar.sessions_between(
+        day - timedelta(days=_EVENT_LOOKBACK_CALENDAR_DAYS), day
+    )
+    if not sessions or sessions[-1] != day:
+        return {}
+    session_index = pd.DatetimeIndex(sessions)
+    all_tickers = sorted({
+        str(ticker).strip().upper()
+        for theme in tree
+        for sub in theme.get("subsectors", []) or []
+        for ticker in sub.get("members", []) or []
+        if str(ticker).strip()
+    })
+    shared_events = ge.build_report_events(
+        all_tickers, session_index, earn, eightk
+    )
+    out: dict[str, dict] = {}
+    for theme in tree:
+        for sub in theme.get("subsectors", []) or []:
+            key = str(sub.get("key") or "").strip()
+            if not key:
+                continue
+            members = [
+                str(ticker).strip().upper()
+                for ticker in sub.get("members", []) or []
+                if str(ticker).strip()
+            ]
+            out[key] = ge.member_event_context(
+                members,
+                as_of=pd.Timestamp(day),
+                sessions=session_index,
+                earn=earn,
+                eightk=eightk,
+                guidance_hits=hits,
+                events=shared_events,
+            )
+    return out
+
+
+def _attach_revision_durability(
+    payload: dict,
+    tree: list,
+    *,
+    latest=_AUTO,
+    hist=_AUTO,
+    events=_AUTO,
+) -> bool:
     """Attach named revision confirmation to the EXISTING owner heatmap payload.
 
     Missing revision stores are an honest no-op; the heatmap keeps its price context.
@@ -48,11 +125,23 @@ def _attach_revision_durability(payload: dict, tree: list, *, latest=_AUTO, hist
         return False
     if hist is _AUTO:
         hist = tr._history()
+    if events is _AUTO:
+        try:
+            events = _event_context_by_key(tree, str(payload.get("asof") or ""))
+        except Exception as exc:  # noqa: BLE001 — event context is an optional named leg
+            log.warning("theme earnings/guidance context unavailable: %s", exc)
+            events = {}
     price_context = {
         "subthemes": [tile["repricing"] for tile in payload.get("tiles", [])
                       if isinstance(tile.get("repricing"), dict)]
     }
-    durability = trd.build_durability(tree, price_context, latest, hist)
+    durability = trd.build_durability(
+        tree,
+        price_context,
+        latest,
+        hist,
+        event_context_by_key=events or {},
+    )
     by_key = {row["key"]: row for row in durability["subthemes"]}
     for tile in payload.get("tiles", []):
         tile["durability"] = by_key.get(tile.get("t"))

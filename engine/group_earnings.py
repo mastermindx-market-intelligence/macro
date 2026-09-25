@@ -553,6 +553,70 @@ def _guidance(members: list[str], hits: pd.DataFrame | None) -> dict:
     return {"band": band, "n_filers": n_filers, "basis": GUIDANCE_BASIS}
 
 
+def member_event_context(
+    members: list[str],
+    *,
+    as_of: pd.Timestamp,
+    sessions: pd.DatetimeIndex,
+    earn: pd.DataFrame | None = None,
+    eightk: pd.DataFrame | None = None,
+    guidance_hits: pd.DataFrame | None = None,
+    events: dict[str, list[dict]] | None = None,
+) -> dict:
+    """Reusable earnings/guidance context for an arbitrary already-owned roster.
+
+    This is the public adapter for other group owners (for example a Finviz source-local
+    subtheme) that need the SAME season/results/guidance rules without inventing a second
+    earnings classifier. It intentionally excludes drift/sympathy because those require
+    a separately-qualified price matrix and benchmark.
+
+    The roster is supplied by the caller; this function creates no membership truth.
+    """
+    unique = sorted(dict.fromkeys(
+        str(ticker).strip().upper()
+        for ticker in members
+        if str(ticker).strip()
+    ))
+    as_of = pd.Timestamp(as_of)
+    if as_of.tz is not None:
+        as_of = as_of.tz_localize(None)
+    as_of = as_of.normalize()
+    sessions = pd.DatetimeIndex(sessions).sort_values()
+    if sessions.tz is not None:
+        sessions = sessions.tz_localize(None)
+
+    hits = guidance_hits
+    if hits is not None and not hits.empty and "file_date" in hits.columns:
+        try:
+            from engine import guidance_gap as gg
+            hits = hits.copy()
+            hits["file_date"] = pd.to_datetime(hits["file_date"], errors="coerce")
+            if getattr(hits["file_date"].dt, "tz", None) is not None:
+                hits["file_date"] = hits["file_date"].dt.tz_localize(None)
+            cutoff = as_of - pd.Timedelta(days=gg.RECENT_DAYS)
+            hits = hits[hits["file_date"].notna() & (hits["file_date"] >= cutoff)]
+        except Exception as exc:  # noqa: BLE001 — guidance is optional context
+            log.warning("group_earnings: member guidance filter failed: %s", exc)
+            hits = None
+
+    if events is None:
+        events = build_report_events(unique, sessions, earn, eightk)
+    season, latest = _season(unique, events, earn, sessions, as_of)
+    return {
+        "schema": SCHEMA,
+        "authority": AUTHORITY,
+        "as_of": as_of.date().isoformat(),
+        "n_members": len(unique),
+        "season": season,
+        "results": _results(unique, latest),
+        "guidance": _guidance(unique, hits),
+        "limits": {
+            "drift": "not_computed_without_qualified_member_price_matrix",
+            "sympathy": "not_computed_without_qualified_member_price_matrix",
+        },
+    }
+
+
 def _revisions_block(members: list[str], rev: pd.DataFrame | None) -> dict:
     """Share of covered members with net-UP analyst revisions (theme_revisions pattern).
 

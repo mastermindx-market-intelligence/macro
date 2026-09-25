@@ -181,11 +181,21 @@ def test_existing_heatmap_owner_projection_can_attach_named_revision_leg():
         latest["breadth"].to_dict(),
     )
 
+    events = {
+        "compute": {
+            "results": {
+                "n_beat": 3, "n_miss": 1, "n_inline": 0, "n_no_data": 0,
+                "beat_basis": "fixture",
+            },
+            "guidance": {"band": "RAISING", "n_filers": 2, "basis": "fixture"},
+        }
+    }
     assert builder._attach_revision_durability(
-        payload, tree, latest=latest, hist=hist
+        payload, tree, latest=latest, hist=hist, events=events
     ) is True
     compute = next(tile for tile in payload["tiles"] if tile["t"] == "compute")
     assert compute["durability"]["joint_state"] == "price_and_revisions_confirming"
+    assert compute["durability"]["events"]["state"] == "earnings_and_guidance_positive"
     assert payload["durability"]["schema"] == dur.SCHEMA
     assert payload["durability"]["authority"]["may_trade"] is False
 
@@ -197,7 +207,111 @@ def test_heatmap_revision_leg_is_honest_noop_when_owner_store_absent():
     payload = th.build_themes_heatmap(_tree(), {}, {})
     before = set(payload)
     assert builder._attach_revision_durability(
-        payload, _tree(), latest=None, hist=None
+        payload, _tree(), latest=None, hist=None, events={}
     ) is False
     assert set(payload) == before
     assert "durability" not in payload
+
+
+def test_event_confirmation_is_a_named_leg_not_part_of_joint_score():
+    latest = _latest({
+        "A": 0.8, "B": 0.7, "C": 0.6, "D": 0.5,
+        "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0,
+    })
+    hist = _history(
+        {"A": 0.1, "B": 0.1, "C": 0.0, "D": 0.0,
+         "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0},
+        latest["breadth"].to_dict(),
+    )
+    events = {
+        "compute": {
+            "season": {"n_members": 4, "n_reported": 4, "n_upcoming_14d": 0, "next": []},
+            "results": {
+                "n_beat": 3, "n_miss": 1, "n_inline": 0, "n_no_data": 0,
+                "beat_basis": "fixture",
+            },
+            "guidance": {"band": "RAISING", "n_filers": 2, "basis": "fixture"},
+            "limits": {"drift": "not_computed", "sympathy": "not_computed"},
+        }
+    }
+    out = dur.build_durability(
+        _tree(), _price_context(), latest, hist, event_context_by_key=events
+    )
+    compute = next(row for row in out["subthemes"] if row["key"] == "compute")
+
+    assert compute["events"]["state"] == "earnings_and_guidance_positive"
+    assert compute["joint_state"] == "price_and_revisions_confirming"
+    assert compute["joint_scope"] == "price_plus_revisions_only"
+    assert out["event_state_counts"]["earnings_and_guidance_positive"] == 1
+    assert out["method"]["event_owner"] == "engine.group_earnings.member_event_context"
+    assert out["authority"]["may_trade"] is False
+
+
+def test_cutting_guidance_and_miss_skew_are_descriptive_negative_context_only():
+    latest = _latest({
+        "A": 0.8, "B": 0.7, "C": 0.6, "D": 0.5,
+        "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0,
+    })
+    event = {
+        "compute": {
+            "results": {
+                "n_beat": 1, "n_miss": 3, "n_inline": 0, "n_no_data": 0,
+                "beat_basis": "fixture",
+            },
+            "guidance": {"band": "CUTTING", "n_filers": 2, "basis": "fixture"},
+        }
+    }
+    out = dur.build_durability(
+        _tree(), _price_context(), latest, None, event_context_by_key=event
+    )
+    compute = next(row for row in out["subthemes"] if row["key"] == "compute")
+
+    assert compute["events"]["state"] == "earnings_and_guidance_negative"
+    assert compute["decision_authority"]["can_support_exit_decision"] is False
+
+
+def test_missing_event_context_is_unavailable_not_negative():
+    latest = _latest({
+        "A": 0.8, "B": 0.7, "C": 0.6, "D": 0.5,
+        "E": 0.0, "F": 0.0, "G": 0.0, "H": 0.0,
+    })
+    out = dur.build_durability(_tree(), _price_context(), latest, None)
+    compute = next(row for row in out["subthemes"] if row["key"] == "compute")
+    assert compute["events"]["state"] == "unavailable"
+
+
+def test_event_projection_precomputes_report_events_once(monkeypatch):
+    from scripts import build_themes_heatmap as builder
+
+    tree = _tree()
+    calls = {"events": 0, "contexts": 0}
+
+    def fake_events(tickers, sessions, earn, eightk):
+        calls["events"] += 1
+        assert set(tickers) == set("ABCDEFGH")
+        return {}
+
+    def fake_context(members, **kwargs):
+        calls["contexts"] += 1
+        assert kwargs["events"] == {}
+        return {
+            "season": {"n_members": len(members), "n_reported": 0,
+                       "n_upcoming_14d": 0, "next": []},
+            "results": {"n_beat": None, "n_miss": None, "n_inline": None,
+                        "n_no_data": len(members), "beat_basis": "fixture"},
+            "guidance": {"band": None, "n_filers": 0, "basis": "fixture"},
+            "limits": {},
+        }
+
+    monkeypatch.setattr(builder.ge, "build_report_events", fake_events)
+    monkeypatch.setattr(builder.ge, "member_event_context", fake_context)
+
+    out = builder._event_context_by_key(
+        tree,
+        "2026-09-24",
+        earn=pd.DataFrame(),
+        eightk=None,
+        hits=None,
+    )
+    assert set(out) == {"compute", "foundry"}
+    assert calls == {"events": 1, "contexts": 2}

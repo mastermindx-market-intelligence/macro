@@ -579,3 +579,54 @@ ASML a universal leader.
 This is the correct intermediate rung before "alpha leader." The next promotion requires
 market + sector + parent-theme residualization and forward evaluation; do not rename this
 field to alpha merely because the candidate looks economically plausible.
+
+
+## Continuation 3 — earnings / guidance confirmation
+
+The durability join now consumes the incumbent **Group Earnings** owner rather than
+inventing another event classifier.
+
+`engine.group_earnings.member_event_context` is a public roster adapter over the same:
+- earnings-season clock;
+- Nasdaq surprise resolution;
+- resolution-conditioned denominator / minimum-report floor;
+- 8-K reaction-date matching;
+- `guidance_gap` classifier and distinct-filer floor.
+
+The Finviz adapter precomputes report events once across the full source-local universe,
+then projects the same event map into each subtheme roster. It deliberately does **not**
+compute Group Earnings' drift or sympathy legs unless a separately-qualified price matrix
+and benchmark are supplied. Missing earnings/guidance evidence stays unavailable; it is
+never treated as negative.
+
+The durability contract keeps this as a separate `events` leg with states such as
+`earnings_positive`, `guidance_positive`, or
+`earnings_and_guidance_positive`. The existing `joint_state` remains explicitly
+`price_plus_revisions_only`; adding event evidence does not silently change its meaning
+or fuse three inputs into an opaque score.
+
+### Current semiconductor earnings evidence (2026-09-24)
+
+Using the tracked current earnings, Item-2.02 and guidance artifacts and the incumbent
+Group Earnings rules:
+
+| Subtheme | Classified current-season results | No-data members | Guidance band |
+|---|---:|---:|---|
+| Compute | 4 beat / 1 miss / 0 inline | 3 | unavailable (0 qualifying filers) |
+| Memory | 5 beat / 0 miss | 0 | unavailable (0 qualifying filers) |
+| Analog | 6 beat / 0 miss | 1 | unavailable (0 qualifying filers) |
+| Wireless | 3 beat / 1 miss | 2 | unavailable (0 qualifying filers) |
+| Foundries | 4 beat / 0 miss | 0 | unavailable (0 qualifying filers) |
+| Design Tools | 3 beat / 1 miss | 2 | unavailable (0 qualifying filers) |
+| Lithography | 5 beat / 0 miss | 0 | unavailable (0 qualifying filers) |
+| Packaging | 6 beat / 0 miss | 0 | unavailable (0 qualifying filers) |
+| Next-Gen | 7 beat / 2 miss | 5 | unavailable (0 qualifying filers) |
+
+Memory also has MU on the tracked upcoming calendar for 2026-09-30 after-hours.
+
+The correct interpretation is narrow: current classified earnings results are positively
+skewed across these semiconductor subthemes, while the source does **not** currently
+provide enough qualifying guidance-language breadth to claim management-guidance
+confirmation at subtheme grain. This is stronger than a sector-only read because it
+separates "earnings results confirm" from "guidance confirms" instead of blending them.
+It remains context-only and is not a buy recommendation.

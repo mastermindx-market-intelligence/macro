@@ -666,3 +666,47 @@ def test_end_to_end_directional_split_refuses_on_its_own_floor(pulse):
     d = pulse["rich"]["sympathy"]["directional"]
     assert (d["n_beat_days"], d["n_miss_days"]) == (4, 1)
     assert d["beat_day_median"] is None and d["miss_day_median"] is None
+
+
+def test_member_event_context_reuses_owner_rules_for_arbitrary_roster(tmp_path, monkeypatch):
+    """Finviz/GMI consumers get the same event rules without a second classifier."""
+    world = _write_tree(tmp_path, monkeypatch)
+    ctx = ge.member_event_context(
+        RICH,
+        as_of=pd.Timestamp(AS_OF),
+        sessions=world["sessions"],
+        earn=ge._earnings_store(),
+        eightk=ge._eightk_results(),
+        guidance_hits=pd.read_parquet(
+            config.data_dir() / "edgar" / "guidance_hits.parquet"
+        ),
+    )
+
+    assert ctx["schema"] == ge.SCHEMA
+    assert ctx["authority"] == "context_only"
+    assert ctx["n_members"] == len(RICH)
+    assert ctx["season"]["n_reported"] == 8
+    assert ctx["results"]["n_beat"] == 4
+    assert ctx["results"]["n_miss"] == 1
+    assert ctx["results"]["n_inline"] == 1
+    assert ctx["results"]["n_no_data"] == 2
+    assert ctx["guidance"]["band"] == "RAISING"
+    assert ctx["guidance"]["n_filers"] == 2
+    assert ctx["limits"]["drift"] == "not_computed_without_qualified_member_price_matrix"
+    assert ctx["limits"]["sympathy"] == "not_computed_without_qualified_member_price_matrix"
+
+
+def test_member_event_context_preserves_guidance_filer_floor(tmp_path, monkeypatch):
+    world = _write_tree(tmp_path, monkeypatch)
+    ctx = ge.member_event_context(
+        ONEF,
+        as_of=pd.Timestamp(AS_OF),
+        sessions=world["sessions"],
+        earn=ge._earnings_store(),
+        eightk=ge._eightk_results(),
+        guidance_hits=pd.read_parquet(
+            config.data_dir() / "edgar" / "guidance_hits.parquet"
+        ),
+    )
+    assert ctx["guidance"]["n_filers"] == 1
+    assert ctx["guidance"]["band"] is None

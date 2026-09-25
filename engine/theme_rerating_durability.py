@@ -81,6 +81,52 @@ def revision_state(revision: Mapping | None) -> str:
     return "flat"
 
 
+def event_confirmation_state(event: Mapping | None) -> str:
+    """Directional earnings/guidance read using only Group Earnings owner outputs."""
+    if not event:
+        return "unavailable"
+    results = event.get("results") or {}
+    guidance = event.get("guidance") or {}
+    beat = results.get("n_beat")
+    miss = results.get("n_miss")
+    band = guidance.get("band")
+
+    if beat is None or miss is None:
+        result_state = "insufficient"
+    elif int(beat) > int(miss):
+        result_state = "beat_skew"
+    elif int(miss) > int(beat):
+        result_state = "miss_skew"
+    else:
+        result_state = "balanced"
+
+    guidance_state = (
+        "raising"
+        if band in {"RAISING", "BROAD-RAISE"}
+        else "cutting"
+        if band == "CUTTING"
+        else "neutral"
+        if band == "NEUTRAL"
+        else "insufficient"
+    )
+
+    if result_state == "beat_skew" and guidance_state == "raising":
+        return "earnings_and_guidance_positive"
+    if result_state == "miss_skew" and guidance_state == "cutting":
+        return "earnings_and_guidance_negative"
+    if guidance_state == "raising":
+        return "guidance_positive"
+    if guidance_state == "cutting":
+        return "guidance_negative"
+    if result_state == "beat_skew":
+        return "earnings_positive"
+    if result_state == "miss_skew":
+        return "earnings_negative"
+    if result_state == "insufficient" and guidance_state == "insufficient":
+        return "insufficient"
+    return "mixed"
+
+
 def joint_state(price_shape: str | None, revisions: str) -> str:
     """Named two-axis relation; never a recommendation or scalar score."""
     shape = str(price_shape or "insufficient_data")
@@ -135,6 +181,7 @@ def build_durability(
     repricing: Mapping,
     latest_revisions: pd.DataFrame,
     revision_history: pd.DataFrame | None,
+    event_context_by_key: Mapping[str, Mapping] | None = None,
 ) -> dict:
     """Join Finviz subthemes to incumbent revision breadth using the same member roster.
 
@@ -142,6 +189,7 @@ def build_durability(
     pure over those frames and does not read or write the revisions store.
     """
     by_key = _repricing_by_key(repricing)
+    event_context_by_key = event_context_by_key or {}
     rows: list[dict] = []
 
     for theme_row in tree:
@@ -169,6 +217,8 @@ def build_durability(
                 rev = None
             rev_state = revision_state(rev)
             state = joint_state(price.get("shape"), rev_state)
+            event = event_context_by_key.get(key) or {}
+            event_state = event_confirmation_state(event)
             rows.append({
                 "key": key,
                 "theme": theme,
@@ -196,7 +246,15 @@ def build_durability(
                     "n_covered": int((rev or {}).get("n_covered") or 0),
                     "coverage": (rev or {}).get("coverage"),
                 },
+                "events": {
+                    "state": event_state,
+                    "season": event.get("season"),
+                    "results": event.get("results"),
+                    "guidance": event.get("guidance"),
+                    "limits": event.get("limits"),
+                },
                 "joint_state": state,
+                "joint_scope": "price_plus_revisions_only",
                 "decision_authority": {
                     "can_support_buy_decision": False,
                     "can_support_exit_decision": False,
@@ -213,16 +271,21 @@ def build_durability(
         "schema": SCHEMA,
         "authority": dict(AUTHORITY),
         "method": {
-            "composition": "named_price_and_revision_legs_no_fused_score",
+            "composition": "named_price_revision_event_legs_no_fused_score",
             "revision_owner": "engine.theme_revisions.theme_revisions_for",
             "price_owner": "engine.theme_repricing_context",
+            "event_owner": "engine.group_earnings.member_event_context",
             "revision_role": "confirmation_and_runway_not_entry",
+            "event_role": "earnings_and_guidance_confirmation_not_entry",
         },
         "joint_state_counts": dict(sorted(Counter(
             row["joint_state"] for row in rows
         ).items())),
         "revision_state_counts": dict(sorted(Counter(
             row["revisions"]["state"] for row in rows
+        ).items())),
+        "event_state_counts": dict(sorted(Counter(
+            row["events"]["state"] for row in rows
         ).items())),
         "subthemes": rows,
         "n_subthemes": len(rows),
