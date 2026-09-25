@@ -2190,7 +2190,7 @@ jobs:
     # roots and the job would select on templates/index.html and every other
     # ordinary code PR it never reads (the packing-ceiling probe caught exactly
     # that: +1 job on all three probes). The paths below are the files these
-    # nineteen suites import, open or render — the vertical's own subjects, the
+    # twenty suites import, open or render — the vertical's own subjects, the
     # shared owners it consumes (Theme Graph rights/contracts, Earnings
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
@@ -2213,6 +2213,10 @@ jobs:
       - "templates/_theme_research_section.html.j2"
       - "tests/test_theme_research_mount_context.py"
       - "config/theme_crosswalk.yml"
+      # Hook 2 on the Theme Tracker: the page mounts one section per
+      # registered vertical whose anchor is already a theme row, through the
+      # same partial the basket page uses.
+      - "tests/test_theme_tracker_research_mounts.py"
       # The registry module imports through the package, so its closure carries
       # engine/market_ontology/__init__.py -> exposure_map.py (as conviction-profile declares).
       - "engine/market_ontology/__init__.py"
@@ -2262,10 +2266,14 @@ jobs:
       # against the Company Intelligence owner's writer/validator/reader.
       - "tests/test_semiconductor_publication_primitives.py"
       - "engine/company_intelligence/event_workspace.py"
-      # The client suite also asserts the BUILT Theme Tracker page carries the
-      # mount and that template and site stay in sync, so its closure reaches
-      # the render pair, the sync checker and the sparse helper. Named by the
-      # curated-exclusive closure audit; widening is the safe direction.
+      # CORRECTION (2026-09-24): an earlier version of this comment said the
+      # client suite asserts the BUILT Theme Tracker page carries the mount. It
+      # does not — no test does, and the committed site/state_of_themes.html
+      # predates the mount entirely (it regenerates on the nightly after
+      # merge). What is true is the reason these paths are here: the suite
+      # imports the tracker suite's synthetic-root helper, so its closure
+      # reaches the render pair, the sync checker and the sparse helper. Named
+      # by the curated-exclusive closure audit; widening is the safe direction.
       - "site/assets/css/theme-research.css"
       - "templates/state_of_themes.html.j2"
       - "site/state_of_themes.html"
@@ -2390,6 +2398,8 @@ jobs:
         run: python -m pytest tests/test_basket_intelligence_mounts.py -q
       - name: registration-driven mount (nine strings, primary-only basket claim, second vertical with no template edit)
         run: python -m pytest tests/test_theme_research_mount_context.py -q
+      - name: theme tracker mounts (row-gated, page order, two verticals, failure never fails the build)
+        run: python -m pytest tests/test_theme_tracker_research_mounts.py -q
 
   lens-tap-boundary:
     if: ${{ false }}
@@ -16794,6 +16804,9 @@ jobs:
       - "scripts/build_site.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
+      # Shared hook 2 (#7780): the leaf module the tracker builder above reads
+      # to decide which registered verticals mount on the board.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"

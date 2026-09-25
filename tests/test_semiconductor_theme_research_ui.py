@@ -486,9 +486,27 @@ def test_abortcontroller_used(js_text):
 # ---------------------------------------------------------------------------
 
 def _render_page(tmp_path: Path) -> str:
+    """The Theme Tracker page rendered from a synthetic root that CARRIES the
+    registered anchor as a theme row.
+
+    Shared hook 2: the page mounts a vertical only where its anchor is already
+    a row on the board, and the section markup now lives in its own partial, so
+    the synthetic root needs both (the tracker suite's fixed support-partial
+    list is not this suite's to edit). The live board carries the row — it is
+    the first of the eighteen in site/neuralwebdata/theme_state.json."""
+    import json  # noqa: PLC0415
     from tests.test_state_of_themes import _make_sot_root
     import scripts.build_state_of_themes as sot
     root = _make_sot_root(tmp_path)
+    state = root / "site" / "neuralwebdata" / "theme_state.json"
+    document = json.loads(state.read_text(encoding="utf-8"))
+    document["themes"][0] = {**document["themes"][0], "theme_id": "ai_semiconductors"}
+    state.write_text(json.dumps(document), encoding="utf-8")
+    section = TPL_PATH.parent / "_theme_research_section.html.j2"
+    if section.exists():
+        (root / "templates" / "_theme_research_section.html.j2").write_bytes(
+            section.read_bytes()
+        )
     return sot.render(root)
 
 
@@ -528,11 +546,25 @@ def test_template_asset_includes_exactly_once(tmp_path):
     assert '<script src="theme.js"></script>\n<script defer src="assets/js/theme-research.js?v=20260924a"></script>' in html
 
 
-def test_template_source_mount_block_is_frozen():
+def test_template_source_mounts_through_the_shared_partial():
+    """The page no longer carries its own copy of one vertical's mount.
+
+    Shared hook 2: the markup and every string in it come from
+    _theme_research_section.html.j2 driven by the registration, so the page
+    source must hold the loop-and-include exactly once and the mount literal
+    not at all. The position is unchanged — still inside the lanes branch,
+    immediately before the disclosure."""
     tpl = TPL_PATH.read_text(encoding="utf-8")
-    # the mount sits inside the lanes branch, immediately before the disclosure
-    assert tpl.index("data-theme-research-mount") < tpl.index('<p class="sot-disclosure">')
-    assert tpl.count("data-theme-research-mount") == 1
+    loop = ('{% for tr_mount in theme_research_mounts or [] %}'
+            '{% include "_theme_research_section.html.j2" ignore missing %}{% endfor %}')
+    assert tpl.count(loop) == 1, "the page must mount through the shared partial, once"
+    assert tpl.index(loop) < tpl.index('<p class="sot-disclosure">')
+    assert "data-theme-research-mount" not in tpl, (
+        "the mount literal belongs to the section partial, not to this page"
+    )
+    assert "ai_semiconductors" not in tpl and "hbm_packaging" not in tpl, (
+        "the page must not name a vertical"
+    )
 
 
 # ---------------------------------------------------------------------------
