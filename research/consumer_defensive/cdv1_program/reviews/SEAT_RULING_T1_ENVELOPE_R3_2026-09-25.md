@@ -155,3 +155,31 @@ The bars are the commission's review standard: (a) wrong bind, (b) present fact 
     - Its return testified "GAPS: None" and "No R136 field is exempt". The audit disproved both: R134 and R135 were incomplete (N1, N2), and two workspace-carried fields were exempt (R150).
     - The round-3 commission revokes the generic PR-body clause by name and allows only read-only `gh` commands. The seat checks the PR's edit history after the lane returns.
   - **Hold.** #7905 stays Draft/HOLD under Sol's direction (comment 5825632041).
+
+## Amendment after the round-3 repair lane (R152)
+
+Source: the round-3 repair lane `cdv1_t1_envelope_r3_repair` (glm-codex/glm-5.3 on mb, 13:33Z–14:43Z). It returned `STATUS: PARTIAL` and pushed nothing. It reported that R145, as written, contradicts the frozen round-1 suite.
+- The seat applied the lane's uncommitted work: two files, 156 lines added and 109 removed, diff sha256 `856f79b82c870212…`. It reproduced the report with the four frozen suites on Python 3.12 with only pytest and pyyaml installed: F1 46 passed; R1 124 passed and 1 failed; R2 70 passed; R3 92 passed.
+- The failing case is `test_pg_envelope_f1_probes_r1.py::test_f3_header_geometry_edit_in_one_statement_never_binds_another_value[highlights_2026_colspan_plus1]`.
+  - The edit shifts the highlights statement's `2026` header onto its `% Change` column, so the second diluted-EPS cell reads `6%`.
+  - The R1 test requires the engine to equal the frozen round-0 witness, `t.witness_outcome`.
+  - The witness reads figures with the unit markers ignored: `t.literal` accepts `[+$]?…%?`. It calls any pair whose values differ `CONFLICT`.
+  - R145's "never a conflict" makes the same pair `envelope_unlocated`. Both are typed absences, and nothing binds either way, but the two frozen oracles cannot both pass.
+- The seat's own R3 case `test_r145_unit_marker_on_either_statement_is_unlocated[Q3-pg_diluted_eps-0-1.63%-second:1.64]` pinned the same contradiction on the primary side.
+- **The error is the seat's.** R151's satisfiability check covered R143's layout cases and R147–R149 on the originals. It never ran R145 against the round-0 witness.
+- The lane stopped and reported the contradiction instead of special-casing either suite. That is the conduct the commission asks for.
+
+- **R152 (amends R145; an older frozen oracle prevails over a newer ruling that contradicts it, as R35 held).**
+  - **The order for each pinned pair:**
+    1. Locate both cells. Unless each statement yields exactly one cell, the metric is `envelope_unlocated`.
+    2. Read both cells under R118 and R128 with the unit markers ignored, as the witness reads them, keeping R118's dash forms unchanged. If either cell does not read, the metric is `envelope_unlocated`.
+    3. If the two values differ, the metric is a conflict (`cross_check_conflict`, `envelope_conflict`), whatever markers either cell holds.
+    4. If they agree, apply R145's unit rule to both cells. A `usd_per_share` cell holding `%`, or a `percent` or `percentage_points` cell holding `$`, makes the metric `envelope_unlocated`. Otherwise it is present.
+  - **What stands from R145.** The unit rule covers both statements, and a cell holding a forbidden marker never contributes to a present fact (bar f).
+  - **What changes.** R145's clause "never a conflict" is withdrawn. A disagreeing pair is a conflict, as the round-0 witness defines it. The order only moves an absence from one code to the other, so no bar is affected.
+  - **The frozen R3 suite is amended in two places, both seat-authored:**
+    - its fifth R145 case becomes the agreeing primary-side case (FY26 Q3 diluted EPS, primary `1.63%`, second cell untouched), which keeps the primary-side coverage that case existed for;
+    - a new test, `test_r152_a_disagreeing_pair_is_a_conflict_whatever_its_unit_markers` (FY26 Q3 diluted EPS with `%`; FY26 Q1 reported sales growth with `$`; second cell `99`), requires the outcome to be a conflict and to equal the witness.
+    - The suite goes from 92 cases to 94. Against the lane's engine, exactly the two new cases fail and 92 pass.
+  - **The engine change is the seat's.** In `pg_envelope.py`, `_outcome` reads both cells with `_literal`, compares them, and then checks both with `_unit_admits`, which replaces `_literal_for`. With the lane's work and this change, all four frozen suites pass: F1 46, R1 125, R2 70, R3 94.
+  - **The R4 audit** judges bar (f) as "a unit marker that binds on either statement". The comparison-first order is lawful under R152. The auditor also attacks the R152 amendment itself: whether it is the minimal rule that satisfies the older oracle, and whether any construction lets a marker-bearing cell reach a present fact.

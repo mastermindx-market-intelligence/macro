@@ -203,17 +203,17 @@ def test_r144_outcome_is_independent_of_the_process_locale(name):
     assert out == "True"
 
 
-# ============================ R145 (N4): the unit rule is part of the literal grammar, for every pinned cell
+# ============================ R145 (N4), as R152 amends it: the unit rule binds both cells of an agreeing pair
 @pytest.mark.parametrize("q,metric,k,printed,other", [
     ("Q3", t.DIL, 1, "1.63%", None),
     ("Q2", t.CORE, 1, None, "%"),
     ("Q3", t.SALES, 1, "$7%", None),
     ("Q1", t.SALES, 1, None, "$"),
-    ("Q3", t.DIL, 0, "1.63%", "second:1.64"),
+    ("Q3", t.DIL, 0, "1.63%", None),
 ])
 def test_r145_unit_marker_on_either_statement_is_unlocated(q, metric, k, printed, other):
-    """R145: a usd_per_share literal holding '%' or a percent literal holding '$', in EITHER statement, makes the metric
-    envelope_unlocated, never present and never a conflict."""
+    """R145 as R152 amends it: when the two statements agree, a usd_per_share literal holding '%' or a percent literal
+    holding '$', in EITHER statement, makes the metric envelope_unlocated, never present."""
     body = src(q)
     cell = t.one(body, pin(q, metric, k))
     if printed is None:
@@ -224,6 +224,18 @@ def test_r145_unit_marker_on_either_statement_is_unlocated(q, metric, k, printed
         body = r1.set_cell(body, pin(q, metric, 1), other.split(":", 1)[1])
     ws, _, _ = build(body, q)
     assert r1.numeric(ws)[metric] == t.UNLOCATED
+
+
+@pytest.mark.parametrize("q,metric,marker", [("Q3", t.DIL, "%"), ("Q1", t.SALES, "$")])
+def test_r152_a_disagreeing_pair_is_a_conflict_whatever_its_unit_markers(q, metric, marker):
+    """R152: the two statements are compared as the frozen witness reads them, unit markers ignored.  A pair whose
+    values differ is a conflict, exactly as t.witness_outcome says, even when one cell holds a marker R145 forbids."""
+    body = src(q)
+    primary = t.one(body, pin(q, metric, 0)).text
+    body = r1.set_cell(body, pin(q, metric, 0), ("$" + primary) if marker == "$" else (primary + "%"))
+    body = r1.set_cell(body, pin(q, metric, 1), "99")
+    ws, _, _ = build(body, q)
+    assert r1.numeric(ws)[metric] == t.CONFLICT == t.witness_outcome(body, REL[q])[metric]
 
 
 # ============================ R146 (N5): carriage returns are tolerated
