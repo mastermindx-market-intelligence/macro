@@ -322,7 +322,7 @@ def _design(df: pd.DataFrame, model: str) -> tuple[np.ndarray, list[str]]:
 
 def _fit(train: pd.DataFrame, model: str) -> dict:
     x, names = _design(train, model)
-    weights = (1 / train.groupby("decision").decision.transform("size")).to_numpy(float)
+    weights = (1 / train.groupby("decision").decision.transform("size")).to_numpy(dtype=float, copy=True)
     weights /= weights.sum()
     mu = np.average(x, axis=0, weights=weights)
     sd = np.sqrt(np.average((x - mu) ** 2, axis=0, weights=weights))
@@ -332,8 +332,10 @@ def _fit(train: pd.DataFrame, model: str) -> dict:
     coef, _, rank, _ = np.linalg.lstsq(xn * sw[:, None], train.active_return.to_numpy(float) * sw, rcond=1e-10)
     if rank < xn.shape[1]:
         raise ValueError(f"Rank-deficient {model} design")
+    ix = names.index("m_x_c") if "m_x_c" in names else None
     return {"names": names, "mean": mu, "scale": sd, "coef": coef,
-            "interaction_coef": float(coef[names.index("m_x_c") + 1]) if "m_x_c" in names else None}
+            "interaction_coef": float(coef[ix + 1] / sd[ix]) if ix is not None else None,
+            "interaction_coef_standardized": float(coef[ix + 1]) if ix is not None else None}
 
 
 def _predict(fit: dict, test: pd.DataFrame, model: str) -> np.ndarray:
