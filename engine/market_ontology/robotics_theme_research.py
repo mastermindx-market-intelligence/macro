@@ -771,18 +771,66 @@ _CLOSED_TAIL = (r"(?:,?\s+(?:on|in|effective|as of|with effect from|dated)\s+"
 # "(divestiture to X, carved out from Y)" all supplied a direction — an
 # inference, which is exactly what this design abolishes. The slot must be the
 # label's trailing parenthetical, an optional status word, ONE ownership head
-# noun, the preposition and a counterparty naming no further preposition.
+# noun, the preposition and a counterparty.
+#
+# Review 9 closed the two halves that FRAME left open. Both were free text
+# policed by a two-word blocklist, and both inverted exactly as the prose
+# blocklists had: agency phrases inside the counterparty ("to Skild AI by
+# Fanuc", "to Skild AI on behalf of Fanuc", "from Fanuc by Skild AI"), and a
+# second relation hidden in the product half by splitting it across two
+# parentheticals ("business (sale to Skild AI) (transfer from Fanuc)", which
+# served the label's SECOND relation against its first). Every curated input to
+# the direction is therefore a closed grammar of its own: the counterparty is a
+# NAME, and the product half may carry no relation at all.
 _OWNERSHIP_HEAD = (r"(?:sale|divestiture|transfer|acquisition|purchase|ownership change|"
                    r"change of control|change of ownership)")
 _CURATED_SLOT = re.compile(
-    r"\(\s*(?:completed|announced|agreed|pending|proposed)?\s*" + _OWNERSHIP_HEAD
+    r"\(\s*(?:(?:completed|announced|agreed|pending|proposed)\s+)?" + _OWNERSHIP_HEAD
     + r"\s+(?P<prep>to|from)\s+(?P<party>[^()]+?)\s*\)\s*$", re.IGNORECASE)
-# a second preposition in the counterparty means the parenthetical carries more
-# than one relation, so it records no single direction
-_SLOT_DIRTY = re.compile(r"\b(?:to|from)\b", re.IGNORECASE)
-# a curated product NAME that embeds an agent phrase is a curation defect
-# (review 8 nit 2); refuse it rather than serve a side the phrase contradicts
-_PRODUCT_DIRTY = re.compile(r"\b(?:by|for|via|through|behalf)\b", re.IGNORECASE)
+# A counterparty is a NAME and nothing else. This is an ALLOWLIST: agency is an
+# open set inside a curated parenthetical for the same reason it is an open set
+# in prose, so the grammar admits proper-noun tokens instead of enumerating the
+# phrases that are not names. "a vehicle managed by Fanuc", "Skild AI on behalf
+# of Fanuc" and "Skild AI, mandated by Fanuc" all fall outside it, as does a
+# second party ("Skild AI and Fanuc") and a second relation.
+_NAME_TOKEN = re.compile(r"[A-Z0-9][A-Za-z0-9&./'’-]*\Z")
+# lower-case tokens that occur INSIDE real names ("Bank of America"); none of
+# them can express an ownership direction in the counterparty position
+_NAME_CONNECTOR = frozenset({"of", "de", "del", "der", "den", "van", "von", "du", "da",
+                             "la", "le"})
+# a capitalised homograph would satisfy _NAME_TOKEN, so a relation word is
+# refused whatever its case
+_NAME_RELATION = frozenset({"to", "from", "by", "for", "via", "through", "and", "or",
+                            "with", "plus", "on", "behalf", "at", "in", "under"})
+_PARTY_MAX_TOKENS = 8
+# The product half must be a product NAME, not a second relation: no
+# preposition, no agent phrase, and no nested parenthetical the slot grammar
+# itself would read as a direction (checked at any depth, review 9 blocker 2).
+_PRODUCT_DIRTY = re.compile(r"\b(?:to|from)\b|\b(?:by|behalf|via|through)\s", re.IGNORECASE)
+# "for" is the one hedge: in a curated product name it usually marks a market
+# segment ("Kepware for Industry 4.0", "Machine Vision for Logistics unit"),
+# which review 9 nit 1 measured as the largest source of silent over-refusal,
+# but "for a client" is a documented agency inversion from rounds 2-6. It is
+# therefore admitted only before a CAPITALISED segment name, which makes this
+# pattern deliberately case-SENSITIVE and separate: under re.IGNORECASE an
+# [A-Z] class matches lower case too and the whole distinction disappears
+# silently.
+_PRODUCT_FOR = re.compile(r"\b[Ff]or\s+(?![A-Z])")
+
+
+def _is_party_name(party: str) -> bool:
+    """Whether ``party`` is a name and nothing else: 1-8 tokens, each either
+    opening with a capital or a digit or being a name-internal connector, none
+    of them a relation word in any case, and a real name token at each end."""
+    tokens = [t for t in (piece.strip(",") for piece in party.split()) if t]
+    if not 1 <= len(tokens) <= _PARTY_MAX_TOKENS:
+        return False
+    for token in tokens:
+        if token.lower() in _NAME_RELATION:
+            return False
+        if not (_NAME_TOKEN.match(token) or token.lower() in _NAME_CONNECTOR):
+            return False
+    return bool(_NAME_TOKEN.match(tokens[0]) and _NAME_TOKEN.match(tokens[-1]))
 
 
 def _subject_mentions(label: object) -> frozenset[str]:
@@ -818,17 +866,18 @@ def _curated_direction(object_label: str) -> tuple[str, str, str] | None:
     records them in its trailing ownership parenthetical: "Robotics Automation
     business (sale to Skild AI)" -> ``("Robotics Automation business", "to",
     "Skild AI")``. ``None`` — i.e. no side is ever served — when the label has
-    no such parenthetical, when the counterparty names a second preposition, or
-    when the product name embeds an agent phrase. This is the ONLY place a
+    no such parenthetical, when the counterparty is not a bare name, or when
+    the product half carries a relation of its own. This is the ONLY place a
     direction may come from, so every one of those is a refusal, never a guess."""
     slot = _CURATED_SLOT.search(object_label)
     if not slot:
         return None
     product = object_label[: slot.start()].strip()
     party = slot.group("party").strip()
-    if not product or not party:
+    if not product or not _is_party_name(party):
         return None
-    if _SLOT_DIRTY.search(party) or _PRODUCT_DIRTY.search(product):
+    if (_PRODUCT_DIRTY.search(product) or _PRODUCT_FOR.search(product)
+            or _CURATED_SLOT.search(product)):
         return None
     return product, slot.group("prep").lower(), party
 
@@ -837,7 +886,7 @@ def _ownership_grammar(product: str, party: str, prep: str) -> tuple[re.Pattern[
     """The closed ownership sentences for ONE direction, built from the curated
     product and counterparty as literals. "to" is the seller direction (the
     subject gave the product up), "from" the acquirer direction."""
-    x = r"(?:an?|the)\s+" + re.escape(product)
+    x = r"(?:an?|the)\s+(?P<prod>" + re.escape(product) + r")"
     p = re.escape(party)
     if prep == "to":
         # "an announced ownership change transferring X to Y" and "the announced
@@ -868,22 +917,32 @@ def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
         return set()
     product, prep, party = direction
     curated_side = "seller" if prep == "to" else "acquirer"
+    mention_re = re.compile(r"(?<![A-Za-z0-9])" + _mention_pattern(mentions), re.IGNORECASE)
+    # a label naming the subject as its own counterparty records no direction
+    # (review 9 blocker 3)
+    if mention_re.search(party):
+        return set()
     grammars = (("seller", _ownership_grammar(product, party, "to")),
                 ("acquirer", _ownership_grammar(product, party, "from")))
-    mention_re = re.compile(r"(?<![A-Za-z0-9])" + _mention_pattern(mentions), re.IGNORECASE)
-    product_re = re.compile(re.escape(product), re.IGNORECASE)
     sides: set[str] = set()
     for piece in limits.get("establishes") or []:
         if not isinstance(piece, str):
             continue
         sentence = _normalised_sentence(piece)
-        # the subject named anywhere outside the curated product name (a
-        # product may innocently share a word with its owner's label) puts the
-        # sentence outside the grammar
-        if mention_re.search(product_re.sub(" ", sentence)):
-            continue
         for side, patterns in grammars:
-            if any(pattern.match(sentence) for pattern in patterns):
+            for pattern in patterns:
+                match = pattern.match(sentence)
+                if match is None:
+                    continue
+                # The subject named anywhere outside the product name THIS match
+                # consumed puts the sentence outside the grammar. A product may
+                # innocently share a word with its owner's label, but review 9
+                # blocker 3 showed that blanking every occurrence of the product
+                # erased a subject mention elsewhere whenever the product name
+                # was a prefix of it, so only the matched span is blanked.
+                start, end = match.span("prod")
+                if mention_re.search(sentence[:start] + " " + sentence[end:]):
+                    continue
                 sides.add(side)
     return sides if sides == {curated_side} else set()
 

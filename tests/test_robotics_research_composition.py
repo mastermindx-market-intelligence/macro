@@ -702,6 +702,23 @@ def test_ownership_direction_comes_only_from_a_closed_curated_parenthetical():
          "an announced sale of the Robotics Automation business for a client to Skild AI"),
         # a label that is only the parenthetical names no product
         ("(sale to Skild AI)", "an announced sale of the  to Skild AI"),
+        # review 9 blocker 2: two relations split across TWO parentheticals.
+        # Whatever the slot refuses inside one parenthetical it must refuse
+        # across two - the trailing slot must never serve the label's SECOND
+        # relation against its first, in either order.
+        ("Robotics Automation business (sale to Skild AI) (transfer from Fanuc)",
+         "an announced acquisition of the Robotics Automation business "
+         "(sale to Skild AI) from Fanuc"),
+        ("Robotics Automation business (sale to Skild AI) (acquisition from Fanuc)",
+         "an announced acquisition of the Robotics Automation business "
+         "(sale to Skild AI) from Fanuc"),
+        ("Robotics Automation business (transfer from Fanuc) (sale to Skild AI)",
+         "an announced sale of the Robotics Automation business "
+         "(transfer from Fanuc) to Skild AI"),
+        # review 9 nit 3: the status word needs a space after it, so a fused
+        # "announcedsale" is not an ownership head
+        ("Robotics Automation business (announcedsale to Skild AI)",
+         "an announced sale of the Robotics Automation business to Skild AI"),
     ):
         assert _zebra_role(**{"object.source_product_label": label,
                               "limitations.establishes": [sentence]}) == "announced_party", label
@@ -718,9 +735,86 @@ def test_ownership_direction_comes_only_from_a_closed_curated_parenthetical():
          "an announced sale of the Robotics (EMEA) business to Skild AI", "announced_seller"),
         ("perception assets (acquisition from Skild AI)",
          "an announced acquisition of the perception assets from Skild AI", "announced_acquirer"),
+        # review 9 nit 1: in a curated product name "for" marks a market
+        # segment, and refusing every "for" was the largest measured source of
+        # silent over-refusal. A capitalised segment is admitted; "for a client"
+        # above stays refused, because that one really is an agency phrase. An
+        # ownership head noun inside the product name is likewise not a relation.
+        ("Kepware for Industry 4.0 (sale to Skild AI)",
+         "an announced sale of the Kepware for Industry 4.0 to Skild AI", "announced_seller"),
+        ("Machine Vision for Logistics unit (sale to Skild AI)",
+         "an announced sale of the Machine Vision for Logistics unit to Skild AI",
+         "announced_seller"),
+        ("Point of sale systems (sale to Skild AI)",
+         "an announced sale of the Point of sale systems to Skild AI", "announced_seller"),
+        ("By-products recycling line (sale to Skild AI)",
+         "an announced sale of the By-products recycling line to Skild AI", "announced_seller"),
     ):
         assert _zebra_role(**{"object.source_product_label": label,
                               "limitations.establishes": [sentence]}) == role, label
+
+
+def test_ownership_side_is_withheld_when_the_curated_counterparty_is_not_a_bare_name():
+    # Review 9 blocker 1: fix8 closed the direction slot's FRAME (trailing
+    # parenthetical, one head noun, the preposition) but left its counterparty
+    # as free text behind a two-word blocklist - and it inverted exactly the way
+    # the retired prose blocklists had, with agency phrases. Each label below
+    # served a side while naming a DIFFERENT party as the real principal. The
+    # counterparty is now an allowlist: a NAME and nothing else.
+    for label, sentence in (
+        ("Robotics Automation business (acquisition from Fanuc by Skild AI)",
+         "an announced acquisition of the Robotics Automation business from Fanuc by Skild AI"),
+        ("Robotics Automation business (sale to Skild AI on behalf of Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI on behalf of Fanuc"),
+        ("Robotics Automation business (sale to Skild AI, mandated by Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI, mandated by Fanuc"),
+        ("Robotics Automation business (sale to Skild AI by Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI by Fanuc"),
+        ("Robotics Automation business (purchase from Fanuc by Skild AI)",
+         "an announced purchase of the Robotics Automation business from Fanuc by Skild AI"),
+        # a counterparty that is a description rather than a name, and one that
+        # names two parties, each record no single counterparty
+        ("Robotics Automation business (sale to a vehicle managed by Fanuc)",
+         "an announced sale of the Robotics Automation business to a vehicle managed by Fanuc"),
+        ("Robotics Automation business (sale to Skild AI and Fanuc)",
+         "an announced sale of the Robotics Automation business to Skild AI and Fanuc"),
+    ):
+        assert _zebra_role(**{"object.source_product_label": label,
+                              "limitations.establishes": [sentence]}) == "announced_party", label
+    # a real name still anchors, including one with a name-internal connector
+    for party in ("Skild AI", "TPG", "Bank of America", "3M Robotics", "Kollmorgen Holdings"):
+        assert _zebra_role(**{
+            "object.source_product_label":
+                "Robotics Automation business (sale to %s)" % party,
+            "limitations.establishes":
+                ["an announced sale of the Robotics Automation business to %s" % party],
+        }) == "announced_seller", party
+
+
+def test_ownership_side_is_withheld_when_the_curated_counterparty_names_the_subject():
+    # Review 9 blocker 3: the subject-named-nowhere guard blanked EVERY
+    # occurrence of the curated product name in the sentence, so when the
+    # product name was a prefix of the counterparty the strip erased the
+    # subject's own mention and the guard went blind - serving a side that
+    # named the subject as the opposite party to the label. The guard now
+    # blanks only the span the grammar itself matched, and a label naming the
+    # subject as its own counterparty records no direction at all.
+    for subject, label, sentence in (
+        ("Universal Robots Holdings", "Universal Robots (sale to Universal Robots Holdings)",
+         "an announced sale of the Universal Robots to Universal Robots Holdings"),
+        ("Fanuc Robotics Group", "Fanuc Robotics (acquisition from Fanuc Robotics Group)",
+         "an announced acquisition of the Fanuc Robotics from Fanuc Robotics Group"),
+    ):
+        assert _zebra_role(**{"subject.source_business_label": subject,
+                              "object.source_product_label": label,
+                              "limitations.establishes": [sentence]}) == "announced_party", label
+    # the control the carve-out exists for: the same overlapping product name
+    # with a counterparty that does NOT name the subject still anchors
+    assert _zebra_role(**{
+        "subject.source_business_label": "Universal Robots Holdings",
+        "object.source_product_label": "Universal Robots (sale to Skild AI)",
+        "limitations.establishes":
+            ["an announced sale of the Universal Robots to Skild AI"]}) == "announced_seller"
 
 
 def test_ownership_side_requires_the_closed_curated_sentence_grammar():
