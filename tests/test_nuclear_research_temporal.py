@@ -157,3 +157,14 @@ def test_system_replay_uses_recorded_cutoff():
         source_cutoff="2026-01-01", recorded_cutoff="2026-12-31")
     payload = nuclear.compose_nuclear_research(query, nuclear_bundle(N04))
     assert payload["request"]["recorded_cutoff"] == "2026-12-31"
+
+
+def test_archival_record_of_an_open_target_stays_next_evidence():
+    payload = nuclear.compose_nuclear_research(
+        nuclear_query("reactor_technology", "commercial",
+                      time_mode="source_history", source_cutoff="2026-12-31"),
+        nuclear_bundle(N03, N03B))
+    assert retrospective_by_revision(payload)[N03["curation_revision"]] is True
+    assert N03["curation_revision"] in {
+        revision for item in payload["summary"]["next_evidence"]
+        for revision in item["input_refs"]}

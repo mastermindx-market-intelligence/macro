@@ -298,9 +298,9 @@ X03 = _assertion(
 X04 = _assertion(
     case="X04", company="Cameco", facet="reactor_technology",
     predicate="REPORTED_OPERATING_MEASURE", mode="REPORTED_FACT",
-    product="Synthetic fuel service", period="2025Q4",
+    product="Synthetic misfaceted fuel service", period="2025Q4",
     observation=_observed(44, "CAD/kgU", "per_unit"),
-    establishes=["a synthetic out-of-cohort value exists"],
+    establishes=["a mis-faceted synthetic value exists"],
     does_not_establish=["primary slice membership"],
 )
 X04C = _assertion(

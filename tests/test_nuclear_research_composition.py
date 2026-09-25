@@ -243,3 +243,68 @@ def test_generation_is_a_content_fingerprint():
     changed = nuclear.compose_nuclear_research(query, nuclear_bundle(N05))
     assert first["generation"] == stable["generation"]
     assert first["generation"] != changed["generation"]
+
+
+def test_misfaceted_supplemental_assertion_is_dropped_and_counted():
+    query = nuclear_query("reactor_technology", "capacity")
+    bundle = nuclear_bundle(X04)
+    payload = nuclear.compose_nuclear_research(query, bundle)
+    assert rows(payload, "capacity") == []
+    assert payload["evidence_refs"] == []
+    assert "witness_cohort_excluded:1" in payload["limitations"]
+    with pytest.raises(nuclear.ResearchRefusal) as refusal:
+        nuclear.select_authorized_evidence(query, bundle, source_ref_for(X04))
+    assert refusal.value.args[0] == "not_available"
+
+
+LEU_IN_COMPONENTS = variant("X04C", "X04L", subject={"company_node_id": "co:us:LEU"})
+
+
+@pytest.mark.parametrize(("slice_key", "intruders"), [
+    ("reactor_technology", (X04, X04B)),
+    ("nuclear_components", (X04C, LEU_IN_COMPONENTS)),
+])
+def test_fuel_cycle_companies_are_out_of_cohort_in_both_primary_slices(slice_key, intruders):
+    query = nuclear_query(slice_key, "capacity")
+    bundle = nuclear_bundle(*intruders)
+    payload = nuclear.compose_nuclear_research(query, bundle)
+    assert rows(payload, "capacity") == []
+    assert payload["evidence_refs"] == []
+    assert f"witness_cohort_excluded:{len(intruders)}" in payload["limitations"]
+    for intruder in intruders:
+        with pytest.raises(nuclear.ResearchRefusal) as refusal:
+            nuclear.select_authorized_evidence(query, bundle, source_ref_for(intruder))
+        assert refusal.value.args[0] == "not_available"
+
+
+def test_witness_cohort_is_the_packet_cohort():
+    assert nuclear.WITNESS_COHORT == {
+        "reactor_technology": ("co:us:SMR", "co:us:OKLO"),
+        "nuclear_components": ("co:us:BWXT",),
+        "fuel_cycle": ("co:us:CCJ", "co:us:LEU"),
+    }
+
+
+def test_collapsed_copy_and_correction_pair_round_trip():
+    original = variant("N05", "N05P", source={"publisher": "Synthetic Trade Journal"})
+    corrected = variant(
+        "N05", "N05R", source={"publisher": "Synthetic Trade Journal"},
+        correction={"predecessor_revision": original["curation_revision"],
+                    "reason": "synthetic correction"})
+    copy = variant(
+        "N04", "N04S", source={"publisher": "Synthetic Wire"},
+        limitations={"source_dependence": "syndicated_copy_of:Synthetic Energy Filings"})
+    query = nuclear_query("nuclear_components", "economics")
+    bundle = nuclear_bundle(N04, original, corrected, copy)
+    payload = nuclear.compose_nuclear_research(query, bundle)
+    assert "syndicated_collapsed" in payload["limitations"]
+    assert "superseded_present" in payload["limitations"]
+    corroboration = [
+        ref for row in rows(payload, "economics") for ref in row["corroboration_refs"]]
+    assert corroboration == [source_ref_for(copy)]
+    advertised = {
+        ref["assertion_ref"] for ref in payload["evidence_refs"] if ref["kind"] == "assertion"}
+    assert source_ref_for(corrected) in advertised
+    for assertion_ref in advertised | set(corroboration):
+        evidence = nuclear.select_authorized_evidence(query, bundle, assertion_ref)
+        assert evidence["assertion_ref"] == assertion_ref

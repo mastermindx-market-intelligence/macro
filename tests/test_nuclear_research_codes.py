@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import re
 
 from engine.market_ontology import nuclear_theme_research as nuclear
@@ -54,3 +55,22 @@ def test_every_emitted_limitation_matches_exactly_one_declared_code():
 def test_every_declared_limitation_fits_the_contract_pattern():
     pattern = re.compile(r"^[a-z0-9_]+(?::[A-Za-z0-9_.-]+)?$")
     assert all(pattern.fullmatch(code.rstrip(":")) for code in nuclear.LIMITATION_CODES)
+
+
+def test_stale_interpretation_code_is_declared():
+    stale_block = {
+        "interpretation_id": "synthetic-interpretation", "input_revisions": [],
+        "freshness": "stale", "reviewed_at": "2026-09-20",
+        "mechanism": "Synthetic demand mechanism.", "offset": "Synthetic model offset.",
+        "falsifier": "Synthetic falsifier.", "missing_measurement": None,
+    }
+    payload = nuclear.compose_nuclear_research(
+        nuclear_query("nuclear_components", "economics"),
+        dataclasses.replace(nuclear_bundle(N04), interpretation_blocks=(stale_block,)))
+    assert "interpretation_stale" in payload["limitations"]
+    unmatched = [
+        token for token in payload["limitations"]
+        if sum(token == code or token.startswith(code)
+               for code in nuclear.LIMITATION_CODES) != 1
+    ]
+    assert unmatched == []
