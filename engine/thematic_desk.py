@@ -40,6 +40,7 @@ import pandas as pd
 from engine import ai_desk as _ad           # reuse _check_by / _extract_json / _cfg
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends
 from engine import master_brain as _mb      # the LLM client (_call_model)
+from engine import thematic_event_context as _event_context
 from lib import config, store
 
 log = logging.getLogger(__name__)
@@ -61,6 +62,12 @@ _LEANS = ("overweight", "underweight", "avoid")
 _CONVICTIONS = ("low", "medium", "high")
 _LEDGER_DIR = ("data", "thematic_desk")
 
+# Durable analytical evidence is wider than the five strings rendered by the current UI.
+# These are storage/view bounds, never ranking, sizing, entry, or trade authority.
+_MAX_DURABLE_EVIDENCE = 32
+_MAX_EVIDENCE_REFS = 64
+_EVIDENCE_REF_ROLES = frozenset({"support", "counter", "context"})
+
 
 def _cfg() -> dict:
     """Share the ai_desk LLM config (key/model/max_tokens/enabled/falsifier_defaults)."""
@@ -74,6 +81,156 @@ def enabled() -> bool:
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
+
+def _text(value) -> str | None:
+    """Non-empty trimmed string or None. Never stringify structured source evidence."""
+    if not isinstance(value, str):
+        return None
+    value = value.strip()
+    return value or None
+
+
+def _bounded_texts(value, limit: int = _MAX_DURABLE_EVIDENCE) -> tuple[list[str], int]:
+    """Normalize model text lists with an explicit durable omission count."""
+    if value is None:
+        return [], 0
+    if isinstance(value, str):
+        raw = [value]
+    elif isinstance(value, (list, tuple)):
+        raw = list(value)
+    else:
+        return [], 0
+    clean = [v.strip() for v in raw if isinstance(v, str) and v.strip()]
+    return clean[:limit], max(0, len(clean) - limit)
+
+
+def _event_meta(state: dict) -> dict:
+    """Index caller-owned event evidence so model source ids can be checked, not invented."""
+    ctx = state.get("event_context") if isinstance(state, dict) else None
+    if not isinstance(ctx, dict):
+        ctx = {}
+    knowledge_cutoff = _text(ctx.get("knowledge_cutoff"))
+    source_snapshot_ref = _text(ctx.get("source_snapshot_ref"))
+    coverage = ctx.get("coverage") if isinstance(ctx.get("coverage"), dict) else None
+    known_items: set[str] = set()
+    known_events: set[str] = set()
+    reports_by_item: dict[str, dict] = {}
+    events = ctx.get("events") if isinstance(ctx.get("events"), list) else []
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        event_key = _text(event.get("event_key"))
+        if event_key:
+            known_events.add(event_key)
+        unclustered = _text(event.get("unclustered_item_id"))
+        if unclustered:
+            known_items.add(unclustered)
+        reports = event.get("reports") if isinstance(event.get("reports"), list) else []
+        for report in reports:
+            if not isinstance(report, dict):
+                continue
+            item_id = _text(report.get("item_id"))
+            if not item_id:
+                continue
+            known_items.add(item_id)
+            bound = {"event_key": event_key}
+            for key in ("source", "source_url", "url", "body_sha256", "source_date_value",
+                        "publisher_stated_at", "context_available_at", "timestamp_quality",
+                        "evidence_level", "ticker", "cik", "accession", "form", "items"):
+                value = _text(report.get(key))
+                if value is not None:
+                    bound[key] = value
+            reports_by_item[item_id] = bound
+    return {
+        "status": _text(ctx.get("status")),
+        "knowledge_cutoff": knowledge_cutoff,
+        "source_snapshot_ref": source_snapshot_ref,
+        "coverage": dict(coverage) if coverage is not None else None,
+        "_known_item_ids": known_items,
+        "_known_event_keys": known_events,
+        "_reports_by_item": reports_by_item,
+    }
+
+
+def _normalize_evidence_refs(value, event_meta: dict) -> tuple[list[dict], int, int]:
+    """Bind only ids present in the supplied event snapshot and restore source clocks from it."""
+    if value is None:
+        return [], 0, 0
+    if not isinstance(value, (list, tuple)):
+        return [], 1, 0
+    known_items = event_meta.get("_known_item_ids") or set()
+    known_events = event_meta.get("_known_event_keys") or set()
+    reports_by_item = event_meta.get("_reports_by_item") or {}
+    snapshot = event_meta.get("source_snapshot_ref")
+    kept: list[dict] = []
+    rejected = 0
+    for raw in value:
+        if not isinstance(raw, dict):
+            rejected += 1
+            continue
+        item_id = _text(raw.get("item_id"))
+        event_key = _text(raw.get("event_key"))
+        role = (_text(raw.get("role")) or "context").lower()
+        if role not in _EVIDENCE_REF_ROLES or (not item_id and not event_key):
+            rejected += 1
+            continue
+        if not known_items and not known_events:
+            rejected += 1
+            continue
+        if item_id and item_id not in known_items:
+            rejected += 1
+            continue
+        if event_key and event_key not in known_events:
+            rejected += 1
+            continue
+        out = {"role": role}
+        if item_id:
+            out["item_id"] = item_id
+        if event_key:
+            out["event_key"] = event_key
+        if snapshot:
+            out["source_snapshot_ref"] = snapshot
+        if item_id and item_id in reports_by_item:
+            bound = reports_by_item[item_id]
+            if not event_key and bound.get("event_key"):
+                out["event_key"] = bound["event_key"]
+            for key in ("source", "source_url", "url", "body_sha256", "source_date_value",
+                        "publisher_stated_at", "context_available_at", "timestamp_quality",
+                        "evidence_level", "ticker", "cik", "accession", "form", "items"):
+                if bound.get(key) is not None:
+                    out[key] = bound[key]
+        kept.append(out)
+    omitted = max(0, len(kept) - _MAX_EVIDENCE_REFS)
+    return kept[:_MAX_EVIDENCE_REFS], rejected, omitted
+
+
+def _build_watch_record(brief: dict) -> dict | None:
+    """Persist an early watch in the existing ledger without turning it into a forecast."""
+    watch = _text(brief.get("emerging_watch"))
+    if not watch:
+        return None
+    generated = _text(brief.get("generated_at"))
+    state_asof = _text(brief.get("state_asof"))
+    market = _text(brief.get("market"))
+    if not generated or not market:
+        return None
+    token = _ledger_law.run_token(generated)
+    return {
+        "id": f"{market}-{state_asof or 'unknown'}-{token}-watch",
+        "record_type": "emerging_watch",
+        "authority": "descriptive_research_only",
+        "is_context_only": True,
+        "market": market,
+        "state_asof": state_asof,
+        "decision_at": generated,
+        "knowledge_cutoff": brief.get("knowledge_cutoff"),
+        "source_snapshot_ref": brief.get("source_snapshot_ref"),
+        "event_coverage": brief.get("event_coverage"),
+        "watch": watch,
+        "evidence_refs": list(brief.get("emerging_watch_evidence_refs") or []),
+        "evidence_refs_rejected_n": int(brief.get("emerging_watch_evidence_refs_rejected_n") or 0),
+        "evidence_refs_omitted_n": int(brief.get("emerging_watch_evidence_refs_omitted_n") or 0),
+    }
 
 # --------------------------------------------------------------------------- #
 # close reads (region-aware via lib.store, unlike ai_desk's yahoo-only helper)
@@ -147,9 +304,15 @@ def gather_thematic_state(region: str, root=None) -> dict | None:
     tr = None
     if isinstance(track, dict):
         tr = (track.get("by_market") or {}).get(region) or track.get("overall")
+    event_context = None
+    if region == "us":
+        event_context = _event_context.build_sec_event_context(
+            root=root,
+            theme_ids=[str(r.get("id")) for r in nr.get("ranks", []) if r.get("id")],
+        )
     return {"as_of": nr.get("as_of"), "region": region, "market": nr.get("market"),
             "narrative_rotation": nr, "track_record": tr, "macro_narrative": _macro_narrative(root),
-            "theme_candidates": _theme_candidates(region, root)}
+            "theme_candidates": _theme_candidates(region, root), "event_context": event_context}
 
 
 def _theme_candidates(region: str, root) -> dict | None:
@@ -214,10 +377,14 @@ def _derive_check(subject: str, lean: str, horizon: int, region: str,
 
 
 def _build_thesis(t: dict, i: int, asof, region: str, ranks: list, cfg: dict,
-                  run_token: str = "") -> dict | None:
-    """`run_token` scopes the id to THIS run — a stale state_asof re-briefed on a later
-    run day would otherwise mint the same `{region}-{asof}-{i}` ids again, and the
-    append's first-wins gate would drop the fresh run invisibly (engine.desk_ledger)."""
+                  run_token: str = "", *, decision_at: str | None = None,
+                  event_meta: dict | None = None) -> dict | None:
+    """Normalize one directional thesis while preserving analytical evidence.
+
+    An event-bound thesis remains context/research until a prospective decision anchor exists.
+    It is logged, but its machine check is forced soft so later-known evidence can never be
+    graded from an earlier market-state date. Detector-only theses keep incumbent behavior.
+    """
     if not isinstance(t, dict):
         return None
     subject = str(t.get("subject") or "").strip()
@@ -231,18 +398,55 @@ def _build_thesis(t: dict, i: int, asof, region: str, ranks: list, cfg: dict,
     horizon = max(5, min(60, horizon))
     conv = str(t.get("conviction") or "low").strip().lower()
     conv = conv if conv in _CONVICTIONS else "low"
+
+    meta = event_meta or {}
+    evidence_all, durable_omitted = _bounded_texts(t.get("evidence"))
+    counterevidence, counter_omitted = _bounded_texts(t.get("counterevidence"))
+    refs, refs_rejected, refs_omitted = _normalize_evidence_refs(t.get("evidence_refs"), meta)
+    event_ref_attempted = bool(t.get("evidence_refs"))
+    has_event_context = bool(meta.get("_known_item_ids") or meta.get("_known_event_keys"))
+    # A hallucinated ref on a legacy detector-only run must not silently change the incumbent
+    # grading contract. Once caller-owned event context exists, however, the whole synthesis
+    # may have reasoned over later-known evidence even when the model omits refs. Fail closed:
+    # event-aware theses need an explicit prospective decision anchor before machine grading.
+    event_bound = has_event_context
+    if event_bound:
+        check = {
+            "kind": "soft",
+            "reason": "event-bound thesis requires a prospective decision anchor before grading",
+        }
+        evaluation_status = "prospective_anchor_required"
+        check_anchor = str(decision_at)[:10] if decision_at else asof
+    else:
+        check = _derive_check(subject, lean, horizon, region, ranks, cfg)
+        evaluation_status = "legacy_machine_check"
+        check_anchor = asof
+
     return {
         "id": (f"{region}-{asof}-{run_token}-{i + 1}" if run_token
                else f"{region}-{asof}-{i + 1}"),
+        "record_type": "thesis",
         "market": region, "subject": subject, "lean": lean,
+        "state_asof": asof, "decision_at": decision_at,
+        "knowledge_cutoff": meta.get("knowledge_cutoff"),
+        "source_snapshot_ref": meta.get("source_snapshot_ref"),
+        "event_coverage": meta.get("coverage"),
+        "event_evidence_bound": event_bound,
+        "evaluation_status": evaluation_status,
         "conviction": conv, "horizon_d": horizon, "thesis": t.get("thesis"),
-        "evidence": [str(e) for e in (t.get("evidence") or []) if e][:5],
+        "evidence": evidence_all[:5],
+        "evidence_all": evidence_all,
+        "display_evidence_omitted_n": max(0, len(evidence_all) - 5),
+        "durable_evidence_omitted_n": durable_omitted,
+        "counterevidence": counterevidence,
+        "counterevidence_omitted_n": counter_omitted,
+        "evidence_refs": refs,
+        "evidence_refs_rejected_n": refs_rejected,
+        "evidence_refs_omitted_n": refs_omitted,
         "dissent": t.get("dissent"),
-        "falsifier": {"text": t.get("falsifier_text"),
-                      "check": _derive_check(subject, lean, horizon, region, ranks, cfg)},
-        "check_by": _ad._check_by(asof, horizon),
+        "falsifier": {"text": t.get("falsifier_text"), "check": check},
+        "check_by": _ad._check_by(check_anchor, horizon),
     }
-
 
 # --------------------------------------------------------------------------- #
 # the analyst (single structured DeepSeek call; the adversarial panel is a fast-follow)
@@ -258,12 +462,15 @@ _SCHEMA_TAIL = (
     "     horizon_d: integer trading days, 5..60.\n"
     "     thesis: string — reasoning, naming WHICH detector leg supports it (rank/durability/"
     "trend-gate/crowding/rotation).\n"
-    "     evidence: array of strings citing the specific legs.\n"
+    "     evidence: array of strings citing the specific detector/source legs.\n"
+    "     counterevidence: optional array of strings for material contrary facts; do not hide them in dissent.\n"
+    "     evidence_refs: optional array of {item_id,event_key,role} objects. Use ONLY ids present in state.event_context; role is support, counter, or context. Never invent a source id.\n"
     "     dissent: string — the single strongest contrary case.\n"
     "     falsifier_text: string — one concrete condition that would prove this wrong, "
     "phrased as the plain condition itself (e.g. 'XLK lags SPY by 5% before the check-by "
     "date'). This text is shown to users under a 'Changes this read' label: never write "
     "the words 'falsified', 'falsify' or 'refuted' in it.\n"
+    "  emerging_watch_evidence_refs: optional array of {item_id,event_key,role} objects binding the watch to state.event_context; [] when no source event supports it.\n"
     "  emerging_watch: string|null — at most ONE early-hypothesis to watch (a theme whose "
     "leadership may be forming OR fading) WITH the observable condition you are watching "
     "for (the one that would retire the watch); or null. This is a watch, not a call. This "
@@ -291,7 +498,8 @@ _SYSTEM = (
     "- A state.macro_narrative backdrop (which macro/policy/geo narrative dominates "
     "headlines + the unscheduled-surprise share) may be present. It is COINCIDENT, "
     "market-level context for the regime read — NOT per-theme news and NEVER a buy "
-    "trigger.\n\n"
+    "trigger.\n"
+    "- If state.event_context is present, it is CONTEXT-ONLY research evidence. Cite only item/event ids actually supplied there; source mention is not beneficiary exposure, attention is not a trade, and an event may support, contradict, or leave a thesis unresolved. Never invent a supplier/customer/mechanism link.\n\n"
     "Rules:\n"
     "- Reason ONLY over the provided JSON state + well-known market structure. NEVER fabricate "
     "a level, score or event. If the state doesn't support a view, return fewer (or zero) "
@@ -336,6 +544,9 @@ _PANEL_CAVEAT = (
     "COINCIDENT. If narrative_rotation.gate_helps is false the discipline did not even cut "
     "drawdown on this market (it mean-reverts) — be especially humble. Honour every item in "
     "narrative_rotation.guardrails.do_not_conclude. NEVER a position size, weight, or trade. "
+    "If state.event_context is present, it is context-only research evidence: an event-first "
+    "watch MAY exist before a price cluster, but attention is neither a buy nor a top by itself; "
+    "cite only supplied item/event ids and never invent beneficiary exposure or a causal link. "
     "Your view is a fallible, falsifiable conditional — not edge extracted from the detector.")
 
 _PANEL_SYSTEMS = {
@@ -357,8 +568,10 @@ _PANEL_SYSTEMS = {
         "on state.theme_candidates (a DISPLAY-ONLY radar of coherent NEW name-groups not yet in a "
         "basket) — but it is NOISY (only ~10% persist) and has NO forward edge, so treat any "
         "candidate as a watch-hypothesis to grade, never a buy, and let IPO-wave/hype RAISE the "
-        "bar. Remember emergence usually reads LATE and attention/inflow spikes mark TOPS. Put it "
-        "in emerging_watch; keep theses minimal." + _PANEL_CAVEAT),
+        "bar. Distinguish genuinely new operating/adoption evidence from repeated coverage or hype; "
+        "attention/inflow can be early, late, or crowded and is NEVER by itself a buy or a top call. "
+        "An event-first watch may precede a price cluster when the supplied evidence raises a concrete "
+        "economic question. Put it in emerging_watch; keep theses minimal." + _PANEL_CAVEAT),
     "macro_regime": (
         "ROLE: MACRO-REGIME analyst. Read the regime signals — breadth-of-rotation, the "
         "one-narrative/absorption gauge, gate_helps, the headline cash level — AND the "
@@ -381,8 +594,8 @@ _ADJ_SYSTEM = (
     "analyst says risk-off / raise cash, when gate_helps is false, or when leadership is narrow. "
     "Reserve \"high\" for genuine multi-analyst agreement (rare). Default \"low\".\n"
     "- Crowding is a SIZE-DOWN caution only — never emit a fade/short/sell. Do NOT predict the "
-    "next narrative; route the scout's idea into emerging_watch (a graded hypothesis), not a "
-    "thesis, unless a handoff is already CONFIRMED.\n"
+    "next narrative; route the scout's idea into emerging_watch (a persistent context-only "
+    "research watch, never a scored thesis), not a thesis, unless a handoff is already CONFIRMED.\n"
     "- If a track_record is present, calibrate to it (past high-conviction misses → lean lower).\n"
     "- In `evidence`, cite which analyst and which detector leg supports each lean. Honour "
     "narrative_rotation.guardrails. NEVER a size/weight/trade. Prefer scorable subjects "
@@ -457,9 +670,17 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
     region = state.get("region")
     asof = state.get("as_of")
     ranks = (state.get("narrative_rotation") or {}).get("ranks") or []
+    generated_at = _now_iso()
+    event_meta = _event_meta(state)
     brief = {
         "schema": SCHEMA, "is_context_only": True, "market": region,
-        "generated_at": _now_iso(), "state_asof": asof,
+        "generated_at": generated_at, "state_asof": asof,
+        "knowledge_cutoff": event_meta.get("knowledge_cutoff"),
+        "source_snapshot_ref": event_meta.get("source_snapshot_ref"),
+        "event_coverage": event_meta.get("coverage"),
+        "emerging_watch_evidence_refs": [],
+        "emerging_watch_evidence_refs_rejected_n": 0,
+        "emerging_watch_evidence_refs_omitted_n": 0,
         "model": cfg.get("llm_model", "deepseek-v4-pro"),
         "regime_context": None, "emerging_watch": None, "theses": [],
         "track_record": state.get("track_record"), "confidence": "low",
@@ -528,13 +749,20 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
         return brief
     brief["regime_context"] = parsed.get("regime_context")
     brief["emerging_watch"] = parsed.get("emerging_watch")
+    watch_refs, watch_rejected, watch_omitted = _normalize_evidence_refs(
+        parsed.get("emerging_watch_evidence_refs"), event_meta)
+    brief["emerging_watch_evidence_refs"] = watch_refs
+    brief["emerging_watch_evidence_refs_rejected_n"] = watch_rejected
+    brief["emerging_watch_evidence_refs_omitted_n"] = watch_omitted
     conf = str(parsed.get("confidence") or "low").strip().lower()
     brief["confidence"] = conf if conf in _CONVICTIONS else "low"
     raw = parsed.get("theses") if isinstance(parsed.get("theses"), list) else []
     theses = []
     token = _ledger_law.run_token(brief["generated_at"])
     for t in raw[: int(cfg.get("max_theses", 3))]:
-        th = _build_thesis(t, len(theses), asof, region, ranks, cfg, run_token=token)
+        th = _build_thesis(
+            t, len(theses), asof, region, ranks, cfg, run_token=token,
+            decision_at=generated_at, event_meta=event_meta)
         if th is not None:
             theses.append(th)
     brief["theses"] = theses
@@ -560,12 +788,15 @@ def _entry_levels(check: dict, asof, root) -> dict:
 
 
 def _append_ledger(brief: dict, root) -> list:
-    """Append this run's theses to the desk ledger. Returns exactly the rows
-    that SURVIVED the id-immutability gate — i.e. the rows actually written
-    this run — so the caller (Eval OS P3 qledger registration) mirrors THOSE
-    and nothing else. `[]` on any failure or when there is nothing to write."""
+    """Append thesis/watch records to the existing thematic ledger.
+
+    Only newly-written directional thesis rows are returned for QLedger registration.
+    Context-only emerging watches persist on the same append-only owner but never enter
+    QLedger, machine grading, or the desk track record.
+    """
     theses = brief.get("theses") or []
-    if not theses:
+    watch = _build_watch_record(brief)
+    if not theses and watch is None:
         return []
     try:
         d = Path(root).joinpath(*_LEDGER_DIR)
@@ -575,19 +806,24 @@ def _append_ledger(brief: dict, root) -> list:
         rows = []
         for th in theses:
             check = (th.get("falsifier") or {}).get("check") or {}
-            rows.append({**th, "market": brief.get("market"), "logged_at": _now_iso(),
-                         "state_asof": asof, "entry_levels": _entry_levels(check, asof, root)})
-        # First-wins as before, but LOUD (engine.desk_ledger): with run-scoped ids a
-        # rejection here means id minting regressed, never a routine re-run.
-        rows = _ledger_law.reject_existing_ids(lp, rows, "thematic_desk")
+            rows.append({
+                **th,
+                "record_type": th.get("record_type") or "thesis",
+                "market": brief.get("market"),
+                "logged_at": _now_iso(),
+                "state_asof": asof,
+                "entry_levels": _entry_levels(check, asof, root),
+            })
+        if watch is not None:
+            rows.append({**watch, "logged_at": _now_iso()})
+        kept = _ledger_law.reject_existing_ids(lp, rows, "thematic_desk")
         with open(lp, "a") as fh:
-            for row in rows:
+            for row in kept:
                 fh.write(json.dumps(row, default=str) + "\n")
-        return rows
+        return [row for row in kept if (row.get("record_type") or "thesis") == "thesis"]
     except Exception as e:  # noqa: BLE001
         log.warning("thematic_desk ledger append failed: %s", e)
         return []
-
 
 def _register_qledger_claims(written: list, root) -> dict | None:
     """Mirror THIS RUN's theses into the Universal Scoreboard (Eval OS P3).
@@ -742,8 +978,8 @@ def score_ledger(root=None, today=None) -> dict | None:
         for line in lp.read_text().splitlines():
             try:
                 r = json.loads(line)
-                if r.get("id"):
-                    rows[r["id"]] = r            # dedupe by id (last wins)
+                if r.get("id") and (r.get("record_type") or "thesis") == "thesis":
+                    rows[r["id"]] = r            # dedupe machine-gradeable thesis ids only
             except Exception:  # noqa: BLE001
                 pass
         prior = _prior_outcomes(d)
