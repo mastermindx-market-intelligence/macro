@@ -138,6 +138,9 @@
 {%- else -%}
 {%- set _counts = book.get('lifecycle_counts') or {} -%}
 {%- set _live_total = book.get('lifecycle_live_total') or 0 -%}
+{%- set _book_rows = book.get('active_count') -%}
+{%- set _declared_rows = book.get('plan_count') -%}
+{%- set _archived_rows = (_declared_rows - _book_rows) if (_book_rows is number and _book_rows is not boolean and _declared_rows is number and _declared_rows is not boolean and _declared_rows >= _book_rows) else none -%}
 {%- set _watch_present = 'early_turn_watch' in (book.get('intake') or {}) -%}
 {%- set _published = _CELLS_LIVE|length - (0 if _watch_present else 1) -%}
 <div class="ladder-headline"><span class="ladder-n fig">{{ _live_total }}</span><span class="ladder-nl">{{ t('unresolved setups','个未结跟踪计划') }}</span><span class="ladder-sub">{{ t('the ' ~ _NUMWORD.get(_published, _published) ~ ' published cells below add up to this number', '下方 ' ~ _published ~ ' 个已发布状态合计') }}</span></div>
@@ -167,7 +170,7 @@
 {%- endif %}
 <div class="ladder-foot">
   <span>{{ t('Ordered by original priority — not a current entry recommendation.', '按建立时优先级排序 — 并非当前入场建议。') }}
-  <span class="help">?<span class="tip tip-wide"><span class="l-en">Each cell counts plan rows — one row per tracked commitment, so a name traded twice appears twice. Watch counts names with a live signal and no open plan yet. The six live cells add up to the headline; Resolved sits outside it, because a closed plan is record rather than inventory.</span><span class="l-zh">每一格统计的是「计划」条目——每条对应一次独立的跟踪，因此同一只股票若有两次操作，就会出现两次。「观察」统计的是已有信号、但尚未建立计划的股票。6 个状态相加等于标题数字；「已结」不计入其中，因为已平仓的计划属于历史战绩，不是当前持仓。</span></span></span></span>
+  <span class="help">?<span class="tip tip-wide"><span class="l-en">Each cell counts plan rows — one row per tracked commitment, so a name traded twice appears twice. Watch counts names with a live signal and no open plan yet. The six live cells add up to the headline; Resolved sits outside it, because a closed plan is record rather than inventory.{% if _archived_rows is number and _archived_rows > 0 %} This plan book contains {{ _book_rows }} effective plan rows; {{ _archived_rows }} archived plan publications remain outside this lifecycle book for record integrity.{% endif %}</span><span class="l-zh">每一格统计的是「计划」条目——每条对应一次独立的跟踪，因此同一只股票若有两次操作，就会出现两次。「观察」统计的是已有信号、但尚未建立计划的股票。6 个状态相加等于标题数字；「已结」不计入其中，因为已平仓的计划属于历史战绩，不是当前持仓。{% if _archived_rows is number and _archived_rows > 0 %} 当前计划簿包含 {{ _book_rows }} 条有效计划记录；另有 {{ _archived_rows }} 条已归档计划发布记录因记录完整性保留在此生命周期视图之外。{% endif %}</span></span></span></span>
   <button type="button" class="ladder-clear" id="us-life-clear" data-life="" hidden>{{ t('Clear filter','清除筛选') }}</button>
 </div>
 {%- endif %}

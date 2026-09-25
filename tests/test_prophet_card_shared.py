@@ -337,3 +337,14 @@ def test_record_only_plan_detail_is_scoped_and_source_bound():
     assert 'data-history-state="unavailable"' in _SRC
     assert "Not connected in this view yet." in _SRC
     assert "fetch(" not in plan_partial and "XMLHttpRequest" not in plan_partial
+
+
+# --------------------------------------------------------------------------- #
+# Packet 2 — current lifecycle-book denominator must not quote cumulative archive
+# --------------------------------------------------------------------------- #
+def test_plan_book_denominator_discloses_archived_rows_separately():
+    assert "book.get('active_count')" in _SRC
+    assert "book.get('plan_count')" in _SRC
+    assert "_declared_rows - _book_rows" in _SRC
+    assert "effective plan rows" in _SRC
+    assert "archived plan publications remain outside this lifecycle book" in _SRC
