@@ -1259,3 +1259,31 @@ def test_discovery_reader_rejects_malformed_store_session(_isolated_registry):
     result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
     assert result["available"] is False
     assert result["reason"] == "store_session_malformed"
+
+
+# ---------------------------------------------------------------------------
+# Pick Lab owner-session clock — never fabricate a denominator epoch
+# ---------------------------------------------------------------------------
+def test_pick_lab_producer_never_falls_back_to_wall_clock():
+    source = (ROOT / "scripts" / "build_hk_library.py").read_text(encoding="utf-8")
+    start = source.index("# ---- HK PICK LAB PRODUCER BLOCK")
+    end = source.index("# ----", start + 32) if "# ----" in source[start + 32:] else len(source)
+    block = source[start:end]
+    assert "_producer_asof = str(as_of).strip() if as_of and str(as_of).strip() else None" in block
+    assert "Timestamp.utcnow().date()" not in block
+    assert 'board_shadow.write_shadow(calls, market="HK", asof=str(as_of) if as_of else None)' in source
+
+
+def test_pick_lab_missing_owner_session_skips_snapshot_and_velocity_sinks():
+    source = (ROOT / "scripts" / "build_hk_library.py").read_text(encoding="utf-8")
+    start = source.index("# -- 5. Assemble snapshot rows")
+    end = source.index("# -- 8.", start) if "# -- 8." in source[start:] else source.index("except Exception", start)
+    block = source[start:end]
+    assert "if _producer_asof is None:" in block
+    assert "_snap_rows = []" in block
+    assert "owner session unavailable" in block
+    assert "else:\n            _snap_rows = build_hk_core_rows(" in block
+    assert "if _snap_rows:" in block
+    assert "if _snap_rows and _is_asia_lane_lib:" in block
+    assert "write_snapshot(" in block
+    assert "build_velocity_desk_artifact(" in block
