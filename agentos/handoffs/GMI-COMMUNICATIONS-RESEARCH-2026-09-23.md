@@ -4,81 +4,84 @@ session: claude/communications-sector-research-20260923
 model: sol
 ended_because: context_budget
 mission: >
-  Complete Communications research and implementation preparation under Sol, preserving the full
-  sector program. The Chairman will manually deliver the eventual bundle to a NEW Fable session
-  later. Semiconductors supplies shared dependencies, not the Communications receiver.
+  Continue the full Communications intelligence research and build preparation under Sol.
+  The Chairman will manually deliver the eventual bundle into a NEW Fable session later.
+  Semiconductors is a shared implementation dependency, not the Communications recipient.
 state_before: >
-  Phase13 head 18bedfd8b2571571550df96bf28fc0693da8b953 preserved four worked bilingual panels,
-  twenty explanation scenarios and sixty CRV obligations distributed across the original plan
-  and amendments. Their execution reading still required reconciling obsolete interfaces.
+  Phase14 at a43287919b98192e71172b7f43e28b9e47d7cb3b consolidated the eight-task plan and
+  preserved sixty CRV requirements. The next intellectual task was the business-to-earnings
+  sensitivity and valuation bridge, not another plan rewrite or immediate delivery.
 changed:
-  - path: docs/superpowers/plans/2026-09-23-communications-advertising-vertical-implementation.md
+  - path: research/communications/COMMUNICATIONS_EARNINGS_SENSITIVITY_AND_VALUATION_2026-09-24.md
     what: >
-      Consolidated the EXISTING plan as revision2: eight tasks, all sixty original requirement
-      texts/allocations, complete numerical adapters, actual shared registration and explicit
-      representation/private/identity/client/live-proof gates. No application implementation.
-  - path: agentos/handoffs/GMI-COMMUNICATIONS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+      Added four role-specific conditional economic models, six selected primary-source anchors,
+      reinvestment and cash-timing hurdles, share/claim consistency, stable-value and inverse-value
+      limitations, and explicit data requirements before predictive use.
+  - path: research/communications/replay_communications_sensitivity_examples.py
     what: >
-      Replaced obsolete amendment-by-amendment and immediate-placement directions with an unsent
-      revision3 preparation index pointing to the current plan and worked-output companion.
+      Preserved eighteen fixed synthetic mathematical examples. No issuer data input, network,
+      native-owner import, model fitting, private data, market price or live target is involved.
+  - path: research/communications/test_sensitivity_reference.py
+    what: Added twenty-one tests of the offline fixed example program, not the application.
   - path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
-    what: Preserved interim and final current continuation on the same file and research carrier.
+    what: Updated the same cumulative frontier; manual handoff remains later and unsent.
 prs: [7794]
 verified:
-  - claim: The consolidated plan and index are persisted at immutable commits with matching local bytes.
-    command: GitHub.update_file then exact-commit fetch_file; compare returned blobs to local Git blob hashes.
+  - claim: The incumbent research carrier was unchanged at recovery and permitted source writes.
+    command: GitHub.get_pr_info 7794 and GitHub.get_repo for mastermindx-market-intelligence/macro.
+    result: a43287919b98192e71172b7f43e28b9e47d7cb3b open/draft/unmerged; push permission observed.
+  - claim: The study was published and read back at an immutable revision with matching local bytes.
+    command: GitHub.create_file then fetch_file at 638350d2b675e57599905f4a3c3d9846b601d162.
+    result: Git blob 48f36446ca2466a8486bf6a4e729968f5a14dbaa matches the local study.
+  - claim: The fixed reference code and tests were published and read back with matching identities.
+    command: >
+      GitHub.create_file then fetch_file at 099dc2105e9090b38cdacad6c5f7345ff49aceba and
+      8265bb339bb1cec2fe96ff2479355692d396b953.
+    result: Matching Git blobs c294f024b411cf3a4e46bd0f00a382cc8aff84ec and 33f68ad1f55004a806b1603b32a38d4ad920872f.
+  - claim: The fixed reference program passes its discriminating offline test set.
+    command: >
+      python -m unittest discover -s /mnt/data/communications_research/phase15/current/research/communications
+      -p test_sensitivity_reference.py -v; run replay_communications_sensitivity_examples.py with explicit --output.
     result: >
-      Plan 477fe2c1ec4de8950c0a0750cbaea86c041a5490 / d631b736d146e753dc48af9fa8cedd53513e51a5;
-      index 13ea16124f87dc752e106494cd25f70060648f28 / 751266a433c6e4e8d8451dc0f0e9b3f094d1a75c.
-  - claim: The original requirement texts and task allocations are preserved, with concrete current interfaces.
-    command: python /mnt/data/communications_research/phase14/validate_consolidation.py
-    result: >
-      Sixty rows preserved verbatim; eight ordered tasks; three Python examples parse with matched
-      adapter constructors; five deliberately damaged plan variants rejected. Zero application tests.
-  - claim: Shared source facts were refreshed only where the consolidated plan depends on them.
-    command: Exact-head GitHub reads for 7870 e2f4d490915660fc6db64d750505309343e9e0e8 and named owner rulings.
-    result: >
-      Closed server registration exists; no Communications entry. Native loader remains unbound;
-      inspected JS contract remains Semiconductor-shaped; unmapped source-family path retains rows.
-      R4 architecture accepted with qualifications, not deployment. Financial extension separately gated.
+      Initial empty-result implementation failed all 21 assertions; final 21 tests pass and 18 fixed
+      examples are emitted. Twelve document/reference/boundary checks pass. Zero application tests.
 unverified:
-  - claim: Shared financial/source-only representations and Communications registration are accepted.
-    what_would_verify: Exact owner acceptance and versioned lossless native round-trip and client conformance.
-  - claim: Source rights, private reader, identity and four-company user journey work in production.
-    what_would_verify: Independent review and all sixty real-source/private/API/browser/company/watchlist obligations.
-  - claim: A Fable receiver has consumed the Communications package or begun execution.
-    what_would_verify: Later Chairman delivery to a NEW session, operation-specific pickup and separate START.
-  - claim: The program has validated earnings sensitivities, valuation predictions or investment usefulness.
-    what_would_verify: Qualified original-vintage inputs, explicitly reviewed models and the existing evaluation gates.
+  - claim: Real company marginal margins, elasticities, discount rates, implied expectations or fair values.
+    what_would_verify: >
+      Obtainable original-vintage operating and financial inputs, qualified definitions and assumptions,
+      then suitable existing-owner out-of-sample evaluation. The fixed examples identify none of these.
+  - claim: Independent plan/shared acceptance, real private/native identity admission and the A1 user workflow.
+    what_would_verify: Existing owner and independent-review receipts plus the unchanged sixty CRV production obligations.
+  - claim: Communications Fable delivery, pickup or execution.
+    what_would_verify: Later deliberate Chairman delivery to a NEW session and that operation's actual pickup/START.
 unresolved:
-  - Shared signed/exact/source-only measurement support remains an accepted-version dependency, not a v1 rewrite.
-  - The actual native loader and cross-domain client must be implemented/qualified; registry presence alone is insufficient.
-  - Unknown source-family pass-through must not qualify A1; actual owner repair and route regression remain required.
-  - Original-guide analysis is useful; final-pre-result histories and consensus remain unqualified.
-  - Prior platform-denied host identity inspection remains unperformed; no retry or delegated evasion occurred.
+  - Conditional models are useful research but not empirically calibrated forecasts or live valuations.
+  - Complete final-pre-result guidance histories and analyst consensus remain unqualified; original-guide analysis remains useful.
+  - Shared signed/exact measurement, source-only anchor, reader/rights/client/identity dependencies retain their prior gates.
+  - The prior platform-denied host identity read remains unperformed and cannot be retried or delegated as an evasion.
 next_actions:
   - >
-    Continue business-to-earnings sensitivity and valuation-interpretation research for the four A1
-    economic roles, distinguishing reported base, conditional incremental economics and dated
-    expectations. Use explicit assumptions and existing owner/evaluation boundaries, not trade scores.
+    Map the four business-role sensitivity questions to actual obtainable historical inputs and
+    outcome definitions; distinguish identified tests from unavailable coefficients before any fitting.
   - >
-    Keep focused independent plan/shared-interface review outstanding for lawful later execution;
-    update this same plan only when material findings or accepted shared changes warrant it.
-  - Preserve later manual-copy delivery to a NEW Fable session; no placement, dispatch or watcher now.
+    Preserve the consolidated plan and worked-output companion; keep independent plan/shared-interface
+    review owed without repeating consolidation or an equivalent failed disclosure-archive sweep.
+  - Assemble the exact latest manual-copy package for a NEW Fable session only at the Chairman's later request; no dispatch now.
 do_not_redo:
-  - Preserve Phases1-13, the 94-business/47-label map, eight accounting bridges, guidance studies and twenty scenarios.
-  - Do not reconsolidate the plan again; revision2 already incorporates all sixty requirements and amendments.
-  - Do not recreate shared assertion/storage/K1/identity/rights/guidance/API/client/publication systems.
-  - Do not repeat equivalent archive searches or turn original-guide comparison into final-history/consensus proof.
-  - Do not retry, rephrase, move or delegate the previously denied identity read.
+  - Preserve Phases1-14, the 94-business/47-label map, current eight-task plan, proof companion and sixty CRV requirements.
+  - Do not recreate GMI/K1/Data OS/F04/Company/Earnings/rights/private-publication/client or evaluation owners.
+  - Do not extrapolate a historical accounting slope as a causal marginal coefficient or treat mix as contract repricing.
+  - Do not turn synthetic hurdles, scenario weights, compensation examples or inverse valuation into company targets.
+  - Do not count the same future compensation, lease, cash component or economic interaction twice.
 danger_areas:
-  - Research/spec/reference checks are not independent review, product tests, source admission or accepted forecasts.
-  - The shared registration does not create canonical theme membership; never fabricate an advertising theme to pass it.
-  - A source-visible rights gap is not a live exploit claim; it remains a pre-acceptance dependency to resolve lawfully.
-  - Keep 7794 DRAFT/HOLD; no merge, auto-merge, rebase, shared write, private payload or trading effect.
+  - All SX01-SX18 inputs are invented assumptions, not issuer forecasts or a native dataset.
+  - Mathematical consistency cannot establish source meaning, historical knowability, behavioral coefficients or predictive usefulness.
+  - An old award's expense ending does not cancel outstanding claims; net revenue is not the gross collection exposure.
+  - No current price, market capitalization, discount rate, probability estimate, trade score or target was obtained.
+  - Keep DRAFT/HOLD: no merge, automatic merge, product source, private admission or trading-policy changes.
 ---
 
-# Communications — cumulative Phase14 continuation
+# Communications — cumulative Phase15 continuation
 
 **FINALIZATION_CLASSIFICATION:** CHECKPOINTED_CONTINUATION  
 **MISSION_COMPLETE:** false  
@@ -86,68 +89,74 @@ danger_areas:
 
 ## Current intent and material result
 
-The Chairman will manually deliver the eventual package to a NEW Fable session later. No receiver
-search, placement, dispatch, upstream notification or watcher was created this turn. Sol retains the
-research/design responsibility; Semiconductor source is a dependency, never an implicit receiver.
+Sol continues research/preparation. The Chairman will manually deliver the eventual bundle to a NEW
+Fable session later. No receiver search, placement, dispatch, upstream notice, child, Attempt or watcher
+was created. The Semiconductor session is a dependency, never the implicit Communications receiver.
 
-The active build-reading path is now the consolidated EXISTING eight-task plan plus the current
-worked-output proof companion. All sixty original requirement texts and task allocations are preserved.
-The numerical and shared amendments are incorporated, not competing current instructions. Old standalone
-route/client, unamended numerical signatures and public-body persistence examples are superseded.
-The broad sector thesis and unfinished economic/evaluation work remain in scope.
+The new study connects four business roles to incremental contribution, reinvestment, working capital,
+share claims and conditional value. Selected source findings distinguish Alphabet's aggregate TAC mix
+from repricing, TTD's finished expense recognition from still-outstanding options, Meta infrastructure
+commitments from current cash capex, and Magnite's gross collection exposure from net revenue. Six
+primary sources support selected clauses; this is not six complete independent financial audits.
 
-This is a verified continuation boundary after substantial cross-owner source reconciliation and a
-complete in-place plan/index rewrite. It preserves the result before a distinct sensitivity/valuation
-research unit and later independent review. A plan's existence or elapsed time alone is not the reason
-to stop, and no product completion, writer release or autonomous continuation is implied.
+Eighteen fixed examples show why a historical slope cannot identify a marginal response, migrating
+activity is not all new activity, growth and funding cost interact, delayed cash raises an investment
+hurdle, and earnings growth can be offset by dilution or multiple change. Conditional inverse valuation
+is not the market's uniquely identified belief. No company coefficient or current price target results.
 
-## Exact source and effect frontier
+## Exact durable source and effect frontier
 
-Sole carrier #7794 / `claude/communications-sector-research-20260923`.
+Sole carrier: #7794 / `claude/communications-sector-research-20260923`.
 Original base: `c4da107fe729e46b4d4036b3e0e290390315d0fd`.
-Entering head and prior complete checkpoint: `18bedfd8b2571571550df96bf28fc0693da8b953`, checkpoint
-blob `98acc468d276c0c1bed1eef1653f849f850352d7`. No rebase or replacement.
+Entering head: `a43287919b98192e71172b7f43e28b9e47d7cb3b`; no rebase or replacement.
 
-- Interim checkpoint: `511f4172720df0c0d480179be6b8a0eb7c6b61d6`, blob `b0cfa915dbf5f654c9124928e276c57bb282dcc2`; superseded by this cumulative record.
-- Plan revision2: `477fe2c1ec4de8950c0a0750cbaea86c041a5490`, blob `d631b736d146e753dc48af9fa8cedd53513e51a5`.
-- Unsent preparation index revision3: `13ea16124f87dc752e106494cd25f70060648f28`, blob `751266a433c6e4e8d8451dc0f0e9b3f094d1a75c`.
-- Current proof companion unchanged: `be1fae5810d30876fa775049bc3689cde0d57b70`, blob `43adb322706fa8a7cac7c5c6ab1a5939aa44e68a`.
-- Current scenario JSON unchanged: `6a0081d210861dc02ebcd5cd3e94f6da28be92d9`, blob `05878ef9e409766c140ab3a15b45ccb2ff8b5673`.
-- Final checkpoint identity is supplied by its write/readback receipt, not a self-reference in its bytes.
+- Sensitivity/valuation study: commit `638350d2b675e57599905f4a3c3d9846b601d162`, blob `48f36446ca2466a8486bf6a4e729968f5a14dbaa`.
+- Fixed replay: commit `099dc2105e9090b38cdacad6c5f7345ff49aceba`, blob `c294f024b411cf3a4e46bd0f00a382cc8aff84ec`.
+- Reference tests: commit `8265bb339bb1cec2fe96ff2479355692d396b953`, blob `33f68ad1f55004a806b1603b32a38d4ad920872f`.
+- This checkpoint's exact final revision comes from its actual update/readback, not a self-reference.
 
-The former plan at `13b130c887353b716385552db96c8505af0efe02` and packet at
-`52ff260554ff8d291b4a595a528f081e9b375ed5` remain immutable history, not active execution directions.
-Baseline master design, numerical/foundation amendments and earlier research remain indexed in the
-current plan and the prior checkpoint. Their source bodies were not modified this turn.
+Unchanged current execution readings: plan revision2 `477fe2c1ec4de8950c0a0750cbaea86c041a5490`,
+blob `d631b736d146e753dc48af9fa8cedd53513e51a5`; proof companion revision2
+`be1fae5810d30876fa775049bc3689cde0d57b70`, blob `43adb322706fa8a7cac7c5c6ab1a5939aa44e68a`.
+Unsent preparation index revision3 `13ea16124f87dc752e106494cd25f70060648f28`, blob
+`751266a433c6e4e8d8451dc0f0e9b3f094d1a75c`. They retain the wider research and amendment identities;
+this study is support, not another replacement plan or a sixty-first release requirement.
 
-Shared source inspected: #7870 `e2f4d490915660fc6db64d750505309343e9e0e8`, not a deployed/accepted
-release claim. Registry blob `7e5b69047d3e0fee57de19c395d5044ea798cd26`; API
-`e079ba949cc68164a760a8f0296a4c72a7d513e9`; JS `aca94e693a0ffd25167468fc658a295573c44cb4`;
-v1 schema `ff3928f0c54aa164ef8283d9da45af67e6a0d971`; checkpoint
-`b259dfe8b0bbb4c774303f51164a2c9b16f64046`. R4 architecture ruling #7780 comment5808854275
-and shared-owner disposition #7870 comment5809602368 are now consumed as dependency facts with their
-limits. No ruling, source-custody takeover or independent shared-code review was issued here.
+Last inspected shared #7870 snapshot remains `e2f4d490915660fc6db64d750505309343e9e0e8`. No new
+shared-source, production or runtime read occurred in this phase. Its old snapshot is not a claim of
+current accepted release. R4 architecture acceptance remains qualified; actual reader/rights/client
+and source-only/signed-measure qualification remains required. No inherited source fence was released.
 
-## Verification, exclusions and resumption
+Protected procedure: Mastermind `a29161fa0a44cca9927afe042b5f7ea25aae1736`, Skillpack1.0.1/bootstrap1.
+Current same-revision INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT reads match unchanged fully
+loaded governing blobs. Direct research reason: PRINCIPAL_JUDGMENT. No hidden timing, served-model,
+quota, worker or runtime-admission receipt is inferred from the chat mode.
 
-The offline checker verifies sixty exact rows, eight tasks, complete named adapter fields and three
-parseable Python blocks. Five damaged variants are rejected: missing requirement, restored old GET,
-missing measurement support, missing task and mismatched constructor keyword. These are DOCUMENT checks,
-not execution of the hypothetical test blocks or application. No new issuer-source audit, native
-admission, source-history census, live API/browser/watchlist test or forecast validation occurred.
+## Verification and limits
 
-Protected Mastermind `819abc8c23609cdded2b33f6e1bfc7854bd5c847`, Skillpack1.0.1/bootstrap1. Fresh INDEX
-and same-revision ACTIVE_EXECUTION/WEB_CEO_DELEGATION/RECONCILE_STATE/CLOSEOUT reads verify unchanged
-previously fully loaded governing blobs. Direct preparation rationale: PRINCIPAL_JUDGMENT. No served-
-model, hidden-budget, duration, worker or runtime-admission receipt is invented.
+The 21 passing tests exercise a fixed standard-library reference program, including restricted
+stable-model refusal. Exact rational arithmetic is serialized with display-only decimal formatting.
+Every case is synthetic. Test success is not calibration, source parsing, causality, independent review,
+real data admission or a model approved to influence trades. The local package also checks six source
+IDs, eighteen example IDs, scope boundaries, source/plan references and parseable code. No acceptance
+requirement or prior research input was changed to produce a pass.
 
-Only the existing plan, unsent index and cumulative checkpoint changed canonically. GitHub writes
-succeeded. No modifying EFFECT_UNKNOWN, no Communications child/Attempt/return watcher, no private
-or shared source modification. The previously denied host read stays unperformed without evasion.
-Portable exports are copies with integrity receipts, not a second authoritative current-state store.
+No current share price, consensus panel, native identity, private-source read, API/browser/watchlist
+result, full repository validator or CI qualification was obtained. Author-prepared Chinese copy lacks
+independent localization acceptance. The prior denied host identity read stayed unperformed without
+retry, rephrasing, alternate route or delegation. No modifying EFFECT_UNKNOWN is outstanding. Native
+GitHub documentation/reference-code writes succeeded; no product/shared implementation changed.
 
-Next: research the four-role earnings-sensitivity and valuation interpretation with labeled assumptions
-and exact source/expectation limitations. Do not rerun broad taxonomy or rebuild arithmetic fixtures.
-Resume from this checkpoint and the two current execution readings plus minimum fresh sources material
-to that task. A fresh conversation changes presentation, not custody. Independent review and eventual
-manual Fable delivery remain separate unfinished boundaries.
+## Exact continuation
+
+The next bounded research unit qualifies obtainable historical inputs and financial outcome definitions
+for the four sensitivity questions before fitting or claiming predictive usefulness. Preserve source
+vintages, missingness and the original-versus-final-guidance distinction; use the existing evaluation
+owner rather than a new panel authority. Reopen stronger history claims only with materially better
+permitted source coverage. Independent review and real-source/privacy/identity/browser proof remain owed.
+
+This continuation boundary follows the completed source-grounded modeling question and its checked
+counterexamples, preserving the result before a distinct empirical-input qualification phase. It does
+not rest on elapsed time, a completed plan alone or a claimed product outcome. Resume from this record,
+the new study and the existing two execution readings, with only material fresh state. No autonomous
+wake, source-custody transfer or delivered Fable handoff is implied.
