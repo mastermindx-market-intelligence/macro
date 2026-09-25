@@ -2,26 +2,21 @@
   "17d18d3a5333": {
     "name_en": "Cross-sector cluster \u00b7 Consumer Staples + Real Estate",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Staples + Real Estate",
-    "score": 46.3
+    "score": 46.2
   },
   "2c85fe224982": {
     "name_en": "Cross-sector cluster \u00b7 Information Technology + Financials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Financials",
-    "score": 53.2
+    "score": 53.8
   },
   "7af7c20b923e": {
     "name_en": "Emerging Consumer Discretionary cluster",
     "name_zh": "\u65b0\u5174 Consumer Discretionary \u96c6\u7fa4",
-    "score": 45.2
+    "score": 45.7
   },
   "df4e9d1ff31a": {
     "name_en": "Emerging Materials cluster",
     "name_zh": "\u65b0\u5174 Materials \u96c6\u7fa4",
-    "score": 41.6
-  },
-  "ebdd56db09ee": {
-    "name_en": "Emerging Communication cluster",
-    "name_zh": "\u65b0\u5174 Communication \u96c6\u7fa4",
     "score": 40.6
   }
 }

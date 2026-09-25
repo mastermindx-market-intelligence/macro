@@ -2,7 +2,7 @@
   "schema": "macro_snapshot.v1.2",
   "asof": "2026-09-25",
   "oldest_component_asof": "2026-09-23",
-  "macro_context_id": "65cd3d7430ef8511",
+  "macro_context_id": "e03e9b65fefb8175",
   "labels": {
     "us": {
       "us_quad": "Q3",
@@ -10,7 +10,7 @@
       "us_fused_risk": "elevated",
       "us_vol_regime": "normalizing",
       "us_risk_radar": "caution",
-      "us_rate_pressure": "pressure",
+      "us_rate_pressure": "panic",
       "us_business_cycle_phase": "recovery",
       "us_liquidity_quality": "contracting",
       "us_liquidity_overlay": "contracting",
@@ -23,7 +23,7 @@
       "cross_asset_verdict": "diverge"
     },
     "market": {
-      "market_state_verdict": "MIXED"
+      "market_state_verdict": "RISK_ON"
     },
     "transmission": {
       "yield_curve_regime": "bear_flattener",
@@ -35,7 +35,7 @@
       "fx_risk": "risk-on",
       "real_rate_regime": "Restrictive real yields",
       "fx_liquidity_dir": "supportive",
-      "fx_regime_radar": null,
+      "fx_regime_radar": "intervention_risk",
       "usd_valuation": "fair",
       "usd_positioning": "neutral",
       "fed_path_lean": "hawkish_repricing",
@@ -59,15 +59,15 @@
     "commodity": {
       "commodity_regime": "Reflation",
       "commodity_favored": "Copper, Oil \u00b7 WTI, Silver",
-      "commodity_mtf_grade": "AVOID",
-      "commodity_ladder": "BOTTOM WATCH",
+      "commodity_mtf_grade": "TREND-FOLLOW",
+      "commodity_ladder": "TURN SIGNALED",
       "commodity_shock_state": "normal",
       "commodity_confluence_state": "Neutral",
       "commodity_breadth_bucket": "broad",
       "gold_action": "SELL",
       "silver_action": "SELL",
       "copper_action": "HOLD",
-      "oil_action": "HOLD"
+      "oil_action": "SELL"
     },
     "china": {
       "china_quad": "Q4",
@@ -105,14 +105,14 @@
     "data/bonds/bond_health.json": "2026-09-24",
     "data/commodity/latest.json": "2026-09-25",
     "data/china_regime/latest.json": "2026-09-24",
-    "data/hk_regime/latest.json": "2026-09-24",
-    "data/canada_regime/latest.json": "2026-09-23",
-    "data/dispersion/regime.json": "2026-09-24",
-    "data/intl_regime/AU_history.parquet": "2026-09-24",
-    "data/intl_regime/EZ_history.parquet": "2026-09-23",
-    "data/intl_regime/GB_history.parquet": "2026-09-23",
-    "data/intl_regime/IN_history.parquet": "2026-09-23",
-    "data/intl_regime/JP_history.parquet": "2026-09-24",
+    "data/hk_regime/latest.json": "2026-09-25",
+    "data/canada_regime/latest.json": "2026-09-25",
+    "data/dispersion/regime.json": "2026-09-25",
+    "data/intl_regime/AU_history.parquet": "2026-09-25",
+    "data/intl_regime/EZ_history.parquet": "2026-09-25",
+    "data/intl_regime/GB_history.parquet": "2026-09-25",
+    "data/intl_regime/IN_history.parquet": "2026-09-25",
+    "data/intl_regime/JP_history.parquet": "2026-09-25",
     "data/intl_regime/KR_history.parquet": "2026-09-23",
     "data/intl_regime/TW_history.parquet": "2026-09-24"
   },
