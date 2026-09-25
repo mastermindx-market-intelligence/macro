@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import date
 import hashlib
+import html
 import json
 import math
 from numbers import Real
@@ -210,6 +211,49 @@ def _validate_fact_structure(
     return metric, definition, period, expected_keys
 
 
+def _source_only_accession(source: str) -> str:
+    number = int(_sha256(source)[:16], 16) % 10**18
+    digits = f"{number:018d}"
+    return f"{digits[:10]}-{digits[10:12]}-{digits[12:]}"
+
+
+def _validate_envelope_span(row: Mapping[str, Any], *, source: str) -> None:
+    span = row.get("source_span")
+    if not isinstance(span, Mapping):
+        raise EconomicObservationError("present envelope observation has no source span")
+    receipt = span.get("receipt")
+    if not isinstance(receipt, Mapping):
+        raise EconomicObservationError("present envelope observation has no byte receipt")
+    start = receipt.get("span_start_byte")
+    end = receipt.get("span_end_byte")
+    source_bytes = source.encode("utf-8")
+    if (
+        isinstance(start, bool) or not isinstance(start, int)
+        or isinstance(end, bool) or not isinstance(end, int)
+        or not 0 <= start < end <= len(source_bytes)
+    ):
+        raise EconomicObservationError("present envelope observation has an invalid byte span")
+    locator = span.get("locator")
+    if isinstance(locator, Mapping):
+        locator_start = locator.get("span_start_byte")
+        locator_end = locator.get("span_end_byte")
+        if locator_start != start or locator_end != end:
+            raise EconomicObservationError("present envelope observation locator disagrees with its receipt")
+    try:
+        raw = source_bytes[start:end].decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise EconomicObservationError("present envelope observation span is not UTF-8 aligned") from exc
+    if "<" in raw or any(character.isspace() for character in raw):
+        raise EconomicObservationError("present envelope observation span is not a raw literal")
+    unescaped = html.unescape(raw)
+    if any(character.isspace() for character in unescaped):
+        raise EconomicObservationError("present envelope observation decodes to whitespace")
+    unit = row.get("unit")
+    value = 0.0 if unescaped == "\u2014%" and unit in {"percent", "percentage_points"} else _pg_envelope._literal(unescaped)
+    if value is None or value != row.get("value"):
+        raise EconomicObservationError("present envelope observation value does not parse from its span")
+
+
 def _validate_envelope_rows(
     *,
     rows: list[Mapping[str, Any]],
@@ -225,7 +269,7 @@ def _validate_envelope_rows(
     if admission.code == "F1-Q" and admission.roles is not None:
         bound = bind_release_document(
             cik=80424,
-            accession="0000080424-26-000056",
+            accession=_source_only_accession(source),
             body=source,
         )
         document = _pg_envelope._document(source)
@@ -287,6 +331,8 @@ def _validate_envelope_rows(
         normalized = json.loads(json.dumps(dict(row)))
         if normalized != replayed[metric]:
             raise EconomicObservationError("selected observation does not replay from source bytes")
+        if "value" in row:
+            _validate_envelope_span(row, source=source)
         checked.append(dict(row))
     return checked
 
