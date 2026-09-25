@@ -4634,7 +4634,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
       - name: Technology ex-Semis boundary (comparison contract + calculator + economic-change composer)
-        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py -q
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py -q
 
   cn-standout-audit:
     if: ${{ false }}

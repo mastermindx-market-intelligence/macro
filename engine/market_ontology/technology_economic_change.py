@@ -62,6 +62,7 @@ from typing import Any
 
 __all__ = [
     "SCHEMA_ID",
+    "DEFINITION_VERSION",
     "ENGINE_VERSION",
     "AUTHORITY_CEILING",
     "MAX_CARDS",
@@ -83,6 +84,10 @@ __all__ = [
 ]
 
 SCHEMA_ID = "technology_economic_change.v1"
+#: Contract-definition revision of this dossier shape. The shared research shell
+#: (#7870 hook 1) requires every registered vertical to carry it on the payload
+#: and match it against the registration, so it is emitted on every dossier.
+DEFINITION_VERSION = "2026-09-24.1"
 ENGINE_VERSION = "market_ontology.technology_economic_change.v1"
 AUTHORITY_CEILING = "research_display_only"
 
@@ -1221,6 +1226,7 @@ def compose_technology_economic_change(
 
     dossier = {
         "schema": SCHEMA_ID,
+        "definition_version": DEFINITION_VERSION,
         "dossier_id": dossier_id,
         "kind": "TECHNOLOGY_ECONOMIC_CHANGE",
         "engine_version": ENGINE_VERSION,
