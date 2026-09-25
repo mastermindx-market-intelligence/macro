@@ -4,7 +4,7 @@
 set -euo pipefail
 
 APP_DIR="${MACRO_APP_DIR:-/opt/macro}"
-MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-8388608}"
+MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-12582912}"
 
 case "$MIN_FREE_KIB" in
   ''|*[!0-9]*)

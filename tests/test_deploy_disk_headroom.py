@@ -10,6 +10,13 @@ GUARD = ROOT / "app" / "deploy" / "disk-headroom.sh"
 UPDATE = ROOT / "app" / "deploy" / "update.sh"
 
 
+def test_deploy_and_maintenance_share_twelve_gib_emergency_floor() -> None:
+    guard = GUARD.read_text()
+    maintenance = (ROOT / "app" / "deploy" / "git-maintenance.sh").read_text()
+    assert 'MACRO_UPDATE_MIN_FREE_KIB:-12582912' in guard
+    assert 'MACRO_GIT_MAINT_MIN_FREE_KIB:-12582912' in maintenance
+
+
 def _run_guard(tmp_path: Path, *, free_kib: int, minimum_kib: int):
     app = tmp_path / "macro"
     app.mkdir()
