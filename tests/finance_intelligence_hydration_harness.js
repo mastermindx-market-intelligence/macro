@@ -393,6 +393,17 @@ function snapshot() {
       });
       return count;
     })(),
+    evidenceAriaLabels: (function () {
+      var labels = [];
+      ['rerating-steps', 'what-changed-list', 'conflict-list', 'constraint-list'].forEach(function (mount) {
+        var root = document.querySelector('[data-fi-mount="' + mount + '"]');
+        if (!root) return;
+        walk(root, function (node) {
+          if (node !== root && /fi-step-evidence/.test(node.className || '')) labels.push(node.getAttribute('aria-label') || '');
+        });
+      });
+      return labels;
+    })(),
     atlasCardCount: (function () {
       if (!atlasGridEl) return 0;
       var count = 0;

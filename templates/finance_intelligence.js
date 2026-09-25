@@ -439,6 +439,12 @@
   // helpers
   // ──────────────────────────────────────────────────────────────────────────
   function isZh() { return document.documentElement.getAttribute('data-lang') === 'zh'; }
+  // Accessible name in the CURRENT language plus the EN/ZH pair the inline
+  // swapper re-applies on langchange. Rendered controls are created after that
+  // swapper has run, so the pair alone would leave them English in 中文.
+  function ariaPair(en, zh) {
+    return ' aria-label="' + esc(isZh() ? (zh || en) : en) + '" data-aria-en="' + esc(en) + '" data-aria-zh="' + esc(zh) + '"';
+  }
   function copyPair(pair) { return isZh() ? (pair[1] || pair[0]) : pair[0]; }
   function labelFor(map, key) {
     if (!key) return copyPair(FI_LABELS[map] && FI_LABELS[map][''] || LABEL_FALLBACKS[map] || ['—', '—']);
@@ -657,7 +663,7 @@
         '<span class="fi-change-name">' + esc(name) + '</span>' +
         '<span class="fi-change-clause">' + esc(clause) + '</span>' +
         chipHtml(labelFor('freshness', freshness), { stateKey: 'FRESHNESS_PLACEHOLDER', classes: 'fi-chip fi-freshness-row' }).replace('data-state="FRESHNESS_PLACEHOLDER"', 'data-state-freshness="' + esc(freshness) + '" data-state-marker="' + esc(freshness) + '"') +
-        '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(evidence) + '" aria-label="Open evidence"><span aria-hidden="true">↗</span></button>' +
+        '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence', '打开证据') + '><span aria-hidden="true">↗</span></button>' +
         '</li>';
     }).join('');
   }
@@ -749,7 +755,7 @@
       if (s.name === 'price' && state$ === 'PRICE_BASIS_UNQUALIFIED') {
         rowHtml += chipHtml(labelFor('plane_state', state$), { stateKey: state$, stateMarker: state$ });
       }
-      rowHtml += '<button type="button" class="fi-step-evidence" data-evidence-ids="' + esc(evidence) + '" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>';
+      rowHtml += '<button type="button" class="fi-step-evidence" data-evidence-ids="' + esc(evidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>';
       rowHtml += '</li>';
       return rowHtml;
     }).join('');
@@ -819,12 +825,12 @@
           '<div class="fi-conflict-side" data-side="left">' +
             chipHtml(labelFor('plane_word', left.plane || 'operating'), { stateMarker: left.plane || '' }) +
             '<p class="fi-conflict-side-statement">' + esc(left.statement || '') + '</p>' +
-            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(leftEvidence) + '" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>' +
+            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(leftEvidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>' +
           '</div>' +
           '<div class="fi-conflict-side" data-side="right">' +
             chipHtml(labelFor('plane_word', right.plane || 'operating'), { stateMarker: right.plane || '' }) +
             '<p class="fi-conflict-side-statement">' + esc(right.statement || '') + '</p>' +
-            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(rightEvidence) + '" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>' +
+            '<button type="button" class="fi-step-evidence fi-evidence-trigger" data-evidence-ids="' + esc(rightEvidence) + '"' + ariaPair('Open evidence', '打开证据') + '>↗</button>' +
           '</div>' +
         '</div>' +
         '<p class="fi-conflict-foot">' + copyPair(SURFACE.conflict_foot) + '</p>' +
@@ -868,7 +874,7 @@
           '</li>';
       }).join('');
       return '<div role="tabpanel" id="panel-' + esc(v.view_id) + '" class="fi-view-panel" data-view="' + esc(v.view_id) + '" aria-labelledby="tab-' + esc(v.view_id) + '"' + hidden + '>' +
-        '<svg class="fi-system-svg" role="img" aria-label="' + esc(v.name_en || v.view_id) + '" data-aria-en="' + esc(v.name_en || '') + '" data-aria-zh="' + esc(v.name_zh || '') + '"><title>' + esc(v.name_en || v.view_id) + '</title></svg>' +
+        '<svg class="fi-system-svg" role="img"' + ariaPair(v.name_en || v.view_id, v.name_zh || '') + '><title>' + esc(v.name_en || v.view_id) + '</title></svg>' +
         '<ul class="fi-slice-list">' + nodeHtml + '</ul>' +
         '<details class="fi-system-edges" open><summary><span class="l-en">Edge list</span><span class="l-zh">边的步骤视图</span></summary>' +
         '<ol class="fi-system-edge-list">' + edgeHtml + '</ol></details>' +
@@ -1123,7 +1129,7 @@
       return '<li class="fi-constraint-row fi-panel2" data-constraint="' + esc(c.constraint) + '" data-slice-id="' + esc(c.slice_id || '') + '" data-state-marker="' + esc(c.constraint) + '">' +
         chipHtml(labelFor('constraint', c.constraint), { stateKey: c.constraint, stateMarker: c.constraint }) +
         '<span class="fi-constraint-effect">' + esc(c.economic_effect || (isZh() ? '尚无经济效应记录。' : 'No economic effect on file.')) + '</span>' +
-        '<button type="button" class="fi-constraint-evidence fi-step-evidence" data-evidence-ids="' + esc(asArray(c.evidence_refs).join(' ')) + '" aria-label="Open evidence" data-aria-en="Open evidence for this constraint" data-aria-zh="打开该约束的证据">↗</button>' +
+        '<button type="button" class="fi-constraint-evidence fi-step-evidence" data-evidence-ids="' + esc(asArray(c.evidence_refs).join(' ')) + '"' + ariaPair('Open evidence for this constraint', '打开该约束的证据') + '>↗</button>' +
         '</li>';
     }).join('');
   }
