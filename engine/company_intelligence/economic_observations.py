@@ -1,12 +1,15 @@
 """Strict validation for the opt-in private PG economic observation selection."""
 from __future__ import annotations
 
+import bisect
 from datetime import date
+import functools
 import hashlib
 import html
 import json
 import math
 from numbers import Real
+import re
 from typing import Any, Mapping
 
 from .documents import ABSENCE_SCHEMA, TypedAbsence
@@ -217,6 +220,70 @@ def _source_only_accession(source: str) -> str:
     return f"{digits[:10]}-{digits[10:12]}-{digits[12:]}"
 
 
+_PRINT_UNIT = re.compile(
+    rb"(<!--.*?-->)|(</?([A-Za-z][A-Za-z0-9]*)[^>]*>)|(<[^>]*>)"
+    rb"|(&(?:#[0-9]+;?|#[xX][0-9a-fA-F]+;?|[^\t\n\f <&#;]{1,32};?))|[^<&]+|[<&]",
+    re.S,
+)
+_SEPARATING = frozenset({b"td", b"th", b"tr", b"table", b"p", b"div", b"br"})
+_RAW_NAMES = frozenset(name.encode() for name in _pg_envelope._RAW_TEXT_CLOSE)
+_UNPRINTED_RAW = frozenset({"raw:script", "raw:style"})
+
+
+@functools.lru_cache(maxsize=4)
+def _printed_units(source_bytes: bytes) -> tuple[tuple[tuple[int, int, str], ...], tuple[int, ...]]:
+    units: list[tuple[int, int, str]] = []
+    raw_name: bytes | None = None
+    for match in _PRINT_UNIT.finditer(source_bytes):
+        start, end = match.span()
+        if raw_name is not None:
+            closing = match.group(2) is not None and match.group(0).startswith(b"</") and match.group(3).lower() == raw_name
+            units.append((start, end, "markup" if closing else "raw:" + raw_name.decode()))
+            raw_name = None if closing else raw_name
+        elif match.group(1) is not None:
+            units.append((start, end, "comment"))
+        elif match.group(4) is not None:
+            units.append((start, end, "markup"))
+        elif match.group(2) is not None:
+            name = match.group(3).lower()
+            units.append((start, end, "separator" if name in _SEPARATING else "markup"))
+            if not match.group(0).startswith(b"</") and name in _RAW_NAMES:
+                raw_name = name
+        else:
+            units.append((start, end, "text"))
+    return tuple(units), tuple(unit[0] for unit in units)
+
+
+def _whole_printed_token(source_bytes: bytes, start: int, end: int) -> bool:
+    units, starts = _printed_units(source_bytes)
+    first = bisect.bisect_right(starts, start) - 1
+    last = bisect.bisect_right(starts, end - 1) - 1
+    kinds = {kind for _start, _end, kind in units[first:last + 1]}
+    if first == last and kinds <= {"comment"} | _UNPRINTED_RAW:
+        return True
+    if kinds != {"text"} and not (first == last and next(iter(kinds)).startswith("raw:")):
+        return False
+
+    def separated(index: int, step: int, fragment: bytes, edge: Any) -> bool:
+        printed = html.unescape(fragment.decode("utf-8"))
+        while not printed:
+            index += step
+            if not 0 <= index < len(units) or units[index][2] == "separator":
+                return True
+            kind = units[index][2]
+            if kind in ("comment", "markup") or kind in _UNPRINTED_RAW:
+                continue
+            printed = html.unescape(source_bytes[units[index][0]:units[index][1]].decode("utf-8"))
+            if printed and kind.startswith("raw:"):
+                return False
+        return edge(printed).isspace()
+
+    return (
+        separated(first, -1, source_bytes[units[first][0]:start], lambda printed: printed[-1])
+        and separated(last, 1, source_bytes[end:units[last][1]], lambda printed: printed[0])
+    )
+
+
 def _validate_envelope_span(row: Mapping[str, Any], *, source: str) -> None:
     span = row.get("source_span")
     if not isinstance(span, Mapping):
@@ -261,6 +328,8 @@ def _validate_envelope_span(row: Mapping[str, Any], *, source: str) -> None:
     value = 0.0 if unescaped == "\u2014%" and unit in {"percent", "percentage_points"} else _pg_envelope._literal(unescaped)
     if value is None or value != row.get("value"):
         raise EconomicObservationError("present envelope observation value does not parse from its span")
+    if not _whole_printed_token(source_bytes, start, end):
+        raise EconomicObservationError("present envelope observation span is not a whole printed token")
 
 
 def _validate_envelope_rows(
