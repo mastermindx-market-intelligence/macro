@@ -108,7 +108,7 @@
                     "role": {
                       "type": "string",
                       "minLength": 1,
-                      "description": "'subject' for ordinary rows; 'announced_seller'/'announced_acquirer'/'announced_party' for announced ownership without an evidenced effective date; 'owner_from:<date>' only when a REPORTED_FACT carries business_valid_from; 'owner_reported_effective_date_unknown' for a reported completion whose effective date is unstated. Never 'supplier_to' from a catalog capability."
+                      "description": "'subject' for ordinary rows; 'announced_party' for announced ownership without an evidenced effective date; 'owner_from:<date>' only when a REPORTED_FACT carries business_valid_from; 'owner_reported_effective_date_unknown' for a reported completion whose effective date is unstated. Never 'supplier_to' from a catalog capability. v1 serves NO directional announced side: 'announced_seller' and 'announced_acquirer' are retired and unreachable - eleven independent reviews each inverted a parse of the curator's free text, so the direction is not derived at all rather than derived wrongly. Do not branch on them. A direction returns only when the shared curation assertion carries it as a structured curated enum (object.subject_role), the standing v1.1 request."
                     },
                     "predicate": {"type": "string", "minLength": 1},
                     "statement_mode": {"type": "string", "minLength": 1},

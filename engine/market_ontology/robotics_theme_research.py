@@ -726,254 +726,56 @@ def _graph(rows: list[dict[str, Any]], selection: _Selection) -> tuple[dict, boo
 # Companies
 # ---------------------------------------------------------------------------
 
-# Ownership side = a CROSS-FIELD EQUALITY against the one field that carries a
-# curated direction, guarded by a closed sentence grammar.
+# Ownership side: STRUCTURALLY UNAVAILABLE in v1. Every ANNOUNCED_ARRANGEMENT
+# serves ``announced_party``.
 #
-# The direction is read from the parenthetical of the assertion's own curated
-# ``object.source_product_label`` ("Robotics Automation business (sale to Skild
-# AI)"): that parenthetical is a curation decision, not an inference.
-# ``limitations.establishes`` is a GUARD, never the source - a sentence serves
-# the curated side only when it names the SAME product after one of a few fixed
-# ownership heads, followed by the SAME preposition and the SAME counterparty
-# the label names, with nothing after it but a date, and with the subject named
-# NOWHERE. Product and counterparty enter the grammar as escaped curated
-# literals, so no free slot is left for a parser to be wrong about.
+# Eleven independent READ_ONLY reviews rejected eleven different readings of
+# this one field. The retired designs, in order: four subject-naming prose
+# templates; a prose agency blocklist; a greedy preposition scan; a closed
+# curated-parenthetical slot with a two-word counterparty blocklist; a
+# counterparty allowlist shaped as "every token opens with a capital"; and a
+# refusal of prepositions and conjunctions as a closed grammatical class. Every
+# one of them was inverted by the next reviewer with a construction it had not
+# seen - "for a client", "on behalf of", "(mandated by Y)", "as sole manager of
+# the Y fund", "Y remains the buyer", "(Sale To Skild AI As Agent Of Fanuc)",
+# "(Acquisition From Fanuc, Buyer Skild AI)", "for A Client", "Skild AI Qua
+# Fanuc", "Skild AI Representing Fanuc", "Fanuc's Nominee Skild AI", "Fanuc
+# Buyer Skild AI", "Skild AI-As-Agent-Of Fanuc".
 #
-# Six rounds of independent review rejected the earlier subject-naming
-# templates ("<SUBJECT> sells X to Y", "X was acquired by <SUBJECT>", "an
-# announced sale by <SUBJECT>", "<SUBJECT>'s sale of X"). Each round inverted
-# the previous round's blocklist with an agency phrase it had not seen - "for a
-# client", "on behalf of", "(mandated by Y)", "as sole manager of the Y fund",
-# "under a power of attorney from Y", "Y remains the buyer" - because agency in
-# free prose is an open set. A served side naming the WRONG party as agent is a
-# blocker; an unnecessary neutral is not. Those templates are therefore
-# RETIRED: a sentence that names the subject as the actor serves
-# ``announced_party`` until ``curation_assertion`` carries a structured
-# ownership direction (the v1.1 additive request to the #7870 owner).
-_ARTICLE = r"(?:[Aa]n|[Tt]he)"
-_NOUN_SELL = (r"(?:sale|divestiture|transfer|ownership change|change of control|"
-              r"change of ownership)")
-_NOUN_ACQUIRE = r"(?:acquisition|purchase)"
-_MONTH = (r"(?:January|February|March|April|May|June|July|August|September|October|"
-          r"November|December)")
-_DATE = (r"(?:[0-9]{1,2}\s+" + _MONTH + r"\s+[0-9]{4}|"
-         + _MONTH + r"\s+[0-9]{1,2},?\s+[0-9]{4}|" + _MONTH + r"\s+[0-9]{4}|"
-         r"[0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{4})")
-# An ALLOWLIST, not a blocklist: after the counterparty the sentence may only
-# end or carry a date. A consideration, a second clause, an agency phrase or a
-# third party is outside the grammar and serves no side.
-_CLOSED_TAIL = (r"(?:,?\s+(?:on|in|effective|as of|with effect from|dated)\s+"
-                + _DATE + r")?\.?$")
-# The curated direction slot is a CLOSED grammar too, not a search for any
-# "to"/"from". Review 8 blocker 1: a greedy scan let the parenthetical's LAST
-# preposition win and never checked the head noun, so "(licensed to X)",
-# "(change of name to X)", "(formerly known as Robotics to Go)" and
-# "(divestiture to X, carved out from Y)" all supplied a direction — an
-# inference, which is exactly what this design abolishes. The slot must be the
-# label's trailing parenthetical, an optional status word, ONE ownership head
-# noun, the preposition and a counterparty.
+# Three findings make the parse unrecoverable rather than merely unfinished:
 #
-# Review 9 closed the two halves that FRAME left open. Both were free text
-# policed by a two-word blocklist, and both inverted exactly as the prose
-# blocklists had: agency phrases inside the counterparty ("to Skild AI by
-# Fanuc", "to Skild AI on behalf of Fanuc", "from Fanuc by Skild AI"), and a
-# second relation hidden in the product half by splitting it across two
-# parentheticals ("business (sale to Skild AI) (transfer from Fanuc)", which
-# served the label's SECOND relation against its first). Every curated input to
-# the direction is therefore a closed grammar of its own: the counterparty is a
-# NAME, and the product half may carry no relation at all.
-_OWNERSHIP_HEAD = (r"(?:sale|divestiture|transfer|acquisition|purchase|ownership change|"
-                   r"change of control|change of ownership)")
-_CURATED_SLOT = re.compile(
-    r"\(\s*(?:(?:completed|announced|agreed|pending|proposed)\s+)?" + _OWNERSHIP_HEAD
-    + r"\s+(?P<prep>to|from)\s+(?P<party>[^()]+?)\s*\)\s*$", re.IGNORECASE)
-# A counterparty is a NAME and nothing else. Review 10 rejected the first
-# attempt at this because a shape rule ("every token opens with a capital")
-# does the whole job only on lower-cased input: in TITLE case "Skild AI As
-# Agent Of Fanuc" satisfies it, so the guard degenerated into the same finite
-# word list that lost rounds 2-6, and it missed "As Agent Of", "As Nominee Of",
-# "Per", "Against". A comma was stripped rather than refused, so
-# "Fanuc, Buyer Skild AI" named two parties through the boundary the grammar
-# depended on.
+#   1. Agency is SEMANTIC and open. No enumeration of agency words survives a
+#      reviewer who reaches for the next one.
+#   2. Agency does not need a connective at all. A transitive participle
+#      ("Skild AI Representing Fanuc") and the English genitive ("Fanuc's
+#      Nominee Skild AI") attach a second party with no preposition, no
+#      conjunction and no punctuation separator - which falsified the closed
+#      GRAMMATICAL class that was meant to replace the semantic one.
+#   3. A SHAPE rule cannot help either. "Every token opens with a capital" does
+#      the whole job only on lower-cased input; in title case it degenerates
+#      into the same finite word list that already lost. Every inversion found
+#      in review 11 required title or upper case, and none was lower case.
 #
-# The structural fact this version rests on: agency is SEMANTIC and therefore
-# open ("mandated by", "as sole manager of", "under a power of attorney from"),
-# but it cannot attach a second party without a PREPOSITION, a CONJUNCTION or a
-# punctuation separator - and prepositions and conjunctions are a closed
-# GRAMMATICAL class, unlike the semantic class the earlier lists chased. So the
-# grammar refuses the class and the separators, in any case, and never
-# enumerates the phrases built from them.
-_NAME_TOKEN = re.compile(r"(?:[A-Z0-9]|[a-z][A-Z])[A-Za-z0-9&./'’-]*\Z")
-_NAME_FUNCTION_WORD = frozenset("""
-about above across after against along alongside amid among around as at before
-behind below beneath beside besides between beyond by concerning despite down
-during except for from in inside into like near of off on onto opposite out
-outside over past per regarding since than through throughout till to toward
-towards under underneath unlike until up upon versus via with within without
-and but nor or plus so yet
-""".split())
-# Two tokens fit the corpus (`Skild AI`, `TPG`); five admits `Smith & Nephew
-# Robotics Holdings`. A longer run is not refused because it must be wrong but
-# because nothing in the corpus needs it and every extra token is room for a
-# clause.
-_PARTY_MAX_TOKENS = 5
-# The product half must be a product NAME, not a second relation: no
-# preposition, no agent phrase, and no nested parenthetical the slot grammar
-# itself would read as a direction (checked at any depth, review 9 blocker 2).
-# "for" is refused flatly. fix9 tried to admit "for <Capitalised Segment>" to
-# recover the recall review 9 nit 1 measured, and review 10 proved that a
-# capitalisation test tracks the curator's shift key rather than meaning: it
-# re-served "business for Client Fanuc" and even "for A Client", one capital
-# letter away from the pinned-neutral "for a client". That is a nit traded for
-# a blocker. The "for <Segment>" recall waits for the v1.1 structured
-# direction, which needs no parse at all.
-_PRODUCT_DIRTY = re.compile(r"\b(?:to|from)\b|\b(?:by|for|behalf|via|through)\s",
-                            re.IGNORECASE)
-
-
-def _is_party_name(party: str) -> bool:
-    """Whether ``party`` names exactly one entity and nothing else: no comma,
-    semicolon or colon, 1-5 whitespace-separated tokens, each a name token, and
-    no preposition or conjunction anywhere but the FIRST position - real names
-    open with one ("Under Armour", "VIA Technologies", "At Home Group", "Plus
-    Therapeutics") whereas a clause's separator never can, because it has to
-    follow the party it modifies."""
-    if any(mark in party for mark in ",;:"):
-        return False
-    tokens = party.split()
-    if not 1 <= len(tokens) <= _PARTY_MAX_TOKENS:
-        return False
-    for index, token in enumerate(tokens):
-        if token == "&":
-            # an ampersand joins name parts ("Smith & Nephew"); it cannot
-            # introduce an agent, but it cannot stand at either end either
-            if index in (0, len(tokens) - 1):
-                return False
-            continue
-        if not _NAME_TOKEN.match(token):
-            return False
-        if index and token.lower() in _NAME_FUNCTION_WORD:
-            return False
-    return tokens[-1].lower() not in _NAME_FUNCTION_WORD
-
-
-def _subject_mentions(label: object) -> frozenset[str]:
-    """How the subject may be written inside its own prose: the label, the
-    label without a corporate suffix after a comma, and its first word (only
-    when it is a real word: 3+ letters, not an article). A mention only ever
-    counts when the next character is not more name ("Fortive Industrial
-    Technologies" for "Fortive", "PTCTech" for "PTC" never match)."""
-    text = str(label or "").strip()
-    if not text:
-        return frozenset()
-    mentions = {text.lower(), text.split(",")[0].strip().lower()}
-    first = text.split()[0].strip(",.").lower()
-    if len(first) >= 3 and first not in {"the", "and", "inc", "ltd", "group"}:
-        mentions.add(first)
-    # the sentence's trailing period is stripped, so "PTC Inc." may end as "PTC Inc"
-    mentions |= {m.rstrip(".") for m in mentions}
-    return frozenset(m for m in mentions if m)
-
-
-def _mention_pattern(mentions: frozenset[str]) -> str:
-    return ("(?:" + "|".join(re.escape(m) for m in sorted(mentions, key=len, reverse=True))
-            + r")(?![A-Za-z0-9'’])")
-
-
-def _normalised_sentence(piece: str) -> str:
-    text = piece.strip().strip("\"“”'").strip().rstrip(".").strip()
-    return text.replace("’", "'")
-
-
-def _curated_direction(object_label: str) -> tuple[str, str, str] | None:
-    """``(product, preposition, counterparty)`` as the curated object label
-    records them in its trailing ownership parenthetical: "Robotics Automation
-    business (sale to Skild AI)" -> ``("Robotics Automation business", "to",
-    "Skild AI")``. ``None`` — i.e. no side is ever served — when the label has
-    no such parenthetical, when the counterparty is not a bare name, or when
-    the product half carries a relation of its own. This is the ONLY place a
-    direction may come from, so every one of those is a refusal, never a guess."""
-    slot = _CURATED_SLOT.search(object_label)
-    if not slot:
-        return None
-    product = object_label[: slot.start()].strip()
-    party = slot.group("party").strip()
-    if not product or not _is_party_name(party):
-        return None
-    # the nested-slot re-scan is belt-and-braces: review 10 proved every nested
-    # slot necessarily carries a standalone "to"/"from" that _PRODUCT_DIRTY
-    # already refuses, so it is unreachable today and kept only so a future
-    # narrowing of _PRODUCT_DIRTY cannot silently reopen review 9 blocker 2
-    if _PRODUCT_DIRTY.search(product) or _CURATED_SLOT.search(product):
-        return None
-    return product, slot.group("prep").lower(), party
-
-
-def _ownership_grammar(product: str, party: str, prep: str) -> tuple[re.Pattern[str], ...]:
-    """The closed ownership sentences for ONE direction, built from the curated
-    product and counterparty as literals. "to" is the seller direction (the
-    subject gave the product up), "from" the acquirer direction."""
-    x = r"(?:an?|the)\s+(?P<prod>" + re.escape(product) + r")"
-    p = re.escape(party)
-    if prep == "to":
-        # "an announced ownership change transferring X to Y" and "the announced
-        # change of X to Y" are the two shapes the curated corpus uses
-        heads = (_NOUN_SELL + r"\s+(?:of|transferring)", r"change\s+of")
-        reordered = r"(?:sale|transfer)"
-    else:
-        heads = (_NOUN_ACQUIRE + r"\s+of",)
-        reordered = _NOUN_ACQUIRE
-    forms = [_ARTICLE + r"\s+announced\s+(?:" + head + r")\s+" + x + r"\s+" + prep
-             + r"\s+" + p + _CLOSED_TAIL for head in heads]
-    forms.append(_ARTICLE + r"\s+announced\s+" + reordered + r"\s+" + prep + r"\s+" + p
-                 + r"\s+of\s+" + x + _CLOSED_TAIL)
-    return tuple(re.compile(form, re.IGNORECASE) for form in forms)
-
-
-def _anchored_sides(assertion: Mapping[str, Any]) -> set[str]:
-    """The side the assertion's own curated object label records, served only
-    when its ``establishes`` prose agrees with it and contradicts it nowhere.
-    A sentence matching the OPPOSITE direction's grammar, a sentence matching
-    neither, a missing curated direction and a missing subject label all yield
-    the empty set, i.e. ``announced_party``."""
-    limits = assertion.get("limitations") or {}
-    direction = _curated_direction(str((assertion.get("object") or {})
-                                       .get("source_product_label") or ""))
-    mentions = _subject_mentions((assertion.get("subject") or {}).get("source_business_label"))
-    if direction is None or not mentions:
-        return set()
-    product, prep, party = direction
-    curated_side = "seller" if prep == "to" else "acquirer"
-    mention_re = re.compile(r"(?<![A-Za-z0-9])" + _mention_pattern(mentions), re.IGNORECASE)
-    # a label naming the subject as its own counterparty records no direction
-    # (review 9 blocker 3)
-    if mention_re.search(party):
-        return set()
-    grammars = (("seller", _ownership_grammar(product, party, "to")),
-                ("acquirer", _ownership_grammar(product, party, "from")))
-    sides: set[str] = set()
-    for piece in limits.get("establishes") or []:
-        if not isinstance(piece, str):
-            continue
-        sentence = _normalised_sentence(piece)
-        for side, patterns in grammars:
-            for pattern in patterns:
-                match = pattern.match(sentence)
-                if match is None:
-                    continue
-                # The subject named anywhere outside the product name THIS match
-                # consumed puts the sentence outside the grammar. A product may
-                # innocently share a word with its owner's label, but review 9
-                # blocker 3 showed that blanking every occurrence of the product
-                # erased a subject mention elsewhere whenever the product name
-                # was a prefix of it, so only the matched span is blanked.
-                start, end = match.span("prod")
-                if mention_re.search(sentence[:start] + " " + sentence[end:]):
-                    continue
-                sides.add(side)
-    return sides if sides == {curated_side} else set()
-
-
+# So the side is not served at all. ``announced_party`` is a true statement
+# about every one of these assertions - a party to an announced ownership
+# arrangement - and it is never the wrong party. A neutral costs recall; a
+# served side naming the WRONG party as agent is a false claim about a named
+# public company, and that asymmetry decides it.
+#
+# Measured cost of this ruling on the real corpus: the two ANNOUNCED_ARRANGEMENT
+# ownership assertions (``zebra_skild_ownership``, ``ptc_tpg_ownership``) lose a
+# correct ``announced_seller`` and become ``announced_party``. Nothing else
+# moves. Both are withheld from serving today in any case - all 63
+# real-publisher source refs resolve to no rights family (#7780 5825621672
+# item 6 registers them as ``unresolved``), so the served difference is zero.
+#
+# The durable fix is a CURATED STRUCTURED FIELD, not a parse: a closed enum on
+# the assertion itself (``object.subject_role``: acquirer | seller | party, or
+# an equivalent ``ownership_direction``), reviewed with the assertion by the
+# curator who already knows the answer. That is the standing v1.1 additive
+# request to the #7870 shared-schema owner (#7870 5825733887 item 7). When it
+# lands, this module reads the enum and serves the side again with no parse
+# anywhere. Until then: neutral, by ruling, not by omission.
 def _ownership_role(assertion: Mapping[str, Any]) -> str:
     if assertion.get("predicate") != "OWNERSHIP_EVENT":
         return "subject"
@@ -984,18 +786,10 @@ def _ownership_role(assertion: Mapping[str, Any]) -> str:
             return f"owner_from:{valid_from}"
         return "owner_reported_effective_date_unknown"
     if mode == "ANNOUNCED_ARRANGEMENT":
-        # The side is the one the assertion's own CURATED object label
-        # records, served only when its ``establishes`` prose agrees through
-        # the closed grammar above. A denial (``does_not_establish``), the
-        # coverage prose, a sentence naming the subject as the actor, a
-        # sentence contradicting the label and a label with no direction at
-        # all never decide a side (R2 nit 1; R2b reviews 1-7).
-        # Ambiguous = neutral.
-        sides = _anchored_sides(assertion)
-        if sides == {"acquirer"}:
-            return "announced_acquirer"
-        if sides == {"seller"}:
-            return "announced_seller"
+        # No side, ever, in v1 - see the ruling above. There is no parse here to
+        # invert: neither the curated label nor the ``establishes`` prose is
+        # read, so no input of any shape can produce ``announced_seller`` or
+        # ``announced_acquirer``.
         return "announced_party"
     return "subject"
 

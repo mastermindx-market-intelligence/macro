@@ -390,23 +390,32 @@ def test_rbv10_announced_ownership_keeps_party_roles():
     companies = response["companies"]["rows"]
     assert [c["source_business_label"] for c in companies] == ["Zebra Technologies"]
     roles = {r["statement_mode"]: r["role"] for r in companies[0]["roles"]}
-    assert roles["ANNOUNCED_ARRANGEMENT"] == "announced_seller"
+    # RBV-10 is a rule about OWNERSHIP, not about which party: an announcement whose
+    # closing date is unknown must not move operating ownership. The announced side
+    # itself is structurally unavailable in v1 (eleven inverted parses; see the ruling
+    # in engine/market_ontology/robotics_theme_research.py), so the served role names
+    # a party without claiming a direction - which satisfies RBV-10 strictly more
+    # conservatively than a direction ever did.
+    assert roles["ANNOUNCED_ARRANGEMENT"] == "announced_party"
     assert roles["REPORTED_FACT"] == "owner_reported_effective_date_unknown"
     security = companies[0]["security"]
     assert security == {"security_id": "NASDAQ:ZBRA",
                         "listing_valid_from": None, "listing_valid_to": None}
 
 
-def test_rbv10_ptc_divestiture_is_seller_side():
+def test_rbv10_ptc_divestiture_names_a_party_never_a_side():
     response, _, _ = compose("ptc_tpg_ownership", view="commercial")
     companies = {c["source_business_label"]: c
                  for c in response["companies"]["rows"]}
     assert set(companies) == {"PTC"}, "TPG has an identity row but is never a subject"
-    assert companies["PTC"]["roles"][0]["role"] == "announced_seller"
+    # the curated label reads "(divestiture to TPG)" - the clearest seller direction in
+    # the whole corpus - and v1 still serves no side. This is the measured cost of the
+    # ruling, pinned so it is never mistaken for a regression.
+    assert companies["PTC"]["roles"][0]["role"] == "announced_party"
 
 
 @pytest.mark.xfail(condition=not HAS_CODEC, strict=True, reason=CODEC_REASON)
-def test_rbv10_dated_completion_becomes_owner_from_and_acquirer_marker_scans():
+def test_rbv10_dated_completion_becomes_owner_from_and_no_announced_side():
     query, bundle = load_bundle_case("zebra_skild_ownership")
     case = load_case("zebra_skild_ownership")
     assertions = list(bundle.assertions)
@@ -414,11 +423,10 @@ def test_rbv10_dated_completion_becomes_owner_from_and_acquirer_marker_scans():
     dated = restamp(
         assertions[1],
         temporal={"business_valid_from": "2026-04-20", "business_valid_to": None})
-    # the side is the one the assertion's own CURATED object label records,
-    # served only when its ``establishes`` prose agrees through the closed
-    # grammar (R2b reviews 1-7) — never from coverage prose, a denial, or a
-    # sentence naming the subject as the actor; a curated "from" direction
-    # with an agreeing guard sentence yields the acquirer side
+    # This is the discriminating case for the ruling: the strongest possible acquirer
+    # input - a curated "from" direction AND an ``establishes`` sentence that agrees
+    # with it word for word - and v1 still serves no side. The REPORTED_FACT half is
+    # RBV-10 proper and is unaffected: a dated completion does move ownership.
     acquirer = restamp(
         assertions[0],
         object={**assertions[0]["object"],
@@ -441,7 +449,7 @@ def test_rbv10_dated_completion_becomes_owner_from_and_acquirer_marker_scans():
     roles = {r["statement_mode"]: r["role"]
              for r in response["companies"]["rows"][0]["roles"]}
     assert roles["REPORTED_FACT"] == "owner_from:2026-04-20"
-    assert roles["ANNOUNCED_ARRANGEMENT"] == "announced_acquirer"
+    assert roles["ANNOUNCED_ARRANGEMENT"] == "announced_party"
     row = next(r for r in view_of(response, "commercial")["rows"]
                if r["statement_mode"] == "REPORTED_FACT")
     assert row["source_clocks"]["business_valid_from"] == "2026-04-20"
