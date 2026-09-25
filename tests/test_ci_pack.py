@@ -4903,12 +4903,41 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     honest instead of leaving it red-on-arrival. WEIGHT and PACK ceilings
     stay unmoved (5,800 / 5,600 / 5,600 and 10 packs; measured 5,792 /
     5,538 / 5,526, packs 10 / 10 / 10).
+
+    2026-09-25 (BC-2 merge gate: #7998, then the page-builder root).
+    ``validated-claims-source`` (w2, ``gate: code``, ``scope: exclusive``)
+    grades the display copy of the PR-authored roots, so it rides the PRs
+    that ARE its subject, on the DECLARED tier: templates/** and engine/**
+    since #7998 (templates/index.html and plan_book.py, +1 job / +2 weight
+    each — already on main, which had left both probes AT their bounds),
+    and the top-level page builders scripts/build_*.py /
+    scripts/render_*.py since this change (build_free_content.py, +1 / +2;
+    nothing else under scripts/ selects it). That is the wave-7
+    "ratcheting the ceiling is the correct-risk response, not curation"
+    case. Main's other drift since #7971 is no manifest entrant:
+    biocatalyst-contracts grew 50 -> 52 weight on all three probes, and
+    #7971's own manifest re-measured on today's tree already selects
+    130 jobs / 5,577 weight for build_free_content.py (+1 / +39 against its
+    129 / 5,538) — an inferred scope widened as the tree moved (the
+    selection code did not change), which left that probe AT its bound too.
+    Re-measured, full manifest, inference on:
+
+        templates/index.html          133 jobs, 5,796 weight
+        scripts/build_free_content.py 130 -> 131 jobs, 5,579 -> 5,581 weight
+        engine/prophet/plan_book.py   126 jobs, 5,530 weight
+
+    JOB ceilings re-based to measurement + 1 (134 / 132 / 127). WEIGHT and
+    PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs) — the
+    builder root adds 2 weight-seconds to one probe and none to the other
+    two. Said explicitly: templates/index.html sits 4 weight-seconds under
+    its bound (unchanged here), so the next entrant there is a curation
+    event, not a ceiling bump.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 133, 5_800),
-        ("scripts/build_free_content.py", 130, 5_600),
-        ("engine/prophet/plan_book.py", 126, 5_600),
+        ("templates/index.html", 134, 5_800),
+        ("scripts/build_free_content.py", 132, 5_600),
+        ("engine/prophet/plan_book.py", 127, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
         weight = sum(job.weight for job in selected)
