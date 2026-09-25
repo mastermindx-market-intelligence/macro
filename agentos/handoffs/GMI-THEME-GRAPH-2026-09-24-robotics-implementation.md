@@ -628,10 +628,26 @@ and the spec:
   `qledger_evidence_clock.py` all exist, so the term is real and reachable in principle). The
   only `engine.theme_graph` members in the closure are `theme_graph` and
   `theme_graph.curation_assertion`.
-  **The one real gap: nothing ASSERTS that absence.** A negative case satisfied by construction
-  is exactly the kind that regresses silently the day someone adds a convenient import. Owed:
-  one import-guard test pinning that the Robotics composer and loader reach no `qledger` module.
-  Cheap, mine, and queued behind the in-flight B2 review (no code changes while it runs).
+  **The one real gap was that nothing ASSERTED that absence** — a negative case satisfied by
+  construction regresses silently the day someone adds a convenient import. **DISCHARGED** at
+  `d10028d1bce`: `test_robotics_product_modules_reach_no_qledger` measures the closure of both
+  product modules in a FRESH subprocess (an in-process `sys.modules` read would attribute a
+  sibling test's import to the composer, and that false red gets "fixed" by loosening the very
+  assertion this pins) and asserts no member matches `qledger`. Re-measured 2026-09-25: **205
+  `sys.modules` entries, 12 of them repo modules, ZERO qledger**, and exactly the two permitted
+  `engine.theme_graph` members. The earlier "145" counted on a different basis; the invariant is
+  unchanged, and the guard pins the invariant and never a count, which would be brittle against
+  any dependency change.
+  **The guard carries its own positive control, asserted BEFORE the null**: importing
+  `engine.qledger_desk_adapter` must load a qledger module (it loads three), or the matcher has
+  lost reach and the null below proves nothing — a matcher that has quietly stopped matching
+  reads exactly like a clean tree, which is the instrument failure this operation has already
+  paid for twice. Control and assertion are deliberately ONE test: split out, the control would
+  pass on a carrier-alone base and **xpass** against the module's strict-xfail marker, breaking
+  gate D's zero-xpass requirement.
+  **Teeth proved, not assumed** (the NIT-1 lesson — green proves no regression, not that the
+  test works): appending `import engine.qledger` to the composer turns the guard red on its own
+  RBV-14 message; reverting turns it green again.
 * **RBV-29** — "Unauthorized/forbidden/error responses preserve incumbent auth and
   private-no-store behavior." §6, the shared paid API boundary (Task 5 / T09). Not mine; held.
 * **RBV-30** — "Desktop/mobile, EN/ZH and dark/light preserve identical quantities, units,
@@ -639,5 +655,40 @@ and the spec:
   item 7. Held on the mount registration, which RULING 6/7 place after this carrier merges.
 
 So the 32 are accounted for: 28 instrumented here, 1 shared (13), 1 satisfied-by-construction
-with an owed guard test (14), 2 held in named lanes (29 = shared API, 30 = R6). None silently
+and now PINNED by a guard whose teeth are proved (14), 2 held in named lanes (29 = shared API, 30 = R6). None silently
 dropped, and none marked covered on the strength of a matrix row.
+
+## Merge gate 1 re-discharged against TODAY's main, not a stale snapshot — and the new canonical gate numbers
+
+Gate 1 ("the carrier is not stale against main") had been recorded discharged on an `ahead_by=0`
+reading. Re-checked 2026-09-25T06:5xZ before merging, it is **not** 0: `main` is **193 commits**
+ahead of the carrier's merge-base `3c93f8194f6`, and the carrier is 47 ahead. GitHub still calls
+#7908 `MERGEABLE`, but `mergeable` only rules out a TEXTUAL conflict — it makes no claim about
+whether the gates still hold, and the repo's CI checks on this PR are governance fences
+(`fence-pack`, `self-mod-fence`, `ci-authority`), not the robotics batteries. So "CI green" was
+never evidence for this.
+
+**Measured rather than argued.** Of the 193 commits the carrier lacks, exactly **one** touches a
+gate-B path: `ee908cb8f0b5` (#7932, mining casebook), and it is a pure **addition** —
+`A engine/market_ontology/mining_dependency_binding.py`, nothing modified, and it matches
+nothing under `robotics|theme_research|curation_assertion|theme_graph`. Prediction recorded
+before running: the gates are unaffected.
+
+**Confirmed by running them, not by the prediction.** Carrier `d716d8f2c86` merged with
+`origin/main 4f996720279` → **`65c2b64b7dc`, zero conflicts**; on that tree **gate D = 20 passed
+/ 115 xfailed, zero xpass** and **gate C = exit 0**, both exactly the recorded baseline. Main's
+drift is benign for this carrier.
+
+**New canonical numbers after the RBV-14 guard (`d10028d1bce`)** — the gate counts move by
+exactly one test, and both halves were measured:
+
+| gate | before | after | where |
+| --- | --- | --- | --- |
+| B (22-file suite, integrated base) | 622 passed | **623 passed** | guard runs and passes |
+| D (six batteries, carrier alone) | 20 passed / 115 xfailed | **20 passed / 116 xfailed** | guard correctly xfails; **zero xpass preserved** |
+| C (`check_theme_graph_contracts.py`) | exit 0 | **exit 0** | unchanged, no contract touched |
+
+The guard xfails on a carrier-alone base because the composer genuinely cannot import there
+without #7870's `curation_assertion` — so RBV-14 has real teeth only on the integrated base,
+which is exactly where the "someone adds a convenient import" regression could occur. That is
+honest coverage, not a gap: on main alone the composer is unreachable anyway.
