@@ -453,6 +453,22 @@ def test_public_access_policy_lists_finance_intelligence_shell():
     assert "/finance_intelligence.js" in public
 
 
+def test_shell_loads_the_shared_theme_runtime():
+    """The nav's theme switch and EN/中文 toggle are wired by theme.js, so a
+    page that omits it renders both controls inert (T8 went live without it
+    on 2026-09-24 and neither toggle did anything). Mirror biocatalyst: load
+    theme.js deferred, ahead of the page runtime, in the template and in the
+    committed (render-stamped) site copy alike."""
+    html = _render()
+    theme_at = html.find('<script src="theme.js" defer></script>')
+    assert theme_at != -1
+    assert theme_at < html.find('<script src="finance_intelligence.js"')
+    site = ROOT / "site" / "finance_intelligence.html"
+    if site.exists():
+        committed = site.read_text(encoding="utf-8")
+        assert re.search(r'<script src="theme\.js(\?v=[0-9a-f]{8})?" defer></script>', committed)
+
+
 def test_shell_ships_the_not_connected_binding_until_integration():
     """T8 seat ruling: the read-model endpoint is bound only through
     ``<main data-fi-read-url>``; an empty value must render the bilingual
