@@ -8,6 +8,7 @@ management intent, legal materiality, or an economic outcome.
 """
 from __future__ import annotations
 
+from bisect import bisect_left
 from collections import Counter
 from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
@@ -360,6 +361,12 @@ class DisclosureBlock:
     # 1..6 for a real ``h1``..``h6`` heading, 0 for a promoted paragraph or plain-text heading.  A layout fact
     # for consumers that read section hierarchy; it does not enter ``to_dict`` or any id.
     heading_level: int = 0
+    # True when visible text the extractor reads into no block -- text outside every block, a ``<center>`` or
+    # ``<figcaption>`` outside one, text directly inside a ``div`` that holds blocks, stray text inside a table
+    # outside its cells and caption -- lies between the previous block and this one (``unread_before``) or after
+    # the last block (``unread_after``).  Layout facts: not in ``to_dict`` or any id (R100).
+    unread_before: bool = False
+    unread_after: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -663,6 +670,8 @@ class _RawBlock:
     table_groups: tuple[tuple[int, str], ...] = ()
     table_nested: bool = False
     table_contains_nested: bool = False
+    unread_before: bool = False
+    unread_after: bool = False
 
 
 @dataclass
@@ -671,6 +680,7 @@ class _Capture:
     start: int
     text_parts: list[str] = field(default_factory=list)
     has_block_child: bool = False
+    emitted: bool = False
 
 
 class _HtmlBlockExtractor(HTMLParser):
@@ -692,6 +702,8 @@ class _HtmlBlockExtractor(HTMLParser):
         self.blocks: list[_RawBlock] = []
         self.captures: list[_Capture] = []
         self.tables: list[_RawTable] = []
+        # Visible text no emitted block may read: (offset, the captures open when it arrived) (R100).
+        self.unread: list[tuple[int, tuple[_Capture, ...]]] = []
         # This is deliberately a subtree depth, not just a stack of hidden
         # tags.  SEC metadata often nests ordinary ``div``/``span`` elements
         # under a hidden wrapper; treating only the outer tag as ignored can
@@ -743,7 +755,13 @@ class _HtmlBlockExtractor(HTMLParser):
                 table.current_cell.text_parts.append(value)
             elif table.in_caption:
                 table.caption_parts.append(value)
+            elif value.strip():
+                # Stray text inside a table, outside its cells and caption: no block reads it (R100).
+                self.unread.append((self._offset(), ()))
             return
+        if value.strip() and all(capture.tag == "div" for capture in self.captures):
+            # Outside every block, or directly inside divs only: read only if one of those divs is emitted (R100).
+            self.unread.append((self._offset(), tuple(self.captures)))
         for capture in self.captures:
             capture.text_parts.append(value)
 
@@ -890,6 +908,7 @@ class _HtmlBlockExtractor(HTMLParser):
                 continue
             kind = BlockKind.HEADING if capture.tag.startswith("h") and len(capture.tag) == 2 else BlockKind.PARAGRAPH
             self.blocks.append(_RawBlock(kind, capture.start, end, text, heading_level=_heading_level(capture.tag)))
+            capture.emitted = True
 
     def finish(self) -> tuple[_RawBlock, ...]:
         self.close()
@@ -908,10 +927,22 @@ class _HtmlBlockExtractor(HTMLParser):
             if text and not (capture.tag == "div" and capture.has_block_child):
                 kind = BlockKind.HEADING if capture.tag.startswith("h") and len(capture.tag) == 2 else BlockKind.PARAGRAPH
                 self.blocks.append(_RawBlock(kind, capture.start, end, text, heading_level=_heading_level(capture.tag)))
+                capture.emitted = True
         unique: dict[tuple[str, int, int, str], _RawBlock] = {}
         for block in self.blocks:
             unique[(block.kind.value, block.start, block.end, block.text)] = block
-        return tuple(sorted(unique.values(), key=lambda item: (item.start, item.end, item.kind.value, item.text)))
+        ordered = sorted(unique.values(), key=lambda item: (item.start, item.end, item.kind.value, item.text))
+        # Visible text that no emitted block read marks the next block, or the last when none follows (R100).
+        starts = [block.start for block in ordered]
+        for offset, captures in self.unread:
+            if any(capture.emitted for capture in captures):
+                continue
+            index = bisect_left(starts, offset)
+            if index < len(ordered):
+                ordered[index].unread_before = True
+            elif ordered:
+                ordered[-1].unread_after = True
+        return tuple(ordered)
 
 
 def _looks_like_heading(text: str, registry: DisclosureDiffRegistry, form: str | None) -> bool:
@@ -1114,9 +1145,11 @@ def normalize_filing(
     blocks: list[DisclosureBlock] = []
     current_section = preamble
 
+    unread_pending = False
     for source_order, raw_block in enumerate(raw_blocks):
         text = _compact_text(raw_block.text)
         if not text:
+            unread_pending = unread_pending or raw_block.unread_before
             continue
         span = source_locator.span(raw_block.start, raw_block.end)
         # SEC Inline XBRL frequently renders Item labels in styled <p>/<div>
@@ -1235,8 +1268,11 @@ def normalize_filing(
                 source_span=span,
                 table=table,
                 heading_level=raw_block.heading_level if block_kind is BlockKind.HEADING else 0,
+                unread_before=unread_pending or raw_block.unread_before,
+                unread_after=raw_block.unread_after,
             )
         )
+        unread_pending = False
     return DisclosureDocument(
         document_id=document_id,
         entity_cik=entity_cik,
