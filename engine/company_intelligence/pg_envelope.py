@@ -57,6 +57,7 @@ _FOOTNOTE_MARKER = re.compile(r"\([0-9]\)")
 _FIGURE = re.compile(r"\(?\$?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?\)?%?")
 _ODD_CHARACTER = re.compile(r"[^\S \t\n\r\f\xa0]|[\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]")
 _RAW_TEXT_ELEMENT = re.compile(rf"<({'|'.join(_RAW_TEXT_CLOSE)})\b[^>]*>.*?</\1{_HTML_SPACE}*>", re.I | re.S)
+_NON_ASCII = re.compile(r"[^\x00-\x7f]")
 _PERIOD_LABEL = "<period>"
 _NUMERIC = "<n>"
 _ROLES = (
@@ -736,6 +737,10 @@ def _match_role(signature: frozenset[str]) -> str | None:
     return None
 
 
+def _unassigned_character(source: str) -> bool:
+    return any(unicodedata.ucd_3_2_0.category(character) == "Cn" for character in _NON_ASCII.findall(html.unescape(source)))
+
+
 def admit(source: str, fiscal_scope: Sequence[str | date]) -> Admission:
     return _admission(_cached_document(source), fiscal_scope)
 
@@ -756,6 +761,8 @@ def _admission(document: Document, fiscal_scope: Sequence[str | date]) -> Admiss
         return Admission("not_ex_99_1")
     if re.search(r"\n<!-- Document created using Wdesk -->\r?\n", source) is None:
         return Admission("generator_not_workiva")
+    if _unassigned_character(source):
+        return Admission("markup_unreadable:character")
     if not document.tables or "The Procter & Gamble Company" not in _table_text(document.tables[0]):
         return Admission("issuer_not_pg")
     role_tables: list[tuple[str, int]] = []
@@ -900,10 +907,14 @@ def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *,
     return title.month == period.month and day_matches and (growth or years == {period.year})
 
 
+def _figure_character(character: str) -> bool:
+    return character.isnumeric() or unicodedata.ucd_3_2_0.category(character) == "Lo"
+
+
 def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int] | None:
     years: set[int] = set()
     for value in _headers_over(rows, cell):
-        if not any(character.isnumeric() for character in value):
+        if not any(_figure_character(character) for character in value):
             continue
         title = _parse_period_title(value)
         if title is not None:
@@ -912,7 +923,7 @@ def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int] | None
             continue
         if _FIGURE.fullmatch(value):
             continue
-        if any(character.isnumeric() for character in _FOOTNOTE_MARKER.sub("", _YEAR.sub("", value))):
+        if any(_figure_character(character) for character in _FOOTNOTE_MARKER.sub("", _YEAR.sub("", value))):
             return None
         years.update(int(year) for year in _YEAR.findall(value))
     return years
