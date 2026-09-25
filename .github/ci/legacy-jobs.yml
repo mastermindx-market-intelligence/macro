@@ -370,6 +370,7 @@ jobs:
       # packed trusted-executor dispatch — pick them up; the suite still
       # imports scripts.check_caddy_hub_boundary, same env.
       - "tests/test_caddy_hub_boundary_am_edition.py"
+      - "templates/index.html"  # SCRATCH: deliberate probe breach, reverted by the next commit
       # ...and that suite's closure, now that the step below runs it (2026-09-25:
       # #7972 declared the suite but no run: step named it, so the unrun census
       # flagged it once the census ran on the code gate).
