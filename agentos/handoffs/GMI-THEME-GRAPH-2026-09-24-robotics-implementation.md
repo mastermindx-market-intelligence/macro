@@ -467,3 +467,33 @@ markers off rather than letting them rot.
 
 Remaining merge gates: **2 (independent review of B2 — in flight, builder != reviewer)** and
 **4 (CI green apart from the `inactive_base_context` pilot — currently satisfied)**.
+
+## Completion criterion 4 (public mirrors) — merging this carrier adds NO public-mirror surface. Measured, not asserted.
+
+`gh api repos/.../macro --jq .private` → **`false`**. The repository is **public**, so this
+repo's known leak class is live: anything materialised under `site/` is retrievable
+unauthenticated from raw.githubusercontent.com. That makes the question worth measuring before
+merge rather than at admission.
+
+* **The carrier writes nothing under `site/` or `premiumdata`.** `git diff --name-only
+  origin/main...HEAD | grep -E '^site/|premiumdata'` → empty. The single `site/` string in the
+  composer is a comment naming the client that renders the status.
+* **Neither the composer nor the loader performs any read.** No `open(`, `read_text`,
+  `read_bytes`, `urlopen`, `requests.` or `boto3` in either module. `load_robotics_owner_bundle`
+  takes `query` and an optional `rights_snapshot` and reads NOTHING from the query — not a
+  slice, path, URL, locator, event id, ticker or CIK — so it has no byte source of its own and
+  cannot be a leak vector. The private binding lives in the SHARED adapter (T11), not here.
+* **The fixture corpus is synthetic under measurement, not under its own label.** I wrote the
+  "synthetic throughout" line myself, so I measured it instead of citing it: 21 fixtures,
+  **zero** redistribution-shaped keys (`body`, `full_text`, `article`, `content`, `raw`, `html`,
+  `excerpt`), and the longest string value in the entire corpus is **235 characters** — analytic
+  prose the lane wrote (`limitations.coverage`, `expected_regression`), not a quoted source
+  body. The one quoted fragment is the deliberate injection sentence inside
+  `source_authority_injection.json`, which is the adversarial case's payload.
+
+**What this does NOT establish.** Criterion 4 is *not* discharged. It asks that anonymous, free
+and public mirrors cannot recover full-fidelity CURRENT research — and the real research payload
+arrives through the shared private adapter and the shared paid API, neither of which is mine and
+both of which are held (R5). What is established is narrower and is a **merge-safety** statement:
+merging #7908 cannot create a new public-mirror surface, because this carrier ships no served
+bytes, no reader and no real research. The public-mirror probe itself remains owed at admission.
