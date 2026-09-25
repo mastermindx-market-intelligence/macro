@@ -74,22 +74,32 @@ def css_text() -> str:
 # Synthetic envelope (FROZEN contract — every closed top-level key present)
 # ---------------------------------------------------------------------------
 
+ENVELOPE_FIXTURE = (REPO_ROOT / "tests" / "fixtures" / "semiconductor_theme_research"
+                    / "client_contract_envelope.json")
+
+
 @functools.lru_cache(maxsize=1)
 def _composed_envelope_text() -> str:
     """The REAL composer's envelope for the synthetic ``witness_hbm_packaging``
-    fixture (economics ready, industrial rows, evidence refs). Cached as text
-    so every test gets a fresh deep copy."""
-    from engine.market_ontology.semiconductor_theme_research import (
-        compose_semiconductor_research,
-    )
-    from tests.semiconductor_research_helpers import load_bundle_case
-    query, bundle = load_bundle_case("witness_hbm_packaging")
-    return json.dumps(compose_semiconductor_research(query, bundle), sort_keys=True)
+    case (economics ready, industrial rows, evidence refs), read from the
+    committed fixture.
+
+    It is READ, not composed here, on purpose. This suite tests a JavaScript
+    file: importing the composer would drag the whole company-intelligence
+    stack (requests, pandas, pyarrow, the reader, the intake) into its import
+    closure, and every CI job that declares this suite would then have to
+    declare that closure too. ``test_client_contract_envelope_fixture_is_the
+    _composer_output`` in the composition suite — where those imports already
+    live — pins the fixture to what the composer produces today, so the
+    fixture cannot drift back into a hand-written look-alike. Cached as text
+    so every test gets a fresh deep copy.
+    """
+    return json.dumps(json.loads(ENVELOPE_FIXTURE.read_text(encoding="utf-8")), sort_keys=True)
 
 
 def _envelope(**over) -> dict:
-    """The frozen-schema envelope the client must accept — produced by the
-    composer itself. The T10 client was first accepted against a hand-written
+    """The frozen-schema envelope the client must accept — the composer's own
+    output. The T10 client was first accepted against a hand-written
     look-alike that had drifted from the schema (``limitations`` and
     ``native_subjects`` as status objects, a top-level ``industrial_views``
     status, string evidence refs); under node the production client refused
@@ -1190,6 +1200,7 @@ def test_pager_never_prints_rows_one_to_zero(js_text):
 
 def test_valid_case_is_the_real_composer_output_and_validates_against_the_frozen_schema():
     import jsonschema  # noqa: PLC0415
+    assert ENVELOPE_FIXTURE.is_file(), "the pinned composer envelope is missing"
     payload = _envelope()
     jsonschema.validate(payload, json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
     assert isinstance(payload["limitations"], list)

@@ -507,3 +507,32 @@ def test_byte_identical_restated_packets_are_one_packet():
     assert _derived(twice['economics'])['prior_midpoint'] == _derived(once['economics'])['prior_midpoint']
     assert _derived(twice['economics'])['prior_midpoint']['status'] == 'ready'
     assert 'competing_financial_packets' not in twice['limitations']
+
+
+def test_client_contract_envelope_fixture_is_the_composer_output() -> None:
+    """The client-contract suite tests a JavaScript file and must not import
+    the composer (its closure is the whole company-intelligence stack), so it
+    reads a committed envelope instead. This test — living where those imports
+    already are — is what stops that fixture becoming a hand-written
+    look-alike again: the first T10 client was accepted against one that had
+    drifted from the frozen schema, and under node the production client
+    refused every real response.
+
+    Regenerate with:
+        python3 -c "import json;from pathlib import Path;\
+        from engine.market_ontology.semiconductor_theme_research import compose_semiconductor_research;\
+        from tests.semiconductor_research_helpers import load_bundle_case;\
+        q,b=load_bundle_case('witness_hbm_packaging');\
+        Path('tests/fixtures/semiconductor_theme_research/client_contract_envelope.json')\
+        .write_text(json.dumps(compose_semiconductor_research(q,b),indent=2,sort_keys=True)+chr(10))"
+    """
+    import json as _json
+    from pathlib import Path as _Path
+
+    fixture = (_Path(__file__).resolve().parents[1] / "tests" / "fixtures"
+               / "semiconductor_theme_research" / "client_contract_envelope.json")
+    assert fixture.is_file(), f"pinned client envelope missing: {fixture}"
+    query, bundle = load_bundle_case("witness_hbm_packaging")
+    assert _json.loads(fixture.read_text(encoding="utf-8")) == compose_semiconductor_research(
+        query, bundle
+    ), "the pinned client envelope no longer matches the composer — regenerate it (see docstring)"
