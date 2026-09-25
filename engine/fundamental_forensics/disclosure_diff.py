@@ -363,8 +363,9 @@ class DisclosureBlock:
     heading_level: int = 0
     # True when visible text the extractor reads into no block -- text outside every block, a ``<center>`` or
     # ``<figcaption>`` outside one, text directly inside a ``div`` that holds blocks, stray text inside a table
-    # outside its cells and caption -- lies between the previous block and this one (``unread_before``) or after
-    # the last block (``unread_after``).  Layout facts: not in ``to_dict`` or any id (R100).
+    # outside its cells and caption (R100), drawn text in an element the extractor drops: svg text, ix:exclude,
+    # noscript, aria-hidden or class-hidden content (R109) -- lies between the previous block and this one
+    # (``unread_before``) or after the last block (``unread_after``).  Layout facts: not in ``to_dict`` or any id.
     unread_before: bool = False
     unread_after: bool = False
 
@@ -683,6 +684,21 @@ class _Capture:
     emitted: bool = False
 
 
+def _style_value(style: str, name: str) -> str | None:
+    """The value an inline ``style`` (comments and whitespace removed) gives property ``name``: the last
+    declaration wins unless an earlier one is ``!important`` (R109)."""
+    value: str | None = None
+    important = False
+    for declaration in style.split(";"):
+        prop, sep, raw = declaration.partition(":")
+        if not sep or prop != name:
+            continue
+        flag = raw.endswith("!important")
+        if flag or not important:
+            value, important = raw.removesuffix("!important"), important or flag
+    return value
+
+
 class _HtmlBlockExtractor(HTMLParser):
     """Small lossless-enough extractor for SEC-style HTML without third-party parsers."""
 
@@ -694,6 +710,11 @@ class _HtmlBlockExtractor(HTMLParser):
         "xbrli:context", "xbrli:unit", "link:schemaref", "link:linkbaseref",
     })
     _VOID_TAGS = frozenset({"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"})
+    # Dropped from every block, yet drawn: svg text, ix:exclude content, noscript fallback (R109).
+    _DRAWN_NONVISIBLE_TAGS = frozenset({"svg", "ix:exclude", "noscript"})
+    # How much of an ignored subtree is drawn (R109): nothing and never (display:none, a metadata tag), nothing
+    # unless a descendant sets visibility:visible (visibility:hidden), or everything the parser drops.
+    _UNDRAWN, _INVISIBLE, _DRAWN = 0, 1, 2
 
     def __init__(self, source: str) -> None:
         super().__init__(convert_charrefs=False)
@@ -709,6 +730,8 @@ class _HtmlBlockExtractor(HTMLParser):
         # under a hidden wrapper; treating only the outer tag as ignored can
         # leak text as soon as a child happens to have the same tag name.
         self.ignored_depth = 0
+        # One drawing state per open element of the ignored subtree (R109).
+        self.ignored_drawn: list[int] = []
 
     @staticmethod
     def _line_starts(source: str) -> tuple[int, ...]:
@@ -746,8 +769,34 @@ class _HtmlBlockExtractor(HTMLParser):
         classes = set(attr_map.get("class", "").casefold().split())
         return bool({"hidden", "ix-hidden", "inline-xbrl-hidden"} & classes)
 
+    @classmethod
+    def _drawing(cls, tag: str, attrs: list[tuple[str, str | None]], parent: int) -> int:
+        """How much of an element in an ignored subtree is drawn (R109).  A metadata or script tag, display:none,
+        or the hidden attribute with no inline display draws nothing, and nothing beneath it is drawn;
+        visibility:hidden draws nothing until a descendant sets visibility:visible.  Everything else the parser
+        drops is DRAWN: svg text, ix:exclude and noscript content, aria-hidden content (hidden from assistive
+        technology only), and a "hidden" class, whose effect depends on a stylesheet the parser does not read."""
+        if parent == cls._UNDRAWN:
+            return cls._UNDRAWN
+        if tag in cls._NONVISIBLE_TAGS and tag not in cls._DRAWN_NONVISIBLE_TAGS:
+            return cls._UNDRAWN
+        attr_map = _attribute_map(attrs)
+        style = re.sub(r"\s+", "", re.sub(r"/\*.*?\*/", "", attr_map.get("style", "").casefold(), flags=re.DOTALL))
+        display = _style_value(style, "display")
+        if display == "none" or ("hidden" in attr_map and display is None):
+            return cls._UNDRAWN
+        visibility = _style_value(style, "visibility")
+        if visibility in {"hidden", "collapse"}:
+            return cls._INVISIBLE
+        if visibility == "visible":
+            return cls._DRAWN
+        return parent
+
     def _append_text(self, value: str) -> None:
         if self.ignored_depth:
+            if value.strip() and self.ignored_drawn and self.ignored_drawn[-1] == self._DRAWN:
+                # Drawn text no block reads (R109).
+                self.unread.append((self._offset(), ()))
             return
         if self.tables:
             table = self.tables[-1]
@@ -771,10 +820,12 @@ class _HtmlBlockExtractor(HTMLParser):
         if self.ignored_depth:
             if tag not in self._VOID_TAGS:
                 self.ignored_depth += 1
+                self.ignored_drawn.append(self._drawing(tag, attrs, self.ignored_drawn[-1] if self.ignored_drawn else self._DRAWN))
             return
         if self._is_nonvisible(tag, attrs):
             if tag not in self._VOID_TAGS:
                 self.ignored_depth = 1
+                self.ignored_drawn = [self._drawing(tag, attrs, self._DRAWN)]
             return
         if tag == "br":
             self._append_text(" ")
@@ -855,6 +906,8 @@ class _HtmlBlockExtractor(HTMLParser):
         if self.ignored_depth:
             if tag not in self._VOID_TAGS:
                 self.ignored_depth -= 1
+                if self.ignored_drawn:
+                    self.ignored_drawn.pop()
             return
         if self.tables:
             table = self.tables[-1]
