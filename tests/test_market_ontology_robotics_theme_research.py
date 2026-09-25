@@ -801,35 +801,89 @@ def test_no_authority_key_in_any_composed_response():
 # RBV-14 — the registered QLedger forward claim is not product evidence
 # ---------------------------------------------------------------------------
 
+_PRODUCT_MODULES = (
+    "engine.market_ontology.robotics_theme_research",
+    "engine.market_ontology.robotics_owner_bundle",
+)
 
-def _fresh_import_closure(*module_names: str) -> list[str]:
-    """Every module a FRESH interpreter loads in order to import ``module_names``.
+# Every ``engine.theme_graph`` member the product modules may reach, at import
+# time OR through their deliberate function-local imports. This is a drift
+# tripwire, NOT an RBV-14 invariant: it catches "the composer now reaches a new
+# part of the shared graph". An earlier version asserted exact equality with the
+# two IMPORT-TIME members under the comment "the composer's only permitted
+# reach" — which was false, because the composer also reaches
+# ``engine.theme_graph.identity`` lazily.
+_PERMITTED_THEME_GRAPH_REACH = {
+    "engine.theme_graph",
+    "engine.theme_graph.curation_assertion",
+    "engine.theme_graph.identity",  # robotics_theme_research.py:68, lazy
+    "engine.theme_graph.rights",    # robotics_owner_bundle.py:197, lazy by design
+}
+
+# Imports BOTH product modules and then EXERCISES them, because an import-time
+# closure cannot see a function-local import — and both modules already use that
+# idiom deliberately. A QLedger reach planted the same way would be invisible.
+_EXERCISED_CLOSURE_PROBE = """
+import sys, json, dataclasses
+import engine.market_ontology.robotics_theme_research as R
+import engine.market_ontology.robotics_owner_bundle
+from tests.robotics_research_helpers import FIXTURE_ROOT, load_bundle_case
+composed = 0
+for name in sorted(p.stem for p in FIXTURE_ROOT.glob("*.json")):
+    try:
+        query, bundle = load_bundle_case(name)
+    except Exception:
+        continue
+    for view in (None, "precision_motion", "perception"):
+        q = query if view is None else dataclasses.replace(query, view=view)
+        try:
+            R.compose_robotics_research(q, bundle)
+            composed += 1
+        except Exception:
+            pass
+        try:
+            R.select_authorized_evidence(q, bundle)
+        except Exception:
+            pass
+print(json.dumps({"modules": sorted(m for m in sys.modules if m), "composed": composed}))
+"""
+
+_CONTROL_PROBE = """
+import sys, json
+import engine.qledger_validity
+print(json.dumps({"modules": sorted(m for m in sys.modules if m), "composed": 1}))
+"""
+
+
+def _run_probe(body: str) -> dict:
+    """Run ``body`` in a FRESH interpreter rooted at the tree pytest imported.
 
     A subprocess rather than this process's ``sys.modules``: by the time this
     test runs a sibling may already have imported anything at all, and an
     in-process read would then attribute to the composer a qledger it never
-    touches. That false red gets "fixed" by loosening the assertion below,
-    which is the opposite of what RBV-14 wants pinned.
+    touches. That false red gets "fixed" by loosening the assertion this pins.
+
+    The cwd comes from the module pytest ACTUALLY imported, never from
+    ``Path(__file__).resolve()``. ``resolve()`` follows symlinks out of the tree
+    under test, so in a symlinked checkout the subprocess would measure a
+    DIFFERENT tree and still report green — and on macOS ``/tmp`` is itself a
+    symlink to ``/private/tmp``, so that is a live hazard, not a hypothetical.
     """
     import subprocess
     import sys
 
-    probe = (
-        "import sys, json\n"
-        + "".join(f"__import__({name!r})\n" for name in module_names)
-        + "print(json.dumps(sorted(m for m in sys.modules if m)))"
-    )
     result = subprocess.run(
-        [sys.executable, "-B", "-c", probe],
+        [sys.executable, "-B", "-c", body],
         capture_output=True, text=True,
-        cwd=str(Path(__file__).resolve().parents[1]),
+        cwd=str(Path(robotics.__file__).parents[2]),
+        timeout=300,
     )
     assert result.returncode == 0, result.stderr[-2000:]
-    return json.loads(result.stdout)
+    return json.loads(result.stdout.strip().splitlines()[-1])
 
 
-def _qledger_members(closure: list[str]) -> list[str]:
-    return [name for name in closure if "qledger" in name.lower()]
+def _qledger_members(modules) -> list[str]:
+    return [name for name in modules if "qledger" in name.lower()]
 
 
 def test_robotics_product_modules_reach_no_qledger():
@@ -838,31 +892,66 @@ def test_robotics_product_modules_reach_no_qledger():
     The spec's only mention of QLedger is rejected alternative B — "put factual
     bodies in K1/QLedger. Rejected. ... the registered QLedger object is a
     forward claim." So no Robotics product module should ever reach one. That
-    holds by construction today, which is precisely why it needs pinning: a
-    negative case satisfied by construction regresses silently the day someone
-    adds a convenient import, and nothing else in this suite would notice.
+    holds by construction, which is precisely why it needs pinning: a negative
+    case satisfied by construction regresses silently the day someone adds a
+    convenient import, and nothing else in this suite would notice.
+
+    Three checks, because one of them alone is evadable. Independent review of
+    the first version of this test (REJECT) demonstrated three working evasions
+    of an import-time-only measurement, including one that defeated its own
+    teeth proof. All three are closed here.
+
+    Everything lives in ONE test on purpose: the module-level ``xfail(strict=True)``
+    marker applies to every test in this file, so a separate check that does not
+    need the shared foundation would PASS on a carrier-alone base and XPASS
+    against that marker, breaking gate D's zero-xpass requirement. A
+    function-level marker cannot cancel a module-level one.
     """
-    # Positive control FIRST. ``engine.qledger*`` exists and is reachable in
-    # principle, so this same helper and this same matcher must find it here.
-    # Checking reach BEFORE reading the null is the whole point: a matcher that
-    # has quietly stopped matching reads exactly like a clean tree.
-    control = _qledger_members(_fresh_import_closure("engine.qledger_desk_adapter"))
-    assert control, (
-        "instrument has no reach: importing engine.qledger_desk_adapter loaded no "
-        "module matching 'qledger', so the assertion below cannot fail and would "
-        "prove nothing"
+    # (1) Positive control, asserted BEFORE any null. If the helper or the
+    # matcher has lost reach, every "clean" result below is worthless — a
+    # matcher that has quietly stopped matching reads exactly like a clean tree.
+    # Deliberately a STDLIB-ONLY qledger module: engine.qledger pulls pandas,
+    # which would couple this Robotics test to that packaging and red it with a
+    # message about someone else's import.
+    control = _run_probe(_CONTROL_PROBE)
+    assert _qledger_members(control["modules"]), (
+        "instrument has no reach: a fresh interpreter that imported "
+        "engine.qledger_validity reported no module matching 'qledger', so the "
+        "assertions below cannot fail and would prove nothing"
     )
 
-    closure = _fresh_import_closure(
-        "engine.market_ontology.robotics_theme_research",
-        "engine.market_ontology.robotics_owner_bundle",
+    # (2) The closure of the modules AS EXERCISED, not merely as imported.
+    probe = _run_probe(_EXERCISED_CLOSURE_PROBE)
+    # Reach checks on the measurement itself. Without these, a probe that
+    # composed nothing (or died early) would degrade silently to the weaker
+    # import-time measurement and still read green.
+    assert probe["composed"] > 0, (
+        "the probe imported the product modules but never composed: this "
+        "measurement cannot see function-local imports and proves little"
     )
-    assert _qledger_members(closure) == [], (
+    assert len(probe["modules"]) > 50, (
+        f"closure of only {len(probe['modules'])} modules is not a real "
+        f"measurement of an exercised composer"
+    )
+    assert _qledger_members(probe["modules"]) == [], (
         "a Robotics product module now reaches QLedger; RBV-14 forbids substituting "
         "the registered forward-claim object for factual product evidence"
     )
-    # The composer's only permitted reach into the shared theme graph.
-    assert sorted(m for m in closure if m.startswith("engine.theme_graph")) == [
-        "engine.theme_graph",
-        "engine.theme_graph.curation_assertion",
-    ]
+
+    # (3) Source text, which catches a planted import on a path no fixture
+    # happens to exercise — the residue (2) cannot reach. Precedent in this
+    # file: test_rbv22_module_source_contains_no_multiplication.
+    composer = Path(robotics.__file__)
+    for module_path in (composer, composer.with_name("robotics_owner_bundle.py")):
+        source = module_path.read_text(encoding="utf-8")
+        assert "qledger" not in source.lower(), (
+            f"{module_path.name} names QLedger in its source; RBV-14 forbids it "
+            f"even on a code path no fixture exercises"
+        )
+
+    # Drift tripwire, a DIFFERENT invariant from RBV-14: the shared-graph
+    # surface these modules reach when exercised.
+    reached = {m for m in probe["modules"] if m.startswith("engine.theme_graph")}
+    assert reached <= _PERMITTED_THEME_GRAPH_REACH, (
+        f"new engine.theme_graph reach: {sorted(reached - _PERMITTED_THEME_GRAPH_REACH)}"
+    )
