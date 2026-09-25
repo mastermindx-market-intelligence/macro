@@ -52,6 +52,9 @@ _UNREAD_ELEMENTS = frozenset({
 _TABLE_NAMES = frozenset({"table", "tr", "td", "th"})
 _SPAN_LIMITS = {"colspan": 1000, "rowspan": 65534}
 _READABLE = frozenset(map(chr, range(0x20, 0x7F))) | {_DASH}
+_YEAR = re.compile(r"(?<![0-9])20[0-9]{2}(?![0-9])")
+_FOOTNOTE_MARKER = re.compile(r"\([0-9]\)")
+_FIGURE = re.compile(r"\(?\$?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?\)?%?")
 _PERIOD_LABEL = "<period>"
 _NUMERIC = "<n>"
 _ROLES = (
@@ -875,6 +878,9 @@ def _is_period_title(value: str) -> bool:
 
 
 def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *, growth: bool, required: bool) -> bool:
+    years = _header_years(rows, cell)
+    if years is None:
+        return False
     titles = _period_titles(rows, cell)
     if not titles:
         return not required
@@ -883,15 +889,28 @@ def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *,
     title = titles[0]
     if title is None:
         return False
-    years = _header_years(rows, cell)
     if title.year is not None:
         years.add(title.year)
     day_matches = title.day is None or title.day == period.day
     return title.month == period.month and day_matches and (growth or years == {period.year})
 
 
-def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int]:
-    return {int(year) for value in _headers_over(rows, cell) for year in re.findall(r"(?<!\d)(20\d{2})(?!\d)", value)}
+def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int] | None:
+    years: set[int] = set()
+    for value in _headers_over(rows, cell):
+        if not any(character.isnumeric() for character in value):
+            continue
+        title = _parse_period_title(value)
+        if title is not None:
+            if title.year is not None:
+                years.add(title.year)
+            continue
+        if _FIGURE.fullmatch(value):
+            continue
+        if any(character.isnumeric() for character in _FOOTNOTE_MARKER.sub("", _YEAR.sub("", value))):
+            return None
+        years.update(int(year) for year in _YEAR.findall(value))
+    return years
 
 
 def _parse_year(value: str) -> int | None:
