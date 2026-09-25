@@ -365,6 +365,260 @@
     return true;
   }
 
+  /* ------------------------------------------------------------------
+   * Mount-driven contract — shared hook 4a (Sol #7780 issuecomment-5813801605).
+   *
+   * Everything above validates against constants compiled into this file:
+   * ONE anchor, ONE slice vocabulary, ONE schema id. A second vertical
+   * mounting this same client needs the SAME laws applied to ITS
+   * registration, so the functions below take a `spec` built from the
+   * mount's own attributes and never read a module constant for anchor,
+   * slices or schema. They are pure, they touch no browser global, and the
+   * runtime still calls the single-vertical functions above until hook 4b
+   * binds the instances — so nothing a member sees changes with this block.
+   *
+   * Two laws hold throughout: a schema id is compared by `===` and never by
+   * pattern, prefix or suffix (a 'semiconductor_theme_research.v1.1' payload
+   * is a different contract, not a compatible one), and a label pair is
+   * returned literally, never interpreted as markup.
+   * ------------------------------------------------------------------ */
+
+  var TR_ID_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789_';
+
+  function _canonicalId(value) {
+    if (typeof value !== 'string' || value.length === 0) return false;
+    for (var i = 0; i < value.length; i++) {
+      if (TR_ID_CHARS.indexOf(value.charAt(i)) < 0) return false;
+    }
+    return true;
+  }
+
+  function _nonEmptyString(value) {
+    return typeof value === 'string' && value.length > 0;
+  }
+
+  /* The mount's attributes → the spec this client validates against, or a
+   * typed refusal naming the field. An unconfigured mount renders nothing:
+   * there is no default anchor, no default slice set and no default schema. */
+  function mountSpecFrom(attrs) {
+    if (!attrs || typeof attrs !== 'object' || Array.isArray(attrs)) {
+      return { ok: false, reason: 'unconfigured:attrs' };
+    }
+    if (!_canonicalId(attrs.anchor)) return { ok: false, reason: 'unconfigured:anchor' };
+    if (!_nonEmptyString(attrs.slices)) return { ok: false, reason: 'unconfigured:slices' };
+    var raw = attrs.slices.split(',');
+    var slices = [];
+    for (var i = 0; i < raw.length; i++) {
+      var token = raw[i];
+      while (token.length && ' \t\n\r'.indexOf(token.charAt(0)) >= 0) token = token.slice(1);
+      while (token.length && ' \t\n\r'.indexOf(token.charAt(token.length - 1)) >= 0) {
+        token = token.slice(0, -1);
+      }
+      if (!_canonicalId(token)) return { ok: false, reason: 'unconfigured:slices' };
+      if (slices.indexOf(token) >= 0) return { ok: false, reason: 'unconfigured:slices' };
+      slices.push(token);
+    }
+    if (slices.length === 0) return { ok: false, reason: 'unconfigured:slices' };
+    if (!_nonEmptyString(attrs.schema)) return { ok: false, reason: 'unconfigured:schema' };
+    if (!_nonEmptyString(attrs.evidenceSchema)) {
+      return { ok: false, reason: 'unconfigured:evidenceSchema' };
+    }
+    if (attrs.schema === attrs.evidenceSchema) {
+      return { ok: false, reason: 'unconfigured:evidenceSchema' };
+    }
+    if (!_nonEmptyString(attrs.labels)) return { ok: false, reason: 'unconfigured:labels' };
+    var parsed;
+    try { parsed = JSON.parse(attrs.labels); }
+    catch (e) { return { ok: false, reason: 'unconfigured:labels' }; }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { ok: false, reason: 'unconfigured:labels' };
+    }
+    if (!_sameKeySet(parsed, slices)) return { ok: false, reason: 'unconfigured:labels' };
+    var labels = {};
+    for (var j = 0; j < slices.length; j++) {
+      var pair = parsed[slices[j]];
+      if (!Array.isArray(pair) || pair.length !== 2) {
+        return { ok: false, reason: 'unconfigured:labels' };
+      }
+      if (!_nonEmptyString(pair[0]) || !_nonEmptyString(pair[1])) {
+        return { ok: false, reason: 'unconfigured:labels' };
+      }
+      labels[slices[j]] = [pair[0], pair[1]];
+    }
+    if (!_nonEmptyString(attrs.apiQuery)) return { ok: false, reason: 'unconfigured:apiQuery' };
+    if (!_nonEmptyString(attrs.apiEvidence)) {
+      return { ok: false, reason: 'unconfigured:apiEvidence' };
+    }
+    return {
+      ok: true,
+      spec: {
+        anchor: attrs.anchor,
+        slices: slices,
+        schema: attrs.schema,
+        evidenceSchema: attrs.evidenceSchema,
+        labels: labels,
+        apiQuery: attrs.apiQuery,
+        apiEvidence: attrs.apiEvidence
+      }
+    };
+  }
+
+  /* Every structural law `validateEnvelope` applies, against the SPEC's
+   * schema and slice set instead of this file's constants, plus the one law
+   * a multi-vertical page needs and a single-vertical client never did: a
+   * payload must answer the mount it was rendered into. Closed reason
+   * vocabulary: not_object, schema_mismatch, missing_key:<k>, extra_key:<k>,
+   * authority_not_false, wrong_mount, malformed:<path>. */
+  function validateEnvelopeFor(spec, payload, expected) {
+    if (!spec || typeof spec !== 'object') return { ok: false, reason: 'not_object' };
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return { ok: false, reason: 'not_object' };
+    }
+    if (payload.schema !== spec.schema) return { ok: false, reason: 'schema_mismatch' };
+    var k, i;
+    for (i = 0; i < TR_TOP_KEYS.length; i++) {
+      k = TR_TOP_KEYS[i];
+      if (!Object.prototype.hasOwnProperty.call(payload, k)) {
+        return { ok: false, reason: 'missing_key:' + k };
+      }
+    }
+    var own = Object.keys(payload);
+    for (i = 0; i < own.length; i++) {
+      if (TR_TOP_KEYS.indexOf(own[i]) < 0) {
+        return { ok: false, reason: 'extra_key:' + own[i] };
+      }
+    }
+    if (!_authorityAllFalse(payload.authority)) {
+      return { ok: false, reason: 'authority_not_false' };
+    }
+    var want = expected && typeof expected === 'object' && !Array.isArray(expected)
+      ? expected : null;
+    var request = payload.request;
+    if (!want ||
+        !request || typeof request !== 'object' || Array.isArray(request) ||
+        request.anchor_theme_id !== want.anchor ||
+        request.slice_key !== want.slice ||
+        want.anchor !== spec.anchor ||
+        spec.slices.indexOf(want.slice) < 0) {
+      return { ok: false, reason: 'wrong_mount' };
+    }
+    if (!_nonEmptyString(payload.generation)) {
+      return { ok: false, reason: 'malformed:generation' };
+    }
+    if (!_nonEmptyString(payload.definition_version)) {
+      return { ok: false, reason: 'malformed:definition_version' };
+    }
+    for (i = 0; i < TR_SECTION_KEYS.length; i++) {
+      var section = payload[TR_SECTION_KEYS[i]];
+      if (!section || typeof section !== 'object' || Array.isArray(section) ||
+          !_validStatus(section.status)) {
+        return { ok: false, reason: 'malformed:' + TR_SECTION_KEYS[i] };
+      }
+    }
+    for (i = 0; i < TR_ARRAY_KEYS.length; i++) {
+      if (!Array.isArray(payload[TR_ARRAY_KEYS[i]])) {
+        return { ok: false, reason: 'malformed:' + TR_ARRAY_KEYS[i] };
+      }
+    }
+    if (!payload.limitations.every(function (e) { return _nonEmptyString(e); })) {
+      return { ok: false, reason: 'malformed:limitations' };
+    }
+    var views = payload.industrial_views;
+    if (!views || typeof views !== 'object' || Array.isArray(views) ||
+        !_sameKeySet(views, TR_VIEW_KEYS)) {
+      return { ok: false, reason: 'malformed:industrial_views' };
+    }
+    for (i = 0; i < TR_VIEW_KEYS.length; i++) {
+      var sub = views[TR_VIEW_KEYS[i]];
+      if (!sub || typeof sub !== 'object' || Array.isArray(sub) || !_validStatus(sub.status)) {
+        return { ok: false, reason: 'malformed:industrial_views.' + TR_VIEW_KEYS[i] };
+      }
+    }
+    var econ = payload.economics;
+    if (!_nonEmptyString(econ.witness_gate)) {
+      return { ok: false, reason: 'malformed:economics.witness_gate' };
+    }
+    if (econ.management !== null &&
+        (!econ.management || typeof econ.management !== 'object' ||
+         Array.isArray(econ.management))) {
+      return { ok: false, reason: 'malformed:economics.management' };
+    }
+    if (econ.management && !_authorityAllFalse(econ.management.authority)) {
+      return { ok: false, reason: 'malformed:economics.management.authority' };
+    }
+    if (econ.management && econ.management.schema !== TR_MANAGEMENT_SCHEMA) {
+      return { ok: false, reason: 'malformed:economics.management.schema' };
+    }
+    var expectations = payload.expectations;
+    if (!expectations || typeof expectations !== 'object' || Array.isArray(expectations)) {
+      return { ok: false, reason: 'malformed:expectations' };
+    }
+    for (i = 0; i < TR_EXPECTATION_KEYS.length; i++) {
+      var expKey = TR_EXPECTATION_KEYS[i];
+      var exp = expectations[expKey];
+      if (!exp || typeof exp !== 'object' || Array.isArray(exp) || !_validStatus(exp.status)) {
+        return { ok: false, reason: 'malformed:expectations.' + expKey };
+      }
+      if (expKey !== 'management' && exp.status !== 'unavailable') {
+        return { ok: false, reason: 'malformed:expectations.' + expKey };
+      }
+    }
+    return { ok: true, reason: null };
+  }
+
+  /* The evidence envelope is its own contract: a schema, an authority block
+   * and a generation. It carries no request, no definition_version and none
+   * of the research sections, so nothing else is checked here. */
+  function validateEvidenceFor(spec, payload, expectedGeneration) {
+    if (!spec || typeof spec !== 'object') return { ok: false, reason: 'not_object' };
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return { ok: false, reason: 'not_object' };
+    }
+    if (payload.schema !== spec.evidenceSchema) {
+      return { ok: false, reason: 'schema_mismatch' };
+    }
+    if (!_authorityAllFalse(payload.authority)) {
+      return { ok: false, reason: 'authority_not_false' };
+    }
+    if (_nonEmptyString(expectedGeneration) && payload.generation !== expectedGeneration) {
+      return { ok: false, reason: 'generation_mismatch' };
+    }
+    return { ok: true, reason: null };
+  }
+
+  /* The stored-selection law with the SPEC's slice vocabulary: a selection
+   * stored by one vertical's mount is not restorable into another's. */
+  function parseStoredSelectionFor(spec, raw) {
+    if (!spec || typeof spec !== 'object' || !Array.isArray(spec.slices)) return null;
+    if (!raw || typeof raw !== 'string') return null;
+    var sel;
+    try { sel = JSON.parse(raw); }
+    catch (e) { return null; }
+    if (!sel || typeof sel !== 'object' || Array.isArray(sel)) return null;
+    if (Object.keys(sel).length !== 3) return null;
+    if (spec.slices.indexOf(sel.slice_key) < 0) return null;
+    if (TR_VIEW_KEYS.indexOf(sel.view) < 0) return null;
+    if (TR_MODE_KEYS.indexOf(sel.time_mode) < 0) return null;
+    return sel;
+  }
+
+  /* `applyResearchResponse`'s laws, spec-driven: a late answer for another
+   * epoch or another principal is dropped with zero side effects, and an
+   * answer for another mount is refused exactly like an invalid envelope. */
+  function applyResearchResponseFor(state, requestEpoch, principalKey, spec, payload, expected) {
+    if (!state || typeof state !== 'object') return false;
+    if (requestEpoch !== state.epoch || principalKey !== state.principalKey) return false;
+    var verdict = validateEnvelopeFor(spec, payload, expected);
+    if (!verdict.ok) {
+      state.error = { code: 'invalid_envelope' };
+      return false;
+    }
+    state.payload = payload;
+    state.generation = payload.generation;
+    state.error = null;
+    return true;
+  }
+
   function clearResearchState(state) {
     if (!state || typeof state !== 'object') return state;
     state.payload = null;

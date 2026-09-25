@@ -1523,3 +1523,401 @@ def test_no_bare_label_map_read_survives_in_the_render_path(js_text):
     for bare in ("L.status[", "L.label[", "L.view[", "L.slice[", "L.expectation[",
                  "L.errcode[", "TR_ECON_LABELS.role[", "TR_ECON_LABELS.metric["):
         assert bare not in code, f"bare map read survives: {bare}"
+
+
+# ---------------------------------------------------------------------------
+# 12. Shared hook 4a — the contract applied to a MOUNT's spec, not to
+#     constants compiled into this file. One anchor, one slice vocabulary and
+#     one schema id were baked in; a second vertical mounting the same client
+#     needs the same laws applied to ITS registration.
+# ---------------------------------------------------------------------------
+
+_MOUNT_HARNESS = r"""
+%(contract)s
+
+var cases = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));
+var out = {spec: null, specReject: {}, envelope: {}, evidence: {}, stored: {}, apply: {}};
+
+var built = mountSpecFrom(cases.attrs);
+out.spec = built.ok ? {ok: true, spec: built.spec} : {ok: false, reason: built.reason};
+var spec = built.ok ? built.spec : null;
+
+cases.badAttrs.forEach(function (c) {
+  var r = mountSpecFrom(c.attrs);
+  out.specReject[c.name] = r.ok ? 'ACCEPTED' : r.reason;
+});
+
+cases.envelopeCases.forEach(function (c) {
+  var useSpec = c.spec ? c.spec : spec;
+  out.envelope[c.name] = validateEnvelopeFor(useSpec, c.payload, c.expected).reason;
+});
+
+cases.evidenceCases.forEach(function (c) {
+  out.evidence[c.name] = validateEvidenceFor(spec, c.payload, c.generation).reason;
+});
+
+cases.storedCases.forEach(function (c) {
+  out.stored[c.name] = parseStoredSelectionFor(spec, c.raw) === null ? null : 'restored';
+});
+
+/* The SAME law under a spec whose slice vocabulary is disjoint from the one
+   compiled into this file — the only way to tell a spec-driven check from a
+   constant-driven one. */
+out.storedAlt = {};
+if (cases.altSpec) {
+  cases.storedAltCases.forEach(function (c) {
+    out.storedAlt[c.name] =
+      parseStoredSelectionFor(cases.altSpec, c.raw) === null ? null : 'restored';
+  });
+}
+
+/* applyResearchResponseFor mirrors the epoch/principal drop laws exactly. */
+var sLate = {epoch: 3, principalKey: 'user-A', payload: null, error: null, generation: null};
+out.apply.late_epoch = (applyResearchResponseFor(sLate, 2, 'user-A', spec, cases.valid, cases.expected) === false
+  && sLate.payload === null && sLate.error === null && sLate.generation === null);
+var sPrincipal = {epoch: 3, principalKey: 'user-A', payload: null, error: null, generation: null};
+out.apply.foreign_principal = (applyResearchResponseFor(sPrincipal, 3, 'user-B', spec, cases.valid, cases.expected) === false
+  && sPrincipal.payload === null && sPrincipal.error === null && sPrincipal.generation === null);
+var sOk = {epoch: 4, principalKey: 'user-A', payload: null, error: null, generation: null};
+out.apply.accepted = (applyResearchResponseFor(sOk, 4, 'user-A', spec, cases.valid, cases.expected) === true
+  && sOk.payload === cases.valid && sOk.generation === cases.valid.generation && sOk.error === null);
+var sWrong = {epoch: 5, principalKey: 'user-A', payload: null, error: null, generation: null};
+out.apply.wrong_mount_rejected = (applyResearchResponseFor(sWrong, 5, 'user-A', spec, cases.valid, cases.foreignExpected) === false
+  && sWrong.payload === null && sWrong.generation === null
+  && sWrong.error && sWrong.error.code === 'invalid_envelope');
+
+/* A label pair is returned literally — never interpreted as markup. */
+out.labels_literal = spec ? spec.labels : null;
+
+console.log(JSON.stringify(out));
+"""
+
+
+def _mount_attrs() -> dict:
+    """The attributes the rendered mount actually carries, from the registration.
+
+    Read from the leaf mounts module, never retyped and never from the
+    registry: importing the registry would drag the composer, the Company
+    Intelligence reader and the frozen theme-graph store into this suite's CI
+    closure (measured 2026-09-24: 55 files against the leaf's 2).
+    """
+    from engine.market_ontology.theme_research_mounts import mount_context
+
+    mount = mount_context("ai_semiconductors")
+    assert mount is not None
+    return {
+        "anchor": mount["anchor_theme_id"],
+        "slices": mount["slices"],
+        "schema": mount["schema_id"],
+        "evidenceSchema": mount["evidence_schema_id"],
+        "labels": mount["slice_labels_json"],
+        "apiQuery": "/api/themes/v1/research/query",
+        "apiEvidence": "/api/themes/v1/research/evidence",
+    }
+
+
+def _run_mount_battery(js_text: str) -> dict:
+    assert shutil.which("node"), "node not on PATH"
+    attrs = _mount_attrs()
+    valid = _envelope()
+    anchor, first_slice = attrs["anchor"], attrs["slices"].split(",")[0]
+    other_slice = attrs["slices"].split(",")[1]
+    expected = {"anchor": anchor, "slice": first_slice}
+
+    def mutate(**changes):
+        payload = _envelope()
+        payload.update(changes)
+        return payload
+
+    foreign_schema_spec = {
+        "anchor": anchor, "slices": attrs["slices"].split(","),
+        "schema": "synthetic_theme_research.v1",
+        "evidenceSchema": "synthetic_theme_research.evidence.v1",
+        "labels": {}, "apiQuery": "/q", "apiEvidence": "/e",
+    }
+    evidence_ok = {
+        "schema": attrs["evidenceSchema"], "generation": valid["generation"],
+        "authority": dict(valid["authority"]),
+    }
+    request_other_anchor = {**valid["request"], "anchor_theme_id": "robotics_automation"}
+    request_other_slice = {**valid["request"], "slice_key": "not_a_declared_slice"}
+
+    cases = {
+        "attrs": attrs,
+        "valid": valid,
+        "expected": expected,
+        "foreignExpected": {"anchor": "robotics_automation", "slice": first_slice},
+        "badAttrs": [
+            {"name": "empty_schema", "attrs": {**attrs, "schema": ""}},
+            {"name": "schema_equals_evidence",
+             "attrs": {**attrs, "evidenceSchema": attrs["schema"]}},
+            {"name": "anchor_with_dash", "attrs": {**attrs, "anchor": "ai-semiconductors"}},
+            {"name": "anchor_empty", "attrs": {**attrs, "anchor": ""}},
+            {"name": "duplicate_slices",
+             "attrs": {**attrs, "slices": f"{first_slice},{first_slice}"}},
+            {"name": "slice_with_space", "attrs": {**attrs, "slices": "hbm packaging"}},
+            {"name": "labels_extra_key",
+             "attrs": {**attrs, "labels": json.dumps(
+                 {**json.loads(attrs["labels"]), "ghost_slice": ["G", "鬼"]})}},
+            {"name": "labels_missing_slice",
+             "attrs": {**attrs, "labels": json.dumps(
+                 {first_slice: json.loads(attrs["labels"])[first_slice]})}},
+            {"name": "label_not_pair",
+             "attrs": {**attrs, "labels": json.dumps(
+                 {first_slice: ["only-one"], other_slice: ["A", "乙"]})}},
+            {"name": "label_half_empty",
+             "attrs": {**attrs, "labels": json.dumps(
+                 {first_slice: ["A", ""], other_slice: ["B", "乙"]})}},
+            {"name": "labels_array", "attrs": {**attrs, "labels": "[1,2]"}},
+            {"name": "labels_invalid_json", "attrs": {**attrs, "labels": "{not json"}},
+            {"name": "api_query_empty", "attrs": {**attrs, "apiQuery": ""}},
+            {"name": "not_an_object", "attrs": None},
+        ],
+        "envelopeCases": [
+            {"name": "valid", "payload": valid, "expected": expected},
+            {"name": "not_object", "payload": "a string", "expected": expected},
+            {"name": "foreign_schema",
+             "payload": mutate(schema="robotics_theme_research.v1"), "expected": expected},
+            {"name": "schema_v1_1",
+             "payload": mutate(schema="semiconductor_theme_research.v1.1"),
+             "expected": expected},
+            {"name": "schema_trailing_space",
+             "payload": mutate(schema="semiconductor_theme_research.v1 "),
+             "expected": expected},
+            {"name": "valid_but_wrong_vertical", "spec": foreign_schema_spec,
+             "payload": valid, "expected": expected},
+            {"name": "other_anchor_in_request",
+             "payload": mutate(request=request_other_anchor), "expected": expected},
+            {"name": "slice_outside_spec",
+             "payload": mutate(request=request_other_slice),
+             "expected": {"anchor": anchor, "slice": "not_a_declared_slice"}},
+            {"name": "request_is_a_string",
+             "payload": mutate(request="hbm_packaging"), "expected": expected},
+            {"name": "authority_can_rank_true",
+             "payload": mutate(authority={**valid["authority"], "can_rank": True}),
+             "expected": expected},
+            {"name": "authority_missing_can_size",
+             "payload": mutate(authority={k: v for k, v in valid["authority"].items()
+                                          if k != "can_size"}),
+             "expected": expected},
+            {"name": "extra_top_level_key",
+             "payload": mutate(house_view={"status": "ready"}), "expected": expected},
+            {"name": "summary_bad_status",
+             "payload": mutate(summary={**valid["summary"], "status": "ok"}),
+             "expected": expected},
+            {"name": "generation_empty", "payload": mutate(generation=""),
+             "expected": expected},
+            {"name": "limitations_not_an_array", "payload": mutate(limitations={}),
+             "expected": expected},
+            {"name": "expectations_house_forecast_ready",
+             "payload": mutate(expectations={
+                 **valid["expectations"],
+                 "house_forecast": {**valid["expectations"]["house_forecast"],
+                                    "status": "ready"}}),
+             "expected": expected},
+        ],
+        "evidenceCases": [
+            {"name": "valid", "payload": evidence_ok, "generation": valid["generation"]},
+            {"name": "no_expected_generation", "payload": evidence_ok, "generation": None},
+            {"name": "research_schema",
+             "payload": {**evidence_ok, "schema": attrs["schema"]},
+             "generation": valid["generation"]},
+            {"name": "generation_mismatch", "payload": evidence_ok, "generation": "other"},
+            {"name": "authority_true",
+             "payload": {**evidence_ok,
+                         "authority": {**valid["authority"], "can_gate": True}},
+             "generation": valid["generation"]},
+            {"name": "not_object", "payload": None, "generation": None},
+        ],
+        "storedCases": [
+            {"name": "declared_slice", "raw": json.dumps(
+                {"slice_key": first_slice, "view": "economics", "time_mode": "latest"})},
+            {"name": "foreign_slice", "raw": json.dumps(
+                {"slice_key": "not_a_declared_slice", "view": "economics",
+                 "time_mode": "latest"})},
+            {"name": "four_keys", "raw": json.dumps(
+                {"slice_key": first_slice, "view": "economics", "time_mode": "latest",
+                 "token": "x"})},
+        ],
+        # A spec whose slices are disjoint from the vocabulary compiled into
+        # the client. Without it, "spec-driven" is indistinguishable from
+        # "reads the module constant": every case would agree.
+        "altSpec": {
+            "anchor": "synthetic_vertical",
+            "slices": ["alpha_slice", "beta_slice"],
+            "schema": "synthetic_theme_research.v1",
+            "evidenceSchema": "synthetic_theme_research.evidence.v1",
+            "labels": {}, "apiQuery": "/q", "apiEvidence": "/e",
+        },
+        "storedAltCases": [
+            {"name": "its_own_slice", "raw": json.dumps(
+                {"slice_key": "alpha_slice", "view": "economics", "time_mode": "latest"})},
+            {"name": "the_incumbents_slice", "raw": json.dumps(
+                {"slice_key": first_slice, "view": "economics", "time_mode": "latest"})},
+        ],
+    }
+    src = _MOUNT_HARNESS % {"contract": _contract(js_text)}
+    with tempfile.TemporaryDirectory() as td:
+        script = Path(td) / "mount_contract.js"
+        script.write_text(src, encoding="utf-8")
+        cases_path = Path(td) / "cases.json"
+        cases_path.write_text(json.dumps(cases), encoding="utf-8")
+        run = subprocess.run(
+            [shutil.which("node"), str(script), str(cases_path)],
+            capture_output=True, text=True, timeout=60,
+        )
+    assert run.returncode == 0, f"node exited {run.returncode}:\n{run.stderr}\n{run.stdout}"
+    return json.loads(run.stdout.strip().splitlines()[-1])
+
+
+@pytest.fixture(scope="module")
+def mount_battery(js_text):
+    if not HAS_NODE:
+        pytest.skip("node not on PATH")
+    return _run_mount_battery(js_text)
+
+
+@needs_node
+def test_mount_spec_is_built_from_the_rendered_registration(mount_battery):
+    """The mount the page renders configures the client — no constant does."""
+    assert mount_battery["spec"]["ok"] is True, mount_battery["spec"]
+    spec = mount_battery["spec"]["spec"]
+    attrs = _mount_attrs()
+    assert spec["anchor"] == attrs["anchor"]
+    assert spec["slices"] == attrs["slices"].split(",")
+    assert spec["schema"] == attrs["schema"]
+    assert spec["evidenceSchema"] == attrs["evidenceSchema"]
+    assert spec["labels"] == json.loads(attrs["labels"])
+
+
+@needs_node
+@pytest.mark.parametrize("case, reason", [
+    ("empty_schema", "unconfigured:schema"),
+    ("schema_equals_evidence", "unconfigured:evidenceSchema"),
+    ("anchor_with_dash", "unconfigured:anchor"),
+    ("anchor_empty", "unconfigured:anchor"),
+    ("duplicate_slices", "unconfigured:slices"),
+    ("slice_with_space", "unconfigured:slices"),
+    ("labels_extra_key", "unconfigured:labels"),
+    ("labels_missing_slice", "unconfigured:labels"),
+    ("label_not_pair", "unconfigured:labels"),
+    ("label_half_empty", "unconfigured:labels"),
+    ("labels_array", "unconfigured:labels"),
+    ("labels_invalid_json", "unconfigured:labels"),
+    ("api_query_empty", "unconfigured:apiQuery"),
+    ("not_an_object", "unconfigured:attrs"),
+])
+def test_an_unconfigured_mount_is_refused_by_field(mount_battery, case, reason):
+    """A mount that cannot say what it is renders nothing, and says which field."""
+    assert mount_battery["specReject"][case] == reason
+
+
+@needs_node
+def test_labels_round_trip_literally(js_text):
+    """A label is text. It is never interpreted as markup, anywhere."""
+    attrs = _mount_attrs()
+    hostile = {key: ['<b>&"\'</b>', "值"] for key in attrs["slices"].split(",")}
+    attrs = {**attrs, "labels": json.dumps(hostile, ensure_ascii=False)}
+    src = _MOUNT_HARNESS % {"contract": _contract(js_text)}
+    cases = {"attrs": attrs, "valid": _envelope(),
+             "expected": {"anchor": attrs["anchor"], "slice": attrs["slices"].split(",")[0]},
+             "foreignExpected": {"anchor": "other", "slice": "x"},
+             "badAttrs": [], "envelopeCases": [], "evidenceCases": [],
+             "storedCases": [], "altSpec": None, "storedAltCases": []}
+    with tempfile.TemporaryDirectory() as td:
+        script = Path(td) / "mount_contract.js"
+        script.write_text(src, encoding="utf-8")
+        cases_path = Path(td) / "cases.json"
+        cases_path.write_text(json.dumps(cases), encoding="utf-8")
+        run = subprocess.run([shutil.which("node"), str(script), str(cases_path)],
+                             capture_output=True, text=True, timeout=60)
+    assert run.returncode == 0, run.stderr
+    labels = json.loads(run.stdout.strip().splitlines()[-1])["labels_literal"]
+    assert labels == hostile, "a label pair must survive byte-for-byte"
+
+
+@needs_node
+@pytest.mark.parametrize("case, reason", [
+    ("valid", None),
+    ("not_object", "not_object"),
+    ("foreign_schema", "schema_mismatch"),
+    ("schema_v1_1", "schema_mismatch"),
+    ("schema_trailing_space", "schema_mismatch"),
+    ("valid_but_wrong_vertical", "schema_mismatch"),
+    ("other_anchor_in_request", "wrong_mount"),
+    ("slice_outside_spec", "wrong_mount"),
+    ("request_is_a_string", "wrong_mount"),
+    ("authority_can_rank_true", "authority_not_false"),
+    ("authority_missing_can_size", "authority_not_false"),
+    ("extra_top_level_key", "extra_key:house_view"),
+    ("summary_bad_status", "malformed:summary"),
+    ("generation_empty", "malformed:generation"),
+    ("limitations_not_an_array", "malformed:limitations"),
+    ("expectations_house_forecast_ready", "malformed:expectations.house_forecast"),
+])
+def test_the_spec_driven_envelope_law(mount_battery, case, reason):
+    """Every law the single-vertical validator applies, plus the mount check.
+
+    `valid_but_wrong_vertical` is the one a single-vertical client could not
+    express: a payload that is perfectly valid for ANOTHER registration must
+    not render here, and it is refused on the schema it declares — compared
+    with `===`, never by prefix, so `…v1.1` and a trailing space are both
+    different contracts rather than compatible ones.
+    """
+    assert mount_battery["envelope"][case] == reason
+
+
+@needs_node
+@pytest.mark.parametrize("case, reason", [
+    ("valid", None),
+    ("no_expected_generation", None),
+    ("research_schema", "schema_mismatch"),
+    ("generation_mismatch", "generation_mismatch"),
+    ("authority_true", "authority_not_false"),
+    ("not_object", "not_object"),
+])
+def test_the_spec_driven_evidence_law(mount_battery, case, reason):
+    """The evidence envelope is its own contract: schema, authority, generation."""
+    assert mount_battery["evidence"][case] == reason
+
+
+@needs_node
+def test_a_stored_selection_belongs_to_the_mount_that_stored_it(mount_battery):
+    """The slice vocabulary is the SPEC's, not the one compiled into the file.
+
+    The second pair is what discriminates: under a spec whose slices are
+    disjoint from this client's constants, its own slice must restore and the
+    incumbent vertical's must not. A check that quietly consulted the compiled
+    list instead would pass every case above and fail both of these — it did,
+    when the suite had only the cases above.
+    """
+    assert mount_battery["stored"]["declared_slice"] == "restored"
+    assert mount_battery["stored"]["foreign_slice"] is None
+    assert mount_battery["stored"]["four_keys"] is None
+    assert mount_battery["storedAlt"]["its_own_slice"] == "restored"
+    assert mount_battery["storedAlt"]["the_incumbents_slice"] is None
+
+
+@needs_node
+def test_the_spec_driven_apply_keeps_every_drop_law(mount_battery):
+    """A late or foreign answer changes nothing; a wrong-mount answer is refused."""
+    assert mount_battery["apply"] == {
+        "late_epoch": True, "foreign_principal": True,
+        "accepted": True, "wrong_mount_rejected": True,
+    }
+
+
+def test_the_mount_driven_block_compares_schemas_only_by_identity(js_text):
+    """No pattern matching on a schema id, anywhere in the contract block.
+
+    A prefix or substring test would make `semiconductor_theme_research.v1.1`
+    — a different contract — look compatible with this client.
+    """
+    contract = _code_only(_contract(js_text))
+    assert "new RegExp(" not in contract
+    for banned in (".startsWith(", ".endsWith(", ".indexOf('semiconductor",
+                   'schema.indexOf(', "schema.match(", "schema.replace("):
+        assert banned not in contract, banned
+    assert "/^\\s+|\\s+$/" not in contract, (
+        "the block trims by character, so no regex literal survives in it"
+    )
