@@ -177,6 +177,9 @@ def build_durability(
                 "price": {
                     "shape": price.get("shape"),
                     "price_leader": price.get("price_leader"),
+                    "group_residual_leader_candidate": (
+                        price.get("group_residual_leader_candidate")
+                    ),
                     "durability_status": (
                         (price.get("durability_evidence") or {}).get("status")
                     ),

@@ -154,3 +154,41 @@ def test_existing_heatmap_projection_carries_context_without_new_authority():
         == "equal_member_positive_return_magnitude_not_market_cap_contribution"
     )
     assert payload["repricing"]["n_subthemes"] == 1
+
+
+def test_group_residual_leader_candidate_rewards_persistent_group_excess_not_one_spike():
+    row = rc.analyze_subtheme(
+        key="x",
+        theme="Theme X",
+        name="Subtheme X",
+        members=["A", "B", "C", "D"],
+        group_perf={"1W": 5.0, "1M": 5.0, "3M": 5.0},
+        member_perf={
+            "A": {"1W": 6.0, "1M": 7.0, "3M": 8.0},
+            "B": {"1W": 12.0, "1M": 4.0, "3M": 4.0},
+            "C": {"1W": 4.0, "1M": 4.0, "3M": 4.0},
+            "D": {"1W": 3.0, "1M": 3.0, "3M": 3.0},
+        },
+    )
+    candidate = row["group_residual_leader_candidate"]
+    assert candidate["ticker"] == "A"
+    assert candidate["positive_residual_horizons"] == 3
+    assert candidate["residual"] == {"1W": 1.0, "1M": 2.0, "3M": 3.0}
+    assert candidate["semantics"] == "group_relative_leader_candidate_not_alpha"
+    assert "not market sector or factor neutral" in candidate["limitations"]
+
+
+def test_group_residual_leader_abstains_without_two_comparable_horizons():
+    row = rc.analyze_subtheme(
+        key="x",
+        theme="Theme X",
+        name="Subtheme X",
+        members=["A", "B", "C"],
+        group_perf={"1W": 2.0},
+        member_perf={
+            "A": {"1W": 3.0},
+            "B": {"1W": 2.0},
+            "C": {"1W": 1.0},
+        },
+    )
+    assert row["group_residual_leader_candidate"] is None

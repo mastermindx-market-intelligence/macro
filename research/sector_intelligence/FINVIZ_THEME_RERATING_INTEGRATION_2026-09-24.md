@@ -546,3 +546,36 @@ Lithography's current price/revision agreement is confirmation evidence, not a b
 This is the granularity the Chairman asked for: Semiconductors can be broadly repricing
 while the most durable evidence differs materially by Compute, Memory, Foundries,
 Lithography, Packaging and the other subthemes.
+
+
+### Group-relative leader candidate — still not alpha
+
+The current repricing payload now also reports a `group_residual_leader_candidate`.
+For each member/horizon it subtracts the Finviz subtheme return, then prefers leadership
+that stays above the group across multiple horizons. This solves a narrower problem than
+factor alpha: it distinguishes "highest raw return" from "persistently beating its own
+subtheme."
+
+The contract is explicit:
+- group-relative only;
+- not market-neutral;
+- not sector-neutral;
+- not factor-neutral;
+- not forward-validated alpha.
+
+On the same 2026-09-24 semiconductor snapshot, the group-relative candidates are:
+- Compute: AMD, +5.58pp / +13.49pp / +17.53pp vs subtheme over 1W/1M/3M;
+- Memory: SNDK, +0.74pp / +5.00pp / +5.53pp;
+- Analog: MPWR, +8.74pp / +0.98pp / +12.11pp;
+- Foundries: INTC, +9.92pp / +20.51pp / +8.63pp;
+- Design Tools: ARM, +18.29pp / +25.22pp / +5.19pp;
+- Packaging: COHU, +9.17pp / +10.72pp / +10.62pp;
+- Next-Gen: AMD, +6.31pp / +24.52pp / +33.16pp.
+
+Lithography's raw/group-relative candidate is ASML, but its 1W residual is negative while
+1M/3M residuals are positive; the payload preserves that disagreement instead of calling
+ASML a universal leader.
+
+This is the correct intermediate rung before "alpha leader." The next promotion requires
+market + sector + parent-theme residualization and forward evaluation; do not rename this
+field to alpha merely because the candidate looks economically plausible.

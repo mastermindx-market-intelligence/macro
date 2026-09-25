@@ -79,6 +79,11 @@ def test_broad_price_plus_rising_revisions_is_confirming_not_a_buy_signal():
     assert compute["price"]["shape"] == "broad_price_repricing"
     assert compute["revisions"]["state"] == "broadening_confirmed"
     assert compute["joint_state"] == "price_and_revisions_confirming"
+    assert compute["price"]["group_residual_leader_candidate"] is not None
+    assert (
+        compute["price"]["group_residual_leader_candidate"]["semantics"]
+        == "group_relative_leader_candidate_not_alpha"
+    )
     assert compute["decision_authority"]["can_support_buy_decision"] is False
     assert out["authority"]["may_trade"] is False
 

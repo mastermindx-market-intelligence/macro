@@ -188,6 +188,59 @@ def _price_leader(
     return dict(max(candidates, key=order))
 
 
+def _group_residual_leader(
+    expected_members: Sequence[str],
+    member_perf: Mapping[str, Mapping[str, float]],
+    group_perf: Mapping[str, float],
+) -> dict | None:
+    """Leader after subtracting the source subtheme return at each horizon.
+
+    This is a GROUP-RELATIVE candidate only. It is not market/sector/factor neutral and
+    therefore must never be called alpha. The explicit limitation is part of the payload.
+    """
+    candidates: list[dict] = []
+    for ticker in expected_members:
+        perf = member_perf.get(ticker) or {}
+        residual: dict[str, float] = {}
+        for horizon in HORIZONS:
+            member = _fin(perf.get(horizon))
+            group = _fin(group_perf.get(horizon))
+            if member is None or group is None:
+                continue
+            residual[horizon] = member - group
+        if len(residual) < 2:
+            continue
+        values = list(residual.values())
+        candidates.append({
+            "ticker": ticker,
+            "observed_horizons": len(residual),
+            "positive_residual_horizons": sum(value > 0 for value in values),
+            "mean_residual": _rnd(sum(values) / len(values), 2),
+            "residual": {h: _rnd(v, 2) for h, v in residual.items()},
+        })
+    if not candidates:
+        return None
+
+    def order(row: Mapping) -> tuple:
+        residual = row.get("residual") or {}
+        return (
+            int(row.get("positive_residual_horizons") or 0),
+            _fin(row.get("mean_residual")) or -1e9,
+            _fin(residual.get("1M")) or -1e9,
+            _fin(residual.get("1W")) or -1e9,
+            str(row.get("ticker") or ""),
+        )
+
+    winner = dict(max(candidates, key=order))
+    winner["semantics"] = "group_relative_leader_candidate_not_alpha"
+    winner["limitations"] = [
+        "subtracts source subtheme return only",
+        "not market sector or factor neutral",
+        "not validated forward alpha",
+    ]
+    return winner
+
+
 def _shape(h1w: Mapping, h1m: Mapping) -> str:
     expected = int(h1w.get("expected_n") or 0)
     observed = int(h1w.get("observed_n") or 0)
@@ -285,6 +338,9 @@ def analyze_subtheme(
         "shape": shape,
         "horizons": horizons,
         "price_leader": _price_leader(expected, member_perf),
+        "group_residual_leader_candidate": _group_residual_leader(
+            expected, member_perf, group_perf,
+        ),
         "durability_evidence": {
             "scope": "price_participation_only",
             "status": price_durability,
@@ -407,6 +463,8 @@ def build_context(
             "move_concentration_basis":
                 "equal_member_positive_return_magnitude_not_market_cap_contribution",
             "leader_semantics": "price_leader_not_validated_alpha_leader",
+            "group_residual_leader_semantics":
+                "subtheme_relative_candidate_not_market_sector_factor_neutral_alpha",
             "durability_semantics":
                 "price_participation_confirmation_not_investment_durability",
             "creates_membership": False,
