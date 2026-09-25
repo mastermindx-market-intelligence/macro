@@ -4350,16 +4350,22 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     JOB ceilings re-based to measurement + 1 (133 / 130 / 126): the index
     probe's +1 is a gate entering on the PRs that are its subject, which the
     wave-7 note names as the correct-risk response ("ratcheting the ceiling
-    is the correct-risk response, not curation"). Said explicitly: those
-    are LOCAL numbers (full checkout, Python 3.14), and the pre-change index
-    measurement of 131 already sat over the old 130 bound there while
-    hosted main (workflow-yaml, Python 3.12) was green on this test — the
-    hosted census runs one job lower, so 133 leaves the hosted count the
-    same +1 headroom the rule intends. The build_free_content.py probe sat
-    AT its 129 bound (zero headroom) and gains its +1; plan_book.py comes
-    down to measurement + 1 exactly. WEIGHT and PACK ceilings stay unmoved
-    (5,800 / 5,600 / 5,600 and 10 packs; measured 5,792 / 5,538 / 5,526,
-    packs 10 / 10 / 10).
+    is the correct-risk response, not curation"). Said explicitly: the
+    PRE-change tree already measured 131 / 129 / 126 — over, at, and at the
+    old bounds — and that is not this PR's doing. #6872 (merged 2026-09-24
+    17:54Z) added ``ontology-explorer`` (w11) with an INFERRED scope: 614
+    owned paths plus a whole-tree fallback smear (admin/**, app/**,
+    collectors/**, config/**, ...), so it rides all three probes. Measured
+    on main's manifest with that one job removed: 130 / 128 / 125, i.e. the
+    old bounds' exact headroom. Nobody saw it because this suite's host job
+    ``workflow-yaml`` is ``gate: data`` — off the merge gate — and the
+    data-health lane had not run a post-#6872 tree by 2026-09-25 00:55Z
+    (its last run, 17:54:26Z, predates the merge). Identical under Python
+    3.12 and 3.14, full checkout. Curating ontology-explorer's smear is a
+    follow-on (B-CUR-ONTOLOGY-EXPLORER-1); re-basing here keeps the ratchet
+    honest instead of leaving it red-on-arrival. WEIGHT and PACK ceilings
+    stay unmoved (5,800 / 5,600 / 5,600 and 10 packs; measured 5,792 /
+    5,538 / 5,526, packs 10 / 10 / 10).
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
