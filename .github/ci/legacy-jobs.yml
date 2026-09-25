@@ -309,9 +309,23 @@ jobs:
     # 2026-09-22 integration-baseline main-red repair: exact owner closure.
     # Exclusive replaces opaque fallback inference; the curated-closure gate
     # fails if a future import is not covered by this declaration.
+    #
+    # 2026-09-24 lane A3 (round-5 MINOR 4): the legacy-jobs `paths:` here
+    # was widened to declare the worktree-sparse helper module because
+    # an earlier round's real-artifact byte-identity test used a dynamic
+    # importlib load to call that helper. Round 5 redirects that test
+    # at the COMMITTED fixture tree (under `tests/fixtures/`, never
+    # under `data/` or `site/`), so the helper call is gone — but the
+    # path declaration is KEPT to satisfy the `Widen … never narrow`
+    # rule (a path the gate already trusts cannot be removed without
+    # another widening). The justification that "the contract-delta
+    # gate follows that import edge" was the prior round's claim and
+    # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
       - "config.yml"
+      - "config/market_reference.yml"
+      - "config/sparse_worktree.json"
       - "data/market_state/latest.json"
       - "data/neuralweb/market_plane.json"
       - "data/regime/latest.json"
@@ -323,6 +337,7 @@ jobs:
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_am_edition.py"
+      - "scripts/worktree_sparse.py"
       - "site/am_edition.html"
       - "site/am_edition.json"
       - "site/live/quotes.json"
@@ -332,6 +347,14 @@ jobs:
       - "site/regime.json"
       - "site/release_forecast.json"
       - "templates/am_edition.html.j2"
+      - "tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py"
+      - "tests/fixtures/am_edition_fixture/data/market_state/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/neuralweb/market_plane.json"
+      - "tests/fixtures/am_edition_fixture/data/regime/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/release_forecast/latest.json"
+      - "tests/fixtures/am_edition_fixture/site/live/quotes.json"
+      - "tests/fixtures/am_edition_fixture/site/master_brief.json"
+      - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
