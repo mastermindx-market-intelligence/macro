@@ -1,0 +1,653 @@
+{
+  "source_page": "site/basket_china/cn_pharma_cxo.html",
+  "source_page_sha256": "1e9e35c800b04d91e4ce21cd87a61c59a9244ed085f1aa2a7b97cd3104987b0f",
+  "captures": 32,
+  "records": [
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-en-1440.png",
+      "sha256": "92097a07b1d33cc845c6fd98189ee28e0ab4fdbc3d413da6ce201d79e768aac9"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-en-390.png",
+      "sha256": "3fb7cbfd8cc61f02690971b3d32c83d38b962bc37a04baa9d48b12078096b1dd"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-zh-1440.png",
+      "sha256": "04dec9aa9974369dfd38fa57316f6a242474408fd12d55d50a0f389becf15dea"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-dark-zh-390.png",
+      "sha256": "577c982303cff6e382156f83abb8abfe1d58412db7896f7554e5724c86de2c7e"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-en-1440.png",
+      "sha256": "f154a571a8a22de0b3c4e0b2f36d4cf8a9f703c69875645b9a7a2d10edf7526f"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-en-390.png",
+      "sha256": "2abb27f5ff12385053ed263106a691bf59f4aff569fb17f84ac7edaae765bb80"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-zh-1440.png",
+      "sha256": "29ba1392484e6ff1b5b38e064659a03cbdd80f19ebe86dabf45c6a5146179122"
+    },
+    {
+      "scenario": "continuation_zero_qualified",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "continuation_zero_qualified-light-zh-390.png",
+      "sha256": "f5d7598f5be0058728a1f4b49dcf90795ab0c7f96e1c7f6471d808103cf958b8"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-en-1440.png",
+      "sha256": "efc4b3c06700e945bc634a0e8e4230800a21752a78c76d72226323ca96589820"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-en-390.png",
+      "sha256": "5d86d5a61343dc7d3a9e2d869dc7ca3abe49ae88f1113acce243dec103c15dc6"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-zh-1440.png",
+      "sha256": "559eb057cbc0167dea39c0ecdf368a25dccaeb9dae103a05df2a82827acc1d95"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-dark-zh-390.png",
+      "sha256": "a07c8660d106a40ab4b24e46480d061fad8df8f4d352b14b32072580f14b7ee1"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-en-1440.png",
+      "sha256": "c5b60200d278070c83e379ad1836c194da5abcd8628a68b6ca6c9b49e68f0830"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-en-390.png",
+      "sha256": "bbccdb043f4eabf811622e5989ac6d3bba213e3095a6786208e2f84367f6a6d7"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-zh-1440.png",
+      "sha256": "96a1687795f8c77bc344afe00b730b29e2135d7b5554a8779bc1c0c0abe9d8b8"
+    },
+    {
+      "scenario": "fresh_initial",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "fresh_initial-light-zh-390.png",
+      "sha256": "3cf1fb03201809008a485041a7f723c1140a0606b47539adfe556883cd1dedcf"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-en-1440.png",
+      "sha256": "16d2698b7dd3c4bf212fd18f628da697d4c1badc426107b61fcc0833b58d8f63"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-en-390.png",
+      "sha256": "31c2ee128a95713cb577648ae6b3f565e82c2a6cb5381958dcab1e820b8fd9c5"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-zh-1440.png",
+      "sha256": "741217d8ab859b1eb8a77532c4eec87a3687859725c0e056d295158062fb65e9"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-dark-zh-390.png",
+      "sha256": "b49ca14496a72bd846da14cef7c343d045eed565b8a88f090af7a56847a2f4f9"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-en-1440.png",
+      "sha256": "b08beb1f8f43a3b546543aa3b30963e7deb216d85dc4fcb70318faf8cffa519b"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-en-390.png",
+      "sha256": "a16a399fc4307d3bb08babdc2c68131259802403c1bc70e3050d251bb302a543"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-zh-1440.png",
+      "sha256": "ec2f886f9b1a62e1a0dbcd4622fabe6ed339949dc756b58f97d7376a8d7d2673"
+    },
+    {
+      "scenario": "final_demoted",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": false,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "final_demoted-light-zh-390.png",
+      "sha256": "41c2f29cfaf318285b5d3d657663d2842370abf615ac4aef8910db5256390a0b"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-en-1440.png",
+      "sha256": "08876665e6eedd1d5a9e70742e819e258937af2af6638fd6a6bf232e37784662"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-en-390.png",
+      "sha256": "78db0d846569fc2d84b5eab11fc39431d17845dd262a37cc87c2318080f360fb"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-zh-1440.png",
+      "sha256": "bb3a6357eb7c6d1afe9a19fbd4984228e493e4673667c44ebbe4c424ca272d26"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-dark-zh-390.png",
+      "sha256": "0655bd0b6007d36cd2158387489e11d35b7ffd647a563035dd565fbd74da68b9"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-en-1440.png",
+      "sha256": "5c2d87fec403dd2e0f88b34225b6b53bf57322eb8c2f352b121cdc6f79d80d99"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-en-390.png",
+      "sha256": "da248539c7c94f1556427e5b2904860457597329384107ec978215106dad6f97"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-zh-1440.png",
+      "sha256": "d65a885a248b9485c681cfe79df02f29d284ea2a8f5065c3d2339525d3d382aa"
+    },
+    {
+      "scenario": "stale_missing_entry",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "http_status": 200,
+      "rating_visible": true,
+      "wait_instruction_absent": true,
+      "initial_context_visible": true,
+      "stock_checks_opened": true,
+      "page_errors": [],
+      "request_failures": [],
+      "page_overflow": false,
+      "unavailable_live_requests": [
+        "/live/basket_pulse.json",
+        "/live/shock_state.json"
+      ],
+      "screenshot": "stale_missing_entry-light-zh-390.png",
+      "sha256": "0434bc8ba4ce0413ad8b4db235bc5a26ecd5396c67b9710666d0d1594ce7ab7c"
+    }
+  ],
+  "production": false,
+  "limitations": [
+    "Synthetic controls modify only DETAIL data inside the compiled current source page.",
+    "No new market data, action-card decision, score, or trade permission is created.",
+    "Local Chromium proof only; production/authenticated proof remains separate."
+  ]
+}

@@ -122,9 +122,15 @@ const badge = (cls,c,en,zh)=>`<span class="${cls}" style="background:${c[0]};bor
 const RECO_NOENTRY = [TINT('--warn',16), TINT('--warn',55), 'var(--ink-warn, var(--warn))'];
 const recoNoEntry = t => (t.reco==='accumulate'||t.reco==='enter') && !(((t.textures||{}).clean_entry)||{}).flag;
 const recoChip = t => recoNoEntry(t)
-  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" title="In favour, but no member has a clean entry — do not chase; wait for a setup.">${L('IN FAVOUR — NO ENTRY','看好但无干净入场')}</span>`
+  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" data-tip-en="Theme in favour; no clean entry is confirmed." data-tip-zh="主题获看好；尚未确认清晰入场点。">${L('WAIT FOR ENTRY','等待入场')}</span>`
   : badge('treco',recoColor(t.reco),t.reco_en,t.reco_zh);
-const RECO_NOENTRY_WHY = () => L('In favour, but no member has a clean entry — do not chase; wait for a setup.','看好，但无成分股具备干净入场点 — 勿追，等待入场时机。');
+const RECO_NOENTRY_WHY = t => {
+  const known=t&&['entry_not_confirmed','entry_read_unavailable'].includes(t.reco_reason_code)
+    &&typeof t.reco_why_en==='string'&&t.reco_why_en.trim()
+    &&typeof t.reco_why_zh==='string'&&t.reco_why_zh.trim();
+  return known?L(esc(t.reco_why_en),esc(t.reco_why_zh))
+    :L('Theme in favour; no clean entry is confirmed.','主题获看好；尚未确认清晰入场点。');
+};
 const COMP_COLOR = {trend:'#5aa7ff',breadth:'#4ade80',impulse:'#a78bfa',macro:'#2dd4bf',crowding:'#fb7185'};
 const COMP_LBL = {trend:['trend','趋势'],breadth:['breadth','广度'],impulse:['impulse','脉冲'],macro:['macro','宏观'],crowding:['crowd','拥挤']};
 
@@ -162,17 +168,35 @@ function absCracks(t){
 }
 // The faster counter-textures that DISAGREE with a constructive label. Each entry is
 // [en, zh] — purely descriptive, computed from already-published payload fields.
+function rolloverReasonText(reasons, zh=false){
+  const translated={
+    'momentum rolling over':'动量转弱','decelerating':'动量减速',
+    'breadth weakening':'广度转弱','breadth narrowing':'广度收窄',
+    'more new lows':'新低增多','below 50d':'低于50日均线',
+    'rolling off the high':'自高位回落'
+  };
+  if(!Array.isArray(reasons)) return '';
+  return reasons.filter(value=>typeof value==='string'&&value.trim()).map(text=>{
+    if(/^extended \(RS \d+(?:\.\d+)?%ile\)$/.test(text))
+      return zh?'相对强势偏高':'high relative strength';
+    if(!zh) return text;
+    if(Object.prototype.hasOwnProperty.call(translated,text)) return translated[text];
+    const fade=text.match(/^momentum fading \(hist ([-+\d.e]+)→([-+\d.e]+), (\d+) straight declines\)$/);
+    if(fade) return '动量放缓（柱状值'+fade[1]+'→'+fade[2]+'，连续'+fade[3]+'次下降）';
+    return '来源条件（中文说明暂缺）';
+  }).join(' · ');
+}
 function contestedTextures(t, cyc){
   const rr=(t.textures||{}).rollover_risk||{};
   const list=[];
   if(cyc && (((cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak')) || ((cyc.proj||{}).nextTurn==='trough')))
     list.push(['cycle clock at a provisional peak / projecting a trough next','周期时钟处于临时顶部 / 推演下一拐点为底部']);
   if(t.rs_pctile!=null && t.rs_pctile>=0.95)
-    list.push(['very extended (RS ≥95%ile)','相对强度极端延展（≥95分位）']);
+    list.push(['relative strength high within its recent history; not an own-price extension measure','相对强势在近期历史中偏高；不是价格偏离自身趋势的度量']);
   if(rr.band==='elevated'||rr.band==='high')
-    list.push(['roll-over risk '+rr.band+(rr.reasons&&rr.reasons.length?': '+rr.reasons.join(' · '):''),'回落风险'+(rr.band_zh||rr.band)+(rr.reasons&&rr.reasons.length?'：'+rr.reasons.join(' · '):'')]);
+    list.push(['roll-over risk '+rr.band+(rr.reasons&&rr.reasons.length?': '+rolloverReasonText(rr.reasons):''),'回落风险'+(rr.band_zh||rr.band)+(rr.reasons&&rr.reasons.length?'：'+rolloverReasonText(rr.reasons,true):'')]);
   else if(earlyCracks(t))
-    list.push(['early cracks: '+(rr.reasons||[]).join(' · '),'初现裂痕：'+(rr.reasons||[]).join(' · ')]);
+    list.push(['early caution: '+rolloverReasonText(rr.reasons),'早期提示：'+rolloverReasonText(rr.reasons,true)]);
   if(t.delta_5d!=null && t.delta_5d<0)
     list.push(['negative 5-day relative return ('+fmtPct(t.delta_5d)+')','5日相对收益为负（'+fmtPct(t.delta_5d)+'）']);
   return list;
@@ -240,8 +264,8 @@ function themeCard(t){
     const tipZh=`裂痕 — 绝对价格下行：5日${ck.p5!=null?fmtPct(ck.p5):'—'}${ck.legImp?' · ±3%脉冲 '+ck.up3+'升 / '+ck.down3+'降':''}`;
     glyphRow=`<div class="tglyph"><span class="tflag wn" style="opacity:.88" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">▾</span></div>`;
   } else if(rr.band==='high'||rr.band==='elevated'){
-    const tipEn=`Roll-over risk ${rr.band}${rr.reasons&&rr.reasons.length?': '+rr.reasons.join(' · '):''}`;
-    const tipZh=`回落风险${rr.band_zh||rr.band}${rr.reasons&&rr.reasons.length?'：'+rr.reasons.join(' · '):''}`;
+    const tipEn=`Roll-over risk ${rr.band}${rr.reasons&&rr.reasons.length?': '+rolloverReasonText(rr.reasons):''}`;
+    const tipZh=`回落风险${rr.band_zh||rr.band}${rr.reasons&&rr.reasons.length?'：'+rolloverReasonText(rr.reasons,true):''}`;
     glyphRow=`<div class="tglyph"><span class="tflag ${rr.band==='high'?'dn':'wn'}" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">⚠</span></div>`;
   } else if(ss&&ss.grade==='backtested'){
     const tipEn=`${ss.en||''} (HAC t ${ss.t_hac}, n ${ss.n})`;
@@ -299,7 +323,7 @@ function themeCard(t){
         <span class="tpill">${L('+3% / −3%','+3% / −3%')} <b class="pos">${im.up3||0}</b>/<b class="neg">${im.down3||0}</b></span>
         <span class="tpill">${L('adv/dec','涨/跌')} <b class="pos">${t.adv||0}</b>/<b class="neg">${t.dec||0}</b></span>
       </div>
-      <div class="why">${recoNoEntry(t)?RECO_NOENTRY_WHY():L(esc(t.reco_why_en),esc(t.reco_why_zh))}</div>
+      <div class="why">${recoNoEntry(t)?RECO_NOENTRY_WHY(t):L(esc(t.reco_why_en),esc(t.reco_why_zh))}</div>
       ${contested?`<div class="why" style="opacity:.9">${L('Contested — faster textures disagreeing with the label (descriptive, not a forecast)','存在分歧 — 与标签相悖的更快纹理（描述性，非预测）')}: ${cTex.map(x=>L(esc(x[0]),esc(x[1]))).join(' · ')}</div>`:''}
       ${ss?`<div class="why" style="opacity:.82">${L('Signal grade','信号评级')}: <b>${esc(ss.grade)}</b> — ${L(esc(ss.en||''),esc(ss.zh||''))}</div>`:''}
       ${top.length?`<div class="why">${L('leaders','领涨')}: ${top.map(x=>esc(x.ticker)).join(', ')}${t.leadership.breadth==='narrow'?' ⚠':''}</div>`:''}

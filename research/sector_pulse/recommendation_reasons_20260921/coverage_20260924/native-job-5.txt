@@ -1,0 +1,190 @@
+................................F......................F....FFF......... [ 51%]
+.....................................................................    [100%]
+=================================== FAILURES ===================================
+__________ test_degraded_capture_host_reveals_rv_modules_under_has_js __________
+
+    def test_degraded_capture_host_reveals_rv_modules_under_has_js():
+        """The JS-on degraded evidence host must depict both panels.
+
+        Round-2 review of head 1271a69a: the host stamps has-js and the CSS
+        `html.has-js .rv{opacity:0}` until `.in`, but neither section carried
+        `.in` and no script added it. Recapture showed only the host banner.
+        The sibling AAPL host already adds `.in`; this host must too.
+        """
+        path = (
+            ROOT
+            / "mockups"
+            / "evidence"
+            / "valuation_assumptions"
+            / "hosts"
+            / "evidence"
+            / "valuation-assumptions-degraded.html"
+        )
+>       html = path.read_text(encoding="utf-8")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_valuation_assumptions.py:765:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/theme-recommendation-reasons-20260921-sol/mockups/evidence/valuation_assumptions/hosts/evidence/valuation-assumptions-degraded.html')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/theme-recommendation-reasons-20260921-sol/mockups/evidence/valuation_assumptions/hosts/evidence/valuation-assumptions-degraded.html'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, verify_shots. If this failure is an artifact of that, sparse worktree — mockups not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+______ test_evidence_hosts_match_final_template_sentences_and_typography _______
+
+    def test_evidence_hosts_match_final_template_sentences_and_typography():
+        """Static evidence hosts carry the production event line, not a stale copy."""
+        event_pattern = re.compile(
+            r'<p[^>]*id="va-event-bridge"[^>]*>(.*?)</p>', re.DOTALL
+        )
+
+        def event_html(html):
+            match = event_pattern.search(html)
+            assert match is not None
+            return " ".join(match.group(1).split())
+
+        v1 = vs.compute(_rows(), ticker="AAPL")
+        controls = va.controls_blob(v1)
+        assert controls is not None
+        cases = {
+            "tender-offer": veb.bridge("Tender Offers"),
+            "restructuring": veb.bridge("Restructuring"),
+            "null": None,
+        }
+        for host_name, bridge_value in cases.items():
+            host_path = (
+                ROOT
+                / "mockups"
+                / "evidence"
+                / "b-f07-3-event-bridge"
+                / "hosts"
+                / f"valuation-event-bridge-{host_name}.html"
+            )
+            controls["latest_event_bridge"] = bridge_value
+>           assert event_html(host_path.read_text()) == event_html(_render(controls))
+                              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_valuation_event_bridge.py:456:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/theme-recommendation-reasons-20260921-sol/mockups/evidence/b-f07-3-event-bridge/hosts/valuation-event-bridge-tender-offer.html')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/theme-recommendation-reasons-20260921-sol/mockups/evidence/b-f07-3-event-bridge/hosts/valuation-event-bridge-tender-offer.html'
+
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, verify_shots. If this failure is an artifact of that, sparse worktree — mockups not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_____ test_production_path_renders_committed_nsa_post_effective_amendment ______
+
+issuer_spines = PosixPath('/private/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-5/test_production_path_renders_c0/events.jsonl')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a06c830>
+
+    def test_production_path_renders_committed_nsa_post_effective_amendment(
+        issuer_spines, monkeypatch
+    ):
+        """controls_blob(v1) plus the ticker-page renderer on committed NSA fixtures.
+
+        The live valuation cohort stays AAPL-only. This test uses the same producer
+        and template as the generated ticker page, against NSA rows already in
+        data/capital_structure/event_versions.parquet.
+        """
+        _use_committed_capital_spine(monkeypatch)
+        v1 = vs.compute(_rows(), ticker="NSA")
+        controls = va.controls_blob(v1)
+        assert controls is not None
+        bridge = controls["latest_event_bridge"]
+>       assert bridge is not None
+E       assert None is not None
+
+tests/test_valuation_event_bridge.py:623: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+______ test_production_path_renders_aapl_typed_null_from_committed_spine _______
+
+issuer_spines = PosixPath('/private/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-5/test_production_path_renders_a0/events.jsonl')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1092a6420>
+
+    def test_production_path_renders_aapl_typed_null_from_committed_spine(
+        issuer_spines, monkeypatch
+    ):
+        """AAPL's generated page paints the typed-null line; it never fabricates an event."""
+        path = _use_committed_capital_spine(monkeypatch)
+        assert path == COMMITTED_CAPITAL_ROOT / "event_versions.parquet"
+>       assert path.exists()
+E       AssertionError: assert False
+E        +  where False = exists()
+E        +    where exists = PosixPath('/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/theme-recommendation-reasons-20260921-sol/data/capital_structure/event_versions.parquet').exists
+
+tests/test_valuation_event_bridge.py:641: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_____________ test_controls_blob_no_collector_import_at_call_time ______________
+
+issuer_spines = PosixPath('/private/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-5/test_controls_blob_no_collecto0/events.jsonl')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1092a4ec0>
+
+    def test_controls_blob_no_collector_import_at_call_time(
+        issuer_spines, monkeypatch
+    ):
+        """Block collector modules with monkeypatch.setitem only, then reload.
+
+        At 57cfa8d9 the producer imported scripts.compile_capital_structure_events
+        at call time, so this test is RED there. At head it must match the
+        unblocked NSA post_effective_amendment line and the AAPL typed null.
+        Do not pop sys.modules keys: monkeypatch snapshots at call time, so a
+        preceding pop makes undo DELETE the restored key (test_no_module_leak).
+        """
+        import importlib
+
+        _use_committed_capital_spine(monkeypatch)
+        v1_nsa = vs.compute(_rows(), ticker="NSA")
+        v1_aapl = vs.compute(_rows(), ticker="AAPL")
+        baseline_nsa = va.controls_blob(v1_nsa)
+        baseline_aapl = va.controls_blob(v1_aapl)
+        assert baseline_nsa is not None
+>       assert baseline_nsa["latest_event_bridge"] is not None
+E       assert None is not None
+
+tests/test_valuation_event_bridge.py:683: AssertionError
+
+NOTE: sparse worktree — data, mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_valuation_assumptions.py::test_degraded_capture_host_reveals_rv_modules_under_has_js
+FAILED tests/test_valuation_event_bridge.py::test_evidence_hosts_match_final_template_sentences_and_typography
+FAILED tests/test_valuation_event_bridge.py::test_production_path_renders_committed_nsa_post_effective_amendment
+FAILED tests/test_valuation_event_bridge.py::test_production_path_renders_aapl_typed_null_from_committed_spine
+FAILED tests/test_valuation_event_bridge.py::test_controls_blob_no_collector_import_at_call_time
+5 failed, 136 passed in 12.35s

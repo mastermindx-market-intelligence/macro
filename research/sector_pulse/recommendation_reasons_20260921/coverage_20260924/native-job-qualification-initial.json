@@ -1,0 +1,147 @@
+{
+  "source_head": "2c28d950aa9448fc878bb64d92b228a8f1952bde",
+  "manifest_sha256": "f27a4d13ac4e67dc17a20cd5e48394e18a31ba342de1c24738ccd02060aa1827",
+  "total_seconds": 120.38,
+  "all_declared_test_commands_executed": false,
+  "total_passed": 777,
+  "results": [
+    {
+      "name": "conviction profile honesty invariants + dossier reason codes",
+      "native_command": "python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py tests/test_theme_recommendation_reasons.py tests/test_basket_entry_explanations.py tests/test_theme_entry_gate_comparison.py tests/test_sector_pulse_observation_clock.py -q",
+      "local_argv": [
+        "/opt/homebrew/opt/python@3.12/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_stock_score.py",
+        "tests/test_stock_dossier.py",
+        "tests/test_theme_recommendation_reasons.py",
+        "tests/test_basket_entry_explanations.py",
+        "tests/test_theme_entry_gate_comparison.py",
+        "tests/test_sector_pulse_observation_clock.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-0"
+      ],
+      "returncode": 0,
+      "seconds": 17.51,
+      "passed": 312,
+      "summary": [
+        "........................                                                 [100%]",
+        "312 passed in 14.30s"
+      ]
+    },
+    {
+      "name": "analyzer display twins + china turnover percentile i18n (#5980)",
+      "native_command": "python -m pytest tests/test_analyzer_i18n_percentile.py -q",
+      "local_argv": [
+        "/opt/homebrew/opt/python@3.12/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_analyzer_i18n_percentile.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-1"
+      ],
+      "returncode": 0,
+      "seconds": 5.75,
+      "passed": 63,
+      "summary": [
+        "...............................................................          [100%]",
+        "63 passed in 3.84s"
+      ]
+    },
+    {
+      "name": "dossier numeric contract, estate machine-sentinel guard, and identity end-to-end (#5984)",
+      "native_command": "python -m pytest tests/test_dossier_numeric_contract.py tests/test_check_stock_dossier_integrity.py tests/test_dossier_identity_end_to_end.py -q\n",
+      "local_argv": [
+        "/opt/homebrew/opt/python@3.12/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_dossier_numeric_contract.py",
+        "tests/test_check_stock_dossier_integrity.py",
+        "tests/test_dossier_identity_end_to_end.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-2"
+      ],
+      "returncode": 0,
+      "seconds": 6.2,
+      "passed": 70,
+      "summary": [
+        "......................................................................   [100%]",
+        "70 passed in 4.95s"
+      ]
+    },
+    {
+      "name": "security_state.v1 contract + identity receipt chain (B1A)",
+      "native_command": "python -m pytest tests/test_security_state_contract.py -q",
+      "local_argv": [
+        "/opt/homebrew/opt/python@3.12/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_security_state_contract.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-3"
+      ],
+      "returncode": 0,
+      "seconds": 19.04,
+      "passed": 94,
+      "summary": [
+        "......................                                                   [100%]",
+        "94 passed in 17.86s"
+      ]
+    },
+    {
+      "name": "security_state.v1 view-model projection (B1A)",
+      "native_command": "python -m pytest tests/test_security_state_view_model.py -q",
+      "local_argv": [
+        "/opt/homebrew/opt/python@3.12/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_security_state_view_model.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-4"
+      ],
+      "returncode": 0,
+      "seconds": 57.81,
+      "passed": 102,
+      "summary": [
+        "..............................                                           [100%]",
+        "102 passed in 56.43s"
+      ]
+    },
+    {
+      "name": "valuation scenario V1 + assumptions + event->AssumptionChange (B-F07-1/2/3/4)",
+      "native_command": "python -m pytest tests/test_valuation_scenario.py tests/test_valuation_assumptions.py tests/test_valuation_event_bridge.py tests/test_valuation_event_proposal.py tests/test_china_archetype_d_s1.py -q\n",
+      "local_argv": [
+        "/opt/homebrew/opt/python@3.12/bin/python3.12",
+        "-m",
+        "pytest",
+        "tests/test_valuation_scenario.py",
+        "tests/test_valuation_assumptions.py",
+        "tests/test_valuation_event_bridge.py",
+        "tests/test_valuation_event_proposal.py",
+        "tests/test_china_archetype_d_s1.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/mmx-leadership-finalize-20260924-0433/pytest-job-5"
+      ],
+      "returncode": 1,
+      "seconds": 13.95,
+      "passed": 136,
+      "summary": [
+        "FAILED tests/test_valuation_event_bridge.py::test_controls_blob_no_collector_import_at_call_time",
+        "5 failed, 136 passed in 12.35s"
+      ]
+    }
+  ],
+  "environment": "existing Python3.12; no packages installed; not a clean-room dependency proof"
+}

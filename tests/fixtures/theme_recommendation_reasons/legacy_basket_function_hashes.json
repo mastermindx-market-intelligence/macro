@@ -1,0 +1,14 @@
+{
+  "source_ref": "4e01f20e2dc5ee66634ed51ec127ba8b8630b860",
+  "functions": {
+    "_rollover_weights": "a443446176cce4772015eb3f7e4f3aff49af51525f56f485e8fd37f26f899c0f",
+    "_rsi": "6ed0192fb43caabf5feb18f33f71629f3cc5d9a3088985c7bf1a0f3e1cb75a59",
+    "bull_age": "a68721bd69557dcc3387fe2c389042ce57aa81c6ba9966c67e694b19193a9e02",
+    "overbought": "dd919ea77e1a045af249f8c612b7b2e315de3386b7b24f7c3ad111b8f8d65b54",
+    "clean_entry": "3eb7ffd5da33ac2df7dba43db0ed438752281622e4f5893059452bf5ac2e6fcd",
+    "_macd_hist_fade_leg": "ad7884b6425a761bdebdad8e7102ad968ae15f99640de7dc4c179686cd316053",
+    "rollover_risk": "dcbc5126b1010b76141bd70300bb5d059f6c298c4ffc6ea19107f61276968855",
+    "theme_textures": "36d1d5713f2f7d786cb6007b0b8a8bc0c104fd9498d60290dee1f88b3f16211b",
+    "market_concentration": "a003f4d0d930c216da34df68f3e79e92fcce0ea8ec72c52805d45f635298b3f6"
+  }
+}

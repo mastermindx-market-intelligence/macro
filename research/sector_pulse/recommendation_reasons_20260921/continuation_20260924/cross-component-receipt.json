@@ -1,0 +1,232 @@
+{
+  "schema": "theme_continuation_detail_contract.v1",
+  "generated_at_utc": "2026-09-25T00:33:33.227066+00:00",
+  "theme_id": "cn_pharma_cxo",
+  "action_card": {
+    "source_head": "6e0beeec8f720333dd72ab47a9e7c39fed6238a1",
+    "source_path": "engine/china_act_now.py",
+    "source_sha256": "fcb9c8996294e1f9cf0fe5e6835c27785ef4006cf43b9aba58cebff0b05cc8f7",
+    "input_head": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+    "input_path": "site/chinabasketdata/baskets.json",
+    "input_sha256": "69c46ef1ec0c60f450dfe6c443d2d01c70da81a91f34c8763c04f747edbb4040",
+    "observed_at": "2026-09-23T05:00:00+00:00",
+    "display_lane": "buy_now",
+    "entry_route": "continuation",
+    "observed_lanes": [
+      "wait_pullback"
+    ],
+    "source_read_lanes": [
+      "wait_pullback"
+    ],
+    "theme_decision": {
+      "source_as_of": "2026-09-22",
+      "final_reco": "accumulate",
+      "final_label": "dominant",
+      "status": "CURRENT",
+      "source_status": "CURRENT",
+      "source_conflict": false,
+      "scope": "theme_presentation_only",
+      "stock_entry_permission": false
+    },
+    "recommendation": "accumulate",
+    "recommendation_en": "CONTINUATION",
+    "recommendation_zh": "趋势增持",
+    "score": 65
+  },
+  "detail": {
+    "input_page_head": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+    "input_page_path": "site/basket_china/cn_pharma_cxo.html",
+    "input_page_sha256": "69a2d8f9bfb49552e01da251bf7e30d8cc778f0dcdcfa8e0c67570dc492282a6",
+    "template_path": "templates/basket_detail.html.j2",
+    "template_sha256": "47f077352c62df68fcf98cc868683e6d8d4ab52e29781049b07cd97f04fae280",
+    "source_as_of": "2026-09-22",
+    "recommendation": "accumulate",
+    "recommendation_en": "ACCUMULATE",
+    "recommendation_zh": "加仓",
+    "label": "dominant",
+    "clean_entry": false,
+    "entry_checks": 0,
+    "qualified_count": null,
+    "stock_entry_checks_available_on_frozen_input": false,
+    "blanket_wait_literal_absent": true,
+    "native_rating_preserved": true,
+    "initial_entry_context_separate": true
+  },
+  "identity": {
+    "same_theme_id": true,
+    "same_source_session": true,
+    "same_final_recommendation": true,
+    "continuation_without_bottoming_event": true,
+    "stock_entry_permission_widened": false
+  },
+  "browser": {
+    "captures": 8,
+    "records": [
+      {
+        "theme": "dark",
+        "language": "en",
+        "width": 1440,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-dark-en-1440.png",
+        "screenshot_sha256": "b5a3c34fabd505891c98410391c6d95df036ce1c25b7e91d3eede3a1db1362bb"
+      },
+      {
+        "theme": "dark",
+        "language": "en",
+        "width": 390,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-dark-en-390.png",
+        "screenshot_sha256": "7a50bf50c42c7020cc394c4d558acfdbd3a1b243a2bcb6875b1d158af59b0857"
+      },
+      {
+        "theme": "dark",
+        "language": "zh",
+        "width": 1440,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-dark-zh-1440.png",
+        "screenshot_sha256": "719071f5b31e6962e8b441b3c29ea52a177f4d1ff775bcc953ae7d60a7eb695f"
+      },
+      {
+        "theme": "dark",
+        "language": "zh",
+        "width": 390,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-dark-zh-390.png",
+        "screenshot_sha256": "ad5120097446519f04acc2a429f0d9a9ff1dba61b55d2666a3b396cb52bcc6dc"
+      },
+      {
+        "theme": "light",
+        "language": "en",
+        "width": 1440,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-light-en-1440.png",
+        "screenshot_sha256": "29e1aff2f668baa6f593b8f11ab85d7292c7bd8f8581984054b6ea775820157c"
+      },
+      {
+        "theme": "light",
+        "language": "en",
+        "width": 390,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-light-en-390.png",
+        "screenshot_sha256": "048c3d97e1a6c1e218f0376f9199cf2641e94afa015636859355ec3749b411cc"
+      },
+      {
+        "theme": "light",
+        "language": "zh",
+        "width": 1440,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-light-zh-1440.png",
+        "screenshot_sha256": "9b018bfd7fda9fbea0e9a901aad2ef397bd86eb7b91abf531059298411489000"
+      },
+      {
+        "theme": "light",
+        "language": "zh",
+        "width": 390,
+        "http_status": 200,
+        "rating_visible": true,
+        "initial_context_visible": true,
+        "blanket_wait_absent": true,
+        "stock_checks_opened": false,
+        "qualified_count": null,
+        "page_overflow": false,
+        "page_errors": [],
+        "request_failures": [],
+        "unavailable_live_requests": [
+          "/live/basket_pulse.json",
+          "/live/shock_state.json"
+        ],
+        "screenshot": "browser-cross-component/exact-continuation-light-zh-390.png",
+        "screenshot_sha256": "3827a5ecb34ba2eca6aacb056cdde7c31abdba52f2ce20910591605ee22ac865"
+      }
+    ]
+  },
+  "scope": {
+    "production": false,
+    "trade_authority": false,
+    "description": "Exact accepted action-card source and exact immutable input are executed, then the same input's compiled detail payload is rendered through the candidate template. This is a cross-component software contract proof, not a current recommendation or production proof."
+  }
+}

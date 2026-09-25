@@ -1,0 +1,97 @@
+{
+  "assessment_primary_bh": {
+    "both_rs_vetoes": {
+      "p": 0.4828,
+      "q": 0.6437,
+      "reject": false
+    },
+    "both_with_price_bound": {
+      "p": 0.1337,
+      "q": 0.5348,
+      "reject": false
+    },
+    "entry_veto_only": {
+      "p": 0.4828,
+      "q": 0.6437,
+      "reject": false
+    },
+    "recommendation_veto_only": {
+      "p": 1.0,
+      "q": 1.0,
+      "reject": false
+    }
+  },
+  "decision_refusals": {
+    "incomplete_trailing_native_input_window": 2727
+  },
+  "decision_rows": 8937,
+  "hashes": {
+    "events": "5cb9806deb9fa011ebc72abd7c1a4d519de38f7a632a5ff81d7f4747ae3ce0c1",
+    "full_result": "88120e5087b469260f1042c8641fe77ec3e94ac374b2c3dbc3eb66560c8aa6ca",
+    "preregistration": "2a0160f2a477e140e70474100ced6fd6f9cc6a16cf19db298012c817f4bdf003",
+    "study": "999547e956e8fd5b5d0e84d9c117634d1e6491eddcf114eacbd19493e7ece810"
+  },
+  "limitations": [
+    "Causal reconstruction on current-vintage close archive, not logged-at historical replay.",
+    "Sector panel breadth and neutral macro are proxies, not the full Prophet or constituent engine.",
+    "Retrospective partition, not prospective validation; no threshold fitting.",
+    "Overlapping event outcomes are not portfolio CAGR, Sharpe or actual fills.",
+    "No individual CPU stock, current market, rank, entry, sizing or live policy claim."
+  ],
+  "prereg_commit": "59bf08ca81632451165ac2423637181d536ab9e4",
+  "price_end": "2026-09-18",
+  "price_start": "1998-12-22",
+  "primary_assessment": {
+    "both_rs_vetoes": {
+      "additional_negative_net_share": 0.42857142857142855,
+      "additional_net_mean": 0.017256028441247247,
+      "additional_net_relative_mean": 0.011377171361568112,
+      "additional_observations": 14,
+      "selected_observations": 354
+    },
+    "both_with_price_bound": {
+      "additional_negative_net_share": 0.2857142857142857,
+      "additional_net_mean": 0.03011887492433604,
+      "additional_net_relative_mean": 0.043353437086798875,
+      "additional_observations": 7,
+      "selected_observations": 347
+    },
+    "entry_veto_only": {
+      "additional_negative_net_share": 0.42857142857142855,
+      "additional_net_mean": 0.017256028441247247,
+      "additional_net_relative_mean": 0.011377171361568112,
+      "additional_observations": 14,
+      "selected_observations": 354
+    },
+    "incumbent": {
+      "additional_negative_net_share": null,
+      "additional_net_mean": null,
+      "additional_net_relative_mean": null,
+      "additional_observations": 0,
+      "selected_observations": 340
+    },
+    "recommendation_veto_only": {
+      "additional_negative_net_share": null,
+      "additional_net_mean": null,
+      "additional_net_relative_mean": null,
+      "additional_observations": 0,
+      "selected_observations": 340
+    }
+  },
+  "primary_assessment_dates": 434,
+  "promotion_authorized": false,
+  "registered_arms": 5,
+  "selection_counts": {
+    "both_rs_vetoes": 726,
+    "both_with_price_bound": 705,
+    "entry_veto_only": 726,
+    "incumbent": 692,
+    "recommendation_veto_only": 692
+  },
+  "source_ref": "1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee",
+  "tests": {
+    "new_cases": 36,
+    "python_312_overlapping": 197,
+    "python_314_owner": 205
+  }
+}

@@ -1249,6 +1249,27 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # Recommendation and entry regression coverage is a PR code obligation.
+      - "site/basketdata/baskets.json"
+      # Cross-component continuation regression binds the accepted China action
+      # card to the exact dated detail witness; both immutable inputs must start
+      # this same PR code owner rather than remain hidden behind a receipt.
+      - "site/chinabasketdata/baskets.json"
+      - "site/basket_china/cn_pharma_cxo.html"
+      - "site/basketdata/theme_extension.json"
+      - "engine/theme_extension.py"
+      - "research/LABEL_FALTERING_PHASE0.md"
+      - "scripts/calibrate_baskets.py"
+      - "tests/test_theme_recommendation_reasons.py"
+      - "tests/test_basket_entry_explanations.py"
+      - "tests/test_theme_entry_gate_comparison.py"
+      - "tests/test_sector_pulse_observation_clock.py"
+      - "templates/basket_detail.html.j2"
+      - "templates/baskets_desk.js"
+      - "site/baskets_desk.js"
+      - "research/sector_pulse/recommendation_reasons_20260921/audit_entry.py"
+      - "research/sector_pulse/recommendation_reasons_20260921/compare_entry_gates.py"
+      - "tests/fixtures/theme_recommendation_reasons/**"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/earnings_release/receipts.py"
@@ -1878,7 +1899,7 @@ jobs:
         # the valuation producer must stay collector-free in this venv.
         run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow
       - name: conviction profile honesty invariants + dossier reason codes
-        run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
+        run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py tests/test_theme_recommendation_reasons.py tests/test_basket_entry_explanations.py tests/test_theme_entry_gate_comparison.py tests/test_sector_pulse_observation_clock.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
       # by no `run:` step in any workflow, so scripts/audit_unrun_tests.py reds the whole
       # fleet's full-manifest runs on it. Same defect class as #5952 / #5985, discovered while
@@ -3095,6 +3116,9 @@ jobs:
           tests/test_mag7_panel.py
           tests/test_stance_matrix.py
           tests/test_theme_scoring_conflicted.py
+          tests/test_theme_scoring.py tests/test_theme_recommendation_reasons.py
+          tests/test_basket_score.py tests/test_basket_entry_explanations.py
+          tests/test_theme_entry_gate_comparison.py
           tests/test_basket_score_rollover_w4.py
           tests/test_index_momentum.py
           tests/test_cohort_flow_chips.py

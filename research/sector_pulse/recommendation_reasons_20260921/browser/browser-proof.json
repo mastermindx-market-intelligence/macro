@@ -1,0 +1,2130 @@
+{
+  "source_ref": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+  "producer_proof": {
+    "source_ref": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+    "source_path": "site/basketdata/baskets.json",
+    "source_sha256": "e43ea0ae82f7e215cef81375ca324da1bc6d897a26f27b0b075994342fa6b069",
+    "source_as_of": "2026-09-18",
+    "candidate_engine_sha256": "18dfb9bcbe030674b362262147dc6b77d9b8375a53f51c9188c5be892b800fcc",
+    "policy_parity": {
+      "cases": 10584,
+      "mismatches": 0,
+      "baseline_ref": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+      "baseline_function": "engine/theme_scoring.py:_reco"
+    },
+    "themes": 49,
+    "replayed": 49,
+    "unmatched": [],
+    "all_non_explanation_data_unchanged": true,
+    "records": [
+      {
+        "id": "crypto",
+        "name": "Crypto & Digital Assets",
+        "reco": "hold",
+        "before_en": "In play but no fresh edge here — keep, don't chase.",
+        "after": {
+          "code": "relative_strength_limit",
+          "en": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+          "zh": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。"
+        },
+        "base_reason": "relative_strength_limit"
+      },
+      {
+        "id": "mag7",
+        "name": "Magnificent Seven",
+        "reco": "accumulate",
+        "before_en": "Leading and still broad — room to add on the trend.",
+        "after": {
+          "code": "entry_checks_clear",
+          "en": "Entry checks are clear; confirm the individual stock setup.",
+          "zh": "主题入场条件已通过；仍需确认个股形态。"
+        },
+        "base_reason": "leading_checks_clear"
+      },
+      {
+        "id": "crypto_rails",
+        "name": "Crypto & Digital Rails",
+        "reco": "accumulate",
+        "before_en": "Leading and still broad — room to add on the trend.",
+        "after": {
+          "code": "entry_checks_clear",
+          "en": "Entry checks are clear; confirm the individual stock setup.",
+          "zh": "主题入场条件已通过；仍需确认个股形态。"
+        },
+        "base_reason": "leading_checks_clear"
+      },
+      {
+        "id": "memory_storage",
+        "name": "Memory, HBM & Storage",
+        "reco": "accumulate",
+        "before_en": "Leading and still broad — room to add on the trend.",
+        "after": {
+          "code": "entry_not_confirmed",
+          "en": "Theme remains in favour; a clean entry is not confirmed.",
+          "zh": "主题仍获看好；尚未确认清晰入场点。"
+        },
+        "base_reason": "leading_checks_clear"
+      },
+      {
+        "id": "cybersecurity",
+        "name": "Cybersecurity",
+        "reco": "hold",
+        "before_en": "In play but no fresh edge here — keep, don't chase.",
+        "after": {
+          "code": "relative_strength_limit",
+          "en": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+          "zh": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。"
+        },
+        "base_reason": "relative_strength_limit"
+      },
+      {
+        "id": "us_sector_tech",
+        "name": "Technology (Equal-Weight)",
+        "reco": "trim",
+        "before_en": "Was strong, now rolling over off a high — take some risk off.",
+        "after": {
+          "code": "momentum_fading",
+          "en": "Momentum has weakened; protect gains rather than adding.",
+          "zh": "动能已转弱；保护利润，避免加仓。"
+        },
+        "base_reason": "momentum_fading"
+      },
+      {
+        "id": "ai_semiconductors",
+        "name": "AI Semiconductors",
+        "reco": "accumulate",
+        "before_en": "Leading and still broad — room to add on the trend.",
+        "after": {
+          "code": "entry_not_confirmed",
+          "en": "Theme remains in favour; a clean entry is not confirmed.",
+          "zh": "主题仍获看好；尚未确认清晰入场点。"
+        },
+        "base_reason": "leading_checks_clear"
+      },
+      {
+        "id": "ai_software",
+        "name": "AI Software & Platforms",
+        "reco": "enter",
+        "before_en": "Early rotation — accelerating before extended; macro not against it.",
+        "after": {
+          "code": "entry_not_confirmed",
+          "en": "Theme remains in favour; a clean entry is not confirmed.",
+          "zh": "主题仍获看好；尚未确认清晰入场点。"
+        },
+        "base_reason": "emerging_checks_clear"
+      },
+      {
+        "id": "ai_infra",
+        "name": "AI Infrastructure",
+        "reco": "accumulate",
+        "before_en": "Leading and still broad — room to add on the trend.",
+        "after": {
+          "code": "entry_not_confirmed",
+          "en": "Theme remains in favour; a clean entry is not confirmed.",
+          "zh": "主题仍获看好；尚未确认清晰入场点。"
+        },
+        "base_reason": "leading_checks_clear"
+      },
+      {
+        "id": "energy_complex",
+        "name": "US Energy Complex",
+        "reco": "trim",
+        "before_en": "Was strong, now rolling over off a high — take some risk off.",
+        "after": {
+          "code": "momentum_fading",
+          "en": "Momentum has weakened; protect gains rather than adding.",
+          "zh": "动能已转弱；保护利润，避免加仓。"
+        },
+        "base_reason": "momentum_fading"
+      },
+      {
+        "id": "ai_neoclouds",
+        "name": "AI Neoclouds & HPC Hosting",
+        "reco": "enter",
+        "before_en": "Early rotation — accelerating before extended; macro not against it.",
+        "after": {
+          "code": "entry_checks_clear",
+          "en": "Entry checks are clear; confirm the individual stock setup.",
+          "zh": "主题入场条件已通过；仍需确认个股形态。"
+        },
+        "base_reason": "emerging_checks_clear"
+      },
+      {
+        "id": "us_sector_energy",
+        "name": "Energy (Equal-Weight)",
+        "reco": "trim",
+        "before_en": "Was strong, now rolling over off a high — take some risk off.",
+        "after": {
+          "code": "momentum_fading",
+          "en": "Momentum has weakened; protect gains rather than adding.",
+          "zh": "动能已转弱；保护利润，避免加仓。"
+        },
+        "base_reason": "momentum_fading"
+      },
+      {
+        "id": "big_pharma",
+        "name": "Big Pharma",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "silver_miners",
+        "name": "Silver Miners",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "non_ai_software",
+        "name": "Non-AI Software",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "non_ai_tech",
+        "name": "Non-AI Tech & Hardware",
+        "reco": "hold",
+        "before_en": "In play but no fresh edge here — keep, don't chase.",
+        "after": {
+          "code": "no_constructive_signal",
+          "en": "No positive theme signal; wait for stronger confirmation.",
+          "zh": "暂无积极的主题信号；等待进一步确认。"
+        },
+        "base_reason": "no_constructive_signal"
+      },
+      {
+        "id": "gold_miners",
+        "name": "Gold Miners",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "ai_agents",
+        "name": "AI Agents & Applications",
+        "reco": "hold",
+        "before_en": "In play but no fresh edge here — keep, don't chase.",
+        "after": {
+          "code": "no_constructive_signal",
+          "en": "No positive theme signal; wait for stronger confirmation.",
+          "zh": "暂无积极的主题信号；等待进一步确认。"
+        },
+        "base_reason": "no_constructive_signal"
+      },
+      {
+        "id": "semicap_equipment",
+        "name": "Semiconductor Equipment (WFE)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_health",
+        "name": "Health Care (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "pgm_miners",
+        "name": "PGM Miners",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "reshoring",
+        "name": "Reshoring & Industrial Capex",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "data_center_power",
+        "name": "Data-Center Power & Cooling",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "robotics_automation",
+        "name": "Robotics & Automation",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "industrial_distribution",
+        "name": "Industrial Distribution & Capital Goods",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "quantum_computing",
+        "name": "Quantum Computing",
+        "reco": "hold",
+        "before_en": "In play but no fresh edge here — keep, don't chase.",
+        "after": {
+          "code": "no_constructive_signal",
+          "en": "No positive theme signal; wait for stronger confirmation.",
+          "zh": "暂无积极的主题信号；等待进一步确认。"
+        },
+        "base_reason": "no_constructive_signal"
+      },
+      {
+        "id": "regional_banks",
+        "name": "Regional Banks",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "space_economy",
+        "name": "Space Economy",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "insurance",
+        "name": "Insurance & Brokers",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_comm",
+        "name": "Communication Services (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "obesity_glp1",
+        "name": "GLP-1 & Obesity",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "managed_care",
+        "name": "Managed Care & Insurers",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "payments_fintech",
+        "name": "Payments & Fintech",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "retail",
+        "name": "Retail",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_financials",
+        "name": "Financials (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "critical_minerals",
+        "name": "Critical Minerals & Rare Earths",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "power_grid",
+        "name": "Power & Grid Buildout",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_materials",
+        "name": "Materials (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "defense",
+        "name": "Defense & Aerospace",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "defensives",
+        "name": "Defensives",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "travel",
+        "name": "Travel & Experiences",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_realestate",
+        "name": "Real Estate (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_staples",
+        "name": "Consumer Staples (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "nuclear_power",
+        "name": "Nuclear & SMR Power",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "housing",
+        "name": "Housing Chain",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "uranium_miners",
+        "name": "Uranium & Nuclear Fuel",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_industrials",
+        "name": "Industrials (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_utilities",
+        "name": "Utilities (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      },
+      {
+        "id": "us_sector_discretionary",
+        "name": "Consumer Discretionary (Equal-Weight)",
+        "reco": "avoid",
+        "before_en": "Momentum and breadth breaking down — stand aside.",
+        "after": {
+          "code": "trend_deteriorating",
+          "en": "Theme trend has deteriorated; avoid new entries.",
+          "zh": "主题趋势已转弱；避免新开仓。"
+        },
+        "base_reason": "trend_deteriorating"
+      }
+    ],
+    "limitations": [
+      "Rounded stored inputs, not a full nightly rebuild.",
+      "Not live market or deployed-browser proof.",
+      "No ranking, entry permission, portfolio or return claim."
+    ]
+  },
+  "baseline_template_sha256": "e885596825285903030e6a1bfbdca4891fc0ae7a5c5cc7b30925ca44d8859752",
+  "live_feeds": "unavailable_by_fixture; never substituted with old tracked quotes",
+  "template_sha256": "74cba22d862c3b8817f3f5d6fd735bd112da66b78dba1b8a26a19920889397cd",
+  "stock_entry_owner_sha256": "4a34515ec6ec790e9fc69b97efa2281999774c2f82770a4dec46ec2080f15bb0",
+  "cells": [
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-1440-dark-en.png",
+      "visible_reason": null,
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nIN FAVOUR — NO ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn favour, but no member has a clean entry — do not chase; wait for a setup.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-1440-dark-en.png",
+      "visible_reason": "Theme remains in favour; a clean entry is not confirmed.",
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nWAIT FOR ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nTheme remains in favour; a clean entry is not confirmed.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-1440-dark-en-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 11 waiting · 1 unavailable\n\nStock\tEntry check\nAMD\tThe stock cycle has not cleared entry.\nQCOM\tStock conviction is below the entry threshold.\nARM\tThe stock cycle has not cleared entry.\nANET\tThe stock cycle has not cleared entry.\nSMCI\tWaiting for signal confirmation.\nALAB\tThe stock cycle has not cleared entry.\nNVDA\tWaiting for signal confirmation.\nAVGO\tStock conviction is below the entry threshold.\nMRVL\tThe stock cycle has not cleared entry.\nCBRS\tStock conviction assessment is unavailable.\nMPWR\tStock conviction is below the entry threshold.\nCRDO\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-1440-dark-en.png",
+      "visible_reason": null,
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn play but no fresh edge here — keep, don't chase.\nContested: cycle clock at a provisional peak / projecting a trough next · very extended (RS ≥95%ile) · early cracks: extended (RS 99%ile)\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-1440-dark-en.png",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nCheck individual stocks →\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-1440-dark-en-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 10 waiting · 0 unavailable\n\nStock\tEntry check\nOKTA\tThe stock cycle has not cleared entry.\nCRWD\tThe stock cycle has not cleared entry.\nNET\tThe stock cycle has not cleared entry.\nZS\tEntry is forming; confirmation is still pending.\nFTNT\tThe stock cycle has not cleared entry.\nRBRK\tThe stock cycle has not cleared entry.\nS\tThe stock cycle has not cleared entry.\nPANW\tThe stock cycle has not cleared entry.\nTENB\tThe stock cycle has not cleared entry.\nQLYS\tThe stock cycle has not cleared entry.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-baseline-1440-dark-en.png",
+      "visible_reason": null,
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nLeading and still broad — room to add on the trend.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-candidate-1440-dark-en.png",
+      "visible_reason": "Entry checks are clear; confirm the individual stock setup.",
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nEntry checks are clear; confirm the individual stock setup.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-1440-dark-en-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 7 waiting · 0 unavailable\n\nStock\tEntry check\nMETA\tStock conviction is below the entry threshold.\nAAPL\tThe stock cycle has not cleared entry.\nTSLA\tStock conviction is below the entry threshold.\nGOOGL\tWaiting for signal confirmation.\nMSFT\tStock conviction is below the entry threshold.\nNVDA\tWaiting for signal confirmation.\nAMZN\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-390-dark-en.png",
+      "visible_reason": null,
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nIN FAVOUR — NO ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn favour, but no member has a clean entry — do not chase; wait for a setup.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-390-dark-en.png",
+      "visible_reason": "Theme remains in favour; a clean entry is not confirmed.",
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nWAIT FOR ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nTheme remains in favour; a clean entry is not confirmed.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-390-dark-en-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 11 waiting · 1 unavailable\n\nStock\tEntry check\nAMD\tThe stock cycle has not cleared entry.\nQCOM\tStock conviction is below the entry threshold.\nARM\tThe stock cycle has not cleared entry.\nANET\tThe stock cycle has not cleared entry.\nSMCI\tWaiting for signal confirmation.\nALAB\tThe stock cycle has not cleared entry.\nNVDA\tWaiting for signal confirmation.\nAVGO\tStock conviction is below the entry threshold.\nMRVL\tThe stock cycle has not cleared entry.\nCBRS\tStock conviction assessment is unavailable.\nMPWR\tStock conviction is below the entry threshold.\nCRDO\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-390-dark-en.png",
+      "visible_reason": null,
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn play but no fresh edge here — keep, don't chase.\nContested: cycle clock at a provisional peak / projecting a trough next · very extended (RS ≥95%ile) · early cracks: extended (RS 99%ile)\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-390-dark-en.png",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nCheck individual stocks →\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-390-dark-en-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 10 waiting · 0 unavailable\n\nStock\tEntry check\nOKTA\tThe stock cycle has not cleared entry.\nCRWD\tThe stock cycle has not cleared entry.\nNET\tThe stock cycle has not cleared entry.\nZS\tEntry is forming; confirmation is still pending.\nFTNT\tThe stock cycle has not cleared entry.\nRBRK\tThe stock cycle has not cleared entry.\nS\tThe stock cycle has not cleared entry.\nPANW\tThe stock cycle has not cleared entry.\nTENB\tThe stock cycle has not cleared entry.\nQLYS\tThe stock cycle has not cleared entry.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-baseline-390-dark-en.png",
+      "visible_reason": null,
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nLeading and still broad — room to add on the trend.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "applied": {
+        "theme": "dark",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-candidate-390-dark-en.png",
+      "visible_reason": "Entry checks are clear; confirm the individual stock setup.",
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nEntry checks are clear; confirm the individual stock setup.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-390-dark-en-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 7 waiting · 0 unavailable\n\nStock\tEntry check\nMETA\tStock conviction is below the entry threshold.\nAAPL\tThe stock cycle has not cleared entry.\nTSLA\tStock conviction is below the entry threshold.\nGOOGL\tWaiting for signal confirmation.\nMSFT\tStock conviction is below the entry threshold.\nNVDA\tWaiting for signal confirmation.\nAMZN\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-1440-dark-zh.png",
+      "visible_reason": null,
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n看好但无干净入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n看好，但无成分股具备干净入场点 — 勿追，等待入场时机。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-1440-dark-zh.png",
+      "visible_reason": "主题仍获看好；尚未确认清晰入场点。",
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n等待入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题仍获看好；尚未确认清晰入场点。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-1440-dark-zh-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 11 只等待 · 1 只暂无评估\n\n个股\t入场条件\nAMD\t个股周期尚未允许入场。\nQCOM\t个股信念低于入场门槛。\nARM\t个股周期尚未允许入场。\nANET\t个股周期尚未允许入场。\nSMCI\t等待信号确认。\nALAB\t个股周期尚未允许入场。\nNVDA\t等待信号确认。\nAVGO\t个股信念低于入场门槛。\nMRVL\t个股周期尚未允许入场。\nCBRS\t个股信念评估暂缺。\nMPWR\t个股信念低于入场门槛。\nCRDO\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-1440-dark-zh.png",
+      "visible_reason": null,
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n仍在运行但此处无新优势 — 持有勿追。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强度极端延展（≥95分位） · 初现裂痕：extended (RS 99%ile)\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-1440-dark-zh.png",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n查看具体个股 →\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-1440-dark-zh-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 10 只等待 · 0 只暂无评估\n\n个股\t入场条件\nOKTA\t个股周期尚未允许入场。\nCRWD\t个股周期尚未允许入场。\nNET\t个股周期尚未允许入场。\nZS\t入场条件形成中；仍需确认。\nFTNT\t个股周期尚未允许入场。\nRBRK\t个股周期尚未允许入场。\nS\t个股周期尚未允许入场。\nPANW\t个股周期尚未允许入场。\nTENB\t个股周期尚未允许入场。\nQLYS\t个股周期尚未允许入场。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-baseline-1440-dark-zh.png",
+      "visible_reason": null,
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n领涨且仍然分散 — 趋势中可加仓。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-candidate-1440-dark-zh.png",
+      "visible_reason": "主题入场条件已通过；仍需确认个股形态。",
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题入场条件已通过；仍需确认个股形态。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-1440-dark-zh-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 7 只等待 · 0 只暂无评估\n\n个股\t入场条件\nMETA\t个股信念低于入场门槛。\nAAPL\t个股周期尚未允许入场。\nTSLA\t个股信念低于入场门槛。\nGOOGL\t等待信号确认。\nMSFT\t个股信念低于入场门槛。\nNVDA\t等待信号确认。\nAMZN\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-390-dark-zh.png",
+      "visible_reason": null,
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n看好但无干净入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n看好，但无成分股具备干净入场点 — 勿追，等待入场时机。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-390-dark-zh.png",
+      "visible_reason": "主题仍获看好；尚未确认清晰入场点。",
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n等待入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题仍获看好；尚未确认清晰入场点。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-390-dark-zh-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 11 只等待 · 1 只暂无评估\n\n个股\t入场条件\nAMD\t个股周期尚未允许入场。\nQCOM\t个股信念低于入场门槛。\nARM\t个股周期尚未允许入场。\nANET\t个股周期尚未允许入场。\nSMCI\t等待信号确认。\nALAB\t个股周期尚未允许入场。\nNVDA\t等待信号确认。\nAVGO\t个股信念低于入场门槛。\nMRVL\t个股周期尚未允许入场。\nCBRS\t个股信念评估暂缺。\nMPWR\t个股信念低于入场门槛。\nCRDO\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-390-dark-zh.png",
+      "visible_reason": null,
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n仍在运行但此处无新优势 — 持有勿追。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强度极端延展（≥95分位） · 初现裂痕：extended (RS 99%ile)\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-390-dark-zh.png",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n查看具体个股 →\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-390-dark-zh-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 10 只等待 · 0 只暂无评估\n\n个股\t入场条件\nOKTA\t个股周期尚未允许入场。\nCRWD\t个股周期尚未允许入场。\nNET\t个股周期尚未允许入场。\nZS\t入场条件形成中；仍需确认。\nFTNT\t个股周期尚未允许入场。\nRBRK\t个股周期尚未允许入场。\nS\t个股周期尚未允许入场。\nPANW\t个股周期尚未允许入场。\nTENB\t个股周期尚未允许入场。\nQLYS\t个股周期尚未允许入场。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-baseline-390-dark-zh.png",
+      "visible_reason": null,
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n领涨且仍然分散 — 趋势中可加仓。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "applied": {
+        "theme": "dark",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-candidate-390-dark-zh.png",
+      "visible_reason": "主题入场条件已通过；仍需确认个股形态。",
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题入场条件已通过；仍需确认个股形态。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-390-dark-zh-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 7 只等待 · 0 只暂无评估\n\n个股\t入场条件\nMETA\t个股信念低于入场门槛。\nAAPL\t个股周期尚未允许入场。\nTSLA\t个股信念低于入场门槛。\nGOOGL\t等待信号确认。\nMSFT\t个股信念低于入场门槛。\nNVDA\t等待信号确认。\nAMZN\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-1440-light-en.png",
+      "visible_reason": null,
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nIN FAVOUR — NO ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn favour, but no member has a clean entry — do not chase; wait for a setup.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-1440-light-en.png",
+      "visible_reason": "Theme remains in favour; a clean entry is not confirmed.",
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nWAIT FOR ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nTheme remains in favour; a clean entry is not confirmed.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-1440-light-en-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 11 waiting · 1 unavailable\n\nStock\tEntry check\nAMD\tThe stock cycle has not cleared entry.\nQCOM\tStock conviction is below the entry threshold.\nARM\tThe stock cycle has not cleared entry.\nANET\tThe stock cycle has not cleared entry.\nSMCI\tWaiting for signal confirmation.\nALAB\tThe stock cycle has not cleared entry.\nNVDA\tWaiting for signal confirmation.\nAVGO\tStock conviction is below the entry threshold.\nMRVL\tThe stock cycle has not cleared entry.\nCBRS\tStock conviction assessment is unavailable.\nMPWR\tStock conviction is below the entry threshold.\nCRDO\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-1440-light-en.png",
+      "visible_reason": null,
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn play but no fresh edge here — keep, don't chase.\nContested: cycle clock at a provisional peak / projecting a trough next · very extended (RS ≥95%ile) · early cracks: extended (RS 99%ile)\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-1440-light-en.png",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nCheck individual stocks →\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-1440-light-en-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 10 waiting · 0 unavailable\n\nStock\tEntry check\nOKTA\tThe stock cycle has not cleared entry.\nCRWD\tThe stock cycle has not cleared entry.\nNET\tThe stock cycle has not cleared entry.\nZS\tEntry is forming; confirmation is still pending.\nFTNT\tThe stock cycle has not cleared entry.\nRBRK\tThe stock cycle has not cleared entry.\nS\tThe stock cycle has not cleared entry.\nPANW\tThe stock cycle has not cleared entry.\nTENB\tThe stock cycle has not cleared entry.\nQLYS\tThe stock cycle has not cleared entry.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-baseline-1440-light-en.png",
+      "visible_reason": null,
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nLeading and still broad — room to add on the trend.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-candidate-1440-light-en.png",
+      "visible_reason": "Entry checks are clear; confirm the individual stock setup.",
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nEntry checks are clear; confirm the individual stock setup.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-1440-light-en-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 7 waiting · 0 unavailable\n\nStock\tEntry check\nMETA\tStock conviction is below the entry threshold.\nAAPL\tThe stock cycle has not cleared entry.\nTSLA\tStock conviction is below the entry threshold.\nGOOGL\tWaiting for signal confirmation.\nMSFT\tStock conviction is below the entry threshold.\nNVDA\tWaiting for signal confirmation.\nAMZN\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-390-light-en.png",
+      "visible_reason": null,
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nIN FAVOUR — NO ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn favour, but no member has a clean entry — do not chase; wait for a setup.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-390-light-en.png",
+      "visible_reason": "Theme remains in favour; a clean entry is not confirmed.",
+      "hero_text": "AI Semiconductors\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\nSCORE\nDOMINANT\nLIFECYCLE\nWAIT FOR ENTRY\nACTION\n+1.3%\n1D VS S&P 500\n1D VS S&P 500\n+1.3%\n5D VS S&P 500\n+2.4%\n10D VS S&P 500\n+8.3%\n20D VS S&P 500\n+1.9%\n5D VELOCITY\n-3.5pp\nACCELERATION Z\n+0.43\nFAST STATE\nweakening\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nTheme remains in favour; a clean entry is not confirmed.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-390-light-en-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 11 waiting · 1 unavailable\n\nStock\tEntry check\nAMD\tThe stock cycle has not cleared entry.\nQCOM\tStock conviction is below the entry threshold.\nARM\tThe stock cycle has not cleared entry.\nANET\tThe stock cycle has not cleared entry.\nSMCI\tWaiting for signal confirmation.\nALAB\tThe stock cycle has not cleared entry.\nNVDA\tWaiting for signal confirmation.\nAVGO\tStock conviction is below the entry threshold.\nMRVL\tThe stock cycle has not cleared entry.\nCBRS\tStock conviction assessment is unavailable.\nMPWR\tStock conviction is below the entry threshold.\nCRDO\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-390-light-en.png",
+      "visible_reason": null,
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nIn play but no fresh edge here — keep, don't chase.\nContested: cycle clock at a provisional peak / projecting a trough next · very extended (RS ≥95%ile) · early cracks: extended (RS 99%ile)\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-390-light-en.png",
+      "visible_reason": "Relative-strength filter blocks entry; it does not measure distance above the price trend.",
+      "hero_text": "Cybersecurity\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\nSCORE\nDOMINANT · CONTESTED\nLIFECYCLE\nHOLD\nACTION\n-2.4%\n1D VS S&P 500\n1D VS S&P 500\n-2.4%\n5D VS S&P 500\n+14.1%\n10D VS S&P 500\n+10.7%\n20D VS S&P 500\n+12.3%\n5D VELOCITY\n+16.9pp\nACCELERATION Z\n+0.16\nFAST STATE\nimproving\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nRelative-strength filter blocks entry; it does not measure distance above the price trend.\nCheck individual stocks →\nContested: cycle clock at a provisional peak / projecting a trough next · relative strength high within its recent history; not an own-price extension measure · early caution: high relative strength\n1559 bps from FADING (~6 bad sessions) — descriptive, not a forecast",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-390-light-en-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 10 waiting · 0 unavailable\n\nStock\tEntry check\nOKTA\tThe stock cycle has not cleared entry.\nCRWD\tThe stock cycle has not cleared entry.\nNET\tThe stock cycle has not cleared entry.\nZS\tEntry is forming; confirmation is still pending.\nFTNT\tThe stock cycle has not cleared entry.\nRBRK\tThe stock cycle has not cleared entry.\nS\tThe stock cycle has not cleared entry.\nPANW\tThe stock cycle has not cleared entry.\nTENB\tThe stock cycle has not cleared entry.\nQLYS\tThe stock cycle has not cleared entry.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-baseline-390-light-en.png",
+      "visible_reason": null,
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nLeading and still broad — room to add on the trend.",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "applied": {
+        "theme": "light",
+        "lang": "en",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-candidate-390-light-en.png",
+      "visible_reason": "Entry checks are clear; confirm the individual stock setup.",
+      "hero_text": "Magnificent Seven\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\nSCORE\nDOMINANT\nLIFECYCLE\nACCUMULATE\nACTION\n-0.3%\n1D VS S&P 500\n1D VS S&P 500\n-0.3%\n5D VS S&P 500\n+1.1%\n10D VS S&P 500\n+1.7%\n20D VS S&P 500\n+5.9%\n5D VELOCITY\n+0.6pp\nACCELERATION Z\n+0.57\nFAST STATE\naccelerating\nFast moves are context; the slower trend, breadth and cycle still drive the recommendation.\nEntry checks are clear; confirm the individual stock setup.\nCheck individual stocks →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-390-light-en-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "Review stock entries\n\n0 qualified · 7 waiting · 0 unavailable\n\nStock\tEntry check\nMETA\tStock conviction is below the entry threshold.\nAAPL\tThe stock cycle has not cleared entry.\nTSLA\tStock conviction is below the entry threshold.\nGOOGL\tWaiting for signal confirmation.\nMSFT\tStock conviction is below the entry threshold.\nNVDA\tWaiting for signal confirmation.\nAMZN\tStock conviction is below the entry threshold.\n\nThese checks describe this snapshot, not a live order."
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-1440-light-zh.png",
+      "visible_reason": null,
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n看好但无干净入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n看好，但无成分股具备干净入场点 — 勿追，等待入场时机。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-1440-light-zh.png",
+      "visible_reason": "主题仍获看好；尚未确认清晰入场点。",
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n等待入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题仍获看好；尚未确认清晰入场点。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-1440-light-zh-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 11 只等待 · 1 只暂无评估\n\n个股\t入场条件\nAMD\t个股周期尚未允许入场。\nQCOM\t个股信念低于入场门槛。\nARM\t个股周期尚未允许入场。\nANET\t个股周期尚未允许入场。\nSMCI\t等待信号确认。\nALAB\t个股周期尚未允许入场。\nNVDA\t等待信号确认。\nAVGO\t个股信念低于入场门槛。\nMRVL\t个股周期尚未允许入场。\nCBRS\t个股信念评估暂缺。\nMPWR\t个股信念低于入场门槛。\nCRDO\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-1440-light-zh.png",
+      "visible_reason": null,
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n仍在运行但此处无新优势 — 持有勿追。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强度极端延展（≥95分位） · 初现裂痕：extended (RS 99%ile)\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-1440-light-zh.png",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n查看具体个股 →\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-1440-light-zh-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 10 只等待 · 0 只暂无评估\n\n个股\t入场条件\nOKTA\t个股周期尚未允许入场。\nCRWD\t个股周期尚未允许入场。\nNET\t个股周期尚未允许入场。\nZS\t入场条件形成中；仍需确认。\nFTNT\t个股周期尚未允许入场。\nRBRK\t个股周期尚未允许入场。\nS\t个股周期尚未允许入场。\nPANW\t个股周期尚未允许入场。\nTENB\t个股周期尚未允许入场。\nQLYS\t个股周期尚未允许入场。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-baseline-1440-light-zh.png",
+      "visible_reason": null,
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n领涨且仍然分散 — 趋势中可加仓。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 1440,
+        "overflow": false
+      },
+      "file": "mag7-candidate-1440-light-zh.png",
+      "visible_reason": "主题入场条件已通过；仍需确认个股形态。",
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题入场条件已通过；仍需确认个股形态。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-1440-light-zh-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 7 只等待 · 0 只暂无评估\n\n个股\t入场条件\nMETA\t个股信念低于入场门槛。\nAAPL\t个股周期尚未允许入场。\nTSLA\t个股信念低于入场门槛。\nGOOGL\t等待信号确认。\nMSFT\t个股信念低于入场门槛。\nNVDA\t等待信号确认。\nAMZN\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "baseline",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-baseline-390-light-zh.png",
+      "visible_reason": null,
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n看好但无干净入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n看好，但无成分股具备干净入场点 — 勿追，等待入场时机。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "5e52b0d27ab4e4c7d1394b2596848f8ec789ffac5fad646e71559b98740d447f",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "ai_semiconductors",
+      "version": "candidate",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "ai_semiconductors-candidate-390-light-zh.png",
+      "visible_reason": "主题仍获看好；尚未确认清晰入场点。",
+      "hero_text": "AI半导体\nSemiconductors\nAI silicon supply chain: GPUs, ASICs, networking, power and server hardware.\n64\n评分\n主导\n生命周期\n等待入场\n结论\n+1.3%\n1日 VS 标普500\n1D VS 标普500\n+1.3%\n5D VS 标普500\n+2.4%\n10D VS 标普500\n+8.3%\n20D VS 标普500\n+1.9%\n5日速度\n-3.5pp\n加速度 Z\n+0.43\n快速状态\n转弱\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题仍获看好；尚未确认清晰入场点。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "ai_semiconductors-candidate-390-light-zh-entries.png",
+        "members": 12,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#AMD",
+          "../stock.html#QCOM",
+          "../stock.html#ARM",
+          "../stock.html#ANET",
+          "../stock.html#SMCI",
+          "../stock.html#ALAB",
+          "../stock.html#NVDA",
+          "../stock.html#AVGO",
+          "../stock.html#MRVL",
+          "../stock.html#CBRS",
+          "../stock.html#MPWR",
+          "../stock.html#CRDO"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 11 只等待 · 1 只暂无评估\n\n个股\t入场条件\nAMD\t个股周期尚未允许入场。\nQCOM\t个股信念低于入场门槛。\nARM\t个股周期尚未允许入场。\nANET\t个股周期尚未允许入场。\nSMCI\t等待信号确认。\nALAB\t个股周期尚未允许入场。\nNVDA\t等待信号确认。\nAVGO\t个股信念低于入场门槛。\nMRVL\t个股周期尚未允许入场。\nCBRS\t个股信念评估暂缺。\nMPWR\t个股信念低于入场门槛。\nCRDO\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/ai_semiconductors.html",
+      "input_sha256": "607b719897c20062cb3937d2131869f1decf6d720bfcd629086db111a88174fa",
+      "rendered_sha256": "1bac0688fa2140a87af9c859bdad3c7fd4dcb2ccfc915d8847b0308f62a42a28",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "baseline",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-baseline-390-light-zh.png",
+      "visible_reason": null,
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n仍在运行但此处无新优势 — 持有勿追。\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强度极端延展（≥95分位） · 初现裂痕：extended (RS 99%ile)\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "c788d7f4938e844923416d3d791371ff6fbbe8cf6251488bf4309ebbd3b1a962",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "cybersecurity",
+      "version": "candidate",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "cybersecurity-candidate-390-light-zh.png",
+      "visible_reason": "相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。",
+      "hero_text": "网络安全\nSoftware\nSecurity software across endpoint, network, identity, vulnerability and cloud protection.\n67\n评分\n主导 · 存在分歧\n生命周期\n持有\n结论\n-2.4%\n1日 VS 标普500\n1D VS 标普500\n-2.4%\n5D VS 标普500\n+14.1%\n10D VS 标普500\n+10.7%\n20D VS 标普500\n+12.3%\n5日速度\n+16.9pp\n加速度 Z\n+0.16\n快速状态\n改善\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n相对强势规则限制入场；该规则并不衡量价格偏离自身趋势的幅度。\n查看具体个股 →\n存在分歧: 周期时钟处于临时顶部 / 推演下一拐点为底部 · 相对强势在近期历史中偏高；不是价格偏离自身趋势的度量 · 早期提示：相对强势偏高\n距「退潮」仅1559个基点（约6个坏交易日） — 描述性，非预测",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "cybersecurity-candidate-390-light-zh-entries.png",
+        "members": 10,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#OKTA",
+          "../stock.html#CRWD",
+          "../stock.html#NET",
+          "../stock.html#ZS",
+          "../stock.html#FTNT",
+          "../stock.html#RBRK",
+          "../stock.html#S",
+          "../stock.html#PANW",
+          "../stock.html#TENB",
+          "../stock.html#QLYS"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 10 只等待 · 0 只暂无评估\n\n个股\t入场条件\nOKTA\t个股周期尚未允许入场。\nCRWD\t个股周期尚未允许入场。\nNET\t个股周期尚未允许入场。\nZS\t入场条件形成中；仍需确认。\nFTNT\t个股周期尚未允许入场。\nRBRK\t个股周期尚未允许入场。\nS\t个股周期尚未允许入场。\nPANW\t个股周期尚未允许入场。\nTENB\t个股周期尚未允许入场。\nQLYS\t个股周期尚未允许入场。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/cybersecurity.html",
+      "input_sha256": "27d89c68c24d0a5e70d243d71602faa471affb097df690ab04d53b94637cbf08",
+      "rendered_sha256": "52fda397fe7ec637dcf71a0aa1c185c01ad4118e4785e1e4ee9f442acb997105",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "baseline",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-baseline-390-light-zh.png",
+      "visible_reason": null,
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n领涨且仍然分散 — 趋势中可加仓。",
+      "page_errors": [],
+      "stock_entry_checks": null,
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "705a648e482c1edd79e1134944622bfbc5e8778929bed03913944d73e30e13d7",
+      "source_as_of": "2026-09-18"
+    },
+    {
+      "name": "mag7",
+      "version": "candidate",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "applied": {
+        "theme": "light",
+        "lang": "zh",
+        "width": 390,
+        "overflow": false
+      },
+      "file": "mag7-candidate-390-light-zh.png",
+      "visible_reason": "主题入场条件已通过；仍需确认个股形态。",
+      "hero_text": "七巨头\nAI & Technology\nMega-cap tech leaders that drive index concentration and breadth.\n70\n评分\n主导\n生命周期\n加仓\n结论\n-0.3%\n1日 VS 标普500\n1D VS 标普500\n-0.3%\n5D VS 标普500\n+1.1%\n10D VS 标普500\n+1.7%\n20D VS 标普500\n+5.9%\n5日速度\n+0.6pp\n加速度 Z\n+0.57\n快速状态\n加速\n快速波动只作背景；较慢的趋势、广度和周期仍决定建议。\n主题入场条件已通过；仍需确认个股形态。\n查看具体个股 →",
+      "page_errors": [],
+      "stock_entry_checks": {
+        "file": "mag7-candidate-390-light-zh-entries.png",
+        "members": 7,
+        "reasons_visible": true,
+        "keyboard_open": true,
+        "refresh_state_and_focus_preserved": true,
+        "stock_links": [
+          "../stock.html#META",
+          "../stock.html#AAPL",
+          "../stock.html#TSLA",
+          "../stock.html#GOOGL",
+          "../stock.html#MSFT",
+          "../stock.html#NVDA",
+          "../stock.html#AMZN"
+        ],
+        "visible_text": "查看个股入场条件\n\n0 只通过 · 7 只等待 · 0 只暂无评估\n\n个股\t入场条件\nMETA\t个股信念低于入场门槛。\nAAPL\t个股周期尚未允许入场。\nTSLA\t个股信念低于入场门槛。\nGOOGL\t等待信号确认。\nMSFT\t个股信念低于入场门槛。\nNVDA\t等待信号确认。\nAMZN\t个股信念低于入场门槛。\n\n这些条件描述当前快照，并非实时下单指令。"
+      },
+      "input": "site/basket/mag7.html",
+      "input_sha256": "8b2152fdf431a35e90ae22ed0255f54f62163155a9481059349ca0f8580f3f74",
+      "rendered_sha256": "73a71ec119951c9d944e907e0ae08d4ac09366126826647ad5e9ca8b840be4b4",
+      "source_as_of": "2026-09-18"
+    }
+  ],
+  "limitations": [
+    "Local browser only; no production or authentication proof.",
+    "Real stored holdings/history with native stock-check replay, not a full nightly.",
+    "Baseline uses the pinned original template and original stored explanation; shared assets are unchanged."
+  ]
+}

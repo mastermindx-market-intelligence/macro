@@ -1,0 +1,37 @@
+{
+  "head": "2c28d950aa9448fc878bb64d92b228a8f1952bde",
+  "manifest_sha256": "f27a4d13ac4e67dc17a20cd5e48394e18a31ba342de1c24738ccd02060aa1827",
+  "job_count": 223,
+  "only_changed_job": "conviction-profile",
+  "closure_concrete_count": 580,
+  "uncovered": [],
+  "historical_data_job_unchanged": true,
+  "scope_only_widened": true,
+  "model_and_ui_sources_unchanged": [
+    "engine/theme_scoring.py",
+    "engine/basket_score.py",
+    "engine/sector_pulse.py",
+    "templates/basket_detail.html.j2",
+    "templates/baskets_desk.js",
+    "site/baskets_desk.js"
+  ],
+  "new_suite_count": 4,
+  "native_job_weight": 48,
+  "new_paths": [
+    "engine/theme_extension.py",
+    "research/LABEL_FALTERING_PHASE0.md",
+    "research/sector_pulse/recommendation_reasons_20260921/audit_entry.py",
+    "research/sector_pulse/recommendation_reasons_20260921/compare_entry_gates.py",
+    "scripts/calibrate_baskets.py",
+    "site/basketdata/baskets.json",
+    "site/basketdata/theme_extension.json",
+    "site/baskets_desk.js",
+    "templates/basket_detail.html.j2",
+    "templates/baskets_desk.js",
+    "tests/fixtures/theme_recommendation_reasons/**",
+    "tests/test_basket_entry_explanations.py",
+    "tests/test_sector_pulse_observation_clock.py",
+    "tests/test_theme_entry_gate_comparison.py",
+    "tests/test_theme_recommendation_reasons.py"
+  ]
+}

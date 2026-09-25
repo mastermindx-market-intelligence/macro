@@ -1,0 +1,1985 @@
+{
+  "schema": "theme_entry_attribution_research.v1",
+  "as_of": "2026-09-18",
+  "scope": "single_dated_export_diagnostic",
+  "policy_change_applied": false,
+  "all_input_rows": 49,
+  "reproduced_rows": 49,
+  "unavailable_rows": 0,
+  "constructive_reproduced_rows": 7,
+  "attribution_counts": {
+    "entry_already_clear": 3,
+    "other_entry_conditions": 38,
+    "relative_strength_veto_and_quality_penalty": 4,
+    "relative_strength_veto_only": 4
+  },
+  "constructive_attribution_counts": {
+    "entry_already_clear": 3,
+    "other_entry_conditions": 1,
+    "relative_strength_veto_only": 3
+  },
+  "records": [
+    {
+      "id": "crypto",
+      "name": "Crypto & Digital Assets",
+      "reco": "hold",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_only",
+      "rs_percentile": 0.909,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "accelerating",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 0.9,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 3.12,
+        "band": "stretched",
+        "n_live": 7,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "mag7",
+      "name": "Magnificent Seven",
+      "reco": "accumulate",
+      "constructive_recommendation": true,
+      "status": "reproduced",
+      "attribution": "entry_already_clear",
+      "rs_percentile": 0.587,
+      "native_entry": {
+        "flag": true,
+        "quality": 0.9,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 0.9,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 2.0,
+        "band": "extended",
+        "n_live": 7,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "crypto_rails",
+      "name": "Crypto & Digital Rails",
+      "reco": "accumulate",
+      "constructive_recommendation": true,
+      "status": "reproduced",
+      "attribution": "entry_already_clear",
+      "rs_percentile": 0.639,
+      "native_entry": {
+        "flag": true,
+        "quality": 1.0,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 1.0,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 3.33,
+        "band": "stretched",
+        "n_live": 7,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "memory_storage",
+      "name": "Memory, HBM & Storage",
+      "reco": "accumulate",
+      "constructive_recommendation": true,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_only",
+      "rs_percentile": 0.845,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.8,
+        "reasons": [
+          "accelerating",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 1.0,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 1.83,
+        "band": "extended",
+        "n_live": 4,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "cybersecurity",
+      "name": "Cybersecurity",
+      "reco": "hold",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_and_quality_penalty",
+      "rs_percentile": 0.988,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.5,
+        "reasons": [
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 3.11,
+        "band": "stretched",
+        "n_live": 10,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_tech",
+      "name": "Technology (Equal-Weight)",
+      "reco": "trim",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_and_quality_penalty",
+      "rs_percentile": 0.96,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.5,
+        "reasons": [
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 0.75,
+        "band": "normal",
+        "n_live": 74,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "ai_semiconductors",
+      "name": "AI Semiconductors",
+      "reco": "accumulate",
+      "constructive_recommendation": true,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_only",
+      "rs_percentile": 0.845,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "accelerating",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 0.9,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 1.77,
+        "band": "extended",
+        "n_live": 12,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "ai_software",
+      "name": "AI Software & Platforms",
+      "reco": "enter",
+      "constructive_recommendation": true,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.663,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 2.84,
+        "band": "extended",
+        "n_live": 17,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "ai_infra",
+      "name": "AI Infrastructure",
+      "reco": "accumulate",
+      "constructive_recommendation": true,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_only",
+      "rs_percentile": 0.833,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.8,
+        "reasons": [
+          "accelerating",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 1.0,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 0.87,
+        "band": "normal",
+        "n_live": 24,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "energy_complex",
+      "name": "US Energy Complex",
+      "reco": "trim",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_and_quality_penalty",
+      "rs_percentile": 0.897,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.5,
+        "reasons": [
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 1.7,
+        "band": "extended",
+        "n_live": 22,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "ai_neoclouds",
+      "name": "AI Neoclouds & HPC Hosting",
+      "reco": "enter",
+      "constructive_recommendation": true,
+      "status": "reproduced",
+      "attribution": "entry_already_clear",
+      "rs_percentile": 0.663,
+      "native_entry": {
+        "flag": true,
+        "quality": 1.0,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 1.0,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "breadth supportive"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 0.73,
+        "band": "normal",
+        "n_live": 10,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_energy",
+      "name": "Energy (Equal-Weight)",
+      "reco": "trim",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "relative_strength_veto_and_quality_penalty",
+      "rs_percentile": 0.825,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.5,
+        "reasons": [
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": true,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 0.92,
+        "band": "normal",
+        "n_live": 21,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "big_pharma",
+      "name": "Big Pharma",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.746,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 3.1,
+        "band": "stretched",
+        "n_live": 9,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "silver_miners",
+      "name": "Silver Miners",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.639,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 2.21,
+        "band": "extended",
+        "n_live": 8,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "non_ai_software",
+      "name": "Non-AI Software",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.571,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 1.63,
+        "band": "extended",
+        "n_live": 14,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "non_ai_tech",
+      "name": "Non-AI Tech & Hardware",
+      "reco": "hold",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.825,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.65,
+        "reasons": [
+          "accelerating",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.85,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -1.53,
+        "band": "normal",
+        "n_live": 13,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "gold_miners",
+      "name": "Gold Miners",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.556,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 3.55,
+        "band": "stretched",
+        "n_live": 12,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "ai_agents",
+      "name": "AI Agents & Applications",
+      "reco": "hold",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.567,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 2.06,
+        "band": "extended",
+        "n_live": 8,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "semicap_equipment",
+      "name": "Semiconductor Equipment (WFE)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.587,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.85,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.85,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -3.32,
+        "band": "washed out",
+        "n_live": 16,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_health",
+      "name": "Health Care (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.813,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.5,
+        "reasons": [
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.7,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 1.62,
+        "band": "extended",
+        "n_live": 59,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "pgm_miners",
+      "name": "PGM Miners",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.313,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": 3.93,
+        "band": "stretched",
+        "n_live": 4,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "reshoring",
+      "name": "Reshoring & Industrial Capex",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.433,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -1.84,
+        "band": "normal",
+        "n_live": 16,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "data_center_power",
+      "name": "Data-Center Power & Cooling",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.433,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.75,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.75,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.9,
+        "band": "washed out",
+        "n_live": 8,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "robotics_automation",
+      "name": "Robotics & Automation",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.44,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -0.21,
+        "band": "normal",
+        "n_live": 12,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "industrial_distribution",
+      "name": "Industrial Distribution & Capital Goods",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.222,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -3.98,
+        "band": "washed out",
+        "n_live": 12,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "quantum_computing",
+      "name": "Quantum Computing",
+      "reco": "hold",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.294,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -0.09,
+        "band": "normal",
+        "n_live": 11,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "regional_banks",
+      "name": "Regional Banks",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.313,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "unavailable",
+        "reason": "extension_population_count_mismatch"
+      }
+    },
+    {
+      "id": "space_economy",
+      "name": "Space Economy",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.413,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -1.76,
+        "band": "normal",
+        "n_live": 15,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "insurance",
+      "name": "Insurance & Brokers",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.187,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.74,
+        "band": "washed out",
+        "n_live": 19,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_comm",
+      "name": "Communication Services (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.083,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.6,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "breadth supportive",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "unavailable",
+        "reason": "extension_population_count_mismatch"
+      }
+    },
+    {
+      "id": "obesity_glp1",
+      "name": "GLP-1 & Obesity",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.397,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.04,
+        "band": "washed out",
+        "n_live": 14,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "managed_care",
+      "name": "Managed Care & Insurers",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.683,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.75,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.75,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "above 200d trend"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -1.26,
+        "band": "normal",
+        "n_live": 9,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "payments_fintech",
+      "name": "Payments & Fintech",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.131,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.12,
+        "band": "washed out",
+        "n_live": 21,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "retail",
+      "name": "Retail",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.004,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -3.79,
+        "band": "washed out",
+        "n_live": 21,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_financials",
+      "name": "Financials (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.246,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.81,
+        "band": "washed out",
+        "n_live": 76,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "critical_minerals",
+      "name": "Critical Minerals & Rare Earths",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.063,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.68,
+        "band": "washed out",
+        "n_live": 11,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "power_grid",
+      "name": "Power & Grid Buildout",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.016,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.75,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.75,
+        "reasons": [
+          "accelerating",
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -3.83,
+        "band": "washed out",
+        "n_live": 24,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_materials",
+      "name": "Materials (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.306,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.55,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "above 200d trend",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -3.3,
+        "band": "washed out",
+        "n_live": 26,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "defense",
+      "name": "Defense & Aerospace",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.012,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -7.09,
+        "band": "washed out",
+        "n_live": 21,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "defensives",
+      "name": "Defensives",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.024,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -3.43,
+        "band": "washed out",
+        "n_live": 18,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "travel",
+      "name": "Travel & Experiences",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.004,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -6.52,
+        "band": "washed out",
+        "n_live": 24,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_realestate",
+      "name": "Real Estate (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.004,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "unavailable",
+        "reason": "extension_population_count_mismatch"
+      }
+    },
+    {
+      "id": "us_sector_staples",
+      "name": "Consumer Staples (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.024,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.79,
+        "band": "washed out",
+        "n_live": 35,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "nuclear_power",
+      "name": "Nuclear & SMR Power",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.008,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -2.55,
+        "band": "washed out",
+        "n_live": 9,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "housing",
+      "name": "Housing Chain",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.004,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -6.9,
+        "band": "washed out",
+        "n_live": 18,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "uranium_miners",
+      "name": "Uranium & Nuclear Fuel",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.012,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -3.24,
+        "band": "washed out",
+        "n_live": 10,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_industrials",
+      "name": "Industrials (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.008,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -4.29,
+        "band": "washed out",
+        "n_live": 80,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_utilities",
+      "name": "Utilities (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.004,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.45,
+        "reasons": [
+          "not extended",
+          "RSI room",
+          "shallow pullback"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -6.84,
+        "band": "washed out",
+        "n_live": 31,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    },
+    {
+      "id": "us_sector_discretionary",
+      "name": "Consumer Discretionary (Equal-Weight)",
+      "reco": "avoid",
+      "constructive_recommendation": false,
+      "status": "reproduced",
+      "attribution": "other_entry_conditions",
+      "rs_percentile": 0.004,
+      "native_entry": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "research_counterfactual": {
+        "flag": false,
+        "quality": 0.35,
+        "reasons": [
+          "not extended",
+          "RSI room"
+        ],
+        "directional": false
+      },
+      "missing_chart_observations": 1,
+      "extension_context": {
+        "status": "date_and_count_matched",
+        "as_of": "2026-09-18",
+        "median_member_close_based_atr_extension": -4.11,
+        "band": "washed out",
+        "n_live": 47,
+        "same_generation_and_membership_proven": false,
+        "trade_authority": false
+      }
+    }
+  ],
+  "limitations": [
+    "Rounded exported series and inputs, not a full nightly rebuild.",
+    "One snapshot, not episodes, out-of-sample results or forward returns.",
+    "Counterfactual changes one research input only; no trade, rank or size effect.",
+    "Extension matches date and population count, not an atomic generation or roster.",
+    "Basket-level entry texture cannot establish each constituent stock's entry."
+  ],
+  "source_ref": "f98f57f4ec7c2cc30cbd90d9a7a759d5ea69144c",
+  "source_sha256": {
+    "site/basketdata/baskets.json": "e43ea0ae82f7e215cef81375ca324da1bc6d897a26f27b0b075994342fa6b069",
+    "site/basketdata/theme_extension.json": "3be448d825f70b77e38dd3a5b4e8f65d726da37ffb5f828321acdc91e07450b9"
+  },
+  "native_owner_sha256": {
+    "engine/basket_score.py": "313e9dfae08768d769c6604dcc0881315c848ce4b6ffa524430385723d7f5016",
+    "engine/theme_extension.py": "089bb214a3094a05408beb0712d4cd86e41db38fd084ac5421b92a56bff2afb5"
+  },
+  "native_owner_source_matches": true,
+  "audit_module_sha256": "7ffc44b56554f6314e35e470886f7b4ab9676fa62e232817e032269f1427d8e4"
+}

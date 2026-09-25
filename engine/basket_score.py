@@ -337,6 +337,54 @@ def theme_textures(lvl: pd.Series, fp: dict | None, fp5: dict | None,
     return out
 
 
+def _stock_entry_check(member: dict, theme_blocked: bool) -> dict:
+    """The existing member admission, paired with the condition that decided it.
+
+    No new score, threshold or trade authority. Both actionable and watch
+    projections consume this one result, so a failed score cannot print BUY as
+    the explanation for why the same member is waiting.
+    """
+    c = member.get("conviction") or {}
+    entry = c.get("entry") or {}
+    status, ep, score = entry.get("status"), c.get("entry_pct"), c.get("score")
+    result = {"symbol": member.get("symbol"), "name": member.get("name"),
+              "eligible": False, "entry_status": status, "score": score}
+    # Missing stock evidence is not a stock-level risk verdict. The outer
+    # theme status still carries its unchanged global admission block.
+    if score is None:
+        code, en, zh = "assessment_unavailable", "Stock conviction assessment is unavailable.", "个股信念评估暂缺。"
+    elif theme_blocked:
+        code, en, zh = "theme_blocked", "Theme risk blocks new stock entries.", "主题风险限制个股新入场。"
+    elif c.get("cycle_blocked"):
+        code, en, zh = "cycle_blocked", "The stock cycle has not cleared entry.", "个股周期尚未允许入场。"
+    elif not (score or 0) >= 50:
+        code, en, zh = "conviction_below_threshold", "Stock conviction is below the entry threshold.", "个股信念低于入场门槛。"
+    elif status in ("buy_now", "partial"):
+        result["eligible"] = True
+        code, en, zh = "entry_qualified", "Stock entry checks passed in this snapshot.", "该快照中个股入场条件已通过。"
+    elif status:
+        code = "entry_waiting"
+        en, zh = {
+            "await_confluence": ("Waiting for signal confirmation.", "等待信号确认。"),
+            "extended": ("The stock entry model reports price extension.", "个股入场模型显示价格延展。"),
+            "bounce_wait": ("The turn has not been confirmed.", "转向尚未确认。"),
+            "buy_soon": ("Entry is forming; confirmation is still pending.", "入场条件形成中；仍需确认。"),
+            "hold": ("Existing positions only; no new entry.", "仅限已有持仓；暂不开新仓。"),
+            "watch": ("Monitoring; entry is not confirmed.", "观察中；入场尚未确认。"),
+            "blocked": ("The stock entry model blocks a new entry.", "个股入场模型暂不允许新入场。"),
+        }.get(status, ("Stock entry is not confirmed.", "个股入场尚未确认。"))
+    else:
+        # Keep the original legacy fallback verb/percentile behavior exactly.
+        v = (c.get("verdict") or "").lower()
+        eligible = ("buy" in v or "add" in v or "leader" in v) and (ep is None or ep >= 0.45)
+        result["eligible"] = eligible
+        code, en, zh = (("legacy_qualified", "Eligible under the legacy check; explicit entry timing is unavailable.",
+                        "旧版条件已通过；明确入场时机信息暂缺。") if eligible else
+                       ("entry_waiting", "The legacy stock assessment does not qualify an entry.", "旧版个股评估未达到入场条件。"))
+    result.update(code=code, reason_en=en, reason_zh=zh)
+    return result
+
+
 def act_now_stocks(members: list, theme: dict) -> dict:
     """WHAT TO ACT ON NOW (stock level) — the member stocks with a genuine buy entry RIGHT
     NOW, GATED by theme health: if the theme is out of favour (deteriorating / fading /
@@ -368,12 +416,21 @@ def act_now_stocks(members: list, theme: dict) -> dict:
     constructive = label in ("emerging", "dominant")
     downtrend = (in_bull is False) and not constructive
     theme_blocked = risk_label or risk_reco or downtrend
+    entry_checks = [_stock_entry_check(m, theme_blocked) for m in members or []]
+    qualified = sum(bool(c["eligible"]) for c in entry_checks)
+    unavailable = sum(c["score"] is None for c in entry_checks)
+    entry_projection = {
+        "entry_checks": entry_checks,
+        "entry_summary": {"members": len(entry_checks), "qualified": qualified,
+                          "displayed": min(qualified, 12), "unavailable": unavailable,
+                          "waiting": len(entry_checks) - qualified - unavailable},
+    }
 
     def early_turn_watch(theme_reason: str | None = None,
                          theme_reason_zh: str | None = None) -> list[dict]:
         """Surface fast T1/T2 evidence that is not yet an actionable theme-gated buy."""
         out = []
-        for m in members or []:
+        for m, check in zip(members or [], entry_checks):
             c = m.get("conviction") or {}
             sig = c.get("signal") or {}
             tier = sig.get("tier")
@@ -381,22 +438,13 @@ def act_now_stocks(members: list, theme: dict) -> dict:
                 continue
             entry = c.get("entry") or {}
             status = entry.get("status")
-            clean = (status in ("buy_now", "partial") and not c.get("cycle_blocked")
-                     and (c.get("score") or 0) >= 50)
-            if clean and not theme_blocked:
+            if check["eligible"]:
                 continue
             if theme_reason:
                 blocker_en = f"theme gate: {theme_reason}"
                 blocker_zh = f"主题门槛：{theme_reason_zh or theme_reason}"
-            elif c.get("cycle_blocked"):
-                blocker_en = "slow cycle has not confirmed the turn"
-                blocker_zh = "慢周期尚未确认转折"
-            elif status:
-                blocker_en = entry.get("headline") or status.replace("_", " ")
-                blocker_zh = entry.get("headline_zh") or blocker_en
             else:
-                blocker_en = "fast turn has not opened a clean entry"
-                blocker_zh = "快速转折尚未形成干净入场"
+                blocker_en, blocker_zh = check["reason_en"], check["reason_zh"]
             out.append({
                 "symbol": m.get("symbol"), "name": m.get("name"),
                 "tier": tier, "provisional": bool(sig.get("provisional")),
@@ -422,29 +470,18 @@ def act_now_stocks(members: list, theme: dict) -> dict:
         why_en = "in a downtrend" if why == "downtrend" else str(why)
         why_zh = {"deteriorating": "走弱", "fading": "退潮", "avoid": "建议回避",
                   "trim": "建议减持", "downtrend": "处于下行趋势"}.get(why, str(why))
-        return {"status": "theme_out_of_favour", "buys": [], "uncovered": uncovered,
+        return {**entry_projection, "status": "theme_out_of_favour", "buys": [], "uncovered": uncovered,
                 "early_turn_watch": early_turn_watch(why_en, why_zh),
                 "note_en": "Theme is out of favour (" + why_en + ") — no stock buys recommended here right now.",
                 "note_zh": "主题暂不被青睐（" + why_zh + "）— 当前不建议买入该主题个股。"}
     buys = []
-    for m in members or []:
+    for m, check in zip(members or [], entry_checks):
         c = m.get("conviction")
         if not c or c.get("score") is None:
             continue
-        # Two-gauge: a member is "act now" only when the ENTRY gauge says the window is
-        # open (buy_now / partial), not when the conviction score is merely high — and
-        # never when the cycle blocks. Falls back to the entry-axis percentile for any
-        # older record that predates the entry_signal block.
         entry = c.get("entry") or {}
-        status = entry.get("status")
-        ep = c.get("entry_pct")
-        if status:
-            is_buy = status in ("buy_now", "partial") and not c.get("cycle_blocked")
-        else:
-            v = (c.get("verdict") or "").lower()
-            is_buy = ("buy" in v or "add" in v or "leader" in v) and not c.get("cycle_blocked") \
-                and (ep is None or ep >= 0.45)
-        if is_buy and (c.get("score") or 0) >= 50:
+        status, ep = entry.get("status"), c.get("entry_pct")
+        if check["eligible"]:
             buys.append({"symbol": m.get("symbol"), "name": m.get("name"),
                          "score": c.get("score"), "verdict": c.get("verdict"),
                          "verdict_zh": c.get("verdict_zh"), "entry_pct": ep,
@@ -455,11 +492,11 @@ def act_now_stocks(members: list, theme: dict) -> dict:
                          "rationale": m.get("rationale")})
     buys.sort(key=lambda x: (-(x.get("act_level") or 0), -(x.get("entry_pct") or 0), -(x.get("score") or 0)))
     if not buys:
-        return {"status": "no_clean_entries", "buys": [], "uncovered": uncovered,
+        return {**entry_projection, "status": "no_clean_entries", "buys": [], "uncovered": uncovered,
                 "early_turn_watch": early_turn_watch(),
-                "note_en": "Theme is in favour, but no member has a clean entry right now — most are extended or mid-trend. Wait for a pullback.",
-                "note_zh": "主题尚可，但当前无成分股具备干净入场点 — 多数已延展或处于趋势中段。等待回调。"}
-    return {"status": "ok", "buys": buys[:12], "uncovered": uncovered,
+                "note_en": "No stock cleared all entry checks. Review the stock-specific reasons below.",
+                "note_zh": "暂无个股通过全部入场条件。请查看下方的个股具体原因。"}
+    return {**entry_projection, "status": "ok", "buys": buys[:12], "uncovered": uncovered,
             "early_turn_watch": early_turn_watch()}
 
 
