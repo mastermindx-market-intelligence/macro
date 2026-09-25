@@ -556,6 +556,7 @@ def get_reaction_sensitivity(
 
         regime_cells_used = False
         fields: dict[str, float | None] = {}
+        evidence: dict[str, dict[str, Any] | None] = {}
 
         for bucket in ("hot", "cold"):
             for outcome_key, field_prefix in [
@@ -568,14 +569,35 @@ def get_reaction_sensitivity(
                 )
                 if cell is None:
                     fields[field_prefix] = None
+                    evidence[field_prefix] = None
                     continue
 
-                # Check if we're using a regime-conditioned cell
-                if cell.get("regime") is not None:
+                # Check if we're using a regime-conditioned cell.
+                is_regime = cell.get("regime") is not None
+                if is_regime:
                     regime_cells_used = True
 
                 mean_val = cell.get("mean")
                 fields[field_prefix] = round(float(mean_val), 4) if mean_val is not None else None
+                evidence[field_prefix] = {
+                    "n": int(cell.get("n") or 0),
+                    "mean": fields[field_prefix],
+                    "median": (
+                        round(float(cell["median"]), 4)
+                        if cell.get("median") is not None else None
+                    ),
+                    "ci_lo": (
+                        round(float(cell["ci_lo"]), 4)
+                        if cell.get("ci_lo") is not None else None
+                    ),
+                    "ci_hi": (
+                        round(float(cell["ci_hi"]), 4)
+                        if cell.get("ci_hi") is not None else None
+                    ),
+                    "era": cell.get("era"),
+                    "regime": cell.get("regime"),
+                    "revision_optimistic": bool(is_regime),
+                }
 
         note = (
             "Historical means from playbook_v1 pooled regime cells (era=all) where "
@@ -591,9 +613,11 @@ def get_reaction_sensitivity(
             "spy_h1_hot_pct": fields.get("spy_h1_hot"),
             "spy_h1_cold_pct": fields.get("spy_h1_cold"),
             "era_basis": _ERA_LABEL,
+            "regime_requested": current_regime,
             "regime_basis": _REGIME_ERA_LABEL if regime_cells_used else None,
             "regime_cells_used": regime_cells_used,
             "regime_labels_revision_optimistic": bool(regime_cells_used),
+            "evidence": evidence,
             "note": note,
         }
 
