@@ -36,13 +36,19 @@
       "novelty_role": "first_material_disclosure",
       "resolution_stage": "physical_implementation",
       "physical_channel": "observed_physical_change",
-      "corroboration_state": "single_official",
-      "event_role": "primary_escalation",
+      "corroboration_state": "conflicted",
+      "event_role": "mixed_conflict_control",
       "source_class": "newsquawk_centcom",
       "clock_quality": "exact_live_feed_utc",
       "source_title": "At 3PM ET today, US Central Command forces began launching an additional round of strikes against Iran",
       "source_url": "https://www.newsquawk.com/headlines/at-3pm-et-today-us-central-command-forces-began-launching-an-additional-round-of-strikes-against-iran-to-continue-degrading-iranian-capabilities-used-to-attack-commercial-shipping-in-the-strait-of-hormuz",
-      "outcome_inspection": "uninspected_at_freeze"
+      "outcome_inspection": "uninspected_at_freeze",
+      "source_side_confounders": {
+        "competing_geopolitical_headline_within_10m": true,
+        "competing_headline_at": "2026-07-14T19:40:00Z",
+        "competing_headline": "Iran Deputy Foreign Minister says return to negotiations and tolerance regarding the Strait of Hormuz is possible",
+        "primary_outcome_eligibility": "confounded_for_clean_35m_escalation_read"
+      }
     },
     {
       "event_id": "2026-08-14-iran-draft-restrict-hostile-transit",
@@ -138,6 +144,7 @@
     }
   ],
   "exclusions_and_notes": [
+    "July 14 19:30Z CENTCOM strikes are source-confounded by a de-escalatory Iranian deputy-FM headline at 19:40Z; retain as a mixed-control cluster, not a clean primary escalation row.",
     "July 7 vessel-strike headlines and July 12 weekend strikes are source-clean but occur outside usable U.S.-ETF same-time tape for the frozen +5 response design; they remain candidates for a separate cross-session handoff study rather than being re-anchored.",
     "September 10 oil-new-high market-update evidence was not admitted as an outcome-blind row because the retrieved source page itself embeds the market reaction.",
     "Mixed Aug 26 claims are intentionally clustered because opposite implications arrived one minute apart."
