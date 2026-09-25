@@ -550,3 +550,44 @@ def test_the_leaf_mount_module_imports_no_data_or_web_stack():
     )
     assert run.returncode == 0, run.stderr
     assert run.stdout.strip() == "", f"leaf module pulled: {run.stdout.strip()}"
+
+
+# ---------------------------------------------------------------------------
+# j — a mount is keyed by its own anchor, ONCE
+# ---------------------------------------------------------------------------
+
+def test_a_duplicate_anchor_raises_instead_of_silently_collapsing():
+    """``MOUNTS`` is built by comprehension, which keeps whichever duplicate
+    came last. The registry one layer up refuses a twice-registered anchor
+    outright, so without this the two hooks would disagree about a vertical
+    while both looked healthy. They now fail the same way, at import."""
+    from engine.market_ontology.theme_research_mounts import (
+        MOUNTS, _assert_unique_anchors,
+    )
+
+    entries = tuple(MOUNTS.values())
+    _assert_unique_anchors(entries)  # the shipped set is clean
+
+    twin = entries[0]
+    with pytest.raises(RuntimeError) as excinfo:
+        _assert_unique_anchors(entries + (twin,))
+    assert twin.anchor_theme_id in str(excinfo.value)
+    assert "registered twice" in str(excinfo.value)
+
+
+def test_every_mount_appears_in_mounts_exactly_once():
+    """The comprehension cannot have dropped an entry on the floor."""
+    from engine.market_ontology.theme_research_mounts import _ENTRIES, MOUNTS
+
+    assert len(MOUNTS) == len(_ENTRIES)
+    assert sorted(MOUNTS) == sorted(e.anchor_theme_id for e in _ENTRIES)
+
+
+def test_the_uniqueness_law_actually_runs_at_import():
+    """A guard nothing calls is decoration. The call site is pinned in source
+    because the test above can only exercise the function, not the import."""
+    source = (
+        REPO_ROOT / "engine" / "market_ontology" / "theme_research_mounts.py"
+    ).read_text(encoding="utf-8")
+    assert "_assert_unique_anchors(_ENTRIES)\n" in source, \
+        "the load-time uniqueness closure is no longer invoked at import"

@@ -115,6 +115,53 @@ def test_semiconductor_registration_binds_composer_constants_and_callables():
     assert entry.select_evidence is composer.select_authorized_evidence
 
 
+def test_every_registration_reconciles_with_its_own_vertical_module():
+    """The same law as the semiconductor test above, stated over the WHOLE
+    registry instead of over one named vertical.
+
+    ``MountFacts`` is where a vertical's schema ids are typed by hand; the
+    registration then derives them from the mount. So a typo in
+    ``MountFacts.schema_id`` leaves the registration agreeing with itself,
+    while the shell refuses every composed payload for carrying "the wrong"
+    schema — a total outage for that vertical with nothing red. The named
+    test proves that cannot happen for the one vertical that exists today;
+    this one proves it for every vertical added after it is written, which is
+    the half that was missing. (Shape raised by the Robotics receiver on
+    #7870; the hole is on this side, so the test is too.)
+
+    The vertical's module is found through its OWN registered callables, so
+    this test never grows a per-vertical table to keep in sync.
+    """
+    import sys
+
+    assert REGISTRY, "the registry is empty: this law would be vacuous"
+    for anchor, entry in REGISTRY.items():
+        compose_module = sys.modules[entry.compose.__module__]
+        assert getattr(compose_module, "SCHEMA_ID", None) == entry.schema_id, (
+            f"{anchor}: registration schema_id {entry.schema_id!r} is not the "
+            f"one {compose_module.__name__} emits"
+        )
+        assert getattr(compose_module, "DEFINITION_VERSION", None) == \
+            entry.definition_version, (
+            f"{anchor}: registration definition_version is not the composer's"
+        )
+        evidence_module = sys.modules[entry.select_evidence.__module__]
+        declared = [
+            getattr(evidence_module, name)
+            for name in ("EVIDENCE_SCHEMA_ID", "_EVIDENCE_SCHEMA_ID")
+            if hasattr(evidence_module, name)
+        ]
+        assert declared, (
+            f"{anchor}: {evidence_module.__name__} declares no evidence schema "
+            f"id constant, so nothing can reconcile the registration's"
+        )
+        assert entry.evidence_schema_id in declared, (
+            f"{anchor}: registration evidence_schema_id "
+            f"{entry.evidence_schema_id!r} is not the one "
+            f"{evidence_module.__name__} emits"
+        )
+
+
 def test_semiconductor_registration_carries_the_mount_copy_verbatim():
     entry = REGISTRY["ai_semiconductors"]
     assert entry.title_en == _TITLE_EN

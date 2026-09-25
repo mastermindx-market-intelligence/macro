@@ -150,9 +150,30 @@ _SEMICONDUCTOR = MountFacts(
     note_zh="会员研究内容。此处内容不构成排序、准入、仓位或时机判断。",
 )
 
+_ENTRIES: tuple[MountFacts, ...] = (_SEMICONDUCTOR,)
+
+
+def _assert_unique_anchors(entries: tuple[MountFacts, ...]) -> None:
+    """Load-time closure: a mount is keyed by its own anchor, ONCE.
+
+    The registry one layer up enforces the identical law explicitly. Here the
+    keys come from a comprehension, which would silently keep whichever
+    duplicate came last — so the two hooks would disagree about a vertical
+    while both looked healthy. They now fail the same way, at import.
+    """
+    anchors = [entry.anchor_theme_id for entry in entries]
+    for anchor in anchors:
+        if anchors.count(anchor) != 1:
+            raise RuntimeError(
+                f"theme_research_mounts: anchor registered twice: {anchor!r}"
+            )
+
+
+_assert_unique_anchors(_ENTRIES)
+
 #: Closed, read-only mapping ``anchor_theme_id -> MountFacts``.
 MOUNTS: Mapping[str, MountFacts] = MappingProxyType(
-    {_SEMICONDUCTOR.anchor_theme_id: _SEMICONDUCTOR}
+    {entry.anchor_theme_id: entry for entry in _ENTRIES}
 )
 
 
