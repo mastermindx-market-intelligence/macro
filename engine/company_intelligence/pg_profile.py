@@ -2169,10 +2169,9 @@ def extract_pg_release_facts(*, bound: BoundRelease, document_id: str, event_id:
     if fiscal_period.calendar_end != current_end:
         return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="The source fiscal period does not match the admitted fiscal scope.") for item in PG_DEFINITIONS]
     source = bound.source
-    if pg_envelope._wrapped(source) and (admission := pg_envelope.admit(source, fiscal_scope)) is not None:
+    if pg_envelope._wrapped(source):
+        admission = pg_envelope.admit(source, fiscal_scope)
         document = pg_envelope._document(source)
-        if document is None:
-            return [_absent(definition=item, document_id=document_id, event_id=event_id, detail="envelope_refused:unknown_table:t0") for item in PG_DEFINITIONS]
         return pg_envelope.extract(document, admission, PG_DEFINITIONS, bound=bound, document_id=document_id, event_id=event_id, fiscal_period=fiscal_period, fiscal_scope=fiscal_scope)
     blocks = parse_release_blocks(source)
     fiscal_year, quarter = _fiscal_identity(current_start, current_end)
