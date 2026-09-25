@@ -424,3 +424,46 @@ editing the shell owner's module for ordering convenience alone.
 ruling is wrong — and then criteria 2 and 7 are unreachable as specified and the packet needs
 an amendment, because no ordering of merges satisfies both. Nothing is merged on this ruling
 today: the independent-review gate is open.
+
+## Merge gates 1 and 3 discharged against CURRENT main, which had drifted 190 commits (`6f434112736`, 2026-09-25)
+
+RULING 7 named four merge gates. Two of them are now measured rather than assumed.
+
+The carrier's base is `3c93f8194f6` and `origin/main` is `9051eab960a` — **190 commits of
+drift**, and the recorded gates A/B had only ever been run over a merge with #7870's branch,
+never against a current main. That gap was real and nobody had closed it.
+
+Merge worktree `rob-mainmerge-gate` = `origin/main` `9051eab960a` + carrier `0c59f914a75`
+→ **`6f434112736`, zero conflicts**.
+
+* **Gate C** `scripts/check_theme_graph_contracts.py` → **exit 0** (census: company nodes 2807,
+  projection rows 2807 — the same pin as before, so the 2807-vs-2806 disagreement is not
+  reachable from this merge).
+* **Gate D** the six Robotics batteries, strict xfail → **20 passed, 115 xfailed, zero xpass**,
+  exactly the recorded baseline.
+
+**The per-file split is the part worth keeping, because the aggregate hides it:**
+
+| battery | on main alone |
+| --- | --- |
+| `test_robotics_theme_non_regression.py` | **9 passed, 0 xfailed** |
+| `test_robotics_research_inputs.py` | 11 passed, 4 xfailed |
+| `test_market_ontology_robotics_theme_research.py` | 37 xfailed |
+| `test_robotics_research_composition.py` | 35 xfailed |
+| `test_robotics_research_temporal.py` | 17 xfailed |
+| `test_robotics_owner_bundle.py` | 22 xfailed |
+
+So **merge gate 3 (the non-regression freeze) is genuinely discharged** — those 9 run and pass
+against current main with the carrier applied; the freeze is not hiding inside an xfail. Had
+they xfailed, "gates green" would have been hollow and the freeze unchecked, which is why the
+aggregate number is not sufficient evidence on its own.
+
+The four composition/loader batteries are **100% xfail on main alone** (111 of the 115). That
+is by design and is the honest state: merging this carrier puts 111 armed tests on `main` that
+exercise nothing until #7870's shared foundation lands. They are **strict** xfail and gate D
+records **zero xpass**, which is the check that every one of those markers is honest today —
+and when the foundation arrives, any that would pass will XPASS and fail the build, forcing the
+markers off rather than letting them rot.
+
+Remaining merge gates: **2 (independent review of B2 — in flight, builder != reviewer)** and
+**4 (CI green apart from the `inactive_base_context` pilot — currently satisfied)**.
