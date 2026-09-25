@@ -1086,6 +1086,58 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         assert "unowned path" not in reason, reason
 
 
+def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
+    """BC-2 ran only on the data gate, so nothing graded a claim before merge.
+
+    Every job that executed the checker was ``gate: data``, and ci.yml packs only
+    ``gate: code``: 75 unearned 'validated' claims merged green between 2026-08-25
+    and 2026-09-24 and were healed in one batch (#7979). The split pinned here:
+    ``validated-claims-source`` scans the PR-authored roots on every PR that can
+    move them, ``validated-claims-contract`` runs the checker's suites when the
+    checker, the allowlist or a suite changes, and ``validated-claims`` keeps the
+    FULL scan on the data gate — the rendered site and the registries move with
+    nightly commits, so they must never red somebody else's PR.
+    """
+    manifest = _yaml(MANIFEST)
+    checker = "scripts/check_validated_claims.py"
+    allowlist = "data/regime/validated_claims_allowlist.json"
+
+    source_job = manifest["jobs"]["validated-claims-source"]
+    source_runs = [str(step.get("run") or "") for step in source_job["steps"]]
+    assert source_job["gate"] == "code"
+    assert source_job["scope"] == "exclusive"
+    assert {"templates/**", "engine/**", "lib/**", checker, allowlist} <= set(source_job["paths"])
+    assert f"python3 {checker} --scope source" in source_runs
+    assert f"python3 {checker} --selftest" in source_runs
+
+    contract_job = manifest["jobs"]["validated-claims-contract"]
+    contract_runs = "\n".join(str(step.get("run") or "") for step in contract_job["steps"])
+    assert contract_job["gate"] == "code"
+    assert contract_job["scope"] == "exclusive"
+    assert {checker, allowlist, "tests/test_validated_claims_*.py"} <= set(contract_job["paths"])
+    assert "tests/test_validated_claims_source_scope.py" in contract_runs
+
+    data_job = manifest["jobs"]["validated-claims"]
+    data_runs = [str(step.get("run") or "") for step in data_job["steps"]]
+    assert data_job["gate"] == "data"
+    assert f"python3 {checker}" in data_runs, "the data gate keeps the full scan"
+    assert not any("--scope" in run for run in data_runs)
+
+    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    code_jobs = [job for job in jobs if job.gate == "code"]
+    for changed, owners in (
+        (["templates/dashboard.html.j2"], {"validated-claims-source"}),
+        (["engine/flow_signing.py"], {"validated-claims-source"}),
+        (["lib/pages.py"], {"validated-claims-source"}),
+        ([checker], {"validated-claims-source", "validated-claims-contract"}),
+        ([allowlist], {"validated-claims-source", "validated-claims-contract"}),
+        (["tests/test_validated_claims_source_scope.py"], {"validated-claims-contract"}),
+    ):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert owners <= {job.job_id for job in selected}, (changed, reason)
+        assert "unowned path" not in reason, reason
+
+
 def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     """PR #5488 shape: `.claude/hooks/gh_quota_guard.py` used to mint 187/187 jobs.
 
@@ -3774,6 +3826,16 @@ CURATED_EXCLUSIVE = {
     # suites (scripts/build_site.py pulls most of engine/ and lib/), so
     # exclusivity loses no owner and contract-delta stays at 0 introduced.
     "dashboard-render-contract",
+    # 2026-09-25 BC-2 gate:data -> PR-gate. `validated-claims-source` runs the
+    # checker's `--scope source` scan over templates/**, engine/** and lib/** on
+    # every PR that can move it — those trees ARE its subject, so it rides the
+    # broad probes on purpose and carries only its two stdlib steps.
+    # `validated-claims-contract` runs the checker's suites, selected by the
+    # checker, the allowlist, the suites and their measured closure. Both are
+    # exclusive because inference would smear the checker's traversal roots
+    # (site/**, data/**) onto them — files that cannot move either verdict.
+    "validated-claims-source",
+    "validated-claims-contract",
 }
 
 
