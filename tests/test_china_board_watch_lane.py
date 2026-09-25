@@ -133,3 +133,82 @@ def test_renderer_rejects_a_superseded_fallback_under_the_current_heading():
     assert shell["board_definition"] == BOARD_DEFINITION
     assert shell["buy"] == []
     assert shell["data_outage"]["flag"] is True
+
+
+# ---------------------------------------------------------------------------
+# Act Now must consume the current settled China theme-intel generation.
+# ---------------------------------------------------------------------------
+
+def _write_theme_intel(path: Path, as_of: str, *, stale: bool = False) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(__import__("json").dumps({
+        "theme_intel": {
+            "as_of": as_of,
+            "stale": stale,
+            "themes": [{"id": "cn_semis", "reco": "enter"}],
+        }
+    }))
+
+
+def _cn_after_settle():
+    from datetime import datetime, timezone
+    return datetime(2026, 9, 23, 10, 0, tzinfo=timezone.utc)
+
+
+def test_act_now_theme_intel_reuses_current_persisted_generation(tmp_path, monkeypatch):
+    from scripts import build_china
+    p = tmp_path / "chinabasketdata" / "baskets.json"
+    _write_theme_intel(p, "2026-09-23")
+
+    def should_not_recompute(_region):
+        raise AssertionError("current settled theme intel must be reused")
+
+    monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", should_not_recompute)
+    got = build_china._theme_intel_for_act_now(p, observed_at=_cn_after_settle())
+    assert got["as_of"] == "2026-09-23"
+
+
+def test_act_now_theme_intel_recomputes_stale_or_missing_generation(tmp_path, monkeypatch):
+    from scripts import build_china
+    p = tmp_path / "chinabasketdata" / "baskets.json"
+    _write_theme_intel(p, "2026-09-22")
+    calls = []
+
+    def current(region):
+        calls.append(region)
+        return {"as_of": "2026-09-23", "themes": [{"id": "cn_semis", "reco": "enter"}]}
+
+    monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", current)
+    got = build_china._theme_intel_for_act_now(p, observed_at=_cn_after_settle())
+    assert calls == ["china"]
+    assert got["as_of"] == "2026-09-23"
+
+    p.unlink()
+    got = build_china._theme_intel_for_act_now(p, observed_at=_cn_after_settle())
+    assert calls == ["china", "china"]
+    assert got["as_of"] == "2026-09-23"
+
+
+def test_act_now_theme_intel_never_restamps_a_stale_recompute(tmp_path, monkeypatch):
+    from scripts import build_china
+    p = tmp_path / "chinabasketdata" / "baskets.json"
+    _write_theme_intel(p, "2026-09-22")
+    monkeypatch.setattr(
+        "engine.theme_scoring.compute_theme_intel",
+        lambda _region: {"as_of": "2026-09-22", "themes": []},
+    )
+    got = build_china._theme_intel_for_act_now(p, observed_at=_cn_after_settle())
+    assert got["as_of"] == "2026-09-22"
+
+
+def test_act_now_theme_intel_compute_failure_preserves_source_evidence(tmp_path, monkeypatch):
+    from scripts import build_china
+    p = tmp_path / "chinabasketdata" / "baskets.json"
+    _write_theme_intel(p, "2026-09-22")
+
+    def fail(_region):
+        raise RuntimeError("synthetic theme owner failure")
+
+    monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", fail)
+    got = build_china._theme_intel_for_act_now(p, observed_at=_cn_after_settle())
+    assert got["as_of"] == "2026-09-22"

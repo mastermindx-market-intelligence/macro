@@ -96,6 +96,47 @@ def _load_json(path: Path) -> dict | None:
     return None
 
 
+def _theme_intel_for_act_now(
+    baskets_json_path: Path,
+    *,
+    observed_at: datetime | None = None,
+) -> dict | None:
+    """Return current settled China theme intelligence for the Act Now consumer.
+
+    The China page is built before build_baskets_china in the Asia lane, so its
+    persisted baskets artifact can legitimately still describe the prior
+    session. Reuse it when current; otherwise recompute through the existing
+    theme_scoring owner. Never restamp or widen authority: if recomputation is
+    stale/invalid, the downstream action-board freshness gate still withholds.
+    """
+    from lib import cn_calendar
+
+    persisted_doc = _load_json(baskets_json_path) or {}
+    persisted = persisted_doc.get("theme_intel")
+    now = observed_at if observed_at is not None else datetime.now(timezone.utc)
+    expected = cn_calendar.expected_last_session(now).isoformat()
+    if (
+        isinstance(persisted, dict)
+        and persisted.get("as_of") == expected
+        and persisted.get("stale") is not True
+    ):
+        return persisted
+
+    try:
+        from engine.theme_scoring import compute_theme_intel
+
+        current = compute_theme_intel("china")
+        if isinstance(current, dict):
+            return current
+    except Exception as exc:  # noqa: BLE001 — optional refresh, downstream fails closed
+        log.error(
+            "china Act Now theme-intel refresh failed (%s); preserving source evidence",
+            exc,
+        )
+
+    return persisted if isinstance(persisted, dict) else None
+
+
 def _no_network_render() -> bool:
     """True for site-only rerender lanes that must reuse committed China caches.
 
@@ -1365,14 +1406,14 @@ def main() -> int:
         act_now_v2 = None
         try:
             from engine.china_act_now import (  # noqa: PLC0415
-                assemble_act_now, load_cycle_rows, load_member_names, load_theme_intel,
+                assemble_act_now, load_cycle_rows, load_member_names,
             )
             cfg = config.load()
             site_dir = Path(cfg["storage"]["site_dir"])
             baskets_json_path = site_dir / "chinabasketdata" / "baskets.json"
             data_dir = Path(cfg["storage"].get("data_dir", "data"))
             forward_log_path = data_dir / "china_sector_cycles" / "forward_log.parquet"
-            theme_intel = load_theme_intel(str(baskets_json_path))
+            theme_intel = _theme_intel_for_act_now(baskets_json_path)
             cycle_rows = load_cycle_rows(str(forward_log_path))
             # W8-R7 rider: load basket_turn_cn artifact for bottoming-watch organ chips
             _basket_turn_cn: dict | None = None
