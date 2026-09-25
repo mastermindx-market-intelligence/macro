@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-09-25T21:32:44.996631+00:00",
+  "produced_at": "2026-09-25T21:49:48.795272+00:00",
   "as_of": "2026-09-25",
   "overall_status": "degraded",
   "lobes": [
@@ -3314,8 +3314,8 @@
     }
   ],
   "cortex": {
-    "cortex_source": "previous_run",
-    "memo_as_of": "2026-09-25T09:54:28+00:00",
+    "cortex_source": "current_run",
+    "memo_as_of": "2026-09-25T21:49:45+00:00",
     "run_status": {
       "status": "degraded",
       "degraded": true,
@@ -3335,32 +3335,8 @@
           "model": "claude-opus-4-8",
           "attempted": true,
           "ok": false,
-          "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfPxNH3bDpFpneCADQVcQ'}"
-        },
-        {
-          "provider": "oauth",
-          "model": "claude-opus-4-8",
-          "attempted": true,
-          "ok": false,
-          "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfPxPYurp5GiLBY5zkZyA'}"
-        },
-        {
-          "provider": "oauth",
-          "model": "claude-opus-4-8",
-          "attempted": true,
-          "ok": false,
-          "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfPxUCg5Xd58kck6qL9Yd'}"
-        },
-        {
-          "provider": "oauth",
-          "model": "claude-opus-4-8",
-          "attempted": true,
-          "ok": false,
-          "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfPxhfnc29mjCfX7os7E1'}"
+          "error_type": "auth",
+          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CfQtugKijh4QPn6b7PpCj'}"
         },
         {
           "provider": "oauth",
@@ -3375,7 +3351,7 @@
       "individual_tool_calls": 0,
       "expected_min_tool_calls": 1,
       "context_stale": false,
-      "context_as_of": "2026-09-25T09:10:59Z"
+      "context_as_of": "2026-09-25T21:28:50Z"
     },
     "probation": {
       "granted": false,
