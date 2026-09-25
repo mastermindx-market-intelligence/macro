@@ -29,6 +29,27 @@ _DASH = "\u2014"
 _COMMENT = re.compile(r"<!--.*?-->", re.S)
 _UNIT = re.compile(r"(<!--.*?-->)|(<[^>]+>)|(&(?:#[0-9]+;?|#[xX][0-9a-fA-F]+;?|[^\t\n\f <&#;]{1,32};?))|([^<&]+|[<&])", re.S)
 _FOLD_NUMBERS = re.compile(rf"(?:{_DASH}%?|[-+%$(]?\d+(?:[.,]\d+)*%?)")
+_HTML_SPACE = "[ \t\n\r\f]"
+_ATTRIBUTE = re.compile(
+    rf"{_HTML_SPACE}+([A-Za-z_:][A-Za-z0-9_:.-]*)"
+    rf"(?:{_HTML_SPACE}*={_HTML_SPACE}*(?:\"([^\"<>]*)\"|'([^'<>]*)'|([^ \t\n\r\f\"'=<>`]+)))?"
+)
+_START_TAG = re.compile(
+    rf"<([A-Za-z][A-Za-z0-9]*)((?:{_HTML_SPACE}+[A-Za-z_:][A-Za-z0-9_:.-]*"
+    rf"(?:{_HTML_SPACE}*={_HTML_SPACE}*(?:\"[^\"<>]*\"|'[^'<>]*'|[^ \t\n\r\f\"'=<>`]+))?)*){_HTML_SPACE}*/?>"
+)
+_END_TAG = re.compile(rf"</([A-Za-z][A-Za-z0-9]*){_HTML_SPACE}*>")
+_MARKUP_OPEN = re.compile(r"<[A-Za-z/!?]")
+_RAW_TEXT_CLOSE = {
+    name: re.compile(rf"</{name}[ \t\n\r\f/>]", re.I)
+    for name in ("script", "style", "title", "textarea", "xmp", "iframe", "noembed", "noframes", "noscript")
+}
+_UNREAD_ELEMENTS = frozenset({
+    "plaintext", "template", "svg", "math", "select", "object", "embed", "frameset", "frame",
+    "caption", "colgroup", "col", "thead", "tbody", "tfoot",
+})
+_TABLE_NAMES = frozenset({"table", "tr", "td", "th"})
+_SPAN_LIMITS = {"colspan": 1000, "rowspan": 65534}
 _PERIOD_LABEL = "<period>"
 _NUMERIC = "<n>"
 _ROLES = (
@@ -208,6 +229,118 @@ def _nested_tables(source: str) -> frozenset[int]:
         for ordinal, (start, end) in enumerate(_table_spans(source))
         if _TABLE_OPEN.search(view, start + 1, end) is not None
     )
+
+
+def _span_attributes(attributes: str) -> list[tuple[str, str | None]]:
+    return [
+        (match.group(1).lower(), next((value for value in match.group(2, 3, 4) if value is not None), None))
+        for match in _ATTRIBUTE.finditer(attributes)
+    ]
+
+
+def _spans_read_alike(attributes: str) -> bool:
+    parsed = _span_attributes(attributes)
+    for key, limit in _SPAN_LIMITS.items():
+        values = [value for name, value in parsed if name == key]
+        engine = _SPAN_PATTERNS[key].search(attributes)
+        if not values:
+            if engine is not None:
+                return False
+            continue
+        if len(values) > 1 or values[0] is None or re.fullmatch(r"[1-9][0-9]{0,4}", values[0]) is None:
+            return False
+        if int(values[0]) > limit or engine is None or engine.group(1) != values[0]:
+            return False
+    return not any(
+        name not in _SPAN_LIMITS and re.search("colspan|rowspan", f"{name}={value or ''}", re.I)
+        for name, value in parsed
+    )
+
+
+@functools.lru_cache(maxsize=8)
+def _unreadable_markup(source: str) -> str | None:
+    state: str | None = None
+    cell_name = ""
+    position = 0
+    filled: dict[int, int] = {}
+    y = x = -1
+    while True:
+        lt = source.find("<", position)
+        text = source[position:] if lt < 0 else source[position:lt]
+        if ">" in text:
+            return "gt"
+        if state in ("table", "row") and text.strip(" \t\n\r\f"):
+            return "table"
+        if lt < 0:
+            break
+        if source.startswith("<!--", lt):
+            close = source.find("-->", lt + 4)
+            if close < 0 or source.startswith((">", "->"), lt + 4) or "--!>" in source[lt + 4:close]:
+                return "comment"
+            position = close + 3
+            continue
+        start = _START_TAG.match(source, lt)
+        end = None if start else _END_TAG.match(source, lt)
+        if start is None and end is None:
+            return "tag" if _MARKUP_OPEN.match(source, lt) else "lt"
+        if start is not None:
+            name = start.group(1).lower()
+            position = start.end()
+            if name in _UNREAD_ELEMENTS:
+                return "element"
+            if name in _RAW_TEXT_CLOSE:
+                close = _RAW_TEXT_CLOSE[name].search(source, position)
+                if state is not None or close is None or re.search("[<>]", source[position:close.start()]):
+                    return "element"
+                position = close.start()
+                continue
+            if state is None:
+                if name == "table":
+                    state, filled, y = "table", {}, -1
+                elif name in _TABLE_NAMES:
+                    return "table"
+            elif state == "table":
+                if name != "tr":
+                    return "table"
+                state, y, x = "row", y + 1, 0
+            elif state == "row":
+                if name not in ("td", "th"):
+                    return "table"
+                if not _spans_read_alike(start.group(2)):
+                    return "span"
+                spans = dict(_span_attributes(start.group(2)))
+                colspan, rowspan = int(spans.get("colspan") or 1), int(spans.get("rowspan") or 1)
+                while filled.get(x, -1) >= y:
+                    x += 1
+                for column in range(x, x + colspan):
+                    if filled.get(column, -1) >= y:
+                        return "grid"
+                    filled[column] = y + rowspan - 1
+                x += colspan
+                state, cell_name = "cell", name
+            elif name in _TABLE_NAMES:
+                return "table"
+        else:
+            name = end.group(1).lower()
+            position = end.end()
+            if state is None:
+                continue
+            if state == "table":
+                if name != "table":
+                    return "table"
+                state = None
+            elif state == "row":
+                if name != "tr":
+                    return "table"
+                occupied = {column for column, last in filled.items() if last >= y}
+                if occupied != set(range(len(occupied))):
+                    return "grid"
+                state = "table"
+            elif name == cell_name:
+                state = "row"
+            elif name in _TABLE_NAMES:
+                return "table"
+    return "table" if state is not None else None
 
 
 def _grid(source: str, ordinal: int, start: int, end: int) -> tuple[tuple[Cell, ...], ...]:
@@ -634,6 +767,8 @@ def _admission(document: Document, fiscal_scope: Sequence[str | date]) -> Admiss
     expected_quarter = f"{_ENGLISH_MONTHS[current_end.month - 1]} {current_end.day}, {current_end.year}"
     if reported != expected_quarter:
         return Admission("quarter_mismatch")
+    if (unreadable := _unreadable_markup(source)) is not None:
+        return Admission(f"markup_unreadable:{unreadable}")
     return Admission("F1-Q", roles)
 
 
