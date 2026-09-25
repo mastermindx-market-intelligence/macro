@@ -17,7 +17,7 @@ Constraints:
   ``engine.theme_graph.curation_assertion.source_ref_for`` AND a present
   ``expected_generation``; missing either yields a typed refusal.
 * Authority law: this module NEVER ranks, gates, sizes, or times anything.
-  All eight caps are False — matching the Finance projection's caps exactly.
+  Every cap is False — matching the Finance projection's caps exactly.
 * No clock reads: generation is derived from frozen fields only
   (``definition_version``, ``rights_revision``, ``revision_tuple``,
   ``profile_id``, ``sector_ref``, ``view``, ``time_mode``, ``source_cutoff``,
@@ -61,11 +61,11 @@ RUN_CONTEXT_KIND: str = "finance_run_context"
 VIEWS: tuple[str, ...] = ("dossier",)
 TIME_MODES: tuple[str, ...] = ("latest",)
 
-# Mirror the closure of the projection's authority caps. Constructed on first
-# use after :data:`engine.sector_intelligence.finance_projection` is importable
-# (which it always is on the carrier because the projection is one of this
-# adapter's imports). Frozen as a MappingProxyType so call sites cannot mutate
-# the eight caps without modifying the projection's source of truth.
+# Mirror the closure of the projection's authority caps. The registry is
+# built at import time (the projection is one of this adapter's imports so
+# it is always available on the carrier). Frozen as a MappingProxyType so
+# call sites cannot mutate the caps without modifying the projection's
+# source of truth.
 def _build_authority() -> Mapping[str, bool]:
     import engine.sector_intelligence.finance_projection as fp
     return MappingProxyType({cap: False for cap in fp._AUTHORITY_CAPS})
@@ -93,8 +93,12 @@ _ASSERTION_REF_PATTERN = re.compile(
 )
 
 # Strict ISO-8601 (with time part) matching either ``Z`` or a numeric offset.
+# Hours are 00..23; minutes/seconds 00..59; fractional seconds capped at six
+# digits; offset REQUIRES a colon (``+HH:MM``). ``24:00`` is rejected because
+# the wall-clock form is non-ISO-8601 even though several lenient libraries
+# accept it — the sealed wire never carries it.
 _ISO_8601_RE = re.compile(
-    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})$"
+    r"^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$"
 )
 
 # Page-bound limits (page cursor is offset+limit; the API is scalar — offset<0
@@ -142,12 +146,12 @@ _SHELL_MODULE_NAMES = frozenset({
 def _import_shell_module(name: str) -> Any:
     """Import one shared-shell module, treating ``ModuleNotFoundError`` as
     absence ONLY when the missing module IS ``name`` (``exc.name`` matches
-    one of the two shell module names). A ``ModuleNotFoundError`` raised
-    from INSIDE a present shell — a missing third-party dependency of the
-    shell itself — carries a different ``exc.name`` and propagates, so a
-    broken shell can never masquerade as ``shared_shell_unavailable``. A
-    genuine non-module ``ImportError`` from a present-but-broken shell
-    propagates too.
+    one of the four shell module names in :data:`_SHELL_MODULE_NAMES`). A
+    ``ModuleNotFoundError`` raised from INSIDE a present shell — a missing
+    third-party dependency of the shell itself — carries a different
+    ``exc.name`` and propagates, so a broken shell can never masquerade as
+    ``shared_shell_unavailable``. A genuine non-module ``ImportError`` from
+    a present-but-broken shell propagates too.
     """
     try:
         return importlib.import_module(name)
@@ -519,7 +523,10 @@ def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
     if bundle_value:
         unnamed_present = False
         for omission in bundle_value:
-            if isinstance(omission, str) and omission:
+            # R8 (M7 amendment): a whitespace-only string (``.strip() == ""``)
+            # is blank — it cannot carry an omission reason, so it collapses
+            # to the single deduplicated ``owner_omission:unnamed`` marker.
+            if isinstance(omission, str) and omission.strip():
                 limitations.add(f"owner_omission:{omission}")
             else:
                 unnamed_present = True
@@ -736,16 +743,21 @@ def _find_assertion_by_ref(
 
 
 def _collect_source_records(
-    dossier: Mapping[str, Any], selected_ref: str
+    dossier: Mapping[str, Any], selected_curation_revision: str
 ) -> list[dict[str, Any]]:
     """The evidence envelope's ``source_records`` is filtered to entries
-    whose ``evidence_ref`` resolves to ``selected_ref`` (B4). When no
-    source record names that ref, the list is EMPTY — never the full
-    dossier's records.
+    whose ``evidence_ref`` equals the SELECTED ASSERTION's
+    ``curation_revision`` string (B4, seat ruling). Finance-owned source
+    records reference the curation revision id, NOT the shell's
+    ``gmi-curation://`` URI addressing form — so the comparison key here is
+    the matched assertion's ``curation_revision``, not the
+    ``assertion_ref`` URI. When no source record names that revision, the
+    list is EMPTY — never the full dossier's records. Comparison is
+    ``str(exc) == exc.code``-exact (no coercion).
     """
     out: list[dict[str, Any]] = []
     for value in dossier.get("source_records", ()) or ():
-        if isinstance(value, Mapping) and value.get("evidence_ref") == selected_ref:
+        if isinstance(value, Mapping) and value.get("evidence_ref") == selected_curation_revision:
             out.append(dict(value))
     return out
 
@@ -778,13 +790,14 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
     """Resolve ``assertion_ref`` to its underlying assertion + the source
     records visible from the same generation.
 
-    Refusals:
+    Refusals (R4 packet order — generation check runs BEFORE the assertion
+    ref pattern check):
 
     * ``expected_generation_required`` — the caller did not pin a
       ``expected_generation``; the evidence route is generation-bound and
       we will not guess.
     * ``generation_changed`` — ``expected_generation`` mismatches. The
-      check runs BEFORE building owner inputs (M1).
+      check runs BEFORE the ``assertion_ref`` pattern check (R4).
     * ``shared_shell_unavailable`` — the resolver or projection module is
       absent (fixture-only: nothing to query against).
     * ``not_available`` — the ref is not a well-formed ``assertion_ref`` or
@@ -795,11 +808,11 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
     request = _validate_query(query)
     if request["expected_generation"] is None:
         _refuse("expected_generation_required")
-    if not isinstance(assertion_ref, str) or not _ASSERTION_REF_PATTERN.match(assertion_ref):
-        _refuse("not_available")
     gen = _generation(request, bundle)
     if request["expected_generation"] != gen:
         _refuse("generation_changed")
+    if not isinstance(assertion_ref, str) or not _ASSERTION_REF_PATTERN.fullmatch(assertion_ref):
+        _refuse("not_available")
     inputs, generated_at, knowledge_cutoff = _owner_inputs_from_bundle(bundle)
     dossier = _dossier(inputs, generated_at, knowledge_cutoff)
 
@@ -813,7 +826,7 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
     if matched is None:
         _refuse("not_available")
 
-    source_records = _collect_source_records(dossier, assertion_ref)
+    source_records = _collect_source_records(dossier, matched["curation_revision"])
     limitations = _build_limitations(inputs, bundle)
     return _evidence_envelope(
         request, gen, assertion_ref, matched, source_records, limitations
@@ -823,17 +836,23 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
 def load_bundle(query: Any, *, rights_snapshot: Mapping[str, str] | None = None) -> Any:
     """Load the owner inputs bundle for a request.
 
-    Refusals (per point (a) of PR #7780 comment 5828668393 + R4):
+    Behaviour (R5, the round-1 M3 instruction is SUPERSEDED — the packet and
+    the shell's own contract govern):
 
-    * ``shared_shell_unavailable`` — the binding module
-      ``engine.market_ontology.theme_research_binding`` is not on the
-      carrier (fixture-only contract; §8 has not been merged yet), or the
-      module is present but exports no usable ``BundleUnavailable`` type.
-    * ``finance_owner_loader_pending`` — when the binding IS present and
-      its loader is the still-not-landed fixture-only placeholder. The
-      message MUST start with the refusal prefix so the carrier can
-      classify it, and MUST name (point (a) of PR #7780 comment
-      5828668393) AND R4 so the carrier can route the hold.
+    * If the binding module ``engine.market_ontology.theme_research_binding``
+      resolves AND it exposes a usable ``BundleUnavailable`` Exception
+      subclass, raise that class DIRECTLY with a message that starts
+      ``finance_owner_loader_pending`` and names point (a) of PR #7780
+      comment 5828668393 and R4. The shell maps ``BundleUnavailable`` to
+      its fixed private 503; the carrier classifies the hold by the prefix
+      and the comment/ruling ids inside the message.
+    * Otherwise (the binding is absent, OR the module is present but
+      exposes no usable ``BundleUnavailable`` type) raise
+      :class:`FinanceRegistrationRefusal` with the bare code
+      ``shared_shell_unavailable``. The class contract requires
+      ``str(exc) == exc.code`` and no whitespace in ``.code`` (mirrors
+      :class:`ResearchRefusal`); no call site passes a sentence as the
+      code.
     """
     binding_module = _import_shell_module(_SHELL_BINDING_MODULE)
     if binding_module is None:
@@ -843,10 +862,11 @@ def load_bundle(query: Any, *, rights_snapshot: Mapping[str, str] | None = None)
     if not (isinstance(unavailable_type, type) and issubclass(unavailable_type, Exception)):
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
-    # Direct raise (M3) — the prefix is part of the message itself, no
-    # raise/catch/re-raise indirection. The carrier classifies the refusal
-    # by the prefix; the message body names the source comment + R4.
-    raise FinanceRegistrationRefusal(
+    # Direct raise — the shell maps BundleUnavailable to its fixed private
+    # 503 envelope. The message prefix classifies the hold; the body names
+    # the source comment + R4 so the carrier can route the hold without
+    # needing repo state.
+    raise unavailable_type(
         "finance_owner_loader_pending: Finance owner loader not wired into "
         "the shared shell yet (T10 fixture-only contract, PR #7780 "
         "comment 5828668393 point (a), R4). The §8 sector_profile "

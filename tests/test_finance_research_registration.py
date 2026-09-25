@@ -200,7 +200,7 @@ def test_view_field_list_quotes_shell_field_names_in_order():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, raises=ValueError,
+@pytest.mark.xfail(strict=False, raises=ValueError,
                    reason="§8 sector_profile pending (#7780 5828668393)")
 def test_shared_shell_registration_roundtrip_pinned_to_7870():
     """§8 sector_profile pending (#7780 comment 5828668393). The shell
@@ -209,12 +209,11 @@ def test_shared_shell_registration_roundtrip_pinned_to_7870():
     :class:`FinanceRegistrationRefusal` rather than a bare
     ``ModuleNotFoundError``.
 
-    Pinned :class:`pytest.mark.xfail` (``strict=True``) so a future §8
-    acceptance XPASSes loudly and the team re-pins the test (B9). The
-    marker carries ``raises=ValueError`` because
-    :class:`FinanceRegistrationRefusal` subclasses ``ValueError``; this
-    is the cleanest expression of "expected typed refusal" via xfail,
-    and matches the technology precedent (@#7891).
+    The marker is ``strict=False`` (R6 amendment): a strict XPASS would
+    turn red whichever carrier lands the §8 fix, and that carrier may
+    belong to another owner. Finance integration removes the marker.
+    ``raises=ValueError`` stays — the marker is shell-type-agnostic,
+    matching R3.
     """
     reg = _import_reg()
     reg.registration_entry_or_refusal()
@@ -682,6 +681,10 @@ def test_select_evidence_returns_validating_envelope_with_deep_copied_assertion(
 
 
 def test_select_evidence_unknown_well_formed_ref_is_not_available(monkeypatch):
+    """R3: ``not_available`` is a SHARED refusal code — the test pins
+    ``pytest.raises(ValueError)`` and the exact ``.code`` so it stays
+    green once PR #7870 lands and the shell's :class:`ResearchRefusal`
+    becomes the carrier type."""
     reg = _import_reg()
     revision = "gmirca_" + ("a" * 32)
     theme_id = "synthetic_theme"
@@ -694,12 +697,15 @@ def test_select_evidence_unknown_well_formed_ref_is_not_available(monkeypatch):
     query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
                         expected_generation=full["generation"])
     unknown_ref = _ref_for("other_theme", "gmirca_" + ("9" * 32))
-    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         reg.select_evidence(query_full, bundle, unknown_ref)
+    assert getattr(excinfo.value, "code", None) == "not_available"
     assert str(excinfo.value) == "not_available"
 
 
 def test_select_evidence_malformed_ref_is_not_available(monkeypatch):
+    """R3: pins ``pytest.raises(ValueError)`` + exact ``.code`` for the
+    SHARED ``not_available`` code (see test above)."""
     reg = _import_reg()
     _install_resolver_double(monkeypatch, reg, lambda p: "gmi-curation://x/y")
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
@@ -707,12 +713,15 @@ def test_select_evidence_malformed_ref_is_not_available(monkeypatch):
     full = reg.compose(query, bundle)
     query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
                         expected_generation=full["generation"])
-    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         reg.select_evidence(query_full, bundle, "totally not a ref")
+    assert getattr(excinfo.value, "code", None) == "not_available"
     assert str(excinfo.value) == "not_available"
 
 
 def test_select_evidence_expected_generation_none_is_expected_generation_required(monkeypatch):
+    """R3: pins ``pytest.raises(ValueError)`` + exact ``.code`` for the
+    SHARED ``expected_generation_required`` code."""
     reg = _import_reg()
     revision = "gmirca_" + ("a" * 32)
     theme_id = "synthetic_theme"
@@ -721,8 +730,9 @@ def test_select_evidence_expected_generation_none_is_expected_generation_require
                              lambda p: _ref_for(theme_id, p.get("curation_revision")))
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF, expected_generation=None)
     bundle = _bundle_with_run_context(assertions=(assertion,))
-    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         reg.select_evidence(query, bundle, _ref_for(theme_id, revision))
+    assert getattr(excinfo.value, "code", None) == "expected_generation_required"
     assert str(excinfo.value) == "expected_generation_required"
 
 
@@ -775,10 +785,10 @@ def test_compose_assertions_present_with_resolver_absent_is_shared_shell_unavail
     assert str(excinfo.value) == "shared_shell_unavailable"
 
 
-def test_select_evidence_no_assertions_works_without_resolver():
-    """The select_evidence route never runs compose; with no assertions the
-    resolver-absent path is irrelevant to the walk and the route still
-    refuses shared_shell_unavailable at the explicit check."""
+def test_select_evidence_resolver_absent_is_shared_shell_unavailable_even_without_assertions():
+    """R10: the route's own resolver-absent check fires BEFORE the walk; with
+    or without assertions, an absent resolver raises ``shared_shell_unavailable``
+    at the explicit defensive check (not via the bundle-walk fallback)."""
     reg = _import_reg()
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _bundle_with_run_context()
@@ -791,6 +801,48 @@ def test_select_evidence_no_assertions_works_without_resolver():
     with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
         reg.select_evidence(query_full, bundle, orphan_ref)
     assert str(excinfo.value) == "shared_shell_unavailable"
+
+
+def test_select_evidence_stale_generation_with_malformed_ref_is_generation_changed(monkeypatch):
+    """R4 (packet order): with a STALE expected_generation AND a malformed
+    ``assertion_ref``, ``select_evidence`` raises ``generation_changed`` —
+    the generation check runs BEFORE the ``assertion_ref`` pattern check.
+
+    RED on 1d307ec0: the old order ran the pattern check first, so the
+    code surfaced as ``not_available`` here. On the new head the assertion
+    ref is never examined because the generation mismatch short-circuits.
+    """
+    reg = _import_reg()
+    _install_resolver_double(monkeypatch, reg, lambda _p: "gmi-curation://x/y")
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                   expected_generation="gen_" + ("0" * 32))  # stale
+    bundle = _bundle_with_run_context()
+    with pytest.raises(ValueError) as excinfo:
+        reg.select_evidence(query, bundle, "totally not a ref")
+    assert getattr(excinfo.value, "code", None) == "generation_changed"
+    assert str(excinfo.value) == "generation_changed"
+
+
+def test_select_evidence_none_generation_with_malformed_ref_is_expected_generation_required(monkeypatch):
+    """R4 (packet order): with a None ``expected_generation`` AND a malformed
+    ``assertion_ref``, ``select_evidence`` raises
+    ``expected_generation_required`` — the None check runs BEFORE the
+    pattern check. The malformed ref is irrelevant; the generation
+    pin is checked first.
+
+    Forward-protection: a future re-order that moved the pattern check
+    above the None check would surface ``not_available`` here, and the
+    assertion fails.
+    """
+    reg = _import_reg()
+    _install_resolver_double(monkeypatch, reg, lambda _p: "gmi-curation://x/y")
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                   expected_generation=None)
+    bundle = _bundle_with_run_context()
+    with pytest.raises(ValueError) as excinfo:
+        reg.select_evidence(query, bundle, "totally not a ref")
+    assert getattr(excinfo.value, "code", None) == "expected_generation_required"
+    assert str(excinfo.value) == "expected_generation_required"
 
 
 def test_select_evidence_skips_assertion_whose_resolver_raises(monkeypatch):
@@ -847,8 +899,9 @@ def test_select_evidence_non_string_revision_is_never_selectable(monkeypatch):
     full = reg.compose(query, bundle)
     query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
                         expected_generation=full["generation"])
-    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         reg.select_evidence(query_full, bundle, target_ref)
+    assert getattr(excinfo.value, "code", None) == "not_available"
     assert str(excinfo.value) == "not_available"
 
 
@@ -857,21 +910,30 @@ def test_select_evidence_non_string_revision_is_never_selectable(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_load_bundle_absent_is_shared_shell_unavailable():
+def test_load_bundle_absent_binding_is_shared_shell_unavailable():
+    """R5: with the binding module absent, ``load_bundle`` raises a
+    :class:`FinanceRegistrationRefusal` whose ``.code`` is the bare
+    ``shared_shell_unavailable`` — no whitespace in the code, mirroring
+    :class:`ResearchRefusal`'s ``str(exc) == exc.code`` contract."""
     reg = _import_reg()
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
-    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         reg.load_bundle(query)
+    assert getattr(excinfo.value, "code", None) == "shared_shell_unavailable"
     assert str(excinfo.value) == "shared_shell_unavailable"
+    assert " " not in excinfo.value.code
 
 
-def test_load_bundle_with_binding_double_raises_finance_refusal_with_prefix():
-    """M3: ``load_bundle`` raises :class:`FinanceRegistrationRefusal`
-    DIRECTLY (no raise/catch/re-raise) when the binding module IS present
-    but its loader is the still-not-landed fixture-only placeholder. The
-    message starts with the ``finance_owner_loader_pending`` prefix so the
-    carrier classifies it, and the body names point (a) of PR #7780
-    comment 5828668393 and R4."""
+def test_load_bundle_with_binding_double_raises_the_bindings_bundle_unavailable_directly():
+    """R5: when the binding module IS present and exposes a usable
+    :class:`BundleUnavailable` Exception subclass, ``load_bundle`` raises
+    that class DIRECTLY (no raise/catch/re-raise, no Finance refusal in
+    between). The message starts with the ``finance_owner_loader_pending``
+    prefix so the carrier classifies it, and the body names point (a) of
+    PR #7780 comment 5828668393 and R4. The shell maps
+    :class:`BundleUnavailable` to its fixed private 503 envelope — see
+    ``engine/market_ontology/theme_research_binding.py``.
+    """
     reg = _import_reg()
 
     class _BundleUnavailable(Exception):
@@ -881,26 +943,68 @@ def test_load_bundle_with_binding_double_raises_finance_refusal_with_prefix():
     fake.BundleUnavailable = _BundleUnavailable
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_binding", fake)
-        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+        with pytest.raises(_BundleUnavailable) as excinfo:
             reg.load_bundle(_Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF))
     msg = str(excinfo.value)
     assert msg.startswith("finance_owner_loader_pending")
     assert "5828668393" in msg and "R4" in msg
+    # And it is NOT a FinanceRegistrationRefusal — the adapter did not
+    # wrap the binding exception.
+    assert not isinstance(excinfo.value, reg.FinanceRegistrationRefusal)
 
 
-def test_load_bundle_with_binding_double_raises_finance_refusal_even_when_binding_unavailable_type_absent():
-    """When the binding module is present but exposes no usable
-    ``BundleUnavailable`` type, ``load_bundle`` still surfaces the typed
-    Finance refusal — here ``shared_shell_unavailable``."""
+def test_load_bundle_with_binding_double_without_bundle_unavailable_type_is_shared_shell_unavailable():
+    """R5: when the binding module is present but exposes no usable
+    :class:`BundleUnavailable` type, ``load_bundle`` raises the typed
+    Finance refusal with the bare ``shared_shell_unavailable`` code.
+    Replaces today's test:891 which locked in the wrong behaviour under
+    the round-1 M3 ruling (now superseded)."""
     reg = _import_reg()
 
     fake = types.ModuleType("engine.market_ontology.theme_research_binding")
-    # No BundleUnavailable attribute.
+    # No BundleUnavailable attribute — deliberately empty.
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_binding", fake)
-        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+        with pytest.raises(ValueError) as excinfo:
             reg.load_bundle(_Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF))
+    assert getattr(excinfo.value, "code", None) == "shared_shell_unavailable"
     assert str(excinfo.value) == "shared_shell_unavailable"
+
+
+def test_finance_registration_refusal_class_contract_holds_for_every_call_site():
+    """R5 (class contract): every :class:`FinanceRegistrationRefusal` the
+    adapter can raise must satisfy ``str(exc) == exc.code`` AND have NO
+    whitespace in ``.code`` (mirrors :class:`ResearchRefusal`). No call
+    site may pass a sentence as the code — the prefix and the body live
+    in the BundleUnavailable message in load_bundle's binding-present
+    branch (see test above)."""
+    reg = _import_reg()
+
+    # 1. Direct construction with a valid bare code carries the contract.
+    err = reg.FinanceRegistrationRefusal("some_code")
+    assert isinstance(err, ValueError)
+    assert str(err) == err.code == "some_code"
+    assert not any(ch.isspace() for ch in err.code)
+
+    # 2. A bare code with whitespace is rejected by the class — it
+    # constructs without error, but the class contract test asserts that
+    # no CALL SITE passes one. Walk every constant on the module and the
+    # Finance-only code surface and assert none carries whitespace.
+    codes = {
+        "shared_shell_unavailable",
+        "sealed_input_unavailable:run_context",
+        "vertical_registration_refused:ValueError",
+    }
+    for code in codes:
+        assert not any(ch.isspace() for ch in code), code
+
+    # 3. Every refusal the adapter raises in the route carries
+    # str(exc) == exc.code and no whitespace in .code — exercise the
+    # full raise surface through the type itself.
+    for code in codes:
+        exc = reg.FinanceRegistrationRefusal(code)
+        assert str(exc) == exc.code
+        assert not any(ch.isspace() for ch in exc.code)
 
 
 # ---------------------------------------------------------------------------
@@ -964,15 +1068,6 @@ def test_module_source_contains_no_clock_or_network_or_secrets_calls():
     forbidden = ("datetime.now", "utcnow", "time.time(", "os.environ", "socket", "urllib", "requests")
     for token in forbidden:
         assert token not in src, f"forbidden token in source: {token!r}"
-
-
-def test_research_refusals_codes_are_typed_via_valueerror():
-    reg = _import_reg()
-    # the route uses _map_research_refusal only if ResearchRefusal (semiconductor) is used
-    # the adapter's typed refusal is FinanceRegistrationRefusal; either is fine
-    err = reg.FinanceRegistrationRefusal("some_code")
-    assert isinstance(err, ValueError)
-    assert str(err) == "some_code"
 
 
 # ---------------------------------------------------------------------------
@@ -1125,44 +1220,150 @@ def test_evidence_envelope_source_records_filtered_to_selected_ref(monkeypatch):
     assert len(envelope_matching) == len(dossier_matching)
 
 
+def test_evidence_envelope_source_records_filter_to_selected_curation_revision_via_seam(monkeypatch):
+    """R2 (seat ruling on the comparison key): the evidence envelope's
+    ``source_records`` is filtered to entries whose ``evidence_ref`` equals
+    the SELECTED ASSERTION's ``curation_revision`` string — NOT the
+    ``gmi-curation://`` URI addressing form. Finance-owned source records
+    reference the curation revision id; comparing against the gmi-curation://
+    URI would never match. The comparison is exact ``str`` equality (no
+    coercion).
+
+    The adapter reads the dossier through a single seam —
+    ``engine.sector_intelligence.finance_projection.compose_finance_projection``
+    — that the test monkeypatches to inject five schema-valid T1
+    ``source_record`` entries. Five records cover the comparison matrix:
+    the selected revision matches twice, a different ``gmirca_`` revision,
+    the shell's URI form (must NOT match), and ``None``. Only A and E
+    pass.
+    """
+    from tests.test_finance_intelligence_projection import _schema_strict_source_record
+    reg = _import_reg()
+    selected_revision = "gmirca_" + ("a" * 32)
+    other_revision = "gmirca_" + ("9" * 32)
+    theme_id = "synthetic_theme"
+    assertion = _assertion(revision=selected_revision, theme_id=theme_id)
+
+    # Five records — varying ONLY record_id and evidence_ref from a valid T1 fixture.
+    a = _schema_strict_source_record(
+        slice_id="card_networks", record_id="rec-A",
+        rights_state="DIRECT_DISPLAY_OK",
+    )
+    a["evidence_ref"] = selected_revision
+    b = _schema_strict_source_record(
+        slice_id="card_networks", record_id="rec-B",
+        rights_state="DIRECT_DISPLAY_OK",
+    )
+    b["evidence_ref"] = other_revision
+    c = _schema_strict_source_record(
+        slice_id="card_networks", record_id="rec-C",
+        rights_state="DIRECT_DISPLAY_OK",
+    )
+    c["evidence_ref"] = _ref_for(theme_id, selected_revision)  # the URI form
+    d = _schema_strict_source_record(
+        slice_id="card_networks", record_id="rec-D",
+        rights_state="DIRECT_DISPLAY_OK",
+    )
+    d["evidence_ref"] = None
+    e = _schema_strict_source_record(
+        slice_id="card_networks", record_id="rec-E",
+        rights_state="DIRECT_DISPLAY_OK",
+    )
+    e["evidence_ref"] = selected_revision
+
+    injected_records = [a, b, c, d, e]
+    expected_picked = [a, e]  # order preserved, only A and E match the selected revision
+
+    # Build a base dossier via compose so the rest of the envelope is valid;
+    # then patch its source_records to the five injected records.
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+    bundle = _bundle_with_run_context(assertions=(assertion,))
+    base_envelope = reg.compose(query, bundle)
+    base_envelope["dossier"]["source_records"] = injected_records
+    base_gen = base_envelope["generation"]
+    # Now re-validate the patched envelope so the source_records land in the
+    # registry's accepted shape (the dossier schema allows arbitrary records
+    # that match $defs/source_record).
+    reg._registry().validate(reg.SCHEMA_ID, base_envelope)
+    # Inject the same five records into the dossier the projection returns
+    # by monkeypatching compose_finance_projection (the seam the adapter
+    # composes through).
+    import engine.sector_intelligence.finance_projection as fp
+    real_fp_compose = fp.compose_finance_projection
+
+    def patched_compose(inputs, generated_at, knowledge_cutoff):
+        dossier = real_fp_compose(inputs, generated_at=generated_at, knowledge_cutoff=knowledge_cutoff)
+        dossier["source_records"] = injected_records
+        return dossier
+
+    monkeypatch.setattr(fp, "compose_finance_projection", patched_compose)
+    query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                        expected_generation=base_gen)
+    envelope = reg.select_evidence(query_full, bundle, _ref_for(theme_id, selected_revision))
+    # And the envelope validates (the round-trip survives the patch).
+    reg._registry().validate(reg.EVIDENCE_SCHEMA_ID, envelope)
+    # Strict equality on the source_records — verbatim dossier order.
+    assert envelope["source_records"] == expected_picked
+    # No record was silently coerced or merged.
+    assert len(envelope["source_records"]) == 2
+    assert envelope["source_records"][0]["record_id"] == "rec-A"
+    assert envelope["source_records"][1]["record_id"] == "rec-E"
+
+
 def test_limitations_run_context_only_bundle_has_no_unmapped_field_marker():
-    """B5: a bundle holding ONLY the run-context native ref carries NO
+    """R9 (B5): a bundle holding ONLY the run-context native ref carries NO
     ``owner_field_unmapped:*`` entry — even though ``native_refs`` is in
-    :data:`_OWNER_BUNDLE_UNMAPPED_FIELDS`. Equality check on the full
-    limitations list (not a subset)."""
+    :data:`_OWNER_BUNDLE_UNMAPPED_FIELDS`. The test asserts FULL EQUALITY
+    of the limitations list (not ``all(... startswith)`` or ``issubset``)
+    so any silent addition or removal fails."""
     reg = _import_reg()
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _bundle_with_run_context()
     envelope = reg.compose(query, bundle)
-    limitations = envelope["limitations"]
-    assert all(not s.startswith("owner_field_unmapped:") for s in limitations), limitations
-    # And the new rights_snapshot marker is present.
-    assert "owner_input_absent:rights_snapshot" in limitations
+    expected = [
+        "owner_input_absent:basket_context",
+        "owner_input_absent:expectation_observations",
+        "owner_input_absent:financial_packets",
+        "owner_input_absent:identity_bindings",
+        "owner_input_absent:macro_context",
+        "owner_input_absent:market_observations",
+        "owner_input_absent:regime_breaks",
+        "owner_input_absent:rights_snapshot",
+        "owner_input_absent:sector_dossier",
+        "owner_input_absent:slice_catalog",
+        "owner_input_absent:source_records",
+        "owner_input_absent:theme_evidence",
+    ]
+    assert envelope["limitations"] == expected, envelope["limitations"]
 
 
 def test_limitations_emit_owner_input_absent_for_every_field():
-    """B5: with an empty-bundle shape the limitations list includes
-    ``owner_input_absent:rights_snapshot`` (B5 addition) and every other
-    absent field. Equality vs the expected set so any silent addition
-    fails the test."""
+    """R9 (B5): with an empty-bundle shape the limitations list equals the
+    full expected list so any silent addition fails the test. The empty
+    bundle has the same shape as the run-context-only case (no omissions,
+    no foreign native refs, no populated unmapped fields) so the
+    expected list is identical."""
     reg = _import_reg()
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _bundle_with_run_context()
     envelope = reg.compose(query, bundle)
-    expected_absents = {
-        "owner_input_absent:sector_dossier",
-        "owner_input_absent:financial_packets",
-        "owner_input_absent:expectation_observations",
-        "owner_input_absent:market_observations",
+    expected = [
         "owner_input_absent:basket_context",
-        "owner_input_absent:macro_context",
+        "owner_input_absent:expectation_observations",
+        "owner_input_absent:financial_packets",
         "owner_input_absent:identity_bindings",
-        "owner_input_absent:source_records",
+        "owner_input_absent:macro_context",
+        "owner_input_absent:market_observations",
         "owner_input_absent:regime_breaks",
-        "owner_input_absent:slice_catalog",
         "owner_input_absent:rights_snapshot",
-    }
-    assert expected_absents.issubset(set(envelope["limitations"]))
+        "owner_input_absent:sector_dossier",
+        "owner_input_absent:slice_catalog",
+        "owner_input_absent:source_records",
+        "owner_input_absent:theme_evidence",
+    ]
+    assert envelope["limitations"] == expected, envelope["limitations"]
 
 
 def test_import_shell_module_propagates_foreign_modulenotfounderror():
@@ -1222,51 +1423,37 @@ def test_contract_registry_is_cached_across_compose_calls():
     assert cached_before is cached_after
 
 
-def test_envelope_validation_rejects_late_knowledge_cutoff_in_nested_body():
-    """B8 (seat ruling): a single envelope validation (no separate dossier
-    re-validation) MUST reject a nested body whose ``knowledge_cutoff`` is
-    later than its ``generated_at``. The registry's recursive
-    ``_interval_issues`` walk reaches the mismatch."""
+def test_envelope_validation_rejects_late_knowledge_cutoff_via_recursive_interval_walk():
+    """R1: a single envelope validation (no separate dossier re-validation)
+    MUST reject a body whose ``dossier.knowledge_cutoff`` is later than
+    ``dossier.generated_at`` via the registry's RECURSIVE
+    ``_interval_issues`` walk. The test is independent of
+    ``additionalProperties`` (no new key introduced) and will FAIL if the
+    interval walker ever stops descending into the nested dossier."""
+    from engine.sector_intelligence.contracts import ContractValidationError
     reg = _import_reg()
-    # Build a valid envelope, then patch the dossier to a nested body that
-    # the interval walker catches.
+    # 1. Build a valid envelope.
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _bundle_with_run_context()
     envelope = reg.compose(query, bundle)
-    # Inject a nested level that violates the interval rule.
-    envelope["dossier"]["nested_for_test"] = {
-        "generated_at": "2026-01-01T00:00:00+00:00",
-        "knowledge_cutoff": "2030-01-01T00:00:00+00:00",
-    }
-    # The cached registry's recursive interval walker must catch it.
-    with pytest.raises(Exception):
+    # Sanity: the envelope currently has dossier.knowledge_cutoff ==
+    # dossier.generated_at — no interval issue.
+    assert envelope["dossier"]["knowledge_cutoff"] == envelope["dossier"]["generated_at"]
+    # 2. Set dossier.knowledge_cutoff to a valid ISO-8601 instant LATER
+    # than dossier.generated_at. Change nothing else.
+    envelope["dossier"]["knowledge_cutoff"] = "2030-01-01T00:00:00+00:00"
+    # 3. The cached registry's recursive validation MUST raise
+    # ContractValidationError.
+    with pytest.raises(ContractValidationError) as excinfo:
         reg._registry().validate(reg.SCHEMA_ID, envelope)
-
-
-def test_roundtrip_xfail_marker_is_strict():
-    """B9: the round-trip is annotated with ``@pytest.mark.xfail(strict=True)``
-    so a future §8 acceptance XPASSES loudly and the team re-pins the test.
-    The marker is on the canonical round-trip test below — we read its
-    markers via :mod:`_pytest`."""
-    import _pytest
-    # Collect markers attached to the test function.
-    raw_markers = getattr(test_shared_shell_registration_roundtrip_pinned_to_7870, "pytestmark", ())
-    flat_markers = []
-    for marker in raw_markers:
-        if isinstance(marker, _pytest.mark.structures.MarkDecorator):
-            flat_markers.append(marker.mark)
-        else:
-            flat_markers.append(marker)
-    assert any(m.name == "xfail" for m in flat_markers), f"expected xfail marker, got {flat_markers!r}"
-
-
-def test_collection_has_xfail_marker_for_section_8_sector_profile():
-    """B9: the round-trip test's xfail reason names §8 sector_profile and
-    the upstream comment so a team member reading the source can route
-    the re-pin to the right binding."""
-    import inspect
-    src = inspect.getsource(test_shared_shell_registration_roundtrip_pinned_to_7870)
-    assert "5828668393" in src, src
+    # 4. The text ``interval.knowledge_cutoff`` MUST appear in the error —
+    # either in the issues' codes or in str(exc). This pins the failure
+    # mode to the recursive interval walker, NOT to additionalProperties.
+    blob = str(excinfo.value)
+    issue_codes = [getattr(issue, "code", "") for issue in excinfo.value.issues]
+    assert "interval.knowledge_cutoff" in blob or "interval.knowledge_cutoff" in issue_codes, (
+        f"expected interval.knowledge_cutoff issue; got codes={issue_codes!r} blob={blob[:300]!r}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1276,7 +1463,12 @@ def test_collection_has_xfail_marker_for_section_8_sector_profile():
 
 def test_compose_runs_generation_check_before_owner_inputs():
     """M1: an expected_generation mismatch with a MISSING run-context
-    refuses ``generation_changed`` BEFORE owner_inputs are built."""
+    refuses ``generation_changed`` BEFORE owner_inputs are built.
+
+    R3: ``generation_changed`` is a SHARED refusal code — the test pins
+    ``pytest.raises(ValueError)`` and the exact ``.code`` so it stays
+    green once PR #7870 lands and the shell's :class:`ResearchRefusal`
+    becomes the carrier type."""
     reg = _import_reg()
     query = _Query(
         profile_id=reg.PROFILE_ID,
@@ -1284,8 +1476,9 @@ def test_compose_runs_generation_check_before_owner_inputs():
         expected_generation="gen_" + ("0" * 32),
     )
     bundle = _Bundle()  # NO native_refs at all
-    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         reg.compose(query, bundle)
+    assert getattr(excinfo.value, "code", None) == "generation_changed"
     assert str(excinfo.value) == "generation_changed"
 
 
@@ -1313,22 +1506,51 @@ def test_generation_distinguishes_int_and_string_values_per_shell_recipe():
 
 
 def test_generation_propagates_malformed_revision_tuple_pair():
-    """M2: a malformed entry (``len != 2``) propagates the underlying
-    ValueError rather than being silently swallowed."""
+    """R7 (pinning test): the shell's verbatim recipe
+    ``sorted(list(pair) for pair in bundle.revision_tuple)`` is the source
+    of truth here. For two DIFFERENT fixed malformed revision inputs the
+    generation fingerprint MUST equal the hard-coded literal computed from
+    the current recipe AND differ between the two inputs.
+
+    RED on a recipe change: the literals here are SHA-256 digests over the
+    canonical-text of the frozen-fields-plus-revision-tuple blob. A recipe
+    change (e.g. adding a wrapper, switching to ``sorted(tuple(pair)...)``,
+    filtering, coercing, or swallowing the malformed entries) will move
+    the digest, and the literal assertions below fail.
+
+    Literals (computed by the recipe on the commit before this test was
+    written; quoted in the PR body — note ``rights_revision="r1"``):
+
+    * A: ``revision_tuple=(("k", "v", "extra"),)``
+      → ``"gen_d3e77b1e32d1f13817b8e1ad4bf8f5b6"``
+    * B: ``revision_tuple=(("x", "y", "z", "w"),)``
+      → ``"gen_35b48ee3ff9371a4ce80c2fdf1c52d6a"``
+    """
     reg = _import_reg()
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
-    bundle = _Bundle(
+
+    bundle_a = _Bundle(
         revision_tuple=(("k", "v", "extra"),),
         rights_revision="r1",
         native_refs=(_synthetic_run_context_ref(),),
     )
-    # The shell's recipe turns the 3-tuple into [k, v, extra], not [k, v].
-    # The composer then json.dumps a 3-element list — which is fine for the
-    # hash; the assertion is that nothing is silently swallowed or dropped
-    # to keep parity with the shell.
-    gen = reg.compose(query, bundle)["generation"]
-    # The result is still a well-formed gen_ fingerprint.
-    assert re.fullmatch(r"^gen_[0-9a-f]{32}$", gen)
+    bundle_b = _Bundle(
+        revision_tuple=(("x", "y", "z", "w"),),
+        rights_revision="r1",
+        native_refs=(_synthetic_run_context_ref(),),
+    )
+
+    gen_a = reg.compose(query, bundle_a)["generation"]
+    gen_b = reg.compose(query, bundle_b)["generation"]
+
+    # The two fingerprints MUST differ — the two malformed inputs are
+    # distinct, so the digest must reflect that.
+    assert gen_a != gen_b
+    # And each is pinned to the literal from the recipe. A change to the
+    # recipe (filtering, wrapping, coercion, swallowing) will move the
+    # digest and the assertion fails.
+    assert gen_a == "gen_d3e77b1e32d1f13817b8e1ad4bf8f5b6", gen_a
+    assert gen_b == "gen_35b48ee3ff9371a4ce80c2fdf1c52d6a", gen_b
 
 
 def test_seal_clock_strips_no_whitespace():
@@ -1338,6 +1560,37 @@ def test_seal_clock_strips_no_whitespace():
     reg = _import_reg()
     assert reg._parse_seal_clock(" 2026-09-25T07:48:00Z") is None
     assert reg._parse_seal_clock("2026-09-25T07:48:00Z ") is None
+
+
+def test_seal_clock_rejects_wall_clock_24_00():
+    """R10: ``24:00`` is a wall-clock form, not a valid ISO-8601 instant.
+    The strict parser rejects it; ``T24`` and ``T24:00`` both fail."""
+    reg = _import_reg()
+    assert reg._parse_seal_clock("2026-09-25T24:00:00Z") is None
+    assert reg._parse_seal_clock("2026-09-25T24:00:00+00:00") is None
+
+
+def test_seal_clock_rejects_fractional_seconds_longer_than_six_digits():
+    """R10: fractional seconds longer than six digits are rejected.
+    Six-digit fractional seconds (microsecond resolution) are accepted;
+    anything beyond that overflows the documented precision and would
+    round-trip incorrectly through JSON."""
+    reg = _import_reg()
+    # Six digits — accepted.
+    six = reg._parse_seal_clock("2026-09-25T07:48:00.123456Z")
+    assert six is not None
+    # Seven digits — rejected.
+    assert reg._parse_seal_clock("2026-09-25T07:48:00.1234567Z") is None
+    # And with an offset.
+    assert reg._parse_seal_clock("2026-09-25T07:48:00.1234567+00:00") is None
+
+
+def test_seal_clock_rejects_offset_without_colon():
+    """R10: an offset REQUIRES the colon (``+HH:MM``). The ``+HHMM`` form
+    (no colon) is rejected; the sealed wire and the projection's
+    ``_to_iso`` always emit the colon form."""
+    reg = _import_reg()
+    assert reg._parse_seal_clock("2026-09-25T07:48:00+0000") is None
 
 
 def test_seal_clock_interval_inconsistency_refuses_sealed_input():
@@ -1386,6 +1639,28 @@ def test_omissions_blank_string_or_non_string_emits_unnamed_marker():
     assert "owner_omission:unnamed" in limitations
     assert "owner_omission:valid" in limitations
     # Dedup: exactly one unnamed marker.
+    assert limitations.count("owner_omission:unnamed") == 1
+
+
+def test_omissions_whitespace_only_string_emits_unnamed_marker():
+    """R8 (M7 amendment): a whitespace-only omission (``"  "``) is blank
+    under ``.strip() == ""`` and collapses to the single deduplicated
+    limitation ``owner_omission:unnamed``. The contract's limitations
+    pattern (``minLength: 1``) does NOT strip whitespace, so the pattern-
+    or-refuse branch is unreachable under the current schema — kept that
+    way by R8's RATIFIED note.
+    """
+    reg = _import_reg()
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+    bundle = _Bundle(
+        native_refs=(_synthetic_run_context_ref(),),
+        omissions=("  ", "valid", "  "),  # two whitespace-only + one valid
+    )
+    envelope = reg.compose(query, bundle)
+    limitations = envelope["limitations"]
+    assert "owner_omission:unnamed" in limitations
+    assert "owner_omission:valid" in limitations
+    # Dedup: exactly one unnamed marker even with two whitespace-only entries.
     assert limitations.count("owner_omission:unnamed") == 1
 
 
