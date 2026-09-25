@@ -262,16 +262,34 @@ next_actions:
     run_ci_pack.py rebalances. Do NOT re-derive this; read the two
     `check-runs/<job>/annotations` payloads.
   - >
-    CRITICAL PATH for #8011 and every other full-suite PR, in strict order:
-    #7870 (`[DRAFT/HOLD]` Semiconductor Theme Intelligence B) lands or Robotics
-    #7908's imports are healed -> ci-pack-4 greens on main -> #6930 (armed +
-    merge-blocked, itself the ci-pack-3 heal) can land -> main greens -> pinned PRs
-    merge. Nothing downstream self-clears while #7870 is held. Receipts posted on
-    #7870 (5831855744) and #6930 (5831860668). Do NOT open a `main-red-repair`
-    carrying these two heals: pack-4 needs the Semiconductors shared BASE (mint-
-    forbidden per the ASTRA CEO ruling) or a revert of another program's merged
-    work, and pack-3 is #6930's copy decision. Allowlisting the import sweep is
-    recorded as the wrong remedy.
+    CRITICAL PATH - SUPERSEDED, read the correction below before acting. I published
+    "#7870 lands -> ci-pack-4 greens -> #6930 lands -> main greens" and posted that
+    receipt on #7870 (5831855744) and #6930 (5831860668). The pack-4 half was undone
+    by a route I did not anticipate: `e5512ef66a7 Revert "Merge #7908: Robotics Theme
+    Intelligence implementation carrier" (#8013)` landed 2026-09-25T11:01:33Z, so
+    `nyse-calendar-freshness` is green WITHOUT #7870 landing and that carrier is no
+    longer any part of the fleet's blocker. Retracted to its owner in 5835036878.
+    Durable residue: a vertical importing #7870-only modules must not merge ahead of
+    it, which is exactly what #7908 did. Remaining main red is
+    `market-os-macro-suite-pages` (#6930's copy decision) alone. Still do NOT open a
+    `main-red-repair` for it: one-PR-per-pack leaves that heal with #6930, and
+    allowlisting is recorded as the wrong remedy for the import sweep.
+  - >
+    A RED CAN BE ALREADY FIXED ON MAIN AND STILL RED ON YOUR HEAD, because CI grades
+    the MERGE REF at the moment it is taken. Run 36131411907 took its merge ref
+    2026-09-25T11:48:29Z and failed `ontology-explorer`; the fix
+    `6e83609d94d fix(ci): strip the nightly's banner tag in the ontology byte guard
+    (#8029)` landed 13:35:57Z, i.e. AFTER. The three ontology suites passed locally at
+    that same head (66 passed), which is the tell: tests green locally + red in CI +
+    an upstream fix timestamped after your merge ref = stale base, not a defect. The
+    remedy is `git merge origin/main`, never debugging the test. Do not spend a cycle
+    re-deriving this; compare the fix commit's `%cd` against the run's `createdAt`.
+  - >
+    Main's ci.yml proof was livelocked again 2026-09-25T14:44-15:28Z: 36149551398,
+    36150758771 and 36152965360 all concluded `cancelled` with 36154418482 pending -
+    sibling sessions re-dispatching over each other, the documented 2026-08-09 shape
+    where the escape hatch IS the lock. Never dispatch to "help"; 36154418482 is on
+    8f978feedf3, which is #8011's merged base, so if it survives it proves this base.
   - >
     The `codex` lane's wedge itself is still open and still operator-owned: the
     declaration was corrected, the carrier was not. Expect 35994988547 to be killed
