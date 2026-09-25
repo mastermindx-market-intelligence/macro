@@ -931,7 +931,20 @@ def _outcome(document: Document, pin: Pin, prior_note: bool) -> Outcome:
         return Outcome("conflict")
     if not (_unit_admits(primary[0].text, unit) and _unit_admits(second[0].text, unit)):
         return Outcome("unlocated")
+    if not (_neighbours_admit(document, primary[0], unit) and _neighbours_admit(document, second[0], unit)):
+        return Outcome("unlocated")
     return Outcome("present", value=primary_value, primary=primary[0], literal=primary[0].text, second=second[0])
+
+
+def _neighbours_admit(document: Document, cell: Cell, unit: str | None) -> bool:
+    row = sorted(
+        (other for other in document.tables[cell.table][cell.row] if other.row == cell.row and other.text and other is not cell),
+        key=lambda other: other.col0,
+    )
+    left = [other for other in row if other.col1 <= cell.col0]
+    right = [other for other in row if other.col0 >= cell.col1]
+    nearest = ([left[-1].text] if left else []) + ([right[0].text] if right else [])
+    return all(_unit_admits(text, unit) for text in nearest if text in _UNIT_CELLS)
 
 
 def _prior_note_present(document: Document, prior_end: date) -> bool:
