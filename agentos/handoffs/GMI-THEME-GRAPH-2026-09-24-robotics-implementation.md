@@ -18,20 +18,34 @@ state_before: >
   shared foundation). No implementation carrier, no Robotics PICKUP_ACK/START, no product
   code. Macro main at pickup was 3c93f8194f6c2cb19dad21c1347d8b3b8474aa31.
 changed:
-  - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-24-robotics-implementation.md
-  - path: tests/robotics_research_helpers.py
-  - path: tests/test_robotics_research_inputs.py
-  - path: tests/fixtures/robotics_theme_research/ (21 synthetic curation_assertion.v1 case bundles)
-  - path: contracts/market_ontology/robotics_theme_research.v1.schema.json
-  - path: engine/market_ontology/robotics_theme_research.py
-  - path: tests/test_market_ontology_robotics_theme_research.py
-  - path: tests/test_robotics_research_composition.py
-  - path: tests/test_robotics_research_temporal.py
-  - path: engine/market_ontology/robotics_owner_bundle.py
-  - path: tests/test_robotics_owner_bundle.py
-  - path: templates/_robotics_research_mount.html.j2 (RETIRED — duplicate mount plane)
-  - path: tests/test_robotics_research_mount.py (RETIRED with the partial)
-    what: "Created the implementation-operation working checkpoint: receiver identity, packet/procedure pins, current-main and shared-foundation reconciliation, Robotics custody rulings RR1-RR9, DO_NOT_REDO map, lane plan and exact next action."
+  - path: "agentos/handoffs/GMI-THEME-GRAPH-2026-09-24-robotics-implementation.md"
+    what: "The implementation-operation working checkpoint: receiver identity, packet and procedure pins, the Robotics custody rulings RR1-RR9, the architecture rulings 1-6, the DO_NOT_REDO map, the lane/gate table and the exact next action. Carries RULING 5 (the duplicate Robotics mount partial and its tests are RETIRED -- Robotics mounts by REGISTERING in the shared shell, so neither path survives on this carrier) and RULING 6 (that registration lands AFTER this carrier merges, because the shared registry imports a vertical's composer eagerly at registry-import time)."
+  - path: "tests/robotics_research_helpers.py"
+    what: "R1 shared test helpers for the Robotics evidence corpus: bundle loading, stamp recomputation and the case-id vocabulary every later Robotics battery reuses instead of restating."
+  - path: "tests/fixtures/robotics_theme_research/ (21 synthetic curation_assertion.v1 case bundles)"
+    what: "R1 evidence corpus: 21 hand-built curation_assertion.v1 bundles covering the Precision Motion and Perception slices plus the adversarial cases -- syndication, source-authority injection, integrated-assembly double count, retained backdate, review expiry, rights partiality and unresolved identity. Synthetic throughout; no vendor body text is redistributed."
+  - path: "tests/test_robotics_research_inputs.py"
+    what: "R1 input contract over the corpus: every fixture decodes under the SHARED theme_graph.curation_assertion.v1 reader and all 66 stamps recompute independently, so this vertical cannot quietly fork the shared assertion contract."
+  - path: "contracts/market_ontology/robotics_theme_research.v1.schema.json"
+    what: "R2 closed served contract for the Robotics research envelope -- deliberately the same 14-key shape as the semiconductor composer so ONE generic paid route and ONE generic client serve both. Pins section_status to ready|degraded|unavailable|refused, and records that top-level limitations carry 'rights_partial' and NEVER name the withheld family (RBV-27)."
+  - path: "engine/market_ontology/robotics_theme_research.py"
+    what: "R2 the Robotics composer: two slices (precision_motion, perception), five views, evidence selection and the coverage ladder. B2 fix at 23055bc5f89 -- emptiness now outranks omission, so a zero-selection read serves 'unavailable' instead of the PARTIAL state 'degraded'; and 'rights_partial' now requires a selection to be partial ABOUT, because the shipped client renders limitation slugs verbatim and the old token was therefore a member-facing claim of cut entitlements on a paid surface. Both lines were authored by this operation's own R2 commit 37fd0bd35471."
+  - path: "tests/test_market_ontology_robotics_theme_research.py"
+    what: "R2 composer battery including the RBV-27 leg, extended at the B2 fix with a zero-selection positive control proving the suppression fires on an EMPTY read and not only on a partial one."
+  - path: "tests/test_robotics_research_composition.py"
+    what: "R2 composition battery: view construction, ordering, and envelope identity against the shared 14-key contract."
+  - path: "tests/test_robotics_research_temporal.py"
+    what: "R2 temporal battery: as-of correctness, backdate refusal and supersession, so a later-retained correction can never be served as the current statement."
+  - path: "engine/market_ontology/robotics_owner_bundle.py"
+    what: "R4-reg the private owner-bundle loader. Coverage absence is a typed omission, never a 503. The B2 fix rewrote the served-value block to state what the code actually serves and withdrew a misattribution, and the RBV-27 paragraph now records that neither omission token changes the served payload in any way."
+  - path: "tests/test_robotics_owner_bundle.py"
+    what: "R4-reg loader battery. After B2 the zero-selection test asserts 'unavailable' with ['slice_scope_unowned'], and the RBV-27 test asserts WHOLE-PAYLOAD byte identity against a bundle composed with omissions=() -- so an empty read cannot disclose even THAT something is withheld."
+  - path: "tests/fixtures/robotics_non_regression/ (frozen baseline + README)"
+    what: "The recorded pre-change state of every frozen decision surface, so the non-regression battery compares against captured bytes rather than against its own expectations."
+  - path: "tests/test_robotics_theme_non_regression.py"
+    what: "The non-regression guard over the 32 preserved RBV cases and the frozen decision surfaces: Robotics basket membership and weights, ThemeState, Theme Tracker recommendation/lane/stage, Prophet and member ranking, entry gates, sizing, alerts and trading. Research coverage carries zero automatic decision authority; this battery is what makes that checkable rather than asserted."
+  - path: "research/theme_graph/thematic_research_20260924/ROBOTICS_SOURCE_RIGHTS_QUALIFICATION_2026-09-24.md"
+    what: "R7 per-publisher source-rights qualification matrix (the twelve M2 columns) covering every host in the corpus: the terms actually inspected, the proposed v1 representation, a minimum positive witness resolving to a real fixture assertion, and the refusal behaviour while a row is pending. Source counts and public accessibility are not an approval basis."
 verified:
   - claim: "Protected procedure re-pinned from one commit and its delta since the packet pin was read."
     command: "git fetch origin master; git rev-parse origin/master; git diff c917a75b0168a524a51b2ba0603a99118e93ef1f origin/master -- docs/sol_skills docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md"
