@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
   "asof": "2026-09-24",
-  "built_at": "2026-09-25T05:30:31.046383+00:00",
+  "built_at": "2026-09-25T17:09:14.254657+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 91.651732,
-    "net_gex_pctile": 90.9,
-    "gamma_flip": 7655.884679,
-    "spot": 7764.6401,
-    "dist_to_flip_pct": 1.40065,
-    "days_in_regime": 5,
-    "days_in_regime_observed": 5,
+    "net_gex_bn": 29.52243,
+    "net_gex_pctile": 62.5,
+    "gamma_flip": 7670.502509,
+    "spot": 7704.13,
+    "dist_to_flip_pct": 0.436487,
+    "days_in_regime": 7,
+    "days_in_regime_observed": 6,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -399,19 +399,28 @@
         "regime": "long",
         "flip": 7655.884679,
         "spot": 7764.6401
+      },
+      {
+        "date": "2026-09-25",
+        "net_gex_bn": 29.52243,
+        "regime": "long",
+        "flip": 7670.502509,
+        "spot": 7704.13
       }
     ],
     "coverage": {
-      "last_obs": "2026-09-23",
+      "last_obs": "2026-09-25",
       "expected_last_session": "2026-09-24",
-      "sessions_behind": 1,
+      "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [
         "2026-09-01",
         "2026-09-02",
         "2026-09-24"
       ],
-      "missing_in_regime": [],
+      "missing_in_regime": [
+        "2026-09-24"
+      ],
       "complete": false
     }
   },
@@ -4448,36 +4457,36 @@
     "vix_curve": [
       {
         "tenor": "M1",
-        "settle": 17.7372,
-        "dte": 28
+        "settle": 17.8081,
+        "dte": 27
       },
       {
         "tenor": "M2",
-        "settle": 18.4683,
-        "dte": 56
+        "settle": 18.5509,
+        "dte": 55
       },
       {
         "tenor": "M3",
-        "settle": 18.804,
-        "dte": 84
+        "settle": 18.9487,
+        "dte": 83
       },
       {
         "tenor": "M4",
-        "settle": 19.5975,
-        "dte": 119
+        "settle": 19.643,
+        "dte": 118
       },
       {
         "tenor": "M5",
-        "settle": 20.0213,
-        "dte": 147
+        "settle": 20.0517,
+        "dte": 146
       },
       {
         "tenor": "M6",
-        "settle": 20.2444,
-        "dte": 175
+        "settle": 20.2503,
+        "dte": 174
       }
     ],
-    "vix_curve_slope": 2.5072,
+    "vix_curve_slope": 2.4422,
     "series_start_curve": "2026-04-16"
   },
   "dispersion": {
@@ -6502,7 +6511,7 @@
     "band_1sigma_hi": 7777.91,
     "band_2sigma_lo": 7395.67,
     "band_2sigma_hi": 7905.33,
-    "gamma_flip": 7655.884679,
+    "gamma_flip": 7670.502509,
     "implied_weekly_pct": 1.67,
     "source": "spx_iv30_scaled_5d"
   },

@@ -154,7 +154,7 @@
         "components": [
           {
             "component_id": "claims_momentum",
-            "contribution": 13.31,
+            "contribution": 14.1,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -164,9 +164,9 @@
             "null_reason": null,
             "owner_field": "labor_nowcast.claims_z",
             "owner_ref": "engine.regime.labor_nowcast",
-            "raw_value": -1.6643042651205326,
+            "raw_value": -1.7622571812872405,
             "sign": 1,
-            "standardized_value": 83.29,
+            "standardized_value": 85.25,
             "weight": 0.4
           },
           {
@@ -188,7 +188,7 @@
           },
           {
             "component_id": "income_growth_proxy",
-            "contribution": 4.62,
+            "contribution": 7.19,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -198,9 +198,9 @@
             "null_reason": null,
             "owner_field": "labor_nowcast.withheld_tax_yoy_pct",
             "owner_ref": "engine.regime.labor_nowcast",
-            "raw_value": 2.956821143214494,
+            "raw_value": 4.602638384891433,
             "sign": 1,
-            "standardized_value": 68.48,
+            "standardized_value": 78.77,
             "weight": 0.25
           }
         ],
@@ -231,7 +231,7 @@
           }
         },
         "transformation": "claims z-score inverted and mapped 50-clamp(z/2.5,-1,1)*50 (elevated claims = weaker demand); Indeed 3m change and withheld-tax YoY mapped 50+clamp(pct/scale,-1,1)*50; prior-only owner reads, no in-composer estimation",
-        "value": 72.32,
+        "value": 75.68,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of standardized components, weights renormalized over present components; initial-claims momentum 0.40, Indeed job-postings momentum 0.35, withheld-tax income-growth proxy 0.25"
       },
@@ -311,8 +311,8 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 72.32,
-        "delta": 0.81,
+        "current_value": 75.68,
+        "delta": 4.17,
         "metric_id": "labor_demand",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 71.51
@@ -332,10 +332,13 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "labor_markets-US-c1f315990b51adff"
+    "changed_fingerprints": [
+      "claims:claims_momentum:547672dfc84dc45a",
+      "withheld_tax:income_growth_proxy:af127d3353cd6744"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native source components changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "labor_markets-US-acfeb49304bf313c"
   },
   "drivers": {
     "balance_sheet": [
@@ -372,16 +375,16 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "claims_momentum",
-        "impact_magnitude": 13.31,
+        "impact_magnitude": 14.1,
         "impact_sign": 1,
         "label": {
           "en": "Initial-claims momentum",
           "zh": "初请失业金动能"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=83.29, weight=0.4",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=85.25, weight=0.4",
         "owner_field": "labor_nowcast.claims_z",
         "unit": "z_score",
-        "value": -1.6643042651205326
+        "value": -1.7622571812872405
       },
       {
         "coverage_state": "PRESENT",
@@ -400,25 +403,25 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "income_growth_proxy",
-        "impact_magnitude": 4.62,
+        "impact_magnitude": 7.19,
         "impact_sign": 1,
         "label": {
           "en": "Withheld-tax income growth (proxy)",
           "zh": "预扣税收入增长（代理指标）"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=68.48, weight=0.25",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=78.77, weight=0.25",
         "owner_field": "labor_nowcast.withheld_tax_yoy_pct",
         "unit": "percent",
-        "value": 2.956821143214494
+        "value": 4.602638384891433
       }
     ]
   },
   "generation": {
-    "built_at": "2026-09-25T05:30:38Z",
+    "built_at": "2026-09-25T17:09:19Z",
     "calculation_as_of": "2026-09-24",
-    "code_version": "d8a2f9d85b7b218faa0c63aa343be76440281481",
-    "content_sha256": "acfeb49304bf313c2f987a85b016d9f1aa6c7555dd2e832ac0792d976d82e355",
-    "generation_id": "labor_markets-US-acfeb49304bf313c",
+    "code_version": "70579fa0fa229f61d995492f9d74ea27d51f17a3",
+    "content_sha256": "a51f2aad2652b967f34c265a7ffd4f9c59d54824bdf3fa201ef052aba2e089a0",
+    "generation_id": "labor_markets-US-a51f2aad2652b967",
     "producer": "engine.market_os.macro_workspaces.labor",
     "rendered_at": null
   },
@@ -434,12 +437,12 @@
     "movement_state": null,
     "nearest_boundary": {
       "axis": "labor_demand",
-      "distance": 22.32,
+      "distance": 25.68,
       "null_reason": null
     },
     "null_reason": null,
     "one_month_vector": {
-      "dx": 0.81,
+      "dx": 4.17,
       "dy": 0.0,
       "null_reason": null,
       "status": "PRESENT",
@@ -452,7 +455,7 @@
       "state_id": "B"
     },
     "quadrant": {
-      "x": 72.32,
+      "x": 75.68,
       "x_status": "PRESENT",
       "y": 76.35,
       "y_status": "PRESENT"
@@ -467,7 +470,7 @@
       "en": "Labor demand / supply-tightness regime",
       "zh": "劳动力需求 / 供给紧张度状态"
     },
-    "transition_distance": 0.81
+    "transition_distance": 4.17
   },
   "implications": {
     "items": [
@@ -490,8 +493,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US labor market reads B - Strong hiring / Tight market (labor demand 72.3, labor supply/tightness 76.3, boundary 50).",
-          "zh": "美国劳动力市场读数为 B - 招聘强劲 / 市场偏紧（劳动力需求 72.3，劳动力供给/紧张度 76.3，分界 50）。"
+          "en": "US labor market reads B - Strong hiring / Tight market (labor demand 75.7, labor supply/tightness 76.3, boundary 50).",
+          "zh": "美国劳动力市场读数为 B - 招聘强劲 / 市场偏紧（劳动力需求 75.7，劳动力供给/紧张度 76.3，分界 50）。"
         },
         "trace_ref": "data/regime/latest.json#labor_nowcast"
       }
@@ -544,7 +547,7 @@
           "value": null
         },
         "unit": "score",
-        "value": 72.32,
+        "value": 75.68,
         "value_type": "score_0_100"
       },
       {
@@ -616,7 +619,7 @@
           "value": null
         },
         "unit": "persons",
-        "value": 203250.0,
+        "value": 202250.0,
         "value_type": "count"
       },
       {
@@ -652,7 +655,7 @@
           "value": null
         },
         "unit": "persons",
-        "value": 1730000.0,
+        "value": 1719000.0,
         "value_type": "count"
       },
       {
@@ -688,7 +691,7 @@
           "value": null
         },
         "unit": "pct",
-        "value": -10.659340659340655,
+        "value": -11.098901098901104,
         "value_type": "percent"
       },
       {
@@ -724,7 +727,7 @@
           "value": null
         },
         "unit": "stddev",
-        "value": -1.6643042651205326,
+        "value": -1.7622571812872405,
         "value_type": "z_score"
       },
       {
@@ -832,7 +835,7 @@
           "value": null
         },
         "unit": "pct",
-        "value": 2.956821143214494,
+        "value": 4.602638384891433,
         "value_type": "percent"
       },
       {
