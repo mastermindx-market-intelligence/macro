@@ -1,8 +1,8 @@
 {
-  "as_of": "2026-09-22",
-  "built_at": "2026-09-23T08:40:36Z",
+  "as_of": "2026-09-24",
+  "built_at": "2026-09-25T07:44:08Z",
   "latest_pulse": {
-    "date": "2026-09-22",
+    "date": "2026-09-24",
     "class": "quiet",
     "market_vol_ratio": null,
     "up_share": null,
@@ -11,7 +11,7 @@
     "megacap_rvol": {},
     "calendar": {
       "is_quarter_end": false,
-      "td_to_quarter_end": 6,
+      "td_to_quarter_end": 4,
       "in_qtr_end_window": false,
       "is_russell_recon_session": false,
       "in_recon_week": false,
@@ -32,21 +32,21 @@
       "types": [
         "quarter_end"
       ],
-      "td_to": 6
+      "td_to": 4
     },
     {
       "date": "2026-12-18",
       "types": [
         "sp_rebalance"
       ],
-      "td_to": 62
+      "td_to": 60
     },
     {
       "date": "2026-12-31",
       "types": [
         "quarter_end"
       ],
-      "td_to": 70
+      "td_to": 68
     }
   ],
   "recent_events": [],

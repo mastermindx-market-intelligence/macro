@@ -346,6 +346,15 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "Note": _pair("Note", "中期国债"),
     "Bill": _pair("Bill", "短期国债"),
     "Bond": _pair("Bond", "长期国债"),
+    # Policy-lever state (`scripts/build_policy_lever.py`, frozen v1 PS-R9:
+    # QUIET | ELEVATED | ARMED), republished by the monetary_policy workspace as
+    # the categorical `policy_uncertainty_state`. The producer's tokens are
+    # UPPER-CASE and `label()` matches exactly, so the 2026-09-23 bake deslugged
+    # `QUIET` into an untranslated "Quiet" ZH span on macro_monetary_policy.html
+    # (copy-law red). Same pairs the dashboard / allocation cards already use.
+    "QUIET": _pair("Quiet", "平静"),
+    "ELEVATED": _pair("Elevated", "警戒"),
+    "ARMED": _pair("Armed", "已触发"),
 }
 
 # --- metric identities -------------------------------------------------------

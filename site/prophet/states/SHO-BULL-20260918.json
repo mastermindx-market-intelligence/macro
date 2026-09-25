@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SHO-BULL-20260918",
-  "asof": "2026-09-23",
+  "asof": "2026-09-25",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 75.9,
-  "raw_confidence": 78.0,
-  "delta_vs_base": 15.9,
+  "management_confidence": 62.0,
+  "raw_confidence": 57.0,
+  "delta_vs_base": 2.0,
   "recommended_action": "hold",
-  "human_state": "On Track",
+  "human_state": "Needs Follow-Through",
   "components": {
-    "validity": 100.0,
-    "progress": 47.2,
-    "pace": 100.0,
+    "validity": 89.8,
+    "progress": 0.0,
+    "pace": 90.0,
     "retention": 50.0,
-    "overlay": 67.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.921,
-    "dist_to_t1_r": 0.579,
-    "dist_to_t2_r": 2.078,
-    "horizon_pct_used": 11.1,
-    "p1": 0.6141,
-    "p2": 0.3071,
+    "dist_to_stop_r": 0.923,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 2.999,
+    "horizon_pct_used": 15.6,
+    "p1": -0.0512,
+    "p2": -0.0256,
     "p3": null,
-    "move_r": 0.921,
+    "move_r": -0.077,
     "mfe_r": 0.921,
-    "mae_r": -0.0
+    "mae_r": -0.077
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.11999984741211023,
-  "_mae": -3.814697180359872e-08,
+  "_mae": -0.010000267028807741,
   "_max_p1": 0.6141240911571624,
   "_first_trigger_ts": "2026-09-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 5,
-  "tau": 0.1111
+  "days_elapsed": 7,
+  "tau": 0.1556
 }
