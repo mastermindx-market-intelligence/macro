@@ -73,6 +73,9 @@ def source_bundle():
             "session": origin.isoformat(),
             "decision_at": decision.isoformat(),
             "price_bundle_ref": "synthetic:dual-basis:bundle-v1",
+            "price_rights_ref": "synthetic:price-rights:v1",
+            "feature_price_identity": {"session": "regular", "venue_scope": "consolidated"},
+            "label_price_identity": {"session": "regular", "venue_scope": "consolidated"},
             "feature_sadj_ref": "synthetic:sadj:feature-v1",
             "feature_tradj_ref": "synthetic:tradj:feature-v1",
             "feature_adjustment_asof": (closes[origin] + timedelta(minutes=6)).isoformat(),
@@ -83,6 +86,7 @@ def source_bundle():
             "event_evidence": {
                 "known_at": (decision - timedelta(days=2)).isoformat(),
                 "coverage_ref": "synthetic:event-window:v1",
+                "rights_ref": "synthetic:event-rights:v1",
                 "coverage_status": "complete_for_window",
                 "features": {"CPI": 1, "NFP": 0, "FOMC": 0},
                 "event_times": {
@@ -214,6 +218,43 @@ class PrepareC1(unittest.TestCase):
         b = copy.deepcopy(self.bundle)
         b["origins"][0]["event_evidence"]["coverage_status"] = "partial"
         with self.assertRaisesRegex(ValueError, "event_coverage_unavailable"):
+            prep.prepare_packet(b)
+
+    def test_price_session_and_venue_identity_are_required_and_carried(self):
+        packet = prep.prepare_packet(self.bundle)
+        evidence = packet["rows"][0]["source_evidence"]
+        self.assertEqual(evidence["feature_price_identity"], {"session": "regular", "venue_scope": "consolidated"})
+        self.assertEqual(evidence["label_price_identity"], {"session": "regular", "venue_scope": "consolidated"})
+
+        b = copy.deepcopy(self.bundle)
+        del b["origins"][0]["feature_price_identity"]
+        with self.assertRaisesRegex(ValueError, "price_identity_unavailable"):
+            prep.prepare_packet(b)
+
+        b = copy.deepcopy(self.bundle)
+        b["origins"][0]["label_price_identity"]["session"] = "post"
+        with self.assertRaisesRegex(ValueError, "unsupported_price_session_scope"):
+            prep.prepare_packet(b)
+
+        b = copy.deepcopy(self.bundle)
+        b["origins"][0]["feature_price_identity"]["venue_scope"] = "unknown"
+        with self.assertRaisesRegex(ValueError, "price_venue_scope_unavailable"):
+            prep.prepare_packet(b)
+
+    def test_price_and_event_rights_references_are_required_and_carried(self):
+        packet = prep.prepare_packet(self.bundle)
+        evidence = packet["rows"][0]["source_evidence"]
+        self.assertEqual(evidence["price_rights_ref"], "synthetic:price-rights:v1")
+        self.assertEqual(evidence["event_rights_ref"], "synthetic:event-rights:v1")
+
+        b = copy.deepcopy(self.bundle)
+        del b["origins"][0]["price_rights_ref"]
+        with self.assertRaisesRegex(ValueError, "price_rights_unavailable"):
+            prep.prepare_packet(b)
+
+        b = copy.deepcopy(self.bundle)
+        del b["origins"][0]["event_evidence"]["rights_ref"]
+        with self.assertRaisesRegex(ValueError, "event_rights_unavailable"):
             prep.prepare_packet(b)
 
     def test_output_remains_nonadmitted_even_when_inputs_have_owner_refs(self):
