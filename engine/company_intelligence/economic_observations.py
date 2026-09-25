@@ -176,7 +176,7 @@ def _validate_row_structure(
                 "event_id": absence_payload.get("event_id"),
                 "document_id": absence_payload.get("document_id"),
             })
-        except ValueError as exc:
+        except (TypeError, ValueError) as exc:
             raise EconomicObservationError(str(exc)) from exc
         if absence_payload.get("authority") != "context_only":
             raise EconomicObservationError("typed_absence authority is not display context")
@@ -406,8 +406,11 @@ def _validate_envelope_rows(
             duplicate_scope=False,
         )
         metric = row.get("metric")
-        normalized = json.loads(json.dumps(dict(row)))
-        if normalized != replayed[metric]:
+        try:
+            serialised = json.dumps(dict(row), sort_keys=True)
+        except (TypeError, ValueError) as exc:
+            raise EconomicObservationError("selected observation is not JSON data") from exc
+        if serialised != json.dumps(replayed[metric], sort_keys=True):
             raise EconomicObservationError("selected observation does not replay from source bytes")
         if "value" in row:
             _validate_envelope_span(row, source=source)
