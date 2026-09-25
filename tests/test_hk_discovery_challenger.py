@@ -1164,7 +1164,7 @@ def _reader_row(date: str, ticker: str, *, definition: str = "hk_discovery_v1") 
         "availability_source": "hk_signal_gate",
         "visible_to_user": False,
         "published_authority": False,
-        "stamped_at": "2026-09-20T12:00:00+00:00",
+        "stamped_at": ASOF + "T12:00:00+00:00",
     }
 
 
