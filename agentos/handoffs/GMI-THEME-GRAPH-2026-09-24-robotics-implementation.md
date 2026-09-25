@@ -385,3 +385,42 @@ closing it. A READ_ONLY independent review of `23055bc5f89` is commissioned with
 adversarial brief (own byte-identity probe, reachability enumeration of the coverage states,
 strongest case AGAINST the suppression ruling, mutation of both edited lines). B2 stays
 unintegrated-as-proven until it returns and I adjudicate.
+
+## RULING 7 — the carrier's HOLD gated itself; it gates release, not merge (#7908 issuecomment-5827514263, 2026-09-25)
+
+The carrier's own description said "Draft/HOLD: no merge, no label, no release until the
+master packet's completion law is met." That is circular. Completion criteria 2 and 7 require
+the existing Theme Tracker and `basket/robotics_automation.html` to SHOW the paid research
+result; that needs the mount registration; and RULING 6 places the registration after this
+carrier merges, because `theme_research_registry.py` binds `compose` and
+`select_authorized_evidence` by EAGER module-top import. Merge <- completion <- page <-
+registration <- merge. Two completion criteria were unreachable and the HOLD held against itself.
+
+**Checked against the packet's text, not my summary of it.** The packet never forbids merging
+this carrier. Its §3 anti-criteria end "The mission is not complete when ... a PR merges" —
+merge is INSUFFICIENT, not forbidden. Line 180's "do not merge automatically" is about #7773,
+the packet PR. Line 473 constrains CHILDREN. Line 594 says "do not treat CI/merge as product
+acceptance." And the Chairman's closing charge, line 661, says "Do not stop at infrastructure,
+CI, merge or a partial page" — which presumes the mission passes THROUGH merge. The law is
+merge-is-not-acceptance, and the carrier body over-read it into completion-precedes-merge.
+
+**Ruling.** The HOLD gates label, release, live admission and any MISSION_COMPLETE claim.
+Merge becomes permissible only on all four of: exact-head gates A/B/C/D at baseline;
+independent review passed (completion-law item 6 — the item that genuinely gates merge);
+the non-regression freeze holding (item 5); and CI green apart from
+`ci-authority/codex/merge-queue-pilot` (`allowed: true / ordinary_change`, failing only on
+`inactive_base_context`). Merging is NOT a completion claim — criteria 1, 2, 3, 4, 7, 8 stay
+open after it and live admission stays exactly where it was.
+
+**Consequent ordering, simpler than RULING 6 first implied.** #7908 merges FIRST. #7870 is
+`dirty` against main and must rebase anyway; rebased onto a main that already carries
+`robotics_theme_research.py`, it can register BOTH verticals in its own registration, eagerly,
+with no dangling module reference and **no third follow-up PR**. Rejected alternative: making
+`compose`/`select_authorized_evidence` lazy so registration could land first — it would put a
+registry entry for a non-existent vertical on main between the two merges, and would mean
+editing the shell owner's module for ordering convenience alone.
+
+**Falsifier.** If the packet owner intends "no merge until completion law" literally, this
+ruling is wrong — and then criteria 2 and 7 are unreachable as specified and the packet needs
+an amendment, because no ordering of merges satisfies both. Nothing is merged on this ruling
+today: the independent-review gate is open.
