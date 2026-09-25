@@ -88,6 +88,7 @@
   .cortex-list { margin:3px 0 0 16px; padding:0; font-size:13px; }
   .cortex-list li { margin:2px 0; }
 {% include "_aibrief_css.j2" %}
+{% include "_mor2b_blocks_css.j2" %}
 </style>
 </head>
 <body>
@@ -125,7 +126,7 @@
 <div class="panel">
   <div class="mx-block-header">
     <span class="eyebrow">{{ t('Morning Orientation', '盘前导读') }}</span>
-    <h2 style="margin:0">{{ t('Before the US open — one read', '美股开盘前 — 一览') }}</h2>
+    <h2>{{ t('Before the US open — one read', '美股开盘前 — 一览') }}</h2>
     <span class="mx-chip-slot">
       <span class="dtp-chip dtp-chip--{{ _ame_chip[0] }}">
         {% if _ame_chip[2] %}<i class="dtp-dot"></i>{% endif %}

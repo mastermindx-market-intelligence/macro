@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture the aibrief.html Morning Orientation band — 2 PNGs (dark, light) at 1440.
+"""Capture the aibrief.html Morning Orientation band — 8 PNGs: {dark, light} x {EN, ZH} x {1440, 390}.
 
 Per §5 of the MOR-2b build packet: lanes B and C carry an evidence matrix in the
 PR body. Lane C adds the aibrief band — two cells:
@@ -34,8 +34,8 @@ from playwright.sync_api import sync_playwright  # noqa: E402
 
 OUT_DIR = _ROOT / "mockups" / "evidence" / "aibrief_band"
 SHOTS_DIR = OUT_DIR / "shots"
-VIEWPORTS = {"desktop": (1440, 900)}
-LOCALES = ("en",)
+VIEWPORTS = {"desktop": (1440, 900), "mobile": (390, 844)}
+LOCALES = ("en", "zh")
 THEMES = ("dark", "light")
 
 _APPLY_STATE_SCRIPT = """

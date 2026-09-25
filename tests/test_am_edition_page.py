@@ -15,6 +15,8 @@ from pathlib import Path
 import pytest
 
 from lib import nyse_calendar
+
+ROOT = Path(__file__).resolve().parents[1]
 from scripts.build_am_edition import (
     STATES,
     build_payload,
@@ -461,6 +463,14 @@ def _build_payload(tmp_path: Path, blocks: list[dict]) -> dict:
     }
 
 
+def _panel_html(html: str, eyebrow_en: str) -> str:
+    """Return the <div class="panel"> chunk whose eyebrow carries ``eyebrow_en``."""
+    chunks = html.split('<div class="panel">')
+    hits = [c for c in chunks[1:] if eyebrow_en in c]  # chunk 0 = everything before the first panel (head + nav)
+    assert hits, f"no panel with eyebrow {eyebrow_en!r}"
+    return hits[0]
+
+
 def _strip_html(html: str) -> str:
     """Remove style/nav/script blocks and tags so we can search visible text."""
     text = re.sub(r'<style[^>]*>.*?</style>', ' ', html, flags=re.DOTALL)
@@ -599,9 +609,14 @@ def test_owner_links_renders_stale_with_last_known_rows(tmp_path):
     assert "dtp-chip--stale" in html
     body_only = re.sub(r'<style[^>]*>.*?</style>', ' ', html, flags=re.DOTALL)
     assert 'class="mx-state-chip' not in body_only
-    # The empty placeholder must NOT be rendered for STALE.
-    # (If owner_links degrades STALE → .mx-empty, the next two would still
-    # be there for unrelated blocks; tighten by scoping to the chip text.)
+    # The empty placeholder must NOT be rendered for STALE — scoped to the
+    # owner_links panel so unrelated blocks cannot mask a regression.
+    owner = _panel_html(html, "Owner pages")
+    assert "mx-empty" not in owner, "STALE owner_links must keep its rows, not degrade to .mx-empty"
+    assert owner.count('class="mx-ol-row"') == 3
+    text = _strip_html(owner)
+    assert "Owner registry has not refreshed since 02:00 UTC." in text
+    assert "主理页面注册表自UTC 02:00起未刷新。" in text
 
 
 def test_owner_links_renders_mx_empty_in_not_covered(tmp_path):
@@ -626,13 +641,20 @@ def test_owner_links_renders_clock_from_source_as_of(tmp_path):
     key (`source_asof`, missing underscore) is NOT what the template reads."""
     blocks = _make_fresh_blocks(tmp_path)
     payload = _build_payload(tmp_path, blocks)
-    html = _render_am_edition(payload)
-    # The fixture sets source_as_of = 2026-09-08T07:30:00+00:00, sliced to
-    # "2026-09-08T07:30" — both blocks (cp + ol) and the prior header chip
-    # ensure this prefix is unique to the new blocks' clock rendering.
-    assert "2026-09-08T07:30" in html, (
-        "owner_links must render its source_as_of clock; missing key"
+    owner = _panel_html(_render_am_edition(payload), "Owner pages")
+    # Direction 1: a fixture clock renders exactly once under .dtp-asof.
+    assert 'class="dtp-asof"' in owner and "2026-09-08T07:30" in owner, (
+        "owner_links must render its source_as_of clock under .dtp-asof"
     )
+    # Direction 2: the producer emits source_as_of=None for owner_links (the
+    # static-link block has no clock); the template must then render NO clock
+    # rather than a blank or a wrong key.
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[2]["source_as_of"] = None
+    blocks[2]["source_asof"] = "1999-01-01T00:00:00+00:00"  # the wrong key must be ignored
+    owner = _panel_html(_render_am_edition(_build_payload(tmp_path, blocks)), "Owner pages")
+    assert 'class="dtp-asof"' not in owner
+    assert "1999-01-01" not in owner
 
 
 def test_new_blocks_render_title_zh_on_every_h2(tmp_path):
@@ -685,7 +707,17 @@ def test_plane_slugs_render_as_plain_words_not_raw(tmp_path):
     # Raw slug variants MUST NOT leak.
     assert "rates_and_credit" not in text
     assert "RATES_AND_CREDIT" not in text
-    assert "INTERNATIONAL" not in text or "国际" in text  # latter half checks the pair
+    assert "INTERNATIONAL" not in text
+    # Plane tags are language-switched twins via t(), never both languages
+    # painted side by side ("Rates 利率") in one language's view.
+    assert '<span class="l-en">Rates</span><span class="l-zh">利率</span>' in html
+    assert ('<span class="l-en">Rates &amp; Credit</span><span class="l-zh">利率与信用</span>' in html
+            or '<span class="l-en">Rates & Credit</span><span class="l-zh">利率与信用</span>' in html)
+    assert '<span class="l-en">International</span><span class="l-zh">国际</span>' in html
+    assert not re.search(r'<span class="mx-ol-label">[^<]*[一-鿿]', html), (
+        "owner_links plane tag must not paint ZH as a bare second span"
+    )
+    assert 'style="margin-left' not in _panel_html(html, "Owner pages")
 
 
 # ── C1: chip text uses plain words, never the enum ───────────────────────────
@@ -753,43 +785,124 @@ def test_no_translated_text_in_title_attributes_of_new_blocks(tmp_path):
 
 
 def test_new_blocks_have_no_color_or_radius_literals_in_added_css(tmp_path):
-    """The CSS lines added for the three new blocks must not carry colour or
-    radius literals. Only token references (var(--...)) are allowed."""
+    """C1/C5: the MOR-2b CSS (templates/_mor2b_blocks_css.j2) must be token-only —
+    no colour or radius literals and no var() fallback literals. Deterministic at
+    every committed head: the whole include is fed to the design checker as an
+    added-lines diff (a working-tree diff would skip at any committed head)."""
     import subprocess
+    import sys
 
-    # Use git to capture ONLY the lines we added to templates/am_edition.html.j2.
-    diff = subprocess.run(
-        ["git", "diff", "templates/am_edition.html.j2"],
-        capture_output=True, text=True, cwd=str(Path(".").resolve()),
-        check=False,
-    )
-    if diff.returncode != 0 or not diff.stdout:
-        pytest.skip("no diff in templates/am_edition.html.j2 — pre-existing state")
-    # Extract just the added lines (start with '+').
-    added_lines = []
-    for line in diff.stdout.splitlines():
-        if not line.startswith("+"):
-            continue
-        # Skip the diff header lines themselves
-        if line.startswith("+++") or line.startswith("@@"):
-            continue
-        added_lines.append(line[1:])  # drop the leading '+'
-    # Scan for colour literals (hex like #abc or #abcdef or #abcd or #abcdef00)
+    include = ROOT / "templates" / "_mor2b_blocks_css.j2"
+    css = include.read_text(encoding="utf-8")
     hex_literal = re.compile(r"#[0-9a-fA-F]{3,8}\b")
     rgb_or_rgba = re.compile(r"\brgba?\s*\(")
     radius_literal = re.compile(r"border-radius\s*:\s*\d", re.I)
+    var_fallback_literal = re.compile(r"var\(--[a-z0-9-]+\s*,\s*[#0-9]")
     bad = []
-    for line in added_lines:
-        if hex_literal.search(line):
-            bad.append(("hex", line))
-        if rgb_or_rgba.search(line):
-            bad.append(("rgb", line))
-        if radius_literal.search(line):
-            bad.append(("radius", line))
-    assert not bad, (
-        "added CSS lines must be token-only; found literals: "
-        + "; ".join(f"[{kind}] {line.strip()[:80]}" for kind, line in bad)
+    for line in css.splitlines():
+        for kind, rx in (("hex", hex_literal), ("rgb", rgb_or_rgba),
+                         ("radius", radius_literal), ("var-fallback", var_fallback_literal)):
+            if rx.search(line):
+                bad.append((kind, line.strip()[:80]))
+    assert not bad, f"token-only CSS violated: {bad}"
+    diff = subprocess.run(
+        ["git", "diff", "--no-index", "--", "/dev/null", "templates/_mor2b_blocks_css.j2"],
+        capture_output=True, text=True, cwd=str(ROOT), check=False,
+    ).stdout
+    assert "+++ b/templates/_mor2b_blocks_css.j2" in diff
+    diff_file = tmp_path / "added.diff"
+    diff_file.write_text(diff, encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, "scripts/check_design_system.py", "--mode", "enforce-added",
+         "--diff-file", str(diff_file)],
+        capture_output=True, text=True, cwd=str(ROOT), check=False,
     )
+    assert proc.returncode == 0, (proc.stdout + proc.stderr)[-2000:]
+
+
+def test_mor2b_css_is_shared_by_both_pages_not_page_local():
+    """C2/C3: the block + band rules live in ONE shared include that BOTH pages
+    load; neither page depends on rules another page defines, and the light art
+    direction is real CSS, not a comment."""
+    include = (ROOT / "templates" / "_mor2b_blocks_css.j2").read_text(encoding="utf-8")
+    am = (ROOT / "templates" / "am_edition.html.j2").read_text(encoding="utf-8")
+    brief = (ROOT / "templates" / "aibrief.html.j2").read_text(encoding="utf-8")
+    brief_css = (ROOT / "templates" / "_aibrief_css.j2").read_text(encoding="utf-8")
+    assert '{% include "_mor2b_blocks_css.j2" %}' in am
+    assert '{% include "_mor2b_blocks_css.j2" %}' in brief
+    for cls in (".mx-block-header", ".mx-chip-slot", ".mx-band", ".mx-cp-row", ".mx-rw-row", ".mx-ol-row"):
+        assert cls in include, f"{cls} must be defined in the shared include"
+        assert cls not in brief_css, f"{cls} must not be defined in _aibrief_css.j2"
+        assert re.search(re.escape(cls) + r"\s*[{,]", am) is None, f"{cls} must not be page-local on am_edition"
+    # DARK: transparent chip fill inside the MOR-2b headers; LIGHT: token-only tint, no pulse.
+    assert ".mx-block-header .dtp-chip { background:transparent;" in include
+    light_tint = 'html[data-theme="light"] .mx-block-header .dtp-chip::before {'
+    assert light_tint in include
+    tint_rule = include[include.index(light_tint):include.index("}", include.index(light_tint))]
+    assert "background:currentColor" in tint_rule and "opacity:.1" in tint_rule, "light chip tint = currentColor at 10 %"
+    assert "color-mix(" not in include, "colour functions are forbidden by the design checker"
+    assert 'html[data-theme="light"] .mx-block-header .dtp-dot { animation:none; }' in include
+    assert ".mx-stale-why" in include
+    # The chip primitive itself stays the pinned theme.css family.
+    assert ".mx-state-chip" not in include and ".mx-state-chip" not in am and ".mx-state-chip" not in brief
+
+
+# ── C3: aibrief band — session-state chip maps the producer state ──────────────
+
+
+def _render_aibrief_band(am_edition):
+    from tests.test_aibrief_page import _env as _aibrief_env
+
+    panels = {
+        "ctx_strip": {"absent": True},
+        "fwd_panel": {"absent": True, "events": [], "rebal_note_en": None, "rebal_note_zh": None},
+        "record_panel": {"absent": True},
+        "am_edition": am_edition,
+    }
+    html = _aibrief_env().get_template("aibrief.html.j2").render(as_of="2026-09-08 13:00 UTC", **panels)
+    return _panel_html(html, "Morning Orientation")
+
+
+@pytest.mark.parametrize(
+    "session_state, chip, dot, word_en, word_zh",
+    [
+        ("OPEN", "dtp-chip--live", True, "Live", "实时"),
+        ("CLOSED", "dtp-chip--stale", False, "After the close", "已收盘"),
+        ("NOT_YET_OPEN", "dtp-chip--pre", False, "Not yet open", "尚未开盘"),
+        ("WEIRD", "dtp-chip--warn", False, "Unavailable", "不可用"),
+    ],
+)
+def test_aibrief_band_session_chip_maps_the_producer_state(session_state, chip, dot, word_en, word_zh):
+    band = _render_aibrief_band({
+        "absent": False, "session_state": session_state,
+        "generated_at": "2026-09-08T13:00:00+00:00",
+        "first_tape_en": "ES S&P 500 futures is up +0.30% since yesterday's close.",
+        "first_tape_zh": "ES 标普500期货自昨日收盘以来上涨 +0.30%。",
+        "reason_en": None, "reason_zh": None, "source_state": "CURRENT",
+    })
+    assert chip in band
+    assert ('class="dtp-dot"' in band) is dot, "the pulse dot belongs to OPEN only"
+    text = _strip_html(band)
+    assert word_en in text and word_zh in text
+    assert session_state not in text, "raw enum must not reach visible copy"
+    assert "2026-09-08T13:00" in band and 'class="dtp-asof"' in band
+    assert 'href="am_edition.html"' in band and "mx-empty" not in band
+    assert "since yesterday's close" in text
+
+
+def test_aibrief_band_absent_json_renders_honest_empty_state():
+    band = _render_aibrief_band({
+        "absent": True, "session_state": None, "generated_at": None,
+        "first_tape_en": None, "first_tape_zh": None, "source_state": None,
+        "reason_en": "The morning orientation page has not built yet.",
+        "reason_zh": "今晨导读页面尚未生成。",
+    })
+    assert "mx-empty" in band and "mx-empty-why" in band
+    assert "dtp-chip--warn" in band and 'class="dtp-dot"' not in band
+    text = _strip_html(band)
+    assert "The morning orientation page has not built yet." in text
+    assert "今晨导读页面尚未生成。" in text
+    assert 'href="am_edition.html"' not in band
 
 
 # ── C4: nav entry exists for am_edition ──────────────────────────────────────
