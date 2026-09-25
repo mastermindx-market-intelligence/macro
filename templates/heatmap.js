@@ -1886,8 +1886,10 @@
         + '</div>'
         + _statCard(L('Median move', '涨跌中位数'), fmtPc(sm.med), _medWord(sm.med),
             sm.med > 0 ? 'up' : sm.med < 0 ? 'down' : '');
-      if (top) h += _statCard(L('Strongest sector', '最强板块'), fmtPc(top.agg), esc(_secName(top.name)), top.agg >= 0 ? 'up' : 'down');
-      if (bot && bot !== top) h += _statCard(L('Weakest sector', '最弱板块'), fmtPc(bot.agg), esc(_secName(bot.name)), bot.agg >= 0 ? 'up' : 'down');
+      if (top) h += _statCard(IS_THEMES ? L('Strongest theme', '最强主题') : L('Strongest sector', '最强板块'),
+            fmtPc(top.agg), esc(_secName(top.name)), top.agg >= 0 ? 'up' : 'down');
+      if (bot && bot !== top) h += _statCard(IS_THEMES ? L('Weakest theme', '最弱主题') : L('Weakest sector', '最弱板块'),
+            fmtPc(bot.agg), esc(_secName(bot.name)), bot.agg >= 0 ? 'up' : 'down');
       statsEl.innerHTML = h;
     }
     function renderBoards(sm) {
@@ -1933,7 +1935,9 @@
         +   sm.gainers.map(function (t) { return moverRow(t, gMax, 1); }).join('') + '</div>'
         + '<div class="hx-board"><h3><span class="tag dn">▼</span>' + moversLbl[1] + '</h3>'
         +   sm.losers.map(function (t) { return moverRow(t, lMax, -1); }).join('') + '</div>'
-        + '<div class="hx-board hx-board-sec"><h3>' + L('Sector leaders &amp; laggards', '板块强弱') + '</h3>'
+        + '<div class="hx-board hx-board-sec"><h3>' + (IS_THEMES
+              ? L('Theme leaders &amp; laggards', '主题强弱')
+              : L('Sector leaders &amp; laggards', '板块强弱')) + '</h3>'
         +   secHtml + '</div>';
     }
     function renderDash() {
