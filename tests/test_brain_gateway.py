@@ -4505,6 +4505,31 @@ def test_v2_same_round_commands_share_host_batch_and_sequence(tmp_path):
     assert all(c["on"] is True for c in cmds)
 
 
+def test_v2_commands_across_rounds_share_turn_batch_and_monotone_sequence(tmp_path):
+    """One user turn is one undo/provenance batch even when commands span model rounds."""
+    root = _make_temp_root()
+    first = _MockBlock("tool_use", name="emit_chart_command",
+                       input_={"op": "draw.hline", "id": "ai_r1", "args": {"p": 100.0}}, id_="r1")
+    second = _MockBlock("tool_use", name="emit_chart_command",
+                        input_={"op": "draw.hline", "id": "ai_r2", "args": {"p": 101.0}}, id_="r2")
+    turn1 = _MockResponse([first], "tool_use")
+    turn2 = _MockResponse([second], "tool_use")
+    turn3 = _MockResponse([_MockBlock("text", "Marked both. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    providers = [{"client": _MockClient([turn1, turn2, turn3]), "model": "deepseek-chat"}]
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        events = list(gw.chat_stream("mark in two steps", "userX", lane="fast",
+                                                     context={"page": "terminal"}, root=root))
+    parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
+    cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
+    assert len(cmds) == 2
+    assert cmds[0]["batch_id"] == cmds[1]["batch_id"]
+    assert [c["seq"] for c in cmds] == [0, 1]
+
+
 def test_v2_command_returned_in_nonstream_has_strict_wire_identity(tmp_path):
     """chat() returns the same strict v2 wire envelope as streaming."""
     root = _make_temp_root()
