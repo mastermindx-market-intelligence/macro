@@ -27,7 +27,7 @@ Columns, in order: **Publisher** (legal entity as named on the inspected page wh
 | Parker Hannifin Corporation (K-Series frameless motor catalogue microsite) | discover.parker.com | vendor_catalogue | 3 · `https://discover.parker.com/K-Series` (`witness_motion_parker_kseries.json[0]`) | family_recognition_only; retained_private_only; original_factual_synthesis_with_attribution; link_only | entitled private route | `https://discover.parker.com/` · 200 but an 865-byte script shell with no terms anchor · 13:22:19Z; robots.txt 200 (`Allow: /`). `https://www.parker.com/` → 403 "Access Denied" (curl 13:22:24Z; the seat's fetch tool also 403); its terms page was therefore not reached. | `terms_unreachable` (publisher blocks automated reads; no terms text was read). | none | `witness_motion_parker_kseries.json[0]` (K-Series catalogue capability, RBV-01/15) | as the first row; no quotation of any kind is proposed until a human-readable terms page is inspected | none beyond G4 (unknown acquisition restrictions cannot be recorded). |
 | ROBOTIS Co., Ltd. (Dynamixel product pages) | www.robotis.com | vendor_catalogue | 2 · `https://www.robotis.com/en/product/dynamixel-2x.php` (`integrated_assembly_double_count.json[0]`) | family_recognition_only; retained_private_only; original_factual_synthesis_with_attribution; link_only | entitled private route | `https://www.robotis.com/` → final URL `https://www.robotis.com/en/` · "ROBOTIS \| Actuator for Physical AI" · 13:22:30Z — footer links only a Privacy Policy (`/en/policyprivacy.php`); `/en/policyterms.php` → 404; robots.txt 200 (disallows `/pdf/` and admin paths; product pages not disallowed). | `silent` (no terms-of-use page located; the privacy policy is not a content licence). | none | `integrated_assembly_double_count.json[0]` (Dynamixel 2X integrated assembly, RBV-21) | as the first row | none beyond G4. |
 | Hexagon Robotics (Hexagon AB group company; press announcement) | robotics.hexagon.com | issuer_press_release_or_announcement | 2 · `https://robotics.hexagon.com/hexagon-robotics-and-schaeffler-deploy-a-fleet-of-aeon-humanoids/` (`schaeffler_hexagon_reciprocal.json[0]`) | family_recognition_only; retained_private_only; original_factual_synthesis_with_attribution; link_only | entitled private route | `https://robotics.hexagon.com/imprint/` · "Imprint - Hexagon Robotics" · 13:24:41Z (no use/copy clause on it); footer "Terms of use" → `https://hexagon.com/legal/terms-of-use` → 403 challenge page (curl on the host root 13:22:55Z; the seat's fetch tool also 403). robots.txt 200 (`Crawl-delay: 10`; `/wp-admin/` only). | `terms_unreachable` for the governing terms; the imprint page is `silent` on reproduction. | none | `schaeffler_hexagon_reciprocal.json[0]` (Schaeffler↔Hexagon two directed edges, RBV-04/05) | as the first row | none beyond G4. |
-| Zebra Technologies Corporation (press release) | www.zebra.com | issuer_press_release_or_announcement | 2 · `https://www.zebra.com/us/en/about-zebra/newsroom/press-releases/2026/skild-ai-acquires-zebra-technologies--robotics-automation-busine.html` (`zebra_skild_ownership.json[0]`) | family_recognition_only; retained_private_only; original_factual_synthesis_with_attribution; link_only | entitled private route | `https://www.zebra.com/us/en/about-zebra/company-information/legal/terms-of-use.html` · "Terms of Use \| Zebra" · no effective date found in the page text · 13:24:41Z; robots.txt 200 (218 lines; press-release path not disallowed). | READ: "Unauthorized reproduction, distribution, modification, duplication, creation of derivative works, or use of this website constitutes copyright infringement." READ: "Any use of the website not in compliance with these Terms of Use is strictly prohibited and will be deemed a breach of your agreement with Zebra to access and use the website." No press-release carve-out was found in the extracted clauses (INFERRED absence: the extraction, not the whole page, was inspected). | none | `zebra_skild_ownership.json[0]` (Zebra = announced_seller of Robotics Automation to Skild AI, RBV-10) | as the first row | none beyond G4. |
+| Zebra Technologies Corporation (press release) | www.zebra.com | issuer_press_release_or_announcement | 2 · `https://www.zebra.com/us/en/about-zebra/newsroom/press-releases/2026/skild-ai-acquires-zebra-technologies--robotics-automation-busine.html` (`zebra_skild_ownership.json[0]`) | family_recognition_only; retained_private_only; original_factual_synthesis_with_attribution; link_only | entitled private route | `https://www.zebra.com/us/en/about-zebra/company-information/legal/terms-of-use.html` · "Terms of Use \| Zebra" · no effective date found in the page text · 13:24:41Z; robots.txt 200 (218 lines; press-release path not disallowed). | READ: "Unauthorized reproduction, distribution, modification, duplication, creation of derivative works, or use of this website constitutes copyright infringement." READ: "Any use of the website not in compliance with these Terms of Use is strictly prohibited and will be deemed a breach of your agreement with Zebra to access and use the website." No press-release carve-out was found in the extracted clauses (INFERRED absence: the extraction, not the whole page, was inspected). | none | `zebra_skild_ownership.json[0]` (Zebra = the announced party of the Robotics Automation transfer to Skild AI, RBV-10; the composer serves `announced_party` and no direction — the ownership-side parse is retired in v1, carrier #7908 fix11) | as the first row | none beyond G4. |
 | 1X Technologies AS (product page "NEO hands") | www.1x.tech | vendor_catalogue | 1 · `https://www.1x.tech/discover/neos-hands` (`per_hand_multiplicity_missing.json[0]`) | family_recognition_only; retained_private_only; original_factual_synthesis_with_attribution; link_only | entitled private route | `https://www.1x.tech/` · "1X \| Home Robots" · 13:23:12Z — footer "Terms of Use" anchor points at `https://www.1x.tech/terms-and-conditions`, which returned **404** at 13:24:43Z; no robots.txt (404). | `terms_unreachable` (linked terms page absent at inspection). | none | `per_hand_multiplicity_missing.json[0]` (NEO tendon-driven hands, per-hand multiplicity missing, RBV-22) | as the first row | none beyond G4. |
 | PTC Inc. (press release) | www.ptc.com | issuer_press_release_or_announcement | 1 · `https://www.ptc.com/en/news/2026/ptc-completes-divestiture-of-kepware-and-thingworx-businesses` (`ptc_tpg_ownership.json[0]`) | family_recognition_only; retained_private_only; original_factual_synthesis_with_attribution; link_only | entitled private route | `https://www.ptc.com/` → 403 "Access Denied" (curl 13:23:21Z; the seat's fetch tool also 403); robots.txt 403. No terms text reached. | `terms_unreachable`. | none | `ptc_tpg_ownership.json[0]` (PTC completed divestiture of Kepware/ThingWorx to TPG, RBV-10/18) | as the first row | none beyond G4. |
 | Teradyne, Inc. (FY2025 Form 10-K as rendered on the investor-relations host; the filing's authoritative copy is SEC EDGAR accession 0001193125-26-059002) | investors.teradyne.com | investor_relations_page (wrapper of an SEC filing) | 1 · `https://investors.teradyne.com/sec-filings/all-sec-filings/content/0001193125-26-059002/ter-20251231.htm` (`rights_partial.json[0]`) | family_recognition_only; link_only | entitled private route | `https://investors.teradyne.com/disclaimer` · "Disclaimer :: Teradyne, Inc. (TER)" · 13:24:43Z (re-read 13:26:53Z); `https://investors.teradyne.com/` 13:23:27Z; robots.txt 200 (`Disallow: /form-submit`). The registered `sec_edgar` family's stated basis is the SEC Website Dissemination policy (`config/theme_sources.yml`, review row), which on its face concerns sec.gov. | READ: the disclaimer is an investment/forward-looking-statement disclaimer ("The information contained herein has been provided as an information service only.") and is `silent` on reproduction; the page footer attributes market data to QuoteMedia under QuoteMedia's terms (third party, not used). INFERRED, not established: whether the `sec_edgar` decision reaches a copy rendered on an IR host. | `sec_edgar` exists for EDGAR-hosted filing content (auth_class keyless_public; redistribution never claimed) — but **no `https://` prefix of any kind is in `SOURCE_PREFIX_FAMILY`**, so even an EDGAR URL maps to `None` today (observed; the shared owner's item) | `rights_partial.json[0]` (Teradyne FY2025 Robotics segment revenue as recorded in the fixture, RBV-27) | as the first row; no new admission is requested for this witness if the locator is re-pointed to EDGAR and the EDGAR prefix is registered (§4 G2) | G2: the one admitted external family is unrecognisable from a `source_uri`; and the registry cannot say "same document, different host" — a wrapper-of relation is missing. |
@@ -36,72 +36,96 @@ Columns, in order: **Publisher** (legal entity as named on the inspected page wh
 
 Not proposed for any row: `full_body_display`, `dataset_redistribution`, and (in v1) `short_quotation_with_attribution`. The corpus has no excerpt field to carry a quotation, and no publisher's inspected terms carve out quotation; if a later version adds an evidence excerpt, that is a new representation request per family, not an extension of this one. Sanhua's, Harmonic Drive Systems' and Twinny's own sites were not inspected: their documents reached the corpus only through the wrapper/host rows above, and inspecting the issuer sites would not change the wrapper questions in §4 Q1.
 
-## 2. Proposed narrowly scoped registry/prefix change (for adjudication; nothing applied)
+## 2. Narrowly scoped registry/prefix change — ADJUDICATED, recognition only
+
+> **SOL RULING #7780 issuecomment-5825621672 item 6 (2026-09-25).** "Add the narrowly
+> path-scoped publisher prefixes/family rows it already prepared with `rights_class:
+> unresolved` so the shared resolver can identify them and the emission gate can refuse them
+> explicitly. This is recognition only, not display approval. Do not create a public-source
+> exception, second rights axis, new `auth_class` or vertical-local registry. Later promotion of
+> an individual family requires its own reviewed terms. `example.invalid` remains fixture-only."
+>
+> The eleven rows below already carry `rights_class: unresolved`, so they are approved as
+> written. They are applied by the **shared rights owner** in `engine/theme_graph/rights.py`
+> and `config/theme_sources.yml`, not from the Robotics lane — two seats editing one shared
+> tuple is a collision this lane exists to prevent. Delta handed over at #7780
+> issuecomment-5825666880. Each row's `outcome` becomes `RECOGNITION ONLY per #7780
+> 5825621672 item 6 — not display approval`.
+>
+> **Recognition does not change what serves.** The corpus holds 66 assertions, each with
+> exactly one source ref (14 distinct URIs, 12 hosts). Before: all 66 unmapped, withheld from
+> ignorance. After: the 63 refs naming the eleven real publishers resolve to a named family whose
+> `rights_class` is `unresolved` and are withheld explicitly with inspected terms attached; the
+> remaining 3 are the fixture-only `example.invalid` host and stay unmapped by design. Zero
+> assertions serve from these publishers either way. That is the ruled-correct state, not a defect.
 
 Grain: one family per **publisher host × source class**, never a whole first-party domain and never "all vendor sites". Every row is `rights_class: unresolved` — the only honest value pending adjudication — and `auth_class: keyless_public` — INFERRED from the fixtures' keyless URLs, not established: this lane fetched no corpus document, the corpus carries no acquisition receipt, and every `retention_ref` is today a `research-vault://fixture/…` placeholder (real retention receipts are an R5 item); the acquisition-method restrictions found on the JPX/HKEX wrappers are NOT expressible in `auth_class` — G4. Prefixes are exact strings scoped to the corpus locator paths; two hosts (Parker's microsite, Hexagon Robotics) have exactly one corpus page each, so their prefixes are that page, not the host root — a future page on either host needs its own registration (closed exact-string registration, per Sol option A). A second publisher on the same prefix (Twinny on Orbbec's host) cannot be a second family (G1) and is recorded in the host family's notes.
 
 ```yaml
-# PROPOSED — awaiting adjudication (#7780 5814333887). Not applied. One row per publisher host × source class.
+# ADJUDICATED #7780 5825621672 item 6 — recognition only, not display approval.
+# Applied by the shared rights owner (delta handed over at #7780 5825666880).
+# One row per publisher host × source class.
 families:
   jpx_tdnet_issuer_disclosure:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "issuer-authored timely-disclosure PDFs hosted by JPX at www2.jpx.co.jp/disc/<code>/ (TDnet-fed); publisher = the issuer, wrapper = JPX (two decisions on one prefix — G1)"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); JPX terms (2026-07-29) prohibit commercial secondary use without permission and restrict generative-AI use — see qualification §4 Q1" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; JPX terms (2026-07-29) prohibit commercial secondary use without permission and restrict generative-AI use — see qualification §4 Q1" }
   hkexnews_issuer_disclosure:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "issuer-authored announcements hosted by HKEXnews at www1.hkexnews.hk/listedco/listconews/; publisher = the issuer, wrapper = HKEX (G1)"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); HKEX group ToU (2025-08-19) grants personal use only and prohibits text-and-data mining / scraping for any purpose — see §4 Q1" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; HKEX group ToU (2025-08-19) grants personal use only and prohibits text-and-data mining / scraping for any purpose — see §4 Q1" }
   orbbec_vendor_case_study:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "Orbbec case studies at www.orbbec.com/case-studies/ (host publisher Orbbec; Twinny-authored statements republished on the same page are a second publisher that this grammar cannot key — G1)"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); T&C forbid copy/reproduce/display without written permission — see §4 Q2" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; T&C forbid copy/reproduce/display without written permission — see §4 Q2" }
   parker_vendor_catalogue:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "Parker Hannifin catalogue page discover.parker.com/K-Series (exact page)"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); terms_unreachable (403 to automated reads)" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; terms_unreachable (403 to automated reads)" }
   robotis_vendor_catalogue:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "ROBOTIS product pages www.robotis.com/en/product/"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); no terms-of-use page located (silent)" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; no terms-of-use page located (silent)" }
   onex_vendor_product_page:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "1X product/discover pages www.1x.tech/discover/"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); linked terms page 404 at inspection" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; linked terms page 404 at inspection" }
   hexagon_robotics_press:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "Hexagon Robotics announcement page robotics.hexagon.com/hexagon-robotics-and-schaeffler-deploy-a-fleet-of-aeon-humanoids/ (exact page)"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); governing hexagon.com terms unreachable (403)" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; governing hexagon.com terms unreachable (403)" }
   zebra_press:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "Zebra press releases www.zebra.com/us/en/about-zebra/newsroom/press-releases/"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); ToU: unauthorized reproduction/distribution is infringement; no press carve-out found" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; ToU: unauthorized reproduction/distribution is infringement; no press carve-out found" }
   ptc_press:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "PTC news releases www.ptc.com/en/news/"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); terms_unreachable (403)" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; terms_unreachable (403)" }
   teradyne_ir_sec_wrapper:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "investors.teradyne.com/sec-filings/ (IR rendering of SEC filings; authoritative copy is EDGAR). Preferred alternative: re-point the fixture locator to EDGAR, register the EDGAR prefix for sec_edgar, and register NO new family — G2"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); prefer the re-point (§4 G2) over a new family" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; prefer the re-point (§4 G2) over a new family" }
   stabilus_press:
     rights_class: unresolved
     auth_class: keyless_public
     source_route: "Stabilus press releases group.stabilus.com/news-and-events/press-releases/"
-    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "PROPOSED — awaiting adjudication (#7780 5814333887); legal notice: may not be copied/used on other sites without permission" }
+    review: { date: "2026-09-24", by: "gmi-robotics-r7", outcome: "RECOGNITION ONLY per #7780 5825621672 item 6 — not display approval; legal notice: may not be copied/used on other sites without permission" }
 ```
 
 ```python
-# PROPOSED additions to engine/theme_graph/rights.py::SOURCE_PREFIX_FAMILY (not applied).
+# ADJUDICATED additions to engine/theme_graph/rights.py::SOURCE_PREFIX_FAMILY, for the
+# shared rights owner to apply (#7780 5825621672 item 6; delta at #7780 5825666880).
 # Exact-string prefixes scoped to the corpus locator paths (two are single pages); no host root.
 (
     ("https://www2.jpx.co.jp/disc/", "jpx_tdnet_issuer_disclosure"),
@@ -121,6 +145,44 @@ families:
 
 Why eleven families (fifteen matrix rows) and not one: the inspected terms differ per publisher (JPX: commercial secondary use prohibited without permission, generative-AI use restricted; HKEX: personal use only, text-and-data mining prohibited; Orbbec: no reproduction or display; Zebra: unauthorized reproduction is infringement; Stabilus: no copying without permission; four publishers unreachable or silent). A single "robotics_vendor" family would force one `rights_class` over incompatible terms, which Sol §4 forbids ("must not … treat every first-party domain as one permitted family"). The exchange rows carry the issuer/wrapper distinction in `source_route` and in §1 because a URL prefix can map to only one family (G1).
 
+### 2.1 Verified seam state (measured 2026-09-25) — why §2 is load-bearing, not a nicety
+
+The shared transport's emission filter (`app/theme_research.py::_filter_bundle_for_rights`,
+#7870 `f2c2893cf07`) now withholds any assertion whose source it cannot attribute. It keys on
+
+```python
+source_ref = source.get("source_uri") or source.get("locator") or ""
+family = family_for_source_ref(source_ref)
+```
+
+and withholds on `family is None`. Measured over the 21 Robotics bundle fixtures: **66 assertions, each carrying
+exactly one source ref (14 distinct URIs over 12 hosts), and all 66 resolving to `None`** — 63 of
+them naming the eleven real publishers, the remaining 3 the fixture-only `example.invalid` host
+that is unmapped by design — because `SOURCE_PREFIX_FAMILY` holds only repo-relative
+prefixes (`data/baskets/`, `finviz_themes/`, `config/theme_crosswalk.yml`) and no `https://`
+prefix of any kind. Positive control in the same run: `family_for_source_ref("data/baskets/foo")
+-> mastermind_curated`, `family_for_source_ref("zzz/nope") -> None`.
+
+Consequence, stated plainly: **until the §2 prefixes land with owner-approved families, the
+Robotics vertical serves zero assertions the moment R4 binds it.** Not a subset — all of it,
+including the 39 HDS assertions that are the corpus's largest positive witness.
+
+This changes nothing about the ask and adds no new question. Fail-closed is the correct default
+and this document does not request an exception; a vertical that serves nothing is a better
+failure than one publishing material no rights row covers. It dates and quantifies the ask, and
+it moves G1-G4 from theoretical representation gaps to the thing that decides whether the
+vertical serves at all. The remedy needs nothing in the Robotics lane: no fixture change, no
+`source_ref` addition, no Robotics-specific rights store, no second registry axis and no new
+`auth_class` value — only the eleven §2 prefixes, each naming a family the rights owner has
+approved rather than one approved by analogy (#7780 issuecomment-5814333887).
+
+**Resolved 2026-09-25 by #7780 issuecomment-5825621672 item 6.** The eleven prefixes are
+approved for RECOGNITION at `rights_class: unresolved`. The measured consequence above is
+therefore not a pending risk but the ruled-correct steady state: the vertical serves nothing
+from these publishers, and now refuses explicitly rather than from ignorance — item 4 of the
+same ruling ("the emission path may not publish from ignorance"). Promotion of any single
+family to a serving rights class requires its own reviewed terms, later.
+
 ## 3. Refusal behaviour while pending (per family) and the tests that already pin it
 
 Required behaviour for every family in §2 while `rights_class: unresolved`, and what the code at the pin actually does:
@@ -139,14 +201,38 @@ Tests in the repo that already pin the fail-closed law (names, no changes; the t
 - `tests/test_market_ontology_exposure_map.py`: `test_rights_suppression_emits_typed_null_and_leaks_nothing`.
 - Robotics: `tests/test_market_ontology_robotics_theme_research.py` RBV-27 (`rights_partial` present, withheld families never named) and the `rights_partial.json` fixture.
 
-## 4. Adjudication questions and representation gaps (returned, not decided)
+## 4. Adjudication questions and representation gaps — DISPOSED 2026-09-25
+
+> **Disposition under #7780 issuecomment-5825621672.** Q1, Q2 and Q3 are **deferred by
+> design**, not blockers: item 6 requires each family's own reviewed terms before any
+> promotion, and until then explicit refusal is correct behaviour. **G1 and G4 are closed as
+> will-not-build** — item 6 refuses a second rights axis and a new `auth_class` value, so the
+> issuer-vs-wrapper distinction, the second publisher on one host (Twinny on Orbbec's page) and
+> the "reachable but text-and-data-mining-restricted" acquisition fact stay recorded in
+> `source_route` and in the §1 matrix rows, and are not expressible in the registry grammar by
+> ruling. **G2 is closed by item 5**, which admits family `sec_edgar` at exact prefix
+> `https://www.sec.gov/Archives/` (`keyless_public`, `direct_display_ok`, SEC Website
+> Dissemination policy basis — explicitly NOT "federal-government works"). **Q4 is confirmed**
+> by item 4: unmapped assertions fail closed on emission and dependent interpretation blocks are
+> withheld with their sources; the queued Robotics composer fix and the R5 acceptance test stand
+> unchanged.
+>
+> One sequencing call this lane owns: item 5 makes §2's preferred Teradyne alternative real (drop
+> `teradyne_ir_sec_wrapper`, re-point the locator at the authoritative EDGAR copy). It is
+> **deliberately not taken yet** — the copy actually retained is the IR page, every
+> `retention_ref` is still a `research-vault://fixture/…` placeholder, and claiming `sec_edgar`
+> for an EDGAR document nobody fetched would assert a source we do not hold. The IR row stays
+> `unresolved`; the re-point is an R5 item behind a real acquisition receipt.
+
+The original questions and gaps are preserved verbatim below as the record of what was inspected.
+
 
 - **Q1 (exchange wrappers).** JPX and HKEX rows: the issuer authored the document, but our copy was retrieved through an exchange wrapper whose terms (READ) prohibit commercial secondary use and restrict generative-AI use (JPX), or grant personal use only and prohibit text-and-data mining and scraping for any purpose including AI training (HKEX). Does the wrapper's site licence govern our retention, automated extraction and factual synthesis of the issuer's disclosure for an entitled commercial consumer, or does the issuer's public-disclosure status govern? Until answered: refused, including the 39 HDS assertions that are the largest positive witness in the corpus. The acquisition method of the retained copies is part of this question (G4).
 - **Q2 (explicit no-display vendors).** Orbbec, Zebra and Stabilus state that reproduction/display without permission is prohibited. Proposed representation is deliberately limited to facts-with-attribution and a link (no quotation, no display of page content). Is original factual synthesis with attribution, served privately to entitled users, within those terms? If not, the corresponding RBV cases (02/12/15, 10, 04) cannot be served from these sources.
 - **Q3 (unreachable/silent publishers).** Parker, PTC, Hexagon (governing terms) are unreachable to automated reads; 1X's terms link is 404; ROBOTIS has no terms page. A human read of those pages (browser, no automation) is a credential-free ceremony this seat can perform only through a human-driven browser session; until then those rows stay `terms_unreachable` and refused.
 - **Q4 (interpretation dependence) — a divergence today, not an open question.** §3.2: rights-dropped inputs leave their interpretation blocks labelled stale rather than withheld. Seat fix queued (Robotics composer); transport half registered with the shared owner. Acceptance test for R5: a bundle with one rights-dropped assertion serves no interpretation text that cites it.
 - **G1 (representation gap: grain).** Current source law keys `rights_class` per family and recognises a family per URL prefix; a prefix can name only one family, so the issuer-vs-wrapper distinction that Sol asked us to preserve, and a second publisher on one host (Twinny on Orbbec's page), cannot be expressed as two families for one prefix. §2 records them in `source_route` and the matrix keeps the rows. If adjudication wants distinct rights for the issuer content and the wrapper, or per-publisher rights on one host, the registry needs a second axis (e.g. `wrapper_of:` / `publisher:` keyed on the assertion's `source.publisher`), which is the shared owner's change to design, not this seat's.
-- **G2 (representation gap: EDGAR by prefix and wrapper-of).** `SOURCE_PREFIX_FAMILY` carries no `https://` prefix at #7870 3e3a7956d014, so `sec_edgar` — the one admitted external family — is not recognised from a `source_uri` either, and nothing can say "same document, different host". Robotics' Teradyne witness should point at the EDGAR archive URL (fixture change in a later lane); the missing `https://www.sec.gov/Archives/edgar/` prefix is the shared owner's item.
+- **G2 (representation gap: EDGAR by prefix and wrapper-of).** `SOURCE_PREFIX_FAMILY` carries no `https://` prefix at #7870 3e3a7956d014, so `sec_edgar` — the one admitted external family — is not recognised from a `source_uri` either, and nothing can say "same document, different host". Robotics' Teradyne witness should point at the EDGAR archive URL (fixture change in a later lane); the missing `https://www.sec.gov/Archives/edgar/` prefix is the shared owner's item. **Measured 2026-09-25 (§2.1): the gap is not confined to `sec_edgar` — no Robotics host resolves to any family, so the emission path withholds the entire corpus, not just the EDGAR-sourced part.**
 - **G3 (per-publisher terms ≠ per-class family).** Eleven families is the smallest set that does not force one rights class over incompatible terms. If Sol prefers class-level families, the registry needs per-prefix review rows; that is the same second-axis gap as G1.
 - **G4 (acquisition-method restrictions).** `auth_class` values (house, keyless_public, receipted_scrape, entitled, licensed) cannot record "publicly reachable without credentials but automated collection / text-and-data mining restricted by the host's terms", which is what the JPX and HKEX pages say. `keyless_public` would silently overstate the permission; `receipted_scrape` describes a method, not a right. The registry needs either a new `auth_class` value or an acquisition-restriction field.
 
