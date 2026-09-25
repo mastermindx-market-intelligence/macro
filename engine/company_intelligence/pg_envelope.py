@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .pg_profile import PGDefinition
 
 from ..earnings_release.binding import BoundRelease
-from ..earnings_release.receipts import ReceiptError, mask_markup, receipt_for_char_span
+from ..earnings_release.receipts import ReceiptError, receipt_for_char_span
 
 
 _TABLE_OPEN = re.compile(r"<table\b", re.I)
@@ -49,7 +49,6 @@ _ROLES = (
     "cash_flow_reconciliation",
 )
 _REQUIRED_ROLES = frozenset(_ROLES[:7])
-_OTHER_ROLES = frozenset(_ROLES[7:])
 
 
 @dataclass(frozen=True)
@@ -94,6 +93,13 @@ class Outcome:
 
 
 @dataclass(frozen=True)
+class PeriodTitle:
+    month: int
+    day: int | None
+    year: int | None
+
+
+@dataclass(frozen=True)
 class Pin:
     metric: str
     primary: tuple[str, str, str | None, str]
@@ -111,14 +117,19 @@ def _norm(value: str) -> str:
 def _label_token(value: str) -> str:
     folded = _norm(value)
     folded = re.sub(
-        r"(?:three|six|nine|twelve)monthsended[a-z]*\.?\d{1,2},20\d{2}",
-        "three<period>",
+        r"(three|six|nine|twelve)monthsended[a-z]*\.?\d{1,2},20\d{2}",
+        r"\1<period>",
         folded,
     )
-    folded = re.sub(r"(?:three|six|nine|twelve)monthsended[a-z]*\.?\d{1,2}", "<period>", folded)
+    folded = re.sub(
+        r"(three|six|nine|twelve)monthsended[a-z]*\.?\d{1,2}",
+        r"\1<period>",
+        folded,
+    )
     folded = re.sub(r"[a-z]+-[a-z]+20\d{2}", "<period>", folded)
     folded = re.sub(r"(?:fy|fiscalyear)?20\d{2}(?:,?20\d{2})?", _PERIOD_LABEL, folded)
-    return _FOLD_NUMBERS.sub(_NUMERIC, folded)
+    folded = _FOLD_NUMBERS.sub(_NUMERIC, folded)
+    return re.sub(r"[a-z]+<n>,<period>", "<month><n>,<period>", folded)
 
 
 def _is_label(value: str) -> bool:
@@ -162,16 +173,12 @@ def _table_spans(source: str) -> tuple[tuple[int, int], ...]:
     return tuple(out)
 
 
-def _nested_table_ordinal(source: str) -> int | None:
-    opens = tuple(match.start() for match in _TABLE_OPEN.finditer(source))
-    for ordinal, start in enumerate(opens):
-        close = _TABLE_CLOSE.search(source, start + 1)
-        if close is None:
-            return ordinal
-        following = _TABLE_OPEN.search(source, start + 1, close.start())
-        if following is not None:
-            return ordinal
-    return None
+def _nested_tables(source: str) -> frozenset[int]:
+    return frozenset(
+        ordinal
+        for ordinal, (start, end) in enumerate(_table_spans(source))
+        if _TABLE_OPEN.search(source, start + 1, end) is not None
+    )
 
 
 def _grid(source: str, ordinal: int, start: int, end: int) -> tuple[tuple[Cell, ...], ...]:
@@ -225,17 +232,8 @@ def _cached_document(source: str) -> Document:
 
 
 def _wrapped(source: str) -> bool:
-    body = source.lstrip("\ufeff \t\r\n")
+    body = source.removeprefix("\ufeff").lstrip()
     return body.casefold().startswith("<document>")
-
-
-def _labels(rows: Sequence[Sequence[Cell]]) -> set[str]:
-    return {
-        _label_token(cell.text)
-        for row in rows
-        for cell in row
-        if cell.text and _is_label(cell.text)
-    }
 
 
 def _reported_quarter(document: Document, drivers_ordinal: int) -> str | None:
@@ -267,12 +265,9 @@ _VOCABULARIES = {
         'foreignexchange',
         'grooming',
         'healthcare',
-        'january-march<period>',
-        'july-september<period>',
         'mix',
         'netsales',
         'netsalesdrivers<n>)',
-        'october-december<period>',
         'organicsales',
         'organicvolume',
         'other<n>)',
@@ -283,6 +278,7 @@ _VOCABULARIES = {
     'earnings': frozenset({
         '%chg',
         '<period>',
+        'three<period>',
         'amountsinmillionsexceptpershareamounts',
         'basic',
         'basisptchg',
@@ -387,10 +383,7 @@ _VOCABULARIES = {
         'foreignexchangeimpact',
         'grooming',
         'healthcare',
-        'january-march<period>',
-        'july-september<period>',
         'netsalesgrowth',
-        'october-december<period>',
         'organicsalesgrowth',
         'totalcompany',
     }),
@@ -414,21 +407,14 @@ _VOCABULARIES = {
         'selling,generalandadministrativeexpense',
         'selling,generalandadministrativeexpenseasa%ofnetsales',
         'othernon-operatingincome/(expense),net',
-        'currency-neutraleps',
-        'currencyimpacttoearnings',
-        'currencyimpacttocoregrossmargin',
-        'currencyimpacttocoreoperatingmargin',
-        'currencyimpacttocoreselling,generalandadministrativeexpenseasa%ofnetsales',
-        'currency-neutralcoregrossmargin',
-        'currency-neutralcoreoperatingmargin',
-        'currency-neutralcoreselling,generalandadministrativeexpenseasa%ofnetsales',
-        'currencyimpacttocoreeps',
-        'currency-neutralcoreeps',
         'theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures',
     }),
     'cash_flows': frozenset({
         '(gain)/lossonsaleofassets',
         '<period>',
+        'six<period>',
+        'nine<period>',
+        'three<period>',
         'acquisitions,netofcashacquired',
         'additionstolong-termdebt',
         'additionstoshort-termdebtwithoriginalmaturitiesofmorethanthreemonths',
@@ -472,18 +458,15 @@ _VOCABULARIES = {
         'cashandcashequivalents',
         'condensedconsolidatedbalancesheets',
         'debtduewithinoneyear',
-        'december<n>,<period>',
+        '<month><n>,<period>',
         'deferredincometaxes',
         'goodwill',
         'inventories',
-        'june<n>,<period>',
         'long-termdebt',
-        'march<n>,<period>',
         'othernoncurrentassets',
         'othernoncurrentliabilities',
         'prepaidexpensesandothercurrentassets',
         'property,plantandequipment,net',
-        'september<n>,<period>',
         'theprocter&gamblecompanyandsubsidiaries',
         'totalassets',
         'totalcurrentassets',
@@ -566,7 +549,7 @@ _ANCHORS = {
     'segment_drivers': frozenset({'netsalesdrivers<n>)', 'organicsales', 'organicvolume', 'totalp&g'}),
     'earnings': frozenset({'%chg', 'consolidatedearningsinformation', 'diluted', 'netearningspercommonshare<n>)'}),
     'drivers': frozenset({'netsalesdrivers<n>)', 'organicvolume', 'totalcompany'}),
-    'core_reconciliation': frozenset({'coreeps', 'incrementalrestructuring', 'currencyimpacttocoreeps', 'currency-neutralcoreeps'}),
+    'core_reconciliation': frozenset({'coreeps', 'incrementalrestructuring', 'currencyimpacttocoregrossmargin'}),
     'change_versus_year_ago': frozenset({'changeversusyearago', 'coreeps', 'dilutedeps'}),
     'organic_reconciliation': frozenset({'netsalesgrowth', 'organicsalesgrowth', 'totalcompany'}),
     'prior_core_reconciliation': frozenset({'asreported(gaap)', 'dilutednetearningspercommonshare<n>)', 'three<period>', 'incrementalrestructuring', 'costofproductssold', 'grossprofit', 'incometaxes', 'operatingincome', 'selling,generalandadministrativeexpense', 'selling,generalandadministrativeexpenseasa%ofnetsales', 'grossmargin', 'operatingmargin', 'dilutedweightedaveragecommonsharesoutstanding', 'netearningsattributabletop&g', 'amountsinmillionsexceptpershareamounts', 'theprocter&gamblecompanyandsubsidiariesreconciliationofnon-gaapmeasures'}),
@@ -583,20 +566,10 @@ _ANCHORS = {
 
 
 def _match_role(signature: frozenset[str]) -> str | None:
-    core_anchor = (
-        {"coreeps", "incrementalrestructuring", "currencyimpacttocoreeps", "currency-neutralcoreeps"}
-        if "currencyimpacttocoreeps" in signature
-        else {"coreeps", "incrementalrestructuring", "currency-neutraleps", "currencyimpacttoearnings"}
-    )
-    has_currency_impact = bool(signature & {
-        "currency-neutraleps", "currencyimpacttoearnings",
-        "currency-neutralcoreeps", "currencyimpacttocoreeps",
-    })
     hits = [
         role for role in _ROLES
-        if (core_anchor if role == "core_reconciliation" else _ANCHORS.get(role, frozenset())) <= signature
+        if _ANCHORS.get(role, frozenset()) <= signature
         and signature <= _VOCABULARIES.get(role, frozenset())
-        and not (role == "prior_core_reconciliation" and has_currency_impact)
     ]
     if len(hits) == 1:
         return hits[0]
@@ -604,12 +577,7 @@ def _match_role(signature: frozenset[str]) -> str | None:
 
 
 def admit(source: str, fiscal_scope: Sequence[str | date]) -> Admission:
-    document = _cached_document(source)
-    admission = _admission(document, fiscal_scope)
-    if admission.roles is None:
-        return admission
-    document = Document(source, document.tables, admission.roles, fiscal_scope=fiscal_scope)
-    return Admission(admission.code, admission.roles)
+    return _admission(_cached_document(source), fiscal_scope)
 
 
 def _admission(document: Document, fiscal_scope: Sequence[str | date]) -> Admission:
@@ -620,12 +588,9 @@ def _admission(document: Document, fiscal_scope: Sequence[str | date]) -> Admiss
     if text_match is None:
         return Admission("not_ex_99_1")
     header = source[:text_match.start()]
-    type_lines = re.findall(r"(?im)^<TYPE>.*$", header)
-    if len(type_lines) != 1 or type_lines[0].rstrip("\r") != "<TYPE>EX-99.1":
+    type_matches = list(re.finditer(r"<type>(.*)", header, re.I))
+    if len(type_matches) != 1 or type_matches[0].group(0) != "<TYPE>EX-99.1":
         return Admission("not_ex_99_1")
-    nested = _nested_table_ordinal(source)
-    if nested is not None:
-        return Admission(f"unknown_table:t{nested}")
     if "\n<!-- Document created using Wdesk -->\n" not in source:
         return Admission("generator_not_workiva")
     if not document.tables or "The Procter & Gamble Company" not in _table_text(document.tables[0]):
@@ -634,6 +599,8 @@ def _admission(document: Document, fiscal_scope: Sequence[str | date]) -> Admiss
     for ordinal, signature in enumerate(document.signatures):
         role = _match_role(signature)
         if role is None:
+            return Admission(f"unknown_table:t{ordinal}")
+        if ordinal in _nested_tables(source):
             return Admission(f"unknown_table:t{ordinal}")
         role_tables.append((role, ordinal))
     required_roles = _REQUIRED_ROLES | {"prior_core_reconciliation"} if current_end.month == 9 else _REQUIRED_ROLES
@@ -649,7 +616,7 @@ def _admission(document: Document, fiscal_scope: Sequence[str | date]) -> Admiss
         if role not in roles:
             return Admission(f"required_table_missing:{role}")
     reported = _reported_quarter(document, roles["drivers"])
-    if reported != current_end.strftime("%B %-d, %Y"):
+    if reported != f"{current_end:%B} {current_end.day}, {current_end.year}":
         return Admission("quarter_mismatch")
     return Admission("F1-Q", roles)
 
@@ -675,63 +642,82 @@ def _headers_over(rows: Sequence[Sequence[Cell]], cell: Cell) -> list[str]:
     out: list[str] = []
     for row_index, row in enumerate(rows[: cell.row]):
         own = [other for other in row if other.text and other.row == row_index]
-        if len({other.col0 for other in own}) == 1 and all(other.col1 >= cell.col0 for other in own):
-            out.append(own[0].text)
+        if not own:
             continue
-        if any(_parse_period_title(other.text) is not None for other in own):
+        if any(_is_period_title(other.text) for other in own):
             out.extend(other.text for other in own if other.col0 <= cell.col0 < other.col1)
             continue
-        filled = own
-        if len({id(other) for other in filled}) == 1:
-            out.append(filled[0].text)
+        if len({id(other) for other in own}) == 1:
+            out.append(own[0].text)
             continue
-        out.extend(other.text for other in filled if other.col0 <= cell.col0 < other.col1)
+
+        if len({other.col0 for other in own}) == 1 and all(other.col1 > cell.col0 for other in own):
+            out.append(own[0].text)
+            continue
+        out.extend(other.text for other in own if other.col0 <= cell.col0 < other.col1)
     return out
 
 
 def _period_titles(rows: Sequence[Sequence[Cell]], cell: Cell) -> list[date | None]:
-    governing = [
-        parsed
-        for value in _headers_over(rows, cell)
-        if (parsed := _parse_period_title(value)) is not None
-    ]
+    governing = [value for value in _headers_over(rows, cell) if _is_period_title(value)]
     if governing:
-        return governing
+        return [_parse_period_title(value) for value in governing]
     return [
-        parsed
+        _parse_period_title(other.text)
         for row in rows
         for other in row
-        if (parsed := _parse_period_title(other.text)) is not None
+        if _is_period_title(other.text)
     ]
 
 
 def _parse_period_title(value: str) -> date | None:
     match = re.fullmatch(
-        r"Three Months Ended ([A-Z][a-z]+) (\d{1,2})(?:, (\d{4}))?",
-        value.strip(),
+        r"three months ended ([a-z]+) (\d{1,2})(?:, (\d{4}))?",
+        " ".join(value.replace("&#160;", " ").replace("<br/>", " ").split()).casefold(),
     )
     if match:
-        month, day = match.group(1), int(match.group(2))
-        if match.group(3) is not None:
-            try:
-                return date.fromisoformat(f"{int(match.group(3)):04d}-{month_number(month):02d}-{day:02d}")
-            except ValueError:
-                return None
-        return date(2000, month_number(month), day)
-    match = re.fullmatch(r"([A-Z][a-z]+) - ([A-Z][a-z]+) (\d{4})", value.strip())
-    if match:
-        try:
-            return date.fromisoformat(f"{int(match.group(3)):04d}-{month_number(match.group(2)):02d}-01")
-        except ValueError:
+        month = month_number(match.group(1))
+        day = int(match.group(2))
+        year = int(match.group(3)) if match.group(3) is not None else None
+        if month is None or not _valid_day(year, month, day):
             return None
+        return PeriodTitle(month, day, year)
+    match = re.fullmatch(r"([a-z]+) - ([a-z]+) (\d{4})", " ".join(value.replace("&#160;", " ").replace("<br/>", " ").split()).casefold())
+    if match:
+        start = month_number(match.group(1))
+        end = month_number(match.group(2))
+        year = int(match.group(3))
+        if start is None or end is None:
+            return None
+        expected_start = (end - 3) % 12 + 1
+        if start != expected_start:
+            return None
+        return PeriodTitle(end, None, year)
     return None
 
 
-def month_number(name: str) -> int:
-    return [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
-    ].index(name) + 1
+def month_number(name: str) -> int | None:
+    return _MONTH_NUMBERS.get(name.casefold())
+
+
+_MONTH_NUMBERS = {
+    "january": 1, "february": 2, "march": 3, "april": 4,
+    "may": 5, "june": 6, "july": 7, "august": 8,
+    "september": 9, "october": 10, "november": 11, "december": 12,
+}
+
+
+def _valid_day(year: int | None, month: int, day: int) -> bool:
+    lengths = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+    if year is not None and year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+        lengths[2] = 29
+    return 1 <= day <= lengths[month]
+
+
+def _is_period_title(value: str) -> bool:
+    return "ended" in _norm(value) or re.fullmatch(
+        r"[A-Za-z]+ - [A-Za-z]+ \d{4}", value.strip()
+    ) is not None
 
 
 def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *, growth: bool, required: bool) -> bool:
@@ -741,11 +727,18 @@ def _period_matches(rows: Sequence[Sequence[Cell]], cell: Cell, period: date, *,
     if len(titles) != 1:
         return False
     title = titles[0]
-    if title.year == 2000:
-        return title.month == period.month and title.day == period.day and (
-            growth or _year_over(rows, cell, period)
-        )
-    return title.month == period.month and title.year == period.year
+    if title is None:
+        return False
+    header_year = _parse_year(value) if (value := _matching_header(rows, cell)) is not None else None
+    year = title.year if title.year is not None else header_year
+    day_matches = title.day is None or title.day == period.day
+    return title.month == period.month and day_matches and (
+        growth or year == period.year
+    )
+
+
+def _matching_header(rows: Sequence[Sequence[Cell]], cell: Cell) -> str | None:
+    return next((value for value in _headers_over(rows, cell) if _parse_year(value) is not None), None)
 
 
 def _year_over(rows: Sequence[Sequence[Cell]], cell: Cell, period: date) -> bool:
@@ -759,6 +752,21 @@ def _parse_year(value: str) -> int | None:
 
 def _as_date(value: str | date) -> date:
     return value if isinstance(value, date) else date.fromisoformat(value)
+
+
+_UNIT_MARKERS = {
+    "pg_diluted_eps": "usd_per_share", "pg_prior_diluted_eps": "usd_per_share",
+    "pg_core_eps": "usd_per_share", "pg_prior_core_eps": "usd_per_share",
+}
+
+
+def _unit_for_metric(metric: str) -> str | None:
+    return _UNIT_MARKERS.get(metric) or (
+        "percentage_points" if metric in {
+            "pg_price_contribution_pp", "pg_mix_contribution_pp",
+            "pg_fx_contribution_pp", "pg_other_contribution_pp",
+        } else "percent"
+    )
 
 
 def _locate(document: Document, locator: tuple[str, str, str | None]) -> list[Cell]:
@@ -884,11 +892,15 @@ def _outcome(document: Document, pin: Pin, prior_note: bool) -> Outcome:
         return Outcome("unlocated")
     if primary_value != second_value:
         return Outcome("conflict")
+    unit = _unit_for_metric(pin.metric)
+    if (unit == "usd_per_share" and "%" in primary[0].text) or (
+        unit in {"percent", "percentage_points"} and "$" in primary[0].text
+    ):
+        return Outcome("unlocated")
     return Outcome("present", value=primary_value, primary=primary[0], literal=primary[0].text, second=second[0])
 
 
 def _prior_note_present(document: Document, prior_end: date) -> bool:
-    from .pg_profile import _scope
     ordinal = document.admission_roles["core_reconciliation"]
     if len(document.tables) <= ordinal + 1:
         return False
@@ -909,33 +921,46 @@ def _table_end(source: str, ordinal: int) -> int:
     return _table_spans(source)[ordinal][1]
 
 
-def _receipt(document: Document, cell: Cell):
-    window = mask_markup(document.source[cell.start:cell.end])
-    relative = window.find(cell.text)
-    if relative >= 0:
-        char_start = cell.start + relative
-        return receipt_for_char_span(
-            source=document.source,
-            source_sha256=document.source_sha256,
-            char_start=char_start,
-            char_end=char_start + len(cell.text),
-        )
-
-    decoded = html.unescape(window)
-    literal_start = decoded.find(cell.text)
-    if literal_start < 0:
-        raise ReceiptError("the cell has no printed literal")
-    prefix = html.unescape(window[:window.find("&", 0)])
-    char_start = cell.start + len(prefix) + (literal_start - len(prefix))
-    entity_end = window.find(";", char_start - cell.start)
-    percent_end = window.find("%", entity_end)
-    if entity_end < 0 or percent_end < 0:
-        raise ReceiptError("the cell has no printed literal")
+def _receipt(document: Document, cell: Cell) -> Any | None:
+    raw = document.source[cell.start:cell.end]
+    extents: list[tuple[int, int]] = []
+    position = 0
+    while position < len(raw):
+        if raw[position].isspace():
+            start = position
+            while position < len(raw) and raw[position].isspace():
+                position += 1
+            extents.append((start, position))
+            continue
+        if raw[position] == "<":
+            end = raw.find(">", position)
+            if end < 0:
+                return None
+            position = end + 1
+            continue
+        if raw[position : position + 1] == "&":
+            end = raw.find(";", position)
+            if end < 0:
+                return None
+            extents.append((position, end + 1))
+            position = end + 1
+            continue
+        extents.append((position, position + 1))
+        position += 1
+    decoded = html.unescape("".join(raw[start:end] for start, end in extents))
+    start = decoded.find(cell.text)
+    if start < 0 or decoded.find(cell.text, start + 1) >= 0:
+        return None
+    first = extents[start]
+    last = extents[start + len(cell.text) - 1]
+    for previous, current in zip(extents[start:start + len(cell.text)], extents[start + 1:start + len(cell.text)]):
+        if previous[1] != current[0]:
+            return None
     return receipt_for_char_span(
         source=document.source,
         source_sha256=document.source_sha256,
-        char_start=char_start,
-        char_end=cell.start + percent_end + 1,
+        char_start=cell.start + first[0],
+        char_end=cell.start + last[1],
     )
 
 
@@ -1000,8 +1025,9 @@ def extract(document: Document, admission: Admission, definitions: Sequence["PGD
             continue
         outcome = outcomes[definition.metric]
         period = prior_end.isoformat() if definition.metric in {"pg_prior_diluted_eps", "pg_prior_core_eps"} else current_end.isoformat()
-        if outcome.kind == "present" and outcome.primary is not None:
-            facts.append(_present(definition=definition, value=outcome.value, document_id=document_id, bound=bound, receipt=_receipt(document, outcome.primary), event_id=event_id, period=period))
+        receipt = _receipt(document, outcome.primary) if outcome.kind == "present" and outcome.primary is not None else None
+        if outcome.kind == "present" and outcome.primary is not None and receipt is not None:
+            facts.append(_present(definition=definition, value=outcome.value, document_id=document_id, bound=bound, receipt=receipt, event_id=event_id, period=period))
         elif outcome.kind == "conflict":
             facts.append(_absent(definition=definition, document_id=document_id, event_id=event_id, reason="cross_check_conflict", detail=f"envelope_conflict:{definition.metric}"))
         else:
