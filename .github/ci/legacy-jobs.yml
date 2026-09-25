@@ -9375,6 +9375,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_sector_intelligence_contracts.py
+          tests/test_sector_dossier_contract.py
           tests/test_launch_slo_evidence_verifier.py
           tests/test_biocatalyst_d0a_design_contract.py
           tests/test_biocatalyst_acceptance_v2.py
