@@ -340,3 +340,48 @@ the registration. This lane does **not** add it from this carrier (#7870's paths
 ask for it early. The proof above exists so the values and the binding are known-good before they
 first enter their tree. Independently agreed by the semiconductor seat at #7780 5827208326 §7;
 verified here rather than taken. Posted at #7870 issuecomment-5827332885.
+
+## The carrier's CI red was my own YAML, and two of the three failures were never failures (`e9d5be2748c`, 2026-09-25)
+
+Recorded at #7908 issuecomment-5827488856.
+
+`fence-pack` and `self-mod-fence` had been red on this carrier since before the B2 fix —
+the pre-B2 head `87ad72e9dd31` carries the identical three verdicts and `main` at
+`9051eab960a` is green on both, so it was neither B2 nor base drift.
+
+**The one genuine failure was mine.** `scripts/agentos.py validate` emitted 12 hard
+`bad-changed-entry` errors against this file: every `changed:` entry was a bare `- path:`
+with no `what:`, and the single `what:` in the block attached by YAML to the LAST entry
+rather than the first one it was written for. The block was also UNTRUE — it omitted four
+paths this carrier changes (R7, the non-regression baseline + README, the non-regression
+battery) and still listed the two paths RULING 5 retired. The machine-readable header was
+advertising the duplicate mount plane after the prose had struck it through. Now 14 entries
+accounting for all 35 changed files, nothing unaccounted. `validate`: 12 errors before,
+0 after, same command and file — which is also the positive control that the checker has reach.
+
+**Two traps that cost probes and will cost the next reader the same.**
+
+* `templates/chat.html's header no longer matches _site_nav.html.j2` is emitted by
+  `scripts/sync_chat_nav.py --selftest` as its OWN positive control. The next log lines are
+  `FIXED:` and `selftest PASS: drift detected, --fix heals both copies`; the real invocation
+  prints `chat nav sync OK`. GitHub scrapes `::error::` from stdout regardless of exit
+  status, so a PASSING self-test publishes an annotation telling the reader to hand-edit a
+  GENERATED file, on PRs that touch no template at all. **Falsifier:** run
+  `python3 scripts/sync_chat_nav.py` with no flags on this tree — `chat nav sync OK`, rc 0.
+  **So what:** an annotation is not a verdict. Read the job log around it before believing it.
+* The three `self-mod-fence: ... fail-closed` lines are the step's SOURCE echoed in the
+  `##[group]Run` header, not its output. That step passed. `self-mod-fence` is a composite
+  whose summary read `success, success, success, failure`; the failing member was the
+  agentos validation above.
+
+**The remaining red is not a carrier defect.** `ci-authority/codex/merge-queue-pilot` reports
+`allowed: true`, `reason: ordinary_change`, `authority_hit_count: 0`, failing only on
+`context_active: false / inactive_base_context` — it is scoped to base ref
+`codex/merge-queue-pilot` and this carrier's base is `main`. GitHub's `mergeable_state` for
+#7908 is `unstable`, not `blocked`, i.e. mergeable with a non-required check failing.
+
+**B2 is not yet proven.** I authored both B2 lines, so builder != reviewer forbids me from
+closing it. A READ_ONLY independent review of `23055bc5f89` is commissioned with an
+adversarial brief (own byte-identity probe, reachability enumeration of the coverage states,
+strongest case AGAINST the suppression ruling, mutation of both edited lines). B2 stays
+unintegrated-as-proven until it returns and I adjudicate.
