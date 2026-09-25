@@ -1,15 +1,15 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-09-23",
+ "as_of": "2026-09-25",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-09-23",
-  "n_new_flags": 62,
+  "as_of": "2026-09-25",
+  "n_new_flags": 60,
   "n_newly_graded": 0,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
-  "n_rows": 2603,
+  "n_rows": 2663,
   "store_repairs": {
    "renormalized": 0,
    "unreadable": []
@@ -17,11 +17,11 @@
   "unreadable_flag_dates": []
  },
  "maturity_state": "accruing",
- "n_accruing": 2603,
+ "n_accruing": 2663,
  "n_matured": 0,
  "first_maturity_est": "2026-09-25",
  "accrual_by_source": {
-  "board_buy": 2260,
+  "board_buy": 2320,
   "prophet_plan": 343
  },
  "summary": {
@@ -38,8 +38,8 @@
   "one_grader_law": "grades are computed once at maturity and never recomputed (SA-R14)"
  },
  "integrity_projection": {
-  "raw_rows": 2603,
-  "effective_rows": 2603,
+  "raw_rows": 2663,
+  "effective_rows": 2663,
   "excluded_prophet_rows": 0,
   "error": null,
   "effect": "raw learning rows remain append-only; Prophet rows require a stable plan source_ref and the current canonical signal-family date, and correction/quarantine authority excludes superseded claims from grades and cohorts"

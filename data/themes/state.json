@@ -35,7 +35,7 @@
     "name_zh": "AI \u667a\u80fd\u4f53\u4e0e\u5e94\u7528",
     "rank": 17,
     "reco": "hold",
-    "score": 54
+    "score": 55
   },
   "ai_infra": {
     "label": "dominant",
@@ -73,7 +73,7 @@
     "label": "deteriorating",
     "name": "Big Pharma",
     "name_zh": "\u5927\u578b\u836f\u4f01",
-    "rank": 13,
+    "rank": 11,
     "reco": "avoid",
     "score": 59
   },
@@ -81,7 +81,7 @@
     "label": "deteriorating",
     "name": "Critical Minerals & Rare Earths",
     "name_zh": "\u5173\u952e\u77ff\u4ea7\u4e0e\u7a00\u571f",
-    "rank": 37,
+    "rank": 38,
     "reco": "avoid",
     "score": 27
   },
@@ -113,9 +113,9 @@
     "label": "deteriorating",
     "name": "Defense & Aerospace",
     "name_zh": "\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929",
-    "rank": 30,
+    "rank": 32,
     "reco": "avoid",
-    "score": 30
+    "score": 29
   },
   "defensives": {
     "label": "deteriorating",
@@ -145,15 +145,15 @@
     "label": "deteriorating",
     "name": "Housing Chain",
     "name_zh": "\u4f4f\u623f\u4ea7\u4e1a\u94fe",
-    "rank": 39,
+    "rank": 35,
     "reco": "avoid",
-    "score": 25
+    "score": 28
   },
   "insurance": {
     "label": "deteriorating",
     "name": "Insurance & Brokers",
     "name_zh": "\u4fdd\u9669\u4e0e\u7ecf\u7eaa",
-    "rank": 31,
+    "rank": 30,
     "reco": "avoid",
     "score": 30
   },
@@ -169,7 +169,7 @@
     "label": "deteriorating",
     "name": "Managed Care & Insurers",
     "name_zh": "\u7ba1\u7406\u5f0f\u533b\u7597\u4e0e\u4fdd\u9669",
-    "rank": 29,
+    "rank": 28,
     "reco": "avoid",
     "score": 33
   },
@@ -185,15 +185,15 @@
     "label": "neutral",
     "name": "Non-AI Software",
     "name_zh": "\u975eAI\u8f6f\u4ef6",
-    "rank": 11,
+    "rank": 12,
     "reco": "hold",
-    "score": 60
+    "score": 58
   },
   "non_ai_tech": {
     "label": "neutral",
     "name": "Non-AI Tech & Hardware",
     "name_zh": "\u975eAI\u79d1\u6280\u4e0e\u786c\u4ef6",
-    "rank": 12,
+    "rank": 10,
     "reco": "hold",
     "score": 59
   },
@@ -201,7 +201,7 @@
     "label": "deteriorating",
     "name": "Nuclear & SMR Power",
     "name_zh": "\u6838\u7535\u4e0e\u5c0f\u578b\u6a21\u5757\u5316\u53cd\u5e94\u5806",
-    "rank": 35,
+    "rank": 36,
     "reco": "avoid",
     "score": 28
   },
@@ -233,9 +233,9 @@
     "label": "deteriorating",
     "name": "Power & Grid Buildout",
     "name_zh": "\u7535\u529b\u4e0e\u7535\u7f51",
-    "rank": 32,
+    "rank": 34,
     "reco": "avoid",
-    "score": 29
+    "score": 28
   },
   "quantum_computing": {
     "label": "deteriorating",
@@ -259,15 +259,15 @@
     "name_zh": "\u96f6\u552e",
     "rank": 25,
     "reco": "avoid",
-    "score": 39
+    "score": 38
   },
   "robotics_automation": {
     "label": "emerging",
     "name": "Robotics & Automation",
     "name_zh": "\u673a\u5668\u4eba\u4e0e\u81ea\u52a8\u5316",
-    "rank": 10,
+    "rank": 13,
     "reco": "enter",
-    "score": 61
+    "score": 58
   },
   "silver_miners": {
     "label": "deteriorating",
@@ -278,12 +278,12 @@
     "score": 48
   },
   "space_economy": {
-    "label": "neutral",
+    "label": "deteriorating",
     "name": "Space Economy",
     "name_zh": "\u592a\u7a7a\u7ecf\u6d4e",
     "rank": 24,
-    "reco": "hold",
-    "score": 40
+    "reco": "avoid",
+    "score": 42
   },
   "travel": {
     "label": "deteriorating",
@@ -297,7 +297,7 @@
     "label": "deteriorating",
     "name": "Uranium & Nuclear Fuel",
     "name_zh": "\u94c0\u77ff\u4e0e\u6838\u71c3\u6599",
-    "rank": 36,
+    "rank": 37,
     "reco": "avoid",
     "score": 28
   },
@@ -305,9 +305,9 @@
     "label": "deteriorating",
     "name": "Communication Services (Equal-Weight)",
     "name_zh": "\u901a\u4fe1\u670d\u52a1\uff08\u7b49\u6743\uff09",
-    "rank": 34,
+    "rank": 31,
     "reco": "avoid",
-    "score": 29
+    "score": 30
   },
   "us_sector_discretionary": {
     "label": "deteriorating",
@@ -339,7 +339,7 @@
     "name_zh": "\u533b\u7597\u4fdd\u5065\uff08\u7b49\u6743\uff09",
     "rank": 19,
     "reco": "avoid",
-    "score": 50
+    "score": 51
   },
   "us_sector_industrials": {
     "label": "deteriorating",
@@ -353,9 +353,9 @@
     "label": "deteriorating",
     "name": "Materials (Equal-Weight)",
     "name_zh": "\u6750\u6599\uff08\u7b49\u6743\uff09",
-    "rank": 28,
+    "rank": 29,
     "reco": "avoid",
-    "score": 34
+    "score": 33
   },
   "us_sector_realestate": {
     "label": "deteriorating",
@@ -369,7 +369,7 @@
     "label": "deteriorating",
     "name": "Consumer Staples (Equal-Weight)",
     "name_zh": "\u5fc5\u9700\u6d88\u8d39\uff08\u7b49\u6743\uff09",
-    "rank": 38,
+    "rank": 39,
     "reco": "avoid",
     "score": 27
   },

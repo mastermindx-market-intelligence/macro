@@ -1,16 +1,16 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-09-25T00:22:13+00:00",
+  "generated_at": "2026-09-25T13:01:45+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-09-23",
+      "asof_last_row": "2026-09-24",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
-        "graded_n": 37
+        "graded_n": 38
       },
       "windows": {
         "full": {
@@ -27,9 +27,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 2,
+            "n": 3,
             "dd_missed": 0,
-            "quiet": 2,
+            "quiet": 3,
             "quiet_rate": null
           },
           "by_scare": {},
@@ -49,9 +49,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 2,
+            "n": 3,
             "dd_missed": 0,
-            "quiet": 2,
+            "quiet": 3,
             "quiet_rate": null
           },
           "by_scare": {},
@@ -60,36 +60,36 @@
       },
       "probability_audit": {
         "definition": "us_issued_probability_audit.v1",
-        "as_of": "2026-09-24",
+        "as_of": "2026-09-25",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
-        "input_rows": 53,
+        "input_rows": 54,
         "min_display_n": 5,
         "horizons": {
           "h5": {
-            "n": 37,
+            "n": 38,
             "excluded_n": 16,
             "excluded": {
               "ungraded": 16
             },
             "from": "2026-06-23",
-            "through": "2026-08-24",
+            "through": "2026-08-25",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.027784,
+            "mean_forecast": 0.027579,
             "observed_rate": 0.0,
-            "brier": 0.000818,
-            "paired_n": 33,
+            "brier": 0.000807,
+            "paired_n": 34,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.000755,
+            "paired_model_brier": 0.000745,
             "paired_base_brier": 0.001296,
-            "paired_brier_delta": -0.000541,
+            "paired_brier_delta": -0.000551,
             "bins": [
               {
                 "lower": 0.0,
                 "upper": 0.1,
                 "upper_inclusive": false,
-                "n": 37,
-                "mean_forecast": 0.027784,
+                "n": 38,
+                "mean_forecast": 0.027579,
                 "observed_rate": 0.0
               },
               {
@@ -127,30 +127,30 @@
             ]
           },
           "h10": {
-            "n": 37,
+            "n": 38,
             "excluded_n": 16,
             "excluded": {
               "ungraded": 16
             },
             "from": "2026-06-23",
-            "through": "2026-08-24",
+            "through": "2026-08-25",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.075135,
+            "mean_forecast": 0.074737,
             "observed_rate": 0.0,
-            "brier": 0.005805,
-            "paired_n": 33,
+            "brier": 0.005747,
+            "paired_n": 34,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.005515,
+            "paired_model_brier": 0.005459,
             "paired_base_brier": 0.007396,
-            "paired_brier_delta": -0.001881,
+            "paired_brier_delta": -0.001937,
             "bins": [
               {
                 "lower": 0.0,
                 "upper": 0.1,
                 "upper_inclusive": false,
-                "n": 33,
-                "mean_forecast": 0.072121,
+                "n": 34,
+                "mean_forecast": 0.071765,
                 "observed_rate": 0.0
               },
               {
@@ -188,23 +188,23 @@
             ]
           },
           "h21": {
-            "n": 37,
+            "n": 38,
             "excluded_n": 16,
             "excluded": {
               "ungraded": 16
             },
             "from": "2026-06-23",
-            "through": "2026-08-24",
+            "through": "2026-08-25",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.152703,
+            "mean_forecast": 0.152105,
             "observed_rate": 0.0,
-            "brier": 0.023678,
-            "paired_n": 37,
+            "brier": 0.0235,
+            "paired_n": 38,
             "missing_baseline_n": 0,
-            "paired_model_brier": 0.023678,
+            "paired_model_brier": 0.0235,
             "paired_base_brier": 0.031684,
-            "paired_brier_delta": -0.008006,
+            "paired_brier_delta": -0.008184,
             "bins": [
               {
                 "lower": 0.0,
@@ -218,8 +218,8 @@
                 "lower": 0.1,
                 "upper": 0.2,
                 "upper_inclusive": false,
-                "n": 37,
-                "mean_forecast": 0.152703,
+                "n": 38,
+                "mean_forecast": 0.152105,
                 "observed_rate": 0.0
               },
               {
@@ -255,38 +255,92 @@
         "current_model_validated": false,
         "prospective": {
           "definition": "us_issued_probability_prospective.v1",
-          "status": "not_started",
-          "ledger_issue_timing_verified": false,
+          "status": "accruing",
+          "ledger_issue_timing_verified": true,
           "public_publication_timing_verified": false,
           "current_model_validated": false,
-          "latest_epoch": null,
-          "latest_model_fingerprint": null,
-          "latest_engine_source_sha256": null,
-          "latest_source_bundle_sha256": null,
-          "latest_calibration_sha256": null,
-          "same_model_issued_n": 0,
+          "latest_epoch": "2026-09-23-prospective-v1",
+          "latest_model_fingerprint": "60d2bd2ece6c0272875735601ab0c3a3782d11d784d523a22df10f2f5caa5efc",
+          "latest_engine_source_sha256": "0b02a4410efff12b273c381831fbb94b1682d35c7f4ef73fc40d2f79d73f93f6",
+          "latest_source_bundle_sha256": "1381f1a0271e819d6333fb308e31f21add95ca7d0a80bc9929205fe21b386ed7",
+          "latest_calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
+          "same_model_issued_n": 1,
           "same_model_graded_n": 0,
-          "awaiting_maturity": 0,
+          "awaiting_maturity": 1,
           "prior_model_issued_n": 0,
-          "model_fingerprints_seen": 0,
-          "from": null,
-          "through": null,
+          "model_fingerprints_seen": 1,
+          "from": "2026-09-24",
+          "through": "2026-09-24",
           "issue_excluded": {
             "missing_issue_receipt": 53
           },
-          "horizons": {},
+          "horizons": {
+            "h5": {
+              "n": 0,
+              "excluded_n": 0,
+              "excluded": {},
+              "from": null,
+              "through": null,
+              "events": 0,
+              "both_outcomes_present": false,
+              "mean_forecast": null,
+              "observed_rate": null,
+              "brier": null,
+              "paired_n": 0,
+              "missing_baseline_n": 0,
+              "paired_model_brier": null,
+              "paired_base_brier": null,
+              "paired_brier_delta": null
+            },
+            "h10": {
+              "n": 0,
+              "excluded_n": 0,
+              "excluded": {},
+              "from": null,
+              "through": null,
+              "events": 0,
+              "both_outcomes_present": false,
+              "mean_forecast": null,
+              "observed_rate": null,
+              "brier": null,
+              "paired_n": 0,
+              "missing_baseline_n": 0,
+              "paired_model_brier": null,
+              "paired_base_brier": null,
+              "paired_brier_delta": null
+            },
+            "h21": {
+              "n": 0,
+              "excluded_n": 0,
+              "excluded": {},
+              "from": null,
+              "through": null,
+              "events": 0,
+              "both_outcomes_present": false,
+              "mean_forecast": null,
+              "observed_rate": null,
+              "brier": null,
+              "paired_n": 0,
+              "missing_baseline_n": 0,
+              "paired_model_brier": null,
+              "paired_base_brier": null,
+              "paired_brier_delta": null
+            }
+          },
           "validation_readiness": {
             "definition": "risk_radar_prospective_validation_readiness.v1",
             "protocol_commit": "7bc85b604a130e01b57b45db1e6430c292874a41",
-            "status": "not_started",
+            "status": "not_mature",
             "promotion_review_eligible": false,
             "authority_h21_supportive": false,
             "full_surface_supportive": false,
             "current_model_validated": false,
             "public_validation_ready": false,
             "cohort": {
-              "issued_n": 0,
-              "span_days": null
+              "issued_n": 1,
+              "span_days": 0,
+              "from": "2026-09-24",
+              "through": "2026-09-24"
             },
             "thresholds": {
               "min_issued_sessions": 252,
@@ -298,12 +352,61 @@
               "bootstrap_draws": 2000,
               "bootstrap_block": "horizon"
             },
-            "horizons": {},
+            "horizons": {
+              "h5": {
+                "n": 0,
+                "events": 0,
+                "non_events": 0,
+                "event_clusters": 0,
+                "baseline_complete": true,
+                "integrity_complete": true,
+                "mature": false,
+                "paired_brier_delta": null,
+                "paired_brier_delta_ci90": null,
+                "calibration_gap": null,
+                "calibration_gap_ci90": null,
+                "brier_supportive": false,
+                "calibration_supportive": false,
+                "supportive": false
+              },
+              "h10": {
+                "n": 0,
+                "events": 0,
+                "non_events": 0,
+                "event_clusters": 0,
+                "baseline_complete": true,
+                "integrity_complete": true,
+                "mature": false,
+                "paired_brier_delta": null,
+                "paired_brier_delta_ci90": null,
+                "calibration_gap": null,
+                "calibration_gap_ci90": null,
+                "brier_supportive": false,
+                "calibration_supportive": false,
+                "supportive": false
+              },
+              "h21": {
+                "n": 0,
+                "events": 0,
+                "non_events": 0,
+                "event_clusters": 0,
+                "baseline_complete": true,
+                "integrity_complete": true,
+                "mature": false,
+                "paired_brier_delta": null,
+                "paired_brier_delta_ci90": null,
+                "calibration_gap": null,
+                "calibration_gap_ci90": null,
+                "brier_supportive": false,
+                "calibration_supportive": false,
+                "supportive": false
+              }
+            },
             "note_en": "Readiness only. Even mature supportive evidence requires a separate promotion decision; this field cannot validate the model automatically.",
             "note_zh": "\u4ec5\u8868\u793a\u8bc1\u636e\u6210\u719f\u5ea6\u3002\u5373\u4f7f\u8bc1\u636e\u6210\u719f\u4e14\u652f\u6301\u6a21\u578b\uff0c\u4ecd\u9700\u72ec\u7acb\u664b\u7ea7\u51b3\u5b9a\uff1b\u672c\u5b57\u6bb5\u4e0d\u4f1a\u81ea\u52a8\u628a\u6a21\u578b\u6807\u8bb0\u4e3a\u5df2\u9a8c\u8bc1\u3002"
           },
-          "note_en": "Prospective same-model evidence has not started yet. Historical rows are not backfilled into this cohort.",
-          "note_zh": "\u524d\u77bb\u6027\u540c\u6a21\u578b\u8bc1\u636e\u5c1a\u672a\u5f00\u59cb\uff1b\u5386\u53f2\u8bb0\u5f55\u4e0d\u4f1a\u88ab\u56de\u586b\u8fdb\u8be5\u6837\u672c\u3002"
+          "note_en": "Prospective same-model ledger evidence. Issue timing is verified for the forward ledger, not public-page publication; validation remains false until a separate promotion law is satisfied.",
+          "note_zh": "\u524d\u77bb\u6027\u540c\u6a21\u578b\u53f0\u8d26\u8bc1\u636e\u3002\u4ec5\u9a8c\u8bc1\u524d\u5411\u53f0\u8d26\u7684\u9996\u53d1\u65f6\u70b9\uff0c\u4e0d\u4ee3\u8868\u516c\u5f00\u9875\u9762\u53d1\u5e03\u65f6\u95f4\uff1b\u5728\u72ec\u7acb\u664b\u7ea7\u89c4\u5219\u6ee1\u8db3\u524d\uff0c\u6a21\u578b\u9a8c\u8bc1\u72b6\u6001\u4fdd\u6301\u4e3a\u5426\u3002"
         },
         "note_en": "Historical issued odds, not a test of today's model. Daily windows overlap; publication timing is unverified.",
         "note_zh": "\u5386\u53f2\u53d1\u5e03\u6982\u7387\uff0c\u5e76\u975e\u5f53\u524d\u6a21\u578b\u9a8c\u8bc1\u3002\u6bcf\u65e5\u7a97\u53e3\u91cd\u53e0\uff1b\u9996\u53d1\u65f6\u70b9\u672a\u7ecf\u6838\u5b9e\u3002"
@@ -313,7 +416,7 @@
       "asof_last_row": "2026-09-24",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
@@ -381,14 +484,14 @@
       }
     },
     "hk": {
-      "asof_last_row": "2026-09-24",
+      "asof_last_row": "2026-09-25",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 19,
         "backlog_cutoff_bd": 28,
-        "graded_n": 16
+        "graded_n": 17
       },
       "windows": {
         "full": {
@@ -405,10 +508,10 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 5,
+            "n": 6,
             "dd_missed": 1,
-            "quiet": 4,
-            "quiet_rate": 0.8
+            "quiet": 5,
+            "quiet_rate": 0.833
           },
           "by_scare": {
             "capital_flow": {
@@ -434,10 +537,10 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 5,
+            "n": 6,
             "dd_missed": 1,
-            "quiet": 4,
-            "quiet_rate": 0.8
+            "quiet": 5,
+            "quiet_rate": 0.833
           },
           "by_scare": {
             "capital_flow": {
@@ -455,7 +558,7 @@
       "asof_last_row": "2026-09-23",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
@@ -512,7 +615,7 @@
       "asof_last_row": "2026-09-23",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -566,14 +669,14 @@
       }
     },
     "jp": {
-      "asof_last_row": "2026-09-18",
+      "asof_last_row": "2026-09-24",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 6,
+        "log_fresh": true,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
-        "graded_n": 14
+        "graded_n": 15
       },
       "windows": {
         "full": {
@@ -590,10 +693,10 @@
             "precursor_rate": 0.4
           },
           "calm": {
-            "n": 7,
+            "n": 8,
             "dd_missed": 2,
-            "quiet": 5,
-            "quiet_rate": 0.714
+            "quiet": 6,
+            "quiet_rate": 0.75
           },
           "by_scare": {
             "rate_shock": {
@@ -619,10 +722,10 @@
             "precursor_rate": 0.4
           },
           "calm": {
-            "n": 7,
+            "n": 8,
             "dd_missed": 2,
-            "quiet": 5,
-            "quiet_rate": 0.714
+            "quiet": 6,
+            "quiet_rate": 0.75
           },
           "by_scare": {
             "rate_shock": {
@@ -637,12 +740,12 @@
       }
     },
     "tw": {
-      "asof_last_row": "2026-09-23",
+      "asof_last_row": "2026-09-24",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 15,
+        "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
         "graded_n": 17
       },
@@ -735,7 +838,7 @@
       "asof_last_row": "2026-09-23",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -803,12 +906,12 @@
       }
     },
     "au": {
-      "asof_last_row": "2026-09-23",
+      "asof_last_row": "2026-09-24",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 16,
+        "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
         "graded_n": 19
       },
@@ -863,7 +966,7 @@
       "asof_last_row": "2026-09-23",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -920,7 +1023,7 @@
       "asof_last_row": "2026-09-23",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,

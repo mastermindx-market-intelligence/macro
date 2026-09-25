@@ -5614,6 +5614,24 @@ jobs:
       - name: uk policy desk unit tests
         run: python -m pytest tests/test_uk_policy_brain.py -q
 
+  finance-intelligence-site-wiring:
+    # Always-on (no scope/paths): reads scripts/build_site.py as text. Split from the
+    # exclusive finance-intelligence job so that job need not carry the builder's
+    # import closure (contract-delta on #8010: 538 uncovered paths).
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: finance intelligence site-builder wiring
+        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
+
   finance-intelligence:
     if: ${{ false }}
     gate: code
@@ -5633,6 +5651,17 @@ jobs:
       - "templates/_finance_financials_launch.html.j2"
       - "templates/state_of_themes.html.j2"
       - "tests/test_finance_entry_points.py"
+      # Finance T8 page + hydration suites: unwired since #7952 (contract-delta listed both as inherited gaps)
+      - "templates/finance_intelligence.html.j2"
+      - "templates/finance_intelligence.js"
+      - "templates/finance_intelligence.css"
+      - "scripts/build_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_hydration.py"
+      - "tests/finance_intelligence_hydration_harness.js"
+      # direct (non-.py) reads of the page suite: public-access map + committed site copy
+      - "config/site_access.yml"
+      - "site/finance_intelligence.html"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
       # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
@@ -5685,6 +5714,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml jinja2
+      - name: finance intelligence page + hydration tests
+        run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
         run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
 
@@ -6307,10 +6338,14 @@ jobs:
   validated-claims:
     if: ${{ false }}
     gate: data
-    # BC-2 PR gate: the word "validated" in user-facing surfaces must trace to a
-    # backed claim. This is the PR-time companion to the nightly calibration run
-    # (cycle-calibration.yml/calibrate). A sibling builder is fixing the current
-    # findings — wire it regardless; final verification happens after both land.
+    # BC-2 FULL SCAN — the data-gate half. The word "validated" in user-facing
+    # surfaces must trace to a backed claim. This job walks EVERY surface,
+    # including the rendered site/ tree, site/prophet JSON and the registry rows
+    # the nightly rewrites, so a data commit alone can move its verdict: it stays
+    # `gate: data` and runs on the data-health lane after the nightly. The PR-tree
+    # half (templates/, engine/, lib/, the top-level page builders
+    # scripts/build_*.py + scripts/render_*.py, and the allowlist) is graded
+    # before merge by validated-claims-source below, which is `gate: code`.
     # Law source: CLAUDE.md ("The word 'validated' in user-facing text is CI-enforced").
     runs-on: ubuntu-latest
     steps:
@@ -6330,6 +6365,278 @@ jobs:
         run: python3 scripts/check_design_system.py --self-check
       - name: design-system ratchet R0 (report-only drift census over templates/)
         run: python3 scripts/check_design_system.py --mode report
+
+  validated-claims-source:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # BC-2 MERGE GATE — the PR-tree half of validated-claims above. Until
+    # 2026-09-25 every BC-2 execution was `gate: data` (this job's sibling,
+    # engine-render-guards' suite sweep, and unrun-subsector-themes' subprocess
+    # scan), and the merge gate packs only `gate: code` jobs, so NOTHING graded a
+    # claim before merge: 75 unearned claims merged green across a dozen PRs
+    # between 2026-08-25 and 2026-09-24 and were healed in one batch (#7979).
+    # `--scope source` walks only templates/, engine/, lib/ and the top-level
+    # page builders scripts/build_*.py + scripts/render_*.py (never the rest of
+    # scripts/ — PAGE BUILDERS in the checker) — roots no data commit writes
+    # (the render-public `?v=` re-stamps on three plain-copy pages cannot spell
+    # the token) — through the SAME matcher, negation, masks and
+    # `surfaces`-enforced allowlist as the full scan, and refuses the one backing
+    # that reads data (a cited artifact's validated:true), so its verdict is a
+    # function of the PR's own tree (see the SCAN SCOPE block in the checker).
+    # Deliberately scan-only: this job rides every templates/**, engine/** and
+    # page-builder PR by design — those PRs are its subject — so it carries only
+    # the two cheap checker steps, and the checker's unit suites ride
+    # validated-claims-contract below, selected by the files that can change
+    # their verdict. CURATED SCOPE: the scanned roots, the checker, the
+    # allowlist, and the literal files the checker names (inference's closure);
+    # site/** and data/** edits otherwise do not select it, because they cannot
+    # move its verdict.
+    paths:
+      - "templates/**"
+      - "engine/**"
+      - "lib/**"
+      # Top level only: a single `*` never crosses `/`, the same cut as the
+      # checker's glob (not rglob) walk of scripts/.
+      - "scripts/build_*.py"
+      - "scripts/render_*.py"
+      - "scripts/check_validated_claims.py"
+      - "data/regime/validated_claims_allowlist.json"
+      # Closure: rendered pages the checker names literally (the registry
+      # payloads and the third-party render targets). Selection only — the
+      # source scope never reads them.
+      - "site/china_news.html"
+      - "site/leader_radar.html"
+      - "site/measurementdata/measurement_data.js"
+      - "site/news.html"
+      - "site/research/index.html"
+      - "site/research_vault.html"
+      - "site/sector_cycles_china_dna_data.js"
+      - "site/sector_cycles_china_narr_data.js"
+      - "site/sector_cycles_dna_data.js"
+      - "site/sector_cycles_narr_data.js"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: validated-claims selftest (gate fires on synthetic unearned claim)
+        run: python3 scripts/check_validated_claims.py --selftest
+      - name: no unearned 'validated' claims in PR-authored source copy (templates/, engine/, lib/, page builders)
+        run: python3 scripts/check_validated_claims.py --scope source
+
+  validated-claims-contract:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # BC-2's checker contract on the merge gate — the matcher, negation and
+    # structural masks, the `surfaces`-enforced allowlist, the third-party and
+    # registry scopes, and the source/full scope split — so a PR that edits the
+    # checker, the allowlist or a suite cannot weaken the gate and merge green.
+    # These suites were run only by engine-render-guards (gate: data). Their
+    # live-tree cases are DESELECTED here, because they read the rendered site/
+    # tree, the full estate scan, or the nightly registries; engine-render-guards
+    # still runs every case after merge. CURATED SCOPE: the checker, the
+    # allowlist, the suites, and their measured import closure plus the files
+    # they read by name — not templates/** or engine/** wholesale, whose PRs
+    # validated-claims-source already grades.
+    paths:
+      - "scripts/check_validated_claims.py"
+      - "data/regime/validated_claims_allowlist.json"
+      - "tests/test_validated_claims_*.py"
+      # Measured closure of the six suites (2026-09-25, full checkout): the
+      # engine.flow_signing and engine.china_news imports and the files the
+      # suites and those modules name literally. A subpackage is globbed only
+      # where the closure already covers most of it; elsewhere the files are
+      # exact, so an unrelated engine edit does not select this job.
+      - "collectors/base.py"
+      - "collectors/equity_earnings.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "collectors/sp_index_changes.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/cycle_pattern/consumer_matrix.yml"
+      - "config/dag.yml"
+      - "config/dataset_registry.yml"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/intelligence_workspace/datapoints.v1.json"
+      - "config/synapse.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "contracts/intelligence_workspace/datapoint_registry.schema.json"
+      - "contracts/intelligence_workspace/datapoint_value.schema.json"
+      - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/canon.py"
+      - "engine/china_news.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/company_intelligence/**"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cycle_pattern/consumer_authority.py"
+      - "engine/cycle_pattern/imce_prospective.py"
+      - "engine/cycle_pattern/truths.py"
+      - "engine/cycles.py"
+      - "engine/dislocation.py"
+      - "engine/earnings_catalyst.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/**"
+      - "engine/extension.py"
+      - "engine/flow_signing.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/gdelt_client.py"
+      - "engine/grading.py"
+      - "engine/htf_durability.py"
+      - "engine/hysteresis.py"
+      - "engine/i18n.py"
+      - "engine/index_changes.py"
+      - "engine/indicators.py"
+      - "engine/intelligence_workspace/**"
+      - "engine/ledger_lane.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/native_facts.py"
+      - "engine/news_translate.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/quote_resolution.py"
+      - "engine/research_implication_card.py"
+      - "engine/seasonality/foundation.py"
+      - "engine/seasonality/program_watch.py"
+      - "engine/session_anchor.py"
+      - "engine/session_digest.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/stock_identity/plane.py"
+      - "engine/synthetic_control.py"
+      - "engine/technicals.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/trial_ledger.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/config.py"
+      - "lib/dataos/**"
+      - "lib/massive_ticker.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/store.py"
+      - "research/DISLOCATION_VALIDATION.md"
+      - "research/HINCL2_PREREG.md"
+      - "research/SEASONALITY_BIOCATALYST_INTEGRATION_SEAM.md"
+      - "research/SEASONALITY_PROGRAM_HANDOFF_2026-08-02.md"
+      - "research/SYNTHETIC_CONTROL_PHASE0.md"
+      - "research/VECTOR_IMPULSE_PREDICTION.md"
+      - "research/cycle_masterplan/PREREGISTRATION.md"
+      - "research/cycle_masterplan/W42_HAZARD_VERDICT.md"
+      - "research/entry_timing/WAVE2_REPORT.md"
+      - "research/imce/IMCE_A4P_ORDER_SOFTNESS_STATE_CONSTRUCTION_V1.md"
+      - "research/imce/IMCE_HB0_SOURCE_DEFINITION_CENSUS_V1.md"
+      - "scripts/build_measurement.py"
+      - "scripts/ci/daily_engine_regional_desk_builders.sh"
+      - "scripts/hincl2_event_study.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/synthetic_control_phase0.py"
+      - "site/alerts.html"
+      - "site/allocation_canada.html"
+      - "site/alt_data.html"
+      - "site/basket_china/cn_autos.html"
+      - "site/basketdata/fear_greed.json"
+      - "site/china.html"
+      - "site/china_news.html"
+      - "site/china_stocks.html"
+      - "site/cycle_app.js"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/etf_board_track.json"
+      - "site/factordata/us_standouts.json"
+      - "site/forex.html"
+      - "site/index.html"
+      - "site/leader_radar.html"
+      - "site/macro.html"
+      - "site/measurementdata/measurement_data.js"
+      - "site/news.html"
+      - "site/prophet/showcase.json"
+      - "site/research/index.html"
+      - "site/research_vault.html"
+      - "site/seasonalitydata/index.json"
+      - "site/sector_cycles_china_dna_data.js"
+      - "site/sector_cycles_china_narr_data.js"
+      - "site/sector_cycles_dna_data.js"
+      - "site/sector_cycles_narr_data.js"
+      - "site/sectors/XLB.html"
+      - "site/signal_lab.html"
+      - "site/stock_seasonality.html"
+      - "site/us_stocks.html"
+      - "templates/_desk_grader_panel.html.j2"
+      - "templates/anticipation.html.j2"
+      - "templates/canada.html.j2"
+      - "templates/china_news.html.j2"
+      - "templates/dashboard.html.j2"
+      - "templates/discovery.html.j2"
+      - "templates/finance_intelligence.js"
+      - "templates/forex.html.j2"
+      - "templates/hk.html.j2"
+      - "templates/research_index.html.j2"
+      - "templates/research_report.html.j2"
+      - "templates/research_vault.html.j2"
+      - "templates/sector_central.html.j2"
+      - "templates/sector_cycles.js"
+      - "templates/spvector.html.j2"
+      - "templates/stock_seasonality.html.j2"
+      - "templates/stockview.js"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: validated-claims suites (PR-tree cases; live site/ + registry cases stay on the data gate)
+        run: >-
+          python -m pytest
+          tests/test_validated_claims_source_scope.py
+          tests/test_validated_claims_engine.py
+          tests/test_validated_claims_structural_scope.py
+          tests/test_validated_claims_surfaces.py
+          tests/test_validated_claims_thirdparty.py
+          tests/test_validated_claims_registry_source.py -q
+          --deselect tests/test_validated_claims_surfaces.py::test_the_live_tree_is_clean
+          --deselect tests/test_validated_claims_thirdparty.py::test_real_tree_is_green_without_a_per_quote_allowlist_entry
+          --deselect tests/test_validated_claims_thirdparty.py::test_the_live_syndicated_renders_are_covered_by_the_skip
+          --deselect tests/test_validated_claims_thirdparty.py::test_every_mapped_render_target_exists_in_the_live_tree
+          --deselect tests/test_validated_claims_registry_source.py::test_every_spec_glob_resolves_against_the_tree
+          --deselect tests/test_validated_claims_registry_source.py::test_every_spec_payload_exists_and_is_scanned
+          --deselect tests/test_validated_claims_registry_source.py::test_the_committed_registries_are_clean
 
   design-governance:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -12780,6 +13087,9 @@ jobs:
       - "engine/flow_regime.py"
       - "engine/hk_global.py"
       - "engine/hk_global_beta.py"
+      # #7277 closure widening: HK native intelligence is imported by the
+      # picks/boards family; curated exclusive scope must cover its own closure.
+      - "engine/hk_native_intelligence.py"
       - "engine/international_macro_dashboard.py"
       - "engine/intl_bonds.py"
       - "engine/intl_compare.py"
