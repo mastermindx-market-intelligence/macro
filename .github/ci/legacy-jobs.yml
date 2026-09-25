@@ -16574,7 +16574,105 @@ jobs:
       - name: install regime-strip test dependencies
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
       - name: markets risk-regime strip + cycle-stage mobile detail
-        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q
+        # The fresh-render byte-match is a DATA assertion (see
+        # markets-regime-strip-bake-parity below): scripts.build_markets reads
+        # data/regime + data/market_state, which closing-bell's scope=close
+        # render rewrites WITHOUT re-baking site/markets.html, so between that
+        # commit and the next render.yml bake every merge ref reds here on a
+        # tree no PR changed. Deselected from the code gate, not deleted.
+        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q --deselect tests/test_markets_regime_strip.py::test_fresh_render_byte_matches_committed_markets_html
+
+  markets-regime-strip-bake-parity:
+    if: ${{ false }}  # executed inside the data-health lane; keep the legacy status definition runner-free
+    gate: data
+    # tests/test_markets_regime_strip.py::test_fresh_render_byte_matches_committed_markets_html
+    # — a fresh `python -m scripts.build_markets` must byte-match the committed
+    # site/markets.html. That builder reads LIVE data/regime/latest.json and
+    # data/market_state/latest.json, which the closing-bell lane's scope=close
+    # render rewrites (c4b705de8f2, 2026-09-25 00:45Z: 7,942 regime lines) without
+    # re-baking site/markets.html — only render.yml bakes that page, and its runs
+    # were being cancelled by main's push cadence. Measured on PR #7971's merge
+    # ref: HK flipped Risk-on -> Risk-off in the fresh render while the committed
+    # page (last baked at #6872) still said Risk-on; main's own newest proof
+    # (25fb8fa805, 23:51Z) predates the data commit and was green, so no PR could
+    # merge and nothing could drain it. By the manifest's own definition that is
+    # a `data` verdict: a nightly/wire data commit alone flips it. It runs here,
+    # after the nightly has baked the page, where a mismatch means the bake
+    # drifted from the builder — the drift #7712 wanted caught. The fixture-driven
+    # strip tests stay on the code gate in markets-regime-strip.
+    scope: exclusive
+    paths:
+      - "templates/markets.html.j2"
+      - "templates/_market_regime_strip.html.j2"
+      # Parity test reads the hero stance sentences from this partial.
+      - "templates/_unified_dashboard_hero.html.j2"
+      - "templates/theme.css"
+      - "site/theme.css"
+      - "site/markets.html"
+      # markets.css (mobile in-flow detail) + its DOM-measured suite (2026-09-23).
+      - "site/markets.css"
+      - "scripts/build_markets.py"
+      - "engine/market_state.py"
+      - "tests/test_markets_regime_strip.py"
+      - "tests/test_markets_cyc_stage_mobile.py"
+      - "tests/fixtures/markets_regime_strip/**"
+      # Import closure beyond the page family. Listed literally so
+      # exclusive scope still covers what inference would have owned.
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config/sparse_worktree.json"
+      - "engine/__init__.py"
+      - "engine/business_cycle.py"
+      - "engine/canon.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/global_liquidity.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/neuralweb/envelope.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/regime_prior.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "lib/store.py"
+      - "scripts/__init__.py"
+      - "scripts/_cycle_seed.py"
+      - "scripts/build_regime_prior.py"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/optimize_assets.py"
+      - "scripts/refresh_markets_now.py"
+      - "scripts/worktree_sparse.py"
+      - "site/countrycyclesdata/country_cycles.json"
+      - "site/cycle.css"
+      - "site/cycle_data.js"
+      - "site/markets_app.js"
+      - "site/markets_data.js"
+      - "site/markets_i18n.js"
+      - "site/marketsdata/markets_engine.js"
+      - "site/mm_charts.js"
+      - "site/regimedata/regime_prior.js"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install regime-strip test dependencies
+        run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
+      - name: markets.html fresh-render byte-match (post-bake parity)
+        run: python -m pytest tests/test_markets_regime_strip.py -q -k test_fresh_render_byte_matches_committed_markets_html
 
   dashboard-render-contract:
     # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and

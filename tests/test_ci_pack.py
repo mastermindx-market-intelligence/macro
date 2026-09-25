@@ -5105,3 +5105,34 @@ def test_p0b_receipt_closure_job_would_block_6872_diff_shape(
               if line.startswith("::error title=p0b-receipt-closure::")]
     assert sum("PINNED PATH CHANGED WITHOUT RECEIPT" in e for e in errors) >= 4, out
     assert any("re-mint with:" in e for e in errors), out
+
+
+def test_markets_fresh_render_byte_match_is_data_gated_and_still_wired() -> None:
+    """The markets.html fresh-render byte-match lives on the DATA gate, once.
+
+    ``scripts.build_markets`` reads live data/regime + data/market_state; the
+    closing-bell lane's scope=close render rewrites both without re-baking
+    site/markets.html (c4b705de8f2, 2026-09-25 00:45Z), so a ``gate: code``
+    byte-match reds every merge ref cut before the next render.yml bake on a
+    tree no PR changed — measured on PR #7971 (ci-pack-3, HK Risk-on ->
+    Risk-off in the fresh render only). By GATE_VALUES' own definition that
+    verdict is ``data``. Pin both halves of the split: the code-gated strip
+    job deselects exactly that node, and the data-gated twin selects exactly
+    it — so the assertion is neither on the merge gate nor silently dropped.
+    """
+    manifest = _yaml(MANIFEST)["jobs"]
+    node = ("tests/test_markets_regime_strip.py::"
+            "test_fresh_render_byte_matches_committed_markets_html")
+    strip = manifest["markets-regime-strip"]
+    twin = manifest["markets-regime-strip-bake-parity"]
+    assert strip["gate"] == "code" and twin["gate"] == "data"
+    strip_cmds = "\n".join(str(s["run"]) for s in strip["steps"] if "run" in s)
+    twin_cmds = "\n".join(str(s["run"]) for s in twin["steps"] if "run" in s)
+    assert f"--deselect {node}" in strip_cmds, strip_cmds
+    assert "tests/test_markets_regime_strip.py" in strip_cmds  # the fixture suite stays
+    assert "-k test_fresh_render_byte_matches_committed_markets_html" in twin_cmds, twin_cmds
+    # Same curated scope on both halves: the twin must re-run whenever the
+    # strip job would, or a builder/template change could drift unnoticed.
+    assert twin.get("scope") == "exclusive"
+    assert set(twin["paths"]) == set(strip["paths"]), (
+        set(twin["paths"]) ^ set(strip["paths"]))
