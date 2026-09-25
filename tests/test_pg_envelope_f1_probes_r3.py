@@ -152,6 +152,32 @@ def test_r143_validator_checks_the_span_itself_not_the_extractor(monkeypatch, sh
     assert not r1.validates(ws, texts)
 
 
+def test_r153_validator_parses_the_span_for_the_rows_unit(monkeypatch):
+    """R153 (enforces R143's 'for the row's unit'): the independent check applies R145's unit rule to the span.  A
+    wrapped present per-share fact whose span holds '1.63%' is refused, even when the extractor mints that span and the
+    R136 replay agrees with it."""
+    body = src("Q3")
+    end = body.lower().rindex("</text>")
+    body = body[:end] + "<!--1.63%-->" + body[end:]
+    cell = t.one(body, pin("Q3", t.DIL))
+    lit_start = body.index(">1.63&#160;", cell.start, cell.end) + 1
+    lit_end = lit_start + len("1.63")
+    marked = body.index("<!--1.63%-->") + len("<!--")
+    minted = receipts.receipt_for_char_span
+
+    def remarked(*, source, source_sha256, char_start, char_end, **kw):
+        if source == body and (char_start, char_end) == (lit_start, lit_end):
+            char_start, char_end = marked, marked + len("1.63%")
+        return minted(source=source, source_sha256=source_sha256, char_start=char_start, char_end=char_end, **kw)
+
+    monkeypatch.setattr(pe, "receipt_for_char_span", remarked)
+    monkeypatch.setattr(receipts, "receipt_for_char_span", remarked)
+    ws, texts, _ = build(body)
+    assert r1.numeric(ws)[t.DIL] == t.expected_values(Q3)[t.DIL]
+    assert excerpt(ws, t.DIL) == "1.63%", "wrapped receipts are minted via receipt_for_char_span"
+    assert not r1.validates(ws, texts)
+
+
 # ============================ R144 (N3 + locale): the outcome is a function of the bytes, in every process
 _ADMIT = r"""
 import sys; sys.path.insert(0, "tests")
