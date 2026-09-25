@@ -1132,12 +1132,12 @@ def _reader_receipt(data_root: Path, **overrides) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "market": "HK",
-        "as_of": "2026-09-20",
+        "as_of": ASOF,
         "registry_state": "wrote_n_rows n=2",
         "written": 2,
         "definitions": ["hk_discovery_v1"],
         "challenger_failures": [],
-        "stamped_at": "2026-09-20T12:00:00+00:00",
+        "stamped_at": ASOF + "T12:00:00+00:00",
     }
     payload.update(overrides)
     path.write_text(json.dumps(payload), encoding="utf-8")
@@ -1172,13 +1172,13 @@ def test_discovery_reader_returns_exact_receipt_epoch_in_store_order(_isolated_r
     root = _isolated_registry
     _reader_receipt(root)
     _reader_store(root, [
-        _reader_row("2026-09-20", "BBB.HK"),
-        _reader_row("2026-09-20", "AAA.HK"),
+        _reader_row(ASOF, "BBB.HK"),
+        _reader_row(ASOF, "AAA.HK"),
     ])
     result = bs.read_discovery_snapshot("hk", "hk_discovery_v1")
     assert result["available"] is True
     assert result["reason"] == "ok"
-    assert result["as_of"] == "2026-09-20"
+    assert result["as_of"] == ASOF
     assert [row["security_ref_raw"] for row in result["records"]] == ["BBB.HK", "AAA.HK"]
     assert all(set(row) == set(bs._DISCOVERY_READER_FIELDS) for row in result["records"])
 
@@ -1186,12 +1186,13 @@ def test_discovery_reader_returns_exact_receipt_epoch_in_store_order(_isolated_r
 def test_discovery_reader_observed_zero_never_substitutes_older_rows(_isolated_registry):
     root = _isolated_registry
     _reader_receipt(root, registry_state="wrote_n_rows n=0", written=0)
-    _reader_store(root, [_reader_row("2026-09-19", "OLD.HK")])
+    prior_asof = (dt.date.fromisoformat(ASOF) - dt.timedelta(days=1)).isoformat()
+    _reader_store(root, [_reader_row(prior_asof, "OLD.HK")])
     result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
     assert result == {
         "available": True,
         "reason": "observed_zero",
-        "as_of": "2026-09-20",
+        "as_of": ASOF,
         "records": [],
     }
 
@@ -1199,7 +1200,8 @@ def test_discovery_reader_observed_zero_never_substitutes_older_rows(_isolated_r
 def test_discovery_reader_rejects_store_newer_than_receipt(_isolated_registry):
     root = _isolated_registry
     _reader_receipt(root)
-    _reader_store(root, [_reader_row("2026-09-21", "FUTURE.HK")])
+    future_asof = (dt.date.fromisoformat(ASOF) + dt.timedelta(days=1)).isoformat()
+    _reader_store(root, [_reader_row(future_asof, "FUTURE.HK")])
     result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
     assert result["available"] is False
     assert result["reason"] == "store_newer_than_receipt"
@@ -1221,7 +1223,7 @@ def test_discovery_reader_receipt_failures_are_explicit(
 ):
     root = _isolated_registry
     _reader_receipt(root, **receipt_overrides)
-    _reader_store(root, [_reader_row("2026-09-20", "AAA.HK")])
+    _reader_store(root, [_reader_row(ASOF, "AAA.HK")])
     result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
     assert result["available"] is False
     assert result["reason"] == reason
@@ -1241,7 +1243,7 @@ def test_discovery_reader_rejects_missing_columns_and_unreadable_receipt(_isolat
     root = _isolated_registry
     receipt = _reader_receipt(root)
     path = root / "prophet_shadow" / "hk_discovery.parquet"
-    pd.DataFrame([{"session_date": "2026-09-20"}]).to_parquet(path, index=False)
+    pd.DataFrame([{"session_date": ASOF}]).to_parquet(path, index=False)
     result = bs.read_discovery_snapshot("HK", "hk_discovery_v1")
     assert result["available"] is False
     assert result["reason"] == "store_missing_columns"
