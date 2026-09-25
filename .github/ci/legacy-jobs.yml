@@ -2187,7 +2187,7 @@ jobs:
     # roots and the job would select on templates/index.html and every other
     # ordinary code PR it never reads (the packing-ceiling probe caught exactly
     # that: +1 job on all three probes). The paths below are the files these
-    # seventeen suites import, open or render — the vertical's own subjects, the
+    # eighteen suites import, open or render — the vertical's own subjects, the
     # shared owners it consumes (Theme Graph rights/contracts, Earnings
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
@@ -2246,6 +2246,10 @@ jobs:
       # T12: the served proof — real app + real reader + the mount partial +
       # the checked-in client executed by node, for BOTH mandated witnesses.
       - "tests/test_semiconductor_witness_served_proof.py"
+      # Item 2 (Sol #7780): the publication primitives B consumes, proven
+      # against the Company Intelligence owner's writer/validator/reader.
+      - "tests/test_semiconductor_publication_primitives.py"
+      - "engine/company_intelligence/event_workspace.py"
       # The client suite also asserts the BUILT Theme Tracker page carries the
       # mount and that template and site stay in sync, so its closure reaches
       # the render pair, the sync checker and the sparse helper. Named by the
@@ -2368,6 +2372,8 @@ jobs:
         run: python -m pytest tests/test_semiconductor_theme_research_ui.py -q
       - name: served witness proof W-A (HBM/TSMC) + W-B (SiC-GaN/onsemi) — mount, route, node render
         run: python -m pytest tests/test_semiconductor_witness_served_proof.py -q
+      - name: publication primitives (absent, create, read, identical replay, stale predecessor, supersession)
+        run: python -m pytest tests/test_semiconductor_publication_primitives.py -q
       - name: basket-intelligence mount partial
         run: python -m pytest tests/test_basket_intelligence_mounts.py -q
 

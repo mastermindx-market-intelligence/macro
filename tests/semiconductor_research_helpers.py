@@ -73,14 +73,16 @@ def load_bundle_case(name: str):
 WITNESS_NEST_BASE = "https://company-intelligence.example/company_intelligence"
 
 
-def build_witness_nest(tmp_dir, *, tickers=("TSM", "ON"), periods=(1, 2)) -> dict:
-    """Return ``{url: bytes}`` for a one-generation ``event_workspaces/`` nest
-    holding the requested witnesses' fiscal periods (Q1/Q2 2026), written by
-    :func:`engine.company_intelligence.event_workspace.write_workspace_generation`
-    under ``tmp_dir`` so marker, immutable manifest and per-object sha256/byte
-    receipts are the producer's own."""
+def witness_workspace_payloads(*, tickers=("TSM", "ON"), periods=(1, 2)) -> dict:
+    """``{event_id: workspace payload}`` for the witnesses' fiscal periods.
+
+    The payloads come from the earnings intake's own discovery over real
+    issuer metadata and synthetic exhibit bodies — nothing here hand-writes a
+    workspace. Split out of :func:`build_witness_nest` so a caller can write
+    MORE THAN ONE generation from the same payloads (the publication-primitive
+    proofs need a chained successor).
+    """
     import pytest  # noqa: PLC0415 — test-only helper
-    from engine.company_intelligence.event_workspace import write_workspace_generation  # noqa: PLC0415
     from engine.company_intelligence.issuer_profiles import ON_CIK, TSM_CIK  # noqa: PLC0415
     from tests import test_semiconductor_earnings_intake_integration as intake  # noqa: PLC0415
 
@@ -101,12 +103,30 @@ def build_witness_nest(tmp_dir, *, tickers=("TSM", "ON"), periods=(1, 2)) -> dic
             for event_id, payload in revisions:
                 if (payload.get("fiscal_period") or {}).get("quarter") in periods:
                     workspaces[event_id] = payload
-    out = Path(tmp_dir) / "company_intelligence"
-    write_workspace_generation(out, workspaces, generated_at="2026-09-24T15:00:00Z", status="ready")
+    return workspaces
+
+
+def nest_files(out_dir) -> dict:
+    """``{url: bytes}`` for every object under a written nest directory."""
+    out = Path(out_dir)
     return {
         f"{WITNESS_NEST_BASE}/{path.relative_to(out).as_posix()}": path.read_bytes()
         for path in out.rglob("*.json")
     }
+
+
+def build_witness_nest(tmp_dir, *, tickers=("TSM", "ON"), periods=(1, 2)) -> dict:
+    """Return ``{url: bytes}`` for a one-generation ``event_workspaces/`` nest
+    holding the requested witnesses' fiscal periods (Q1/Q2 2026), written by
+    :func:`engine.company_intelligence.event_workspace.write_workspace_generation`
+    under ``tmp_dir`` so marker, immutable manifest and per-object sha256/byte
+    receipts are the producer's own."""
+    from engine.company_intelligence.event_workspace import write_workspace_generation  # noqa: PLC0415
+
+    workspaces = witness_workspace_payloads(tickers=tickers, periods=periods)
+    out = Path(tmp_dir) / "company_intelligence"
+    write_workspace_generation(out, workspaces, generated_at="2026-09-24T15:00:00Z", status="ready")
+    return nest_files(out)
 
 
 def wire_witness_nest(monkeypatch, files: dict) -> list:
