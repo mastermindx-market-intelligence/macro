@@ -4,55 +4,47 @@
   "asof": "2026-09-25",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 24.8,
-  "raw_confidence": 24.3,
-  "delta_vs_base": -35.2,
-  "recommended_action": null,
+  "management_confidence": 23.5,
+  "raw_confidence": 22.0,
+  "delta_vs_base": -36.5,
+  "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 30.5,
+    "validity": 22.4,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 47.0,
-    "overlay": 50.0
+    "retention": 46.5,
+    "overlay": 55.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.415,
+    "dist_to_stop_r": 0.33,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 155.6,
-    "p1": -0.3903,
-    "p2": -0.1951,
+    "p1": -0.4466,
+    "p2": -0.2233,
     "p3": null,
-    "move_r": -0.585,
+    "move_r": -0.67,
     "mfe_r": 0.0,
-    "mae_r": -0.587
+    "mae_r": -0.67
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Nearing Invalidation",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-09-21; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -3.0599997711181643,
+  "_mae": -3.4900000762939456,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
   "days_elapsed": 70,
-  "tau": 1.5556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-09-21",
-    "run_asof": "2026-09-25",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "tau": 1.5556
 }

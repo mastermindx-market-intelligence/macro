@@ -4,27 +4,27 @@
   "asof": "2026-09-25",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
-  "management_confidence": 59.7,
-  "raw_confidence": 61.0,
-  "delta_vs_base": -0.3,
-  "recommended_action": null,
-  "human_state": "T1 Giveback Warning",
+  "management_confidence": 43.7,
+  "raw_confidence": 40.9,
+  "delta_vs_base": -16.3,
+  "recommended_action": "trim",
+  "human_state": "Deep Giveback \u2014 Reassess",
   "components": {
     "validity": 100.0,
-    "progress": 46.4,
-    "pace": 26.8,
-    "retention": 57.1,
-    "overlay": 59.0
+    "progress": 33.6,
+    "pace": 1.7,
+    "retention": 3.7,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.575,
-    "dist_to_t1_r": 0.925,
-    "dist_to_t2_r": 2.425,
+    "dist_to_stop_r": 1.037,
+    "dist_to_t1_r": 1.463,
+    "dist_to_t2_r": 2.963,
     "horizon_pct_used": 177.8,
-    "p1": 0.3833,
-    "p2": 0.1917,
+    "p1": 0.025,
+    "p2": 0.0125,
     "p3": null,
-    "move_r": 0.575,
+    "move_r": 0.037,
     "mfe_r": 1.613,
     "mae_r": 0.0
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-09-21; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.290000114440918,
@@ -46,13 +46,5 @@
   "_first_t1_ts": "2026-08-13",
   "_first_t2_ts": null,
   "days_elapsed": 80,
-  "tau": 1.7778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-09-21",
-    "run_asof": "2026-09-25",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "tau": 1.7778
 }

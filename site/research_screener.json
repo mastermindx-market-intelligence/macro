@@ -1,7 +1,7 @@
 {
   "schema": "research_screener.v1",
   "tier": "research_priority_only",
-  "as_of": "2026-09-22",
+  "as_of": "2026-09-24",
   "order": "name",
   "orderings": [
     "name",
