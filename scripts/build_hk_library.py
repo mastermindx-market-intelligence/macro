@@ -2324,7 +2324,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         from engine.pick_lab.profile import HK_PROFILE
         from engine.pick_lab.signals_1d import compute_grids as _compute_grids
 
-        _producer_asof = str(as_of) if as_of else str(pd.Timestamp.utcnow().date())
+        _producer_asof = str(as_of).strip() if as_of and str(as_of).strip() else None
 
         # -- 1. Close panel: the breadth cache (already loaded as `closes` above)
         # Compute 1D/2D oscillators over the full close panel; also derive the 3D
@@ -2488,7 +2488,14 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
             pass
 
         # -- 5. Assemble snapshot rows
-        _snap_rows = build_hk_core_rows(
+        if _producer_asof is None:
+            _snap_rows = []
+            log.warning(
+                "hk producer: owner session unavailable — Pick Lab snapshot and "
+                "velocity outputs skipped for this pass"
+            )
+        else:
+            _snap_rows = build_hk_core_rows(
             tickers=_tickers,
             asof=_producer_asof,
             close_by=_close_by,
@@ -2516,7 +2523,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
                               if isinstance(liquidity_regime, dict) else liquidity_regime,
             vhsi_pctile=vhsi_pct,
             hsi_close=_hsi_close_scalar,
-        )
+            )
         log.info("hk producer: assembled %d snapshot rows (asof=%s)", len(_snap_rows), _producer_asof)
 
         # -- 6. Write snapshot parquet (keep-first; idempotent)
