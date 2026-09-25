@@ -14,8 +14,13 @@ claim: >
   lost its last carrier while pc-render-1 (org runner id 15) stayed online and
   idle, and render.yml, engine-render.yml and sector-intelligence.yml each spent
   the next two days cycling one 24h-killed queued run into one superseded pending
-  successor. The only visible symptom was 1,479 committed `site/**.html` pages
-  frozen at pre-2026-09-23 template bytes.
+  successor. There was NO clean visible symptom, which is the whole finding: the
+  1,479 committed `site/**.html` pages holding pre-#7970 nav bytes look like the
+  outage's fingerprint but are NOT - nightly `969883bc973` rewrote 1,485 of 2,736
+  `site/stocks/` pages and `2736-1485=1251` is exactly the stale `stocks/` count,
+  so a LIVE lane owns them and the dead label only explains why the split persists.
+  A de-labelled runner's real signature is the absence of anything: no red, no
+  missing host, and no artifact you can attribute to it without arithmetic.
 falsifier: >
   `gh api orgs/mastermindx-market-intelligence/actions/runners --jq '.runners[]
   | select(.labels[].name=="render-linux") | {id,name,status,busy}'` returning a
