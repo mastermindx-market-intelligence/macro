@@ -12528,6 +12528,7 @@ jobs:
           python -m pytest
           tests/test_china_heatmap_gate.py
           tests/test_china_heatmap_observations.py
+          tests/test_market_heatmap_switchers.py
           -q
       - name: coherent China heatmap browser refresh contracts (source + shipped mirror)
         run: |
