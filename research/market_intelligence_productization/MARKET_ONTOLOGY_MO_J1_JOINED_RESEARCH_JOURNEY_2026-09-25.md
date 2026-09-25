@@ -474,3 +474,46 @@ After current A/B active carriers close:
 5. batch F04 entitled proof + #744 thesis proof + final joined MO-J1 proof into the smallest possible Chairman acceptance windows.
 
 Parent mission remains incomplete after MO-J1. MO-J1 is the first coherent integrated product milestone, followed by portfolio/capital-impact and continuous-decision-loop waves toward full parity and beyond-parity.
+
+## 16. Paper connective-design receipt
+
+Design system owner reused: existing Paper file **MASTERMIND PAGES**. No second design system or new token family was created.
+
+Paper identity:
+
+- file: `MASTERMIND PAGES`
+- file id: `01M2WGNCX9475G79JRKJTCM08P`
+- page: `MarketOntology · Joined Journey · 2026-09-25`
+- page id: `p-G-0`
+- page URL: `https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-G-0`
+- primary artboard: `MO-J1 · Joined Journey · Desktop Storyboard · V1`
+- artboard id: `VS0-0`
+
+The storyboard is a connective product contract, not a replacement visual system. It uses the existing Mastermind dark tokens and Inter scale and shows:
+
+1. **WTI Live Path → affected company**
+   - theme exposure remains research-display-only;
+   - canonically resolved company gets **Open company research**;
+   - unresolved company remains visible as exposure context but has **No link**.
+2. **Company Intelligence arrival**
+   - compact **Opened from WTI Live Path** context strip;
+   - path revision / as-of context;
+   - explicit Back-to-path affordance;
+   - existing **Your theses** continuation.
+3. **Thesis continuity**
+   - same transient context strip;
+   - context is visibly not silently persisted;
+   - accepted “What changed” concept from #746 is the reopen surface.
+4. **Monitoring return**
+   - in-product condition state reopens research;
+   - external delivery remains a separate claim.
+5. **Degraded-state strip**
+   - unresolved identity → show exposure, no Terminal CTA;
+   - revised path → return explains revision change;
+   - malformed context → company research still opens, context drops;
+   - unavailable monitor → no false external-delivery claim.
+
+Paper edits were applied through the guarded adapter with observed responses. A wrapper error occurred only after the Stage-2 write response had returned; the artboard was read back before any further edit, confirming the Stage-2 frame existed. No ambiguous Paper effect remains. The final storyboard was screenshot-reviewed for spacing, hierarchy, contrast, alignment and failure-state clarity; the affected-company action lane was then aligned to a fixed trailing slot before the artboard was released with `finish_working_on_nodes`.
+
+This design receipt does not prove implementation or production acceptance.
+
