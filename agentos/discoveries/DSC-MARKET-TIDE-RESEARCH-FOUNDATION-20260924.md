@@ -117,3 +117,24 @@ The four prior action-scoped pre-dispatch refusals remain EFFECT_NONE and unreti
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION only after this updated record, bridge proof and current PR metadata are read back. MISSION_COMPLETE:false. The bridge is BUILT_NOT_EMPIRICALLY_ADMITTED; Market Tide remains an unfinished research-to-product programme.
 
 DO_NOT_REDO additionally includes the preparation bridge/TDD/full87-test proof absent a material source or method invalidator.
+
+
+### Bridge adversarial provenance review — session/venue/rights preserved
+
+A further contract review against Data OS price identity found that the first bridge version preserved basis/vintage refs but dropped explicit cash-session/venue identity and rights references. That omission would weaken later auditability even though the bridge itself never granted source qualification.
+
+Tests were extended first at `bbf3c3907d12c1141e426211a9775ab2aef89039`. Native process27429 ran15 bridge tests:13passed and2errored because `source_evidence` lacked the new provenance fields. Repair/tested code head **`2687deb19598d6a90d996d346fc2d6b52ce45863`** now:
+
+- requires feature and label price identity with `session=regular`;
+- requires venue scope to be one of the existing Data OS `primary|consolidated` identities and preserves it rather than silently normalizing an unknown venue;
+- requires explicit supplied price-rights and event-rights references;
+- carries those provenance dimensions in each prepared row's `source_evidence`;
+- still does **not** authenticate those references or admit the cohort.
+
+Native process27458:15 bridge tests passed, followed by **89 total C1 tests passed, zero failures/errors**, clean diff/status. Exact bridge blob `b83f64d023d004c852ba709eb4616828b6e13258`, SHA256 `289b28548d57754f5b910ce8b60db22a6ee18b5a9d62800749258fcdb6e52b6a`; test blob `1ad91c79963e8c410b11b04020c6aac33b9488fa`, SHA256 `ce0bc2ba701697ae9a61c5548b898e3b1b56d5c3e5fdf36e4a230f4437b43936`.
+
+A planned full multi-year synthetic bridge→core stress process was explicitly blocked **before dispatch** because the platform could not determine safety status. No PID/effect. Classify this one action `TOOL_DEGRADED / EFFECT_NONE`; it was not retried, rephrased, moved to another host/tool/model or delegated. The focused bridge/full-suite proofs remain valid at their stated scope, but no multi-year bridge stress result exists.
+
+The bridge proof at current source records that denial and the final identities. The total count of held action-scoped pre-dispatch refusals for this operation is now five: the prior four plus this multi-year synthetic stress process. None is EFFECT_UNKNOWN.
+
+**Current exact next action remains:** obtain a lawful independent review plus current shared-CI custody/enrollment evidence; consume genuine price/event owner returns. If those owner returns are absent, continue only source-independent review/acceptance work. Do not reroute the blocked stress action or infer source admission from 89 passing synthetic tests.
