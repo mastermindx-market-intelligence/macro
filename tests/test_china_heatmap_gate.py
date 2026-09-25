@@ -845,4 +845,14 @@ def test_member_theme_map_preflights_the_canonical_wall_and_can_retry():
     # then force a fresh wall check before the member view can reappear.
     assert "delete _dataPromises[m.url || '']" in HEATMAP_JS
     assert "window.addEventListener('mdx-auth'" in HEATMAP_JS
+    # A response that began before sign-out must not repaint protected bytes
+    # after the forced re-check. Selection/auth epochs fence every async stage.
+    assert "selectEpoch = 0" in HEATMAP_JS
+    assert "var epoch = ++selectEpoch;" in HEATMAP_JS
+    assert HEATMAP_JS.count("epoch !== selectEpoch || curKey !== m.key") >= 3
+    # A wall allow followed by a protected-feed/network failure remains
+    # recoverable without switching away from the active Themes tab.
+    assert "if (m.access === 'member')" in HEATMAP_JS
+    assert "resetMapAccess(m);" in HEATMAP_JS
+    assert "showMemberMapGate(host, function () { select(m, true); });" in HEATMAP_JS
 
