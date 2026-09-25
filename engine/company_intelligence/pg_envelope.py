@@ -842,12 +842,12 @@ def _eps_row(document: Document, role: str) -> str:
     return candidates[0]
 
 
-def _literal_for(printed: str, unit: str | None) -> float | None:
-    if unit == "usd_per_share" and "%" in printed:
-        return None
-    if unit in {"percent", "percentage_points"} and "$" in printed:
-        return None
-    return _literal(printed)
+def _unit_admits(printed: str, unit: str | None) -> bool:
+    if unit == "usd_per_share":
+        return "%" not in printed
+    if unit in {"percent", "percentage_points"}:
+        return "$" not in printed
+    return True
 
 
 def _literal(printed: str) -> float | None:
@@ -910,8 +910,8 @@ def _outcome(document: Document, pin: Pin, prior_note: bool) -> Outcome:
     if len(primary) != 1 or len(second) != 1:
         return Outcome("unlocated")
     unit = _unit_for_metric(pin.metric)
-    primary_value = _literal_for(primary[0].text, unit)
-    second_value = _literal_for(second[0].text, unit)
+    primary_value = _literal(primary[0].text)
+    second_value = _literal(second[0].text)
     if second_value is None and second[0].text == _DASH and unit in {"percent", "percentage_points"}:
         following = sorted(
             (other for other in document.tables[second[0].table][second[0].row]
@@ -924,6 +924,8 @@ def _outcome(document: Document, pin: Pin, prior_note: bool) -> Outcome:
         return Outcome("unlocated")
     if primary_value != second_value:
         return Outcome("conflict")
+    if not (_unit_admits(primary[0].text, unit) and _unit_admits(second[0].text, unit)):
+        return Outcome("unlocated")
     return Outcome("present", value=primary_value, primary=primary[0], literal=primary[0].text, second=second[0])
 
 
