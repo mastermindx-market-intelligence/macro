@@ -739,6 +739,10 @@ tr:last-child td { border-bottom:0; }
     const label = horizonLabel(button);
     document.querySelectorAll('[data-horizon-label]').forEach(node => { node.textContent = label; });
   };
+  const syncInitialControls = () => {
+    document.querySelectorAll('[data-theme-button]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.themeButton === root.dataset.theme)));
+    document.querySelectorAll('[data-lang-button]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.langButton === root.dataset.lang)));
+  };
   document.querySelectorAll('[data-theme-button]').forEach(button => button.addEventListener('click', () => {
     root.dataset.theme = button.dataset.themeButton; document.querySelectorAll('[data-theme-button]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
   }));
@@ -775,6 +779,7 @@ tr:last-child td { border-bottom:0; }
       activateCountry(tabs[next].dataset.countryTab); tabs[next].focus();
     });
   });
+  syncInitialControls();
   const initialHorizon = document.querySelector('[data-horizon][aria-pressed="true"]');
   if (initialHorizon) syncHorizonLabels(initialHorizon);
 })();

@@ -306,7 +306,11 @@ def test_r3_deep_link_labels_describe_their_actual_fragments():
     assert "欧元区分化" in html
 
 
-def test_r3_initial_locale_synchronizes_selected_horizon_labels():
+def test_r3_initial_locale_synchronizes_selected_horizon_labels_and_controls():
     html = _html()
+    assert "const syncInitialControls = () =>" in html
+    assert "item.dataset.themeButton === root.dataset.theme" in html
+    assert "item.dataset.langButton === root.dataset.lang" in html
+    assert "syncInitialControls();" in html
     assert "const initialHorizon = document.querySelector('[data-horizon][aria-pressed=\"true\"]');" in html
     assert "if (initialHorizon) syncHorizonLabels(initialHorizon);" in html
