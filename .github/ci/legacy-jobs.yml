@@ -5614,6 +5614,24 @@ jobs:
       - name: uk policy desk unit tests
         run: python -m pytest tests/test_uk_policy_brain.py -q
 
+  finance-intelligence-site-wiring:
+    # Always-on (no scope/paths): reads scripts/build_site.py as text. Split from the
+    # exclusive finance-intelligence job so that job need not carry the builder's
+    # import closure (contract-delta on #8010: 538 uncovered paths).
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: finance intelligence site-builder wiring
+        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
+
   finance-intelligence:
     if: ${{ false }}
     gate: code
@@ -5633,6 +5651,17 @@ jobs:
       - "templates/_finance_financials_launch.html.j2"
       - "templates/state_of_themes.html.j2"
       - "tests/test_finance_entry_points.py"
+      # Finance T8 page + hydration suites: unwired since #7952 (contract-delta listed both as inherited gaps)
+      - "templates/finance_intelligence.html.j2"
+      - "templates/finance_intelligence.js"
+      - "templates/finance_intelligence.css"
+      - "scripts/build_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_hydration.py"
+      - "tests/finance_intelligence_hydration_harness.js"
+      # direct (non-.py) reads of the page suite: public-access map + committed site copy
+      - "config/site_access.yml"
+      - "site/finance_intelligence.html"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
       # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
@@ -5685,6 +5714,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml jinja2
+      - name: finance intelligence page + hydration tests
+        run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
         run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
 
@@ -13048,6 +13079,9 @@ jobs:
       - "engine/flow_regime.py"
       - "engine/hk_global.py"
       - "engine/hk_global_beta.py"
+      # #7277 closure widening: HK native intelligence is imported by the
+      # picks/boards family; curated exclusive scope must cover its own closure.
+      - "engine/hk_native_intelligence.py"
       - "engine/international_macro_dashboard.py"
       - "engine/intl_bonds.py"
       - "engine/intl_compare.py"

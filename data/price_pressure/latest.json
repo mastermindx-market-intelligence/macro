@@ -2,7 +2,7 @@
   "schema": "price_pressure.v1",
   "engine_version": "price_pressure.v1",
   "asof": "2026-09-22",
-  "generated_utc": "2026-09-23T21:18:12+00:00",
+  "generated_utc": "2026-09-25T09:05:41+00:00",
   "display_only": true,
   "authority": {
     "can_rank": false,
@@ -54,7 +54,7 @@
     "character": {
       "verdict": "mixed",
       "primary_label": "AI / semis",
-      "asof": "2026-09-23",
+      "asof": "2026-09-24",
       "source": "data/regime/latest.json#market_drivers"
     },
     "banner": "Today's pressure is name-by-name, not market-wide.",

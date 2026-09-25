@@ -1,17 +1,17 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-09-25",
-  "generated_utc": "2026-09-25T05:19:19.982524+00:00",
+  "generated_utc": "2026-09-25T08:47:57.729878+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
-  "regime_read": "The desk is flagging a crowded AI/gov-contract convergence but several of the loudest names (PLTR, CRWD) are already extended and carry a Trump-linked SELL print, so the edge in those is noted, not actionable here. The cleaner alignment sits in non-extended semis (AMAT, MU) with multi-channel corroboration, while the rest is single-channel noise.",
+  "regime_read": "Convergence fire is brightest in AI/semis (NVDA/AMAT both 6/5-convergence, congress + analyst + github/patent alignment) but the retail/affiliate-heavy AI names (PLTR, META) are already extended; the actionable edge concentrates in the lagging semis left behind by the AI move, where insider momentum (MU) and legislation (memory-chip act) independently line up.",
   "brain_present": true,
   "brain_usable": true,
   "article3": {
     "granted": false,
     "lift_lb": null,
     "reason": "insufficient-n: n=17 < min_n=25",
-    "evidence_asof": "2026-09-23",
-    "evaluated_at": "2026-09-23T21:06:56+00:00"
+    "evidence_asof": "2026-09-24",
+    "evaluated_at": "2026-09-25T08:46:41+00:00"
   },
   "is_context_only": true,
   "calibration": {
@@ -23,85 +23,6 @@
   "n_signals": 83,
   "n_broken": 40,
   "signals": [
-    {
-      "ticker": "NVDA",
-      "signal_score": 86,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "long",
-      "source": "brain",
-      "weighted_score": 1.9,
-      "convergence_score": 6,
-      "channels": [
-        "affiliation",
-        "analyst_upgrade_cluster",
-        "github_momentum",
-        "patent_cluster",
-        "retail_buzz",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 11.2,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -4.5,
-      "ret_20d": 7.2,
-      "above_50dma": true,
-      "entry_tier": "T1",
-      "affiliations": [
-        {
-          "actor": "Jensen Huang",
-          "rel": "CONTROLS",
-          "kind": "exec"
-        },
-        {
-          "actor": "Nancy Pelosi",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Marjorie Taylor Greene",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Michael McCaul",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Jim Cramer",
-          "rel": "TALKS_ABOUT",
-          "kind": "influencer"
-        },
-        {
-          "actor": "Paul Pelosi",
-          "rel": "AFFILIATES_WITH",
-          "kind": "influencer"
-        }
-      ],
-      "n_affiliated_actors": 6,
-      "thesis": "Strong multi-channel convergence: Pelosi, Greene, and McCaul all hold disclosed stakes [actor:Pelosi/actor:Greene/actor:McCaul], Jensen Huang CONTROLS [actor:Huang], a perfect 1.0 analyst bull ratio [analyst_upgrade_cluster], 207 WSB mentions [retail_buzz], and a 270-patent cluster [patent_cluster] plus a special-situation flag [special_situation]. It's not extended (~+11pp vs SPY), but the investor's own AI/gov-contract positioning is already crowded, and the second-order read is what matters here: NVDA implies AMAT and MU are underexposed semicap catches.",
-      "second_order": [
-        "AMAT \u2014 tooling supplier with cleaner congressional cluster at cheaper RS",
-        "MU \u2014 memory silicon, same AI demand spine at better entry",
-        "TSM \u2014 the other sanctioned fabric in this cluster",
-        "AVGO \u2014 AI silicon peer benefiting from the same capex wave"
-      ],
-      "falsifier": {
-        "text": "A NVDA guidance call that lowers the next-12-month AI-cohort earnings floor below current consensus, which would sink the entire semicap convergence read.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "NVDA",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 60
-        }
-      },
-      "clamped": null
-    },
     {
       "ticker": "MSFT",
       "signal_score": 74,
@@ -143,6 +64,84 @@
       "thesis": null,
       "second_order": [],
       "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "NVDA",
+      "signal_score": 73,
+      "conviction": "low",
+      "action": "WATCH",
+      "direction": "long",
+      "source": "brain",
+      "weighted_score": 1.9,
+      "convergence_score": 6,
+      "channels": [
+        "affiliation",
+        "analyst_upgrade_cluster",
+        "github_momentum",
+        "patent_cluster",
+        "retail_buzz",
+        "special_situation"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 9.4,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -4.5,
+      "ret_20d": 7.2,
+      "above_50dma": true,
+      "entry_tier": "T1",
+      "affiliations": [
+        {
+          "actor": "Jensen Huang",
+          "rel": "CONTROLS",
+          "kind": "exec"
+        },
+        {
+          "actor": "Nancy Pelosi",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Marjorie Taylor Greene",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Michael McCaul",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Jim Cramer",
+          "rel": "TALKS_ABOUT",
+          "kind": "influencer"
+        },
+        {
+          "actor": "Paul Pelosi",
+          "rel": "AFFILIATES_WITH",
+          "kind": "influencer"
+        }
+      ],
+      "n_affiliated_actors": 6,
+      "thesis": "Nvidia carries the richest actor map in the pack \u2014 Nancy Pelosi, Marjorie Taylor Greene, and Michael McCaul all openly hold stakes [actor: Pelosi, Greene, McCaul], Jensen Huang CONTROLS, and Jim Cramer TALKS_ABOUT \u2014 with 6 convergence points (affiliation, analyst_upgrade_cluster, github_momentum, patent_cluster, retail_buzz, special_situation). The catch: the name is not lagging (rs_vs_spy_60d +9.4pp, not extended but not cheap) and retail attention is already huge (207 WSB mentions). It is a regime anchor, not an entry. I mark it WATCH rather than accumulate because the edge is in shadow beneficiaries, not the obvious name.",
+      "second_order": [
+        "AMAT: NVDA GPU demand translates to wafer-fab equipment demand (deposition/etch)",
+        "MU: HBM (high-bandwidth memory) is co-bottleneck with NVDA AI GPUs",
+        "SMCI: NVDA-server integrator already extended \u2014 theme confirms but avoid the name itself"
+      ],
+      "falsifier": {
+        "text": "Nvidia's hyperscaler AI-capex orders show signs of front-loaded digestion \u2014 customers lengthen depreciation, delay mainstream GPUs beyond HBM-constrained pods, or disclosed politicians trim positions.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "NVDA",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 60
+        }
+      },
       "clamped": null
     },
     {
@@ -198,53 +197,67 @@
       "clamped": null
     },
     {
-      "ticker": "META",
-      "signal_score": 54,
+      "ticker": "CRWD",
+      "signal_score": 49,
       "conviction": "high",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 1.6,
-      "convergence_score": 5,
+      "weighted_score": 1.7,
+      "convergence_score": 4,
       "channels": [
-        "affiliation",
-        "cnbc_pick",
-        "special_situation",
-        "stocktwits_bull",
+        "13f_add",
+        "analyst_upgrade_cluster",
+        "congress_buy",
         "trump"
       ],
       "trump_linked": true,
-      "rs_vs_spy_60d": 35.2,
+      "rs_vs_spy_60d": 36.8,
       "no_price_data": false,
       "extended": true,
       "rolling_over": false,
-      "off_high_252": 0.0,
-      "ret_20d": 35.1,
+      "off_high_252": -1.1,
+      "ret_20d": 40.1,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "BRK.B",
+      "signal_score": 45,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.35,
+      "convergence_score": 3,
+      "channels": [
+        "13f_add",
+        "affiliation",
+        "congress_buy"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -0.7,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -4.2,
+      "ret_20d": 0.6,
       "above_50dma": true,
       "entry_tier": null,
       "affiliations": [
         {
-          "actor": "Mark Zuckerberg",
+          "actor": "Warren Buffett",
           "rel": "CONTROLS",
-          "kind": "exec"
-        },
-        {
-          "actor": "Mark Zuckerberg",
-          "rel": "CONTROLS",
-          "kind": "exec"
-        },
-        {
-          "actor": "Dan Crenshaw",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Bill Ackman",
-          "rel": "AFFILIATES_WITH",
           "kind": "fund"
         }
       ],
-      "n_affiliated_actors": 4,
+      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -390,6 +403,63 @@
       "second_order": [],
       "falsifier": null,
       "clamped": null
+    },
+    {
+      "ticker": "PLTR",
+      "signal_score": 41,
+      "conviction": "medium",
+      "action": "AVOID",
+      "direction": "short",
+      "source": "brain",
+      "weighted_score": 2.1,
+      "convergence_score": 6,
+      "channels": [
+        "affiliation",
+        "analyst_upgrade_cluster",
+        "gov_contract",
+        "retail_buzz",
+        "stocktwits_bull",
+        "trump"
+      ],
+      "trump_linked": true,
+      "rs_vs_spy_60d": 62.1,
+      "no_price_data": false,
+      "extended": true,
+      "rolling_over": false,
+      "off_high_252": -7.0,
+      "ret_20d": 8.5,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Marjorie Taylor Greene",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Cathie Wood",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 2,
+      "thesis": "Palantir has 6 convergence points and a gov_contract_accel of 0.83, but every behavioral flag here is a caution: rs_vs_spy_60d +62.1pp (extended: true), Trump side 'sell', the only disclosed actor is Marjorie Taylor Greene HOLDS_STAKE \u2014 a highly volatile political bet, not a smart-money signal \u2014 and stocktwits_bull is maxed at 1.0 on 324k watchers (peak retail crowding). The retail heat drowns any edge. Avoid.",
+      "second_order": [
+        "Defense/AI software peers: C3.ai, BBAI \u2014 same government AI-cohort trade rides PLTR's hot narrative if it unwinds",
+        "MSFT: government-AI partnership read (Altman PARTNERS_WITH) \u2014 large, liquid beneficiary without the meme beta"
+      ],
+      "falsifier": {
+        "text": "PLTR's government contract acceleration rolls over (accel falls below ~0.5 sequentially) or the pair of crowded retail actors begins churning down Stocktwits watcher count as government contract wins slow.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "PLTR",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 60
+        }
+      },
+      "clamped": "conviction 'high' \u2192 'medium' (deterministic ceiling)"
     },
     {
       "ticker": "MRK",
@@ -544,36 +614,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "SMCI",
-      "signal_score": 38,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.35,
-      "convergence_score": 3,
-      "channels": [
-        "insider_mspr",
-        "retail_buzz",
-        "unusual_options"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 38.5,
-      "no_price_data": false,
-      "extended": true,
-      "rolling_over": false,
-      "off_high_252": -29.3,
-      "ret_20d": 11.0,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -987,63 +1027,6 @@
       "clamped": null
     },
     {
-      "ticker": "PLTR",
-      "signal_score": 29,
-      "conviction": "low",
-      "action": "AVOID",
-      "direction": "long",
-      "source": "brain",
-      "weighted_score": 2.1,
-      "convergence_score": 6,
-      "channels": [
-        "affiliation",
-        "analyst_upgrade_cluster",
-        "gov_contract",
-        "retail_buzz",
-        "stocktwits_bull",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 63.3,
-      "no_price_data": false,
-      "extended": true,
-      "rolling_over": false,
-      "off_high_252": -7.0,
-      "ret_20d": 8.5,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Marjorie Taylor Greene",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Cathie Wood",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 2,
-      "thesis": "The single biggest convergence in the pack (score 7, weighted 2.85) but the entry is gone: +63pp vs SPY over 60d and flagged extended [extended:true]. The channels are real \u2014 gov-contract acceleration at 75.47 on $37.7M [gov_contract_accel], a perfect 1.0 bull ratio from analysts [analyst_upgrade_cluster], 22k GitHub stars [github_momentum], and Greene holds a stake [actor:Greene] \u2014 but the price already says it. Also, Trump's side prints SELL [trump_side:sell], which is a quiet contrary note. WATCH only; PLTR's real value is as a signpost for the AI/gov-contract trade, not another entry.",
-      "second_order": [
-        "GOVT exposure names \u2014 any firm with similar gov_contract_accel prints",
-        "AI contractors with disclosed congressional stakes \u2014 follow the same cluster"
-      ],
-      "falsifier": {
-        "text": "A sharp mean-reversion in PLTR relative strength toward the cluster median within 60 days, which would confirm the extended-flag was the correct regime.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "PLTR",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 60
-        }
-      },
-      "clamped": null
-    },
-    {
       "ticker": "BAC",
       "signal_score": 29,
       "conviction": "medium",
@@ -1080,7 +1063,7 @@
     },
     {
       "ticker": "MU",
-      "signal_score": 27,
+      "signal_score": 28,
       "conviction": "low",
       "action": "AVOID",
       "direction": "short",
@@ -1095,7 +1078,7 @@
         "stocktwits_bull"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": -11.4,
+      "rs_vs_spy_60d": -9.4,
       "no_price_data": false,
       "extended": false,
       "rolling_over": false,
@@ -1111,24 +1094,24 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": "Short-horizon setup: earnings in 7 days [insider_mspr / next_earnings], insider buying registering a perfect 100.0 mark [insider_mspr], a 446-patent cluster [patent_cluster], 100% bull ratio on StockTwits with 213k watchers [stocktwits_bull], and a CNBC pick [cnbc_pick]. The House Memory Chip Competitiveness Assessment Act [bill:HR10170] is a direct named-market catalyst. Relative strength is only ~-11pp vs SPY, so the pre-earnings run is still early.",
+      "thesis": "Micron shows 5 convergence points with an insider_mspr of 100 (insider momentum at full strength, no selling) against a -9.4pp relative lag, plus a maxed Stocktwits bull ratio 1.0 on 213k watchers and a CNBC pick. Crucially the pack carries the Memory Chip Competitiveness Assessment Act (HR10170, Semiconductors, introduced 2026-08-27) and MU reports earnings 2026-09-30 \u2014 5 trading days out. The evidence aligns on an idiosyncratic catalyst window rather than broad AI chase, which is why it is actionable even before earnings.",
       "second_order": [
-        "AMAT \u2014 tooling demand precedes MU bit output",
-        "WDC \u2014 NAND peer with same pricing dynamics",
-        "SIMOX \u2014 pure-play memory substrate exposure"
+        "AMAT: MU's HBM/memory capacity expansion is fabrication demand for AMAT's etch/deposition tools",
+        "SMH theme: broad semis (NVDA, AMD not in pack) ride the same memory/AI pricing cycle",
+        "WDC: memory-competitiveness bill reads broadly to storage/memory peers if CHIPS-style support extends"
       ],
       "falsifier": {
-        "text": "A memory pricing print or MU guidance call that trails consensus for the next two quarters inside the 30-day window.",
+        "text": "Micron guides third-quarter memory pricing or bit-shipments below consensus in the 2026-09-30 report, or the memory-chip bill stalls in House after introduction and is never marked up.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MU",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 30
+          "horizon_d": 20
         }
       },
-      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); conviction 'medium' \u2192 'low' (deterministic ceiling); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
+      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
     },
     {
       "ticker": "PAA",
@@ -1591,7 +1574,7 @@
         "unusual_options"
       ],
       "trump_linked": false,
-      "rs_vs_spy_60d": -30.6,
+      "rs_vs_spy_60d": -37.3,
       "no_price_data": false,
       "extended": false,
       "rolling_over": true,
@@ -1601,15 +1584,14 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "The strongest convergence in the pack: congress_cluster shows 4 members net-add with a ~$51M disclosed position [congress_cluster], an analyst upgrade cluster with 0.97 bull ratio [analyst_upgrade_cluster], a deep patent cluster (293 filings) [patent_cluster], rising news sentiment (0.86 bull) [news_sentiment], and elevated unusual options activity (0.611 OI ratio, put/call ~1.07, call-skewed on elevated vol) [unusual_options]. The name is down ~31pp vs SPY over 60d, so the entry is not extended. Combined with the House 'Memory Chip Competitiveness Assessment Act' catalyst [bill:HR10170], the read points to a Washington-driven semicap cycle that AMAT catches first as the tool supplier.",
+      "thesis": "Applied Materials shows 5-way convergence (analyst_upgrade_cluster, congress_cluster, news_sentiment, patent_cluster, unusual_options) with congress net +4 across 4 members holding ~$52.0M, analyst bull 0.97, news bull 0.86, and 293 patents \u2014 yet it is rs_vs_spy_60d -37.3pp (not extended). The second-order beneficiaries are the lagging semis tied to the Memory Chip Competitiveness Assessment Act (HR10170) and the AI data-center buildout this pack points to elsewhere (NVDA). This is accumulation on weakness, not momentum-chasing.",
       "second_order": [
-        "MU \u2014 same semicap cycle plus direct Memory Chip Act exposure, earnings in 7 days",
-        "NVDA \u2014 foundry/design demand flows through tooling demand",
-        "KLAC \u2014 peer semicap with same gov/patent/cycle tailwind",
-        "LRCX \u2014 same WFE upcycle, not in pack but implied by AMAT strength"
+        "MU: same memory/semis bill (HR10170) adds legislative tailwind, and earnings in 5 days may crystallize insider momentum",
+        "LRCX: direct semis-pick-and-shovel peer not named in pack; benefits if AMAT's capex read is real",
+        "NVDA: AI-fab demand that fuels AMAT's deposition/etch orders is the same demand driving NVDA GPU capex"
       ],
       "falsifier": {
-        "text": "A high-profile AI capex guidance cut or a semiconductor-zone tariff escalation that takes AMAT-specific WFE orders below consensus within the holding window.",
+        "text": "Semiconductor equipment cycle stalls \u2014 AMAT's orders or peer bookings show sequential decline over two quarters despite AI capex, and congressional disclosed positions rotate out within 90 days.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "AMAT",
@@ -1619,7 +1601,7 @@
           "horizon_d": 60
         }
       },
-      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); conviction 'medium' \u2192 'low' (deterministic ceiling); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
+      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)"
     },
     {
       "ticker": "AORT",

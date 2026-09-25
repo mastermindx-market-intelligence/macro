@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-22",
+ "as_of": "2026-09-23",
  "rows": [
   {
    "ticker": "DOCN",
@@ -17,11 +17,11 @@
   {
    "ticker": "EZPW",
    "sector": "Financials",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 28.75,
+   "first_surfaced": "2026-08-19",
+   "surfaced_price": 28.76,
    "last_price": 32.22,
-   "pct_since": 12.1,
-   "days_on_board": 6,
+   "pct_since": 12.0,
+   "days_on_board": 5,
    "exit_date": "2026-08-21",
    "mark_date": "2026-08-21",
    "status": "running",
@@ -37,19 +37,6 @@
    "days_on_board": 2,
    "exit_date": "2026-09-14",
    "mark_date": "2026-09-14",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
-   "ticker": "EU",
-   "sector": "Energy",
-   "first_surfaced": "2026-08-26",
-   "surfaced_price": 1.39,
-   "last_price": 1.25,
-   "pct_since": -10.1,
-   "days_on_board": 3,
-   "exit_date": "2026-08-31",
-   "mark_date": "2026-08-31",
    "status": "stopped",
    "lane": "buy"
   },
@@ -262,19 +249,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "VIR",
-   "sector": "Health Care",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 9.77,
-   "last_price": 9.21,
-   "pct_since": -5.7,
-   "days_on_board": 8,
-   "exit_date": "2026-08-20",
-   "mark_date": "2026-08-20",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
    "ticker": "GPI",
    "sector": "Consumer Discretionary",
    "first_surfaced": "2026-09-03",
@@ -392,6 +366,19 @@
    "lane": "buy"
   },
   {
+   "ticker": "AVAV",
+   "sector": "Industrials",
+   "first_surfaced": "2026-09-16",
+   "surfaced_price": 163.38,
+   "last_price": 155.94,
+   "pct_since": -4.6,
+   "days_on_board": 4,
+   "exit_date": "2026-09-23",
+   "mark_date": "2026-09-23",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
    "ticker": "SKYW",
    "sector": "Industrials",
    "first_surfaced": "2026-09-14",
@@ -405,6 +392,19 @@
    "lane": "buy"
   },
   {
+   "ticker": "EIX",
+   "sector": "Utilities",
+   "first_surfaced": "2026-08-19",
+   "surfaced_price": 74.66,
+   "last_price": 71.59,
+   "pct_since": -4.1,
+   "days_on_board": 5,
+   "exit_date": "2026-08-21",
+   "mark_date": "2026-08-21",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
    "ticker": "MARA",
    "sector": "Information Technology",
    "first_surfaced": "2026-09-10",
@@ -414,19 +414,6 @@
    "days_on_board": 2,
    "exit_date": "2026-09-14",
    "mark_date": "2026-09-14",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
-   "ticker": "LBRT",
-   "sector": "Energy",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 20.05,
-   "last_price": 19.27,
-   "pct_since": -3.9,
-   "days_on_board": 3,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
    "status": "stopped",
    "lane": "buy"
   },
@@ -522,32 +509,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "LEA",
-   "sector": "Consumer Discretionary",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 123.29,
-   "last_price": 127.75,
-   "pct_since": 3.6,
-   "days_on_board": 4,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
-   "status": "running",
-   "lane": "buy"
-  },
-  {
-   "ticker": "SO",
-   "sector": "Utilities",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 92.19,
-   "last_price": 88.94,
-   "pct_since": -3.5,
-   "days_on_board": 3,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
    "ticker": "HLI",
    "sector": "Financials",
    "first_surfaced": "2026-08-21",
@@ -558,32 +519,6 @@
    "exit_date": "2026-08-31",
    "mark_date": "2026-08-31",
    "status": "running",
-   "lane": "buy"
-  },
-  {
-   "ticker": "BIIB",
-   "sector": "Health Care",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 221.56,
-   "last_price": 214.35,
-   "pct_since": -3.3,
-   "days_on_board": 2,
-   "exit_date": "2026-08-20",
-   "mark_date": "2026-08-20",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
-   "ticker": "LIVN",
-   "sector": "Health Care",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 80.84,
-   "last_price": 78.21,
-   "pct_since": -3.3,
-   "days_on_board": 3,
-   "exit_date": "2026-08-20",
-   "mark_date": "2026-08-20",
-   "status": "stopped",
    "lane": "buy"
   },
   {
@@ -639,19 +574,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "KDP",
-   "sector": "Consumer Staples",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 31.06,
-   "last_price": 32.04,
-   "pct_since": 3.2,
-   "days_on_board": 4,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
-   "status": "running",
-   "lane": "buy"
-  },
-  {
    "ticker": "MCO",
    "sector": "Financials",
    "first_surfaced": "2026-08-19",
@@ -678,19 +600,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "SWX",
-   "sector": "Utilities",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 91.75,
-   "last_price": 88.87,
-   "pct_since": -3.1,
-   "days_on_board": 3,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
-   "status": "stopped",
-   "lane": "buy"
-  },
-  {
    "ticker": "WB",
    "sector": "Communication Services",
    "first_surfaced": "2026-09-17",
@@ -714,19 +623,6 @@
    "exit_date": "2026-09-10",
    "mark_date": "2026-09-10",
    "status": "stopped",
-   "lane": "buy"
-  },
-  {
-   "ticker": "CAVA",
-   "sector": "Consumer Discretionary",
-   "first_surfaced": "2026-08-18",
-   "surfaced_price": 71.57,
-   "last_price": 73.63,
-   "pct_since": 2.9,
-   "days_on_board": 3,
-   "exit_date": "2026-08-21",
-   "mark_date": "2026-08-21",
-   "status": "running",
    "lane": "buy"
   },
   {
@@ -780,19 +676,123 @@
    "mark_date": "2026-09-21",
    "status": "stopped",
    "lane": "buy"
+  },
+  {
+   "ticker": "YETI",
+   "sector": "Consumer Discretionary",
+   "first_surfaced": "2026-09-14",
+   "surfaced_price": 39.39,
+   "last_price": 40.55,
+   "pct_since": 2.9,
+   "days_on_board": 2,
+   "exit_date": "2026-09-16",
+   "mark_date": "2026-09-16",
+   "status": "running",
+   "lane": "buy"
+  },
+  {
+   "ticker": "HOG",
+   "sector": "Consumer Discretionary",
+   "first_surfaced": "2026-08-21",
+   "surfaced_price": 28.1,
+   "last_price": 27.3,
+   "pct_since": -2.8,
+   "days_on_board": 6,
+   "exit_date": "2026-08-25",
+   "mark_date": "2026-08-25",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
+   "ticker": "SNEX",
+   "sector": "Financials",
+   "first_surfaced": "2026-08-21",
+   "surfaced_price": 67.75,
+   "last_price": 69.66,
+   "pct_since": 2.8,
+   "days_on_board": 2,
+   "exit_date": "2026-08-25",
+   "mark_date": "2026-08-25",
+   "status": "running",
+   "lane": "buy"
+  },
+  {
+   "ticker": "RBA",
+   "sector": "Industrials",
+   "first_surfaced": "2026-09-14",
+   "surfaced_price": 86.11,
+   "last_price": 83.7,
+   "pct_since": -2.8,
+   "days_on_board": 3,
+   "exit_date": "2026-09-21",
+   "mark_date": "2026-09-21",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
+   "ticker": "SWX",
+   "sector": "Utilities",
+   "first_surfaced": "2026-08-19",
+   "surfaced_price": 91.3,
+   "last_price": 88.87,
+   "pct_since": -2.7,
+   "days_on_board": 2,
+   "exit_date": "2026-08-21",
+   "mark_date": "2026-08-21",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
+   "ticker": "SO",
+   "sector": "Utilities",
+   "first_surfaced": "2026-08-19",
+   "surfaced_price": 91.43,
+   "last_price": 88.94,
+   "pct_since": -2.7,
+   "days_on_board": 2,
+   "exit_date": "2026-08-21",
+   "mark_date": "2026-08-21",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
+   "ticker": "RNR",
+   "sector": "Financials",
+   "first_surfaced": "2026-08-24",
+   "surfaced_price": 328.79,
+   "last_price": 337.55,
+   "pct_since": 2.7,
+   "days_on_board": 6,
+   "exit_date": "2026-09-03",
+   "mark_date": "2026-09-03",
+   "status": "running",
+   "lane": "buy"
+  },
+  {
+   "ticker": "YUM",
+   "sector": "Consumer Discretionary",
+   "first_surfaced": "2026-08-21",
+   "surfaced_price": 156.56,
+   "last_price": 152.54,
+   "pct_since": -2.6,
+   "days_on_board": 6,
+   "exit_date": "2026-08-31",
+   "mark_date": "2026-08-31",
+   "status": "stopped",
+   "lane": "buy"
   }
  ],
  "summary": {
-  "n_running": 35,
-  "n_stopped": 56,
+  "n_running": 34,
+  "n_stopped": 51,
   "n_flat": 266,
-  "n_total": 357,
+  "n_total": 351,
   "n_shown": 60,
   "median_pct": 0.0,
   "n_skipped_no_price": 0,
   "skipped_no_price": [],
-  "win_rate": 0.098,
-  "avg_pct": -0.4,
+  "win_rate": 0.097,
+  "avg_pct": -0.3,
   "conventions": {
    "entry": "next session's close after first_surfaced (the surfaced bar is the bar the board is computed from \u2014 unbuyable)",
    "mark": "close on the date the name left the buy board, not today's",

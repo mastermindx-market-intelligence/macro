@@ -443,10 +443,10 @@ def test_render_lane_owns_and_narrows_finance_intelligence_builder():
     assert "finance_intelligence.*" in render
 
 
-def test_build_site_wires_finance_intelligence_hook():
-    site_builder = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
-    assert "scripts.build_finance_intelligence_page" in site_builder
-    assert "finance_intelligence.html render failed" in site_builder
+# The build_site hook assertion lives in tests/test_finance_intelligence_site_wiring.py,
+# run by an always-on job: it reads the site builder as text, and the exclusive
+# finance-intelligence scope would otherwise have to carry that builder's whole
+# import closure.
 
 
 def test_shell_has_no_private_api_or_serving_route_reference():
