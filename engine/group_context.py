@@ -347,6 +347,9 @@ class GroupContext:
 
     def _entry_context_for_member(self, ticker: str, group: dict, member: dict) -> dict:
         eligibility_raw = member.get("stock_eligible")
+        buyable_raw = member.get("stock_buyable")
+        eligibility = eligibility_raw if isinstance(eligibility_raw, bool) else None
+        buyable = buyable_raw if isinstance(buyable_raw, bool) else False
         member_gate = {
             "tier_cascade": member.get("stock_tier"),
             "weight": member.get("stock_weight"),
@@ -354,7 +357,7 @@ class GroupContext:
             "bars_to_cross": member.get("stock_bars_to_cross"),
             "state": member.get("stock_state"),
             "reason": member.get("stock_reason"),
-            "eligible": (None if eligibility_raw is None else bool(eligibility_raw)),
+            "eligible": eligibility,
         }
         relationship = member.get("relationship_kind")
         if not relationship:
@@ -363,8 +366,8 @@ class GroupContext:
         return self._entry_source.for_member(
             ticker=ticker,
             member_gate=member_gate,
-            member_buyable=bool(member.get("stock_buyable")),
-            member_eligible=(None if eligibility_raw is None else bool(eligibility_raw)),
+            member_buyable=buyable,
+            member_eligible=eligibility,
             group=group,
             stock_route=f"stock.html#{ticker}",
             group_route=f"subsector/{group_key}.html" if group_key else "subsectors.html",
@@ -662,7 +665,7 @@ class EntryContextSource:
     """Tolerant adapter over stock-setup and Live Entry Radar artifacts."""
 
     def __init__(self, *, standouts: Mapping[str, Any] | None,
-                 radar: Mapping[str, Any] | None, now: date,
+                 radar: Mapping[str, Any] | None, now: date | datetime,
                  setups: Mapping[str, Any] | None = None,
                  standouts_error: str | None = None,
                  setups_error: str | None = None,
@@ -670,7 +673,8 @@ class EntryContextSource:
         self._standouts = dict(standouts) if isinstance(standouts, Mapping) else None
         self._setups = dict(setups) if isinstance(setups, Mapping) else None
         self._radar = dict(radar) if isinstance(radar, Mapping) else None
-        self._now = now
+        self._now_dt = _as_datetime(now)
+        self._now = self._now_dt.date()
         self._standouts_error = standouts_error
         self._setups_error = setups_error
         self._radar_error = radar_error
@@ -719,9 +723,23 @@ class EntryContextSource:
             },
             "computation", "observation", "availability", "publication",
         )
-        self._standouts_age = _age_days(self._standouts_as_of, now)
-        self._setups_age = _age_days(self._setups_as_of, now)
-        self._radar_age = _age_days(self._radar_as_of, now)
+        self._standouts_clock_issue = _owner_clock_issue(
+            observation=self._standouts_observed_at,
+            availability=self._standouts_available_at,
+            computation=self._standouts_computed_at,
+            publication=self._standouts_published_at,
+            now=self._now_dt,
+        )
+        self._setups_clock_issue = _owner_clock_issue(
+            observation=self._setups_observed_at,
+            availability=self._setups_available_at,
+            computation=self._setups_computed_at,
+            publication=self._setups_published_at,
+            now=self._now_dt,
+        )
+        self._standouts_age = _age_days(self._standouts_observed_at, self._now)
+        self._setups_age = _age_days(self._setups_observed_at, self._now)
+        self._radar_age = _age_days(self._radar_as_of, self._now)
         self._stock_rows = self._index_stock_rows()
         self._radar_rows = self._index_radar_rows()
 
@@ -731,7 +749,8 @@ class EntryContextSource:
                        setups: Mapping[str, Any] | None = None,
                        now: date | datetime | None = None) -> "EntryContextSource":
         return cls(
-            standouts=standouts, setups=setups, radar=radar, now=_as_date(now))
+            standouts=standouts, setups=setups, radar=radar,
+            now=(now if now is not None else datetime.now(timezone.utc)))
 
     @classmethod
     def from_site(cls, site: Path, *,
@@ -742,7 +761,8 @@ class EntryContextSource:
         setups, setups_error = _read_json(site / "factordata" / "setups.json")
         radar, radar_error = _read_json(site / "live" / "entry_radar.json")
         return cls(
-            standouts=standouts, setups=setups, radar=radar, now=_as_date(now),
+            standouts=standouts, setups=setups, radar=radar,
+            now=(now if now is not None else datetime.now(timezone.utc)),
             standouts_error=standouts_error, setups_error=setups_error,
             radar_error=radar_error)
 
@@ -785,12 +805,16 @@ class EntryContextSource:
         expiry = self._expiry(src, availability, setup_signal, entry_signal)
         setup_q = self._setup_qualification(
             src, availability, setup_signal, expiry["state"])
-        member_q = "QUALIFIED" if member_buyable else "NOT_QUALIFIED"
         eligibility_raw = (gate.get("eligible")
                            if member_eligible is None else member_eligible)
         member_eligibility = (
-            "UNKNOWN" if eligibility_raw is None
-            else "QUALIFIED" if bool(eligibility_raw)
+            "QUALIFIED" if eligibility_raw is True
+            else "NOT_QUALIFIED" if eligibility_raw is False
+            else "UNKNOWN"
+        )
+        member_q = (
+            "QUALIFIED"
+            if member_buyable is True and eligibility_raw is True
             else "NOT_QUALIFIED"
         )
         confirmation = _confirmation(
@@ -802,7 +826,7 @@ class EntryContextSource:
         extended = group_state == "EXTENDED"
         group_confirmation = _confirmation(
             group_entry, {}, "ACTIVE",
-            "QUALIFIED" if group_entry.get("buyable") else "UNKNOWN")
+            "QUALIFIED" if group_entry.get("buyable") is True else "UNKNOWN")
         levels = {
             "trigger": (_first(entry_signal, "trigger")
                         or _first(entry_signal.get("timing") or {}, "next_trigger")),
@@ -818,8 +842,15 @@ class EntryContextSource:
         setup_id = _explicit(src.row if src else {}, _ENTRY_ID_KEYS)
         source_meta = self._stock_source_meta(src)
         source_scope = source_meta["ref"]
+        availability_reason = (
+            source_meta.get("clock_issue") if availability == "UNAVAILABLE"
+            else "owner_record_not_in_snapshot" if availability == "NOT_IN_SNAPSHOT"
+            else "owner_observation_stale" if availability == "STALE"
+            else None
+        )
         stock_setup = {
             "availability": availability,
+            "availability_reason": availability_reason,
             "scope": source_scope,
             "searched_scopes": [STANDOUTS_REF, SETUPS_REF],
             "global_absence": False if availability == "NOT_IN_SNAPSHOT" else None,
@@ -879,7 +910,7 @@ class EntryContextSource:
             },
             "group_context": {
                 "entry_tier": group_entry.get("tier"),
-                "entry_buyable": bool(group_entry.get("buyable")),
+                "entry_buyable": group_entry.get("buyable") is True,
                 "regime_state": group_state,
                 "headwind": headwind,
                 "extended": extended,
@@ -960,8 +991,10 @@ class EntryContextSource:
             return "UNAVAILABLE"
         if src is None:
             return "NOT_IN_SNAPSHOT"
-        age_days = self._stock_source_meta(src)["age_days"]
-        if age_days is not None and age_days > ENTRY_CONTEXT_STALE_DAYS:
+        meta = self._stock_source_meta(src)
+        if meta.get("clock_issue") is not None or meta.get("age_days") is None:
+            return "UNAVAILABLE"
+        if meta["age_days"] > ENTRY_CONTEXT_STALE_DAYS:
             return "STALE"
         return "AVAILABLE"
 
@@ -975,6 +1008,7 @@ class EntryContextSource:
                 "availability": self._setups_available_at,
                 "computation": self._setups_computed_at,
                 "publication": self._setups_published_at,
+                "clock_issue": self._setups_clock_issue,
             }
         if self._standouts is not None:
             return {
@@ -985,6 +1019,7 @@ class EntryContextSource:
                 "availability": self._standouts_available_at,
                 "computation": self._standouts_computed_at,
                 "publication": self._standouts_published_at,
+                "clock_issue": self._standouts_clock_issue,
             }
         return {
             "ref": SETUPS_REF,
@@ -994,15 +1029,18 @@ class EntryContextSource:
             "availability": self._setups_available_at,
             "computation": self._setups_computed_at,
             "publication": self._setups_published_at,
+            "clock_issue": self._setups_clock_issue,
         }
 
     def _stock_setup_contract_status(self) -> dict[str, Any]:
         standouts = self._artifact_status(
             self._standouts, STANDOUTS_REF, self._standouts_as_of,
-            self._standouts_age, self._standouts_error)
+            self._standouts_age, self._standouts_error,
+            clock_issue=self._standouts_clock_issue)
         setups = self._artifact_status(
             self._setups, SETUPS_REF, self._setups_as_of,
-            self._setups_age, self._setups_error)
+            self._setups_age, self._setups_error,
+            clock_issue=self._setups_clock_issue)
         states = {standouts["state"], setups["state"]}
         if "AVAILABLE" in states:
             state = "AVAILABLE"
@@ -1025,11 +1063,13 @@ class EntryContextSource:
             expires_at = expires_at or _explicit(signal, _ENTRY_EXPIRY_KEYS)
             expires_at = expires_at or _explicit(entry_signal, _ENTRY_EXPIRY_KEYS)
         expired = _expired_by_owner(signal, entry_signal, expires_at, self._now)
-        if expired:
+        if availability in {"UNAVAILABLE", "NOT_IN_SNAPSHOT"}:
+            state = "UNKNOWN"
+        elif expired:
             state = "EXPIRED"
         elif availability == "STALE":
             state = "STALE"
-        elif src is not None and signal_gate.is_buyable(dict(signal)):
+        elif src is not None and _strict_signal_buyable(signal):
             state = "ACTIVE"
         else:
             state = "UNKNOWN"
@@ -1056,7 +1096,7 @@ class EntryContextSource:
             return "EXPIRED"
         if availability == "STALE":
             return "STALE"
-        return ("QUALIFIED" if signal_gate.is_buyable(dict(signal))
+        return ("QUALIFIED" if _strict_signal_buyable(signal)
                 else "NOT_QUALIFIED")
 
     @staticmethod
@@ -1126,10 +1166,11 @@ class EntryContextSource:
     @staticmethod
     def _artifact_status(doc: Mapping[str, Any] | None, ref: str,
                          as_of: Any, age_days: int | None,
-                         error: str | None) -> dict[str, Any]:
-        if doc is None:
+                         error: str | None,
+                         clock_issue: str | None = None) -> dict[str, Any]:
+        if doc is None or clock_issue is not None or age_days is None:
             state = "UNAVAILABLE"
-        elif age_days is not None and age_days > ENTRY_CONTEXT_STALE_DAYS:
+        elif age_days > ENTRY_CONTEXT_STALE_DAYS:
             state = "STALE"
         else:
             state = "AVAILABLE"
@@ -1139,6 +1180,7 @@ class EntryContextSource:
             "as_of": as_of,
             "age_days": age_days,
             "error": error,
+            "clock_issue": clock_issue,
         }
 
 
@@ -1147,6 +1189,75 @@ def _relationship_kind(value: Any) -> str:
     if normalized in {"DIRECT_MEMBER", "PROXY"}:
         return normalized
     return "UNKNOWN"
+
+
+def _strict_signal_buyable(signal: Mapping[str, Any]) -> bool:
+    """Use the native gate only after its permission bit is a real JSON boolean."""
+    return signal.get("eligible") is True and signal_gate.is_buyable(dict(signal))
+
+
+def _as_datetime(value: date | datetime | None) -> datetime:
+    if value is None:
+        return datetime.now(timezone.utc)
+    if isinstance(value, datetime):
+        if value.tzinfo is None or value.utcoffset() is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
+    return datetime(value.year, value.month, value.day, 23, 59, 59, 999999,
+                    tzinfo=timezone.utc)
+
+
+def _owner_observation_date(value: Any) -> date | None:
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if len(text) != 10:
+        return None
+    try:
+        parsed = date.fromisoformat(text)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == text else None
+
+
+def _supporting_clock(value: Any) -> datetime | None:
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        return None
+    text = value.strip()
+    try:
+        parsed = datetime.fromisoformat(
+            text[:-1] + "+00:00" if text.endswith("Z") else text
+        )
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _owner_clock_issue(*, observation: Any, availability: Any,
+                       computation: Any, publication: Any,
+                       now: datetime) -> str | None:
+    observed = _owner_observation_date(observation)
+    if observed is None:
+        return "owner_observation_clock_invalid"
+    if observed > now.date():
+        return "owner_observation_clock_future"
+    for name, value in (
+        ("availability", availability),
+        ("computation", computation),
+        ("publication", publication),
+    ):
+        if value is None:
+            continue
+        parsed = _supporting_clock(value)
+        if parsed is None:
+            return f"owner_{name}_clock_invalid"
+        if parsed > now:
+            return f"owner_{name}_clock_future"
+    return None
 
 
 def _clock(value: Any, *, reason: str) -> dict[str, Any]:
