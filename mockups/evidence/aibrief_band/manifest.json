@@ -1,0 +1,101 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-25T01:23:32Z",
+  "tool": {
+    "module_ref": "scripts/capture_aibrief_band_evidence.py",
+    "module_sha256": "c7a84de8d3c873449f7520f02c568b6afbce5ed89a5bdbbcbbca98708270f7f6"
+  },
+  "target": "aibrief.html#am_edition_band",
+  "head": "8d175a94df227f48d7b9d24e94403067b81cfe2b",
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ]
+    },
+    "locales": [
+      "en"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "band"
+    ]
+  },
+  "aliases": {
+    "band-dark-en-desktop.png": "shots/72159cdd86b0c15bc31e09dd3b737c4ac76356d6851692b059df6dc362942d41.png",
+    "band-light-en-desktop.png": "shots/2a13dd0559baa70668b87b812c412419bd061229fd35a60234c8662d867ca62b.png"
+  },
+  "excluded": [],
+  "outcome": "captured",
+  "totals": {
+    "rest_cells": 2,
+    "rest_required": 2,
+    "pages": 1
+  },
+  "honesty": {
+    "access": "anonymous only",
+    "authority": "This tool captures screenshots; it scores nothing.",
+    "page": "templates/aibrief.html.j2 rendered with a hand-built am_edition panel fixture in scratch space; never writes to site/ or data/."
+  },
+  "pages": [
+    {
+      "page_id": "aibrief.html#am_edition_band",
+      "route": "/aibrief.html#am_edition_band",
+      "registry_route": "/aibrief.html#am_edition_band",
+      "route_kind": "aibrief_band",
+      "subject": "band",
+      "selector": "div.panel:has(span.eyebrow):has-text('Morning Orientation')",
+      "states": [
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/72159cdd86b0c15bc31e09dd3b737c4ac76356d6851692b059df6dc362942d41.png",
+          "alias": "band-dark-en-desktop.png",
+          "sha256": "72159cdd86b0c15bc31e09dd3b737c4ac76356d6851692b059df6dc362942d41",
+          "bytes": 25202,
+          "width": 1100,
+          "height": 125,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/2a13dd0559baa70668b87b812c412419bd061229fd35a60234c8662d867ca62b.png",
+          "alias": "band-light-en-desktop.png",
+          "sha256": "2a13dd0559baa70668b87b812c412419bd061229fd35a60234c8662d867ca62b",
+          "bytes": 24809,
+          "width": 1100,
+          "height": 125,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        }
+      ],
+      "metrics": {},
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": []
+    }
+  ]
+}
