@@ -37,6 +37,8 @@ from engine.market_ontology.semiconductor_owner_bundle import (
     WORKSPACE_UNAVAILABLE,
     WORKSPACE_UNVERIFIED,
     WORKSPACE_UNPROJECTABLE,
+    WORKSPACE_GENERATION_SPLIT,
+    WORKSPACE_GENERATION_UNQUALIFIED,
     load_semiconductor_owner_bundle,
     scope_filter,
     wire_omission,
@@ -615,3 +617,155 @@ def test_reader_error_class_is_swallowed_by_the_reader_and_fails_this_loader(mon
     monkeypatch.setattr(reader, "_fetch_bytes", failing)
     with pytest.raises(BundleUnavailable):
         load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# (h) ONE OWNER-QUALIFIED SNAPSHOT PER COMPARISON
+#     Sol #7780 issuecomment-5825621672 item 3; grain fixed by 5825811888
+#     item 4 (same publication domain only, never a cross-domain equality).
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _second_generation(tmp_dir, *, generated_at: str) -> dict:
+    """A SECOND generation of the same witnesses, written by the production
+    writer with a different publication clock so its generation_id differs."""
+    from engine.company_intelligence.event_workspace import write_workspace_generation
+    from tests.semiconductor_research_helpers import nest_files, witness_workspace_payloads
+
+    out = Path(tmp_dir) / "company_intelligence"
+    write_workspace_generation(
+        out, witness_workspace_payloads(tickers=("TSM",), periods=(1, 2)),
+        generated_at=generated_at, status="ready",
+    )
+    return nest_files(out)
+
+
+def test_a_publication_flip_between_the_two_reads_withholds_the_comparison(
+    monkeypatch, tmp_path,
+) -> None:
+    """THE A→B TEST. Publication advances between the current read and the
+    preceding read, so the two halves describe two different worlds. The panel
+    would otherwise present them as one comparison. Real producer, real
+    reader, real receipts — only the byte source flips."""
+    files_a = _second_generation(tmp_path / "a", generated_at="2026-09-24T15:00:00Z")
+    files_b = _second_generation(tmp_path / "b", generated_at="2026-09-24T18:30:00Z")
+    assert files_a != files_b, "the two generations must be distinguishable"
+
+    state = {"files": files_a}
+    reader.clear_company_intelligence_cache()
+    monkeypatch.setattr(reader, "_public_base_url", lambda: WITNESS_NEST_BASE)
+
+    def fetch(url: str, *, limit: int) -> bytes:
+        if url not in state["files"]:
+            raise CompanyIntelligenceReadError(
+                "Company Intelligence public source unavailable")
+        return state["files"][url]
+
+    monkeypatch.setattr(reader, "_fetch_bytes", fetch)
+
+    real_current = reader.read_current_event_workspace
+
+    def flipping_current(params):
+        envelope = real_current(params)
+        # Publication advances A→B the instant the current half is in hand.
+        state["files"] = files_b
+        reader.clear_company_intelligence_cache()
+        return envelope
+
+    monkeypatch.setattr(reader, "read_current_event_workspace", flipping_current)
+    _pin_scope(monkeypatch, _TSM)
+
+    bundle = load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
+
+    # The current half is served; the preceding half is WITHHELD, not mixed in.
+    assert [w["event_id"] for w in bundle.event_workspaces] == [
+        "evt_cik0001046179_2026q2_results"]
+    assert f"{WORKSPACE_GENERATION_SPLIT}.TSM-2026Q1" in bundle.omissions, bundle.omissions
+
+    # And the withheld period is not named in the revision fingerprint: the
+    # guard runs BEFORE admission, so the bundle never advertises a period it
+    # does not serve.
+    assert not any(
+        kind == "event" and value.endswith("2026q1_results")
+        for kind, value in bundle.revision_tuple
+    ), bundle.revision_tuple
+
+    response = compose_semiconductor_research(_query(), bundle)
+    assert response["economics"]["status"] == "unavailable"
+    assert "witness_economics_missing" in response["limitations"]
+    assert f"omitted:{WORKSPACE_GENERATION_SPLIT}.TSM-2026Q1" in response["limitations"]
+    assert all(_matches_grammar(item) for item in response["limitations"])
+
+
+def test_one_generation_serves_both_halves_and_raises_no_coherence_omission(
+    monkeypatch, served_nest,
+) -> None:
+    """The permit control. The guard must not empty the product: when both
+    halves come from ONE generation — the ordinary case, and what the reader's
+    manifest cache produces — the comparison is served."""
+    _pin_scope(monkeypatch, _TSM)
+    bundle = load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
+
+    assert len(bundle.event_workspaces) == 2
+    assert not [o for o in bundle.omissions if "generation" in str(o)], bundle.omissions
+
+
+@pytest.mark.parametrize("receipt", [
+    pytest.param({}, id="no-generation-key"),
+    pytest.param({"generation_id": ""}, id="empty-generation"),
+    pytest.param({"generation_id": None}, id="null-generation"),
+    pytest.param({"generation_id": 7}, id="non-string-generation"),
+    pytest.param("not-a-mapping", id="non-mapping-receipt"),
+])
+def test_a_workspace_with_no_qualified_generation_cannot_join_a_comparison(
+    monkeypatch, served_nest, receipt,
+) -> None:
+    """A generation nobody stamped is a snapshot no owner vouches for. It may
+    not anchor or join a comparison, whichever half it is."""
+    _pin_scope(monkeypatch, _TSM)
+    real_prior = reader.read_event_workspace
+
+    def stripped(params):
+        envelope = dict(real_prior(params))
+        envelope["receipt"] = receipt
+        return envelope
+
+    monkeypatch.setattr(reader, "read_event_workspace", stripped)
+    bundle = load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
+
+    assert [w["event_id"] for w in bundle.event_workspaces] == [
+        "evt_cik0001046179_2026q2_results"]
+    assert f"{WORKSPACE_GENERATION_UNQUALIFIED}.TSM-2026Q1" in bundle.omissions
+
+
+def test_the_current_half_without_a_generation_cannot_anchor_either(
+    monkeypatch, served_nest,
+) -> None:
+    """Symmetry: an unqualified CURRENT workspace is not a base to compare
+    against, so the preceding half is withheld even though ITS receipt is
+    perfectly good."""
+    _pin_scope(monkeypatch, _TSM)
+    real_current = reader.read_current_event_workspace
+
+    def stripped(params):
+        envelope = dict(real_current(params))
+        envelope["receipt"] = {}
+        return envelope
+
+    monkeypatch.setattr(reader, "read_current_event_workspace", stripped)
+    bundle = load_semiconductor_owner_bundle(_query(), rights_snapshot=_SNAPSHOT)
+
+    assert [w["event_id"] for w in bundle.event_workspaces] == [
+        "evt_cik0001046179_2026q2_results"]
+    assert f"{WORKSPACE_GENERATION_UNQUALIFIED}.TSM-2026Q1" in bundle.omissions
+
+
+def test_the_coherence_rule_is_scoped_to_this_publication_domain():
+    """5825811888 item 4 forbids a general equality rule over generation
+    strings from independent publication domains: they share no clock to be
+    equal in. This guard must therefore compare only the two event-workspace
+    receipts it reads itself, and must not reach for any other ref's
+    generation."""
+    source = MODULE_PATH.read_text(encoding="utf-8")
+    assert "_generation_of(current)" in source and "_generation_of(prior)" in source
+    # exactly two call sites: the two halves of ONE event-workspace comparison
+    assert source.count("_generation_of(") == 3  # the def plus its two uses

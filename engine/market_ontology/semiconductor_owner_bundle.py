@@ -110,6 +110,8 @@ __all__ = [
     "load_semiconductor_owner_bundle",
     "scope_filter",
     "wire_omission",
+    "WORKSPACE_GENERATION_SPLIT",
+    "WORKSPACE_GENERATION_UNQUALIFIED",
 ]
 
 # Omission names this loader emits (the owners' own tokens are lifted verbatim
@@ -120,6 +122,8 @@ WORKSPACE_UNVERIFIED = "workspace_unverified"
 WORKSPACE_UNPROJECTABLE = "workspace_unprojectable"
 IDENTITY_MISMATCH = "identity_mismatch"
 PERIOD_UNSTEPPABLE = "period_unsteppable"
+WORKSPACE_GENERATION_SPLIT = "workspace_generation_split"
+WORKSPACE_GENERATION_UNQUALIFIED = "workspace_generation_unqualified"
 OMISSIONS_TRUNCATED = "omissions_truncated"
 # Refusal code for a research mode this surface cannot serve (see module doc).
 IDENTITY_VINTAGE_UNSUPPORTED = "identity_vintage_unsupported"
@@ -251,6 +255,21 @@ def _admit(
     return served
 
 
+def _generation_of(envelope: Mapping[str, Any]) -> str | None:
+    """The publication generation a reader envelope's receipt was qualified in,
+    or None when the receipt carries none.
+
+    None is not a detail to tolerate: a workspace with no generation is a
+    workspace no owner snapshot vouches for, and it may not anchor or join a
+    comparison (Sol #7780 issuecomment-5825621672 item 3).
+    """
+    receipt = envelope.get("receipt")
+    if not isinstance(receipt, Mapping):
+        return None
+    generation = receipt.get("generation_id")
+    return generation if isinstance(generation, str) and generation else None
+
+
 def _read(surface: Any, params: Mapping[str, Any]) -> Mapping[str, Any]:
     """Call one model-facing reader surface; a raise past the reader's own
     envelope, or a non-mapping envelope, is a transport failure."""
@@ -301,6 +320,35 @@ def _serve_witness(
         absent = prior.get("note") in _PRECEDING_ABSENT_NOTES
         tokens.append(f"{WORKSPACE_UNAVAILABLE if absent else WORKSPACE_UNVERIFIED}:{alias}")
         return rows, revisions, tokens
+    # ONE OWNER-QUALIFIED SNAPSHOT PER COMPARISON (Sol #7780
+    # issuecomment-5825621672 item 3, grain fixed by 5825811888 item 4). Both
+    # halves of this economics comparison come from ONE publication domain —
+    # Company Intelligence event workspaces — so they must come from one
+    # generation of it. If publication advances A->B between the current read
+    # and the preceding read, the pair describes two different worlds, and the
+    # panel would present them as one. The comparison is withheld instead.
+    #
+    # This is checked BEFORE ``_admit`` deliberately: admitting the row first
+    # would record its ("event", ...) and ("generation", ...) in the revision
+    # fingerprint, so the served bundle would name a period it does not serve.
+    #
+    # The native reader's 300-second manifest cache usually makes the two reads
+    # reuse one manifest. That is helpful behaviour, not proof, and this guard
+    # does not rely on it.
+    #
+    # The rule is scoped to THIS publication domain and is not a general
+    # equality rule over unrelated generation strings: 5825811888 item 4
+    # forbids comparing generations across independent domains, which have no
+    # common clock to be equal in.
+    current_generation = _generation_of(current)
+    prior_generation = _generation_of(prior)
+    if current_generation is None or prior_generation is None:
+        tokens.append(f"{WORKSPACE_GENERATION_UNQUALIFIED}:{alias}")
+        return rows, revisions, tokens
+    if current_generation != prior_generation:
+        tokens.append(f"{WORKSPACE_GENERATION_SPLIT}:{alias}")
+        return rows, revisions, tokens
+
     prior_row = _admit(identity, prior, tokens, revisions)
     if prior_row is not None:
         rows.append(prior_row)
