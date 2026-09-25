@@ -10,7 +10,8 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Mapping
 from datetime import datetime, timezone
-from decimal import Decimal, InvalidOperation, localcontext
+from decimal import (Context, Decimal, DivisionByZero, InvalidOperation,
+                     Overflow, ROUND_HALF_EVEN, localcontext)
 import re
 from typing import Any
 
@@ -110,7 +111,7 @@ def _number(value: Any) -> Decimal:
     # Bound serialization and exact arithmetic, not a market materiality rule.
     # Unsupported precision is absence; never silently round source values.
     if (not result.is_finite() or result.as_tuple().exponent < -30
-            or len(result.as_tuple().digits) > 64 or abs(result) > Decimal("1e30")):
+            or len(result.as_tuple().digits) > 64 or result.copy_abs() > Decimal("1e30")):
         raise _Refusal("guidance_invalid")
     return result
 
@@ -129,6 +130,12 @@ def _guidance(item: Mapping, workspace: Mapping) -> tuple[Decimal, Decimal, dict
         raise _Refusal("guidance_invalid")
     raw = item.get("source_span")
     if not isinstance(raw, Mapping) or raw.get("schema") != "source_span.v1" or raw.get("authority") != AUTHORITY:
+        raise _Refusal("guidance_evidence_invalid")
+    # Two missing identifiers must not count as an evidence association.
+    # These are shape checks, not a replacement source identity or byte replay.
+    if (any(not isinstance(raw.get(k), str) or not raw[k].strip() or len(raw[k]) > 128
+            for k in ("document_id", "span_id"))
+            or type(raw.get("document_version")) is not int or raw["document_version"] < 1):
         raise _Refusal("guidance_evidence_invalid")
     try:
         span = SourceSpan(**{key: raw.get(key) for key in (
@@ -186,7 +193,10 @@ def compare_guidance_workspaces(current: Any, prior: Any, *, as_of: datetime,
         p, p_issuer, p_observed = _workspace(prior, now, None)
         if issuer != p_issuer:
             raise _Refusal("issuer_mismatch")
-        if p_observed >= observed:
+        # Receipt order is not disclosure order: a backfilled old release may
+        # arrive last without becoming the company's latest outlook.
+        if (p_observed >= observed or _clock(p["lifecycle"]["source_available_at"])
+                > _clock(c["lifecycle"]["source_available_at"])):
             raise _Refusal("revision_order_invalid")
         current_counts = Counter(_key(g) for g in c["guidance"])
         if not c["guidance"]:
@@ -211,11 +221,16 @@ def compare_guidance_workspaces(current: Any, prior: Any, *, as_of: datetime,
                 if any(item.get(k) != previous.get(k) for k in ("basis", "currency", "scope")):
                     raise _Refusal("measurement_mismatch")
                 if item["unit"] not in {"vehicles", "percent"} and (
-                        item.get("basis") not in {"gaap", "adjusted"}
+                        not isinstance(item.get("basis"), str)
+                        or item.get("basis") not in {"gaap", "adjusted"}
                         or not re.fullmatch(r"[A-Z]{3}", str(item.get("currency") or ""))):
                     raise _Refusal("measurement_basis_missing")
-                with localcontext() as ctx:
-                    ctx.prec = 96
+                # Fix precision, rounding, exponent bounds and traps; unrelated
+                # Decimal callers must not change the same evidence result.
+                with localcontext(Context(prec=96, rounding=ROUND_HALF_EVEN,
+                                          Emin=-999999, Emax=999999, capitals=1,
+                                          clamp=0, flags=[],
+                                          traps=[InvalidOperation, DivisionByZero, Overflow])):
                     midpoint = (low + high) / 2; p_midpoint = (p_low + p_high) / 2
                     delta = midpoint - p_midpoint
                     percentage = None; pct_reason = None

@@ -52,3 +52,45 @@ This leaf is not the full product slice. The automatic accepted-pair producer, a
 - Publication compatibility base:d3a4bee82462556c899645a59a5ea22b5f3af950. Every pinned source/test/fixture dependency in source-manifest.json remains byte-identical to the implementation base; protected Skillpack stays605cd056c3463c992d85ba76dbcc90fbb758da75. The operation's new branch was absent at preflight.
 
 **Not claimed:** automatic accepted-pair discovery, historical decision-time proof, real source access, a live UI, full repository conftest/data-guard execution, independent review, merge or deployment. The existing R2 source read returned403; that lane is not retried. Default production News builds do not acquire comparison pairs yet. This is the tested calculation-to-existing-artifact consumer leaf, not the full user-facing upgrade.
+
+
+## R6 same-carrier repair: arithmetic isolation and disclosure order
+
+Self-adversarial review of #7982 head 1037d783fa34b965cd12a483ca091db6d37f1644
+found 11 reproducible failures in 14 added cases. This is author hardening, NOT
+independent review. No input collector, writer, UI, activation, dependency,
+source identity, or execution authority was added or replaced.
+
+- Pin a private Decimal context, including rounding, exponent limits and traps.
+  Changing an unrelated caller's Decimal state no longer changes the same
+  comparison or causes a decimal exception. Validate the supported magnitude
+  ceiling with context-free copy_abs, never a rounded absolute value.
+- Require nondecreasing source-availability time in addition to increasing
+  observation time. A delayed older disclosure cannot become a new outlook
+  simply because its bytes were received later. Equal source timestamps still
+  allow separately observed source corrections; those remain labeled as such.
+- Reject missing/blank document and span identities, and invalid document
+  revisions. Two absent document identifiers do not establish a source binding.
+  SourceSpan and the existing verified reader remain the evidence owners.
+- Malformed accounting-basis collections produce the existing named absence
+  rather than a TypeError that can discard the enclosing News projection.
+
+Verification on the operation's existing isolated Python 3.12 snapshot:
+- New comparison suite: 77 cases; original comparator 11 FAIL / 66 PASS.
+- Repaired comparison plus existing Financial News/common/qkernel: 194 PASS.
+- Restore the original comparator: the same 11 failures return; restore repair:
+  194 PASS again.
+- Existing composed #7955 + #7966 + repaired #7982 proof: 302 PASS. The first
+  two PRs are unchanged; no whole-repository, network, browser or live claim.
+
+Exact logs: r6-red.log, r6-green.log, r6-original-mutation.log, r6-restored.log,
+r6-three-candidate-integration.log and r6-verification.json in the existing
+operation evidence root. Every test uses its own operation-owned basetemp.
+
+Release constraints remain: independent exact-head review, applicable concluded
+CI and current-source compatibility. The predecessor's CI pack 10 reproduced
+an unrelated markets-regime-strip render mismatch on its unchanged base; that
+is not permission to bypass release. The live R2 source denial remains frozen.
+Mastermind Executive read preflight now returns 401 / manual reauthentication
+required; no request was submitted, and no alternate credential or dispatcher
+was used. Authentication recovery is distinct from a Pro/Extra High switch.

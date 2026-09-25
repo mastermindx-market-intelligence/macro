@@ -342,3 +342,69 @@ def test_tiny_financial_baseline_never_crashes_percentage_formatting():
     assert r["comparisons"]
     assert r["comparisons"][0]["relative_change_pct"] is not None
     json.dumps(r,allow_nan=False)
+
+
+# r6: unrelated Decimal users must not change the same evidence comparison.
+@pytest.mark.parametrize("rounding", ["ROUND_FLOOR", "ROUND_CEILING"])
+def test_comparison_does_not_inherit_decimal_rounding(rounding):
+    from decimal import localcontext
+    previous = workspace(); current = workspace(76000, 78000, later=True)
+    expected = compare(current, previous)
+    with localcontext() as context:
+        context.prec = 8
+        context.rounding = rounding
+        assert compare(current, previous) == expected
+
+
+def test_comparison_does_not_inherit_decimal_traps_or_exponents():
+    from decimal import Inexact, Rounded, localcontext
+    previous = workspace(); current = workspace(76000, 78000, later=True)
+    expected = compare(current, previous)
+    with localcontext() as context:
+        context.prec = 8
+        context.Emax = 4
+        context.Emin = -4
+        context.traps[Inexact] = True
+        context.traps[Rounded] = True
+        assert compare(current, previous) == expected
+
+
+def test_supported_amount_ceiling_is_checked_without_context_rounding():
+    from decimal import Decimal
+    current = workspace(Decimal("1000000000000000000000000000000.1"),
+                        Decimal("1000000000000000000000000000000.2"),
+                        later=True, unit="USD", metric="revenue")
+    prior = workspace(1, 2, unit="USD", metric="revenue")
+    for item in (current, prior):
+        item["guidance"][0].update(basis="gaap", currency="USD")
+    result = compare(current, prior)
+    assert not result["comparisons"] and "guidance_invalid" in result["reasons"]
+
+
+def test_late_arriving_older_disclosure_is_not_a_new_guidance_change():
+    current = workspace(76000, 78000, later=True)
+    current["lifecycle"]["source_available_at"] = "2026-09-22T15:00:00+00:00"
+    result = compare(current, workspace())
+    assert not result["comparisons"] and "revision_order_invalid" in result["reasons"]
+
+
+@pytest.mark.parametrize("basis", [[], {}, True, "unknown"])
+def test_malformed_financial_basis_returns_named_absence(basis):
+    current = workspace(76, 78, later=True, metric="revenue", unit="USD")
+    prior = workspace(100, 103, metric="revenue", unit="USD")
+    for item in (current, prior):
+        item["guidance"][0].update(basis=basis, currency="USD")
+    result = compare(current, prior)
+    assert not result["comparisons"] and "measurement_basis_missing" in result["reasons"]
+
+
+@pytest.mark.parametrize("field,value", [("document_id", None), ("document_id", ""),
+                                        ("span_id", None), ("document_version", True),
+                                        ("document_version", 0)])
+def test_receipt_identity_cannot_be_absent_on_both_sides(field, value):
+    current = workspace(76000, 78000, later=True)
+    current["guidance"][0]["source_span"][field] = value
+    if field == "document_id":
+        current["sources"][0][field] = value
+    result = compare(current, workspace())
+    assert not result["comparisons"] and "guidance_evidence_invalid" in result["reasons"]
