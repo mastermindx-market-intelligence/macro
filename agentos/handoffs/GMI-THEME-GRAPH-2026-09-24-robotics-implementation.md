@@ -130,7 +130,7 @@ REQUESTS POSTED ON #7870 (shared owner; no reply yet at this commit): issuecomme
 | R3 | Legacy decision non-regression + public-leak freeze mirroring Energy #7895 (packet R3_nonregression) | none | SEAT-EXECUTED under Sol #7780 5814541566 §1 (rob-r3 dispatcher withdrawn: m1/mb held at active=2 by other seats' lanes since ~04–06Z) | ACCEPTED: 30bfe8d75979 (R3) → review REJECT (`foresight.score` nightly-volatile frozen) → b56ba8121ef1 (R3-fix: `foresight_decision` frozen / `foresight_score` shape, sparse guard, `PROPHET_FROZEN`, prophet top-level keys, `foresight_cascade.json` canary) → re-review ACCEPT_WITH_NITS (drift replay 0/27 red, determinism proven, 13 mutations) → 760cb4ccc8f (nits: `foresight_keys` frozen, README decisions 5/7). Baseline `frozen_at_main` 3c93f8194f6c |
 | R2 | Robotics F04 composer + contract + tests over the shared envelope (packet R2_composer as run, 114 lines) | R1 accepted | mb glm-5.3 lane rs_20260924T102921Z_16517 | ACCEPTED (ACCEPT_WITH_NITS); integrated 37fd0bd35471 + guards 95d7e6ef41d7 + f257fc8e6a05 |
 | R4a | Robotics partial `templates/_robotics_research_mount.html.j2` gated on the exact `robotics_automation` anchor + tests (packet R4a_partial) | T10/T10b landed on #7870 | mb glm-5.3 lane rs_20260924T101159Z_59812 | ACCEPTED (ACCEPT_WITH_NITS); integrated 31919764cf9a + f5f8e8362c5b; request 6 (ONE include line after the identity gate + T10d anchor registration) posted to the #7870 shell writer. **RULING 5 (principal, 2026-09-25): the partial is RETIRED and request 6 WITHDRAWN.** #7870's `_theme_research_mount.html.j2` was rewritten generic (no vertical named, nine-key `theme_research_mount` context, assets emitted once) and `_theme_research_section.html.j2` renders any registered vertical; `scripts/build_theme_detail.py:318` already passes the context for EVERY basket page, and `config/theme_crosswalk.yml:193` already gives `robotics_automation` exactly one primary claimant. So a Robotics-specific partial is the "copying a partial" Sol's Option A (#7780 5813801605) forbids, mine mirrored the SUPERSEDED T10b markup-carrying design, it had ZERO code referrers (verified: the only hits were its own test and this doc) so it never rendered, it re-emitted the `<link>`/`<script>` pair the shared partial now owns once, and it lacked `data-evidence-schema-id`, which the shared ENTRY partial's nine-key render gate (`_theme_research_mount.html.j2:28-33`) requires — so it could not have rendered through the shared path at all. **Leg 4 CORRECTED by independent review (R4-reg):** the original wording credited hook 4a's `mountSpecFrom`, which at `86f699b054da` had ZERO runtime call sites (its only occurrence was its own definition, inside the `THEME-RESEARCH-CONTRACT` block that only #7870's node harness executes) — so no shipped code path would have refused the partial at that head. It does now: hook 4b (`a45788878dbc`) wired it at `theme-research.js:1891-1898`. The render-gate reason above is the one that was true throughout. **A fifth and stronger leg, found by the review:** `theme_research_anchor`, the context variable the retired partial gated on, exists NOWHERE on the merged tree — so even with an include line it could never have rendered, and the deleted suite's grammar-vs-identity xfail pair is architecturally moot (one mount context per page, supplied by `mount_context_for_basket`). Robotics mounts by REGISTERING; the delta was handed to the #7870 owner at issuecomment-5826358018, and **corrected at issuecomment-5826848991**: it is not two entries but two entries PLUS three test edits (`tests/test_theme_research_registry.py:89`, `:94`, `:225` all assert `list(REGISTRY) == ["ai_semiconductors"]`; `:191` asserts `robotics_automation` is unregistered) |
-| R4-reg | `engine/market_ontology/robotics_owner_bundle.py` — the `load_bundle` callable #7870's closed registration must name for Robotics, + `tests/test_robotics_owner_bundle.py` | #7870 hook 1 (`theme_research_registry`) landed | SEAT-EXECUTED (principal; Robotics-owned module, no collision) | Serves NOTHING and SAYS so: private half unbound (R4/R5), public half unowned (no declared witness cohort owns `precision_motion`/`perception`; declaring one is a Theme Graph / Data OS ruling, not this lane's). Coverage absence is a typed omission, never a 503 — `BundleUnavailable`'s own contract reserves it for a broken owner. Measured through the REAL composer: `authorized_coverage.status=degraded`, `selected=0`, `limitations=[rights_partial, slice_scope_unowned]`, 0 rows, 0 evidence_refs, every authority flag false. No loader-level `system_replay` refusal (the composer's `_refuse_unsupported_identity_vintage` already owns it, keyed on identity material that is empty here, so no request is AFFECTED). **Gate A/D suite list changed**: `tests/test_robotics_research_mount.py` retired with the partial, `tests/test_robotics_owner_bundle.py` joins — declared, not silently dropped. **INDEPENDENT REVIEW: REJECT, then integrated.** All four gates were green (A 125 / B 434 / C 0 / D 11+114 xfail, zero xpass) and mutation testing found no hole among the loader's four laws — every blocker was a FALSE STATEMENT IN A DURABLE RECORD, not a code defect. (1) The `system_replay` rationale was falsified by experiment: `_refuse_unsupported_identity_vintage` iterates `bundle.identity_results`, which this loader AND `semiconductor_owner_bundle:334,392` both hard-code to `()`, so the guard is inert for both verticals and admitting assertions would not wake it — fixed in prose and pinned by the new `test_r5_cannot_admit_assertions_without_facing_replay_vintage`, which goes red the day R5 admits owner material without either populating vintages or refusing replay. (2) "A member sees a mount that states it is serving nothing yet" was refuted on the served bytes: the client renders `degraded` as "Degraded — partial data" when there is NO data, and `rights_partial` asserts a partial ENTITLEMENT — a false commercial signal on a paid surface. Both are shared-composer defects this lane must not fork, so the omissions stay (dropping them would buy an honest "Unavailable" by discarding the diagnosis of which half is absent) and **live admission stays held until the composer owner maps zero-input omissions to `unavailable` or stops emitting `rights_partial` for non-rights omissions**. (3) Leg 4 of RULING 5 corrected — see the R4a row. Nits 3/4/5/6 folded: the emptiness-predicate test is relabelled a control and not counted as loader coverage; `test_coverage_absence_is_never_a_refusal` no longer duplicates the rights-revision assertion and now exercises all five views × three time modes; the owner-plane grep is relabelled a defeatable drift tripwire; and the "tests exercise both resolutions" claim is withdrawn (only the local mirror is reachable today). Post-integration: **gate D 20 passed / 115 xfailed, zero xpass** |
+| R4-reg | `engine/market_ontology/robotics_owner_bundle.py` — the `load_bundle` callable #7870's closed registration must name for Robotics, + `tests/test_robotics_owner_bundle.py` | #7870 hook 1 (`theme_research_registry`) landed | SEAT-EXECUTED (principal; Robotics-owned module, no collision) | Serves NOTHING and SAYS so: private half unbound (R4/R5), public half unowned (no declared witness cohort owns `precision_motion`/`perception`; declaring one is a Theme Graph / Data OS ruling, not this lane's). Coverage absence is a typed omission, never a 503 — `BundleUnavailable`'s own contract reserves it for a broken owner. Measured through the REAL composer: `authorized_coverage.status=unavailable`, `selected=0`, `limitations=[slice_scope_unowned]`, 0 rows, 0 evidence_refs, every authority flag false (the `degraded`/`rights_partial` pair it served until 2026-09-25 was the B2 defect, fixed in `23055bc5f89` — see the B2 section below). No loader-level `system_replay` refusal (the composer's `_refuse_unsupported_identity_vintage` already owns it, keyed on identity material that is empty here, so no request is AFFECTED). **Gate A/D suite list changed**: `tests/test_robotics_research_mount.py` retired with the partial, `tests/test_robotics_owner_bundle.py` joins — declared, not silently dropped. **INDEPENDENT REVIEW: REJECT, then integrated.** All four gates were green (A 125 / B 434 / C 0 / D 11+114 xfail, zero xpass) and mutation testing found no hole among the loader's four laws — every blocker was a FALSE STATEMENT IN A DURABLE RECORD, not a code defect. (1) The `system_replay` rationale was falsified by experiment: `_refuse_unsupported_identity_vintage` iterates `bundle.identity_results`, which this loader AND `semiconductor_owner_bundle:334,392` both hard-code to `()`, so the guard is inert for both verticals and admitting assertions would not wake it — fixed in prose and pinned by the new `test_r5_cannot_admit_assertions_without_facing_replay_vintage`, which goes red the day R5 admits owner material without either populating vintages or refusing replay. (2) "A member sees a mount that states it is serving nothing yet" was refuted on the served bytes: the client renders `degraded` as "Degraded — partial data" when there is NO data, and `rights_partial` asserts a partial ENTITLEMENT — a false commercial signal on a paid surface. Both defects were real. **The attribution was not, and it was mine:** I recorded them as shared-composer defects this lane must not fork and held live admission on "the composer owner" — a party that does not exist. `robotics_theme_research.py` is the ONLY theme-research composer on this carrier, no other `engine/market_ontology` module computes a coverage ladder, and `git log -1 -L 1155,1170` attributes the ladder to this operation's own R2 commit `37fd0bd35471`. **Fixed in lane** at `23055bc5f89` (see the B2 section below); the omissions still stay, because dropping them would buy an honest "Unavailable" by discarding the diagnosis of which half is absent. (3) Leg 4 of RULING 5 corrected — see the R4a row. Nits 3/4/5/6 folded: the emptiness-predicate test is relabelled a control and not counted as loader coverage; `test_coverage_absence_is_never_a_refusal` no longer duplicates the rights-revision assertion and now exercises all five views × three time modes; the owner-plane grep is relabelled a defeatable drift tripwire; and the "tests exercise both resolutions" claim is withdrawn (only the local mirror is reachable today). Post-integration: **gate D 20 passed / 115 xfailed, zero xpass** |
 | R7 | Source-rights qualification matrix + proposed narrowly scoped registry/prefix change (rights_class unresolved) for adjudication (packet R7_rights_matrix) | Sol #7780 5814333887 | SEAT-EXECUTED under Sol §1 (rob-r7 dispatcher withdrawn; remote rob-r7 worktrees removed) | ACCEPTED: v1 review REJECT (7 blockers) → v2 ACCEPT_WITH_NITS (8 nits taken) → committed 62bce5afef2a (`research/theme_graph/thematic_research_20260924/ROBOTICS_SOURCE_RIGHTS_QUALIFICATION_2026-09-24.md`: 15 rows, 11 proposed families all `unresolved`, refusal behaviour, Q1–Q4/G1–G4); qualification return posted to Sol #7780 issuecomment-5815643294 (14:04Z). Pending = refused until Sol adjudicates |
 | R2b (+R2c) | Canonical theme-id re-grounding of the R1 corpus, composer match via the identity owner (`scope_slug_keyed:<n>`), R1 nits n1-n3, R2 nits N1/N2/N4/N5/N6/N7/N9/N11/N12/N13, Sol addenda S1 (`identity_vintage_unsupported`) + S2 (`slice_scope_unowned` cohort); R2c = interpretation blocks whose `input_revisions` are absent from the bundle are WITHHELD (`interpretation_inputs_absent:<n>`), Sol 5814333887 §4 | R2 accepted (done); #7870 5812295091 | SEAT-EXECUTED under Sol §1 (rob-r2b dispatcher withdrawn; remote rob-r2b worktrees removed); review tree `seat-rob-r2b` = carrier + #7870 3e3a7956d014 | ROUND 12 ACCEPT, ZERO BLOCKERS, six nits (nit 1 `import re` dead → fixed in 3d73de31e21; nits 2-5 were five wrong counts of MINE, corrected in that commit message; nit 6 accepted as-is by ruling). The reviewer proved it two ways: a TOTAL static proof (fix11 `_ownership_role` reads only `predicate`, `statement_mode` and `temporal.business_valid_from`, uses zero module globals, has four reachable returns, and the strings `announced_seller`/`announced_acquirer` do not occur in the function — covering the infinite input space, not a sample) and a 536,448-case dynamic differential through the real entry point with 27,132 directional sides as positive control at the parent: fix11 produced ZERO. Cohort diff reproduced exactly (305 rows, key set identical, exactly 10 change, only `companies` differs across 100 composed responses); 5 of 6 new/changed tests fail against the parent; a reintroduced one-line direction fails 5 tests (teeth proven); all 28 inversion triples verified truthful to their round labels, with exactly the 14 `r11-*` entries still inverting at fix10; all 19 deleted names at zero references; no missed pin or consumer (the frontend reads `role` only as an ARIA attribute and `compose_robotics_research` has no non-test caller) |
 | R4b | Facet rendering / per-anchor Theme Tracker entry on the generic client | Sol build-out ruling (#7780 5811066300) + T10c/T10d | remote lane | held |
@@ -166,7 +166,7 @@ check mattered: a first draft of this table had `Precision motion` (wrong case) 
 copy transcribed from memory is worse than no canonical copy — if the shell owner had typed this
 table, the registration would have drifted from both the delta and the composer on day one.
 
-## Shared-shell state at #7870 `17b72317b737` — one live gap, reported
+## Shared-shell state at #7870 `17b72317b737` — one live gap, reported and now CLOSED at `6cd958e92b2`
 
 Hook 4b landed (`a45788878dbc`, "one client instance per mount"), which closes the label half:
 `theme-research.js:1891-1898` now builds a spec from all seven mount attributes and `:1401`
@@ -187,11 +187,41 @@ if (sel && TR_SLICE_KEYS.indexOf(sel.slice_key) >= 0 &&
 conjunction is unsatisfiable and a **valid** stored slice selection is silently discarded on
 restore — which contradicts the comment six lines above it ("the slice vocabulary that validates
 it is this mount's, not a list compiled into this file"). `SLICES` is the correct mount-scoped
-check; the `TR_SLICE_KEYS` conjunct is the leftover. `TR_VIEW_KEYS`/`TR_MODE_KEYS` in the same
-block are genuinely generic (this vertical's `VIEWS` tuple is identical to `:113`) and must stay.
-`parseStoredSelection` (bare, `:118`) now has no callers, so it can go with the conjunct.
+check; the `TR_SLICE_KEYS` conjunct is the leftover. ~~`TR_VIEW_KEYS`/`TR_MODE_KEYS` in the same
+block are genuinely generic (this vertical's `VIEWS` tuple is identical to `:113`) and must stay.~~
+
+**The `TR_VIEW_KEYS` half of that sentence is FALSIFIED** — by Technology, the third vertical
+(issuecomment-5827349789), and conceded at issuecomment-5827367115. My evidence was that this
+vertical's `VIEWS` tuple is identical to `:113`; it is identical **because it was adopted from
+semiconductor** so one route and client serve both (`robotics_theme_research.py:7` says exactly
+that), not because the list is generic. Two verticals agreeing where the second copied the first
+is a sample of one, and I generalised from it in a durable record that the shell owner then acted
+on. Technology's own view tuple has ZERO overlap with `:113`.
+
+Measured from the registration side, which is this lane's to measure: `MountFacts` carries
+`slice_keys` and `slice_labels` and **no view field of any kind**, and `mount_context` emits
+exactly nine keys — `anchor_theme_id`, `slices`, `schema_id`, `evidence_schema_id`,
+`slice_labels_json`, `title_en/zh`, `note_en/zh`. So unlike the slice case there is no
+mount-scoped counterpart to fall back on: `data-slices` exists, `data-views` does not. The view
+half is a mount-contract change, not a JS edit. `TR_MODE_KEYS` is untouched by this correction —
+the three time modes are the shared research-mode vocabulary, and nothing has falsified that.
+~~`parseStoredSelection` (bare, `:118`) now has no callers, so it can go with the conjunct.~~
+**That sentence is wrong and was corrected to the owner at issuecomment-5827344619:** `:126`
+uses `TR_SLICE_KEYS` inside `parseStoredSelection`, which #7870's own node cases drive directly
+and whose `test_..._ui.py:2199` pins that the WIRING must never call it. It is a deliberate
+test-only helper living in the contract block, not dead code — so the fix is the conjunct alone.
 Reported to the shell owner at issuecomment-5826848991. **This is shell work**, which retracts
 this lane's earlier "Robotics' remaining gap is not shell work".
+
+**CLOSED 2026-09-25 at `6cd958e92b2`** ("a second vertical's remembered tab now comes back").
+Verified by this lane as the only second vertical that can: the conjunct is gone and `SLICES`
+stands alone; `test_a_second_verticals_remembered_slice_actually_restores` drives
+`beta_slice` — a key in no version of `TR_SLICE_KEYS` — behaviourally through a real boot,
+seeded localStorage and a chip click, asserting NO write; its premise holds (`:1405` is
+`if (currentSlice === key) return;`); and it carries its own positive control proving the probe
+can see a write at all. `test_the_wiring_never_consults_one_verticals_slice_list` closes the
+class rather than the instance, and is satisfiable because `TR_SLICE_KEYS` sits in the contract
+block ahead of `/* THEME-RESEARCH-CONTRACT-END */`.
 
 ## Honest import closure of the loader (corrects the #7870 handover §4)
 
@@ -204,3 +234,95 @@ module-scope import of `semiconductor_theme_research` (`:123`) which pulls
 `engine.market_ontology.robotics_owner_bundle`. The conclusion still holds and was verified with
 #7870's own probe: `FORBIDDEN_LOADED=[]`, with positive controls firing on `numpy`, `requests`,
 `jinja2` and `engine.neuralweb.company_intelligence_reader`.
+
+## B2 — the gate this lane held on itself (`23055bc5f89`, 2026-09-25)
+
+R4-reg blocker B2 was recorded as two **shared-composer** defects with live admission held until
+"the composer owner" fixed them. There is no such owner. Measured three ways before acting:
+
+| instrument | result |
+|---|---|
+| `ls engine/market_ontology/*theme_research*` | `robotics_theme_research.py` is the ONLY theme-research composer on this carrier |
+| `grep -rln coverage_status engine/ scripts/` | four unrelated subsystems + my file; no other ladder under `engine/market_ontology` |
+| `git log -1 -L 1155,1170` | the ladder is `37fd0bd35471`, **this operation's own R2 commit**, created from `/dev/null` |
+
+Both defects were real; only the attribution was wrong. Fixed in lane:
+
+- **Emptiness outranks omission.** `degraded` is the PARTIAL state and the client renders it
+  "Degraded — partial data"; an omission never ADDS data, so it can never lift an empty read
+  above `unavailable`. `authorized_coverage.selected` is `len(selection.assertions)` seven lines
+  below, so the status and the count can no longer disagree.
+- **`rights_partial` needs a selection to be partial ABOUT.** The v1 schema's own description
+  reserves the token for rights partiality; neither omission is a withholding
+  (`private_assertions_unbound` = unbound store, `public_cohort_unowned` = undeclared cohort);
+  and the client renders limitation slugs **verbatim** (`:1599`, `textSafe` is escaping only), so
+  the raw token was the member-facing sentence asserting cut entitlements on a paid surface.
+
+The loader's omissions **stay on the bundle** — dropping them would trade the which-half
+diagnosis for a cosmetic fix. The composer simply no longer turns them into a member-facing claim.
+
+**Deliberate consequence, now pinned:** the served payload for an empty bundle is byte-identical
+to one composed with `omissions=()`. Measured before the fix, the two differed in exactly two
+fields across all five views and nothing else leaked. So an empty read can no longer disclose
+*that withheld content exists* — the disclosure RBV-27 exists to prevent. Pinned by
+`test_rbv27_the_response_never_names_a_withheld_family` (both named fields + whole-payload
+identity); its positive control is `test_rbv27_rights_partial_never_names_families`, extended
+with a zero-selection leg on the corpus's own `later_retained_backdate` case.
+
+Blast radius, all 20 loadable fixture cases composed as shipped and with a synthesized omission:
+19 cases `sel>0, omis=0` unchanged; the RBV-27 manoeuvre unchanged; `later_retained_backdate`
+(`sel=0, omis=0`) unchanged. **Only `sel=0, omis>0` changes.** Zero RBV cases weakened.
+
+Gates A 135 / B 622 / C exit 0 / D 20 passed + 115 xfailed, zero xpass — all at the recorded
+baseline. Run wider (adding the theme-graph foundation) gives 941 passed / 3 failed, all three in
+`tests/test_theme_graph_identity_resolution.py` on a 2807-vs-2806 company-node pin; reverting
+this lane's four files to `HEAD~1` in place reproduces them identically, so they are pre-existing
+and are the identity plane's acceptance evidence (independently reported at #7780 5827208326 §6).
+
+Recorded at #7908 issuecomment-5827273049.
+
+## Mount registration — PROVEN on a merged tree, and the sequencing ruling
+
+The delta was "paste-ready" but never executed. It is now executed and measured, on #7870's
+**current-head** `theme_research_mounts.py` + `theme_research_registry.py` dropped onto the merge
+worktree with the two Robotics entries applied:
+
+```
+REGISTRY keys      : ['ai_semiconductors', 'robotics_automation']
+registration_for   : robotics_automation  robotics_theme_research.v1  2026-09-24.1
+allowed_slices     : {'precision_motion', 'perception'}
+mount_context      : nine keys, all non-empty; slices = precision_motion,perception
+slice_labels_json  : {"perception":["Perception","感知"],"precision_motion":["Precision Motion","精密运动"]}
+served (through the registration's OWN load_bundle + compose):
+  schema robotics_theme_research.v1 · definition_version 2026-09-24.1 == registration
+  authorized_coverage.status unavailable · selected 0 · limitations ['slice_scope_unowned']
+  every authority flag False · byte-identical to omissions=()
+```
+
+**The delta's shape changed under this lane:** both modules now build from an `_ENTRIES` tuple
+with an `_assert_unique_anchors` load-time guard, so the edit is a `MountFacts` block plus
+`(_SEMICONDUCTOR, _ROBOTICS)` — not an edit to the `MOUNTS` comprehension the earlier delta
+described. The registry half needs an eager import aliasing `select_authorized_evidence` (my
+selector shares semiconductor's name) and a lazily-bound `_load_robotics_owner_bundle` wrapper.
+
+**Exactly three tests go red, four sites** — `test_registry_is_a_read_only_mapping_with_exactly_one_entry`
+(`:89`, `:94`), `test_synthetic_registration_constructs_without_touching_the_registry` (`:275`),
+`test_registration_for_unknown_or_non_exact_probe_is_none[unregistered-real-theme]` (`:241`→`:249`).
+A fourth failure in my run (`semiconductor_owner_bundle` ModuleNotFound) is an artifact of the
+merge worktree pinning a #7870 older than the registry/mounts refactor — declared, not reported
+as a consequence. Trap recorded for whoever edits `:241`: `robotics_automation` remains the
+correct *foreign-anchor* negative in `test_..._ui.py:1659/:1666/:1697`.
+
+**Trap — label order.** `mount_context` serialises `slice_labels_json` with `sort_keys=True`, so
+Robotics' key order is alphabetical (`perception` first), not `slice_keys` order. Set equality
+holds. Semiconductor's two keys are already alphabetical, so an order-based assertion written
+against it would pass today and fail the day Robotics lands.
+
+**RULING 6 (principal, 2026-09-25) — the registration is POST-MERGE.** `compose` and
+`select_evidence` are bound by *eager* module-top import in `theme_research_registry.py` (only
+`load_bundle` is lazy), so a Robotics entry imports `robotics_theme_research` at registry-import
+time, which does not exist on #7870's branch. The order is: #7908 merges → the shell owner lands
+the registration. This lane does **not** add it from this carrier (#7870's paths), and does not
+ask for it early. The proof above exists so the values and the binding are known-good before they
+first enter their tree. Independently agreed by the semiconductor seat at #7780 5827208326 §7;
+verified here rather than taken. Posted at #7870 issuecomment-5827332885.
