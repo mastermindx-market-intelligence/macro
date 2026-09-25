@@ -328,6 +328,9 @@ def test_record_only_plan_detail_is_scoped_and_source_bound():
     assert 'data-plan-id="{{ _rd.plan_id|e }}"' in _SRC
     assert "System model plan — not your holdings or fills." in _SRC
     assert "'record_detail': {" in plan_partial
-    assert "p.get('what_to_do_now')" in plan_partial
+    assert "p.get('what_to_do_now')" not in plan_partial
+    assert "'created_date': p.get('plan_asof') or p.get('recorded_at')" in plan_partial
+    assert "'lifecycle_en': _LIFE_LABEL_EN.get(_life, 'State unavailable')" in plan_partial
     assert "p.get('management_status') == 'available'" in plan_partial
+    assert "does not restate management actions or infer a user position" in _SRC
     assert "fetch(" not in plan_partial and "XMLHttpRequest" not in plan_partial

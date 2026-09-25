@@ -658,14 +658,16 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
         <div>{{ t('System model plan — not your holdings or fills.','系统模型计划——并非您的实际持仓或成交。') }}</div>
         <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
           <span><b style="color:var(--text)">{{ t('Plan ID','计划 ID') }}</b><br>{{ _rd.plan_id|e }}</span>
+          <span><b style="color:var(--text)">{{ t('Plan created','计划建立') }}</b><br>{{ _rd.created_date|e if _rd.created_date else t('Unavailable','暂缺') }}</span>
+          <span><b style="color:var(--text)">{{ t('Current lifecycle','当前生命周期') }}</b><br>{{ t(_rd.lifecycle_en, _rd.lifecycle_zh) }}</span>
           <span><b style="color:var(--text)">{{ t('Horizon','周期') }}</b><br>{% if _rd.horizon_days is number and _rd.horizon_days is not boolean %}{{ _rd.horizon_days|int }} {{ t('days','天') }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
           <span><b style="color:var(--text)">{{ t('Original entry','原始入场') }}</b><br>{% if _rd.entry is number and _rd.entry is not boolean %}${{ '%.2f'|format(_rd.entry) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
           <span><b style="color:var(--text)">{{ t('Original invalidation','原始失效位') }}</b><br>{% if _rd.invalidation is number and _rd.invalidation is not boolean %}${{ '%.2f'|format(_rd.invalidation) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
-          <span><b style="color:var(--text)">T1</b><br>{% if _rd.t1 is number and _rd.t1 is not boolean %}${{ '%.2f'|format(_rd.t1) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
-          <span><b style="color:var(--text)">T2</b><br>{% if _rd.t2 is number and _rd.t2 is not boolean %}${{ '%.2f'|format(_rd.t2) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original T1','原始 T1') }}</b><br>{% if _rd.t1 is number and _rd.t1 is not boolean %}${{ '%.2f'|format(_rd.t1) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original T2','原始 T2') }}</b><br>{% if _rd.t2 is number and _rd.t2 is not boolean %}${{ '%.2f'|format(_rd.t2) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
         </div>
-        {% if _rd.pulse_en %}<div><b style="color:var(--text)">{{ t('Recorded state','记录状态') }}</b><br>{{ t(_rd.pulse_en|e, (_rd.pulse_zh or _rd.pulse_en)|e) }}</div>{% endif %}
-        {% if _rd.next_en %}<div><b style="color:var(--text)">{{ t('Model-plan note','模型计划说明') }}</b><br>{{ t(_rd.next_en|e, (_rd.next_zh or _rd.next_en)|e) }}</div>{% endif %}
+        {% if _rd.pulse_en %}<div><b style="color:var(--text)">{{ t('Published plan read','已发布计划读数') }}</b><br>{{ t(_rd.pulse_en|e, (_rd.pulse_zh or _rd.pulse_en)|e) }}</div>{% endif %}
+        <div>{{ t('This record preserves model-plan terms; it does not restate management actions or infer a user position.','此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。') }}</div>
         {% if not _rd.management_available %}<div>{{ t('Management state unavailable for this record.','此记录的管理状态暂缺。') }}</div>{% endif %}
       </div>
     </details>

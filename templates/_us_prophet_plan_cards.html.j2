@@ -41,8 +41,6 @@
 {#- Packet 2: source-safe plan detail. Everything below already rides on the
    canonical plans[] row; no new fetch, identity join, management owner, or
    user-position state is introduced. The disclosure is collapsed by default. -#}
-{%- set _rd_todo_en = p.get('what_to_do_now') if p.get('what_to_do_now') is sequence and p.get('what_to_do_now') is not string else [] -%}
-{%- set _rd_todo_zh = p.get('what_to_do_now_zh') if p.get('what_to_do_now_zh') is sequence and p.get('what_to_do_now_zh') is not string else [] -%}
 {%- set _rd_targets = p.get('targets') if p.get('targets') is sequence and p.get('targets') is not string else [] -%}
 {{ pv.pv_card({
   'record_only': true,
@@ -66,15 +64,16 @@
   'marks': _marks.rows,
   'record_detail': {
     'plan_id': p.id,
+    'created_date': p.get('plan_asof') or p.get('recorded_at'),
     'horizon_days': p.get('horizon_days'),
+    'lifecycle_en': _LIFE_LABEL_EN.get(_life, 'State unavailable'),
+    'lifecycle_zh': _LIFE_LABEL_ZH.get(_life, '状态暂缺'),
     'pulse_en': p.get('pulse') if p.get('pulse') is string else none,
     'pulse_zh': p.get('pulse_zh') if p.get('pulse_zh') is string else none,
     'entry': p.get('entry'),
     'invalidation': p.get('invalidation'),
     't1': (_rd_targets[0] if _rd_targets|length > 0 else none),
     't2': (_rd_targets[1] if _rd_targets|length > 1 else none),
-    'next_en': (_rd_todo_en[0] if _rd_todo_en|length > 0 and _rd_todo_en[0] is string else none),
-    'next_zh': (_rd_todo_zh[0] if _rd_todo_zh|length > 0 and _rd_todo_zh[0] is string else none),
     'management_available': p.get('management_status') == 'available' and not p.get('management_error')
   }
 }, allow_no_read=true) }}
