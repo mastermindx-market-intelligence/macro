@@ -780,9 +780,9 @@ def compose_nuclear_research(query: ResearchQuery,
 
 
 def _correction_lineage(assertion: Mapping[str, Any],
-                        bundle: OwnerBundle) -> list[str]:
+                        visible: list[dict[str, Any]]) -> list[str]:
     by_revision = {item.get("curation_revision"): item
-                   for item in bundle.assertions if isinstance(item, Mapping)}
+                   for item in visible if isinstance(item, Mapping)}
     lineage, seen = [], {assertion.get("curation_revision")}
     current = assertion
     while True:
@@ -832,7 +832,7 @@ def select_authorized_evidence(query: ResearchQuery, bundle: OwnerBundle,
                     "observed_at": source.get("observed_at"),
                     "retained_at": source.get("retained_at"),
                 },
-                "lineage": _correction_lineage(assertion, bundle),
+                "lineage": _correction_lineage(assertion, selection.review_ok),
                 "limitations": sorted(selection.limitations),
                 "authority": dict(AUTHORITY),
             }
