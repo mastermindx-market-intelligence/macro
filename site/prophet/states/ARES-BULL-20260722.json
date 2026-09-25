@@ -10,23 +10,23 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 80.7,
+    "validity": 75.5,
     "progress": 0.0,
     "pace": 7.3,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.853,
+    "dist_to_stop_r": 0.812,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 137.8,
-    "p1": -0.098,
-    "p2": -0.049,
+    "p1": -0.1251,
+    "p2": -0.0626,
     "p3": null,
-    "move_r": -0.147,
+    "move_r": -0.188,
     "mfe_r": 0.672,
-    "mae_r": -0.147
+    "mae_r": -0.188
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 22.949996948242188,
-  "_mae": -5.019996643066406,
+  "_mae": -6.410003662109375,
   "_max_p1": 0.4480233664859383,
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,

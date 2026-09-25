@@ -216,3 +216,63 @@ def test_selftest_passes():
     """The script's built-in selftest passes."""
     rc = selftest()
     assert rc == 0, "check_grader_manifest selftest must pass"
+
+
+# Fable-mode source contracts, not model-behavior scores.
+import unittest
+
+_FABLE_SKILL = _REPO_ROOT / ".claude/skills/fable-mode"
+
+def _fable_text(name):
+    return (_FABLE_SKILL / name).read_text()
+
+class R31Contract(unittest.TestCase):
+
+    def test_missing_watch_has_no_fictional_wake(self):
+        s = _fable_text('references/harness-adapters.md')
+        self.assertNotIn('it ends its turn on a state and is re-invoked by the event', s)
+        self.assertNotIn('let the event re-invoke you', s)
+        self.assertIn('verified return path', s)
+
+    def test_missing_return_does_not_duplicate_worker(self):
+        s = _fable_text('references/orchestration.md')
+        self.assertNotIn('answer the gating sub-questions yourself with a few targeted probes in parallel with the worker', s)
+        self.assertIn('do not duplicate the live assignment', s)
+        self.assertIn('read-only', s)
+
+    def test_no_effect_does_not_authorize_retry(self):
+        s = _fable_text('references/long-horizon.md')
+        self.assertIn('EFFECT_NONE is not retry permission', s)
+        self.assertIn('permission denial', s)
+
+    def test_economics_not_universal_fable_price(self):
+        s = _fable_text('references/long-horizon.md')
+        self.assertIn('historical Fable measurement', s)
+        self.assertIn('cost per accepted outcome', s)
+        self.assertIn('rejected attempts', s)
+
+    def test_codex_checks_discovery_and_child_effort(self):
+        s = _fable_text('references/harness-adapters.md')
+        for expected in ('skills/list', 'forceReload', 'reasoning effort', 'sparse', 'not model-behavior proof'):
+            self.assertIn(expected, s)
+
+    def test_distillation_requires_return_proof(self):
+        s = (_REPO_ROOT / 'config/fable_mode_core.md').read_text()
+        self.assertIn('verified return path', s)
+
+    def test_ownership_gate_accepts_native_return_binding(self):
+        for source in (_fable_text('SKILL.md'), (_REPO_ROOT / 'config/fable_mode_core.md').read_text()):
+            self.assertTrue('one owner, one verified return binding' in source, 'Ownership gate must allow a verified native return, not require a duplicate watcher')
+
+    def test_existing_numbered_rules_and_references_survive(self):
+        s = _fable_text('SKILL.md')
+        for prefix, count in [('S', 8), ('O', 17), ('L', 14), ('A', 7)]:
+            for n in range(1, count + 1):
+                self.assertIn(f'**{prefix}.{n} ', s)
+        for name in ('engineering', 'orchestration', 'long-horizon', 'adjudication', 'packets', 'harness-adapters'):
+            self.assertTrue((_FABLE_SKILL / 'references' / (name + '.md')).is_file())
+
+    def test_user_scope_cannot_reuse_checkout_relative_stub(self):
+        s = _fable_text('references/harness-adapters.md')
+        self.assertIn('Do not copy the checkout-relative stub into', s)
+        self.assertIn('complete canonical package', s)
