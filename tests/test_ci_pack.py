@@ -1511,7 +1511,10 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     move them, ``validated-claims-contract`` runs the checker's suites when the
     checker, the allowlist or a suite changes, and ``validated-claims`` keeps the
     FULL scan on the data gate — the rendered site and the registries move with
-    nightly commits, so they must never red somebody else's PR.
+    nightly commits, so they must never red somebody else's PR. scripts/ joins the
+    PR-authored roots at its top-level page builders only (``build_*``/``render_*``),
+    the same cut the checker walks, so a checker or a research script never selects
+    the source job.
     """
     manifest = _yaml(MANIFEST)
     checker = "scripts/check_validated_claims.py"
@@ -1521,7 +1524,8 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     source_runs = [str(step.get("run") or "") for step in source_job["steps"]]
     assert source_job["gate"] == "code"
     assert source_job["scope"] == "exclusive"
-    assert {"templates/**", "engine/**", "lib/**", checker, allowlist} <= set(source_job["paths"])
+    assert {"templates/**", "engine/**", "lib/**", "scripts/build_*.py", "scripts/render_*.py",
+            checker, allowlist} <= set(source_job["paths"])
     assert f"python3 {checker} --scope source" in source_runs
     assert f"python3 {checker} --selftest" in source_runs
 
@@ -1544,6 +1548,8 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
         (["templates/dashboard.html.j2"], {"validated-claims-source"}),
         (["engine/flow_signing.py"], {"validated-claims-source"}),
         (["lib/pages.py"], {"validated-claims-source"}),
+        (["scripts/build_spvector.py"], {"validated-claims-source"}),
+        (["scripts/render_china_fast.py"], {"validated-claims-source"}),
         ([checker], {"validated-claims-source", "validated-claims-contract"}),
         ([allowlist], {"validated-claims-source", "validated-claims-contract"}),
         (["tests/test_validated_claims_source_scope.py"], {"validated-claims-contract"}),
@@ -1551,6 +1557,11 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
         selected, reason = PACK.select_jobs(code_jobs, changed)
         assert owners <= {job.job_id for job in selected}, (changed, reason)
         assert "unowned path" not in reason, reason
+    for changed in (["scripts/check_design_system.py"], ["scripts/capture_page_evidence.py"],
+                    ["scripts/research/build_delivery_waterfall.py"]):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert "validated-claims-source" not in {job.job_id for job in selected}, (
+            changed, reason)
 
 
 def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
@@ -4892,12 +4903,66 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     honest instead of leaving it red-on-arrival. WEIGHT and PACK ceilings
     stay unmoved (5,800 / 5,600 / 5,600 and 10 packs; measured 5,792 /
     5,538 / 5,526, packs 10 / 10 / 10).
+
+    2026-09-25 (BC-2 merge gate: #7998, then the page-builder root).
+    ``validated-claims-source`` (w2, ``gate: code``, ``scope: exclusive``)
+    grades the display copy of the PR-authored roots, so it rides the PRs
+    that ARE its subject, on the DECLARED tier: templates/** and engine/**
+    since #7998 (templates/index.html and plan_book.py, +1 job / +2 weight
+    each — already on main, which had left both probes AT their bounds),
+    and the top-level page builders scripts/build_*.py /
+    scripts/render_*.py since this change (build_free_content.py, +1 / +2;
+    nothing else under scripts/ selects it). That is the wave-7
+    "ratcheting the ceiling is the correct-risk response, not curation"
+    case. Main's other drift since #7971 is no manifest entrant:
+    biocatalyst-contracts grew 50 -> 52 weight on all three probes, and
+    #7971's own manifest re-measured on today's tree already selects
+    130 jobs / 5,577 weight for build_free_content.py (+1 / +39 against its
+    129 / 5,538) — an inferred scope widened as the tree moved (the
+    selection code did not change), which left that probe AT its bound too.
+    Re-measured, full manifest, inference on, before #8010:
+
+        templates/index.html          133 jobs, 5,796 weight
+        scripts/build_free_content.py 130 -> 131 jobs, 5,579 -> 5,581 weight
+        engine/prophet/plan_book.py   126 jobs, 5,530 weight
+
+    JOB ceilings re-based to measurement + 1 (134 / 132 / 127). WEIGHT and
+    PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs) — the
+    builder root adds 2 weight-seconds to one probe and none to the other
+    two.
+
+    #8010 then landed ``finance-intelligence-site-wiring`` (w4, ``gate:
+    code``, no declared scope). Its one suite reads scripts/build_site.py
+    as text, and inference follows that file's import closure: 560 owned
+    paths, none of them a probe, plus a whole-tree fallback smear
+    (admin/**, app/**, collectors/**, config/**, ...). It rides all three
+    probes on that FALLBACK tier only, +1 job / +4 weight each. On its own,
+    that put main one job over all three ceilings as they stood (133 / 130
+    / 126). Nothing in the merge gate runs this file, so the breach showed
+    only in the data lane. Re-measured on main 7c22f6c5b79 with this change:
+
+        templates/index.html          134 jobs, 5,800 weight
+        scripts/build_free_content.py 132 jobs, 5,585 weight
+        engine/prophet/plan_book.py   127 jobs, 5,534 weight
+
+    The ceilings above are NOT raised for it. They are this change's
+    measurement + 1, and the #8010 entrant fills that headroom exactly. All
+    three probes now sit AT their job bound, and templates/index.html sits
+    AT its 5,800 weight bound. Said explicitly: no headroom is left, so the
+    next entrant on any of the three needs a decision recorded here, not a
+    reflexive bump. The rule this file already follows: curate a
+    fallback-tier smear away (a declared ``scope: exclusive`` for the job
+    that caused it); ratchet a job that enters on its own declared subject
+    (wave 7). By that rule finance-intelligence-site-wiring's own smear is
+    a curation candidate, left to its owner. An exclusive declaration for it
+    would have to cover that closure (#8010's manifest comment: 538
+    uncovered paths), which is why it has none.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 133, 5_800),
-        ("scripts/build_free_content.py", 130, 5_600),
-        ("engine/prophet/plan_book.py", 126, 5_600),
+        ("templates/index.html", 134, 5_800),
+        ("scripts/build_free_content.py", 132, 5_600),
+        ("engine/prophet/plan_book.py", 127, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
         weight = sum(job.weight for job in selected)

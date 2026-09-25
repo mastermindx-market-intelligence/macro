@@ -50,9 +50,10 @@ builder that copies it into a site payload, so it is gated at the row rather tha
 nightly later on the generated half (found 2026-08-11 alongside #5413).
 
 MERGE GATE vs DATA GATE — see the SCAN SCOPE block below. `--scope source` walks only the
-PR-authored roots (templates/, engine/, lib/) and runs in every pull request's merge gate;
-the default full scan also walks the nightly-rewritten site/ tree and data registries and
-runs on the data gate.
+PR-authored roots (templates/, engine/, lib/, and the top-level page builders
+scripts/build_*.py / scripts/render_*.py — see PAGE BUILDERS) and runs in every pull
+request's merge gate; the default full scan also walks the nightly-rewritten site/ tree
+and data registries and runs on the data gate.
 
 Run:  python -m scripts.check_validated_claims          # scan; exit 1 on any unearned claim
       python -m scripts.check_validated_claims --scope source  # the merge gate's PR-tree half
@@ -98,7 +99,24 @@ PY_COPY_GLOBS = [
     # display fields. It was scanned by nothing: censused 2026-09-25 at 80 display-copy
     # strings in 9 files and ZERO token-bearing ones, so it joins with no debt.
     ("lib", ("*.py",)),
+    # PAGE BUILDERS — walked at the TOP LEVEL only (_TOP_LEVEL_ONLY), never all of scripts/.
+    # A builder authors display copy exactly the way engine/ does (`note`, `edge`, `*_en` /
+    # `*_zh` fields rendered onto a page), but scripts/ was no scan root, so that copy was
+    # graded only after a nightly render carried it onto a page: a day late and on somebody
+    # else's PR — the #3765 → #3790 failure, one directory over. WHY THIS CUT, measured
+    # 2026-09-25 over scripts/'s 1,416 Python files: 141 name a page template, and every one
+    # of those that ships a page is a top-level build_* / render_*; the other 25 are evidence
+    # capture (capture_*_evidence), checkers (check_*), _dev_* previews and nav sync — they
+    # read pages, they do not author them. scripts/research/build_* write no site/ output and
+    # name no template, hence top level only. Joined with no debt: 366 builders carry 3,180
+    # display-copy strings, 4 of them token-bearing, all resolved in the change that added
+    # this root. KNOWN RESIDUE, graded by the data gate as before: the 144 non-builder
+    # scripts that write under site/ — 0 findings on that census.
+    ("scripts", ("build_*.py", "render_*.py")),
 ]
+
+# Roots walked with glob, not rglob — see PAGE BUILDERS above.
+_TOP_LEVEL_ONLY = frozenset({"scripts"})
 
 
 # ── SCAN SCOPE: which tree moves each surface's verdict (--scope) ────────────────────
@@ -119,7 +137,10 @@ PY_COPY_GLOBS = [
 #                 zero [skip ci] commits touched templates/, engine/, lib/ or the
 #                 allowlist; the only bot writes to templates/ are the render-public
 #                 `?v=` asset re-stamps on three plain-copy pages, whose hex digests
-#                 cannot spell the token. The verdict of a source-scoped scan is
+#                 cannot spell the token. The same window's 192 commits to the top-level
+#                 page builders (scripts/build_*.py, scripts/render_*.py — the only part
+#                 of scripts/ that is scanned, PAGE BUILDERS) held zero [skip ci] and zero
+#                 dashboard-bot commits. The verdict of a source-scoped scan is
 #                 therefore a function of the PR's own tree, which is `gate: code`'s
 #                 definition — so `--scope source` runs in the merge gate.
 #   everything else  the rendered site/ tree, site/prophet JSON, and the DATA_COPY_SPECS
@@ -140,8 +161,23 @@ PY_COPY_GLOBS = [
 # Every scan root must be classified: the source-scope suite fails a new SCAN_GLOBS /
 # PY_COPY_GLOBS root that is neither a source root nor under site/, so a root added
 # without a decision cannot silently fall out of the merge gate.
-SOURCE_ROOTS = frozenset({"templates", "engine", "lib"})
+SOURCE_ROOTS = frozenset({"templates", "engine", "lib", "scripts"})
 SCOPES = ("all", "source")
+
+
+def _source_scope_label() -> str:
+    """What `--scope source` walks, as the CLI prints it: a whole-tree root as `root/`, a
+    top-level-only root as its patterns — `scripts/`, which is never walked whole, is
+    printed as `scripts/build_*.py, scripts/render_*.py`."""
+    walked: set[str] = set()
+    for sub, pats in SCAN_GLOBS + PY_COPY_GLOBS:
+        if sub not in SOURCE_ROOTS:
+            continue
+        if sub in _TOP_LEVEL_ONLY:
+            walked.update(f"{sub}/{pat}" for pat in pats)
+        else:
+            walked.add(f"{sub}/")
+    return ", ".join(sorted(walked))
 
 
 class DataSpec(NamedTuple):
@@ -884,9 +920,12 @@ def _copy_strings(tree: ast.AST) -> list[tuple[str, ast.Constant]]:
 
     Covers the shapes engine/ actually uses to emit copy: dict literals
     ({"read_en": ...}), call keywords (RadarProfile(caveat_en=...), _row(why_zh=...)),
-    plain/annotated assignment, attribute and constant-subscript assignment. Values are
-    unwrapped through ternaries, `+` concatenation, f-string literal parts, and
-    list/tuple elements, because each of those is a live way to write shipping copy.
+    plain/annotated assignment, attribute and constant-subscript assignment, and tuple
+    unpacking (`label_en, label_zh = "…", "…"` — the bilingual idiom, 624 strings in 65
+    engine/ and builder files on 2026-09-25, none of them scanned before), paired element
+    by element so each literal keeps its own field name. Values are unwrapped through
+    ternaries, `+` concatenation, f-string literal parts, and list/tuple elements,
+    because each of those is a live way to write shipping copy.
     """
     out: list[tuple[str, ast.Constant]] = []
     seen: set[tuple[int, int]] = set()
@@ -908,6 +947,21 @@ def _copy_strings(tree: ast.AST) -> list[tuple[str, ast.Constant]]:
             for e in node.elts:
                 emit(name, e)
 
+    def bind(target: ast.AST, value: ast.AST) -> None:
+        if isinstance(target, ast.Name) and _is_copy_field(target.id):
+            emit(target.id, value)
+        elif isinstance(target, ast.Attribute) and _is_copy_field(target.attr):
+            emit(target.attr, value)
+        elif isinstance(target, ast.Subscript) and isinstance(target.slice, ast.Constant) \
+                and isinstance(target.slice.value, str) and _is_copy_field(target.slice.value):
+            emit(target.slice.value, value)
+        elif isinstance(target, (ast.Tuple, ast.List)) \
+                and isinstance(value, (ast.Tuple, ast.List)) \
+                and len(target.elts) == len(value.elts) \
+                and not any(isinstance(e, ast.Starred) for e in (*target.elts, *value.elts)):
+            for t, v in zip(target.elts, value.elts):     # a, b = x, y — pairwise
+                bind(t, v)
+
     for n in ast.walk(tree):
         if isinstance(n, ast.Dict):
             for k, v in zip(n.keys, n.values):
@@ -920,13 +974,7 @@ def _copy_strings(tree: ast.AST) -> list[tuple[str, ast.Constant]]:
                     emit(kw.arg, kw.value)
         elif isinstance(n, ast.Assign):
             for t in n.targets:
-                if isinstance(t, ast.Name) and _is_copy_field(t.id):
-                    emit(t.id, n.value)
-                elif isinstance(t, ast.Attribute) and _is_copy_field(t.attr):
-                    emit(t.attr, n.value)
-                elif isinstance(t, ast.Subscript) and isinstance(t.slice, ast.Constant) \
-                        and isinstance(t.slice.value, str) and _is_copy_field(t.slice.value):
-                    emit(t.slice.value, n.value)
+                bind(t, n.value)
         elif isinstance(n, ast.AnnAssign) and n.value is not None \
                 and isinstance(n.target, ast.Name) and _is_copy_field(n.target.id):
             emit(n.target.id, n.value)
@@ -1155,8 +1203,9 @@ def scan(list_all: bool = False, scope: str = "all") -> list[dict]:
         base = ROOT / sub
         if not base.exists():
             continue
+        walk = base.glob if sub in _TOP_LEVEL_ONLY else base.rglob
         for pat in pats:
-            for f in sorted(base.rglob(pat)):
+            for f in sorted(walk(pat)):
                 if "node_modules" in str(f):
                     continue
                 consume(f, scanner)
@@ -1543,17 +1592,15 @@ def main() -> None:
     ap.add_argument("--selftest", action="store_true", help="prove the gate fires on synthetic EN+zh")
     ap.add_argument("--scope", choices=SCOPES, default="all",
                     help="all (default): every surface — the data gate's full scan. "
-                         "source: only the PR-authored roots "
-                         f"({', '.join(sorted(r + '/' for r in SOURCE_ROOTS))}) — the "
-                         "merge gate's half, whose verdict no data commit can move")
+                         f"source: only the PR-authored roots ({_source_scope_label()}) — "
+                         "the merge gate's half, whose verdict no data commit can move")
     args = ap.parse_args()
 
     if args.selftest:
         sys.exit(selftest())
 
     unearned = scan(list_all=args.list, scope=args.scope)
-    where = ("" if args.scope == "all" else
-             f" [scope=source: {', '.join(sorted(r + '/' for r in SOURCE_ROOTS))}]")
+    where = "" if args.scope == "all" else f" [scope=source: {_source_scope_label()}]"
     if unearned:
         # The source scope refuses artifact backing (SCAN SCOPE), so it offers one remedy.
         remedy = ("a justified entry in" if args.scope == "source" else
