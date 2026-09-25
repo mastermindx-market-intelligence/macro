@@ -15,6 +15,16 @@ Updated 2026-09-24 through R18. This updates the existing packet; it does not cr
 **Prepared for principal integration and independent review, not an unblocked production build.** Preferred avenue Fable for consequential shared-owner integration and acceptance; routine implementation uses the least-scarce capable avenue. CAPACITY_SELECTABLE / WAITING_CAPACITY / needs_placement. No Materials receiver, ACK, START, Executive Attempt or autonomous wake is established. The Semiconductor Fable assignment does not assign Materials.
 
 
+## R20 principal review of implementation PR #7984
+
+Read `research/basic_materials/BASIC_MATERIALS_R20_T4_CORE_PRINCIPAL_REVIEW_2026-09-24.md` before continuing T4. The implementation carrier is now real: Macro **#7984**, `claude/basic-materials-core-v0`, exact reviewed head `36f330b1f7829a289a44937bca0007c734d6df5e`, intentionally Draft/HOLD/RED.
+
+The existing cash-reconciliation test remains the next TDD step. Its minimal production patch was platform-blocked before dispatch in R19; no retry/reroute is authorized. Principal read-only probes found three additional defects to convert into RED tests after cash is green: (1) exponent and whitespace numeric text are accepted even though the qualified scalar grammar is plain decimal text; (2) duplicate required metric labels silently overwrite earlier evidence; (3) reversed current/prior periods still emit an economic-change explanation. Missing `quantity_basis` already refuses correctly and must not regress.
+
+Merged Consumer Cyclical V1 core (#7942) is the sibling precedent: deterministic Decimal core may land separately while shared/private/browser legs stay frozen, but merged arithmetic is not the product acceptance ruler. Reuse its generic invariants—deterministic fact pairing, strict chronology, explicit unavailable state—not its sector-specific contract/source envelope.
+
+Frozen repair order when product writes are permitted: existing cash RED -> strict decimal grammar RED -> duplicate-role RED -> chronology RED -> complete targeted + exposure-map non-regression after each GREEN -> output schema only after the four economic mechanisms/denials are stable. T7/T8 real-source/private/browser acceptance remains unchanged.
+
 ## R18 sequencing refinement — read before assigning implementation
 
 Read `research/basic_materials/BASIC_MATERIALS_R18_NUMERIC_CORE_AND_SHARED_CONTRACT_BOUNDARY_2026-09-24.md` and `R18_EXISTING_CONTRACT_QUALIFICATION_2026-09-24.json`. Current main at `5600bb63b27978031769eb428911fe9b46572a92` has a Consumer Cyclical read-model scalar convention supporting signed exact decimal text. Twelve actual schema-fragment checks confirmed its representation and its sector-specific limits. Its SEC-only source shape, revenue/expense kinds and comparison scope are NOT a Materials record. Do not copy that contract ID, invent SEC provenance or switch Materials to another evidence owner.
