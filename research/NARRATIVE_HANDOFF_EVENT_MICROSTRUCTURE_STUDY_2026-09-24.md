@@ -77,6 +77,32 @@ Social posts are timing context, not authoritative confirmation. A social-first 
 be measured as an information-diffusion lead only if later official/wire evidence is
 recorded separately. Social lead never upgrades source authority.
 
+### September 24 public-source anchor
+
+Fresh public-source reconciliation on September 25 found a materially stronger anchor for
+the motivating event than the original social observation:
+
+- Reuters' report that U.S. and Iranian negotiators were exploring a phased path involving
+  reopening Hormuz and lifting the U.S. blockade was published by Reuters republishers at
+  12:16-12:17 p.m. EDT on September 24, 2026.
+- Reuters' 2:35 p.m. EDT U.S.-stocks update explicitly said the S&P 500 and Nasdaq pared
+  losses after that report.
+- Reuters separately reported at 12:32 p.m. EDT that crude-oil futures pared gains after
+  the talks report.
+
+These observations make the event suitable for reconstruction, but they do not establish
+the exact original Reuters wire tick, the first social timestamp, a causal price ordering,
+or a reusable edge. The historical fixture must bind one exact authoritative source
+identity/timestamp before the primary replay is run. The 12:16-12:17 interval is evidence
+for source reconciliation, not permission to choose whichever minute produces a better
+result.
+
+Public references observed:
+- Reuters via MarketScreener, "US and Iran discuss phased deal to reopen Hormuz and end US blockade, sources say", published 2026-09-24 12:16 EDT.
+- Reuters via Investing.com, same report, published 2026-09-24 12:17 EDT.
+- Reuters via Fidelity, "US STOCKS-Wall Street dips as investors focus on US-Iran war", published 2026-09-24 14:35 EDT.
+- Reuters via MarketScreener, crude-oil flash, published 2026-09-24 12:32 EDT.
+
 ## 4. Preregistered first hypothesis family
 
 Family: geopolitical de-escalation with oil-risk transmission.
@@ -99,9 +125,22 @@ Event clustering:
 
 ### Primary causal asset
 
-WTI or Brent, whichever is the admitted point-in-time source for the event.
+The economic causal asset remains WTI or Brent when an admitted point-in-time intraday
+commodity source exists. The current Massive/Polygon stocks entitlement does not establish
+historical futures-minute authority for CL=F/BZ=F, so the first executable equity-entitled
+replay must not label an ETF as crude truth.
 
-For a de-escalation event, causal direction is lower crude.
+First executable proxy hierarchy:
+
+1. USO downside — primary *oil-price proxy* because it is a U.S.-listed ETF inside the
+   existing stocks minute-aggregate entitlement.
+2. XLE downside — secondary energy-equity confirmation, never a substitute for oil.
+3. Direct WTI/Brent — preferred causal asset once a separately admitted commodity-minute
+   source is available; if adopted, it replaces the proxy as primary rather than being
+   stacked as another confirmation vote.
+
+For a de-escalation event, causal direction is lower oil / lower oil proxy. Every result
+must disclose which causal substrate was actually used.
 
 Initial causal confirmation definition:
 - first decline of at least 25 bps from the latest valid pre-event baseline;
@@ -249,17 +288,30 @@ No alert or action authority should be enabled by this research PR.
 ## 10. Data reality and next implementation slice
 
 The current repository already has the semantic homes needed for news_narrative and
-intraday_microstructure, but broad historical U.S. minute bars are not established here as
-an admitted replay substrate. Historical event testing therefore must not silently rebuild
-minute truth from EOD data.
+intraday_microstructure. There is no permanent broad U.S. minute store, but the existing
+Massive/Polygon stock entitlement and accepted Entry Radar research law establish
+episode-windowed historical one-minute aggregates from at least 2010-06-15 for U.S.
+equities/ETFs. The accepted pattern is bounded per-event/per-name REST, never a bulk crawl,
+and no permanent minute store.
+
+The existing engine/entry_radar/vendor_minutes.py is NOT repurposed as a research plane:
+its cache and semantics belong to Entry Radar C3. Research may reuse the generic incumbent
+PolygonOptions/Massive transport and the same bounded aggregate endpoint contract, with an
+injected transport in tests and zero minute-data persistence.
+
+The remaining data gap is direct WTI/Brent minute truth: the current stocks entitlement
+does not establish futures-minute authority. Therefore the first replay uses USO as an
+explicit oil proxy plus XLE as a secondary energy check. Direct crude remains a stronger
+future replacement when its source is admitted.
 
 Two lawful paths can advance independently:
 
 A. Historical reconstruction
-- obtain an approved one-minute price substrate through the existing Data OS/provider
-  owner;
+- use the existing bounded Massive/Polygon one-minute equity/ETF aggregate path for
+  USO/XLE, SMH/SOXX and QQQ;
 - construct a source-timestamp event manifest without looking at post-event returns;
-- run the frozen study.
+- run the frozen study;
+- keep direct futures-minute data excluded until a commodity source owner admits it.
 
 B. Live-forward evidence
 - consume existing Market Memory / Data OS receipts prospectively;
@@ -275,9 +327,10 @@ The first experiment should use the September 24 motivating observation only as 
 fixture once its exact source clocks and admissible minute bars are available.
 
 Required outputs:
-- earliest social-known time;
-- earliest authoritative-known time;
-- WTI/Brent first qualifying downside cross;
+- earliest social-known time, if source identity can be recovered honestly;
+- exact authoritative-known time;
+- USO first qualifying downside cross (proxy disclosure required);
+- XLE secondary downside confirmation;
 - QQQ and SMH/SOXX first qualifying upside cross;
 - causal-to-response lag seconds;
 - 5/15/30/60 minute semiconductor excess returns after causal confirmation;
@@ -308,11 +361,17 @@ Hosted CI and current-base review remain separate release gates.
 
 1. Keep this carrier Draft and research-only.
 2. Run repository CI against the exact branch head.
-3. Reconcile an approved minute-bar source with the existing Data OS / Market Memory
-   contracts; do not create another source store.
-4. Build the timestamp-only historical event manifest before inspecting returns.
-5. Run the frozen primary experiment and controls.
-6. If the effect survives chronological holdout and controls, design the read-only
+3. Use the existing bounded Massive/Polygon equity-minute transport through a
+   research-only no-persistence adapter; do not create another source store or reuse the
+   Entry Radar C3 cache as a research authority.
+4. Bind one exact Reuters authoritative timestamp and build the timestamp-only historical
+   event fixture before inspecting post-event returns.
+5. Run the first USO -> SMH/SOXX vs QQQ replay, with XLE as a secondary energy check.
+6. Separately resolve direct WTI/Brent minute source authority; if admitted, rerun as a
+   preregistered substrate upgrade, not as an outcome-tuned threshold change.
+7. Run the frozen controls and chronological/event-clustered evaluation after the event
+   manifest is assembled without outcomes.
+8. If the effect survives chronological holdout and controls, design the read-only
    Narrative Handoff Radar consumer.
-7. Any ranking, alerting, portfolio use, or execution remains a later separately accepted
+9. Any ranking, alerting, portfolio use, or execution remains a later separately accepted
    authority decision.
