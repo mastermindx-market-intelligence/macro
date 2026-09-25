@@ -1886,6 +1886,12 @@ on:
       - "templates/_theme_research_mount.html.j2"
       - "tests/test_basket_intelligence_mounts.py"
       - "templates/_basket_intelligence_mounts.html.j2"
+      # Shared hook 2 (#7780): what a mount renders, the section it renders
+      # through, and the suite that proves a second vertical needs neither.
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "templates/_theme_research_section.html.j2"
+      - "tests/test_theme_research_mount_context.py"
+      - "scripts/build_theme_detail.py"
       - "templates/_theme_research_mount.html.j2"
       - "tests/test_basket_intelligence_mounts.py"
       - "engine/portfolio_brief.py"

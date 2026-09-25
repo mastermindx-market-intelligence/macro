@@ -1598,6 +1598,9 @@ jobs:
       - "scripts/build_spvector.py"
       - "scripts/build_strategies.py"
       - "scripts/build_theme_detail.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "scripts/build_vector.py"
       - "scripts/capture_china_archetype_d_evidence.py"
       - "scripts/capture_page_evidence.py"
@@ -2462,6 +2465,9 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
@@ -8328,6 +8334,9 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
@@ -8966,6 +8975,9 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
@@ -11058,6 +11070,9 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
@@ -11437,6 +11452,9 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
@@ -13417,6 +13435,9 @@ jobs:
       - "scripts/build_subsector_rotation_china_pages.py"
       - "scripts/build_subsector_rotation_pages.py"
       - "scripts/build_theme_detail.py"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "scripts/build_themes_heatmap.py"
       - "scripts/build_vector.py"
       - "scripts/check_board_contradictions.py"
@@ -14842,6 +14863,10 @@ jobs:
       - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
       - "templates/_basket_intelligence_mounts.html.j2"
       - "templates/_theme_research_mount.html.j2"
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
+      - "templates/_theme_research_section.html.j2"
       - "templates/basket_detail.html.j2"
       - "tests/test_basket_intelligence_mounts.py"
       - "tests/test_subsector_confluence.py"
@@ -14946,6 +14971,9 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
+      # Shared hook 2 (#7780): the leaf module that owns what a theme-research
+      # mount renders — anchor, slices, schema ids, bilingual copy.
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_ontology/theme_research_binding.py"  # app.theme_research -> the one loader exception (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_owner_bundle.py"  # registry -> lazily bound owner-bundle loader (T08c-2, #7870)
       - "engine/market_ontology/semiconductor_witness_scope.py"  # owner-bundle loader -> declared witness scope (T08c-1, #7870)
