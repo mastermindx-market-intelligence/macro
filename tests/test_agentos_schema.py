@@ -119,6 +119,24 @@ def test_fast_yaml_loader_uses_c_loader_without_slow_fallback(monkeypatch) -> No
     }
 
 
+def test_fast_yaml_loader_falls_back_when_c_loader_is_unavailable(monkeypatch) -> None:
+    """Runtimes without CSafeLoader retain the historical safe_load path."""
+    agentos = _load_agentos_module()
+    original_text = "alpha: 1\nitems: [x, y]\n"
+    sentinel = {"fallback": True}
+    observed: list[str] = []
+
+    def historical_safe_load(text):
+        observed.append(text)
+        return sentinel
+
+    monkeypatch.setattr(agentos, "_FAST_YAML_LOADER", None)
+    monkeypatch.setattr(agentos.yaml, "safe_load", historical_safe_load)
+
+    assert agentos._yaml_safe_load(original_text) is sentinel
+    assert observed == [original_text]
+
+
 def test_fast_yaml_loader_preserves_historical_malformed_diagnostic() -> None:
     """C-parser failure must replay through safe_load before surfacing."""
     agentos = _load_agentos_module()
