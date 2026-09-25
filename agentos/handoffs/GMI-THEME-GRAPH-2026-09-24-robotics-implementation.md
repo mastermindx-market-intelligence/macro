@@ -497,3 +497,47 @@ arrives through the shared private adapter and the shared paid API, neither of w
 both of which are held (R5). What is established is narrower and is a **merge-safety** statement:
 merging #7908 cannot create a new public-mirror surface, because this carrier ships no served
 bytes, no reader and no real research. The public-mirror probe itself remains owed at admission.
+
+## "Preserve all 32 RBV cases" — measured. 28 cited on the carrier; the other 4 accounted for individually, not waved through.
+
+The packet's §10 acceptance checklist requires "all RBV-01 … RBV-32 acceptance cases mapped".
+I had been repeating "the 32 preserved RBV cases" without ever measuring it, so I measured it.
+
+The carrier's own 35 files cite **28 distinct RBV ids**: RBV-01..12, 15..28, 31, 32.
+**Absent: RBV-13, RBV-14, RBV-29, RBV-30.** Instrument control: a case-insensitive search for
+`rbv[ _-]?(13|14|29|30)` across the same files returns nothing, so the absence is real and not
+a spelling miss; and `precision_motion` hits 18 files, so the search has reach.
+
+Each of the four, resolved against the approved plan's traceability table (`plan.md:966-967`)
+and the spec:
+
+* **RBV-13** — "K1 cross-type joins without a consumed valid bridge refuse/degrade." Plan maps
+  it to **Task 3**, and the packet's own amendment (line 45) says Task 3 is the K1 curation
+  subtype, **SHARED / IN FLIGHT on #7870**, with "Robotics consumes the accepted result; **no
+  Robotics-specific K1 subtype**". Correctly absent here. Theirs to map, and I am forbidden to
+  build it.
+* **RBV-14** — "Do not substitute the registered QLedger forward-claim object for factual
+  product evidence." Plan maps it to Tasks 3 **and 4**, and Task 4 is my composer. **I was
+  heading toward reporting this as an unmapped gap in my own lane, and that was wrong.** The
+  spec's only mention of QLedger is in **rejected alternative B**: *"put factual bodies in
+  K1/QLedger. Rejected. … the registered QLedger object is a forward claim."* RBV-14 is a
+  **negative** acceptance case — it asserts the rejected alternative was not built. The absence
+  of QLedger from my code IS the compliance, not a hole in it.
+  **Now measured rather than argued:** importing both Robotics product modules pulls in **145
+  modules, of which ZERO are QLedger** (`engine/qledger.py`, `qledger_desk_adapter.py` and
+  `qledger_evidence_clock.py` all exist, so the term is real and reachable in principle). The
+  only `engine.theme_graph` members in the closure are `theme_graph` and
+  `theme_graph.curation_assertion`.
+  **The one real gap: nothing ASSERTS that absence.** A negative case satisfied by construction
+  is exactly the kind that regresses silently the day someone adds a convenient import. Owed:
+  one import-guard test pinning that the Robotics composer and loader reach no `qledger` module.
+  Cheap, mine, and queued behind the in-flight B2 review (no code changes while it runs).
+* **RBV-29** — "Unauthorized/forbidden/error responses preserve incumbent auth and
+  private-no-store behavior." §6, the shared paid API boundary (Task 5 / T09). Not mine; held.
+* **RBV-30** — "Desktop/mobile, EN/ZH and dark/light preserve identical quantities, units,
+  statuses and sources." §6. **This case IS R6**, the browser proof, and it is completion-law
+  item 7. Held on the mount registration, which RULING 6/7 place after this carrier merges.
+
+So the 32 are accounted for: 28 instrumented here, 1 shared (13), 1 satisfied-by-construction
+with an owed guard test (14), 2 held in named lanes (29 = shared API, 30 = R6). None silently
+dropped, and none marked covered on the strength of a matrix row.
