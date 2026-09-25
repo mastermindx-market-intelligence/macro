@@ -3561,6 +3561,15 @@ CURATED_EXCLUSIVE = {
     # collectors/ and engine.market_state chains), so exclusivity loses no
     # owner and contract-delta stays at 0 introduced.
     "markets-regime-strip",
+    # #7971 (2026-09-25) declared two curated `scope: exclusive` jobs and
+    # registered neither, so pure main failed this set-equality assertion from
+    # 02:46Z until #7970 carried both pins. This PR retires one of those two —
+    # `markets-regime-strip-bake-parity`, the `gate: data` twin that re-ran the
+    # fresh-render byte guard — so its pin leaves with the job it named: a
+    # registered name with no declaration fails this same assertion from the
+    # other side. `p0b-receipt-closure` stays, bound to the live receipts by
+    # test_p0b_receipt_closure_job_owns_every_receipt_pinned_path.
+    "p0b-receipt-closure",
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane
     # (#7737). `skew-accrual-lane` is the gate:code home for the five W2-2
     # end-to-end suites (test_skew_accrual_gate/launchd/precheck/verify_ledger
@@ -5117,32 +5126,61 @@ def test_p0b_receipt_closure_job_would_block_6872_diff_shape(
     assert any("re-mint with:" in e for e in errors), out
 
 
-def test_markets_fresh_render_byte_match_is_data_gated_and_still_wired() -> None:
-    """The markets.html fresh-render byte-match lives on the DATA gate, once.
+def test_markets_fresh_render_byte_match_is_code_gated_and_runs_exactly_once() -> None:
+    """The markets.html fresh-render byte guard runs on the CODE gate, once.
 
-    ``scripts.build_markets`` reads live data/regime + data/market_state; the
-    closing-bell lane's scope=close render rewrites both without re-baking
-    site/markets.html (c4b705de8f2, 2026-09-25 00:45Z), so a ``gate: code``
-    byte-match reds every merge ref cut before the next render.yml bake on a
-    tree no PR changed — measured on PR #7971 (ci-pack-3, HK Risk-on ->
-    Risk-off in the fresh render only). By GATE_VALUES' own definition that
-    verdict is ``data``. Pin both halves of the split: the code-gated strip
-    job deselects exactly that node, and the data-gated twin selects exactly
-    it — so the assertion is neither on the merge gate nor silently dropped.
+    History this pins, in order. The guard baked ``scripts.build_markets`` IN
+    PLACE and compared against the committed ``site/markets.html``, so it read
+    the live ``data/regime`` + ``data/market_state`` feeds that closing-bell's
+    scope=close render rewrites without re-baking the page — it reddened every
+    merge ref cut between that data commit and the next ``render.yml`` bake, on
+    a tree no PR had changed (measured on PR #7971's merge ref: HK Risk-on ->
+    Risk-off in the fresh render only). #7971 therefore deselected the node here
+    and ran it on a ``gate: data`` twin, ``markets-regime-strip-bake-parity``.
+
+    #7986 removed the live read: the guard recovers the branch each strip row
+    took from the committed page's own ``mx-stance`` modifiers, bakes into
+    ``tmp_path`` with those views pinned in place of the three
+    ``_persisted_ms_view`` reads, and normalises the lane-owned
+    ``optimize_assets`` markup on both sides. A data-only commit can no longer
+    flip it; a template, partial or builder edit shipped without a rebake still
+    does. By GATE_VALUES' own definition that verdict is ``code``, so the node
+    is back on the merge gate — the only gate a PR can act on.
+
+    The twin is RETIRED rather than narrowed. Post-#7986 it would select the
+    same node and assert the same thing this job asserts, because the node no
+    longer reads the feeds the split was made for: a second run buys no
+    coverage and re-creates a duplicate owner. A data-gated freshness check —
+    committed strip verdicts versus the live persisted feeds — would be a NEW
+    test, not this one, and is deliberately not minted in its place: it would
+    alarm on exactly the between-bakes window #7971 was opened to stop
+    alarming on.
     """
     manifest = _yaml(MANIFEST)["jobs"]
     node = ("tests/test_markets_regime_strip.py::"
             "test_fresh_render_byte_matches_committed_markets_html")
+    selector = "test_fresh_render_byte_matches_committed_markets_html"
+
     strip = manifest["markets-regime-strip"]
-    twin = manifest["markets-regime-strip-bake-parity"]
-    assert strip["gate"] == "code" and twin["gate"] == "data"
+    assert strip["gate"] == "code", strip["gate"]
     strip_cmds = "\n".join(str(s["run"]) for s in strip["steps"] if "run" in s)
-    twin_cmds = "\n".join(str(s["run"]) for s in twin["steps"] if "run" in s)
-    assert f"--deselect {node}" in strip_cmds, strip_cmds
-    assert "tests/test_markets_regime_strip.py" in strip_cmds  # the fixture suite stays
-    assert "-k test_fresh_render_byte_matches_committed_markets_html" in twin_cmds, twin_cmds
-    # Same curated scope on both halves: the twin must re-run whenever the
-    # strip job would, or a builder/template change could drift unnoticed.
-    assert twin.get("scope") == "exclusive"
-    assert set(twin["paths"]) == set(strip["paths"]), (
-        set(twin["paths"]) ^ set(strip["paths"]))
+    assert "tests/test_markets_regime_strip.py" in strip_cmds, strip_cmds
+    # The node RUNS: the suite is named whole, with nothing that drops a node
+    # from it. Any future narrowing has to come back through this fixture.
+    assert "--deselect" not in strip_cmds, strip_cmds
+    assert "-k " not in strip_cmds, strip_cmds
+
+    # The data-gated twin is gone, and no other job re-runs the node.
+    assert "markets-regime-strip-bake-parity" not in manifest, sorted(manifest)
+    duplicates = []
+    for name, job in manifest.items():
+        if name == "markets-regime-strip" or not isinstance(job, dict):
+            continue
+        cmds = "\n".join(
+            str(step["run"])
+            for step in (job.get("steps") or [])
+            if isinstance(step, dict) and "run" in step
+        )
+        if selector in cmds or node in cmds:
+            duplicates.append(name)
+    assert not duplicates, sorted(duplicates)
