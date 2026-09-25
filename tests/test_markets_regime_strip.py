@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -23,16 +24,11 @@ FIXTURES = ROOT / "tests" / "fixtures" / "markets_regime_strip"
 PAGE = ROOT / "site" / "markets.html"
 MARKETS = ("us", "hk", "cn")
 
-# Builder side effects that are not the page under test. Restored so a render
-# check cannot append a PIT row or rewrite the regime-prior script.
+# Builder side effect outside the tmp site dir the byte guard bakes into: the
+# regime-prior emit appends a PIT row to this parquet. The guard disables that
+# append for its run; this restore is the fail-closed backstop so the real
+# data/ tree is byte-identical after the test whatever the emit does.
 _BAKE_SIDE_EFFECTS = (
-    "site/marketsdata/markets_engine.js",
-    "site/markets_data.js",
-    "site/markets_app.js",
-    "site/markets_i18n.js",
-    "site/cycle.css",
-    "site/mm_charts.js",
-    "site/regimedata/regime_prior.js",
     "data/regime/market_state_history.parquet",
 )
 
@@ -434,18 +430,153 @@ def test_committed_regime_prior_stamp_matches_shipped_file():
     assert stamps == {digest}, (stamps, digest)
 
 
-def test_fresh_render_byte_matches_committed_markets_html(_restore_bake_side_effects):
-    before = PAGE.read_bytes()
-    proc = subprocess.run(
-        [sys.executable, "-m", "scripts.build_markets"],
-        cwd=ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
+# ---------------------------------------------------------------------------
+# Fresh-render byte guard: templates/markets.html.j2 (+ partials) and
+# scripts/build_markets.py versus the committed site/markets.html.
+#
+# The builder reads LIVE feeds for the strip (data/market_state/latest.json and
+# the hk/china siblings) that the closing-bell scope=close render rewrites
+# WITHOUT re-baking this page (c4b705de8f29, 2026-09-25 00:45Z). A raw byte
+# comparison against an in-place bake therefore reds on main between that data
+# commit and the nightly "engine: regime update" rebake with no template change
+# behind it (measured 2026-09-25: green baseline 36077213698, then 36079750505
+# and 36082870457 red on this test alone) — and the in-place bake itself dirtied
+# site/markets.html, which MM_DATA_GUARD fails the whole job for.
+#
+# The strip prints no date, score or rail, so the page cannot name the snapshot
+# it was baked from. What it DOES encode is the branch the template took per
+# row — the mx-stance modifier pair (RISK_ON / RISK_OFF / another truthy verdict
+# / designed-null) — plus the HK/CN caveat prose. That is the entire input space
+# the template distinguishes, so the guard recovers those inputs from the
+# committed page and bakes with THEM pinned in place of the live feeds. Every
+# literal the template emits is still compared byte for byte (a copy, markup or
+# structure edit without a rebake still fails; negative probes are in the heal
+# PR's body), while a data-only commit can no longer flip it.
+#
+# The bake goes into tmp_path: an absolute site_dir wins in the builder's
+# ``root / site_dir``, so nothing under the real site/ tree is written, and the
+# PIT-row append into data/ is disabled for the run. The optimize_assets chain
+# is lane-owned (``?v=`` stamps, preload hints, ``defer`` — the render-public
+# lane re-stamps committed pages with [skip ci]; #7959's heal of the ontology
+# guard) and is normalised on both sides; hand-pinned ``?v=4``-style queries
+# are not the sweep's stamp shape and stay in the comparison.
+# ---------------------------------------------------------------------------
+
+# Builder inputs the bake reads from site/ (everything else it reads is data/).
+_BUILDER_INPUTS = (
+    "countrycyclesdata/country_cycles.json",  # engine records + as_of
+    "markets_data.js",                        # curated overlay: regime claims, `now` stanzas
+    "regimedata/regime_prior.js",             # the builder snapshots + restores this around its emit
+)
+# (state modifier, stance modifier) -> the persisted verdict class that renders it.
+_BRANCH_BY_MODS: dict[tuple[str, str], str | None] = {
+    ("ok", "warn"): "RISK_ON",
+    ("down", "muted"): "RISK_OFF",
+    ("muted", "warn"): "OTHER",   # any truthy verdict outside the two named states
+    ("muted", "muted"): None,     # designed-null row: feed missing / unreadable
+}
+_STAMP = re.compile(rb"\?v=[0-9a-f]{8}")  # optimize_assets' own stamp shape (_OUR_STAMP_RE)
+_PRELOAD_LINE = re.compile(rb"^[ \t]*<link rel=\"preload\" as=\"style\"[^\n]*\n", re.M)
+_DEFER = re.compile(rb"(<script\b[^>]*?) defer\b")
+
+
+def _without_lane_owned_asset_markup(page: bytes) -> bytes:
+    """Strip what scripts/optimize_assets adds after render: ``?v=<8 hex>``
+    stamps, ``<link rel="preload" as="style">`` hints and ``defer`` on scripts."""
+    page = _STAMP.sub(b"", page)
+    page = _PRELOAD_LINE.sub(b"", page)
+    page = _DEFER.sub(rb"\1", page)
+    return page
+
+
+def _stance_mod(node) -> str:
+    mods = [c[len("mx-stance--"):] for c in (node.get("class") or []) if c.startswith("mx-stance--")]
+    assert len(mods) == 1, node.get("class")
+    return mods[0]
+
+
+def _pop_text(pop, lang: str) -> str:
+    """Caveat prose exactly as rendered (no whitespace strip — it is compared back)."""
+    for child in pop.find_all("span", recursive=False):
+        if lang in (child.get("class") or []):
+            return child.get_text()
+    raise AssertionError(f"{lang} missing in caveat popover {pop.get('id')}")
+
+
+def _committed_strip_views(html: str) -> dict[str, dict | None]:
+    """Recover the strip's builder inputs from a committed render.
+
+    One ``_persisted_ms_view``-shaped dict (or None) per market key, read from
+    the branch each row took — the mx-stance modifier pair — never from the copy,
+    so a copy edit is left for the byte comparison to catch. HK/CN caveat prose
+    comes back verbatim from the popover. An unknown modifier pair fails here
+    rather than guessing a branch.
+    """
+    strip = _strip(html)
+    views: dict[str, dict | None] = {}
+    for market in MARKETS:
+        row = _row(strip, market)
+        key = (_stance_mod(row.select_one(".mrs-state")), _stance_mod(row.select_one(".mrs-do")))
+        assert key in _BRANCH_BY_MODS, (
+            f"{market}: committed strip row renders an unknown branch {key}; "
+            "extend _BRANCH_BY_MODS from templates/_market_regime_strip.html.j2"
+        )
+        verdict = _BRANCH_BY_MODS[key]
+        if verdict is None:
+            views[market] = None
+            continue
+        caveat_en = caveat_zh = ""
+        btn = row.select_one(".mrs-caveat-btn")
+        if btn is not None:
+            pop = strip.select_one("#" + btn["aria-describedby"])
+            assert pop is not None, market
+            caveat_en, caveat_zh = _pop_text(pop, "l-en"), _pop_text(pop, "l-zh")
+        views[market] = {
+            "verdict": verdict,
+            "caveat_en": caveat_en,
+            "caveat_zh": caveat_zh,
+            "display_only": True,
+            "market": market,
+            "ms_history": [],
+        }
+    return views
+
+
+def _bake_with_pinned_strip(tmp_site: Path, monkeypatch, views: dict[str, dict | None]) -> bytes:
+    """Run scripts.build_markets.main() into ``tmp_site`` with the strip's
+    three persisted reads replaced by ``views``. Returns the baked page bytes."""
+    import scripts.build_markets as build_markets  # noqa: PLC0415
+    import scripts.build_regime_prior as build_regime_prior  # noqa: PLC0415
+    from lib import config as _config  # noqa: PLC0415
+
+    real_cfg = _config.load()
+    pinned_cfg = {**real_cfg, "storage": {**real_cfg["storage"], "site_dir": str(tmp_site)}}
+    monkeypatch.setattr(_config, "load", lambda: pinned_cfg)  # data_dir is untouched
+    for rel in _BUILDER_INPUTS:
+        src = ROOT / "site" / rel
+        if src.is_file():
+            dst = tmp_site / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
+    monkeypatch.setattr(build_markets, "_persisted_ms_view", lambda market_key: views[market_key])
+    monkeypatch.setattr(build_regime_prior, "_append_pit", lambda *_a, **_k: None)
+    assert build_markets.main() == 0, "scripts.build_markets.main() failed — see the log above"
+    return (tmp_site / "markets.html").read_bytes()
+
+
+def test_fresh_render_byte_matches_committed_markets_html(tmp_path, monkeypatch, _restore_bake_side_effects):
+    committed = PAGE.read_bytes()
+    views = _committed_strip_views(committed.decode("utf-8"))
+    print(
+        "PINNED strip inputs recovered from the committed page: "
+        + " ".join(f"{m}={(v or {}).get('verdict')}" for m, v in views.items())
     )
-    assert proc.returncode == 0, proc.stderr[-2000:]
-    after = PAGE.read_bytes()
-    assert after == before
+    fresh = _bake_with_pinned_strip(tmp_path / "site", monkeypatch, views)
+    assert PAGE.read_bytes() == committed, "the bake must not touch the real site/ tree"
+    assert _without_lane_owned_asset_markup(fresh) == _without_lane_owned_asset_markup(committed), (
+        "site/markets.html is stale against templates/markets.html.j2 (+ partials) or "
+        "scripts/build_markets.py — re-run `python -m scripts.build_markets` and commit the page"
+    )
 
 
 def test_zh_risk_off_pill_stays_danger_ink_not_the_price_pole():
