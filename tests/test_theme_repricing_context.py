@@ -192,3 +192,93 @@ def test_group_residual_leader_abstains_without_two_comparable_horizons():
         },
     )
     assert row["group_residual_leader_candidate"] is None
+
+
+def test_leadership_handoff_requires_new_leader_up_and_former_leader_not_beating_group():
+    row = rc.analyze_subtheme(
+        key="x",
+        theme="Theme X",
+        name="Subtheme X",
+        members=["A", "B", "C", "D"],
+        group_perf={"1W": 4.0, "1M": 8.0, "3M": 10.0},
+        member_perf={
+            "A": {"1W": 3.0, "1M": 12.0, "3M": 15.0},
+            "B": {"1W": 8.0, "1M": 10.0, "3M": 12.0},
+            "C": {"1W": 2.0, "1M": 6.0, "3M": 8.0},
+            "D": {"1W": 1.0, "1M": 5.0, "3M": 7.0},
+        },
+    )
+    lead = row["leadership"]
+    assert lead["state"] == "handoff_candidate"
+    assert lead["recent_leader"] == "B"
+    assert lead["medium_horizon_leader"] == "A"
+    assert lead["long_horizon_leader"] == "A"
+    assert lead["recent_leader_1w_vs_group"] == 4.0
+    assert lead["former_medium_leader_1w_vs_group"] == -1.0
+    assert lead["semantics"] == "price_leadership_continuity_not_capital_flow"
+    assert lead["can_support_rotate_decision"] is False
+    assert row["exit_watch"]["leader_handoff_candidate"] is True
+
+
+def test_same_recent_and_medium_leader_is_stable_recent_not_handoff():
+    row = rc.analyze_subtheme(
+        key="x",
+        theme="Theme X",
+        name="Subtheme X",
+        members=["A", "B", "C"],
+        group_perf={"1W": 2.0, "1M": 4.0, "3M": 6.0},
+        member_perf={
+            "A": {"1W": 5.0, "1M": 8.0, "3M": 7.0},
+            "B": {"1W": 4.0, "1M": 6.0, "3M": 9.0},
+            "C": {"1W": 1.0, "1M": 3.0, "3M": 5.0},
+        },
+    )
+    assert row["leadership"]["state"] == "stable_recent_leader"
+    assert row["leadership"]["recent_leader"] == "A"
+    assert row["leadership"]["medium_horizon_leader"] == "A"
+    assert row["leadership"]["long_horizon_leader"] == "B"
+    assert row["exit_watch"]["leader_handoff_candidate"] is False
+
+
+def test_three_different_horizon_leaders_surface_fragmentation_without_flow_claim():
+    row = rc.analyze_subtheme(
+        key="x",
+        theme="Theme X",
+        name="Subtheme X",
+        members=["A", "B", "C", "D"],
+        group_perf={"1W": 2.0, "1M": 4.0, "3M": 6.0},
+        member_perf={
+            "A": {"1W": 5.0, "1M": 5.0, "3M": 6.0},
+            "B": {"1W": 3.0, "1M": 9.0, "3M": 7.0},
+            "C": {"1W": 2.5, "1M": 7.0, "3M": 12.0},
+            "D": {"1W": 1.0, "1M": 2.0, "3M": 3.0},
+        },
+    )
+    assert row["leadership"]["state"] == "fragmented"
+    assert row["leadership"]["n_unique_leaders"] == 3
+    assert row["exit_watch"]["leadership_fragmented"] is True
+
+
+def test_theme_summary_counts_handoffs_and_fragmented_leadership():
+    tree = [{"theme": "Theme X", "subsectors": [
+        {"key": "handoff", "name": "Handoff", "members": ["A", "B", "C", "D"]},
+        {"key": "stable", "name": "Stable", "members": ["E", "F", "G", "H"]},
+    ]}]
+    group = {
+        "handoff": {"1W": 4.0, "1M": 8.0, "3M": 10.0},
+        "stable": {"1W": 3.0, "1M": 5.0, "3M": 7.0},
+    }
+    member = {
+        "A": {"1W": 3.0, "1M": 12.0, "3M": 15.0},
+        "B": {"1W": 8.0, "1M": 10.0, "3M": 12.0},
+        "C": {"1W": 2.0, "1M": 6.0, "3M": 8.0},
+        "D": {"1W": 1.0, "1M": 5.0, "3M": 7.0},
+        "E": {"1W": 6.0, "1M": 9.0, "3M": 11.0},
+        "F": {"1W": 4.0, "1M": 7.0, "3M": 9.0},
+        "G": {"1W": 3.0, "1M": 5.0, "3M": 7.0},
+        "H": {"1W": 2.0, "1M": 4.0, "3M": 6.0},
+    }
+    out = rc.build_context(tree, group, member)
+    theme = out["themes"][0]
+    assert theme["leader_handoff_candidate_subthemes"] == 1
+    assert theme["fragmented_leadership_subthemes"] == 0

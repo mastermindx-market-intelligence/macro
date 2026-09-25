@@ -630,3 +630,44 @@ provide enough qualifying guidance-language breadth to claim management-guidance
 confirmation at subtheme grain. This is stronger than a sector-only read because it
 separates "earnings results confirm" from "guidance confirms" instead of blending them.
 It remains context-only and is not a buy recommendation.
+
+
+## Continuation 4 — leadership continuity vs leader replacement
+
+The price layer now distinguishes **theme/subtheme health from leader continuity**.
+A new `leadership` block compares the raw return leader at 1W, 1M and 3M and surfaces:
+
+- `stable_multihorizon`
+- `stable_recent_leader`
+- `leader_rotation`
+- `handoff_candidate`
+- `fragmented`
+- `insufficient`
+
+`handoff_candidate` is intentionally narrow: the 1W leader differs from the 1M leader,
+the new leader is beating the subtheme over 1W, and the former 1M leader is no longer
+beating the subtheme over 1W. That is **price leadership continuity evidence**, not proof
+that capital literally flowed from the old name to the new name and not a rotate/exit order.
+
+This directly addresses a key failure mode of sector-only intelligence: a healthy theme can
+keep re-rating while leadership rotates internally. A leader failing is therefore not the
+same fact as a theme failing.
+
+On the 2026-09-24 semiconductor snapshot:
+- **Compute:** fragmented — 1W ARM / 1M INTC / 3M AMD.
+- **Memory:** fragmented — 1W RMBS / 1M SNDK / 3M MU.
+- **Analog:** handoff candidate — recent MPWR vs prior-medium STM; STM is now ~0.22pp
+  below the Analog subtheme over 1W.
+- **Wireless:** handoff candidate — recent MRVL vs prior-medium SWKS; SWKS is ~0.51pp
+  below the Wireless subtheme over 1W.
+- **Lithography:** handoff candidate — recent AMAT vs prior-medium KLAC; KLAC is ~0.47pp
+  below the Lithography subtheme over 1W.
+- **Foundries:** stable recent leader = INTC (3M leader remains TSM).
+- **Design Tools:** stable recent leader = ARM (3M leader KEYS).
+- **Packaging:** stable recent leader = COHU (3M leader ASX).
+- **Next-Gen:** stable recent leader = INTC (3M leader NVEC).
+
+This is the beginning of an honest "rotate inside the theme vs rotate out of the theme"
+workflow: leader turnover is now machine-visible separately from breadth, revisions and
+earnings confirmation. The eventual decision layer still needs PIT validation and the
+existing rotation/turn owner before any action authority is considered.

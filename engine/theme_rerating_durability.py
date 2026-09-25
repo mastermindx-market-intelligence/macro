@@ -230,6 +230,7 @@ def build_durability(
                     "group_residual_leader_candidate": (
                         price.get("group_residual_leader_candidate")
                     ),
+                    "leadership": price.get("leadership"),
                     "durability_status": (
                         (price.get("durability_evidence") or {}).get("status")
                     ),

@@ -241,6 +241,89 @@ def _group_residual_leader(
     return winner
 
 
+def _leadership_context(
+    expected_members: Sequence[str],
+    member_perf: Mapping[str, Mapping[str, float]],
+    group_perf: Mapping[str, float],
+) -> dict:
+    """Cross-horizon leader continuity / handoff context.
+
+    A handoff is a PRICE observation: the recent leader changed and the former medium-
+    horizon leader is no longer beating the group over 1W. It is not evidence that
+    capital literally flowed from one security to another, and it is not an exit order.
+    """
+    leaders: dict[str, dict] = {}
+    for horizon in HORIZONS:
+        rows = []
+        for ticker in expected_members:
+            value = _fin((member_perf.get(ticker) or {}).get(horizon))
+            if value is not None:
+                rows.append((ticker, value))
+        if rows:
+            ticker, value = max(rows, key=lambda row: (row[1], row[0]))
+            leaders[horizon] = {"ticker": ticker, "return": _rnd(value, 2)}
+
+    unique = sorted({row["ticker"] for row in leaders.values()})
+    recent = (leaders.get("1W") or {}).get("ticker")
+    medium = (leaders.get("1M") or {}).get("ticker")
+    long = (leaders.get("3M") or {}).get("ticker")
+    group_1w = _fin(group_perf.get("1W"))
+
+    former_1w = (
+        _fin((member_perf.get(medium) or {}).get("1W"))
+        if medium
+        else None
+    )
+    recent_1w = (
+        _fin((member_perf.get(recent) or {}).get("1W"))
+        if recent
+        else None
+    )
+
+    if len(leaders) < 2:
+        state = "insufficient"
+    elif recent == medium and (long is None or long == recent):
+        state = "stable_multihorizon"
+    elif recent == medium:
+        state = "stable_recent_leader"
+    elif (
+        recent is not None
+        and medium is not None
+        and group_1w is not None
+        and recent_1w is not None
+        and former_1w is not None
+        and recent_1w > group_1w
+        and former_1w <= group_1w
+    ):
+        state = "handoff_candidate"
+    elif len(unique) >= 3:
+        state = "fragmented"
+    else:
+        state = "leader_rotation"
+
+    return {
+        "state": state,
+        "leaders": leaders,
+        "n_unique_leaders": len(unique),
+        "recent_leader": recent,
+        "medium_horizon_leader": medium,
+        "long_horizon_leader": long,
+        "recent_leader_1w_vs_group": (
+            _rnd(recent_1w - group_1w, 2)
+            if recent_1w is not None and group_1w is not None
+            else None
+        ),
+        "former_medium_leader_1w_vs_group": (
+            _rnd(former_1w - group_1w, 2)
+            if former_1w is not None and group_1w is not None
+            else None
+        ),
+        "semantics": "price_leadership_continuity_not_capital_flow",
+        "can_support_exit_decision": False,
+        "can_support_rotate_decision": False,
+    }
+
+
 def _shape(h1w: Mapping, h1m: Mapping) -> str:
     expected = int(h1w.get("expected_n") or 0)
     observed = int(h1w.get("observed_n") or 0)
@@ -314,6 +397,7 @@ def analyze_subtheme(
     }
     shape = _shape(horizons["1W"], horizons["1M"])
     h1w, h1m = horizons["1W"], horizons["1M"]
+    leadership = _leadership_context(expected, member_perf, group_perf)
     if shape == "broad_price_repricing" and (_fin(h1m.get("group_return")) or 0) > 0:
         price_durability = "confirming"
     elif shape == "early_diffusion":
@@ -341,6 +425,7 @@ def analyze_subtheme(
         "group_residual_leader_candidate": _group_residual_leader(
             expected, member_perf, group_perf,
         ),
+        "leadership": leadership,
         "durability_evidence": {
             "scope": "price_participation_only",
             "status": price_durability,
@@ -359,6 +444,8 @@ def analyze_subtheme(
             ),
             "leadership_break": shape == "leadership_break",
             "fading": shape == "fading",
+            "leader_handoff_candidate": leadership["state"] == "handoff_candidate",
+            "leadership_fragmented": leadership["state"] == "fragmented",
         },
     }
 
@@ -384,6 +471,14 @@ def _theme_summary(theme: str, rows: Sequence[Mapping]) -> dict:
     early_n = sum(row.get("shape") == "early_diffusion" for row in usable)
     narrow_n = sum(
         row.get("shape") in {"single_name_impulse", "narrow_leadership"}
+        for row in usable
+    )
+    handoff_n = sum(
+        ((row.get("leadership") or {}).get("state") == "handoff_candidate")
+        for row in usable
+    )
+    fragmented_n = sum(
+        ((row.get("leadership") or {}).get("state") == "fragmented")
         for row in usable
     )
 
@@ -417,6 +512,8 @@ def _theme_summary(theme: str, rows: Sequence[Mapping]) -> dict:
         "broad_price_repricing_subthemes": broad_n,
         "early_diffusion_subthemes": early_n,
         "narrow_or_single_name_subthemes": narrow_n,
+        "leader_handoff_candidate_subthemes": handoff_n,
+        "fragmented_leadership_subthemes": fragmented_n,
         "state": state,
     }
 
@@ -465,6 +562,8 @@ def build_context(
             "leader_semantics": "price_leader_not_validated_alpha_leader",
             "group_residual_leader_semantics":
                 "subtheme_relative_candidate_not_market_sector_factor_neutral_alpha",
+            "leadership_semantics":
+                "cross_horizon_continuity_handoff_context_not_capital_flow_or_exit_order",
             "durability_semantics":
                 "price_participation_confirmation_not_investment_durability",
             "creates_membership": False,
