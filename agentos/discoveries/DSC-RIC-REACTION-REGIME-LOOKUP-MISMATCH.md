@@ -7,16 +7,17 @@ claim: >
   this makes the documented regime preference unreachable and silently falls back
   to unconditioned 2021plus reaction means.
 falsifier: >
-  Produce an accepted playbook_v1 row with era="2021plus", regime=Q1/Q2/Q3/Q4,
-  horizon=h1 and n>=8 for the same release/bucket/outcome lookup, or supersede the
-  preregistered playbook contract so regime cells are no longer pooled era="all".
+  Run `python3 -c 'import json; p=json.load(open("research/release_playbook/results/playbook_v1.json")); print([r for r in p if r.get("era")=="2021plus" and r.get("regime") in {"Q1","Q2","Q3","Q4"} and r.get("horizon")=="h1" and (r.get("n") or 0)>=8][:5])'`.
+  A non-empty accepted result for the same release/bucket/outcome contract, or an
+  accepted supersession of PREREG_PLAYBOOK_V1.md that no longer defines pooled
+  regime cells, falsifies this discovery.
 so_what: >
   Release Radar reaction_sensitivity should read the actual pooled regime cell when
   current_regime matches and n>=8, then fall back field-by-field to the modern-era
   2021plus unconditioned cell. Because the preregistered regime labels use
   latest-revised regime history, any such read must expose revision_optimistic and
   remain descriptive/display-only. It is not rates-direction or trade authority.
-kind: implementation
+kind: landmine
 scope:
   - macro
   - engine/release_market_context.py
@@ -25,8 +26,9 @@ scope:
 confidence: verified
 verified_at: 2026-09-24
 verified_by: >
-  Exact main 25fb8fa805d611727078f65626f2c3b0388070b3 source/prereg/playbook
-  comparison during the Chairman-authorized rates-direction program.
+  #7965; compare engine/release_market_context.py lookup against
+  research/release_playbook/PREREG_PLAYBOOK_V1.md:88 and the accepted
+  research/release_playbook/results/playbook_v1.json via the falsifier command.
 related:
   - "WS:RATES-INFLATION-COMMAND"
   - "MRI-R17"
