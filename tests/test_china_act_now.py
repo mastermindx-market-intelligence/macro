@@ -1552,3 +1552,47 @@ def test_emerging_enter_render_names_theme_scope_not_stock_permission():
     assert 'Theme-level entry' in html
     assert 'Individual stock timing is separate; no stock entry is implied.' in html
     assert 'A clean entry is open today.' not in html
+
+
+@pytest.mark.parametrize("changes", [
+    {"regime_demoted": True},
+    {"chase_demoted": True},
+    {"textures": {}},
+    {"label": "dominant"},
+])
+def test_emerging_enter_requires_complete_final_theme_state(changes):
+    ti = _emerging_enter_fixture()
+    ti["themes"][0].update(changes)
+    assert _emerging_enter_board(ti)["display_lanes"]["buy_now"] == []
+
+
+@pytest.mark.parametrize("field", ["regime_demoted", "chase_demoted", "label", "reco"])
+def test_emerging_enter_missing_final_state_field_fails_closed(field):
+    ti = _emerging_enter_fixture()
+    del ti["themes"][0][field]
+    assert _emerging_enter_board(ti)["display_lanes"]["buy_now"] == []
+
+
+@pytest.mark.parametrize("observation", [
+    None,
+    {},
+    {"effective_as_of": "2026-09-21"},
+    {"aggregate_eligible": True},
+    {"effective_as_of": "2026-09-18", "aggregate_eligible": True},
+    {"effective_as_of": "2026-09-21", "aggregate_eligible": False},
+    {"effective_as_of": "2026-09-21", "aggregate_eligible": "true"},
+])
+def test_emerging_enter_requires_current_eligible_constituent_observation(observation):
+    ti = _emerging_enter_fixture()
+    ti["themes"][0]["observation"] = observation
+    board = _emerging_enter_board(ti)
+    assert board["display_lanes"]["buy_now"] == []
+    row, = board["display_lanes"]["wait_pullback"]
+    assert row["theme_decision"]["status"] == "UNAVAILABLE"
+
+
+@pytest.mark.parametrize("clean", [None, "false", 0, 1])
+def test_emerging_enter_requires_boolean_clean_entry_state(clean):
+    ti = _emerging_enter_fixture()
+    ti["themes"][0]["textures"]["clean_entry"]["flag"] = clean
+    assert _emerging_enter_board(ti)["display_lanes"]["buy_now"] == []
