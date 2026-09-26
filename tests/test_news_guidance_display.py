@@ -8,7 +8,7 @@ import re
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
-from test_news_guidance_comparison import workspace, ASOF
+from tests.test_news_guidance_comparison import workspace, ASOF
 from engine.company_intelligence.guidance_comparison import compare_guidance_workspaces, public_guidance_context
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -222,7 +222,7 @@ def test_source_clock_absence_uses_existing_plain_timing_message(reason):
 
 @pytest.mark.parametrize("known", [True, False])
 def test_actual_news_to_ticker_path_preserves_source_clock_and_absence(tmp_path, monkeypatch, known):
-    from test_news_guidance_comparison import transcript_workspace
+    from tests.test_news_guidance_comparison import transcript_workspace
     from engine import financial_news
     from scripts import build_ticker_pages as pages
     monkeypatch.setattr(financial_news.nc, "build_entity_map", lambda: {"tickers": {}})
@@ -249,7 +249,7 @@ def test_actual_news_to_ticker_path_preserves_source_clock_and_absence(tmp_path,
 
 # R9: the same ticker artifact accepts an owner release history, not a chosen pair.
 def test_owner_release_history_reaches_the_existing_news_artifact_and_ticker(monkeypatch, tmp_path):
-    from test_news_guidance_comparison import release_history, EVENT
+    from tests.test_news_guidance_comparison import release_history, EVENT
     from engine import financial_news
     from scripts import build_ticker_pages as pages
     history = release_history()
@@ -274,7 +274,7 @@ def test_owner_release_history_reaches_the_existing_news_artifact_and_ticker(mon
 
 
 def test_release_history_and_manual_pair_are_not_silently_prioritized(monkeypatch):
-    from test_news_guidance_comparison import release_history, EVENT
+    from tests.test_news_guidance_comparison import release_history, EVENT
     from engine import financial_news
     history = release_history(); security = history[-1]['workspace']['issuer']['listings'][0]['security_id']
     pair = {'release_revisions':history,'event_id':EVENT,'expected_security_id':security,
@@ -286,7 +286,7 @@ def test_release_history_and_manual_pair_are_not_silently_prioritized(monkeypatc
 
 
 def test_release_history_does_not_create_new_ticker_keys(monkeypatch):
-    from test_news_guidance_comparison import release_history, EVENT
+    from tests.test_news_guidance_comparison import release_history, EVENT
     from engine import financial_news
     monkeypatch.setattr(financial_news.nc,'build_entity_map',lambda:{})
     result = financial_news.mastermind_by_ticker({'by_ticker':{'ACME':[]}},
@@ -295,7 +295,7 @@ def test_release_history_does_not_create_new_ticker_keys(monkeypatch):
 
 
 def test_invalid_history_has_a_plain_bilingual_explanation(monkeypatch):
-    from test_news_guidance_comparison import history_context
+    from tests.test_news_guidance_comparison import history_context
     data = public_guidance_context(history_context([None]))
     result = view(data)
     assert result['note_en']=='Release history could not be verified.' and result['note_zh']
