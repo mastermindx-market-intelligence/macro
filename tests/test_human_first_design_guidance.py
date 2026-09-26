@@ -61,6 +61,9 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("Cycle** capability is retained inside **History", text)
         self.assertIn("reported / supplied / readable / filtered", text)
         self.assertIn("rights_class: unresolved", text)
+        self.assertIn("Broad market — Sector × Size", text)
+        self.assertIn("Selected sector — Industry × Cap", text)
+        self.assertIn("do not pretend those segments are exact market-cap cutoffs", text)
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
             with self.subTest(path=path):
