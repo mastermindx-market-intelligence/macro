@@ -8011,3 +8011,5 @@
 {"id":"ob-2026-09-26-8d915b16f7","from":"approved","to":"quarantined","at":"2026-09-26T15:14:01Z","actor":"publisher","note":"voice laws (queue vintage): exclamation mark: zero of 679 shipped items and zero of 205 real reference posts carry one","receipt":null}
 {"id":"ob-2026-09-26-c731a4e99e","from":"approved","to":"posting","at":"2026-09-26T15:14:09Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-26-c731a4e99e","from":"posting","to":"posted","at":"2026-09-26T15:14:10Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab7e14105811e57372fc2a9","external_url":null,"at":"2026-09-26T15:13:59Z","booked_at":"2026-09-26T15:13:59Z"}}
+{"id":"ob-2026-09-26-0880806203","from":"approved","to":"posting","at":"2026-09-26T18:31:09Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-26-0880806203","from":"posting","to":"posted","at":"2026-09-26T18:31:10Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab80f6e4b4b9f2c1c54c59d","external_url":null,"at":"2026-09-26T18:31:07Z","booked_at":"2026-09-26T18:38:07Z"}}
