@@ -8,12 +8,74 @@ mission_complete: false
 implementation_authority: none
 ---
 
-# Basic Materials Economics — current Fable integration packet
+# Basic Materials Economics — current Fable implementation handoff
 
-Updated 2026-09-24 through R18. This updates the existing packet; it does not create another handoff or discard the referenced specifications. The prior R17 packet remains at `1474e14f6bb220efdd77f556f70e18040a78f1d6`, blob `ab11564b902c0e9959abb3ae4eeea0bd2c6ec2d1`.
+Updated 2026-09-26 through R21. This is the canonical current handoff; it updates the existing packet in place and does not create a parallel handoff/control plane. The prior R17 packet remains at `1474e14f6bb220efdd77f556f70e18040a78f1d6`, blob `ab11564b902c0e9959abb3ae4eeea0bd2c6ec2d1`.
 
 **Prepared for principal integration and independent review, not an unblocked production build.** Preferred avenue Fable for consequential shared-owner integration and acceptance; routine implementation uses the least-scarce capable avenue. CAPACITY_SELECTABLE / WAITING_CAPACITY / needs_placement. No Materials receiver, ACK, START, Executive Attempt or autonomous wake is established. The Semiconductor Fable assignment does not assign Materials.
 
+
+## R21 architecture checkpoint — read first
+
+**Binding architecture:** Basic Materials is a **sector umbrella**, not one canonical GMI theme. Do **not** mint `theme:basic_materials`, force the sector ETF/basket into theme identity, or register one giant synthetic Materials vertical in #7870.
+
+Read first:
+- `research/basic_materials/BASIC_MATERIALS_R21_SECTOR_UMBRELLA_AND_THEME_DRILLDOWN_ARCHITECTURE_2026-09-26.md`
+- cumulative Agent OS frontier `agentos/handoffs/GMI-BASIC-MATERIALS-RESEARCH-2026-09-23.md`
+- then R20/R18 and the saved implementation plan only as amended by R21.
+
+### V0 topology
+
+1. **Basic Materials sector dossier** is the first served product. It spans all Materials families and all four proof subjects, including unmapped families such as precious-metals financial claims and forest products.
+2. **#7984** remains the reusable pure economics core underneath the sector dossier and later canonical-theme drilldowns.
+3. **Canonical-theme drilldowns** come later through #7870 only for accepted anchors such as `rare_earth_critical_min`, `copper_steel_electrify`, and `ag_fertilizer`.
+4. Families without canonical anchors remain sector/research slices until the ontology owner admits a theme. No Materials worker mints one unilaterally.
+
+### Current carriers
+
+- Research/masterplan: **#7796**, branch `sol/basic-materials-research-20260923`, current R21 head from its live PR/readback.
+- T4 core: **#7984**, branch `claude/basic-materials-core-v0`, exact head `36f330b1f7829a289a44937bca0007c734d6df5e`, Draft/HOLD/intentional RED.
+- Shared theme foundation: **#7870**, exact inspected head `6cd958e92b259f7221690547e7076f4a0de4ed33`, Draft/HOLD. It now contains the closed `VerticalRegistration`, `MountFacts`, generic API/binding/mount/rights-refresh infrastructure, but has not accepted the Materials AM1–AM4 request.
+
+### Sector precedent and sequencing law
+
+Use the **Finance sector-deep-dive** pattern for V0:
+- one Theme Tracker sector-deep-dive card outside canonical theme lanes;
+- one data-free Materials dossier shell;
+- one Materials-specific Sector Intelligence read model that references existing evidence owners rather than storing evidence itself;
+- no rank/stage/score/entry authority.
+
+Consume `sector_dossier_read_model.v1` as the outer sector object where applicable; do not fork it. A Materials-specific inner read model is allowed only as an owner-preserving projection, analogous to Finance's inner read model, with its own Materials domains/slices/mechanisms.
+
+Do **not** repeat Robotics #7908's sequencing defect. #7908 merged before #7870, imported shared modules absent on main, broke first-party-import CI, and was reverted by #8013. Any #7870-dependent Materials theme vertical must be stacked on or land after the actual shared foundation. The sector V0 core/projection must not import #7870-only modules while merging on main.
+
+### Frozen implementation order
+
+**T4 core (#7984):**
+- cash-reconciliation RED first;
+- strict canonical-decimal RED;
+- duplicate-required-role refusal RED;
+- strict chronology RED;
+- remaining commercial-progression and contractual-participation cases;
+- output schema / wider T4 gates only after those are green.
+
+**Sector V0 (after current design/custody review):**
+- freeze `basic_materials_intelligence_read_model.v1` as a sector projection; no second evidence store;
+- first-release slice catalog comes from R1–R20 families, not a generic theme slug;
+- Finance-style data-free shell and sector-deep-dive card;
+- private/native adapter consumes existing source/identity/rights owners;
+- all five original documents / four company journeys remain mandatory real-path proof.
+
+### Current holds
+
+- #7984 product-write class was blocked before dispatch for the cash patch; EFFECT_NONE, not retry permission.
+- #7870 Materials compatibility acceptance is unreturned.
+- native retained source/rights/private publication and four-company browser proof remain incomplete.
+- no Materials receiver / ACK / START is created by this handoff.
+
+### Handoff execution boundary
+
+This packet is ready for a future Fable/authorized implementation principal to consume. It grants **no** authority by itself. A lawful assignment/placement still requires the normal runtime/admission/custody gates. On pickup, reconcile only changed heads/custody; do not replay R1–R21 research.
 
 ## R20 principal review of implementation PR #7984
 
