@@ -508,12 +508,12 @@ def classify_evidence_state(
         state = "SOURCE_QUALITY_UNRESOLVED"
     elif causal_confirmed is False:
         state = "CAUSAL_REJECTED"
+    elif causal_confirmed is None:
+        state = "SOURCE_QUALITY_RESOLVED"
     elif cross_session_assimilated is False:
         state = "CROSS_SESSION_NO_ASSIMILATION"
     elif cross_session_assimilated is True:
         state = "CROSS_SESSION_ASSIMILATION_OBSERVED"
-    elif causal_confirmed is None:
-        state = "SOURCE_QUALITY_RESOLVED"
     elif not first_impulse_observed:
         state = "CAUSAL_CONFIRMED"
     elif continuation_observed is False:
