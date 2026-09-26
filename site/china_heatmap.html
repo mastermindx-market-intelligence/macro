@@ -32,27 +32,89 @@
 })();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>China A-Share Heatmap — Live Sector Map — MastermindX</title>
-<meta name="description" content="Every liquid Shanghai and Shenzhen A-share as one sector treemap — today&#39;s winners, losers and sector breadth, sized by market cap, after each close.">
+<title>China A-Share Heatmaps — Sectors + Themes — MastermindX</title>
+<meta name="description" content="China A-share sector and THS theme heatmaps — switch between the stock market-cap treemap and concept-board leadership across multiple timeframes after each close.">
 <link rel="canonical" href="https://www.mastermind-x.com/china_heatmap.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MastermindX">
-<meta property="og:title" content="China A-Share Heatmap — Live Sector Map — MastermindX">
-<meta property="og:description" content="Every liquid Shanghai and Shenzhen A-share as one sector treemap — today&#39;s winners, losers and sector breadth, sized by market cap, after each close.">
+<meta property="og:title" content="China A-Share Heatmaps — Sectors + Themes — MastermindX">
+<meta property="og:description" content="China A-share sector and THS theme heatmaps — switch between the stock market-cap treemap and concept-board leadership across multiple timeframes after each close.">
 <meta property="og:url" content="https://www.mastermind-x.com/china_heatmap.html">
 <meta property="og:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="China A-Share Heatmap — Live Sector Map — MastermindX">
-<meta name="twitter:description" content="Every liquid Shanghai and Shenzhen A-share as one sector treemap — today&#39;s winners, losers and sector breadth, sized by market cap, after each close.">
+<meta name="twitter:title" content="China A-Share Heatmaps — Sectors + Themes — MastermindX">
+<meta name="twitter:description" content="China A-share sector and THS theme heatmaps — switch between the stock market-cap treemap and concept-board leadership across multiple timeframes after each close.">
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=d58d35e9">
-<link rel="stylesheet" href="assets/css/2c699580.css?v=2c699580">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
+<style>
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font:14px/1.5 'Inter',-apple-system,
+         "Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:24px 0 28px; }
+  a { text-decoration:none; }
+  .wrap { padding:16px; }
+  @media (min-width:1100px){ .wrap{ padding:18px max(28px,calc((100vw - 1680px)/2)); } }
+  .hm-head { display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px 22px; margin:10px 2px 16px; }
+  .hm-head h1 { font-size:23px; margin:0; font-weight:800; letter-spacing:-.015em; }
+  .hm-head .sub { color:var(--muted); font-size:12.5px; margin-top:5px; max-width:74ch; line-height:1.5; }
+  .hm-foot { color:var(--muted); font-size:11px; margin:14px 2px 0; line-height:1.6; }
+  /* Live-feed badge: populated by live.js when LIVE_FEED_LABEL is set.
+     Hidden (no layout footprint) when the span is empty (no live feed). */
+  .hm-live-badge { display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; color:var(--muted); font-weight:600;
+    background:color-mix(in srgb,#d97706 14%,transparent);
+    border:1px solid color-mix(in srgb,#d97706 35%,transparent);
+    color:var(--ink-warn, var(--warn)); border-radius:7px; padding:3px 9px; margin-top:6px;
+    white-space:nowrap; align-self:flex-end; }
+  .hm-live-badge:empty { display:none; }
+  /* Hidden live-chg spans that live.js writes to (observer then recolors the tile) */
+  .hm-live-chg { display:none !important; }
+
+  /* ── the server-rendered summary layer (W2 spec §A2.3) ────────────────────
+     Deliberately class-compatible with heatmap.js's own dashboard chrome: the
+     renderer injects the .hx-* stylesheet at boot, so the SSR blocks and the
+     live blocks are the same pixels rather than a second, drifting copy. Only
+     the two rules below are SSR-specific. heatmap.js removes #hm-ssr the moment
+     the live map draws — and LEAVES it standing when the fetch fails, so a
+     visitor who never gets the tile map still keeps the breadth read. */
+  #hm-ssr { margin-bottom:2px; }
+  #hm-ssr .hx-boards { margin-top:14px; }
+
+  /* ── gate elements ────────────────────────────────────────────────────────
+     Transliterated from templates/special_situations.html.j2 (the shipped
+     reference) into THIS page's token vocabulary. That page defines --card /
+     --grid / --ink / --faint / --blue locally; this one has no local token
+     block at all and inherits theme.css, where the same roles are --panel /
+     --line / --text / --muted / --link. Pasting the reference verbatim would
+     resolve every colour to nothing — a note that renders transparent and
+     still "works", which is exactly the failure a review misses.
+
+     #8b5cf6 (the lock violet) stays a hard-coded hex, identical to the
+     reference mockup. The CTA gradient is brand blue → violet and never signal
+     amber (terminal-paywall lesson). The gate elements carry NO directional
+     colour: under html[data-lang="zh"] theme.css swaps --up/--down, and a wall
+     tinted by state would invert its meaning with the language. */
+  .gate-note { display:flex; align-items:flex-start; gap:8px; margin:20px 0 4px;
+    padding:11px 14px; border-radius:12px; font-size:12.5px; line-height:1.5; color:var(--muted);
+    background:color-mix(in srgb,#8b5cf6 7%,transparent);
+    border:1px solid color-mix(in srgb,#8b5cf6 22%,transparent); }
+  .gate-note svg { width:14px; height:14px; flex:none; margin-top:2px; color:#8b5cf6; }
+  .gate-note a { color:var(--ink-link, var(--link)); border-bottom:1px solid color-mix(in srgb,var(--link) 40%,transparent); }
+  .cta-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:16px;
+    padding:14px 16px; border-radius:14px; background:var(--panel); border:1px solid var(--line); }
+  .cta-txt { flex:1; min-width:220px; font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .cta-txt b { color:var(--text); font-weight:700; }
+  .tw-btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 22px;
+    border-radius:12px; font-size:13px; font-weight:700; color:#fff;
+    background:linear-gradient(135deg,var(--link),#8b5cf6);
+    box-shadow:0 8px 22px -10px color-mix(in srgb,#8b5cf6 70%,transparent); }
+  .tw-note { font-size:11px; color:var(--muted); }
+</style>
 </head>
 <body>
 
@@ -307,7 +369,7 @@
   <div class="hm-head">
     <div>
       <h1>🔥 <span class="l-en">China A-share Heatmap</span><span class="l-zh">A股市场热力图</span></h1>
-      <div class="sub"><span class="l-en">Winners and losers at a glance — every name a tile, shaded by the move you pick.</span><span class="l-zh">涨跌一目了然 —— 每只个股一个方块，按所选周期着色。</span><span class="hx-help" tabindex="0" aria-label="How to read this">?<span class="hx-tip"><span class="l-en">Every liquid A-share as a tile, grouped <b>Sector → stock</b> and sized by <b>market cap</b> — the institutional treemap in our theme. Tiles shade by the move over the timeframe you pick; hover a tile for our conviction read, or a sector header for its members, and click through to the analyzer.</span><span class="l-zh">每只活跃 A 股一个方块，按「<b>板块 → 个股</b>」分组、按<b>市值</b>定大小 —— 采用我们主题配色的机构级树图。方块按所选周期的涨跌幅着色；悬停方块查看我们的研判，悬停板块标题查看其成员，点击进入分析器。</span></span></span></div>
+      <div class="sub"><span class="l-en">Winners and losers at a glance — every name a tile, shaded by the move you pick.</span><span class="l-zh">涨跌一目了然 —— 每只个股一个方块，按所选周期着色。</span><span class="hx-help" tabindex="0" aria-label="How to read this">?<span class="hx-tip"><span class="l-en">Switch between <b>Sectors</b> and <b>Themes</b>. Sectors show every liquid A-share grouped Sector → stock and sized by market cap. Themes reuse our THS concept-board structure, grouped broad theme → concept board and sized by membership, so narrative leadership is visible on the same multi-timeframe canvas.</span><span class="l-zh">可在<b>板块</b>与<b>主题</b>之间切换。板块视图展示每只活跃 A 股，按「板块 → 个股」分组并按市值定大小；主题视图复用同花顺概念板块结构，按「大类主题 → 概念板块」分组并按成员数定大小，在同一多周期画布上观察叙事主线强弱。</span></span></span></div>
     </div>
     
     <span class="hm-live-badge" data-live-label></span>
@@ -384,24 +446,31 @@
       </div>
     </div>
   </div>
-  <div id="heatmap-full" data-hm-gated="1" data-hm-maps='[{"key":"china","icon":"🔥","label_en":"China A-shares","label_zh":"A股","url":"marketdata/china_heatmap.json"}]'></div>
+
+
+  <div id="heatmap-full" data-hm-gated="1" data-hm-maps='[{"key":"china-sectors","label_en":"Sectors","label_zh":"板块","url":"marketdata/china_heatmap.json"},{"key":"china-themes","label_en":"Themes","label_zh":"主题","url":"marketdata/subsector_rotation_china.json","access":"member","adapter":"china-ths-themes","join_url":"marketdata/china_heatmap.json"}]'></div>
+
   <div class="gate-note" id="hm-gate-note">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    <span><span class="l-en">The whole map is open — every tile, every timeframe, every sector. What members add is our read on each name: where it sits and what we&#39;d do about it.</span><span class="l-zh">整张热力图完全开放 —— 每个方块、每个周期、每个板块。会员另可看到我们对每只个股的解读：所处位置与应对方式。</span></span>
+
+    <span><span class="l-en">The sector map is open — every stock tile and timeframe. Members can also switch to the THS Themes map and see our nightly read on each name.</span><span class="l-zh">板块热力图完全开放 —— 每只个股和每个周期均可查看。会员还可切换至同花顺主题热力图，并查看我们对每只个股的每晚解读。</span></span>
+
   </div>
 
   <div class="cta-row" id="hm-cta">
     <span class="cta-txt">
-      <span class="l-en"><b>The map is free, and stays free.</b> Members get our nightly read on all 1,702 names here — plus the same maps for Hong Kong and Canada.</span>
-      <span class="l-zh"><b>热力图免费，且将持续免费。</b>会员可获取我们对全部 1,702 只个股的每晚解读 —— 以及港股与加拿大的同款热力图。</span>
+
+      <span class="l-en"><b>The sector map is free, and stays free.</b> Members unlock the THS Themes view plus our nightly read on all 1,702 names here — and the same sector maps for Hong Kong and Canada.</span>
+      <span class="l-zh"><b>板块热力图免费，且将持续免费。</b>会员可解锁同花顺主题视图，并获取我们对全部 1,702 只个股的每晚解读 —— 以及港股与加拿大的同款板块热力图。</span>
+
     </span>
     <a class="tw-btn" href="plans.html"><span class="l-en">See plans</span><span class="l-zh">查看方案</span></a>
     <span class="tw-note"><span class="l-en">7-day Pro trial · cancel anytime</span><span class="l-zh">Pro 7 天试用 · 随时取消</span></span>
   </div>
 
   <div class="hm-foot">
-    <span class="l-en">Green = up, red = down (inverted in 中文). Our market read is research context — never a buy signal.</span><span class="l-zh">绿涨红跌（中文按亚洲习惯反转）。市场研判仅供研究参考，绝非买入信号。</span><span class="hx-help" tabindex="0" aria-label="Details">?<span class="hx-tip"><span class="l-en">Green = up, red = down (inverted in 中文 to the Asian convention); the 1D view bins at ±1/2/3%, longer windows widen the bins so the map stays legible. Tiles are sized by market cap and computed from adjusted closes; the hover card is our own conviction read (verdict, 0–100 score, drivers and cautions) — research context, never a buy signal.</span><span class="l-zh">绿涨红跌（中文模式按亚洲习惯反转）；1天视图采用 ±1/2/3% 分档，更长周期会拓宽分档以保持可读性。方块按市值定大小、由复权收盘价计算；悬停卡片为我们自有的研判（结论、0–100 评分、驱动与风险）—— 仅作研究参考，绝非买入信号。</span></span></span>
+    <span class="l-en">Green = up, red = down (inverted in 中文). Our market read is research context — never a buy signal.</span><span class="l-zh">绿涨红跌（中文按亚洲习惯反转）。市场研判仅供研究参考，绝非买入信号。</span><span class="hx-help" tabindex="0" aria-label="Details">?<span class="hx-tip"><span class="l-en">Green = up, red = down (inverted in 中文 to the Asian convention). Sector tiles are stocks sized by market cap from adjusted closes; theme tiles are THS concept boards sized by covered membership and coloured by each board's move. Hover for constituents/context — research only, never a buy signal.</span><span class="l-zh">绿涨红跌（中文模式按亚洲习惯反转）。板块视图为个股方块，按市值定大小、由复权收盘价计算；主题视图为同花顺概念板块，按覆盖成员数定大小并按板块涨跌着色。悬停查看成员与背景——仅作研究参考，绝非买入信号。</span></span></span>
   </div>
 </div>
 
@@ -410,7 +479,7 @@
 </footer>
 
 <script src="theme.js?v=3ffc953f" defer></script>
-<script src="heatmap.js?v=92998a32" defer></script>
+<script src="heatmap.js?v=a897fe15" defer></script>
 <script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>

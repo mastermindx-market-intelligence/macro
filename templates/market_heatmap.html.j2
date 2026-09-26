@@ -193,7 +193,14 @@
       entitled build with a genuinely missing file, and a lie on a walled one where
       the read exists and is paid. The gate state is never inferred from the fetch
       result — a network error would then read as a paywall. #}
+{# China gets the same one-renderer map switch used by the US heatmap.
+   The THS view is a browser-side projection of the existing China rotation
+   + stock-map feeds: no second THS publisher, taxonomy or lifecycle plane. #}
+{% if mk.key == 'china' %}
+  <div id="heatmap-full"{% if gated %} data-hm-gated="1"{% endif %} data-hm-maps='[{"key":"china-sectors","label_en":"Sectors","label_zh":"板块","url":"marketdata/china_heatmap.json"},{"key":"china-themes","label_en":"Themes","label_zh":"主题","url":"marketdata/subsector_rotation_china.json","access":"member","adapter":"china-ths-themes","join_url":"marketdata/china_heatmap.json"}]'></div>
+{% else %}
   <div id="heatmap-full"{% if gated %} data-hm-gated="1"{% endif %} data-hm-maps='[{"key":"{{ mk.key }}","icon":"{{ mk.icon }}","label_en":"{{ mk.label_en }}","label_zh":"{{ mk.label_zh }}","url":"{{ mk.json }}"}]'></div>
+{% endif %}
 
 {%- if gated %}
   {#- The ONE gate note on this page. A heatmap of market performance is almost
@@ -204,8 +211,13 @@
   <div class="gate-note" id="hm-gate-note">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+{% if mk.key == 'china' %}
+    <span>{{ t('The sector map is open — every stock tile and timeframe. Members can also switch to the THS Themes map and see our nightly read on each name.',
+              '板块热力图完全开放 —— 每只个股和每个周期均可查看。会员还可切换至同花顺主题热力图，并查看我们对每只个股的每晚解读。') }}</span>
+{% else %}
     <span>{{ t('The whole map is open — every tile, every timeframe, every sector. What members add is our read on each name: where it sits and what we&#39;d do about it.',
               '整张热力图完全开放 —— 每个方块、每个周期、每个板块。会员另可看到我们对每只个股的解读：所处位置与应对方式。') }}</span>
+{% endif %}
   </div>
 
   <div class="cta-row" id="hm-cta">
@@ -216,8 +228,13 @@
           total, membership changes nightly and a stale honest total is a
           dishonest one. #}
       {%- set n_txt = "{:,}".format(n_tiles) %}
+{% if mk.key == 'china' %}
+      <span class="l-en"><b>The sector map is free, and stays free.</b> Members unlock the THS Themes view plus our nightly read on all {{ n_txt }} names here{% if siblings %} — and the same sector maps for {{ siblings.en }}{% endif %}.</span>
+      <span class="l-zh"><b>板块热力图免费，且将持续免费。</b>会员可解锁同花顺主题视图，并获取我们对全部 {{ n_txt }} 只个股的每晚解读{% if siblings %} —— 以及{{ siblings.zh }}的同款板块热力图{% endif %}。</span>
+{% else %}
       <span class="l-en"><b>The map is free, and stays free.</b> Members get our nightly read on all {{ n_txt }} names here{% if siblings %} — plus the same maps for {{ siblings.en }}{% endif %}.</span>
       <span class="l-zh"><b>热力图免费，且将持续免费。</b>会员可获取我们对全部 {{ n_txt }} 只个股的每晚解读{% if siblings %} —— 以及{{ siblings.zh }}的同款热力图{% endif %}。</span>
+{% endif %}
     </span>
     <a class="tw-btn" href="plans.html">{{ t('See plans', '查看方案') }}</a>
     <span class="tw-note">{{ t('7-day Pro trial · cancel anytime', 'Pro 7 天试用 · 随时取消') }}</span>

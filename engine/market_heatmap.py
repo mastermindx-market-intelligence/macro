@@ -215,16 +215,16 @@ PAGE_META: dict[str, dict] = {
     "china": {
         "icon": "🔥", "key": "china", "json": "marketdata/china_heatmap.json",
         "title": "China A-share Heatmap",
-        "seo_title": "China A-Share Heatmap — Live Sector Map — MastermindX",
-        "seo_desc": ("Every liquid Shanghai and Shenzhen A-share as one sector treemap — "
-                     "today's winners, losers and sector breadth, sized by market cap, "
-                     "after each close."),
+        "seo_title": "China A-Share Heatmaps — Sectors + Themes — MastermindX",
+        "seo_desc": ("China A-share sector and THS theme heatmaps — switch between the "
+                     "stock market-cap treemap and concept-board leadership across "
+                     "multiple timeframes after each close."),
         "label_en": "China A-shares", "label_zh": "A股",
         "h1_en": "China A-share Heatmap", "h1_zh": "A股市场热力图",
-        "sub_en": "Every liquid A-share as a tile, grouped <b>Sector → stock</b> and sized by <b>market cap</b> — the institutional treemap in our theme. Tiles shade by the move over the timeframe you pick; hover a tile for our conviction read, or a sector header for its members, and click through to the analyzer.",
-        "sub_zh": "每只活跃 A 股一个方块，按「<b>板块 → 个股</b>」分组、按<b>市值</b>定大小 —— 采用我们主题配色的机构级树图。方块按所选周期的涨跌幅着色；悬停方块查看我们的研判，悬停板块标题查看其成员，点击进入分析器。",
-        "foot_en": "Green = up, red = down (inverted in 中文 to the Asian convention); the 1D view bins at ±1/2/3%, longer windows widen the bins so the map stays legible. Tiles are sized by market cap and computed from adjusted closes; the hover card is our own conviction read (verdict, 0–100 score, drivers and cautions) — research context, never a buy signal.",
-        "foot_zh": "绿涨红跌（中文模式按亚洲习惯反转）；1天视图采用 ±1/2/3% 分档，更长周期会拓宽分档以保持可读性。方块按市值定大小、由复权收盘价计算；悬停卡片为我们自有的研判（结论、0–100 评分、驱动与风险）—— 仅作研究参考，绝非买入信号。",
+        "sub_en": "Switch between <b>Sectors</b> and <b>Themes</b>. Sectors show every liquid A-share grouped Sector → stock and sized by market cap. Themes reuse our THS concept-board structure, grouped broad theme → concept board and sized by membership, so narrative leadership is visible on the same multi-timeframe canvas.",
+        "sub_zh": "可在<b>板块</b>与<b>主题</b>之间切换。板块视图展示每只活跃 A 股，按「板块 → 个股」分组并按市值定大小；主题视图复用同花顺概念板块结构，按「大类主题 → 概念板块」分组并按成员数定大小，在同一多周期画布上观察叙事主线强弱。",
+        "foot_en": "Green = up, red = down (inverted in 中文 to the Asian convention). Sector tiles are stocks sized by market cap from adjusted closes; theme tiles are THS concept boards sized by covered membership and coloured by each board's move. Hover for constituents/context — research only, never a buy signal.",
+        "foot_zh": "绿涨红跌（中文模式按亚洲习惯反转）。板块视图为个股方块，按市值定大小、由复权收盘价计算；主题视图为同花顺概念板块，按覆盖成员数定大小并按板块涨跌着色。悬停查看成员与背景——仅作研究参考，绝非买入信号。",
     },
     "hk": {
         "icon": "🔥", "key": "hk", "json": "marketdata/hk_heatmap.json",
