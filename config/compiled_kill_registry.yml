@@ -846,3 +846,10 @@ entries:
     section: 4
     section_name: held_suspended
 
+  - topic: 'UD-B1 Unified Macro Dashboard as the primary `macro.html` composition, including re-mounting `_unified_dashboard_hero.html.j2` above the established dashboard or treating its US-derived top score as a global composite'
+    key: HOLD-UD-B1-PRIMARY-MACRO-MIGRATION
+    verdict: '**SUSPENDED / DESIGN-CANDIDATE ONLY — Chairman rulings 2026-09-20 and 2026-09-21.** The first production composition stacked a second global/cross-market regime surface above the existing US macro dashboard, increased prose and vertical space, duplicated the primary decision hierarchy, and originally shipped four of five spine rows as designed-null `BLOCKED_DATA`. Current main later added useful B2 work: W1 improved the established US risk surface, and W2 truthfully bound HK/CN market-state persistence inside the retained candidate. Those accepted capabilities are do-not-redo; they do **not** authorize remounting `#ud-hero` on `macro.html`. Preserve the candidate source/spec/evidence and HK/CN bindings, keep the established `#regime-radar` as the US primary surface, and recompose any compact global successor through `markets.html` with true global/country-cycle evidence. Do not move the block wholesale to `intl.html`, and do not label default US `market_state` as global.'
+    source: '`research/UNIFIED_DASHBOARD_DISPOSITION.md` §§ Primary-route override / Current-main reconciliation — 2026-09-21'
+    section: 4
+    section_name: held_suspended
+

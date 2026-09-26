@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_graph.v1",
   "artifact_id": "confluence-graph",
-  "asof": "2026-09-11",
+  "asof": "2026-09-23",
   "is_context_only": true,
   "display_only": true,
   "hard_law": "HARD LAW: confluence never gates, never ranks, never raises a priority.  All edges are display_only=True.  Cross-engine hard gates require their own pre-registered gauntlet (China falsification precedent).  Edge promotion beyond display requires a registered gauntlet result in config/qual_ladder.yml.",
@@ -11,7 +11,7 @@
       "type": "engine",
       "label": "altdata",
       "meta": {
-        "n_spine_rows": 2673
+        "n_spine_rows": 3144
       }
     },
     {
@@ -19,7 +19,7 @@
       "type": "engine",
       "label": "altdata_conv",
       "meta": {
-        "n_spine_rows": 6
+        "n_spine_rows": 14
       }
     },
     {
@@ -27,7 +27,7 @@
       "type": "engine",
       "label": "basket_turn.v1",
       "meta": {
-        "n_spine_rows": 15
+        "n_spine_rows": 19
       }
     },
     {
@@ -35,7 +35,7 @@
       "type": "engine",
       "label": "ca_board",
       "meta": {
-        "n_spine_rows": 2668
+        "n_spine_rows": 3020
       }
     },
     {
@@ -43,7 +43,7 @@
       "type": "engine",
       "label": "china_news",
       "meta": {
-        "n_spine_rows": 1214
+        "n_spine_rows": 1217
       }
     },
     {
@@ -51,7 +51,7 @@
       "type": "engine",
       "label": "china_special_sits",
       "meta": {
-        "n_spine_rows": 111
+        "n_spine_rows": 120
       }
     },
     {
@@ -59,7 +59,7 @@
       "type": "engine",
       "label": "cn_board",
       "meta": {
-        "n_spine_rows": 1812
+        "n_spine_rows": 2368
       }
     },
     {
@@ -67,7 +67,7 @@
       "type": "engine",
       "label": "cn_importance_v0",
       "meta": {
-        "n_spine_rows": 5271
+        "n_spine_rows": 5719
       }
     },
     {
@@ -75,7 +75,7 @@
       "type": "engine",
       "label": "cn_importance_v0_pit",
       "meta": {
-        "n_spine_rows": 5271
+        "n_spine_rows": 5719
       }
     },
     {
@@ -83,7 +83,7 @@
       "type": "engine",
       "label": "demand_chain",
       "meta": {
-        "n_spine_rows": 6
+        "n_spine_rows": 11
       }
     },
     {
@@ -99,7 +99,7 @@
       "type": "engine",
       "label": "desk:narrative_brain",
       "meta": {
-        "n_spine_rows": 8
+        "n_spine_rows": 22
       }
     },
     {
@@ -107,7 +107,15 @@
       "type": "engine",
       "label": "desk:policy_intent",
       "meta": {
-        "n_spine_rows": 4
+        "n_spine_rows": 9
+      }
+    },
+    {
+      "id": "engine:desk:radar",
+      "type": "engine",
+      "label": "desk:radar",
+      "meta": {
+        "n_spine_rows": 53
       }
     },
     {
@@ -115,7 +123,7 @@
       "type": "engine",
       "label": "desk:stock_desk",
       "meta": {
-        "n_spine_rows": 180
+        "n_spine_rows": 182
       }
     },
     {
@@ -123,7 +131,7 @@
       "type": "engine",
       "label": "desk:thematic_desk",
       "meta": {
-        "n_spine_rows": 202
+        "n_spine_rows": 248
       }
     },
     {
@@ -131,7 +139,7 @@
       "type": "engine",
       "label": "hk_board",
       "meta": {
-        "n_spine_rows": 3120
+        "n_spine_rows": 3516
       }
     },
     {
@@ -139,7 +147,7 @@
       "type": "engine",
       "label": "intel_hub",
       "meta": {
-        "n_spine_rows": 5576
+        "n_spine_rows": 6278
       }
     },
     {
@@ -147,7 +155,7 @@
       "type": "engine",
       "label": "macro_context",
       "meta": {
-        "n_spine_rows": 558
+        "n_spine_rows": 602
       }
     },
     {
@@ -155,7 +163,7 @@
       "type": "engine",
       "label": "narrative",
       "meta": {
-        "n_spine_rows": 1005
+        "n_spine_rows": 1015
       }
     },
     {
@@ -163,7 +171,7 @@
       "type": "engine",
       "label": "options_entry",
       "meta": {
-        "n_spine_rows": 419
+        "n_spine_rows": 427
       }
     },
     {
@@ -171,7 +179,7 @@
       "type": "engine",
       "label": "placebo",
       "meta": {
-        "n_spine_rows": 512
+        "n_spine_rows": 513
       }
     },
     {
@@ -179,7 +187,7 @@
       "type": "engine",
       "label": "policy",
       "meta": {
-        "n_spine_rows": 102
+        "n_spine_rows": 109
       }
     },
     {
@@ -187,7 +195,7 @@
       "type": "engine",
       "label": "radar",
       "meta": {
-        "n_spine_rows": 27408
+        "n_spine_rows": 31247
       }
     },
     {
@@ -195,7 +203,7 @@
       "type": "engine",
       "label": "reflex.commodity_shock",
       "meta": {
-        "n_spine_rows": 11
+        "n_spine_rows": 13
       }
     },
     {
@@ -203,7 +211,7 @@
       "type": "engine",
       "label": "reflex.cortex_attention",
       "meta": {
-        "n_spine_rows": 200
+        "n_spine_rows": 212
       }
     },
     {
@@ -211,7 +219,7 @@
       "type": "engine",
       "label": "reflex.options_flow_attention",
       "meta": {
-        "n_spine_rows": 670
+        "n_spine_rows": 760
       }
     },
     {
@@ -219,7 +227,7 @@
       "type": "engine",
       "label": "reflex.regime_stale_selfheal",
       "meta": {
-        "n_spine_rows": 21
+        "n_spine_rows": 23
       }
     },
     {
@@ -227,7 +235,7 @@
       "type": "engine",
       "label": "stock_desk",
       "meta": {
-        "n_spine_rows": 62
+        "n_spine_rows": 102
       }
     },
     {
@@ -235,7 +243,7 @@
       "type": "engine",
       "label": "stock_personality",
       "meta": {
-        "n_spine_rows": 2941
+        "n_spine_rows": 2937
       }
     },
     {
@@ -251,7 +259,7 @@
       "type": "engine",
       "label": "thematic_desk",
       "meta": {
-        "n_spine_rows": 22
+        "n_spine_rows": 45
       }
     },
     {
@@ -259,7 +267,7 @@
       "type": "engine",
       "label": "track_record",
       "meta": {
-        "n_spine_rows": 300370
+        "n_spine_rows": 302065
       }
     },
     {
@@ -267,7 +275,7 @@
       "type": "engine",
       "label": "us_board",
       "meta": {
-        "n_spine_rows": 9614
+        "n_spine_rows": 12726
       }
     },
     {
@@ -275,7 +283,7 @@
       "type": "engine",
       "label": "us_importance_v0",
       "meta": {
-        "n_spine_rows": 42312
+        "n_spine_rows": 51326
       }
     },
     {
@@ -283,7 +291,7 @@
       "type": "engine",
       "label": "us_importance_v0_pit",
       "meta": {
-        "n_spine_rows": 42312
+        "n_spine_rows": 51326
       }
     },
     {
@@ -291,7 +299,7 @@
       "type": "engine",
       "label": "whitehouse",
       "meta": {
-        "n_spine_rows": 215
+        "n_spine_rows": 230
       }
     },
     {
@@ -2763,6 +2771,573 @@
       }
     },
     {
+      "id": "thesis:2026-09-16-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-16-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-16-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-16-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-16-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_industrials",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_industrials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-16-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-16-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-16-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-17-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-17-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-17-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-17-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_discretionary",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_discretionary",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-17-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-17-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-17-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-17-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-data_center_power",
+      "type": "thesis",
+      "label": "2026-09-17-radar-data_center_power",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-17-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-17-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-21-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-21-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-21-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-21-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-data_center_power",
+      "type": "thesis",
+      "label": "2026-09-21-radar-data_center_power",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-21-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-21-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-21-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-21-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-21-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-21-radar-ai_semiconductors",
+      "type": "thesis",
+      "label": "2026-09-21-radar-ai_semiconductors",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-23-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-23-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-23-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-09-23-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-23-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-23-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-23-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-ai_semiconductors",
+      "type": "thesis",
+      "label": "2026-09-23-radar-ai_semiconductors",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-23-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-23-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-semicap_equipment",
+      "type": "thesis",
+      "label": "2026-09-24-radar-semicap_equipment",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-memory_storage",
+      "type": "thesis",
+      "label": "2026-09-24-radar-memory_storage",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-industrial_distribution",
+      "type": "thesis",
+      "label": "2026-09-24-radar-industrial_distribution",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_realestate",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_realestate",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_staples",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_staples",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-defensives",
+      "type": "thesis",
+      "label": "2026-09-24-radar-defensives",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-payments_fintech",
+      "type": "thesis",
+      "label": "2026-09-24-radar-payments_fintech",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-data_center_power",
+      "type": "thesis",
+      "label": "2026-09-24-radar-data_center_power",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-reshoring",
+      "type": "thesis",
+      "label": "2026-09-24-radar-reshoring",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-defense",
+      "type": "thesis",
+      "label": "2026-09-24-radar-defense",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-space_economy",
+      "type": "thesis",
+      "label": "2026-09-24-radar-space_economy",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-ai_semiconductors",
+      "type": "thesis",
+      "label": "2026-09-24-radar-ai_semiconductors",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_financials",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_financials",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-us_sector_comm",
+      "type": "thesis",
+      "label": "2026-09-24-radar-us_sector_comm",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-robotics_automation",
+      "type": "thesis",
+      "label": "2026-09-24-radar-robotics_automation",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
+      "id": "thesis:2026-09-24-radar-retail",
+      "type": "thesis",
+      "label": "2026-09-24-radar-retail",
+      "meta": {
+        "direction": null,
+        "onset_date": null
+      }
+    },
+    {
       "id": "macro:fx_dollar",
       "type": "macro",
       "label": "FX / Dollar",
@@ -2770,16 +3345,16 @@
         "subtype": "fx_dollar",
         "regime": "Global reflation",
         "risk": "risk-on",
-        "usd_trend": "down",
-        "asof": "2026-09-14",
+        "usd_trend": "mixed",
+        "asof": "2026-09-25",
         "display_only": true,
         "source_lobe": "fx_dollar",
-        "smile_regime": "rates-driven",
+        "smile_regime": "safety-driven",
         "dollar_day_flag": false,
-        "regime_radar_dominant": "reflation_risk_on",
-        "stance_word": "Get ready",
-        "dominant_scenario": "reflation_risk_on",
-        "days_in_regime": 14
+        "regime_radar_dominant": null,
+        "stance_word": "Watch — don't chase",
+        "dominant_scenario": null,
+        "days_in_regime": 25
       }
     },
     {
@@ -2790,20 +3365,20 @@
         "subtype": "rates_transmission",
         "state": {
           "rates": {
-            "real_10y": 2.55,
+            "real_10y": 2.63,
             "real_10y_pctile": 1.0,
-            "real_10y_chg_63d_bp": 41.0,
-            "nominal_10y": 4.95,
-            "curve_2s10s": 0.33,
+            "real_10y_chg_63d_bp": 47.0,
+            "nominal_10y": 4.96,
+            "curve_2s10s": 0.26,
             "curve_tp_adj": 1.22,
-            "policy_gap": 0.93,
+            "policy_gap": 0.83,
             "regime": "restrictive",
             "direction": "rising",
-            "real_10y_chg_22d_bp": 13.0,
+            "real_10y_chg_22d_bp": 31.0,
             "turn_watch": "extreme_watch",
             "label": {
-              "en": "Real 10y 2.55% (restrictive, rising — at a 5y extreme)",
-              "zh": "实际10年期 2.55%（偏紧，处于5年极值）"
+              "en": "Real 10y 2.63% (restrictive, rising — at a 5y extreme)",
+              "zh": "实际10年期 2.63%（偏紧，处于5年极值）"
             }
           },
           "inflation": {
@@ -2822,15 +3397,15 @@
             }
           },
           "expectations": {
-            "breakeven_10y": 2.36,
-            "breakeven_5y5y": 2.32,
+            "breakeven_10y": 2.35,
+            "breakeven_5y5y": 2.36,
             "model_5y": 2.58,
             "survey_1y": 4.2,
-            "market_minus_model_bp": -26.0,
+            "market_minus_model_bp": -22.0,
             "anchoring": "anchored",
             "label": {
-              "en": "5y5y breakeven 2.32% vs model 2.58% (anchored)",
-              "zh": "5年5年盈亏平衡 2.32% vs 模型 2.58%（锚定）"
+              "en": "5y5y breakeven 2.36% vs model 2.58% (anchored)",
+              "zh": "5年5年盈亏平衡 2.36% vs 模型 2.58%（锚定）"
             }
           }
         },
@@ -2839,7 +3414,7 @@
           "zh": "仅供展示。可计分腿检验：没有任何利率/通胀腿通过前瞻回撤门槛并满足清洗交叉验证稳健性（详见校准报告）。"
         },
         "yield_curve_regime": "bear_flattener",
-        "asof": "2026-09-11",
+        "asof": "2026-09-24",
         "display_only": true,
         "source_lobe": "rates_transmission"
       }
@@ -2853,7 +3428,7 @@
         "health_label": "healthy",
         "cycle_phase": "late",
         "recession_risk": 0.21714285714285714,
-        "asof": "2026-09-11",
+        "asof": "2026-09-24",
         "display_only": true,
         "source_lobe": "rates_credit"
       }
@@ -2864,12 +3439,13 @@
       "label": "Commodity",
       "meta": {
         "subtype": "commodity",
-        "regime": "Stagflation",
+        "regime": "Reflation",
         "favored": [
-          "Gold",
+          "Copper",
+          "Oil · WTI",
           "Silver"
         ],
-        "asof": "2026-09-13",
+        "asof": "2026-09-25",
         "display_only": true,
         "source_lobe": "commodity_context"
       }
@@ -2881,10 +3457,10 @@
       "meta": {
         "subtype": "cross_asset_flows",
         "label_zh": "跨资产流",
-        "regime": "risk-on trends",
-        "correlation_verdict": "converging",
-        "state_text": "risk-on trends",
-        "asof": "2026-09-14",
+        "regime": "mixed / no clear trend",
+        "correlation_verdict": "diversified",
+        "state_text": "mixed / no clear trend",
+        "asof": "2026-09-25",
         "display_only": true,
         "source_lobe": "cross_asset_flows"
       }
@@ -2899,7 +3475,7 @@
         "quad_name": "Stagflation",
         "cycle_tag": "late",
         "stale": false,
-        "asof": "2026-09-11",
+        "asof": "2026-09-24",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2914,7 +3490,7 @@
         "quad_name": "Growth-scare",
         "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-09-11",
+        "asof": "2026-09-24",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2927,9 +3503,9 @@
         "subtype": "global_regime:hk",
         "quad": "Q4",
         "quad_name": "Growth-scare",
-        "cycle_tag": "mid",
+        "cycle_tag": "early",
         "stale": false,
-        "asof": "2026-09-11",
+        "asof": "2026-09-24",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2944,7 +3520,7 @@
         "quad_name": "Reflation",
         "cycle_tag": "mid",
         "stale": false,
-        "asof": "2026-09-11",
+        "asof": "2026-09-23",
         "display_only": true,
         "source_lobe": "global_regimes"
       }
@@ -2967,9 +3543,9 @@
       "meta": {
         "subtype": "market_structure",
         "regime": "long",
-        "agreement": "split",
-        "cor1m_regime": "normal",
-        "asof": "2026-09-11",
+        "agreement": "aligned_adding",
+        "cor1m_regime": "dispersion",
+        "asof": "2026-09-24",
         "display_only": true,
         "source_lobe": "world_state.market_structure"
       }
@@ -16987,6 +17563,26 @@
       "note": "structural: data/neuralweb/theme_trade_flows.json consumed by engine/theme_trade_flows.py"
     },
     {
+      "src": "module:engine/critical_minerals_supply.py",
+      "dst": "artifact:neuralweb-critical-minerals-supply",
+      "edge_type": "feeds",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "structural: engine/critical_minerals_supply.py writes data/neuralweb/critical_minerals_supply.json"
+    },
+    {
+      "src": "artifact:neuralweb-critical-minerals-supply",
+      "dst": "module:engine/critical_minerals_supply.py",
+      "edge_type": "feeds",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "structural: data/neuralweb/critical_minerals_supply.json consumed by engine/critical_minerals_supply.py"
+    },
+    {
       "src": "module:engine/theme_trade_flows.py",
       "dst": "artifact:site-trade-flows",
       "edge_type": "feeds",
@@ -21324,7 +21920,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "pair_id=briefing-divergences kind=directional-opposition severity=note a=15 ticker-level demand-vs-supply divergences b=n_divergences=15, top tickers=['TKO', 'AIT', 'VOYG', 'KVUE',"
+      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=37 ticker-level demand-vs-supply divergences b=n_divergences=37, top tickers=['LUNR', 'PANW', 'SCHW', 'XYZ'"
     },
     {
       "src": "data/regime/latest.json:cross_asset_confirm (bonds/FX)",
@@ -21334,51 +21930,62 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "pair_id=cross_asset_confirm-diverge kind=directional-opposition severity=tension a=bonds+FX cross-asset leg readings b=cross_asset_confirm verdict=diverge, agree_pct=50"
+      "note": "pair_id=cross_asset_confirm-diverge kind=directional-opposition severity=tension a=bonds+FX cross-asset leg readings b=cross_asset_confirm verdict=diverge, agree_pct=100"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:intel_hub",
       "edge_type": "confirms",
-      "n": 48,
-      "lift": 0.00105,
+      "n": 53,
+      "lift": 0.00117,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=0.0010 n=48 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=0.0012 n=53 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:radar",
       "edge_type": "confirms",
-      "n": 189,
-      "lift": -0.02392,
+      "n": 213,
+      "lift": -0.02276,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0239 n=189 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0228 n=213 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:altdata",
+      "dst": "engine:stock_desk",
+      "edge_type": "confirms",
+      "n": 1,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:track_record",
       "edge_type": "confirms",
-      "n": 18,
+      "n": 23,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=18 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+      "note": "n=23 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
     },
     {
       "src": "engine:altdata",
       "dst": "engine:us_board",
       "edge_type": "confirms",
-      "n": 62,
-      "lift": -0.00854,
+      "n": 83,
+      "lift": -0.01108,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0085 n=62 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0111 n=83 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:altdata",
@@ -21403,6 +22010,17 @@
       "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
+      "src": "engine:desk:narrative_brain",
+      "dst": "engine:desk:radar",
+      "edge_type": "confirms",
+      "n": 1,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
+    },
+    {
       "src": "engine:desk:stock_desk",
       "dst": "engine:radar",
       "edge_type": "confirms",
@@ -21417,34 +22035,45 @@
       "src": "engine:intel_hub",
       "dst": "engine:radar",
       "edge_type": "confirms",
-      "n": 1483,
-      "lift": 0.00198,
+      "n": 1658,
+      "lift": 0.00136,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=0.0020 n=1483 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=0.0014 n=1658 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:intel_hub",
+      "dst": "engine:stock_desk",
+      "edge_type": "confirms",
+      "n": 4,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=4 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "engine:intel_hub",
       "dst": "engine:track_record",
       "edge_type": "confirms",
-      "n": 15,
+      "n": 20,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=15 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+      "note": "n=20 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
     },
     {
       "src": "engine:intel_hub",
       "dst": "engine:us_board",
       "edge_type": "confirms",
-      "n": 102,
-      "lift": -0.01914,
+      "n": 128,
+      "lift": -0.02193,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0191 n=102 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0219 n=128 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:intel_hub",
@@ -21462,59 +22091,92 @@
       "dst": "engine:radar",
       "edge_type": "confirms",
       "n": 23,
-      "lift": -0.02268,
+      "lift": -0.02333,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0227 n=23 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0233 n=23 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:radar",
+      "dst": "engine:stock_desk",
+      "edge_type": "confirms",
+      "n": 2,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=2 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "engine:radar",
       "dst": "engine:thematic_desk",
       "edge_type": "confirms",
-      "n": 1,
+      "n": 2,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
+      "note": "n=2 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
       "src": "engine:radar",
       "dst": "engine:track_record",
       "edge_type": "confirms",
-      "n": 47,
+      "n": 53,
       "lift": null,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "n=47 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+      "note": "n=53 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
     },
     {
       "src": "engine:radar",
       "dst": "engine:us_board",
       "edge_type": "confirms",
-      "n": 222,
-      "lift": -0.0065,
+      "n": 296,
+      "lift": -0.00047,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=-0.0065 n=222 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=-0.0005 n=296 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:radar",
       "dst": "engine:whitehouse",
       "edge_type": "confirms",
       "n": 10,
-      "lift": 0.00055,
+      "lift": 0.00042,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "co-firing lift=0.0006 n=10 (pre-gauntlet estimate; display-only)"
+      "note": "co-firing lift=0.0004 n=10 (pre-gauntlet estimate; display-only)"
     },
     {
       "src": "engine:stock_desk",
       "dst": "engine:us_board",
+      "edge_type": "confirms",
+      "n": 10,
+      "lift": 0.03396,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "co-firing lift=0.0340 n=10 (pre-gauntlet estimate; display-only)"
+    },
+    {
+      "src": "engine:track_record",
+      "dst": "engine:us_board",
+      "edge_type": "confirms",
+      "n": 111,
+      "lift": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "n=111 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
+    },
+    {
+      "src": "engine:us_board",
+      "dst": "engine:whitehouse",
       "edge_type": "confirms",
       "n": 1,
       "lift": null,
@@ -21524,45 +22186,34 @@
       "note": "n=1 < MIN_N=10 — lift=null (insufficient sample; display-only)"
     },
     {
-      "src": "engine:track_record",
-      "dst": "engine:us_board",
-      "edge_type": "confirms",
-      "n": 85,
-      "lift": null,
-      "stable": null,
-      "display_only": true,
-      "regime": null,
-      "note": "n=85 — outcome basis not signed (track_record=unsigned_mfe_proxy; unsigned mfe proxy) — co-firing lift undefined; cf. PR #4673 dst_outcome_unsigned_mfe_proxy"
-    },
-    {
       "src": "options.skew_rising",
       "dst": "us_board.buy_lane",
       "edge_type": "contradicts",
-      "n": 3,
+      "n": 6,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "buy-lane names with 5d-rising OTM-put skew (as_of 2026-09-04); e.g. CARR, ELV, WDC. Display-only de-escalation context; W-E1 prior: bullish skew-decel UNSUPPORTED on sector history."
+      "note": "buy-lane names with 5d-rising OTM-put skew (as_of 2026-09-17); e.g. CI, HON, PG, TEL, UAL, ZS. Display-only de-escalation context; W-E1 prior: bullish skew-decel UNSUPPORTED on sector history."
     },
     {
       "src": "options.skew_decel",
       "dst": "us_board.buy_lane",
       "edge_type": "confirms",
-      "n": 3,
+      "n": 0,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "buy-lane names with top-tercile skew now falling (as_of 2026-09-04); e.g. COF, NOVT, TEL. Display-only; S-SKEW_DECEL gate building_history, W-E1 sector-history prior is SKEPTICAL."
+      "note": "buy-lane names with top-tercile skew now falling (as_of 2026-09-17); e.g. none. Display-only; S-SKEW_DECEL gate building_history, W-E1 sector-history prior is SKEPTICAL."
     },
     {
       "src": "options.ivspread_positive_call_doi",
       "dst": "us_board.watch_lane",
       "edge_type": "confirms",
-      "n": 6,
+      "n": 4,
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "watch-lane names with CW ivspread>0 and net ΔOI>0 (as_of 2026-09-04); e.g. AMAT, AME, CL, DLTR, FORM, TJX. Display-only; S-IVSPREAD-F gate building_history; W-E1: CWIV Era3 5d IC survives on sector history."
+      "note": "watch-lane names with CW ivspread>0 and net ΔOI>0 (as_of 2026-09-17); e.g. AME, CL, FIVE, FORM. Display-only; S-IVSPREAD-F gate building_history; W-E1: CWIV Era3 5d IC survives on sector history."
     },
     {
       "src": "options.skew_rising_or_call_wall_pin",
@@ -21582,7 +22233,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLB net=-0.457 verdict=headwind source_lobe=rates_transmission asof=2026-09-11"
+      "note": "rates headwind: asset=XLB net=-0.459 verdict=headwind source_lobe=rates_transmission asof=2026-09-24"
     },
     {
       "src": "macro:rates_transmission",
@@ -21592,7 +22243,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLK net=-0.383 verdict=headwind source_lobe=rates_transmission asof=2026-09-11"
+      "note": "rates headwind: asset=XLK net=-0.384 verdict=headwind source_lobe=rates_transmission asof=2026-09-24"
     },
     {
       "src": "macro:rates_transmission",
@@ -21602,7 +22253,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "rates headwind: asset=XLF net=-0.333 verdict=headwind source_lobe=rates_transmission asof=2026-09-11"
+      "note": "rates headwind: asset=XLF net=-0.317 verdict=headwind source_lobe=rates_transmission asof=2026-09-24"
     },
     {
       "src": "macro:fx_dollar",
@@ -21612,7 +22263,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "cross_asset diverge: fx_dollar contradicts regime:Q3 asof=2026-09-11 source_lobe=contradictions/cross_asset_confirm"
+      "note": "cross_asset diverge: fx_dollar contradicts regime:Q3 asof=2026-09-24 source_lobe=contradictions/cross_asset_confirm"
     },
     {
       "src": "macro:rates_credit",
@@ -21622,14 +22273,13 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "cross_asset diverge: rates_credit contradicts regime:Q3 asof=2026-09-11 source_lobe=contradictions/cross_asset_confirm"
+      "note": "cross_asset diverge: rates_credit contradicts regime:Q3 asof=2026-09-24 source_lobe=contradictions/cross_asset_confirm"
     }
   ],
   "contradiction_summary": {
     "n": 2,
     "by_severity": {
-      "note": 1,
-      "tension": 1
+      "tension": 2
     },
     "top_pair_ids": [
       "briefing-divergences",
@@ -21641,16 +22291,16 @@
       "pair_id": "briefing-divergences",
       "a": {
         "artifact": "site/intelligence/by_ticker.json (demand/tape)",
-        "reading": "15 ticker-level demand-vs-supply divergences"
+        "reading": "37 ticker-level demand-vs-supply divergences"
       },
       "b": {
         "artifact": "site/intelligence/briefing.json",
-        "reading": "n_divergences=15, top tickers=['TKO', 'AIT', 'VOYG', 'KVUE', 'CHTR']"
+        "reading": "n_divergences=37, top tickers=['LUNR', 'PANW', 'SCHW', 'XYZ', 'PSA']"
       },
       "kind": "directional-opposition",
-      "severity": "note",
-      "as_of": "2026-09-14",
-      "note": "15 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: TKO, AIT, VOYG, KVUE, CHTR.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
+      "severity": "tension",
+      "as_of": "2026-09-25",
+      "note": "37 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: LUNR, PANW, SCHW, XYZ, PSA.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
       "display_only": true
     },
     {
@@ -21661,19 +22311,19 @@
       },
       "b": {
         "artifact": "data/regime/latest.json:regime (equity)",
-        "reading": "cross_asset_confirm verdict=diverge, agree_pct=50"
+        "reading": "cross_asset_confirm verdict=diverge, agree_pct=100"
       },
       "kind": "directional-opposition",
       "severity": "tension",
-      "as_of": "2026-09-15",
-      "note": "cross_asset_confirm signals 'diverge': bonds/FX and equity readings disagree.  Bonds/FX diverge from the equity read — fast-family caution the equity gauges don't yet show (usd_triple_red).  Note: MOVE-vs-VIX, dollar/EM-FX, FX carry are COINCIDENT not leading (engine/cross_asset_confirm.py:15-20).  Display-only macro context.",
+      "as_of": "2026-09-24",
+      "note": "cross_asset_confirm signals 'diverge': bonds/FX and equity readings disagree.  Bonds/FX diverge from the equity read — fast-family caution the equity gauges don't yet show (credit).  Note: MOVE-vs-VIX, dollar/EM-FX, FX carry are COINCIDENT not leading (engine/cross_asset_confirm.py:15-20).  Display-only macro context.",
       "display_only": true
     }
   ],
   "independence": {
     "effective_independent_lobes": 1.0,
     "n_lobes_measurable": 1,
-    "n_lobes_total": 35,
+    "n_lobes_total": 36,
     "pctile_vs_null": 1.0,
     "same_bet_warning": null,
     "dominant_overlap_cluster": null,
@@ -21688,7 +22338,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/confluence.py",
-  "produced_at": "2026-09-16T09:10:11Z",
-  "inputs_hash": "sha256:7ec26956be7f08408453162c83f33df0fdc09bc0615a698fb0fe311dac829f73",
+  "produced_at": "2026-09-25T21:12:30Z",
+  "inputs_hash": "sha256:4b038edd0a08f4e26ae285117621e68a778b6a51ae30e2978f2d622087309fa9",
   "tier": "display"
 }

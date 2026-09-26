@@ -7,7 +7,7 @@ Config block 'live_flow:' in config.yml:
   cadence_sec:    120     # minimum interval between cycle starts (poll floor)
   max_concurrent: 2       # HARD LAW — T1 backfill shares the 8-request cap
   etf_anchors:    [...]   # defaults to build_tape_flow's 21 + DIA
-  top_names:      100     # resolved from gex_symbols() after anchors
+  top_names:      128     # bounded rotating names after ETF anchors
   etf_floor:      1000000 # $ gross premium floor for ETF anchors
   name_floor:     250000  # $ gross premium floor for single names
   retention_hours: 24     # trailing window for feed events
@@ -30,7 +30,7 @@ NEVER raise max_concurrent above 2 without explicit Fable adjudication.
 New R2 objects emitted each cycle (live_flow/ prefix):
   tide_current.json       — market tide (NCP/NPP/gross/vol cumulative minutes + sectors)
   dte_tide_current.json   — DTE-bucket tide (5 buckets)
-  tickers/{ROOT}.json     — per-root drill (top ~40 by day gross premium)
+  tickers/{ROOT}.json     — per-root drill for successful roots with session data
   tide/{DATE}.json        — dated archive of tide_current (same bytes; OIP W0 T-lane)
   dte_tide/{DATE}.json    — dated archive of dte_tide_current (same bytes)
   {tide,dte_tide}/dates.json — sessions index per family (see scripts/build_flow_archive.py)
@@ -107,9 +107,6 @@ OPTIONS_CONTEXT_CAPTURE_TARGET_ENV = "MARKET_MEMORY_OPTIONS_CONTEXT_SSH_TARGET"
 OPTIONS_CONTEXT_CAPTURE_KEY_ENV = "MARKET_MEMORY_OPTIONS_CONTEXT_SSH_KEY"
 _OPTIONS_CONTEXT_DISPATCHER = None
 
-# Top tickers to publish per cycle (by day gross premium)
-TOP_TICKERS_N = 40
-
 # Day-state size guard: warn if exceeds this byte threshold
 DAY_STATE_SIZE_WARN_BYTES = 50 * 1024 * 1024  # 50 MB
 
@@ -143,16 +140,6 @@ TIER1_ROOTS = [
     # Mag7
     "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
     # Memory storage (flow continuity names)
-    "MU", "WDC", "STX", "SNDK",
-]
-
-# Task 3: pinned always-publish roots (Mag7 + memory + ETF majors).
-# When LIVE_FLOW_PINNED_PUBLISH=1 (DEFAULT ON), these roots are included in the
-# published ticker JSON even if they fall outside the top-40 by gross premium.
-PINNED_PUBLISH_ENV = "LIVE_FLOW_PINNED_PUBLISH"
-PINNED_PUBLISH_ROOTS = [
-    "SPY", "QQQ", "SMH",
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
     "MU", "WDC", "STX", "SNDK",
 ]
 
@@ -268,11 +255,182 @@ def _select_cycle_roots(
     return cycle_roots, bucket_idx
 
 
-# ── Task 3: pinned-publish helper ─────────────────────────────────────────────
+# ── Intraday root coverage catalog (Terminal issue #681) ─────────────────────
+_ROOT_TOKEN = re.compile(r"^[A-Z][A-Z0-9.\-]{0,9}$")
 
-def _pinned_publish_enabled() -> bool:
-    """True by default; set LIVE_FLOW_PINNED_PUBLISH=0 to disable."""
-    return os.environ.get(PINNED_PUBLISH_ENV, "1").strip() != "0"
+
+def _normalise_root_list(values) -> list[str]:
+    """Return safe uppercase roots in first-seen order."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values or []:
+        if not isinstance(value, str):
+            continue
+        root = value.strip().upper()
+        if not _ROOT_TOKEN.fullmatch(root) or root in seen:
+            continue
+        seen.add(root)
+        out.append(root)
+    return out
+
+
+def _valid_source_receipts(receipts) -> dict[str, str]:
+    """Keep only normalized roots with non-empty UTC ISO receipts."""
+    if not isinstance(receipts, dict):
+        return {}
+    out: dict[str, str] = {}
+    for raw_root, raw_ts in receipts.items():
+        roots = _normalise_root_list([raw_root])
+        if not roots or not isinstance(raw_ts, str) or not raw_ts.strip():
+            continue
+        ts = raw_ts.strip()
+        try:
+            parsed = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None or parsed.utcoffset() != timedelta(0):
+            continue
+        out[roots[0]] = parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    return out
+
+
+def _real_accumulator_row(row, value_fields: tuple[str, ...]) -> bool:
+    """Return whether an engine accumulator row contains usable numeric activity.
+
+    Engine-produced minute and strike rows always carry their complete field set.
+    Missing fields, booleans, strings, non-finite values, and negative volume are
+    malformed persisted state and must not advertise drill availability.  A
+    legitimate net-zero row remains real when positive volume proves prints were
+    accumulated.
+    """
+    if not isinstance(row, dict):
+        return False
+
+    values: list[float] = []
+    for field in value_fields:
+        value = row.get(field)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return False
+        numeric = float(value)
+        if not math.isfinite(numeric):
+            return False
+        values.append(numeric)
+
+    volume = values[-1]
+    if volume < 0 or not volume.is_integer():
+        return False
+    return volume > 0 or any(value != 0 for value in values[:-1])
+
+
+def _roots_with_ticker_data(day_state: dict) -> set[str]:
+    """Roots with real accumulated minute or strike rows."""
+    if not isinstance(day_state, dict):
+        return set()
+
+    fields_by_container = {
+        "root_minutes": ("ncp", "npp", "vol"),
+        "root_strikes": ("call_prem", "put_prem", "vol"),
+    }
+    out: set[str] = set()
+    for field, value_fields in fields_by_container.items():
+        values = day_state.get(field)
+        if not isinstance(values, dict):
+            continue
+        for raw_root, rows in values.items():
+            roots = _normalise_root_list([raw_root])
+            if not roots or not isinstance(rows, dict):
+                continue
+            if any(_real_accumulator_row(row, value_fields) for row in rows.values()):
+                out.add(roots[0])
+    return out
+
+
+def _select_ticker_publish_roots(
+    cycle_roots: list[str],
+    successful_roots: list[str],
+    day_state: dict,
+) -> list[str]:
+    """Current-cycle roots eligible for a non-empty ticker artifact."""
+    successful = set(_normalise_root_list(successful_roots))
+    data_roots = _roots_with_ticker_data(day_state)
+    return [
+        root for root in _normalise_root_list(cycle_roots)
+        if root in successful and root in data_roots
+    ]
+
+
+def _build_root_catalog(
+    configured_roots: list[str],
+    cycle_roots: list[str],
+    successful_roots: list[str],
+    receipts: dict,
+    day_state: dict,
+) -> list[dict]:
+    """Build deterministic display-only coverage rows for live_flow.meta/v2."""
+    configured = _normalise_root_list(configured_roots)
+    cycle = set(_normalise_root_list(cycle_roots))
+    successful = set(_normalise_root_list(successful_roots))
+    valid_receipts = _valid_source_receipts(receipts)
+    data_roots = _roots_with_ticker_data(day_state)
+
+    raw_gross = day_state.get("root_gross_today", {}) if isinstance(day_state, dict) else {}
+    gross: dict[str, float] = {}
+    if isinstance(raw_gross, dict):
+        for raw_root, raw_value in raw_gross.items():
+            roots = _normalise_root_list([raw_root])
+            if not roots or isinstance(raw_value, bool):
+                continue
+            try:
+                value = float(raw_value)
+            except (TypeError, ValueError):
+                continue
+            if math.isfinite(value) and value > 0 and roots[0] in configured:
+                gross[roots[0]] = value
+
+    position = {root: idx for idx, root in enumerate(configured)}
+    active = sorted(gross, key=lambda root: (-gross[root], position[root]))
+    active_set = set(active)
+    tier1 = set(TIER1_ROOTS)
+    core = [root for root in configured if root not in active_set and root in tier1]
+    rotating = [root for root in configured if root not in active_set and root not in tier1]
+    ordered = active + core + rotating
+    ranks = {root: idx + 1 for idx, root in enumerate(active)}
+
+    return [
+        {
+            "root": root,
+            "tier": "core" if root in tier1 else "rotating",
+            "scheduled_this_cycle": root in cycle,
+            "source_ok_this_cycle": root in successful,
+            "last_source_success": valid_receipts.get(root),
+            "has_session_data": root in data_roots,
+            "activity_rank": ranks.get(root),
+        }
+        for root in ordered
+    ]
+
+
+def _attach_root_catalog(
+    meta: dict,
+    configured_roots: list[str],
+    cycle_roots: list[str],
+    receipts: dict,
+    day_state: dict,
+) -> dict:
+    """Attach the full configured coverage catalog without changing cycle counts."""
+    successful = meta.get("roots_with_source_payload_names", [])
+    if not isinstance(successful, list):
+        successful = []
+    catalog = _build_root_catalog(
+        configured_roots=configured_roots,
+        cycle_roots=cycle_roots,
+        successful_roots=successful,
+        receipts=receipts,
+        day_state=day_state,
+    )
+    meta["roots_configured"] = len(catalog)
+    meta["root_catalog"] = catalog
+    return meta
 
 
 # ── output paths ─────────────────────────────────────────────────────────────
@@ -940,7 +1098,7 @@ def _resolve_universe(cfg: dict) -> list[str]:
         "KRE", "SMH", "XBI", "ARKK", "DIA",
     ]
     anchors = [a.upper() for a in (cfg.get("etf_anchors") or default_anchors)]
-    top_n   = int(cfg.get("top_names", 100))
+    top_n   = int(cfg.get("top_names", 128))
 
     seen: dict[str, None] = {}
     for t in anchors:
@@ -1259,29 +1417,45 @@ def _log_rss_phase(phase: str, *, cycle_n: int | None = None) -> tuple[int | Non
 # session — cache the {(exp,strike,right)→oi} map per surface root ONCE per session so the
 # greek path costs no extra parquet read after the first cycle. Reuses _load_oi_prev (the
 # same EOD-t-1 source the feed uses) — no new API fetch, no 8-request-ceiling contention.
-_SURFACE_OI_CACHE: dict[str, dict] = {}
+_SURFACE_OI_CACHE: dict[str, tuple[dict, str | None]] = {}
 
 
-def _surface_oi_map(root: str, session_date: str) -> dict:
-    """Session-cached {(exp_str,strike,right)→oi} for a surface root (Lane G). {} if absent."""
+def _surface_oi_snapshot(root: str, session_date: str) -> tuple[dict, str | None]:
+    """Session-cached ({contract→oi}, exact source session) for one surface root."""
     key = f"{session_date}:{root.upper()}"
     if key in _SURFACE_OI_CACHE:
         return _SURFACE_OI_CACHE[key]
+
     oi_map: dict = {}
+    oi_vintage: str | None = None
     try:
-        oi_df = _load_oi_prev(root, session_date)  # cols: expiration, strike, right, open_interest
+        oi_df = _load_oi_prev(root, session_date)  # attrs carries exact oi_vintage
         if oi_df is not None:
             from scripts.build_flow_surface import oi_by_contract
             oi_map = oi_by_contract(oi_df)
+            raw_vintage = oi_df.attrs.get("oi_vintage")
+            if isinstance(raw_vintage, str) and raw_vintage:
+                oi_vintage = raw_vintage
     except Exception as e:  # noqa: BLE001 — never break a cycle for greek OI
-        log.debug("poller: surface OI map failed for %s: %s", root, e)
+        log.debug("poller: surface OI snapshot failed for %s: %s", root, e)
         oi_map = {}
-    _SURFACE_OI_CACHE[key] = oi_map
+        oi_vintage = None
+
+    snapshot = (oi_map, oi_vintage)
+    _SURFACE_OI_CACHE[key] = snapshot
     if oi_map:
-        log.info("poller: surface OI cached %s — %d contracts (EOD t-1)", root.upper(), len(oi_map))
+        log.info(
+            "poller: surface OI cached %s — %d contracts vintage=%s",
+            root.upper(), len(oi_map), oi_vintage or "unknown",
+        )
     else:
         log.info("poller: surface OI empty for %s (greek grids will show 0 coverage)", root.upper())
-    return oi_map
+    return snapshot
+
+
+def _surface_oi_map(root: str, session_date: str) -> dict:
+    """Backward-compatible map-only projection of the surface OI snapshot."""
+    return _surface_oi_snapshot(root, session_date)[0]
 
 
 # ── prior-session close loader (FIX 3 — moneyness) ───────────────────────────
@@ -1405,6 +1579,15 @@ def _load_day_state(session_date: str) -> dict:
             raw["source_asof"] = _canonical_utc_timestamp(
                 raw["source_asof"], field="day_state.source_asof",
             )
+        # Per-root source and ticker clocks are durable session state. Missing or
+        # malformed prior entries degrade independently instead of erasing the
+        # valid receipts needed to describe off-cycle roots after a restart.
+        raw["root_source_receipts"] = _valid_source_receipts(
+            raw.get("root_source_receipts", {})
+        )
+        raw["root_ticker_receipts"] = _valid_source_receipts(
+            raw.get("root_ticker_receipts", {})
+        )
         raw.setdefault("pending_learning_events", [])
         raw.setdefault("cycle_watermarks", {})
         return raw
@@ -1455,6 +1638,15 @@ def _save_day_state(session_date: str, state: dict) -> Path:
         raw["source_asof"] = (
             _canonical_utc_timestamp(source_asof, field="day_state.source_asof")
             if source_asof is not None else None
+        )
+        # Preserve the producer-owned per-root clocks across process restarts.
+        # Canonicalizing here also prevents malformed legacy entries from being
+        # re-emitted into the atomic Terminal catalog claim.
+        raw["root_source_receipts"] = _valid_source_receipts(
+            state.get("root_source_receipts", {})
+        )
+        raw["root_ticker_receipts"] = _valid_source_receipts(
+            state.get("root_ticker_receipts", {})
         )
         # Tuple-keyed dicts → string-keyed for JSON serialisation
         raw["contract_vol"]      = {_state_key(k): v
@@ -2165,7 +2357,10 @@ def run_cycle(
         # Advance watermark by subtracting overlap
         try:
             wm_dt = datetime.fromisoformat(wm["ts"].replace("Z", "+00:00"))
-            wm_et = wm_dt.astimezone(ET)
+            wm_et = (
+                wm_dt.replace(tzinfo=ET) if wm_dt.tzinfo is None
+                else wm_dt.astimezone(ET)
+            )
             overlap_dt = wm_et - timedelta(seconds=_OVERLAP_SEC)
             return overlap_dt.strftime("%H:%M:%S")
         except Exception:  # noqa: BLE001
@@ -2208,11 +2403,20 @@ def run_cycle(
         _surface_root_set = set()
     surface_quotes: dict[str, list] = {}
     surface_spot_fallback: dict[str, float] = {}
+    surface_observed_at: dict[str, str] = {}
     surface_quote_sec: float = 0.0
 
     # Fetch in parallel (max_concurrent=2); per-root start_time in time_window mode
     fetch_results: dict[str, tuple] = {}
     source_response_times: list[str] = []
+    roots_with_source_payload_names: list[str] = []
+    roots_with_ticker_state_names: list[str] = []
+    root_source_receipts = _valid_source_receipts(
+        day_state.get("root_source_receipts", {})
+    )
+    root_ticker_receipts = _valid_source_receipts(
+        day_state.get("root_ticker_receipts", {})
+    )
     with ThreadPoolExecutor(max_workers=max_w) as pool:
         futs = {
             pool.submit(
@@ -2229,16 +2433,31 @@ def run_cycle(
             # network response and create false point-in-time provenance.
             observed_at = _utc_now_iso()
             fetch_results[r] = (calls_df, puts_df, observed_at)
-            if calls_df is not None or puts_df is not None:
+            if calls_df is not None and puts_df is not None:
                 source_response_times.append(observed_at)
             requests_count += 2  # two calls per root (call + put)
     _log_rss_phase("post_fetch", cycle_n=cycle_n)
 
-    # Process each root
+    # Process each root in requested order.  Thread completion order is not a
+    # coverage contract, so the named receipt list is derived here rather than
+    # from ``as_completed`` above.
     for root in roots:
         calls_df, puts_df, observed_at = fetch_results.get(root, (None, None, None))
-        if calls_df is None and puts_df is None:
-            log.debug("poller: skip %s (both legs failed)", root)
+        named_root: str | None = None
+        if calls_df is not None and puts_df is not None:
+            normalised = _normalise_root_list([root])
+            if normalised:
+                named_root = normalised[0]
+                roots_with_source_payload_names.append(named_root)
+                if isinstance(observed_at, str) and observed_at:
+                    root_source_receipts[named_root] = observed_at
+        if calls_df is None or puts_df is None:
+            log.warning(
+                "poller: skip %s (incomplete source response: calls=%s puts=%s)",
+                root,
+                "failed" if calls_df is None else "ok",
+                "failed" if puts_df is None else "ok",
+            )
             continue
 
         # Derive, but do not yet commit, the fetched-root watermark. It advances
@@ -2334,6 +2553,12 @@ def run_cycle(
         sweep_clusters_acc  = state_out.get("sweep_clusters", sweep_clusters_acc)
         if candidate_watermark:
             cycle_watermarks[root] = candidate_watermark
+        # A source receipt proves the vendor response arrived.  A ticker-state
+        # receipt additionally proves the engine accepted that response and merged
+        # its accumulators.  Failed processing must never freshen an old drill.
+        if named_root is not None and isinstance(observed_at, str) and observed_at:
+            roots_with_ticker_state_names.append(named_root)
+            root_ticker_receipts[named_root] = observed_at
 
         # Decision completion is later than fetch observation. Durably stage the
         # events before they can enter the capped/retained display feed.
@@ -2377,11 +2602,15 @@ def run_cycle(
         # spot fallback the greek engine uses when parity can't resolve.
         if root.upper() in _surface_root_set:
             _sq_t0 = time.perf_counter()
+            if observed_at is not None:
+                surface_observed_at[root.upper()] = observed_at
             try:
                 from scripts.build_flow_surface import extract_cycle_quotes
                 near_cap = cfg.get("near_dte_cap_days", 90)
                 quotes = extract_cycle_quotes(
-                    calls_df, puts_df, session_date=session_date,
+                    calls_df, puts_df,
+                    session_date=session_date,
+                    observed_at=observed_at,
                     near_dte_cap_days=int(near_cap) if near_cap is not None else None)
                 if quotes:
                     surface_quotes[root.upper()] = quotes
@@ -2539,6 +2768,8 @@ def run_cycle(
         ),
         "roots_requested":       len(roots),
         "roots_with_source_payload": len(source_response_times),
+        "roots_with_source_payload_names": roots_with_source_payload_names,
+        "roots_with_ticker_state_names": roots_with_ticker_state_names,
         # Compatibility count aliases.  They do not define cadence truth.
         "universe_n":            len(roots),
         "roots_polled":          len(source_response_times),
@@ -2568,6 +2799,7 @@ def run_cycle(
         # ephemeral, never serialized to day_state). Consumed by build_and_stage_surfaces.
         "surface_quotes":         surface_quotes,
         "surface_spot_fallback":  surface_spot_fallback,
+        "surface_observed_at":    surface_observed_at,
     }
 
     updated_state = {
@@ -2590,6 +2822,11 @@ def run_cycle(
         # Retain the newest successful source response across a fully failed
         # cycle so an unchanged cumulative snapshot cannot acquire a fresh age.
         "source_asof":         source_asof,
+        # Per-root receipts share this session state owner.  Off-cycle and failed
+        # roots retain their previous exact source-success clock.
+        "root_source_receipts": root_source_receipts,
+        # Updated only after process_batch succeeds and its state is merged.
+        "root_ticker_receipts": root_ticker_receipts,
     }
 
     return feed_payload, heat_payload, meta_payload, updated_state, tide_day_state
@@ -2990,6 +3227,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             # Publication durability gets its own build clock instead of making
             # an unchanged source snapshot appear fresh.
             meta["built_at"] = committed_asof
+            _attach_root_catalog(
+                meta=meta,
+                configured_roots=roots,
+                cycle_roots=cycle_roots,
+                receipts=updated_state.get("root_source_receipts", {}),
+                day_state=tide_day_state,
+            )
         except Exception as e:  # noqa: BLE001
             log.error("poller: cycle #%d unhandled error: %s", cycle_n, e, exc_info=True)
             # Restore the last durable transaction. If it owns a pending event WAL,
@@ -3064,32 +3308,37 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             except Exception as arch_err:  # noqa: BLE001
                 log.warning("poller: dated tide archive staging failed: %s", arch_err)
 
-        # Build ticker JSONs for top ~40 roots by gross premium + pinned roots (Task 3).
+        # Build one current artifact for every successfully polled root that has
+        # real accumulated drill state.  Session activity ranks presentation; it
+        # no longer gates availability.
         ns_map  = _load_names_sectors()
         rg_dict = tide_day_state.get("root_gross_today", {})
-        top_roots_by_gross = sorted(rg_dict.items(), key=lambda kv: kv[1], reverse=True)
         ticker_count = 0
         ticker_paths: list[tuple[Path, str]] = []  # (local_path, r2_key)
         _tickers_out_dir = _out_dir() / "tickers"
         _tickers_out_dir.mkdir(parents=True, exist_ok=True)
-
-        # Task 3: pinned-publish roots guarantee — Mag7 + memory + SPY/QQQ/SMH are
-        # always included in the published set even if they fall outside the top-40.
-        # Default ON (LIVE_FLOW_PINNED_PUBLISH=1); set =0 to disable.
-        top40_set = {r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]}
-        if _pinned_publish_enabled():
-            pinned_extra = [r for r in PINNED_PUBLISH_ROOTS
-                            if r.upper() not in top40_set and r.upper() in rg_dict]
-            publish_roots = [r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]] + pinned_extra
-        else:
-            publish_roots = [r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]]
+        root_receipts = _valid_source_receipts(
+            updated_state.get("root_ticker_receipts", {})
+        )
+        publish_roots = _select_ticker_publish_roots(
+            cycle_roots=cycle_roots,
+            successful_roots=meta.get("roots_with_ticker_state_names", []),
+            day_state=tide_day_state,
+        )
 
         for tick_root in publish_roots:
             try:
+                root_asof = root_receipts.get(tick_root)
+                if root_asof is None:
+                    log.warning(
+                        "poller: skip ticker JSON for %s (successful root has no receipt)",
+                        tick_root,
+                    )
+                    continue
                 tk_payload = lf_mod.build_ticker_json(
                     root=tick_root,
                     session_date=session_date,
-                    asof=meta.get("asof", feed.get("asof", "")),
+                    asof=root_asof,
                     day_state=tide_day_state,
                     root_gross_today=rg_dict,
                     baselines=baselines,
@@ -3138,11 +3387,17 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             surf_roots = resolve_surface_roots(cfg, rg_dict)
             surf_quotes = tide_day_state.get("surface_quotes", {}) or {}
             surf_spot_fb = tide_day_state.get("surface_spot_fallback", {}) or {}
-            # EOD-t-1 OI map per surface root that has quotes (session-cached; no new fetch).
+            surf_observed = tide_day_state.get("surface_observed_at", {}) or {}
+            # Pre-session OI map + exact source session per surface root that
+            # has quotes (session-cached; no new fetch).
             surf_oi = {}
+            surf_oi_vintage = {}
             for _sr in surf_roots:
                 if surf_quotes.get(_sr.upper()):
-                    surf_oi[_sr.upper()] = _surface_oi_map(_sr, session_date)
+                    oi_map, oi_vintage = _surface_oi_snapshot(_sr, session_date)
+                    surf_oi[_sr.upper()] = oi_map
+                    if oi_vintage is not None:
+                        surf_oi_vintage[_sr.upper()] = oi_vintage
             surface_paths = build_and_stage_surfaces(
                 root_strikes_by_root=tide_day_state.get("root_strikes", {}),
                 roots=surf_roots,
@@ -3152,6 +3407,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
                 quotes_by_root=surf_quotes,
                 oi_by_root=surf_oi,
                 spot_fallback_by_root=surf_spot_fb,
+                observed_at_by_root=surf_observed,
+                oi_vintage_by_root=surf_oi_vintage,
                 retain_sessions=int(cfg.get("surface_retain_sessions",
                                             SURFACE_RETAIN_SESSIONS) or
                                     SURFACE_RETAIN_SESSIONS),

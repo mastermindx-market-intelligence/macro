@@ -20,6 +20,17 @@ ADMIN_PASSWORD=secret .venv/bin/python -m admin   # local + login wall
 Core needs no extra deps beyond the project's `requests` + `pyyaml`. Live Google
 Analytics reading is optional (`pip install -r admin/requirements.txt`).
 
+## Workspace navigation
+
+The console opens with 13 everyday pages grouped into Workspace, Customers and
+Publishing. The full 54-page inventory remains searchable; Intelligence & research,
+Publishing tools, and Platform & settings expand when needed. Pages have bookmarkable
+`#/page/<id>` addresses. Overview separates operational checks from dated research
+records, and failed reads offer recovery without a browser reload.
+
+See `research/ADMIN_PANEL_REVAMP_2026-09-21.md` for the audit, retained-route policy,
+remaining remediation work and reproducible read-only browser checks.
+
 ## What it tracks
 
 | Tab | Capability |

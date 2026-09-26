@@ -96,6 +96,37 @@ def _load_json(path: Path) -> dict | None:
     return None
 
 
+def _no_network_render() -> bool:
+    """True for site-only rerender lanes that must reuse committed China caches.
+
+    ``render.yml`` promises a no-collector/no-network rebake through
+    ``RENDER_NO_DRIP=1``.  ``CHINA_FAST_RENDER=1`` is the bounded VPS/dev sibling
+    used for emergency template publication.  Neither lane may refresh Eastmoney
+    or the per-stock context drips; the normal nightly remains their owner.
+    """
+    import os
+
+    return (
+        os.environ.get("RENDER_NO_DRIP") == "1"
+        or os.environ.get("CHINA_FAST_RENDER") == "1"
+    )
+
+
+def _build_china_library_for_page(alpha: dict | None) -> dict | None:
+    """Build the stock library only on its owning data-refresh lanes.
+
+    Site-only rerenders fall through to the already-committed
+    ``china_standouts.json`` contract later in ``main`` instead of spending
+    minutes in keyless Eastmoney/akshare drips whose writes are discarded.
+    """
+    if _no_network_render():
+        log.info("china stock library: no-network rerender; reusing persisted board")
+        return None
+    from scripts import build_china_library
+
+    return build_china_library.main(alpha=alpha)
+
+
 def _is_current_prophet_artifact(doc: dict | None) -> bool:
     """True when `doc` is a board the CURRENT engine definition produced.
 
@@ -434,6 +465,10 @@ def _leaderboard() -> dict | None:
     """Stock-Connect 'smart money' leaderboard — today's most-active A-shares by foreign
     (northbound) turnover + the HK names mainland (southbound) money net-bought/sold.
     A build-time fetch (ephemeral top-N, no history needed); fully best-effort."""
+    if _no_network_render():
+        log.info("china leaderboard: no-network rerender; skipping ephemeral fetch")
+        return None
+
     import requests
     UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
@@ -1521,6 +1556,23 @@ def main() -> int:
                 pass
             vm["market_state"] = _ms.market_state_snapshot(
                 latest, _f, latest.get("alerts") or [], profile=CN_PROFILE)
+            # Persist the CN_PROFILE snapshot to its OWN file
+            # (data/china_market_state/latest.json) so the macro spine can ingest it as
+            # a ratified 0-100 source without ever overwriting the US latest.json.
+            # The no-regress guard travels with the engine (market_key="cn"). The
+            # NYSE freshness stamp is suppressed for CN (its own session calendar
+            # governs CN staleness; the macro spine reads caveat_en / caveat_zh on
+            # the row instead). Fast-render dev rerenders skip the write just like
+            # the score-log append. Off the heavy render path: a single json.dump
+            # beside existing parquet writes.
+            try:
+                import os as _osenv_p_cn  # noqa: PLC0415
+                if _osenv_p_cn.environ.get("CHINA_FAST_RENDER"):
+                    pass                  # dev re-render: read-only
+                else:
+                    _ms.persist(vm.get("market_state"), market_key="cn")
+            except Exception as _pc_e:  # noqa: BLE001 — additive, never fatal
+                log.warning("cn market_state persist failed (%s); skipping", _pc_e)
             # Attach contagion block to the post-transform radar dict so rd.contagion
             # resolves in _risk_radar_card.html.j2 (build_site.py idiom, CGL W1).
             # FIX 2: disclose staleness when the CGL artifact predates the page's as_of.
@@ -1623,8 +1675,7 @@ def main() -> int:
         # china.html. Built here so the setups board renders server-side below.
         setups = None
         try:
-            from scripts import build_china_library
-            setups = build_china_library.main(alpha=alpha)
+            setups = _build_china_library_for_page(alpha)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             # exc_info: this fallback silently served a stale china_standouts.json for
             # 3 sessions (07-13→07-16) because the one-line message gave no traceback

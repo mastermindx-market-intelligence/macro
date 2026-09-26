@@ -588,6 +588,7 @@ def _build_risk_radar(world_state: dict | None, snapshot: dict | None) -> dict:
         "dd_h5": dp.get("h5"),
         "dd_h10": dp.get("h10"),
         "dd_h21": dp.get("h21"),
+        "dd_evidence": dp.get("calibration_evidence"),
         "dd_base_h5": dp.get("base_h5"),
         "dd_base_h10": dp.get("base_h10"),
         "dd_base_h21": dp.get("base_h21"),

@@ -429,8 +429,8 @@ def _comp_stress(latest: dict) -> dict | None:
 # --------------------------------------------------------------- assembly ----
 
 _HEADLINES = {
-    "RISK_ON": ("Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.",
-                "风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。"),
+    "RISK_ON": ("Risk-on — the overall backdrop is supportive. Trend-following is supported, but participation and entry quality still matter.",
+                "风险偏好 — 整体环境支持风险资产。顺势交易受支持，但仍需结合市场参与度与入场质量。"),
     "MIXED": ("Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
               "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。"),
     "RISK_OFF": ("Risk-off — stress is elevated; defend capital first.",
@@ -451,6 +451,147 @@ def _verdict_from_score(score: int) -> str:
     if score >= 42:
         return "MIXED"
     return "RISK_OFF"
+
+
+_US_SCOPE_GUIDANCE = {
+    ("broad", "supportive"): {
+        "subline_en": "GREEN — Broad participation confirms",
+        "subline_zh": "偏多 — 广泛参与确认",
+        "action_en": "Follow the trend. Add where setups confirm.",
+        "action_zh": "顺势而为，仅在入场条件确认时加仓。",
+    },
+    ("selective", "uneven"): {
+        "subline_en": "GREEN — Selective risk-on",
+        "subline_zh": "偏多 — 选择性风险偏好",
+        "action_en": "Stay selective. Follow confirmed leadership.",
+        "action_zh": "保持精选。跟随已确认的强势板块。",
+    },
+    ("selective", "weak"): {
+        "subline_en": "GREEN — Selective risk-on",
+        "subline_zh": "偏多 — 选择性风险偏好",
+        "action_en": "Stay selective. Follow confirmed leadership and fresh turns.",
+        "action_zh": "保持精选。跟随已确认的强势板块与新出现的转强信号。",
+    },
+    ("unverified", "unverified"): {
+        "subline_en": "GREEN — Participation unverified",
+        "subline_zh": "偏多 — 市场参与度未验证",
+        "action_en": "Stay selective until participation confirms.",
+        "action_zh": "在市场参与度确认前保持精选。",
+    },
+}
+
+
+def _participation_scope(
+    verdict: str,
+    comps: list,
+    *,
+    market: str,
+    asof: str | None = None,
+    input_vintages: dict | None = None,
+) -> dict | None:
+    """Display-only breadth qualifier for the US Risk-on band.
+
+    The score/verdict keep their existing authority. A numeric breadth value may
+    qualify Risk-on only when it is a single non-degraded leg whose canonical
+    pct_above_200 vintage is fresh and bound to the same settled session. Missing,
+    duplicated, malformed, stale, or cross-session breadth fails closed to
+    unverified; intraday clocks never re-date the settled observation.
+    """
+    if market != "us" or verdict != "RISK_ON":
+        return None
+
+    breadth_rows = [
+        c for c in (comps or [])
+        if isinstance(c, dict) and c.get("key") == "breadth"
+    ]
+    breadth = breadth_rows[0] if len(breadth_rows) == 1 else None
+    raw_score = (breadth or {}).get("score")
+    numeric_score = (
+        isinstance(raw_score, (int, float, np.number))
+        and not isinstance(raw_score, (bool, np.bool_))
+    )
+    score = _num(raw_score) if numeric_score else None
+
+    vintages = input_vintages if isinstance(input_vintages, dict) else {}
+    vintage = (
+        vintages.get("pct_above_200")
+        if isinstance(vintages.get("pct_above_200"), dict)
+        else {}
+    )
+    breadth_asof = vintage.get("asof")
+    score_valid = score is not None and 0 <= score <= 100
+    verified = (
+        len(breadth_rows) == 1
+        and score_valid
+        and not bool((breadth or {}).get("degraded"))
+        and bool(asof)
+        and breadth_asof == asof
+        and vintage.get("stale") is False
+    )
+
+    if not verified:
+        state, participation = "unverified", "unverified"
+        score_out = int(round(score)) if score_valid else None
+    else:
+        score_out = int(round(score))
+        if score >= 60:
+            state, participation = "broad", "supportive"
+        else:
+            state = "selective"
+            participation = "uneven" if score >= 42 else "weak"
+
+    out = {
+        "state": state,
+        "participation": participation,
+        "breadth_score": score_out,
+        "breadth_asof": breadth_asof,
+    }
+    out.update(_US_SCOPE_GUIDANCE[(state, participation)])
+    return out
+
+
+_US_SCOPE_HEADLINES = {
+    ("broad", "supportive"): (
+        "Broad risk-on — the broader backdrop is supportive and participation confirms the move. "
+        "Trend-following is supported; individual setup quality still matters.",
+        "广泛风险偏好 — 大环境支持风险资产，市场参与度也确认上涨。顺势交易受支持，但个别标的仍需看入场质量。",
+    ),
+    ("selective", "uneven"): (
+        "Selective risk-on — the broader backdrop is supportive, but participation is uneven. "
+        "Stay selective rather than treating this as a broad rally.",
+        "选择性风险偏好 — 大环境仍支持风险资产，但市场参与度分化。保持精选，不要把它当作全面普涨。",
+    ),
+    ("selective", "weak"): (
+        "Selective risk-on — the broader backdrop is supportive, but participation is weak. "
+        "Focus on confirmed leaders and fresh turns rather than treating this as a broad rally.",
+        "选择性风险偏好 — 大环境仍支持风险资产，但市场参与度偏弱。聚焦已确认的强势板块与新出现的转强信号，不要把它当作全面普涨。",
+    ),
+    ("unverified", "unverified"): (
+        "Risk-on — the broader backdrop is supportive, but participation is unverified. "
+        "Broad-rally confirmation is unavailable.",
+        "风险偏好 — 大环境支持风险资产，但市场参与度尚无法验证。当前不能确认全面普涨。",
+    ),
+}
+
+
+def _headline_for(
+    verdict: str,
+    comps: list,
+    *,
+    market: str,
+    asof: str | None = None,
+    input_vintages: dict | None = None,
+) -> tuple[str, str]:
+    scope = _participation_scope(
+        verdict,
+        comps,
+        market=market,
+        asof=asof,
+        input_vintages=input_vintages,
+    )
+    if scope is None:
+        return _HEADLINES[verdict]
+    return _US_SCOPE_HEADLINES[(scope["state"], scope["participation"])]
 
 
 def _cap(verdict: str, ceiling: str) -> str:
@@ -614,6 +755,9 @@ def _radar_to_rd(rr: dict) -> dict:
         "gross": _num(rr.get("gross_factor")),
         "dd5": _num(dp.get("h5")), "dd10": _num(dp.get("h10")), "dd21": _num(dp.get("h21")),
         "dd_lift": _num(dp.get("lift_h21")),
+        # Display-only calibration provenance from the accepted post-parity audit.
+        # It never feeds score/state/authority and is absent on markets without this study.
+        "dd_evidence": dp.get("calibration_evidence"),
         # unconditional "normal" base rates per horizon — the reference the radar card draws the
         # escalating odds against (so a small near-term bar can't be misread as "no risk").
         "dd_base": {"h5": _num(dp.get("base_h5")), "h10": _num(dp.get("base_h10")),
@@ -859,6 +1003,7 @@ def _calm_radar() -> dict:
     return {"state": None, "top_score": None, "label_en": "calm", "label_zh": "平静",
             "state_zh": "", "do_en": "", "do_zh": "", "gross": None,
             "dd5": None, "dd10": None, "dd21": None, "dd_lift": None,
+            "dd_evidence": None,
             "dd_base": {"h5": None, "h10": None, "h21": None},
             "is_warning": False, "is_loud": False, "can_force": False, "binding": False,
             "authority": None,
@@ -992,6 +1137,21 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
 
         flip_en, flip_zh = _flip_text(comps, verdict, raw_score=raw_score,
                                       radar=radar, overrides=overrides)
+        input_vintages = ((latest.get("conditions") or {}).get("vintages") or {})
+        participation_scope = _participation_scope(
+            verdict,
+            comps,
+            market=profile.key,
+            asof=latest.get("date"),
+            input_vintages=input_vintages,
+        )
+        headline_en, headline_zh = _headline_for(
+            verdict,
+            comps,
+            market=profile.key,
+            asof=latest.get("date"),
+            input_vintages=input_vintages,
+        )
         return {
             "schema": "market_state.v1",
             "asof": latest.get("date"),
@@ -1008,7 +1168,8 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
             "color": _COLOR[verdict],
             "label_en": _LABEL[verdict][0], "label_zh": _LABEL[verdict][1],
             "posture_en": _POSTURE[verdict][0], "posture_zh": _POSTURE[verdict][1],
-            "headline_en": _HEADLINES[verdict][0], "headline_zh": _HEADLINES[verdict][1],
+            "headline_en": headline_en, "headline_zh": headline_zh,
+            "participation_scope": participation_scope,
             "components": comps,
             "mtf": tape,
             "overrides": overrides,
@@ -1021,7 +1182,7 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
             # persist()'s freshness stamp can be derived from real store vintages instead of the
             # frame calendar it used to certify itself with. Empty on markets whose conditions
             # reader does not emit them.
-            "input_vintages": ((latest.get("conditions") or {}).get("vintages") or {}),
+            "input_vintages": input_vintages,
             "stale_inputs": ((latest.get("conditions") or {}).get("stale_inputs") or []),
             # which legs are running on fewer inputs than their label implies
             "degraded_components": [c["key"] for c in comps if c.get("degraded")],
@@ -1260,30 +1421,51 @@ def _flip_text(comps: list, verdict: str, *, raw_score=None, radar: dict | None 
 # re-deriving a (divergent) read — which is exactly how sector_central used to disagree
 # with macro.html. Build order already runs build_site before build_sector_central, so the
 # file is fresh when the latter reads it. Never raises.
-def _store_path(root=None):
+def _store_path(root=None, market_key: str | None = None):
+    """Per-market snapshot path. `market_key=None`/'"us"' preserves the canonical
+    US path data/market_state/latest.json (no-regress guard, freshness stamp). Any
+    other key lands at data/<dir>/latest.json so the per-market home pages and
+    the macro spine can each read their own snapshot without overwriting the US
+    one. The directory follows the long-standing convention
+    (engine/market_state_hk.py builds the HK score_log beside
+    data/hk_market_state/, build_china.py:1888 writes CN beside
+    data/china_market_state/) — "cn" maps to "china_market_state", "hk" maps
+    to "hk_market_state", any other key uses <key>_market_state."""
     from pathlib import Path
     from lib import config
     base = config.data_dir() if root is None else (Path(root) / "data")
+    if market_key and market_key != "us":
+        _dir = {"hk": "hk_market_state", "cn": "china_market_state"}.get(
+            market_key, f"{market_key}_market_state")
+        return base / _dir / "latest.json"
     return base / "market_state" / "latest.json"
 
 
-def persist(snap: dict | None, root=None, now=None) -> None:
-    """Write the canonical market-state snapshot to data/market_state/latest.json.
+def persist(snap: dict | None, root=None, now=None, market_key: str | None = None) -> None:
+    """Write the canonical market-state snapshot. With `market_key=None` or
+    "us" the US path data/market_state/latest.json is used unchanged. Any other
+    `market_key` lands at the per-market path resolved by `_store_path` —
+    "hk" → data/hk_market_state/latest.json, "cn" → data/china_market_state/latest.json
+    (the existing convention from build_china.py:1888), any other key uses
+    data/<key>_market_state/latest.json. The US latest.json is NEVER overwritten
+    by a non-US persist. The freshness stamp against the NYSE calendar is
+    kept US-only by design: HK/CN home lanes own their own staleness discipline
+    and the macro spine consumes a display-only caveat stamp.
 
     Freshness contract (2026-07-07 stale-regime incident):
     - NO-REGRESS: refuse to overwrite a persisted snapshot whose asof is NEWER than the
       incoming one. Two lanes raced that day (a stale scheduled engine run + a manually
       re-dispatched fresh one); ordering luck decided which verdict the site carried.
       Equal asof always overwrites (same-session recomputes are routine).
-    - SELF-DECLARING STALENESS: stamp snap["freshness"] against the NYSE calendar
-      (lib.nyse_calendar — independent of every price store, so it still fires when the
-      whole collection push dies and all stores agree on the stale date), so downstream
-      consumers (build_risk_state's nightly backbone, macro.html) can see a stale read
-      without cross-referencing the store. Both legs degrade-never-raise."""
+    - SELF-DECLARING STALENESS (US path only): stamp snap["freshness"] against the NYSE
+      calendar (lib.nyse_calendar — independent of every price store, so it still fires
+      when the whole collection push dies and all stores agree on the stale date), so
+      downstream consumers (build_risk_state's nightly backbone, macro.html) can see a
+      stale read without cross-referencing the store. Both legs degrade-never-raise."""
     if not snap:
         return
     try:
-        p = _store_path(root)
+        p = _store_path(root, market_key)
         incoming = str(snap.get("asof") or "")
         try:
             if incoming and p.exists():
@@ -1294,43 +1476,47 @@ def persist(snap: dict | None, root=None, now=None) -> None:
                     return
         except Exception as e:  # noqa: BLE001 — an unreadable existing file never blocks
             log.warning("market_state no-regress check skipped: %s", e)
-        try:
-            from lib import nyse_calendar
-            expected = str(nyse_calendar.expected_last_session(now))
-            fresh = {
-                "data_asof": incoming or None,
-                "expected_asof": expected,
-                # PRICE-calendar staleness — unchanged meaning, unchanged consumers.
-                "stale": bool(incoming) and incoming < expected,
-            }
-            # NO LONGER SELF-CERTIFYING (audit 2026-07-29). `stale` above is derived from the
-            # snapshot's own asof, which comes from the FRAME calendar — and the frame ffills slow
-            # macro series onto trading days, so it reported stale:false on a session where the
-            # NFCI print was 12 days old and had already dropped out of the drawdown composite and
-            # the credit leg. The per-input vintages (engine/conditions._input_vintages) are real
-            # per-store last-print dates, so the stamp now carries a claim it can actually back.
-            # Surfacing is the template lane's call; this only makes the truth available.
-            v = (snap.get("input_vintages") or {})
-            stale_inputs = sorted(k for k, d in v.items() if (d or {}).get("stale"))
-            ages = [d.get("age_days") for d in v.values()
-                    if isinstance(d, dict) and d.get("age_days") is not None]
-            fresh["inputs"] = v
-            fresh["stale_inputs"] = stale_inputs
-            fresh["any_input_stale"] = bool(stale_inputs)
-            fresh["worst_input_age_days"] = (max(ages) if ages else None)
-            snap["freshness"] = fresh
-        except Exception as e:  # noqa: BLE001 — the stamp is additive, never the gate
-            log.warning("market_state freshness stamp skipped: %s", e)
+        # NYSE freshness stamp is US-only — HK/CN use their own session calendar and the
+        # macro spine reads the lighter caveat_en caveat_zh on the row instead.
+        if not market_key or market_key == "us":
+            try:
+                from lib import nyse_calendar
+                expected = str(nyse_calendar.expected_last_session(now))
+                fresh = {
+                    "data_asof": incoming or None,
+                    "expected_asof": expected,
+                    # PRICE-calendar staleness — unchanged meaning, unchanged consumers.
+                    "stale": bool(incoming) and incoming < expected,
+                }
+                # NO LONGER SELF-CERTIFYING (audit 2026-07-29). `stale` above is derived from the
+                # snapshot's own asof, which comes from the FRAME calendar — and the frame ffills slow
+                # macro series onto trading days, so it reported stale:false on a session where the
+                # NFCI print was 12 days old and had already dropped out of the drawdown composite and
+                # the credit leg. The per-input vintages (engine/conditions._input_vintages) are real
+                # per-store last-print dates, so the stamp now carries a claim it can actually back.
+                # Surfacing is the template lane's call; this only makes the truth available.
+                v = (snap.get("input_vintages") or {})
+                stale_inputs = sorted(k for k, d in v.items() if (d or {}).get("stale"))
+                ages = [d.get("age_days") for d in v.values()
+                        if isinstance(d, dict) and d.get("age_days") is not None]
+                fresh["inputs"] = v
+                fresh["stale_inputs"] = stale_inputs
+                fresh["any_input_stale"] = bool(stale_inputs)
+                fresh["worst_input_age_days"] = (max(ages) if ages else None)
+                snap["freshness"] = fresh
+            except Exception as e:  # noqa: BLE001 — the stamp is additive, never the gate
+                log.warning("market_state freshness stamp skipped: %s", e)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(snap, ensure_ascii=False, default=str))
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("market_state persist failed: %s", e)
 
 
-def load_persisted(root=None) -> dict | None:
-    """Read the persisted canonical snapshot; None if absent/unreadable."""
+def load_persisted(root=None, market_key: str | None = None) -> dict | None:
+    """Read the persisted canonical snapshot for `market_key` ("us" default;
+    "hk"/"cn" land in their per-market directories). None if absent/unreadable."""
     try:
-        p = _store_path(root)
+        p = _store_path(root, market_key)
         if p.exists():
             return json.loads(p.read_text())
     except Exception as e:  # noqa: BLE001

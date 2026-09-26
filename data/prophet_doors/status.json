@@ -1,33 +1,52 @@
 {
-  "appended": 0,
-  "asof": "2026-09-15",
+  "appended": 16,
+  "asof": "2026-09-24",
   "candidates": {
-    "R": 1,
-    "T": 1,
-    "W": 3
+    "R": 3,
+    "T": 19,
+    "W": 4
   },
   "deduped": {
-    "R": 1,
-    "T": 1,
+    "R": 0,
+    "T": 7,
     "W": 3
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "consulted": false
+      "asof": "2026-09-25",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 19
+      },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {},
+      "themes_read": {
+        "Industrial Automation": {
+          "theme_thrust_frac": 0.0714,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Semiconductors": {
+          "theme_thrust_frac": 0.0882,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_ok": 58,
+      "tickers_read": 77
     },
     "keys": [
       "relay_count_3d",
@@ -45,17 +64,33 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": false
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 117,
+      "n_covered": 20,
+      "reason": null,
+      "window_sessions": 21
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-09-24",
+      "n_tickers": 1547,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": false,
-      "n_asked": 0,
-      "n_covered": 0
+      "consulted": true,
+      "direction": "bull",
+      "grid": "W",
+      "horizon": "13w",
+      "n_asked": 1,
+      "n_covered": 1,
+      "reason": null,
+      "source": "engine.event_atlas.receipt"
     },
     "enabled": true,
     "keys": [
@@ -76,51 +111,70 @@
     ]
   },
   "flag_tickers": {
-    "R": [],
-    "T": [],
-    "W": []
+    "R": [
+      "TMO",
+      "CRVL",
+      "RNG"
+    ],
+    "T": [
+      "CDNS",
+      "KLAC",
+      "LSCC",
+      "MCHP",
+      "MPWR",
+      "SNPS",
+      "STX",
+      "ON",
+      "PDFS",
+      "TXN",
+      "ETN",
+      "PRLB"
+    ],
+    "W": [
+      "WMT"
+    ]
   },
-  "n_universe": 1496,
+  "n_universe": 1492,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-16 22:29:33",
-  "runtime_s": 147.9,
+  "run_utc": "2026-09-25 22:07:47",
+  "runtime_s": 108.2,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-09-15",
-    "n_members": 69,
+    "age_days": -1,
+    "asof": "2026-09-25",
+    "n_members": 117,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.862,
+        "emerging_score": 4.007,
         "rank": 1,
-        "theme": "Cybersecurity"
+        "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.059,
+        "emerging_score": 2.462,
         "rank": 2,
-        "theme": "Social Media"
+        "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 1.984,
+        "emerging_score": 2.355,
         "rank": 3,
-        "theme": "Biometrics"
+        "theme": "Space Tech"
       },
       {
-        "emerging_score": 1.444,
+        "emerging_score": 1.381,
         "rank": 4,
-        "theme": "Wearables"
+        "theme": "Industrial Automation"
       },
       {
-        "emerging_score": 1.205,
+        "emerging_score": 1.36,
         "rank": 5,
-        "theme": "Mega-Cap"
+        "theme": "Wearables"
       }
     ]
   },
@@ -129,19 +183,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 3,
-    "asof_max": "2026-09-16",
-    "asof_mismatch": 3,
-    "asof_run": "2026-09-15",
+    "aligned": 4,
+    "asof_max": "2026-09-25",
+    "asof_mismatch": 4,
+    "asof_run": "2026-09-24",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 25.3,
+    "runtime_s": 21.8,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 83,
+    "state_turn": 67,
     "universe_n": 717
   }
 }

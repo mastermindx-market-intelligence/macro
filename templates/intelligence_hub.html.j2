@@ -80,10 +80,15 @@
   <span class="v">{{ ((e or 0)*100)|round|int }}%</span>
 </div>
 {%- endmacro %}
-{#- ⚡ prime-entry badge — the owner's T1-T4 confluence verdict. i18n via the
-    data-tip-en/zh popover pattern (NEVER translated text in a title= attribute). -#}
+{#- Entry-readiness is useful at a glance; the engine's technical tier stays in the
+    hover receipt rather than becoming a machine badge on the primary reading path. -#}
 {% macro entrybadge(eg) -%}
-{% if eg %}{% if eg.get('buyable') %}<span class="chip en-buy" data-tip-en="Validated confluence buy · tier {{ eg.get('tier') or '—' }}" data-tip-zh="已验证共振买入 · 层级 {{ eg.get('tier') or '—' }}">⚡ <span class="l-en">entry</span><span class="l-zh">入场</span>{% if eg.get('tier') %} {{ eg.tier }}{% endif %}</span>{% endif %}{% endif %}
+{% if eg %}{% if eg.get('buyable') %}<span class="chip en-buy" data-tip-en="Multiple entry checks agree. Review the setup before acting.{% if eg.get('tier') %} Technical tier: {{ eg.tier }}.{% endif %}" data-tip-zh="多项入场条件一致。采取行动前请先复核该设置。{% if eg.get('tier') %}技术层级：{{ eg.tier }}。{% endif %}"><span class="l-en">ready to review</span><span class="l-zh">可复核</span></span>{% endif %}{% endif %}
+{%- endmacro %}
+{% macro watchcopy(value) -%}
+{%- set en = value.get('text', '') if value is mapping else value if value is string else '' -%}
+{%- set zh = value.get('text_zh', '') if value is mapping else '' -%}
+<div class="watch">{% if en is string and en|trim %}<span class="l-en">Watching: <b>{{ en|e }}</b></span><span class="l-zh">关注: <b>{{ (zh if zh is string and zh|trim else en)|e }}</b></span>{% else %}<span class="l-en">Review condition unavailable</span><span class="l-zh">复核条件暂缺</span>{% endif %}</div>
 {%- endmacro %}
 {#- price-trajectory state. Only the shape words live here — the off-high and
     relative-strength figures already arrive inside edge_drivers, so printing them
@@ -103,13 +108,21 @@
 {% set keep = [] %}{% for f in (fs or []) %}{% if f not in FLAG_SKIP %}{% set _ = keep.append(f) %}{% endif %}{% endfor %}
 {%- for f in keep[:2] %}<span class="chip {{ 'crowd' if f=='crowded_top' else 'good' if f in ['confirmed_trend','theme_wide','stealth_accumulation','policy_aligned'] else 'bad' if f=='policy_conflict' else 'cat' if f=='catalyst' else 'info' if f in ['early_edge','velocity_spike'] else 'mut' }}"><span class="l-en">{{ f.replace('_',' ') }}</span><span class="l-zh">{{ FLAG_ZH.get(f, f.replace('_',' ')) }}</span></span>{% endfor %}
 {%- endmacro %}
-{#- desk track-record state. The chip's own label is machine-generated (qledger D10,
-    never hand-written) so it rides the hover as the receipt; Tier 1 shows only the
-    translated state word, the STAGE_ZH slug-to-label pattern the doctrine ratifies. -#}
-{% set QL_ZH = {'UNGRADED':'未评分','ACCRUING':'评分中','GRADED':'已评分'} %}
+{#- Desk track record is a user-facing maturity cue, not a place to expose the
+    qledger enum. Exact grading statistics remain in the dedicated Track record panel. -#}
+{% set QL_EN = {'UNGRADED':'no history','ACCRUING':'building record','GRADED':'measured'} %}
+{% set QL_ZH = {'UNGRADED':'暂无记录','ACCRUING':'记录积累中','GRADED':'已有记录'} %}
 {% macro qlword(chip) -%}
-{% set c = chip or {'state':'UNGRADED','css_class':'ql-ungraded','label':'UNGRADED · n=0','label_zh':'未评级 · n=0'} %}
-<span class="gw {{ c.css_class }}"><span class="l-en">{{ (c.state or 'UNGRADED')|lower }}</span><span class="l-zh">{{ QL_ZH.get(c.state, '未评分') }}</span></span>
+{% set c = chip or {'state':'UNGRADED','css_class':'ql-ungraded'} %}
+<span class="gw {{ c.css_class }}"><span class="l-en">{{ QL_EN.get(c.state, 'no history') }}</span><span class="l-zh">{{ QL_ZH.get(c.state, '暂无记录') }}</span></span>
+{%- endmacro %}
+{% macro qlreceipt(chip, lang='en') -%}
+{% set state = (chip or {}).get('state', 'UNGRADED') %}
+{%- if lang == 'zh' -%}
+{{ {'UNGRADED':'暂无评分记录','ACCRUING':'评分记录积累中','GRADED':'已有评分记录'}.get(state, '暂无评分记录') }}
+{%- else -%}
+{{ {'UNGRADED':'no scored history yet','ACCRUING':'building a scored history','GRADED':'measured history available'}.get(state, 'no scored history yet') }}
+{%- endif -%}
 {%- endmacro %}
 {% set _ql = qledger_chips or {} %}
 {% set MC = hub.macro_context or {} %}
@@ -504,6 +517,14 @@
     .sp::before{ left:9px; }
   }
 
+  @media(max-width:620px){
+    .led-row{grid-template-columns:22px minmax(0,1fr) auto;gap:8px 11px;align-items:start;}
+    .led-row > .sp{grid-column:1;grid-row:1 / span 2;}
+    .led-row > .id{grid-column:2;grid-row:1;}
+    .led-row > .led-metrics{grid-column:3;grid-row:1;}
+    .led-row > .led-analysis{grid-column:2 / -1;grid-row:2;min-width:0;overflow-wrap:anywhere;}
+  }
+
   /* ── track record: the plain read, with the study panel folded beneath ── */
   .trh{ display:grid; gap:11px; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); }
   .trc{ padding:12px 14px 13px; }
@@ -569,8 +590,8 @@
       <p class="deck">{{ t('What still has room to run — surfaced before the crowd arrives.',
                           '仍有上行空间的机会 —— 抢在人群之前浮出水面。') }}
         <button class="lens-q" type="button" aria-label="How this page ranks names"
-          data-tip-en="Ranked by genuine signal × how much of the move is still ahead × whether a leading desk fired before the crowd. Deliberately NOT ranked by how many desks agree — agreement is a lagging condition, so a crowd favourite that has already run is demoted. Four evidence desks carry a direction: news flow, alt-data, divergence radar, buy-board; conviction only breaks ties. Policy intent is shown as context and never moves a name's rank. A desk with a proven weak track record can only pull a name down, never lift it. Context only, never a trade trigger."
-          data-tip-zh="排序依据：真实信号 × 行情尚未走完的幅度 × 领先信号台是否抢在人群之前发动。刻意不按「多少台一致」排序 —— 一致性是滞后条件，因此已经跑完的人群宠儿会被下调。四个证据台给出方向：新闻流、另类数据、背离雷达、买入榜；信念度仅用于并列时分先后。政策意图仅作背景展示，绝不影响排名。历史表现经证实偏弱的台只能下调排名，绝不能上调。仅供参考，绝非交易触发。">?</button></p>
+          data-tip-en="Four desks vote: news flow, alt-data, divergence radar and buy-board. Names rise when a real signal appears early and there is room for the move; conviction only breaks ties. Policy intent is shown as context, never moves a name's rank, and never votes. A desk with a weak measured history can only pull a name down, never lift it. Use this to prioritize research — it is never a trade trigger."
+          data-tip-zh="四个证据台参与投票：新闻流、另类数据、背离雷达、买入榜。真实信号越早、剩余空间越大，排名越靠前；信念度仅用于并列时打破平局。政策意图仅作背景展示，绝不影响排名，也从不参与投票。历史表现偏弱的台只能下调排名，绝不会拉高。这里只用于安排研究优先级，绝非交易触发。">?</button></p>
     </div>
     <div class="state">
       {% if MC.regime %}<i class="hot">{{ t('Regime', '格局') }} <b>{{ MC.regime }}{% if MC.quad %} {{ MC.quad }}{% endif %}</b></i>{% endif %}
@@ -613,8 +634,8 @@
     {% set live = (hub.desks.get(key) or {}).get('live') %}
     {% set qc = _ql.get(key) %}
     <a class="rl" href="{{ href }}"
-       data-tip-en="{{ desc }} · {{ 'live' if live else 'offline' }} · track record: {{ (qc.label if qc else 'UNGRADED · n=0') }}"
-       data-tip-zh="{{ desc_zh }} · {{ '在线' if live else '离线' }} · track record: {{ (qc.label_zh if qc else '未评级 · n=0') }}">
+       data-tip-en="{{ desc }} · {{ 'live' if live else 'offline' }} · track record: {{ qlreceipt(qc) }}"
+       data-tip-zh="{{ desc_zh }} · {{ '在线' if live else '离线' }} · 历史记录：{{ qlreceipt(qc, 'zh') }}">
       {{ ic(DICON.get(key,'news')) }}<span class="rn">{{ t(label, label_zh) }}</span>{{ qlword(qc) }}<span class="lamp {{ 'on' if live else '' }}"></span>
     </a>{% endfor %}
   </div>
@@ -707,8 +728,8 @@
     <h2>{{ t('Command', '指挥榜') }}</h2><span class="ln"></span>
     <span class="legend" data-tip-en="{{ ROOM_EN }}" data-tip-zh="{{ ROOM_ZH }}"><span class="lg"></span>{{ t('room left', '剩余空间') }}</span>
     <span class="n">{{ hub.command|length }}</span></div>
-  <div class="stance">{{ t('Most room left first. <b>Nothing here is an entry unless it carries ⚡.</b>',
-                          '剩余空间最大者居前。<b>未带 ⚡ 者均非入场信号。</b>') }}</div>
+  <div class="stance">{{ t('Most room left first. <b>A ready-to-review badge means the entry checks agree; review before acting.</b>',
+                          '剩余空间最大者居前。<b>「可复核」表示入场条件一致；行动前仍需复核。</b>') }}</div>
   <div class="lst-wrap" data-ovl-title-en="Command — ranked by opportunity" data-ovl-title-zh="指挥榜 —— 按机会值排序" data-ovl-accent="var(--up)">
   <div class="led lst-collapse is-collapsed">
     {% for d in hub.command %}
@@ -719,14 +740,14 @@
         <div class="tkline"><span class="tk">{{ d.ticker }}</span>{{ ihmp(d.ticker, d.price) }}</div>
         {% if d.name and d.name != d.ticker %}<div class="nm">{{ d.name|e }}</div>{% endif %}
       </div>
-      <div><div class="score">{{ d.opportunity_score|round|int }}</div>
+      <div class="led-metrics"><div class="score">{{ d.opportunity_score|round|int }}</div>
         <div class="rmv">{{ ((d.edge_remaining or 0)*100)|round|int }}%</div></div>
       <div class="mtxc">{{ matrix(d.directions, d.composite_conviction, d.n_confirm) }}</div>
-      <div>
+      <div class="led-analysis">
         <div class="cline">{{ stage(d.stage) }}{{ entrybadge(d.entry_gate) }}{{ tstate(d.trajectory) }}{{ flags(d.flags) }}
           {%- if d.leading_gap and d.leading_gap>0 %}<span class="chip info">{{ t('leads by','领先') }} +{{ d.leading_gap }}</span>{% endif %}</div>
         {{ drivers(d.edge_drivers) }}
-        {% if d.falsifier %}<div class="watch">{{ t('Watching', '关注') }}: <b>{{ d.falsifier|e }}</b></div>{% endif %}
+        {% if d.falsifier %}{{ watchcopy(d.falsifier) }}{% endif %}
       </div>
     </div>{% endfor %}
   </div>
@@ -752,7 +773,7 @@
     {% set stg = e.get('by_stage') or {} %}
     <div class="card trc">
       <div class="th"><span class="h">{{ h }}{{ t('d', '天') }}</span>
-        {% if TR.proven.get(h) %}<span class="chip good" data-tip-en="Cleared the pre-registered significance bar at this horizon" data-tip-zh="该周期已通过预登记的显著性检验">{{ t('proven', '已验证') }}</span>
+        {% if TR.proven.get(h) %}<span class="chip good" data-tip-en="This horizon cleared the page's preset evidence threshold" data-tip-zh="该周期已达到本页预设的证据阈值">{{ t('supported', '有证据') }}</span>
         {% else %}<span class="chip" data-tip-en="Still accruing scored calls at this horizon — shown, not yet trusted" data-tip-zh="该周期样本仍在累积 —— 仅展示，尚未采信">{{ t('measuring', '测量中') }}</span>{% endif %}</div>
       <div class="trg">
         <div class="trcell" data-tip-en="Does a higher rank from this page actually go with a better return {{ h }} trading days later, measured against SPY? Above zero = yes.{% if ic_pooled %} Thin sample here, so the value is pooled across horizons (~).{% endif %}" data-tip-zh="本页排名越高，{{ h }} 个交易日后相对标普的收益是否真的越好？大于零 = 是。{% if ic_pooled %}该周期样本较少，取跨周期合并值（~）。{% endif %}">

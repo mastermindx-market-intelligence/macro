@@ -1,18 +1,18 @@
 {
   "schema": "us_track_history/v1",
-  "as_of": "2026-09-16",
-  "generated": "2026-09-16T10:18:32.283686+00:00",
+  "as_of": "2026-09-25",
+  "generated": "2026-09-25T21:40:53.287272+00:00",
   "cohort_rollup": {
     "horizons": {
       "h5": {
-        "accruing": true,
-        "raw_n": 4762,
-        "effective_n": 2,
-        "win_rate": 0.4561,
-        "avg_excess": -0.0025,
-        "med_excess": -0.005,
-        "wilson_lo": 0.0945,
-        "wilson_hi": 0.9055,
+        "accruing": false,
+        "raw_n": 5732,
+        "effective_n": 3,
+        "win_rate": 0.4367,
+        "avg_excess": -0.0046,
+        "med_excess": -0.0073,
+        "wilson_lo": 0.0615,
+        "wilson_hi": 0.7923,
         "cohort_series": [
           {
             "week": "2026-06-15/2026-06-21",
@@ -104,31 +104,39 @@
           },
           {
             "week": "2026-08-31/2026-09-06",
-            "raw_n": 411,
+            "raw_n": 422,
             "effective_n": 1,
-            "win_rate": 0.4112,
-            "avg_excess": -0.0081,
-            "med_excess": -0.0074
+            "win_rate": 0.4076,
+            "avg_excess": -0.0087,
+            "med_excess": -0.0083
           },
           {
             "week": "2026-09-07/2026-09-13",
-            "raw_n": 136,
+            "raw_n": 585,
             "effective_n": 1,
-            "win_rate": 0.3824,
-            "avg_excess": -0.0135,
-            "med_excess": -0.0167
+            "win_rate": 0.3624,
+            "avg_excess": -0.0155,
+            "med_excess": -0.0129
+          },
+          {
+            "week": "2026-09-14/2026-09-20",
+            "raw_n": 510,
+            "effective_n": 1,
+            "win_rate": 0.3294,
+            "avg_excess": -0.013,
+            "med_excess": -0.0233
           }
         ]
       },
       "h10": {
-        "accruing": true,
-        "raw_n": 3749,
-        "effective_n": 2,
-        "win_rate": 0.4212,
-        "avg_excess": -0.0089,
-        "med_excess": -0.0131,
-        "wilson_lo": 0.0945,
-        "wilson_hi": 0.9055,
+        "accruing": false,
+        "raw_n": 4646,
+        "effective_n": 3,
+        "win_rate": 0.3956,
+        "avg_excess": -0.0133,
+        "med_excess": -0.0177,
+        "wilson_lo": 0.0615,
+        "wilson_hi": 0.7923,
         "cohort_series": [
           {
             "week": "2026-06-15/2026-06-21",
@@ -204,31 +212,39 @@
           },
           {
             "week": "2026-08-24/2026-08-30",
-            "raw_n": 711,
+            "raw_n": 732,
             "effective_n": 1,
-            "win_rate": 0.3122,
-            "avg_excess": -0.0267,
-            "med_excess": -0.0268
+            "win_rate": 0.3074,
+            "avg_excess": -0.027,
+            "med_excess": -0.0267
           },
           {
             "week": "2026-08-31/2026-09-06",
-            "raw_n": 122,
+            "raw_n": 422,
             "effective_n": 1,
-            "win_rate": 0.3934,
-            "avg_excess": -0.0143,
-            "med_excess": -0.0171
+            "win_rate": 0.3175,
+            "avg_excess": -0.0262,
+            "med_excess": -0.0288
+          },
+          {
+            "week": "2026-09-07/2026-09-13",
+            "raw_n": 576,
+            "effective_n": 1,
+            "win_rate": 0.2951,
+            "avg_excess": -0.032,
+            "med_excess": -0.0434
           }
         ]
       },
       "h21": {
         "accruing": true,
-        "raw_n": 1955,
-        "effective_n": 1,
-        "win_rate": 0.3867,
-        "avg_excess": -0.0179,
-        "med_excess": -0.0309,
-        "wilson_lo": 0.0,
-        "wilson_hi": 0.7935,
+        "raw_n": 3155,
+        "effective_n": 2,
+        "win_rate": 0.3287,
+        "avg_excess": -0.0304,
+        "med_excess": -0.0396,
+        "wilson_lo": 0.0945,
+        "wilson_hi": 0.9055,
         "cohort_series": [
           {
             "week": "2026-06-29/2026-07-05",
@@ -280,11 +296,27 @@
           },
           {
             "week": "2026-08-10/2026-08-16",
-            "raw_n": 443,
+            "raw_n": 479,
             "effective_n": 1,
-            "win_rate": 0.377,
-            "avg_excess": -0.0266,
-            "med_excess": -0.03
+            "win_rate": 0.3591,
+            "avg_excess": -0.0289,
+            "med_excess": -0.0324
+          },
+          {
+            "week": "2026-08-17/2026-08-23",
+            "raw_n": 732,
+            "effective_n": 1,
+            "win_rate": 0.2391,
+            "avg_excess": -0.0483,
+            "med_excess": -0.0508
+          },
+          {
+            "week": "2026-08-24/2026-08-30",
+            "raw_n": 432,
+            "effective_n": 1,
+            "win_rate": 0.2338,
+            "avg_excess": -0.0547,
+            "med_excess": -0.061
           }
         ]
       },
@@ -298,42 +330,42 @@
     },
     "accruing": false,
     "return_distribution_21d": {
-      "raw_n": 1955,
+      "raw_n": 3155,
       "bins": [
         {
           "lo": -0.5574,
           "hi": -0.3736,
-          "count": 5
+          "count": 8
         },
         {
           "lo": -0.3736,
           "hi": -0.1897,
-          "count": 109
+          "count": 180
         },
         {
           "lo": -0.1897,
           "hi": -0.0059,
-          "count": 1040
+          "count": 1849
         },
         {
           "lo": -0.0059,
           "hi": 0.178,
-          "count": 680
+          "count": 968
         },
         {
           "lo": 0.178,
           "hi": 0.3618,
-          "count": 95
+          "count": 122
         },
         {
           "lo": 0.3618,
           "hi": 0.5457,
-          "count": 18
+          "count": 19
         },
         {
           "lo": 0.5457,
           "hi": 0.7295,
-          "count": 4
+          "count": 5
         },
         {
           "lo": 0.7295,
@@ -548,6 +580,36 @@
       },
       {
         "as_of": "2026-09-14",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-16",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-17",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-21",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-22",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-23",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-24",
         "total": 0,
         "by_lane": {}
       }

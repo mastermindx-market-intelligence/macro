@@ -1,0 +1,19 @@
+{
+  "proof_class": "real_observation_data_in_explicitly_admitted_private_generation_fixture",
+  "production": false,
+  "live_registry_or_environment_changed": false,
+  "fixture_only_nightly_admission_override": true,
+  "v2_source": "0e57dc01e494475802c62fc664924236544abb90",
+  "first_appended_events": 298,
+  "second_appended_events": 0,
+  "same_ledger_hash": true,
+  "same_projection_hashes": true,
+  "changed_file_provenance_retained": true,
+  "prior_generations_preserved": true,
+  "actual_input_snapshot_unchanged": true,
+  "semantic_definition_drift_refused": true,
+  "refusal_preserves_selected_generation": true,
+  "elapsed_seconds": 175.75,
+  "first_generation": "peg:21abac54eef916c19e60d9c29abef42ea7e6c86467e709bf957dd530f2f38f6f",
+  "second_generation": "peg:f1778b42f4f8cb509abe36c47230ab297fd6a74b5873de033cc1ddc9ea34d3b5"
+}

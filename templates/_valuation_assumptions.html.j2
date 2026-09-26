@@ -3,7 +3,12 @@
     three free parameters V1 hard-codes. Nothing is saved or sent.
     Governed CSS lives in this partial's own <style> block -- never authored
     as a runtime JS stylesheet. Whole file gated on valuation_assumptions
-    (CSS included). too_thin_base renders ONLY the single-line copy. -#}
+    (CSS included). too_thin_base renders ONLY the single-line copy.
+    B-F07-3 adds the event-to-assumption bridge line: one Tier-2 plain-word
+    line under the controls naming which of the three F07-2 inputs a
+    freshly-classified filing would touch, with a single direction word
+    only -- no magnitude, no score, no ranking, nothing applied
+    automatically. -#}
 {% if valuation_assumptions %}
 {% set va = valuation_assumptions %}
 {% if va.too_thin_base %}
@@ -40,6 +45,36 @@
 .va-note{margin:0 0 6px;font-size:11.5px;line-height:1.5;color:var(--muted);}
 .va-is-null .va-out-num,.va-is-null .va-bridge{display:none;}
 .va-is-null .va-out-null{display:block;}
+/* B-F07-3 event-to-assumption bridge — one Tier-2 plain-word line under
+   the controls. Smaller than the FY footnote; same hairline color as
+   the notes so the line is read as receipt, not as instruction. */
+.va-event-bridge{margin:6px 0 0;font-size:11px;line-height:1.5;color:var(--muted);}
+.va-event-bridge .va-event-target{color:var(--muted);}
+.va-event-bridge .va-event-null{font-style:normal;}
+/* F07 event -> AssumptionChange proposal. A quiet aside, never louder than the
+   server-computed figure above it: no accent fill, no glow, one hairline rule
+   to mark it as a separate voice (the filing's, not the page's). The guard
+   sentence is deliberately the same size as the claim it qualifies.
+   Two art directions: dark leans on a recessed panel and a hairline; light
+   uses white material with a soft shadow and no fill, per the theme law. */
+.va-event-proposal{margin:14px 0 0;padding:12px 14px;border:1px solid var(--hair);
+  border-left:2px solid color-mix(in srgb,var(--muted) 55%,transparent);
+  border-radius:var(--r-card,13px);
+  background:color-mix(in srgb,var(--panel2) 45%,transparent);}
+[data-theme="light"] .va-event-proposal{background:var(--panel);
+  border-left:2px solid color-mix(in srgb,var(--text) 22%,transparent);
+  box-shadow:0 6px 18px -14px color-mix(in srgb,var(--text) 20%,transparent);}
+.va-event-proposal-head{margin:0 0 6px;font-size:11px;font-weight:700;color:var(--text);
+  text-transform:uppercase;letter-spacing:.06em;}
+[data-lang="zh"] .va-event-proposal-head{letter-spacing:0;text-transform:none;}
+.va-event-proposal-body,.va-event-proposal-move,.va-event-proposal-guard,
+.va-event-proposal-source{margin:0 0 6px;font-size:12px;line-height:1.55;color:var(--muted);
+  max-width:62ch;}
+.va-event-proposal-move{color:var(--text);font-variant-numeric:tabular-nums;}
+.va-event-proposal-guard{color:var(--muted);}
+.va-event-proposal-source{margin-bottom:0;}
+.va-event-proposal-source a{color:var(--link);text-decoration:underline;
+  text-underline-offset:2px;}
 @media(max-width:390px){
   .va-ctl{grid-template-columns:1fr;gap:4px;}
   .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}
@@ -101,6 +136,86 @@
   {#- One minus-sign convention across the panel: the site's ASCII hyphen-minus,
       the same character the V1 cards and this panel's own readouts print. -#}
   <p class="va-note">{{ t('Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.', '销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。') }}</p>
+  {#- B-F07-3 event-to-assumption bridge. One plain-word line under the
+      controls: the latest classified event on file usually touches growth,
+      margin, or multiple — or a typed null. No magnitude, no score, no
+      ranking, nothing applied automatically. The user moves the
+      slider; the bridge never moves it. -#}
+  {% set _va_event_bridge = va.latest_event_bridge if va and va.latest_event_bridge else None %}
+  {% set _va_prop = va.event_assumption_proposal if va and va.event_assumption_proposal else None %}
+  {% set _va_scen = va.event_assumption_scenario if va and va.event_assumption_scenario else None %}
+  {#- When a lawful proposal renders below, it IS the statement about the
+      latest filing — so this one-line summary yields entirely rather than
+      claiming "no filing on file" directly above the filing it links. -#}
+  {% set _va_shows_proposal = (_va_prop and _va_prop.status == 'PROPOSED'
+                               and _va_scen and not _va_scen.refused) %}
+  {% if not _va_shows_proposal %}
+  <p class="va-event-bridge" id="va-event-bridge" data-valuation-event-bridge="v1">
+    {% if _va_event_bridge %}
+    {{ t(
+      (
+        'Latest filing on file (' ~ _va_event_bridge.event_class_en
+        ~ ') <span class="va-event-target">' ~ _va_event_bridge.direction_word ~ '</span>.'
+      ) | safe,
+      (
+        '最新备案（' ~ _va_event_bridge.event_class_zh
+        ~ '）<span class="va-event-target">' ~ _va_event_bridge.direction_word_zh ~ '</span>。'
+      ) | safe
+    ) }}
+    {% elif _va_prop and _va_prop.rationale_en and _va_prop.event and _va_prop.event.event_id %}
+    {#- The class map has no entry for this event, but we still know what the
+        event was and why it does not move an input. Saying "no filing on file"
+        here would be false: there IS a filing, it just cannot lawfully set an
+        assumption. Only for the abstaining case — when a proposal renders
+        below, this line would repeat its first sentence verbatim. -#}
+    {{ t(_va_prop.rationale_en, _va_prop.rationale_zh) }}
+    {% else %}
+    {{ t('No filing on file yet for this company.', '该公司暂无备案。') }}
+    {% endif %}
+  </p>
+  {% endif %}
+  {#- F07 event -> AssumptionChange proposal. A PROPOSAL, never our number and
+      never applied: the panel shows what a recent filing would argue, what it
+      would do to the per-share figure, and where to read the filing. The user
+      moves the slider or ignores it. Plain words only (DESIGN_DOCTRINE Law 2):
+      no status codes, no reason slugs, no refutation language. -#}
+  {% if _va_shows_proposal %}
+  {% set _va_ref = (_va_prop.event.source_refs or [None])[0] %}
+  {% set _va_unit = {'sales_growth_pct': '%', 'margin_delta_pp': ' pp', 'earnings_multiple': '×'}.get(_va_prop.assumption_name, '') %}
+  <div class="va-event-proposal" id="va-event-proposal" data-valuation-event-proposal="v1">
+    <p class="va-event-proposal-head">
+      {{ t('A recent filing argues this differently', '最近的一份备案给出了不同的看法') }}
+    </p>
+    <p class="va-event-proposal-body">
+      {{ t(_va_prop.rationale_en, _va_prop.rationale_zh) }}
+    </p>
+    <p class="va-event-proposal-move">
+      {{ t(
+        'Moving that one input from ' ~ _va_prop.baseline_value ~ _va_unit ~ ' to '
+          ~ _va_prop.proposed_value ~ _va_unit ~ ' takes the value per share from $'
+          ~ _va_scen.baseline.per_share ~ ' to $' ~ _va_scen.proposed.per_share
+          ~ '. The other two are untouched.',
+        '仅将该项假设从 ' ~ _va_prop.baseline_value ~ _va_unit ~ ' 调整为 '
+          ~ _va_prop.proposed_value ~ _va_unit ~ '，每股价值将从 $'
+          ~ _va_scen.baseline.per_share ~ ' 变为 $' ~ _va_scen.proposed.per_share
+          ~ '，另外两项不变。'
+      ) }}
+    </p>
+    <p class="va-event-proposal-guard">
+      {{ t(
+        'That figure is this page\'s own more optimistic case, not a number the company gave. Nothing has been changed for you — move the slider yourself if you agree, or ignore it.',
+        '该数值取自本页自身较乐观的情景设定，并非公司给出的数字。系统不会替您更改任何设置——您可以自行调整滑块，也可以忽略。'
+      ) }}
+    </p>
+    {% if _va_ref and _va_ref.url %}
+    <p class="va-event-proposal-source">
+      <a href="{{ _va_ref.url }}" rel="noopener noreferrer" target="_blank">{{
+        t('Read the ' ~ (_va_ref.form or 'filing') ~ ' filed ' ~ (_va_ref.file_date or ''),
+          '查看 ' ~ (_va_ref.file_date or '') ~ ' 提交的 ' ~ (_va_ref.form or '备案')) }}</a>
+    </p>
+    {% endif %}
+  </div>
+  {% endif %}
   <script>
 (function (root) {
   function round2(v) {

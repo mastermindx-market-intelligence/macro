@@ -1,250 +1,250 @@
 {
   "schema": "subsector_rotation.track_record.v1",
-  "as_of": "2026-09-15",
-  "generated_at": "2026-09-16T05:47:55.872229+00:00",
+  "as_of": "2026-09-25",
+  "generated_at": "2026-09-25T17:15:02.750949+00:00",
   "is_context_only": true,
-  "n_snapshots": 10482,
-  "n_days": 39,
+  "n_snapshots": 12096,
+  "n_days": 45,
   "horizons": {
     "5": {
-      "n_matured": 9907,
-      "score_ic": -0.0315,
-      "score_ic_t_hac": -0.495,
-      "score_ic_t_gate": -0.495,
-      "score_ic_t_iid": -0.55,
+      "n_matured": 10979,
+      "score_ic": -0.0522,
+      "score_ic_t_hac": -0.787,
+      "score_ic_t_gate": -0.787,
+      "score_ic_t_iid": -0.951,
       "hac_anticonservative": false,
-      "ic_span_days": 76,
-      "indep_windows": 10.86,
+      "ic_span_days": 84,
+      "indep_windows": 12.0,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": -0.0315,
-        "ic_vol": 0.3481,
-        "ic_ir": -0.09,
-        "ic_ir_ann": -0.286,
-        "t_hac": -0.495,
-        "p_hac": 0.6208,
-        "hit": 0.405,
-        "n": 37,
+        "mean_ic": -0.0522,
+        "ic_vol": 0.3513,
+        "ic_ir": -0.148,
+        "ic_ir_ann": -0.469,
+        "t_hac": -0.787,
+        "p_hac": 0.4314,
+        "hit": 0.39,
+        "n": 41,
         "hac_lags": 5,
         "hac_lags_requested": 5,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-09-10",
-        "ic_span_days": 76,
-        "indep_windows": 10.86
+        "ic_last_date": "2026-09-18",
+        "ic_span_days": 84,
+        "indep_windows": 12.0
       },
       "by_stage": {
         "emerging": {
-          "n": 438,
-          "mean_fwd_rel": -0.007,
-          "hit_rate": 0.432
+          "n": 486,
+          "mean_fwd_rel": -0.0076,
+          "hit_rate": 0.416
         },
         "neutral": {
-          "n": 9025,
-          "mean_fwd_rel": 0.0002,
+          "n": 10002,
+          "mean_fwd_rel": 0.0,
           "hit_rate": null
         },
         "fading": {
-          "n": 444,
-          "mean_fwd_rel": 0.0043,
-          "hit_rate": 0.523
+          "n": 491,
+          "mean_fwd_rel": 0.0064,
+          "hit_rate": 0.503
         }
       },
       "v2": {
-        "n_matured": 4556,
-        "score_ic": -0.0587,
-        "score_ic_t_hac": -1.383,
+        "n_matured": 5628,
+        "score_ic": -0.0799,
+        "score_ic_t_hac": -1.685,
         "by_stage": {
           "emerging": {
-            "n": 486,
-            "mean_fwd_rel": -0.005,
-            "hit_rate": 0.407
+            "n": 564,
+            "mean_fwd_rel": -0.0076,
+            "hit_rate": 0.362
           },
           "neutral": {
-            "n": 3567,
-            "mean_fwd_rel": -0.0008,
+            "n": 4454,
+            "mean_fwd_rel": -0.0007,
             "hit_rate": null
           },
           "fading": {
-            "n": 503,
-            "mean_fwd_rel": 0.0016,
-            "hit_rate": 0.533
+            "n": 610,
+            "mean_fwd_rel": 0.0034,
+            "hit_rate": 0.531
           }
         }
       }
     },
     "10": {
-      "n_matured": 9103,
-      "score_ic": -0.0023,
-      "score_ic_t_hac": -0.027,
-      "score_ic_t_gate": -0.027,
-      "score_ic_t_iid": -0.047,
+      "n_matured": 10175,
+      "score_ic": -0.0196,
+      "score_ic_t_hac": -0.243,
+      "score_ic_t_gate": -0.243,
+      "score_ic_t_iid": -0.438,
       "hac_anticonservative": false,
-      "ic_span_days": 70,
-      "indep_windows": 5.0,
+      "ic_span_days": 77,
+      "indep_windows": 5.5,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": -0.0023,
-        "ic_vol": 0.2829,
-        "ic_ir": -0.008,
-        "ic_ir_ann": -0.036,
-        "t_hac": -0.027,
-        "p_hac": 0.9788,
-        "hit": 0.412,
-        "n": 34,
+        "mean_ic": -0.0196,
+        "ic_vol": 0.2757,
+        "ic_ir": -0.071,
+        "ic_ir_ann": -0.318,
+        "t_hac": -0.243,
+        "p_hac": 0.808,
+        "hit": 0.368,
+        "n": 38,
         "hac_lags": 10,
         "hac_lags_requested": 10,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-09-04",
-        "ic_span_days": 70,
-        "indep_windows": 5.0
+        "ic_last_date": "2026-09-11",
+        "ic_span_days": 77,
+        "indep_windows": 5.5
       },
       "by_stage": {
         "emerging": {
-          "n": 402,
-          "mean_fwd_rel": -0.0046,
-          "hit_rate": 0.443
+          "n": 450,
+          "mean_fwd_rel": -0.0038,
+          "hit_rate": 0.458
         },
         "neutral": {
-          "n": 8293,
-          "mean_fwd_rel": 0.0007,
+          "n": 9269,
+          "mean_fwd_rel": 0.0001,
           "hit_rate": null
         },
         "fading": {
-          "n": 408,
-          "mean_fwd_rel": -0.0004,
-          "hit_rate": 0.493
+          "n": 456,
+          "mean_fwd_rel": 0.0065,
+          "hit_rate": 0.452
         }
       },
       "v2": {
-        "n_matured": 3752,
-        "score_ic": -0.0966,
-        "score_ic_t_hac": -4.204,
+        "n_matured": 4824,
+        "score_ic": -0.0724,
+        "score_ic_t_hac": -2.209,
         "by_stage": {
           "emerging": {
-            "n": 409,
-            "mean_fwd_rel": -0.0052,
-            "hit_rate": 0.369
+            "n": 515,
+            "mean_fwd_rel": -0.0051,
+            "hit_rate": 0.381
           },
           "neutral": {
-            "n": 2929,
-            "mean_fwd_rel": -0.0023,
+            "n": 3772,
+            "mean_fwd_rel": -0.0024,
             "hit_rate": null
           },
           "fading": {
-            "n": 414,
-            "mean_fwd_rel": 0.0059,
-            "hit_rate": 0.444
+            "n": 537,
+            "mean_fwd_rel": 0.0066,
+            "hit_rate": 0.453
           }
         }
       }
     },
     "21": {
-      "n_matured": 7763,
-      "score_ic": 0.0141,
-      "score_ic_t_hac": 0.138,
-      "score_ic_t_gate": 0.138,
-      "score_ic_t_iid": 0.232,
+      "n_matured": 8835,
+      "score_ic": 0.0055,
+      "score_ic_t_hac": 0.059,
+      "score_ic_t_gate": 0.059,
+      "score_ic_t_iid": 0.1,
       "hac_anticonservative": false,
-      "ic_span_days": 60,
-      "indep_windows": 2.04,
+      "ic_span_days": 69,
+      "indep_windows": 2.35,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.0141,
-        "ic_vol": 0.3267,
-        "ic_ir": 0.043,
-        "ic_ir_ann": 0.28,
-        "t_hac": 0.138,
-        "p_hac": 0.8906,
-        "hit": 0.448,
-        "n": 29,
+        "mean_ic": 0.0055,
+        "ic_vol": 0.3157,
+        "ic_ir": 0.017,
+        "ic_ir_ann": 0.112,
+        "t_hac": 0.059,
+        "p_hac": 0.9533,
+        "hit": 0.455,
+        "n": 33,
         "hac_lags": 21,
         "hac_lags_requested": 21,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-08-25",
-        "ic_span_days": 60,
-        "indep_windows": 2.04
+        "ic_last_date": "2026-09-03",
+        "ic_span_days": 69,
+        "indep_windows": 2.35
       },
       "by_stage": {
         "emerging": {
-          "n": 345,
-          "mean_fwd_rel": 0.0005,
-          "hit_rate": 0.484
+          "n": 391,
+          "mean_fwd_rel": -0.005,
+          "hit_rate": 0.453
         },
         "neutral": {
-          "n": 7070,
-          "mean_fwd_rel": 0.0052,
+          "n": 8048,
+          "mean_fwd_rel": 0.0035,
           "hit_rate": null
         },
         "fading": {
-          "n": 348,
-          "mean_fwd_rel": -0.007,
-          "hit_rate": 0.511
+          "n": 396,
+          "mean_fwd_rel": -0.0026,
+          "hit_rate": 0.487
         }
       },
       "v2": {
-        "n_matured": 2412,
-        "score_ic": -0.1243,
-        "score_ic_t_hac": -1.76,
+        "n_matured": 3484,
+        "score_ic": -0.0803,
+        "score_ic_t_hac": -2.544,
         "by_stage": {
           "emerging": {
-            "n": 289,
-            "mean_fwd_rel": -0.0166,
-            "hit_rate": 0.322
+            "n": 380,
+            "mean_fwd_rel": -0.0183,
+            "hit_rate": 0.303
           },
           "neutral": {
-            "n": 1839,
-            "mean_fwd_rel": -0.0043,
+            "n": 2713,
+            "mean_fwd_rel": -0.0059,
             "hit_rate": null
           },
           "fading": {
-            "n": 284,
-            "mean_fwd_rel": 0.0126,
-            "hit_rate": 0.423
+            "n": 391,
+            "mean_fwd_rel": 0.0112,
+            "hit_rate": 0.442
           }
         }
       }
     },
     "63": {
-      "n_matured": 2671,
-      "score_ic": 0.2723,
-      "score_ic_t_hac": 10.42,
-      "score_ic_t_gate": 5.862,
-      "score_ic_t_iid": 5.862,
-      "hac_anticonservative": true,
-      "ic_span_days": 18,
-      "indep_windows": 0.2,
+      "n_matured": 4011,
+      "score_ic": 0.1208,
+      "score_ic_t_hac": 1.485,
+      "score_ic_t_gate": 1.485,
+      "score_ic_t_iid": 1.85,
+      "hac_anticonservative": false,
+      "ic_span_days": 26,
+      "indep_windows": 0.29,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.2723,
-        "ic_vol": 0.1469,
-        "ic_ir": 1.853,
-        "ic_ir_ann": 20.802,
-        "t_hac": 10.42,
-        "p_hac": 0.0,
-        "hit": 1.0,
-        "n": 10,
-        "hac_lags": 9,
+        "mean_ic": 0.1208,
+        "ic_vol": 0.2529,
+        "ic_ir": 0.477,
+        "ic_ir_ann": 5.36,
+        "t_hac": 1.485,
+        "p_hac": 0.1376,
+        "hit": 0.667,
+        "n": 15,
+        "hac_lags": 14,
         "hac_lags_requested": 63,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-07-14",
-        "ic_span_days": 18,
-        "indep_windows": 0.2
+        "ic_last_date": "2026-07-22",
+        "ic_span_days": 26,
+        "indep_windows": 0.29
       },
       "by_stage": {
         "emerging": {
-          "n": 119,
-          "mean_fwd_rel": 0.032,
-          "hit_rate": 0.571
+          "n": 179,
+          "mean_fwd_rel": 0.0184,
+          "hit_rate": 0.531
         },
         "neutral": {
-          "n": 2432,
-          "mean_fwd_rel": 0.0088,
+          "n": 3652,
+          "mean_fwd_rel": 0.0101,
           "hit_rate": null
         },
         "fading": {
-          "n": 120,
-          "mean_fwd_rel": -0.1072,
-          "hit_rate": 0.8
+          "n": 180,
+          "mean_fwd_rel": -0.0384,
+          "hit_rate": 0.594
         }
       },
       "v2": {
@@ -269,114 +269,114 @@
   "note_zh": "\u6b63\u5728\u7d2f\u79ef\u524d\u77bb\u89c2\u6d4b\uff1b\u5c1a\u65e0\u5468\u671f\u901a\u8fc7 Newey-West \u663e\u8457\u6027\u68c0\u9a8c\u3002\u65e9\u671f\u6570\u636e\u4e3a\u6682\u5b9a\uff0c\u4ec5\u4f9b\u53c2\u8003\u3002",
   "recent_misses": [
     {
-      "date": "2026-08-25",
-      "key": "cybersecurityzerotrust",
-      "name": "ZeroTrust",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.1788,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "key": "commenergyuranium",
-      "name": "Uranium",
-      "theme": "Commodities Energy",
-      "stage": "emerging",
-      "fwd_rel": -0.1696,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "key": "aisecurity",
-      "name": "Security",
-      "theme": "Artificial Intelligence",
-      "stage": "fading",
-      "fwd_rel": 0.1648,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "key": "iotsecurity",
-      "name": "Security",
-      "theme": "Internet of Things",
-      "stage": "fading",
-      "fwd_rel": 0.1597,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "key": "cloudsecurity",
-      "name": "Security",
-      "theme": "Cloud Computing",
-      "stage": "fading",
-      "fwd_rel": 0.1546,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "key": "cybersecuritythreatops",
-      "name": "ThreatOps",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.1406,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
-      "key": "softwaresecurity",
-      "name": "Security",
-      "theme": "Software",
-      "stage": "fading",
-      "fwd_rel": 0.1389,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-25",
+      "date": "2026-09-03",
       "key": "cybersecurityappsecurity",
       "name": "App Security",
       "theme": "Cybersecurity",
       "stage": "fading",
-      "fwd_rel": 0.1386,
+      "fwd_rel": 0.168,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-03",
+      "key": "healthcaregenomics",
+      "name": "Genomics",
+      "theme": "Healthcare & Biotech",
+      "stage": "fading",
+      "fwd_rel": 0.1513,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-03",
+      "key": "cybersecurityzerotrust",
+      "name": "ZeroTrust",
+      "theme": "Cybersecurity",
+      "stage": "fading",
+      "fwd_rel": 0.1512,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-03",
+      "key": "cybersecuritythreatops",
+      "name": "ThreatOps",
+      "theme": "Cybersecurity",
+      "stage": "fading",
+      "fwd_rel": 0.148,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-03",
+      "key": "cloudsecurity",
+      "name": "Security",
+      "theme": "Cloud Computing",
+      "stage": "fading",
+      "fwd_rel": 0.141,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-03",
+      "key": "iotsecurity",
+      "name": "Security",
+      "theme": "Internet of Things",
+      "stage": "fading",
+      "fwd_rel": 0.1313,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-03",
+      "key": "aisecurity",
+      "name": "Security",
+      "theme": "Artificial Intelligence",
+      "stage": "fading",
+      "fwd_rel": 0.1285,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-03",
+      "key": "energycleansolar",
+      "name": "Solar",
+      "theme": "Energy Renewable",
+      "stage": "emerging",
+      "fwd_rel": -0.1258,
       "horizon_d": 21
     }
   ],
   "head_to_head": {
     "by_horizon": {
       "5": {
-        "n": 9907,
-        "n_v2": 4556,
-        "ic": -0.0315,
-        "ic_v2": -0.0587,
-        "gap": -0.0272,
-        "t_hac": -0.495,
-        "t_hac_v2": -1.383
+        "n": 10979,
+        "n_v2": 5628,
+        "ic": -0.0522,
+        "ic_v2": -0.0799,
+        "gap": -0.0277,
+        "t_hac": -0.787,
+        "t_hac_v2": -1.685
       },
       "10": {
-        "n": 9103,
-        "n_v2": 3752,
-        "ic": -0.0023,
-        "ic_v2": -0.0966,
-        "gap": -0.0943,
-        "t_hac": -0.027,
-        "t_hac_v2": -4.204
+        "n": 10175,
+        "n_v2": 4824,
+        "ic": -0.0196,
+        "ic_v2": -0.0724,
+        "gap": -0.0528,
+        "t_hac": -0.243,
+        "t_hac_v2": -2.209
       },
       "21": {
-        "n": 7763,
-        "n_v2": 2412,
-        "ic": 0.0141,
-        "ic_v2": -0.1243,
-        "gap": -0.1384,
-        "t_hac": 0.138,
-        "t_hac_v2": -1.76
+        "n": 8835,
+        "n_v2": 3484,
+        "ic": 0.0055,
+        "ic_v2": -0.0803,
+        "gap": -0.0858,
+        "t_hac": 0.059,
+        "t_hac_v2": -2.544
       },
       "63": {
-        "n": 2671,
+        "n": 4011,
         "n_v2": 0,
-        "ic": 0.2723,
+        "ic": 0.1208,
         "ic_v2": null,
         "gap": null,
-        "t_hac": 10.42,
+        "t_hac": 1.485,
         "t_hac_v2": null
       }
     },

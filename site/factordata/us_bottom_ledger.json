@@ -1,0 +1,60 @@
+{
+ "schema": "bottom_ledger/v1",
+ "as_of": "2026-09-25",
+ "ledger_born": "2026-06-30",
+ "advance": {
+  "status": "advanced",
+  "as_of": "2026-09-25",
+  "n_new_flags": 63,
+  "n_newly_graded": 51,
+  "error": null,
+  "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
+  "n_rows": 2726,
+  "store_repairs": {
+   "renormalized": 0,
+   "unreadable": []
+  },
+  "unreadable_flag_dates": []
+ },
+ "maturity_state": "maturing",
+ "n_accruing": 2675,
+ "n_matured": 51,
+ "first_maturity_est": null,
+ "accrual_by_source": {
+  "board_buy": 2383,
+  "prophet_plan": 343
+ },
+ "summary": {
+  "pin5": 0.2157,
+  "held_pct": 0.5294,
+  "prox_med": 0.0895
+ },
+ "cohorts": [
+  {
+   "source": "board_buy",
+   "lane": "unknown",
+   "n": 51,
+   "prox_med": 0.08946938489986334,
+   "pin5": 0.21568627450980393,
+   "held_pct": 0.5294117647058824,
+   "broke_pct": 0.19607843137254902,
+   "mfe60_med": 0.08958331914017026,
+   "fwd60_med": -0.04705980367851981,
+   "undercut_med": 0.0012157172409883454
+  }
+ ],
+ "baseline_ref": "calibration/bottom_ruler_baseline.json",
+ "reliability": {
+  "tier": "display",
+  "en": "Display-tier learning instrument. Measures how close bottom-class flags land to the eventual low and whether the called floor holds — policy-free (no exits/stops). It confers no ranking, sizing, or trading authority. Live cohorts are compared against the committed panel baseline as they mature; first maturities land ~2026-09-25.",
+  "zh": "展示层学习工具。衡量“抄底类”信号距最终低点的接近度以及所判定的底部是否守住 — 不含任何策略（无止损/离场）。不赋予任何排名、仓位或交易权限。随着样本成熟，实时队列将与已提交的面板基线比较；首批成熟约在 2026-09-25。",
+  "one_grader_law": "grades are computed once at maturity and never recomputed (SA-R14)"
+ },
+ "integrity_projection": {
+  "raw_rows": 2726,
+  "effective_rows": 2726,
+  "excluded_prophet_rows": 0,
+  "error": null,
+  "effect": "raw learning rows remain append-only; Prophet rows require a stable plan source_ref and the current canonical signal-family date, and correction/quarantine authority excludes superseded claims from grades and cohorts"
+ }
+}

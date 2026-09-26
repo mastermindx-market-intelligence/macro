@@ -10,8 +10,8 @@
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
 <title>Macro Weather Station — {{ vm.asof }}</title>
-{% set seo_title = 'Macro Weather Station — Regime Labels & Context | Mastermind' %}
-{% set seo_desc = 'Live macro label board: US cycle quadrant, FX/dollar regime, rates transmission, bond health, commodity, China, HK, Canada and international reads — display-only context.' %}
+{% set seo_title = 'Macro Context — Regime Labels & Market Backdrop | Mastermind' %}
+{% set seo_desc = 'Macro context board for cycle regime, liquidity, volatility, breadth, rates, commodities and major international markets.' %}
 {% set seo_path = 'macro_context.html' %}
 {% include "_seo_head.html.j2" %}
 <style>
@@ -593,12 +593,12 @@ html[data-theme="light"] {
           <div class="hero-sub">
             <span class="chip {{ vm.hero.quad_cls }}">{{ vm.hero.quad }} {{ t(vm.hero.quad_name, vm.hero.quad_name_zh) }}</span>
             {% if vm.hero.transition_state %}&bull; {{ td(vm.hero.transition_state) }}{% endif %}
-            {% if vm.hero.quad_conf is not none %}&bull; <span class="l-en">{{ "%.0f"|format(vm.hero.quad_conf * 100) }}% confidence</span><span class="l-zh">置信 {{ "%.0f"|format(vm.hero.quad_conf * 100) }}%</span>{% endif %}
+            {% if vm.hero.quad_conf is not none %}&bull; <span class="l-en">{{ "%.0f"|format(vm.hero.quad_conf * 100) }}% regime confidence</span><span class="l-zh">周期置信 {{ "%.0f"|format(vm.hero.quad_conf * 100) }}%</span>{% endif %}
             {% if vm.hero.liq_quality %}&bull; {{ td(vm.hero.liq_quality) }}{% endif %}
             {% if vm.hero.vix is not none %}&bull; VIX {{ vm.hero.vix }}{% endif %}
           </div>
           {% endif %}
-          <div class="display-badge">&#9432; {{ t('Display-only context — not signals', '仅展示背景 — 非信号') }}</div>
+          <div class="display-badge">ⓘ {{ t('Context only — not a trade signal', '仅作背景 — 非交易信号') }}</div>
         </div>
         {% if vm.hero.score is not none %}
         <div class="hero-score-box">
@@ -655,9 +655,9 @@ html[data-theme="light"] {
         {% endif %}
         {% if vm.hero.hmm_modal_quad is not none %}
         <div class="kpi-chip"
-             data-tip-en="How confident a hidden-Markov regime model is in the current quadrant — its smoothed posterior probability P(quad), the months already spent in this regime, and the typical dwell time before a switch. Hazard rate {{ vm.hero.hmm_hazard }}. Display-only: scored use requires a causal refit against live regime labels."
-             data-tip-zh="HMM平滑后验（仅展示）。评分使用需对实时周期标签进行因果重拟合。">
-          <span class="kpi-label">{{ t('Model agrees', '模型判断') }}</span>
+             data-tip-en="Confidence shows how strongly the statistical regime model favors the current quadrant. Time in regime shows how long it has lasted; typical duration shows what the model usually sees. Use this as context, not a scored signal."
+             data-tip-zh="置信度表示统计周期模型对当前象限的支持程度。已持续时间表示当前状态已维持多久；典型持续时间用于比较。仅作背景，不作为评分信号。">
+          <span class="kpi-label">{{ t('Regime model', '周期模型') }}</span>
           <span class="kpi-val c-info">{{ "%.0f"|format(vm.hero.hmm_p_modal * 100) }}%</span>
           <span class="kpi-sub l-en">on {{ vm.hero.hmm_modal_quad }}{% if vm.hero.hmm_in_regime is not none %} &middot; {{ vm.hero.hmm_in_regime }} months in{% endif %}{% if vm.hero.hmm_dwell is not none %} &middot; usually ~{{ vm.hero.hmm_dwell }} months{% endif %}</span>
           <span class="kpi-sub l-zh">判定为 {{ vm.hero.hmm_modal_quad }}{% if vm.hero.hmm_in_regime is not none %} &middot; 已 {{ vm.hero.hmm_in_regime }} 个月{% endif %}{% if vm.hero.hmm_dwell is not none %} &middot; 通常约 {{ vm.hero.hmm_dwell }} 个月{% endif %}</span>
@@ -1149,7 +1149,7 @@ html[data-theme="light"] {
           {% if rl.netliq_pctile is not none %}
           <div class="liq-stat">
             <div class="liq-stat-k">{{ t('vs history', '历史分位') }}</div>
-            <div class="liq-stat-v c-info">{{ rl.netliq_pctile }}<span style="font-size:10px;font-weight:600">{{ t('th pct','%') }}</span></div>
+            <div class="liq-stat-v c-info"><span class="l-en">{{ rl.netliq_pctile }}<span style="font-size:10px;font-weight:600">th pct</span></span><span class="l-zh">第{{ rl.netliq_pctile }}百分位</span></div>
           </div>
           {% endif %}
         </div>
@@ -1350,7 +1350,7 @@ html[data-theme="light"] {
     </div>
 
     <div style="font-size:12px;color:var(--muted);margin-top:8px">
-      {{ t('Contradiction pairs are display-only — no gate, no rank raise. See committee.html for graded signal authority.', '矛盾对仅供展示，不触发任何门槛或排名变化。如需评级信号权威，请参阅委员会视图。') }}
+      {{ t('Contradictions are context only. They do not change scores or rankings. See Committee View for graded signals.', '矛盾仅作背景参考，不改变评分或排名。如需已评级信号，请查看委员会视图。') }}
     </div>
   </div>
 
@@ -1370,8 +1370,8 @@ html[data-theme="light"] {
     </div>
 
     <div class="disclaimer" style="margin-top:12px">
-      <b>{{ t('Display-only — labels, not signals.', '仅展示标签，非信号。') }}</b>
-      {{ t('This page presents macro regime labels distilled from committed data sources. No label on this page has been calibrated for forward return, has passed a pre-registration gate, or carries authority to modify any position or scoring surface. These are context descriptors only.', '本页展示从已提交数据源中提炼的宏观周期标签。页面上任何标签均未经前瞻收益校准、未通过预注册门槛，亦不具备修改任何持仓或评分界面的权限。仅供参考描述使用。') }}
+      <b>{{ t('Context labels, not trade signals.', '背景标签，不是交易信号。') }}</b>
+      {{ t('These regime labels summarize source data. They have not been validated as trade signals and do not directly change positions, scores, or rankings.', '这些周期标签用于概括来源数据。它们尚未被验证为交易信号，也不会直接改变持仓、评分或排名。') }}
     </div>
     <div class="meta-foot">{{ t('Built', '构建于') }} {{ built }}</div>
   </div>
@@ -1380,7 +1380,7 @@ html[data-theme="light"] {
 
 <footer class="site-footer" style="max-width:1440px;margin:30px auto 0;padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px">
   <span>© Mastermind-X</span>
-  <span>{{ t('Macro Weather Station · display-only context · labels, not signals', '宏观气象台 · 仅供展示 · 标签，非信号') }}</span>
+  <span>{{ t('Macro Weather Station · market context only', '宏观气象台 · 仅作市场背景') }}</span>
 </footer>
 
 <script src="theme.js"></script>

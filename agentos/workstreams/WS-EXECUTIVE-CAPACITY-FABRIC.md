@@ -137,8 +137,33 @@ waves:
       config/subscription_provider_profiles.v1.json — glm-coding-plan, alibaba-token-plan-personal,
       minimax-token-plan — registered as adapter `claude-compatible-subscription`. It is NOT the native
       Anthropic vertical and is NOT PF1 progress (Sol R21: never treat a #581 merge as native readiness).
-      Record each remaining carrier's merge the same way, and for any carrier whose title says Claude,
-      state in its row whether it is compatible-provider or native.
+      #575 has since MERGED as 91dbdf876f1f1ea10d24342b9d4ea49ba081bfcc ("[ACP] Qualify provider-free
+      SDK boundary and conformance"). It establishes the provider-free ACP SDK boundary; that merge
+      commit is an ancestor of protected bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 by 57 commits.
+      Merged is not proven. #579 has since MERGED as 3a8cc8b007c4573bd01efd909bf6d0e786c71663
+      ("[ACP] Bind guarded native ACP worker to common receipts"). It binds the guarded native ACP
+      worker to the common worker receipts; that merge commit is an ancestor of protected
+      bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 by 52 commits. Merged is not proven. #576 has since
+      MERGED as cb95ae8bf76382df14d1017691e4ccc0b6356f7c ("[HF1-B] Configure worker broker by
+      provider-neutral adapter"). It configures the existing worker broker by provider-neutral adapter
+      identity; that merge commit is an ancestor of protected
+      bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 by 58 commits. Merged is not proven. #578 has since
+      MERGED as d6beb70f1b6278a5d656a8b88384c9e2936332ef ("[HF1-C] Add reviewed GLM, Alibaba,
+      MiniMax subscription profiles"). It adds the reviewed GLM / Alibaba / MiniMax subscription
+      profiles; the repaired contract REJECTS `adapter_id` / `harness_id` on provider profiles so a
+      provider-plan identity does not globally select a harness; that merge commit is an ancestor of
+      protected bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 by 53 commits. Merged is not proven. #583
+      has since MERGED as 7868e2c2727a8871f64f387de9ce00dc6a67cff9 ("[HF1-D] Bind subscription
+      plans to reviewed worker harnesses"). It binds subscription plans to reviewed worker harnesses
+      via control_plane/subscription_harness_bindings.py as the SINGLE plan-to-harness binding
+      authority; that merge commit is an ancestor of protected
+      bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 by 33 commits. Merged is not proven. #577 has since
+      MERGED as ef4682c8b998a9ca522b4690fadf938aa57029ad ("[PROVIDER-FABRIC][DRAFT/HOLD] Add MiniMax
+      and Alibaba subscription realms to Codex worker"); that merge commit is an ancestor of protected
+      bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 by 60 commits. Merged is not proven. With #577, ALL SEVEN
+      Wave 1 carriers are now merged and the "Wave 1 open carriers" table below is corrected to match.
+      Record each remaining carrier's merge the same way, and for any carrier whose title says Claude, state in its
+      row whether it is compatible-provider or native.
   - id: HF1-A
     title: Provider-neutral worker execution contract (HF1 slice A)
     status: done
@@ -178,6 +203,35 @@ waves:
       alongside the #7114 skill/profile integration and the real realm/capacity producer. Resolved only
       through the existing PF1 owner: never open a replacement worker, carrier or second native writer,
       and never satisfy this wave with the merged compatible-provider harness.
+      2026-09-17 BOUNDARY (see DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY and handoff
+      EXECUTIVE-CAPACITY-FABRIC-2026-09-17): the native adapter is now BUILT but UNMERGED and
+      UNARMED — branch claude/ssd-pf1-native-claude-worker-adapter at
+      0df5e985c85ca4d3e16dcee075086d101ed0e722, no pull request, with the claude-code descriptor in
+      control_plane/worker_adapter.py carrying implementation=
+      "control_plane.claude_worker.ClaudeCodeWorkerAdapter" and implemented=False so the broker
+      cannot execute it. PR #455 is still OPEN/DRAFT/unmerged at 0a368935 under its ratified hold,
+      with its ordered repair already implemented and independently confirmed adversarially. Two
+      further architecture constraints are now measured, and they collapse the remaining gap into
+      ONE wall rather than two: the Executive work leg refuses every non-Codex execution surface at
+      four independent sites with _EXECUTION_SURFACES a CLOSED enum, leaving a profile-less Job as
+      the only lawful seam; and on that seam the fake-only PF1-F0 falsifier's fixed two-key
+      sealed-evidence result can never satisfy the supervisor's twelve-key closed per-Job schema, so
+      no COMPLETED Job is reachable while the effect ceiling holds. A Job-conformant result requires
+      a real model turn, which is exactly what the adjudicated dedicated-principal decision
+      withholds. Spend the next effort on that authority question, not on more adapter or test work,
+      and do not mirror tests/test_w6b_native_round_trip.py — it proves the PLAN leg and records in
+      its own source that the work leg cannot complete hermetically for any provider.
+      A THIRD constraint narrows the seam further: the supervisor's complete-launch-attestation gate
+      (executive_supervisor.py:1072-1075) requires the CODEX contract's
+      LAUNCH_ATTESTATION_SCHEMA_VERSION, lazily imported at :85-92, and fires whenever a Job carries
+      an effective grant regardless of its flag — so the lawful seam is profile-less AND grant-less,
+      and no non-Codex worker can serve a Job with an effective grant. LaunchAttestation is still
+      codex_worker.py-local and absent from worker_execution_contract.py. PF1 must NOT close this by
+      claiming the Codex schema version; the remedy is an HF1 promotion of the type plus a
+      provider-neutral schema version. One integration proof does exist and is green on the adapter
+      branch at 5b461fb2 (tests/test_executive_claude_lifecycle_integration.py, 3 passed): the real
+      adapter drives the live supervisor through a real subprocess to measured JobStatus.FAILED /
+      AttemptStatus.FAILED on the result-content refusal, which is the designed outcome.
   - id: MH1
     title: Authenticated multi-host Executive worker transport
     status: todo
@@ -190,10 +244,15 @@ waves:
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
+  - DEC:LAUNCHER-RELOCATION-IS-A-CAPABILITY-GRANT
 discoveries:
   - DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
+  - DSC:VISIBLE-TURN-PROJECTION-IS-THE-EXISTING-READ-SEAM
+  - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
+  - agentos/discoveries/DSC-PF1-CLAUDE-WORK-LEG-BOUNDARY.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md
   - agentos/decisions/DEC-AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION.md
   - agentos/discoveries/DSC-AGENT-DISPATCH-CURRENTLY-HAS-NO-WORKER-RECEIVER.md
   - agentos/discoveries/DSC-ASTRA-FABRIC-LIVE-CLIENT-AND-SUBSCRIPTION-GATES.md
@@ -202,6 +261,7 @@ artifacts:
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-08-29-CF2-H0-SOURCE-RELEASED.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-13.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md
   - agentos/discoveries/DSC-CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_ARCHITECTURE_2026-08-22.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_PLACEMENT_AMENDMENT_2026-08-22.md
@@ -243,6 +303,8 @@ landmines:
   - "The provider-capacity normalizer receives only secret-free typed observations. Existing Provider Control helpers may continue their already-reviewed credential-presence mechanics internally; that authority is not transferred to the normalizer or Executive OS."
   - "Subscription headroom should reduce marginal API spend for routine eligible work, but policy may reserve scarce frontier capacity for critical/interactive work."
   - "Never expose auth tokens, cookies, API keys, raw auth files, provider-home contents, email/account PII, remote endpoint credentials or private host addresses in the capacity projection."
+  - "Merged is not proven. The three ACP/HF1-B merges (#575 91dbdf87, #579 3a8cc8b0, #576 cb95ae8b) the three HF1-C/HF1-D merges (#578 d6beb70f, #581 27a5d893, #583 7868e2c2) and the provider-fabric merge (#577 ef4682c8) — all seven Wave 1 carriers — establish provider-free ACP SDK / native-process boundaries, the provider-neutral broker seam and the subscription realms on the Codex worker. None proves a live provider route or a production heterogeneous workflow; native Anthropic Claude capacity still belongs to the PF1 / native-Claude path and the Family-B Provider Control / realm work."
+  - "The intake pin 0fe8074ff953b2ced9025ed40f0f66019c759967 is an ANCESTOR of bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 — older, not newer. SCOPE: bf843961 was the protected master when this was measured at 2026-09-16T19:5xZ; it has since been SUPERSEDED three times over — by e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 at 20:4xZ, then 5ee11ab1e993616f3568cfca4069cb21fa61fd8f, then 4537f066775c73d305f82acf0643701f01f5e53c, which is the CURRENT protected master as read 2026-09-16T22:55:39Z. The verified order is 0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 -> 5ee11ab1 -> 4537f066 (current). Every 'ancestor of bf843961' measurement in this record remains true as measured and holds against 4537f066 by transitivity. The intake pin does not advance the record and must not be written as the protected-master pin."
 do_not_redo:
   - "Do not create a provider/account/quota database in Mastermind Executive OS."
   - "Do not duplicate Macro key_pool, budget_gate, llm_auth, provider_health or Codex account-home identity logic."
@@ -258,22 +320,83 @@ do_not_redo:
   - "Do not reopen CF1 implementation absent a concrete defect or material-source change."
   - "Do not reopen CF2-F; Mastermind #150 is the accepted source law."
   - "Do not patch `mastermind.provider_capacity.v1` in place to add native Claude realm semantics. OCR-2C Family B, if approved, is a new versioned Provider Control evolution."
+  - "HOST SATURATION CONSTRAINT, binding on every actor in this fabric until the incident owner lifts it (Chairman incident, root ts 1789596435.196469, delta 1789597170.411539): no new whole-root, home, volume or temp diagnostic sweeps and no generic heavy work on M2 (24 CPUs, load ~127, ~0% idle), and do not spill that work blindly to M1 (load 37.8, ~3% idle, ~13 GiB free, connector since OFFLINE). Three >30-minute read-only `rg` diagnostics were TERM'd and M2 remained saturated — that is explicitly not a fleet-fixed claim. The gateway's local backend/RPC slots do NOT reserve CPU or I/O for children that outlive the start call. Use exact tracked paths and GitHub reads instead."
   - "Do not widen Capacity Fabric into Wake, Slack dispatch, Control Room, browser/devserver resources, host arming, merge/deploy authority or capital/trading authority."
   - "Do not treat the merged Mastermind #581 (27a5d893ca28f7006c1007dffa51e677c9c7a4ab) as native Anthropic capacity or as PF1 progress, and never treat a #581 merge as native readiness (Sol R21)."
   - "Do not build a native Claude worker, adapter or carrier outside PF1. Native ownership is PF1 `claude-code` / `ClaudeCodeWorkerAdapter`; PF1-F0 custody is PR #455 and it stays held. A second native writer for one operation is the error, not a shortcut around a slow one."
+  - "macro #7181 is MERGED at d7d8bdc6fb9f3548b90487cf51c274693f4e105a and TERMINAL (release child verdict exactly `PASS / MERGE_RECEIPT_VERIFIED / TERMINAL_RELEASE_ACT`). Never re-merge, re-verify or reopen the release child."
+  - "Do NOT replay or reroute the platform-blocked MacBook RWE native `run` launch (Environment R7, root ts 1789595728.262069). Readback proved it created no log, receipt, result, cache or temp environment. It is an OPTIONAL attended-host probe and is NOT a release prerequisite on #625, which is merged as 4dc8b9c2 and whose `rwe_env.py run` is to be REUSED, never rebuilt."
+  - "Do NOT rebuild `Mastermind_Connected_Reader_Integration_2026-09-16.zip` or retry its blocked native action (root ts 1789596917.528609). Targeted Library/Project lookup and two exact native artifact locations failed to recover it; ask its incumbent to return the existing artifact's accessible reference and hash. Source inspection is not replacement publication."
+  - "Do NOT rerun, cancel or replace Mastermind #707's hosted `test` run 35155252029 (root ts 1789597361.588869). It was still in its repository-test step; CodeQL/security were green. #707 stays DRAFT / BUILT_NOT_PROVEN until both gates close."
+  - "Do NOT re-verify packet05 #699 with the unprotected candidate verifier, and do not treat REMOTE_PROOF_CHANGED as source divergence or as permission to rerun (Sol ruling, root ts 1789597068.473939). The single authorized invocation is SPENT. A fresh evidence-only remote-complete grant becomes possible only AFTER #707 is independently accepted and protected."
+  - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
+  VPS economical-provider track (seat Claude6 5fae71cf, Fable; Sol root
+  C0BSBM78V1N/1789324397.992989, ruled at edges 1789694411.329219 + 1789694989.668909): TWO verticals
+  sit DRAFT and HELD and may not be readied, merged or auto-merged without an explicit Sol acceptance
+  ruling on that root. (1) Macro PR #7280, branch claude/provider-production-modes-20260918, head
+  284bd893f5fb2085d597611d065017494f3275db — production API usage modes. (2) Mastermind PR #804, branch
+  claude/executive-service-principal-20260918, head 3b5182e2545cab671f2da2db6735b51c926baf18 — tier A1
+  executive service principal, which reports NOT_YET_ADMITTED by design because the intent sink refuses a
+  typed schema, a provenance key and constraints.task_kind. A2 (actor-aware CEO gate in
+  executive_runtime.py) and B (OpenCode native Worker) are NOT started: they collide with open PR #699
+  and PR #762/#590 respectively. Read DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY — the CEO provenance
+  gate is schema-only, so an actor-aware CEO branch is a security prerequisite before any non-CEO
+  principal is armed beyond READ/RESEARCH — and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-18.md
+  before touching either vertical. Protected Mastermind master is now
+  320f586126b7c82c843ef17612f12d40d20a42e0; executive generation 8b231e82 is installed but
+  UNARMED/STOPPED and the next gate is HUMAN_AUTH/CREDENTIAL_READINESS.
+
+  CEO REGIME 2026-09-17 (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, amended ~08:50Z): the Chairman delegated
+  ownership and decision authority over the ENTIRE Agent Fabric program to the Fable seat (aa22a3d2,
+  Claude8) - no separate Sol authorization inside the program; bounded by unrelated programs, shared
+  infrastructure outside Agent Fabric, and active worker custody (Claude6 seat 5fae71cf holds the STARTed
+  Executive-closure milestone and its manifest/symlink worktree; Claude5 keeps #710). Mastermind #716
+  MERGED 2026-09-17T09:32:10Z as 7e4d18c1283c95d1b5b840acb51a2d0bf3a34e67 and #665 MERGED 10:11:33Z as
+  e878878c9a4ae2dd50a48d825e031e07e8211708 (both protected master, BUILT_NOT_PROVEN, activation
+  Chairman-gated per the kit packet MINIMAX_CODEX_ACTIVATION_BOUNDARY_2026-09-17.md). Next act = integrate
+  macro #7114's published first-use patch once the org-level `ci-linux` pool drains (hold retained;
+  starvation escalated to the Chairman with exact evidence, no duplicate control plane); the #7114 and
+  #7257 watchers are the only CI observers (no polling). Everything below is the state this record
+  inherited on 2026-09-16 and is historical where it conflicts. Current carrier state: §10 of
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md.
+
   Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
-  Protected Mastermind master at this record repair is 7642aea155d2817219135b24246b55c1d7611c66
-  (`git -C /Users/chriswong/Documents/Cluade/Mastermind rev-parse origin/master`, 2026-09-16), the pin
-  Sol rulings R17/R19/R21/R22 were issued against. Principal critical path is W1-H3 (Mastermind #677,
-  OPEN/DRAFT at 2575c111210b1f6e51b4c900087a95331284b173, repair round in progress for Sol R17 B1-B3 on
-  the SAME child/worktree/writer) and H0 prestage attempt 2 on the existing runner. Before sizing,
-  routing, promising or reporting native Anthropic Fable/Opus capacity anywhere in this fabric, read
-  DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands at the
-  then-current protected master: the merged Claude subscription worker is a compatible-provider harness,
-  the native path is PF1's and is NOT BUILT. The Wave 1 carriers previously pinned below were read at
-  2026-09-13 and have moved (#581 merged as 27a5d893ca28f7006c1007dffa51e677c9c7a4ab); re-read every
-  head before acting on it. Accepted Macro CF1 remains
+  Protected Mastermind master is 4537f066775c73d305f82acf0643701f01f5e53c, read 2026-09-16T22:55:39Z
+  (`gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq .commit.sha`),
+  replacing the 7642aea155d2817219135b24246b55c1d7611c66 pin this record inherited. It moved twice more
+  during this session: the verified order is 0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 -> 5ee11ab1 ->
+  4537f066, each step measured by compare (see §8 of the handoff). Earlier pins in this record are
+  timestamped where they were read and every "ancestor of <older pin>" measurement still holds against
+  4537f066 by transitivity. Current carrier state is in
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md. Principal critical path is
+  W1-H3 (Mastermind #677, OPEN/DRAFT on the SAME child/worktree/writer; head is now
+  6dc2ea83bc738c2532745ef71dcde6c170c58d91 after the R80 four-path repair — SUPERSEDING the
+  09e53b30092400c501a508992bf942474d70d830 head and its 20:4xZ CHANGES_REQUESTED reading, both of which
+  are historical. Seat REPAIR_RETURN at root ts 1789598965.415869: R14 APPROVE / BLOCKING 0, hosted
+  `test` success (run 35156879220), canonical remote-complete receipt_digest
+  45525cd549f57646e679a04c7fbb69fb79b5955444df92db850a8cec63200530 on the third invocation, HOLD-FOR-SOL
+  and awaiting Sol's ruling. Sol accepted the
+  R48/R50/R68/R76 semantic closure at this head (root ts 1789588151), but **R80 (ts 1789590510.060009,
+  durable contract comment 5704046553) is a REQUEST_REPAIR, not an acceptance** — disposition verbatim
+  `REQUEST_REPAIR / SAME CHILD+BRANCH+WRITER / EXACT FOUR-PATH CEILING / H4 NOT_STARTED` over
+  ops/executive_os/autonomy_control.py, tests/test_executive_autonomy_control.py,
+  scripts/executive_os_phase1c_control_wrapper.py and tests/test_executive_launchd_config.py. The
+  old-head `remote-complete` grant was WITHDRAWN BEFORE ACCEPTANCE; both typed results produced against
+  09e53b30 — the `OUT_OF_SCOPE_DIRT` refusal and the later `REMOTE_COMPLETE_VERIFIED`
+  (receipt_digest 3edb2976…, root ts 1789591021.847339) — are HISTORICAL EVIDENCE ONLY per Sol R81 and
+  release nothing. The no-retry rule is scoped to the OLD head 09e53b30 ONLY; R80 requires the canonical
+  remote-complete verifier on the NEW head once one exists) and H0 prestage attempt 2 on the existing runner. Before
+  sizing, routing, promising or reporting native Anthropic Fable/Opus capacity anywhere in this fabric,
+  read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands
+  at the then-current protected master: the merged Claude subscription worker is a compatible-provider
+  harness, the native path is PF1's and is NOT BUILT. Wave 1 ACP/HF1-B carriers #575/#579/#576 and
+  HF1-C/HF1-D carriers #578/#581/#583 and the provider-fabric carrier #577 have merged on the protected
+  master as it stood at bf843961 (and therefore on its descendants e8803ba3 / 5ee11ab1 / 4537f066)
+  — ALL SEVEN Wave 1 carriers, see the corrected "Wave 1 open carriers" table below (all seven
+  merge commits are
+  ancestors of it) — see the HF1 umbrella wave `next_action` for the per-PR sentences; merged is not
+  proven for any of them. Re-read every head before acting on it. Accepted Macro CF1 remains
   dcdd939c45b23abce5ba04f95e330ac914a3904b. Any native H0 build or root action still belongs to the
   CF2-H0 wave: re-pin CURRENT protected Mastermind, keep the immutable repair release
   229aebce5e8d0c1c7372f5fead9c24516b027cc1, and require repair ancestry plus exact mode/blob equality
@@ -326,20 +449,29 @@ The program remains `PARTIAL`.
 Fable principal integration, operation `agent-fabric-end-to-end-fable-integration-20260913-sol-001`, Wave 1,
 under ruling `orch/fabric/INTEGRATION_RULING_W1.md` (Fable, 2026-09-13). Heads and titles were read with
 `gh pr list -R mastermindx-market-intelligence/Mastermind --state open --limit 100 --json number,title,headRefName,headRefOid,isDraft`;
-all seven are DRAFT and none is merged. A head recorded here is a pin, not a promise — re-read it before
-acting on it, and never merge, rebase, label or ready one of these carriers from a records-only session.
+all seven were DRAFT and none was merged AT THAT READING. **That is no longer true: as re-read on
+2026-09-16, ALL SEVEN have MERGED**, and every merge commit below is an ancestor of protected master
+`bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` (`gh pr view <n> -R mastermindx-market-intelligence/Mastermind
+--json state,headRefOid,mergeCommit` and `gh api repos/.../compare/<merge>...bf843961...`). A head recorded
+here is a pin, not a promise — re-read it before acting on it, and never merge, rebase, label or ready one of
+these carriers from a records-only session.
 
-| PR | Head | Role (one line) |
-|---|---|---|
-| #575 | `420c4228` | ACP probe: qualify the provider-free SDK boundary and conformance with no real provider work. |
-| #579 | `8ee3128d` | ACP turn driver: bind the guarded native ACP worker to the common worker receipts. |
-| #576 | `43c24484` | HF1-B: configure the existing worker broker by provider-neutral adapter identity. |
-| #578 | `ed3ed5e0` | HF1-C: add reviewed GLM, Alibaba and MiniMax subscription profiles (carries ruling R1). |
-| #581 | `e6aca940` | HF1-D: add the fixed-profile Claude subscription worker (Wave 1 rebase per ruling R3). |
-| #583 | `d20a4226` | HF1-D: bind subscription plans to reviewed worker harnesses. |
-| #577 | `264fa51a` | Provider fabric v2: add MiniMax and Alibaba subscription realms to the Codex worker (DRAFT/HOLD). |
+| PR | Released head | Merge commit | Role (one line) |
+|---|---|---|---|
+| #575 | `6035d6b5` | `91dbdf876f1f1ea10d24342b9d4ea49ba081bfcc` | ACP probe: qualify the provider-free SDK boundary and conformance with no real provider work. |
+| #579 | `6f9f420e` | `3a8cc8b007c4573bd01efd909bf6d0e786c71663` | ACP turn driver: bind the guarded native ACP worker to the common worker receipts. |
+| #576 | `d3587a15` | `cb95ae8bf76382df14d1017691e4ccc0b6356f7c` | HF1-B: configure the existing worker broker by provider-neutral adapter identity. |
+| #578 | `092c2bf2` | `d6beb70f1b6278a5d656a8b88384c9e2936332ef` | HF1-C: reviewed GLM, Alibaba and MiniMax subscription profiles; the repaired contract REJECTS `adapter_id`/`harness_id` on a provider profile — a plan identity does not globally select a harness. |
+| #581 | `17623544` | `27a5d893ca28f7006c1007dffa51e677c9c7a4ab` | HF1-D: the fixed-profile Claude subscription worker. The bounded `claude-compatible-subscription` harness for the purchased GLM/Alibaba/MiniMax plan stack, production disarmed absent exact admission/realm/capacity. COMPATIBLE-PROVIDER, NOT native — see `DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC`. |
+| #583 | `11f7abf8` | `7868e2c2727a8871f64f387de9ce00dc6a67cff9` | HF1-D: `control_plane/subscription_harness_bindings.py` is the single plan-to-harness binding authority. |
+| #577 | `d862ff93` | `ef4682c8b998a9ca522b4690fadf938aa57029ad` | Provider fabric v2: MiniMax and Alibaba subscription realms on the Codex worker. |
 
-#578 moved after the Wave 1 packet was cut: the packet pinned `5d786da2`, the live head is
+These are protected SOURCE. None of the seven proves a live provider route, a real provider turn, a Ready
+receipt, an Executive Job or a production heterogeneous workflow, and PF1's first real non-Codex vertical
+remains `todo`. Current carrier state and the full receipts are in
+`agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md`.
+
+Before the merge, #578 moved after the Wave 1 packet was cut: the packet pinned `5d786da2`, the live head is
 `ed3ed5e06c0a45c06a2709b3ac77acdda05fd229`, and
 `gh api repos/mastermindx-market-intelligence/Mastermind/compare/5d786da2...ed3ed5e0` returns
 `status: ahead, ahead_by: 1, behind_by: 0`. The one added commit is the ruling-R1 amendment

@@ -80,6 +80,9 @@ jobs:
             site/factordata/hk_standouts.json
             site/factordata/canada_standouts.json
             site/factordata/intl_setups.json
+            site/basketdata/baskets.json
+            site/basketdata/action_board.json
+            site/sectordata/sector_central.json
             data/risk_radar_intl/cn_forward_log.jsonl
             data/risk_radar_intl/hk_forward_log.jsonl
           sparse-checkout-cone-mode: false

@@ -98,6 +98,67 @@ def _load_briefs(site_dir: Path, data_dir: Path) -> dict:
     return out
 
 
+def _load_am_edition_panel(site_dir: Path, data_dir: Path) -> dict:
+    """MOR-2b Lane C: load site/am_edition.json (with data/regime/ fallback) for
+    the Morning Orientation band on the aibrief page. Fail-open: any failure
+    returns {'absent': True, 'reason': ...} so the band can render its honest
+    .mx-empty state without breaking the build.
+
+    Returns a dict with:
+      absent (bool) — True when the JSON could not be loaded
+      reason_en, reason_zh — plain-word reasons for the absent state
+      session_state — OPEN / CLOSED / NOT_YET_OPEN when present
+      generated_at — page build time when present
+      first_tape_en, first_tape_zh — the tape block's first row, in plain words
+      source_state — the producer's typed state of the JSON read
+    """
+    out: dict = {
+        "absent": True,
+        "reason_en": "The morning orientation page has not built yet.",
+        "reason_zh": "今晨导读页面尚未生成。",
+        "session_state": None,
+        "generated_at": None,
+        "first_tape_en": None,
+        "first_tape_zh": None,
+        "source_state": None,
+    }
+    payload = _load_json_safe(site_dir / "am_edition.json")
+    if payload is None:
+        payload = _load_json_safe(data_dir / "regime" / "am_edition.json")
+    if payload is None or not isinstance(payload, dict):
+        return out
+    out["absent"] = False
+    out["session_state"] = payload.get("session_state")
+    out["generated_at"] = payload.get("generated_at")
+    # Pull the tape block's first row, in plain words.
+    blocks = payload.get("blocks") or []
+    tape_block = None
+    for blk in blocks:
+        if isinstance(blk, dict) and blk.get("key") == "tape_since_prior_close":
+            tape_block = blk
+            break
+    if isinstance(tape_block, dict):
+        rows = tape_block.get("rows") or []
+        if rows and isinstance(rows[0], dict):
+            row = rows[0]
+            label_en = row.get("label_en") or row.get("symbol") or ""
+            label_zh = row.get("label_zh") or label_en
+            chg = row.get("change_pct")
+            sym = row.get("symbol") or ""
+            if chg is not None:
+                direction_en = "up" if chg > 0 else ("down" if chg < 0 else "flat")
+                direction_zh = "上涨" if chg > 0 else ("下跌" if chg < 0 else "持平")
+                pct_en = f"{chg:+.2f}%"
+                pct_zh = f"{chg:+.2f}%"
+                out["first_tape_en"] = (
+                    f"{sym} {label_en} is {direction_en} {pct_en} since yesterday's close."
+                )
+                out["first_tape_zh"] = (
+                    f"{sym} {label_zh}自昨日收盘以来{direction_zh} {pct_zh}。"
+                )
+    return out
+
+
 def _gather_context_strip(data_dir: Path) -> dict:
     """Panel A: light fail-open reads for the context strip.
 
@@ -481,6 +542,9 @@ def main() -> int:
         # ABX v2: the three lens brief bodies are now SERVER-rendered by the shared
         # macro (templates/_aibrief_body.html.j2). aibrief.js handles only cortex.
         briefs = _load_briefs(site, data_dir)
+        # MOR-2b Lane C: load site/am_edition.json for the Morning Orientation band
+        # under the page h1. Fail-open — the band renders .mx-empty when absent.
+        panels["am_edition"] = _load_am_edition_panel(site, data_dir)
         html = env.get_template("aibrief.html.j2").render(as_of=as_of, **panels, **briefs)
         write_page(site / "aibrief.html", html)
 

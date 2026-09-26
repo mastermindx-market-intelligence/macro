@@ -31,6 +31,7 @@ scripts/build_site.py, exactly like tests/test_p_mp1_shell_repair_round.py.
 from __future__ import annotations
 
 import re
+import pytest
 import sys
 from pathlib import Path
 
@@ -97,6 +98,81 @@ def test_a_data_prophet_src_defaults_candidates_when_su_present():
     assert 'data-prophet-src="candidates"' in html
     assert 'id="us-src-toggle"' in html
     assert 'data-src="candidates"' in html and 'data-src="plans"' in html
+
+
+def test_a_today_uses_owner_featured_preview_without_entry_promotion():
+    from bs4 import BeautifulSoup
+
+    rows = []
+    for i in range(5):
+        wait = i == 1
+        rows.append(_board_row(
+            ticker=f"TOD{i}", name=f"Today {i}", lane="bottoming",
+            stage=("setting_up" if wait else "live"),
+            featured=True,
+            entry_signal={
+                "status": ("bounce_wait" if wait else "buy_now"),
+                "buy_zone": {"low": 40.0 + i, "high": 41.0 + i},
+            },
+        ))
+    rows.append(_board_row(
+        ticker="OTHER", name="Other", lane="continuation", stage="live",
+        featured=False,
+        entry_signal={
+            "status": "buy_now",
+            "buy_zone": {"low": 50.0, "high": 51.0},
+        },
+    ))
+    su = {
+        "as_of": "2026-09-24",
+        "buy": rows,
+        "ran": [],
+        "eligible": len(rows),
+        "ranking": {"featured_count": 5},
+    }
+    html = _render_stocks({
+        "us_standouts": su,
+        "us_prophet_book": _prophet_book(),
+    })
+    soup = BeautifulSoup(html, "html.parser")
+
+    panel = soup.select_one("#us-standouts")
+    assert panel["data-prophet-src"] == "today"
+    assert soup.select_one('#us-src-btn-today[aria-selected="true"]')
+    today = soup.select_one("#us-today")
+    assert today and today["data-today-total"] == "5"
+    assert today["data-today-visible"] == "3"
+    cards = today.select("#us-today-grid .pvcard")
+    assert [card["data-ticker"] for card in cards] == ["TOD0", "TOD1", "TOD2"]
+    assert "pv-buy" in cards[0]["class"]
+    assert "pv-wait" in cards[1]["class"], "Featured bounce_wait must remain Wait"
+    today_text = today.get_text(" ", strip=True)
+    assert "2 more Featured names remain in Candidates" in today_text
+    assert "not a pick quota" in today_text
+
+    # Today previews the owner's shelf; it does not remove any candidate row.
+    assert len(soup.select("#us-cand-grid .pvcard")) == 6
+    assert soup.select_one('#us-src-btn-cand[data-src="candidates"]')
+    assert soup.select_one('#us-src-btn-plan[data-src="plans"]')
+
+
+def test_a_today_zero_does_not_replace_candidates_default():
+    rows = [_board_row(
+        ticker="AAA", name="A", stage="live", lane="bottoming", featured=False,
+    )]
+    html = _render_stocks({
+        "us_standouts": {
+            "as_of": "2026-09-24",
+            "buy": rows,
+            "ran": [],
+            "eligible": 1,
+            "ranking": {"featured_count": 0},
+        },
+        "us_prophet_book": _prophet_book(),
+    })
+    assert 'data-prophet-src="candidates"' in html
+    assert 'id="us-today"' in html
+    assert "No owner-Featured names on this board." in html
 
 
 def test_a_toggle_stays_reachable_and_typed_unavailable_state_shows_when_su_missing():
@@ -219,7 +295,7 @@ def test_c1_no_escaped_b_tag_anywhere_in_the_rendered_document():
     assert "&lt;b&gt;" not in html, (
         "t()+|safe on a string already containing raw <b>/</b> double-escapes "
         "under autoescape — the fix writes the bilingual twin explicitly")
-    assert f"<b>{gate['total']}</b> screened tonight" in html
+    assert f"<b>{gate['total']}</b> screened" in html
 
 
 # ═══════════════════════════ C2 — census reconciliation ════════════════════
@@ -232,8 +308,8 @@ def test_c2_cand_total_equals_gate_total_not_inflated_by_the_ran_array():
         {"live": 22, "setting_up": 24, "ran": 5, "basing": 6, "blocked": 3},
         ran_extra=17)
     assert gate["total"] == 60
-    assert f"<b>{gate['total']}</b> screened tonight" in html
-    assert "<b>77</b> screened tonight" not in html
+    assert f"<b>{gate['total']}</b> screened" in html
+    assert "<b>77</b> screened" not in html
 
 
 def test_c2_five_shelves_sum_exactly_to_cand_total_no_residual_when_clean():
@@ -374,6 +450,104 @@ def test_e_no_js_assignment_impersonates_an_href_or_src_attribute():
     )
 
 
+@pytest.mark.parametrize("as_of", ("2026-09-11", "2026-09-15", None, "", "__missing__"))
+def test_candidate_heading_discloses_source_date_without_tonight_claim(as_of):
+    """A new shell/render timestamp must not freshen an old or undated screen."""
+    from bs4 import BeautifulSoup
+
+    su = {"buy": _stage_rows({"live": 1}), "ran": [], "eligible": 1}
+    if as_of != "__missing__":
+        su["as_of"] = as_of
+    html = _render_stocks({"us_standouts": su,
+                           "us_prophet_book": _prophet_book(plans=[])})
+    soup = BeautifulSoup(html, "html.parser")
+    section = soup.select_one("#us-candidates")
+    assert section is not None
+    heading = section.select_one(".mx-sec-total .l-en").get_text(" ", strip=True)
+    assert "1 screened" in heading
+    if as_of and as_of != "__missing__":
+        assert "as of " + as_of in heading
+    else:
+        assert "date unavailable" in heading
+    assert "tonight" not in section.get_text(" ", strip=True).lower()
+    assert "今晚" not in section.get_text(" ", strip=True)
+
+
+def _dated_gated_candidate_and_plan_page(as_of, *, first_resolved=False):
+    """Exercise actual tier splitters; dates, counts and hidden identities stay separate."""
+    from copy import deepcopy
+    from tests.test_dashboard_template_render import _prophet_plan
+
+    source = {"buy": _stage_rows({"live": 5}), "ran": [], "eligible": 5}
+    if as_of != "__missing__":
+        source["as_of"] = as_of
+    plans = [_prophet_plan(id=f"PLAN{i}-BULL-20260701", asset=f"PLAN{i}",
+                           lifecycle_state="resolved" if first_resolved and i == 0 else "ready")
+             for i in range(5)]
+    book = _prophet_book(plans=plans, source_asof="2026-07-04")
+    original_source, original_book = deepcopy(source), deepcopy(book)
+    shell, gate, locked = bs._split_us_board(source, 3, gated=True)
+    plan_shell, life_gate, locked_plans = bs._split_us_prophet_board(book, 3, gated=True)
+    context = bs._us_life_repair_context(
+        {"us_standouts": source, "us_prophet_book": book}, plan_shell, life_gate, preview_rows=3)
+    html = _render_stocks({"us_standouts": shell, "gate": gate,
+                           "us_prophet_book": plan_shell, "life_gate": life_gate, **context})
+    assert source == original_source and book == original_book
+    assert gate["preview"] + gate["locked"] == gate["total"] == 5
+    assert life_gate["preview"] + life_gate["locked"] == life_gate["total"] == 5
+    assert len(locked) == len(locked_plans) == 2
+    return html, gate, life_gate, context
+
+
+@pytest.mark.parametrize("as_of", ("2026-09-11", "2026-09-16", None, "", "__missing__"))
+def test_gated_candidate_journey_never_borrows_freshness(as_of):
+    from bs4 import BeautifulSoup
+
+    html, gate, _, _ = _dated_gated_candidate_and_plan_page(as_of)
+    soup = BeautifulSoup(html, "html.parser")
+    section = soup.select_one("#us-candidates")
+    wall = section.select_one(".us-tier-wall")
+    assert wall is not None
+    toggle = soup.select_one("#us-src-toggle")
+    assert toggle is not None
+    visible_and_tooltip = (section.get_text(" ", strip=True) + " "
+                           + toggle["data-tip-en"] + " " + toggle["data-tip-zh"])
+    assert "tonight" not in visible_and_tooltip.lower()
+    assert "今晚" not in visible_and_tooltip
+    assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-en").get_text()
+    assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-zh").get_text()
+    assert len(section.select("#us-cand-grid a[data-ticker]")) == gate["preview"]
+    assert not section.select('#us-cand-grid [data-ticker="CAND3"], #us-cand-grid [data-ticker="CAND4"]')
+    heading = section.select_one(".mx-sec-total .l-en").get_text(" ", strip=True)
+    if as_of and as_of != "__missing__":
+        assert "as of " + as_of in heading
+    else:
+        assert "date unavailable" in heading
+
+
+@pytest.mark.parametrize("as_of", ("2026-09-11", "2026-09-16", None, "", "__missing__"))
+@pytest.mark.parametrize("first_resolved", (False, True))
+def test_historical_plan_wall_does_not_borrow_candidate_date(as_of, first_resolved):
+    from bs4 import BeautifulSoup
+
+    html, _, gate, context = _dated_gated_candidate_and_plan_page(as_of, first_resolved=first_resolved)
+    soup = BeautifulSoup(html, "html.parser")
+    wall = soup.select_one("#us-life-wall")
+    assert wall is not None
+    text = wall.get_text(" ", strip=True)
+    assert "tonight" not in text.lower() and "今晚" not in text
+    assert "2026-09-11" not in text and "2026-09-16" not in text
+    assert "2 more tracked plan rows" in text if not first_resolved else "3 more tracked plan rows" in text
+    visible = context["life_gate_visible_preview"]
+    locked = context["life_gate_visible_locked"]
+    assert visible + locked == gate["total"] == 5
+    assert visible == (2 if first_resolved else 3)
+    assert f"first {visible} of 5 tracked plan rows" in text
+    assert len(soup.select("#us-life-grid a[data-ticker]")) == 3
+    assert not soup.select('#us-life-grid [data-ticker="PLAN3"], #us-life-grid [data-ticker="PLAN4"]')
+
+
+# --- #7237 tracked-record pager regression family ---
 # ═══════════ F — tracked-record pager uses the default-visible population ════
 def _show_more_script() -> str:
     src = (ROOT / "templates" / "theme.js").read_text()

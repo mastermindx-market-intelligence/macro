@@ -1,0 +1,61 @@
+{% autoescape true %}
+{# The existing eligible pool, not another recommendation list or admission rule. #}
+{% set _why = {
+  'sector_cap_overflow': ('Sector display limit reached', '达到板块展示上限'),
+  'dual_class_duplicate': ('Another share class is shown', '已展示另一股份类别'),
+  'buy_slice_cap': ('Main-list display limit reached', '达到主榜展示上限'),
+  'event_blackout': ('Earnings blackout', '财报禁入期'),
+  'sector_label_unreadable': ('Sector data needs repair', '板块数据待修复'),
+  'off_board_reason_unknown': ('Exclusion reason unavailable', '排除原因暂不可用'),
+  'conviction_low': ('Conviction requirement not met', '未满足信心门槛'),
+  'ran_too_far': ('Entry is extended', '入场位置已延伸'),
+  'stood_down': ('Entry is on hold', '入场暂停'),
+  'pending_expired': ('Confirmation window expired', '确认窗口已过期'),
+  'already_open': ('A plan is already open', '已有开放计划'),
+  'plan_not_built': ('No new plan was built', '尚未生成新计划'),
+  'board_featured': ('Featured on the main list', '主榜重点展示'),
+  'cleared_admission': ('Admission checks passed', '已通过准入检查'),
+  'tier_not_buyable': ('Signal tier is not actionable', '信号等级暂不可操作'),
+  'not_yet': ('Entry conditions pending', '入场条件待确认'),
+  'tone_refused': ('Entry direction not accepted', '入场方向未获准'),
+  'unknown': ('Decision detail unavailable', '决策详情暂不可用')
+} %}
+{% for row in (rows or []) %}
+{% set _reason = row.get('headline_reason') or 'unknown' %}
+{% set _copy = _why.get(_reason, ('Check the recorded decision', '请查看已记录的决策')) %}
+<div class="ucp-row" data-ticker="{{ row.ticker|e }}" data-off-board="{{ 'false' if row.in_buy_lane else 'true' }}">
+  <div class="ucp-identity">
+    <a href="stock.html#{{ row.ticker|urlencode }}">{{ row.ticker }}</a>
+    <span class="ucp-name">{{ row.get('name') or row.ticker }}</span>
+    <span class="muted">{{ row.get('sector') or '—' }}</span>
+  </div>
+  <div class="ucp-decision">
+    <span class="ucp-placement">{% if row.in_buy_lane %}<span class="l-en">On main list</span><span class="l-zh">主榜标的</span>{% else %}<span class="l-en">Outside main list</span><span class="l-zh">主榜之外</span>{% endif %}</span>
+    <span class="l-en">{{ _copy[0] }}</span><span class="l-zh">{{ _copy[1] }}</span>
+    <button type="button" class="ucp-context-btn" data-ucp-context="{{ row.ticker|e }}"><span class="l-en">Company context</span><span class="l-zh">公司信息</span></button>
+    <details class="ucp-receipt"><summary><span class="l-en">Decision record</span><span class="l-zh">决策记录</span></summary>
+      <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> {{ row.get('pool_rank') if row.get('pool_rank') is not none else '—' }}
+      {% if row.get('tier_cascade') %} · <span class="l-en">Signal</span><span class="l-zh">信号</span> {{ row.tier_cascade }}{% endif %}
+      <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
+      {% for reason in (row.get('lane_reasons') or [_reason]) %}<code>{{ reason }}</code>{% endfor %}
+      {% if row.get('archive_state') %}
+      <div class="ucp-archive-row" data-archive-state="{{ row.archive_state|e }}">
+        {% if row.archive_state == 'matched_fields' %}<span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+        {% elif row.archive_state == 'missing' %}<span class="l-en">No matching saved candidate record.</span><span class="l-zh">没有匹配的已保存候选记录。</span>
+        {% elif row.archive_state == 'mismatch' %}<span class="l-en">Saved candidate record differs.</span><span class="l-zh">已保存候选记录存在差异。</span>
+        {% else %}<span class="l-en">Saved record not verified.</span><span class="l-zh">已保存记录尚未核实。</span>{% endif %}
+      </div>
+      {% endif %}
+    </details>
+  </div>
+  <div class="ucp-score">
+    {% if row.get('prophet') is not none %}
+    <b>{{ '%.1f'|format(row.prophet.score) }}</b><span class="muted"><span class="l-en">Main-list score</span><span class="l-zh">主榜评分</span></span>
+    {% else %}
+    <b>—</b><span class="muted"><span class="l-en">Not scored</span><span class="l-zh">未评分</span></span>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+{% endautoescape %}

@@ -2499,6 +2499,20 @@ def main() -> None:
         log.info("build_prophet: lifecycle `watch` cell WITHHELD — the intake published "
                  "no early_turn_watch roster (key-absence, not zero)")
 
+    # P1 leader-observation receipt. The full ticker roster remains owned by
+    # site/anticipationdata/us_leader_pullback.json and the protected US page payload;
+    # index.json receives source clocks and aggregate counts only. This read happens
+    # after every plan/lifecycle decision above and cannot alter their bytes or order.
+    from engine.us_leader_pullback_coverage import (  # noqa: PLC0415
+        load_prophet_observations,
+        prophet_observation_summary,
+    )
+    _leader_observations = load_prophet_observations(
+        site_root=_REPO / "site",
+        reference_session=source_asof,
+    )
+    _leader_observation_summary = prophet_observation_summary(_leader_observations)
+
     index: dict[str, Any] = {
         "schema": "prophet.index/v1",
         # Compatibility run clock.  Freshness sentinels MUST use source_asof below:
@@ -2541,6 +2555,7 @@ def main() -> None:
         "lifecycle_counts": _life_counts,
         "lifecycle_live_total": _life_live_total,
         "lifecycle_grand_total": _life_grand_total,
+        "leader_observation_summary": _leader_observation_summary,
         # P6 — the order `plans[]` actually ships in, stated where the reader can check
         # it against the `_priority_score` on every row.
         "plans_sort_key": (

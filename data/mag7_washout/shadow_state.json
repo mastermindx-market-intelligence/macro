@@ -1,6 +1,6 @@
 {
  "schema": "mag7_washout_shadow.v1",
- "as_of": "2026-09-15",
+ "as_of": "2026-09-25",
  "open_positions": [],
  "book": {
   "rows": 0,
@@ -14,6 +14,6 @@
    "within_5": 0
   }
  },
- "confluence_stamped": 0,
+ "confluence_stamped": 1,
  "note": "shadow tier (MWR §7 W1a/W1d) — measurement only; never gates, ranks, or alters any decision; §4 Use-B stays un-ratified"
 }

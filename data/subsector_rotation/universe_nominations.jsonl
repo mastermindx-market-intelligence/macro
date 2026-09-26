@@ -69,3 +69,21 @@
 {"date":"2026-09-11","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.52,"both_confirmed":false}
 {"date":"2026-09-11","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.412,"both_confirmed":false}
 {"date":"2026-09-15","theme":"Artificial Intelligence","donor":"aicompute","receiver":"aiadssearch","confidence":0.312,"both_confirmed":false}
+{"date":"2026-09-18","theme":"FinTech","donor":"fintechneobanks","receiver":"fintechblockchain","confidence":0.344,"both_confirmed":false}
+{"date":"2026-09-18","theme":"Hardware","donor":"hardwareservers","receiver":"hardwarenextgen","confidence":0.339,"both_confirmed":false}
+{"date":"2026-09-18","theme":"Crypto & Blockchain","donor":"blockchainenterprise","receiver":"blockchainmining","confidence":0.305,"both_confirmed":false}
+{"date":"2026-09-18","theme":"Aging Population & Longevity","donor":"longevityseniorliving","receiver":"longevityhealthcare","confidence":0.289,"both_confirmed":false}
+{"date":"2026-09-22","theme":"Transportation & Logistics","donor":"transportationwarehousing","receiver":"transportationairtravel","confidence":0.412,"both_confirmed":false}
+{"date":"2026-09-22","theme":"Crypto & Blockchain","donor":"blockchainenterprise","receiver":"blockchainplatforms","confidence":0.35,"both_confirmed":false}
+{"date":"2026-09-22","theme":"FinTech","donor":"fintechneobanks","receiver":"fintechblockchain","confidence":0.321,"both_confirmed":false}
+{"date":"2026-09-22","theme":"Aging Population & Longevity","donor":"longevityseniorliving","receiver":"longevityhealthyaging","confidence":0.288,"both_confirmed":false}
+{"date":"2026-09-22","theme":"Commodities Metals","donor":"commmetalssilver","receiver":"commmetalsrareearth","confidence":0.155,"both_confirmed":false}
+{"date":"2026-09-23","theme":"Transportation & Logistics","donor":"transportationmaritime","receiver":"transportationairtravel","confidence":0.391,"both_confirmed":false}
+{"date":"2026-09-23","theme":"FinTech","donor":"fintechinsurance","receiver":"fintechblockchain","confidence":0.317,"both_confirmed":false}
+{"date":"2026-09-23","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiapplications","confidence":0.304,"both_confirmed":false}
+{"date":"2026-09-24","theme":"Transportation & Logistics","donor":"transportationmaritime","receiver":"transportationairtravel","confidence":0.366,"both_confirmed":false}
+{"date":"2026-09-24","theme":"FinTech","donor":"fintechinsurance","receiver":"fintechblockchain","confidence":0.317,"both_confirmed":false}
+{"date":"2026-09-24","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.311,"both_confirmed":false}
+{"date":"2026-09-25","theme":"Transportation & Logistics","donor":"transportationmaritime","receiver":"transportationairtravel","confidence":0.619,"both_confirmed":false}
+{"date":"2026-09-25","theme":"E-commerce","donor":"ecommerceadsmedia","receiver":"ecommercedtc","confidence":0.348,"both_confirmed":false}
+{"date":"2026-09-25","theme":"Healthcare & Biotech","donor":"healthcaretelemedicine","receiver":"healthcaremetabolic","confidence":0.325,"both_confirmed":false}

@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-09-16",
-  "generated_at": "2026-09-16T09:39:33Z",
+  "as_of": "2026-09-25",
+  "generated_at": "2026-09-25T21:31:54Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -21,17 +21,17 @@
     ]
   },
   "n_theses": 18,
-  "n_falsifier_fired": 5,
-  "n_theses_with_fired": 4,
-  "n_ok": 14,
+  "n_falsifier_fired": 4,
+  "n_theses_with_fired": 3,
+  "n_ok": 15,
   "stale_legs": [],
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-25",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:acabcaac5d83c41a0e8842b01718afa40ee39c46ea2fa9d2a5aebb0053aeaa36",
-      "prev_content_hash": "sha256:e5e49a7d80a00910ab32233fafb6bafe5601e6a98b6cda23e1064fb33e02bd6b",
+      "content_hash": "sha256:bcf977e3a7fdb1b2ab5cb6a6503920840b0fe9b5fd19655d8a5c20136fc2ad1d",
+      "prev_content_hash": "sha256:15300f1a8d9dd099f4edd1fb96f216e628d3f5a1e11d9c631efbca5fc1aa5b73",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -52,36 +52,36 @@
       },
       "theme_id": "ai_semiconductors",
       "status": "active",
-      "variant_perception_en": "Consensus treats AI capex as a 1-2 year budget cycle and prices semis accordingly. The market underestimates how infrastructure sovereignty (on-shore AI stacks, allied-nation data-center builds) has created a second, policy-anchored demand wave that is structurally less cyclical than prior server upgrades.\n",
-      "variant_perception_zh": "市场将AI资本支出视为1-2年周期，并以此定价半导体板块。市场低估了\"基础设施主权\"需求 （国内AI栈建设及盟国数据中心）所形成的第二波需求浪潮——该波浪潮受政策锚定，比 历史服务器升级周期的周期性更弱。\n",
-      "mechanism_en": "AI model training and inference require massive parallel matrix multiply; only a handful of chip architectures serve that demand today. Hyperscaler and sovereign buyers commit multi-year purchase agreements, turning episodic chip demand into annuity-like backlog. Equipment node-lock effects (leading-edge process requires specific WFE toolsets) create a 3-5 year replacement window, giving pricing power to the supply chain even as unit volumes eventually normalize.\n",
-      "mechanism_zh": "AI模型训练与推理需要大规模并行矩阵乘法运算，目前仅少数芯片架构能满足该需求。 超大规模云服务商与主权买家签订多年采购协议，将阶段性芯片需求转化为类年金式积压订单。 先进制程设备锁定效应（最新制程需指定WFE工具组合）形成3-5年更换窗口， 即使出货量最终正常化，供应链仍能维持定价权。\n",
+      "variant_perception_en": "Current AI infrastructure spending is visible, but aggregate customer capex does not identify which supplier or product captures it. Issuer results show broad data-center compute growth with CPU and accelerator participation while the exact CPU/GPU and memory product split remains unknown. The opportunity is product-specific and cycle-specific, not a permanent winner/loser claim.\n",
+      "variant_perception_zh": "当前AI基础设施支出清晰可见，但客户总资本支出本身无法识别由哪个供应商或产品兑现。 发行人业绩显示数据中心计算整体增长，CPU与加速器均有参与，但CPU/GPU及内存产品 的具体拆分仍未知。因此机会必须按产品与周期分别判断，而不能固化为永久赢家/输家。\n",
+      "mechanism_en": "Training and inference raise demand for compute, memory bandwidth, networking and packaging. Realized beneficiaries depend on qualified architectures, product shipments, allocation, yield, inventory and customer mix. Customer capex is context, not supplier/product exposure confirmation; capacity expansion can strengthen equipment/content demand while eventually loosening chip availability and pricing.\n",
+      "mechanism_zh": "训练与推理提升对计算、内存带宽、网络和先进封装的需求。实际受益者取决于架构认证、 产品出货、分配、良率、库存和客户结构。客户资本支出只是背景，并不等于供应商/产品 暴露确认；扩产既可能增强设备与内容需求，也可能最终缓解芯片供应并改变价格。\n",
       "driver": {
         "type": "technology",
-        "description": "GPU/ASIC architecture dominance for parallel matrix workloads; AI sovereign capex commitments from hyperscalers and allied governments.\n"
+        "description": "AI compute, memory-bandwidth, interconnect and packaging demand; customer capex remains contextual until supplier/product exposure is established by dated operating evidence.\n"
       },
       "winner_classes": [
         {
           "class": "gpu_asic_monopolists",
-          "why": "Pricing power from architecture lock-in; long multi-year purchase agreements provide revenue visibility well beyond typical semi cycles.\n"
+          "why": "Architecture and product qualification can support pricing and backlog visibility, but require direct supplier shipment/backlog and customer deployment evidence rather than aggregate capex.\n"
         },
         {
           "class": "advanced_packaging_and_hbm_suppliers",
-          "why": "HBM bandwidth is the binding constraint for large-model inference; very few suppliers; capacity additions take 18-24 months.\n"
+          "why": "HBM4 production and shipments are an active product-cycle signal; scarcity and pricing duration require dated allocation, yield, inventory or contract-price evidence.\n"
         },
         {
           "class": "high_bandwidth_networking_and_silicon_photonics",
-          "why": "Scaling GPU clusters requires ultra-low-latency interconnect; incumbents control standards and supply in a concentrated market.\n"
+          "why": "Cluster scaling increases interconnect demand, but winner status remains supplier/product-specific and must follow direct shipment, backlog or customer deployment evidence.\n"
         }
       ],
       "loser_classes": [
         {
           "class": "legacy_cpu_centric_datacenter_builders",
-          "why": "AVOID — x86 server refresh cycles are being crowded out by GPU capex; ASP compression likely as AI hardware commands a larger budget share.\n"
+          "why": "AVOID — treating CPU-centric data-center exposure as an automatic loser or winner from aggregate AI capex. Current issuer disclosures show CPU participation; require CPU-specific shipment/revenue, inventory or deployment evidence.\n"
         },
         {
           "class": "commodity_memory_undifferentiated",
-          "why": "AVOID — commodity DRAM exposed to pricing cycles; only HBM-capable suppliers capture the AI-related pricing premium.\n"
+          "why": "AVOID — blanket treatment of DRAM/NAND as one permanent loser class. Current evidence shows HBM, broad DRAM and enterprise-SSD activity together; require product-specific shipment, inventory and pricing evidence.\n"
         }
       ],
       "evidence_refs": [
@@ -92,47 +92,73 @@
       "falsifiers": [
         {
           "id": "ai_semi_f1",
-          "rule_en": "If revision_breadth for ai_semiconductors turns negative (net earnings downgrades exceed upgrades), the thesis that AI demand is above-cycle durable is weakening — watch for two consecutive negative breadth prints.\n",
+          "rule_en": "If revision_breadth for ai_semiconductors is below -0.05 on two distinct dated producer prints, net earnings downgrades exceed upgrades persistently and the above-cycle demand thesis is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.654"
+          "reason_code": "CONSECUTIVE_THRESHOLD_NOT_MET",
+          "detail": "2 distinct dated observations checked: 'revision_breadth' lt -0.05",
+          "evidence": {
+            "source_artifact": "data/foresight/log.jsonl",
+            "observations": [
+              {
+                "as_of": "2026-09-23",
+                "value": 0.497,
+                "condition_met": false
+              },
+              {
+                "as_of": "2026-09-25",
+                "value": 0.497,
+                "condition_met": false
+              }
+            ],
+            "corrections_superseded": 0
+          }
         },
         {
           "id": "ai_semi_f2",
-          "rule_en": "If foresight stage degrades from RE-RATING to GLUT-RISK or WATCH, the above-cycle demand narrative is broken (supply caught up or demand pulled forward).\n",
-          "state": "FIRED",
-          "fired": true,
-          "detail": "stage_regression check: 'stage' in ['GLUT-RISK', 'WATCH'] → value='WATCH'"
+          "rule_en": "If foresight moves from RE-RATING to GLUT-RISK, or to WATCH while the independently observed bottleneck band turns LOOSE, supply caught up or demand was pulled forward and the above-cycle narrative is broken.\n",
+          "state": "ARMED",
+          "fired": false,
+          "reason_code": "WATCH_WITHOUT_INDEPENDENT_DETERIORATION",
+          "detail": "WATCH means scarcity was not confirmed; no separately evidenced deterioration was present",
+          "evidence": {
+            "prior_as_of": "2026-08-04",
+            "prior_stage": "RE-RATING",
+            "current_stage": "WATCH",
+            "deterioration_field": "bottleneck_band",
+            "deterioration_value": "NEUTRAL",
+            "corrections_superseded": 0
+          }
         },
         {
           "id": "ai_semi_f3",
           "rule_en": "If crowding on the ai_semiconductors or ai_infra basket exceeds 0.7 (z-score), the risk-adjusted opportunity is diminished — variant perception has become consensus.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.0"
+          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.643"
         },
         {
           "id": "ai_semi_f4",
-          "rule_en": "If major hyperscaler commentary shifts from \"capacity constrained\" to \"right-sized\" or \"digesting,\" multi-year backlog narrative breaks.\n",
+          "rule_en": "If CPU/GPU/HBM/DRAM/NAND product-specific shipments, backlog, inventory, allocation or realized pricing deteriorate across dated observations, the affected product-cycle thesis weakens; management commentary alone remains a claim.\n",
           "state": "QUALITATIVE",
           "fired": false,
           "detail": "no machine-checkable spec; human review required"
         }
       ],
       "falsifier_summary": {
-        "n_fired": 1,
-        "n_armed": 2,
+        "n_fired": 0,
+        "n_armed": 3,
         "n_data_missing": 0,
         "n_qualitative": 1,
-        "any_fired": true
+        "any_fired": false
       }
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-25",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:b1be53a6bbf00605ffe2d738bf20311db6661ef0f5ca01a33d51fdad34dfe2ce",
-      "prev_content_hash": "sha256:0c6e97447bd98288f49fe810b10d8699338750362468195cdda06bc30f93b4e0",
+      "content_hash": "sha256:0203f3e612de04364d82b983dae3b022980c402b648a388753858477c0fee5df",
+      "prev_content_hash": "sha256:e12941614bee95d6cf206bf7322ad2fdefc7b4ae0fc2d11dcaec4672e86fc35e",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -153,28 +179,28 @@
       },
       "theme_id": "memory_storage",
       "status": "active",
-      "variant_perception_en": "Consensus models memory as a commodity cycle and prices HBM producers as commodity-like. The asymmetric opportunity is that HBM3/HBM4 supply is controlled by two producers and capacity takes 18-24 months to add, making the margin profile of HBM-capable producers structurally different from commodity DRAM/NAND for 2-3 years.\n",
-      "variant_perception_zh": "市场将内存视为商品周期，并以此估值HBM生产商。不对称机会在于：HBM3/HBM4供应 仅由两家生产商掌控，新增产能需18-24个月，使具备HBM能力的生产商利润率 在未来2-3年内具有结构性差异。\n",
-      "mechanism_en": "HBM stacks are manufactured by bonding DRAM dies — a costly, yield-sensitive process mastered by only two players. GPU vendors are contractually obligated to qualify specific HBM sources. A single AI accelerator chip consumes 6-8x the silicon content of a prior-generation server DRAM slot. NAND storage at AI inference nodes is secondary; HBM is the binding constraint.\n",
-      "mechanism_zh": "HBM采用键合DRAM颗粒的工艺制造——成本高、良率敏感，目前仅两家厂商掌握该技术。 GPU供应商需合同指定特定HBM来源，改供需18-24个月资质认证。单块AI加速器 消耗的硅含量是上一代服务器DRAM插槽的6-8倍。AI推理节点的NAND存储居次，HBM是 真正的瓶颈。\n",
+      "variant_perception_en": "Memory should not be collapsed into a single commodity-versus-HBM verdict. Direct issuer evidence shows active HBM4 production and shipments alongside DDR5, LPDDR5X, enterprise SSD and other DRAM/NAND activity. The opportunity is product-specific: scarcity/pricing duration, supplier exposure and cycle state must be re-established from dated operating and physical-supply evidence.\n",
+      "variant_perception_zh": "内存不应被压缩成单一的“商品内存对HBM”结论。发行人直接证据显示HBM4已进入生产与 出货阶段，同时DDR5、LPDDR5X、企业级SSD及其他DRAM/NAND产品也在活动。 机会必须按产品区分：稀缺性/定价持续时间、供应商暴露和周期状态都需由带日期的 经营与实物供应证据重新确认。\n",
+      "mechanism_en": "HBM stacking and qualification make yield and allocation important, while broad server/client DRAM and enterprise NAND are also active. Capacity additions can support packaging/equipment demand and later loosen memory availability and pricing. Treat HBM, DRAM and NAND as separate product/cycle paths rather than assuming fixed supplier counts or fixed lead times.\n",
+      "mechanism_zh": "HBM堆叠与认证使良率和分配尤为重要，但服务器/客户端DRAM及企业级NAND同样存在 实际活动。扩产可支持封装和设备需求，也可能随后缓解内存供应并改变价格。 HBM、DRAM与NAND应作为独立产品/周期路径处理，而非假设固定供应商数量或固定提前期。\n",
       "driver": {
         "type": "supply_constraint",
-        "description": "HBM3/HBM4 manufacturing yield-gate; two-supplier oligopoly with 18-24 month capacity lead times; GPU design lock-in to qualified HBM sources.\n"
+        "description": "HBM4 shipment/qualification transition plus product-specific DRAM/NAND shipment, inventory and pricing evidence; no permanent scarcity or fixed supplier-count assumption.\n"
       },
       "winner_classes": [
         {
           "class": "hbm_capable_dram_producers",
-          "why": "Oligopolistic supply with multi-year demand visibility; ASP 6-8x standard DRAM; margin profile decoupled from commodity DRAM cycle.\n"
+          "why": "Active HBM4 production and shipments can support product-cycle strength; durability requires dated allocation, yield, contract-price and inventory evidence.\n"
         },
         {
           "class": "advanced_packaging_foundries",
-          "why": "HBM stacking is manufactured at packaging foundries; limited competition; capacity fully allocated.\n"
+          "why": "HBM stacking demand can support advanced-packaging utilization; capacity, yield and allocation evidence determine whether that advantage persists.\n"
         }
       ],
       "loser_classes": [
         {
           "class": "commodity_nand_and_standard_dram_producers",
-          "why": "AVOID — commoditized, cyclical pricing; no AI pricing premium; oversupply risk from demand shifting away from conventional data-center footprint.\n"
+          "why": "AVOID — blanket conventional-memory loser framing. Broad DRAM and enterprise-SSD activity is currently visible; cyclicality, inventory and pricing must be assessed product-specifically.\n"
         }
       ],
       "evidence_refs": [
@@ -184,21 +210,38 @@
       "falsifiers": [
         {
           "id": "mem_f1",
-          "rule_en": "If revision_breadth for memory_storage turns negative two consecutive prints, the HBM margin thesis is weakening — capacity may be catching demand.\n",
+          "rule_en": "If revision_breadth for memory_storage is negative on two distinct dated producer prints, the HBM margin thesis is weakening — capacity may be catching demand.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.655"
+          "reason_code": "CONSECUTIVE_THRESHOLD_NOT_MET",
+          "detail": "2 distinct dated observations checked: 'revision_breadth' lt 0.0",
+          "evidence": {
+            "source_artifact": "data/foresight/log.jsonl",
+            "observations": [
+              {
+                "as_of": "2026-09-19",
+                "value": 0.655,
+                "condition_met": false
+              },
+              {
+                "as_of": "2026-09-25",
+                "value": 0.655,
+                "condition_met": false
+              }
+            ],
+            "corrections_superseded": 0
+          }
         },
         {
           "id": "mem_f2",
           "rule_en": "If tightness for memory_storage falls below 0.0, bottleneck has eased — supply caught up with demand in the near-term window.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt 0.0 → value=0.11"
+          "detail": "threshold check: 'tightness' lt 0.0 → value=0.07"
         },
         {
           "id": "mem_f3",
-          "rule_en": "If a third HBM producer achieves volume qualification at a major GPU vendor, pricing power of the two-player oligopoly is structurally impaired.\n",
+          "rule_en": "If HBM qualifications or shipments stall, allocations loosen, or product-specific inventory/ASP evidence turns adverse across dated observations, the active HBM product-cycle thesis is weakened.\n",
           "state": "QUALITATIVE",
           "fired": false,
           "detail": "no machine-checkable spec; human review required"
@@ -214,10 +257,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-23",
       "thesis_id": "semicap_equipment.v1",
-      "content_hash": "sha256:cc3157c10581252ec72f1a72e350c0a1fe39f375442c54dc0afc0019e3513d69",
-      "prev_content_hash": "sha256:8c21fc3796eb9381f1a18a98ee0cc7a2de384f4ff2fed0761b9fcb8b81af8fbc",
+      "content_hash": "sha256:16ff5a25407b5b49cdf5ea8e5ac94b4cd853d67d1f9ee8c186235dba8a48570d",
+      "prev_content_hash": "sha256:53ad594afdb267abcf3129865164b8f629c8f92126bf2bfefac35fae0b92196b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -272,14 +315,14 @@
           "rule_en": "If revision_breadth for semicap_equipment turns negative, foundry capex guidance is being cut and WFE order book is deteriorating.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.84"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.866"
         },
         {
           "id": "wfe_f2",
           "rule_en": "If tightness score falls below -0.1, the near-term supply/demand balance in WFE has shifted negative — excess equipment inventory probable.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt -0.1 → value=-0.06"
+          "detail": "threshold check: 'tightness' lt -0.1 → value=-0.1"
         },
         {
           "id": "wfe_f3",
@@ -299,10 +342,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-23",
       "thesis_id": "data_center_power.v1",
-      "content_hash": "sha256:9631fd6c05106d4977d6c7486fda759b0873e11a18f485037cb6f3ecc916a26b",
-      "prev_content_hash": "sha256:a41cb4a7a972827d3587a9571b41d40f9fa640a5cff432e8c190ec3d86ccad7c",
+      "content_hash": "sha256:e648e069297e045b14ce9a7425bab21f83724fe35b136ce6ed5394ba202c6b9f",
+      "prev_content_hash": "sha256:f2bbb77d25e97d358cef2ad79530844eb301ef4b6da723c6480c89e63e9684b3",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -361,14 +404,14 @@
           "rule_en": "If revision_breadth for data_center_power falls below 0.2, earnings estimate broadening has peaked and the near-term trade is mature.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.2 → value=0.745"
+          "detail": "threshold check: 'revision_breadth' lt 0.2 → value=0.702"
         },
         {
           "id": "dcp_f2",
           "rule_en": "If tightness falls below 0.5, the supply constraint is easing — transformer lead times are compressing and the scarcity premium is fading.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt 0.5 → value=0.71"
+          "detail": "threshold check: 'tightness' lt 0.5 → value=0.53"
         },
         {
           "id": "dcp_f3",
@@ -388,10 +431,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-23",
       "thesis_id": "cybersecurity.v1",
-      "content_hash": "sha256:218311c08dc9a1574684fa5a88d1aeb4b919d0290294a92678b8eab5cebf8ffb",
-      "prev_content_hash": "sha256:a68948452be0825beb28f5d0156841f23c8982f2dfb28bdb88b3c4ec112fd7e8",
+      "content_hash": "sha256:d0f3c0f8b1d817f29dea3b4c56bcfc4fee54605ba90ad70e8916023d3cebe383",
+      "prev_content_hash": "sha256:3142a7d7d19ef355a40ae0c8a522dcedecc8382e3d32a9f2bc51912003ed42ab",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -445,7 +488,7 @@
           "rule_en": "If revision_breadth for cybersecurity falls below 0.1, software IT budget compression is overriding the platform cycle tailwind.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.563"
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.542"
         },
         {
           "id": "cyber_f2",
@@ -465,10 +508,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-25",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:0cbad9948c850ca9b9677c35a5bac0b50b24e3872d0251d1c80f9856c0725636",
-      "prev_content_hash": "sha256:93bb4a916946f7622f081f099935933ae98598e7ba6f15e91fded1787c7c58f5",
+      "content_hash": "sha256:4ced63288c6c55f4d7f1206877921f68a67a79e1553f91bc7dbe82514b8e47e0",
+      "prev_content_hash": "sha256:932d8fa9a6d0ccafd9c902e1fa8268339d90fa080d58be0d3ffb480116ec85eb",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -527,14 +570,14 @@
           "rule_en": "If revision_breadth for robotics_automation falls below 0.0, earnings upgrades are not broadening — adoption is slower than the ROI case implies.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.837"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.879"
         },
         {
           "id": "robo_f2",
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=39.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=56.0"
         },
         {
           "id": "robo_f3",
@@ -554,10 +597,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-18",
       "thesis_id": "fintech_payments.v1",
-      "content_hash": "sha256:795af4d25fb13735fb3269640bd3ac0fa360b71498e47bd9cf2e83ca6f49d85b",
-      "prev_content_hash": "sha256:f27abe31a48b1b38ea03df6074dc67c27f583dd07f553cf19c196177e0ddf60e",
+      "content_hash": "sha256:f2efe45815a74f6d5e5207836fd13c70f3b78b3aa9c929877b4fc6ac967a21bb",
+      "prev_content_hash": "sha256:795af4d25fb13735fb3269640bd3ac0fa360b71498e47bd9cf2e83ca6f49d85b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -611,7 +654,7 @@
           "rule_en": "If revision_breadth for fintech_payments falls negative, earnings consensus is cutting; stablecoin disruption may be larger than the on-ramp toll revenue offset.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.137"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.19"
         },
         {
           "id": "finpay_f2",
@@ -631,10 +674,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-14",
+      "as_of": "2026-09-23",
       "thesis_id": "nuclear_power.v1",
-      "content_hash": "sha256:62e2f9afa38ae23c06ff264132257c16046375755b53dac4c810b61e6806b225",
-      "prev_content_hash": "sha256:100a36adce2c29443dd7253d490fd800731e8be42b6a8e5b43fb840b59aab30c",
+      "content_hash": "sha256:100a36adce2c29443dd7253d490fd800731e8be42b6a8e5b43fb840b59aab30c",
+      "prev_content_hash": "sha256:62e2f9afa38ae23c06ff264132257c16046375755b53dac4c810b61e6806b225",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -693,7 +736,7 @@
           "rule_en": "If revision_breadth for nuclear_power turns negative, earnings estimate cuts are spreading — hyperscaler PPA momentum may be stalling.\n",
           "state": "FIRED",
           "fired": true,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.15"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.174"
         },
         {
           "id": "nuke_f2",
@@ -720,10 +763,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-04",
+      "as_of": "2026-09-23",
       "thesis_id": "grid_electrification.v1",
-      "content_hash": "sha256:14d0bddc88bc28fbfa47fe3eb47eeb64085875859856b91515c359ba98dcc06b",
-      "prev_content_hash": "sha256:0bccae76601b5a2e48938fcb94f2ebed8353ca1e9df1a294e94849ce62403edf",
+      "content_hash": "sha256:446aca287ea1cfef0e430009bf565ac45d42f9fb859e989a65f39d8b2fdeb4e1",
+      "prev_content_hash": "sha256:0c20746bd4033059081f4b002f33e1b28b3069dee66abe9933085a9253558948",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -781,14 +824,14 @@
           "rule_en": "If tightness for grid_electrification falls below 0.5, the bottleneck signal is easing — supply is beginning to meet demand and pricing power for equipment manufacturers is compressing.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt 0.5 → value=0.95"
+          "detail": "threshold check: 'tightness' lt 0.5 → value=0.83"
         },
         {
           "id": "grid_f2",
           "rule_en": "If glut_score rises above 0.0 (positive, indicating supply surplus), the equipment scarcity thesis has reversed.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'glut_score' gt 0.0 → value=-0.63"
+          "detail": "threshold check: 'glut_score' gt 0.0 → value=-0.37"
         },
         {
           "id": "grid_f3",
@@ -980,10 +1023,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-23",
       "thesis_id": "glp1_obesity.v1",
-      "content_hash": "sha256:3c7c6b41a4c6c8a643ad45c7e04c6fe6ac2a9470b8ddc99af36b0bf22de61421",
-      "prev_content_hash": "sha256:04cfea1325785481c4e1b2788e50242e28674b939f554566ef6f7f055edc22f0",
+      "content_hash": "sha256:c41da77028a96d209c781a0d76aca5efd7af03e114f8f38014533382e160d7a0",
+      "prev_content_hash": "sha256:52304a15b70adafe8bdb5aaaa7c150b2c68e0b67b6f2544a8b930562eadad439",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1045,7 +1088,7 @@
           "rule_en": "If revision_breadth for glp1_obesity falls below 0.0, earnings estimates are being cut broadly — manufacturing ramp is not meeting demand curve.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.677"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.689"
         },
         {
           "id": "glp1_f2",
@@ -1072,10 +1115,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-14",
+      "as_of": "2026-09-23",
       "thesis_id": "medical_devices.v1",
-      "content_hash": "sha256:fbf96cbf100e3de00ff1182b974d5a715bc4ef745587248206a6ff600734c2d8",
-      "prev_content_hash": "sha256:af578983471cfd3002f69b632d1f44d5677d46568baed88f8e9e389ecf4ae6df",
+      "content_hash": "sha256:1a5f309e3f5643fcee1c6d8e0ab0bdd360767a183fe951d366d015f9aaf0ee1d",
+      "prev_content_hash": "sha256:5dd9519be307c1e51684be769fa26c061d9702c76f98cdd5c698bd4e7e7f7ecc",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1129,7 +1172,7 @@
           "rule_en": "If revision_breadth for medical_devices falls below 0.0, hospital capex cycles are overriding the installed-base recurring revenue thesis.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.024"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.05"
         },
         {
           "id": "meddev_f2",
@@ -1149,10 +1192,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-18",
       "thesis_id": "diagnostics_lifesci.v1",
-      "content_hash": "sha256:e360bf42031a35dea45ee913fd7aa215ee62e1f4516888764f590181ca9ccb7a",
-      "prev_content_hash": "sha256:8235f9f599eaf52d36a9b4e5b16a0c486257813f89d99e18bf8dc9fde3f45971",
+      "content_hash": "sha256:4e1c057de08f997cde4651e5b3c431b17e399ee4a8f93a8da0b58e8895227c22",
+      "prev_content_hash": "sha256:ee2000805ae0581232a7c7cefa81bab06eff78dc9b1c1d02d368656b8e0350eb",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1206,7 +1249,7 @@
           "rule_en": "If revision_breadth for diagnostics_lifesci remains below 0.1 for two consecutive months, biopharma R&D capex recovery is not yet flowing through to tools demand.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.615"
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.576"
         },
         {
           "id": "diag_f2",
@@ -1226,10 +1269,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-08-20",
+      "as_of": "2026-09-18",
       "thesis_id": "rare_earth_critical_min.v1",
-      "content_hash": "sha256:f36c4e444849963640b202e0d1cede874c9cbe0c55f21746a93dcc09aa8900df",
-      "prev_content_hash": "sha256:06b38daca0c360f745eda0878c4ba1032b08d1cdcf9c4ad0fe2878c3eb04952e",
+      "content_hash": "sha256:d03b03a76193d7cac95bde61fd6648542ab5fa0a0b98fd257b0bffd28ea26e06",
+      "prev_content_hash": "sha256:f36c4e444849963640b202e0d1cede874c9cbe0c55f21746a93dcc09aa8900df",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1283,7 +1326,7 @@
           "rule_en": "If revision_breadth for rare_earth_critical_min falls negative, government offtake commitments are not yet driving earnings estimate upgrades — policy support may be insufficient.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.213"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.183"
         },
         {
           "id": "ree_f2",
@@ -1303,10 +1346,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-23",
       "thesis_id": "copper_steel_electrify.v1",
-      "content_hash": "sha256:0ebfad98d19a9f1e6f13f5d394a63c72ab7212e0754fd3ec991de147ee024787",
-      "prev_content_hash": "sha256:23162a748bf7dae57e649107c38c9a7e82ea3d2b5e13ca393a706804f1b4af91",
+      "content_hash": "sha256:8f4fbb5f6f7b757a258f3d8aceefe1564ff9963d6f1170a8f7395fc5da7b1114",
+      "prev_content_hash": "sha256:0ebfad98d19a9f1e6f13f5d394a63c72ab7212e0754fd3ec991de147ee024787",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1367,7 +1410,7 @@
           "rule_en": "If glut_score rises above 0.3 (surplus signal), near-term copper supply is exceeding demand — structural deficit may be years away, not priced on a 12-18 month horizon.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'glut_score' gt 0.3 → value=-0.41"
+          "detail": "threshold check: 'glut_score' gt 0.3 → value=-0.44"
         }
       ],
       "falsifier_summary": {
@@ -1535,7 +1578,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-16T09:39:33Z",
-  "inputs_hash": "sha256:4bf7f592754af5844772f660a5616c843d6f260e11b1eea4362a9547b2712cc1",
+  "produced_at": "2026-09-25T21:31:54Z",
+  "inputs_hash": "sha256:75b2f0593cf567f6356e94705b31f94214a77ecce1880714a1e999025f190a38",
   "tier": "display"
 }

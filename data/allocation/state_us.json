@@ -9,7 +9,6 @@
     "big_pharma",
     "crypto",
     "cybersecurity",
-    "defensives",
     "energy_complex",
     "gold_miners",
     "industrial_distribution",
@@ -19,23 +18,20 @@
     "memory_storage",
     "non_ai_tech",
     "obesity_glp1",
-    "regional_banks",
     "reshoring",
     "robotics_automation",
+    "semicap_equipment",
     "silver_miners",
     "us_sector_energy",
     "us_sector_financials",
     "us_sector_health",
-    "us_sector_materials",
-    "us_sector_realestate",
-    "us_sector_staples",
     "us_sector_tech"
   ],
   "held": [
     "memory_storage",
     "cybersecurity",
-    "silver_miners",
-    "us_sector_energy"
+    "ai_infra",
+    "silver_miners"
   ],
   "leader": "memory_storage",
   "names": {

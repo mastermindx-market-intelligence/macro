@@ -2,38 +2,38 @@
   "schema": "master_brief.v2",
   "lens": "china",
   "is_context_only": true,
-  "generated_at": "2026-09-16T08:52:26.501655+00:00",
+  "generated_at": "2026-09-25T20:54:12.220980+00:00",
   "model": "deepseek-v4-pro",
   "served_by": "deepseek",
-  "state_asof": "2026-09-15",
+  "state_asof": "2026-09-24",
   "tldr": [
-    "Head: Mainland cools. Growth is sliding fast while prices stay weak \u2014 near the growth-scare edge.",
-    "Head: Banks stretched. Banks and coal have run hard but money is quietly leaving them.",
-    "Head: Hong Kong split. Global fear is hitting Hong Kong tech far harder than mainland shares.",
-    "Head: Easing stuck. Beijing is cutting rates but the system is not yet looser \u2014 that is the story.",
-    "What to do: Get ready"
+    "Head: China cools fast \u2014 growth has fallen sharply in a week, and the map now sits in the scared-of-growth zone.",
+    "Head: Easing is stuck \u2014 the central bank has cut, but money markets still read tight, so the cut has not reached the system.",
+    "Head: Leaders are stretched \u2014 banks and coal sit near the top of their year-long range; the signal says they are extended, not good to chase.",
+    "Head: HK gets squeezed \u2014 the weak side of the currency peg is pulling money out, and the US rates push is tightening Hong Kong from outside.",
+    "Head: What to do: Get ready \u2014 the system is on alert, not yet in the trade."
   ],
-  "summary": "Mainland growth is cooling into a growth-scare, Hong Kong is bowing to global fear, and easing has not yet reached the pipes.",
-  "regime_read": "Mainland sits in the growth-scare zone, and the drift is the story: growth has cooled sharply in the last five days and from a month ago, prices are still falling, and liquidity is contracting. We are not tipping into a new regime yet \u2014 no pending flip is flagged \u2014 so the honest read is that we are deep inside growth-scare and sliding further toward its coldest corner.\n\nThe dominant tension is policy versus plumbing. Beijing has delivered rate cuts and a reserve-requirement cut, and news flow is squarely pro-growth, but the central bank's own stance dial still reads neutral and the liquidity overlay says contracting. That means the easing is announced but not yet moving through the system \u2014 the classic 'stuck in the pipes' split.",
+  "summary": "China is cooling fast while easing has not yet hit the system; Hong Kong is squeezed by the US rate push.",
+  "regime_read": "China and Hong Kong both sit in the scared-of-growth zone. But the mainland has moved hard this week \u2014 growth readings fell from close to flat to clearly negative in five days. That is the drift worth watching: we are not settled in this zone, we are sliding deeper into it. Inflation is still weak, so this is not yet a switch into a hotter, reflation mix. The dominant driver today is the stuck easing. The central bank has delivered cuts, but the money-market corridor still reads tight. Policy says easier, plumbing says not yet.",
   "conflicts": [
-    "Head: Easing says go. Beijing has cut rates and reserves, but the bank-liquidity dial still reads contracting \u2014 easing announced, not delivered.",
-    "Head: Banks look strong. Bank shares have jumped lately, yet credit growth is fading and money is leaving the sector \u2014 a stretched leader.",
-    "Head: News is loud. Media is strongly pro-growth and tech-focused, but the growth score is falling fast \u2014 talk is ahead of activity."
+    "Head: Easing vs tight \u2014 the central bank is cutting, but money markets still read tight; the easing has not reached the system yet.",
+    "Head: Banks vs credit \u2014 banks lead the market strongly, but the credit impulse is fading; the lead looks borrowed, not earned.",
+    "Head: HK vs China \u2014 mainland is driven by domestic policy, Hong Kong by the US rate push through the peg; the two are splitting."
   ],
-  "rotation_check": "The easy-money leg is running backwards \u2014 easing is announced but liquidity is still contracting, so rate-sensitive leaders have not confirmed.",
+  "rotation_check": "The stuck easing breaks the first leg of the playbook: policy is cutting, but liquidity is not flowing through yet.",
   "transmission": [
-    "If the loan rate cut next week keeps easing stuck in neutral \u2192 expect more pressure on rate-sensitive groups like brokers and property.",
-    "If Hong Kong's fear spike and weak currency continue \u2192 Hong Kong tech will stay under far more pressure than mainland tech."
+    "If the stuck easing keeps up \u2192 banks and property keep leading on hope, not on credit.",
+    "If the US rate repricing keeps up \u2192 Hong Kong's peg imports more tightening, and outflows keep pressing the weak side."
   ],
   "watch_items": [
-    "Loan rate fix (Sep 21): confirms whether easing actually flows",
-    "Bank net-flow: if outflows persist, the bank rally is fake strength",
-    "Hong Kong fear gauge: decides whether the split from mainland widens",
-    "Next inflation print: confirms growth-scare or starts to warm"
+    "Sep 30 PMI: if weak, the cool-down deepens.",
+    "Money-market rate: if it drops, the easing finally flows.",
+    "Hong Kong peg distance: if it widens, outflows accelerate.",
+    "US 2-year yield: if it keeps rising, Hong Kong tightens more."
   ],
   "confidence": "medium",
   "theses": [],
-  "raw_text": "{\n  \"tldr\": [\n    \"Head: Mainland cools. Growth is sliding fast while prices stay weak \u2014 near the growth-scare edge.\",\n    \"Head: Banks stretched. Banks and coal have run hard but money is quietly leaving them.\",\n    \"Head: Hong Kong split. Global fear is hitting Hong Kong tech far harder than mainland shares.\",\n    \"Head: Easing stuck. Beijing is cutting rates but the system is not yet looser \u2014 that is the story.\",\n    \"What to do: Get ready\"\n  ],\n  \"summary\": \"Mainland growth is cooling into a growth-scare, Hong Kong is bowing to global fear, and easing has not yet reached the pipes.\",\n  \"regime_read\": \"Mainland sits in the growth-scare zone, and the drift is the story: growth has cooled sharply in the last five days and from a month ago, prices are still falling, and liquidity is contracting. We are not tipping into a new regime yet \u2014 no pending flip is flagged \u2014 so the honest read is that we are deep inside growth-scare and sliding further toward its coldest corner.\\n\\nThe dominant tension is policy versus plumbing. Beijing has delivered rate cuts and a reserve-requirement cut, and news flow is squarely pro-growth, but the central bank's own stance dial still reads neutral and the liquidity overlay says contracting. That means the easing is announced but not yet moving through the system \u2014 the classic 'stuck in the pipes' split.\",\n  \"conflicts\": [\n    \"Head: Easing says go. Beijing has cut rates and reserves, but the bank-liquidity dial still reads contracting \u2014 easing announced, not delivered.\",\n    \"Head: Banks look strong. Bank shares have jumped lately, yet credit growth is fading and money is leaving the sector \u2014 a stretched leader.\",\n    \"Head: News is loud. Media is strongly pro-growth and tech-focused, but the growth score is falling fast \u2014 talk is ahead of activity.\"\n  ],\n  \"transmission\": [\n    \"If the loan rate cut next week keeps easing stuck in neutral \u2192 expect more pressure on rate-sensitive groups like brokers and property.\",\n    \"If Hong Kong's fear spike and weak currency continue \u2192 Hong Kong tech will stay under far more pressure than mainland tech.\"\n  ],\n  \"rotation_check\": \"The easy-money leg is running backwards \u2014 easing is announced but liquidity is still contracting, so rate-sensitive leaders have not confirmed.\",\n  \"watch_items\": [\n    \"Loan rate fix (Sep 21): confirms whether easing actually flows\",\n    \"Bank net-flow: if outflows persist, the bank rally is fake strength\",\n    \"Hong Kong fear gauge: decides whether the split from mainland widens\",\n    \"Next inflation print: confirms growth-scare or starts to warm\"\n  ],\n  \"confidence\": \"medium\"\n}",
+  "raw_text": "{\n  \"tldr\": [\n    \"Head: China cools fast \u2014 growth has fallen sharply in a week, and the map now sits in the scared-of-growth zone.\",\n    \"Head: Easing is stuck \u2014 the central bank has cut, but money markets still read tight, so the cut has not reached the system.\",\n    \"Head: Leaders are stretched \u2014 banks and coal sit near the top of their year-long range; the signal says they are extended, not good to chase.\",\n    \"Head: HK gets squeezed \u2014 the weak side of the currency peg is pulling money out, and the US rates push is tightening Hong Kong from outside.\",\n    \"Head: What to do: Get ready \u2014 the system is on alert, not yet in the trade.\"\n  ],\n  \"summary\": \"China is cooling fast while easing has not yet hit the system; Hong Kong is squeezed by the US rate push.\",\n  \"regime_read\": \"China and Hong Kong both sit in the scared-of-growth zone. But the mainland has moved hard this week \u2014 growth readings fell from close to flat to clearly negative in five days. That is the drift worth watching: we are not settled in this zone, we are sliding deeper into it. Inflation is still weak, so this is not yet a switch into a hotter, reflation mix. The dominant driver today is the stuck easing. The central bank has delivered cuts, but the money-market corridor still reads tight. Policy says easier, plumbing says not yet.\",\n  \"conflicts\": [\n    \"Head: Easing vs tight \u2014 the central bank is cutting, but money markets still read tight; the easing has not reached the system yet.\",\n    \"Head: Banks vs credit \u2014 banks lead the market strongly, but the credit impulse is fading; the lead looks borrowed, not earned.\",\n    \"Head: HK vs China \u2014 mainland is driven by domestic policy, Hong Kong by the US rate push through the peg; the two are splitting.\"\n  ],\n  \"transmission\": [\n    \"If the stuck easing keeps up \u2192 banks and property keep leading on hope, not on credit.\",\n    \"If the US rate repricing keeps up \u2192 Hong Kong's peg imports more tightening, and outflows keep pressing the weak side.\"\n  ],\n  \"rotation_check\": \"The stuck easing breaks the first leg of the playbook: policy is cutting, but liquidity is not flowing through yet.\",\n  \"watch_items\": [\n    \"Sep 30 PMI: if weak, the cool-down deepens.\",\n    \"Money-market rate: if it drops, the easing finally flows.\",\n    \"Hong Kong peg distance: if it widens, outflows accelerate.\",\n    \"US 2-year yield: if it keeps rising, Hong Kong tightens more.\"\n  ],\n  \"confidence\": \"medium\"\n}",
   "degraded_reason": null,
   "disclaimer": "Context only \u2014 not a signal. This is an AI-generated SYNTHESIS of the dashboards' own deterministic outputs. It does not feed any score, signal or allocation, and it can be wrong or overconfident. Use it as a research read; verify every claim against the underlying dashboard it cites. Effective sample sizes on macro regimes are small \u2014 treat cross-asset 'reads' as odds, not forecasts.",
   "style_flags": [],
@@ -85,36 +85,36 @@
       "key": "cn_leader",
       "label_en": "Leading sector",
       "label_zh": "\u9886\u6da8\u677f\u5757",
-      "value_en": "Healthcare",
-      "value_zh": "Healthcare",
+      "value_en": "Coal",
+      "value_zh": "Coal",
       "tone": "info"
     }
   ],
   "zh": {
-    "summary": "\u5185\u5730\u589e\u957f\u6b63\u5728\u964d\u6e29\uff0c\u6ed1\u5411\u589e\u957f\u6050\u614c\uff0c\u9999\u6e2f\u6b63\u5c48\u670d\u4e8e\u5168\u7403\u6050\u614c\u60c5\u7eea\uff0c\u800c\u5bbd\u677e\u653f\u7b56\u5c1a\u672a\u4f20\u5bfc\u5230\u4f4d\u3002",
-    "regime_read": "\u5185\u5730\u5904\u4e8e\u589e\u957f\u6050\u614c\u533a\u95f4\uff0c\u8d8b\u52bf\u624d\u662f\u5173\u952e\uff1a\u589e\u957f\u5728\u8fc7\u53bb\u4e94\u5929\u5185\u6025\u5267\u964d\u6e29\uff0c\u8f83\u4e00\u4e2a\u6708\u524d\u4e5f\u660e\u663e\u653e\u7f13\uff0c\u4ef7\u683c\u4ecd\u5728\u4e0b\u8dcc\uff0c\u6d41\u52a8\u6027\u6b63\u5728\u6536\u7f29\u3002\u6211\u4eec\u5c1a\u672a\u8fdb\u5165\u65b0\u7684\u5b8f\u89c2\u72b6\u6001\u2014\u2014\u6682\u65e0\u5373\u5c06\u7ffb\u8f6c\u7684\u4fe1\u53f7\u2014\u2014\u56e0\u6b64\u5ba2\u89c2\u7684\u5224\u65ad\u662f\uff0c\u6211\u4eec\u5df2\u6df1\u9677\u589e\u957f\u6050\u614c\uff0c\u5e76\u6b63\u8fdb\u4e00\u6b65\u6ed1\u5411\u5176\u6700\u51b7\u7684\u4e00\u89d2\u3002\n\n\u6838\u5fc3\u77db\u76fe\u662f\u653f\u7b56\u4e0e\u4f20\u5bfc\u673a\u5236\u4e4b\u95f4\u7684\u8131\u8282\u3002\u5317\u4eac\u5df2\u63a8\u51fa\u964d\u606f\u548c\u964d\u51c6\uff0c\u65b0\u95fb\u9762\u4e5f\u660e\u663e\u504f\u5411\u652f\u6301\u589e\u957f\uff0c\u4f46\u592e\u884c\u81ea\u8eab\u7684\u7acb\u573a\u6307\u9488\u4ecd\u663e\u793a\u4e2d\u6027\uff0c\u6d41\u52a8\u6027\u5c42\u9762\u5219\u663e\u793a\u6536\u7f29\u3002\u8fd9\u610f\u5473\u7740\u5bbd\u677e\u653f\u7b56\u5df2\u7ecf\u5ba3\u5e03\uff0c\u4f46\u5c1a\u672a\u5728\u4f53\u7cfb\u4e2d\u4f20\u5bfc\u5f00\u6765\u2014\u2014\u5178\u578b\u7684\u201c\u5361\u5728\u7ba1\u9053\u91cc\u201d\u7684\u5206\u88c2\u3002",
-    "rotation_check": "\u5bbd\u677e\u8d27\u5e01\u8fd9\u4e00\u73af\u8282\u6b63\u5728\u5012\u9000\u2014\u2014\u5bbd\u677e\u5df2\u5ba3\u5e03\u4f46\u6d41\u52a8\u6027\u4ecd\u5728\u6536\u7f29\uff0c\u56e0\u6b64\u5bf9\u5229\u7387\u654f\u611f\u7684\u9886\u5934\u677f\u5757\u5c1a\u672a\u786e\u8ba4\u3002",
+    "summary": "\u4e2d\u56fd\u6b63\u5728\u5feb\u901f\u964d\u6e29\uff0c\u800c\u5bbd\u677e\u653f\u7b56\u5c1a\u672a\u4f20\u5bfc\u81f3\u4f53\u7cfb\uff1b\u9999\u6e2f\u5219\u53d7\u5230\u7f8e\u56fd\u52a0\u606f\u538b\u529b\u7684\u6324\u538b\u3002",
+    "regime_read": "\u4e2d\u56fd\u548c\u9999\u6e2f\u90fd\u5904\u4e8e\u589e\u957f\u6050\u614c\u533a\u3002\u4f46\u5185\u5730\u672c\u5468\u52a8\u4f5c\u5f88\u5927\u2014\u2014\u589e\u957f\u7387\u8bfb\u6570\u5728\u4e94\u5929\u5185\u4ece\u63a5\u8fd1\u6301\u5e73\u8dcc\u81f3\u660e\u663e\u8d1f\u503c\u3002\u8fd9\u4e00\u8d8b\u52bf\u503c\u5f97\u5173\u6ce8\uff1a\u6211\u4eec\u5e76\u672a\u7a33\u5b9a\u505c\u7559\u5728\u6b64\u533a\u57df\uff0c\u800c\u662f\u5728\u8fdb\u4e00\u6b65\u6ed1\u5411\u6df1\u5904\u3002\u901a\u80c0\u4f9d\u7136\u75b2\u5f31\uff0c\u56e0\u6b64\u8fd9\u8fd8\u4e0d\u662f\u8f6c\u5411\u66f4\u70ed\u3001\u518d\u901a\u80c0\u7ec4\u5408\u7684\u8f6c\u53d8\u3002\u4eca\u5929\u7684\u4e3b\u5bfc\u56e0\u7d20\u662f\u5361\u4f4f\u7684\u5bbd\u677e\u3002\u592e\u884c\u5df2\u7ecf\u964d\u606f\uff0c\u4f46\u8d27\u5e01\u5e02\u573a\u8d70\u5eca\u4ecd\u7136\u504f\u7d27\u3002\u653f\u7b56\u8bf4\u5df2\u7ecf\u653e\u677e\uff0c\u7ba1\u9053\u5374\u8bf4\u8fd8\u6ca1\u3002",
+    "rotation_check": "\u5361\u4f4f\u7684\u5bbd\u677e\u6253\u7834\u4e86\u7b56\u7565\u7684\u7b2c\u4e00\u6b65\uff1a\u653f\u7b56\u6b63\u5728\u964d\u606f\uff0c\u4f46\u6d41\u52a8\u6027\u5c1a\u672a\u4f20\u5bfc\u5230\u4f4d\u3002",
     "tldr": [
-      "\u6807\u9898\uff1a\u5185\u5730\u964d\u6e29\u3002\u589e\u957f\u5feb\u901f\u4e0b\u6ed1\uff0c\u7269\u4ef7\u4f9d\u65e7\u75b2\u8f6f\u2014\u2014\u5df2\u903c\u8fd1\u589e\u957f\u6050\u614c\u8fb9\u7f18\u3002",
-      "\u6807\u9898\uff1a\u94f6\u884c\u80a1\u627f\u538b\u3002\u94f6\u884c\u548c\u7164\u70ad\u677f\u5757\u6da8\u5e45\u5df2\u5927\uff0c\u4f46\u8d44\u91d1\u6b63\u5728\u6084\u7136\u64a4\u79bb\u3002",
-      "\u6807\u9898\uff1a\u9999\u6e2f\u5e02\u573a\u5206\u5316\u3002\u5168\u7403\u6050\u614c\u5bf9\u9999\u6e2f\u79d1\u6280\u80a1\u7684\u51b2\u51fb\u8fdc\u5927\u4e8e\u5185\u5730\u80a1\u7968\u3002",
-      "\u6807\u9898\uff1a\u5bbd\u677e\u53d7\u963b\u3002\u5317\u4eac\u6b63\u5728\u964d\u606f\uff0c\u4f46\u7cfb\u7edf\u5c1a\u672a\u771f\u6b63\u653e\u677e\u2014\u2014\u8fd9\u624d\u662f\u5173\u952e\u6240\u5728\u3002",
-      "\u5e94\u5bf9\u7b56\u7565\uff1a\u505a\u597d\u51c6\u5907"
+      "\u6807\u9898\uff1a\u4e2d\u56fd\u8fc5\u901f\u964d\u6e29\u2014\u2014\u4e00\u5468\u5185\u589e\u901f\u5927\u5e45\u4e0b\u6ed1\uff0c\u5730\u56fe\u73b0\u5904\u4e8e\u201c\u62c5\u5fe7\u589e\u957f\u201d\u533a\u57df\u3002",
+      "\u6807\u9898\uff1a\u5bbd\u677e\u653f\u7b56\u9677\u5165\u505c\u6ede\u2014\u2014\u592e\u884c\u5df2\u964d\u606f\uff0c\u4f46\u8d27\u5e01\u5e02\u573a\u4ecd\u663e\u7d27\u7f29\uff0c\u964d\u606f\u5c1a\u672a\u4f20\u5bfc\u81f3\u6574\u4e2a\u4f53\u7cfb\u3002",
+      "\u6807\u9898\uff1a\u9f99\u5934\u80a1\u5df2\u8d85\u4e70\u2014\u2014\u94f6\u884c\u4e0e\u7164\u70ad\u63a5\u8fd1\u4e00\u5e74\u533a\u95f4\u9ad8\u4f4d\uff1b\u4fe1\u53f7\u663e\u793a\u5df2\u8fc7\u5ea6\u62c9\u4f38\uff0c\u4e0d\u5b9c\u8ffd\u9ad8\u3002",
+      "\u6807\u9898\uff1a\u6e2f\u80a1\u627f\u538b\u2014\u2014\u8054\u7cfb\u6c47\u7387\u5f31\u52bf\u4e00\u4fa7\u6b63\u5728\u62bd\u8d70\u8d44\u91d1\uff0c\u7f8e\u56fd\u5229\u7387\u4e0a\u884c\u6b63\u4ece\u5916\u90e8\u6536\u7d27\u9999\u6e2f\u6d41\u52a8\u6027\u3002",
+      "\u6807\u9898\uff1a\u64cd\u4f5c\u5efa\u8bae\uff1a\u505a\u597d\u51c6\u5907\u2014\u2014\u7cfb\u7edf\u5904\u4e8e\u8b66\u6212\u72b6\u6001\uff0c\u5c1a\u672a\u8fdb\u5165\u4ea4\u6613\u3002"
     ],
     "conflicts": [
-      "\u8981\u70b9\uff1a\u5bbd\u677e\u5728\u558a\u201c\u524d\u8fdb\u201d\u3002\u5317\u4eac\u5df2\u964d\u606f\u964d\u51c6\uff0c\u4f46\u94f6\u884c\u6d41\u52a8\u6027\u6307\u9488\u4ecd\u663e\u793a\u6536\u7f29\u2014\u2014\u5bbd\u677e\u5df2\u5ba3\u5e03\uff0c\u5c1a\u672a\u843d\u5730\u3002",
-      "\u8981\u70b9\uff1a\u94f6\u884c\u80a1\u770b\u8d77\u6765\u5f88\u5f3a\u3002\u94f6\u884c\u80a1\u8fd1\u671f\u5927\u6da8\uff0c\u4f46\u4fe1\u8d37\u589e\u957f\u6b63\u5728\u51cf\u5f31\uff0c\u8d44\u91d1\u4e5f\u5728\u6d41\u51fa\u8be5\u677f\u5757\u2014\u2014\u4e00\u4e2a\u88ab\u62c9\u4f38\u7684\u9886\u5934\u7f8a\u3002",
-      "\u8981\u70b9\uff1a\u65b0\u95fb\u58f0\u52bf\u6d69\u5927\u3002\u5a92\u4f53\u5f3a\u70c8\u504f\u5411\u652f\u6301\u589e\u957f\u5e76\u805a\u7126\u79d1\u6280\uff0c\u4f46\u589e\u957f\u8bc4\u5206\u6b63\u5728\u5feb\u901f\u4e0b\u6ed1\u2014\u2014\u5634\u4e0a\u8bf4\u7684\u9886\u5148\u4e8e\u5b9e\u9645\u52a8\u4f5c\u3002"
+      "\u6807\u9898\uff1a\u5bbd\u677e\u4e0e\u504f\u7d27\u2014\u2014\u592e\u884c\u6b63\u5728\u964d\u606f\uff0c\u4f46\u8d27\u5e01\u5e02\u573a\u4ecd\u7136\u504f\u7d27\uff1b\u5bbd\u677e\u5c1a\u672a\u4f20\u5bfc\u81f3\u4f53\u7cfb\u3002",
+      "\u6807\u9898\uff1a\u94f6\u884c\u4e0e\u4fe1\u8d37\u2014\u2014\u94f6\u884c\u80a1\u5f3a\u52bf\u9886\u8dd1\uff0c\u4f46\u4fe1\u8d37\u8109\u51b2\u6b63\u5728\u6d88\u9000\uff1b\u8fd9\u79cd\u9886\u5148\u50cf\u662f\u501f\u6765\u7684\uff0c\u800c\u975e\u6323\u6765\u7684\u3002",
+      "\u6807\u9898\uff1a\u9999\u6e2f\u4e0e\u4e2d\u56fd\u2014\u2014\u5185\u5730\u7531\u56fd\u5185\u653f\u7b56\u9a71\u52a8\uff0c\u9999\u6e2f\u5219\u901a\u8fc7\u8054\u7cfb\u6c47\u7387\u53d7\u5230\u7f8e\u56fd\u52a0\u606f\u538b\u529b\u9a71\u52a8\uff1b\u4e24\u8005\u6b63\u5728\u5206\u5316\u3002"
     ],
     "transmission": [
-      "\u5982\u679c\u4e0b\u5468\u8d37\u6b3e\u5229\u7387\u4e0b\u8c03\u7ee7\u7eed\u8ba9\u5bbd\u677e\u653f\u7b56\u9677\u5165\u505c\u6ede \u2192 \u9884\u8ba1\u5238\u5546\u548c\u5730\u4ea7\u7b49\u5bf9\u5229\u7387\u654f\u611f\u7684\u677f\u5757\u5c06\u9762\u4e34\u66f4\u5927\u538b\u529b\u3002",
-      "\u5982\u679c\u9999\u6e2f\u7684\u6050\u614c\u6307\u6570\u98d9\u5347\u548c\u672c\u5e01\u8d70\u5f31\u6301\u7eed \u2192 \u9999\u6e2f\u79d1\u6280\u80a1\u5c06\u6bd4\u5185\u5730\u79d1\u6280\u80a1\u627f\u53d7\u66f4\u5927\u538b\u529b\u3002"
+      "\u5982\u679c\u505c\u6ede\u7684\u5bbd\u677e\u6301\u7eed\uff0c\u94f6\u884c\u548c\u5730\u4ea7\u5c06\u7ee7\u7eed\u9760\u9884\u671f\u800c\u975e\u4fe1\u8d37\u9886\u6da8\u3002",
+      "\u5982\u679c\u7f8e\u56fd\u5229\u7387\u91cd\u65b0\u5b9a\u4ef7\u6301\u7eed\uff0c\u9999\u6e2f\u8054\u7cfb\u6c47\u7387\u5236\u5ea6\u5c06\u8f93\u5165\u66f4\u591a\u7d27\u7f29\uff0c\u8d44\u91d1\u5916\u6d41\u5c06\u7ee7\u7eed\u65bd\u538b\u5f31\u65b9\u3002"
     ],
     "watch_items": [
-      "\u8d37\u6b3e\u5229\u7387\u8c03\u6574\uff089\u670821\u65e5\uff09\uff1a\u786e\u8ba4\u5bbd\u677e\u662f\u5426\u771f\u6b63\u843d\u5730",
-      "\u94f6\u884c\u51c0\u6d41\u5411\uff1a\u5982\u679c\u8d44\u91d1\u6301\u7eed\u5916\u6d41\uff0c\u94f6\u884c\u80a1\u7684\u4e0a\u6da8\u5c31\u662f\u865a\u5047\u5f3a\u52bf",
-      "\u9999\u6e2f\u6050\u614c\u6307\u6807\uff1a\u51b3\u5b9a\u4e0e\u5185\u5730\u5e02\u573a\u7684\u5206\u5316\u662f\u5426\u6269\u5927",
-      "\u4e0b\u4e00\u6b21\u901a\u80c0\u6570\u636e\uff1a\u786e\u8ba4\u662f\u589e\u957f\u6050\u614c\u8fd8\u662f\u5f00\u59cb\u5347\u6e29"
+      "9\u670830\u65e5PMI\uff1a\u5982\u679c\u75b2\u5f31\uff0c\u964d\u6e29\u5c06\u52a0\u5267\u3002",
+      "\u8d27\u5e01\u5e02\u573a\u5229\u7387\uff1a\u5982\u679c\u4e0b\u964d\uff0c\u5bbd\u677e\u7ec8\u4e8e\u4f20\u5bfc\u3002",
+      "\u6e2f\u5143\u8054\u7cfb\u6c47\u7387\u504f\u79bb\u5ea6\uff1a\u5982\u679c\u6269\u5927\uff0c\u8d44\u91d1\u5916\u6d41\u5c06\u52a0\u901f\u3002",
+      "\u7f8e\u56fd2\u5e74\u671f\u6536\u76ca\u7387\uff1a\u5982\u679c\u7ee7\u7eed\u4e0a\u5347\uff0c\u9999\u6e2f\u5c06\u8fdb\u4e00\u6b65\u6536\u7d27\u3002"
     ]
   }
 }

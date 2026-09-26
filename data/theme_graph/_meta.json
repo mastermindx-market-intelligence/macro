@@ -1,5 +1,5 @@
 {
-  "belief_time": "2026-09-16",
+  "belief_time": "2026-09-25",
   "capability_counts": {
     "measurement_candidate": 505,
     "semantic_only": 138
@@ -12,12 +12,12 @@
       "symbol": "IBIT"
     }
   ],
-  "computed_at": "2026-09-16T07:46:31Z",
+  "computed_at": "2026-09-25T19:09:51Z",
   "counts": {
     "capability": 644,
-    "edges": 16854,
-    "edges_latest_belief": 8293,
-    "evidence": 19,
+    "edges": 24312,
+    "edges_latest_belief": 12171,
+    "evidence": 20,
     "identity_resolution": 2807,
     "node_lifecycle": 2,
     "nodes": 3882
@@ -26,8 +26,8 @@
   "era": "observed",
   "identity_resolution_state_counts": {
     "DEFERRED_IDENTITY_EXCEPTION": 1,
-    "NOT_IN_MASTER": 197,
-    "RESOLVED": 2374,
+    "NOT_IN_MASTER": 195,
+    "RESOLVED": 2376,
     "UNSUPPORTED_MARKET": 233
   },
   "lane": "nightly",
@@ -87,11 +87,19 @@
     },
     "baskets_china_ths": {
       "baskets": 237,
+      "closed_member_edges": 0,
       "companies": 919,
+      "excluded_source_shapes": [
+        "ths_concept_dump"
+      ],
       "member_edges": 3532,
+      "membership_pit_rows": 14128,
       "membership_published_at": "2026-06-30",
+      "note": null,
       "seed_constant": "2021-06-15",
-      "tracks_edges": 0
+      "skipped_unidentifiable": [],
+      "tracks_edges": 0,
+      "unlabelled_nodes": 0
     },
     "baskets_hk": {
       "baskets": 17,
@@ -115,7 +123,9 @@
       "published_at": "2026-07-09",
       "themes": 18,
       "ths_codes_mapped": 61,
-      "ths_codes_unknown": 0
+      "ths_codes_unknown": 0,
+      "ths_codes_with_canonical_basket_join": 48,
+      "ths_codes_without_canonical_basket_join": 13
     }
   },
   "rows_appended": {

@@ -3162,6 +3162,62 @@ checks:
       quantity. All manifest reads are defensive — a failed-capture row carries
       only captured:false plus a reason, so direct indexing would crash the guard
       instead of reporting the gap.
+  - law_id: ui.p0b_receipt_closure
+    summary: >
+      A change to any path pinned by the Prophet P0B browser receipts
+      (construction_inputs, loaded_assets, the verifier script, or
+      rendered-fixture.json's recipe inputs) must remint those receipts in the
+      same diff. #7603 changed templates/hk.html.j2 without reminting
+      mobile-layout*.json (still pinning 1ae1c8ed…); #7500 did the same with
+      site/navigation-refresh.css (healed by #7597). The class reddens
+      test_stock_dashboard_first_frame.py on every fresh merge-ref until the
+      closure is a GATE. The pin set is derived FROM the receipts at runtime
+      and is never hardcoded.
+    source_ref:
+      - scripts/check_p0b_receipt_closure.py
+      - tests/test_check_p0b_receipt_closure.py
+      - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+      - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+      - "PR #7597"
+      - "PR #7603"
+    severity: hard
+    check_script: scripts/check_p0b_receipt_closure.py
+    ci_wiring:
+      - workflow: .github/ci/legacy-jobs.yml
+        job: p0b-receipt-closure
+        lane: pr_ci
+    selftest: true
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - >-
+        File-list closure only: a receipt file present in the diff satisfies
+        the gate even if its hashes were not actually reminted. The receipt
+        tests in tests/test_stock_dashboard_first_frame.py still bind live
+        bytes and catch a touch-only companion.
+      - >-
+        Derives pins from committed receipts at HEAD, not from the incoming
+        diff's new receipt bytes. A PR that adds a newly pinned path and the
+        receipts in the same diff is judged against the pre-change pin set
+        for that path (the new pin takes effect on the next PR).
+      - >-
+        REFUSES on a sparse checkout that omits mockups/ rather than reporting
+        a vacuous pass over receipts it cannot see.
+    owner_program: prophet-us-eyes-open
+    notes: >
+      Its own legacy job, p0b-receipt-closure (gate: code, scope: exclusive,
+      fetch-depth 0), since the #6872 postmortem (2026-09-24). It first shipped
+      as trailing steps on design-governance (#7613), which failed twice on
+      #6872: run_ci_pack.py skips a logical job's remaining steps after the
+      first failing one, so the design ratchet's own red hid this verdict; and
+      "unscoped" is not always-on — inference derives a scope from the job's
+      commands and mockups/ sits outside every opaque scan root, so a diff
+      touching only the rendered fixture or a receipt input skipped the job.
+      The curated paths name the roots every pin lives under and are bound to
+      the committed receipts by tests/test_ci_pack.py::
+      test_p0b_receipt_closure_job_owns_every_receipt_pinned_path. The gate
+      step runs first in the job. The checker never shells out to git; the
+      caller hands it `git diff --name-only`.
   - law_id: data.append_only_assertions
     summary: >
       A historical assertion over an append-only store must not become false

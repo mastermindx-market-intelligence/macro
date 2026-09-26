@@ -1848,7 +1848,8 @@ def _orch_settings(repo: Path) -> dict:
     out = dict(_ORCH_DEFAULT_SETTINGS)
     try:
         import yaml  # noqa: PLC0415
-        cfg = yaml.safe_load((repo / "config.yml").read_text(encoding="utf-8")) or {}
+        loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+        cfg = yaml.load((repo / "config.yml").read_text(encoding="utf-8"), Loader=loader) or {}
         block = cfg.get("orchestrator") or {}
         n = block.get("review_every_n_runs")
         if isinstance(n, int) and not isinstance(n, bool) and 2 <= n <= 50:
@@ -1878,15 +1879,21 @@ def _orch_load(repo: Path, limit: int = 60) -> dict:
     """{entries, reviews, settings} — via the engine module when importable,
     else a direct fail-open read of the committed JSONL ledgers.
     entries/reviews are oldest-first (the ledger order)."""
+    settings = None
     try:
         mod = _load_orchestrator_log()
         data = mod.load(repo, limit=limit)
         entries = data.get("entries") or []
         reviews = data.get("reviews") or []
+        loaded_settings = data.get("settings")
+        if isinstance(loaded_settings, dict):
+            settings = loaded_settings
     except Exception:  # noqa: BLE001
         entries = list(reversed(_tail_jsonl(repo / _ORCH_RUNLOG_REL, limit)))
         reviews = list(reversed(_tail_jsonl(repo / _ORCH_REVIEWS_REL, 12)))
-    return {"entries": entries, "reviews": reviews, "settings": _orch_settings(repo)}
+    if settings is None:
+        settings = _orch_settings(repo)
+    return {"entries": entries, "reviews": reviews, "settings": settings}
 
 
 def _orch_dialogue(repo: Path) -> dict:

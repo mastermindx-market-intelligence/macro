@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/navigation-refresh.css
+  - site/navigation-refresh.css
+  - templates/theme.js
+  - site/theme.js
+manifest: mockups/evidence/mobile-chrome-touch-floor-r3/manifest.json

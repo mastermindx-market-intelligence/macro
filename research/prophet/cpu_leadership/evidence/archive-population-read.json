@@ -1,0 +1,90 @@
+{
+  "source_ref": "4bf1b3aee532114b0c67e06c532b6e4ed7884549",
+  "source_path": "data/us_prophet_rank/candidates/2026-09.parquet",
+  "source_sha256": "bace73d4503ecc45db498c45b721eb1941deefbf3801a33f367fa603fd04a296",
+  "reader": "engine.us_context_vector.load_candidates",
+  "recent_population_by_tier": [
+    {
+      "date": "2026-09-16",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "rows": 1713
+    },
+    {
+      "date": "2026-09-16",
+      "tier": "scan",
+      "board_definition": "us_prophet_v3",
+      "rows": 1532
+    },
+    {
+      "date": "2026-09-17",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "rows": 2932
+    },
+    {
+      "date": "2026-09-17",
+      "tier": "scan",
+      "board_definition": "us_prophet_v3",
+      "rows": 1539
+    },
+    {
+      "date": "2026-09-18",
+      "tier": "scan",
+      "board_definition": "us_prophet_v3",
+      "rows": 1535
+    }
+  ],
+  "latest_target_rows": [
+    {
+      "stamp_date": "2026-09-17",
+      "ticker": "AAPL",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "lane": "not_on_board",
+      "signal_asof": "2026-09-14"
+    },
+    {
+      "stamp_date": "2026-09-17",
+      "ticker": "AMD",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "lane": "not_on_board",
+      "signal_asof": "2026-09-14"
+    },
+    {
+      "stamp_date": "2026-09-17",
+      "ticker": "ARM",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "lane": "not_on_board",
+      "signal_asof": "2026-09-17"
+    },
+    {
+      "stamp_date": "2026-09-17",
+      "ticker": "INTC",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "lane": "not_on_board",
+      "signal_asof": "2026-09-14"
+    },
+    {
+      "stamp_date": "2026-09-17",
+      "ticker": "MSFT",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "lane": "not_on_board",
+      "signal_asof": "2026-09-14"
+    },
+    {
+      "stamp_date": "2026-09-17",
+      "ticker": "NVDA",
+      "tier": "curated",
+      "board_definition": "us_prophet_v3",
+      "lane": "not_on_board",
+      "signal_asof": "2026-09-14"
+    }
+  ],
+  "read_only": true,
+  "limitation": "Pinned artifact only, not proof of why the upstream runtime writer failed."
+}

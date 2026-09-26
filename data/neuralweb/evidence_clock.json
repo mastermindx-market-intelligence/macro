@@ -1,20 +1,20 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-09-16",
-  "generated_utc": "2026-09-16T09:40:48Z",
+  "as_of": "2026-09-25",
+  "generated_utc": "2026-09-25T21:32:49Z",
   "authority": "display_only",
   "summary": {
-    "n_rows": 315,
+    "n_rows": 317,
     "by_state": {
-      "overdue": 26,
-      "due": 46,
+      "overdue": 70,
+      "due": 10,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 239
+      "accruing": 233
     },
     "n_acknowledged": 0,
     "top_due": {
@@ -22,7 +22,7 @@
       "due_at": "2026-06-22",
       "owner_program": "qualitative-intelligence"
     },
-    "morning_line": "72 due/overdue, 1 missing, 239 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
+    "morning_line": "80 due/overdue, 1 missing, 233 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
   },
   "rows": [
     {
@@ -133,8 +133,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 3924,
-        "n_past_check_by": 3238
+        "n_open": 4086,
+        "n_past_check_by": 3632
       },
       "allowed_actions": [
         "inspect",
@@ -181,8 +181,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 3924,
-        "n_past_check_by": 3238
+        "n_open": 4086,
+        "n_past_check_by": 3632
       },
       "allowed_actions": [
         "inspect",
@@ -229,8 +229,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 33132,
-        "n_past_check_by": 24665
+        "n_open": 40696,
+        "n_past_check_by": 28580
       },
       "allowed_actions": [
         "inspect",
@@ -277,8 +277,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 33132,
-        "n_past_check_by": 24665
+        "n_open": 40696,
+        "n_past_check_by": 28580
       },
       "allowed_actions": [
         "inspect",
@@ -417,8 +417,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 185,
-        "n_past_check_by": 185
+        "n_open": 197,
+        "n_past_check_by": 197
       },
       "allowed_actions": [
         "inspect",
@@ -465,8 +465,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 4748,
-        "n_past_check_by": 3439
+        "n_open": 5398,
+        "n_past_check_by": 3998
       },
       "allowed_actions": [
         "inspect",
@@ -513,8 +513,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 86,
-        "n_past_check_by": 70
+        "n_open": 91,
+        "n_past_check_by": 77
       },
       "allowed_actions": [
         "inspect",
@@ -577,8 +577,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 1453,
-        "n_past_check_by": 450
+        "n_open": 1525,
+        "n_past_check_by": 592
       },
       "allowed_actions": [
         "inspect",
@@ -609,8 +609,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 347,
-        "n_past_check_by": 332
+        "n_open": 353,
+        "n_past_check_by": 336
       },
       "allowed_actions": [
         "inspect",
@@ -642,7 +642,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 43,
-        "n_past_check_by": 5
+        "n_past_check_by": 12
       },
       "allowed_actions": [
         "inspect",
@@ -984,38 +984,6 @@
       "packet": null
     },
     {
-      "clock_id": "qledger:basket_turn.v1",
-      "source_system": "qledger",
-      "subject_id": "basket_turn.v1",
-      "subject_type": "claim_family",
-      "owner_program": null,
-      "clock_type": "check_by",
-      "due_at": "2026-09-10",
-      "as_of": null,
-      "state": "overdue",
-      "date_state": "overdue",
-      "readiness": {
-        "n_open": 15,
-        "n_past_check_by": 2
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/qledger/claims.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
       "clock_id": "experiments:picklab-cn-cnlab_theme_laggard",
       "source_system": "experiments",
       "subject_id": "picklab-cn-cnlab_theme_laggard",
@@ -1024,8 +992,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-09",
       "as_of": "2026-07-10",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
         "cadence": "daily",
@@ -1056,8 +1024,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-09",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Trigger: machine_registry.jsonl exists with >=1 row having an evaluator verdict. No numeric maturation gate — this is a pipeline-health watch, not a forward-return accrual.",
         "cadence": "on-trigger",
@@ -1080,6 +1048,38 @@
       "packet": null
     },
     {
+      "clock_id": "qledger:basket_turn.v1",
+      "source_system": "qledger",
+      "subject_id": "basket_turn.v1",
+      "subject_type": "claim_family",
+      "owner_program": null,
+      "clock_type": "check_by",
+      "due_at": "2026-09-10",
+      "as_of": null,
+      "state": "overdue",
+      "date_state": "overdue",
+      "readiness": {
+        "n_open": 19,
+        "n_past_check_by": 6
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/qledger/claims.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
       "clock_id": "cortex:cortex-2026-08-14-in-low-volatility-regimes-negative-10-d-5df4be",
       "source_system": "cortex",
       "subject_id": "cortex-2026-08-14-in-low-volatility-regimes-negative-10-d-5df4be",
@@ -1088,8 +1088,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-11",
       "as_of": "2026-08-14",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "horizon_d": 21,
         "status": "registered"
@@ -1120,8 +1120,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-14",
       "as_of": "2026-06-15",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Call matures at check_by; promotion runs through calibration_hub's gate (placebo-paired hit-null >= 5pp, Holm p < 0.05, independent_blocks >= 10). The former '>55% high-conviction hit' upgrade trigger is RETIRED 2026-08-03: 55% sits 31pp below this desk's measured placebo null (86.2%), so it would promote leniency, not skill.",
         "cadence": "daily",
@@ -1153,8 +1153,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-14",
       "as_of": "2026-06-28",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "grade() needs >=3 matured obs/horizon; cross-sectional rank-IC needs distinct call-dates each >=3 scores; stable IC target >=100 obs.",
         "cadence": "daily",
@@ -1185,8 +1185,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-08",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": ">=50 nightly-appended rows in limit_tape.parquet (beyond the 2011→ backfill); co-occurrence pattern table produced; pre-registration question identified if pattern warrants. Promotion requires future pre-registered ruling.",
         "cadence": "quarterly detection print",
@@ -1217,8 +1217,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-06-12",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "a (date,horizon) matures when the h-th bar after date exists and <=asof; finder threshold >=50 matured obs for power. A state->forward-return grader must first be BUILT.",
         "cadence": "daily accrual (grade not wired)",
@@ -1249,8 +1249,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": null,
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "append on event-window + fragility co-occurrence; grade forward (event-window realized vol >= typical OR sustained fragility). Display-only, accruing.",
         "cadence": "daily / event-driven",
@@ -1281,8 +1281,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "First single 21d grade: ~21 trading days after first render write (~2026-07-27 per market). Stable rank-IC read (>=5 matured IC dates with >=5 names each): approx 2026-08-24. 63d read: approx 2026-10. Graduation (W7) is a 2026-Q4 event gated on ledger maturity. scorecard() returns status='accruing' until gate is met.",
         "cadence": "daily",
@@ -1313,8 +1313,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Standard radar audit thresholds; leg stays ACCRUING (cannot arm conjunction escalator) until its escalations have a graded record.",
         "cadence": "daily",
@@ -1345,8 +1345,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Dual floor: #1669 n>=25 per contrast + W-EX exposure depth.",
         "cadence": "once",
@@ -1377,8 +1377,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Same floor as attribution; the two may ship as one wave.",
         "cadence": "once",
@@ -1409,8 +1409,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-08",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "see masterplan section 4",
         "cadence": "one-time",
@@ -1441,8 +1441,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 independent date clusters AND Wilson-CI lower bound >0 vs matched control (§3 gate). Auto-alerts on first-cross. grader_quiet_days>=2 fires broken-not-quiet warn.",
         "cadence": "daily",
@@ -1474,8 +1474,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0; salience families gate on |excess|>placebo instead of directional hit-rate.",
         "cadence": "daily",
@@ -1507,8 +1507,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0 (§3 gate).",
         "cadence": "daily",
@@ -1540,8 +1540,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-06",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0. Direction stays 0 (salience-only) until mechanism independently validated.",
         "cadence": "daily",
@@ -1573,8 +1573,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0 AND phrase polarity human-reviewed (§3 gate + D9).",
         "cadence": "daily",
@@ -1606,8 +1606,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0 AND regime-stratification (§3).",
         "cadence": "daily",
@@ -1639,8 +1639,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 (§3 gate); wilson_ci_low>0 for salience magnitude. W6 surface step deferred.",
         "cadence": "daily",
@@ -1672,8 +1672,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0; remove grandfathered gate on promotion.",
         "cadence": "daily",
@@ -1705,8 +1705,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0 (§3 gate).",
         "cadence": "daily",
@@ -1738,8 +1738,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "n_dates>=25 AND wilson_ci_low>0 (§3 gate); context-only, not a direction bet.",
         "cadence": "daily",
@@ -1771,8 +1771,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-06-26",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "can_force per market: n_graded>=30 AND n_alerts>=8 AND realized alert-state DD lift >=1.25x base.",
         "cadence": "daily",
@@ -1803,8 +1803,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-06-23",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "CI gate: >=3 validated legs still clear 1.2x (passing now). Opus retune: risk_radar_audit h21=21bd grading; risk_radar_review needs min_graded>=30 before writing calibration.json.",
         "cadence": "on-build (CI) + daily accrual",
@@ -1835,8 +1835,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": "2026-07-07",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": ">=63 GEX chain days accrued AND AC(lag-5d) > 0.20 on options_pin or negative_gamma_trend labels.",
         "cadence": "quarterly",
@@ -1867,8 +1867,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": null,
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Forward-only: flagged-subsector EW return spread vs the median subsector over 2-4wk, graded on NON-OVERLAPPING windows; readable at n_eff(4wk) >= 20. (Rewritten 2026-08-03; the prior 'phase0.json publishes pass/fail backtest' cited an artifact that never existed.)",
         "cadence": "daily",
@@ -1899,8 +1899,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-15",
       "as_of": null,
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "append on emergence-threshold cross; grade +20D realized basket return vs baseline theme universe.",
         "cadence": "daily",
@@ -1931,8 +1931,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": null,
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": ">=2 weekly batches run; cumulative literal_n printed and consistent with ledger; >=1 honest null in library",
         "cadence": "weekly",
@@ -1963,8 +1963,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-08",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "see masterplan section 4",
         "cadence": "one-time",
@@ -1995,8 +1995,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-10",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
         "cadence": "daily",
@@ -2027,8 +2027,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-10",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
         "cadence": "daily",
@@ -2059,8 +2059,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-10",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
         "cadence": "daily",
@@ -2091,8 +2091,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-10",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "CNPL-R4: n>=25 fires AND months_span>=3 AND >=6 distinct fire dates (engine/pick_lab/book.py:54-57); ruler 21d CSI300-excess. Read lift vs cnlab_random_ctrl only. Promotion requires the pre-registered gauntlet.",
         "cadence": "daily",
@@ -2123,8 +2123,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-13",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Scoreboard floor (site/labdata/pick_lab.json): n>=25 fires AND >=3 months span AND >=6 distinct fire dates; earliest clear 2026-10-13. Emitted metrics are h21_wr_exc / h21_capture / vs_random_lift (hit_quality / upside_capture / coverage_health do not exist in engine/pick_lab). Promotion requires the SA-R5 Tier-2 gauntlet.",
         "cadence": "daily",
@@ -2155,8 +2155,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-13",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Scoreboard floor (site/labdata/pick_lab.json): n>=25 fires AND >=3 months span AND >=6 distinct fire dates; earliest clear 2026-10-13. Emitted metrics are h21_wr_exc / h21_capture / vs_random_lift (hit_quality / upside_capture / coverage_health do not exist in engine/pick_lab). Promotion requires the SA-R5 Tier-2 gauntlet.",
         "cadence": "daily",
@@ -2187,8 +2187,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-13",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Scoreboard floor (site/labdata/pick_lab.json): n>=25 fires AND >=3 months span AND >=6 distinct fire dates; earliest clear 2026-10-13. Emitted metrics are h21_wr_exc / h21_capture / vs_random_lift (hit_quality / upside_capture / coverage_health do not exist in engine/pick_lab). Promotion requires the SA-R5 Tier-2 gauntlet.",
         "cadence": "daily",
@@ -2219,8 +2219,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-13",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Scoreboard floor (site/labdata/pick_lab.json): n>=25 fires AND >=3 months span AND >=6 distinct fire dates; earliest clear 2026-10-13. Emitted metrics are h21_wr_exc / h21_capture / vs_random_lift (hit_quality / upside_capture / coverage_health do not exist in engine/pick_lab). Promotion requires the SA-R5 Tier-2 gauntlet.",
         "cadence": "daily",
@@ -2251,8 +2251,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-13",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Scoreboard floor (site/labdata/pick_lab.json): n>=25 fires AND >=3 months span AND >=6 distinct fire dates; earliest clear 2026-10-13. Emitted metrics are h21_wr_exc / h21_capture / vs_random_lift (hit_quality / upside_capture / coverage_health do not exist in engine/pick_lab). Promotion requires the SA-R5 Tier-2 gauntlet.",
         "cadence": "daily",
@@ -2283,8 +2283,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-13",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Scoreboard floor (site/labdata/pick_lab.json): n>=25 fires AND >=3 months span AND >=6 distinct fire dates; earliest clear 2026-10-13. Emitted metrics are h21_wr_exc / h21_capture / vs_random_lift (hit_quality / upside_capture / coverage_health do not exist in engine/pick_lab). Promotion requires the SA-R5 Tier-2 gauntlet.",
         "cadence": "daily",
@@ -2315,8 +2315,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": "2026-07-13",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "Scoreboard floor (site/labdata/pick_lab.json): n>=25 fires AND >=3 months span AND >=6 distinct fire dates; earliest clear 2026-10-13. Emitted metrics are h21_wr_exc / h21_capture / vs_random_lift (hit_quality / upside_capture / coverage_health do not exist in engine/pick_lab). Promotion requires the SA-R5 Tier-2 gauntlet.",
         "cadence": "daily",
@@ -2347,12 +2347,269 @@
       "clock_type": "come_back_on",
       "due_at": "2026-09-16",
       "as_of": null,
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": null,
         "cadence": null,
         "status": "complete",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "qledger:radar",
+      "source_system": "qledger",
+      "subject_id": "radar",
+      "subject_type": "claim_family",
+      "owner_program": null,
+      "clock_type": "check_by",
+      "due_at": "2026-09-16",
+      "as_of": null,
+      "state": "overdue",
+      "date_state": "overdue",
+      "readiness": {
+        "n_open": 13602,
+        "n_past_check_by": 1886
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/qledger/claims.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:calibration-hub",
+      "source_system": "experiments",
+      "subject_id": "calibration-hub",
+      "subject_type": "calibration",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-17",
+      "as_of": "2026-06-15",
+      "state": "overdue",
+      "date_state": "overdue",
+      "readiness": {
+        "maturation": "The real gate is engine/calibration_hub.py:165-259 — cold n<10; inverted if dir_acc<null_dir or conviction verdict False; weak if hit<null_hit; calibrated only when the desk placebo is available AND hit-null >= 5pp AND Holm-adjusted p < 0.05 AND independent_blocks >= 10. hit_rate>=0.5 is the demotion floor (:56), never the promotion bar. (Seed text corrected 2026-08-03; the prior 'hit_rate>=0.5 AND conviction monotone' description was wrong in both clauses.)",
+        "cadence": "on-build",
+        "status": "measuring"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/calibration/summary.json"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-08-22-when-the-confirmed-us-regime-label-remai-710a86",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-08-22-when-the-confirmed-us-regime-label-remai-710a86",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-19",
+      "as_of": "2026-08-22",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-08-23-when-a-risk-on-tape-with-broad-participa-e4a85a",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-08-23-when-a-risk-on-tape-with-broad-participa-e4a85a",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-20",
+      "as_of": "2026-08-23",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:shadow-book",
+      "source_system": "experiments",
+      "subject_id": "shadow-book",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-21",
+      "as_of": "2026-06-18",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "row matures when p0+h < len(closes) AND close date<=asof; per-horizon IC needs >=10 names/date; ic_summary emits IC-IR/HAC-t only at >=6 distinct matured dates.",
+        "cadence": "daily snapshot + nightly maturation",
+        "status": "measuring",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-08-26-when-the-confirmed-us-regime-label-remai-3fe580",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-08-26-when-the-confirmed-us-regime-label-remai-3fe580",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-23",
+      "as_of": "2026-08-26",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:nwci-scanner-first-review",
+      "source_system": "experiments",
+      "subject_id": "nwci-scanner-first-review",
+      "subject_type": "infrastructure_check",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-23",
+      "as_of": "2026-07-08",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "see masterplan section 4",
+        "cadence": "one-time",
+        "status": "registered",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:btc-regime-ledger",
+      "source_system": "experiments",
+      "subject_id": "btc-regime-ledger",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-25",
+      "as_of": "2026-06-20",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "First 90d window closes 2026-09-18. Falsifier needs >=8 graded quarters (~2028-06). Independent-episode count, not row count, is the honest denominator.",
+        "cadence": "daily",
+        "status": "accruing",
         "floor": "undeclared"
       },
       "allowed_actions": [
@@ -2377,7 +2634,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-16",
+      "due_at": "2026-09-25",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2409,7 +2666,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-16",
+      "due_at": "2026-09-25",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2441,7 +2698,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-16",
+      "due_at": "2026-09-25",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2473,7 +2730,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-16",
+      "due_at": "2026-09-25",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2548,7 +2805,6 @@
           "reliability",
           "contradictions",
           "bottom_sensors",
-          "cortex",
           "government_revenue"
         ]
       },
@@ -2632,8 +2888,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 95852,
-        "n_with_falsifier": 900,
+        "n_claims": 112121,
+        "n_with_falsifier": 1022,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
@@ -2649,228 +2905,6 @@
       "evidence_refs": [
         "data/qledger/claims.jsonl"
       ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:calibration-hub",
-      "source_system": "experiments",
-      "subject_id": "calibration-hub",
-      "subject_type": "calibration",
-      "owner_program": "neural-web",
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-17",
-      "as_of": "2026-06-15",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "The real gate is engine/calibration_hub.py:165-259 — cold n<10; inverted if dir_acc<null_dir or conviction verdict False; weak if hit<null_hit; calibrated only when the desk placebo is available AND hit-null >= 5pp AND Holm-adjusted p < 0.05 AND independent_blocks >= 10. hit_rate>=0.5 is the demotion floor (:56), never the promotion bar. (Seed text corrected 2026-08-03; the prior 'hit_rate>=0.5 AND conviction monotone' description was wrong in both clauses.)",
-        "cadence": "on-build",
-        "status": "measuring"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/calibration/summary.json"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "cortex:cortex-2026-08-22-when-the-confirmed-us-regime-label-remai-710a86",
-      "source_system": "cortex",
-      "subject_id": "cortex-2026-08-22-when-the-confirmed-us-regime-label-remai-710a86",
-      "subject_type": "hypothesis",
-      "owner_program": "neural-web",
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-19",
-      "as_of": "2026-08-22",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "horizon_d": 21,
-        "status": "registered"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/neuralweb/machine_registry.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "cortex:cortex-2026-08-23-when-a-risk-on-tape-with-broad-participa-e4a85a",
-      "source_system": "cortex",
-      "subject_id": "cortex-2026-08-23-when-a-risk-on-tape-with-broad-participa-e4a85a",
-      "subject_type": "hypothesis",
-      "owner_program": "neural-web",
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-20",
-      "as_of": "2026-08-23",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "horizon_d": 21,
-        "status": "registered"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/neuralweb/machine_registry.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:shadow-book",
-      "source_system": "experiments",
-      "subject_id": "shadow-book",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-21",
-      "as_of": "2026-06-18",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "row matures when p0+h < len(closes) AND close date<=asof; per-horizon IC needs >=10 names/date; ic_summary emits IC-IR/HAC-t only at >=6 distinct matured dates.",
-        "cadence": "daily snapshot + nightly maturation",
-        "status": "measuring"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "cortex:cortex-2026-08-26-when-the-confirmed-us-regime-label-remai-3fe580",
-      "source_system": "cortex",
-      "subject_id": "cortex-2026-08-26-when-the-confirmed-us-regime-label-remai-3fe580",
-      "subject_type": "hypothesis",
-      "owner_program": "neural-web",
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-23",
-      "as_of": "2026-08-26",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "horizon_d": 21,
-        "status": "registered"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/neuralweb/machine_registry.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:nwci-scanner-first-review",
-      "source_system": "experiments",
-      "subject_id": "nwci-scanner-first-review",
-      "subject_type": "infrastructure_check",
-      "owner_program": "neural-web",
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-23",
-      "as_of": "2026-07-08",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "see masterplan section 4",
-        "cadence": "one-time",
-        "status": "registered"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:btc-regime-ledger",
-      "source_system": "experiments",
-      "subject_id": "btc-regime-ledger",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-25",
-      "as_of": "2026-06-20",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "First 90d window closes 2026-09-18. Falsifier needs >=8 graded quarters (~2028-06). Independent-episode count, not row count, is the honest denominator.",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
       "regenerate_cmd": null,
       "acknowledged": false,
       "review": null,
@@ -4269,6 +4303,38 @@
       "packet": null
     },
     {
+      "clock_id": "cortex:cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-02",
+      "as_of": "2026-09-18",
+      "state": "accruing",
+      "date_state": "accruing",
+      "readiness": {
+        "horizon_d": 7,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
       "clock_id": "experiments:exit_crowding_phase0",
       "source_system": "experiments",
       "subject_id": "exit_crowding_phase0",
@@ -5588,6 +5654,38 @@
         "score"
       ],
       "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "cortex:cortex-2026-09-18-in-low-volatility-regimes-negative-10-d-acd5d5",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-09-18-in-low-volatility-regimes-negative-10-d-acd5d5",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-10-16",
+      "as_of": "2026-09-18",
+      "state": "accruing",
+      "date_state": "accruing",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
       "regenerate_cmd": null,
       "acknowledged": false,
       "review": null,
@@ -9584,39 +9682,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 6,
-        "n_past_check_by": 0
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/qledger/claims.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "qledger:radar",
-      "source_system": "qledger",
-      "subject_id": "radar",
-      "subject_type": "claim_family",
-      "owner_program": null,
-      "clock_type": "check_by",
-      "due_at": null,
-      "as_of": null,
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "n_open": 13602,
+        "n_open": 9,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9648,7 +9714,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 62,
+        "n_open": 102,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9680,7 +9746,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 22,
+        "n_open": 45,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9804,12 +9870,12 @@
       "owner_program": null,
       "clock_type": "fdr_batch_due",
       "due_at": null,
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-18",
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_trials": 17,
-        "last_ts": "2026-08-31T06:21:57.531381+00:00"
+        "n_trials": 19,
+        "last_ts": "2026-09-18T19:52:35.259468+00:00"
       },
       "allowed_actions": [
         "inspect",

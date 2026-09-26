@@ -200,6 +200,8 @@ def _dlg(html: str) -> str:
 
 def _default_visible(dlg: str) -> str:
     """Strip collapsed <details> bodies, keeping each <summary>."""
+    # Embedded bilingual data is not visible copy.
+    dlg = re.sub(r"<script\b[^>]*>.*?</script>", "", dlg, flags=re.S)
 
     def _keep_summary(match: re.Match[str]) -> str:
         block = match.group(0)
@@ -364,3 +366,34 @@ def test_missing_horizon_omits_zero_coerce():
     assert "21d" in odds
     assert "6%" in odds
     assert "13%" in odds
+
+
+def test_leadership_rank_delta_colour_follows_observed_move_not_heat_tier():
+    """A structural heat label must never recolour the displayed 5-session rank move."""
+    vm = _vm()
+    rotation = [dict(row) for row in vm["sector_heat"]["rotation"]]
+    rotation[0].update(rank_delta_5d=7, heat="cooling")
+    rotation[1].update(rank_delta_5d=-3, heat="heating")
+    vm["sector_heat"] = dict(vm["sector_heat"], rotation=rotation)
+
+    dlg = _dlg(_render(vm))
+    assert re.search(r'class="riskdlg-rank-delta up"[^>]*>\s*·\s*▲7 5d</span>', dlg)
+    assert re.search(r'class="riskdlg-rank-delta down"[^>]*>\s*·\s*▼3 5d</span>', dlg)
+    assert '<span class="riskdlg-rank">#4</span>' in dlg
+    assert '<span class="riskdlg-rank">#6</span>' in dlg
+    assert 'riskdlg-theme up' not in dlg
+    assert 'riskdlg-theme down' not in dlg
+
+    html = _render(vm)
+    assert '#dlg-risk .riskdlg-rank-delta.up{color:var(--ink-up,var(--up));}' in html
+    assert '#dlg-risk .riskdlg-rank-delta.down{color:var(--ink-down,var(--down));}' in html
+
+
+def test_leadership_rank_delta_uses_locale_aware_up_down_tokens():
+    """The shared direction tokens encode Western EN and red-up/green-down ZH conventions."""
+    from pathlib import Path
+
+    css = (Path(__file__).resolve().parents[1] / "site" / "theme.css").read_text()
+    assert '--up: #45b873; --down: #e06464;' in css
+    assert 'html[data-lang="zh"] {' in css
+    assert '--up: #e06464; --down: #45b873;' in css

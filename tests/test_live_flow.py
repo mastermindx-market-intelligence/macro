@@ -558,6 +558,29 @@ class TestEventIdIdempotency:
         ]
         assert loaded.attrs["oi_vintage"] == "2026-09-03"
 
+    def test_surface_oi_snapshot_preserves_exact_loader_vintage(self, monkeypatch) -> None:
+        from scripts import live_flow_poller as poller
+
+        oi = pd.DataFrame([{
+            "expiration": "2026-09-18", "strike": 100.0,
+            "right": "C", "open_interest": 50,
+        }])
+        oi.attrs["oi_vintage"] = "2026-09-03"
+        monkeypatch.setattr(poller, "_load_oi_prev", lambda root, session_date: oi.copy())
+        poller._SURFACE_OI_CACHE.clear()
+
+        oi_map, vintage = poller._surface_oi_snapshot("TEST", "2026-09-08")
+        assert oi_map[("2026-09-18", 100.0, "C")] == 50.0
+        assert vintage == "2026-09-03"
+
+        # The second read is session-cached and must preserve the same basis.
+        monkeypatch.setattr(
+            poller, "_load_oi_prev",
+            lambda *args, **kwargs: pytest.fail("surface OI cache should be reused"),
+        )
+        assert poller._surface_oi_snapshot("TEST", "2026-09-08") == (oi_map, vintage)
+
+
     def test_oi_loader_returns_none_after_five_prior_sessions(self, monkeypatch) -> None:
         from engine import thetadata_store as theta_store
         from scripts import live_flow_poller as poller
@@ -2289,7 +2312,68 @@ class TestPollerMergePath:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 29b. run_cycle end-to-end regression (prior-dict tide keys — the actual fix)
+# 29b. time-window watermark timezone semantics
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestWatermarkStartClock:
+    @staticmethod
+    def _capture_start_time(monkeypatch, watermark: str) -> str:
+        import scripts.live_flow_poller as poller
+
+        starts: list[str | None] = []
+
+        def fake_fetch(root, session_date, start_time, end_time):
+            starts.append(start_time)
+            return root, None, None
+
+        monkeypatch.setattr(poller, "_fetch_root", fake_fetch)
+        poller.run_cycle(
+            roots=["SPY"],
+            session_date="2026-09-18",
+            delta_mode="time_window",
+            day_state={},
+            baselines={},
+            cfg={
+                "max_concurrent": 2,
+                "cadence_sec": 120,
+                "etf_floor": 0,
+                "name_floor": 0,
+                "etf_anchors": ["SPY"],
+            },
+            cycle_watermarks={"SPY": {"ts": watermark, "seq": 1}},
+        )
+        assert len(starts) == 1
+        assert starts[0] is not None
+        return starts[0]
+
+    def test_naive_theta_watermark_is_et_wall_clock_independent_of_host_tz(
+        self, monkeypatch,
+    ):
+        import os
+        import time
+
+        old_tz = os.environ.get("TZ")
+        try:
+            monkeypatch.setenv("TZ", "America/Los_Angeles")
+            time.tzset()
+            assert self._capture_start_time(
+                monkeypatch, "2026-09-18T13:53:56.805",
+            ) == "13:53:26"
+        finally:
+            if old_tz is None:
+                os.environ.pop("TZ", None)
+            else:
+                os.environ["TZ"] = old_tz
+            time.tzset()
+
+    def test_aware_watermark_converts_to_et_before_overlap(self, monkeypatch):
+        assert self._capture_start_time(
+            monkeypatch, "2026-09-18T17:53:56.805+00:00",
+        ) == "13:53:26"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 29c. run_cycle end-to-end regression (prior-dict tide keys — the actual fix)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestRunCycleEndToEnd:
@@ -2315,18 +2399,20 @@ class TestRunCycleEndToEnd:
     _STRIKES = {"SPY": 550.0, "QQQ": 460.0, "IWM": 200.0}
 
     def _root_frame(self, root: str, t_hhmm: str, size: int = 100,
-                    price: float = 2.80, seq_base: int = 1000) -> pd.DataFrame:
-        """One ask-side call trade for `root` at `t_hhmm` ET on SESSION_DATE."""
+                    price: float = 2.80, seq_base: int = 1000,
+                    session_date: str = SESSION_DATE) -> pd.DataFrame:
+        """One ask-side call trade for `root` at `t_hhmm` ET on `session_date`."""
         from zoneinfo import ZoneInfo
         et = ZoneInfo("America/New_York")
         h, m = int(t_hhmm[:2]), int(t_hhmm[3:])
-        ts_utc = (datetime(2026, 7, 2, h, m, 0, tzinfo=et)
+        y, mo, d = (int(part) for part in session_date.split("-"))
+        ts_utc = (datetime(y, mo, d, h, m, 0, tzinfo=et)
                   .astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
         return pd.DataFrame([{
             "root": root, "right": "C", "expiration": "2026-07-05",
             "strike": self._STRIKES[root], "price": price, "bid": 2.40, "ask": 2.80,
             "size": size, "trade_timestamp": ts_utc, "quote_timestamp": ts_utc,
-            "sequence": seq_base, "date": SESSION_DATE,
+            "sequence": seq_base, "date": session_date,
         }])
 
     def _run_real_cycle(self, monkeypatch, frames: dict,
@@ -2334,7 +2420,9 @@ class TestRunCycleEndToEnd:
                         cycle_watermarks: dict | None = None,
                         cycle_started_at: str | None = None,
                         observed_start_to_start_sec: float | None = None,
-                        cadence_sec: int = 120) -> tuple:
+                        cadence_sec: int = 120,
+                        session_date: str = SESSION_DATE,
+                        fixed_now: datetime | None = None) -> tuple:
         """Invoke the real run_cycle with all I/O stubbed.
 
         `frames` maps root → canned calls DataFrame (the puts leg returns an empty
@@ -2360,7 +2448,7 @@ class TestRunCycleEndToEnd:
         monkeypatch.setattr(poller, "_upload_r2", _no_r2)
 
         from datetime import datetime as dt2
-        fixed_now = dt2(2026, 7, 2, 18, 30, 0, tzinfo=timezone.utc)  # 14:30 ET
+        fixed_now = fixed_now or dt2(2026, 7, 2, 18, 30, 0, tzinfo=timezone.utc)  # 14:30 ET
         monkeypatch.setattr(poller, "datetime",
                             type("FakeDT", (), {
                                 "now": staticmethod(lambda tz=None: fixed_now),
@@ -2377,7 +2465,7 @@ class TestRunCycleEndToEnd:
             "etf_anchors": ["SPY", "QQQ", "IWM"],
             "retention_hours": 24,
         }
-        def fake_stager(session_date, events):
+        def fake_stager(staged_session_date, events):
             for event in events:
                 event["available_at"] = event["decision_at"]
                 event["published_at"] = None
@@ -2386,7 +2474,7 @@ class TestRunCycleEndToEnd:
             return events
         return poller.run_cycle(
             roots=list(frames.keys()),
-            session_date=SESSION_DATE,
+            session_date=session_date,
             delta_mode="full_day",
             day_state=day_state or {},
             baselines={},
@@ -2397,6 +2485,83 @@ class TestRunCycleEndToEnd:
             cycle_started_at=cycle_started_at,
             observed_start_to_start_sec=observed_start_to_start_sec,
         )
+
+    def test_surface_quote_tap_uses_fetched_root_observation_not_cycle_start(self, monkeypatch):
+        import scripts.build_flow_surface as bfs
+
+        seen = {}
+        real = bfs.extract_cycle_quotes
+
+        def recording_extract(calls_df, puts_df, *, session_date, near_dte_cap_days=90, observed_at=None):
+            seen["session_date"] = session_date
+            seen["observed_at"] = observed_at
+            return real(
+                calls_df, puts_df,
+                session_date=session_date,
+                observed_at=observed_at,
+                near_dte_cap_days=near_dte_cap_days,
+            )
+
+        monkeypatch.setattr(bfs, "extract_cycle_quotes", recording_extract)
+        started = "2026-07-02T18:29:59Z"
+        self._run_real_cycle(
+            monkeypatch,
+            {"SPY": self._root_frame("SPY", "09:30", seq_base=1000)},
+            cycle_started_at=started,
+        )
+
+        assert seen["session_date"] == SESSION_DATE
+        # _run_real_cycle freezes the actual fetch-completion clock at 18:30:00Z.
+        # A quote available then must never be valued against the earlier cycle start.
+        assert seen["observed_at"] == "2026-07-02T18:30:00Z"
+
+    def test_surface_quote_tap_keeps_trade_and_nbbo_clocks_distinct(self, monkeypatch):
+        frame = self._root_frame("SPY", "09:30", seq_base=1000)
+        frame.loc[0, "expiration"] = "2026-07-06"  # valid NYSE session after July 2
+        frame.loc[0, "quote_timestamp"] = "2026-07-02T13:29:58.500Z"
+
+        _, _, _, _, tide = self._run_real_cycle(
+            monkeypatch, {"SPY": frame}, cycle_started_at="2026-07-02T18:29:59Z",
+        )
+
+        quote = tide["surface_quotes"]["SPY"][0]
+        assert quote["trade_at"] == "2026-07-02T13:30:00Z"
+        assert quote["quote_at"] == "2026-07-02T13:29:58.500000Z"
+        assert tide["surface_observed_at"]["SPY"] == "2026-07-02T18:30:00Z"
+
+    @pytest.mark.parametrize(
+        ("session_date", "trade_hhmm", "fixed_now", "cycle_started_at"),
+        [
+            (
+                "2026-07-02", "15:50",
+                datetime(2026, 7, 2, 20, 1, 0, tzinfo=timezone.utc),
+                "2026-07-02T19:50:00Z",
+            ),
+            (
+                "2026-11-27", "12:50",
+                datetime(2026, 11, 27, 18, 1, 0, tzinfo=timezone.utc),
+                "2026-11-27T17:50:00Z",
+            ),
+        ],
+    )
+    def test_surface_quote_tap_excludes_0dte_after_session_close(
+        self, monkeypatch, session_date, trade_hhmm, fixed_now, cycle_started_at,
+    ):
+        frame = self._root_frame(
+            "SPY", trade_hhmm, seq_base=1000, session_date=session_date,
+        )
+        frame.loc[0, "expiration"] = session_date
+
+        _, _, _, _, tide = self._run_real_cycle(
+            monkeypatch, {"SPY": frame},
+            cycle_started_at=cycle_started_at,
+            session_date=session_date,
+            fixed_now=fixed_now,
+        )
+
+        observed = fixed_now.isoformat().replace("+00:00", "Z")
+        assert tide["surface_observed_at"]["SPY"] == observed
+        assert tide["surface_quotes"].get("SPY") in (None, [])
 
     def test_meta_v2_separates_poll_source_and_compute_clocks(self, monkeypatch):
         started = "2026-07-02T18:29:59Z"
@@ -2415,6 +2580,14 @@ class TestRunCycleEndToEnd:
         assert meta["fetch_compute_sec"] >= 0
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 1
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["SPY"]
+        assert state["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
         assert meta["source_response_at_first"] == "2026-07-02T18:30:00Z"
         assert meta["source_response_at_last"] == "2026-07-02T18:30:00Z"
         assert meta["asof"] == "2026-07-02T18:30:00Z"
@@ -2467,11 +2640,17 @@ class TestRunCycleEndToEnd:
             lambda root, *_args, **_kwargs: (root, None, None),
         )
         prior_source = "2026-07-02T17:45:00Z"
+        prior_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
         feed, heat, meta, state, _ = poller.run_cycle(
             roots=["SPY"],
             session_date=SESSION_DATE,
             delta_mode="full_day",
-            day_state={"source_asof": prior_source},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
+            },
             baselines={},
             cfg={
                 "max_concurrent": 2,
@@ -2489,8 +2668,86 @@ class TestRunCycleEndToEnd:
         assert state["source_asof"] == prior_source
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_source_receipts"] == prior_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
         assert meta["source_response_at_first"] is None
         assert meta["source_response_at_last"] is None
+
+    @pytest.mark.parametrize("failed_leg", ["call", "put"])
+    def test_partial_leg_failure_retains_prior_receipts_and_skips_engine(
+        self, monkeypatch, failed_leg,
+    ):
+        import scripts.live_flow_poller as poller
+
+        successful = self._root_frame("SPY", "09:30", seq_base=1000)
+        if failed_leg == "call":
+            successful["right"] = "P"
+
+        def partial_fetch(root, *_args, **_kwargs):
+            if failed_leg == "call":
+                return root, None, successful.copy()
+            return root, successful.copy(), None
+
+        monkeypatch.setattr(poller, "_fetch_root", partial_fetch)
+        processed_roots: list[str] = []
+        real_process_batch = lf.process_batch
+
+        def recording_process_batch(**kwargs):
+            processed_roots.append("SPY")
+            return real_process_batch(**kwargs)
+
+        monkeypatch.setattr(lf, "process_batch", recording_process_batch)
+        prior_source = "2026-07-02T17:45:00Z"
+        prior_source_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
+
+        feed, heat, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {"SPY": successful},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_source_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
+                "root_minutes": {
+                    "SPY": {"09:29": {"ncp": 100.0, "npp": 0.0, "vol": 1}},
+                },
+            },
+        )
+
+        assert processed_roots == []
+        assert meta["asof"] == prior_source
+        assert feed["source_asof"] == prior_source
+        assert heat["source_asof"] == prior_source
+        assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_source_receipts"] == prior_source_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
+
+    def test_root_source_receipts_update_in_requested_order_and_preserve_prior(self, monkeypatch):
+        prior_receipts = {"IWM": "2026-07-02T17:40:00Z"}
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {
+                "QQQ": self._root_frame("QQQ", "09:30", seq_base=2000),
+                "SPY": self._root_frame("SPY", "09:30", seq_base=1000),
+            },
+            day_state={"root_source_receipts": prior_receipts},
+        )
+
+        assert meta["roots_with_source_payload_names"] == ["QQQ", "SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["QQQ", "SPY"]
+        assert state["root_source_receipts"] == {
+            "IWM": "2026-07-02T17:40:00Z",
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
 
     def test_engine_failure_does_not_advance_root_watermark(self, monkeypatch):
         frames = {
@@ -2501,11 +2758,21 @@ class TestRunCycleEndToEnd:
             lf, "process_batch",
             lambda **kwargs: (_ for _ in ()).throw(RuntimeError("synthetic engine failure")),
         )
-        self._run_real_cycle(
-            monkeypatch, frames, cycle_watermarks=watermarks,
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            frames,
+            cycle_watermarks=watermarks,
+            day_state={
+                "root_ticker_receipts": {"SPY": "2026-07-02T17:30:00Z"},
+            },
         )
         assert watermarks == {
             "SPY": {"ts": "2026-07-02T13:29:00Z", "seq": 999}
+        }
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T17:30:00Z",
         }
 
     def test_market_tide_gross_sums_all_roots_same_minute(self, monkeypatch):
@@ -3033,6 +3300,41 @@ class TestDayStateVersionDiscard:
             },
         )
         assert _load_day_state(SESSION_DATE)["source_asof"] == source_asof
+
+    def test_per_root_receipts_roundtrip_and_ignore_malformed(self, tmp_path, monkeypatch):
+        """Restart recovery preserves only canonical per-root source/ticker clocks."""
+        from scripts.live_flow_poller import _load_day_state, _save_day_state
+
+        state_dir = tmp_path / "live_flow_state"
+        state_dir.mkdir()
+        monkeypatch.setattr(
+            "scripts.live_flow_poller._state_dir", lambda: state_dir,
+        )
+        _save_day_state(
+            SESSION_DATE,
+            {
+                "emitted_ids": set(),
+                "seen_sequences": {},
+                "contract_vol": {},
+                "notability_history": {},
+                "root_source_receipts": {
+                    "SPY": "2026-07-02T18:30:00Z",
+                    "AMD": "not-a-time",
+                },
+                "root_ticker_receipts": {
+                    "SPY": "2026-07-02T18:29:59+00:00",
+                    "TLT": 123,
+                },
+            },
+        )
+
+        restored = _load_day_state(SESSION_DATE)
+        assert restored["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert restored["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T18:29:59Z",
+        }
 
 
 class TestDayStateLearningWal:

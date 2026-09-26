@@ -2309,7 +2309,12 @@ def sector_setup_view(latest: dict, timing: dict | None = None) -> dict | None:
                 r["rate_pos"] = br["exc63"] >= 0
             else:
                 r["rate_str"], r["rate_pos"] = T("—", "—"), None
+            r["rate_hit"] = br.get("hit") if br else None
+            r["rate_n"] = br.get("n") if br else None
+            r["rate_exc"] = br.get("exc63") if br else None
             r["season_str"], _ = _compact_season(st.get("season_this"))
+            _sm = r["season_str"]
+            r["season_magnitude"] = _sm.split(" (", 1)[0] if _sm and " (" in _sm else _sm
             r["season_tip"] = _season_tooltip(st.get("season_all"), st.get("season_month") or month)
             # TS-R6 two-reads reconciliation chip: when this ETF's setup-side verdict
             # (3D tactical) conflicts with the cycle timing action (slow, cap-weighted).
@@ -2554,18 +2559,32 @@ def _flip_confirmation_view() -> dict | None:
 
 
 def _sector_heat_view() -> dict | None:
-    """Compact sector-heat strip for the macro.html dashboard: up to 4 heating themes
-    and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
+    """Compact sector-heat strip for the macro.html dashboard: up to 4 producer-declared
+    heating themes and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
     rotation lane for the risk dialog; each links straight to basket/<id>.html.
     DISPLAY-ONLY — data comes from engine.sector_pulse.build_pulse('us') at build time.
     Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
     try:
         from engine.sector_pulse import build_pulse as _sp_build
+        from lib.sector_desk_view import opportunity_desk
         pulse = _sp_build("us")
         if not pulse:
             return None
         themes = pulse.get("themes") or []
-        heating = [t for t in themes if t.get("heat") in ("heating", "hot")][:4]
+        by_id = {t.get("id"): t for t in themes if t.get("id")}
+        # sector_pulse deliberately separates acceleration (heating) from an
+        # incumbent top-quartile state (hot). The homepage used to merge both
+        # labels and then slice by trailing rank, so already-hot Crypto / AI
+        # Software could suppress an actually accelerating AI Semiconductors
+        # theme. Consume the producer-owned heating roster first; when reading a
+        # legacy/mocked pulse without that top-level list, fall back only to rows
+        # whose own tier is literally heating (never hot).
+        producer_heating = pulse.get("heating")
+        if isinstance(producer_heating, list):
+            heating = [by_id[theme_id] for theme_id in producer_heating
+                       if isinstance(theme_id, str) and theme_id in by_id]
+        else:
+            heating = [t for t in themes if t.get("heat") == "heating"]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
         def _row(t):
             return {
@@ -2595,7 +2614,6 @@ def _sector_heat_view() -> dict | None:
             "semicap_equipment": ("Semicap Equipment", "半导体设备"),
             "memory_storage": ("Memory & Storage", "存储与内存"),
         }
-        by_id = {t.get("id"): t for t in themes if t.get("id")}
         rotation = []
         for theme_id in rotation_order:
             t = by_id.get(theme_id)
@@ -2608,7 +2626,8 @@ def _sector_heat_view() -> dict | None:
             return None
         return {
             "as_of": pulse.get("as_of"),
-            "heating": [_row(t) for t in heating],
+            "heating": [_row(t) for t in heating[:4]],
+            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
@@ -2637,19 +2656,32 @@ def _policy_lever_view() -> dict | None:
         return None
 
 
-def holdings_rows() -> list[dict]:
-    """Compact teaser for the dashboard's "real fund moves" panel: the top
-    conviction-ranked ACCUMULATION decisions across the thematic/active fund
-    universe (same engine as the full radar at etfs.html). Conviction = pp of
-    fund weight committed, so a tiny-position double doesn't outrank a real add."""
-    from engine.holdings_signals import top_etf_accumulation
+def holdings_panel() -> tuple[list[dict], int | None]:
+    """Sliced teaser rows + destination-true accumulate N for the etfs.html link.
+
+    N is the number of accumulate rows the destination actually renders
+    (``drop_cash(all_etf_signals())`` → ``split_by_conviction`` accumulate side
+    → ``page_top_n``). If that chain fails, N is None and the template drops
+    the count rather than print a number the board will not show.
+    """
+    from engine.holdings_signals import (
+        all_etf_signals, drop_split_events, etf_page_accumulation,
+    )
     n = config.load()["holdings_signals"].get("panel_top_n", 12)
     try:
-        acc = top_etf_accumulation().get("accumulation", [])[:n]
+        raw = all_etf_signals()
+        acc_all = [r for r in drop_split_events(raw)
+                   if (r.get("conviction_pp") or 0) > 0]
+        acc = sorted(acc_all, key=lambda r: -r["conviction_pp"])[:n]
     except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
         log.error("fund moves panel failed: %s", e)
-        return []
-    return [{
+        return [], None
+    try:
+        universe_n = len(etf_page_accumulation(raw))
+    except Exception as e:  # noqa: BLE001 — a bad count is worse than none
+        log.warning("etfs.html accumulate count failed (%s) — dropping N", e)
+        universe_n = None
+    rows = [{
         "fund": s["etf"], "fund_name": s.get("etf_name", s["etf"]),
         "ticker": s["ticker"], "name": s["name"], "sector": s.get("sector", ""),
         "weight_pct": s.get("weight_pct"), "conviction_pp": s.get("conviction_pp"),
@@ -2657,6 +2689,40 @@ def holdings_rows() -> list[dict]:
         "is_active": s.get("is_active", False), "confirmed": s.get("confirmed", False),
         "ladder": s.get("ladder"), "window": s.get("window", ""),
     } for s in acc]
+    return rows, universe_n
+
+
+def holdings_rows() -> list[dict]:
+    """Compact teaser for the dashboard's "real fund moves" panel: the top
+    conviction-ranked ACCUMULATION decisions across the thematic/active fund
+    universe (same engine as the full radar at etfs.html). Conviction = pp of
+    fund weight committed, so a tiny-position double doesn't outrank a real add."""
+    rows, _uni = holdings_panel()
+    return rows
+
+
+def accumulation_panel() -> tuple[list[dict], int | None]:
+    """Sliced accumulation-watch rows + residual-universe N from the same pass."""
+    from engine.holdings_signals import sector_residual_panel
+    from engine.playbook import SECTOR_NAMES
+    n = config.load()["holdings_signals"].get("panel_top_n", 12)
+    rows = []
+    try:
+        raw, universe_n = sector_residual_panel(n)
+        for s in raw:
+            rows.append({
+                "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
+                "ticker": s["ticker"], "name": s["name"],
+                "raw_change": s["raw_change"], "active_change": s["active_change"],
+                "active_pct": s["active_pct"],
+                "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
+                "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
+                "direction": s["direction"], "confirmed": s["confirmed"],
+                "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
+        log.error("accumulation panel failed: %s", e)
+        return [], None
+    return rows, universe_n
 
 
 def accumulation_rows() -> list[dict]:
@@ -2664,23 +2730,10 @@ def accumulation_rows() -> list[dict]:
     holding's weight change split into a price part and a residual ('active'), with
     the stock's cycle state attached. See engine/holdings_signals.py.
 
-    Uses ``top_sector_residuals`` (the strongest residual movers, no alert gate) so
+    Uses ``sector_residual_panel`` (the strongest residual movers, no alert gate) so
     the panel is always populated — on passive SPDRs the residual is tiny by
     construction and the thresholded list is almost always empty."""
-    from engine.holdings_signals import top_sector_residuals
-    from engine.playbook import SECTOR_NAMES
-    n = config.load()["holdings_signals"].get("panel_top_n", 12)
-    rows = []
-    for s in top_sector_residuals(n):
-        rows.append({
-            "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
-            "ticker": s["ticker"], "name": s["name"],
-            "raw_change": s["raw_change"], "active_change": s["active_change"],
-            "active_pct": s["active_pct"],
-            "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
-            "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
-            "direction": s["direction"], "confirmed": s["confirmed"],
-            "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    rows, _uni = accumulation_panel()
     return rows
 
 
@@ -4325,6 +4378,7 @@ def build_advanced_page(env: Environment, site: Path, generated: str, latest: di
         accumulation=accumulation_rows(), holdings_changes=holdings_rows(),
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
         flows_html=flows_html_table(),
+        breadth_split=_breadth_split_view(),  # UD-B2-W3 R6: relocated from macro dialog
     )
     write_page(site / "advanced.html", html)
     log.info("wrote advanced.html (%.0f KB)", (site / "advanced.html").stat().st_size / 1024)
@@ -5073,6 +5127,35 @@ def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bo
     return shell_book, life_gate, locked
 
 
+
+def _split_us_leader_observations(
+    projection: "dict | None", preview_rows: int, *, gated: bool = True
+):
+    """Server-side preview split for the display-only leader observation shelf.
+
+    Source status, provenance and aggregate counts remain on the shell; only ticker rows
+    beyond the configured preview move into the existing protected US payload. The input
+    projection is never mutated.
+    """
+    if not gated or not projection or not projection.get("rows"):
+        return projection, None, []
+    rows = list(projection.get("rows") or [])
+    preview_n = max(0, preview_rows)
+    preview = rows[:preview_n]
+    locked = rows[preview_n:]
+    if not locked:
+        return projection, None, []
+    shell = dict(projection)
+    shell["rows"] = preview
+    gate = {
+        "preview": len(preview),
+        "locked": len(locked),
+        "total": len(rows),
+        "tier": "essential",
+        "payload": US_PAYLOAD_URL,
+    }
+    return shell, gate, locked
+
 def _us_life_gate_cfg() -> bool:
     """P-MP1-SHELL repair round, finding S1: fail-CLOSED sibling of
     _us_board_gate_cfg(), for the PLAN-BOOK split only.
@@ -5397,7 +5480,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
                              if k in ("setups", "leaders", "ran", "actnow", "tape",
-                                      "plv_names")}
+                                      "plv_names", "leader_observations", "candidate_pool")}
         payload.update(panel_blocks)
     # P-MP1-SHELL §8b — the Setups grid's OWN locked remainder, independent of
     # `gate`/`cards_html` above. Always present in the payload shape (empty
@@ -5520,6 +5603,30 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     pgate: dict = {"tier": "essential", "payload": US_PAYLOAD_URL, "preview": preview}
     locked: dict = {}
+    overrides: dict = {}
+
+    # The complete eligible pool uses the SAME protected row split and payload.
+    # No withheld ticker is copied into the anonymous shell, search index or JS.
+    pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
+        vm.get("us_candidate_visibility"), preview, gated=True
+    )
+    if pool_gate:
+        overrides["us_candidate_visibility"] = pool_shell
+        pgate["candidate_pool"] = {key: pool_gate[key] for key in ("preview", "locked", "total")}
+        locked["candidate_pool"] = pool_locked
+
+    # ── Leader observations — a separate display population, never Candidates/Plans.
+    leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
+        vm.get("us_leader_observations"), preview, gated=True
+    )
+    if leader_gate:
+        overrides["us_leader_observations"] = leader_shell
+        pgate["leader_observations"] = {
+            "preview": leader_gate["preview"],
+            "locked": leader_gate["locked"],
+            "total": leader_gate["total"],
+        }
+        locked["leader_observations"] = leader_locked
 
     # ── .topsetups — the residual fresh-trigger table. The template filters
     # top_setups.buy against the carded board and caps at 10; that filter is
@@ -5602,7 +5709,7 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     if len(pgate) <= 3:                       # tier/payload/preview only
         return {}, None, {}
-    return {}, pgate, locked
+    return overrides, pgate, locked
 
 
 def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dict,
@@ -5625,6 +5732,21 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
             log.error("us_stocks: locked %s render failed (%s)", key, e)
             out[key] = ""
 
+    if locked.get("candidate_pool"):
+        _render("candidate_pool_html", "_us_candidate_pool_rows.html.j2",
+                rows=locked["candidate_pool"])
+        candidate_view = vm.get("us_candidate_visibility") or {}
+        out["candidate_pool_source"] = {
+            "as_of": candidate_view.get("as_of"),
+            "digest": candidate_view.get("source_digest"),
+            "total": (candidate_view.get("counts") or {}).get("eligible"),
+        }
+    if locked.get("leader_observations"):
+        _render(
+            "leader_observations_html",
+            "_us_leader_observation_rows.html.j2",
+            rows=locked["leader_observations"],
+        )
     if locked.get("setups"):
         _render("setups_html", "_us_setups_rows.html.j2", rows=locked["setups"])
     if locked.get("leaders"):
@@ -5663,10 +5785,17 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"),
                       autoescape=True)
     env.filters["min"] = lambda seq: min(seq)
+    import re as _re
+    env.filters["regex_replace"] = (
+        lambda s, pattern, repl: _re.sub(pattern, repl, s)
+        if isinstance(s, str) else s
+    )
     from engine import i18n
     from lib.seo import SITE_BASE as _SITE_BASE
+    from engine.macro_news import CHANNEL_LABEL as _CHANNEL_LABEL
     env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile, zip=zip,
-                       SITE_BASE=_SITE_BASE)  # bilingual helpers for templates
+                       SITE_BASE=_SITE_BASE,  # bilingual helpers for templates
+                       CHANNEL_LABEL=_CHANNEL_LABEL)  # ZH twins for all 21 news channels
     # P-MP1-SHELL central act: expose the b1-ruling stance projection to the
     # template so the Setups card grid (re-sourced to the plan book, below) can
     # call it per row — the SAME function scripts/build_site.py already ships
@@ -5902,6 +6031,10 @@ def main() -> int:
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
     us_standouts = _attach_board_display_chips(site, us_standouts)
+    # Read the existing lossless pool; never rescore or re-admit a candidate here.
+    from engine.us_candidate_lanes import project_candidate_visibility, load_candidate_archive_status
+    us_candidate_visibility = project_candidate_visibility(
+        us_standouts, archive=load_candidate_archive_status(us_standouts))
     # ANTICIPATION §6.9 R5 — the per-name "why not" shelf under the board. Derived from
     # the SAME board dict the cards render from; see _us_prophet_refusals for the
     # build-order reason it cannot read the published prophet index for its reason list.
@@ -5946,6 +6079,22 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("prophet/index.json unreadable (%s)", e)
             us_prophet_book_error = True
+
+    # P1 — read the incumbent leader-pullback coverage independently of Candidates and
+    # Plans. The full roster exists only in this in-memory view and the existing protected
+    # US payload; the Prophet index carries aggregate source/count telemetry only.
+    from engine.us_leader_pullback_coverage import (  # noqa: PLC0415
+        load_prophet_observations,
+    )
+    _leader_reference_session = (
+        (us_prophet_book or {}).get("source_asof")
+        or ((us_standouts or {}).get("staleness") or {}).get("price_through")
+        or (us_standouts or {}).get("as_of")
+    )
+    us_leader_observations = load_prophet_observations(
+        site_root=site,
+        reference_session=_leader_reference_session,
+    )
 
     # THEME TAPE (W2) — the hottest themes reconciled against the board above, so a
     # heating theme the board is SILENT on still prints a line saying so. Pure
@@ -6013,7 +6162,9 @@ def main() -> int:
     # Macro news & catalysts (LEAF, additive, never fatal). Catalysts (FOMC + jobs
     # report) are keyless and always on; filtered headlines + the optional LLM brief
     # only when macro_news.enabled. News NEVER feeds any score.
-    macro_catalysts, macro_news_data, macro_brief_data = [], None, None
+    # None = fetch failed (unknown/cautious lane). [] = genuinely empty calendar.
+    # Never pre-set []: a failed fetch would then assert "nothing scheduled".
+    macro_catalysts, macro_news_data, macro_brief_data = None, None, None
     event_strip, catalyst_line = [], ""
     event_risk = {"show": False}
     macro_news_disclaimer = macro_news_disclaimer_zh = ""
@@ -6022,20 +6173,22 @@ def main() -> int:
         from engine import macro_news as _mnews
         _mncfg = config.load().get("macro_news", {}) or {}
         _horizon = _mncfg.get("catalysts_horizon_days", 14)
-        macro_catalysts = _mnews.upcoming_catalysts(horizon_days=_horizon)
+        macro_catalysts = _mnews.load_upcoming_catalysts(horizon_days=_horizon)
         # RIC W3: enrich OPEX event rows with the window level chip (display-only;
         # reads site/vol/regime.json['opex_risk'] — never blocks on absence).
-        try:
-            import json as _json
-            _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
-            _vr_path = _site_dir / "vol" / "regime.json"
-            _or_snap = None
-            if _vr_path.exists():
-                _vr = _json.loads(_vr_path.read_text())
-                _or_snap = _vr.get("opex_risk")
-            macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
-        except Exception as _e:  # noqa: BLE001
-            pass   # enrichment is additive; failure leaves catalysts unchanged
+        # Skip enrich when the fetch failed (None): leave the unknown-lane signal.
+        if macro_catalysts is not None:
+            try:
+                import json as _json
+                _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
+                _vr_path = _site_dir / "vol" / "regime.json"
+                _or_snap = None
+                if _vr_path.exists():
+                    _vr = _json.loads(_vr_path.read_text())
+                    _or_snap = _vr.get("opex_risk")
+                macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
+            except Exception as _e:  # noqa: BLE001
+                pass   # enrichment is additive; failure leaves catalysts unchanged
         # compact "US high-impact next 14 days" glance strip + the imminent-catalyst
         # text line fed to the LLM brief below (context only; never a scored input)
         event_strip = _ec.high_impact_strip(horizon_days=_horizon)
@@ -6615,6 +6768,53 @@ def main() -> int:
     except Exception:  # noqa: BLE001 — additive, never break the build
         pass
 
+    # UD-B2-W2: ingest the HK + CN ratified market_state snapshots + score-log history.
+    # These are READ-ONLY on the macro lane (persisted by build_hk / build_china on
+    # their own nightly cadences) — the macro page never recomputes the blender
+    # itself. Named `_persisted_ms_view` (not `_intl_ms_view`) because R-W2-2
+    # forbids `intl_market_state` as a HK/CN source; the name must not reopen
+    # that trap. The entry shape is fixed by DEC-SPINE-SCALE-BINDINGS:
+    # {score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true};
+    # ms_history is added so the spine row can compute month-ago travel the same way
+    # the US subject row does (>=22 rows → real, shorter → designed-null travel
+    # with a real today marker, matching _unified_dashboard_hero.html.j2 lines
+    # ~:362-384 — never substitute raw_score).
+    def _persisted_ms_view(market_key: str) -> dict | None:
+        try:
+            from engine.market_state import load_persisted as _lp  # noqa: PLC0415
+            _snap = _lp(market_key=market_key)
+            if not _snap:
+                return None
+            _view = {
+                "score": _snap.get("score"),
+                "raw_score": _snap.get("raw_score"),
+                "verdict": _snap.get("verdict"),
+                "label_en": _snap.get("label_en"),
+                "label_zh": _snap.get("label_zh"),
+                "asof": _snap.get("asof"),
+                "caveat_en": _snap.get("caveat_en") or "",
+                "caveat_zh": _snap.get("caveat_zh") or "",
+                "display_only": True,
+                "market": market_key,
+                "ms_history": [],      # filled below from the parquet log
+            }
+            # score_log.parquet is keyed by the per-market directory; CN lives
+            # under data/china_market_state/ (the existing convention used by
+            # build_china.py:1888), HK under data/hk_market_state/.
+            _log_dir = "china_market_state" if market_key == "cn" else f"{market_key}_market_state"
+            _sl_path = config.data_dir() / _log_dir / "score_log.parquet"
+            if _sl_path.exists():
+                _all = pd.read_parquet(_sl_path).sort_values("date")
+                _view["ms_history"] = _all.tail(60).to_dict(orient="records")
+            return _view
+        except Exception as _e:  # noqa: BLE001 — additive, never fatal
+            log.warning("%s_market_state ingest failed (%s); degrading to None",
+                        market_key, _e)
+            return None
+
+    _hk_ms_view = _persisted_ms_view("hk")
+    _cn_ms_view = _persisted_ms_view("cn")
+
     # CA-W3: cross_asset radar chip — display-only concentration context.
     # Sources: data/regime/latest.json["cross_asset"] + data/crossasset_shadow/latest.json
     # Both fail-open; skips attach entirely if no data.
@@ -6705,6 +6905,9 @@ def main() -> int:
     _fx_context = _build_fx_context()
     _msig_stances_val = _msig_stances(_us_ms_view, _chart_liq_meta, f)
 
+    _hold_rows, _hold_uni = holdings_panel()
+    _acc_rows, _acc_uni = accumulation_panel()
+
     vm = dict(
         latest=latest,
         risk_envelope=_risk_envelope,
@@ -6728,7 +6931,9 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
+        us_leader_observations=us_leader_observations,
         us_prophet_refusals=us_prophet_refusals,
         theme_tape=theme_tape,
         us_board_outcomes=us_board_outcomes,
@@ -6754,9 +6959,11 @@ def main() -> int:
         msig_stances=_msig_stances_val,          # MSX-2: stance {en,zh} pairs per section
         fx_context=_fx_context,                  # MSX-2: FX context block (fail-open None)
         positioning=positioning_rows(f),
-        holdings_changes=holdings_rows(),
+        holdings_changes=_hold_rows,
+        holdings_universe_n=_hold_uni,
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
-        accumulation=accumulation_rows(),
+        accumulation=_acc_rows,
+        accumulation_universe_n=_acc_uni,
         flows_html=flows_html_table(),
         health=health_rows(),
         factor_leadership=factor_leadership,
@@ -6773,6 +6980,11 @@ def main() -> int:
         regime_snap=_rs_view,
         market_state=_us_ms_view,  # Green/Yellow/Red market-state command-center (display-only)
         ms_history=_ms_history_view(_us_ms_view),  # v5 scorecard: measured blend, last <=60 sessions
+        # UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS): HK + CN spine rows bind to the
+        # HK_PROFILE / CN_PROFILE market_state snapshots persisted by build_hk /
+        # build_china. Read-only on this lane; off the heavy render path.
+        hk_market_state=_hk_ms_view,
+        cn_market_state=_cn_ms_view,
         idx_spark=_idx_spark_view(),      # v5 scorecard: 20-point sparklines SPY/QQQ/^DJI/^RUT — graceful absent
         signal_stack=build_signal_stack(latest),  # consolidated cross-subsystem read (display-only)
         vol_shock=_vol_shock_view(latest, event_risk),  # forward vol-shock risk gauge (display-only)
@@ -6815,6 +7027,24 @@ def main() -> int:
     # regressing to the dashboard when build_vector doesn't run after this.
     out = site / "macro.html"
     write_page(out, env.get_template("dashboard.html.j2").render(**vm, mode="macro"))
+
+    # The cross-market component belongs to intl.html, not the primary US route.
+    # Publish the same rendered view, preserving all per-market evidence/clocks.
+    from lib.global_regime_fragment import (
+        internationalize_hero_styles,
+        write_global_regime_fragment,
+    )
+    _intl_hero_css = internationalize_hero_styles(
+        (Path(__file__).resolve().parent.parent / "templates" / "theme.css").read_text()
+    )
+    _intl_hero_html = env.get_template("_unified_dashboard_hero.html.j2").render(
+        **vm, ud_international=True
+    )
+    write_global_regime_fragment(
+        site,
+        f"<style>\n{_intl_hero_css}\n</style>\n{_intl_hero_html}",
+        source_asof=(vm.get("market_state") or {}).get("asof"),
+    )
     log.info("wrote %s (%.0f KB)", out, out.stat().st_size / 1024)
 
     # Dedicated macro news feed. Uses the same context-only news/catalyst/sentiment
@@ -7177,40 +7407,14 @@ def main() -> int:
     # Additive — never fatal to the daily run.
     try:
         from scripts.build_market_heatmap import build_all as build_market_heatmaps
-        from engine.market_heatmap import PAGE_META as _HM_MK
-        from engine.market_heatmap import page_summary as _hm_summary
-        from engine.market_heatmap import sibling_markets as _hm_siblings
-        from lib.seo import is_public_path as _is_public
+        from scripts.build_market_heatmap import render_pages as render_market_heatmap_pages
+
         _hm_payloads = build_market_heatmaps(site, generated_utc=generated)
         _tmark("intl_heatmaps")
-        _hm_tmpl = env.get_template("market_heatmap.html.j2")
-        for _m, _mk in _HM_MK.items():
-            out_mh = site / f"{_m}_heatmap.html"
-            # Read the tile map back off disk rather than trusting the in-memory
-            # return: build_all() swallows a single market's failure so one dead
-            # feed cannot take the site down, and on that path the committed JSON
-            # from the last good run is what the browser will actually fetch — so
-            # it is what the server-rendered summary must describe.
-            _pay = _hm_payloads.get(_m)
-            if not _pay:
-                try:
-                    _pay = json.loads((site / "marketdata" / f"{_m}_heatmap.json")
-                                      .read_text(encoding="utf-8"))
-                except Exception:  # noqa: BLE001 — no map, no summary; the shell still ships
-                    _pay = None
-            # The wall shows exactly when the page is anonymous-public. One source
-            # of truth (config/site_access.yml) means a sibling market adopts the
-            # tier preview by moving one line of policy — no template edit, no
-            # second flag that can disagree with the boundary.
-            _gated = _is_public(f"/{_m}_heatmap.html")
-            _sum = _hm_summary(_pay)
-            write_page(out_mh, _hm_tmpl.render(
-                mk=_mk, summary=_sum, gated=_gated,
-                n_tiles=(_sum or {}).get("n_tiles") or (_pay or {}).get("n_tiles") or 0,
-                siblings=_hm_siblings(_m),
-            ))
-            log.info("wrote %s (%.0f KB, ssr=%s, gated=%s)", out_mh,
-                     out_mh.stat().st_size / 1024, bool(_sum), _gated)
+        # The shared publisher owns JSON→SSR fallback and boundary projection.
+        # Asia close calls the same owner for China alone, so no second page
+        # renderer can drift from the full-site path.
+        render_market_heatmap_pages(_hm_payloads, site=site, env=env)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("market heatmaps (cn/hk/ca) failed: %s", e)
 
@@ -7404,10 +7608,17 @@ def main() -> int:
                 site, json.loads(_us_path.read_text())) if _us_path.exists() else None
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
+            _fresh_candidate_visibility = project_candidate_visibility(
+                _fresh_su, archive=load_candidate_archive_status(_fresh_su))
             if _fresh_su and (
                     _fresh_su.get("as_of") != _prior_as_of
-                    or (_fresh_su.get("staleness") or {}) != _prior_stale):
+                    or (_fresh_su.get("staleness") or {}) != _prior_stale
+                    # A same-session correction can change names, exclusion reasons,
+                    # or availability without advancing the date/freshness clock.
+                    # Compare the existing allowlisted view, not unrelated raw fields.
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")):
                 vm["us_standouts"] = _fresh_su
+                vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
                 # it moves with it for the same reason the Theme Tape below does — the
                 # whole point of deriving it from us_standouts (rather than from the
@@ -7731,6 +7942,19 @@ def main() -> int:
         log.info("wrote %s", _cs_page)
     except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
         log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
+
+    # Finance Intelligence dossier — render only the registered preview shell.
+    # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships
+    # no private store, no publish lane, and no serving route — the read model
+    # is consumed at runtime from the same-origin foundation route behind the
+    # site_full access policy; this static renderer never reads or republishes
+    # any read-model payload.
+    try:
+        from scripts.build_finance_intelligence_page import render_from_state as _render_finance
+        _fi_page = _render_finance(config.ROOT)
+        log.info("wrote %s", _fi_page)
+    except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
 
     # F01 Macro & Monetary suite — server-rendered workspace pages over the
     # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder

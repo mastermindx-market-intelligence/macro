@@ -3,7 +3,7 @@
   "is_context_only": true,
   "scored": false,
   "as_of": "2026-08-13",
-  "generated_utc": "2026-09-16T07:52:00.469768+00:00",
+  "generated_utc": "2026-09-25T19:22:24.586370+00:00",
   "n": 372,
   "names": {
     "AAL": {
@@ -39,7 +39,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.20837703744197666,
+        "skew_acceleration": -0.2452162842659582,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -59,7 +59,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "dislocated",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -85,7 +85,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.16746913041603878,
+        "skew_acceleration": 0.09320474057866451,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -94,7 +94,7 @@
         "em30": 0.06828,
         "oi_tilt": 0.426957,
         "turnover": 0.234985,
-        "skew": -0.0159,
+        "skew": 0.0028,
         "ivspread": 0.02117
       }
     },
@@ -131,7 +131,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.09515866262854178,
+        "skew_acceleration": 0.11786159940402374,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -177,7 +177,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.21705133994292491,
+        "skew_acceleration": 0.2332454502546507,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -223,7 +223,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.32020658900304055,
+        "skew_acceleration": 0.3387416082068757,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -269,7 +269,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.021900017307307507,
+        "skew_acceleration": 0.010448514529207475,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -315,7 +315,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.06493938332220395,
+        "skew_acceleration": 0.09465548108940147,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -381,7 +381,7 @@
           "parts": {
             "ivspread": "neutral",
             "d5_ivspread": "dislocated",
-            "skew": "neutral"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -407,7 +407,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13077703981295785,
+        "skew_acceleration": 0.14000724360451677,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -453,7 +453,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.01165411547548012,
+        "skew_acceleration": 0.031096229472383663,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -565,7 +565,7 @@
           "parts": {
             "ivspread": "neutral",
             "d5_ivspread": "contra",
-            "skew": "neutral"
+            "skew": "contra"
           }
         },
         "volatility_disagreement": {
@@ -591,7 +591,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.15145138539941017,
+        "skew_acceleration": 0.18096354919612778,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -637,7 +637,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.033167265472825225,
+        "skew_acceleration": -0.010780841433762345,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -683,7 +683,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13717362749970008,
+        "skew_acceleration": 0.14390521533621436,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -729,7 +729,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13837712316658213,
+        "skew_acceleration": 0.15095841374392827,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -821,7 +821,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.44339398833584087,
+        "skew_acceleration": -0.4262159504994161,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -837,11 +837,11 @@
     "AMD": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "mixed",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "contra",
-            "skew": "contra"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -852,9 +852,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "contradicts",
+          "read": "confirms",
           "parts": {
-            "options": "contra",
+            "options": "mixed",
             "stock": "down"
           }
         },
@@ -867,7 +867,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.23378961099820772,
+        "skew_acceleration": 0.14667029885880456,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -876,7 +876,7 @@
         "em30": 0.155801,
         "oi_tilt": 0.273855,
         "turnover": 0.264817,
-        "skew": 0.0385,
+        "skew": -0.0129,
         "ivspread": -0.06801
       }
     },
@@ -913,7 +913,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.04248999618159238,
+        "skew_acceleration": 0.04011213761570154,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -959,7 +959,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1175500986300072,
+        "skew_acceleration": -0.13574354381232134,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1005,7 +1005,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1467247870051559,
+        "skew_acceleration": -0.0594870554402912,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1014,7 +1014,7 @@
         "em30": 0.080903,
         "oi_tilt": 0.561034,
         "turnover": 0.175908,
-        "skew": 0.0035,
+        "skew": 0.0042,
         "ivspread": -0.00289
       }
     },
@@ -1051,7 +1051,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.32773057704009556,
+        "skew_acceleration": 0.3427015554017169,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1097,7 +1097,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.14455322011018878,
+        "skew_acceleration": 0.16740845944818739,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1143,7 +1143,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2695093317748899,
+        "skew_acceleration": 0.27265045705861324,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1189,7 +1189,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.43731726829100437,
+        "skew_acceleration": 0.448496004927594,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1205,11 +1205,11 @@
     "ARM": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "mixed",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "contra",
-            "skew": "contra"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -1220,9 +1220,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "contradicts",
+          "read": "confirms",
           "parts": {
-            "options": "contra",
+            "options": "mixed",
             "stock": "down"
           }
         },
@@ -1235,7 +1235,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4312614485466506,
+        "skew_acceleration": -0.007454953010121557,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1244,7 +1244,7 @@
         "em30": 0.210985,
         "oi_tilt": 0.259304,
         "turnover": 0.193259,
-        "skew": 0.0477,
+        "skew": -0.0123,
         "ivspread": -0.09766
       }
     },
@@ -1281,7 +1281,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13934756823131667,
+        "skew_acceleration": 0.147162258950153,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1327,7 +1327,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.041251670699109066,
+        "skew_acceleration": 0.06066564875693792,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1389,11 +1389,11 @@
     "AVAV": {
       "reads": {
         "directional_option_information": {
-          "read": "mixed",
+          "read": "contra",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "contra",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -1404,9 +1404,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "contradicts",
+          "read": "confirms",
           "parts": {
-            "options": "mixed",
+            "options": "contra",
             "stock": "up"
           }
         },
@@ -1419,7 +1419,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.24500950387992793,
+        "skew_acceleration": 0.26278685170149096,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1465,7 +1465,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.08636755484814906,
+        "skew_acceleration": 0.0008003130088961585,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1474,7 +1474,7 @@
         "em30": 0.142899,
         "oi_tilt": 0.405147,
         "turnover": 0.102443,
-        "skew": 0.0138,
+        "skew": 0.0052,
         "ivspread": -0.01635
       }
     },
@@ -1511,7 +1511,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0684753124620584,
+        "skew_acceleration": -0.09038075273637514,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1557,7 +1557,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4042644022957496,
+        "skew_acceleration": -0.40776566814884746,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1603,7 +1603,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2837255136337637,
+        "skew_acceleration": -0.27393679192166126,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1649,7 +1649,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.07517756908025863,
+        "skew_acceleration": -0.09538813586384659,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1695,7 +1695,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.12271560050274599,
+        "skew_acceleration": 0.13952067496978726,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1741,7 +1741,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.09547240808985913,
+        "skew_acceleration": 0.1063560510536804,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1787,7 +1787,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.22495817796694167,
+        "skew_acceleration": 0.23847867333209122,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1833,7 +1833,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.37785775662258064,
+        "skew_acceleration": -0.3748771633211653,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1879,7 +1879,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.04522260458551236,
+        "skew_acceleration": -0.07487537805831973,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1925,7 +1925,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.10261957684351614,
+        "skew_acceleration": -0.08299896071169377,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -1971,7 +1971,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.056959951441059475,
+        "skew_acceleration": 0.08048665801599986,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2017,7 +2017,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.014640381114519152,
+        "skew_acceleration": -0.0054495996215135345,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2063,7 +2063,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.23186328952137158,
+        "skew_acceleration": 0.2329859761617057,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2155,7 +2155,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.00514649905158493,
+        "skew_acceleration": 0.029143883764178424,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2201,7 +2201,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.14030334103843634,
+        "skew_acceleration": 0.16332250209948784,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2247,7 +2247,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.04778339278982496,
+        "skew_acceleration": 0.05908608228540013,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2293,7 +2293,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5672836610737065,
+        "skew_acceleration": -0.5625848822345992,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2339,7 +2339,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.006834316591126599,
+        "skew_acceleration": 0.01117722944769639,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2385,7 +2385,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1018615805991413,
+        "skew_acceleration": 0.13523665128237172,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2431,7 +2431,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.19996927324924707,
+        "skew_acceleration": 0.22115485250051137,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2477,7 +2477,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.16319755633052202,
+        "skew_acceleration": -0.2035902497208389,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2569,7 +2569,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.27313094262240134,
+        "skew_acceleration": -0.28765382703117925,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2615,7 +2615,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.20190589189444302,
+        "skew_acceleration": 0.21305112776829122,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2661,7 +2661,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.24557874999590468,
+        "skew_acceleration": -0.2499994191464469,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2707,7 +2707,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4668387010840225,
+        "skew_acceleration": -0.47218315314777004,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2723,11 +2723,11 @@
     "CHD": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "neutral",
           "parts": {
             "ivspread": "neutral",
             "d5_ivspread": "neutral",
-            "skew": "contra"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -2738,9 +2738,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "contradicts",
+          "read": "neutral",
           "parts": {
-            "options": "contra",
+            "options": "neutral",
             "stock": "down"
           }
         },
@@ -2753,7 +2753,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.16504627241329345,
+        "skew_acceleration": 0.17867628026412824,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2799,7 +2799,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1989149526474541,
+        "skew_acceleration": -0.21542057675528087,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2845,7 +2845,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.16054346645672035,
+        "skew_acceleration": 0.1905287588554604,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2891,7 +2891,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.0998550331753868,
+        "skew_acceleration": 0.11332649620716262,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2937,7 +2937,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.00489472447800593,
+        "skew_acceleration": -0.04216073666450815,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -2983,7 +2983,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2903522549456703,
+        "skew_acceleration": 0.29048033768581705,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3029,7 +3029,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3005281342646172,
+        "skew_acceleration": -0.30526827740290846,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3075,7 +3075,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.34188131124023996,
+        "skew_acceleration": 0.36396458723495,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3091,11 +3091,11 @@
     "CNC": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "neutral",
           "parts": {
             "ivspread": "neutral",
             "d5_ivspread": "neutral",
-            "skew": "contra"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -3108,7 +3108,7 @@
         "option_stock_confirmation": {
           "read": "neutral",
           "parts": {
-            "options": "contra",
+            "options": "neutral",
             "stock": "neutral"
           }
         },
@@ -3121,7 +3121,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.24906176179640868,
+        "skew_acceleration": -0.2785005526215234,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3167,7 +3167,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.026954041367908577,
+        "skew_acceleration": -0.04548892053317821,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3213,7 +3213,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1000432132121426,
+        "skew_acceleration": -0.06555616727370739,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3259,7 +3259,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.17479551956068073,
+        "skew_acceleration": 0.1868034112744411,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3305,7 +3305,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4041322312247996,
+        "skew_acceleration": -0.1929976173315897,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3314,7 +3314,7 @@
         "em30": 0.176897,
         "oi_tilt": -0.050509,
         "turnover": 0.307804,
-        "skew": -0.0289,
+        "skew": -0.0208,
         "ivspread": 0.02006
       }
     },
@@ -3351,7 +3351,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.34206778386019576,
+        "skew_acceleration": -0.35431606785189906,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3371,7 +3371,7 @@
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "dislocated",
-            "skew": "contra"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -3397,7 +3397,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.38690148791791623,
+        "skew_acceleration": -0.3910543845079553,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3443,7 +3443,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2204398212717571,
+        "skew_acceleration": 0.2241089249646122,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3489,7 +3489,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.256774418619738,
+        "skew_acceleration": -0.24916995863110863,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3535,7 +3535,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.29027563163758385,
+        "skew_acceleration": 0.29938090477546775,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3581,7 +3581,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1684025272359958,
+        "skew_acceleration": 0.19407666667648726,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3601,7 +3601,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "contra",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -3627,7 +3627,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.40389690553980173,
+        "skew_acceleration": -0.09645209748858324,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3636,7 +3636,7 @@
         "em30": 0.153963,
         "oi_tilt": 0.531131,
         "turnover": 0.119538,
-        "skew": -0.0022,
+        "skew": 0.0203,
         "ivspread": 0.02947
       }
     },
@@ -3673,7 +3673,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.013747758620420436,
+        "skew_acceleration": 0.018035124486308618,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3719,7 +3719,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.32658253038227836,
+        "skew_acceleration": 0.33864296498601654,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3765,7 +3765,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1417864333244328,
+        "skew_acceleration": -0.17091086621136758,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3811,7 +3811,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.004718252933306688,
+        "skew_acceleration": 0.009387692193866815,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3857,7 +3857,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.10858316831308934,
+        "skew_acceleration": -0.13499857946656552,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3903,7 +3903,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.17268703133897684,
+        "skew_acceleration": -0.1869920990829672,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -3995,7 +3995,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.23610507244226506,
+        "skew_acceleration": -0.24929194560382326,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4041,7 +4041,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.11328609755501545,
+        "skew_acceleration": 0.13102084242828066,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4061,7 +4061,7 @@
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "neutral",
-            "skew": "neutral"
+            "skew": "contra"
           }
         },
         "volatility_disagreement": {
@@ -4087,7 +4087,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.28671900196214184,
+        "skew_acceleration": 0.3047097831261233,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4133,7 +4133,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2801163072377908,
+        "skew_acceleration": -0.2844621463360492,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4179,7 +4179,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.22497247764051242,
+        "skew_acceleration": 0.2521167965389106,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4225,7 +4225,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.11721567974714403,
+        "skew_acceleration": -0.10470137243307631,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4271,7 +4271,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.48971568776033014,
+        "skew_acceleration": 0.48962696664002003,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4317,7 +4317,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.09922572109606947,
+        "skew_acceleration": 0.05311047206239922,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4326,7 +4326,7 @@
         "em30": 0.033362,
         "oi_tilt": 0.401834,
         "turnover": 0.159319,
-        "skew": 0.0072,
+        "skew": 0.0152,
         "ivspread": 0.00699
       }
     },
@@ -4363,7 +4363,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.22069182531815812,
+        "skew_acceleration": -0.24819384620395224,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4409,7 +4409,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.07506206160089546,
+        "skew_acceleration": -0.06604481186576316,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4455,7 +4455,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4192699063295673,
+        "skew_acceleration": -0.41292518501078934,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4501,7 +4501,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.07097373008054714,
+        "skew_acceleration": -0.0494958579152337,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4547,7 +4547,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.19310831161227604,
+        "skew_acceleration": -0.20051388366071188,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4593,7 +4593,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.006934063648348865,
+        "skew_acceleration": -0.027264483752292568,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4639,7 +4639,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.34786430280346026,
+        "skew_acceleration": 0.3458133098889856,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4685,7 +4685,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.02978158236717804,
+        "skew_acceleration": -0.0070854419257457835,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4731,7 +4731,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.15841072686308832,
+        "skew_acceleration": -0.18252911039861852,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4777,7 +4777,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1818400394289486,
+        "skew_acceleration": -0.2192172783296334,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4823,7 +4823,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.21236846465400333,
+        "skew_acceleration": -0.24043394446170313,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4915,7 +4915,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.15664853398426976,
+        "skew_acceleration": -0.17302750950331597,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -4961,7 +4961,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4756669040605009,
+        "skew_acceleration": -0.4647813368103341,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5007,7 +5007,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2801606570884398,
+        "skew_acceleration": -0.2836256746919229,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5053,7 +5053,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.11706055289502315,
+        "skew_acceleration": 0.13705103110633343,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5099,7 +5099,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3582513527636846,
+        "skew_acceleration": -0.360740438043758,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5145,7 +5145,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.15801320461851193,
+        "skew_acceleration": -0.19271364888972406,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5237,7 +5237,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.348856546486941,
+        "skew_acceleration": 0.34472273074038806,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5283,7 +5283,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.24632037626823122,
+        "skew_acceleration": 0.27718904214636775,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5329,7 +5329,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.16392600327529522,
+        "skew_acceleration": 0.17654006655529325,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5375,7 +5375,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3682825035782613,
+        "skew_acceleration": -0.3587018420111916,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5421,7 +5421,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.28668765134312346,
+        "skew_acceleration": -0.2925805497208873,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5467,7 +5467,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.18236036084012602,
+        "skew_acceleration": -0.21812655345899815,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5513,7 +5513,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5032901235487149,
+        "skew_acceleration": -0.513546460626889,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5559,7 +5559,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.09532156484996862,
+        "skew_acceleration": 0.12411880491838762,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5605,7 +5605,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.17844913003538473,
+        "skew_acceleration": -0.2157165993025678,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5651,7 +5651,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2971235248287576,
+        "skew_acceleration": 0.2985532248335723,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5697,7 +5697,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0250132647620549,
+        "skew_acceleration": -0.06092605957895908,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5743,7 +5743,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1047545644059572,
+        "skew_acceleration": 0.13274758272406884,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5789,7 +5789,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1502662435455071,
+        "skew_acceleration": 0.18522075273112149,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5835,7 +5835,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.08849054008272783,
+        "skew_acceleration": 0.09834523225377811,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5881,7 +5881,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.35187535715636475,
+        "skew_acceleration": 0.357391262645398,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5927,7 +5927,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1978932879578028,
+        "skew_acceleration": -0.2265160120272906,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -5973,7 +5973,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.44130752335452295,
+        "skew_acceleration": 0.4444201034324631,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6065,7 +6065,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.02319553403900604,
+        "skew_acceleration": -0.027764855156895307,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6111,7 +6111,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.36405322386270556,
+        "skew_acceleration": -0.35347112811738224,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6203,7 +6203,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0524097950518716,
+        "skew_acceleration": -0.09450145309782865,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6249,7 +6249,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.09828414435753874,
+        "skew_acceleration": 0.12093950588032754,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6295,7 +6295,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.19541484295019496,
+        "skew_acceleration": 0.2002841287229319,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6341,7 +6341,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.17675536313440343,
+        "skew_acceleration": 0.20377811448394867,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6407,7 +6407,7 @@
           "parts": {
             "ivspread": "neutral",
             "d5_ivspread": "dislocated",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -6433,7 +6433,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.26704754529141805,
+        "skew_acceleration": -0.00029920750377809835,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6442,7 +6442,7 @@
         "em30": 0.079582,
         "oi_tilt": 0.286143,
         "turnover": 0.156262,
-        "skew": -0.0024,
+        "skew": 0.0022,
         "ivspread": 0.01088
       }
     },
@@ -6479,7 +6479,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5442615757345762,
+        "skew_acceleration": -0.5452916564409289,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6525,7 +6525,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.18837113234875708,
+        "skew_acceleration": -0.21644172820602575,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6571,7 +6571,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2569036433368055,
+        "skew_acceleration": 0.26191280605843215,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6617,7 +6617,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.168070331633492,
+        "skew_acceleration": 0.186442161841474,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6663,7 +6663,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.4504956278135665,
+        "skew_acceleration": 0.44292251845654945,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6709,7 +6709,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.02064602508903235,
+        "skew_acceleration": -0.05226779560514622,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6755,7 +6755,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.16582496434207256,
+        "skew_acceleration": -0.18411498580742047,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6801,7 +6801,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.26694369714347943,
+        "skew_acceleration": -0.27884872789480575,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6847,7 +6847,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.45387491490838067,
+        "skew_acceleration": 0.46774203032533745,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6893,7 +6893,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5266745113211013,
+        "skew_acceleration": -0.5334929068405678,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -6985,7 +6985,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.5540592021835711,
+        "skew_acceleration": 0.5630747606195206,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7077,7 +7077,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.04555175508033449,
+        "skew_acceleration": 0.06774268091994856,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7123,7 +7123,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.05154367189851061,
+        "skew_acceleration": 0.07519601425790101,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7169,7 +7169,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.22617401900609702,
+        "skew_acceleration": 0.23285890435568357,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7215,7 +7215,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2283950831230973,
+        "skew_acceleration": 0.23242827851167291,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7261,7 +7261,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.10541111345308446,
+        "skew_acceleration": 0.12068092284936349,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7307,7 +7307,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3004584078448399,
+        "skew_acceleration": -0.2924327778292504,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7353,7 +7353,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3968212645253377,
+        "skew_acceleration": 0.4076521340872874,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7399,7 +7399,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.34012731569167043,
+        "skew_acceleration": -0.33666785841410646,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7445,7 +7445,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2456524739014163,
+        "skew_acceleration": 0.25667960939965573,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7491,7 +7491,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.40202908788207803,
+        "skew_acceleration": -0.40007931172082334,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7583,7 +7583,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.14533241534203545,
+        "skew_acceleration": 0.15561123508476726,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7629,7 +7629,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.06334239243611234,
+        "skew_acceleration": 0.09090232940926984,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7675,7 +7675,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.08774962189784108,
+        "skew_acceleration": -0.0658121066384309,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7721,7 +7721,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.108997290002537,
+        "skew_acceleration": 0.12944482431368154,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7767,7 +7767,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.6103477546495568,
+        "skew_acceleration": -0.6200901794348319,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7813,7 +7813,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.16952872347257586,
+        "skew_acceleration": 0.20369307702411565,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7859,7 +7859,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.6223794197587326,
+        "skew_acceleration": -0.6259656740373611,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7905,7 +7905,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.24623124975480665,
+        "skew_acceleration": -0.2721814924979084,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7951,7 +7951,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3152392338514993,
+        "skew_acceleration": 0.3127308963863411,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -7997,7 +7997,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2241565597966242,
+        "skew_acceleration": 0.25279959965210386,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8043,7 +8043,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2113076913877034,
+        "skew_acceleration": -0.21232955846119994,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8089,7 +8089,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13328255425294516,
+        "skew_acceleration": 0.1310120883841418,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8098,7 +8098,7 @@
         "em30": 0.045571,
         "oi_tilt": 0.35116,
         "turnover": 0.094429,
-        "skew": 0.0155,
+        "skew": 0.0224,
         "ivspread": 0.00577
       }
     },
@@ -8135,7 +8135,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2140485562011385,
+        "skew_acceleration": -0.23917075085133643,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8181,7 +8181,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2750936807475161,
+        "skew_acceleration": -0.27412392807458263,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8227,7 +8227,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.034823256204322306,
+        "skew_acceleration": -0.02960394855870646,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8273,7 +8273,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.5009325824856762,
+        "skew_acceleration": 0.4941346861741271,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8319,7 +8319,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3348983427243577,
+        "skew_acceleration": -0.3518142733551228,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8411,7 +8411,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.23158674528671352,
+        "skew_acceleration": 0.25119018193208054,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8457,7 +8457,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4924960511461329,
+        "skew_acceleration": -0.49111681762605824,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8503,7 +8503,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.24652679681061807,
+        "skew_acceleration": -0.25573682856135904,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8549,7 +8549,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.11563948572484706,
+        "skew_acceleration": -0.1558823622245938,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8595,7 +8595,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.09593978019646132,
+        "skew_acceleration": -0.12989201744769846,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8641,7 +8641,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1054601344860912,
+        "skew_acceleration": 0.5319113460569853,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8650,7 +8650,7 @@
         "em30": 0.063053,
         "oi_tilt": 0.37861,
         "turnover": 0.056979,
-        "skew": 0.0265,
+        "skew": 0.1028,
         "ivspread": -0.01238
       }
     },
@@ -8687,7 +8687,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.28019305641371783,
+        "skew_acceleration": 0.2854949092357758,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8733,7 +8733,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.6131509111322835,
+        "skew_acceleration": 0.5935806214466356,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8779,7 +8779,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3441211685428378,
+        "skew_acceleration": 0.3441429534898375,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8825,7 +8825,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.04598710044570292,
+        "skew_acceleration": -0.03598486329157263,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8871,7 +8871,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13872344804909997,
+        "skew_acceleration": 0.15187038735623215,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8917,7 +8917,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5383727767140407,
+        "skew_acceleration": -0.5299568867333617,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -8963,7 +8963,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.30634362891499334,
+        "skew_acceleration": -0.30246687434381414,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9009,7 +9009,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.396257141092295,
+        "skew_acceleration": -0.3857735579966779,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9055,7 +9055,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3512422129653932,
+        "skew_acceleration": -0.35661397158580993,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9101,7 +9101,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3416800061040125,
+        "skew_acceleration": -0.3297814555343388,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9147,7 +9147,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.11088046331686541,
+        "skew_acceleration": 0.1360144171661649,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9193,7 +9193,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.15680616296647232,
+        "skew_acceleration": 0.1828432254728528,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9239,7 +9239,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.18299088188435897,
+        "skew_acceleration": -0.2043918742280738,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9285,7 +9285,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.35340335197297723,
+        "skew_acceleration": 0.3750912556596373,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9331,7 +9331,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.24860738649584568,
+        "skew_acceleration": 0.2586162788798353,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9377,7 +9377,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.07327144219408377,
+        "skew_acceleration": 0.08116886151128766,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9423,7 +9423,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2862446441320647,
+        "skew_acceleration": 0.2992420549994763,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9469,7 +9469,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.018990036783126996,
+        "skew_acceleration": -0.00016987636029991426,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9515,7 +9515,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1118461582827096,
+        "skew_acceleration": 0.13328974986811376,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9531,11 +9531,11 @@
     "MARA": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "mixed",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "neutral",
-            "skew": "neutral"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -9546,9 +9546,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "contradicts",
+          "read": "confirms",
           "parts": {
-            "options": "contra",
+            "options": "mixed",
             "stock": "down"
           }
         },
@@ -9561,7 +9561,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.24809372010795638,
+        "skew_acceleration": -0.10095521095339577,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9570,7 +9570,7 @@
         "em30": 0.223729,
         "oi_tilt": -0.466691,
         "turnover": 0.489174,
-        "skew": 0.008,
+        "skew": -0.0328,
         "ivspread": -0.05126
       }
     },
@@ -9607,7 +9607,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.45482990798830264,
+        "skew_acceleration": 0.4544316528219238,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9653,7 +9653,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.02799946504158235,
+        "skew_acceleration": -0.014784504268552823,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9699,7 +9699,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.25454525835187936,
+        "skew_acceleration": 0.2816506248971492,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9745,7 +9745,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.07776084679534945,
+        "skew_acceleration": 0.08544431847450212,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9765,7 +9765,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "dislocated",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -9791,7 +9791,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.461003525064686,
+        "skew_acceleration": -0.09257021273236016,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9800,7 +9800,7 @@
         "em30": 0.094303,
         "oi_tilt": 0.318915,
         "turnover": 0.172419,
-        "skew": -0.0111,
+        "skew": 0.003,
         "ivspread": 0.02188
       }
     },
@@ -9837,7 +9837,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1215014571780243,
+        "skew_acceleration": 0.1309953073555335,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9883,7 +9883,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.29627173088859987,
+        "skew_acceleration": 0.3119867550860019,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9929,7 +9929,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.04415055934164863,
+        "skew_acceleration": 0.05052810045304684,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -9975,7 +9975,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.47133327774512224,
+        "skew_acceleration": -0.4586451871593228,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10021,7 +10021,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.03454245547147505,
+        "skew_acceleration": -0.07261755201664571,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10067,7 +10067,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.23790248998358715,
+        "skew_acceleration": -0.2580467712214551,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10113,7 +10113,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.029827553441319765,
+        "skew_acceleration": -0.0018493726828906487,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10133,7 +10133,7 @@
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "contra",
-            "skew": "neutral"
+            "skew": "contra"
           }
         },
         "volatility_disagreement": {
@@ -10159,7 +10159,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.23952555824947286,
+        "skew_acceleration": 0.2689890831925902,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10205,7 +10205,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.4020549875915408,
+        "skew_acceleration": 0.3942670928403489,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10251,7 +10251,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.22442077849627562,
+        "skew_acceleration": 0.2365215175048987,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10297,7 +10297,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.22076914701131856,
+        "skew_acceleration": 0.2409292823198077,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10343,7 +10343,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.5496058242348647,
+        "skew_acceleration": 0.070073921733046,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10352,7 +10352,7 @@
         "em30": 0.072204,
         "oi_tilt": 0.793785,
         "turnover": 0.135812,
-        "skew": 0.0031,
+        "skew": 0.0255,
         "ivspread": 0.00865
       }
     },
@@ -10389,7 +10389,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.07939209012862558,
+        "skew_acceleration": -0.15694724539917054,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10398,7 +10398,7 @@
         "em30": 0.189826,
         "oi_tilt": 0.122104,
         "turnover": 0.484608,
-        "skew": -0.0209,
+        "skew": -0.0125,
         "ivspread": 0.02086
       }
     },
@@ -10435,7 +10435,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.13921191796378324,
+        "skew_acceleration": -0.16193185080379516,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10481,7 +10481,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.05595820270861446,
+        "skew_acceleration": -0.05746492257359381,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10497,11 +10497,11 @@
     "MU": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "mixed",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "contra",
-            "skew": "contra"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -10512,9 +10512,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "confirms",
+          "read": "contradicts",
           "parts": {
-            "options": "contra",
+            "options": "mixed",
             "stock": "up"
           }
         },
@@ -10527,7 +10527,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.34367597508409387,
+        "skew_acceleration": -0.096932607032224,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10536,7 +10536,7 @@
         "em30": 0.187489,
         "oi_tilt": 0.387355,
         "turnover": 0.778727,
-        "skew": 0.0996,
+        "skew": -0.0102,
         "ivspread": -0.1449
       }
     },
@@ -10573,7 +10573,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3266321558977432,
+        "skew_acceleration": 0.3374606135136371,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10619,7 +10619,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.10263497702583757,
+        "skew_acceleration": -0.11777374613724823,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10665,7 +10665,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.028278515044709185,
+        "skew_acceleration": 0.049230341460954896,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10711,7 +10711,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.05092360343011065,
+        "skew_acceleration": 0.04886804006473311,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10777,7 +10777,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "dislocated",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -10803,7 +10803,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.06499188355179408,
+        "skew_acceleration": 0.09921112192008485,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10849,7 +10849,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2533941099327057,
+        "skew_acceleration": 0.25616438326192514,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10895,7 +10895,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.14176155520718864,
+        "skew_acceleration": -0.1562405933514446,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10941,7 +10941,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.49344699493782984,
+        "skew_acceleration": -0.4893922838303978,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -10987,7 +10987,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3586159254286082,
+        "skew_acceleration": 0.36927980698725105,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11033,7 +11033,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.23869421068363028,
+        "skew_acceleration": 0.25545631165191485,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11079,7 +11079,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.06784889493413349,
+        "skew_acceleration": -0.07682712569913824,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11088,7 +11088,7 @@
         "em30": 0.112405,
         "oi_tilt": 0.671464,
         "turnover": 0.284676,
-        "skew": 0.0137,
+        "skew": 0.0153,
         "ivspread": -0.00771
       }
     },
@@ -11125,7 +11125,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.15330437781763717,
+        "skew_acceleration": 0.1884820068461418,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11171,7 +11171,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.43008527889901127,
+        "skew_acceleration": -0.4447244276785396,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11217,7 +11217,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3177217504101908,
+        "skew_acceleration": 0.3311741676081216,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11263,7 +11263,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.01327532312641655,
+        "skew_acceleration": 0.042817707641165104,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11309,7 +11309,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5494328986753229,
+        "skew_acceleration": -0.5500331164358678,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11355,7 +11355,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3692524255026621,
+        "skew_acceleration": 0.3772227385054773,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11401,7 +11401,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.08828824531950669,
+        "skew_acceleration": 0.1012923464264191,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11447,7 +11447,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.07030882829569796,
+        "skew_acceleration": 0.0814849429283836,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11493,7 +11493,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.08812666822846982,
+        "skew_acceleration": 0.10881880309171965,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11539,7 +11539,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4833279205107656,
+        "skew_acceleration": -0.486594024775767,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11585,7 +11585,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1434163737901777,
+        "skew_acceleration": 0.15594011045690093,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11631,7 +11631,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2783594936287703,
+        "skew_acceleration": -0.29208220873590257,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11677,7 +11677,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.34020293967039683,
+        "skew_acceleration": 0.03476656143223822,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11686,7 +11686,7 @@
         "em30": 0.20699,
         "oi_tilt": 0.277588,
         "turnover": 0.167256,
-        "skew": 0.0227,
+        "skew": 0.0257,
         "ivspread": 0.00241
       }
     },
@@ -11723,7 +11723,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.28796729412906585,
+        "skew_acceleration": -0.2983615754960658,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11769,7 +11769,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4338938879324047,
+        "skew_acceleration": -0.442306302366121,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11815,7 +11815,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1765264901139127,
+        "skew_acceleration": -0.21148604532981335,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11861,7 +11861,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.4527361685151545,
+        "skew_acceleration": 0.444741854121536,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11953,7 +11953,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.11109108370376775,
+        "skew_acceleration": 0.14258244163328848,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -11999,7 +11999,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5945965305294711,
+        "skew_acceleration": -0.6058967259793813,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12045,7 +12045,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.39978557371256584,
+        "skew_acceleration": 0.39564400783221343,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12091,7 +12091,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0269818164621361,
+        "skew_acceleration": -0.058362972562132076,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12111,7 +12111,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "neutral",
-            "skew": "neutral"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -12137,7 +12137,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0028312104266756677,
+        "skew_acceleration": -0.04761511998634482,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12183,7 +12183,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0233885333888188,
+        "skew_acceleration": -0.05868317159560027,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12229,7 +12229,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0711488493808155,
+        "skew_acceleration": -0.086591359225213,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12249,7 +12249,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "dislocated",
-            "skew": "neutral"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -12275,7 +12275,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1620512345011798,
+        "skew_acceleration": -0.18994329321388842,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12295,7 +12295,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "neutral",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -12321,7 +12321,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.0917347024759344,
+        "skew_acceleration": -0.12479614700787872,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12330,7 +12330,7 @@
         "em30": 0.133412,
         "oi_tilt": 0.754328,
         "turnover": 0.32638,
-        "skew": -0.0286,
+        "skew": 0.005,
         "ivspread": 0.04368
       }
     },
@@ -12367,7 +12367,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.19343215932824082,
+        "skew_acceleration": 0.21183318536959606,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12413,7 +12413,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.04191244913038411,
+        "skew_acceleration": 0.03339712664426553,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12459,7 +12459,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.16219403339270289,
+        "skew_acceleration": 0.19030146181450192,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12505,7 +12505,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.042950217238613364,
+        "skew_acceleration": -0.042474851738742325,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12551,7 +12551,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3830350313503589,
+        "skew_acceleration": -0.3827772374477857,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12597,7 +12597,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.08951656487555038,
+        "skew_acceleration": 0.11673513788503509,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12643,7 +12643,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3080491735221979,
+        "skew_acceleration": 0.3192878410058245,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12689,7 +12689,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2809400571046592,
+        "skew_acceleration": 0.3063837671382026,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12735,7 +12735,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.20155664292090048,
+        "skew_acceleration": 0.20937860448754497,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12781,7 +12781,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.48819137449908157,
+        "skew_acceleration": -0.4946951899421931,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12827,7 +12827,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3437100498609471,
+        "skew_acceleration": 0.04218421095916536,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12836,7 +12836,7 @@
         "em30": 0.132051,
         "oi_tilt": -0.17728,
         "turnover": 0.109389,
-        "skew": 0.068,
+        "skew": 0.0297,
         "ivspread": -0.08611
       }
     },
@@ -12873,7 +12873,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.14008861713522658,
+        "skew_acceleration": 0.1648925027208984,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12919,7 +12919,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3143726960139689,
+        "skew_acceleration": -0.33963531321172263,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12965,7 +12965,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3268722612212644,
+        "skew_acceleration": 0.04720597567546553,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -12974,7 +12974,7 @@
         "em30": 0.053283,
         "oi_tilt": 0.508376,
         "turnover": 0.26712,
-        "skew": 0.0147,
+        "skew": 0.0168,
         "ivspread": 0.00938
       }
     },
@@ -13011,7 +13011,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2732142727562671,
+        "skew_acceleration": -0.3072054936636653,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13057,7 +13057,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.007981808143385671,
+        "skew_acceleration": 0.02940370058800812,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13103,7 +13103,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2602473799680859,
+        "skew_acceleration": -0.2749114583678691,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13149,7 +13149,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2880013466430615,
+        "skew_acceleration": 0.289822654958114,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13195,7 +13195,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5921211674459522,
+        "skew_acceleration": -0.6033407540860929,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13241,7 +13241,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13029561006609913,
+        "skew_acceleration": 0.14101076456257267,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13287,7 +13287,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.24861691623325916,
+        "skew_acceleration": -0.27557414977392514,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13333,7 +13333,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.16130326644610288,
+        "skew_acceleration": 0.19015188448127696,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13379,7 +13379,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.13682030697507375,
+        "skew_acceleration": -0.1565198877074515,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13425,7 +13425,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.0394264606518841,
+        "skew_acceleration": 0.050163384308422265,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13471,7 +13471,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.11260660485467477,
+        "skew_acceleration": -0.10315221761931814,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13517,7 +13517,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.08255360093577341,
+        "skew_acceleration": 0.1051073014289926,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13563,7 +13563,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13923664552473752,
+        "skew_acceleration": 0.14832748666303952,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13579,11 +13579,11 @@
     "SMCI": {
       "reads": {
         "directional_option_information": {
-          "read": "neutral",
+          "read": "dislocated",
           "parts": {
             "ivspread": "neutral",
             "d5_ivspread": "neutral",
-            "skew": "neutral"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -13594,9 +13594,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "neutral",
+          "read": "contradicts",
           "parts": {
-            "options": "neutral",
+            "options": "dislocated",
             "stock": "up"
           }
         },
@@ -13609,7 +13609,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.24333988474589252,
+        "skew_acceleration": -0.21168863034344126,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13618,7 +13618,7 @@
         "em30": 0.224743,
         "oi_tilt": 0.664598,
         "turnover": 0.592409,
-        "skew": 0.0096,
+        "skew": -0.0293,
         "ivspread": -0.0154
       }
     },
@@ -13655,7 +13655,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.25975258568232706,
+        "skew_acceleration": -0.03899171845804661,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13664,7 +13664,7 @@
         "em30": 0.108787,
         "oi_tilt": 0.309815,
         "turnover": 0.136095,
-        "skew": 0.0149,
+        "skew": 0.0009,
         "ivspread": -0.01181
       }
     },
@@ -13701,7 +13701,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3211987043930896,
+        "skew_acceleration": 0.31883934606237774,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13747,7 +13747,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.346659284666884,
+        "skew_acceleration": 0.368359718996095,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13793,7 +13793,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3145833657777708,
+        "skew_acceleration": 0.33756017266462235,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13839,7 +13839,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.10462831315681415,
+        "skew_acceleration": -0.1367850094693773,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13859,7 +13859,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "neutral",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -13885,7 +13885,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.015197773033332473,
+        "skew_acceleration": -0.19183765208303943,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13894,7 +13894,7 @@
         "em30": 0.135439,
         "oi_tilt": 0.42006,
         "turnover": 0.171017,
-        "skew": -0.0263,
+        "skew": 0.0,
         "ivspread": 0.04691
       }
     },
@@ -13931,7 +13931,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3113700086003901,
+        "skew_acceleration": 0.070104146070888,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13940,7 +13940,7 @@
         "em30": 0.121502,
         "oi_tilt": 0.256414,
         "turnover": 0.167993,
-        "skew": 0.0653,
+        "skew": 0.0415,
         "ivspread": -0.04285
       }
     },
@@ -13977,7 +13977,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.11824577851664159,
+        "skew_acceleration": 0.047693766863632525,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -13986,7 +13986,7 @@
         "em30": 0.034308,
         "oi_tilt": 0.562566,
         "turnover": 0.286739,
-        "skew": 0.0109,
+        "skew": 0.0174,
         "ivspread": 0.01413
       }
     },
@@ -14023,7 +14023,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3294619448658216,
+        "skew_acceleration": 0.3407995305592548,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14069,7 +14069,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.554411399936588,
+        "skew_acceleration": -0.5623533898717953,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14115,7 +14115,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1901261964408526,
+        "skew_acceleration": -0.21140016964532773,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14161,7 +14161,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1737643004451661,
+        "skew_acceleration": 0.18809541934927454,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14207,7 +14207,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3458846889776378,
+        "skew_acceleration": 0.3706408471917242,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14253,7 +14253,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.13387712270996804,
+        "skew_acceleration": 0.1539445591358784,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14299,7 +14299,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.049929553576030794,
+        "skew_acceleration": 0.06570670213495888,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14345,7 +14345,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.2769713711870645,
+        "skew_acceleration": -0.26593434283711304,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14391,7 +14391,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.42289399219311924,
+        "skew_acceleration": 0.44287426960832443,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14437,7 +14437,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.4121353148465976,
+        "skew_acceleration": 0.417395616240938,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14483,7 +14483,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.29964966331339105,
+        "skew_acceleration": -0.3039217588895875,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14529,7 +14529,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.46534795929656037,
+        "skew_acceleration": -0.4727484503050686,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14575,7 +14575,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.25913906135545894,
+        "skew_acceleration": 0.2842338444200634,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14621,7 +14621,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.17720198532851905,
+        "skew_acceleration": -0.20584992280200118,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14667,7 +14667,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.25200547162744025,
+        "skew_acceleration": -0.27330290529116275,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14713,7 +14713,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.27095710307017523,
+        "skew_acceleration": -0.2788216675851177,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14759,7 +14759,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.46662264962483124,
+        "skew_acceleration": -0.45392399977279463,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14805,7 +14805,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.37266990830231217,
+        "skew_acceleration": -0.37237020079528094,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14851,7 +14851,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.33113083364955886,
+        "skew_acceleration": 0.329569158948546,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14897,7 +14897,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4094976515985181,
+        "skew_acceleration": -0.4080545131757457,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14943,7 +14943,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.04533692757214269,
+        "skew_acceleration": 0.06600944436695866,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -14989,7 +14989,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.44456165970894457,
+        "skew_acceleration": -0.4547536476080707,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15005,11 +15005,11 @@
     "TSLA": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "mixed",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "neutral",
-            "skew": "neutral"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -15020,9 +15020,9 @@
           }
         },
         "option_stock_confirmation": {
-          "read": "confirms",
+          "read": "contradicts",
           "parts": {
-            "options": "contra",
+            "options": "mixed",
             "stock": "up"
           }
         },
@@ -15035,7 +15035,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.1259548845036298,
+        "skew_acceleration": -0.06011218802665086,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15044,7 +15044,7 @@
         "em30": 0.107903,
         "oi_tilt": -0.059709,
         "turnover": 0.81655,
-        "skew": 0.022,
+        "skew": -0.009,
         "ivspread": -0.03539
       }
     },
@@ -15081,7 +15081,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.18876819317412397,
+        "skew_acceleration": 0.210688131760697,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15127,7 +15127,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.11070571174945809,
+        "skew_acceleration": 0.11838921843825229,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15173,7 +15173,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2538873619115041,
+        "skew_acceleration": 0.27047066858741187,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15219,7 +15219,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.12356454441722797,
+        "skew_acceleration": 0.14435618180520005,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15265,7 +15265,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.25564762760306614,
+        "skew_acceleration": -0.26671653296058995,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15311,7 +15311,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3066469043888025,
+        "skew_acceleration": -0.3081562583380124,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15357,7 +15357,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.16661900950186526,
+        "skew_acceleration": -0.1823599098111786,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15403,7 +15403,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.33945082357329526,
+        "skew_acceleration": -0.36979633493441116,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15449,7 +15449,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.15160713899684736,
+        "skew_acceleration": 0.1834244390154428,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15495,7 +15495,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.18528332318426266,
+        "skew_acceleration": 0.19467737867959178,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15541,7 +15541,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.0346845017498415,
+        "skew_acceleration": -0.056560454033327046,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15587,7 +15587,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5877562127744135,
+        "skew_acceleration": -0.5917054638448223,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15633,7 +15633,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.21482902718647578,
+        "skew_acceleration": 0.22997032535319284,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15679,7 +15679,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.5433035549586474,
+        "skew_acceleration": -0.5497053859116982,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15725,7 +15725,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4907385565637138,
+        "skew_acceleration": -0.48314140243253395,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15771,7 +15771,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2124746890641832,
+        "skew_acceleration": 0.2405753922368401,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15817,7 +15817,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.10515036182205861,
+        "skew_acceleration": 0.12365282675480849,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15863,7 +15863,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.16374782673938731,
+        "skew_acceleration": 0.17943573988237227,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15909,7 +15909,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.22937555880272126,
+        "skew_acceleration": 0.24213860121716552,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -15955,7 +15955,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3384148741961571,
+        "skew_acceleration": 0.3557472643644135,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16001,7 +16001,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.37748800947223204,
+        "skew_acceleration": 0.3951028926514232,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16047,7 +16047,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.3270922806265566,
+        "skew_acceleration": -0.3348265375838304,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16093,7 +16093,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.30355099422226617,
+        "skew_acceleration": -0.3148495491695702,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16139,7 +16139,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.23350341115829554,
+        "skew_acceleration": -0.2569634737173837,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16185,7 +16185,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.36110951160608246,
+        "skew_acceleration": -0.3554561448208232,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16231,7 +16231,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.29620683348424537,
+        "skew_acceleration": 0.31420317126753733,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16277,7 +16277,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.21807003359024368,
+        "skew_acceleration": 0.22274667738593745,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16323,7 +16323,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.29788099308161564,
+        "skew_acceleration": 0.29903451976453765,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16369,7 +16369,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.10343420901528094,
+        "skew_acceleration": 0.12050354548622133,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16415,7 +16415,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.21999037616600672,
+        "skew_acceleration": -0.1202170318825383,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16424,18 +16424,18 @@
         "em30": 0.081167,
         "oi_tilt": 0.479228,
         "turnover": 0.055648,
-        "skew": -0.0163,
+        "skew": -0.0131,
         "ivspread": 0.03173
       }
     },
     "XLB": {
       "reads": {
         "directional_option_information": {
-          "read": "contra",
+          "read": "mixed",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "neutral",
-            "skew": "neutral"
+            "skew": "dislocated"
           }
         },
         "volatility_disagreement": {
@@ -16448,7 +16448,7 @@
         "option_stock_confirmation": {
           "read": "neutral",
           "parts": {
-            "options": "contra",
+            "options": "mixed",
             "stock": "neutral"
           }
         },
@@ -16461,7 +16461,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.15380817384929257,
+        "skew_acceleration": 0.2976263452013313,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16470,7 +16470,7 @@
         "em30": 0.048367,
         "oi_tilt": 0.412353,
         "turnover": 0.029121,
-        "skew": 0.0066,
+        "skew": -0.2158,
         "ivspread": -0.01377
       }
     },
@@ -16507,7 +16507,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.3181983511416268,
+        "skew_acceleration": 0.5105861529911895,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16516,7 +16516,7 @@
         "em30": 0.053077,
         "oi_tilt": -0.423587,
         "turnover": 0.022096,
-        "skew": 0.1118,
+        "skew": 0.2467,
         "ivspread": -0.14699
       }
     },
@@ -16527,7 +16527,7 @@
           "parts": {
             "ivspread": "dislocated",
             "d5_ivspread": "dislocated",
-            "skew": "dislocated"
+            "skew": "neutral"
           }
         },
         "volatility_disagreement": {
@@ -16553,7 +16553,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.18308833159587287,
+        "skew_acceleration": -0.06556028882988774,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16562,18 +16562,18 @@
         "em30": 0.066589,
         "oi_tilt": 0.66418,
         "turnover": 0.04538,
-        "skew": -0.0152,
+        "skew": 0.0107,
         "ivspread": 0.04065
       }
     },
     "XLF": {
       "reads": {
         "directional_option_information": {
-          "read": "mixed",
+          "read": "contra",
           "parts": {
             "ivspread": "contra",
             "d5_ivspread": "contra",
-            "skew": "dislocated"
+            "skew": "contra"
           }
         },
         "volatility_disagreement": {
@@ -16586,7 +16586,7 @@
         "option_stock_confirmation": {
           "read": "neutral",
           "parts": {
-            "options": "mixed",
+            "options": "contra",
             "stock": "neutral"
           }
         },
@@ -16599,7 +16599,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.5236509481271958,
+        "skew_acceleration": 0.5441789825125775,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16608,7 +16608,7 @@
         "em30": 0.064406,
         "oi_tilt": 0.592484,
         "turnover": 0.047242,
-        "skew": -0.0936,
+        "skew": 0.7751,
         "ivspread": -0.05517
       }
     },
@@ -16645,7 +16645,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.02619954415738318,
+        "skew_acceleration": 0.36918677051213167,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16654,7 +16654,7 @@
         "em30": 0.052255,
         "oi_tilt": 0.052035,
         "turnover": 0.225781,
-        "skew": 0.1097,
+        "skew": 0.1515,
         "ivspread": 0.02501
       }
     },
@@ -16665,7 +16665,7 @@
           "parts": {
             "ivspread": "neutral",
             "d5_ivspread": "contra",
-            "skew": "neutral"
+            "skew": "contra"
           }
         },
         "volatility_disagreement": {
@@ -16691,7 +16691,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.27831122035773687,
+        "skew_acceleration": 0.18129337815647967,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16700,7 +16700,7 @@
         "em30": 0.074155,
         "oi_tilt": 0.656979,
         "turnover": 0.063781,
-        "skew": 0.0224,
+        "skew": 0.0272,
         "ivspread": -0.00414
       }
     },
@@ -16737,7 +16737,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.20362968428405281,
+        "skew_acceleration": -0.32057416462944455,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16746,7 +16746,7 @@
         "em30": 0.052023,
         "oi_tilt": -0.074225,
         "turnover": 0.064387,
-        "skew": -0.1147,
+        "skew": -0.0236,
         "ivspread": 0.05104
       }
     },
@@ -16783,7 +16783,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.1168256317592935,
+        "skew_acceleration": 0.6096913764645531,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16792,7 +16792,7 @@
         "em30": 0.0432,
         "oi_tilt": 0.477109,
         "turnover": 0.080314,
-        "skew": 0.0383,
+        "skew": 0.9015,
         "ivspread": -0.02426
       }
     },
@@ -16829,7 +16829,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.622979814134947,
+        "skew_acceleration": 0.3758344770900424,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16838,7 +16838,7 @@
         "em30": 0.045244,
         "oi_tilt": 0.092414,
         "turnover": 0.053113,
-        "skew": 0.035,
+        "skew": 0.0542,
         "ivspread": 0.02509
       }
     },
@@ -16875,7 +16875,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.2459993538894925,
+        "skew_acceleration": 0.050789141380832736,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16884,7 +16884,7 @@
         "em30": 0.041332,
         "oi_tilt": 0.797089,
         "turnover": 0.069846,
-        "skew": 0.0147,
+        "skew": 0.0242,
         "ivspread": 0.02742
       }
     },
@@ -16921,7 +16921,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.4322207203876203,
+        "skew_acceleration": 0.18842985986924765,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -16930,7 +16930,7 @@
         "em30": 0.050159,
         "oi_tilt": -0.218879,
         "turnover": 0.048922,
-        "skew": 0.0404,
+        "skew": 0.2612,
         "ivspread": -0.0041
       }
     },
@@ -16967,7 +16967,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.22992367757098425,
+        "skew_acceleration": -0.24355485405165053,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -17013,7 +17013,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.28962078758166504,
+        "skew_acceleration": 0.3012745975606678,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -17059,7 +17059,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": -0.4690236867459724,
+        "skew_acceleration": -0.4616591518296211,
         "event_expected_move_gap": null
       },
       "primitives": {
@@ -17105,7 +17105,7 @@
           },
           "is_return_predictor": false
         },
-        "skew_acceleration": 0.11254344969047081,
+        "skew_acceleration": 0.14131087830756783,
         "event_expected_move_gap": null
       },
       "primitives": {

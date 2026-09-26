@@ -586,7 +586,7 @@ _D5_GENERATION_ID = "peg:" + "e" * 64
 
 def _d5_episode(*, cut: str = "2026-01-31T12:00:00Z") -> dict:
     anchor = {
-        "kind": "reset_low",
+        "kind": "turn_watch_reset_low",
         "time": cut,
         "price": "100.0000",
         "basis": "turn_watch.reset_low",
@@ -1182,6 +1182,7 @@ def test_d5_body_only_decision_to_issuer_release_is_observed_and_endpoint_200(
 ) -> None:
     from types import SimpleNamespace
 
+    pytest.importorskip("fastapi", reason="Prophet Lab API tests need fastapi")
     import app.prophet_lab as prophet_lab_api
 
     decision = _raw_workspace(

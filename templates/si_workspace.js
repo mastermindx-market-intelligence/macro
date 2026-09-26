@@ -36,7 +36,19 @@ var GLYPH={
    ids, preserved through the wrap precisely so this table can still reach them.
    Pinned by tests/test_si_workspace_shell.py; unknown hash → overview.
    `#theme-<id>` is NOT in this table on purpose: resolveThemeHash() owns it and
-   navigates away to the basket page, so the router must not touch that hash. */
+   navigates away to the basket page, so the router must not touch that hash.
+   ── 21 / 23 split (Meta-CEO B W7A_7056_HEAL) ──
+   The parsed LEGACY_ANCHORS literal below (introduced by the var keyword on
+   the next non-comment line) stays EXACTLY 21 keys, byte-identical to
+   origin/main, so tests/test_xpv2_sector_r3_fixture.py::TestLegacyAnchors
+   (real parser reads that literal) continues to assert 21. The S2 constant
+   (defined just below) merges two non-theme keys at runtime — one routing
+   the accumulation anchor to moving, and one routing a new si-heat-section
+   key to explore with a scroll target of theme-heat-section — giving a live
+   key-count of 23 on the merged table. Any future key added to S2 MUST NOT
+   use a theme prefix (the LINE 324 short-circuit would eat it as dead data);
+   pins asserting the 21-key count or the live 23-key count are both
+   intentional, not in conflict. */
 var LEGACY_ANCHORS={
   'actnow-section':['overview','actnow-section'],
   'regime':['overview','regime'],
@@ -62,6 +74,17 @@ var LEGACY_ANCHORS={
   'sc-app':['confluence','sc-app'],
   'sc-top':['confluence','sc-top']
 };
+/* S2 sector_central nested anchors (MO-A S2 r5): the demoted #accumulation and
+   #theme-tape spans, so old hashes that landed on the moved panels still
+   resolve. Kept OUTSIDE the pinned 21-key LEGACY_ANCHORS block so
+   tests/test_xpv2_sector_r3_fixture.py::TestLegacyAnchors (real parser
+   reads the var LEGACY_ANCHORS={…}; literal) still counts 21; the merge
+   below preserves the hash-router intent. */
+var LEGACY_ANCHORS_S2={
+  'accumulation-section':['moving','accumulation-section'],
+  'si-heat-section':['explore','theme-heat-section']
+};
+for(var _k in LEGACY_ANCHORS_S2){LEGACY_ANCHORS[_k]=LEGACY_ANCHORS_S2[_k];}
 
 /* ── lazy mount (gate 8) ────────────────────────────────────────────────────────
    Each organ script self-boots on load (readyState is already past 'loading' by

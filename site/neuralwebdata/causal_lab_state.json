@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.causal_lab_state.v1",
-  "asof": "2026-09-16T10:04:41Z",
+  "asof": "2026-09-25T21:51:04Z",
   "heartbeat": {
     "program": "CHF",
     "wave": "W3",
@@ -44,12 +44,12 @@
   "surprise_queue": {
     "size": 69,
     "stalest_source": "data/release_forecast/forward_ledger.jsonl",
-    "stalest_source_asof": "2026-09-16"
+    "stalest_source_asof": "2026-09-25"
   },
   "drift_events": [],
   "llm_lane": {
     "status": "degraded_pack_only",
-    "asof": "2026-09-15T19:05:44+00:00",
+    "asof": "2026-09-22T21:33:45+00:00",
     "description": "generator failed: rate_limited_all"
   },
   "data_absent_notes": [

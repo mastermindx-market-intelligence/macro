@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MTSI-BULL-20260813",
-  "asof": "2026-09-16",
+  "asof": "2026-09-25",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 25.8,
-  "raw_confidence": 24.0,
-  "delta_vs_base": -34.2,
+  "management_confidence": 27.6,
+  "raw_confidence": 28.5,
+  "delta_vs_base": -32.4,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 6.8,
+    "validity": 49.9,
     "progress": 0.0,
-    "pace": 3.7,
+    "pace": 0.1,
     "retention": 50.0,
-    "overlay": 56.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.172,
+    "dist_to_stop_r": 0.597,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 66.7,
-    "p1": -0.552,
-    "p2": -0.276,
+    "horizon_pct_used": 86.7,
+    "p1": -0.2686,
+    "p2": -0.1343,
     "p3": null,
-    "move_r": -0.828,
+    "move_r": -0.403,
     "mfe_r": 0.0,
     "mae_r": -0.832
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 30,
-  "tau": 0.6667
+  "days_elapsed": 39,
+  "tau": 0.8667
 }

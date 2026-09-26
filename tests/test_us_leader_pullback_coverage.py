@@ -98,11 +98,31 @@ def _frame(closes: list[float], end: str = ASOF, volume: float | None = 1_000_00
 
 
 def _store(tmp_path: Path, frames: dict[str, pd.DataFrame]) -> Path:
-    """A ``data/`` root carrying ``yahoo/<TICKER>.parquet`` for each frame."""
+    """A ``data/`` root plus an outcome-independent synthetic universe contract."""
+    import hashlib
+
     root = tmp_path / "data"
     (root / tw.DECK_STORE).mkdir(parents=True, exist_ok=True)
     for ticker, frame in frames.items():
         frame.to_parquet(root / tw.DECK_STORE / f"{ticker}.parquet")
+    tickers = sorted(frames)
+    digest = hashlib.sha256(("\n".join(tickers) + "\n").encode()).hexdigest()
+    contract = tmp_path / tw.UNIVERSE_CONTRACT_REL
+    contract.parent.mkdir(parents=True, exist_ok=True)
+    contract.write_text(json.dumps({
+        "schema": tw.UNIVERSE_CONTRACT_SCHEMA,
+        "universe_id": "test:synthetic",
+        "selection_era": tw.SELECTION_ERA,
+        "source": {"commit": "test-fixture"},
+        "population_count": len(tickers),
+        "tickers_sha256": digest,
+        "snapshot": {},
+        "freshness": {
+            "reference": "lib.nyse_calendar.expected_last_session",
+            "max_completed_session_lag": 10000,
+        },
+        "tickers": tickers,
+    }))
     return root
 
 

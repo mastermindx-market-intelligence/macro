@@ -1,0 +1,54 @@
+<script data-dbase>(function () {
+  window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
+  var B = window.DATA_BASE;
+  if (!B) return;                                         // no-op when unset -> zero behavior change
+  B = B.replace(/\/+$/, "");                              // strip trailing slash
+  // the per-ticker stores that live in R2 (mirror scripts/publish_r2.py DEFAULT_DIRS)
+  var RE = /^(ohlc|chinaohlc|hkohlc|intlohlc|canadaohlc|subsectorohlc(?:_china|_russell|_nasdaq)?|stockdata|chinastockdata|hkstockdata|canadastockdata|intlstockdata|intraday)\//;
+  var orig = window.fetch;
+  window.fetch = function (u, o) {
+    try {
+      if (typeof u === "string") {
+        /* theme.js resolves shared assets from its own script URL, so its stock
+           libraries arrive here as absolute same-origin URLs.  The old shim only
+           recognized bare/../ paths, leaving those requests on the protected HTML
+           origin (401 on Start) and the search spinner alive forever.  Normalize
+           every same-origin string to a root-relative key before matching; preserve
+           query/hash cache keys, and never rewrite an already-external URL. */
+        var a = new URL(u, location.href);
+        if (a.origin === location.origin) {
+          var rel = a.pathname.replace(/^\/+/, "") + a.search + a.hash;
+          if (RE.test(rel)) u = B + "/" + rel;            // -> https://<data-host>/ohlc/AAPL.json
+        }
+      }
+    } catch (e) { /* never let the shim break a fetch */ }
+    return orig.call(this, u, o);
+  };
+})();</script>
+
+
+<div class="mc-figure-tabbody" data-mc-tabbody="liquidity" id="liquidity"
+     role="tabpanel" aria-labelledby="liquidity-t" data-mc-fragment><div class="mc-move" data-mc-move data-mc-fragment>
+  <ul class="mc-move-list">
+    <li class="mx-chg-row mc-move-row">
+      <a class="mx-chg-name mc-move-name" href="../../macro_liquidity_regime.html"><span class="l-en">Funding pressure</span><span class="l-zh">融资压力</span></a>
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current"><span class="l-en">31.28 pts</span><span class="l-zh">31.28 点</span></strong><span class="mc-move-words mq-delta-up"><span class="l-en">up 4.76 pts since the last reading</span><span class="l-zh">较上次读数上升 4.76 点</span></span>
+      </span>
+    </li>
+    <li class="mx-chg-row mc-move-row">
+      <a class="mx-chg-name mc-move-name" href="../../macro_liquidity_regime.html"><span class="l-en">Balance-sheet support</span><span class="l-zh">资产负债表支持</span></a>
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current"><span class="l-en">28.33 pts</span><span class="l-zh">28.33 点</span></strong><span class="mc-move-words mq-delta-up"><span class="l-en">up 0.38 pts since the last reading</span><span class="l-zh">较上次读数上升 0.38 点</span></span>
+      </span>
+    </li>
+  </ul><p class="mc-move-count"><span class="l-en">2 readings compared against the previous publication.</span><span class="l-zh">与上一次发布相比，共对比 2 项读数。</span></p>
+</div>
+</div>
+<div class="mc-figure-tabbody" data-mc-tabbody="central_banks" id="central_banks"
+     role="tabpanel" aria-labelledby="central_banks-t" data-mc-fragment><div class="mc-empty" role="note" data-mc-empty="e2" data-mc-fragment><p class="mc-empty-title"><span class="l-en">No reading arrived today.</span><span class="l-zh">今天没有新的读数。</span></p>
+  <p class="mc-empty-why"><span class="l-en">The data provider did not deliver in time. We show nothing rather than yesterday&#39;s number dressed as today&#39;s.</span><span class="l-zh">数据提供方未能及时送达。我们宁可不显示，也不会把昨天的数字当作今天的。</span></p><p class="mc-empty-unlock"><span class="l-en">It returns as soon as the provider publishes; checked every night.</span><span class="l-zh">数据源恢复发布后即会显示；每晚检查。</span></p>
+</div>
+</div>
+
+<script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>

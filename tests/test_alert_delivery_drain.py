@@ -48,10 +48,19 @@ class FakeTables:
         self.email_log = email_log if email_log is not None else {}
         self.runs = {}
         self.patches = []
+        self.get_paths = []
 
     def pg(self, method, path, body=None, prefer=None, timeout=6):
         if path.startswith("alert_outbox") and method == "GET":
-            return [r for r in self.outbox if _outbox_row_selected(r, path)]
+            import urllib.parse as _up
+            self.get_paths.append(path)
+            rows = [r for r in self.outbox if _outbox_row_selected(r, path)]
+            match = re.search(r"(?:^|&)fire_event_id=eq\.([^&]*)", path)
+            if match:
+                requested = _up.unquote(match.group(1))
+                rows = [r for r in rows if str(r.get("fire_event_id")) == requested]
+            limit_match = re.search(r"(?:^|&)limit=(\d+)", path)
+            return rows[:int(limit_match.group(1))] if limit_match else rows
         if path.startswith("alert_outbox") and method == "PATCH":
             row_id = re.search(r"id=eq\.([^&]+)", path).group(1)
             self.patches.append((row_id, body))
@@ -98,13 +107,19 @@ def _patch(monkeypatch, fake, *, users=None):
 def _row(**kw):
     base = dict(id=str(uuid.uuid4()), user_id="u1", alert_id="a1", fire_event_id="fe1",
                status="pending", attempts=0, deliver_after=None,
-               payload={"subject": "AAPL moved", "ticker": "AAPL", "summary_plain": "x",
+               payload={"subject": "AAPL moved", "ticker": "AAPL", "category": "thesis_window",
+                        "summary_plain": "x",
                         "condition_plain": "RSI crossed 70", "evidence_url": "https://x/e", "fired_at": "2026-09-05T14:00:00Z"})
     base.update(kw)
     return base
 
 
-OPTED_IN_USER = {"email": "u@example.com", "user_metadata": {"alert_email_optin": "true", "lang": "en"}}
+OPTED_IN_USER = {
+    "email": "u@example.com",
+    "user_metadata": {
+        "alert_email_optin": "true", "alert_categories": ["thesis_window"], "lang": "en",
+    },
+}
 
 
 def test_same_fire_event_id_drained_twice_sends_once_and_reports_duplicate(monkeypatch):
@@ -184,10 +199,18 @@ def test_duplicate_whose_email_log_row_is_queued_stays_pending_never_mirrors_a_n
 
     Review round 6 MAJOR (amended ruling): `attempts` must still increment on this
     pending-stays-pending path -- leaving it unchanged is the exact livelock the
-    round-6 review found (same idem_key claimed forever)."""
+    round-6 review found (same idem_key claimed forever).
+
+    2026-09-18: the claim is now stamped WELL PAST ``EFFECT_UNKNOWN_GRACE_S`` so it is
+    an ABANDONED pre-send claim, which is the case this test was always about. A claim
+    younger than that window is a LIVE writer -- bumping its attempts would mint a
+    fresh idempotency key and race a send still under way -- and is covered by
+    ``test_a_fresh_bare_claim_is_left_to_its_live_writer`` below. The anti-livelock
+    property is unchanged: once the claim ages out, attempts increments and the row
+    retires at the cap."""
     row = _row()
     fake = FakeTables(outbox=[row])
-    fake.email_log["alert_fire:fe1"] = {"status": "queued", "created_at": "2026-09-05T14:59:00+00:00"}
+    fake.email_log["alert_fire:fe1"] = {"status": "queued", "created_at": "2026-09-05T14:00:00+00:00"}
     _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
     result = drain.drain(send_fn=lambda **kw: "duplicate", now_utc=_now(), limit=10)
     assert result.fired_n == 0
@@ -195,6 +218,27 @@ def test_duplicate_whose_email_log_row_is_queued_stays_pending_never_mirrors_a_n
     assert fake.outbox[0]["status"] == "pending"
     assert fake.outbox[0]["last_error"] == "prior send queued"
     assert fake.outbox[0]["attempts"] == 1
+
+
+def test_a_fresh_bare_claim_is_left_to_its_live_writer(monkeypatch):
+    """The other side of the line above: an ``email_log`` claim younger than
+    ``EFFECT_UNKNOWN_GRACE_S`` may belong to a drain tick that is STILL inside SMTP --
+    the window between the ledger INSERT and the write-ahead marker spans connect,
+    STARTTLS, AUTH and the marker's own round trip. Bumping ``attempts`` there mints a
+    fresh key next tick and delivers a second copy of a message already on its way, with
+    no crash anywhere."""
+    row = _row()
+    fake = FakeTables(outbox=[row])
+    fake.email_log["alert_fire:fe1"] = {"status": "queued",
+                                        "created_at": "2026-09-05T14:59:30+00:00"}
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    result = drain.drain(send_fn=lambda **kw: "duplicate", now_utc=_now(), limit=10)
+    assert result.fired_n == 0
+    assert result.in_flight_n == 1
+    assert fake.outbox[0]["status"] == "pending"
+    assert int(fake.outbox[0]["attempts"] or 0) == 0, (
+        "a live writer's row must not have its attempts bumped")
+    assert result.outcome != "success"
 
 
 def test_duplicate_whose_email_log_row_is_unreadable_leaves_outbox_row_pending(monkeypatch, capsys):
@@ -275,6 +319,27 @@ def test_deliver_after_is_the_next_local_window_open_in_utc():
     action, deliver_after = drain.quiet_decision(_now("2026-09-05T00:30:00+00:00"), prefs)
     assert action == "defer"
     assert deliver_after.hour == 1 and deliver_after.minute == 0
+
+
+def test_fall_back_defer_uses_the_second_ambiguous_window_end():
+    prefs = drain.AlertPrefs(email_optin=True, categories=("thesis_window",),
+                             tz="America/New_York", tz_source="user",
+                             quiet=(0, 90), quiet_note=None, lang="en")
+    now = _now("2026-11-01T06:15:00+00:00")  # 01:15 EST, the second fold
+    action, deliver_after = drain.quiet_decision(now, prefs)
+    assert action == "defer"
+    assert deliver_after == _now("2026-11-01T06:30:00+00:00")
+    assert deliver_after > now
+
+
+def test_spring_forward_defer_opens_at_the_first_real_minute_after_the_gap():
+    prefs = drain.AlertPrefs(email_optin=True, categories=("thesis_window",),
+                             tz="America/New_York", tz_source="user",
+                             quiet=(0, 150), quiet_note=None, lang="en")
+    now = _now("2026-03-08T06:30:00+00:00")  # 01:30 EST; 02:30 does not exist
+    action, deliver_after = drain.quiet_decision(now, prefs)
+    assert action == "defer"
+    assert deliver_after == _now("2026-03-08T07:00:00+00:00")  # 03:00 EDT
 
 
 def test_lapsed_entitlement_yields_suppressed_row_never_deleted_never_sent(monkeypatch):
@@ -591,6 +656,73 @@ def test_selection_predicate_never_selects_a_sent_or_suppressed_row(monkeypatch)
     assert suppressed_row["status"] == "suppressed"
 
 
+def test_canary_selector_is_url_quoted_server_side_isolated_and_forces_limit_two(monkeypatch):
+    selected_id = "fire /?&= exact"
+    selected = _row(id=str(uuid.uuid4()), fire_event_id=selected_id)
+    other = _row(id=str(uuid.uuid4()), fire_event_id="other")
+    fake = FakeTables(outbox=[selected, other])
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=999, dry_run=True,
+                         fire_event_id=selected_id)
+
+    assert result.outcome == "success"
+    assert result.evaluated_n == 1
+    assert result.fired_n == 1  # decision proof only; dry-run performs no effect
+    assert sends == [] and fake.patches == [] and fake.runs == {}
+    assert len(fake.get_paths) == 1
+    assert "fire_event_id=eq.fire%20%2F%3F%26%3D%20exact" in fake.get_paths[0]
+    assert "limit=2" in fake.get_paths[0]
+
+
+@pytest.mark.parametrize(
+    ("returned_rows", "expected_state"),
+    [
+        ([], drain.SELECTOR_NO_MATCH),
+        ([_row(fire_event_id="wanted"), _row(fire_event_id="wanted")],
+         drain.SELECTOR_MULTIPLE_MATCH),
+        ([_row(fire_event_id="different")], drain.SELECTOR_MISMATCH),
+        (["malformed-row"], drain.SELECTOR_MISMATCH),
+    ],
+)
+def test_canary_selector_cardinality_and_identity_fail_before_every_effect(
+        monkeypatch, returned_rows, expected_state):
+    calls = []
+
+    def pg(method, path, body=None, prefer=None, timeout=6):
+        calls.append((method, path))
+        if method == "GET" and path.startswith("alert_outbox"):
+            return returned_rows
+        raise AssertionError("selector failure must not write or read another surface")
+
+    monkeypatch.setattr(drain, "_pg", pg)
+    monkeypatch.setattr(
+        drain, "fetch_user_record",
+        lambda uid: (_ for _ in ()).throw(AssertionError("user lookup must not run")))
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), fire_event_id="wanted")
+
+    assert result.selector_state == expected_state
+    assert result.error_class == expected_state
+    assert result.outcome == "failure"
+    assert result.evaluated_n == result.fired_n == result.unevaluable_n == 0
+    assert result.run_id is None and result.receipt_written is False
+    assert sends == []
+    assert len(calls) == 1 and calls[0][0] == "GET"
+
+
+def test_blank_canary_selector_is_rejected_before_read(monkeypatch):
+    monkeypatch.setattr(
+        drain, "_pg", lambda *a, **k: (_ for _ in ()).throw(
+            AssertionError("blank selector must not read")))
+    with pytest.raises(ValueError, match="must not be blank"):
+        drain.drain(send_fn=None, now_utc=_now(), fire_event_id="   ")
+
+
 def test_missing_tables_yield_typed_read_unavailable_zero_sends_and_exit_zero(monkeypatch, capsys):
     def pg(method, path, body=None, prefer=None, timeout=6):
         import urllib.error
@@ -649,19 +781,203 @@ def test_main_forces_dry_run_and_zero_sends_when_alert_drain_enable_is_unset(mon
     assert "receipt_written=" in out
 
 
+def test_main_propagates_exact_canary_selector_and_keeps_dormant_dry_run(
+        monkeypatch, capsys):
+    from scripts import drain_alert_outbox
+
+    selected_id = "canary /?&= one"
+    row = _row(fire_event_id=selected_id)
+    fake = FakeTables(outbox=[row])
+    monkeypatch.setattr(drain, "_pg", fake.pg)
+    monkeypatch.setattr(drain, "fetch_user_record", lambda uid: (drain.READ_OK, OPTED_IN_USER))
+    monkeypatch.delenv("ALERT_DRAIN_ENABLE", raising=False)
+    sent = []
+    monkeypatch.setattr("app.mailer.send_alert", lambda **kw: sent.append(kw) or "sent")
+
+    rc = drain_alert_outbox.main([
+        "--fire-event-id", selected_id, "--limit", "500",
+        "--now", "2026-09-05T15:00:00+00:00",
+    ])
+
+    assert rc == 0
+    assert sent == [] and fake.patches == [] and fake.runs == {}
+    assert "fire_event_id=eq.canary%20%2F%3F%26%3D%20one" in fake.get_paths[0]
+    assert "limit=2" in fake.get_paths[0]
+    assert "alert-drain: DORMANT" in capsys.readouterr().out
+
+
+def test_main_selector_no_match_exits_two_with_line_start_error_and_zero_writes(
+        monkeypatch, capsys):
+    from scripts import drain_alert_outbox
+
+    fake = FakeTables(outbox=[])
+    monkeypatch.setattr(drain, "_pg", fake.pg)
+    monkeypatch.delenv("ALERT_DRAIN_ENABLE", raising=False)
+
+    rc = drain_alert_outbox.main(["--fire-event-id", "missing"])
+    lines = capsys.readouterr().out.splitlines()
+
+    assert rc == 2
+    assert any(line.startswith("::error") and "selector-failed" in line for line in lines)
+    assert fake.patches == [] and fake.runs == {}
+
+
+def test_main_selector_read_unavailable_exits_two_but_global_mode_stays_zero(
+        monkeypatch, capsys):
+    import urllib.error
+    from scripts import drain_alert_outbox
+
+    def pg(method, path, body=None, prefer=None, timeout=6):
+        raise urllib.error.HTTPError(path, 404, "not found", None, None)
+
+    monkeypatch.setattr(drain, "_pg", pg)
+    monkeypatch.delenv("ALERT_DRAIN_ENABLE", raising=False)
+
+    assert drain_alert_outbox.main(["--fire-event-id", "one"]) == 2
+    selector_lines = capsys.readouterr().out.splitlines()
+    assert any(line.startswith("::error") for line in selector_lines)
+
+    assert drain_alert_outbox.main([]) == 0
+    global_lines = capsys.readouterr().out.splitlines()
+    assert any(line.startswith("::warning") and "read-unavailable" in line
+               for line in global_lines)
+
+
+def test_main_rejects_blank_selector_before_any_read(monkeypatch, capsys):
+    from scripts import drain_alert_outbox
+
+    monkeypatch.setattr(
+        drain, "_pg", lambda *a, **k: (_ for _ in ()).throw(
+            AssertionError("blank selector must not read")))
+    rc = drain_alert_outbox.main(["--fire-event-id", "  "])
+    lines = capsys.readouterr().out.splitlines()
+    assert rc == 2
+    assert lines and lines[0].startswith("::error")
+
+
 def test_category_filter_suppresses_a_row_outside_the_users_categories(monkeypatch):
     row = _row(payload={"subject": "AAPL moved", "ticker": "AAPL", "summary_plain": "x",
                         "condition_plain": "RSI crossed 70", "evidence_url": "https://x/e",
-                        "fired_at": "2026-09-05T14:00:00Z", "category": "earnings"})
+                        "fired_at": "2026-09-05T14:00:00Z",
+                        "category": "holdings_material_change"})
     fake = FakeTables(outbox=[row])
     user = {"email": "u@example.com",
-            "user_metadata": {"alert_email_optin": "true", "alert_categories": ["technical"]}}
+            "user_metadata": {"alert_email_optin": "true",
+                              "alert_categories": ["thesis_window"]}}
     _patch(monkeypatch, fake, users={"u1": user})
     result = drain.drain(send_fn=lambda **kw: "sent", now_utc=_now(), limit=10)
     assert result.fired_n == 0
     assert result.suppressed_n == 1
     assert fake.outbox[0]["status"] == "suppressed"
     assert fake.outbox[0]["last_error"] == "category_filtered"
+
+
+def test_missing_payload_category_is_unevaluable_and_never_calls_mailer(monkeypatch):
+    payload = dict(_row()["payload"])
+    payload.pop("category")
+    row = _row(payload=payload)
+    fake = FakeTables(outbox=[row])
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.unevaluable_n == 1
+    assert result.fired_n == 0
+    assert fake.outbox[0]["status"] == "pending"
+
+
+@pytest.mark.parametrize("stored", [None, []])
+def test_no_selected_alert_category_suppresses_instead_of_broadening_consent(
+        monkeypatch, stored):
+    meta = {"alert_email_optin": "true"}
+    if stored is not None:
+        meta["alert_categories"] = stored
+    fake = FakeTables(outbox=[_row()])
+    _patch(monkeypatch, fake, users={"u1": {"email": "u@example.com", "user_metadata": meta}})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.suppressed_n == 1
+    assert result.fired_n == 0
+    assert fake.outbox[0]["status"] == "suppressed"
+    assert fake.outbox[0]["last_error"] == "no_alert_categories_selected"
+
+
+@pytest.mark.parametrize("stored", ["not-an-object", ["alert_email_optin", True], 7])
+def test_non_object_user_metadata_is_unevaluable_and_never_calls_mailer(
+        monkeypatch, stored):
+    fake = FakeTables(outbox=[_row()])
+    user = {"email": "u@example.com", "user_metadata": stored}
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.unevaluable_n == 1
+    assert result.fired_n == 0
+    assert fake.outbox[0]["status"] == "pending"
+
+
+def test_unrecognized_payload_category_is_unevaluable_and_never_calls_mailer(monkeypatch):
+    payload = dict(_row()["payload"], category="technical")
+    fake = FakeTables(outbox=[_row(payload=payload)])
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.unevaluable_n == 1
+    assert result.fired_n == 0
+    assert fake.outbox[0]["status"] == "pending"
+
+
+def test_non_object_payload_is_unevaluable_without_aborting_later_rows(monkeypatch):
+    malformed = _row(id=str(uuid.uuid4()), fire_event_id="bad", payload=["not", "an", "object"])
+    valid = _row(id=str(uuid.uuid4()), fire_event_id="good")
+    fake = FakeTables(outbox=[malformed, valid])
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert result.unevaluable_n == 1
+    assert result.fired_n == 1
+    assert [item["fire_event_id"] for item in sends] == ["good"]
+    assert malformed["status"] == "pending"
+    assert valid["status"] == "sent"
+
+
+@pytest.mark.parametrize(
+    "stored",
+    ["thesis_window", {"thesis_window": True}, ["thesis_window", 7], ["technical"]],
+)
+def test_malformed_stored_alert_categories_are_unevaluable_not_widened(
+        monkeypatch, stored):
+    row = _row()
+    fake = FakeTables(outbox=[row])
+    user = {"email": "u@example.com",
+            "user_metadata": {"alert_email_optin": "true", "alert_categories": stored}}
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.unevaluable_n == 1
+    assert result.fired_n == 0
+    assert fake.outbox[0]["status"] == "pending"
 
 
 def test_requires_tier_suppresses_below_gate_and_sends_at_or_above():
@@ -681,7 +997,8 @@ def test_entitlement_unrecognised_status_fails_closed_not_open():
 
 def test_quiet_hours_unparsed_shape_is_unevaluable_not_a_silent_send():
     """Major finding: an unrecognised quiet_hours shape must never fail OPEN to 'send'."""
-    meta = {"alert_email_optin": "true", "quiet_hours": "not-a-window"}
+    meta = {"alert_email_optin": "true", "alert_categories": ["thesis_window"],
+            "quiet_hours": "not-a-window"}
     parsed = drain.parse_alert_prefs(meta)
     assert parsed.quiet_note == "unparsed"
     row = _row()
@@ -692,6 +1009,68 @@ def test_quiet_hours_unparsed_shape_is_unevaluable_not_a_silent_send():
                                 now_utc=_now())
     assert decision.action == "unevaluable"
     assert decision.reason == "quiet_hours_unparsed"
+
+
+@pytest.mark.parametrize(
+    "stored",
+    ["99:00-07:00", {"start": "22:00", "end": "07:99"}, "9:00-07:00"],
+)
+def test_out_of_range_or_noncanonical_stored_quiet_hours_are_unevaluable(stored):
+    meta = {"alert_email_optin": "true", "alert_categories": ["thesis_window"],
+            "tz": "UTC", "quiet_hours": stored}
+    decision = drain.decide_row(
+        _row(), user_state=drain.READ_OK,
+        record={"email": "u@example.com", "user_metadata": meta},
+        ent=drain.TypedRead(drain.READ_OK_ZERO, []),
+        suppression=drain.TypedRead(drain.READ_OK_ZERO, []), now_utc=_now())
+    assert decision.action == "unevaluable"
+    assert decision.reason == "quiet_hours_unparsed"
+
+
+def test_invalid_stored_timezone_with_quiet_hours_is_unevaluable_and_never_sends(monkeypatch):
+    row = _row()
+    fake = FakeTables(outbox=[row])
+    user = {"email": "u@example.com",
+            "user_metadata": {"alert_email_optin": "true",
+                              "alert_categories": ["thesis_window"],
+                              "tz": "Mars/Olympus_Mons",
+                              "quiet_hours": "22:00-07:00"}}
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.unevaluable_n == 1
+    assert result.fired_n == 0
+    assert fake.outbox[0]["status"] == "pending"
+
+
+@pytest.mark.parametrize("stored", ["", None, 0])
+def test_present_falsey_timezone_with_quiet_hours_is_invalid_not_default_utc(
+        monkeypatch, stored):
+    fake = FakeTables(outbox=[_row()])
+    user = {"email": "u@example.com",
+            "user_metadata": {"alert_email_optin": "true",
+                              "alert_categories": ["thesis_window"],
+                              "tz": stored, "quiet_hours": "22:00-07:00"}}
+    _patch(monkeypatch, fake, users={"u1": user})
+    sends = []
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+    assert sends == []
+    assert result.unevaluable_n == 1
+    assert fake.outbox[0]["status"] == "pending"
+
+
+def test_absent_timezone_keeps_the_explicit_utc_default_for_quiet_hours():
+    prefs = drain.parse_alert_prefs({"alert_email_optin": "true",
+                                     "quiet_hours": "14:00-16:00"})
+    assert prefs.tz == "UTC"
+    assert prefs.tz_source == "default_utc"
+    action, _ = drain.quiet_decision(_now(), prefs)
+    assert action == "defer"
 
 
 def test_read_unavailable_is_not_read_ok_zero(monkeypatch):
@@ -779,7 +1158,10 @@ def test_two_users_alerting_on_the_same_ticker_both_receive(monkeypatch):
             _row(id=str(uuid.uuid4()), user_id="u2", fire_event_id="fe2")]
     fake = FakeTables(outbox=rows)
     users = {"u1": OPTED_IN_USER, "u2": {"email": "u2@example.com",
-                                          "user_metadata": {"alert_email_optin": "true"}}}
+                                          "user_metadata": {
+                                              "alert_email_optin": "true",
+                                              "alert_categories": ["thesis_window"],
+                                          }}}
     _patch(monkeypatch, fake, users=users)
     sent_to = []
     result = drain.drain(send_fn=lambda **kw: sent_to.append(kw["to_email"]) or "sent",

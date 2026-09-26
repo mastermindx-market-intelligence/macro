@@ -28,9 +28,16 @@ FOCUSABLE = ("button", "a", "input", "select", "textarea", "label", '[role="butt
 
 
 def _lens_region(src: str) -> str:
-    """The lens IIFE, from its SEL definition to the end of its keydown binding."""
+    """The lens event core, from SEL through the delegated keydown binding."""
     start = src.index("var SEL = '[data-tip-en], .lens-q, .lens-term';")
-    end = src.index("if (e.key === 'Escape' && isOpen()) hide();", start)
+    end = src.index("  window.addEventListener('scroll'", start)
+    return src[start:end]
+
+
+def _lens_full_region(src: str) -> str:
+    """The full lens implementation, including the legacy-help upgrade tail."""
+    start = src.index("var SEL = '[data-tip-en], .lens-q, .lens-term';")
+    end = src.index("  window._upgradeHelpIcon = upgradeOne;", start)
     return src[start:end]
 
 
@@ -148,6 +155,58 @@ def test_the_toggle_this_healed_still_carries_its_tooltip():
     )
 
 
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_upgraded_help_icons_have_keyboard_and_coarse_pointer_affordances(name, src):
+    """The tiny legacy glyph may stay visually compact, but its real interaction
+    contract must not remain a 15px mouse-only target."""
+    src = _require(name, src)
+    region = _lens_full_region(src)
+    assert (
+        "span.help.help-upgraded{position:relative;cursor:help;touch-action:manipulation;"
+        in region
+    )
+    assert (
+        "span.help.help-upgraded:hover,span.help.help-upgraded.lens-on{" in region
+    )
+    assert (
+        "span.help.help-upgraded:focus-visible{color:var(--info,var(--blue));border-color:currentColor;"
+        in region
+    )
+    assert (
+        "outline:2px solid currentColor;outline-offset:3px}" in region
+    )
+    assert (
+        '@media (hover:none),(pointer:coarse){span.help.help-upgraded::before{'
+        'content:"";position:absolute;' in region
+    )
+    assert (
+        'left:50%;top:50%;width:40px;height:40px;'
+        'transform:translate(-50%,-50%);border-radius:var(--r-pill,999px)}}'
+        in region
+    )
+    assert "el.setAttribute('tabindex', '0');" in region
+    assert "el.setAttribute('role', 'button');" in region
+    assert "syncUpgradedHelpLabel(el);" in region
+    assert "zh ? '更多信息' : 'More information'" in region
+    assert "document.addEventListener('langchange'" in region
+    assert "e.target.closest('span.help.help-upgraded')" in region
+    assert "e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'" in region
+
+
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_mobile_lens_sheet_close_is_a_real_touch_and_keyboard_target(name, src):
+    src = _require(name, src)
+    region = _lens_region(src)
+    assert (
+        ".lens-x{display:grid;place-items:center;position:absolute;top:8px;right:8px;"
+        "z-index:2;width:40px;height:40px;" in region
+    )
+    assert ".lens-x{touch-action:manipulation}" in region
+    assert ".lens-x:focus-visible{outline:2px solid var(--lens-accent);" in region
+    assert "document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'" in region
+    assert "document.addEventListener('langchange'" in region
+
+
 # ---------------------------------------------------------------------------
 # Intelligence Hub ticker -> existing Terminal overlay boundary
 # ---------------------------------------------------------------------------
@@ -188,9 +247,27 @@ def test_intelligence_hub_promotion_accepts_real_symbol_punctuation_only(name, s
     assert "/^[A-Z0-9][A-Z0-9.-]{0,15}$/" in region
 
 
+_DOT_SYMBOL_TK_RE = re.compile(r'<span class="tk">[A-Z0-9]+\.[A-Z0-9]+</span>')
+
+
 def test_current_hub_fixture_contains_a_dot_symbol_regression_case():
+    """A dot symbol (BRK.B, BF.B) must reach the Terminal route as ONE token.
+
+    The mechanical pin is the template: the hub renders `d.ticker` verbatim
+    inside the `tk` span, and the route regex asserted above accepts the dot.
+    The committed bake is nightly DATA — which names sit on the hub changes
+    every night (the 2026-09-23 bake carried no dot symbol at all, which is
+    how this guard went red on main with no code change) — so the live page
+    is asserted only when it actually lists a dot symbol.
+    """
+    template = (ROOT / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
+    assert '<span class="tk">{{ d.ticker }}</span>' in template
     hub = HUB_HTML.read_text(encoding="utf-8")
-    assert '<span class="tk">BRK.B</span>' in hub
+    dotted = _DOT_SYMBOL_TK_RE.findall(hub)
+    if not dotted:
+        pytest.skip("today's committed hub bake lists no dot-symbol ticker; "
+                    "the template pin above is the mechanical guard")
+    assert all(re.fullmatch(r'<span class="tk">[A-Z0-9][A-Z0-9.-]{0,15}</span>', d) for d in dotted)
 
 
 @pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)

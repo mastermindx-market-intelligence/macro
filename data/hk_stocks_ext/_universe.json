@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-16T11:45:21Z",
+  "as_of": "2026-09-25T11:47:20Z",
   "source": "https://www.hsi.com.hk/data/eng/rt/index-series/hsci/constituents.do",
   "n": 582,
   "tickers": [
@@ -405,7 +405,6 @@
     "2665.HK",
     "2666.HK",
     "2669.HK",
-    "2670.HK",
     "2672.HK",
     "2675.HK",
     "2685.HK",
@@ -432,6 +431,7 @@
     "2888.HK",
     "2889.HK",
     "2899.HK",
+    "2915.HK",
     "2922.HK",
     "3277.HK",
     "3288.HK",

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import textwrap
 from pathlib import Path
@@ -33,6 +34,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from scripts.check_dag_conformance import _extract_steps_from_run
 from scripts.workflow_run_source import resolve_run_source
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -207,17 +209,45 @@ def _backoff_samples(cls: str, attempt: int, n: int = 30) -> list[int]:
     return [int(l.split()[1]) for l in r.stdout.splitlines() if l.startswith("SLEPT")]
 
 
-def test_contention_backs_off_faster_than_a_real_conflict():
-    """The core policy split: a lost ref race wants to retry INTO main's next gap; a
-    conflict wants main to settle first.
+def _backoff_complete_jitter_cycle(cls: str, attempt: int, period: int) -> list[int]:
+    """Exercise every residue in the declared jitter support, not a lucky sample.
 
-    Compared on the mean, not the extremes — the ladders are fully jittered, so their
-    ranges are allowed to overlap at the tails. What must hold is that spending ten
-    attempts on contention is far cheaper in wall-clock than spending ten on conflicts.
+    RANDOM is made an ordinary variable only in this disposable test subprocess.
+    The production policy is sourced unmodified. A fixed test clock prevents the
+    independent deadline cap from censoring the distribution under test.
     """
-    for attempt in (1, 3, 5, 8):
-        contention = _backoff_samples("contention", attempt, n=60)
-        conflict = _backoff_samples("rebase-conflict", attempt, n=60)
+    r = run_sh(
+        f"""
+        sleep() {{ echo "SLEPT $1"; }}
+        date() {{ echo 100; }}
+        unset RANDOM
+        for ((draw=0; draw<{period}; draw++)); do
+          RANDOM=$draw
+          push_retry_init "complete-jitter-cycle"
+          PUSH_ATTEMPT={attempt}
+          PUSH_FAIL_CLASS={cls}
+          push_backoff
+        done
+        """
+    )
+    assert r.returncode == 0, r.stderr
+    samples = [int(line.split()[1]) for line in r.stdout.splitlines() if line.startswith("SLEPT")]
+    assert len(samples) == period, r.stdout
+    return samples
+
+
+def test_contention_backs_off_faster_than_a_real_conflict():
+    """Compare complete jitter-support means; runtime jitter remains enabled.
+
+    Sixty independent random samples can violate this expectation inequality on
+    a correct policy (actual Bash seeds 57/7976 give sums 308/462 at attempt 1).
+    Enumerating the complete residues makes the same 1.5x policy test decisive
+    without retrying until green or weakening its threshold. The support sizes
+    below pin the intended uncapped/capped ladders; endpoint tests verify them.
+    """
+    for attempt, contention_period, conflict_period in ((1, 6, 9), (3, 12, 25), (5, 18, 41), (8, 21, 61)):
+        contention = _backoff_complete_jitter_cycle("contention", attempt, contention_period)
+        conflict = _backoff_complete_jitter_cycle("rebase-conflict", attempt, conflict_period)
         mean_c = sum(contention) / len(contention)
         mean_x = sum(conflict) / len(conflict)
         assert mean_c * 1.5 < mean_x, (
@@ -471,6 +501,106 @@ def _daily_engine_commit_step() -> tuple[dict, dict]:
     # source so these assertions keep reading what the step actually runs.
     step["run"] = resolve_run_source(step["run"], REPO_ROOT)
     return doc, step
+
+
+CORE_ENGINE_CHECKPOINT_NAME = (
+    "checkpoint core engine outputs to main (durable before tail desks)"
+)
+
+
+def _daily_engine_steps() -> list[dict]:
+    workflow = REPO_ROOT / ".github" / "workflows" / "daily.yml"
+    return yaml.safe_load(workflow.read_text())["jobs"]["engine"]["steps"]
+
+
+def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
+    steps = _daily_engine_steps()
+    names = [step.get("name") for step in steps]
+    checkpoint_index = names.index(CORE_ENGINE_CHECKPOINT_NAME)
+    regional_index = next(
+        index
+        for index, name in enumerate(names)
+        if str(name).startswith("regional + desk builders")
+    )
+    membership_index = names.index(
+        "membership snapshot freshness tripwire (advisory)"
+    )
+    tail_index = names.index("timings band — tail-desks (W2)")
+
+    assert regional_index < checkpoint_index < membership_index < tail_index
+
+    checkpoint = steps[checkpoint_index]
+    assert checkpoint["if"] == "always()"
+    assert checkpoint["timeout-minutes"] == 25
+    assert checkpoint["continue-on-error"] is True
+    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+
+
+def test_daily_engine_keeps_final_commit_after_core_checkpoint():
+    steps = _daily_engine_steps()
+    publisher_steps = [
+        step
+        for step in steps
+        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    ]
+
+    assert [step.get("name") for step in publisher_steps] == [
+        CORE_ENGINE_CHECKPOINT_NAME,
+        "commit engine outputs",
+    ]
+    assert publisher_steps[0]["continue-on-error"] is True
+    assert publisher_steps[1]["if"] == "always()"
+
+
+def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    engine = next(
+        lane
+        for lane in dag["lanes"]
+        if lane["workflow"] == ".github/workflows/daily.yml"
+        and lane["job"] == "engine"
+    )
+    steps = engine["steps"]
+    ids = [step.get("id") for step in steps]
+    start = ids.index("checkpoint_core_precommit_inject_data_base")
+    expected = [
+        ("checkpoint_core_precommit_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_precommit_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_precommit_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_precommit_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+        (
+            "checkpoint_core_gold_render_audit",
+            "scripts.audit_china_gold_premium",
+            ["--strict-render"],
+        ),
+        ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_postrebase_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+    ]
+
+    declared = steps[start : start + len(expected)]
+    assert [
+        (step.get("id"), step.get("module"), step.get("args"))
+        for step in declared
+    ] == expected
+
+    publisher_source = resolve_run_source(
+        "bash scripts/ci/daily_engine_commit_outputs.sh", REPO_ROOT
+    )
+    actual_modules = [
+        step.module for step in _extract_steps_from_run(publisher_source)
+    ]
+    assert [step.get("module") for step in declared] == actual_modules
+    assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
 
 
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
@@ -856,6 +986,541 @@ def test_abort_rebase_flags_a_conflict_only_when_a_rebase_is_in_progress(tmp_pat
         cwd=repo,
     )
     assert r.stdout.strip() == "rebase-conflict", r.stderr
+
+
+def test_abort_rebase_quits_malformed_stale_state_when_abort_cannot(tmp_path):
+    repo = tmp_path / "repo"
+    _init_repo(repo)
+    (repo / "a").write_text("a")
+    subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(repo), "commit", "-qm", "c"], check=True)
+
+    # A cancelled self-hosted job can leave only the rebase directory behind.
+    # `git rebase --abort` cannot parse this state; the helper must still clear it
+    # so every retry does not die with "already a rebase-merge directory".
+    stale = repo / ".git" / "rebase-merge"
+    stale.mkdir()
+    r = run_sh(
+        'push_retry_init "t"; PUSH_FAIL_CLASS=contention; push_abort_rebase; echo "$PUSH_FAIL_CLASS"',
+        cwd=repo,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.strip() == "rebase-conflict", r.stderr
+    assert not stale.exists(), "malformed stale rebase metadata survived cleanup"
+
+
+def test_abort_rebase_fails_closed_when_quit_exposes_partial_rebase_state(tmp_path):
+    repo = tmp_path / "repo"
+    _init_repo(repo)
+    (repo / "file").write_text("base\n")
+    _git_output(repo, "add", "file")
+    _git_output(repo, "commit", "-m", "base")
+    base = _git_output(repo, "rev-parse", "HEAD")
+
+    _git_output(repo, "checkout", "-b", "upstream")
+    (repo / "file").write_text("upstream\n")
+    _git_output(repo, "commit", "-am", "upstream")
+
+    _git_output(repo, "checkout", "-b", "topic", base)
+    (repo / "file").write_text("topic\n")
+    _git_output(repo, "commit", "-am", "topic")
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "upstream"],
+        check=False, capture_output=True, text=True,
+    )
+    assert conflict.returncode != 0
+
+    # Corrupt a genuine stopped rebase the same way a cancelled shared runner can:
+    # abort can no longer restore the original branch, while quit can only remove
+    # metadata and necessarily leaves the detached HEAD + unmerged index behind.
+    stale = repo / ".git" / "rebase-merge"
+    (stale / "head-name").unlink()
+    (stale / "orig-head").unlink()
+    r = run_sh(
+        'push_retry_init "t"; PUSH_FAIL_CLASS=contention; push_abort_rebase',
+        cwd=repo,
+    )
+    assert r.returncode != 0, (
+        "cleanup returned success even though quit left a partial rebase state "
+        f"that a bash -e caller could mistake for a retryable clean workspace:\n{r.stdout}\n{r.stderr}"
+    )
+    assert "partial rebase state survived cleanup" in r.stderr
+    assert not stale.exists(), "quit did not remove malformed rebase metadata"
+    assert _git_output(repo, "diff", "--name-only", "--diff-filter=U") == "file"
+    branch = subprocess.run(
+        ["git", "-C", str(repo), "symbolic-ref", "-q", "HEAD"],
+        check=False, capture_output=True, text=True,
+    )
+    assert branch.returncode != 0, "fixture no longer represents a detached partial rebase"
+
+
+def _current_attempt_conflict_repo(tmp_path: Path, *, dirty: bool = False) -> tuple[Path, str]:
+    repo = tmp_path / ("repo-dirty" if dirty else "repo-clean")
+    bare = tmp_path / ("origin-dirty.git" if dirty else "origin-clean.git")
+    _init_repo(repo)
+    for name, body in (
+        ("file", "base\n"),
+        ("staged.txt", "base staged\n"),
+        ("unstaged.txt", "base unstaged\n"),
+    ):
+        (repo / name).write_text(body)
+    _git_output(repo, "add", ".")
+    _git_output(repo, "commit", "-m", "base")
+    base = _git_output(repo, "rev-parse", "HEAD")
+
+    subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(bare)], check=True)
+    _git_output(repo, "remote", "add", "origin", str(bare))
+    _git_output(repo, "push", "-u", "origin", "main")
+
+    # origin/main is the exact upstream target used by production retry callers.
+    (repo / "file").write_text("upstream\n")
+    _git_output(repo, "commit", "-am", "upstream")
+    _git_output(repo, "push", "origin", "main")
+
+    _git_output(repo, "checkout", "-b", "topic", base)
+    (repo / "file").write_text("topic\n")
+    _git_output(repo, "commit", "-am", "topic")
+    topic_head = _git_output(repo, "rev-parse", "HEAD")
+    if dirty:
+        (repo / "staged.txt").write_text("current attempt staged\n")
+        _git_output(repo, "add", "staged.txt")
+        (repo / "unstaged.txt").write_text("current attempt unstaged\n")
+    return repo, topic_head
+
+def _install_inherited_complete_rebase(repo: Path, tmp_path: Path) -> Path:
+    """Park a prior invocation's complete stopped rebase over a clean attached topic."""
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "origin/main"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert conflict.returncode != 0
+    git_dir = Path(_git_output(repo, "rev-parse", "--absolute-git-dir"))
+    state = git_dir / "rebase-merge"
+    assert state.is_dir()
+    saved = tmp_path / "inherited-rebase-merge"
+    shutil.copytree(state, saved)
+    _git_output(repo, "rebase", "--abort")
+    assert _git_output(repo, "symbolic-ref", "--short", "HEAD") == "topic"
+    assert _git_output(repo, "diff", "--name-only", "--diff-filter=U") == ""
+    shutil.copytree(saved, state)
+    return git_dir
+
+def test_fetch_rebase_discards_inherited_complete_state_before_binding_current_attempt(tmp_path):
+    """A retained runner must not normal-abort using a previous invocation's orig-head."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -z "$(git ls-files -u)"
+        test "$(cat file)" = topic
+        test ! -d "$GIT_DIR/rebase-merge"
+        test ! -d "$GIT_DIR/rebase-apply"
+
+        rc=0
+        out=$(git rebase origin/main 2>&1) || rc=$?
+        test "$rc" -ne 0
+        case "$out" in
+          *"already a rebase-merge directory"*|*"index contains uncommitted changes"*|*"unstaged changes"*)
+            echo "$out" >&2
+            exit 71
+            ;;
+        esac
+        test -d "$GIT_DIR/rebase-merge"
+        git rebase --abort
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+
+def test_inherited_cleanup_uses_quit_and_never_normal_abort(tmp_path):
+    """Inherited orig-head/autostash metadata is never accepted as this retry's authority."""
+    repo, _ = _current_attempt_conflict_repo(tmp_path)
+    _install_inherited_complete_rebase(repo, tmp_path)
+    real_git = subprocess.run(
+        ["which", "git"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    log = tmp_path / "git-args.log"
+    fakebin = tmp_path / "logging-args-bin"
+    fakebin.mkdir()
+    wrapper = fakebin / "git"
+    wrapper.write_text(
+        "#!/usr/bin/env bash\n"
+        f"printf '%s\\n' \"$*\" >> {str(log)!r}\n"
+        f'exec {real_git!r} "$@"\n'
+    )
+    wrapper.chmod(0o755)
+
+    r = run_sh(
+        'push_retry_init "t"; push_attempt; push_fetch_main_for_rebase',
+        env={"PATH": f"{fakebin}:{os.environ['PATH']}"},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+    calls = log.read_text().splitlines()
+    assert "rebase --quit" in calls, calls
+    assert "rebase --abort" not in calls, calls
+
+
+def test_inherited_cleanup_never_overwrites_concurrent_branch_ref_movement(tmp_path):
+    """The current-attempt anchor fences local branch movement during inherited cleanup."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+    moved_head = _git_output(repo, "rev-parse", "origin/main")
+    real_git = subprocess.run(
+        ["which", "git"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    fakebin = tmp_path / "move-branch-bin"
+    fakebin.mkdir()
+    wrapper = fakebin / "git"
+    wrapper.write_text(textwrap.dedent(f"""\
+        #!/usr/bin/env bash
+        if [ "$1" = rebase ] && [ "$2" = --quit ]; then
+          {real_git!r} "$@"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            {real_git!r} update-ref refs/heads/topic "$MOVED_HEAD" "$TOPIC_HEAD"
+          fi
+          exit "$rc"
+        fi
+        exec {real_git!r} "$@"
+        """))
+    wrapper.chmod(0o755)
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        if push_fetch_main_for_rebase; then
+          echo "concurrent branch movement was overwritten" >&2
+          exit 74
+        fi
+        test "$(git rev-parse refs/heads/topic)" = "$MOVED_HEAD"
+        test "$(git rev-parse HEAD)" = "$MOVED_HEAD"
+        test "$PUSH_ATTEMPT_INHERITED_REBASE" -eq 1
+        test ! -d "$GIT_DIR/rebase-merge"
+        """,
+        env={
+            "PATH": f"{fakebin}:{os.environ['PATH']}",
+            "TOPIC_HEAD": topic_head,
+            "MOVED_HEAD": moved_head,
+            "GIT_DIR": str(git_dir),
+        },
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+
+def test_failed_inherited_recovery_is_sticky_across_retry_attempts(tmp_path):
+    """A failed inherited-state recovery cannot be recaptured as fresh authority."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    _install_inherited_complete_rebase(repo, tmp_path)
+    moved_head = _git_output(repo, "rev-parse", "origin/main")
+    real_git = subprocess.run(
+        ["which", "git"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    fakebin = tmp_path / "sticky-failure-bin"
+    fakebin.mkdir()
+    wrapper = fakebin / "git"
+    wrapper.write_text(textwrap.dedent(f"""\\
+        #!/usr/bin/env bash
+        if [ "$1" = rebase ] && [ "$2" = --quit ]; then
+          {real_git!r} "$@"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            {real_git!r} update-ref refs/heads/topic "$MOVED_HEAD" "$TOPIC_HEAD"
+          fi
+          exit "$rc"
+        fi
+        exec {real_git!r} "$@"
+        """))
+    wrapper.chmod(0o755)
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        if push_fetch_main_for_rebase; then
+          echo "first inherited recovery unexpectedly succeeded" >&2
+          exit 81
+        fi
+        test "$PUSH_RECOVERY_FAILED" -eq 1
+        if push_attempt; then
+          echo "failed recovery was forgotten by the next retry" >&2
+          exit 82
+        fi
+        test "$PUSH_RECOVERY_FAILED" -eq 1
+        case "$PUSH_STOP" in
+          *"recovery failed"*) ;;
+          *) echo "missing sticky recovery stop: $PUSH_STOP" >&2; exit 83 ;;
+        esac
+        """,
+        env={
+            "PATH": f"{fakebin}:{os.environ['PATH']}",
+            "TOPIC_HEAD": topic_head,
+            "MOVED_HEAD": moved_head,
+        },
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_inherited_cleanup_preserves_untracked_child_without_destructive_restore(tmp_path):
+    """Cleanup-only quit must not reset away current-job untracked output."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+    tracked = repo / "staged.txt"
+    tracked.unlink()
+    tracked.mkdir()
+    child = tracked / "untracked-child.txt"
+    child.write_text("current-job-untracked\n")
+    before = _git_output(repo, "status", "--porcelain")
+    assert "staged.txt" in before
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        test "$PUSH_RECOVERY_FAILED" -eq 0
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -f staged.txt/untracked-child.txt
+        test "$(cat staged.txt/untracked-child.txt)" = current-job-untracked
+        test -z "$(git ls-files -u)"
+        test ! -d "$GIT_DIR/rebase-merge"
+        test ! -d "$GIT_DIR/rebase-apply"
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+    assert child.read_text() == "current-job-untracked\n"
+
+def test_fetch_rebase_preserves_current_tracked_dirt_while_removing_inherited_state(tmp_path):
+    """Inherited control metadata cannot erase the current job's staged/unstaged bytes."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+    (repo / "staged.txt").write_text("current job staged\n")
+    _git_output(repo, "add", "staged.txt")
+    (repo / "unstaged.txt").write_text("current job unstaged\n")
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test "$(cat staged.txt)" = "current job staged"
+        test "$(cat unstaged.txt)" = "current job unstaged"
+        test "$(git diff --cached --name-only)" = staged.txt
+        test "$(git diff --name-only)" = unstaged.txt
+        test -z "$(git ls-files -u)"
+        test ! -d "$GIT_DIR/rebase-merge"
+        test ! -d "$GIT_DIR/rebase-apply"
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+
+def test_inherited_autostash_is_never_applied_over_current_job_bytes(tmp_path):
+    """A prior invocation's autostash may be retained as evidence, never applied as state."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    (repo / "staged.txt").write_text("prior invocation staged\n")
+    _git_output(repo, "add", "staged.txt")
+    (repo / "unstaged.txt").write_text("prior invocation unstaged\n")
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "--autostash", "origin/main"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert conflict.returncode != 0
+    git_dir = Path(_git_output(repo, "rev-parse", "--absolute-git-dir"))
+    state = git_dir / "rebase-merge"
+    assert (state / "autostash").is_file()
+    saved = tmp_path / "inherited-autostash-rebase-merge"
+    shutil.copytree(state, saved)
+    _git_output(repo, "rebase", "--abort")
+    _git_output(repo, "reset", "--hard", topic_head)
+    shutil.copytree(saved, state)
+
+    (repo / "staged.txt").write_text("current job staged\n")
+    _git_output(repo, "add", "staged.txt")
+    (repo / "unstaged.txt").write_text("current job unstaged\n")
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test "$(cat staged.txt)" = "current job staged"
+        test "$(cat unstaged.txt)" = "current job unstaged"
+        test "$(git diff --cached --name-only)" = staged.txt
+        test "$(git diff --name-only)" = unstaged.txt
+        test -z "$(git ls-files -u)"
+        test ! -d "$GIT_DIR/rebase-merge"
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+def test_fetch_rebase_refuses_inherited_detached_conflict_without_trusting_old_abort(tmp_path):
+    """No current-job anchor means inherited detached/unmerged state stays fail-closed."""
+    repo, _ = _current_attempt_conflict_repo(tmp_path)
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "origin/main"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert conflict.returncode != 0
+    pre_head = _git_output(repo, "rev-parse", "HEAD")
+    pre_unmerged = _git_output(repo, "ls-files", "-u")
+    assert pre_unmerged
+    git_dir = Path(_git_output(repo, "rev-parse", "--absolute-git-dir"))
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        if push_fetch_main_for_rebase; then
+          echo "inherited partial rebase was accepted" >&2
+          exit 72
+        fi
+        if push_abort_rebase; then
+          echo "inherited rebase metadata was trusted by abort" >&2
+          exit 73
+        fi
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 0
+        test "$(git rev-parse HEAD)" = "$PRE_HEAD"
+        test -z "$(git symbolic-ref -q HEAD || true)"
+        test "$(git ls-files -u)" = "$PRE_UNMERGED"
+        test -d "$GIT_DIR/rebase-merge"
+        """,
+        env={
+            "PRE_HEAD": pre_head,
+            "PRE_UNMERGED": pre_unmerged,
+            "GIT_DIR": str(git_dir),
+        },
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_abort_rebase_restores_exact_current_attempt_after_malformed_real_conflict(tmp_path):
+    """A damaged conflict created by THIS retry may recover from its pre-rebase anchor."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        git rebase --autostash origin/main >/tmp/push-retry-current-attempt-first.log 2>&1 || true
+        gd=$(git rev-parse --git-dir)
+        rm -f "$gd/rebase-merge/head-name" "$gd/rebase-merge/orig-head"
+        push_abort_rebase
+
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -z "$(git ls-files -u)"
+        test "$(cat file)" = topic
+        test ! -d "$gd/rebase-merge"
+        test ! -d "$gd/rebase-apply"
+
+        rc=0
+        out=$(git rebase origin/main 2>&1) || rc=$?
+        test "$rc" -ne 0
+        case "$out" in
+          *"already a rebase-merge directory"*|*"index contains uncommitted changes"*|*"unstaged changes"*)
+            echo "$out" >&2
+            exit 71
+            ;;
+        esac
+        test -d "$gd/rebase-merge"
+        git rebase --abort
+        """,
+        env={"TOPIC_HEAD": topic_head},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_abort_rebase_current_attempt_anchor_restores_staged_and_unstaged_bytes(tmp_path):
+    """Fallback uses this attempt's snapshot; an abandoned Git autostash is not authority."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path, dirty=True)
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        git rebase --autostash origin/main >/tmp/push-retry-current-attempt-dirty.log 2>&1 || true
+        gd=$(git rev-parse --git-dir)
+        rm -f "$gd/rebase-merge/head-name" "$gd/rebase-merge/orig-head"
+        push_abort_rebase
+
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -z "$(git ls-files -u)"
+        test "$(cat file)" = topic
+        test "$(cat staged.txt)" = "current attempt staged"
+        test "$(cat unstaged.txt)" = "current attempt unstaged"
+        test "$(git diff --cached --name-only)" = staged.txt
+        test "$(git diff --name-only)" = unstaged.txt
+        test ! -d "$gd/rebase-merge"
+        test ! -d "$gd/rebase-apply"
+        git stash list >/dev/null
+        """,
+        env={"TOPIC_HEAD": topic_head},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_metadata_only_push_attempt_does_not_capture_rebase_anchor(tmp_path):
+    """Retry accounting alone must not scan/stash a dirty repository."""
+    repo = tmp_path / "repo-metadata-only"
+    _init_repo(repo)
+    (repo / "a").write_text("base\n")
+    _git_output(repo, "add", ".")
+    _git_output(repo, "commit", "-m", "base")
+    (repo / "a").write_text("dirty current output\n")
+
+    log = tmp_path / "git-calls.log"
+    fakebin = _logging_git(tmp_path, log)
+    r = run_sh(
+        'push_retry_init "metadata-only"; push_attempt; echo "anchor=$PUSH_ATTEMPT_ANCHOR_VALID"',
+        env={"PATH": f"{fakebin}:{os.environ['PATH']}"},
+        cwd=repo,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "anchor=0" in r.stdout
+    calls = log.read_text().splitlines() if log.exists() else []
+    assert "diff" not in calls, calls
+    assert "stash" not in calls, calls
+    assert "write-tree" not in calls, calls
 
 
 # ---------------------------------------------------------------------------
@@ -1871,3 +2536,23 @@ def test_backfill_lane_block_fails_the_job_when_the_push_never_lands(tmp_path):
     assert r.returncode == 1, f"a backfill that published nothing concluded green:\n{combined}"
     assert "::error title=backfill NOT pushed" in combined
     assert "data/symbol_directory" not in _git_output(bare, "show", "--stat", "main")
+
+@pytest.mark.parametrize("kind,attempt,period,lo,hi", [
+    ("contention", 1, 6, 2, 7), ("rebase-conflict", 1, 9, 4, 12),
+    ("contention", 3, 12, 5, 16), ("rebase-conflict", 3, 25, 12, 36),
+    ("contention", 5, 18, 8, 25), ("rebase-conflict", 5, 41, 20, 60),
+    ("contention", 8, 21, 10, 30), ("rebase-conflict", 8, 61, 30, 90),
+])
+def test_complete_jitter_cycle_covers_policy_support(kind, attempt, period, lo, hi):
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    samples = _backoff_complete_jitter_cycle(kind, attempt, period)
+    assert samples == list(range(lo, hi + 1))
+    assert len(samples) == period
+
+
+def test_complete_jitter_cycle_is_reproducible_without_disabling_runtime_jitter():
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    first = _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert first == _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert len(set(first)) == 6
+

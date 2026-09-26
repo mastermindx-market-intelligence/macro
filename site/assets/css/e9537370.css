@@ -1,0 +1,35 @@
+
+  /* post-stack: consolidate */
+  /* Folded header strip (S2 §1.3). Tokens only; theme.css untouched.
+     Dark: hairline + air. Light: --panel2 inset band (hairline on white is not enough). */
+  .acb-tape{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;
+    margin:10px 0 14px; padding:10px 0 0;
+    border-top:1px solid var(--line);
+  }
+  .acb-tape-eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  html[data-lang="zh"] .acb-tape-eyebrow{letter-spacing:.06em}
+  .acb-tape-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;min-width:0}
+  .acb-tape-sym{font-weight:700;white-space:nowrap}
+  .acb-tape-fig{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+  .acb-tape-fig.is-up{color:var(--ink-up, var(--up))}
+  .acb-tape-fig.is-down{color:var(--ink-down, var(--down))}
+  .acb-tape-say{font-size:12.5px;color:color-mix(in srgb,var(--text) 78%,transparent);flex:1 1 12em;min-width:0}
+  .acb-tape-asof{margin-left:auto;font-size:11px;color:var(--muted)}
+  .acb-tape-foot{flex:1 0 100%;margin:6px 0 0;font-size:12.5px;line-height:1.5}
+  .m7t-rare{color:var(--muted)}
+  .m7t-rare::before{content:"·";padding:0 5px 0 4px;opacity:.5}
+  .m7t-split{font-size:12.5px;line-height:1.5;color:var(--text);margin:0;max-width:74ch}
+  .m7t-stance{color:var(--text);font-weight:650}
+  .m7t-lane{font-weight:650;color:var(--text);white-space:nowrap}
+  @media (max-width:520px){
+    .acb-tape{gap:6px 10px}
+    .acb-tape-asof{margin-left:0;flex:1 0 100%}
+  }
+  :root[data-theme="light"] .acb-tape,
+  html:not([data-theme="dark"]) .acb-tape{
+    background:var(--panel2);
+    border-top-color:color-mix(in srgb,var(--text) 12%,transparent);
+    padding:10px 12px; margin-inline:-12px; border-radius:var(--r-ctl,6px);
+  }
+  
