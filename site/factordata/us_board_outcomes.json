@@ -587,6 +587,19 @@
    "lane": "buy"
   },
   {
+   "ticker": "AMKR",
+   "sector": "Information Technology",
+   "first_surfaced": "2026-09-21",
+   "surfaced_price": 54.59,
+   "last_price": 52.69,
+   "pct_since": -3.5,
+   "days_on_board": 3,
+   "exit_date": "2026-09-24",
+   "mark_date": "2026-09-24",
+   "status": "stopped",
+   "lane": "buy"
+  },
+  {
    "ticker": "HLI",
    "sector": "Financials",
    "first_surfaced": "2026-08-21",
@@ -691,19 +704,6 @@
    "lane": "buy"
   },
   {
-   "ticker": "WB",
-   "sector": "Communication Services",
-   "first_surfaced": "2026-09-17",
-   "surfaced_price": 6.54,
-   "last_price": 6.74,
-   "pct_since": 3.1,
-   "days_on_board": 2,
-   "exit_date": "2026-09-22",
-   "mark_date": "2026-09-21",
-   "status": "running",
-   "lane": "buy"
-  },
-  {
    "ticker": "NOVT",
    "sector": "Information Technology",
    "first_surfaced": "2026-09-03",
@@ -784,8 +784,8 @@
  ],
  "summary": {
   "n_running": 33,
-  "n_stopped": 56,
-  "n_flat": 285,
+  "n_stopped": 57,
+  "n_flat": 284,
   "n_total": 374,
   "n_shown": 60,
   "median_pct": 0.0,

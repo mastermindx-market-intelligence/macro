@@ -370,6 +370,11 @@ jobs:
       # packed trusted-executor dispatch — pick them up; the suite still
       # imports scripts.check_caddy_hub_boundary, same env.
       - "tests/test_caddy_hub_boundary_am_edition.py"
+      # ...and that suite's closure, now that the step below runs it (2026-09-25:
+      # #7972 declared the suite but no run: step named it, so the unrun census
+      # flagged it once the census ran on the code gate).
+      - "scripts/check_caddy_hub_boundary.py"
+      - "app/deploy/Caddyfile"
       # 2026-09-25 seat heal of the inherited contract-delta notices from
       # #7972: tests/test_am_edition_live.py names the systemd unit/timer and
       # the deploy updater literally, so the producer job must own them too.
@@ -391,7 +396,7 @@ jobs:
         # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
         run: pip install pytest pyyaml jinja2
       - name: AM Edition producer + lane-B live contract (per-source clocks, six states, no laundering, served-artifact chmod 0o644, freshest-wins under Z/naive ISO stamps)
-        run: python -m pytest tests/test_am_edition_producer.py tests/test_am_edition_live.py -q
+        run: python -m pytest tests/test_am_edition_producer.py tests/test_am_edition_live.py tests/test_caddy_hub_boundary_am_edition.py -q
 
   all-exports-resolve:
     if: ${{ false }}
@@ -3210,12 +3215,26 @@ jobs:
       # house-law registry census (post-#2297 fix): run the statement-tape schema
       # guard itself against the committed registry, not just its pytest coverage.
       # It stays in THIS job — `config/house_law_checks.yml` names this job as its
-      # ci_wiring — and it is deliberately LAST: it is the only step here that is not
-      # pytest, and the sweep above is the thing most likely to be red, so ordering it
-      # first would have bought nothing. Its own pytest coverage
+      # ci_wiring — and it deliberately runs after the sweep: it is the only step here
+      # that is not pytest, and the sweep above is the thing most likely to be red, so
+      # ordering it first would have bought nothing. Its own pytest coverage
       # (tests/test_statement_tape.py) is inside the sweep, one step above.
       - name: statement-tape schema guard (FL-E / FC-R9)
         run: python -m scripts.check_statement_tape
+      # #7603's rendered dead-reference targets: site/am_edition.html must exist, and the
+      # HK pages must link the in-page #sector-rotation anchor, never the retired
+      # sector_ranking.html. It reads rendered pages under site/, so it runs on this data
+      # gate. It follows the statement-tape guard so that a red here can never hide a
+      # registered house-law guard.
+      - name: rendered dead-reference targets (#7603)
+        run: python -m pytest tests/test_render_dead_ref_targets.py -q
+      # The data_gate half of three suites whose other half runs in workflow-yaml on the
+      # code gate (2026-09-25). Each test selected here reads a real store under data/
+      # or a rendered page under site/, so its verdict can move with a nightly commit and
+      # no code change. tests/conftest.py registers the marker. LAST, for the same reason
+      # as the step above.
+      - name: options + render assertions that read committed data (the data_gate half)
+        run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -4759,44 +4778,154 @@ jobs:
       - name: CN board-append lane gate (fail-closed CN_LANE — board/ripening/audit/event-latch)
         run: python -m pytest tests/test_cn_board_lane_gate.py -q
 
-  workflow-yaml:
-    if: ${{ false }}
-    gate: data
-    # Every .github/workflows/* file must load as YAML and carry on: + jobs:.
-    # An unparseable workflow file makes GitHub stamp a FAILED zero-job run on
-    # every push to every branch carrying it (metabolism-agenda.yml col-0
-    # incident: ~325 failed runs 07-10→07-11, introduced #2135, repaired #2260).
-    # dag-conformance above only yaml-loads workflows declared as dag.yml lanes,
-    # so non-lane workflow files had no parse guard at all — this closes that gap.
+  ci-control-plane-contracts:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # The CI control plane's own contracts, on the PR code gate (2026-09-25). Every
+    # step below ran in workflow-yaml until then, and workflow-yaml was gate: data.
+    # ci.yml's ci-pack runs gate: code only, so none of these ran on a pull request;
+    # they ran on data-health's schedule, after the merge. Two measured costs:
+    # test_derived_scopes_are_startable_by_the_ci_workflow was red on main from #7971
+    # until #7998, and #8010 added a job selected by engine/** that breached the
+    # packing probes in test_exclusive_curation_narrows_ordinary_code_prs and still
+    # merged green.
+    # Every verdict here is a function of the PR tree
+    # (research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md): manifest
+    # structure, pack ceilings, trigger startability, exclusive-curation closure,
+    # CURATED_EXCLUSIVE equality, and the unrun, skip-only and trigger-closure
+    # censuses. Measured with an audit hook on every step, test_ci_pack.py's 135
+    # tests included: no step makes a Python-level network call, and the only
+    # opens under data/ or site/ are audit_unrun_tests.py's report tier reading a
+    # few site/ files. No verdict depends on them: that script's exit code comes
+    # only from the unrun, baseline and waiver sets. Every step also passes with
+    # GIT_ALLOW_PROTOCOL=file, so no git subprocess reaches a remote: they run
+    # against temporary local repositories or against this checkout itself.
+    # EXCLUSIVE, not inferred. These suites read most of the repository, so an
+    # inferred job would be selected by nearly every PR and add one job to every
+    # packing probe, and those probes sit at their ceilings. The paths below are
+    # the suites' import closure plus the files they read directly.
+    # check_ci_trigger_closure.py and test_ci_pack.py's curated-closure test (both
+    # run below) red when that list falls behind.
+    # WHAT THE PATHS CANNOT COVER. Some verdicts here depend on the whole tree, not
+    # on the files listed below. The packing probes, the always-on list, the
+    # inference checks and the unrun, skip-only and trigger-closure censuses walk
+    # every job and suite through the planner, and no exclusive list can name
+    # every suite. So a PR that moves one of those verdicts without touching a
+    # path below merges without running this job. Each such shape has another
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
+    # curated-closure check differentially. integration-baseline.yml runs
+    # test_ci_pack.py and the skip-only census on every source push to main and
+    # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
+    # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
+    # one when its main proof goes stale. A PR that edits the manifest or the
+    # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/**"
+      - "scripts/run_ci_pack.py"
+      - "scripts/ci_*.py"
+      - "scripts/audit_unrun_tests.py"
+      - "scripts/check_ci_trigger_closure.py"
+      - "scripts/check_runner_policy.py"
+      - "scripts/check_skip_only_suites.py"
+      - "scripts/check_workflow_yaml.py"
+      - "scripts/nightly_backstop.py"
+      - "tests/test_audit_unrun_tests.py"
+      - "tests/test_check_conflict_markers.py"
+      - "tests/test_check_skip_only_suites.py"
+      - "tests/test_ci_canary_tools.py"
+      - "tests/test_ci_canary_workflows.py"
+      - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_pack.py"
+      - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_plan_workflow.py"
+      - "tests/test_ci_semantic_proof.py"
+      - "tests/test_ci_trigger_closure.py"
+      - "tests/test_contract_delta.py"
+      - "tests/test_merge_on_green.py"
+      - "tests/test_merge_on_green_semantic.py"
+      - "tests/test_nightly_backstop.py"
+      - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_fetch_fallback.py"
+      - "tests/test_runner_policy.py"
+      - "tests/test_trusted_ci_executor_workflow.py"
+      - "tests/test_trusted_ci_production_route.py"
+      # What the suites above import or read. `scope: exclusive` replaces
+      # inference, so a file missing here is one whose change never starts this
+      # job; test_curated_exclusive_scopes_cover_their_own_import_closure reds on it.
+      - "scripts/__init__.py"
+      - "scripts/workflow_run_source.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "lib/nyse_calendar.py"
+      - "scripts/check_conflict_markers.py"
+      - "scripts/check_contract_delta.py"
+      - "scripts/merge_on_green.py"
+      - "scripts/gh_path_filter.py"
+      - "scripts/capture_ci_canary_receipt.py"
+      - "scripts/compare_ci_canary_receipts.py"
+      - "scripts/monitor_ci_host_resources.py"
+      - "scripts/resolve_ci_canary_ref.py"
+      - "scripts/select_ci_canary_packs.py"
+      - "ops/runner-host/**"
+      - ".claude/workflows/release_hold_text.py"
+      - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md"
+      - "config/house_law_checks.yml"
+      # The unrun census's own inputs: a waiver or baseline edit changes its verdict.
+      - "config/unrun_test_baseline.json"
+      - "config/unrun_test_waivers.yml"
+      # tests/test_ci_pack.py imports the P0B receipt verifier, which imports the
+      # stock-dashboard fixture renderer. These are that import's closure.
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+      - "site/stock-dashboard.css"
+      - "site/factordata/canada_standouts.json"
+      - "site/factordata/hk_standouts.json"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      # Parsed or existence-checked subjects, never imported. Each is marked
+      # `# ci-trigger-closure: data` where a suite names it, so its own imports
+      # are not followed; the file itself is still a trigger.
+      - "collectors/fred.py"
+      - "contracts/government_revenue/*.schema.json"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/market_state.py"
+      - "engine/signal_quality.py"
+      - "lib/config.py"
+      - "scripts/build_news.py"
+      - "scripts/build_signal_quality.py"
+      - "config/causal_priors.yml"
+      - "config/marketing.yml"
+      - "config/press_sources.yml"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/cn_prophet_audit/sector_intel_exante_test.py"
+      - "research/prophet_us_audit/reclaim_veto_packet.py"
+      - "research/prophet_us_audit/test_label_grading_battery.py"
+      - "research/signal_engine/test_breadth_consume.py"
+      - "research/signal_engine/test_buy_filters.py"
+      - "research/signal_engine/test_buyfilter.py"
+      - "scripts/research/test_run_w4_controls_fingerprints.py"
+      - "tests/test_chart_render_inline.py"
+      - "tests/test_us_reclaim_veto_packet.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # Deps grew 2026-07-30 (#3977). This job was `pytest pyyaml` — right for the
-      # workflow-YAML steps — but OIP E8 attached five options suites whose assertions are
-      # DATA-layer: they build DataFrames, round-trip parquet, and drive builders that
-      # render templates and fetch over HTTP. Only the first added step ran before ci-pack-1
-      # died, so its `No module named 'jinja2'` hid four more steps that would have failed
-      # the same way on pandas/jinja2/requests. Verified minimal by installing one package
-      # at a time in a clean venv (2026-07-30): pytest+pyyaml alone collects none of the
-      # four; +pandas leaves parquet writes failing; +pyarrow leaves 15 jinja2 and 11
-      # requests failures; the set below runs all five green (31+52+38+33+23 = 177 tests).
-      # numpy is transitive via pandas and named for the record, as causal-factory does.
-      # NOT patched with importorskip anywhere — a suite that skips in the only job naming
-      # it executes NOWHERE while reading green, which is the class the
-      # check_skip_only_suites.py steps below exist to catch.
+      # pytest + pyyaml only. Every suite below collects and passes with nothing else
+      # installed (measured 2026-09-25 in a clean venv holding exactly these two). The
+      # data stack in workflow-yaml's install is for its options suites. It is not
+      # needed here, and check_skip_only_suites.py below reds if a suite here ever
+      # starts to skip for a package this line does not install.
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
-      - name: check_workflow_yaml selftest
-        run: python scripts/check_workflow_yaml.py --selftest
-      - name: "all workflow files must parse with on:/jobs: blocks"
-        run: python scripts/check_workflow_yaml.py .github/workflows
-      # ci.yml's Wave B job graph (2026-08-11), wired here because the step above is
-      # the closest existing owner: both read .github/workflows/ as their subject and
-      # both need only pytest+pyyaml, already installed above. A parse gate proves the
-      # file LOADS; this proves it still says what it has to say. `ci-plan` now emits
+        run: pip install pytest pyyaml
+      # ci.yml's Wave B job graph (2026-08-11), first wired in workflow-yaml beside
+      # the workflow parse gate: both read .github/workflows/ as their subject. A
+      # parse gate proves the file LOADS; this proves it still says what it has to say. `ci-plan` now emits
       # the pack matrix, so a PR may publish a SUBSET of ci-pack-0..11 and `ci-gate`
       # is the only name that concludes on every non-closed event — the affirmative
       # success `scripts/merge_on_green.py` requires (#4779, absence of red is not a
@@ -4864,10 +4993,13 @@ jobs:
       # read as unrun WARN to be pruned; they never red, so the PR that wires a suite is
       # never punished for wiring it. Grandfathering the 969 rather than gating them is
       # deliberate — running them all would blow the ci-pack budget; what this buys is
-      # the ratchet on the 970th. Enumeration stays EXPLICIT for the same reason the
-      # install-line comments above give: a glob runner would auto-run unvetted suites
-      # and re-create the ERROR-at-collection class those comments document, so a new
-      # suite is wired into the job that owns its subject, by hand, on purpose.
+      # the ratchet on the 970th. Enumeration stays EXPLICIT for the reason
+      # workflow-yaml's install-line comment gives: a glob runner would auto-run unvetted
+      # suites and re-create the ERROR-at-collection class that comment documents, so a
+      # new suite is wired into the job that owns its subject, by hand, on purpose.
+      # Tree-pure: its exit code depends only on the manifest's run: steps, the suites
+      # the tree holds, and the two config files. The site/ files it opens feed the
+      # severity tiers of its report, never the exit code.
       - name: "no suite may be named by zero run: steps (baseline-gated)"
         run: python scripts/audit_unrun_tests.py
       - name: unrun-census discovery unit tests
@@ -4910,6 +5042,51 @@ jobs:
         run: python scripts/check_ci_trigger_closure.py
       - name: trigger-closure guard unit tests
         run: python -m pytest tests/test_ci_trigger_closure.py -q
+
+  workflow-yaml:
+    if: ${{ false }}
+    gate: code
+    # Every .github/workflows/* file must load as YAML and carry on: + jobs:.
+    # An unparseable workflow file makes GitHub stamp a FAILED zero-job run on
+    # every push to every branch carrying it (metabolism-agenda.yml col-0
+    # incident: ~325 failed runs 07-10→07-11, introduced #2135, repaired #2260).
+    # dag-conformance above only yaml-loads workflows declared as dag.yml lanes,
+    # so non-lane workflow files had no parse guard at all — this closes that gap.
+    # GATE (2026-09-25): gate: code. This job was gate: data, so ci.yml's ci-pack
+    # (gate: code only) never ran it on a pull request. Its CI control-plane
+    # contracts moved to ci-control-plane-contracts, above. What stays is also a
+    # function of the tree: the workflow parse gate, render-lane wiring contracts
+    # that read workflow/dag/builder text, the options suites' fixture-built
+    # tests, and the sparse-worktree suites, which build synthetic git repos
+    # under tmp_path. The options and dead-asset tests that read a real store
+    # under data/ or a rendered page under site/ carry @pytest.mark.data_gate
+    # (tests/conftest.py). They are deselected here and run in
+    # engine-render-guards on the data gate.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Deps grew 2026-07-30 (#3977). This job was `pytest pyyaml` — right for the
+      # workflow-YAML steps — but OIP E8 attached five options suites whose assertions are
+      # DATA-layer: they build DataFrames, round-trip parquet, and drive builders that
+      # render templates and fetch over HTTP. Only the first added step ran before ci-pack-1
+      # died, so its `No module named 'jinja2'` hid four more steps that would have failed
+      # the same way on pandas/jinja2/requests. Verified minimal by installing one package
+      # at a time in a clean venv (2026-07-30): pytest+pyyaml alone collects none of the
+      # four; +pandas leaves parquet writes failing; +pyarrow leaves 15 jinja2 and 11
+      # requests failures; the set below runs all five green (31+52+38+33+23 = 177 tests).
+      # numpy is transitive via pandas and named for the record, as causal-factory does.
+      # NOT patched with importorskip anywhere — a suite that skips in the only job naming
+      # it executes NOWHERE while reading green, which is the class
+      # check_skip_only_suites.py (ci-control-plane-contracts) exists to catch.
+      - name: install minimal deps
+        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
+      - name: check_workflow_yaml selftest
+        run: python scripts/check_workflow_yaml.py --selftest
+      - name: "all workflow files must parse with on:/jobs: blocks"
+        run: python scripts/check_workflow_yaml.py .github/workflows
       # render.yml's per-scope publish wiring. #3718 fixed the international
       # dashboard never publishing because `intl` was missing from the render
       # lane's scope list, and shipped this suite as the guard — but no `run:`
@@ -4929,7 +5106,7 @@ jobs:
       - name: "render workflow size ceiling and builder ownership"
         run: python -m pytest tests/test_render_run_size_cap.py tests/test_render_builder_ownership.py -q
       - name: render publication dead-asset fences
-        run: python -m pytest tests/test_render_dead_asset_gate.py -q
+        run: python -m pytest tests/test_render_dead_asset_gate.py -q -m "not data_gate"
       # Same class, second instance (2026-07-27). build_canada was invoked by NO
       # workflow at all: site/canada.html existed only as a side effect of a
       # swallowed try/except inside build_vector, so a canada-only fix could ride a
@@ -4954,14 +5131,16 @@ jobs:
       # #3721 weekend-row class. The options stores accrue non-session rows that RECOMPUTE
       # IV/spot/walls off a stale price; unfiltered they corrupt .iloc[-1], percentile
       # windows and positional lookbacks — including the n_obs count that gates
-      # call_skew_rich into the CROWDED state.
+      # call_skew_rich into the CROWDED state. The tests that read the real stores
+      # carry @pytest.mark.data_gate and run in engine-render-guards; the ones here are
+      # fixture-built. The same split applies to the seams and dead-asset suites.
       - name: options readers must session-filter dated stores
-        run: python -m pytest tests/test_options_session_guards.py -q
+        run: python -m pytest tests/test_options_session_guards.py -q -m "not data_gate"
       # The ×100 class, hit twice. Both incidents survived tests whose FIXTURES encoded
       # the bug, so this suite asserts against fixture-shaped AND prod-shaped inputs and
       # simulates a newest-vintage-only flip.
       - name: options ingestion seams must assert percent-vs-fraction
-        run: python -m pytest tests/test_options_unit_seams.py -q
+        run: python -m pytest tests/test_options_unit_seams.py -q -m "not data_gate"
       # R8 one coverage shape across the four family builders; pins the honesty rules
       # (unknown stays None, never a fabricated 100%; staleness is calendar-derived).
       - name: options coverage object contract
@@ -4981,7 +5160,7 @@ jobs:
       - name: render-lane scope contract (flow_desk must stay express-wired)
         run: python -m pytest tests/test_render_flow_desk_scope.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
-      # named by no run: step — the same class the census above now gates —
+      # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
       # with the other worktree/CI-profile steps: its subject is
       # scripts/worktree_sparse.py + the WorktreeCreate hook, and the sibling
@@ -5000,7 +5179,7 @@ jobs:
       - name: sparse worktree add/full lock preflight + truncation repair (never worse than it started)
         run: python -m pytest tests/test_worktree_sparse_add_lock_safety.py -q
       # VACUOUS guards: the same lie audit_unrun_tests.py catches, one layer down.
-      # A suite that never runs is caught above; a guard that RUNS, walks a tree
+      # A suite that never runs is caught by the unrun census; a guard that RUNS, walks a tree
       # that is not checked out, finds nothing and prints its affirmative OK is
       # not — it reports green over an empty set. Session worktrees are sparse by
       # default (policy R8, scripts/worktree_sparse.py), and seven check_*.py

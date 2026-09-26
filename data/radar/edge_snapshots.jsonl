@@ -16282,3 +16282,15 @@
 {"date":"2026-09-24","kind":"ticker","subject":"ALM","ticker":"ALM","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
 {"date":"2026-09-24","kind":"ticker","subject":"UUUU","ticker":"UUUU","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
 {"date":"2026-09-24","kind":"ticker","subject":"ALB","ticker":"ALB","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-09-24","kind":"ticker","subject":"ACN","ticker":"ACN","edge_score":79,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-09-24","kind":"ticker","subject":"NOW","ticker":"NOW","edge_score":56,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-09-24","kind":"ticker","subject":"COIN","ticker":"COIN","edge_score":40,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-09-24","kind":"ticker","subject":"QCOM","ticker":"QCOM","edge_score":20,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"signal"}
+{"date":"2026-09-24","kind":"ticker","subject":"UCTT","ticker":"UCTT","edge_score":17,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
+{"date":"2026-09-24","kind":"ticker","subject":"CRWD","ticker":"CRWD","edge_score":13,"state":"CONFIRMED_UP","era":2,"source":"signal"}
+{"date":"2026-09-24","kind":"ticker","subject":"ICHR","ticker":"ICHR","edge_score":8,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
+{"date":"2026-09-24","kind":"ticker","subject":"AEIS","ticker":"AEIS","edge_score":8,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
+{"date":"2026-09-24","kind":"ticker","subject":"LMT","ticker":"LMT","edge_score":5,"state":"CONFIRMED_UP","era":2,"source":"basket_attributed"}
+{"date":"2026-09-24","kind":"ticker","subject":"PH","ticker":"PH","edge_score":3,"state":"CONFIRMED_DOWN","era":2,"source":"signal"}
+{"date":"2026-09-24","kind":"ticker","subject":"BWXT","ticker":"BWXT","edge_score":1,"state":"CONFIRMED_DOWN","era":2,"source":"basket_attributed"}
+{"date":"2026-09-24","kind":"ticker","subject":"APP","ticker":"APP","edge_score":0,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
