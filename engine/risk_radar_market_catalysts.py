@@ -842,32 +842,53 @@ def _c7_oas_rollover() -> dict:
 # C8 — Vol instability VETO (not a confirmation chip)
 # ---------------------------------------------------------------------------
 
+def _unknown_vol_veto(detail: str) -> dict:
+    """Return an explicit unevaluated veto; unknown is never equivalent to clear."""
+    return {
+        "active": None,
+        "evaluated": False,
+        "state": "unknown",
+        "p_now": None,
+        "detail": detail,
+        "label_en": "Volatility veto unknown",
+        "label_zh": "波动否决状态未知",
+    }
+
+
 def _c8_vol_instability_veto() -> dict:
-    """21d rolling std of VIX daily changes. pct_rank_window(504). Veto active if p_now >= 0.80.
-    Returns veto dict, not a chip.
+    """21d rolling std of VIX daily changes. pct_rank_window(504).
+
+    ``active`` is only Boolean when evaluation completed. Missing, malformed,
+    short, non-finite, or exceptional inputs return an explicit unknown state.
     """
     try:
         vix = store.read("yahoo", "_VIX")
         if vix is None or "close" not in vix.columns:
-            return {"active": False, "detail": "VIX unavailable — veto inactive"}
+            return _unknown_vol_veto("VIX unavailable — veto not evaluated")
 
-        v = vix["close"].dropna().sort_index().astype(float)
+        v = pd.to_numeric(vix["close"], errors="coerce").replace(
+            [np.inf, -np.inf], np.nan
+        ).dropna().sort_index().astype(float)
         v.index = pd.to_datetime(v.index)
 
         if len(v) < 530:
-            return {"active": False, "detail": "VIX series too short — veto inactive"}
+            return _unknown_vol_veto("VIX series too short — veto not evaluated")
 
         inst = v.diff().rolling(21, min_periods=10).std()
         p = pct_rank_window(inst, 504)
 
         p_now = float(p.iloc[-1])
-        if np.isnan(p_now):
-            return {"active": False, "detail": "pct rank NaN — veto inactive"}
+        if not np.isfinite(p_now):
+            return _unknown_vol_veto(
+                "VIX instability percentile non-finite — veto not evaluated"
+            )
 
-        active = p_now >= 0.80
+        active = bool(p_now >= 0.80)
 
         return {
             "active": active,
+            "evaluated": True,
+            "state": "active" if active else "clear",
             "p_now": round(p_now, 3),
             "detail": (
                 f"VIX 21d realized-vol pctile={p_now:.2f} "
@@ -878,7 +899,7 @@ def _c8_vol_instability_veto() -> dict:
         }
     except Exception as e:  # noqa: BLE001
         log.debug("c8 vol_instability veto failed: %s", e)
-        return {"active": False, "detail": f"error: {e} — veto inactive"}
+        return _unknown_vol_veto(f"error: {e} — veto not evaluated")
 
 
 # ---------------------------------------------------------------------------
@@ -1413,9 +1434,10 @@ def compute(root=None) -> dict:
           asof: ISO date,
           chips: [chip...],           C1–C7 (internals) + C9–C12 (mood/tape); each has channel field
           market_confirmed_raw: bool,  C1–C7 only: any fresh, ignoring veto
-          market_confirmed: bool,      C1–C7 only: market_confirmed_raw AND veto not active
+          market_confirmed: bool,      C1–C7 only: raw AND veto evaluated AND not active
           n_fresh: int,                C1–C7 only
-          veto: {active, detail, ...}, C8 — evaluated on C1–C7 arm only
+          veto: {active, evaluated, state, detail, ...},
+                                      C8 — active is None when evaluation is unavailable
           morphology: {shape, label_en/zh, detail_en/zh},
           note: str,
         }
@@ -1445,12 +1467,14 @@ def compute(root=None) -> dict:
 
         # C8: vol instability veto — evaluated on internals arm only
         veto = _c8_vol_instability_veto()
-        veto_active = veto.get("active", False)
+        veto_active = veto.get("active")
+        veto_evaluated = veto.get("evaluated")
+        veto_clear = veto_evaluated is True and veto_active is False
 
         # FROZEN: n_fresh, market_confirmed_raw, market_confirmed computed from C1–C7 only
         n_fresh = sum(1 for c in internals_chips if c.get("fresh"))
         market_confirmed_raw = n_fresh >= 1
-        market_confirmed = market_confirmed_raw and not veto_active
+        market_confirmed = market_confirmed_raw and veto_clear
 
         # C9–C11: mood chips (display-only, never flip confirmations)
         mood_chips = [
@@ -1493,7 +1517,7 @@ def compute(root=None) -> dict:
             "market_confirmed_raw": False,
             "market_confirmed": False,
             "n_fresh": 0,
-            "veto": {"active": False, "detail": f"error: {e}"},
+            "veto": _unknown_vol_veto(f"compute error: {e} — veto not evaluated"),
             "morphology": {"shape": "grinding", "label_en": "Unknown", "label_zh": "未知",
                            "detail_en": "", "detail_zh": ""},
             "note": f"compute failed: {e}",
