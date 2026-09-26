@@ -349,6 +349,70 @@ not through another Discover top-level tab. A bounded state grammar is:
 Back/Forward must restore both levels. Opening selected-object depth from a Rotation/Discover/
 Breadth mark must retain the originating job, representation, filters and selected object so
 closing/back returns to the same research context.
+### Workspace → detail state transition
+
+Do not render the outer three jobs and the five selected-object tabs as two permanent peer
+tab rows. They are different depths:
+
+- **Workspace depth:** show `Rotation / Discover / Market breadth`, one dominant job canvas/
+  list and one coordinated selected-object inspector. Selection alone does not leave the job.
+  The inspector's primary action is `Open intelligence` / `Open full detail`.
+- **Detail depth:** retain the current R5 `Overview / Companies / Signals / Drivers / History`
+  composition for the selected object. Replace the outer job tabs with a concise return control
+  such as `← Discover · Bubbles` or `← Rotation`; Browser Back has the same result.
+
+Add one explicit URL bit such as `sectorDetail=1` rather than inferring depth from visual
+layout state. `sectorJob` and `sectorRep` stay in the URL while detail is open so the return
+context is durable.
+
+Compatibility rules:
+
+- `/discover?tab=sectors` with no explicit legacy detail parameter opens the **Rotation
+  workspace** by default.
+- An existing bookmark with an explicit `sectorView=companies|signals|drivers|history` or a
+  selected `sectorCompany` is treated as **detail** even if `sectorDetail=1` is absent.
+- An explicit legacy `sectorView=intelligence` remains detail for that bookmark; absence of
+  the `sectorView` parameter is what distinguishes the new workspace default.
+- Legacy `sectorView=sources` continues to map to contextual Sources over detail, never a sixth
+  destination.
+- While workspace depth is active, URL serialization must **not** write a default
+  `sectorView=intelligence`, because doing so would turn reload/back into detail. Write the
+  local `sectorView` only when detail is active.
+
+State transitions that change the semantic research location (job, representation, selected
+object opening/closing detail) should create navigable history. High-frequency display-only
+filter edits may replace the current URL entry, but their values remain encoded so opening
+detail and returning restores the exact filtered view. No context lives only in component
+memory if it matters to Back/Forward or a saved view.
+
+### Component-level vertical slices
+
+Keep `SectorIntelligenceWorkspace` as the single mounted root under Discover's existing
+`sectors` tab. A safe refactor may split its render internals into pure child presenters, but
+must not create another mounted page/workspace:
+
+1. **State + shell slice:** extend `sectorIntelligence.ts` parsing/serialization with job,
+   representation and detail depth; add outer workspace nav + exact return control. Preserve
+   current legacy URL mappings and the contextual Sources controller.
+2. **Rotation slice:** a pure Rotation presenter over the accepted rotation owner DTO; Map/List
+   parity, explicit overlap chooser, selected-object inspector. No client-side reimplementation
+   of `rs_ratio`, `rs_mom`, `accel`, `quadrant` or turn logic.
+3. **Market-breadth slice:** render existing sector heat/breadth facts first; list/table
+   fallback is the source of truth when a visual fails. Any ETF-flow addition waits for an
+   existing owner binding.
+4. **Discover / Industry×Cap slice:** pure Matrix/Table projection over the current heatmap BFF
+   population, preserving exact sector strings and coverage. This slice can proceed without
+   the Finviz-local-theme rights decision.
+5. **Discover / Themes+Bubbles slice:** prepare components/state but gate production data wiring
+   on the existing Finviz-theme rights/use decision. No direct browser fetch around the BFF.
+6. **Detail hardening slice:** consume the already-filed R5 fixes for population completeness,
+   plain-language Signals/Companies/Drivers and representative visual proof; do not fork the
+   detail experience.
+
+Fetch only the owner feeds required by the active job/detail surface. Extending the current
+component to future `rotation` / `themeMap` feeds must not make every visit eagerly load every
+source. Keep any in-component successful read account-bound as today; do not add a new cache
+service or persistent browser data store.
 
 ### Existing data-owner mapping
 
