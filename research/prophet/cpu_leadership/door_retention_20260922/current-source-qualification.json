@@ -1,0 +1,101 @@
+{
+  "operation": "prophet-door-intake-retention-20260922-sol-001",
+  "procedure_pin": "c917a75b0168a524a51b2ba0603a99118e93ef1f",
+  "predecessor_head": "cf3ccae74ed2c186e657fb3e5062928169a19c24",
+  "runtime_semantic_head": "d2ec700e98b584e25db695711db8f1655f2e9c6f",
+  "source_ref": "668237947e016f679782e41e61c91c9133a5ea99",
+  "ingestion_clock": "2026-09-23T09:02:31Z",
+  "all_inputs_from_one_current_commit": true,
+  "accepted_historical_substitution": false,
+  "full_writer_status": "passed",
+  "full_writer_counts": {
+    "input": 5067,
+    "mapped": 1158,
+    "suppressed": 3909,
+    "ledger_suppressions": 32249,
+    "old_events": 4977,
+    "new_events": 6125,
+    "appended_events": 1148
+  },
+  "full_writer_door_lineage": {
+    "submitted": 171,
+    "all_accounted": true,
+    "source_receipts_match": true,
+    "prior_records_preserved": true,
+    "new_events": 121,
+    "new_suppressions": 29,
+    "motivating_cases": [
+      {
+        "source_system": "doors",
+        "source_schema": "prophet_doors/v1",
+        "source_event_id": "doors:2026-09-10:T:INTC",
+        "source_receipt": "sha256:e63bc5548d10092ee7f8cb747b9639ed7270b8e7093081efc1fd2eaa1d6edb07",
+        "event_type": "OBSERVED",
+        "episode_id": "pe:SEC:US-XNAS-INTC:epoch_0:sa:bf66a0f3a6de6be82f076d7b:1",
+        "occurred_at": "2026-09-10T20:00:00Z",
+        "known_at": "2026-09-23T09:02:31Z",
+        "recorded_at": "2026-09-23T09:02:31Z",
+        "observation_session": null,
+        "reason": null
+      },
+      {
+        "source_system": "doors",
+        "source_schema": "prophet_doors/v1",
+        "source_event_id": "doors:2026-09-10:T:MU",
+        "source_receipt": "sha256:643a5660144f19b7a6bbd4d3f7ef7e467ceadd43d0913e4a0f1cae85657c5d03",
+        "event_type": "OBSERVED",
+        "episode_id": "pe:SEC:US-XNAS-MU:epoch_0:sa:a3d9222b5339e5e8e2994499:1",
+        "occurred_at": "2026-09-10T20:00:00Z",
+        "known_at": "2026-09-23T09:02:31Z",
+        "recorded_at": "2026-09-23T09:02:31Z",
+        "observation_session": null,
+        "reason": null
+      },
+      {
+        "source_system": "doors",
+        "source_schema": "prophet_doors/v1",
+        "source_event_id": "doors:2026-09-18:T:AMD",
+        "source_receipt": "sha256:5edf9b7b24aeaf3625b59f19568f6ba0ba98a7e4711224a44126beb83f749ff6",
+        "event_type": "OBSERVED",
+        "episode_id": "pe:SEC:US-XNAS-AMD:epoch_0:sa:3387a9e95425cbe74f4f489a:1",
+        "occurred_at": "2026-09-18T20:00:00Z",
+        "known_at": "2026-09-23T09:02:31Z",
+        "recorded_at": "2026-09-23T09:02:31Z",
+        "observation_session": null,
+        "reason": null
+      }
+    ],
+    "entry_authority_changed": false,
+    "scope": "exact submitted source keys in the complete nonwriting output; not trades"
+  },
+  "isolated_door_stage": {
+    "new_event_count": 119,
+    "new_suppression_count": 31
+  },
+  "denominator_caution": "Full output has 121 new Door events/29 suppressions; isolated Door core has 119/31. Neither equals total full-writer appends 1148.",
+  "tests": {
+    "owner_passed": 172,
+    "failed": 0,
+    "skipped": 0,
+    "focused_passed": 7,
+    "red_first_claim": false,
+    "note": "The initial queued test run loaded the already-added implementation; no RED-before claim."
+  },
+  "source_sha256": {
+    "scripts/reconcile_us_candidate_episodes.py": "efedde5a4599e6c22ee829ee0e472464b9a66fbcc00d552992c843a5a674074b",
+    "research/prophet/cpu_leadership/door_retention_20260922/prove.py": "82a00e8e6ab07b93f06ed078e3b043bb9489c56ebb27900d23b8d6a9c22da608",
+    "tests/test_us_candidate_episode_reconciler.py": "29480d5deb35e0a2a1fac7e86571ba54702c379b2d26957a20dbe761af8b1f4e"
+  },
+  "runtime_source_changed_this_unit": false,
+  "canonical_writes": false,
+  "rank_entry_size_changed": false,
+  "production_proven": false,
+  "independent_review": "required; no approval claimed",
+  "mission_complete": false,
+  "limitations": [
+    "Current committed inputs include a September 21 TURN WATCH envelope; not a claim of current market-session freshness.",
+    "Observation of the actual public nonwriting call captures its unchanged builder output; no input/result substitution.",
+    "No scheduled production consumption, live advice, retrospective trade credit or performance validation.",
+    "A separate parquet cohort-inspection request was platform-blocked; no scoring comparison was performed."
+  ]
+}

@@ -1,0 +1,38 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+____ test_door_backlog_future_identity_failure_stays_pending_not_suppressed ____
+tests/test_us_candidate_episode_reconciler.py:1560: in test_door_backlog_future_identity_failure_stays_pending_not_suppressed
+    assert _door_owned(tmp_path) == []
+E   AssertionError: assert [{'content_sh...05:00Z', ...}] == []
+E
+E     Left contains one more item: {'content_sha256': 'ff93f5a08cb546553661dd322b7a18ca9aa790501a110c7fd832f3bcc774c878', 'observation_session': '2026-11-27', 'reason': 'IDENTITY_UNRESOLVED', 'recorded_at': '2026-11-30T21:05:00Z', ...}
+E     Use -v to get more diff
+___ test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[True] ___
+tests/test_us_candidate_episode_reconciler.py:1568: in test_door_backlog_invalid_explicit_clock_cannot_gain_default_close
+    with pytest.raises(EpisodeContractError, match="clock"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+___ test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[123] ____
+tests/test_us_candidate_episode_reconciler.py:1568: in test_door_backlog_invalid_explicit_clock_cannot_gain_default_close
+    with pytest.raises(EpisodeContractError, match="clock"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+_ test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[bad-clock] _
+tests/test_us_candidate_episode_reconciler.py:1568: in test_door_backlog_invalid_explicit_clock_cannot_gain_default_close
+    with pytest.raises(EpisodeContractError, match="clock"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+_ test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[2026-11-27T18:00:00] _
+tests/test_us_candidate_episode_reconciler.py:1568: in test_door_backlog_invalid_explicit_clock_cannot_gain_default_close
+    with pytest.raises(EpisodeContractError, match="clock"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_future_identity_failure_stays_pending_not_suppressed
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[True]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[123]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[bad-clock]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_invalid_explicit_clock_cannot_gain_default_close[2026-11-27T18:00:00]
+5 failed, 75 deselected in 9.78s
