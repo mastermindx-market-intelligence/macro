@@ -1336,6 +1336,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
+      - "engine/signal_evidence.py"
       - "engine/stock_view.py"
       - "engine/stocks_hub.py"
       - "engine/technicals.py"
@@ -8929,6 +8930,11 @@ jobs:
       - "engine/beneficial_ownership.py"
       - "engine/bottleneck.py"
       - "engine/bottom_radar.py"
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"
@@ -13399,6 +13405,7 @@ jobs:
       - "engine/btc_regime_flags.py"
       - "engine/btc_regime_ledger.py"
       - "engine/btc_signals.py"
+      - "engine/signal_evidence.py"
       - "engine/canada_axes.py"
       - "engine/canada_conditions.py"
       - "engine/canada_factor_beta.py"
@@ -15037,7 +15044,7 @@ jobs:
       # — the fake corroborator that held a `major` band at priority 60, which is also
       # the outbound push floor. Hermetic: monkeypatched readers, injected clock.
       - name: Alert Command Center — three clocks, ET board day, and exact evidence links
-        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py -q
+        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py tests/test_alert_trust_projection.py tests/test_signal_evidence.py tests/test_signal_lab_alert_trust.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH C (2026-07-27) ─────────────────────────────
   # The PIT / frozen-tape share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
