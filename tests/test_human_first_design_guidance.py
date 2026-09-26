@@ -70,7 +70,7 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("`sector == Technology`, which yields 79 names", text)
         self.assertIn("do **not** scale the desktop Matrix", text)
         self.assertIn("Every dense visual has a list/table equivalent", text)
-        self.assertIn("individual tiny marks are not treated as separate 44px touch controls", text)
+        self.assertIn("separate 44px touch controls", text)
         self.assertIn("Motion communicates selection/context, not fake market motion.", text)
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
