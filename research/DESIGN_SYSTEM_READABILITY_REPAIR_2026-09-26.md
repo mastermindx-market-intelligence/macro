@@ -1,0 +1,155 @@
+# Design-system readability repair — 2026-09-26
+
+**Scope:** existing design-system PR #7394; supporting evidence and bounded projection/consumer contract, not another design constitution. **State: candidate / NOT_APPLIED_TO_PAPER / NOT_DEPLOYED.** No production CSS, component renderer, score, data, permission or trade authority changes in this document.
+
+The Chairman assigned this session to the shared design system while other sessions specialize in individual pages. The product should supply prepared intelligence and a useful next step without removing analytical depth. Content authority remains `docs/DESIGN_DOCTRINE.md`; visual/composition authority remains `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md`; migration and acceptance remain `research/DESIGN_MIGRATION_FACTORY_V1.md` and the existing Reference Integrity Gate. The pending human-first amendment is #8041, inspected at `920c87a793efffa7993fdb156deaf10b2fadd671`; this record does not merge it or duplicate its decision.
+
+## 1. What changes for a page author
+
+A primitive is not complete because it has the right radius and palette. It must carry an understandable meaning, a data-state contract, an interaction/result contract and appropriate evidence.
+
+| Existing primitive | At rest | On inspection | Completion/result requirement |
+|---|---|---|---|
+| Decision header | Subject and owned assessment; consequential limitation beside the claim | Supporting and conflicting evidence, clock and basis | User can identify the main read and useful continuation without reconstructing it from scattered tiles |
+| Comparison row | Comparable values, units and the same stated period/baseline | Full series, constituent coverage and methodology | Missing or differently timed evidence cannot masquerade as a valid comparison |
+| Decision row/card | Exact company/group identity and owner-issued state | Why this item matters, readiness versus leadership, evidence | Inspection returns to the originating selection/filter/position; no silent identity substitution |
+| State panel | What is unavailable or changed, its consequence and a useful recovery | Detailed source/coverage information | Loading, true zero, filtered-empty, stale, partial, denied and failure stay distinct |
+| Primary action | One visually prioritized verb and destination | Legitimate secondary actions remain reachable | Request, success and failure are different; a saved or active state requires the real owner result |
+| Lens/disclosure | A meaningful opening label, not a vague 'More' or another introductory paragraph | The information promised by that label | Keyboard/touch opening, dismissal and return; no mandatory nested-overlay maze |
+
+These are authoring checks for existing components, not a new component registry. An unfamiliar intended user should understand the subject, main assessment and next useful step in approximately four seconds. This is an orientation target, not a promise to understand a dossier instantly or a substitute for actual cold-reader evidence.
+
+### Prepared defaults, not forced simplification
+
+Start with a useful task state: the relevant comparison, prioritized changes or owner-ranked results. A user should not need to configure widgets or write an expert prompt to obtain the first useful answer. Preserve the complete population, advanced controls and direct full-research destination. Frequently used comparisons belong together rather than behind separate disclosures.
+
+A title may supply the conclusion, a chart the decisive comparison, and an action the continuation. Do not add a subtitle, description and footer to every component simply because a template has room. Remove repeated explanation; never remove a consequential caveat, unit, denominator or time basis to satisfy a word budget. The budgets are ceilings, not quotas.
+
+Illustrative copy patterns, **not live assessments**:
+
+| Situation | Prepared first read | Useful continuation | Must remain visible |
+|---|---|---|---|
+| Index gains but weak participation | 'Index up. Breadth weak.' with a same-window index/equal-weight comparison | Inspect participating sectors | Partial coverage or incompatible observation periods |
+| Strong business, no accepted entry | 'Strong business. Entry not ready.' only when the respective owners supply those states | Inspect the setup | Leadership does not grant entry authority |
+| No current qualifying results | 'No setups qualify today.' only when the current complete source establishes a genuine zero | Review the next monitoring step | A source failure must never produce this sentence |
+| Filters exclude available results | 'No matches for these filters.' | Clear the relevant filters | Keep the unfiltered population and active filters understandable |
+| Coverage is behind | 'Latest update unavailable.' | Inspect the last confirmed evidence | Its observation time; do not present the last value as current |
+
+Avoid customer copy such as 'runtime', 'hydration', 'admission', CI/PR identifiers or internal confidence enums. Keep that information in the existing engineering/evidence surface. Strong is not ready; fresh is not bullish; unknown is not neutral; locked identity is not missing data.
+
+## 2. Actual projection defect and bounded correction
+
+Editable identity: Paper file `01M2WGNCX9475G79JRKJTCM08P`, system page `p-1-0`, light component atlas `126-0`. The observed token hash is `5ae876bc` with 79 projected tokens. This hash and the bridge snapshot are **not** file revisions or writer leases.
+
+Fresh native readback found text node **`13N-0`**, 'STALE', at **10px / weight 600**, bound to `var(--mx-light-warn)` = `#B9791A`. Its transparent ancestors `13M-0` and `13K-0` sit within white panel `13H-0`. The general text-safe and solid-label fill roles already present in the source theme are absent from the Paper projection.
+
+The large 46px 'STRETCHED' node `12F-0` uses the same raw amber but is a different, large-text use. Do not darken the whole amber palette or change that hero as a side effect of repairing the small label.
+
+### The three color uses are not interchangeable
+
+| Use | Existing source role | Rule |
+|---|---|---|
+| Graphic mark or restrained tint | `--warn`, `--up`, `--down`, other semantic hues | A graphic/fill role is not automatically safe as small text |
+| Text on a surface | `--ink-*`, or ordinary `--text` when a specific semantic pair fails | Measure the actual surface, including hue-tinted backgrounds |
+| Solid control carrying a light label | `--fill-*` with the intended label color | Do not put white text on a raw hue just because a different pairing passed |
+
+Source-derived light warning ink is `color-mix(in srgb, var(--warn) 62%, var(--text))`, resolving to **`rgb(125.34, 88.70, 34.36)`** on the inspected source. The raw amber remains unchanged.
+
+| Surface | Raw amber as small text | Source warning ink as small text |
+|---|---:|---:|
+| White panel | 3.612765:1 — fail | 6.326019:1 — pass |
+| Raised light panel | 3.190985:1 — fail | 5.587475:1 — pass |
+| Light canvas | 3.399821:1 — fail | 5.953150:1 — pass |
+
+The normal-text comparison uses the unrounded 4.5:1 threshold. These are computed opaque color-pair results, not a claim of Paper application, browser rendering, readability at every font size or full accessibility conformance.
+
+### Prepared native label correction — do not execute without custody
+
+First reconcile the single modifying owner of the **entire file across hosts**. During this continuation another M1 session performed `news-intelligence-paper-vnext-20260926-sol-001` / `rename_nodes` with APPLIED_RESPONSE_OBSERVED. This session did not modify the canvas or shared tokens. A separate page assignment does not remove that collision.
+
+After lawful file custody, re-read the current source role, exact file identity, current tokens and target styles. The prepared additive role is a one-way projection of the existing source role, not a new brand palette:
+
+```json
+{
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "tokens": [{
+    "type": "color",
+    "name": "--mx-light-ink-warn",
+    "value": "rgb(125.34, 88.70, 34.36)",
+    "description": "Projection of templates/theme.css --ink-warn, light: 62% warn plus 38% text in sRGB. Text role; source owns the value. Re-measure changed source or backgrounds."
+  }]
+}
+```
+
+Use the actual guarded `create_tokens` schema only if the name is absent. Upstream allows duplicate names: absence must be checked explicitly. If an equivalent role already exists, reuse it; if it differs, reconcile its owner/value before writing. Do not create a duplicate or overwrite another session's token.
+
+Then, as a separately reconciled guarded operation with a fresh snapshot:
+
+```json
+{
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "updates": [{
+    "nodeIds": ["13N-0"],
+    "styles": {"color": "var(--mx-light-ink-warn)"}
+  }]
+}
+```
+
+The payloads are documentation, not dispatched operations. A snapshot or operation ID must be obtained at execution, never copied from this record. Preserve the large hero, other pages and unrelated token roles. Capture the exact changed atlas after application, inspect the pixels, re-read the computed binding and measure its actual surface. Do not call the defect repaired until those results exist.
+
+For buttons, project the existing `--fill-info` role and retain a real light-label pairing. Inspected source resolves dark fill-info to `rgb(58.24, 99.20, 153.60)` and light fill-info to `rgb(25.60, 60.80, 163.20)`. Target button node identities, state backgrounds and complete interaction matrix must be inspected before any patch. No button patch is implied here.
+
+## 3. Wider measurement prevented a false blanket fix
+
+The source-role audit evaluated eight roles, both themes, both languages and explicit surface combinations. The 9%/13% tint compositions below are **stress cases**, not proof those exact combinations appear in production.
+
+| Pair family | Passed / examined | Important limit |
+|---|---:|---|
+| Raw semantic hues as normal text on three flat surfaces | 62 / 96 | Raw hue is not a general text role |
+| Text-grade inks on three flat surfaces | 94 / 96 | Dark `--ink-act` on `--panel2` fails in both languages at 4.250667:1 |
+| White labels on existing solid-fill roles | 32 / 32 | Minimum measured ratio 5.109280:1; intended white label only |
+| Text-grade ink on its own 9%/13% hue tint over panel | 58 / 64 | Six failures; an ink name alone is not a universal guarantee |
+
+The six tint failures are dark down/red at 13% in EN and its up/red counterpart in ZH (4.328310:1), plus dark act at 9% (4.194758:1) and 13% (3.997252:1) in both languages.
+
+**Consumer disposition:** do not spread the failing combinations into new primitives. A state panel can use ordinary primary text for its label while retaining the semantic icon/rail and explicit state word. That preserves meaning without inventing a new red or changing a shared palette without a source-owned design review. Any proposed shared ink retune is a separate source/consumer change requiring current custody, affected-consumer measurement and visual review; this docs-only wave does not make it.
+
+No blanket light/dark/locale pass is asserted. Direction swaps with the existing language convention; health/severity and freshness must not follow that swap. The role calculations separately checked those invariants.
+
+## 4. Evidence method and falsifiers
+
+Inspected source: Macro `bd23cfbd3f192389166bef37e490003fadd6d453`.
+
+- `templates/theme.css`: blob `41f0c3bdea3979faf4a57f2a98e31a4df54a5973`, SHA256 `d58d35e93758ada2123553f88ea6652e66ec11c116b031679a82b80951f8a478`.
+- Existing `tests/test_prophet_verb_ink_contrast.py`: blob `6d6a15bb43e43e0b14e271ff93cd4ff80c331132`.
+- Existing `templates/_prophet_card.html.j2`: blob `713e0e49b037e9f2b8c2a716265bff6f900a2c9e`.
+- Corrected 288-pair calculation output: SHA256 `c655cf379429eed4b2f8de26967be3cacbeb3cc1a729f8eb7da0bb6daa5a0d8c`.
+
+The calculation reuses the existing color-expression resolver, expands source percentage variables, and selects only top-level `:root` and exact html theme/language selectors. Descendant component remaps and conditional nested rules are not global baseline tokens. The calculation uses the sRGB transfer threshold 0.04045 and does not round a failure upward.
+
+Two diagnostic errors were caught before using the result as a repair contract. First, the helper did not expand `--fill-mix`; the source percentage must be resolved explicitly. Second, the helper's permissive selector matcher admitted `html[data-lang="zh"] .rrx` and `html[data-lang="zh"] :is(.igx, .igs)` as global overrides. A negative-control fixture with descendant and nested-media overrides proved the scope error; exact top-level filtering corrected it. The earlier report `8ae96f8f7abaf273316e14d996e957c5932f6c62f93387b36b11f22048b69863` is superseded and must not be used. No repository parser or shared test implementation was changed.
+
+The **unchanged existing Prophet test file** was run against exact extracted source with pytest's project conftest and automatic plugins disabled: **87 passed, exit 0**. This is a targeted source test, not a full repository test or validation of a new Paper effect.
+
+Falsifiers before rollout: a changed source blob/role or target background; a different target binding; a duplicate projected token; a locale-dependent health color; a tinted/focus/hover pairing below its applicable threshold; or an actual browser result disagreeing with the arithmetic. Any of these invalidates the affected projection/consumer claim rather than being averaged into a pass.
+
+Reference basis: W3C WCAG 2.2, Understanding SC 1.4.3 (Contrast Minimum), SC 2.5.8 (Target Size Minimum) and SC 2.5.5 (Target Size Enhanced). Normal text requires 4.5:1 and large text 3:1 subject to the criteria's exceptions. A comfortable 44px target is our product preference; the AA minimum is 24 CSS pixels subject to documented exceptions. A contrast result does not prove target size, readability, cognitive accessibility or overall conformance.
+
+## 5. Carry this into the existing migration packet
+
+Use the existing packet fields rather than another checklist store:
+
+- **Field 4:** intended first reading order; subject/main assessment/useful next action; visible consequential limitation. Do not demand a subtitle or three new boxes.
+- **Field 6:** every demotion's actual destination and whether the normal task still works without extra reconstruction. Preserve direct expert access.
+- **Field 3B:** source role and projected role separately; actual foreground/background/state pairs; neutral-label disposition for unsupported combinations.
+- **Field 3C:** the interaction state changes that can change readability or meaning, not only a resting screenshot.
+- **Field 11:** technical, design, cold-reader and real-journey evidence recorded separately, including unperformed evidence.
+- **Field 12:** intended task completes with real result feedback, deeper/adverse evidence access and context-preserving return. No saved/active state from a mere request.
+
+The primary task can be an investigation, comparison, monitoring setup or honest decision to wait. It does not require a newly invented trade recommendation. Long analytical content uses normal document scrolling; purposeful chart-workspace panes retain their existing archetype. Sticky controls must not obscure focused content or the primary assessment.
+
+## 6. Remaining delivery boundary
+
+Procedure pin: Mastermind protected `763ec8f920177fdf48b18df1b8e37b61ab482ef0`, compatible Skillpack 1.0.1/bootstrap 1. Existing source carrier is #7394 / `sol/design-system-editable-reference-20260919`; original semantic head `bc01b258609cb4fcab0a3cf8089fdc5b7e21f803` remains historical evidence, not a review of this addition.
+
+Still required: exact-head source review/checks; native file-wide writer reconciliation; additive role projection and the one-label consumer patch; after-image/computed-binding/actual-pair readback; complete button-state inspection; eventually real implementation fidelity and intended-user journey/comprehension proof. This record changes none of the #7394/#8041/#7630 release holds. No source merge, live UI change, specialist consumption, worker START or automatic wake is claimed.
