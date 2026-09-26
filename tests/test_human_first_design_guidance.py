@@ -76,6 +76,11 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("sectorJob=rotation|discover|breadth", text)
         self.assertIn("subsector_rotation.json", text)
         self.assertIn("Do **not** embed the existing global `HeatmapView`", text)
+        self.assertIn("sectorDetail=1", text)
+        self.assertIn("Rotation workspace", text)
+        self.assertIn("must **not** write a default", text)
+        self.assertIn("Keep `SectorIntelligenceWorkspace` as the single mounted root", text)
+        self.assertIn("Fetch only the owner feeds required by the active job/detail surface", text)
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
             with self.subTest(path=path):
