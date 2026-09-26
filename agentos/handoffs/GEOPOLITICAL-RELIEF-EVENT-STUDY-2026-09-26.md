@@ -1,3 +1,78 @@
+---
+workstream: "WS:MARKET-OS"
+session: "chatgpt/market-pattern-analysis-20260926-sol"
+model: sol
+ended_because: context_budget
+mission: >-
+  Continue the bounded geopolitical narrative-repricing / cross-session transfer research on Macro
+  PR #8012, preserve falsifiers and frozen prospective geometry, repair the current CI blocker, and
+  advance only existing Market OS / Brain / analogue ownership without creating a parallel signal
+  or data plane.
+state_before: >-
+  The prior Market Pattern Analysis session timed out after durable checkpoint commit
+  37e232528735709b68680ad48df802263b8c7746. PR #8012 remained DRAFT and mergeable, with the
+  research kernel, HK daily falsifier, matched controls, prospective protocol, and consumer ruling
+  already committed. Exact-head ci and fences later failed because this handoff file was missing
+  AgentOS YAML frontmatter; no research-code failure was identified.
+changed:
+  - path: agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md
+    what: >-
+      Repair the durable continuation record to the current AgentOS handoff schema, bind it to the
+      canonical WS:MARKET-OS owner, and update the exact CI failure classification without changing
+      the frozen research geometry or prospective protocol.
+verified:
+  - claim: >-
+      Exact head 37e232528735709b68680ad48df802263b8c7746 failed fences because this handoff
+      had no YAML frontmatter.
+    command: >-
+      gh run view 36238510880 -R mastermindx-market-intelligence/macro --log
+    result: >-
+      fence-pack agent-os record contract emitted [unparseable] no YAML frontmatter block for this
+      file and failed the pack; all other listed fence subchecks were successful.
+  - claim: >-
+      Exact head 37e232528735709b68680ad48df802263b8c7746 failed full CI for the same AgentOS
+      record defect rather than a research-code failure.
+    command: >-
+      gh run view 36238511028 -R mastermindx-market-intelligence/macro --log
+    result: >-
+      ci-pack-4 reported only self-mod-fence -> agent-os record contract; the semantic gate carried
+      one unknown classification and contract-delta was success.
+  - claim: >-
+      WS:MARKET-OS is an active canonical AgentOS workstream whose scope includes the forecast /
+      prospective-ledger product boundary relevant to this research.
+    command: >-
+      sed -n '1,220p' agentos/workstreams/WS-MARKET-OS.md
+    result: >-
+      WS:MARKET-OS is active in macro/terminal and its F0-F5 wave reserves Forecast Packet,
+      prospective ledgers, shadow evaluation, and earned promotion.
+unverified:
+  - "Repaired exact-head ci and fences have not yet completed."
+  - "Prospective cross-session transfer generalization on future events remains unproven."
+  - "Stable Hong Kong first-five-minute target-region data capability remains unproven."
+unresolved:
+  - "Current PR head must regain exact-head ci + fences before the research carrier is considered green."
+  - "The source census remains retrieval_incomplete, so timing-frequency population claims remain blocked."
+  - "The prospective hypothesis remains concentrated in the 2026 Iran/Hormuz family and needs future-event evidence."
+next_actions:
+  - "Reconcile the repaired PR head and consume its exact-head ci/fences results; repair only new branch-owned failures."
+  - "If exact-head checks clear, preserve PR #8012 as the frozen development/prospective carrier."
+  - "Admit the next qualifying future event only under research/CROSS_SESSION_TRANSFER_PROSPECTIVE_PROTOCOL_2026-09-26.md before reading its Hong Kong outcome."
+  - "Independently verify/restore the existing HK intraday source through its existing data owner; do not create a replacement data plane."
+do_not_redo:
+  - "Do not reopen or repurpose the existing Narrative Repricing V2 prospective holdout."
+  - "Do not retune clocks, oil thresholds, semiconductor thresholds, or HSI-gap thresholds from observed outcomes."
+  - "Do not create a second event rail, narrative radar, analogue store, scorecard, alert engine, regional minute store, or execution plane."
+  - "Do not enrich get_market_events with inferred/predicted effects; it remains FACTS ONLY."
+  - "Do not relabel the already-inspected mainland daily slice as blind evidence."
+danger_areas:
+  - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
+  - "The HK AkShare/Eastmoney minute endpoint was observed once and then began RemoteDisconnected failures; no target intraday outcomes were read."
+  - "Mainland minute implementation exists but historical materialization/backfill belongs to the existing Data OS owner, not this PR."
+prs: [8012]
+decisions: []
+discoveries: []
+---
+
 # AgentOS Continuation — Geopolitical Narrative Repricing / Cross-Session Transfer
 
 Date: 2026-09-26
@@ -5,7 +80,7 @@ Operation: `geopolitical-relief-event-study-20260924-sol-001`
 Carrier: `mastermindx-market-intelligence/macro` PR #8012
 Branch: `sol/geopolitical-relief-event-study-20260924`
 Checkpoint parent head: `d3abcad0dda82d84b5410a98a8042e674db08d6a`
-Protected Mastermind pin: `763ec8f920177fdf48b18df1b8e37b61ab482ef0`
+Protected Mastermind pin at resumed repair: `a31f49f4056943124cc0e7e42349e46feee444c7` (prior checkpoint pin `763ec8f920177fdf48b18df1b8e37b61ab482ef0`)
 Skillpack INDEX blob: `94d1af402598894372858793a5b1931019c5fa77`
 Closeout skill blob: `4a9ec3782da001322604e977dbe91b9cf371f0b9`
 
@@ -125,10 +200,12 @@ Exact-head classifier smoke on GitHub bytes at `75e718b...`:
 `EXACT_HEAD_CLASSIFIER_SMOKE_PASS`.
 
 At `0f9d4d8...`, hosted `fences` completed SUCCESS while `ci` remained pending.
-After the integration-ruling doc advanced head to `d3abcad...`, new exact-head runs were:
-- fences run 21805: QUEUED at checkpoint-write time;
-- ci run 21343: PENDING at checkpoint-write time.
-Do not call current exact head fully green until those runs finish successfully.
+After the cumulative handoff advanced head to `37e2325...`, exact-head hosted runs failed for one
+branch-owned structural reason: this handoff lacked required AgentOS YAML frontmatter. The fence
+pack reported `[unparseable] no YAML frontmatter block`, and CI pack 4 propagated the same
+`agent-os record contract` failure. No research-code failure was identified. This repair adds
+the required frontmatter and updates the continuation receipt; do not call the repaired head green
+until its own exact-head runs finish successfully.
 
 PR remains DRAFT and mergeable. No merge or production deployment is authorized by this checkpoint.
 
