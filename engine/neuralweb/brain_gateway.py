@@ -299,6 +299,7 @@ _BRAIN_TOOLS = frozenset({
     "annotate_chart",
     # Finance tool suite (W6d) — read-only reads over calibrated nightly artifacts
     "get_fundamentals",
+    "calculate_financial_bridge",
     "get_earnings",
     "get_insider_activity",
     "get_congress_trades",
@@ -355,6 +356,7 @@ _BRAIN_ONLY_TOOLS = frozenset({
     "annotate_chart",
     # Finance tool suite (W6d)
     "get_fundamentals",
+    "calculate_financial_bridge",
     "get_earnings",
     "get_insider_activity",
     "get_congress_trades",
@@ -833,7 +835,9 @@ def _chart_command_tool_schemas() -> list[dict]:
 
 def _brain_tool_schemas() -> list[dict]:
     """Return brain-gateway-only schemas (excluding separately gated chart tools)."""
+    from engine.neuralweb.brain_financial_bridge import financial_bridge_tool_schema
     return [
+        financial_bridge_tool_schema(),
         {
             "name": "get_quote",
             "description": (
@@ -3540,6 +3544,7 @@ def _dispatch_brain_tool(
     user_id: str = "",
     internals_ok: bool = False,
     chart_client: str = "",
+    mode: str = "chat",
 ) -> dict:
     """Dispatch a brain gateway tool call.
 
@@ -3560,6 +3565,8 @@ def _dispatch_brain_tool(
         # CXI-R23a: exclude internals tool names for non-allowlisted sessions so the
         # model never learns of context_search / context_open from this error path.
         _disclosed_tools = set(_BRAIN_TOOLS)
+        if type(mode) is not str or mode.strip().lower() != "chat":
+            _disclosed_tools.discard("calculate_financial_bridge")
         if not internals_ok:
             _disclosed_tools.difference_update(_BRAIN_INTERNALS_TOOLS)
         # Match the model-facing schema boundary: a guest/free/inactive session must
@@ -3594,6 +3601,11 @@ def _dispatch_brain_tool(
             }
 
     if tool_name in _BRAIN_ONLY_TOOLS:
+        if tool_name == "calculate_financial_bridge":
+            if type(mode) is not str or mode.strip().lower() != "chat":
+                return {"error": "This calculation is available in chat mode only."}
+            from engine.neuralweb.brain_financial_bridge import analyze_financial_bridge
+            return analyze_financial_bridge(tool_params)
         if tool_name == "get_quote":
             return _tool_get_quote(tool_params, terminal_data_dir, terminal_hub_url, root)
         if tool_name == "get_symbol_context":
@@ -3787,6 +3799,7 @@ def _all_brain_tool_schemas(
     page: str = "",
     internals_allowed: bool = False,
     user_id: str = "",
+    mode: str = "chat",
 ) -> list[dict]:
     """Return the full tool schema list (ask_brain read tools + brain-only tools).
 
@@ -3799,6 +3812,8 @@ def _all_brain_tool_schemas(
     """
     from engine.neuralweb.ask_brain import _read_tool_schemas  # noqa: PLC0415
     schemas = _read_tool_schemas() + _brain_tool_schemas()
+    if type(mode) is not str or mode.strip().lower() != "chat":
+        schemas = [s for s in schemas if s.get("name") != "calculate_financial_bridge"]
     if not _earnings_evidence_allowed(user_id, root):
         schemas = [s for s in schemas if s.get("name") != "read_earnings_evidence"]
     # Analyst OS P0: market-intel retrieval (live events wire + research-vault search).
@@ -6370,6 +6385,7 @@ def _run_brain_loop(
         page=safe_page,
         internals_allowed=internals_ok,
         user_id=user_id,
+        mode=mode,
     )
     tool_schemas = _fast_visible_tool_schemas(
         tool_schemas,
@@ -6547,6 +6563,7 @@ def _run_brain_loop(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -6698,6 +6715,7 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "get_symbol_backtest":    ("Checking how this has paid before", "看这类形态过去的表现"),
     "screen_universe":        ("Combing the market for matches", "在全市场里筛匹配的标的"),
     "get_fundamentals":       ("Looking at the business underneath", "看背后的基本面"),
+    "calculate_financial_bridge": ("Checking the financial assumptions", "核算财务假设"),
     "get_earnings":           ("Checking the earnings picture", "查看财报情况"),
     "get_insider_activity":   ("Seeing what insiders have done", "看内部人最近的动作"),
     "get_congress_trades":    ("Checking congressional trades", "查看国会交易记录"),
@@ -7274,6 +7292,7 @@ def _run_brain_loop_stream(
         page=safe_page,
         internals_allowed=internals_ok,
         user_id=user_id,
+        mode=mode,
     )
     tool_schemas = _fast_visible_tool_schemas(
         tool_schemas,
@@ -7595,6 +7614,7 @@ def _run_brain_loop_stream(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
