@@ -114,6 +114,57 @@ def test_generic_read_uses_defaults():
     assert set(routed) == {"protocol", "lens_structure", "lens_trend", "lens_sr"}
 
 
+
+# ---------------------------------------------------------------------------
+# 4A. Trusted chart-context routing — attached instruments/timeframe
+# ---------------------------------------------------------------------------
+
+def test_chart_context_can_route_when_user_message_is_generic():
+    routed = _ids(d.route(
+        "analyze this",
+        context_terms=["structure", "trend", "intraday"],
+    ))
+    assert "protocol" in routed
+    assert "lens_structure" in routed
+    assert "lens_trend" in routed
+    assert "lens_multitf" in routed
+
+
+def test_chart_context_can_route_with_empty_user_message_without_default_fallback():
+    routed = _ids(d.route("", context_terms=["trend"]))
+    assert routed == ["protocol", "lens_trend"]
+
+
+def test_explicit_user_intent_outranks_context_only_modules_under_cap():
+    routed = _ids(d.route(
+        "where is my entry and invalidation?",
+        context_terms=["trend", "support", "volume", "stage"],
+    ))
+    non_always = [mid for mid in routed if mid != "protocol"]
+    assert "lens_risk" in non_always
+    assert non_always[0] == "lens_risk"
+    assert len(non_always) <= d._MAX_ROUTED
+
+
+def test_context_terms_do_not_leak_into_prompt_text():
+    marker = "SECRET_CONTEXT_MARKER_DO_NOT_ECHO"
+    routed = d.route("analyze this", context_terms=["trend", marker])
+    block = d.prompt_block(routed)
+    assert marker not in block
+
+
+def test_context_terms_preserve_word_boundary_matching():
+    routed = _ids(d.route("show me support", context_terms=["email"]))
+    assert "lens_sr" in routed
+    assert "lens_trend" not in routed
+
+
+def test_message_only_route_is_backward_compatible():
+    msg = "read this chart for me and tell me what you see"
+    assert _ids(d.route(msg)) == _ids(d.route(msg, context_terms=None))
+    assert _ids(d.route(msg, context_terms=[])) == _ids(d.route(msg))
+
+
 # ---------------------------------------------------------------------------
 # 5. Cap + char budget
 # ---------------------------------------------------------------------------
