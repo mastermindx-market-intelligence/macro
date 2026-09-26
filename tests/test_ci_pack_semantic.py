@@ -284,12 +284,15 @@ def test_fetch_depth_zero_action_is_materialized_for_the_exact_tree(
 
     def run(command: list[str], *, cwd: Path, **_kwargs: object) -> object:
         calls.append((list(command), cwd))
-        if "--is-shallow-repository" in command:
-            return SimpleNamespace(returncode=0, stdout="false\n", stderr="")
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     monkeypatch.setattr(PACK, "_trusted_git_environment", lambda _root: {})
     monkeypatch.setattr(PACK.subprocess, "run", run)
+    monkeypatch.setattr(
+        PACK,
+        "_tested_tree_ancestry_ready",
+        lambda *_args, **_kwargs: True,
+    )
     PACK._prepare_provided_actions(job, root=tmp_path, tested_tree_sha=SHA_TREE)
     assert calls == [
         (
@@ -298,29 +301,19 @@ def test_fetch_depth_zero_action_is_materialized_for_the_exact_tree(
                 "fetch",
                 "--no-recurse-submodules",
                 "--no-tags",
-                "--depth=2147483647",
+                "--depth=2",
                 "origin",
                 SHA_TREE,
             ],
             tmp_path,
-        ),
-        (
-            [
-                "git",
-                "-C",
-                str(tmp_path),
-                "rev-parse",
-                "--is-shallow-repository",
-            ],
-            tmp_path,
-        ),
+        )
     ]
 
 
-def test_fetch_depth_zero_exact_tree_restores_merge_history_without_unrelated_refs(
+def test_fetch_depth_zero_bounded_ancestry_preserves_pr_history_contract(
     tmp_path: Path,
 ) -> None:
-    """The healthy deepen restores tested-tree ancestry without remote namespace drag."""
+    """Bounded exact-tree history preserves merge/diff/trailer semantics."""
     source = tmp_path / "source"
     source.mkdir()
     _git(source, "init", "-b", "main")
@@ -335,17 +328,26 @@ def test_fetch_depth_zero_exact_tree_restores_merge_history_without_unrelated_re
 
     _git(source, "checkout", "-b", "feature")
     feature_file = source / "feature.txt"
-    feature_file.write_text("feature\n", encoding="utf-8")
+    feature_file.write_text("feature one\n", encoding="utf-8")
     _git(source, "add", "feature.txt")
-    _git(source, "commit", "-m", "feature")
+    _git(source, "commit", "-m", "feature one")
+    feature_file.write_text("feature two\n", encoding="utf-8")
+    _git(source, "commit", "-am", "feature two")
 
     _git(source, "checkout", "main")
     main_file = source / "main.txt"
-    main_file.write_text("main\n", encoding="utf-8")
+    main_file.write_text("tested base\n", encoding="utf-8")
     _git(source, "add", "main.txt")
-    _git(source, "commit", "-m", "main")
+    _git(source, "commit", "-m", "tested base")
+    tested_base_sha = _git(source, "rev-parse", "HEAD")
+
+    _git(source, "checkout", "-b", "test-merge")
     _git(source, "merge", "--no-ff", "feature", "-m", "synthetic PR merge")
     tested_sha = _git(source, "rev-parse", "HEAD")
+
+    _git(source, "checkout", "main")
+    main_file.write_text("current main\n", encoding="utf-8")
+    _git(source, "commit", "-am", "main advanced after tested merge")
 
     _git(source, "checkout", "-b", "unrelated", base_sha)
     unrelated_file = source / "unrelated.txt"
@@ -369,7 +371,7 @@ def test_fetch_depth_zero_exact_tree_restores_merge_history_without_unrelated_re
             "clone",
             "--depth=1",
             "--branch",
-            "main",
+            "test-merge",
             remote.as_uri(),
             str(checkout),
         ],
@@ -377,7 +379,6 @@ def test_fetch_depth_zero_exact_tree_restores_merge_history_without_unrelated_re
         capture_output=True,
     )
     assert _git(checkout, "rev-parse", "HEAD") == tested_sha
-    assert _git(checkout, "rev-parse", "--is-shallow-repository") == "true"
     before_merge_base = subprocess.run(
         ["git", "merge-base", f"{tested_sha}^1", f"{tested_sha}^2"],
         cwd=checkout,
@@ -399,8 +400,27 @@ def test_fetch_depth_zero_exact_tree_restores_merge_history_without_unrelated_re
         tested_tree_sha=tested_sha,
     )
 
-    assert _git(checkout, "rev-parse", "--is-shallow-repository") == "false"
+    git_env = PACK._trusted_git_environment(checkout)
+    assert PACK._tested_tree_ancestry_ready(checkout, git_env, tested_sha)
     assert _git(checkout, "merge-base", f"{tested_sha}^1", f"{tested_sha}^2") == base_sha
+
+    subprocess.run(
+        [
+            "git",
+            "fetch",
+            "origin",
+            "main:refs/remotes/origin/main",
+        ],
+        cwd=checkout,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert _git(checkout, "merge-base", "origin/main", "HEAD") == tested_base_sha
+    pr_messages = _git(checkout, "log", "--format=%s", "origin/main..HEAD").splitlines()
+    assert "synthetic PR merge" in pr_messages
+    assert "feature one" in pr_messages
+    assert "feature two" in pr_messages
 
     unrelated_ref = subprocess.run(
         ["git", "rev-parse", "--verify", "refs/remotes/origin/unrelated"],
@@ -423,6 +443,52 @@ def test_fetch_depth_zero_exact_tree_restores_merge_history_without_unrelated_re
     assert unrelated_ref.returncode != 0
     assert unrelated_tag.returncode != 0
     assert unrelated_object.returncode != 0
+
+
+def test_fetch_depth_zero_linear_main_stops_after_immediate_parent(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source"
+    _base_sha, tested_sha = _small_repository(source)
+    subject = source / "subject.txt"
+    subject.write_text("newer main\n", encoding="utf-8")
+    _git(source, "commit", "-am", "newer main")
+    tested_sha = _git(source, "rev-parse", "HEAD")
+
+    remote = tmp_path / "remote.git"
+    subprocess.run(
+        ["git", "clone", "--bare", str(source), str(remote)],
+        check=True,
+        capture_output=True,
+    )
+    checkout = tmp_path / "checkout"
+    subprocess.run(
+        [
+            "git",
+            "clone",
+            "--depth=1",
+            "--branch",
+            "main",
+            remote.as_uri(),
+            str(checkout),
+        ],
+        check=True,
+        capture_output=True,
+    )
+
+    job = _job(
+        "history",
+        [
+            {"uses": "actions/checkout@v4", "with": {"fetch-depth": 0}},
+            {"name": "proof", "run": "true"},
+        ],
+    )
+    PACK._prepare_provided_actions(job, root=checkout, tested_tree_sha=tested_sha)
+
+    git_env = PACK._trusted_git_environment(checkout)
+    assert PACK._tested_tree_ancestry_ready(checkout, git_env, tested_sha)
+    visible = _git(checkout, "rev-list", "--parents", "-n", "1", tested_sha).split()
+    assert len(visible) == 2
 
 
 def test_plan_v2_hash_binds_provenance_semantic_inventory_and_authority() -> None:
