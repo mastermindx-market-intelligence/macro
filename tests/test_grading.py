@@ -1447,3 +1447,145 @@ def test_prophet_discovery_maturity_clock_guard_keeps_native_reason_boundaries(m
     assert result["counts"][expected] == 1
     assert sum(result["counts"].values()) == 1
     pd.testing.assert_frame_equal(frame, original)
+
+
+# Packet 3 R11: the complete reporting result must exist before output commit.
+def _discovery_writer_fixture(tmp_path, monkeypatch, market, prior_store):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: None)
+    current = {"series": _trend(45)}
+    monkeypatch.setattr(
+        pdg.board_ledger, "_name_close", lambda *_a, **_k: current["series"]
+    )
+    ticker = "0001.HK" if market == "HK" else "ABC.TO"
+    source = _discovery_rows(ticker, market=market)
+    source_path = pdg.board_shadow._lane_b_path(market)
+    source_path.parent.mkdir(parents=True, exist_ok=True)
+    source.to_parquet(source_path, index=False)
+    pdg.board_shadow._discovery_receipt_path(market).write_text(json.dumps({
+        "market": market,
+        "as_of": "2026-01-12",
+        "registry_state": "wrote_n_rows n=1",
+        "written": 1,
+        "definitions": ["disc_v1"],
+        "challenger_failures": [],
+        "stamped_at": "2026-01-12T23:00:00+00:00",
+    }))
+    out = pdg._outcome_path(market)
+    if prior_store:
+        pdg.grade_frame(market, source).to_parquet(out, index=False)
+    before = out.read_bytes() if out.exists() else None
+    current["series"] = _trend(180)
+    return source, source_path, out, before
+
+
+@pytest.mark.parametrize("market", ("HK", "CA"))
+@pytest.mark.parametrize("prior_store", (False, True))
+@pytest.mark.parametrize("failure_at", ("candidate_metrics", "maturity_reasons", "rank_races"))
+def test_prophet_discovery_reporting_failure_cannot_commit_outcomes(
+    tmp_path, monkeypatch, capsys, market, prior_store, failure_at,
+):
+    from engine import prophet_discovery_grade as pdg
+    import scripts.grade_prophet_discovery as runner
+
+    source, source_path, out, before = _discovery_writer_fixture(
+        tmp_path, monkeypatch, market, prior_store,
+    )
+    source_before = source_path.read_bytes()
+    if failure_at == "rank_races":
+        # Valid Parquet transport, malformed owned input: exercise the actual
+        # reporting failure rather than mocking a successful source receipt.
+        pairs_path = pdg.board_shadow._lane_a_path(market)
+        pd.DataFrame({"malformed": [1]}).to_parquet(pairs_path, index=False)
+        pairs_before = pairs_path.read_bytes()
+    else:
+        name = "summarize_outcomes" if failure_at == "candidate_metrics" else "summarize_maturity_reasons"
+        def fail_summary(*_a, **_k):
+            raise RuntimeError("injected report construction failure")
+        monkeypatch.setattr(pdg, name, fail_summary)
+
+    assert runner.main(["--nightly", "--market", market, "--source-asof", "2026-01-12"]) == 1
+    receipt = json.loads(capsys.readouterr().out)[market]
+    assert receipt["state"] == "ERROR" and receipt["available"] is False
+    assert receipt["error_type"] == ("KeyError" if failure_at == "rank_races" else "RuntimeError")
+    assert (out.read_bytes() if out.exists() else None) == before
+    assert not out.with_suffix(".tmp.parquet").exists()
+    assert source_path.read_bytes() == source_before
+    if failure_at == "rank_races":
+        assert pairs_path.read_bytes() == pairs_before
+
+
+@pytest.mark.parametrize("market", ("HK", "CA"))
+@pytest.mark.parametrize("prior_store", (False, True))
+def test_prophet_discovery_success_commits_after_complete_receipt(
+    tmp_path, monkeypatch, capsys, market, prior_store,
+):
+    from pathlib import Path
+    from engine import prophet_discovery_grade as pdg
+    import scripts.grade_prophet_discovery as runner
+
+    source, source_path, out, before = _discovery_writer_fixture(
+        tmp_path, monkeypatch, market, prior_store,
+    )
+    source_before = source_path.read_bytes()
+    expected = {"bytes": before}
+    calls = []
+    replacements = []
+    for name in ("summarize_outcomes", "summarize_maturity_reasons", "evaluate_rank_races"):
+        original = getattr(pdg, name)
+        def observed(*args, _name=name, _original=original, **kwargs):
+            assert (out.read_bytes() if out.exists() else None) == expected["bytes"]
+            assert not out.with_suffix(".tmp.parquet").exists()
+            calls.append(_name)
+            return _original(*args, **kwargs)
+        monkeypatch.setattr(pdg, name, observed)
+    original_replace = Path.replace
+    def observed_replace(path, target):
+        if path == out.with_suffix(".tmp.parquet"):
+            assert calls[-3:] == ["summarize_outcomes", "summarize_maturity_reasons", "evaluate_rank_races"]
+            replacements.append(str(target))
+        return original_replace(path, target)
+    monkeypatch.setattr(Path, "replace", observed_replace)
+
+    args = ["--nightly", "--market", market, "--source-asof", "2026-01-12"]
+    assert runner.main(args) == 0
+    first = json.loads(capsys.readouterr().out)[market]
+    assert first["state"] == "UPDATED" and first["identity_parity"] and first["cohort_parity"]
+    assert replacements == [str(out)]
+    stored = pd.read_parquet(out)
+    pd.testing.assert_frame_equal(stored, pdg.grade_frame(market, source), check_exact=True)
+    expected["bytes"] = out.read_bytes()
+    assert runner.main(args) == 0
+    second = json.loads(capsys.readouterr().out)[market]
+    assert second["state"] == "UNCHANGED"
+    assert {k:v for k,v in second.items() if k != "state"} == {k:v for k,v in first.items() if k != "state"}
+    assert len(replacements) == 1 and len(calls) == 6
+    assert out.read_bytes() == expected["bytes"]
+    assert source_path.read_bytes() == source_before
+
+
+@pytest.mark.parametrize("prior_store", (False, True))
+def test_prophet_discovery_batch_reports_only_actual_market_effects(
+    tmp_path, monkeypatch, capsys, prior_store,
+):
+    from engine import prophet_discovery_grade as pdg
+    import scripts.grade_prophet_discovery as runner
+
+    _discovery_writer_fixture(tmp_path, monkeypatch, "HK", False)
+    _, source_path, ca_out, ca_before = _discovery_writer_fixture(
+        tmp_path, monkeypatch, "CA", prior_store,
+    )
+    source_before = source_path.read_bytes()
+    pd.DataFrame({"malformed": [1]}).to_parquet(pdg.board_shadow._lane_a_path("CA"), index=False)
+    assert runner.main(["--nightly"]) == 1
+    result = json.loads(capsys.readouterr().out)
+    assert result["HK"]["state"] == "UPDATED"
+    assert len(pd.read_parquet(pdg._outcome_path("HK"))) == 1
+    assert result["CA"]["state"] == "ERROR"
+    assert (ca_out.read_bytes() if ca_out.exists() else None) == ca_before
+    assert not ca_out.with_suffix(".tmp.parquet").exists()
+    assert source_path.read_bytes() == source_before

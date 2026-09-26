@@ -1183,7 +1183,6 @@ def grade_market(
     source_session_count = int(source_dates.nunique())
     board = board_shadow._read_board_parquet(m, ["date", "ticker"])
     board_admission_bridge = summarize_board_admission_bridge(source, board)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
 
     changed = True
     if out_path.exists():
@@ -1194,11 +1193,6 @@ def grade_market(
         _assert_append_only_source_continuity(prior, fresh)
         changed = not _same_frame(prior, fresh)
 
-    if changed:
-        tmp = out_path.with_suffix(".tmp.parquet")
-        fresh.to_parquet(tmp, index=False)
-        tmp.replace(out_path)
-
     counts = fresh["outcome_state"].value_counts(dropna=False).to_dict()
     terminal8 = (
         fresh["terminal_state_clean8_21"].dropna().astype(str).value_counts().to_dict()
@@ -1206,7 +1200,9 @@ def grade_market(
     terminal15 = (
         fresh["terminal_state_clean15_126"].dropna().astype(str).value_counts().to_dict()
     )
-    return {
+    # Finish fallible report construction before publishing any derived rows.
+    # Rank-race reporting reads Lane A independently, not this output store.
+    receipt = {
         "market": m,
         "available": True,
         "state": "UPDATED" if changed else "UNCHANGED",
@@ -1236,6 +1232,13 @@ def grade_market(
         "board_admission_bridge": board_admission_bridge,
         "rank_races": evaluate_rank_races(m),
     }
+
+    if changed:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = out_path.with_suffix(".tmp.parquet")
+        fresh.to_parquet(tmp, index=False)
+        tmp.replace(out_path)
+    return receipt
 
 
 def grade_all() -> dict[str, dict[str, Any]]:
