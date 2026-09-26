@@ -295,24 +295,55 @@ def test_fetch_depth_zero_action_is_materialized_for_the_exact_tree(
                 "git",
                 "fetch",
                 "--no-recurse-submodules",
-                "--prune",
-                "--tags",
+                "--no-tags",
                 "--depth=2147483647",
                 "origin",
-                "+refs/heads/*:refs/remotes/origin/*",
+                SHA_TREE,
             ],
             tmp_path,
         )
     ]
 
 
-def test_fetch_depth_zero_materializes_all_remote_branches_tags_and_history(
+def test_fetch_depth_zero_exact_tree_restores_merge_history_without_unrelated_refs(
     tmp_path: Path,
 ) -> None:
+    """The healthy deepen restores tested-tree ancestry without remote namespace drag."""
     source = tmp_path / "source"
-    base_sha, tested_sha = _small_repository(source)
-    _git(source, "branch", "feature", base_sha)
-    _git(source, "tag", "base-tag", base_sha)
+    source.mkdir()
+    _git(source, "init", "-b", "main")
+    _git(source, "config", "user.email", "ci@example.test")
+    _git(source, "config", "user.name", "CI Test")
+
+    base_file = source / "base.txt"
+    base_file.write_text("base\n", encoding="utf-8")
+    _git(source, "add", "base.txt")
+    _git(source, "commit", "-m", "base")
+    base_sha = _git(source, "rev-parse", "HEAD")
+
+    _git(source, "checkout", "-b", "feature")
+    feature_file = source / "feature.txt"
+    feature_file.write_text("feature\n", encoding="utf-8")
+    _git(source, "add", "feature.txt")
+    _git(source, "commit", "-m", "feature")
+
+    _git(source, "checkout", "main")
+    main_file = source / "main.txt"
+    main_file.write_text("main\n", encoding="utf-8")
+    _git(source, "add", "main.txt")
+    _git(source, "commit", "-m", "main")
+    _git(source, "merge", "--no-ff", "feature", "-m", "synthetic PR merge")
+    tested_sha = _git(source, "rev-parse", "HEAD")
+
+    _git(source, "checkout", "-b", "unrelated", base_sha)
+    unrelated_file = source / "unrelated.txt"
+    unrelated_file.write_text("unrelated\n", encoding="utf-8")
+    _git(source, "add", "unrelated.txt")
+    _git(source, "commit", "-m", "unrelated")
+    unrelated_sha = _git(source, "rev-parse", "HEAD")
+    _git(source, "tag", "unrelated-tag", unrelated_sha)
+    _git(source, "checkout", "main")
+
     remote = tmp_path / "remote.git"
     subprocess.run(
         ["git", "clone", "--bare", str(source), str(remote)],
@@ -333,6 +364,16 @@ def test_fetch_depth_zero_materializes_all_remote_branches_tags_and_history(
         check=True,
         capture_output=True,
     )
+    assert _git(checkout, "rev-parse", "HEAD") == tested_sha
+    assert _git(checkout, "rev-parse", "--is-shallow-repository") == "true"
+    before_merge_base = subprocess.run(
+        ["git", "merge-base", f"{tested_sha}^1", f"{tested_sha}^2"],
+        cwd=checkout,
+        capture_output=True,
+        text=True,
+    )
+    assert before_merge_base.returncode != 0
+
     job = _job(
         "history",
         [
@@ -345,9 +386,31 @@ def test_fetch_depth_zero_materializes_all_remote_branches_tags_and_history(
         root=checkout,
         tested_tree_sha=tested_sha,
     )
-    assert _git(checkout, "rev-parse", "origin/feature") == base_sha
-    assert _git(checkout, "rev-parse", "base-tag") == base_sha
-    assert int(_git(checkout, "rev-list", "--count", tested_sha)) == 2
+
+    assert _git(checkout, "rev-parse", "--is-shallow-repository") == "false"
+    assert _git(checkout, "merge-base", f"{tested_sha}^1", f"{tested_sha}^2") == base_sha
+
+    unrelated_ref = subprocess.run(
+        ["git", "rev-parse", "--verify", "refs/remotes/origin/unrelated"],
+        cwd=checkout,
+        capture_output=True,
+        text=True,
+    )
+    unrelated_tag = subprocess.run(
+        ["git", "rev-parse", "--verify", "refs/tags/unrelated-tag"],
+        cwd=checkout,
+        capture_output=True,
+        text=True,
+    )
+    unrelated_object = subprocess.run(
+        ["git", "cat-file", "-e", unrelated_sha],
+        cwd=checkout,
+        capture_output=True,
+        text=True,
+    )
+    assert unrelated_ref.returncode != 0
+    assert unrelated_tag.returncode != 0
+    assert unrelated_object.returncode != 0
 
 
 def test_plan_v2_hash_binds_provenance_semantic_inventory_and_authority() -> None:
