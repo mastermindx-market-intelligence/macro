@@ -1,0 +1,16 @@
+{
+  "authority": "preregistration_freeze_only_no_rank_alert_size_trade_or_event_authority",
+  "config_sha256": "b4cb8b474bb0b3c77f2847e8ef0227c03d0071d360fa2ea398f30c54fbc595d2",
+  "freeze_commit": "0c54e10e20c43827802d3d829505f74f57f8eb5f",
+  "grid_cells": 60,
+  "negative_control_selector": "CONTINUATION_RISK",
+  "outcomes_opened": false,
+  "pickup_base": "2f1eeaecd2a526853aa5e3fd4a102395380bd00c",
+  "prereg_sha256": "7658e7695cf7ef5282478cc81f55422fc506789e4b270d89ea2e9ae14d26c118",
+  "primary_selector": "EXHAUSTION_RECLAIM",
+  "registered": false,
+  "schema": "mastermind.terminal_tactical_r1b_freeze_receipt.v1",
+  "study_id": "tti-r1b-exhaustion-reclaim-v1",
+  "trial_family": "entry_radar",
+  "trial_ledger_modified_by_freeze": false
+}

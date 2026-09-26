@@ -1,0 +1,39 @@
+{
+  "schema": "mastermind.terminal_tactical_r1b_registration_receipt.v4",
+  "study_id": "tti-r1b-exhaustion-reclaim-v4",
+  "family": "entry_radar",
+  "prereg_freeze_commit": "4db8d0edc63997f7f7944c3b35ac04709461b810",
+  "prereg_sha256": "a8afab8d87cfe912aeaed02c105112869943433cf6b7bb7c765bd2768d0dfcd3",
+  "config_sha256": "24b5a89f8df9c441160f1162c0f08d62796e842e29fff3c55766160fe388bc19",
+  "accepted_r1a_head": "b73f1c7bf13aa386fb11c4fdce762b999e91eae7",
+  "stacked_merge_commit": "094680febbcd883dd18616c4cb13fbe3c8257997",
+  "registration_commit": "350c57e1c6aab6e064c022a483389c905d2b7ad0",
+  "ledger_lines_before": 1760,
+  "ledger_lines_after": 1820,
+  "study_rows": 60,
+  "ledger_prefix_sha256": "beb48ca70d10c81e9c149afea5dbdbc31614bfe2489f2558e8c45d8fb112a794",
+  "ledger_after_sha256": "904a0799c80cc2ff3629e415e8460d77b2972556b5ef32327de700de496a2f80",
+  "prefix_preserved": true,
+  "grid_sha256": "151c0cb20af85537287413b4ecdeaf2ccad18232ed4eb0a20091cbd46cdb6b17",
+  "selectors": [
+    "BASE_FRESH_LOW",
+    "CONTINUATION_RISK",
+    "EXHAUSTION_FORMING",
+    "EXHAUSTION_RECLAIM",
+    "RECLAIM_ONLY"
+  ],
+  "horizons": [
+    "120m",
+    "30m",
+    "60m",
+    "close"
+  ],
+  "cost_bps": [
+    10,
+    25,
+    50
+  ],
+  "r1a_rows_preserved": 84,
+  "market_outcomes_opened_before_registration": false,
+  "authority": "research_accounting_only_no_rank_alert_size_trade_or_event_authority"
+}

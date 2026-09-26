@@ -1,0 +1,27 @@
+{
+  "cases": [
+    "grid_is_60_cells",
+    "market_thresholds_unchanged_from_v3",
+    "stale_global_first_event_field_removed",
+    "per_selector_uniqueness_is_machine_explicit",
+    "unqualified_early_anchor_does_not_consume_later_selector",
+    "one_anchor_may_fire_multiple_independent_selectors",
+    "second_same_selector_event_is_refused",
+    "control_census_is_first_base_per_bin",
+    "control_census_ignores_future_selector_labels",
+    "candidate_and_episode_lod_anchors_remain_separate",
+    "latency_is_one_full_bar_for_selected_and_controls",
+    "no_live_authority",
+    "v4_is_unregistered_and_unrun"
+  ],
+  "cases_passed": 13,
+  "config_sha256": "24b5a89f8df9c441160f1162c0f08d62796e842e29fff3c55766160fe388bc19",
+  "freeze_commit": "4db8d0edc63997f7f7944c3b35ac04709461b810",
+  "grid_cells": 60,
+  "market_data_read": false,
+  "outcomes_opened": false,
+  "prereg_sha256": "a8afab8d87cfe912aeaed02c105112869943433cf6b7bb7c765bd2768d0dfcd3",
+  "schema": "terminal_tactical.r1b_v4_synthetic_spec_check.v1",
+  "study_id": "tti-r1b-exhaustion-reclaim-v4",
+  "trial_ledger_modified": false
+}
