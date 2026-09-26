@@ -116,9 +116,10 @@
         "companyfacts_deferred": {"type": "integer", "minimum": 0},
         "recovery_backlog": {"type": "integer", "minimum": 0},
         "selected_recovery_ciks": {"type": "integer", "minimum": 0, "maximum": 64},
-        "submissions_fetched": {"type": "integer", "minimum": 0, "maximum": 64},
+        "submissions_fetched": {"type": "integer", "minimum": 0, "maximum": 4000},
         "historical_submissions_fetched": {"type": "integer", "minimum": 0, "maximum": 64},
-        "historical_submissions_bytes_fetched": {"type": "integer", "minimum": 0, "maximum": 33554432}
+        "historical_submissions_bytes_fetched": {"type": "integer", "minimum": 0, "maximum": 33554432},
+        "filing_corrections_admitted": {"type": "integer", "minimum": 0, "maximum": 4000}
       }
     },
     "change_summary": {
