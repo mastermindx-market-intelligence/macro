@@ -621,6 +621,7 @@ document.getElementById('t-theme').onclick = function(){
 };
 document.getElementById('t-lang').onclick = function(){
   root.setAttribute('data-lang', root.getAttribute('data-lang')==='zh' ? 'en' : 'zh');
+  root.setAttribute('lang', root.getAttribute('data-lang')==='zh' ? 'zh-CN' : 'en');
 };
 document.getElementById('t-width').onclick = function(){
   document.body.classList.toggle('mobile-sim');

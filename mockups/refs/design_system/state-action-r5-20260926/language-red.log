@@ -1,0 +1,10 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_specimen_language_toggle_updates_document_language ____________
+tests/test_design_system_foundations.py:617: in test_specimen_language_toggle_updates_document_language
+    assert "root.setAttribute('lang',root.getAttribute('data-lang')==='zh'?'zh-CN':'en');" in body, (
+E   AssertionError: The specimen changes the visible locale but not the document language; bind html lang to the resulting data-lang using the existing zh-CN/en mapping.
+E   assert "root.setAttribute('lang',root.getAttribute('data-lang')==='zh'?'zh-CN':'en');" in "root.setAttribute('data-lang',root.getAttribute('data-lang')==='zh'?'en':'zh');"
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_language_toggle_updates_document_language
+1 failed, 33 deselected in 0.04s

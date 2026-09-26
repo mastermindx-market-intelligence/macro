@@ -596,3 +596,25 @@ def test_ladder_total_prints_exactly_one_language_label(theme, lang, visible, hi
         f"in the ladder total. theme.css is out-specifying its own language toggle; keep the "
         f"restoring rule below .mx-ladder .mx-lad-total small."
     )
+
+
+def test_specimen_language_toggle_updates_document_language(specimen):
+    """Visible locale and the assistive-technology language must change together.
+
+    This is a browser-free source-contract guard for the specimen's small toggle,
+    not a JavaScript interpreter. The real-browser R5 observation found data-lang
+    switched to zh while html lang stayed en. Executing the actual handler and
+    checking both directions is separate behavior evidence in the repair record.
+    """
+    scripts = "\n".join(re.findall(r"<script\b[^>]*>(.*?)</script>", specimen, re.S))
+    handler = re.search(
+        r"document\.getElementById\(['\"]t-lang['\"]\)\.onclick\s*=\s*function\s*\(\)\s*\{(.*?)\};",
+        scripts, re.S,
+    )
+    assert handler, "The specimen language control must have an inspectable handler"
+    body = re.sub(r"\s+", "", handler.group(1)).replace('"', "'")
+    assert "root.setAttribute('data-lang'," in body, "Keep the visual locale binding"
+    assert "root.setAttribute('lang',root.getAttribute('data-lang')==='zh'?'zh-CN':'en');" in body, (
+        "The specimen changes the visible locale but not the document language; "
+        "bind html lang to the resulting data-lang using the existing zh-CN/en mapping."
+    )

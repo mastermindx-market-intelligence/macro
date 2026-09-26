@@ -244,3 +244,75 @@ now-corrected target. R4 did not rerun or widen R3's 100-test result or R2's
 288-pair campaign. Remaining work is broader component and filled-control states,
 locale/mobile parity, independent review, real journeys and human comprehension;
 production implementation and release remain separate obligations.
+
+
+## 8. R5 — state/action contract and real disclosure qualification
+
+R4 remains applied and preserved. The **R5 native additions are NOT_APPLIED_TO_PAPER**;
+another observed M1 Policy Watch session is modifying the shared file. No writer,
+working indicator, token or specialist page was displaced. Figma remains excluded.
+
+The supporting `research/DESIGN_SYSTEM_STATE_ACTION_PATTERNS_2026-09-26.md` carries
+EN/ZH first-read/recovery examples for eight existing data states and five save
+outcomes. It extends the existing components, not another registry or state engine.
+True zero, filtered-empty, partial coverage and conflicting checks remain distinct;
+unknown save completion queries the original result rather than submitting again.
+All figures are illustrative. Nine proposed native payloads target the existing dark
+and light Data/Chart/Access boards, with two source-derived fill-role projections.
+They are preserved as a proposal only, without a captured snapshot or write grant.
+
+### Actual current-source browser evidence
+
+Source: `e9e3245e17f8c8d309f9bd7591ad54270efbdb2f`. The unmodified specimen blob
+`b20b82f51390ff927e51ebb17b313f1e6d068c8b` was loaded with exact theme and tier CSS
+in a fresh local headless Chrome profile; outbound HTTP(S) was blocked. This is
+local-file transport, not the public production origin or an authenticated session.
+
+The existing `.mx-disc` disclosure passed **eight component-only cases**:
+1440/390 CSS pixels × dark/light × EN/ZH, actual Enter opening and Space closing,
+focus retained, requested theme/visible language matched, no internal overflow.
+No JavaScript exception was observed. The two retained full-viewport screenshots
+were captured in dark/desktop/EN and light/phone/ZH; author visual review is separate
+from independent acceptance. The broader specimen **does horizontally overflow in
+all four phone-width cases**. That is retained as unresolved page-level debt, not
+suppressed with overflow clipping and not excused by the component pass.
+
+The Chinese display changed while `html lang` remained `en` in all four Chinese
+cases. This is a specimen-local accessibility defect. The existing production
+language owner must not be replaced to repair this fixture. The bounded source
+repair adds one `lang` assignment beside the existing `data-lang` assignment and
+one browser-free source-contract regression to the existing foundations suite.
+Actual-handler execution checks are separate from that structural CI guard.
+
+Tests-first: the added regression failed for the missing language binding. After
+the one-line repair, **four focused Python tests passed (30 deselected)**; **six
+executions of the actual inline script** passed (EN/ZH/absent initial locale, each
+with two switches). Removing only the added line restored **one failure / three
+passes**. The same one-line repair also passed six actual-handler transitions on
+the newer main specimen, preserving its additional sections. These are focused
+source/handler results, not a full-repository run, assistive-technology test, or
+post-fix browser pass. The existing CI command already runs the foundations file.
+
+### Evidence and unfinished work
+
+Evidence is under `mockups/refs/design_system/state-action-r5-20260926/`:
+source identities, the final browser report, two viewport screenshots, language
+RED/GREEN/mutation logs, actual-handler outputs, pair calculations and the unapplied
+native proposal. The first two browser harness attempts had missing key text and/or
+theme/screenshot attribution defects; they are superseded diagnostics, not product
+failures or valid visual proof. The final report separately records page overflow
+and document-language mismatch rather than averaging them into the component result.
+
+The two proposed filled-action/white-label pairs calculate to 6.108856:1 dark and
+9.390028:1 light. All eight measured normal-text/border pairs passed their applicable
+thresholds; no native fill token, full interaction-state or overall conformance
+claim follows. Nine payloads passed the observed Paper schemas and eighteen malformed
+missing-ID/extra-field cases were rejected, without dispatch.
+
+Next: apply the already prepared native slice only after current file-wide custody
+is reconciled, inspect actual dark/light images, then qualify phone/localized states
+and real result/return journeys. Diagnose the specimen's page-level phone overflow
+without deleting its analytical depth. The specimen language fix remains source-only
+until post-fix browser proof and normal source/review/release gates conclude. A local
+headless browser cleanup left one owned exiting process; do not describe termination
+signals as confirmed process disappearance or target any other user's browser.
