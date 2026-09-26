@@ -1,0 +1,159 @@
+schema: mastermind.rig_verdict.v1
+reference_id: confluence-screener-paper-r1
+
+authority:
+  identity: "Sol CEO · product-design-system-convergence · 2026-09-25"
+  role: design_authority
+
+packet:
+  materially_improved: >
+    R1 makes the protected identity boundary more legible without leaking paid tickers,
+    separates global-zero from ordinary filtered emptiness, uses DEMO/runtime placeholders
+    instead of fabricating live market facts, exposes sample denominators more directly, and
+    moves a non-authorizing research-priority warning earlier in the journey.
+  materially_worsened: >
+    R1 weakens the answer-first hierarchy, rank-to-rank comparability, recent-versus-older
+    validation comparison, evidence scannability, dark-mode character, bilingual visual
+    semantics, and the route's distinctive product identity. The compressed paid rows and
+    evidence microtype are especially material regressions for a dense research screener.
+  disappeared: >
+    The shipped prominence of the current setup count and as-of freshness anchor, the
+    pre-attentive wins-per-10 readout, always-visible honesty guidance, a fully specified
+    free rank-1 ticker-link/wrap grammar, and several methodology affordances are absent or
+    only indirectly represented in the frozen reference. Some information is relocated rather
+    than deleted, but the missing interaction/visual grammar is still a reference defect.
+  behavior_harder: >
+    A user must work harder to scan and compare the top three ranks, compare recent with
+    older-era evidence, interpret ranks 2-3, verify methodology/sample context, and understand
+    or use the free rank-1 matching-ticker continuation. Mobile and ZH increase that burden.
+  stronger_claims: >
+    The #1/#2/#3 treatment and "public evidence" framing read more authoritatively than the
+    cautious shipped ordinal lead list while caveats and methodology affordances become less
+    prominent. Presentation filters also introduce a new interaction claim that must stay
+    strictly presentation-only if retained.
+  intent_vs_convenience: >
+    Product intent correctly drives the no-fake-market-data rule, the protected-payload
+    boundary, global-zero honesty, and the earlier non-trade framing. The regressions are
+    mostly implementation/design convenience: compressing paid rows into run-on receipts,
+    shrinking critical evidence type, hiding honesty detail, printing pseudo-state labels,
+    flattening dark mode, and replacing the route's distinctive hero with generic chrome.
+  production_preferable_for: >
+    Production remains preferable for immediate top-three scanning, recent-versus-older
+    evidence comparison, always-visible honesty, the free ticker-link interaction, dark-mode
+    character, methodology discoverability, and ZH semantic/color parity. R1 is not yet a
+    superior canonical replacement on those jobs.
+  strongest_argument_against: >
+    Both independent Opus critics return BLOCK after rationale reveal, and Reviewer B still
+    carries two surviving blocker-severity findings: the primary answer is not visually
+    primary, and ranks 2-3 are too compressed to support the screen's defining comparison
+    task. Canonizing R1 despite that evidence would be reference laundering.
+
+blocking_findings:
+  - finding: PRC-001
+    resolution: upheld_revise
+    note: "Downgraded to major in pass 2, but the runtime answer remains materially demoted; R2 must restore answer-first hierarchy without hardcoding data."
+  - finding: PRC-002
+    resolution: upheld_revise
+    note: "Downgraded to major, but top-three like-for-like comparison remains materially worse; R2 must use one comparable evidence grammar."
+  - finding: PRC-003
+    resolution: upheld_revise
+    note: "Downgraded to major, but recent/older validation remains visually asymmetric; R2 must make both eras directly comparable."
+  - finding: PRC-004
+    resolution: upheld_revise
+    note: "Downgraded to major, but a critical honesty interaction became opt-in; R2 must preserve unavoidable glance-tier honesty."
+  - finding: PRC-005
+    resolution: upheld_revise
+    note: "Downgraded to major, but the free rank-1 ticker link/wrap interaction is not demonstrated; R2 must prove that grammar with DEMO identities."
+  - finding: VTC-001
+    resolution: upheld_revise
+    note: "Still blocker after pass 2: the daily screener's answer is not the dominant visual fact."
+  - finding: VTC-002
+    resolution: upheld_revise
+    note: "Downgraded to major, but placeholder typography does not prove numeric scale/alignment/width tolerance."
+  - finding: VTC-003
+    resolution: upheld_revise
+    note: "Still blocker after pass 2: ranks 2-3 are compressed into non-comparable run-on evidence."
+  - finding: VTC-004
+    resolution: upheld_revise
+    note: "Downgraded to major: interaction states are labeled as product copy instead of demonstrated visually."
+  - finding: VTC-005
+    resolution: upheld_revise
+    note: "Downgraded to major: shared-nav omission is scoped out, but the frozen reference still misspells MASTERMINDX in every governed cell."
+
+overrides: []
+
+verdict: REVISE
+
+conditions:
+  - id: R2-HERO-ANSWER
+    text: >
+      Keep the protected question but restore a dedicated visually primary runtime answer/count
+      slot in every EN/ZH, Dark/Light, desktop/mobile cell; no hardcoded live value.
+  - id: R2-RANK-COMPARABILITY
+    text: >
+      Rank 1-3 must share one comparable evidence grammar; entitlement may hide identities but
+      may not collapse public evidence into a materially less scannable row class.
+  - id: R2-VALIDATION-PAIR
+    text: >
+      Recent and older validation plus sample basis must be adjacent and comparably legible on
+      every rank and viewport; the recent rate may not dominate as the only glance-tier metric.
+  - id: R2-HONESTY
+    text: >
+      Critical honesty must remain directly visible without requiring disclosure; expanded detail
+      may supplement it, and symbol-only shorthand such as "≠" may not replace plain-language truth.
+  - id: R2-FREE-MATCH
+    text: >
+      Demonstrate the rank-1 matching-ticker interaction with DEMO-only identities, including link
+      affordance, ticker/company hierarchy and multi-ticker wrapping, without inserting live names.
+  - id: R2-STATE-VISUALS
+    text: >
+      Focus, hover, loading, empty, stale, error and disabled states must be represented visually,
+      not printed as pseudo-class/specification copy; RIG/browser-proof prose must not appear in
+      customer-facing UI.
+  - id: R2-BRAND
+    text: >
+      Correct MASTERMINDX branding in every governed cell and keep shared site navigation outside
+      the route-body projection rather than minting a second nav/control plane.
+  - id: R2-LOCALE-PARITY
+    text: >
+      Preserve ZH disclaimer, controls, state coverage, locale-switch reachability and the shipped
+      language-sensitive color semantics; no EN-only state or visual contract is allowed.
+  - id: R2-LEG-STACK
+    text: >
+      Use explicit structured builder-owned D/W leg rows and prove variable leg depth; third-row
+      capacity must not mint an unsupported "TF" timeframe semantic.
+  - id: R2-FRESHNESS
+    text: >
+      Restore a visible as-of/provenance/freshness anchor and remove design-process metadata from
+      the product footer.
+  - id: R2-LOCK-HYDRATION
+    text: >
+      Preserve per-row paid-lock truth including public count and why identities are hidden, and
+      prove post-entitlement hydration/CTA/fallback behavior with non-live identities.
+  - id: R2-READING-MEASURE
+    text: >
+      Restore a sane reading measure and canonical type floor; critical evidence may not be
+      compressed into near-10px muted run-on text on desktop or mobile.
+  - id: R2-DARK-IDENTITY
+    text: >
+      Give dark mode an intentional treatment and preserve a distinctive nonsemantic convergence
+      identity, or an equally characterful replacement, without unsupported 4H/3D/2W semantics.
+  - id: R2-FILTER-TRUTH
+    text: >
+      If presentation filters remain, prove they only filter the already-ranked result set and
+      distinguish filter-empty from global-zero; otherwise remove them from the successor.
+  - id: R2-CONTINUITY
+    text: >
+      Freeze R2 as a new successor with continuity closure for every open PRC/VTC finding and every
+      condition in this verdict, then run a fresh dual rationale-quarantined review against the new
+      frozen SHA.
+
+preserved_strengths:
+  - "Rank 2/3 protected identities are not leaked, and entitled hydration uses non-live DEMO identities."
+  - "Global-zero is explicitly distinguished from an ordinary filtered-empty state."
+  - "The design refuses to fabricate live counts, rates, dates or ticker identities."
+  - "Sample denominators are made more directly visible than the current hover-only implementation."
+  - "The hero/right-rail framing correctly states that convergence increases research attention, not trade authority."
+  - "The proposal preserves a broad Dark/Light, EN/ZH, desktop/mobile and governed-state evidence matrix even though several parity details still require repair."
+
+[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]

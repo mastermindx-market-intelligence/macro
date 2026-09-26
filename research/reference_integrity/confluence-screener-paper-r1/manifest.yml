@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: confluence-screener-paper-r1
 scope: full
-status: in_review
+status: revise
 
 surface:
   route: confluence_screener.html
@@ -50,3 +50,5 @@ files:
 # This remains one full cycle. The original defective freeze is preserved in Git
 # history; this manifest points only at the refreshed candidate evidence.
 # No migration is authorized while this candidate is in review.
+
+[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]
