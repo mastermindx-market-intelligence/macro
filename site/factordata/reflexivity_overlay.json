@@ -2,7 +2,7 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-09-24",
-  "generated_utc": "2026-09-25T18:33:04Z",
+  "generated_utc": "2026-09-26T07:04:43Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
@@ -26,7 +26,7 @@
       "label": "Information Technology"
     }
   ],
-  "earnings_coverage_frac": 0.875,
+  "earnings_coverage_frac": 1.0,
   "by_ticker": {
     "STX": {
       "verdict": "duplicate",
@@ -69,61 +69,13 @@
       "earnings_leg": {
         "next_date": "2026-10-27",
         "same_week_peers": [
-          "MRK"
+          "BIIB"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Same bet as COHU \u2014 Information Technology (similarity 96%).",
       "why_zh": "\u4e0e COHU \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 96%\uff09\u3002"
-    },
-    "SONO": {
-      "verdict": "duplicate",
-      "max_similarity": 1.0,
-      "basis": "membership-only:r2=0.16<0.2",
-      "nearest": [
-        {
-          "ticker": "SBH",
-          "combined": 1.0,
-          "membership_jaccard": 1.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "STX",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "AMGN",
-          "COHU",
-          "ITT"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as SBH \u2014 Consumer Discretionary (similarity 100%).",
-      "why_zh": "\u4e0e SBH \u62bc\u6ce8\u76f8\u540c \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
     },
     "COHU": {
       "verdict": "duplicate",
@@ -175,6 +127,54 @@
       "why_en": "Same bet as STX \u2014 Information Technology (similarity 96%).",
       "why_zh": "\u4e0e STX \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 96%\uff09\u3002"
     },
+    "SONO": {
+      "verdict": "duplicate",
+      "max_similarity": 1.0,
+      "basis": "membership-only:r2=0.16<0.2",
+      "nearest": [
+        {
+          "ticker": "SBH",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.16<0.2",
+          "shared_groups": [
+            "sector:Consumer Discretionary"
+          ],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "STX",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.16<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "COHU",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.16<0.2",
+          "shared_groups": [],
+          "same_earnings_week": true
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-04",
+        "same_week_peers": [
+          "AMGN",
+          "COHU",
+          "ITT"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as SBH \u2014 Consumer Discretionary (similarity 100%).",
+      "why_zh": "\u4e0e SBH \u62bc\u6ce8\u76f8\u540c \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+    },
     "SBH": {
       "verdict": "duplicate",
       "max_similarity": 1.0,
@@ -218,6 +218,53 @@
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Same bet as SONO \u2014 Consumer Discretionary (similarity 100%).",
       "why_zh": "\u4e0e SONO \u62bc\u6ce8\u76f8\u540c \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+    },
+    "BIIB": {
+      "verdict": "partial",
+      "max_similarity": 0.5,
+      "basis": "membership-only:r2=0.08<0.2",
+      "nearest": [
+        {
+          "ticker": "AMGN",
+          "combined": 0.5,
+          "membership_jaccard": 0.5,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.08<0.2",
+          "shared_groups": [
+            "basket:us_sector_health",
+            "sector:Health Care"
+          ],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "STX",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.08<0.2",
+          "shared_groups": [],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "COHU",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.08<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-10-29",
+        "same_week_peers": [
+          "STX"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Partial overlap with AMGN \u2014 us_sector_health, Health Care (similarity 50%).",
+      "why_zh": "\u4e0e AMGN \u90e8\u5206\u91cd\u53e0 \u2014 us_sector_health\u3001Health Care\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
     },
     "ITT": {
       "verdict": "duplicate",
@@ -280,7 +327,7 @@
             "basket:us_sector_tech",
             "sector:Information Technology"
           ],
-          "same_earnings_week": null
+          "same_earnings_week": false
         },
         {
           "ticker": "COHU",
@@ -291,7 +338,7 @@
           "shared_groups": [
             "sector:Information Technology"
           ],
-          "same_earnings_week": null
+          "same_earnings_week": false
         },
         {
           "ticker": "ITT",
@@ -300,64 +347,17 @@
           "factor_cosine": 0.6978,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
-          "same_earnings_week": null
+          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
-        "next_date": null,
+        "next_date": "2026-11-18",
         "same_week_peers": [],
-        "has_data": false
+        "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Same bet as STX \u2014 us_sector_tech, Information Technology (similarity 82%).",
       "why_zh": "\u4e0e STX \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_tech\u3001Information Technology\uff08\u76f8\u4f3c\u5ea6 82%\uff09\u3002"
-    },
-    "MRK": {
-      "verdict": "partial",
-      "max_similarity": 0.5,
-      "basis": "membership-only:r2=0.20<0.2",
-      "nearest": [
-        {
-          "ticker": "AMGN",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.20<0.2",
-          "shared_groups": [
-            "basket:us_sector_health",
-            "sector:Health Care"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "STX",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.20<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "SONO",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-29",
-        "same_week_peers": [
-          "STX"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Partial overlap with AMGN \u2014 us_sector_health, Health Care (similarity 50%).",
-      "why_zh": "\u4e0e AMGN \u90e8\u5206\u91cd\u53e0 \u2014 us_sector_health\u3001Health Care\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
     },
     "AMGN": {
       "verdict": "partial",
@@ -365,11 +365,11 @@
       "basis": "membership-only:r2=0.18<0.2",
       "nearest": [
         {
-          "ticker": "MRK",
+          "ticker": "BIIB",
           "combined": 0.5,
           "membership_jaccard": 0.5,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.20<0.2",
+          "factor_basis": "beta-read-thin:r2=0.08<0.2",
           "shared_groups": [
             "basket:us_sector_health",
             "sector:Health Care"
@@ -386,11 +386,11 @@
           "same_earnings_week": false
         },
         {
-          "ticker": "SONO",
+          "ticker": "COHU",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
+          "factor_basis": "beta-read-thin:r2=0.18<0.2",
           "shared_groups": [],
           "same_earnings_week": true
         }
@@ -405,18 +405,11 @@
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Partial overlap with MRK \u2014 us_sector_health, Health Care (similarity 50%).",
-      "why_zh": "\u4e0e MRK \u90e8\u5206\u91cd\u53e0 \u2014 us_sector_health\u3001Health Care\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
+      "why_en": "Partial overlap with BIIB \u2014 us_sector_health, Health Care (similarity 50%).",
+      "why_zh": "\u4e0e BIIB \u90e8\u5206\u91cd\u53e0 \u2014 us_sector_health\u3001Health Care\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
     }
   },
   "pair_basis": {
-    "STX__SONO": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
     "STX__COHU": {
       "membership_jaccard": 0.25,
       "factor_cosine": 0.9589,
@@ -426,11 +419,25 @@
         "sector:Information Technology"
       ]
     },
+    "STX__SONO": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "shared_groups": []
+    },
     "STX__SBH": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.0,
       "combined": 0.0,
       "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "STX__BIIB": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
     "STX__ITT": {
@@ -450,13 +457,6 @@
         "sector:Information Technology"
       ]
     },
-    "STX__MRK": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
-      "shared_groups": []
-    },
     "STX__AMGN": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -464,44 +464,7 @@
       "factor_basis": "beta-read-thin:r2=0.18<0.2",
       "shared_groups": []
     },
-    "SONO__COHU": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__SBH": {
-      "membership_jaccard": 1.0,
-      "factor_cosine": null,
-      "combined": 1.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": [
-        "sector:Consumer Discretionary"
-      ]
-    },
-    "SONO__ITT": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__NVDA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__MRK": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__AMGN": {
+    "COHU__SONO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -513,6 +476,13 @@
       "factor_cosine": 0.0639,
       "combined": 0.0639,
       "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "COHU__BIIB": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
     "COHU__ITT": {
@@ -531,18 +501,55 @@
         "sector:Information Technology"
       ]
     },
-    "COHU__MRK": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
-      "shared_groups": []
-    },
     "COHU__AMGN": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.18<0.2",
+      "shared_groups": []
+    },
+    "SONO__SBH": {
+      "membership_jaccard": 1.0,
+      "factor_cosine": null,
+      "combined": 1.0,
+      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "shared_groups": [
+        "sector:Consumer Discretionary"
+      ]
+    },
+    "SONO__BIIB": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "shared_groups": []
+    },
+    "SONO__ITT": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "shared_groups": []
+    },
+    "SONO__NVDA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "shared_groups": []
+    },
+    "SONO__AMGN": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "shared_groups": []
+    },
+    "SBH__BIIB": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
     "SBH__ITT": {
@@ -559,13 +566,6 @@
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "SBH__MRK": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
-      "shared_groups": []
-    },
     "SBH__AMGN": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -573,18 +573,35 @@
       "factor_basis": "beta-read-thin:r2=0.18<0.2",
       "shared_groups": []
     },
+    "BIIB__ITT": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "BIIB__NVDA": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": []
+    },
+    "BIIB__AMGN": {
+      "membership_jaccard": 0.5,
+      "factor_cosine": null,
+      "combined": 0.5,
+      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "shared_groups": [
+        "basket:us_sector_health",
+        "sector:Health Care"
+      ]
+    },
     "ITT__NVDA": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.6978,
       "combined": 0.6978,
       "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "ITT__MRK": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
       "shared_groups": []
     },
     "ITT__AMGN": {
@@ -594,29 +611,12 @@
       "factor_basis": "beta-read-thin:r2=0.18<0.2",
       "shared_groups": []
     },
-    "NVDA__MRK": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
-      "shared_groups": []
-    },
     "NVDA__AMGN": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.18<0.2",
       "shared_groups": []
-    },
-    "MRK__AMGN": {
-      "membership_jaccard": 0.5,
-      "factor_cosine": null,
-      "combined": 0.5,
-      "factor_basis": "beta-read-thin:r2=0.20<0.2",
-      "shared_groups": [
-        "basket:us_sector_health",
-        "sector:Health Care"
-      ]
     }
   },
   "verdicts": {
@@ -627,8 +627,8 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 2.5,
-    "setting_up": 2.6
+    "entry_open": 3.3,
+    "setting_up": 2.0
   },
   "source_passport": {
     "factor_betas": {

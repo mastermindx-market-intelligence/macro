@@ -11502,7 +11502,7 @@ jobs:
       - name: data/stocks retention fetch + per-name freshness audit
         run: python -m pytest tests/test_stock_price_retention.py tests/test_audit_stocks_freshness.py -q
       - name: stock-library freshness demotion (frozen-feed scan admission)
-        run: python -m pytest tests/test_stock_library_freshness.py -q
+        run: python -m pytest tests/test_stock_library_freshness.py tests/test_us_completed_session_panel.py -q
 
   defense-rail-laws:
     # D6-A + D6-B1 defense acquisition rails — the two commissioned law
@@ -12847,6 +12847,11 @@ jobs:
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
         run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
+      # #7180 completed-session source binding is a code contract, not nightly data
+      # freshness. Keep the suite in this existing Prophet code gate so PR packs can
+      # exercise the same source/date clipping and frozen-object law before merge.
+      - name: US completed-session source binding (closed-session panel + frozen source)
+        run: python -m pytest tests/test_us_completed_session_panel.py -q
       - name: leader-observation projection (strict source status, no-rank authority, summary privacy)
         run: python -m pytest tests/test_us_leader_observation_projection.py -q
       # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the

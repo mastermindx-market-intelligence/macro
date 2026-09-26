@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PLMR-BULL-20260903",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 36.7,
-  "raw_confidence": 34.7,
-  "delta_vs_base": -23.3,
+  "management_confidence": 34.9,
+  "raw_confidence": 32.8,
+  "delta_vs_base": -25.1,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 62.2,
+    "validity": 59.5,
     "progress": 0.0,
-    "pace": 16.2,
+    "pace": 12.8,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.704,
+    "dist_to_stop_r": 0.681,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 46.7,
-    "p1": -0.1975,
-    "p2": -0.0988,
+    "horizon_pct_used": 48.9,
+    "p1": -0.2128,
+    "p2": -0.1064,
     "p3": null,
-    "move_r": -0.296,
+    "move_r": -0.319,
     "mfe_r": 0.127,
-    "mae_r": -0.296
+    "mae_r": -0.319
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.779998779296875,
-  "_mae": -11.144996643066406,
+  "_mae": -12.010002136230469,
   "_max_p1": 0.08470669465349769,
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 21,
-  "tau": 0.4667
+  "days_elapsed": 22,
+  "tau": 0.4889
 }
