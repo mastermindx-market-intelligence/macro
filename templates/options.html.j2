@@ -237,6 +237,8 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 /* the ? help affordance — the Tier-2 home for mechanics (LENS popover) */
 .oew-help{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
   border:1px solid var(--hair);color:var(--muted);font-size:9.5px;font-weight:800;cursor:help;flex:none;background:var(--tile)}
+.oew-help{position:relative;touch-action:manipulation}
+@media (hover:none),(pointer:coarse){.oew-help::before{content:'';position:absolute;left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%)}}
 .oew-help:hover,.oew-help:focus-visible{color:var(--text);border-color:var(--oew-accent);outline:none}
 .oew [data-tip-en]{cursor:help}
 
@@ -252,6 +254,10 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   background:color-mix(in srgb,var(--warn) 8%,var(--tile));color:var(--ink-2)}
 .oew-banner .ico{color:var(--ink-warn, var(--warn));font-weight:900;flex:none}
 .oew-empty{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.oew-retry{min-height:40px;margin-top:var(--s3);padding:7px 13px;border:1px solid var(--hair);
+  border-radius:var(--r-ctl);background:var(--tile);color:var(--text);font:inherit;font-size:12px;font-weight:650;cursor:pointer}
+.oew-retry:hover{border-color:var(--oew-accent);color:var(--oew-accent)}
+.oew-retry:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 
 /* ── BRIEF: AD-1 · OPTIONS INTELLIGENCE BRIEF ─────────────────────────────
    contracts/options/OPTIONS_INTEL_BRIEF_V1.md.  scripts/build_options_command.py
@@ -545,7 +551,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 .oew-rg-h{font-size:12px;font-weight:700;margin-bottom:3px}
 .oew-rg-s{font-size:11px;color:var(--muted);margin-bottom:9px;line-height:1.4}
 .oew-tkchips{display:flex;gap:5px;flex-wrap:wrap}
-.oew-tkchip{font-family:var(--font-mono);font-size:11.5px;font-weight:650;letter-spacing:-.01em;padding:3px 9px;
+.oew-tkchip{display:inline-flex;align-items:center;justify-content:center;min-height:40px;font-family:var(--font-mono);font-size:11.5px;font-weight:650;letter-spacing:-.01em;padding:3px 9px;
   border-radius:5px;border:1px solid var(--hair);background:var(--panel);color:var(--text);cursor:pointer}
 .oew-tkchip:hover{border-color:var(--oew-accent);color:var(--oew-accent)}
 .oew-tkchip:focus-visible{outline:2px solid var(--oew-accent);outline-offset:1px}
@@ -568,7 +574,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
 .oew-sc-bar{display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap;margin-bottom:var(--s3)}
 /* font:inherit FIRST — a <button> does NOT inherit the page face, and without
    this the chip renders in the UA default (Arial), breaking the type role law. */
-.oew-preset{appearance:none;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
+.oew-preset{appearance:none;min-height:40px;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
   border-radius:var(--r-pill);border:1px solid var(--hair);
   background:var(--tile);color:var(--ink-2);cursor:pointer;white-space:nowrap}
 .oew-preset:hover{border-color:var(--oew-accent);color:var(--text)}
@@ -576,7 +582,7 @@ html[data-lang="zh"] .oew-ic-lv .k{letter-spacing:.02em;text-transform:none}
   background:color-mix(in srgb,var(--oew-accent) 13%,var(--tile))}
 .oew-preset:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
 .oew-seg{display:inline-flex;border:1px solid var(--hair);border-radius:var(--r-ctl);overflow:hidden}
-.oew-seg button{appearance:none;border:none;background:var(--tile);color:var(--muted);font:inherit;font-size:11.5px;
+.oew-seg button{appearance:none;min-height:40px;border:none;background:var(--tile);color:var(--muted);font:inherit;font-size:11.5px;
   font-weight:650;padding:6px 13px;cursor:pointer;border-left:1px solid var(--hair)}
 .oew-seg button:first-child{border-left:none}
 .oew-seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--oew-accent) 17%,var(--panel));color:var(--text)}
@@ -946,7 +952,7 @@ html[data-lang="zh"] .oew-raw-greeks .g .k{letter-spacing:.02em;text-transform:n
 
 /* ═══ SCANNER · more filters, per-column sort, CSV ═══ */
 .oew-sc-more{border-top:1px solid var(--hair)}
-.oew-sc-more summary{cursor:pointer;font-size:11.5px;font-weight:650;color:var(--muted);
+.oew-sc-more summary{display:flex;align-items:center;min-height:40px;cursor:pointer;font-size:11.5px;font-weight:650;color:var(--muted);
   padding:9px var(--s4);list-style:none}
 .oew-sc-more summary::-webkit-details-marker{display:none}
 .oew-sc-more summary::before{content:'▸ ';color:var(--oew-accent)}
@@ -962,18 +968,18 @@ html[data-lang="zh"] .oew-sc-f{letter-spacing:.02em;text-transform:none}
 @media (max-width:560px){.oew-sc-f.wide{grid-column:span 1}}
 .oew-sc-pair{display:flex;align-items:center;gap:6px}
 .oew-sc-pair .sep{color:var(--muted)}
-.oew-sc-more input,.oew-sc-more select{width:100%;min-width:0;padding:6px 9px;border:1px solid var(--hair);
+.oew-sc-more input,.oew-sc-more select{width:100%;min-width:0;min-height:40px;padding:6px 9px;border:1px solid var(--hair);
   border-radius:var(--r-ctl);background:var(--tile);color:var(--text);font:inherit;font-size:12px;
   font-family:var(--font-ui);font-weight:400;text-transform:none;letter-spacing:0}
 .oew-sc-more input:focus-visible,.oew-sc-more select:focus-visible{outline:2px solid var(--oew-accent);
   outline-offset:1px;border-color:var(--oew-accent)}
 .oew-sc-more input::placeholder{color:var(--muted)}
 .oew-sc-fbar{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:0 var(--s4) var(--s4)}
-.oew-sc-clear{appearance:none;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
+.oew-sc-clear{appearance:none;min-height:40px;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
   border-radius:var(--r-pill);border:1px solid var(--hair);background:var(--tile);color:var(--ink-2);cursor:pointer}
 .oew-sc-clear:hover{border-color:var(--oew-accent);color:var(--text)}
 .oew-sc-clear:focus-visible{outline:2px solid var(--oew-accent);outline-offset:2px}
-.oew-sc-csv{appearance:none;font:inherit;font-size:11px;font-weight:650;padding:4px 11px;
+.oew-sc-csv{appearance:none;min-height:40px;font:inherit;font-size:11px;font-weight:650;padding:4px 11px;
   border-radius:var(--r-pill);border:1px solid var(--hair);background:var(--tile);color:var(--ink-2);
   cursor:pointer;white-space:nowrap}
 .oew-sc-csv:hover{border-color:var(--oew-accent);color:var(--text)}
@@ -1793,6 +1799,25 @@ function skeleton(en, zh){
 function emptyPanel(en, zh){
   return '<div class="oew-panel"><div class="oew-pbody"><p class="oew-empty">' + bi(en, zh) + '</p></div></div>';
 }
+function modeFailurePanel(mode, err){
+  var status = err && Number(err.status);
+  var state = 'error';
+  var en = "This mode's data did not load. The rest of the page is intact. Retry this mode.";
+  var zh = '该模式的数据未能加载。页面其余部分不受影响。请重试此模式。';
+  if(status === 401 || status === 403){
+    state = 'denied';
+    en = 'This mode is not available to this session. Sign in or check your access, then retry.';
+    zh = '当前会话无法使用此模式。请登录或检查访问权限后重试。';
+  } else if(status === 404){
+    state = 'unavailable';
+    en = 'This mode has no published payload at this URL yet. Retry later.';
+    zh = '此模式在该地址尚无已发布数据。请稍后重试。';
+  }
+  return '<div class="oew-panel" data-load-state="' + state + '" role="status" aria-live="polite">'
+    + '<div class="oew-pbody"><p class="oew-empty">' + bi(en, zh) + '</p>'
+    + '<button class="oew-retry" type="button" data-mode-retry="' + esc(mode) + '">'
+    + bi('Retry this mode', '重试此模式') + '</button></div></div>';
+}
 var SKEL = {
   flow:    ['Loading the flow desk for this close…', '正在加载本次收盘的资金流台…'],
   scanner: ['Loading the screener table for this close…', '正在加载本次收盘的筛选表…'],
@@ -1823,7 +1848,12 @@ function terminalUrl(sym){
 function getJSON(url){
   if(cache[url]) return Promise.resolve(cache[url]);
   return fetch(url, { credentials:'same-origin' }).then(function(r){
-    if(!r.ok) throw new Error('HTTP ' + r.status);
+    if(!r.ok){
+      var err = new Error('HTTP ' + r.status);
+      err.status = r.status;
+      err.url = url;
+      throw err;
+    }
     return r.json();
   }).then(function(j){ cache[url] = j; return j; });
 }
@@ -3645,9 +3675,8 @@ function loadMode(mode){
   // ticker change.
   var tgt = (mode === 'ticker') ? (document.getElementById('oew-tk-body') || host) : host;
   tgt.innerHTML = skeleton(SKEL[mode][0], SKEL[mode][1]);
-  var fail = function(){
-    tgt.innerHTML = emptyPanel('That data did not load. Reload the page to try again — nothing above depends on it.',
-      '该数据未能加载。请重新加载页面重试 — 上方内容不依赖于它。');
+  var fail = function(err){
+    tgt.innerHTML = modeFailurePanel(mode, err);
   };
   if(mode === 'flow'){
     /* Both stores are lazy and BOTH are optional: cohorts.json missing costs the
@@ -3699,6 +3728,16 @@ function activate(mode, opts){
 }
 tabs.forEach(function(t){
   t.addEventListener('click', function(){ activate(t.getAttribute('data-mode')); });
+});
+/* One bounded, user-driven retry. Failure responses are never cached, so the
+   exact same owner URL is re-read without resetting the tab/hash/page state. */
+document.addEventListener('click', function(e){
+  var retry = e.target.closest && e.target.closest('[data-mode-retry]');
+  if(!retry) return;
+  e.preventDefault();
+  var retryMode = retry.getAttribute('data-mode-retry');
+  if(MODES.indexOf(retryMode) < 0) return;
+  loadMode(retryMode);
 });
 /* ticker deep-links from the Brief rail and the Scanner table */
 document.addEventListener('click', function(e){
