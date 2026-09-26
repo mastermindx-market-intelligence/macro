@@ -1,0 +1,53 @@
+{
+  "schema": "theme_intelligence.lane_d_acceptance_result.v2",
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "candidate_operation": "theme-intelligence-d-entry-and-stock-routing-20260919-sol-001",
+  "candidate_pr": 7508,
+  "candidate_head": "4d6e047c34fc86b744aeaca09454470af126085d",
+  "candidate_tree": "d414cba7ead0fc07a766a4287466d54e672a2d36",
+  "latest_main": "05523caeeabdb124d910988349877285fd6fd2d1",
+  "latest_main_tree": "d790fea64a8d7c58e6b0fe93093b73c95cf5ef1c",
+  "latest_integration_tree": "91cbd63c11e669f76c1d4e5dce61f402d6995b14",
+  "local_proof_commit": "9ad0a0d232dc767de7d630942885b23ca3d00f4e",
+  "semantic_verdict": "PASS_FOR_BOUNDED_LANE_D_PRODUCER_CONTRACT",
+  "carrier_verdict": "SEMANTIC_PASS_RELEASE_GATES_OPEN",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "github_comment_id": 5749597019,
+  "github_review_surface": "PR comment used because connected identity is the PR author",
+  "tests": {
+    "candidate": "59 passed",
+    "integrated": "59 passed",
+    "agentos": "1140 records / 0 errors / 51 inherited warnings",
+    "diff_check": "PASS"
+  },
+  "real_path": {
+    "group_entry_context": "additive descriptive projection",
+    "pending_confirmation": "preserved separately from regime/extension",
+    "observation_clock": "owner as_of preserved",
+    "source_reference": "site/marketdata/subsector_confluence.json plus group identity",
+    "authority": "may_rank/may_gate/may_size/may_escalate/may_trade all false"
+  },
+  "freshness_boundary": {
+    "probe": "as_of=2000-01-01 with historical entry_now",
+    "observed_state": "QUALIFIED_PENDING_CONFIRMATION",
+    "observed_clock": "2000-01-01",
+    "ruling": "PRODUCER_PASS; historical entry state is not current health and carries no action authority",
+    "integration_dependency": "Lane A must map the owner observation clock into the separate shared health/freshness dimension before current presentation"
+  },
+  "current_base": {
+    "path_overlap": "NONE_ON_D_SOURCE_TEST_AND_IMMEDIATE_CONSUMER_PATHS",
+    "merge_tree": "CONFLICT_FREE",
+    "integration_tests": "59 passed"
+  },
+  "hosted": {
+    "fences_run": 35506964924,
+    "fences": "SUCCESS",
+    "ci_run": 35506965096,
+    "ci_at_review": "IN_PROGRESS"
+  },
+  "merge": "NOT_AUTHORIZED",
+  "deployment": "NOT_PERFORMED",
+  "browser_proof": "NOT_PROVEN",
+  "parent_program_acceptance": "NOT_PROVEN",
+  "exact_next_action": "Preserve D source semantics; consume Lane A's accepted clock/health repair, then rerun end-to-end D-to-A consumer freshness and hosted CI before release adjudication."
+}
