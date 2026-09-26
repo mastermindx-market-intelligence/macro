@@ -72,6 +72,10 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("Every dense visual has a list/table equivalent", text)
         self.assertIn("separate 44px touch controls", text)
         self.assertIn("Motion communicates selection/context, not fake market motion.", text)
+        self.assertIn("/discover?tab=sectors", text)
+        self.assertIn("sectorJob=rotation|discover|breadth", text)
+        self.assertIn("subsector_rotation.json", text)
+        self.assertIn("Do **not** embed the existing global `HeatmapView`", text)
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
             with self.subTest(path=path):
