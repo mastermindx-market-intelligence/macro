@@ -3133,10 +3133,14 @@ def _prepare_provided_actions(
 
     setup-python 3.12 and setup-node 20 are supplied by the pack job itself.
     The ordinary checkout is represented by the exact-tree reset. A manifest
-    checkout requesting fetch-depth 0 additionally receives every advertised
-    branch and tag with complete history, matching checkout@v4's closed input
-    contract. Exact-base replay points ``origin`` at its isolated base-only
-    remote, so this same operation can never substitute moving current main.
+    checkout requesting fetch-depth 0 first deepens only the authoritative
+    tested tree. Current history consumers fetch the canonical base they need
+    themselves, so unrelated branch/tag namespaces are not part of the healthy
+    contract. If that exact-tree acquisition fails, preserve the established
+    all-branches -> main-only -> 30-day recovery ladder. Exact-base replay
+    points ``origin`` at its isolated base-only remote, so a failed exact-tree
+    fetch falls through to the same bounded recovery behavior rather than
+    substituting moving current main.
     """
     contracts = _job_action_contract(job)
     if not any(
@@ -3151,6 +3155,31 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
+
+    git_env = _trusted_git_environment(root)
+    try:
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-recurse-submodules",
+                "--no-tags",
+                "--depth=2147483647",
+                "origin",
+                tested_tree_sha,
+            ],
+            cwd=root,
+            env=git_env,
+            check=True,
+        )
+        return
+    except subprocess.CalledProcessError:
+        print(
+            "::warning title=run-ci-pack::exact tested-tree deepen failed; "
+            "retrying legacy all-branches deepen",
+            flush=True,
+        )
+
     try:
         subprocess.run(
             [
@@ -3164,7 +3193,7 @@ def _prepare_provided_actions(
                 "+refs/heads/*:refs/remotes/origin/*",
             ],
             cwd=root,
-            env=_trusted_git_environment(root),
+            env=git_env,
             check=True,
         )
     except subprocess.CalledProcessError:
@@ -3193,7 +3222,7 @@ def _prepare_provided_actions(
                     "+refs/heads/main:refs/remotes/origin/main",
                 ],
                 cwd=root,
-                env=_trusted_git_environment(root),
+                env=git_env,
                 check=True,
             )
         except subprocess.CalledProcessError:
@@ -3223,7 +3252,7 @@ def _prepare_provided_actions(
                     "+refs/heads/main:refs/remotes/origin/main",
                 ],
                 cwd=root,
-                env=_trusted_git_environment(root),
+                env=git_env,
                 check=True,
             )
 
