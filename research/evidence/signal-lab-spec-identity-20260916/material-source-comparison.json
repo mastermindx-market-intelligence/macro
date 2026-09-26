@@ -1,0 +1,67 @@
+{
+  "source_base": "27ec910d04fc81692cf9640347ac31fd3de40170",
+  "current_main": "00c801797371a312fa12506968de4292785cc114",
+  "paths": [
+    {
+      "path": "engine/signal_foundry/spec.py",
+      "base_blob": "d94ff7ae9d34968f7e1641fd625be99dbb9e2614",
+      "current_blob": "d94ff7ae9d34968f7e1641fd625be99dbb9e2614",
+      "unchanged": true
+    },
+    {
+      "path": "engine/signal_foundry/screen.py",
+      "base_blob": "9284627896423a36b7e3e36fc5f9e2d118972423",
+      "current_blob": "9284627896423a36b7e3e36fc5f9e2d118972423",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/run_signal_foundry_brainstorm.py",
+      "base_blob": "9d7120ae43bad45269e5de6aea3239212cc3aa2e",
+      "current_blob": "9d7120ae43bad45269e5de6aea3239212cc3aa2e",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/codex_signal_lane.py",
+      "base_blob": "b7f29cd2ec8805f2c3894b386245790e43c43eff",
+      "current_blob": "b7f29cd2ec8805f2c3894b386245790e43c43eff",
+      "unchanged": true
+    },
+    {
+      "path": "engine/signal_foundry/harness.py",
+      "base_blob": "0a1da1e22c1104c0e7a4a64b9c87d8190a682749",
+      "current_blob": "0a1da1e22c1104c0e7a4a64b9c87d8190a682749",
+      "unchanged": true
+    },
+    {
+      "path": "engine/trial_ledger.py",
+      "base_blob": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+      "current_blob": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+      "unchanged": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "base_blob": "797bea4e910ea25de814b2d08863e786f075c88a",
+      "current_blob": "797bea4e910ea25de814b2d08863e786f075c88a",
+      "unchanged": true
+    },
+    {
+      "path": "research/SIGNAL_FOUNDRY_MASTERPLAN_BY_FABLE.md",
+      "base_blob": "de51d602097f7f0a68d44ed88f8635f03f5f6178",
+      "current_blob": "de51d602097f7f0a68d44ed88f8635f03f5f6178",
+      "unchanged": true
+    },
+    {
+      "path": "AGENTS.md",
+      "base_blob": "b0ca5ff15f73cca9a33bb13b99ba3f6060d561d8",
+      "current_blob": "b0ca5ff15f73cca9a33bb13b99ba3f6060d561d8",
+      "unchanged": true
+    },
+    {
+      "path": "CLAUDE.md",
+      "base_blob": "ea4951d28a1eb5773fe5fe65b6016b12eaf4427d",
+      "current_blob": "ea4951d28a1eb5773fe5fe65b6016b12eaf4427d",
+      "unchanged": true
+    }
+  ],
+  "all_unchanged": true
+}
