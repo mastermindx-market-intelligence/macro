@@ -4,6 +4,22 @@
 
 The Chairman assigned this session to the shared design system while other sessions specialize in individual pages. The product should supply prepared intelligence and a useful next step without removing analytical depth. Content authority remains `docs/DESIGN_DOCTRINE.md`; visual/composition authority remains `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md`; migration and acceptance remain `research/DESIGN_MIGRATION_FACTORY_V1.md` and the existing Reference Integrity Gate. The pending human-first amendment is #8041, inspected at `920c87a793efffa7993fdb156deaf10b2fadd671`; this record does not merge it or duplicate its decision.
 
+**R3 reconciliation:** another session has now added the source-derived light
+warning/up/down/link ink aliases to the same Paper file. Reuse the existing
+`--mx-light-ink-warn=#7D5922`; do not execute the older create-token example while
+that name exists. The rounded alias measures 6.317604:1 on white (5.580043:1 on
+raised light; 5.945232:1 on the canvas). The 6.326019:1 figure below remains the
+unrounded source-mixture calculation. Node `13N-0` still uses raw amber, so the
+consumer fix remains unapplied and still needs file-wide coordination.
+
+The existing contrast helper is now repaired in test-only commit
+`fe7b900e4c28ba2d4a4d327bb996526f09019753`: whole-selector admission plus 13
+regressions, not a new checker or palette. Tests-first RED and old-parser mutation
+each produced 10 failed / 3 passed; repaired full-file qualification passed 100
+tests against current-main and separately against the older branch theme.
+Existing CI already invokes that same file. These are isolated source tests, not
+whole-repository, browser, native-edit or human-comprehension acceptance.
+
 ## 1. What changes for a page author
 
 A primitive is not complete because it has the right radius and palette. It must carry an understandable meaning, a data-state contract, an interaction/result contract and appropriate evidence.
@@ -39,7 +55,7 @@ Avoid customer copy such as 'runtime', 'hydration', 'admission', CI/PR identifie
 
 ## 2. Actual projection defect and bounded correction
 
-Editable identity: Paper file `01M2WGNCX9475G79JRKJTCM08P`, system page `p-1-0`, light component atlas `126-0`. The observed token hash is `5ae876bc` with 79 projected tokens. This hash and the bridge snapshot are **not** file revisions or writer leases.
+Editable identity: Paper file `01M2WGNCX9475G79JRKJTCM08P`, system page `p-1-0`, light component atlas `126-0`. The R2-observed token hash was `5ae876bc` with 79 projected tokens; R3 additions are noted above. This hash and the bridge snapshot are **not** file revisions or writer leases.
 
 Fresh native readback found text node **`13N-0`**, 'STALE', at **10px / weight 600**, bound to `var(--mx-light-warn)` = `#B9791A`. Its transparent ancestors `13M-0` and `13K-0` sit within white panel `13H-0`. The general text-safe and solid-label fill roles already present in the source theme are absent from the Paper projection.
 
@@ -127,9 +143,9 @@ Inspected source: Macro `bd23cfbd3f192389166bef37e490003fadd6d453`.
 
 The calculation reuses the existing color-expression resolver, expands source percentage variables, and selects only top-level `:root` and exact html theme/language selectors. Descendant component remaps and conditional nested rules are not global baseline tokens. The calculation uses the sRGB transfer threshold 0.04045 and does not round a failure upward.
 
-Two diagnostic errors were caught before using the result as a repair contract. First, the helper did not expand `--fill-mix`; the source percentage must be resolved explicitly. Second, the helper's permissive selector matcher admitted `html[data-lang="zh"] .rrx` and `html[data-lang="zh"] :is(.igx, .igs)` as global overrides. A negative-control fixture with descendant and nested-media overrides proved the scope error; exact top-level filtering corrected it. The earlier report `8ae96f8f7abaf273316e14d996e957c5932f6c62f93387b36b11f22048b69863` is superseded and must not be used. No repository parser or shared test implementation was changed.
+Two diagnostic errors were caught before using the result as a repair contract. First, the helper did not expand `--fill-mix`; the source percentage must be resolved explicitly. Second, the helper's permissive selector matcher admitted `html[data-lang="zh"] .rrx` and `html[data-lang="zh"] :is(.igx, .igs)` as global overrides. A negative-control fixture with descendant and nested-media overrides proved the scope error; exact top-level filtering corrected it. The earlier report `8ae96f8f7abaf273316e14d996e957c5932f6c62f93387b36b11f22048b69863` is superseded and must not be used. At that R2 boundary no repository parser or shared test implementation had changed; the R3 repair above supersedes that historical state.
 
-The **unchanged existing Prophet test file** was run against exact extracted source with pytest's project conftest and automatic plugins disabled: **87 passed, exit 0**. This is a targeted source test, not a full repository test or validation of a new Paper effect.
+At the R2 baseline the **then-unchanged Prophet test file** was run against exact extracted source with pytest's project conftest and automatic plugins disabled: **87 passed, exit 0**. This is a targeted source test, not a full repository test or validation of a new Paper effect.
 
 Falsifiers before rollout: a changed source blob/role or target background; a different target binding; a duplicate projected token; a locale-dependent health color; a tinted/focus/hover pairing below its applicable threshold; or an actual browser result disagreeing with the arithmetic. Any of these invalidates the affected projection/consumer claim rather than being averaged into a pass.
 
@@ -152,4 +168,4 @@ The primary task can be an investigation, comparison, monitoring setup or honest
 
 Procedure pin: Mastermind protected `763ec8f920177fdf48b18df1b8e37b61ab482ef0`, compatible Skillpack 1.0.1/bootstrap 1. Existing source carrier is #7394 / `sol/design-system-editable-reference-20260919`; original semantic head `bc01b258609cb4fcab0a3cf8089fdc5b7e21f803` remains historical evidence, not a review of this addition.
 
-Still required: exact-head source review/checks; native file-wide writer reconciliation; additive role projection and the one-label consumer patch; after-image/computed-binding/actual-pair readback; complete button-state inspection; eventually real implementation fidelity and intended-user journey/comprehension proof. This record changes none of the #7394/#8041/#7630 release holds. No source merge, live UI change, specialist consumption, worker START or automatic wake is claimed.
+Still required: exact-head source review/checks; native file-wide writer reconciliation; reuse of the now-existing role and the one-label consumer patch; after-image/computed-binding/actual-pair readback; complete button-state inspection; eventually real implementation fidelity and intended-user journey/comprehension proof. This record changes none of the #7394/#8041/#7630 release holds. No source merge, live UI change, specialist consumption, worker START or automatic wake is claimed.
