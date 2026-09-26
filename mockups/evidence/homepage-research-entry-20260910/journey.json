@@ -1,0 +1,23 @@
+{
+  "kind": "local_browser_journey_only",
+  "anchor_destinations": [
+    {
+      "section": "financials",
+      "url": "file:///Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/sol-homepage-research-entry-20260910/site/stocks/AAPL.html#financials",
+      "visible": true
+    },
+    {
+      "section": "valuation",
+      "url": "file:///Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/sol-homepage-research-entry-20260910/site/stocks/AAPL.html#valuation",
+      "visible": true
+    },
+    {
+      "section": "why",
+      "url": "file:///Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/sol-homepage-research-entry-20260910/site/stocks/AAPL.html#why",
+      "visible": true
+    }
+  ],
+  "keyboard_disclosure": "passed",
+  "page_errors": [],
+  "production_proof": false
+}
