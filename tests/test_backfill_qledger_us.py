@@ -392,6 +392,21 @@ class TestRadarBackfill:
         assert by_subj["housing"]["scope"]["key"] == "XHB"
 
 
+    def test_claim_store_is_read_once_per_radar_batch(self, src_root, monkeypatch):
+        """Regression: radar backfill must not rescan the durable claims ledger per row."""
+        original = q.load_claims
+        calls = 0
+
+        def counted(root=None):
+            nonlocal calls
+            calls += 1
+            return original(root)
+
+        monkeypatch.setattr(q, "load_claims", counted)
+        backfill_radar(src_root)
+        assert calls == 1
+
+
 # ---------------------------------------------------------------------------
 # integration: POLICY backfill
 # ---------------------------------------------------------------------------
@@ -469,6 +484,21 @@ class TestPolicyBackfill:
         backfill_policy(root)
         claims = q.load_claims(root)
         assert all(c["timestamp_quality"] == "DISCLOSURE_DATE" for c in claims)
+
+
+    def test_claim_store_is_read_once_per_policy_batch(self, priceable_only_smh, monkeypatch):
+        """Regression: policy backfill must not rescan the durable claims ledger per thesis."""
+        original = q.load_claims
+        calls = 0
+
+        def counted(root=None):
+            nonlocal calls
+            calls += 1
+            return original(root)
+
+        monkeypatch.setattr(q, "load_claims", counted)
+        backfill_policy(priceable_only_smh)
+        assert calls == 1
 
 
 # ---------------------------------------------------------------------------
