@@ -48,7 +48,7 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-09-23",
+    "board_as_of": "2026-09-24",
     "coverage": {
       "identical": 8,
       "matured": 0,
@@ -67,13 +67,13 @@
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 1226,
+    "n_paired_rows": 1289,
     "paired": {
-      "identical": 1183,
-      "matured": 0,
+      "identical": 1191,
+      "matured": 55,
       "revisions_refused": 0,
-      "stamps": 0,
-      "written": 0
+      "stamps": 1,
+      "written": 55
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -87,34 +87,240 @@
       "2026-09-15",
       "2026-09-18"
     ],
-    "require_stamp": "2026-09-23",
+    "require_stamp": "2026-09-24",
     "same_stamp_revisions_refused": [
       {
         "changed_fields": [
           {
-            "existing": 37,
+            "existing": 39,
             "field": "rows_contributing",
-            "incoming": 35
+            "incoming": 41
           },
           {
-            "existing": 0.3243243243,
+            "existing": 0.3333333333,
             "field": "modal_value",
-            "incoming": 0.3428571429
+            "incoming": 0.2926829268
           },
           {
-            "existing": 0.6216216216,
+            "existing": 0.5897435897,
             "field": "modal_share",
-            "incoming": 0.6571428571
+            "incoming": 0.512195122
           },
           {
-            "existing": 0.2424913303,
+            "existing": 0.2479879076,
             "field": "dispersion",
-            "incoming": 0.2373321104
+            "incoming": 0.2526681806
           },
           {
-            "existing": 1.8064516129,
+            "existing": 3.0476190476,
             "field": "mean_abs_rank_delta",
-            "incoming": 2.0333333333
+            "incoming": 3.6875
+          },
+          {
+            "existing": 16,
+            "field": "max_abs_rank_delta",
+            "incoming": 14
+          },
+          {
+            "existing": 47,
+            "field": "rows_moved",
+            "incoming": 55
+          }
+        ],
+        "existing_fingerprint": "1f9a8da692ec8940e2a41bd031e73c4c5d3c04283830a928ac81bc42a5337774",
+        "grain": "family",
+        "incoming_fingerprint": "64b97243be62fd6e3c7a0bca9da81a1fd3e609afc429bd5686335af76c02e861",
+        "key": [
+          "2026-09-24",
+          "F1_TECHNICAL_CONFLUENCE"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-24"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 63,
+            "field": "rows_contributing",
+            "incoming": 64
+          },
+          {
+            "existing": 0.4920634921,
+            "field": "modal_value",
+            "incoming": 0.5234375
+          },
+          {
+            "existing": 0.0476190476,
+            "field": "modal_share",
+            "incoming": 0.0625
+          },
+          {
+            "existing": 0.2252253614,
+            "field": "dispersion",
+            "incoming": 0.229660427
+          },
+          {
+            "existing": 3.7777777778,
+            "field": "mean_abs_rank_delta",
+            "incoming": 3.90625
+          },
+          {
+            "existing": 13,
+            "field": "max_abs_rank_delta",
+            "incoming": 16
+          },
+          {
+            "existing": 54,
+            "field": "rows_moved",
+            "incoming": 55
+          }
+        ],
+        "existing_fingerprint": "458c0fcd6008ffecc027c082bdb0063afa9b94c41abd4894a8b3281693bea431",
+        "grain": "family",
+        "incoming_fingerprint": "9dc1d423cf23b10456ec9c41f1a6ec942fed4a18c6903b9babe5dba521c5641d",
+        "key": [
+          "2026-09-24",
+          "F2_MOMENTUM_EXTENSION"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-24"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 63,
+            "field": "rows_contributing",
+            "incoming": 64
+          },
+          {
+            "existing": 0.4206349206,
+            "field": "modal_value",
+            "incoming": 0.421875
+          },
+          {
+            "existing": 0.8253968254,
+            "field": "modal_share",
+            "incoming": 0.828125
+          },
+          {
+            "existing": 0.1898136626,
+            "field": "dispersion",
+            "incoming": 0.1886358823
+          },
+          {
+            "existing": 2.0952380952,
+            "field": "mean_abs_rank_delta",
+            "incoming": 2.46875
+          },
+          {
+            "existing": 14,
+            "field": "max_abs_rank_delta",
+            "incoming": 13
+          },
+          {
+            "existing": 44,
+            "field": "rows_moved",
+            "incoming": 46
+          },
+          {
+            "existing": 8,
+            "field": "top30_churn",
+            "incoming": 10
+          }
+        ],
+        "existing_fingerprint": "afb6368c923b0dfd2507f9946b8853e508fef4d12e49448d87d4990e73f8ae7e",
+        "grain": "family",
+        "incoming_fingerprint": "b69510292ed193581cbd469c0f1879aac17e9a8c50f46b824bf17c06c2ab94cc",
+        "key": [
+          "2026-09-24",
+          "F4_CATALYST_EVENT"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-24"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 63,
+            "field": "rows_contributing",
+            "incoming": 64
+          },
+          {
+            "existing": 3,
+            "field": "distinct_values",
+            "incoming": 2
+          },
+          {
+            "existing": 0.4603174603,
+            "field": "modal_value",
+            "incoming": 0.45703125
+          },
+          {
+            "existing": 0.8095238095,
+            "field": "modal_share",
+            "incoming": 0.796875
+          },
+          {
+            "existing": 0.0981691816,
+            "field": "dispersion",
+            "incoming": 0.1005811968
+          },
+          {
+            "existing": 1.1111111111,
+            "field": "mean_abs_rank_delta",
+            "incoming": 1.4375
+          },
+          {
+            "existing": 5,
+            "field": "max_abs_rank_delta",
+            "incoming": 7
+          },
+          {
+            "existing": 29,
+            "field": "rows_moved",
+            "incoming": 42
+          }
+        ],
+        "existing_fingerprint": "0a5f98b3ac3e6b757b17df977262b4efaf28047f84283451826b8e60c92b2152",
+        "grain": "family",
+        "incoming_fingerprint": "ef29a546d608beb7c7bfb7c0bc988b191c66f12afee0479dce8771042fb4b09e",
+        "key": [
+          "2026-09-24",
+          "F5_FLOW_POSITIONING"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-24"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 63,
+            "field": "rows_contributing",
+            "incoming": 64
+          },
+          {
+            "existing": 0.4841269841,
+            "field": "modal_value",
+            "incoming": 0.5
+          },
+          {
+            "existing": 0.9523809524,
+            "field": "modal_share",
+            "incoming": 0.984375
+          },
+          {
+            "existing": 0.1064794275,
+            "field": "dispersion",
+            "incoming": 0.0620097964
+          },
+          {
+            "existing": 0.6031746032,
+            "field": "mean_abs_rank_delta",
+            "incoming": 0.4375
           },
           {
             "existing": 9,
@@ -122,307 +328,101 @@
             "incoming": 10
           },
           {
-            "existing": 0,
-            "field": "top30_churn",
-            "incoming": 2
-          }
-        ],
-        "existing_fingerprint": "3bc98d1b137366e32080eb1145d2d3f32367142f9b5b1137207118c3aafb0db5",
-        "grain": "family",
-        "incoming_fingerprint": "4c00ff191fe5f8af3746b94f2ea4b198b0fa1d68cc070ed0595ebc5190890dde",
-        "key": [
-          "2026-09-23",
-          "F1_TECHNICAL_CONFLUENCE"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 53,
-            "field": "distinct_values",
-            "incoming": 51
-          },
-          {
-            "existing": 0.1370967742,
-            "field": "modal_value",
-            "incoming": 0.4333333333
-          },
-          {
-            "existing": 0.0322580645,
-            "field": "modal_share",
-            "incoming": 0.05
-          },
-          {
-            "existing": 0.2303265356,
-            "field": "dispersion",
-            "incoming": 0.2280033605
-          },
-          {
-            "existing": 3.4193548387,
-            "field": "mean_abs_rank_delta",
-            "incoming": 3.3666666667
-          },
-          {
-            "existing": 12,
-            "field": "max_abs_rank_delta",
-            "incoming": 11
-          },
-          {
-            "existing": 48,
+            "existing": 22,
             "field": "rows_moved",
-            "incoming": 52
+            "incoming": 18
           }
         ],
-        "existing_fingerprint": "6985f7faaf07d06d3ce129346b34eec27d8cbb8dda481beb51583827b98016fd",
+        "existing_fingerprint": "843e47c4b364c3a7dfd2eb53b6271dcda4599b3376be64a98b9f543281c7c4fa",
         "grain": "family",
-        "incoming_fingerprint": "c2c376a3e10b2df270ce5cbad81b03604724c1c7b589609fb53facdf233da690",
+        "incoming_fingerprint": "025e41b2fcd47ddee4f61103087d9b654e84ef3a043b585849b8d548380c31c9",
         "key": [
-          "2026-09-23",
-          "F2_MOMENTUM_EXTENSION"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 0.4032258065,
-            "field": "modal_value",
-            "incoming": 0.4
-          },
-          {
-            "existing": 0.7903225806,
-            "field": "modal_share",
-            "incoming": 0.7833333333
-          },
-          {
-            "existing": 0.2035391849,
-            "field": "dispersion",
-            "incoming": 0.2059867849
-          },
-          {
-            "existing": 1.8064516129,
-            "field": "mean_abs_rank_delta",
-            "incoming": 1.8
-          },
-          {
-            "existing": 40,
-            "field": "rows_moved",
-            "incoming": 36
-          }
-        ],
-        "existing_fingerprint": "adc59176edfa2c31501a955eaa48e70dfafee71b5064a1b3c65eaa02b6c5d585",
-        "grain": "family",
-        "incoming_fingerprint": "516da573af0eaace21dadd254dc8545945d020cef11b87bab9103718635e9f80",
-        "key": [
-          "2026-09-23",
-          "F4_CATALYST_EVENT"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 5,
-            "field": "distinct_values",
-            "incoming": 7
-          },
-          {
-            "existing": 0.4838709677,
-            "field": "modal_value",
-            "incoming": 0.4791666667
-          },
-          {
-            "existing": 0.435483871,
-            "field": "modal_share",
-            "incoming": 0.4333333333
-          },
-          {
-            "existing": 0.0794126503,
-            "field": "dispersion",
-            "incoming": 0.0905414895
-          },
-          {
-            "existing": 0.6451612903,
-            "field": "mean_abs_rank_delta",
-            "incoming": 0.9333333333
-          },
-          {
-            "existing": 26,
-            "field": "rows_moved",
-            "incoming": 31
-          },
-          {
-            "existing": 0,
-            "field": "top30_churn",
-            "incoming": 2
-          }
-        ],
-        "existing_fingerprint": "bb317bd4ad1b4fe4e1bbefa95edc5121d822898a4ab1b880a7ec36ad4591bcb8",
-        "grain": "family",
-        "incoming_fingerprint": "c9fcc2481bacc66af7a60710cbf749625e0a264a51951fb13c7eadaaf6b083a8",
-        "key": [
-          "2026-09-23",
-          "F5_FLOW_POSITIONING"
-        ],
-        "kind": "SAME_STAMP_REVISION_REFUSED",
-        "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
-      },
-      {
-        "changed_fields": [
-          {
-            "existing": 62,
-            "field": "rows_contributing",
-            "incoming": 60
-          },
-          {
-            "existing": 0.4596774194,
-            "field": "modal_value",
-            "incoming": 0.4583333333
-          },
-          {
-            "existing": 0.9032258065,
-            "field": "modal_share",
-            "incoming": 0.9
-          },
-          {
-            "existing": 0.1478250224,
-            "field": "dispersion",
-            "incoming": 0.15
-          },
-          {
-            "existing": 0.9032258065,
-            "field": "mean_abs_rank_delta",
-            "incoming": 0.8666666667
-          },
-          {
-            "existing": 9,
-            "field": "max_abs_rank_delta",
-            "incoming": 8
-          },
-          {
-            "existing": 29,
-            "field": "rows_moved",
-            "incoming": 26
-          }
-        ],
-        "existing_fingerprint": "69111e42313979ea60eb6a363744d6929553de73d24eafc0991aa2c982c9e974",
-        "grain": "family",
-        "incoming_fingerprint": "a957f8acfbead4a5ad530a9eed364ca28d96dcc7d4975a05f52c6af133bb7b89",
-        "key": [
-          "2026-09-23",
+          "2026-09-24",
           "F8_ATTENTION_CROWDING"
         ],
         "kind": "SAME_STAMP_REVISION_REFUSED",
         "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
+        "stamp_date": "2026-09-24"
       },
       {
         "changed_fields": [
           {
             "existing": 56,
             "field": "distinct_values",
-            "incoming": 54
+            "incoming": 57
           }
         ],
-        "existing_fingerprint": "6575ca0b4198ed2e515974dea8773ac9070306cd9217be37d6fa1ffc80d4c19c",
+        "existing_fingerprint": "39b4ac1df36097cc13550faacabc56f626ae928e36b37fec24e91f3a10289355",
         "grain": "coverage",
-        "incoming_fingerprint": "438a61aa67f6bddd9b492f903d9c4c04d2052219f3351cf34f6a924436ff01f7",
+        "incoming_fingerprint": "f24475152bf29cc57b27fc51ed5fcb0391a9d13b858b556960eaa2768f9e0b94",
         "key": [
-          "2026-09-23",
+          "2026-09-24",
           "alpha"
         ],
         "kind": "SAME_STAMP_REVISION_REFUSED",
         "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
+        "stamp_date": "2026-09-24"
       },
       {
         "changed_fields": [
           {
-            "existing": 0.516129,
+            "existing": 0.492063,
             "field": "coverage",
-            "incoming": 0.516667
-          },
-          {
-            "existing": 2,
-            "field": "distinct_values",
-            "incoming": 3
+            "incoming": 0.46875
           }
         ],
-        "existing_fingerprint": "10db1f8ca3c29674e402e46278fd035ba49599dd0846b4ccff1e220e261925b1",
+        "existing_fingerprint": "8ee74449447302341820077b962d9b0cf30664b1935cce712614c0e8d6449b72",
         "grain": "coverage",
-        "incoming_fingerprint": "4e603979fe025481048d4869766bb4ef089d5c191254b949d3864523c10b7b96",
+        "incoming_fingerprint": "22811b0b91d8d68eb5d7241b1a5159667294980626bff032275ef9f48eac5943",
         "key": [
-          "2026-09-23",
+          "2026-09-24",
           "gex_confirm_verdict"
         ],
         "kind": "SAME_STAMP_REVISION_REFUSED",
         "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
+        "stamp_date": "2026-09-24"
       },
       {
         "changed_fields": [
           {
-            "existing": 59,
+            "existing": 57,
             "field": "distinct_values",
-            "incoming": 57
+            "incoming": 58
           }
         ],
-        "existing_fingerprint": "d70a5d924c81877b0046b738e0974a54896c96666d1cdf6aba66b0230f4b4db6",
+        "existing_fingerprint": "ab51599bb72b652275b9e133131173bf06d0a6c4ddc89426936264337033f2ba",
         "grain": "coverage",
-        "incoming_fingerprint": "1d63b77e44ce736c5196d9feb7a5663bbf279a1ac6565cbd7e5e98a569d7b787",
+        "incoming_fingerprint": "6264faef75113575329dbf05e5cac53232e226fde40d5bce82b8540a553f6331",
         "key": [
-          "2026-09-23",
+          "2026-09-24",
           "off_high"
         ],
         "kind": "SAME_STAMP_REVISION_REFUSED",
         "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
+        "stamp_date": "2026-09-24"
       },
       {
         "changed_fields": [
           {
-            "existing": 0.596774,
+            "existing": 0.619048,
             "field": "coverage",
-            "incoming": 0.583333
+            "incoming": 0.640625
           }
         ],
-        "existing_fingerprint": "cb93e22fa3b230094e818556b622e03f496b02568b671db7b845999a56f4eaf3",
+        "existing_fingerprint": "4579513e3806b0f274d9d8bb522b5eb22f6e8f83bd3902c3ee330b80ca33e7e0",
         "grain": "coverage",
-        "incoming_fingerprint": "644d021ac58953bcbcfbbaf0b5616a3399f21821a3879e8e0fa43a8ba67a0759",
+        "incoming_fingerprint": "55f23bf635dbd1b3c0f00728f7d6bddb6880077a12a18c626a05e3bedbd496ae",
         "key": [
-          "2026-09-23",
+          "2026-09-24",
           "tier_cascade"
         ],
         "kind": "SAME_STAMP_REVISION_REFUSED",
         "schema": "us.prophet_w3_revision/v1",
-        "stamp_date": "2026-09-23"
+        "stamp_date": "2026-09-24"
       }
     ],
     "sessions_written": {
-      "identical": 21,
+      "identical": 22,
       "matured": 0,
       "refused": 0,
       "written": 0
@@ -431,13 +431,13 @@
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-09-23"
+    "stamp_date": "2026-09-24"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [],
   "n_degraded_or_unpaired": 10,
   "n_missing": 0,
-  "paired_sessions_accrued": 21,
+  "paired_sessions_accrued": 22,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -4756,14 +4756,327 @@
         "tier_cascade"
       ],
       "stamp_date": "2026-09-23"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 39,
+          "field": "rows_contributing",
+          "incoming": 41
+        },
+        {
+          "existing": 0.3333333333,
+          "field": "modal_value",
+          "incoming": 0.2926829268
+        },
+        {
+          "existing": 0.5897435897,
+          "field": "modal_share",
+          "incoming": 0.512195122
+        },
+        {
+          "existing": 0.2479879076,
+          "field": "dispersion",
+          "incoming": 0.2526681806
+        },
+        {
+          "existing": 3.0476190476,
+          "field": "mean_abs_rank_delta",
+          "incoming": 3.6875
+        },
+        {
+          "existing": 16,
+          "field": "max_abs_rank_delta",
+          "incoming": 14
+        },
+        {
+          "existing": 47,
+          "field": "rows_moved",
+          "incoming": 55
+        }
+      ],
+      "existing_fingerprint": "1f9a8da692ec8940e2a41bd031e73c4c5d3c04283830a928ac81bc42a5337774",
+      "grain": "family",
+      "incoming_fingerprint": "64b97243be62fd6e3c7a0bca9da81a1fd3e609afc429bd5686335af76c02e861",
+      "key": [
+        "2026-09-24",
+        "F1_TECHNICAL_CONFLUENCE"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 63,
+          "field": "rows_contributing",
+          "incoming": 64
+        },
+        {
+          "existing": 0.4920634921,
+          "field": "modal_value",
+          "incoming": 0.5234375
+        },
+        {
+          "existing": 0.0476190476,
+          "field": "modal_share",
+          "incoming": 0.0625
+        },
+        {
+          "existing": 0.2252253614,
+          "field": "dispersion",
+          "incoming": 0.229660427
+        },
+        {
+          "existing": 3.7777777778,
+          "field": "mean_abs_rank_delta",
+          "incoming": 3.90625
+        },
+        {
+          "existing": 13,
+          "field": "max_abs_rank_delta",
+          "incoming": 16
+        },
+        {
+          "existing": 54,
+          "field": "rows_moved",
+          "incoming": 55
+        }
+      ],
+      "existing_fingerprint": "458c0fcd6008ffecc027c082bdb0063afa9b94c41abd4894a8b3281693bea431",
+      "grain": "family",
+      "incoming_fingerprint": "9dc1d423cf23b10456ec9c41f1a6ec942fed4a18c6903b9babe5dba521c5641d",
+      "key": [
+        "2026-09-24",
+        "F2_MOMENTUM_EXTENSION"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 63,
+          "field": "rows_contributing",
+          "incoming": 64
+        },
+        {
+          "existing": 0.4206349206,
+          "field": "modal_value",
+          "incoming": 0.421875
+        },
+        {
+          "existing": 0.8253968254,
+          "field": "modal_share",
+          "incoming": 0.828125
+        },
+        {
+          "existing": 0.1898136626,
+          "field": "dispersion",
+          "incoming": 0.1886358823
+        },
+        {
+          "existing": 2.0952380952,
+          "field": "mean_abs_rank_delta",
+          "incoming": 2.46875
+        },
+        {
+          "existing": 14,
+          "field": "max_abs_rank_delta",
+          "incoming": 13
+        },
+        {
+          "existing": 44,
+          "field": "rows_moved",
+          "incoming": 46
+        },
+        {
+          "existing": 8,
+          "field": "top30_churn",
+          "incoming": 10
+        }
+      ],
+      "existing_fingerprint": "afb6368c923b0dfd2507f9946b8853e508fef4d12e49448d87d4990e73f8ae7e",
+      "grain": "family",
+      "incoming_fingerprint": "b69510292ed193581cbd469c0f1879aac17e9a8c50f46b824bf17c06c2ab94cc",
+      "key": [
+        "2026-09-24",
+        "F4_CATALYST_EVENT"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 63,
+          "field": "rows_contributing",
+          "incoming": 64
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 2
+        },
+        {
+          "existing": 0.4603174603,
+          "field": "modal_value",
+          "incoming": 0.45703125
+        },
+        {
+          "existing": 0.8095238095,
+          "field": "modal_share",
+          "incoming": 0.796875
+        },
+        {
+          "existing": 0.0981691816,
+          "field": "dispersion",
+          "incoming": 0.1005811968
+        },
+        {
+          "existing": 1.1111111111,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.4375
+        },
+        {
+          "existing": 5,
+          "field": "max_abs_rank_delta",
+          "incoming": 7
+        },
+        {
+          "existing": 29,
+          "field": "rows_moved",
+          "incoming": 42
+        }
+      ],
+      "existing_fingerprint": "0a5f98b3ac3e6b757b17df977262b4efaf28047f84283451826b8e60c92b2152",
+      "grain": "family",
+      "incoming_fingerprint": "ef29a546d608beb7c7bfb7c0bc988b191c66f12afee0479dce8771042fb4b09e",
+      "key": [
+        "2026-09-24",
+        "F5_FLOW_POSITIONING"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 63,
+          "field": "rows_contributing",
+          "incoming": 64
+        },
+        {
+          "existing": 0.4841269841,
+          "field": "modal_value",
+          "incoming": 0.5
+        },
+        {
+          "existing": 0.9523809524,
+          "field": "modal_share",
+          "incoming": 0.984375
+        },
+        {
+          "existing": 0.1064794275,
+          "field": "dispersion",
+          "incoming": 0.0620097964
+        },
+        {
+          "existing": 0.6031746032,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.4375
+        },
+        {
+          "existing": 9,
+          "field": "max_abs_rank_delta",
+          "incoming": 10
+        },
+        {
+          "existing": 22,
+          "field": "rows_moved",
+          "incoming": 18
+        }
+      ],
+      "existing_fingerprint": "843e47c4b364c3a7dfd2eb53b6271dcda4599b3376be64a98b9f543281c7c4fa",
+      "grain": "family",
+      "incoming_fingerprint": "025e41b2fcd47ddee4f61103087d9b654e84ef3a043b585849b8d548380c31c9",
+      "key": [
+        "2026-09-24",
+        "F8_ATTENTION_CROWDING"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 56,
+          "field": "distinct_values",
+          "incoming": 57
+        }
+      ],
+      "existing_fingerprint": "39b4ac1df36097cc13550faacabc56f626ae928e36b37fec24e91f3a10289355",
+      "grain": "coverage",
+      "incoming_fingerprint": "f24475152bf29cc57b27fc51ed5fcb0391a9d13b858b556960eaa2768f9e0b94",
+      "key": [
+        "2026-09-24",
+        "alpha"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.492063,
+          "field": "coverage",
+          "incoming": 0.46875
+        }
+      ],
+      "existing_fingerprint": "8ee74449447302341820077b962d9b0cf30664b1935cce712614c0e8d6449b72",
+      "grain": "coverage",
+      "incoming_fingerprint": "22811b0b91d8d68eb5d7241b1a5159667294980626bff032275ef9f48eac5943",
+      "key": [
+        "2026-09-24",
+        "gex_confirm_verdict"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 57,
+          "field": "distinct_values",
+          "incoming": 58
+        }
+      ],
+      "existing_fingerprint": "ab51599bb72b652275b9e133131173bf06d0a6c4ddc89426936264337033f2ba",
+      "grain": "coverage",
+      "incoming_fingerprint": "6264faef75113575329dbf05e5cac53232e226fde40d5bce82b8540a553f6331",
+      "key": [
+        "2026-09-24",
+        "off_high"
+      ],
+      "stamp_date": "2026-09-24"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.619048,
+          "field": "coverage",
+          "incoming": 0.640625
+        }
+      ],
+      "existing_fingerprint": "4579513e3806b0f274d9d8bb522b5eb22f6e8f83bd3902c3ee330b80ca33e7e0",
+      "grain": "coverage",
+      "incoming_fingerprint": "55f23bf635dbd1b3c0f00728f7d6bddb6880077a12a18c626a05e3bedbd496ae",
+      "key": [
+        "2026-09-24",
+        "tier_cascade"
+      ],
+      "stamp_date": "2026-09-24"
     }
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 168,
-    "n_family_rows": 168,
+    "n_coverage_rows": 176,
+    "n_family_rows": 176,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 20
+  "unmatured_sessions": 21
 }

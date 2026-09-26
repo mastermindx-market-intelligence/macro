@@ -3150,9 +3150,11 @@ def put_chart_state(
 ) -> dict:
     """Store one mount's latest chart state and bounded ACK receipts.
 
-    A context revision change starts a new target epoch and therefore does not inherit
-    ACK history from the prior symbol/timeframe.  A same-revision state-only POST keeps
-    prior ACKs so an execution receipt cannot disappear on the next market/state update.
+    A newer context revision starts a new target epoch and does not inherit ACK
+    history from the prior symbol/timeframe. A same-revision state-only POST keeps
+    prior ACKs. For an unexpired versioned origin, an older or missing revision is
+    ignored without refreshing TTL or importing stale ACKs. The legacy empty-origin
+    behavior is unchanged; this in-memory owner adds no persistent revision watermark.
     """
     now = time.monotonic()
     origin = _chart_origin_id(origin_id)
@@ -3165,6 +3167,12 @@ def put_chart_state(
             _chart_state_store.pop(k, None)
 
         prior = _chart_state_store.get(key)
+        prior_rev = prior.get("context_revision") if prior is not None else None
+        if origin and isinstance(prior_rev, int) and (rev is None or rev < prior_rev):
+            # Concurrent HTTP mirrors may arrive after a newer symbol/timeframe.
+            # Ignore the whole stale snapshot: importing its ACKs would cross target
+            # epochs, and refreshing updated_at would make old telemetry look fresh.
+            return prior
         prior_acks = (
             list(prior.get("acks") or [])
             if prior is not None and prior.get("context_revision") == rev

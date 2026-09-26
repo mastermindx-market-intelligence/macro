@@ -410,6 +410,14 @@ def pytest_configure(config):
         "session worktree omits (policy R8). Skipped — with the opt-in command as the "
         "reason — only when those dirs are actually absent.",
     )
+    config.addinivalue_line(
+        "markers",
+        "data_gate: this test's verdict depends on committed data/ or site/ contents, "
+        "not only on the code under test. A legacy CI job that runs the suite on the "
+        "code gate deselects it with -m 'not data_gate'; a gate: data job runs it with "
+        "-m data_gate. See the workflow-yaml and engine-render-guards jobs in "
+        ".github/ci/legacy-jobs.yml.",
+    )
 
 
 def pytest_report_header(config):
