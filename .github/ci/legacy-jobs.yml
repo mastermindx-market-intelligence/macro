@@ -10672,6 +10672,10 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
+      # Skylit R10 Stage 0: tests live in tests/test_market_structure.py and
+      # import this calibrator directly; keep the exclusive owner closed over
+      # its actual dependency so edits cannot bypass the owning pack.
+      - "scripts/research_skylit_r10_cross_instrument_mapping.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
