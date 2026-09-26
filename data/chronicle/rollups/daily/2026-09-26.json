@@ -1,0 +1,246 @@
+{
+  "as_of": "2026-09-26",
+  "coverage": {
+    "end": "2026-09-25",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-16 to 2026-09-25; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-16"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": []
+    },
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": []
+    },
+    {
+      "date": "2026-09-21",
+      "events": []
+    },
+    {
+      "date": "2026-09-20",
+      "events": []
+    },
+    {
+      "date": "2026-09-19",
+      "events": []
+    },
+    {
+      "date": "2026-09-18",
+      "events": [
+        {
+          "date": "2026-09-18",
+          "id": "cev-research_vault-5afdefc17403",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fip581gs8cw-ae1704",
+          "tickers": [],
+          "title": "S&T: GS Mourad post Fed what's working what's not working 17 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-17",
+      "events": [
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-cf288ca2fb96",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-g3bugkjjgib-77331c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-16",
+      "events": [
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-c656772232b3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ifvweti4bl0-81ed6e",
+          "tickers": [],
+          "title": "S&T: GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-c6c12d0a258a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ynxvgs1kneu-189a85",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Market Intelligence | US Election Series Midterms: September 16, 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-c6d212adacec",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xndi46tpnve-822273",
+          "tickers": [],
+          "title": "Goldman Sachs: Dividend Swap Monitor European dividends supported by strong earnings but upside increasingly limited",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-c9fbdd9801cc",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-sc7hnmuw9b4-615a24",
+          "tickers": [],
+          "title": "Goldman Sachs: Brazil Mixed to soft Retail Sales in July (Ramos)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-cd12857a7352",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-hvqiah0op2r-175974",
+          "tickers": [],
+          "title": "S&T: GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-ceedcdba8d1e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-knd1xcpxblx-4040da",
+          "tickers": [],
+          "title": "Goldman Sachs: Global Markets Daily A Floor Under Foreign Flows Into US Credit",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-cfa74b648526",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nl0qtpoyubw-58bcb3",
+          "tickers": [],
+          "title": "Goldman Sachs: China Musings Policy and macro back to school",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-d6a1e528276a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-oigknaiqhfi-f22e87",
+          "tickers": [],
+          "title": "Goldman Sachs: US Economics Analyst September FOMC Preview A Hike Without a Signal",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-d9cad543ccdd",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-gqittnbnwec-8433b0",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Europe Equity Research | Today’s Morning Meeting",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-e7d4dc95e01f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ce0qkpblcew-a2ea4f",
+          "tickers": [],
+          "title": "Goldman Sachs: Walmart Inc. (WMT) Global Consumer and Retail Conference 2026 — Key Takeaways",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-e7e0ae6185bd",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ndruwslrard-e5e2c2",
+          "tickers": [],
+          "title": "Goldman Sachs: UK Motor Pricing Tracker UK Motor Pricing decelerating with ONS data showing price declines in August",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-edf14e3fd52f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-qfweop7ozss-df479d",
+          "tickers": [],
+          "title": "Goldman Sachs: US Daily What Explains the Decline in the Labor Share of Income",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-f30f3bb4ad04",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-frxocynb2fp-a14cbd",
+          "tickers": [],
+          "title": "S&T: GS Abbas GS US Daily Download 16 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-f47e861b8641",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-didbhvbmh6e-e180ec",
+          "tickers": [],
+          "title": "CommBank: Economics Economic Update 15 09 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-fe1efe4cba3a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jqwzuxd4euh-e59c74",
+          "tickers": [],
+          "title": "Goldman Sachs: Global Physical AI Framing the Forward Progress of Humanoids [Replay]",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}
