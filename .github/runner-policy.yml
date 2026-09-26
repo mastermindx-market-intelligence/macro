@@ -86,8 +86,17 @@ pool_topology:
     pending_carriers: [pc-ci-4]
     pending_labels: [self-hosted, Linux, X64]
   pc-render:
+    # `slots: 1` is R7's architectural RESERVATION — one host held for the serial
+    # renderer, disjoint from the CI pool — and R7 requires exactly one. It is not
+    # a claim that the slot is routable today: as of the 2026-09-25 receipt
+    # pc-render-1 is online and idle but carries only {self-hosted, Linux, X64}, so
+    # it can route nothing the render lanes address. `labels` stays the contract the
+    # reserved host is SUPPOSED to satisfy; `missing_labels` is the measured gap.
+    # Closing that gap is the operator restore act, never an edit to this file —
+    # and `scripts/check_runner_queue_hostage.py` is what notices if it reopens.
     slots: 1
     labels: [self-hosted, Linux, X64, render-linux]
+    missing_labels: [render-linux]
     forbidden_labels: [ci-linux, ci-linux-canary]
   m1-theta-canary:
     slots: 1
@@ -120,11 +129,31 @@ pool_topology:
 #        `schedule:` trigger unless its entry declares a dated
 #        `scheduled_use_waiver` — so the next host deregistration reds a PR
 #        instead of freezing a nightly.
-# `offline` is deliberately NOT blocked by R12: those hosts are registered and
-# return (the PC pool is powered down between canary waves). An `offline` label
-# on a cron lane is still a queue risk worth watching, just not a merge stop.
+#   R15  (2026-09-25) the same bar for EVERY automatic trigger, not just `schedule:`.
+#        `push:` is equally unattended and fires far more often — main takes ~25
+#        pushes a day here against one cron line — so a push-only lane on a dead
+#        label wedges harder, not softer. render.yml and engine-render.yml are
+#        push-only and were therefore exempt from R12 by trigger alone while they
+#        sat dark for three days.
+# `offline` is deliberately NOT blocked: those hosts are registered and return (the
+# PC pool is powered down between canary waves). An `offline` label on an unattended
+# lane is still a queue risk worth watching, just not a merge stop. THE LOAD-BEARING
+# WORD IS "RETURN" — `render-linux` was carried as `offline` while its declared
+# hosts had been gone five weeks and its one live host had been de-labelled. A label
+# with zero carriers is `orphaned`, whatever the reason; `offline` is for a pool that
+# is powered down, not for one that no longer exists.
 #
-# Verified against the live pool 2026-08-17.
+# AND NEITHER RULE CAN SEE A FACT NOBODY WROTE DOWN. `status` is hand-maintained
+# documentation (no admin token in CI), so R11/R12/R15 are DECLARATION gates: they
+# fire when a human records a death, never when one happens. That is why they were
+# silent through both the 2026-08-17 and 2026-09-25 outages, and why the actual
+# dead-man switch is `scripts/check_runner_queue_hostage.py`, which observes the
+# live Actions API for the queued-with-no-runner symptom and needs no declaration
+# to be correct. Keep this file honest, but never rely on it to notice.
+#
+# Verified against the live pool 2026-09-25 (gh api
+# orgs/mastermindx-market-intelligence/actions/runners + repos/{repo}/actions/runners):
+# 12 self-hosted hosts online, `render-linux` carried by none.
 label_registry:
   ubuntu-latest:
     status: github-hosted
@@ -132,10 +161,17 @@ label_registry:
     note: GitHub-hosted; the Wave B/C default for every ordinary PR job.
   self-hosted:
     status: live
-    carried_by: [mac-builder-3, mac-builder-4, mac-builder-5, mac-builder-light]
+    carried_by: [mac-builder-3, mac-builder-4, mac-builder-5, mac-builder-light,
+                 m1-light-1, m1-nightly-1, m1-nightly-2,
+                 pc-ci-1, pc-ci-2, pc-ci-3, pc-render-1]
     note: >
-      Also carried by the offline pc-render-2/3/4. Never sufficient on its own —
-      every self-hosted job pairs it with a capability label below.
+      Never sufficient on its own — every self-hosted job pairs it with a
+      capability label below, which is exactly why it proves nothing: pc-render-1
+      carries `self-hosted` while carrying no capability label at all, so a
+      `[self-hosted, render-linux]` job still has nowhere to run. pc-ci-4 also
+      carries it live but is deliberately ABSENT here — R14 makes entering a live
+      roster the activation act for the fourth PC CI slot, so it stays declared
+      only as pool_topology.pc-ci.pending_labels.
   macOS:
     status: live
     carried_by: [mac-builder-3, mac-builder-4, mac-builder-5, mac-builder-light]
@@ -188,21 +224,54 @@ label_registry:
       store-bearing host — tape lanes self-skip there by design (#3644,
       probe-only Terminal law). Re-point at the real store host when it returns.
   Linux:
-    status: offline
-    carried_by: [pc-render-2, pc-render-3, pc-render-4]
-    note: Implicit OS label on the PC render pool; all three hosts offline 2026-08-17.
-  X64:
-    status: offline
-    carried_by: [pc-render-2, pc-render-3, pc-render-4]
-    note: Implicit architecture label on the PC render pool.
-  render-linux:
-    status: offline
-    carried_by: [pc-render-2, pc-render-3, pc-render-4]
+    status: live
+    carried_by: [pc-ci-1, pc-ci-2, pc-ci-3, pc-render-1]
     note: >
-      Operator fallback for render.yml/engine-render.yml, reachable only through
-      the dispatch `runner` input or a push default. Registered-but-offline, so a
-      job routed here queues until a host returns. Neither consumer carries a
-      `schedule:` trigger, which is what keeps this out of R12.
+      Implicit OS label on the PC pool. Was declared `offline` against
+      pc-render-2/3/4 until 2026-09-25; five Linux hosts are in fact online
+      (pc-ci-4 among them, kept out of this roster per R14). An implicit platform
+      label is never a capability — see `render-linux`.
+  X64:
+    status: live
+    carried_by: [pc-ci-1, pc-ci-2, pc-ci-3, pc-render-1]
+    note: >
+      Implicit architecture label on the PC pool. Corrected from `offline`
+      2026-09-25. pc-ci-4 carries it live but stays out of this roster per R14.
+  render-linux:
+    status: orphaned
+    carried_by: []
+    note: >
+      ZERO CARRIERS since 2026-09-23T12:05Z — the 2026-09-25 render-lane outage.
+      pc-render-1 is online and IDLE but its custom labels were stripped to the
+      read-only set {self-hosted, Linux, X64}; it keeps org runner id 15, so the
+      host was never re-registered, only de-labelled. pc-render-2/3/4 have been
+      absent from the live pool since 2026-08-17. Declared `offline` until
+      2026-09-25, which is what exempted it from R12 — `offline` means "registered
+      and returns", and neither half is true here.
+      RECEIPTS. Last job ever assigned: run 35819881039, started 2026-09-23T09:45:34Z
+      on pc-render-1, done 12:05:08Z. Next job, created 12:05:09Z (run 35855143666),
+      never assigned and killed at +24h00m00s exactly. Successor 35989213316 took
+      the slot at 12:05:10Z and sat queued >20h. ~25 pushes behind it were
+      superseded as `pending`, each one's updatedAt equal to the next run's
+      createdAt. Consumers dark: render.yml, engine-render.yml (push),
+      sector-intelligence.yml (push+schedule); selfhosted-ci-canary.yml's
+      render-reservation-probe is dispatch-only. 1,479 committed site pages went
+      stale behind it (research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md).
+      RESTORE IS OPERATOR-OWNED: re-add the label to pc-render-1
+      (`POST /orgs/{org}/actions/runners/15/labels`) or bring a labelled render host
+      back. Not taken in-session — the strip has no recorded cause, so it may be
+      deliberate, and re-labelling immediately releases a scope=all bake plus a
+      three-day backlog onto a production host.
+    scheduled_use_waiver:
+      since: '2026-09-25'
+      reason: >
+        R12/R15 waiver of the DECLARATION gate only, so correcting this entry to
+        the truth does not red main while the restore is operator-gated. It
+        silences nothing: `scripts/check_runner_queue_hostage.py` observes the live
+        Actions API three times a day and pages on the queued-with-no-runner
+        symptom regardless of waiver state — that check, not this waiver, is the
+        instrument that was missing for three days. Remove this waiver in the same
+        act that restores the carrier.
   ci-linux:
     status: live
     carried_by: [pc-ci-1, pc-ci-2, pc-ci-3]
@@ -218,11 +287,14 @@ label_registry:
     note: >
       P1-accepted single-slot PC canary carried by pc-ci-1; dispatch-only.
   m1-theta:
-    status: orphaned
-    carried_by: []
+    status: live
+    carried_by: [m1-nightly-2]
     note: >
-      The M1 return canary — deliberately unschedulable until the M1 host is
-      re-registered, which is exactly what the canary exists to detect.
+      The M1 return canary. CARRIED AGAIN as of the 2026-09-25 receipt: m1-nightly-2
+      (org runner 17) holds it, so the condition this canary existed to detect has
+      been met — it sat declared `orphaned` after the host returned, which is the
+      same hand-maintenance gap that hid `render-linux`. Dispatch-only, so nothing
+      was starved.
       Dispatch-only (m1-runner-canary.yml). Note the label is `m1-theta`, the
       REVERSE of the production `theta-m1`; they are different labels and only
       this one is a canary.
@@ -236,13 +308,28 @@ label_registry:
       re-routable in-repo — the codex CLI and ~/.codex/auth.json are host-local
       (CRX-R8) and config/codex_lane.yml is operator-immutable (CRX-R7), so a
       macstudio re-route would fail preflight while burning a production slot.
-      Restore is host-side and operator-owned.
+      Restore is host-side and operator-owned. This lane is a CONFIRMED queued-job
+      hostage, not merely dark. 2026-09-25 receipts: run 35994988547 (created
+      2026-09-24T11:46:30Z) is STILL `queued` 22h later and holds the concurrency
+      group; 36032578502, 36062008421 and 36078078689 each entered `pending`
+      behind it and were superseded 1s after the next firing was created;
+      36109614790 (2026-09-25T07:49:21Z) holds the pending slot now. GitHub's
+      24h queued-job kill lands on 35994988547 at 2026-09-25T11:46:30Z, after
+      which the pending successor is promoted to `queued` and re-wedges — the
+      wedge cycles, it does not self-heal.
     scheduled_use_waiver:
       since: '2026-08-17'
       reason: >
-        Single-job run, so a queued firing sits `pending` and is superseded by
-        the next 2-hourly line rather than holding the group for 24h — the lane
-        is dead, not hostage-taking (contrast daily.yml collect_tail, whose
-        completed sibling jobs kept its run `in_progress` and pended the next
-        night). Waived rather than silenced: the entry above is the standing
-        record that this lane is dark pending an operator host restore.
+        The orphan-use gate is waived because restore is host-side and
+        operator-owned (CRX-R7/CRX-R8 above), NOT because the lane is harmless.
+        The original 2026-08-17 reason argued that a single-job run's queued
+        firing sits `pending` and is superseded by the next 2-hourly line rather
+        than holding the group for 24h; the receipts above FALSIFY that
+        mechanism. GitHub supersedes `pending` runs — the runs blocked BY the
+        group — and never the run holding it, and a run whose only job cannot be
+        assigned sits `queued`, i.e. it is the holder. So a single-job lane is no
+        safer here than daily.yml's collect_tail; being small only means it takes
+        one unassignable job instead of several. Waived rather than silenced:
+        scripts/check_runner_queue_hostage.py reports this lane's queue age on
+        every nightly-liveness run, and this entry is the standing record that it
+        is dark pending an operator host restore.
