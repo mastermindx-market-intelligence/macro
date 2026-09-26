@@ -161,8 +161,9 @@ page-local substitute.
 
 The existing fields above also carry the human-first doctrine: clear initial orientation,
 earned copy, accessible depth and a complete task. They create no new approval store or
-mandatory extra approval for routine reversible work. The pending doctrine amendment in
-#8041 and its final accepted successor remain the content-law owner. A measured worked
+mandatory extra approval for routine reversible work. `docs/DESIGN_DOCTRINE.md` remains
+the content-law owner; compose with #8041 without treating that pending amendment as
+merged law. A measured worked
 repair and unsupported-pair dispositions are recorded in
 `research/DESIGN_SYSTEM_READABILITY_REPAIR_2026-09-26.md`; that record is candidate evidence,
 not a RIG receipt or proof that its native Paper patch has been applied.
