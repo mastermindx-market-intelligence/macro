@@ -754,8 +754,15 @@ def _chart_command_tool_schemas() -> list[dict]:
                         "description": (
                             "Op arguments. Points are {t: <epoch seconds>, p: <price>}. "
                             "draw.trendline: {p1, p2, extend?, text?}. draw.hline: {p}. "
-                            "draw.zone: {top, bottom}. chart.set_symbol: {symbol}. chart.set_tf: {tf}. "
-                            "chart.set_indicators: {indicators:[...]}. Prices must be positive."
+                            "draw.zone: {p_lo, p_hi, t1?, t2?}. chart.set_symbol: {symbol}. chart.set_tf: {tf}. "
+                            "chart.set_indicators defaults to replacement: {indicators:[{name,params?}]}. "
+                            "For a supported non-destructive edit use {mode:'patch',indicators:[{name,params?}],remove?:[name]}; "
+                            "unmentioned studies/settings survive. Use patch ONLY when read_chart_state capabilities.indicator_edit "
+                            "advertises it. Native parameter keys and typed values come from capabilities.native_parameters; "
+                            "remove names only on explicit user intent. ai.clear with {ids:[ai_id,...]} removes only named AI "
+                            "objects when capabilities.ai_drawing_edit.clear_ids is true; an absent id rejects the entire request. "
+                            "ai.clear without ids clears all AI annotations on the active symbol, never human drawings. "
+                            "Prices must be positive."
                         ),
                     },
                     "caption": {
@@ -824,7 +831,9 @@ def _chart_command_tool_schemas() -> list[dict]:
                 "Read what's currently on the user's live chart: the active symbol, timeframe, "
                 "indicators, visible range, the chart's CAPABILITIES (which timeframes and indicators "
                 "it supports), and existing drawings. Choose indicators and timeframes ONLY from the "
-                "reported capabilities. Returns {connected: false} when no live chart is attached. "
+                "reported capabilities. study_context describes configured native module identities, NOT computed values, "
+                "output health or trading edge. native_parameters describes settings; indicator_edit describes safe patch support. "
+                "Returns {connected: false} when no live chart is attached. "
                 "Only offered when page=terminal."
             ),
             "input_schema": {"type": "object", "properties": {}},
@@ -3022,6 +3031,18 @@ def _tool_chart_command(params: dict) -> dict:
             return {"error": f"caption exceeds {_CAPTION_MAX} chars"}
 
     args = params.get("args")
+    if op == "chart.set_indicators" and isinstance(args, dict):
+        edit_mode = args.get("mode", "replace")
+        if edit_mode not in ("replace", "patch"):
+            return {"error": "indicator mode must be replace or patch"}
+        if edit_mode != "patch" and "remove" in args:
+            return {"error": "indicator removals require patch mode"}
+    if op == "ai.clear" and isinstance(args, dict) and "ids" in args:
+        ids = args["ids"]
+        if (not isinstance(ids, list) or not 1 <= len(ids) <= 60
+                or any(not isinstance(identity, str)
+                       or not re.fullmatch(r"ai_[A-Za-z0-9_-]{1,61}", identity) for identity in ids)):
+            return {"error": "ai.clear ids must be 1-60 existing AI drawing ids"}
     args_err = _validate_v2_args(args)
     if args_err:
         return {"error": args_err}
@@ -3435,7 +3456,124 @@ def _tool_read_chart_state(
     if origin_id:
         out["origin_id"] = origin_id
         out["context_revision"] = observed_rev
+    out["study_context"] = _chart_study_context(out)
     return out
+
+
+_CHART_CONTEXT_TOKEN = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]{0,63}$")
+_CHART_MODULE_TOKEN = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
+
+
+def _chart_study_context(state: object) -> dict:
+    """Bound configuration identities from the exact state read; never infer output.
+
+    Client labels, captions, guide prose and settings values are NOT prompt material.
+    This projects the existing Terminal catalog, not a second registry of modules.
+    """
+    empty = {"status": "unavailable", "source": "terminal_configuration",
+             "native_module_ids": [], "configuration_only": True}
+    if not isinstance(state, dict) or state.get("connected") is not True:
+        return {**empty, "reason": "chart_not_connected"}
+    origin = _chart_origin_id(state.get("origin_id"))
+    revision = state.get("context_revision")
+    session = state.get("session")
+    if not origin or not isinstance(revision, int) or isinstance(revision, bool) or revision < 0:
+        return {**empty, "reason": "exact_context_required"}
+    if not isinstance(session, dict):
+        return {**empty, "reason": "chart_session_unavailable"}
+    caps = session.get("capabilities")
+    caps = caps if isinstance(caps, dict) else {}
+    indicators = session.get("indicators")
+    indicators = indicators if isinstance(indicators, list) else []
+    active: dict[str, dict] = {}
+    for row in indicators[:64]:
+        if not isinstance(row, dict):
+            continue
+        name = row.get("name")
+        if isinstance(name, str) and _CHART_CONTEXT_TOKEN.fullmatch(name):
+            active[name] = row.get("params") if isinstance(row.get("params"), dict) else {}
+    packet = caps.get("native_study_context")
+    compact = isinstance(packet, dict) and packet.get("schema") == "chart.native_study_context.v1"
+    if not compact:
+        packet = caps.get("native_parameters")
+        if not isinstance(packet, dict) or packet.get("schema") != "chart.native_parameters.v1":
+            return {**empty, "reason": "native_configuration_unavailable",
+                    "origin_id": origin, "context_revision": revision}
+    rows = packet.get("modules")
+    if not isinstance(rows, list):
+        return {**empty, "reason": "native_configuration_malformed"}
+    partial = (packet.get("status") != "complete" or bool(packet.get("omitted_modules"))
+               or len(rows) > 64 or len(indicators) > 64)
+    enabled_ids: set[str] = set()
+    disabled_ids: set[str] = set()
+    for row in rows[:64]:
+        if not isinstance(row, dict):
+            partial = True
+            continue
+        suite, module, identity = row.get("suite"), row.get("module"), row.get("id")
+        if (not isinstance(suite, str) or not _CHART_MODULE_TOKEN.fullmatch(suite)
+                or not isinstance(module, str) or not _CHART_MODULE_TOKEN.fullmatch(module)
+                or identity != f"{suite}/{module}" or suite not in active):
+            partial = True
+            continue
+        enabled = row.get("enabled") if compact else None
+        if not compact:
+            parameters = row.get("parameters")
+            switch = parameters.get(f"{module}.on") if isinstance(parameters, dict) else None
+            default = switch.get("default") if isinstance(switch, dict) else None
+            enabled = active[suite].get(f"{module}.on", default)
+        if not isinstance(enabled, bool):
+            partial = True
+            continue
+        (enabled_ids if enabled else disabled_ids).add(identity)
+    # A contradictory duplicate must not become a configured-and-enabled claim.
+    conflict = enabled_ids & disabled_ids
+    if conflict:
+        partial = True
+        enabled_ids -= conflict
+        disabled_ids -= conflict
+    return {
+        "status": "partial" if partial else "complete",
+        "source": "terminal_configuration", "origin_id": origin,
+        "context_revision": revision, "native_module_ids": sorted(enabled_ids),
+        "disabled_native_module_ids": sorted(disabled_ids), "configuration_only": True,
+        "observations": "not_supplied_by_configuration",
+        "entitlement_and_output_health": "not_attested",
+    }
+
+
+def _chart_doctrine_terms(state: object) -> list[str]:
+    """Only closed-form catalog identities influence the existing trigger router."""
+    if not isinstance(state, dict) or state.get("connected") is not True:
+        return []
+    origin = _chart_origin_id(state.get("origin_id"))
+    revision = state.get("context_revision")
+    if not origin or not isinstance(revision, int) or isinstance(revision, bool) or revision < 0:
+        return []
+    session = state.get("session")
+    if not isinstance(session, dict):
+        return []
+    study = _chart_study_context(state)
+    # Delimit the full identity so rsix/eng-extra cannot match the rsix/eng lesson.
+    terms = [f"native[{identity}]" for identity in study["native_module_ids"]]
+    caps = session.get("capabilities")
+    caps = caps if isinstance(caps, dict) else {}
+    declared = caps.get("indicators")
+    declared = declared[:128] if isinstance(declared, list) else []
+    indicators = session.get("indicators")
+    for row in (indicators[:64] if isinstance(indicators, list) else []):
+        name = row.get("name") if isinstance(row, dict) else None
+        if isinstance(name, str) and _CHART_CONTEXT_TOKEN.fullmatch(name) and name in declared:
+            terms.append(name)
+    tf = session.get("tf")
+    # Descriptive horizon only, not a request to compute unsupported intraday data.
+    if tf in ("W", "1W", "1w"):
+        terms.append("weekly")
+    elif tf in ("M", "1M"):
+        terms.append("monthly")
+    elif isinstance(tf, str) and re.fullmatch(r"(?:[1-9][0-9]{0,2}[mh]|[1-9][0-9]{0,2})", tf):
+        terms.append("intraday")
+    return list(dict.fromkeys(terms))[:64]
 
 
 # ---------------------------------------------------------------------------
@@ -4065,6 +4203,35 @@ def _dispatch_brain_tool(
             return _tool_run_chart_detection(tool_params)
         # Chart Mastermind v2 (CMX W2)
         if tool_name == "emit_chart_command":
+            args = tool_params.get("args")
+            if tool_params.get("op") == "ai.clear" and isinstance(args, dict) and "ids" in args:
+                state = _tool_read_chart_state(
+                    user_id, chart_client, origin_id=chart_origin_id,
+                    context_revision=chart_context_revision)
+                session = state.get("session")
+                caps = session.get("capabilities") if isinstance(session, dict) else None
+                edit = caps.get("ai_drawing_edit") if isinstance(caps, dict) else None
+                if (not chart_origin_id or chart_context_revision is None
+                        or state.get("connected") is not True or not isinstance(edit, dict)
+                        or edit.get("clear_ids") is not True):
+                    return {"error": "selective_ai_clear_not_supported",
+                            "note": "Do not fall back to clearing all annotations; preserve the user's unselected work."}
+            if (tool_params.get("op") == "chart.set_indicators" and isinstance(args, dict)
+                    and args.get("mode") == "patch"):
+                # Old clients interpret set_indicators as replacement. Never silently
+                # send a patch to one and clear the user's unrelated studies.
+                state = _tool_read_chart_state(
+                    user_id, chart_client, origin_id=chart_origin_id,
+                    context_revision=chart_context_revision)
+                session = state.get("session")
+                caps = session.get("capabilities") if isinstance(session, dict) else None
+                edit = caps.get("indicator_edit") if isinstance(caps, dict) else None
+                if (not chart_origin_id or chart_context_revision is None
+                        or state.get("connected") is not True or not isinstance(edit, dict)
+                        or edit.get("op") != "chart.set_indicators"
+                        or not isinstance(edit.get("modes"), list) or "patch" not in edit["modes"]):
+                    return {"error": "indicator_patch_not_supported",
+                            "note": "Read the exact chart capabilities; do not substitute a destructive replacement."}
             return _tool_chart_command(tool_params)
         if tool_name == "chart_digest":
             return _tool_chart_digest(tool_params, root)
@@ -4568,11 +4735,23 @@ with RSI", "mark support & resistance"). These are DISPLAY ACTIONS ONLY — they
 constitute a buy/sell/hold recommendation and perform no server-side action.
 
 READING THE CHART BEFORE YOU DRAW:
-- Call chart_digest first to see the real structure (swings, levels, trendline candidates)
-  before you mark anything — draw what the bars show, not what you remember.
+- Call read_chart_state first to bind the exact chart, settings, pane and actual viewport.
+  Then obtain chart_digest or qualified native observations for the matching data basis.
+  Draw only supported geometry; a daily digest is not an intraday observation.
 - Before you call a line a trendline, run measure_line and only assert it when the verdict
   is "holds"; if it comes back "weak" or "invalid", say so plainly instead.
 - Pick timeframes and indicators only from what read_chart_state reports the chart can do.
+- For indicator edits, prefer chart.set_indicators with mode:"patch" when indicator_edit
+  advertises patch support. It preserves unrelated studies/settings; remove names only when asked.
+  A client without patch support must not receive that payload as a silent full replacement.
+- Configuration is not observation: attached native modules and defaults do not supply numerical
+  readings, warmup, unlocked status or predictive edge. Use native mechanics for the actual module.
+- A successful Terminal ACK is application acceptance, not pixel proof. Do not say an unverified,
+  rejected or deferred action completed. Re-read after dependent symbol/timeframe/setting changes.
+- To remove selected AI marks, use ai.clear {ids:[...]} ONLY when ai_drawing_edit.clear_ids
+  is true. Resolve exact by:ai ids from read_chart_state; do not drop ids or clear everything
+  as fallback. A stale/missing id rejects the whole selection; re-read before another action.
+- ai.undo affects AI drawings only, not indicator settings; never promise broader undo.
 - Every drawing caption is one short plain sentence — what it shows, no jargon.
 
 DRAW ON THE USER'S CHART, DON'T SEND A PICTURE:
@@ -4687,15 +4866,35 @@ def _build_system_prompt(mode: str = "chat", page: str = "",
     return prompt
 
 
-def _doctrine_block_for(page: str, message: str) -> str:
-    """CMX W4: technician doctrine, terminal chart sessions only. Never raises."""
+def _doctrine_block_for(
+    page: str, message: str, *, user_id: str = "", origin_id: str = "",
+    context_revision: int | None = None, chart_state: dict | None = None,
+) -> str:
+    """Existing technician router, now bound to exact configured chart identities.
+
+    No provider call, chart calculation, second guide library or client-prose injection.
+    User wording still takes precedence under the router's existing three-module cap.
+    """
     if page != "terminal":
         return ""
     try:
         from engine.neuralweb import doctrine as _doctrine_mod  # noqa: PLC0415
-        return _doctrine_mod.prompt_block(_doctrine_mod.route(message))
+        if chart_state is None and origin_id and context_revision is not None:
+            chart_state = _tool_read_chart_state(
+                user_id, "terminal", origin_id=origin_id, context_revision=context_revision)
+        terms = _chart_doctrine_terms(chart_state)
+        return _doctrine_mod.prompt_block(_doctrine_mod.route(message, context_terms=terms))
     except Exception:  # noqa: BLE001
         return ""
+
+
+def _replace_chart_doctrine(prompt: str, old: str, new: str) -> str:
+    """Replace this turn's one owned block; repeated chart reads never stack lessons."""
+    if old == new:
+        return prompt
+    if old:
+        return prompt.replace(old, new, 1)
+    return prompt + new
 
 
 def _analyst_block_for(message: str, lane: str) -> str:
@@ -6709,7 +6908,10 @@ def _run_brain_loop(
     evidence_observations: list[tuple[str, Any]] = []
     evidence_gate_issued = False
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
-    system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
+    chart_doctrine_block = _doctrine_block_for(
+        safe_page, message, user_id=user_id, origin_id=chart_origin_id,
+        context_revision=chart_context_revision)
+    system_prompt = system_prompt + chart_doctrine_block
     # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
     # own instructions still read closest to the turn (and the LANGUAGE line stays last).
     system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
@@ -6884,6 +7086,11 @@ def _run_brain_loop(
             tool_id = block.id
             evidence_observations.append((tool_name, result))
             model_result = _model_visible_tool_result(tool_name, result)
+            if tool_name == "read_chart_state":
+                next_doctrine = _doctrine_block_for(safe_page, message, chart_state=result)
+                system_prompt = _replace_chart_doctrine(
+                    system_prompt, chart_doctrine_block, next_doctrine)
+                chart_doctrine_block = next_doctrine
 
             # Collect annotate_chart payloads for the response
             if tool_name == "annotate_chart" and result.get("client_executed"):
@@ -7626,7 +7833,10 @@ def _run_brain_loop_stream(
     evidence_observations: list[tuple[str, Any]] = []
     evidence_gate_issued = False
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
-    system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
+    chart_doctrine_block = _doctrine_block_for(
+        safe_page, message, user_id=user_id, origin_id=chart_origin_id,
+        context_revision=chart_context_revision)
+    system_prompt = system_prompt + chart_doctrine_block
     # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
     # own instructions still read closest to the turn (and the LANGUAGE line stays last).
     system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
@@ -7946,6 +8156,11 @@ def _run_brain_loop_stream(
             tool_id = block.id
             evidence_observations.append((tool_name, result))
             model_result = _model_visible_tool_result(tool_name, result)
+            if tool_name == "read_chart_state":
+                next_doctrine = _doctrine_block_for(safe_page, message, chart_state=result)
+                system_prompt = _replace_chart_doctrine(
+                    system_prompt, chart_doctrine_block, next_doctrine)
+                chart_doctrine_block = next_doctrine
 
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
@@ -8013,6 +8228,15 @@ def _run_brain_loop_stream(
             # rather than keep requesting the stale revision captured at turn start.
             if observed_revisions:
                 chart_context_revision = max(observed_revisions)
+            # A symbol, timeframe or indicator edit invalidates the old attached-study
+            # selection. Refresh one block from the exact post-command state (or remove
+            # context-only guidance when the current state is no longer qualified).
+            next_doctrine = _doctrine_block_for(
+                safe_page, message, user_id=user_id, origin_id=chart_origin_id,
+                context_revision=chart_context_revision)
+            system_prompt = _replace_chart_doctrine(
+                system_prompt, chart_doctrine_block, next_doctrine)
+            chart_doctrine_block = next_doctrine
 
         _timing_round(timing, _round_model_ms, _round_tools)
         tool_call_count += 1
