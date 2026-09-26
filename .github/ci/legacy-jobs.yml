@@ -8551,7 +8551,7 @@ jobs:
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
       - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py -q
+        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_intelligence_evidence_delta.py -q
 
 
   research-vault-source-lineage:
