@@ -89,6 +89,11 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("Breadth is narrow; Technology is the only sector with majority participation.", text)
         self.assertIn("Semiconductors are broad across all 9 subthemes.", text)
         self.assertIn("Do not ship these Sep-25 English sentences as", text)
+        self.assertIn("**Overlap / hidden concentration.**", text)
+        self.assertIn("330 family→company edges", text)
+        self.assertIn("78 / 201", text)
+        self.assertIn("not a concentration score or recommendation", text)
+        self.assertIn("Do not create an overlap database", text)
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
             with self.subTest(path=path):
