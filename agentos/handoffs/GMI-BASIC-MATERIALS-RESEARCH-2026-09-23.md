@@ -5,7 +5,7 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R20_T4_CORE_PRINCIPAL_REVIEW_ACTION_BLOCKED
+research_stage: R21_SECTOR_UMBRELLA_ARCHITECTURE_HANDOFF_READY
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
@@ -163,3 +163,98 @@ Frozen TDD order once the previously denied product-write class is platform-perm
 The blocked cash production patch remains `TOOL_DEGRADED / EFFECT_NONE`. It was not retried or rerouted in R20. No product file, source fact, identity, rights registry, ranking/entry/size/trade output, publisher, worker or runtime changed.
 
 EFFECT_UNKNOWN: none.
+
+
+## R21 — sector-umbrella architecture checkpoint and canonical handoff
+
+Chairman explicitly requested a checkpoint and handoff after the R21 architecture work. This section is the durable continuation frontier; the existing Fable packet was updated in place rather than creating another competing handoff/control plane.
+
+### Protected procedure and current pins
+
+- Protected Mastermind pin: `763ec8f920177fdf48b18df1b8e37b61ab482ef0`.
+- INDEX blob `94d1af402598894372858793a5b1931019c5fa77`; compatible Skillpack `1.0.1`, bootstrap1.
+- Same-pin ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`.
+- R21 architecture file created in commit `2cd1347bfb0d744fae99dc9f1b6d9ead672692cb`.
+- Canonical Fable handoff updated in commit `585a19a53836d032ff00a2ef440d8b6c2bd3fdad`, content blob `cea20a6697dacd25b9d9a3df18af4e38d22a7e96`.
+- T4 core #7984 remains at exact head `36f330b1f7829a289a44937bca0007c734d6df5e`, OPEN/DRAFT/HOLD/intentional RED.
+- Shared foundation #7870 inspected at `6cd958e92b259f7221690547e7076f4a0de4ed33`, OPEN/DRAFT/HOLD.
+- Current Macro main moved during this unit; the latest main ref observed before handoff preparation was `e4a7ba926a217710f6e96e6a7b1828232a1d94d1`. Re-pin on pickup rather than assuming this remains current.
+
+### R21 architecture ruling
+
+**Basic Materials is a sector umbrella, not one canonical GMI theme.**
+
+Do not mint `theme:basic_materials`, map the sector ETF to theme identity, or create one synthetic Materials anchor merely to fit #7870.
+
+The product topology is now:
+
+1. **V0 Basic Materials sector dossier** — one sector-level intelligence surface spanning all researched Materials families and all four selected proof subjects.
+2. **#7984 pure economics core** — reusable deterministic calculations/explanations below the served products.
+3. **Canonical-theme drilldowns later** — through #7870 only for already accepted anchors such as `rare_earth_critical_min`, `copper_steel_electrify`, and `ag_fertilizer`.
+4. Precious-metals financial claims, construction materials, chemicals/gases, forest products/packaging and any other unmapped family remain sector/research slices until the canonical ontology owner admits a theme.
+
+Evidence:
+- current `config/theme_crosswalk.yml` contains the three accepted Materials-related themes above but no Basic Materials umbrella theme;
+- gold/silver/PGM baskets remain explicitly unmapped;
+- #7870's `VerticalRegistration` and `MountFacts` are exact one-anchor contracts;
+- Finance production uses a sector-deep-dive card and sector-specific read model outside canonical theme lanes;
+- Robotics #7908 was reverted by #8013 / `e5512ef66a74b538b165c5a600354c7a8eb35c92` after merging before #7870 and breaking first-party import CI. Materials must not repeat that sequencing defect.
+
+### Revised implementation frontier
+
+**#7984 T4 core** remains first writable code lane once the previously denied write class is actually permitted:
+1. existing cash-reconciliation RED;
+2. strict canonical-decimal text;
+3. duplicate-required-role refusal;
+4. current/prior chronology;
+5. commercial progression + contractual participation;
+6. output schema / wider T4 tests.
+
+No retry/reroute of the blocked cash patch merely to evade the previous safety denial.
+
+**V0 sector projection** is the next architectural lane:
+- use existing `sector_dossier_read_model.v1` as the accepted outer sector object where applicable;
+- freeze a Materials-specific inner read model analogous in ownership posture to Finance but with Materials domains/slices/mechanisms;
+- sector read model is a projection, never a new evidence truth store;
+- one Finance-style Theme Tracker sector-deep-dive entry outside canonical theme lanes;
+- one data-free Materials dossier shell;
+- native/private adapter remains behind existing source/rights/identity/private owners.
+
+All44 core acceptance requirements, eight task identities, five originals/four company journeys, ten Materials families/eight lenses and V0–V4 ambition remain. R21 changes topology/mechanics, not scope or acceptance.
+
+### Canonical handoff
+
+The current handoff is **only**:
+`agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md`
+
+It now starts with R21 and is the packet a future Fable/authorized implementation principal should consume. Do not mint another equivalent handoff unless authority/topology materially changes.
+
+No Materials receiver, PICKUP_ACK, START, Executive Attempt or autonomous watcher is created by updating the packet. The Semiconductor/Robotics/Energy Fable operations remain separate assignments.
+
+### Exact pickup order
+
+A fresh successor should:
+1. repin protected Mastermind INDEX and current Macro main;
+2. read this cumulative frontier;
+3. read R21 architecture;
+4. read the updated canonical Fable handoff;
+5. reconcile only heads/custody changed since this checkpoint;
+6. if authorized product writes are available, resume the **same #7984 RED**, not a successor PR;
+7. otherwise continue only the sector-read-model design/custody lane or source/route proof that does not duplicate shared infrastructure.
+
+DO_NOT_REDO: R1–R20 research, selected-source worksheets, synthetic case expansion, original broad shared-foundation discovery, the blocked cash-patch reroute, or the old standalone Materials theme/API/client design.
+
+### Effect truth
+
+Effects this R21 closeout:
+- R21 architecture file added on research carrier.
+- Existing Fable packet updated in place to become the current handoff.
+- No product/shared/source/private/identity/rights/UI code changed.
+- No PR merged, released, deployed or marked Ready.
+- No worker assigned or started.
+- EFFECT_UNKNOWN: none.
+
+**FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION**  
+**MISSION_COMPLETE: false**
+
+Justified boundary: Chairman requested checkpoint/handoff after a substantive architecture ruling; state is durably recoverable and the exact next action is preserved.
