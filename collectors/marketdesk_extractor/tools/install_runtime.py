@@ -21,17 +21,27 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 EXPECTED_PAYLOAD_COUNT = 58
-EXPECTED_MANIFEST_SHA256 = (
+EXPECTED_INSTALLED_FILE_COUNT = 56
+EXPECTED_RECOVERY_MANIFEST_SHA256 = (
     "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
 )
+EXPECTED_MANIFEST_SHA256 = "85581c72a868c8b759e793925d1932cbd5309794f98638379ce06a0faff85e03"
+EXPECTED_IMPORT_COMMIT = "31981dc66e9a37419b5b7a6aecfde28808785d03"
+EXPECTED_RELEASE_ID = "research-vault-feed-liveness-r1-20260916"
 MANIFEST_NAME = "SHA256SUMS"
+RECOVERY_MANIFEST_NAME = "RECOVERY_SHA256SUMS"
 IMPORT_RECEIPT_NAME = "IMPORT_RECEIPT.json"
+RELEASE_RECEIPT_NAME = "RELEASE_RECEIPT.json"
 ROLLBACK_RECEIPT = "ROLLBACK_RECEIPT.json"
 APPROVED_RUNTIME_PAYLOADS = frozenset(
     {
+        "runtime/com.mastermindx.research-trickle.plist",
+    }
+)
+RETIRED_RUNTIME_PAYLOADS = frozenset(
+    {
         "runtime/feed.sh",
         "runtime/com.mastermindx.research-feed.plist",
-        "runtime/com.mastermindx.research-trickle.plist",
     }
 )
 MANAGED_RUNTIME_DIRS = ("src", "tests", "docs", "deploy")
@@ -128,40 +138,63 @@ def verify_source(source_root: Path = DEFAULT_SOURCE_ROOT) -> dict[str, Any]:
 
     unexpected = sorted(actual_files - set(entries))
     receipt_error: str | None = None
-    receipt_manifest_sha256: str | None = None
+    release_manifest_sha256: str | None = None
+    recovery_manifest_sha256: str | None = None
     manifest_sha256 = _sha256(source_root / MANIFEST_NAME)
     try:
-        receipt_path = source_root / IMPORT_RECEIPT_NAME
-        if receipt_path.is_symlink() or not receipt_path.is_file():
-            raise ValueError(f"missing regular import receipt: {receipt_path}")
-        receipt = json.loads(receipt_path.read_text())
-        if receipt.get("schema") != "mastermind.marketdesk_extractor.import.v1":
-            raise ValueError(f"unsupported import receipt: {receipt.get('schema')!r}")
-        packet = receipt.get("source_packet")
+        import_path = source_root / IMPORT_RECEIPT_NAME
+        release_path = source_root / RELEASE_RECEIPT_NAME
+        recovery_path = source_root / RECOVERY_MANIFEST_NAME
+        for candidate, label in (
+            (import_path, "import receipt"),
+            (release_path, "release receipt"),
+            (recovery_path, "recovery manifest"),
+        ):
+            if candidate.is_symlink() or not candidate.is_file():
+                raise ValueError(f"missing regular {label}: {candidate}")
+
+        import_receipt = json.loads(import_path.read_text())
+        if import_receipt.get("schema") != "mastermind.marketdesk_extractor.import.v1":
+            raise ValueError(f"unsupported import receipt: {import_receipt.get('schema')!r}")
+        if import_receipt.get("import_commit") != EXPECTED_IMPORT_COMMIT:
+            raise ValueError("import receipt does not pin the accepted import commit")
+        packet = import_receipt.get("source_packet")
         if not isinstance(packet, dict):
             raise ValueError("import receipt source_packet must be an object")
-        if packet.get("manifest") != MANIFEST_NAME:
-            raise ValueError("import receipt names a different source manifest")
+        if packet.get("manifest") != RECOVERY_MANIFEST_NAME:
+            raise ValueError("import receipt names a different recovery manifest")
         if packet.get("payload_count") != EXPECTED_PAYLOAD_COUNT:
-            raise ValueError("import receipt payload count does not match the frozen packet")
-        candidate_hash = packet.get("manifest_sha256")
-        if (
-            not isinstance(candidate_hash, str)
-            or len(candidate_hash) != 64
-            or any(character not in "0123456789abcdef" for character in candidate_hash)
-        ):
-            raise ValueError("import receipt manifest hash is invalid")
-        receipt_manifest_sha256 = candidate_hash
+            raise ValueError("import receipt payload count does not match the recovery packet")
+        if packet.get("manifest_sha256") != EXPECTED_RECOVERY_MANIFEST_SHA256:
+            raise ValueError("import receipt does not match the frozen recovery manifest hash")
+        recovery_manifest_sha256 = _sha256(recovery_path)
+        if recovery_manifest_sha256 != EXPECTED_RECOVERY_MANIFEST_SHA256:
+            raise ValueError("recovery manifest does not match the frozen recovery hash")
+
+        release_receipt = json.loads(release_path.read_text())
+        if release_receipt.get("schema") != "mastermind.marketdesk_extractor.release.v1":
+            raise ValueError(f"unsupported release receipt: {release_receipt.get('schema')!r}")
+        if release_receipt.get("release_id") != EXPECTED_RELEASE_ID:
+            raise ValueError("release receipt names a different release")
+        if release_receipt.get("manifest") != MANIFEST_NAME:
+            raise ValueError("release receipt names a different current manifest")
+        if release_receipt.get("payload_count") != EXPECTED_PAYLOAD_COUNT:
+            raise ValueError("release receipt payload count does not match the current release")
+        if release_receipt.get("recovery_manifest") != RECOVERY_MANIFEST_NAME:
+            raise ValueError("release receipt names a different recovery manifest")
+        if release_receipt.get("recovery_manifest_sha256") != EXPECTED_RECOVERY_MANIFEST_SHA256:
+            raise ValueError("release receipt does not preserve the recovery manifest hash")
+        release_manifest_sha256 = release_receipt.get("manifest_sha256")
+        if release_manifest_sha256 != EXPECTED_MANIFEST_SHA256:
+            raise ValueError("release receipt does not match the frozen manifest hash")
         if manifest_sha256 != EXPECTED_MANIFEST_SHA256:
             raise ValueError("source manifest does not match the frozen manifest hash")
-        if receipt_manifest_sha256 != EXPECTED_MANIFEST_SHA256:
-            raise ValueError("import receipt does not match the frozen manifest hash")
-        if manifest_sha256 != receipt_manifest_sha256:
-            raise ValueError("source manifest does not match the frozen import receipt")
+        if manifest_sha256 != release_manifest_sha256:
+            raise ValueError("source manifest does not match the release receipt")
     except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
         receipt_error = str(exc)
 
-    result = {
+    return {
         "ok": not missing
         and not mismatched
         and not unexpected
@@ -171,15 +204,14 @@ def verify_source(source_root: Path = DEFAULT_SOURCE_ROOT) -> dict[str, Any]:
         "source_root": str(source_root),
         "payload_count": len(entries),
         "manifest_sha256": manifest_sha256,
-        "receipt_manifest_sha256": receipt_manifest_sha256,
+        "receipt_manifest_sha256": release_manifest_sha256,
+        "recovery_manifest_sha256": recovery_manifest_sha256,
         "receipt_error": receipt_error,
         "missing": sorted(missing),
         "mismatched": sorted(mismatched),
         "unexpected": unexpected,
         "symlinks": symlinks,
     }
-    return result
-
 
 def _destination_mappings(
     source_root: Path,
@@ -189,6 +221,8 @@ def _destination_mappings(
 ) -> list[tuple[str, Path, Path, str]]:
     mappings: list[tuple[str, Path, Path, str]] = []
     for relative_path, expected_hash in _parse_manifest(source_root).items():
+        if relative_path in RETIRED_RUNTIME_PAYLOADS:
+            continue
         source_path = source_root / relative_path
         packet_path = PurePosixPath(relative_path)
         if packet_path.parts[0] == "extractor":
@@ -203,6 +237,13 @@ def _destination_mappings(
             raise ValueError(f"unmapped source payload: {relative_path}")
         mappings.append((relative_path, source_path, destination, expected_hash))
     return mappings
+
+
+def _retired_destinations(feed_script: Path, launch_agents_dir: Path) -> list[Path]:
+    return [
+        feed_script,
+        launch_agents_dir / "com.mastermindx.research-feed.plist",
+    ]
 
 
 def _atomic_copy(source: Path, destination: Path) -> None:
@@ -347,6 +388,11 @@ def verify_installed(
     mode_mismatched: list[str] = []
     symlinks: list[str] = []
     matched = 0
+    retired_present = [
+        str(path)
+        for path in _retired_destinations(feed_script, launch_agents_dir)
+        if path.exists() or path.is_symlink()
+    ]
     for _, source_path, destination, expected_hash in _destination_mappings(
         source_root, runtime_root, feed_script, launch_agents_dir
     ):
@@ -368,13 +414,15 @@ def verify_installed(
         and not missing
         and not mismatched
         and not mode_mismatched
-        and not symlinks,
+        and not symlinks
+        and not retired_present,
         "source_ok": source_result["ok"],
         "matched": matched,
         "missing": sorted(missing),
         "mismatched": sorted(mismatched),
         "mode_mismatched": sorted(mode_mismatched),
         "symlinks": sorted(symlinks),
+        "retired_present": sorted(retired_present),
         "runtime_root": str(runtime_root),
         "feed_script": str(feed_script),
         "launch_agents_dir": str(launch_agents_dir),
@@ -561,8 +609,10 @@ def install(
         raise ValueError("backup directory must be outside the managed runtime root")
 
     mappings = _destination_mappings(source_root, runtime_root, feed_script, launch_agents_dir)
+    retired_destinations = _retired_destinations(feed_script, launch_agents_dir)
     managed_destinations = _existing_managed_files(runtime_root)
     managed_destinations.update(destination for _, _, destination, _ in mappings)
+    managed_destinations.update(retired_destinations)
     receipt = _create_backup(
         backup_dir,
         managed_destinations,
@@ -578,6 +628,13 @@ def install(
 
     try:
         _remove_managed_runtime_source(runtime_root)
+        for destination in retired_destinations:
+            if destination.is_symlink():
+                raise RuntimeError(f"refusing to retire symlinked feed path: {destination}")
+            if destination.exists():
+                if not destination.is_file():
+                    raise RuntimeError(f"retired feed path is not a regular file: {destination}")
+                destination.unlink()
         for _, source_path, destination, _ in mappings:
             _atomic_copy(source_path, destination)
 
@@ -597,6 +654,7 @@ def install(
         return {
             "ok": True,
             "installed_files": len(mappings),
+            "retired": [str(path) for path in retired_destinations],
             "backup_dir": str(backup_dir),
             "readback": readback,
         }

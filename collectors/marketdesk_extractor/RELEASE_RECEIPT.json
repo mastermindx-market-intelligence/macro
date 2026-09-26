@@ -1,0 +1,31 @@
+{
+  "active_runtime_authority": {
+    "collector_dispatch": "research-ingest.yml",
+    "collector_label": "com.mastermindx.research-trickle",
+    "hourly_workflow_backstop": true,
+    "repository": "mastermindx-market-intelligence/macro"
+  },
+  "base_import_commit": "31981dc66e9a37419b5b7a6aecfde28808785d03",
+  "branch_creation_base_sha": "14055bf177fa83321447b55b1d823cd8047b3519",
+  "capability": "collector-owned event-driven Research Vault ingest dispatch",
+  "changes": [
+    "The collector dispatches ingest only after one or more successful vault publications.",
+    "The existing watermark advances atomically only after GitHub accepts the dispatch.",
+    "Dispatch failure is fail-soft and the hourly workflow remains the correction backstop.",
+    "The deterministic installer backs up and removes the separate feed script and feed LaunchAgent."
+  ],
+  "creates_new_execution_plane": false,
+  "manifest": "SHA256SUMS",
+  "manifest_sha256": "85581c72a868c8b759e793925d1932cbd5309794f98638379ce06a0faff85e03",
+  "operation_key": "research-vault-feed-liveness-r1-20260916-sol-001",
+  "payload_count": 58,
+  "recovery_manifest": "RECOVERY_SHA256SUMS",
+  "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
+  "release_id": "research-vault-feed-liveness-r1-20260916",
+  "retired_runtime_destinations": [
+    "~/mastermind-research/feed.sh",
+    "~/Library/LaunchAgents/com.mastermindx.research-feed.plist"
+  ],
+  "schema": "mastermind.marketdesk_extractor.release.v1",
+  "source_of_truth": "Git commit plus current release manifest"
+}

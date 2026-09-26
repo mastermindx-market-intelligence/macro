@@ -213,6 +213,7 @@ def upload_pending(cfg: Config, conn, *, limit: int | None = None,
 class VaultSummary:
     published: int = 0
     skipped: int = 0
+    latest_vaulted_at: str = ""
 
     def summary(self) -> str:
         return f"published={self.published} skipped={self.skipped}"
@@ -261,8 +262,10 @@ def publish_vault_pending(
         else:
             vid = pub.publish(view, force=force)
         if vid:
-            db.mark_vaulted(conn, row["blob_id"], vid, utc_now().isoformat())
+            vaulted_at = utc_now().isoformat()
+            db.mark_vaulted(conn, row["blob_id"], vid, vaulted_at)
             res.published += 1
+            res.latest_vaulted_at = vaulted_at
         else:
             res.skipped += 1
 

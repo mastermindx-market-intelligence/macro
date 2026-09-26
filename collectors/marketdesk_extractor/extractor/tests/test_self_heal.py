@@ -12,6 +12,7 @@ short-circuits before ``item_extra`` is ever called again. These tests cover:
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 
 from marketdesk_extractor import db
@@ -156,11 +157,15 @@ def test_vault_pass_routes_reheal_to_json_only_republish(tmp_path, monkeypatch):
         fake["pub"] = FakePublisher(c); return fake["pub"]
     monkeypatch.setattr(pipeline, "VaultPublisher", _factory, raising=False)
     monkeypatch.setattr("marketdesk_extractor.publish_vault.VaultPublisher", _factory, raising=False)
+    vaulted_at = datetime(2026, 9, 16, 20, 34, 5, tzinfo=timezone.utc)
+    monkeypatch.setattr(pipeline, "utc_now", lambda: vaulted_at)
 
     res = pipeline.publish_vault_pending(cfg, conn)
     pub = fake["pub"]
     assert res.published == 2
+    assert res.latest_vaulted_at == vaulted_at.isoformat()
     assert pub.published == ["FRESH"]          # never-vaulted → full publish
     assert pub.residecared == ["REHEAL"]       # already-vaulted → JSON-only re-publish
     # both are now (re)marked vaulted
-    assert db.get_by_blob_id(conn, "REHEAL")["vaulted_at"] is not None
+    assert db.get_by_blob_id(conn, "FRESH")["vaulted_at"] == vaulted_at.isoformat()
+    assert db.get_by_blob_id(conn, "REHEAL")["vaulted_at"] == vaulted_at.isoformat()
