@@ -1,0 +1,130 @@
+{
+  "schema_version": "toi.w1_residual_family_dispositions.v1",
+  "as_of": "2026-09-13",
+  "authority": "W1 evidence/ownership classification only; no market-outcome, W3, Prophet, rank, gate, size, execution or trade authority",
+  "parent_operation": "TOI-W1-EVIDENCE-CENSUS-V1",
+  "rule": "Residual families are kept outside the active W3 passport trial family when their current disposition is existing-owner, comparator-only, blocked/opaque, or a later model family. This artifact does not create a second registry; Setup Species, CPI, Live Entry Radar, Market/Regime owners and Research Factory remain canonical.",
+  "families": [
+    {
+      "family_id": "gap_imbalance_generic",
+      "representative_methods": ["generic three-candle fair-value gap", "gap fill"],
+      "research_priority": "P2",
+      "owner_disposition": "toi_later_context",
+      "local_state": "exact_local_challenger",
+      "evidence_paths": ["engine/challenger_signals.py", "tests/test_challenger_signals.py"],
+      "local_signal_ids": ["fvg_bull_form", "fvg_bear_form", "fvg_bull_fill", "fvg_bear_fill"],
+      "dnr_keys": ["DNR:KILL-PM3-GAP-MAP"],
+      "dnr_interpretation": "The generic three-candle imbalance is explicitly fenced as a different construction from the falsified PM3 unfilled-overhead-gap map. PM3 stays killed; any inverse/revival reading needs a new preregistration.",
+      "horizon_owner_boundary": "Weekly/Daily/candidate-4H descriptive research may be considered later; true tactical 5m/RTH gap events remain Live Entry Radar-owned.",
+      "w3_first_vertical": "hold",
+      "reason": "Useful structural context, but it must not launder the killed PM3 gap-map or expand the first Compression Release family without a new registered hypothesis."
+    },
+    {
+      "family_id": "divergence",
+      "representative_methods": ["RSI divergence", "price/oscillator divergence"],
+      "research_priority": "P2",
+      "owner_disposition": "toi_later_context",
+      "local_state": "partial_existing",
+      "evidence_paths": ["engine/cycles.py", "research/CYCLE_INTELLIGENCE_PROBLEM_AUDIT_FOR_FABLE.md"],
+      "local_signal_ids": ["rsi_divergence"],
+      "dnr_keys": [],
+      "known_at_boundary": "Current pivot/divergence machinery has historical causal-availability caveats around symmetric pivot confirmation; a TOI construction must timestamp confirmation/known-at rather than backdate the pivot.",
+      "w3_first_vertical": "hold",
+      "reason": "Divergence is a legitimate later context family, but existing local code cannot be promoted into first-vertical evidence without resolving confirmation-time semantics."
+    },
+    {
+      "family_id": "candlestick_and_bar_patterns",
+      "representative_methods": ["candlestick formations", "single/multi-bar price-action patterns"],
+      "research_priority": "archive",
+      "owner_disposition": "terminal_display",
+      "local_state": "covered_by_deterministic_bar_grammar_and_visual_catalog",
+      "evidence_paths": ["engine/bar_structure_signals.py", "engine/tech_catalog.py"],
+      "dnr_keys": [],
+      "w3_first_vertical": "exclude",
+      "reason": "Deterministic high/low bar grammar is already represented by toi.inside_bar. Broad named-candlestick enumeration would multiply aliases without adding a distinct first-vertical mechanism."
+    },
+    {
+      "family_id": "cycle_phase_and_cycle_transforms",
+      "representative_methods": ["cycle phase clock", "cycle transition state", "monthly oscillator cycle context"],
+      "research_priority": "archive",
+      "owner_disposition": "existing_species",
+      "canonical_owner": "Cycle Pattern Intelligence / cycle-intelligence",
+      "local_state": "existing_owner_live_research_plane",
+      "evidence_paths": ["research/CYCLE_PATTERN_INTELLIGENCE_MASTERPLAN_BY_FABLE.md", "engine/cycle_pattern/phase_clock.py", "data/cycle_pattern/truths.jsonl"],
+      "dnr_keys": ["DNR:KILL-ROTATION-CYCLE-CONFLUENCE"],
+      "w3_first_vertical": "comparator_or_context_only",
+      "reason": "TOI may consume separately governed cycle context later but may not create a second cycle phase/turn/hazard owner or count CPI state as a new technical species."
+    },
+    {
+      "family_id": "breadth_and_peer_confirmation",
+      "representative_methods": ["market breadth", "sector/peer participation", "advance/decline confirmation"],
+      "research_priority": "P2",
+      "owner_disposition": "toi_later_context",
+      "local_state": "existing_shared_substrate_no_new_toi_store",
+      "evidence_paths": ["data/breadth/constituents.parquet", "research/LIVE_ENTRY_RADAR_PR0_RESEARCH_CONTRACT.md"],
+      "dnr_keys": [],
+      "aggregation_scope": ["breadth", "cross_sectional", "sector_theme_basket"],
+      "w3_first_vertical": "hold",
+      "reason": "Peer participation may later condition technical opportunity, but W1 must reuse the canonical universe/breadth substrate and must not invent a second breadth store or survivor-defined denominator."
+    },
+    {
+      "family_id": "market_regime_conditioning",
+      "representative_methods": ["RISK_ON/MIXED/RISK_OFF technical conditioning", "regime-conditioned transition probability"],
+      "research_priority": "P2",
+      "owner_disposition": "toi_later_context",
+      "canonical_owner": "existing market/risk regime plane",
+      "local_state": "existing_context_consumer_only",
+      "evidence_paths": ["engine/market_state.py", "engine/regime_coherence.py", "scripts/build_regime_prior.py"],
+      "dnr_keys": ["DNR:KILL-REGIME-SCORECARD", "DNR:KILL-FUSED-COMPOSITE"],
+      "w3_first_vertical": "hold",
+      "reason": "Regime may condition a later calibrated model, but TOI must consume the existing regime owner and may not originate a new fused regime/technical score."
+    },
+    {
+      "family_id": "sequence_representation_learning",
+      "representative_methods": ["learned path embedding", "sequence model over causal technical states"],
+      "research_priority": "P2",
+      "owner_disposition": "toi_later_context",
+      "local_state": "not_built",
+      "evidence_paths": ["research/TECHNICAL_OPPORTUNITY_INTELLIGENCE_ARCHITECTURE_FREEZE_2026-08-27.md"],
+      "dnr_keys": ["DNR:KILL-OUTCOME-AUDITION", "DNR:KILL-FUSED-COMPOSITE"],
+      "w3_first_vertical": "exclude",
+      "reason": "A learned sequence challenger is only meaningful after simple causal families have a frozen baseline, leakage-safe replay and multiplicity budget. Model output has zero rank/gate/trade authority by default."
+    },
+    {
+      "family_id": "exhaustion_and_extension",
+      "representative_methods": ["extension/remaining-opportunity state", "exhaustion risk"],
+      "research_priority": "P2",
+      "owner_disposition": "toi_later_context",
+      "local_state": "partial_from_existing_path_risk_and_location_features",
+      "evidence_paths": ["engine/path_risk_signals.py", "engine/momentum_context_signals.py", "engine/htf_durability.py"],
+      "dnr_keys": [],
+      "w3_first_vertical": "hold",
+      "reason": "The product job requires eventual no-chase/exhaustion context, but the first vertical should establish the setup-to-release occurrence before adding a second-stage exhaustion model."
+    },
+    {
+      "family_id": "opaque_fused_vendor_composites",
+      "representative_methods": ["GoNoGo Trend/Oscillator"],
+      "research_priority": "blocked",
+      "owner_disposition": "blocked",
+      "local_state": "blocked_proprietary_or_redundant",
+      "evidence_paths": ["research/TRENDSPIDER_REVIVAL_ADJUDICATION_2026-07-19.md"],
+      "dnr_keys": ["DNR:KILL-FUSED-COMPOSITE"],
+      "w3_first_vertical": "blocked",
+      "reason": "Vendor weights are undisclosed and a generic rebuild would fuse already-owned components into one opaque vote. No lawful clean-room W3 construction is created."
+    },
+    {
+      "family_id": "opaque_proprietary_pivots",
+      "representative_methods": ["TW Pivot", "undisclosed vendor pivot/countdown methods"],
+      "research_priority": "blocked",
+      "owner_disposition": "blocked",
+      "local_state": "blocked_proprietary",
+      "evidence_paths": ["research/TRENDSPIDER_REVIVAL_ADJUDICATION_2026-07-19.md"],
+      "dnr_keys": [],
+      "w3_first_vertical": "blocked",
+      "reason": "No formula is disclosed. Guessing an implementation would invent a proprietary-adjacent method rather than reproduce lawful public evidence."
+    }
+  ],
+  "family_counts": {"P2": 6, "archive": 2, "blocked": 2, "total": 10},
+  "w3_trial_family_effect": "none of these ten residual classifications enters the first Compression Release W3 search family without a new preregistered decision",
+  "outcomes_read": false
+}
