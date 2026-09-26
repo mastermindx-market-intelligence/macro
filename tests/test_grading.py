@@ -1370,3 +1370,80 @@ def test_prophet_discovery_maturity_reasons_do_not_call_market_mature_name_short
     assert result["counts"]["short_name_history_after_market_mature"] == 1
     assert result["counts"]["insufficient_followup"] == 0
     assert result["confirmed_exchange_suspension_evidence"] == "NOT_EVALUATED"
+
+
+@pytest.mark.parametrize("market", ["HK", "CA"])
+@pytest.mark.parametrize("fault", [
+    "benchmark_before_fill", "benchmark_behind_name", "benchmark_missing_fill",
+    "benchmark_missing_observed_session",
+    "name_absent", "name_empty", "name_missing_fill",
+    "benchmark_duplicate_sessions", "name_duplicate_sessions",
+    "benchmark_not_datetime", "name_not_monotonic",
+])
+def test_prophet_discovery_maturity_requires_coherent_native_clocks(monkeypatch, market, fault):
+    """Incomplete or contradictory source clocks are not normal right-censoring."""
+    from engine import prophet_discovery_grade as pdg
+
+    idx = pd.bdate_range("2026-09-18", periods=5)
+    close = pd.Series(100.0, index=idx)
+    bench = close.copy()
+    if fault == "benchmark_before_fill":
+        bench = bench.iloc[:1]
+    elif fault == "benchmark_behind_name":
+        bench = bench.iloc[:3]
+    elif fault == "benchmark_missing_fill":
+        bench = bench.drop(idx[1])
+    elif fault == "benchmark_missing_observed_session":
+        bench = bench.drop(idx[2])
+    elif fault == "name_absent":
+        close = None
+    elif fault == "name_empty":
+        close = close.iloc[:0]
+    elif fault == "name_missing_fill":
+        close = close.drop(idx[1])
+    elif fault == "benchmark_duplicate_sessions":
+        bench = pd.concat([bench, bench.iloc[[-1]]])
+    elif fault == "name_duplicate_sessions":
+        close = pd.concat([close, close.iloc[[-1]]])
+    elif fault == "benchmark_not_datetime":
+        bench.index = bench.index.strftime("%Y-%m-%d")
+    elif fault == "name_not_monotonic":
+        close = close.iloc[::-1]
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: bench)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    frame = pd.DataFrame([{
+        "session_date": "2026-09-18", "security_ref": "0001.HK" if market == "HK" else "TEST.TO",
+        "outcome_state": pdg.SUSPENDED, "fill_date": "2026-09-21",
+    }])
+    original = frame.copy(deep=True)
+    result = pdg.summarize_maturity_reasons(market, frame)
+    assert result["counts"]["followup_clock_unavailable"] == 1
+    assert result["counts"]["insufficient_followup"] == 0
+    assert sum(result["counts"].values()) == len(frame)
+    assert result["confirmed_exchange_suspension_evidence"] == "NOT_EVALUATED"
+    pd.testing.assert_frame_equal(frame, original)
+
+
+@pytest.mark.parametrize("market", ["HK", "CA"])
+@pytest.mark.parametrize("history,expected", [
+    ("aligned_short", "insufficient_followup"),
+    ("market_mature_name_short", "short_name_history_after_market_mature"),
+    ("both_mature", "canonical_suspension_not_reproduced"),
+])
+def test_prophet_discovery_maturity_clock_guard_keeps_native_reason_boundaries(monkeypatch, market, history, expected):
+    from engine import prophet_discovery_grade as pdg
+
+    idx = pd.bdate_range("2026-09-18", periods=10)
+    bench = pd.Series(100.0, index=idx[:5] if history == "aligned_short" else idx)
+    close = pd.Series(100.0, index=idx if history == "both_mature" else idx[:5])
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: bench)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    frame = pd.DataFrame([{
+        "session_date": "2026-09-18", "security_ref": "0001.HK" if market == "HK" else "TEST.TO",
+        "outcome_state": pdg.SUSPENDED, "fill_date": "2026-09-21",
+    }])
+    original = frame.copy(deep=True)
+    result = pdg.summarize_maturity_reasons(market, frame)
+    assert result["counts"][expected] == 1
+    assert sum(result["counts"].values()) == 1
+    pd.testing.assert_frame_equal(frame, original)

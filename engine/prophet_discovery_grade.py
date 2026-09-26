@@ -475,20 +475,46 @@ def summarize_maturity_reasons(
             continue
 
         fill = pd.to_datetime(row.get("fill_date"), errors="coerce")
-        if pd.isna(fill) or bench is None or bench.empty:
+        ticker = str(row.get("security_ref") or "")
+        close = board_ledger._name_close(m, ticker, ca_cache=cache)
+        if pd.isna(fill) or bench is None or bench.empty or close is None or close.empty:
             counts["followup_clock_unavailable"] += 1
             continue
-        market_after = int((bench.index > fill).sum())
+
+        # A short benchmark file is not evidence of ordinary right-censoring.
+        # Both native clocks must contain the observed fill, and the benchmark
+        # must cover the name's observed sessions before counting follow-up.
+        # This proves relative clock consistency only, not absolute freshness.
+        clocks = (bench.index, close.index)
+        if any(
+            not isinstance(index, pd.DatetimeIndex)
+            or index.hasnans
+            or not index.is_unique
+            or not index.is_monotonic_increasing
+            for index in clocks
+        ):
+            counts["followup_clock_unavailable"] += 1
+            continue
+        try:
+            coherent = (
+                fill in bench.index
+                and fill in close.index
+                and bench.index[-1] >= close.index[-1]
+                and close.index[close.index >= fill].isin(bench.index).all()
+            )
+            if not coherent:
+                counts["followup_clock_unavailable"] += 1
+                continue
+            market_after = int((bench.index > fill).sum())
+            name_after = int((close.index > fill).sum())
+        except (TypeError, ValueError):
+            # Incomparable native timestamps stay unknown; never normalize them
+            # into an invented common calendar or silently rewrite stored rows.
+            counts["followup_clock_unavailable"] += 1
+            continue
         if market_after < min_followup:
             counts["insufficient_followup"] += 1
             continue
-
-        ticker = str(row.get("security_ref") or "")
-        close = board_ledger._name_close(m, ticker, ca_cache=cache)
-        if close is None or close.empty:
-            counts["followup_clock_unavailable"] += 1
-            continue
-        name_after = int((close.index > fill).sum())
         if name_after < min_followup:
             counts["short_name_history_after_market_mature"] += 1
         else:
