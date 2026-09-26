@@ -4637,6 +4637,75 @@ def test_chart_state_ack_history_survives_empty_followup_and_dedupes():
     assert rec["acks"] == [ack]
 
 
+def test_chart_state_older_revision_cannot_replace_current_state_or_acks(monkeypatch):
+    """A delayed old-target POST cannot rewind the mounted chart or erase its receipt."""
+    clock = [1000.0]
+    monkeypatch.setattr(gw.time, "monotonic", lambda: clock[0])
+    ack = {"batch_id": "brain_current", "seq": 0, "id": "ai_current", "ok": True}
+    session = {"symbol": "AAPL", "tf": "1W", "visible_range": {"from": 10, "to": 20}}
+    gw.put_chart_state("u-reorder", "terminal", session,
+                       origin_id="origin-reorder", context_revision=8, acks=[ack])
+    clock[0] += 5
+    returned = gw.put_chart_state(
+        "u-reorder", "terminal", {"symbol": "NVDA", "tf": "1D"},
+        origin_id="origin-reorder", context_revision=7, acks=[],
+    )
+    assert returned["context_revision"] == 8
+    assert returned["updated_at"] == 1000.0  # stale traffic is not fresh telemetry
+    out = gw._tool_read_chart_state(
+        "u-reorder", "terminal", origin_id="origin-reorder", context_revision=8,
+    )
+    assert out["connected"] is True
+    assert out["session"] == session
+    assert out["acks"] == [ack]
+
+
+def test_chart_state_older_revision_cannot_import_stale_acks():
+    """Stale receipts must not overwrite current outcomes or leak into a new target epoch."""
+    ack = {"batch_id": "brain_current", "seq": 0, "id": "ai_current", "ok": True}
+    gw.put_chart_state("u-old-acks", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-old-acks", context_revision=8, acks=[ack])
+    gw.put_chart_state(
+        "u-old-acks", "terminal", {"symbol": "NVDA"},
+        origin_id="origin-old-acks", context_revision=7,
+        acks=[{**ack, "ok": False},
+              {"batch_id": "brain_old", "seq": 1, "id": None, "ok": True}],
+    )
+    rec = gw.get_chart_state_record("u-old-acks", "terminal", origin_id="origin-old-acks")
+    assert rec["acks"] == [ack]
+    assert rec["session"]["symbol"] == "AAPL"
+
+
+@pytest.mark.parametrize("revision", [None, -1, True, "8"])
+def test_chart_state_missing_or_invalid_revision_cannot_downgrade_versioned_origin(revision):
+    gw.put_chart_state("u-downgrade", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-downgrade", context_revision=8)
+    gw.put_chart_state("u-downgrade", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-downgrade", context_revision=revision)
+    rec = gw.get_chart_state_record("u-downgrade", "terminal", origin_id="origin-downgrade")
+    assert rec["context_revision"] == 8
+    assert rec["session"]["symbol"] == "AAPL"
+
+
+def test_chart_state_new_revision_still_starts_fresh_ack_epoch():
+    old_ack = {"batch_id": "brain_old", "seq": 0, "id": None, "ok": True}
+    new_ack = {"batch_id": "brain_new", "seq": 0, "id": None, "ok": True}
+    gw.put_chart_state("u-forward", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-forward", context_revision=7, acks=[old_ack])
+    gw.put_chart_state("u-forward", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-forward", context_revision=8, acks=[new_ack])
+    rec = gw.get_chart_state_record("u-forward", "terminal", origin_id="origin-forward")
+    assert rec["context_revision"] == 8
+    assert rec["session"]["symbol"] == "AAPL"
+    assert rec["acks"] == [new_ack]
+
+
+def test_chart_state_empty_origin_retains_legacy_last_write_behavior():
+    gw.put_chart_state("u-legacy-revision", "terminal", {"symbol": "NVDA"}, context_revision=8)
+    gw.put_chart_state("u-legacy-revision", "terminal", {"symbol": "AAPL"})
+    assert gw.get_chart_state("u-legacy-revision", "terminal") == {"symbol": "AAPL"}
+
+
 def test_chart_state_ack_history_sanitizes_and_bounds():
     """Untrusted POST extras never become model-visible receipt fields; history remains bounded."""
     rows = []
@@ -4843,6 +4912,33 @@ def test_chart_state_route_stores_origin_revision_and_acks():
         assert rec["context_revision"] == 6
         assert rec["session"]["symbol"] == "NVDA"
         assert rec["acks"] == payload["acks"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_chart_state_route_reordered_posts_keep_newer_context_and_receipt():
+    """Real HTTP delivery order must not rewind a versioned Terminal mount."""
+    from app.main import require_user
+    client, app = _brain_state_client()
+    app.dependency_overrides[require_user] = lambda: {"id": "route-reorder-user"}
+    try:
+        latest = {
+            "client": "terminal", "origin_id": "route-reorder", "context_revision": 8,
+            "session": {"symbol": "AAPL", "tf": "1W"},
+            "acks": [{"batch_id": "brain_route_new", "seq": 0, "id": None, "ok": True}],
+        }
+        delayed = {
+            **latest, "context_revision": 7,
+            "session": {"symbol": "NVDA", "tf": "1D"}, "acks": [],
+        }
+        assert client.post("/api/brain/chart/state", json=latest).status_code == 200
+        assert client.post("/api/brain/chart/state", json=delayed).status_code == 200
+        out = gw._tool_read_chart_state(
+            "route-reorder-user", "terminal", origin_id="route-reorder", context_revision=8,
+        )
+        assert out["connected"] is True
+        assert out["session"] == latest["session"]
+        assert out["acks"] == latest["acks"]
     finally:
         app.dependency_overrides.clear()
 
