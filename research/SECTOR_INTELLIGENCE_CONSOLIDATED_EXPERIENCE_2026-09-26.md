@@ -87,6 +87,39 @@ company and filters through applicable tab transitions. A subgroup selection mus
 change scope, not silently relabel its parent's measures. Back restores the original
 object and return position. Escape closes the current disclosure first. Keyboard focus
 returns to its opener; touch supports the same actions without hover dependence.
+### Change, compare, save and monitor
+
+These are product workflows inside the same Sector Central state model, not new dashboards.
+
+**Comparable change.** Each view may surface a concise `What changed` read only when two
+observations are comparable under the same owner identity/population/version semantics.
+Keep different change species distinct: price/participation change, evidence change,
+structural membership change, and source correction/version change. If the prior
+observation is not comparable, show change as unavailable rather than subtracting it.
+The known same-date archive/current Finviz mismatch is a source-version conflict, not a
+market move.
+
+**Compare.** Compare up to a small bounded set of groups/subthemes while preserving each
+object's source clock, population, benchmark and missingness. A common benchmark may support
+a direct numeric comparison; different parent-relative references require an explicit
+warning rather than a synthetic ranking. Shared companies/memberships are disclosed so
+overlapping thematic groups are not counted as independent bets. Comparison never fuses
+named evidence legs into one score.
+
+**Saved view.** Do not make a decorative `Saved views` control look operational. A real
+Sector view is persisted only after an existing canonical saved-state owner is deliberately
+extended/bound to this product. The saved state must include the workspace job,
+representation, universe/classification, selected family/group, measure, date/window,
+filters and selected object. Do not create Sector-specific localStorage or a second saved-
+view API merely to enable the button.
+
+**Monitor.** Follow/watch/alert actions reuse the existing canonical watchlist/alert owners
+and only become active after real write/readback. Meaningful conditions can include a
+leadership/formation change, same-cohort participation deterioration, newly connected
+source-grounded evidence, owner-issued setup-availability change, or stale/unavailable
+source state. `Preference saved`, `watch active` and `alert delivered` are distinct states.
+A saved Sector state may later feed the Daily Desk/briefing return journey; it never becomes
+trade authority by being monitored.
 
 ## 3. Primary viewport composition
 
@@ -208,6 +241,11 @@ evidence without changing source authority:
   subthemes and 924 memberships**. A focused six-family canvas is a prepared comparison,
   not the full universe; the product must state the scope and provide a family picker/
   search so all 40 remain reachable.
+- The Sep-25 stock heatmap design fixture intentionally uses exact source
+  `sector == Technology`, which yields 79 names. The same owner snapshot also contains one
+  distinct `Information Technology` sector row (`P`). Do not silently alias those strings
+  to manufacture an 80-name Technology cohort. Any taxonomy unification belongs to an
+  existing accepted identity/classification owner.
 - Current checked-in Finviz structure equals the latest recorded tree-change vintage
   (2026-08-15) while visible price/performance evidence is later. Structure clocks and
   performance clocks stay separate. The existing Theme Graph/PIT owner, not Sector
