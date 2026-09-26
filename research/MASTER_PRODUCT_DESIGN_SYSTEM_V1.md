@@ -98,6 +98,21 @@ scales below. **No new `:root` token family may be created outside it** on produ
 are permitted only as *derivations* of theme tokens (`--pv-*` and `--ms-*` are the compliant
 pattern: local names bound to theme values at the top of a scope).
 
+### Role binding is consumer-specific
+
+Graphic/tint hues, text-grade `--ink-*`, and solid-label `--fill-*` are separate uses.
+An editable alias must name its repository source role and retain its meaning. Do not use
+raw state hues for small text or white-label buttons merely because the hue is familiar.
+An ink role still needs measurement against the actual background and interaction state;
+its name is not a universal guarantee for nested or hue-tinted surfaces. If a combination
+fails, preserve the state word and semantic icon/rail while using a suitable existing text
+role, or return the shared consumer gap to its source owner. Do not mint a page-local color.
+
+`research/DESIGN_SYSTEM_READABILITY_REPAIR_2026-09-26.md` records one source-derived warning
+label repair and specific unsupported dark/tinted pairs. Its proposed Paper payload is not
+an applied effect or a RIG approval. Project accepted source roles only after reconciling
+file-wide custody; application and after-change evidence remain separate obligations.
+
 ### 2.1 Canonical today (KEEP — already law)
 
 Surfaces `--bg/--panel/--panel2/--line`; text `--text/--muted`; direction `--up/--down` with
@@ -414,6 +429,48 @@ architecture leaking into the customer's cognitive model are the census-measured
     question. **Deletion and demotion are design acts of equal rank with addition.** Every
     removal gets a named landing (the packet's demotion-landing-table pattern) — demoted, not
     deleted, is the default; deleted-with-no-landing requires the packet to say so.
+
+---
+
+### 9.1 Prepared tasks and complete returns
+
+The components above must compose a useful task before the user configures the product.
+Start with the relevant comparison, meaningful changes or an existing owner-ranked result;
+keep the full population, advanced controls and direct research path accessible. A blank
+configurator or a set of equally weighted metrics is not the default briefing.
+
+The first read follows the content doctrine: **subject → owned assessment → consequential
+qualification → useful continuation**. This is a semantic order, not four mandatory cards.
+The result list, a plain headline or a visual comparison can carry the answer. Descriptions,
+badges and footers are optional; add them only when they change interpretation, prevent an
+important mistake or enable the task. Never shrink critical copy or remove its context to
+fit a word budget. Preserve adverse evidence; an honest unknown is a valid assessment.
+
+Use the existing archetype for the job rather than forcing every route into the same layout:
+
+| Job | Default useful surface | Depth that stays reachable |
+|---|---|---|
+| Orient | Main read and decisive comparison | Drivers, conflicts, coverage and history |
+| Prioritize | Meaningful changes or source-owned ranked results | Complete population and advanced filters |
+| Inspect | Stable subject, relevant evidence and qualifications | Full dossier, methodology and contrary evidence |
+| Monitor | Changes since the user's relevant checkpoint | Managed list, history and source status |
+
+Quick inspection and Study are depths, not a compulsory click funnel. Frequently used
+comparisons stay together. Every demotion names its destination and preserves the ordinary
+workflow. A panel that becomes shorter by forcing users to reconstruct its answer elsewhere
+has not become simpler.
+
+Every inspect/compare/save/track control specifies its real result and return behavior.
+Preserve the exact subject/listing and applicable market, filters, period, benchmark,
+selection and return position; reset incompatible state explicitly. A request is not a
+confirmed save or active alert. A refresh must not silently replace the inspected object.
+Normal long analytical pages use document scrolling with clear orientation, not poster-height
+clipping or a nested scroll box per panel; the chart workspace keeps its distinct pane model.
+
+Record these details in the existing migration packet fields 3B/3C/4/6/11/12. Separate
+technical, design, intended-user comprehension and real-journey evidence. Neither author
+confidence nor a successful screenshot is a human-comprehension receipt. This section adds
+no approval store, trade authority or extra human gate for routine reversible edits.
 
 ---
 
