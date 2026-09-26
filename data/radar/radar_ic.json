@@ -1,7 +1,7 @@
 {
   "schema": "radar_ic.v2",
   "as_of": "2026-09-25",
-  "generated_at": "2026-09-25T08:48:21.051042+00:00",
+  "generated_at": "2026-09-25T21:14:38.134632+00:00",
   "horizon_d": 21,
   "horizons": [
     21,
@@ -9,220 +9,220 @@
     91
   ],
   "seed_horizon_cal_d": 91,
-  "n_snapshots": 15950,
-  "n_matured": 12709,
-  "ic_all": -0.0955,
-  "ic_all_signed": -0.041,
-  "ic_rolling_90": -0.0858,
+  "n_snapshots": 16284,
+  "n_matured": 12807,
+  "ic_all": -0.0931,
+  "ic_all_signed": -0.0402,
+  "ic_rolling_90": -0.3171,
   "by_bucket": {
     "0-40": {
-      "n": 11382,
-      "n_directional": 10992,
-      "hit_rate": 0.494,
-      "mean_fwd_ret": -0.0044
+      "n": 11474,
+      "n_directional": 11079,
+      "hit_rate": 0.495,
+      "mean_fwd_ret": -0.0047
     },
     "40-70": {
-      "n": 1073,
-      "n_directional": 1063,
-      "hit_rate": 0.44,
+      "n": 1078,
+      "n_directional": 1068,
+      "hit_rate": 0.443,
       "mean_fwd_ret": -0.0472
     },
     "70-100": {
-      "n": 254,
-      "n_directional": 254,
-      "hit_rate": 0.339,
-      "mean_fwd_ret": -0.0573
+      "n": 255,
+      "n_directional": 255,
+      "hit_rate": 0.341,
+      "mean_fwd_ret": -0.0574
     }
   },
   "by_state": {
-    "POSITIVE_DIVERGENCE": {
-      "n": 2241,
-      "dir_accuracy": 0.425,
-      "excess_vs_base": -0.014,
-      "mean_fwd_ret": -0.0128
-    },
     "CONFIRMED_UP": {
-      "n": 2359,
-      "dir_accuracy": 0.371,
-      "excess_vs_base": -0.068,
-      "mean_fwd_ret": -0.0302
+      "n": 2376,
+      "dir_accuracy": 0.37,
+      "excess_vs_base": -0.067,
+      "mean_fwd_ret": -0.0301
     },
-    "CONFIRMED_DOWN": {
-      "n": 3608,
-      "dir_accuracy": 0.495,
-      "excess_vs_base": -0.066,
-      "mean_fwd_ret": 0.0075
+    "POSITIVE_DIVERGENCE": {
+      "n": 2254,
+      "dir_accuracy": 0.425,
+      "excess_vs_base": -0.012,
+      "mean_fwd_ret": -0.0129
     },
     "NEGATIVE_DIVERGENCE": {
-      "n": 4101,
-      "dir_accuracy": 0.578,
+      "n": 4137,
+      "dir_accuracy": 0.58,
       "excess_vs_base": 0.017,
-      "mean_fwd_ret": -0.0109
+      "mean_fwd_ret": -0.0111
+    },
+    "CONFIRMED_DOWN": {
+      "n": 3635,
+      "dir_accuracy": 0.498,
+      "excess_vs_base": -0.065,
+      "mean_fwd_ret": 0.0072
     }
   },
   "base_rate": {
-    "n": 12709,
-    "p_up": 0.439,
-    "mean_fwd_ret": -0.0091,
-    "median_fwd_ret": -0.0118
+    "n": 12807,
+    "p_up": 0.437,
+    "mean_fwd_ret": -0.0093,
+    "median_fwd_ret": -0.012
   },
-  "note": "12709 matured row-observations (horizon=21d; 2420 distinct episodes). Base rate P(beat SPY)=0.439. IC_all=-0.0955 (unsigned legacy), IC_signed=-0.041. CONTEXT-ONLY \u2014 never fed into a score/size/allocation.",
+  "note": "12807 matured row-observations (horizon=21d; 2448 distinct episodes). Base rate P(beat SPY)=0.437. IC_all=-0.0931 (unsigned legacy), IC_signed=-0.0402. CONTEXT-ONLY \u2014 never fed into a score/size/allocation.",
   "by_horizon": {
     "21": {
-      "n_matured": 12709,
-      "ic_all": -0.0955,
-      "ic_all_signed": -0.041,
-      "ic_rolling_90": -0.0858,
+      "n_matured": 12807,
+      "ic_all": -0.0931,
+      "ic_all_signed": -0.0402,
+      "ic_rolling_90": -0.3171,
       "ic_daily_hac": {
-        "mean_ic": -0.0171,
-        "ic_vol": 0.1679,
-        "ic_ir": -0.102,
-        "ic_ir_ann": -0.66,
-        "t_hac": -0.343,
-        "p_hac": 0.7313,
+        "mean_ic": -0.0182,
+        "ic_vol": 0.1664,
+        "ic_ir": -0.109,
+        "ic_ir_ann": -0.707,
+        "t_hac": -0.366,
+        "p_hac": 0.7147,
         "hit": 0.528,
         "n": 53,
         "hac_lags": 21,
         "hac_lags_requested": 21
       },
       "ic_daily_hac_claims": {
-        "mean_ic": 0.0375,
-        "ic_vol": 0.1779,
-        "ic_ir": 0.211,
-        "ic_ir_ann": 1.365,
-        "t_hac": 0.86,
-        "p_hac": 0.39,
+        "mean_ic": 0.0366,
+        "ic_vol": 0.1771,
+        "ic_ir": 0.207,
+        "ic_ir_ann": 1.339,
+        "t_hac": 0.841,
+        "p_hac": 0.4004,
         "hit": 0.604,
         "n": 53,
         "hac_lags": 21,
         "hac_lags_requested": 21
       },
       "base_rate": {
-        "n": 12709,
-        "p_up": 0.439,
-        "mean_fwd_ret": -0.0091,
-        "median_fwd_ret": -0.0118
+        "n": 12807,
+        "p_up": 0.437,
+        "mean_fwd_ret": -0.0093,
+        "median_fwd_ret": -0.012
       },
       "by_bucket": {
         "0-40": {
-          "n": 11382,
-          "n_directional": 10992,
-          "hit_rate": 0.494,
-          "mean_fwd_ret": -0.0044
+          "n": 11474,
+          "n_directional": 11079,
+          "hit_rate": 0.495,
+          "mean_fwd_ret": -0.0047
         },
         "40-70": {
-          "n": 1073,
-          "n_directional": 1063,
-          "hit_rate": 0.44,
+          "n": 1078,
+          "n_directional": 1068,
+          "hit_rate": 0.443,
           "mean_fwd_ret": -0.0472
         },
         "70-100": {
-          "n": 254,
-          "n_directional": 254,
-          "hit_rate": 0.339,
-          "mean_fwd_ret": -0.0573
+          "n": 255,
+          "n_directional": 255,
+          "hit_rate": 0.341,
+          "mean_fwd_ret": -0.0574
         }
       },
       "by_state": {
-        "POSITIVE_DIVERGENCE": {
-          "n": 2241,
-          "dir_accuracy": 0.425,
-          "excess_vs_base": -0.014,
-          "mean_fwd_ret": -0.0128
-        },
         "CONFIRMED_UP": {
-          "n": 2359,
-          "dir_accuracy": 0.371,
-          "excess_vs_base": -0.068,
-          "mean_fwd_ret": -0.0302
+          "n": 2376,
+          "dir_accuracy": 0.37,
+          "excess_vs_base": -0.067,
+          "mean_fwd_ret": -0.0301
         },
-        "CONFIRMED_DOWN": {
-          "n": 3608,
-          "dir_accuracy": 0.495,
-          "excess_vs_base": -0.066,
-          "mean_fwd_ret": 0.0075
+        "POSITIVE_DIVERGENCE": {
+          "n": 2254,
+          "dir_accuracy": 0.425,
+          "excess_vs_base": -0.012,
+          "mean_fwd_ret": -0.0129
         },
         "NEGATIVE_DIVERGENCE": {
-          "n": 4101,
-          "dir_accuracy": 0.578,
+          "n": 4137,
+          "dir_accuracy": 0.58,
           "excess_vs_base": 0.017,
-          "mean_fwd_ret": -0.0109
+          "mean_fwd_ret": -0.0111
+        },
+        "CONFIRMED_DOWN": {
+          "n": 3635,
+          "dir_accuracy": 0.498,
+          "excess_vs_base": -0.065,
+          "mean_fwd_ret": 0.0072
         }
       },
       "by_kind": {
         "basket": {
-          "n": 1087,
-          "n_directional": 1087,
-          "n_nonclaim": 0,
-          "dir_accuracy": 0.459,
-          "mean_fwd_ret": -0.0086
-        },
-        "ticker": {
-          "n": 11622,
-          "n_directional": 11222,
-          "n_nonclaim": 400,
-          "dir_accuracy": 0.489,
-          "mean_fwd_ret": -0.0092
-        }
-      },
-      "claims": {
-        "n": 6342,
-        "n_directional": 6342,
-        "n_nonclaim": 0,
-        "dir_accuracy": 0.524,
-        "mean_fwd_ret": -0.0116,
-        "base_dart": 0.518,
-        "excess_vs_base": 0.006
-      },
-      "diagonal": {
-        "n": 5967,
-        "n_directional": 5967,
-        "n_nonclaim": 0,
-        "dir_accuracy": 0.446,
-        "mean_fwd_ret": -0.0074,
-        "base_dart": 0.513,
-        "excess_vs_base": -0.067
-      },
-      "episodes": {
-        "n_matured": 2420,
-        "base_rate": {
-          "n": 2420,
-          "p_up": 0.42,
-          "mean_fwd_ret": -0.0139,
-          "median_fwd_ret": -0.0147
-        },
-        "claims": {
-          "n": 1193,
-          "n_directional": 1193,
-          "n_nonclaim": 0,
-          "dir_accuracy": 0.545,
-          "mean_fwd_ret": -0.0153,
-          "base_dart": 0.522,
-          "excess_vs_base": 0.023
-        },
-        "diagonal": {
           "n": 1095,
           "n_directional": 1095,
           "n_nonclaim": 0,
-          "dir_accuracy": 0.467,
-          "mean_fwd_ret": -0.0134
+          "dir_accuracy": 0.46,
+          "mean_fwd_ret": -0.0085
         },
-        "ic_signed": 0.0071
+        "ticker": {
+          "n": 11712,
+          "n_directional": 11307,
+          "n_nonclaim": 405,
+          "dir_accuracy": 0.49,
+          "mean_fwd_ret": -0.0094
+        }
       },
-      "note": "12709 matured row-observations (horizon=21d; 2420 distinct episodes). Base rate P(beat SPY)=0.439. IC_all=-0.0955 (unsigned legacy), IC_signed=-0.041. CONTEXT-ONLY \u2014 never fed into a score/size/allocation."
+      "claims": {
+        "n": 6391,
+        "n_directional": 6391,
+        "n_nonclaim": 0,
+        "dir_accuracy": 0.525,
+        "mean_fwd_ret": -0.0117,
+        "base_dart": 0.519,
+        "excess_vs_base": 0.006
+      },
+      "diagonal": {
+        "n": 6011,
+        "n_directional": 6011,
+        "n_nonclaim": 0,
+        "dir_accuracy": 0.447,
+        "mean_fwd_ret": -0.0076,
+        "base_dart": 0.513,
+        "excess_vs_base": -0.066
+      },
+      "episodes": {
+        "n_matured": 2448,
+        "base_rate": {
+          "n": 2448,
+          "p_up": 0.418,
+          "mean_fwd_ret": -0.0142,
+          "median_fwd_ret": -0.0151
+        },
+        "claims": {
+          "n": 1207,
+          "n_directional": 1207,
+          "n_nonclaim": 0,
+          "dir_accuracy": 0.546,
+          "mean_fwd_ret": -0.0154,
+          "base_dart": 0.523,
+          "excess_vs_base": 0.023
+        },
+        "diagonal": {
+          "n": 1105,
+          "n_directional": 1105,
+          "n_nonclaim": 0,
+          "dir_accuracy": 0.467,
+          "mean_fwd_ret": -0.0136
+        },
+        "ic_signed": 0.0084
+      },
+      "note": "12807 matured row-observations (horizon=21d; 2448 distinct episodes). Base rate P(beat SPY)=0.437. IC_all=-0.0931 (unsigned legacy), IC_signed=-0.0402. CONTEXT-ONLY \u2014 never fed into a score/size/allocation."
     },
     "63": {
       "n_matured": 6492,
-      "ic_all": -0.1404,
-      "ic_all_signed": -0.1005,
-      "ic_rolling_90": -0.056,
+      "ic_all": -0.1406,
+      "ic_all_signed": -0.1006,
+      "ic_rolling_90": -0.081,
       "ic_daily_hac": {
-        "mean_ic": -0.1283,
+        "mean_ic": -0.1284,
         "ic_vol": 0.1837,
-        "ic_ir": -0.698,
-        "ic_ir_ann": -7.839,
-        "t_hac": -1.835,
-        "p_hac": 0.0665,
+        "ic_ir": -0.699,
+        "ic_ir_ann": -7.845,
+        "t_hac": -1.837,
+        "p_hac": 0.0662,
         "hit": 0.296,
         "n": 27,
         "hac_lags": 26,
@@ -231,10 +231,10 @@
       "ic_daily_hac_claims": {
         "mean_ic": -0.0499,
         "ic_vol": 0.1894,
-        "ic_ir": -0.264,
-        "ic_ir_ann": -2.958,
-        "t_hac": -1.001,
-        "p_hac": 0.317,
+        "ic_ir": -0.263,
+        "ic_ir_ann": -2.956,
+        "t_hac": -0.999,
+        "p_hac": 0.3176,
         "hit": 0.481,
         "n": 27,
         "hac_lags": 26,
@@ -244,14 +244,14 @@
         "n": 6492,
         "p_up": 0.392,
         "mean_fwd_ret": -0.02,
-        "median_fwd_ret": -0.0397
+        "median_fwd_ret": -0.0398
       },
       "by_bucket": {
         "0-40": {
           "n": 5590,
           "n_directional": 5525,
           "hit_rate": 0.506,
-          "mean_fwd_ret": -0.0061
+          "mean_fwd_ret": -0.006
         },
         "40-70": {
           "n": 710,
@@ -263,33 +263,33 @@
           "n": 192,
           "n_directional": 192,
           "hit_rate": 0.349,
-          "mean_fwd_ret": -0.0852
+          "mean_fwd_ret": -0.0851
         }
       },
       "by_state": {
-        "POSITIVE_DIVERGENCE": {
-          "n": 1414,
-          "dir_accuracy": 0.39,
-          "excess_vs_base": -0.002,
-          "mean_fwd_ret": -0.0035
-        },
         "CONFIRMED_UP": {
           "n": 1365,
           "dir_accuracy": 0.325,
           "excess_vs_base": -0.067,
           "mean_fwd_ret": -0.0715
         },
-        "CONFIRMED_DOWN": {
-          "n": 1758,
-          "dir_accuracy": 0.55,
-          "excess_vs_base": -0.058,
-          "mean_fwd_ret": 0.0121
+        "POSITIVE_DIVERGENCE": {
+          "n": 1414,
+          "dir_accuracy": 0.39,
+          "excess_vs_base": -0.002,
+          "mean_fwd_ret": -0.0034
         },
         "NEGATIVE_DIVERGENCE": {
           "n": 1880,
-          "dir_accuracy": 0.624,
-          "excess_vs_base": 0.016,
+          "dir_accuracy": 0.623,
+          "excess_vs_base": 0.015,
           "mean_fwd_ret": -0.0304
+        },
+        "CONFIRMED_DOWN": {
+          "n": 1758,
+          "dir_accuracy": 0.551,
+          "excess_vs_base": -0.057,
+          "mean_fwd_ret": 0.0121
         }
       },
       "by_kind": {
@@ -312,25 +312,25 @@
         "n": 3294,
         "n_directional": 3294,
         "n_nonclaim": 0,
-        "dir_accuracy": 0.524,
-        "mean_fwd_ret": -0.0189,
+        "dir_accuracy": 0.523,
+        "mean_fwd_ret": -0.0188,
         "base_dart": 0.515,
-        "excess_vs_base": 0.009
+        "excess_vs_base": 0.008
       },
       "diagonal": {
         "n": 3123,
         "n_directional": 3123,
         "n_nonclaim": 0,
-        "dir_accuracy": 0.451,
+        "dir_accuracy": 0.452,
         "mean_fwd_ret": -0.0244,
         "base_dart": 0.514,
-        "excess_vs_base": -0.063
+        "excess_vs_base": -0.062
       },
       "episodes": {
         "n_matured": 1241,
         "base_rate": {
           "n": 1241,
-          "p_up": 0.38,
+          "p_up": 0.379,
           "mean_fwd_ret": -0.0265,
           "median_fwd_ret": -0.043
         },
@@ -338,32 +338,32 @@
           "n": 629,
           "n_directional": 629,
           "n_nonclaim": 0,
-          "dir_accuracy": 0.531,
-          "mean_fwd_ret": -0.026,
-          "base_dart": 0.522,
-          "excess_vs_base": 0.009
+          "dir_accuracy": 0.533,
+          "mean_fwd_ret": -0.0261,
+          "base_dart": 0.523,
+          "excess_vs_base": 0.01
         },
         "diagonal": {
           "n": 583,
           "n_directional": 583,
           "n_nonclaim": 0,
           "dir_accuracy": 0.492,
-          "mean_fwd_ret": -0.0333
+          "mean_fwd_ret": -0.0332
         },
         "ic_signed": -0.0472
       },
-      "note": "6492 matured row-observations (horizon=63d; 1241 distinct episodes). Base rate P(beat SPY)=0.392. IC_all=-0.1404 (unsigned legacy), IC_signed=-0.1005. CONTEXT-ONLY \u2014 never fed into a score/size/allocation."
+      "note": "6492 matured row-observations (horizon=63d; 1241 distinct episodes). Base rate P(beat SPY)=0.392. IC_all=-0.1406 (unsigned legacy), IC_signed=-0.1006. CONTEXT-ONLY \u2014 never fed into a score/size/allocation."
     },
     "91": {
-      "n_matured": 928,
-      "ic_all": -0.2096,
-      "ic_all_signed": -0.25,
-      "ic_rolling_90": -0.0956,
+      "n_matured": 971,
+      "ic_all": -0.2057,
+      "ic_all_signed": -0.2497,
+      "ic_rolling_90": -0.1133,
       "ic_daily_hac": {
-        "mean_ic": -0.2656,
-        "ic_vol": 0.0405,
-        "ic_ir": -6.553,
-        "ic_ir_ann": -88.403,
+        "mean_ic": -0.2683,
+        "ic_vol": 0.0402,
+        "ic_ir": -6.68,
+        "ic_ir_ann": -90.125,
         "t_hac": null,
         "p_hac": null,
         "hit": 0.0,
@@ -372,10 +372,10 @@
         "hac_lags_requested": 91
       },
       "ic_daily_hac_claims": {
-        "mean_ic": -0.2467,
-        "ic_vol": 0.0689,
-        "ic_ir": -3.578,
-        "ic_ir_ann": -48.273,
+        "mean_ic": -0.2598,
+        "ic_vol": 0.0582,
+        "ic_ir": -4.465,
+        "ic_ir_ann": -60.24,
         "t_hac": null,
         "p_hac": null,
         "hit": 0.0,
@@ -384,23 +384,23 @@
         "hac_lags_requested": 91
       },
       "base_rate": {
-        "n": 928,
-        "p_up": 0.322,
-        "mean_fwd_ret": -0.0501,
-        "median_fwd_ret": -0.0871
+        "n": 971,
+        "p_up": 0.317,
+        "mean_fwd_ret": -0.053,
+        "median_fwd_ret": -0.0898
       },
       "by_bucket": {
         "0-40": {
-          "n": 708,
-          "n_directional": 708,
-          "hit_rate": 0.331,
-          "mean_fwd_ret": -0.031
+          "n": 749,
+          "n_directional": 749,
+          "hit_rate": 0.324,
+          "mean_fwd_ret": -0.0365
         },
         "40-70": {
-          "n": 155,
-          "n_directional": 155,
-          "hit_rate": 0.187,
-          "mean_fwd_ret": -0.1446
+          "n": 157,
+          "n_directional": 157,
+          "hit_rate": 0.191,
+          "mean_fwd_ret": -0.1404
         },
         "70-100": {
           "n": 65,
@@ -410,109 +410,109 @@
         }
       },
       "by_state": {
-        "POSITIVE_DIVERGENCE": {
-          "n": 427,
-          "dir_accuracy": 0.319,
-          "excess_vs_base": -0.003,
-          "mean_fwd_ret": -0.0505
-        },
         "CONFIRMED_UP": {
-          "n": 401,
-          "dir_accuracy": 0.264,
-          "excess_vs_base": -0.058,
-          "mean_fwd_ret": -0.0766
+          "n": 422,
+          "dir_accuracy": 0.261,
+          "excess_vs_base": -0.056,
+          "mean_fwd_ret": -0.0795
         },
-        "CONFIRMED_DOWN": {
-          "n": 51,
-          "dir_accuracy": 0.412,
-          "excess_vs_base": -0.266,
-          "mean_fwd_ret": 0.1038
+        "POSITIVE_DIVERGENCE": {
+          "n": 444,
+          "dir_accuracy": 0.313,
+          "excess_vs_base": -0.004,
+          "mean_fwd_ret": -0.0533
         },
         "NEGATIVE_DIVERGENCE": {
-          "n": 49,
-          "dir_accuracy": 0.449,
-          "excess_vs_base": -0.229,
-          "mean_fwd_ret": 0.0106
+          "n": 52,
+          "dir_accuracy": 0.442,
+          "excess_vs_base": -0.241,
+          "mean_fwd_ret": 0.0141
+        },
+        "CONFIRMED_DOWN": {
+          "n": 53,
+          "dir_accuracy": 0.434,
+          "excess_vs_base": -0.249,
+          "mean_fwd_ret": 0.0942
         }
       },
       "by_kind": {
         "basket": {
-          "n": 114,
-          "n_directional": 114,
+          "n": 121,
+          "n_directional": 121,
           "n_nonclaim": 0,
-          "dir_accuracy": 0.298,
-          "mean_fwd_ret": -0.0177
+          "dir_accuracy": 0.306,
+          "mean_fwd_ret": -0.0179
         },
         "ticker": {
-          "n": 814,
-          "n_directional": 814,
+          "n": 850,
+          "n_directional": 850,
           "n_nonclaim": 0,
-          "dir_accuracy": 0.308,
-          "mean_fwd_ret": -0.0546
+          "dir_accuracy": 0.304,
+          "mean_fwd_ret": -0.058
         }
       },
       "claims": {
-        "n": 476,
-        "n_directional": 476,
+        "n": 496,
+        "n_directional": 496,
         "n_nonclaim": 0,
-        "dir_accuracy": 0.332,
-        "mean_fwd_ret": -0.0442,
-        "base_dart": 0.359,
-        "excess_vs_base": -0.027
+        "dir_accuracy": 0.327,
+        "mean_fwd_ret": -0.0462,
+        "base_dart": 0.355,
+        "excess_vs_base": -0.028
       },
       "diagonal": {
-        "n": 452,
-        "n_directional": 452,
+        "n": 475,
+        "n_directional": 475,
         "n_nonclaim": 0,
-        "dir_accuracy": 0.281,
-        "mean_fwd_ret": -0.0562,
-        "base_dart": 0.362,
-        "excess_vs_base": -0.081
+        "dir_accuracy": 0.28,
+        "mean_fwd_ret": -0.0601,
+        "base_dart": 0.358,
+        "excess_vs_base": -0.078
       },
       "episodes": {
-        "n_matured": 263,
+        "n_matured": 265,
         "base_rate": {
-          "n": 263,
-          "p_up": 0.316,
-          "mean_fwd_ret": -0.0679,
+          "n": 265,
+          "p_up": 0.313,
+          "mean_fwd_ret": -0.0681,
           "median_fwd_ret": -0.0985
         },
         "claims": {
-          "n": 135,
-          "n_directional": 135,
+          "n": 136,
+          "n_directional": 136,
           "n_nonclaim": 0,
-          "dir_accuracy": 0.341,
-          "mean_fwd_ret": -0.0545,
-          "base_dart": 0.362,
-          "excess_vs_base": -0.021
+          "dir_accuracy": 0.346,
+          "mean_fwd_ret": -0.0541,
+          "base_dart": 0.363,
+          "excess_vs_base": -0.017
         },
         "diagonal": {
-          "n": 128,
-          "n_directional": 128,
+          "n": 129,
+          "n_directional": 129,
           "n_nonclaim": 0,
-          "dir_accuracy": 0.273,
-          "mean_fwd_ret": -0.0821
+          "dir_accuracy": 0.271,
+          "mean_fwd_ret": -0.0828
         },
-        "ic_signed": -0.2331
+        "ic_signed": -0.2363
       },
-      "note": "928 matured row-observations (horizon=91d; 263 distinct episodes). Base rate P(beat SPY)=0.322. IC_all=-0.2096 (unsigned legacy), IC_signed=-0.25. CONTEXT-ONLY \u2014 never fed into a score/size/allocation."
+      "note": "971 matured row-observations (horizon=91d; 265 distinct episodes). Base rate P(beat SPY)=0.317. IC_all=-0.2057 (unsigned legacy), IC_signed=-0.2497. CONTEXT-ONLY \u2014 never fed into a score/size/allocation."
     }
   },
   "verdict": {
     "status": "null",
     "basis": {
       "horizon": 21,
-      "t_hac": 0.86,
-      "mean_ic": 0.0375,
+      "t_hac": 0.841,
+      "mean_ic": 0.0366,
       "n_days": 53,
-      "n_claim_episodes": 1193
+      "n_claim_episodes": 1207
     },
     "gates": {
       "min_claim_episodes": 60,
       "t_sig": 2.0,
       "hac_valid_rule": "n_days >= lag (=horizon)"
     },
-    "n_claim_episodes": 1193,
+    "n_claim_episodes": 1207,
     "note": "Evidence gates met; no significant lead or lag either way."
   },
   "era_breaks": [

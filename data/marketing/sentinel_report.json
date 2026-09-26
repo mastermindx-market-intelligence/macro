@@ -1,36 +1,24 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-25T09:33:56Z",
+  "produced_at": "2026-09-25T21:48:32Z",
   "as_of": "2026-09-25",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 15,
-    "passed": 13,
-    "quarantined": 2,
-    "quarantined_policy": 2,
+    "items": 16,
+    "passed": 15,
+    "quarantined": 1,
+    "quarantined_policy": 1,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
   "reasons_histogram": {
-    "near_dup": 2
+    "near_dup": 1
   },
   "quarantined": [
-    {
-      "id": "post-kelly-012",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-flagship-020"
-      ]
-    },
     {
       "id": "post-cici-003",
       "account": "cici",
@@ -40,41 +28,17 @@
       "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-flagship-020"
+        "near_dup:post-meagan-013"
       ]
     }
   ],
   "passed": [
     {
-      "id": "post-flagship-012",
+      "id": "post-flagship-013",
       "account": "flagship",
-      "slot": "D1-S12",
+      "slot": "D1-S13",
       "type": "signal",
-      "cashtag": "$VTRS",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-020",
-      "account": "flagship",
-      "slot": "D1-S20",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-026",
-      "account": "flagship",
-      "slot": "D1-S26",
-      "type": "signal",
-      "cashtag": "$COHU",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-049",
-      "account": "flagship",
-      "slot": "D1-S49",
-      "type": "chart",
-      "cashtag": "$GLW",
+      "cashtag": "$ITW",
       "headline": ""
     },
     {
@@ -90,8 +54,8 @@
       "account": "flagship",
       "slot": "D1-S2",
       "type": "theme_list",
-      "cashtag": "$MNTK",
-      "headline": "Energy Renewable selling off, -2.3% avg on Thursday"
+      "cashtag": "$ZS",
+      "headline": "Cybersecurity selling off, -2.3% avg today"
     },
     {
       "id": "post-congress-001",
@@ -102,58 +66,98 @@
       "headline": ""
     },
     {
-      "id": "post-founder-016",
+      "id": "post-founder-052",
       "account": "founder",
-      "slot": "D1-S16",
+      "slot": "D1-S52",
+      "type": "watchlist",
+      "cashtag": "$GLW",
+      "headline": ""
+    },
+    {
+      "id": "post-housepick-003",
+      "account": "founder",
+      "slot": "D1-S22",
+      "type": "watchlist",
+      "cashtag": "$WBD",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-013",
+      "account": "meagan",
+      "slot": "D1-S13",
       "type": "macro",
       "cashtag": "",
       "headline": ""
     },
     {
-      "id": "post-founder-043",
-      "account": "founder",
-      "slot": "D1-S43",
-      "type": "receipt",
-      "cashtag": "$ATO",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-038",
+      "id": "post-meagan-051",
       "account": "meagan",
-      "slot": "D1-S38",
-      "type": "receipt",
-      "cashtag": "$XRAY",
-      "headline": "There's low, then there's the whole shelf giving way."
+      "slot": "D1-S51",
+      "type": "chart",
+      "cashtag": "$IPGP",
+      "headline": ""
     },
     {
       "id": "post-theme-004",
       "account": "meagan",
       "slot": "D1-S5",
       "type": "theme_list",
-      "cashtag": "$BYND",
-      "headline": "Consumer Goods selling off, -2.4% avg on Thursday"
+      "cashtag": "$BTDR",
+      "headline": "Crypto & Blockchain selling off, -1.5% avg today"
     },
     {
-      "id": "post-theme-005",
+      "id": "post-sophia-012",
+      "account": "sophia",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-029",
+      "account": "sophia",
+      "slot": "D1-S29",
+      "type": "chart",
+      "cashtag": "$GATX",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-050",
+      "account": "sophia",
+      "slot": "D1-S50",
+      "type": "chart",
+      "cashtag": "$CLH",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-012",
       "account": "kelly",
-      "slot": "D1-S3",
-      "type": "theme_list",
-      "cashtag": "$EXK",
-      "headline": "Commodities Metals selling off, -3.9% avg on Thursday"
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
     },
     {
-      "id": "post-theme-006",
-      "account": "cici",
-      "slot": "D1-S2",
-      "type": "theme_list",
-      "cashtag": "$HCAT",
-      "headline": "Healthcare & Biotech selling off, -2.2% avg on Thursday"
+      "id": "post-kelly-026",
+      "account": "kelly",
+      "slot": "D1-S26",
+      "type": "chart",
+      "cashtag": "$GATX",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-031",
+      "account": "kelly",
+      "slot": "D1-S31",
+      "type": "receipt",
+      "cashtag": "$PPG",
+      "headline": ""
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 59,
-      "hits": 2,
+      "pairs_checked": 96,
+      "hits": 1,
       "shared_media_hits": 0
     },
     "cadence": {
@@ -178,8 +182,9 @@
         "ASTH",
         "ATO",
         "CARR",
+        "CHRW",
         "CMS",
-        "FIBK",
+        "CXT",
         "GL",
         "HBAN",
         "HUBG",

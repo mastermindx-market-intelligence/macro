@@ -1,22 +1,22 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-09-25T09:18:39+00:00",
+  "checked_at": "2026-09-26T09:00:33+00:00",
   "status": "available_fresh",
   "render_consistent": true,
   "machine_projection_consistent": true,
   "available": true,
   "headline_method": "close_proxy",
   "headline_state": "premium",
-  "premium_pct": 0.2666146575824646,
+  "premium_pct": 0.16216220051119556,
   "expected_display_source": "proxy",
   "rendered_display_source": "proxy",
   "expected_currency": "CNY",
   "rendered_currency": "CNY",
   "rendered_state": "premium",
-  "rendered_source_asof": "2026-09-23T07:30:00+00:00",
-  "rendered_premium_pct": 0.266615,
+  "rendered_source_asof": "2026-09-24T07:30:00+00:00",
+  "rendered_premium_pct": 0.162162,
   "source_fresh": true,
-  "source_asof": "2026-09-23T07:30:00+00:00",
+  "source_asof": "2026-09-24T07:30:00+00:00",
   "sources": [
     "Shanghai Gold Exchange Au99.99",
     "Global XAU/CNY spot"
@@ -37,10 +37,10 @@
     "close_proxy": {
       "available": true,
       "fresh": true,
-      "asof": "2026-09-23T07:30:00+00:00"
+      "asof": "2026-09-24T07:30:00+00:00"
     }
   },
-  "history_points": 242,
+  "history_points": 243,
   "stats_5_ready": true,
   "stats_30_ready": true,
   "violations": [],
@@ -54,9 +54,9 @@
       "column": "rmb_per_g",
       "path": "data/gold_china_basis/sge_au9999.parquet",
       "exists": true,
-      "rows": 249,
-      "sha256": "edc7450ea3ac2b26e13dc96098d1802545f396f44d93264a4baee03cdda5da10",
-      "asof": "2026-09-23T07:30:00+00:00",
+      "rows": 250,
+      "sha256": "4c9ddf1424cc536991ad1ce8fde3591ad4ccc6073619bd7422d46a7733d27a58",
+      "asof": "2026-09-24T07:30:00+00:00",
       "selected_asof_present": true
     },
     {
@@ -68,9 +68,9 @@
       "column": "cny_per_oz",
       "path": "data/gold_china_basis/xaucny_spot.parquet",
       "exists": true,
-      "rows": 260,
-      "sha256": "434d14780becdfe935c71c922f479631b44fd100d7855dd6f5abc3d14facc8aa",
-      "asof": "2026-09-23T07:30:00+00:00",
+      "rows": 262,
+      "sha256": "af89dfc96445d877fc6f4539f409931b0c841737cb9923c52c784b62e79aac67",
+      "asof": "2026-09-25T07:30:00+00:00",
       "selected_asof_present": true
     }
   ],

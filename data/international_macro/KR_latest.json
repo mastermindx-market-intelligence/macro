@@ -8,7 +8,7 @@
   "scope_en": "Republic of Korea national economy; KOSPI is market context.",
   "scope_zh": "大韩民国全国经济；KOSPI仅作市场背景。",
   "asof": "2026-09-23",
-  "built": "2026-09-25 08:17 UTC",
+  "built": "2026-09-25 20:50 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -204,17 +204,17 @@
   },
   "risk": {
     "state": "caution",
-    "top_score": 75,
+    "top_score": 77,
     "dominant_en": "US rate shock",
     "dominant_zh": "美债利率冲击",
     "h21": 0.289,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 74.6,
+      "intensity": 76.6,
       "peak": 80.2,
       "peak_days_ago": 3,
-      "off_peak": 5.6,
-      "velocity": 8.1,
+      "off_peak": 3.6,
+      "velocity": 10.1,
       "phase": "rising",
       "reached_risk": true,
       "state_now": "caution",
@@ -245,16 +245,16 @@
         80.2,
         79.2,
         78.4,
-        74.6
+        76.6
       ],
-      "spark_pts": "3.0,18.2 6.9,22.4 10.8,23.0 14.7,22.1 18.7,20.2 22.6,15.7 26.5,15.2 30.4,17.0 34.3,15.5 38.2,14.8 42.1,13.2 46.0,15.5 50.0,12.1 53.9,12.9 57.8,9.1 61.7,7.7 65.6,8.9 69.5,9.2 73.4,7.9 77.3,6.6 81.3,3.0 85.2,3.4 89.1,3.6 93.0,5.0",
+      "spark_pts": "3.0,18.2 6.9,22.4 10.8,23.0 14.7,22.1 18.7,20.2 22.6,15.7 26.5,15.2 30.4,17.0 34.3,15.5 38.2,14.8 42.1,13.2 46.0,15.5 50.0,12.1 53.9,12.9 57.8,9.1 61.7,7.7 65.6,8.9 69.5,9.2 73.4,7.9 77.3,6.6 81.3,3.0 85.2,3.4 89.1,3.6 93.0,4.3",
       "spark_peak": {
         "x": 81.3,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 5.0
+        "y": 4.3
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -266,22 +266,22 @@
         "tier": "A",
         "label_en": "US rate shock",
         "label_zh": "美债利率冲击",
-        "score": 95.1,
+        "score": 98.8,
         "band": "risk-off",
         "firing_legs": [
           {
             "leg": "us_rate_2y",
-            "pctile": 0.983,
+            "pctile": 1.0,
             "confirmed": true
           },
           {
             "leg": "us_real_rate",
-            "pctile": 0.953,
+            "pctile": 0.997,
             "confirmed": true
           },
           {
             "leg": "us_rate_10y",
-            "pctile": 0.918,
+            "pctile": 0.966,
             "confirmed": true
           }
         ]

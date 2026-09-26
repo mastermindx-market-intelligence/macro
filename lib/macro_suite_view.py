@@ -1083,8 +1083,8 @@ def _next_action(context: Mapping[str, Any],
             "tone": "warn",
             "text": _pair(
                 "Do not read this as today's answer. A required source is not current — "
-                "wait for the next accepted print.",
-                "请勿将此视为今日读数。某项必需数据源并非最新 — 请等待下一次已接受的读数。"),
+                "wait for the next reading.",
+                "请勿将此视为今日读数。某项必需数据源并非最新 — 请等待下一次读数。"),
             "route": _route(_ROUTE_SOURCE_CLOCKS),
             "watch": None,
         }
@@ -1114,11 +1114,12 @@ def _next_action(context: Mapping[str, Any],
             "tone": "neutral",
             # Plain words on purpose, and no "recommendation": the merged authority
             # guard in tests/test_macro_suite_pages.py bans that vocabulary from
-            # the surface outright, and a denial is still a use.
+            # the surface outright, and a denial is still a use. "axis" is banned
+            # too (spec §5); this matches the shell template's own sentence.
             "text": _pair(
-                "Watch the axis closest to changing this state. Nothing here tells "
+                "Watch the reading closest to changing this state. Nothing here tells "
                 "you to act.",
-                "关注最接近改变当前状态的坐标轴。此处不提供任何操作指示。"),
+                "关注最接近改变当前状态的读数。此处不提供任何操作指示。"),
             "route": _route(_ROUTE_STATE_MAP),
             "watch": {
                 "label": _pair("Closest to changing", "最接近发生改变"),

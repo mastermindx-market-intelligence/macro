@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-23",
+  "date": "2026-09-25",
   "quad": "Q2",
   "quad_name": "Reflation",
   "growth_score": 0.2,
@@ -25,121 +25,121 @@
     {
       "ticker": "XGD.TO",
       "name": "Gold Miners",
-      "rs": 0.0016530807016868643,
-      "mom_20d_pct": -5.17,
-      "mom_60d_pct": 20.5,
+      "rs": 0.0016368588692779104,
+      "mom_20d_pct": -5.65,
+      "mom_60d_pct": 19.56,
       "above_200d_trend": true,
-      "pctile_252d": 61.1,
+      "pctile_252d": 57.5,
       "rank": 1
-    },
-    {
-      "ticker": "XMA.TO",
-      "name": "Materials",
-      "rs": 0.001351274670567425,
-      "mom_20d_pct": -4.06,
-      "mom_60d_pct": 16.71,
-      "above_200d_trend": true,
-      "pctile_252d": 63.5,
-      "rank": 2
     },
     {
       "ticker": "XEG.TO",
       "name": "Energy",
-      "rs": 0.0007890593280060041,
-      "mom_20d_pct": 1.29,
-      "mom_60d_pct": 14.58,
+      "rs": 0.0007862078130323642,
+      "mom_20d_pct": 2.96,
+      "mom_60d_pct": 15.66,
       "above_200d_trend": true,
       "pctile_252d": 84.9,
+      "rank": 2
+    },
+    {
+      "ticker": "XMA.TO",
+      "name": "Materials",
+      "rs": 0.001335096372190608,
+      "mom_20d_pct": -4.81,
+      "mom_60d_pct": 14.89,
+      "above_200d_trend": true,
+      "pctile_252d": 59.5,
       "rank": 3
     },
     {
       "ticker": "XIT.TO",
       "name": "Information Technology",
-      "rs": 0.002183688886772557,
-      "mom_20d_pct": 4.75,
-      "mom_60d_pct": 6.6,
+      "rs": 0.0022359011786670904,
+      "mom_20d_pct": 4.14,
+      "mom_60d_pct": 7.35,
       "above_200d_trend": true,
-      "pctile_252d": 64.3,
+      "pctile_252d": 68.3,
       "rank": 4
-    },
-    {
-      "ticker": "XBM.TO",
-      "name": "Base Metals",
-      "rs": 0.0010242946716250748,
-      "mom_20d_pct": -3.92,
-      "mom_60d_pct": 2.43,
-      "above_200d_trend": true,
-      "pctile_252d": 61.5,
-      "rank": 5
     },
     {
       "ticker": "XCG.TO",
       "name": "Consumer Discretionary",
-      "rs": 0.0019230000198855685,
-      "mom_20d_pct": -2.55,
-      "mom_60d_pct": 2.35,
+      "rs": 0.0019125369586917604,
+      "mom_20d_pct": -2.34,
+      "mom_60d_pct": 3.17,
       "above_200d_trend": false,
-      "pctile_252d": 28.2,
+      "pctile_252d": 26.6,
+      "rank": 5
+    },
+    {
+      "ticker": "XBM.TO",
+      "name": "Base Metals",
+      "rs": 0.0010210054231105828,
+      "mom_20d_pct": -5.27,
+      "mom_60d_pct": 0.71,
+      "above_200d_trend": false,
+      "pctile_252d": 59.1,
       "rank": 6
     },
     {
       "ticker": "ZEB.TO",
       "name": "Banks",
-      "rs": 0.0020734834355263985,
-      "mom_20d_pct": 4.16,
-      "mom_60d_pct": -3.63,
+      "rs": 0.0020935655690516477,
+      "mom_20d_pct": 3.86,
+      "mom_60d_pct": -3.52,
       "above_200d_trend": true,
-      "pctile_252d": 79.8,
+      "pctile_252d": 82.9,
       "rank": 7
     },
     {
       "ticker": "XFN.TO",
       "name": "Financials",
-      "rs": 0.0025870293488181088,
+      "rs": 0.002605749394284754,
       "mom_20d_pct": 3.15,
-      "mom_60d_pct": -3.66,
+      "mom_60d_pct": -3.74,
       "above_200d_trend": true,
-      "pctile_252d": 76.6,
+      "pctile_252d": 81.7,
       "rank": 8
     },
     {
       "ticker": "XCD.TO",
       "name": "Communication Services",
-      "rs": 0.0015196595578400164,
-      "mom_20d_pct": -3.89,
-      "mom_60d_pct": -4.37,
+      "rs": 0.001518491065231908,
+      "mom_20d_pct": -3.12,
+      "mom_60d_pct": -6.8,
       "above_200d_trend": false,
-      "pctile_252d": 1.2,
+      "pctile_252d": 1.6,
       "rank": 9
-    },
-    {
-      "ticker": "XUT.TO",
-      "name": "Utilities",
-      "rs": 0.000952129780908565,
-      "mom_20d_pct": -0.15,
-      "mom_60d_pct": -10.14,
-      "above_200d_trend": false,
-      "pctile_252d": 5.2,
-      "rank": 10
     },
     {
       "ticker": "XST.TO",
       "name": "Consumer Staples",
-      "rs": 0.0017744744526647536,
-      "mom_20d_pct": 0.43,
-      "mom_60d_pct": -10.38,
+      "rs": 0.0017741867299825268,
+      "mom_20d_pct": 1.42,
+      "mom_60d_pct": -8.65,
       "above_200d_trend": false,
-      "pctile_252d": 6.0,
+      "pctile_252d": 7.1,
+      "rank": 10
+    },
+    {
+      "ticker": "XUT.TO",
+      "name": "Utilities",
+      "rs": 0.0009450744717893261,
+      "mom_20d_pct": -0.19,
+      "mom_60d_pct": -9.96,
+      "above_200d_trend": false,
+      "pctile_252d": 2.8,
       "rank": 11
     },
     {
       "ticker": "XRE.TO",
       "name": "Real Estate",
-      "rs": 0.00043494764619641797,
-      "mom_20d_pct": -3.0,
-      "mom_60d_pct": -10.54,
+      "rs": 0.0004323302575164017,
+      "mom_20d_pct": -1.16,
+      "mom_60d_pct": -10.95,
       "above_200d_trend": false,
-      "pctile_252d": 1.6,
+      "pctile_252d": 2.4,
       "rank": 12
     }
   ],
@@ -152,8 +152,8 @@
       "XFN.TO"
     ],
     "actual_ranks": {
-      "XEG.TO": 3,
-      "XMA.TO": 2,
+      "XEG.TO": 2,
+      "XMA.TO": 3,
       "XGD.TO": 1,
       "XFN.TO": 8
     },
@@ -163,98 +163,98 @@
   },
   "pair_ratios": {
     "cyc_def": {
-      "level": 2.4125,
-      "chg_20d_pct": 1.53
+      "level": 2.4014,
+      "chg_20d_pct": 1.72
     },
     "infl_basket": {
-      "level": 2.7243,
-      "chg_20d_pct": 1.7
+      "level": 2.6708,
+      "chg_20d_pct": 1.6
     },
     "tsx_spx": {
-      "level": 46.5629,
-      "chg_20d_pct": -3.34
+      "level": 46.5214,
+      "chg_20d_pct": -2.33
     },
     "usdcad": {
-      "level": 1.4066,
-      "chg_20d_pct": 1.66
+      "level": 1.414,
+      "chg_20d_pct": 2.08
     },
     "copper_gold": {
-      "level": 0.0015,
-      "chg_20d_pct": 9.12
+      "level": 0.0016,
+      "chg_20d_pct": 7.57
     }
   },
   "overlay": {
-    "score": -0.042,
+    "score": -0.083,
     "state": "Neutral",
     "factors": [
       {
         "key": "oil",
         "label": "WTI crude oil",
-        "z": 0.58,
+        "z": 0.15,
         "sign": 1.0,
-        "risk": "on",
-        "level": 92.16
+        "risk": "neutral",
+        "level": 92.66
       },
       {
         "key": "gold",
         "label": "Gold",
-        "z": -0.67,
+        "z": -0.33,
         "sign": 1.0,
-        "risk": "off",
-        "level": 4318.3999
+        "risk": "neutral",
+        "level": 4336.3999
       },
       {
         "key": "copper_gold",
         "label": "Copper / Gold",
-        "z": 0.8,
+        "z": 0.9,
         "sign": 1.0,
         "risk": "on",
-        "level": 0.0015
+        "level": 0.0016
       },
       {
         "key": "usdcad",
         "label": "USD / CAD",
-        "z": 1.13,
+        "z": 2.28,
         "sign": -1,
         "risk": "off",
-        "level": 1.4066
+        "level": 1.4136
       },
       {
         "key": "spy",
         "label": "S&P 500",
-        "z": 0.16,
+        "z": 0.12,
         "sign": 1.0,
         "risk": "neutral",
-        "level": 767.81
+        "level": 767.18
       },
       {
         "key": "vix",
         "label": "Volatility (VIX)",
-        "z": -0.01,
+        "z": 0.15,
         "sign": -1,
         "risk": "neutral",
-        "level": 15.18
+        "level": 15.04
       },
       {
         "key": "dxy",
         "label": "US Dollar (DXY)",
-        "z": 1.29,
+        "z": 1.14,
         "sign": -1,
         "risk": "off",
-        "level": 101.1
+        "level": 101.005
       }
     ],
     "terms_of_trade": "mixed",
     "coupling": {
       "boc_rate": 2.25,
-      "goc_2y": 3.25,
-      "goc_10y": 3.83,
-      "us_2y": 4.71,
-      "us_10y": 4.96,
+      "goc_2y": 3.39,
+      "goc_10y": 3.97,
+      "us_2y": 4.85,
+      "us_10y": 5.11,
       "goc_minus_ust_2y": -1.46,
-      "goc_minus_ust_10y": -1.13,
+      "goc_minus_ust_10y": -1.14,
       "goc_curve_2s10s": 0.58
     },
-    "asof": "2026-09-23"
+    "asof": "2026-09-25"
   }
 }

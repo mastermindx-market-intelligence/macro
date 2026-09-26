@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
-  "as_of": "2026-09-24",
-  "generated_utc": "2026-09-24T13:26:15Z",
+  "as_of": "2026-09-25",
+  "generated_utc": "2026-09-25T13:09:20Z",
   "authority": {
     "tier": "context_only",
     "why": [
@@ -70,15 +70,15 @@
     "as_of": "2026-09-24",
     "aggregate": {
       "date": "2026-09-24",
-      "limit_up_count": 4.0,
+      "limit_up_count": 6.0,
       "limit_down_count": 2.0,
-      "sealed_up_close": 2.0,
+      "sealed_up_close": 4.0,
       "failed_up_seal_count": 2.0,
-      "lianban_2plus": 0.0,
-      "lianban_max": 1.0,
-      "universe_n": 1832.0,
-      "limit_up_breadth_pct": 0.2183,
-      "limit_down_breadth_pct": 0.1092
+      "lianban_2plus": 1.0,
+      "lianban_max": 2.0,
+      "universe_n": 1862.0,
+      "limit_up_breadth_pct": 0.3222,
+      "limit_down_breadth_pct": 0.1074
     },
     "name_summary": {
       "n_packets": 96,
@@ -88,7 +88,7 @@
     "names_ref": "site/chinastatedata/microstructure.json#name_packets"
   },
   "policy": {
-    "as_of": "2026-09-24",
+    "as_of": "2026-09-25",
     "policy_impulse": "neutral",
     "transmission_channel": [],
     "recent_event_count": 10,
@@ -126,15 +126,15 @@
     ],
     "staleness": {
       "per_source_days": {
-        "lpr": 4,
-        "rrr": 505,
-        "fr007": 0,
-        "communiques": 149
+        "lpr": 5,
+        "rrr": 506,
+        "fr007": 1,
+        "communiques": 150
       }
     }
   },
   "rotation": {
-    "as_of": "2026-09-24",
+    "as_of": "2026-09-25",
     "sector_phase_distribution": {
       "Bottoming": 39,
       "Topping": 7,
@@ -158,7 +158,7 @@
       "LAGGARD: Agriculture ranked #29/31 (-26.3%) — among the weakest this leg"
     ],
     "ths_heat": {
-      "as_of": "2026-09-24",
+      "as_of": "2026-09-25",
       "basket_count": 237,
       "above_200d_pct": 45.1,
       "hot_baskets": [
@@ -226,11 +226,11 @@
     "contradicting": [],
     "conditions": {
       "roro": {
-        "roro": -0.038,
-        "roro_raw": -0.038,
+        "roro": -0.041,
+        "roro_raw": -0.041,
         "roro_state": "neutral",
-        "china_roro_copper_gold": 1.706,
-        "china_roro_breadth": -1.058,
+        "china_roro_copper_gold": 1.703,
+        "china_roro_breadth": -1.083,
         "china_roro_southbound": 0.025,
         "china_roro_m1_m2": 0.167,
         "china_roro_turnover": -1.183,
@@ -243,14 +243,14 @@
             "key": "copper_gold",
             "name_en": "Copper / Gold",
             "name_zh": "铜／金 比",
-            "value": 1.706,
+            "value": 1.703,
             "lean": "risk-on"
           },
           {
             "key": "breadth",
             "name_en": "Breadth (% > 50d)",
             "name_zh": "市场宽度（>50日）",
-            "value": -1.058,
+            "value": -1.083,
             "lean": "risk-off"
           },
           {
@@ -393,15 +393,15 @@
   "external": {
     "yield_curve": {
       "as_of": "2026-09-24",
-      "staleness_days": 0,
+      "staleness_days": 1,
       "cn_10y": 1.6738,
       "cn_2y": 1.2709,
       "cn_slope_10_2": 0.40290000000000004,
-      "cn_us_10y_spread": null
+      "cn_us_10y_spread": -3.5061999999999998
     },
     "cgb_curve": {
       "as_of": "2026-09-24",
-      "staleness_days": 0,
+      "staleness_days": 1,
       "m3": 1.181,
       "y1": 1.2327,
       "y5": 1.4058,
@@ -412,10 +412,10 @@
     "usdcnh": {
       "quote": 6.6715,
       "chg_pct": -0.8,
-      "as_of": "Sep 24, 2026"
+      "as_of": "Sep 25, 2026"
     },
     "dxy": {
-      "quote": 101.17,
+      "quote": 101.28,
       "chg": 1.6,
       "label": "DXY"
     }

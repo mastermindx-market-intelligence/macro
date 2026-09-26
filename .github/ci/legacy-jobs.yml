@@ -2257,6 +2257,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -5614,24 +5615,6 @@ jobs:
       - name: uk policy desk unit tests
         run: python -m pytest tests/test_uk_policy_brain.py -q
 
-  finance-intelligence-site-wiring:
-    # Always-on (no scope/paths): reads scripts/build_site.py as text. Split from the
-    # exclusive finance-intelligence job so that job need not carry the builder's
-    # import closure (contract-delta on #8010: 538 uncovered paths).
-    if: ${{ false }}
-    gate: code
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: install minimal deps
-        run: pip install pytest
-      - name: finance intelligence site-builder wiring
-        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
-
   finance-intelligence:
     if: ${{ false }}
     gate: code
@@ -6343,8 +6326,9 @@ jobs:
     # including the rendered site/ tree, site/prophet JSON and the registry rows
     # the nightly rewrites, so a data commit alone can move its verdict: it stays
     # `gate: data` and runs on the data-health lane after the nightly. The PR-tree
-    # half (templates/, engine/, lib/ + the allowlist) is graded before merge by
-    # validated-claims-source below, which is `gate: code`.
+    # half (templates/, engine/, lib/, the top-level page builders
+    # scripts/build_*.py + scripts/render_*.py, and the allowlist) is graded
+    # before merge by validated-claims-source below, which is `gate: code`.
     # Law source: CLAUDE.md ("The word 'validated' in user-facing text is CI-enforced").
     runs-on: ubuntu-latest
     steps:
@@ -6375,23 +6359,30 @@ jobs:
     # scan), and the merge gate packs only `gate: code` jobs, so NOTHING graded a
     # claim before merge: 75 unearned claims merged green across a dozen PRs
     # between 2026-08-25 and 2026-09-24 and were healed in one batch (#7979).
-    # `--scope source` walks only templates/, engine/ and lib/ — roots no data
-    # commit writes (the render-public `?v=` re-stamps on three plain-copy pages
-    # cannot spell the token) — through the SAME matcher, negation, masks and
+    # `--scope source` walks only templates/, engine/, lib/ and the top-level
+    # page builders scripts/build_*.py + scripts/render_*.py (never the rest of
+    # scripts/ — PAGE BUILDERS in the checker) — roots no data commit writes
+    # (the render-public `?v=` re-stamps on three plain-copy pages cannot spell
+    # the token) — through the SAME matcher, negation, masks and
     # `surfaces`-enforced allowlist as the full scan, and refuses the one backing
     # that reads data (a cited artifact's validated:true), so its verdict is a
     # function of the PR's own tree (see the SCAN SCOPE block in the checker).
-    # Deliberately scan-only: this job rides every templates/** and engine/** PR
-    # by design — those PRs are its subject — so it carries only the two cheap
-    # checker steps, and the checker's unit suites ride validated-claims-contract
-    # below, selected by the files that can change their verdict. CURATED SCOPE:
-    # the scanned roots, the checker, the allowlist, and the literal files the
-    # checker names (inference's closure); site/** and data/** edits otherwise do
-    # not select it, because they cannot move its verdict.
+    # Deliberately scan-only: this job rides every templates/**, engine/** and
+    # page-builder PR by design — those PRs are its subject — so it carries only
+    # the two cheap checker steps, and the checker's unit suites ride
+    # validated-claims-contract below, selected by the files that can change
+    # their verdict. CURATED SCOPE: the scanned roots, the checker, the
+    # allowlist, and the literal files the checker names (inference's closure);
+    # site/** and data/** edits otherwise do not select it, because they cannot
+    # move its verdict.
     paths:
       - "templates/**"
       - "engine/**"
       - "lib/**"
+      # Top level only: a single `*` never crosses `/`, the same cut as the
+      # checker's glob (not rglob) walk of scripts/.
+      - "scripts/build_*.py"
+      - "scripts/render_*.py"
       - "scripts/check_validated_claims.py"
       - "data/regime/validated_claims_allowlist.json"
       # Closure: rendered pages the checker names literally (the registry
@@ -6412,7 +6403,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: validated-claims selftest (gate fires on synthetic unearned claim)
         run: python3 scripts/check_validated_claims.py --selftest
-      - name: no unearned 'validated' claims in PR-authored source copy (templates/, engine/, lib/)
+      - name: no unearned 'validated' claims in PR-authored source copy (templates/, engine/, lib/, page builders)
         run: python3 scripts/check_validated_claims.py --scope source
 
   validated-claims-contract:
@@ -8655,6 +8646,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
@@ -9287,6 +9279,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -10914,6 +10907,14 @@ jobs:
       # immediately above.
       - name: public glossary directory (view-model contract + rendered-page wiring)
         run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
+      # Finance Intelligence site-builder hook (2026-09-25). The suite reads
+      # scripts/build_site.py as TEXT, and this job already owns the site builder, so
+      # hosting it here adds no owned path and no packing-probe match. #8010 ran it
+      # in its own job instead. That job matched every one-file probe in
+      # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
+      # (templates/index.html 134/133), which turned integration-baseline red on main.
+      - name: finance intelligence site-builder wiring (build_site carries the render hook)
+        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -11322,7 +11323,7 @@ jobs:
       - name: data/stocks retention fetch + per-name freshness audit
         run: python -m pytest tests/test_stock_price_retention.py tests/test_audit_stocks_freshness.py -q
       - name: stock-library freshness demotion (frozen-feed scan admission)
-        run: python -m pytest tests/test_stock_library_freshness.py -q
+        run: python -m pytest tests/test_stock_library_freshness.py tests/test_us_completed_session_panel.py -q
 
   defense-rail-laws:
     # D6-A + D6-B1 defense acquisition rails — the two commissioned law
@@ -11733,6 +11734,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -12535,7 +12537,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
-        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
       # test_china_intel_visits_render.py is the SOL-repair template render
@@ -12666,6 +12668,11 @@ jobs:
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
         run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
+      # #7180 completed-session source binding is a code contract, not nightly data
+      # freshness. Keep the suite in this existing Prophet code gate so PR packs can
+      # exercise the same source/date clipping and frozen-object law before merge.
+      - name: US completed-session source binding (closed-session panel + frozen source)
+        run: python -m pytest tests/test_us_completed_session_panel.py -q
       - name: leader-observation projection (strict source status, no-rank authority, summary privacy)
         run: python -m pytest tests/test_us_leader_observation_projection.py -q
       # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
@@ -15223,6 +15230,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
       - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
