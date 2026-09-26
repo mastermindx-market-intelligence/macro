@@ -16476,9 +16476,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            way to REACH the typed Candidates-unavailable state (B5) — gating
            the toggle on `_su` would bake that state and then make it
            permanently unreachable. -#}
-        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between Today, Candidates, and Plans" data-tip-zh="在今日、候选与计划之间切换">
+        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between Today, Screener, and Plans" data-tip-zh="在今日、筛选器与计划之间切换">
           {% if _su %}<button id="us-src-btn-today" type="button" aria-selected="{{ 'true' if _src_default == 'today' else 'false' }}" data-src="today"><span class="l-en">Today</span><span class="l-zh">今日</span></button>{% endif %}
-          <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _src_default == 'candidates' else 'false' }}" data-src="candidates"><span class="l-en">Candidates</span><span class="l-zh">候选</span></button>
+          <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _src_default == 'candidates' else 'false' }}" data-src="candidates"><span class="l-en">Screener</span><span class="l-zh">筛选器</span></button>
           <button id="us-src-btn-plan" type="button" aria-selected="{{ 'true' if _src_default == 'plans' else 'false' }}" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
         </span>
         {# W8-R6: grid/table view toggle (US market) #}
@@ -16847,7 +16847,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2">{{ t('Today', '今日') }}</h2>
           <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
-          <button type="button" class="mx-sec-link" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('All candidates', '全部候选') }}</button>
+          <button type="button" class="mx-sec-link" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener', '打开筛选器') }}</button>
         </div>
         <p class="mx-sec-note">{{ t('A preview of the current board’s owner-Featured shelf in its existing order. Featured is not entry permission — the card’s Buy, Near or Wait state still controls timing.', '当前榜单「精选」层的预览，顺序保持不变。精选不等于获准入场——仍以卡片上的买入、接近或等待状态决定时机。') }}</p>
         {%- if _today_visible %}
@@ -16855,12 +16855,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh %}{% include "_us_board_cards.html.j2" %}{% endwith %}
         </div>
         {%- if _today_more > 0 %}
-        <p class="mx-sec-note"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Candidates; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在候选页；三张卡只是预览容量，并非选股名额。</span></p>
+        <p class="mx-sec-note"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
         {%- endif %}
         {%- elif _today_total > 0 %}
-        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Candidates after access is available; no hidden name is inferred here.', '获得访问权限后请打开候选页；此处不会推断任何隐藏股票。') }}</div></div>
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Screener after access is available; no hidden name is inferred here.', '获得访问权限后请打开筛选器；此处不会推断任何隐藏股票。') }}</div></div>
         {%- else %}
-        <div class="mx-empty"><div class="mx-empty-line">{{ t('No owner-Featured names on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Candidates remain available; zero Featured is not a broken board.', '候选页仍可使用；精选为零并不代表榜单故障。') }}</div></div>
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('No owner-Featured names on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Screener remains available; zero Featured is not a broken board.', '筛选器仍可使用；精选为零并不代表榜单故障。') }}</div></div>
         {%- endif %}
       </section>
       {% endif %}
@@ -17028,7 +17028,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _cand_total = (gate.total if gate else _board|length) -%}
       <div class="mx-sec" id="us-candidates">
         <div class="mx-sec-hd">
-          <h2 class="mx-sec-h2">{{ t('Candidates', '候选') }}</h2>
+          <h2 class="mx-sec-h2">{{ t('Screener', '筛选器') }}</h2>
           {#- P0 #6185 (C1): verified mechanism — `t(en, zh)` as called INSIDE
              this file resolves to the `{% macro t(en, zh='') %}` defined at
              the top of dashboard.html.j2 (line ~13), which SHADOWS the
@@ -17179,7 +17179,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          data left up. -#}
       <div class="mx-sec" id="us-candidates">
         <div class="mx-sec-hd">
-          <h2 class="mx-sec-h2">{{ t('Candidates', '候选') }}</h2>
+          <h2 class="mx-sec-h2">{{ t('Screener', '筛选器') }}</h2>
         </div>
         <div class="mx-empty">
           <div class="mx-empty-line">{{ t("Tonight's candidate screen hasn't published — the Plans view below is unaffected.", '今晚的候选筛选尚未发布——下方的计划视图不受影响。') }}</div>

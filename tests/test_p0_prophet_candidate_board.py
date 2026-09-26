@@ -100,6 +100,58 @@ def test_a_data_prophet_src_defaults_candidates_when_su_present():
     assert 'data-src="candidates"' in html and 'data-src="plans"' in html
 
 
+def test_a_r2_screener_label_binds_product_ia_without_renaming_candidate_authority():
+    """R2 changes the reader-facing product noun, not the source contract."""
+    from bs4 import BeautifulSoup
+
+    rows = _stage_rows({"live": 2})
+    html = _render_stocks({
+        "us_standouts": {"buy": rows, "ran": [], "eligible": len(rows)},
+        "us_prophet_book": _prophet_book(),
+    })
+    soup = BeautifulSoup(html, "html.parser")
+    toggle = soup.select_one("#us-src-toggle")
+    assert toggle is not None
+    cand = toggle.select_one('[data-src="candidates"]')
+    assert cand is not None
+    assert cand.select_one(".l-en").get_text(strip=True) == "Screener"
+    assert cand.select_one(".l-zh").get_text(strip=True) == "筛选器"
+    assert "Screener" in toggle.get("data-tip-en", "")
+    assert "筛选器" in toggle.get("data-tip-zh", "")
+    assert soup.select_one("#us-candidates .mx-sec-h2 .l-en").get_text(strip=True) == "Screener"
+    assert soup.select_one("#us-candidates .mx-sec-h2 .l-zh").get_text(strip=True) == "筛选器"
+    # Internal identity and the data owner stay untouched.
+    assert toggle["id"] == "us-src-toggle"
+    assert cand["data-src"] == "candidates"
+    assert soup.select_one("#us-candidates") is not None
+
+
+def test_a_r2_today_cta_opens_screener_without_promoting_entry_state():
+    from bs4 import BeautifulSoup
+
+    row = _board_row(
+        ticker="WAIT1", name="Wait One", lane="bottoming",
+        stage="setting_up", featured=True,
+        entry_signal={"status": "bounce_wait", "buy_zone": {"low": 40.0, "high": 41.0}},
+    )
+    html = _render_stocks({
+        "us_standouts": {
+            "as_of": "2026-09-24", "buy": [row], "ran": [], "eligible": 1,
+            "ranking": {"featured_count": 1},
+        },
+        "us_prophet_book": _prophet_book(),
+    })
+    soup = BeautifulSoup(html, "html.parser")
+    today = soup.select_one("#us-today")
+    assert today is not None
+    cta = today.select_one(".mx-sec-link")
+    assert cta.get_text(" ", strip=True).startswith("Open Screener")
+    assert "USProphetSource.set('candidates')" in cta.get("onclick", "")
+    card = today.select_one(".pvcard")
+    assert card is not None and "pv-buy" not in (card.get("class") or [])
+    assert "Featured is not entry permission" in today.get_text(" ", strip=True)
+
+
 def test_a_today_uses_owner_featured_preview_without_entry_promotion():
     from bs4 import BeautifulSoup
 
@@ -147,7 +199,7 @@ def test_a_today_uses_owner_featured_preview_without_entry_promotion():
     assert "pv-buy" in cards[0]["class"]
     assert "pv-wait" in cards[1]["class"], "Featured bounce_wait must remain Wait"
     today_text = today.get_text(" ", strip=True)
-    assert "2 more Featured names remain in Candidates" in today_text
+    assert "2 more Featured names remain in Screener" in today_text
     assert "not a pick quota" in today_text
 
     # Today previews the owner's shelf; it does not remove any candidate row.
@@ -279,6 +331,7 @@ def test_b_su_absent_renders_typed_unavailable_state_with_mx_empty_why():
     idx = html.find('id="us-candidates"')
     assert idx != -1, "Candidates must never be silently absent"
     block = html[idx:idx + 1200]
+    assert 'Screener' in block and '筛选器' in block
     assert 'class="mx-empty"' in block
     assert 'class="mx-empty-why"' in block, (
         "theme.css requires .mx-empty-why alongside .mx-empty (S4 idiom) — "
