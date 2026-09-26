@@ -5,256 +5,153 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R21_SECTOR_UMBRELLA_ARCHITECTURE_HANDOFF_READY
+research_stage: R23_SECTOR_HANDOFF_CORRECTED_READER_IDENTITY_UNBOUND
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
 
 # Basic Materials — minimum continuing frontier
 
-## Mission, authority and one carrier
+Updated 2026-09-26 through R23. This replaces the cumulative working frontier in place, not the implementation carrier or the immutable historical evidence. Full R18–R21 chronology remains recoverable at this same path in commit `03997c06855e5dee7681b763bdc69159fd79f61a`, blob `e9dbd9907e68e9c0f9ac5dfa58c9049af57161c5`. Do not reload that chronology unless a material contradiction requires it.
 
-Continue Chairman-directed Materials research, synthesis and implementation preparation, consuming the Semiconductor shared GMI foundation. Preserve all44 core requirements, eight tasks, five originals/four company journeys, ten families/eight lenses and V0–V4 ambition. Sol retains responsibility. No product implementation, native source admission, ranking/entry/sizing/trade change or new shared writer is assigned by this record.
+## Mission, authority and preserved scope
 
-Macro #7796 / `sol/basic-materials-research-20260923` remains OPEN/DRAFT/HOLD; Sol retains release. No merge/rebase/replacement/product code. R18 entry `381e46ae44838b40b8c006ecb95254c18226da62` and checkpoint blob `b0d58f58a3c29ffad32b71574489a4620a890ff3` preserve R1–R17. Intermediate checkpoint `a9ce5a449e8eb52b44a1d2a079beb94b5399705b`, blob `5b26705adfcff10f8e38b74a7149b21ab7687035`, was read back before the remote-launch attempt. Last artifact commit before this final checkpoint is `5c23f20bc27f5837c6b178c6595cdb1f28461fb3`. Obtain this checkpoint's final revision from its actual write/readback.
+Deliver the Chairman's Materials Economics capability: a sector-first dossier explaining what changed, which operating business or financial right captures it, what reaches retained cash/per-share economics, what was expected and what evidence matters next. Preserve all **44 core requirements, eight task identities, five original documents/four real company journeys, ten research-navigation families/eight economic lenses, and V0–V4 ambition**. Source-only fallback, arithmetic, a shell or green CI alone does not satisfy the full product ruler.
 
-Protected Mastermind `a29161fa0a44cca9927afe042b5f7ea25aae1736`, compatible1.0.1/bootstrap1. Same-pin INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT/RECONCILE_STATE/COMMISSION_WAVE/WORKER_AVENUE_ROUTING and routing addendum read or unchanged previously-read blobs confirmed. GitHub resource read/push permission observed separately from authority. No hidden model/mode/quota/admission telemetry invented.
+Sol retains Materials principal responsibility under the live Chairman continuation. The record itself grants no worker, source-admission, identity, rights, shared-writer, runtime, release or trading authority. Direct R23 source/document work was retained for `LOWER_TOTAL_OVERHEAD` and `PRINCIPAL_JUDGMENT`; Fable was not dispatched for routine edits. No new worker receiver, PICKUP_ACK, START, Executive Attempt, watcher or autonomous continuation was created.
 
-## Material R18 delta
+Research #7796 remains OPEN/DRAFT/HOLD on `sol/basic-materials-research-20260923`. No product code, merge, rebase, branch replacement or release on this carrier. #7984 remains the separate reusable economic-core implementation carrier. The shared #7870 and existing #7462/#7669 custody are not transferred by Materials continuation.
 
-The actual main-branch sector contract contains signed exact decimal-text fields. Twelve native-schema FRAGMENT checks establish usable scalar conventions and incompatible sector-specific envelopes. This resolves a representation/implementation-order question, not the shared GMI source-admission gate.
+## Current exact identities
 
-The existing Fable packet now separates T4's pure calculation-and-explanation core from its native-input adapter. A bounded implementation assignment may build/review the former without waiting for private publication; it must not store current evidence, allocate identities, grant permissions, fetch sources, call models or emit notifications. Keep existing proposed F04 consumer/output paths; no new evidence owner or whole Consumer/Finance record reuse. AM1 and other shared gates remain necessary for the chosen GMI data path. T7/T8 retain all five actual sources/four company journeys and private-browser acceptance. Core-only success is not V0 completion.
+| Item | Verified identity / disposition |
+|---|---|
+| Protected Mastermind | `763ec8f920177fdf48b18df1b8e37b61ab482ef0`, compatible Skillpack 1.0.1/bootstrap 1 |
+| INDEX | `94d1af402598894372858793a5b1931019c5fa77` |
+| ACTIVE_EXECUTION | `9fed10f7cc7a2f4323d039b406f7c0715445e22e` |
+| RECONCILE_STATE | `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, same pinned source |
+| WEB_CEO_DELEGATION | `2073a33f05506268b15f0b5ce292ce57d5b60ed3` |
+| CLOSEOUT | `4a9ec3782da001322604e977dbe91b9cf371f0b9` |
+| R23 main source read pin | `79dbe3f2431b9e21cabf23071f02eab5add57eb4`; not a claim that moving main remains there |
+| R22 contract-qualification main pin | `bd23cfbd3f192389166bef37e490003fadd6d453` |
+| Research entry head | `03997c06855e5dee7681b763bdc69159fd79f61a` |
+| R23 canonical handoff amendment | commit `acde066d1d6fa756a64508114d1c457b613be054`, blob `68dbec7623c8e8225954f140f8800799be535f80`, exact-ref read back |
+| T4 core #7984 | `36f330b1f7829a289a44937bca0007c734d6df5e`, `claude/basic-materials-core-v0`, OPEN/DRAFT/HOLD/RED |
+| Shared implementation #7870 | `6cd958e92b259f7221690547e7076f4a0de4ed33`, OPEN/DRAFT/unmerged; Materials compatibility not accepted by this record |
+| Original compatibility discussion | **#7773 comment `5809093547`**, NOT a comment on #7870 |
+| R23 request amendment readback | same comment `5809093547`, `updated_at=2026-09-26T12:08:08Z` |
+| R22 durable research qualification | #7796 comment `5845972981`; historical R22 counts remain historical |
 
-No Materials product code was written here. R1–R17 source/research, helper/corpus and original task matrices are unchanged. Only the narrow T4 sequencing instruction is amended in the current packet; all release requirements remain.
+Obtain this checkpoint's containing commit and blob from its actual write/readback. It cannot truthfully name its own future commit inside its content. Current PR metadata and final receipts must reference the returned exact revision, not the older entry head.
 
-## Exact main-source qualification
+## R23 changes that are actually applied
 
-Inspection pin `5600bb63b27978031769eb428911fe9b46572a92`:
-- `contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json`: blob `9cbee16f2ff8cd0f16512ea436b13f5dfedde3f7`.
-- `contracts/sector_intelligence/evidence_claim.v1.schema.json`: blob `5f61cf362f5cb81723855fa493a954ffd71894f4`.
-- `engine/sector_intelligence/contracts.py`: blob `d14658dba4821d949b1abc3db38366ae1f8eb78c`.
-- `tests/test_sector_intelligence_contracts.py`: blob `5acbf0a4f8a4576c06ad55451970ea7a449fc7a2`, bounded inspection only.
+### Canonical handoff now agrees with the sector-first architecture
 
-First three full byte streams were hash-verified against connector blobs. Tests used the actual complete Consumer JSON schema's selected definitions and JSON Schema Draft2020-12/FormatChecker. The Python contracts module was NOT imported. Results:12 expectations matched (5 valid/7 invalid). Negative exact text, long exact decimals and fractional text work; numeric JSON in a text field, NaN, exponent spelling, Materials unit-margin kind, slash-bearing Materials units, native_admitted true without a ref, and corporate URLs in the SEC-specific shape refuse as recorded. A valid fragment neither proves a full dossier nor a real native reference. Synthetic source URLs were not fetched.
+`agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md` was updated in place at `acde066d1d6fa756a64508114d1c457b613be054`. Its opening clarification, T4–T8 table and exact-next-action section now agree:
 
-No wholesale sector-evidence migration is selected. Presence of another evidence schema does not authorize a second source/review/identity system. No Materials values are disguised as Consumer facts or SEC filings.
+- V0 is a **Basic Materials sector dossier**, not `theme:basic_materials` or a synthetic Materials registration.
+- T4 continues #7984. T4b is the internal sector projection, not a ninth lifecycle task or an alternate economics implementation.
+- T5 requires an accepted incumbent sector-private reader; the concrete Materials reader remains **UNBOUND**.
+- T6 is a sector-deep-dive navigation entry outside canonical theme lanes plus a data-free dossier shell. Theme-specific mounts come later through #7870 for accepted anchors only.
+- The closed `sector_dossier_read_model.v1` is referenced, not extended or forked. The Materials-specific inner projection does not become an evidence, source-retention, rights or publication owner.
+- Finance's hardcoded `sector:financials` and 52-slice vocabulary are not Materials data.
+- All five originals/four company journeys and native/private/browser proof remain mandatory. No source/identity/rights or decision-output change follows from the document edit.
 
-## Review attempts and restrictions
+The exact-ref handoff readback covered the new opening and the complete revised task table, preserved holds, consumer constraints, acceptance and next action; the returned blob was `68dbec7623c8e8225954f140f8800799be535f80` in both reads.
 
-R17 full-packet Qwen attempt remains NOT_STARTED. Current native operator selection returned NONE/no_operator_available; no broad architectural reviewer was launched. The permitted kit policy confirms remote-first and MiniMax's fixed-checklist role; it does not authorize broad architecture judgment on that lane.
+### Compatibility request recovered on its actual discussion
 
-A separately bounded checklist child `gmi-basic-materials-comparison-review-20260924-sol-r18-001` was prepared for the corrected public R16 helper, four invariants and one synthetic input. Native plan/pick selected MiniMax-M2.7-highspeed, and host selection identified mini2. Auto-host native remote dry-run PID85411 exited0. The actual `pool remote auto minimax ...` call was BLOCKED BY OPENAI SAFETY CHECKS BEFORE DISPATCH, no launch PID. No reviewer ACK, START, result or served-model identity exists. It was not retried, rephrased, routed to another provider/host/tool, or represented as a capacity failure. The specific launch requires platform-permitted recovery, not a new chat/mode.
+Direct GET of comment `5809093547` established `issue_url=.../issues/7773`. #7870 is the implementation dependency, not the location of that request. A bounded read of later #7773 comments returned only `5810063026`, `5810224304` and `5811684843`: Robotics pickup, START and checkpoint messages. They do **not** accept Materials AM1–AM4 or establish a Materials receiver. Prior #7870-only comment reads were insufficient to reconcile this dialogue; do not repeat that routing error.
 
-Separate file read `/Users/chriswong/.local/bin/pool` was denied by the path allowlist and not accessed through shell/symlink/another tool. Independently discovered permitted policy/script files under the existing .claude handoff kit were read, not edited. R13 browser and additional alias/identity/delivery denials remain in force. The R17 locality issue and R18 platform denial are different boundaries; preserve both.
+The **existing** comment `5809093547` was amended in place and read back at `2026-09-26T12:08:08Z`. Historical R11 content remains below a narrow supersession notice. Its old broad-sector theme-router/client requirement is superseded; AM1, AM2, AM4 and full acceptance are retained. There is no duplicate request, new PR, new worker, new queue or re-home.
 
-Research staging `/Volumes/Mastermind/research/basic-materials-r18-gtw7q52q` contains only REVIEW_PROMPT.txt and schema_fragment_checks.json. PromptSHA256 `6318e97f453d206a18620e7e7c5a42a8474bc2cad4db6effd6342e1676a89eb8`; review.stdout absent. Research REPL83762 exited0, verified by process output. No reviewer/research process or autonomous watcher remains from this unit. Staging is not a product worktree or current-state owner.
+Amended AM3 requests one concrete answer: the existing accepted private read/projection boundary, if any, with owner, immutable signature/source, closed sector discriminator or accepted identity mapping, entitlement/current-rights enforcement and permitted outer/inner join. If out of scope or unaccepted, it requests an exact bounded disposition and an existing receiver/carrier only when verified. A comment edit is not notification, delivery-consumption, acceptance or START. Sol still owns the next recovery/adjudication action.
 
-## Durable R18 artifacts
+### Source facts narrow the unresolved identity/transport question
 
-All below were committed and exact-ref blobs read back, matching complete local portable bytes:
-- `research/basic_materials/BASIC_MATERIALS_R18_NUMERIC_CORE_AND_SHARED_CONTRACT_BOUNDARY_2026-09-24.md`: creation `546c80245a4361fe5c56a344968fc077f1fbdf62`, blob `c7b815ba8e5badda1518969dae3ab874d32a2aee`,17962bytes; SHA256 `f113b151169fcd51999d7778ea825f61c3ed018359111351ae7a0b87eceefed9`.
-- `research/basic_materials/R18_EXISTING_CONTRACT_QUALIFICATION_2026-09-24.json`: creation `ad78761a36b57659c6042bb66210440055260bdc`, blob `39a07a481c8e273285eab9d8e0a282128816541f`,10273bytes; SHA256 `946b5910e4953785172687c10f3983f49cd7c02b16f4b5cc1bdb52f233773e77`. Exported completed-result bytes match native file exactly.
-- Existing `agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md` UPDATED IN PLACE at `5c23f20bc27f5837c6b178c6595cdb1f28461fb3`, blob `c77f52171a5d1d4fc56416989ba1fee80c16413b`,14784bytes; SHA256 `59fd9477bda013d97351e4d1fc95dfc6d72493fb5c95ea0a0cf0d87df60eb05c`.
+At the R23 main pin:
+- `engine/neuralweb/sector_map.py`, blob `7c715fd39d3c113edb6e16145d1086d01037ce51`, maps the existing GICS Materials label to the XLB panel node using incumbent breadth/holdings stores. It is explicitly display-only. This does not prove a global Materials dossier identity, current issuer membership or a private evidence join.
+- `docs/superpowers/plans/2026-09-21-stsi1-sector-federation-technology-dossier.md`, blob `6800ca09cba0e31693c1d17ac23bcffd630ce77e`, admits Technology as its first sector and specifies the existing focused static publication transaction. Architecture #7577 is merged at `d38e10f01686e9227e4c774fa1a4e28239993960`; the merged plan is not proof that the composer/reader is deployed or Materials admitted.
+- Therefore an existing sector-ID pattern, a `sector:xlb` display string or a generic outer schema cannot silently authorize Materials identity or private publication. In particular, do not put full private source assertions in public `site/sectordata` merely to reuse the focused publisher.
 
-Local distribution copies reside under `/mnt/data/basic_materials_r18/`; verify exact existence before links. Package consistency checks confirm unique outcomes, true expected/observed equality, explicit non-started/no-admission state, preserved task rows and scope. These are not independent semantic approval or product tests. No full source documents, secret files, native dataset or production payload published.
+R22 source facts remain pinned rather than repeated as new tests:
+- closed outer schema `affc11c5ead2d5213a6b0e268b4bcd8734e3c9fb`;
+- Finance inner schema `f3d8bcbebf81b46c7078d0acea938a02390e9163` and projection `0f6b2d157992b283b38de37027f29f68d42ed4e8`;
+- Finance builder `64b1f94d99ccfc0c7dac7dc8fd2564ebb5e62f70` has `FI_READ_URL = ""`;
+- Finance #8009 `dabc3492ec4e3a4f4d8152899cf9295fb471a9db` supplies fixture-connected evidence, not a production private reader; #8006 `3d73f7867881590df8d587a56ebf4dac95f924ac` is fixture-only registration/envelope work.
 
-## Preserved shared and economic frontier
+## Workspace and capability reconciliation — scope matters
 
-#7870 unchanged at `e2f4d490915660fc6db64d750505309343e9e0e8`, open/draft/unmerged. No new shared-comment return was found in the single bounded read; no repeat request or old schema probe. Existing curation schema `ff3928f0c54aa164ef8283d9da45af67e6a0d971`, signed/exact/private/profile acceptance remain unestablished for Materials. Do not displace #7462/#7669 source custody.
+The R22 `mmx-workspace status ... --lane web` returned NOT_APPLIED/not registered. R23 read the installed launcher and established that it unconditionally selects **`/Users/chriswong/Documents/GitHub/Mastermind`**, with workspace root `/Volumes/Mastermind/agent-workspaces`. That result is **not a Macro workspace/custody verdict**. Do not keep probing that Mastermind launcher for a Macro branch, override its host-selected repository, invoke its payload directly or create an ad hoc clone/worktree.
 
-H1/H2/H3/H5/H6/H7 remain open; H4 partial. R13 NTR/WY NYSE identities retain original clocks, Canadian NTR unresolved. NOVONIX/Wheaton native identities, real source-review/retention/rights and published routes remain unknown. R17 helper repair/40-path regression and original38 output equality remain historical exact evidence, not rerun or reclassified as product tests.
+A read-only Macro worktree census from `/Users/chriswong/Documents/Cluade/macro-main` returned zero matching Materials entries in that particular clone's registry. It does not prove that another clone/host has no workspace or that a lease expired. The historical #7984 M1 workspace remains `/Users/chriswong/lanes/wt/basic-materials-core-v0`, from `/Users/chriswong/lanes/repos/macro`; no current inspection or custody release of that workspace is claimed.
 
-Minimum references: R11 matrix `443a29e64069c029e48aed14a2ea11f51e705257` before old standalone API/client steps; R9 plan `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R8 manifest `7aabc80d34278609e717fcbdfef56c080bfc9dce`; R15 source index `200fd463cf7f902022dcf14cde7dc24583110737`. Current packet retains these sources and all source-specific limitations.
+For R23's **source-only Agent OS corrections**, the native GitHub action family and Macro resource were checked; repository push permission was reported. The live Chairman continuation, existing research branch, exact blob compare-and-swap and fresh discussion/head reconciliation bound the edits to their incumbent targets. No local source checkout, product writer or runtime lease was acquired or modified. This does not waive the repo-specific workspace/admission requirements for later host implementation.
 
-## Next material action and finalization
+One later Studio compound **read** request for Macro CLAUDE/AGENTS/Agent OS and Mastermind delivery procedure was blocked before dispatch with “we couldn't determine the safety status of the request.” It was not retried, rephrased or rerouted. No mutation or process began for that request. This is an action-scoped platform refusal, not proof of universal GitHub failure, a credential fault, or recovery of the separately blocked product action. Independent native GitHub document/comment writes succeeded and were read back.
 
-The next build contribution is T4's pure economic core under an actual bounded implementation assignment and existing F04 source custody, using the prepared cases and explanatory requirements. This is separate from retrying the denied review launch. Accepted shared source/private/profile signatures and real native adapter rehearsal may advance independently through their owners. Independent review and complete T7/T8 acceptance remain mandatory. No new equivalent worksheets, source surveys, unchanged probes or fixture expansion without a real finding.
+Observed mode/served identity/quota are not inferred from those tool results. Current bootstrap adaptive-mode directions govern recommendations; older procedure mode wording does not authorize fabricated telemetry or a self-switch. No mode was changed and no mode change would waive a denied action or an Executive admission requirement.
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
-MISSION_COMPLETE: false
+## Frozen T4 implementation frontier — do not restart
 
-Boundary: completed exact-schema compatibility qualification and scoped implementation-order decision after reconciling a non-started review attempt. The current review launch is action-blocked; the native research process is closed; the next material unit crosses into actual implementation assignment or accepted shared-interface review. Preserve the mission and authority rather than calling planning a product release. Resume from this checkpoint/current packet, not R1–R18 raw history. Next-mode recommendation: Extra High for iterative implementation/terminal work after assignment, Pro only when substantial integration judgment warrants it; text does not switch modes and no mode overrides an action denial.
+#7984 remains the same explicit RED checkpoint, not a green candidate. Historical exact run: two tests passed and `cash_reconciliation` failed with `ValueError: unsupported analysis_kind`. Those tests were **not rerun in R23**.
 
-EFFECT_UNKNOWN: none observed. Only this research carrier and existing packet/checkpoint changed. No shared/product code, native facts/identity/rights, ranking/entry/size/trade, publisher, running worker or autonomous wake. Read back this final checkpoint and reconcile #7796 projection before finalizing.
+After the actual platform permits the denied cash-write action and source custody is reconciled, resume the same branch in this order:
+1. existing cash-reconciliation RED -> minimal implementation -> GREEN;
+2. canonical decimal grammar RED -> reject exponent/whitespace without losing exact signed/fractional values;
+3. duplicate-required-role RED -> refuse ambiguous evidence;
+4. chronology RED -> require a genuinely prior period;
+5. complete commercial-progression and contractual-participation mechanisms;
+6. run the complete Materials targeted file plus `tests/test_market_ontology_exposure_map.py` after each GREEN; freeze output schema/wider T4 proof only after mechanisms and denials stabilize.
 
+Missing `quantity_basis` refusal already works and must not regress. Do not replace the RED with a skipped test, recreate its unit-economics implementation, mark Ready, arm merge-on-green, merge or call it built. Historical M1 test interpreter: `$HOME/lanes/venv/bin/python` (Python 3.12); `/usr/bin/python3` 3.9.6 failed on repository syntax and is not the selected runner.
 
-## R19 — T4 pure-core implementation began under current live Chairman continuation
+## Held gates and no-retry effects
 
-The Chairman continued this exact mission with Extra High enabled after R18. That current live directive supplied present intent for the already-frozen bounded T4 core; it does not grant rights/source/publication authority or transfer the shared GMI writer. Product code remains separate from research carrier #7796.
+- **H1:** shared AM1–AM4 compatibility remains unaccepted; exact return belongs on #7773 discussion `5809093547` unless a lawful receiver/carrier handoff is actually proven.
+- **H2/H3:** existing store custody and accepted private profile/current-rights/publication proof remain unresolved. Shared merge does not establish private acceptance.
+- **H4 partial:** original NYSE Nutrien/Weyerhaeuser identity observations retain their clocks. Canadian Nutrien unresolved; NOVONIX/Wheaton and all four complete journeys are not proven. Research relevance does not change an issuer's structural sector.
+- **H5:** detail/template custody remains with current owners; no #7462/#7669 takeover.
+- **H6/H7:** independent release review and actual original retention/review/rights remain owed.
+- **Sector V0:** exact sector identity/outer-inner join and authenticated reader are UNBOUND. A schema-valid literal or data-free shell does not close these gates.
+- **Cash patch:** historical explicit pre-dispatch safety denial, `TOOL_DEGRADED / EFFECT_NONE`; no permitted recovery established. No retry through GitHub, another host/tool/provider/account or changed wording.
+- **R18 reviewer launch:** same no-retry hold. Native dry run PID85411 exited 0, actual remote launch never dispatched; no reviewer ACK/START/result. R17 Qwen locality refusal (`LOCAL_SEAT_REMOTE_REQUIRED`, exit 78) is a different earlier fact, not an authorized fallback.
+- **Other preserved denials:** R13 browser/additional alias/identity/delivery actions; `.local/bin/pool` path-allowlist denial. Do not reroute them. Their full receipts remain at the immutable prior checkpoint.
 
-### Workspace/source reconciliation
+No modifying effect is unresolved. No current Materials worker or autonomous return path has been established. Historical research REPL83762 and staging observations are not a live worker claim.
 
-- M2 designated `/Users/chriswong/Documents/Cluade/macro-main` was dirty and `git fetch origin && git merge --ff-only origin/main` failed because the local main diverged. Per repository law it was not rebased/reset/forced or used for product edits.
-- M1 primary `macro-main` was also unsuitable. The established clean lane clone `/Users/chriswong/lanes/repos/macro` fetched `origin/main` successfully.
-- Fresh worktree: `/Users/chriswong/lanes/wt/basic-materials-core-v0`.
-- Local implementation branch: `claude/basic-materials-core-v0`.
-- Exact base: `22094843f4042db6d9d77ad8847bcdbf9a27faa9` (`origin/main` at worktree creation).
-- Implementation branch was subsequently committed/pushed and opened as **Macro PR #7984**, Draft/HOLD, branch `claude/basic-materials-core-v0`, head `36f330b1f7829a289a44937bca0007c734d6df5e`. The PR body records the deliberate RED and DO-NOT-MERGE condition. No merge, release, deployment or browser proof.
-- Protected procedure for this unit: Mastermind `a29161fa0a44cca9927afe042b5f7ea25aae1736`, Skillpack 1.0.1/bootstrap1; same-pin ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT loaded. Current Macro AGENTS/CLAUDE and GMI workstream were read at the implementation base.
+## Minimum durable source map
 
-### TDD effects actually observed
+- R21 architecture: `research/basic_materials/BASIC_MATERIALS_R21_SECTOR_UMBRELLA_AND_THEME_DRILLDOWN_ARCHITECTURE_2026-09-26.md`, blob `4acb9647da524e628596671fae6e2557b102c7ed` at the entry head; unchanged by this unit.
+- R20 core review: `research/basic_materials/BASIC_MATERIALS_R20_T4_CORE_PRINCIPAL_REVIEW_2026-09-24.md`, creation commit `628437cb3a75d599e14c065f6ed8d2b4a1916f95`; #7984 comment `5826147289`.
+- R18 report blob `c7b815ba8e5badda1518969dae3ab874d32a2aee`, creation `546c80245a4361fe5c56a344968fc077f1fbdf62`; qualification blob `39a07a481c8e273285eab9d8e0a282128816541f`, creation `ad78761a36b57659c6042bb66210440055260bdc`. Twelve actual schema-fragment checks were research evidence, not product acceptance.
+- R11 adoption matrix `443a29e64069c029e48aed14a2ea11f51e705257` precedes older standalone API/client steps, now further narrowed by R21/R23 sector transport.
+- Saved implementation plan `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R9 44-requirement/task matrix `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9`.
+- R8 integrated specification `354ac7e305d43be8e4fe2b21dab54cbe2cf60736`; manifest `7aabc80d34278609e717fcbdfef56c080bfc9dce` locates the unchanged family studies.
+- R15 five-source index `200fd463cf7f902022dcf14cde7dc24583110737`; R14 worksheet `4da2e39f6ffae09cb25e3cb1a6a15feebdc9d221`; R13 identity observations `3f54410ae6a0caeb36a0698f76a4beb4f48e3e63`.
+- R16 corrected research helper and R17 guards remain references: 20 parent regression failures repaired, 38 original outputs unchanged. Do not promote research exercises to independent review or production code.
 
-TDD uses `$HOME/lanes/venv/bin/python` (Python3.12). M1 `/usr/bin/python3` is Python3.9.6 and fails while loading the repository conftest on modern `list[str] | None` syntax; this is an interpreter-selection issue, not a product defect.
+The proof subjects remain Nutrien manufactured phosphate; NOVONIX's two distinct qualification/collaboration originals; Wheaton/Antamina's financial participation; Weyerhaeuser's actual investment cash versus adjusted distribution metric. No company/financial-right scope, native source clocks or missingness case is dropped. All source-specific limits are retained in the canonical packet and source registers.
 
-1. RED: first test failed because `compare_measures` was absent.
-2. GREEN: implemented an in-memory exact-decimal `same_period_spread` calculation. Test passed.
-3. RED: unit-economics composition failed because `compose_materials_economics` was absent. A temporary test-import coupling also masked the already-green first function; the test harness was corrected, then the intended single RED was reproduced.
-4. GREEN: implemented the synthetic unit-economics composition. It calculates current/prior unit margin plus price/cost/margin changes and emits a deterministic `price_up_margin_down` explanation with an explicit no-whole-company-profitability limitation. Two tests then passed.
-5. RED: added cash-reconciliation behavior. Current exact run is **2 passed / 1 failed**; failure is `ValueError: unsupported analysis_kind` for `cash_reconciliation`, as intended before implementation.
-6. Attempted minimal cash-reconciliation production patch was **blocked by OpenAI safety checks before dispatch**. No tool process or patch effect began. It was not retried, rephrased, switched to another tool/provider/host, or pushed through GitHub.
+## Verification and effects of this unit
 
-Current local-only files:
-- `engine/market_ontology/materials_economics.py` — 292 lines, SHA256 `97894a46a91b583be942214e48372791a86302c344db368755e34860af23b5c8`.
-- `tests/test_market_ontology_materials_economics.py` — 168 lines, SHA256 `8967aaf2f816e6e0f06c32bbe5e97d2fde3ee9bbf259676390132f07c5f41652`.
-- These exact files were committed together in RED checkpoint commit `36f330b1f7829a289a44937bca0007c734d6df5e` and pushed to `origin/claude/basic-materials-core-v0`; the worktree was clean immediately after push. Their pre-commit SHA256 values above remain content receipts.
+Applied: one canonical handoff source amendment; the same existing compatibility comment amended with exact-ref/source evidence and read back; this cumulative checkpoint updated in place. GitHub is the one source/comment carrier. No product file, shared schema, source record, identity, rights registry, membership, rank/entry/size/trade output, UI, publisher or credential was edited.
 
-Fresh verification immediately before this checkpoint:
-`$HOME/lanes/venv/bin/python -m pytest tests/test_market_ontology_materials_economics.py -q` -> **2 passed / 1 failed**, with the one expected cash-reconciliation RED. This is deliberately not a green-suite or completion claim.
+R23 claims exact-source/readback and scoped source-diff verification only. Product tests 0; new economic fixture cases 0; independent reviews 0; native admissions 0; worker launches 0; blocked-action retries 0; merge/deployment/private-browser proof 0. R22's 11 passing structural checks plus one mismatch are retained as R22 evidence, not freshly rerun R23 tests. No CI or runtime success is inferred from these document commits.
 
-### Effect and continuation boundary
+Before finalizing, verify this checkpoint's exact returned commit/blob and that the diff from `03997c06855e5dee7681b763bdc69159fd79f61a` contains only the two existing Agent OS handoff paths. Reconcile PR #7796's title/body as a projection of this frontier without changing Draft/HOLD or source custody. Those receipts live on the existing GitHub carrier, not a new status registry.
 
-Blocked patch call: `TOOL_DEGRADED / EFFECT_NONE` for that exact cash-production write. It is not `EFFECT_UNKNOWN`. The denial is not retry permission. Do not route the same patch through GitHub, another device/tool/provider, or a differently worded call merely to bypass it.
+## Exact next action and continuation boundary
 
-The known partial product work is durably pinned on PR #7984, but the carrier remains an **intentional RED checkpoint**, not an accepted implementation. Do not mark Ready, arm merge-on-green, merge, or call it built while the cash case is red. Research PR #7796 remains separate and holds the complete program requirements.
+**Primary:** resolve the amended AM3 sector-private reader and identity/outer-inner join on its actual #7773 discussion `5809093547`. Consume any actual exact-source owner return; if none exists, advance the concrete owner-binding question from the accepted STSI-1/GMI source boundaries rather than polling unchanged comments, waiting for a ghost receiver or creating a second request. Only a verified existing receiver/carrier may be named as a transfer. Then freeze the Materials inner projection under separately reconciled product path custody; do not treat discussion delivery as implementation admission.
 
-Independent safe lanes remain research/read-only reconciliation and durable continuity. Once the platform permits the blocked write class in a later turn/session, resume **the same PR #7984 / branch / RED test**: implement only cash reconciliation, run it green, then continue commercial-progression and contractual-participation cases before schema/identity-link work. Reconcile current main and target-path collisions before the next push; do not create a second carrier or rebuild the existing unit-economics code from scratch unless its exact source is materially invalidated.
+**Independent lane:** #7984 may resume its existing RED only when the recorded cash-write restriction is genuinely lifted and its incumbent workspace/custody is reconciled. The data-free sector shell remains an independent design/build possibility after its own current design/template custody gates; it does not acquire private reader or identity authority from an empty state. Do not repeat R1–R22 surveys, worksheets, equivalent fixtures, the wrong-repository workspace probe, denied calls or the now-completed T5/T6 source correction.
 
-R1–R18 research, all44 requirements, eight tasks, five originals/four company journeys and V0–V4 ambition remain intact. Shared/private/native T7/T8 gates remain open. No source admission, identity/rights change, ranking, entry, sizing, trade, publication, worker or autonomous wake occurred.
+**Boundary:** the source-correction and exact-dialogue reconciliation unit is complete; the next substantive unit crosses unreturned shared identity/private-reader acceptance or independently admitted product implementation. This is a recoverable continuation, not a transfer, wake, platform-wide outage, all-lanes-unavailable claim or mission completion.
 
-EFFECT_UNKNOWN: none.
-
-
-## R20 — read-only principal review while cash write remains action-blocked
-
-Current procedure was re-pinned before this unit: Mastermind `605cd056c3463c992d85ba76dbcc90fbb758da75`, INDEX blob `cc40fb22e7ae9b20a39bbaa551e883e625a5de56`, compatible1.0.1/bootstrap1; same-pin ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`. Current Chairman message continued the same mission. No new authority beyond that scope.
-
-### Carrier reconciliation
-
-- #7984 remains OPEN/DRAFT/HOLD at exact head `36f330b1f7829a289a44937bca0007c734d6df5e`; no implementation-head movement.
-- Research PR #7796 remained OPEN/DRAFT/HOLD at the start of R20.
-- Macro main advanced to `773be812b89ccff610a248f187f8ac98b057fbbf`. Exact compare from #7984 base `22094843f4042db6d9d77ad8847bcdbf9a27faa9` showed no changes to the Materials T4 target paths. No merge/rebase/base-update was performed.
-- Materials amendment comment5809093547 still has no direct acceptance response. Later Robotics PICKUP/START comments on #7773 belong to operation `gmi-robotics-fable-ceo-e2e-20260923-chairman-001`; they neither assign nor resolve Materials.
-
-### Read-only defect probes on exact #7984 head
-
-Using the existing M1 clean worktree and Python3.12 venv, no file modifications:
-1. **R20-F1 canonical decimal grammar:** `compare_measures` accepts `"1e3"` and whitespace-padded `" 7 "`, producing available numeric results. R18's qualified scalar convention rejects exponent spelling; the future production parser needs a strict plain-decimal text grammar before Decimal construction.
-2. **R20-F2 duplicate required metric:** two `price_current` assertions are silently collapsed by the dict comprehension. The later synthetic evidence overwrote the first and produced a current unit margin of `918` without refusal. Required role/metric mapping must be unique; no last-write-wins.
-3. **R20-F3 reversed chronology:** current/prior quarter labels were reversed and the composer still emitted `price_up_margin_down`. A valid comparison requires explicit chronological ordering.
-4. **Working control:** missing `quantity_basis` already returns `not_comparable`; preserve this behavior.
-
-Merged Consumer Cyclical V1 (#7942) was inspected only as precedent. Its `_select_pair` requires strictly newer current period_end and groups candidate facts rather than overwriting by key. Its return record also distinguishes deterministic core proof from unreached browser acceptance. Reuse invariants, not its sector-specific contract/source envelope.
-
-Principal review comment **#7984 issuecomment-5826147289** records the exact findings and future TDD order. Independent reviewer approval is still absent.
-
-### Durable R20 artifact and implementation order
-
-`research/basic_materials/BASIC_MATERIALS_R20_T4_CORE_PRINCIPAL_REVIEW_2026-09-24.md` was created on this research carrier in commit `628437cb3a75d599e14c065f6ed8d2b4a1916f95`. The existing Fable packet was then updated in place in `cc045620f7a6d58a4bc98d95570252004eb70010`, new blob `5a54568fb32fc0d6a8c34eb4c63ea559f6be6af8`.
-
-Frozen TDD order once the previously denied product-write class is platform-permitted:
-1. resume **the existing cash-reconciliation RED** on #7984; minimal implementation; prove green;
-2. add canonical-decimal grammar RED; prove exponent/whitespace refusal without losing signed/fractional exact values;
-3. add duplicate-required-role RED; refuse ambiguity;
-4. add reversed/non-prior chronology RED; require explicit ordering;
-5. after each GREEN run the entire Materials targeted file plus `tests/test_market_ontology_exposure_map.py`;
-6. only after the four economic mechanisms/denials are stable, freeze the Materials output schema and run broader T4 gates.
-
-The blocked cash production patch remains `TOOL_DEGRADED / EFFECT_NONE`. It was not retried or rerouted in R20. No product file, source fact, identity, rights registry, ranking/entry/size/trade output, publisher, worker or runtime changed.
-
-EFFECT_UNKNOWN: none.
-
-
-## R21 — sector-umbrella architecture checkpoint and canonical handoff
-
-Chairman explicitly requested a checkpoint and handoff after the R21 architecture work. This section is the durable continuation frontier; the existing Fable packet was updated in place rather than creating another competing handoff/control plane.
-
-### Protected procedure and current pins
-
-- Protected Mastermind pin: `763ec8f920177fdf48b18df1b8e37b61ab482ef0`.
-- INDEX blob `94d1af402598894372858793a5b1931019c5fa77`; compatible Skillpack `1.0.1`, bootstrap1.
-- Same-pin ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`.
-- R21 architecture file created in commit `2cd1347bfb0d744fae99dc9f1b6d9ead672692cb`.
-- Canonical Fable handoff updated in commit `585a19a53836d032ff00a2ef440d8b6c2bd3fdad`, content blob `cea20a6697dacd25b9d9a3df18af4e38d22a7e96`.
-- T4 core #7984 remains at exact head `36f330b1f7829a289a44937bca0007c734d6df5e`, OPEN/DRAFT/HOLD/intentional RED.
-- Shared foundation #7870 inspected at `6cd958e92b259f7221690547e7076f4a0de4ed33`, OPEN/DRAFT/HOLD.
-- Current Macro main moved during this unit; the latest main ref observed before handoff preparation was `e4a7ba926a217710f6e96e6a7b1828232a1d94d1`. Re-pin on pickup rather than assuming this remains current.
-
-### R21 architecture ruling
-
-**Basic Materials is a sector umbrella, not one canonical GMI theme.**
-
-Do not mint `theme:basic_materials`, map the sector ETF to theme identity, or create one synthetic Materials anchor merely to fit #7870.
-
-The product topology is now:
-
-1. **V0 Basic Materials sector dossier** — one sector-level intelligence surface spanning all researched Materials families and all four selected proof subjects.
-2. **#7984 pure economics core** — reusable deterministic calculations/explanations below the served products.
-3. **Canonical-theme drilldowns later** — through #7870 only for already accepted anchors such as `rare_earth_critical_min`, `copper_steel_electrify`, and `ag_fertilizer`.
-4. Precious-metals financial claims, construction materials, chemicals/gases, forest products/packaging and any other unmapped family remain sector/research slices until the canonical ontology owner admits a theme.
-
-Evidence:
-- current `config/theme_crosswalk.yml` contains the three accepted Materials-related themes above but no Basic Materials umbrella theme;
-- gold/silver/PGM baskets remain explicitly unmapped;
-- #7870's `VerticalRegistration` and `MountFacts` are exact one-anchor contracts;
-- Finance production uses a sector-deep-dive card and sector-specific read model outside canonical theme lanes;
-- Robotics #7908 was reverted by #8013 / `e5512ef66a74b538b165c5a600354c7a8eb35c92` after merging before #7870 and breaking first-party import CI. Materials must not repeat that sequencing defect.
-
-### Revised implementation frontier
-
-**#7984 T4 core** remains first writable code lane once the previously denied write class is actually permitted:
-1. existing cash-reconciliation RED;
-2. strict canonical-decimal text;
-3. duplicate-required-role refusal;
-4. current/prior chronology;
-5. commercial progression + contractual participation;
-6. output schema / wider T4 tests.
-
-No retry/reroute of the blocked cash patch merely to evade the previous safety denial.
-
-**V0 sector projection** is the next architectural lane:
-- use existing `sector_dossier_read_model.v1` as the accepted outer sector object where applicable;
-- freeze a Materials-specific inner read model analogous in ownership posture to Finance but with Materials domains/slices/mechanisms;
-- sector read model is a projection, never a new evidence truth store;
-- one Finance-style Theme Tracker sector-deep-dive entry outside canonical theme lanes;
-- one data-free Materials dossier shell;
-- native/private adapter remains behind existing source/rights/identity/private owners.
-
-All44 core acceptance requirements, eight task identities, five originals/four company journeys, ten Materials families/eight lenses and V0–V4 ambition remain. R21 changes topology/mechanics, not scope or acceptance.
-
-### Canonical handoff
-
-The current handoff is **only**:
-`agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md`
-
-It now starts with R21 and is the packet a future Fable/authorized implementation principal should consume. Do not mint another equivalent handoff unless authority/topology materially changes.
-
-No Materials receiver, PICKUP_ACK, START, Executive Attempt or autonomous watcher is created by updating the packet. The Semiconductor/Robotics/Energy Fable operations remain separate assignments.
-
-### Exact pickup order
-
-A fresh successor should:
-1. repin protected Mastermind INDEX and current Macro main;
-2. read this cumulative frontier;
-3. read R21 architecture;
-4. read the updated canonical Fable handoff;
-5. reconcile only heads/custody changed since this checkpoint;
-6. if authorized product writes are available, resume the **same #7984 RED**, not a successor PR;
-7. otherwise continue only the sector-read-model design/custody lane or source/route proof that does not duplicate shared infrastructure.
-
-DO_NOT_REDO: R1–R20 research, selected-source worksheets, synthetic case expansion, original broad shared-foundation discovery, the blocked cash-patch reroute, or the old standalone Materials theme/API/client design.
-
-### Effect truth
-
-Effects this R21 closeout:
-- R21 architecture file added on research carrier.
-- Existing Fable packet updated in place to become the current handoff.
-- No product/shared/source/private/identity/rights/UI code changed.
-- No PR merged, released, deployed or marked Ready.
-- No worker assigned or started.
-- EFFECT_UNKNOWN: none.
+**Resume surface/mode:** current attended Sol session for principal source-boundary adjudication; native GitHub source/comment actions are working. Keep the current working mode unless a material phase/capability change justifies a switch. Extra High is a later candidate for permitted iterative code/test work, not recovery permission for denied actions. Do not infer the actually served model, selected effort or remaining quota.
 
 **FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION**  
-**MISSION_COMPLETE: false**
-
-Justified boundary: Chairman requested checkpoint/handoff after a substantive architecture ruling; state is durably recoverable and the exact next action is preserved.
+**MISSION_COMPLETE: false**  
+**EFFECT_UNKNOWN: none observed**
