@@ -48,7 +48,7 @@ VALID_DOC = {
          "basket_state": {"membership_state": "PIT_MEMBERSHIP_VALIDATED",
                           "posture": "ADMITTED",
                           "price_basis_state": "TOTAL_RETURN_QUALIFIED",
-                          "basket_construction_family": "EQUAL",
+                          "weighting_family": "EQUAL_WEIGHT",
                           "incumbent_basket_ids": ["B.BNK.AMER"]},
          "rerating": {
             "operating": {"state": "OBSERVED",
@@ -320,11 +320,20 @@ def test_hydrated_controls_are_named_in_the_page_language() -> None:
     zh, en = zh_snap["evidenceAriaLabels"], en_snap["evidenceAriaLabels"]
     assert zh and len(zh) == len(en), (zh, en)
     assert all(re.search(r"[\u4e00-\u9fff]", label) for label in zh), zh
-    assert all(label.startswith("Open evidence") for label in en), en
-    # The hero chips are named from the label they paint, never a placeholder.
+    assert all(label.startswith("Open evidence: ") for label in en), en
+    # F3 (item 4): the row labels ARE the visible text — what-changed = slice
+    # name, rerating step = plane word, conflict sides = "first reading
+    # (plane)" / "second reading (plane)", constraint = §D.9 label. None of
+    # them may be a placeholder or a fabricated word.
+    for label in en:
+        assert "{slice" not in label and "{plane" not in label and "{row" not in label, label
+    for label in zh:
+        assert "{" not in label, label
+        assert label.startswith("打开证据："), label
+    # F4 (item 5): hero chips carry NO aria-label — their visible text already
+    # names them. The runtime exposes the absence of aria-label as empty
+    # strings, not as a placeholder.
     zh_chips, en_chips = zh_snap["heroChipAria"], en_snap["heroChipAria"]
-    assert en_chips[0].startswith("Evidence freshness: "), en_chips
-    assert en_chips[1].startswith("Outer dossier: "), en_chips
-    assert zh_chips[0].startswith("证据新鲜度："), zh_chips
-    assert zh_chips[1].startswith("外部报告："), zh_chips
+    assert en_chips == ["", ""], en_chips
+    assert zh_chips == ["", ""], zh_chips
     assert not any("{" in label for label in zh_chips + en_chips), (zh_chips, en_chips)

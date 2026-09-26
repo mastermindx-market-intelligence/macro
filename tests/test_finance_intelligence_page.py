@@ -259,7 +259,7 @@ def test_js_uses_authenticated_source_only_and_forbidden_storage_list_is_absent(
         "first_vertical_state", "outer_dossier_state", "history_state",
         "per_share_anchor", "valuation_multiple", "horizon",
         "valuation_anchor_state", "falsifier_state", "price_basis_state",
-        "basket_construction_family", "identity_state", "company_route_state",
+        "weighting_family", "identity_state", "company_route_state",
         "rights_state", "statement_mode", "published_at_grain",
         "measurement_class", "gross_net_basis", "period_summary_basis",
         "reported_derived_estimated", "indicator_direction", "indicator_state",
@@ -267,6 +267,11 @@ def test_js_uses_authenticated_source_only_and_forbidden_storage_list_is_absent(
         "degraded_section_state", "conflict_label",
     ):
         assert key in js, f"missing FI_LABELS row: {key}"
+
+    # F2 (item 3): the fabricated basket_construction_family field is GONE —
+    # there is no such field anywhere in the read model or label map.
+    assert "basket_construction_family" not in js
+    assert "FI_W_CHIP_CLASS" not in js
 
     # FORBIDDEN JS identifier list — labels excepted via map.
     label_string_exempt = (
@@ -286,20 +291,33 @@ def test_js_uses_authenticated_source_only_and_forbidden_storage_list_is_absent(
                 if "labelFor(" in line or "FI_LABELS" in line:
                     continue
                 raise AssertionError(f"forbidden token {token} in JS: {line.strip()}")
-    for token in ("average", "weight"):
-        for line in body.splitlines():
-            stripped = line.strip()
-            if stripped.startswith("//"):
+    # F2 (item 3): narrow the "weight" ban so spec identifiers (the
+    # weighting_family field name and its fi-weighting-chip / data-state-weighting
+    # attribute names per spec §B line 396) are NOT flagged. The ban still
+    # targets computed weighting — anything that does arithmetic on a "weight"
+    # variable. Existing visible-label strings ('Equal weight', etc.) are still
+    # excepted.
+    weight_spec_identifiers = ("weighting_family", "fi-weighting-chip", "data-state-weighting", "weighting ")
+    for line in body.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("//"):
+            continue
+        if "weight" in line:
+            if any(ex in line for ex in label_string_exempt):
                 continue
-            if token in line:
-                # Either a visible label (excepted) or a comment.
-                if any(ex in line for ex in label_string_exempt):
-                    continue
-                if token == "weight" and "Equal weight" in line:
-                    continue
-                if token == "average" and "'average'" in line:
-                    continue
-                raise AssertionError(f"forbidden token {token} in JS: {line.strip()}")
+            # Allow the line if every "weight" occurrence is inside one of the
+            # spec identifiers (weighting_family / fi-weighting-chip /
+            # data-state-weighting) — strip those occurrences and re-test.
+            remaining = line
+            for ident in weight_spec_identifiers:
+                remaining = remaining.replace(ident, "")
+            if "weight" not in remaining:
+                continue
+            raise AssertionError(f"forbidden token weight in JS: {line.strip()}")
+        if "average" in line:
+            if "'average'" in line:
+                continue
+            raise AssertionError(f"forbidden token average in JS: {line.strip()}")
 
 
 def test_js_renders_seven_sections_and_handles_evidence_drawer_and_slice_hash():
@@ -514,6 +532,269 @@ def test_runtime_never_turns_a_missing_state_into_a_positive_fact():
     assert 'data-fi-mount="evidence-missing"' in _render()
 
 
+# ──────────────────────────────────────────────────────────────────────────
+# F1 — colour map cleanup: SPEC_CHIP_SELECTORS own every per-state rule
+# ──────────────────────────────────────────────────────────────────────────
+def test_f1_colour_map_owns_only_spec_chip_selectors():
+    """F1 (item 1): the page owns colour for exactly the chip selectors the
+    spec enumerates — fi-step-chip, fi-membership-chip, fi-posture-chip,
+    fi-slice-chip, fi-macro-cell-state. Every per-state background rule for
+    these lives in one block whose header lists them as a tuple, so any
+    rule that targets fi-constraint-chip / fi-weighting-chip /
+    fi-price-basis-chip / fi-identity-chip / fi-exposure-chip / etc. fails.
+    """
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    forbidden_chip_pairs = (
+        "fi-constraint-chip",
+        "fi-weighting-chip",
+        "fi-price-basis-chip",
+        "fi-identity-chip",
+        "fi-exposure-chip",
+    )
+    for chip in forbidden_chip_pairs:
+        # No per-state rule is allowed to paint the chip background.
+        for state in ("OK", "MISSING", "INFERRED", "OBSERVED", "CONFLICTING", "STALE"):
+            bad = f".{chip}[data-state-{state.lower().replace('_', '-')}]" if state else f".{chip}"
+            assert bad not in css, f"forbidden {chip} per-state rule: {bad}"
+            bad2 = f".{chip}[data-state=\"{state}\"]" if state else f".{chip}"
+            assert bad2 not in css, f"forbidden {chip} per-state rule: {bad2}"
+    # No bare chip class background rule.
+    for chip in forbidden_chip_pairs:
+        assert re.search(rf"\.{chip}\s*\{{[^}}]*background:", css) is None, chip
+    # SPEC_CHIP_SELECTORS is a JS comment tuple naming the five chips that DO
+    # own per-state backgrounds, so any rule outside the tuple is one the
+    # spec did not enumerate.
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "SPEC_CHIP_SELECTORS" in js
+    spec_selectors = re.search(
+        r"SPEC_CHIP_SELECTORS\s*=\s*\[([^\]]+)\]", js
+    )
+    assert spec_selectors is not None
+    members = [m.strip().strip('"\'') for m in spec_selectors.group(1).split(",") if m.strip()]
+    for expected in (
+        "fi-step-chip", "fi-membership-chip", "fi-posture-chip",
+        "fi-slice-chip", "fi-macro-cell-state",
+    ):
+        assert expected in members, expected
+
+
+def test_f1_no_color_for_orphan_chip_classes():
+    """Negative test: the bare forbidden chips must not carry any colour
+    rule at all (background / color / border-color / fill)."""
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    for chip in (
+        "fi-constraint-chip",
+        "fi-weighting-chip",
+        "fi-price-basis-chip",
+        "fi-identity-chip",
+        "fi-exposure-chip",
+    ):
+        for prop in ("background", "color", "border-color", "fill"):
+            pat = re.compile(rf"\.{chip}\s*\{{[^}}]*{prop}\s*:")
+            assert pat.search(css) is None, f"{chip} {prop} rule still present"
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# F3 — evidence trigger names via ariaPair on data-state-driven triggers
+# ──────────────────────────────────────────────────────────────────────────
+def test_f3_evidence_triggers_use_aria_pair_pattern():
+    """F3 (item 4): every chip that opens the evidence drawer announces its
+    purpose through ariaPair-style EN/ZH strings, never a string the LLM
+    invented. The page-level helpers expose the labelled trigger."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    # ariaPair helper exists; ariaLabel constructed from it.
+    assert "function ariaPair(en, zh)" in js
+    # what-changed: "Open evidence: <slice name>"
+    assert "'Open evidence: '" in js or "'Open evidence:'" in js
+    # rerating step: "Open evidence: <plane word>"
+    assert "planeWordEn" in js or "labelFor('plane_word'" in js
+    # conflict sides: "first reading" / "second reading"
+    assert "first reading" in js
+    assert "second reading" in js
+    assert "第一方读数" in js
+    assert "第二方读数" in js
+    # Constraint: §D.9 row label via labelRow (not a fabricated string).
+    assert "labelRow" in js
+    # No bare placeholder strings that survive into the trigger.
+    for forbidden in (
+        "Open evidence (TODO)", "Open evidence: ??", "Open evidence ",
+    ):
+        assert forbidden not in js, forbidden
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# F4 — generic elements without role get no aria-label
+# ──────────────────────────────────────────────────────────────────────────
+def test_f4_generic_elements_carry_no_aria_label():
+    """F4 (item 5): aria-label/aria-labelledby may only name elements that
+    actually need naming — visible-text elements, named links, named
+    regions. The hero freshness/outer chips, the conflicts div, and the
+    atlas eyebrow must NOT carry a name attribute."""
+    html = _render()
+    # Hero chips — span.fi-chip with data-fi-mount="hero-freshness" /
+    # "hero-outer". Their visible text labels them; a redundant aria-label
+    # would be doubly read.
+    for chip_mount in ("hero-freshness", "hero-outer"):
+        block = re.search(
+            rf'<span class="fi-chip"[^>]*data-fi-mount="{chip_mount}"[^>]*>',
+            html
+        )
+        assert block is not None, chip_mount
+        assert "aria-label" not in block.group(0), f"{chip_mount} must NOT carry aria-label"
+        assert "aria-labelledby" not in block.group(0), f"{chip_mount} must NOT carry aria-labelledby"
+    # Conflict container — div.fi-conflicts, no aria-labelledby (the heading
+    # inside already names it via aria-labelledby on the section).
+    block = re.search(r'<div class="fi-conflicts"[^>]*>', html)
+    assert block is not None
+    assert "aria-label" not in block.group(0)
+    assert "aria-labelledby" not in block.group(0)
+    # Atlas eyebrow — span.fi-section-eyebrow.fi-atlas-eyebrow, no
+    # aria-label/labelledby.
+    block = re.search(r'<span class="fi-section-eyebrow fi-atlas-eyebrow"[^>]*>', html)
+    assert block is not None
+    assert "aria-label" not in block.group(0)
+    assert "aria-labelledby" not in block.group(0)
+    assert "data-aria-en" not in block.group(0)
+    assert "data-aria-zh" not in block.group(0)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# F5 — active view survives langchange
+# ──────────────────────────────────────────────────────────────────────────
+def test_f5_active_view_survives_langchange():
+    """F5 (item 6): when the language toggle fires, the active tab remains
+    active (aria-selected=true, tabindex=0) even if focus is elsewhere.
+    The runtime must NOT reset viewId on langchange."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    # renderSystem / activateView reads state.viewId; nothing about a
+    # language event touches viewId.
+    assert "state.viewId" in js
+    # The langchange handler in JS MUST NOT reset state.viewId — the active
+    # tab must survive the language swap. The handler exists to preserve
+    # focus on the same view tab; it never writes viewId.
+    langchange_block = re.search(
+        r"addEventListener\('langchange',\s*function\s*\([^)]*\)\s*\{(.*?)\}\s*\);",
+        js, re.S,
+    )
+    if langchange_block is not None:
+        body = langchange_block.group(1)
+        assert "state.viewId" not in body, "langchange handler must not reset viewId"
+    # activateView persists: tabindex=0 on the SAME view id.
+    assert "activateView" in js
+    assert "tabindex" in js
+    # Default view id is set on hydrate (state.viewId || first view), so a
+    # fresh page lands on the first view and re-renders preserve it.
+    assert "views[0].view_id" in js or "views[0]" in js
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# F6 — phone reachability: cards-first, sibling disclosure for the rest
+# ──────────────────────────────────────────────────────────────────────────
+def test_f6_macro_and_exposure_reachable_on_phone_without_horizontal_scroll():
+    """F6 (item 7): at 390px wide the macro / exposure sections render as
+    cards; rows beyond the first 8 live in a sibling <details> with a
+    'See all N' summary; the desktop table disclosure (.fi-macro-more /
+    .fi-exposure-more) is hidden on mobile so it never triggers horizontal
+    scroll."""
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    # Cards are visible on mobile.
+    assert ".fi-macro-cards" in css
+    assert ".fi-exposure-cards" in css
+    # Macro table is hidden on mobile.
+    assert re.search(r"\.fi-macro-table-wrap\s*\{\s*display\s*:\s*none", css)
+    # Exposure table is hidden on mobile.
+    assert re.search(r"\.fi-exposure-table-wrap\s*\{\s*display\s*:\s*none", css)
+    # Sibling disclosure for the rest of the macro cards.
+    assert ".fi-macro-cards-more" in css
+    # Desktop reveal hides the sibling disclosure. Match through one level of
+    # nested braces so the @media block is the containing rule.
+    assert re.search(
+        r"@media[^{]*\{(?:[^{}]|\{[^{}]*\})*\.fi-macro-cards-more\s*\{[^}]*display\s*:\s*none",
+        css, re.S,
+    ), "desktop @media must hide .fi-macro-cards-more"
+    # The desktop-only macro table disclosure is also hidden on mobile to
+    # prevent horizontal scroll.
+    assert re.search(
+        r"@media\s*\([^)]*\)\s*\{(?:[^{}]|\{[^{}]*\})*\.fi-macro-more\s*\{\s*display\s*:\s*none",
+        css, re.S,
+    ), "mobile breakpoint must hide .fi-macro-more"
+    # Sibling disclosure summary copy in the template.
+    html = _render()
+    assert 'class="fi-disc fi-macro-cards-more"' in html
+    assert 'class="fi-disc fi-exposure-cards-more"' in html
+    assert "See all slices" in html
+    assert "查看全部切片" in html
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# F7 — source-language marking only when prose is present
+# ──────────────────────────────────────────────────────────────────────────
+def test_f7_source_lang_note_only_when_prose_present():
+    """F7 (item 8): the ZH-only `fi-srclang-note` paragraph appears only when
+    the section actually holds free English prose. The runtime inspects the
+    section after every render and adds the note if and only if at least one
+    child carries lang='en'."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "function renderSourceLangNote" in js
+    # Function checks sectionEl.querySelector('[lang="en"]') before appending.
+    assert "querySelector('[lang=\"en\"]')" in js or "querySelector(`[lang=\"en\"]`)" in js
+    # The note copy is the ZH-only message from the ruling.
+    assert "本节部分文字为英文原文" in js
+    # The italic style was REMOVED — only color/size token rules remain.
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    assert ".fi-srclang-note" in css
+    assert "font-style" not in re.search(r"\.fi-srclang-note[^{}]*\{[^}]*\}", css).group(0)
+    # Macro cards use the <span lang="en"> pattern for the mechanism part.
+    assert 'lang="en"' in js
+    # The drawer note lives at the top of the drawer body when prose exists.
+    assert "此记录部分文字为英文原文" in js
+    # Token-only sizing — no px literals.
+    assert re.search(r"\.fi-srclang-note\s*\{[^}]*font-size\s*:\s*var\(--fs-micro\)", css)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# F8 — .fi-step-evidence is one rule, not stacked
+# ──────────────────────────────────────────────────────────────────────────
+def test_f8_step_evidence_is_one_rule():
+    """F8 (item 9): the step evidence button rule is a single block — width
+    and height on the same declaration, not two stacked rules of differing
+    geometry."""
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    blocks = re.findall(r"\.fi-step-evidence\s*\{[^}]*\}", css)
+    assert len(blocks) == 1, f"expected single .fi-step-evidence rule, found {len(blocks)}"
+    body = blocks[0]
+    assert "width: 24px" in body
+    assert "height: 24px" in body
+    # The F8 fix must NOT carry any pre-existing radius literal — tokens only.
+    assert "border-radius" not in body
+    # No override rule after.
+    after = css.split(".fi-step-evidence", 1)
+    if len(after) == 2:
+        tail = after[1]
+        # Nothing else in the css redefines its geometry.
+        assert "width:" not in tail.split("}", 1)[0] or "24px" in tail.split("}", 1)[0]
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# F2 — weighting_family enum compliance (chip + read-model)
+# ──────────────────────────────────────────────────────────────────────────
+def test_f2_weighting_chip_uses_spec_enum():
+    """F2 (item 3): the weighting chip reads basket_state.weighting_family,
+    carries data-state-weighting, and the only accepted enum values match
+    spec §D.20."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    # The chip class is fi-weighting-chip and the attribute is
+    # data-state-weighting — never a fabricated basket_construction_family.
+    assert "fi-weighting-chip" in js
+    assert "data-state-weighting" in js
+    # weighting_family is read from basket_state in renderAtlas (and
+    # everywhere else weight is used).
+    assert "s.basket_state.weighting_family" in js or "basket_state && basket_state.weighting_family" in js
+    # No default to EQUAL_WEIGHT — null weighting is shown as MISSING, not
+    # fabricated as equal.
+    assert "weighting_family || 'EQUAL_WEIGHT'" not in js
+
+
 def test_shell_ships_the_not_connected_binding_until_integration():
     """T8 seat ruling: the read-model endpoint is bound only through
     ``<main data-fi-read-url>``; an empty value must render the bilingual
@@ -533,3 +814,83 @@ def test_shell_ships_the_not_connected_binding_until_integration():
     # the page-local ARIA swapper stays the inline template script (asserted above)
     css = (root / "templates" / "finance_intelligence.css").read_text(encoding="utf-8")
     assert '.fi-shell[data-state="not-connected"] .fi-meta { display: none; }' in css
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# T11 round 2 — seat rulings from the browser probe (8 cells + keyboard)
+# ──────────────────────────────────────────────────────────────────────────
+def test_light_chip_base_rule_cannot_outrank_the_state_chip_rules():
+    """Seat erratum: at (0,2,1) the light base rule painted every state chip white.
+
+    `:where()` drops the theme selector's weight, so the base is (0,1,0) and every
+    per-state chip rule (0,2,0) wins in the light theme as it does in the dark one.
+    """
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    assert ':where(html[data-theme="light"]) .fi-chip { background: var(--fi-panel); }' in css
+    assert not re.search(r'(?m)^html\[data-theme="light"\] \.fi-chip\s*\{', css)
+
+
+def test_identity_chip_is_a_state_chip_not_an_evidence_trigger():
+    """Seat erratum: company_exposures[].identity carries no evidence reference.
+
+    A trigger there would open nothing, and a click-bound span can take neither
+    focus nor an accessible name, so the chip keeps its state binding only.
+    """
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "{ classes: 'fi-identity-chip', stateIdentity: identity, stateMarker: identity }" in js
+    assert "'fi-identity-chip fi-evidence-trigger'" not in js
+
+
+def test_fallback_placeholders_never_render_inside_lang_en():
+    """F7a: lang="en" marks payload prose only, never a localized fallback."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "function enLang(value) { return value ? ' lang=\"en\"' : ''; }" in js
+    # every remaining literal lang="en" is a comment, the helper, a query, or wraps a
+    # value that is present by construction (a guarded retained_risk, a prose-flagged row)
+    lines = [line.strip() for line in js.splitlines() if 'lang="en"' in line]
+    allowed = ("//", "function enLang(", "(cell.retained_risk ?", "(opts.prose && value ?")
+    stray = [line for line in lines if not line.startswith(allowed) and "querySelector('[lang=\"en\"]')" not in line]
+    assert not stray, stray
+    for fallback in ("'尚未描述。'", "'尚无可观察陈述。'", "'尚无经济效应记录。'", "'尚无操作启示。'"):
+        start = js.index(fallback)
+        assert 'lang="en">' not in js[js.rindex("\n", 0, start):start]
+
+
+def test_drawer_marks_only_scope_excerpt_and_limitations_as_english():
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "rec.business_scope || '', { prose: true });" in js
+    assert "|| '', { prose: !!rec.excerpt });" in js
+    assert "asArray(rec.limitations).join(' · '), { prose: true });" in js
+    assert js.count("{ prose:") == 3
+
+
+def test_source_language_notes_follow_the_section_header_without_a_lang_attribute():
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "setAttribute('lang', 'zh')" not in js
+    # Seat erratum: `.fi-sowhat` never existed, so the note anchors on the section header
+    assert "'.fi-sowhat'" not in js  # no selector literal (the erratum comment may name it)
+    assert "if (head) sectionEl.insertBefore(note, head.nextSibling);" in js
+    tpl = (TEMPLATES / "finance_intelligence.html.j2").read_text(encoding="utf-8")
+    sections = re.findall(r'<section id="[^"]+" class="fi-section [^"]*".*?</section>', tpl, re.S)
+    assert len(sections) == 7
+    for body in sections:
+        # the anchor exists as the section's first element child, exactly once
+        assert re.match(r'<section[^>]*>\s*<header class="fi-section-head"', body)
+        assert body.count('class="fi-section-head"') == 1
+    # the drawer note appears only when the record holds English prose
+    assert "if (isZh() && fields.querySelector('[lang=\"en\"]')) {" in js
+    # removal is parent-agnostic, so a repaint never throws on a nested note
+    assert "sectionEl.removeChild(" not in js and "drawer.removeChild(" not in js
+
+
+def test_what_changed_rows_are_the_house_decision_row():
+    """Spec §B.1 pins `<li class="fi-change-row mx-chg-row">`: the canonical DecisionRow
+    (theme.css), not a bulleted run where the slice name abuts the English clause."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "'<li class=\"fi-change-row mx-chg-row\" data-change-id=\"'" in js
+    assert "'<span class=\"fi-change-name mx-chg-name\">'" in js
+    assert "'<span class=\"fi-change-clause mx-chg-what\"' + enLang(row.operating_implication)" in js
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    rule = re.search(r"^\.fi-change-list \{([^}]*)\}", css, re.M)
+    assert rule is not None
+    assert "list-style: none" in rule.group(1) and "padding: 0" in rule.group(1)

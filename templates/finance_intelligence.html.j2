@@ -91,7 +91,7 @@
 
     <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察"></ul>
 
-    <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
+    <div class="fi-conflicts" data-fi-mount="conflicts">
       <h3 id="fi-conflicts-title" class="fi-conflicts-title">
         <span class="l-en">Where the planes disagree</span>
         <span class="l-zh">各维度之间的分歧</span>
@@ -131,7 +131,7 @@
         <span class="l-en">Subtheme atlas</span>
         <span class="l-zh">子主题图谱</span>
       </h2>
-      <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow" data-state-coverage="" data-aria-en="Domains and slices mapped" data-aria-zh="已映射的子域与切片" hidden></span>
+      <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow" data-state-coverage="" hidden></span>
     </header>
 
     <div class="fi-domain-grid" data-fi-mount="domain-grid"></div>
@@ -229,6 +229,13 @@
       </table>
     </details>
     <ul class="fi-macro-cards" data-fi-mount="macro-cards" hidden></ul>
+    <details class="fi-disc fi-macro-cards-more" data-fi-mount="macro-cards-more" hidden>
+      <summary>
+        <span class="l-en">See all slices</span>
+        <span class="l-zh">查看全部切片</span>
+      </summary>
+      <ul class="fi-macro-cards" data-fi-mount="macro-cards-list"></ul>
+    </details>
   </section>
 
   <section id="constraint-map" class="fi-section fi-panel fi-constraint" aria-labelledby="fi-constraint-title" data-fi-mount="constraint-map">
@@ -247,10 +254,12 @@
 
   <footer class="fi-provenance" data-fi-mount="provenance" data-aria-en="Input receipts" data-aria-zh="输入凭据"></footer>
 
-  <p class="mx-empty fi-notice" data-fi-mount="notice" hidden>
-    <span class="l-en" data-fi-mount="notice-en"></span>
-    <span class="l-zh" data-fi-mount="notice-zh"></span>
-  </p>
+  <div class="fi-notice-live" role="status" aria-live="polite">
+    <p class="mx-empty fi-notice" data-fi-mount="notice" hidden>
+      <span class="l-en" data-fi-mount="notice-en"></span>
+      <span class="l-zh" data-fi-mount="notice-zh"></span>
+    </p>
+  </div>
 </main>
 
 <aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"

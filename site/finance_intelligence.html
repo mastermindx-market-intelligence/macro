@@ -52,7 +52,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="theme.css?v=d58d35e9">
-<link rel="stylesheet" href="finance_intelligence.css?v=7030d540">
+<link rel="stylesheet" href="finance_intelligence.css?v=3d76ad0b">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 </head>
@@ -378,7 +378,7 @@
 
     <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察"></ul>
 
-    <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
+    <div class="fi-conflicts" data-fi-mount="conflicts">
       <h3 id="fi-conflicts-title" class="fi-conflicts-title">
         <span class="l-en">Where the planes disagree</span>
         <span class="l-zh">各维度之间的分歧</span>
@@ -418,7 +418,7 @@
         <span class="l-en">Subtheme atlas</span>
         <span class="l-zh">子主题图谱</span>
       </h2>
-      <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow" data-state-coverage="" data-aria-en="Domains and slices mapped" data-aria-zh="已映射的子域与切片" hidden></span>
+      <span class="fi-section-eyebrow fi-atlas-eyebrow" data-fi-mount="coverage-eyebrow" data-state-coverage="" hidden></span>
     </header>
 
     <div class="fi-domain-grid" data-fi-mount="domain-grid"></div>
@@ -516,6 +516,13 @@
       </table>
     </details>
     <ul class="fi-macro-cards" data-fi-mount="macro-cards" hidden></ul>
+    <details class="fi-disc fi-macro-cards-more" data-fi-mount="macro-cards-more" hidden>
+      <summary>
+        <span class="l-en">See all slices</span>
+        <span class="l-zh">查看全部切片</span>
+      </summary>
+      <ul class="fi-macro-cards" data-fi-mount="macro-cards-list"></ul>
+    </details>
   </section>
 
   <section id="constraint-map" class="fi-section fi-panel fi-constraint" aria-labelledby="fi-constraint-title" data-fi-mount="constraint-map">
@@ -534,10 +541,12 @@
 
   <footer class="fi-provenance" data-fi-mount="provenance" data-aria-en="Input receipts" data-aria-zh="输入凭据"></footer>
 
-  <p class="mx-empty fi-notice" data-fi-mount="notice" hidden>
-    <span class="l-en" data-fi-mount="notice-en"></span>
-    <span class="l-zh" data-fi-mount="notice-zh"></span>
-  </p>
+  <div class="fi-notice-live" role="status" aria-live="polite">
+    <p class="mx-empty fi-notice" data-fi-mount="notice" hidden>
+      <span class="l-en" data-fi-mount="notice-en"></span>
+      <span class="l-zh" data-fi-mount="notice-zh"></span>
+    </p>
+  </div>
 </main>
 
 <aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"
@@ -570,7 +579,7 @@
 
 <script>(function(){function applyAria(){var lang=document.documentElement.getAttribute('data-lang')||'en';document.querySelectorAll('[data-aria-en]').forEach(function(el){el.setAttribute('aria-label',lang==='zh'?(el.getAttribute('data-aria-zh')||el.getAttribute('data-aria-en')):el.getAttribute('data-aria-en'));});}document.addEventListener('langchange',applyAria);applyAria();})();</script>
 <script src="theme.js?v=3ffc953f" defer></script>
-<script src="finance_intelligence.js?v=f286c5a4" defer></script>
+<script src="finance_intelligence.js?v=49205521" defer></script>
 <script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>

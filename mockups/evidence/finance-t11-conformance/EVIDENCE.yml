@@ -1,0 +1,12 @@
+# Finance T11 (#8009) connected-state evidence. The connected dossier has no production read URL
+# (FI_READ_URL is empty on main), so this capture serves a scratch copy of the site whose
+# finance_intelligence.html differs from the committed page ONLY in data-fi-read-url="/fi.json",
+# fulfilled by the synthetic T11 probe fixture (the hydration suite's VALID_DOC widened to 11 rows;
+# issuers are "Issuer N"). finance_intelligence.css/.js are byte-identical to this commit's site copies.
+# Interaction cells: step_evidence_hover = a real pointer hover on .fi-step-evidence; disc_summary_focus
+# = real focus on a visible .fi-disc > summary. Both applied in all 8 cells (24/24 captured).
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/finance_intelligence.css
+  - site/finance_intelligence.css
+manifest: mockups/evidence/finance-t11-conformance/manifest.json

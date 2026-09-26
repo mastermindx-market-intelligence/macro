@@ -169,7 +169,9 @@ html[data-theme="light"] .fi-rerating-steps::before {
   background: var(--fi-panel);
   color: var(--fi-text);
 }
-html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
+/* Seat erratum (T11 round 2): :where() gives the light base zero theme specificity, so the
+   per-state chip rules (0,2,0) still win over it; at (0,2,1) it painted every state chip white. */
+:where(html[data-theme="light"]) .fi-chip { background: var(--fi-panel); }
 
 /* page canvas — the page owns its canvas in both art directions. theme.css does not
    paint body, and the shell's 1200px box alone left every gutter, the nav band and
@@ -203,6 +205,9 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-section-eyebrow { display: block; font-size: var(--fs-sm); color: var(--fi-muted); font-weight: 400; margin-top: 2px; }
 .fi-section-foot { font-size: var(--fs-sm); color: var(--fi-muted); margin: 12px 0 0; max-width: 75ch; }
 .fi-section-head { padding: 4px 0; }
+/* Seat erratum (T11 round 2): spec §B.1 rows are the house DecisionRow (.mx-chg-row, theme.css);
+   the list drops its UA bullets and indent like the page's other lists. */
+.fi-change-list { list-style: none; margin: 12px 0 0; padding: 0; }
 .fi-disc { margin: 12px 0 0; padding-top: 8px; border-top: 1px solid var(--fi-line); }
 .fi-disc > summary { list-style: none; cursor: pointer; padding: 4px 0; font-size: var(--fs-sm); color: var(--fi-link); }
 .fi-disc > summary::-webkit-details-marker { display: none; }
@@ -210,7 +215,12 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-disc[open] > summary::before { content: "\2013"; }
 .fi-disc > summary:focus-visible { outline: 2px solid var(--fi-link); outline-offset: 2px; }
 .fi-disc > table, .fi-disc > ul { margin-top: 8px; }
-.fi-exposure-cards-more { display: none; }
+/* Cards-more disclosure is now visible at every viewport by default; §C.10 hides it at ≥768. */
+.fi-exposure-cards-more { display: block; }
+
+/* Per-state colour map (§C.7/§C.8/D.36) — every spec-named chip carries its own selector.
+   Spec covers ONLY step, slice, membership, posture, and macro-cell-state chips;
+   every other chip keeps the base .fi-chip treatment and its plain word. */
 
 /* rerating stepper */
 .fi-slice-picker { margin: 12px 0 16px; display: flex; gap: 10px; align-items: center; font-size: var(--fs-sm); }
@@ -223,8 +233,20 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-step-chip { display: inline-block; font-size: var(--fs-sm); font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); }
 .fi-step-clock { font-size: var(--fs-sm); color: var(--fi-muted); font-variant-numeric: tabular-nums; }
 .fi-anchor-chip, .fi-history-chip, .fi-valuation-chip, .fi-price-chip, .fi-comparability-chip { display: inline-block; font-size: var(--fs-sm); font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); }
-.fi-step-evidence { background: transparent; border: 1px solid var(--fi-line); width: 22px; height: 22px; border-radius: 6px; color: var(--fi-muted); cursor: pointer; font-size: var(--fs-sm); }
+.fi-step-evidence { background: transparent; border: 1px solid var(--fi-line); width: 24px; height: 24px; color: var(--fi-muted); cursor: pointer; font-size: var(--fs-sm); }
 .fi-step-evidence:hover { color: var(--fi-text); border-color: var(--fi-muted); }
+/* §C.5 / Item 5: coarse-pointer hit areas at 44×44 (WCAG 2.5.5 AAA). The glyph
+   stays the same; padding or an inset hit-area absorbs the extra size. */
+@media (pointer: coarse) {
+  .fi-step-evidence,
+  .fi-evidence-trigger,
+  .fi-constraint-evidence {
+    min-width: 44px; min-height: 44px;
+  }
+  .fi-view-tab { min-width: 44px; min-height: 44px; padding: 8px 12px; }
+  .fi-disc > summary { min-width: 44px; min-height: 44px; padding: 8px 4px; }
+  .fi-drawer-close { min-width: 44px; min-height: 44px; }
+}
 .fi-rerating-bridge { font-size: var(--fs-md); color: var(--fi-text); margin: 16px 0 0; max-width: 75ch; }
 .fi-falsifiers { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
 .fi-falsifier { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; font-size: var(--fs-sm); }
@@ -341,6 +363,12 @@ body.fi-page { background: var(--fi-canvas); }
 /* visually-hidden helper */
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
+/* Item 10 (SEAT-PINNED source-language marking) — a quiet line under
+   sections that hold English-source prose, in ZH only (the helper strips it
+   on EN). Treatment: text-only metadata line at --fs-micro, --fi-muted,
+   4px top margin — never a chip, never coloured, never italic (F7). */
+.fi-srclang-note { font-size: var(--fs-micro); color: var(--fi-muted); margin: 4px 0 0; }
+
 /* responsive */
 @media (min-width: 1200px) {
   .fi-shell { max-width: 1200px; }
@@ -364,13 +392,28 @@ body.fi-page { background: var(--fi-canvas); }
   .fi-exposure-cards-more { display: block; }
   .fi-section { padding: 16px; }
   .fi-macro-table-wrap { display: none; }
-  .fi-macro-more { display: none; }
+  /* Item 9: every row stays reachable on phone. First 8 rows render in
+     .fi-macro-cards; rows 9..N live inside a sibling .fi-disc .fi-macro-cards-more
+     with the same card builder (no horizontal scroll at 390px). */
   .fi-macro-cards { display: grid; gap: 10px; list-style: none; margin: 16px 0 0; padding: 0; }
+  /* F6: mobile uses the cards sibling for rows 9..N; the desktop table
+     disclosure (.fi-macro-more) stays hidden on phone so the inner table
+     cannot overflow the viewport. */
+  .fi-macro-cards-more { display: block; }
+  .fi-macro-more { display: none; }
   .fi-conflict-pair { grid-template-columns: 1fr; }
   .fi-toc ol { flex-direction: column; gap: 4px; }
   .fi-shell { padding-left: 16px; padding-right: 16px; }
   .fi-hero h1 { font-size: var(--fs-h2); }
   .fi-exposure-cards { gap: 8px; }
+}
+/* Item 9: hide the cards-only "see all" disclosure at ≥768 — the desktop
+   table + its sibling .fi-disc.fi-exposure-more already cover rows 9..N.
+   F6: same rule for .fi-macro-cards-more — desktop table + .fi-macro-more
+   already cover rows 9..N. */
+@media (min-width: 768px) {
+  .fi-exposure-cards-more { display: none; }
+  .fi-macro-cards-more { display: none; }
 }
 
 /* reduced motion */
