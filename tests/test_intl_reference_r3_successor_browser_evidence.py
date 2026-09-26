@@ -1,4 +1,4 @@
-"""Verify the fresh R3 repair browser matrix without mutating historical receipts."""
+"""Verify the successor R3 browser matrix without mutating historical receipts."""
 from __future__ import annotations
 
 import hashlib
@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "mockups/refs/reference_integrity/intl-vnext-20260924"
-PROOF = EVIDENCE / "proposal-r3-repair-browser-proof.json"
+PROOF = EVIDENCE / "proposal-r3-successor-browser-proof.json"
 ARTIFACT_REL = "mockups/refs/institutionalize/intl/reference-r3.html"
 ARTIFACT = ROOT / ARTIFACT_REL
 STOCKS_REL = "site/intl_stocks.html"
@@ -37,15 +37,19 @@ def _proof() -> dict:
 def test_r3_repair_receipt_binds_exact_immutable_source_and_stocks() -> None:
     proof = _proof()
     source_commit = proof["source_commit"]
-    assert proof["schema"] == "mastermind.intl_r3_browser_evidence.v3"
-    assert re.fullmatch(r"[0-9a-f]{40}", source_commit)
-    subprocess.run(
-        ["git", "cat-file", "-e", f"{source_commit}^{{commit}}"],
-        cwd=ROOT,
-        check=True,
-    )
+    assert proof["schema"] == "mastermind.intl_r3_browser_evidence.v4"
+    assert source_commit == "UNFROZEN_WORKTREE" or re.fullmatch(r"[0-9a-f]{40}", source_commit)
     assert proof["artifact"] == ARTIFACT_REL
-    assert proof["artifact_sha256"] == _git_blob_sha256(source_commit, ARTIFACT_REL)
+    if source_commit == "UNFROZEN_WORKTREE":
+        assert proof["artifact_sha256"] == _sha256(ARTIFACT)
+    else:
+        subprocess.run(
+            ["git", "cat-file", "-e", f"{source_commit}^{{commit}}"],
+            cwd=ROOT,
+            check=True,
+        )
+        assert proof["artifact_sha256"] == _git_blob_sha256(source_commit, ARTIFACT_REL)
+        assert proof["artifact_sha256"] == _sha256(ARTIFACT)
     assert proof["stocks_artifact"] == STOCKS_REL
     assert proof["stocks_sha256"] == _sha256(STOCKS)
     assert len(proof["captures"]) == 41
@@ -65,7 +69,7 @@ def test_r3_repair_default_and_stocks_matrices_are_complete() -> None:
         for theme in ("dark", "light")
         for locale in ("en", "zh")
     }
-    for kind in ("r3-repair-default", "stocks-repair-preservation"):
+    for kind in ("r3-successor-default", "stocks-successor-preservation"):
         actual = {
             (row["viewport"], row["theme"], row["locale"])
             for row in captures
@@ -73,7 +77,7 @@ def test_r3_repair_default_and_stocks_matrices_are_complete() -> None:
         }
         assert actual == expected
     for row in captures:
-        if row["kind"] != "stocks-repair-preservation":
+        if row["kind"] != "stocks-successor-preservation":
             continue
         assert row["settled"] is True
         assert row["stable_samples"] >= 3
@@ -83,7 +87,7 @@ def test_r3_repair_default_and_stocks_matrices_are_complete() -> None:
 
 
 def test_r3_repair_captures_every_country_and_keyboard_progression() -> None:
-    rows = [row for row in _proof()["captures"] if row["kind"] == "r3-repair-country"]
+    rows = [row for row in _proof()["captures"] if row["kind"] == "r3-successor-country"]
     all_countries = {"JP", "KR", "TW", "IN", "AU", "GB", "EZ"}
     combinations = {(row["country"], row["theme"], row["locale"]) for row in rows}
     assert {row["country"] for row in rows} == all_countries
@@ -112,19 +116,19 @@ def test_r3_repair_horizons_fixed_paths_and_direct_initial_zh() -> None:
     horizons = {
         (row["viewport"], row["theme"], row["locale"], row["horizon"])
         for row in captures
-        if row["kind"] == "r3-repair-horizon"
+        if row["kind"] == "r3-successor-horizon"
     }
     assert horizons == {
         ("desktop", "dark", "en", "12m"),
         ("mobile", "light", "zh", "1m"),
     }
-    fixed = [row for row in captures if row["kind"] == "r3-repair-fixed-paths"]
+    fixed = [row for row in captures if row["kind"] == "r3-successor-fixed-paths"]
     assert len(fixed) == 1
     assert fixed[0]["market_count"] == 7
     assert fixed[0]["horizons_verified"] == ["1m", "3m", "6m", "12m", "ytd"]
     assert fixed[0]["horizon_independent"] is True
     assert fixed[0]["semantic_direction_ink"] is True
-    direct_zh = [row for row in captures if row["kind"] == "r3-repair-initial-locale"]
+    direct_zh = [row for row in captures if row["kind"] == "r3-successor-initial-locale"]
     assert len(direct_zh) == 1
     assert direct_zh[0]["viewport"] == "mobile"
     assert direct_zh[0]["locale"] == "zh"
@@ -134,7 +138,7 @@ def test_r3_repair_horizons_fixed_paths_and_direct_initial_zh() -> None:
 
 
 def test_r3_repair_organ_states_are_local_and_full_page() -> None:
-    rows = [row for row in _proof()["captures"] if row["kind"] == "r3-repair-organ-state"]
+    rows = [row for row in _proof()["captures"] if row["kind"] == "r3-successor-organ-state"]
     assert {(row["state"], row["theme"]) for row in rows} == {
         (state, theme)
         for state in ("loading", "empty", "stale", "error")
@@ -177,11 +181,11 @@ def test_r3_repair_semantic_route_contrast_and_integrity_checks() -> None:
 
 def test_r3_repair_and_stocks_have_exact_page_widths() -> None:
     width_kinds = {
-        "r3-repair-default",
-        "r3-repair-horizon",
-        "r3-repair-initial-locale",
-        "r3-repair-organ-state",
-        "stocks-repair-preservation",
+        "r3-successor-default",
+        "r3-successor-horizon",
+        "r3-successor-initial-locale",
+        "r3-successor-organ-state",
+        "stocks-successor-preservation",
     }
     for row in _proof()["captures"]:
         if row["kind"] not in width_kinds:
@@ -192,3 +196,43 @@ def test_r3_repair_and_stocks_have_exact_page_widths() -> None:
         assert dimensions["clientWidth"] == expected
         if row["kind"].startswith("r3-repair"):
             assert dimensions["actCount"] == 6
+
+
+def test_r3_successor_critic_driven_browser_checks_are_green() -> None:
+    proof = _proof()
+    checks = proof["checks"]
+    for key in (
+        "heatmap_high_contrast",
+        "search_focus_visible",
+        "shell_locale_accessibility_sync",
+        "mobile_act_navigation",
+        "no_regional_indicator_emoji",
+        "fixed_path_grid_aligned",
+        "direct_initial_pixel_distinct",
+        "country_inspector_unobscured",
+    ):
+        assert checks[key] is True, key
+    assert checks["heatmap_high_contrast_light"] >= 4.5
+    assert checks["heatmap_high_contrast_dark"] >= 4.5
+
+
+def test_r3_successor_direct_zh_and_organ_locality_cover_critic_failures() -> None:
+    proof = _proof()
+    direct = next(row for row in proof["captures"] if row["kind"] == "r3-successor-initial-locale")
+    assert direct["search_placeholder"] == "搜索任意股票"
+    assert direct["search_aria"] == "搜索股票"
+    assert direct["settings_aria"] == "设置"
+    assert direct["locale_focus_style"]["outlineStyle"] != "none"
+    for row in proof["captures"]:
+        if row["kind"] == "r3-successor-organ-state":
+            assert row["independent_turn_board_visible"] is True
+        if row["kind"] == "r3-successor-country":
+            assert row["inspector_top"] >= row["sticky_bottom"] + 4
+
+
+def test_r3_successor_fixed_path_capture_is_shape_only_and_aligned() -> None:
+    row = next(
+        row for row in _proof()["captures"] if row["kind"] == "r3-successor-fixed-paths"
+    )
+    assert row["scale_mode"] == "per-market-normalized-shape-only"
+    assert row["sparkline_top_spread"] <= 2

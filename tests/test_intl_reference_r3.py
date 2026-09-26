@@ -339,7 +339,7 @@ def test_r3_shell_matches_canonical_product_chrome_jobs():
     assert 'class="terminal-link"' in html
     assert 'class="shell-settings"' in html
     assert _attr_values(html, "data-shell-market") == {
-        "US", "CN", "HK", "CA", "INTL", "RESEARCH"
+        "US", "CN", "HK", "CA", "INTL", "RESEARCH", "OTHER"
     }
     assert 'data-theme-button="dark"' in html
     assert 'data-theme-button="light"' in html
@@ -363,8 +363,10 @@ def test_r3_preserves_the_full_upstream_overview_job():
         "macro_signals.html", "news.html", "macro_monetary.html",
     ):
         assert f'href="{route}"' in overview.group(0)
-    assert "One scale, five markets" in block
-    assert "同一标尺，五个市场" in block
+    assert "Five-market readout" in block
+    assert "One scale, five markets" not in block
+    assert "五市场读数" in block
+    assert "同一标尺，五个市场" not in block
     assert "61/100" in block and "US-only" in block
 
 
@@ -376,7 +378,9 @@ def test_r3_restores_international_risk_desk_synthesis_and_hot_channel():
     assert set(re.findall(r'data-risk-desk-domain="([^"]+)"', block)) == {
         "EM", "CONTAGION", "USD", "FUNDING"
     }
-    assert "Elevated: 1 of 6 stress signals hot" in block
+    assert "1 / 6 active" in block
+    assert "no stronger state label is inferred" in block.lower()
+    assert "No action needed · EM positions" in block
     assert "1 of 5 US transmission channels are hot" in block
     assert "Dollar moving on rate differences, not fear" in block
     assert "Swap lines ~$0.1bn outstanding" in block
@@ -460,7 +464,7 @@ def test_r3_pressure_flow_keeps_source_backed_magnitudes():
         assert 'data-pressure-magnitude=' in row, market
         assert row.count('class="pressure-source"') >= 3, market
         assert row.count('data-pressure-share=') >= 3, market
-    assert "source-backed pressure magnitude" in html
+    assert "source-backed pressure magnitude" in html.lower()
     assert 'data-unsourced-magnitude="true"' not in html
 
 
@@ -513,3 +517,172 @@ def test_r3_organ_controls_fail_with_the_organ_and_errors_are_distinct():
     assert "status-danger" in error.group(1)
     assert "Retry data organ" in html_lib.unescape(error.group(1))
     assert "status-danger" not in empty.group(1)
+
+
+def test_r3_rrg_membership_geometry_matches_declared_engine_quadrants():
+    html = _html()
+    rows = re.findall(
+        r'data-rrg-point="([^"]+)"[^>]+style="--rrg-x:([0-9.]+)%;--rrg-y:([0-9.]+)%"[^>]+title="([^"]+)"[^>]*>.*?<small>.*?<span class="l-en">([^<]+)</span>',
+        html,
+        re.S,
+    )
+    assert len(rows) == 7
+
+    def quadrant(x: float, y: float) -> str:
+        if x < 50 and y < 50:
+            return "Improving"
+        if x >= 50 and y < 50:
+            return "Leading"
+        if x < 50 and y >= 50:
+            return "Lagging"
+        return "Weakening"
+
+    for market, x, y, title, label in rows:
+        assert quadrant(float(x), float(y)) == label, market
+        assert label in title
+    assert html.count("data-rrg-level=") == 7
+    assert html.count("data-rrg-momentum=") == 7
+
+
+def test_r3_turn_board_survives_performance_organ_failure():
+    html = _html()
+    organ = re.search(
+        r'<div class="panel organ" data-organ="global-pulse".*?</div>\s*</section>',
+        html,
+        re.S,
+    )
+    assert organ
+    block = organ.group(0)
+    assert 'class="turn-grid"' in block
+    assert 'data-independent-turn-board="true"' in block
+    assert '.organ[data-state="loading"] .organ-content' not in html
+    assert '.organ[data-state="empty"] .organ-content' not in html
+    assert '.organ[data-state="error"] .organ-content' not in html
+    assert '.organ[data-state="loading"] .performance-producer' in html
+    assert "turn-state board remains available" in html_lib.unescape(block).lower()
+
+
+def test_r3_rates_desk_copies_populated_production_fields_instead_of_false_nulls():
+    html = _html()
+    desk = re.search(r'<article[^>]+id="rates-curves".*?</article>', html, re.S)
+    assert desk
+    block = html_lib.unescape(desk.group(0))
+    expected = {
+        "JP": ("1.48", "-2.02", "+0.27"),
+        "KR": ("1.32", "-0.67", "+0.10"),
+        "IN": ("—", "+1.82", "-0.11"),
+        "AU": ("0.50", "+0.05", "+0.18"),
+        "GB": ("1.23", "+0.03", "+0.19"),
+    }
+    for market, (curve, carry, drift) in expected.items():
+        row = re.search(rf'<tr[^>]+data-rate-market="{market}".*?</tr>', block, re.S)
+        assert row, market
+        text = re.sub(r'<[^>]+>', ' ', row.group(0))
+        assert curve in text, market
+        assert carry in text, market
+        assert drift in text, market
+    tw = re.search(r'<tr[^>]+data-rate-market="TW"[^>]+data-null-series="true".*?</tr>', block, re.S)
+    assert tw
+    assert "typed null" in block.lower()
+
+
+def test_r3_shell_and_mobile_navigation_do_not_fake_canonical_product_chrome():
+    html = _html()
+    assert 'data-shell-market="OTHER"' in html
+    assert 'class="shell-dropdown-caret"' in html
+    assert 'data-shell-copilot="true"' in html
+    assert 'data-act-jump' in html
+    assert 'class="act-jump"' in html
+    assert '.nav-search input:focus-visible' in html
+    assert 'data-placeholder-en="Search any stock"' in html
+    assert 'data-placeholder-zh="搜索任意股票"' in html
+    assert 'html[data-lang="zh"] :where(h1,.act h2' in html
+
+
+def test_r3_pressure_and_overview_visuals_do_not_imply_fake_quantitative_scales():
+    html = _html()
+    assert 'class="pressure-meter"' not in html
+    assert 'class="overview-score"' not in html
+    assert "One scale, five markets" not in html
+    assert "同一标尺，五个市场" not in html
+    assert 'data-pressure-magnitude-unit="two-year-percentile"' in html
+    assert "Magnitude percentile" in html
+    assert "幅度百分位" in html
+
+
+def test_r3_heatmap_and_scroll_tables_preserve_readability():
+    html = _html()
+    assert '.correlation-heat td[data-heat-band="high"]' in html
+    assert 'var(--heat-ink-high)' in html
+    assert '.rotation-table .sticky-market' in html
+    assert '.correlation-heat .sticky-market' in html
+    assert '.league-view .sticky-market' in html
+
+
+def test_r3_turn_metrics_and_hk_risk_match_committed_production_bake():
+    html = _html()
+    expected = {
+        "US": ("20d +0.7%", "Off high −1.2%", 'data-risk-state="unavailable"'),
+        "CN": ("20d +0.6%", "Off high −7.2%", 'data-risk-state="unavailable"'),
+        "HK": ("20d −3.2%", "Off high −11.2%", 'data-risk-state="elevated"'),
+    }
+    for market, (mom, off_high, risk_state) in expected.items():
+        card = re.search(rf'<article class="turn-cell" data-turn-market="{market}".*?</article>', html, re.S)
+        assert card, market
+        block = html_lib.unescape(card.group(0))
+        assert mom in block, market
+        assert off_high in block, market
+        assert risk_state in card.group(0), market
+    hk = re.search(r'<article class="turn-cell" data-turn-market="HK".*?</article>', html, re.S)
+    assert hk
+    assert "US rate shock — protect gains" in html_lib.unescape(hk.group(0))
+
+
+def test_r3_seven_market_return_surface_discloses_its_population_boundary():
+    html = html_lib.unescape(_html())
+    assert "published seven-market international comparison" in html
+    assert "US, China, and Hong Kong remain represented" in html
+    assert "十市场拐点状态范围" in html
+
+
+def test_r3_fixed_paths_are_shape_only_and_grid_aligned():
+    html = _html()
+    assert 'data-scale-mode="per-market-normalized-shape-only"' in html
+    assert "independently normalized to each market’s own range" in html
+    assert "never amplitude across markets" in html
+    assert ".path-card { display:flex; flex-direction:column; }" in html
+    assert ".path-card .path-head { min-height:72px; }" in html
+    assert ".path-card .sparkline { margin-top:auto; }" in html
+
+
+def test_r3_leadership_marker_is_bound_to_declared_share():
+    html = _html()
+    assert 'data-leadership-ahead="0"' in html
+    assert 'data-leadership-total="7"' in html
+    assert 'style="--lead-share:0%"' in html
+    assert "left:var(--lead-share,0%)" in html
+
+
+def test_r3_pressure_flow_preserves_export_rule_and_gap_receipt():
+    html = html_lib.unescape(_html())
+    assert 'data-pressure-export-rule="sigma>=0.5"' in html
+    assert 'data-pressure-gap-count="0"' in html
+    assert "exporting risk" in html
+    assert "none is active in this committed bake" in html
+    assert "No structural-only data gaps are present in this bake" in html
+
+
+def test_r3_shell_locale_syncs_search_and_settings_accessibility_copy():
+    html = _html()
+    assert "const syncShellLocale = () =>" in html
+    assert "node.placeholder = zh ? node.dataset.placeholderZh : node.dataset.placeholderEn" in html
+    assert "node.setAttribute('aria-label', zh ? node.dataset.ariaZh : node.dataset.ariaEn)" in html
+    assert html.count("syncShellLocale();") >= 2
+
+
+def test_r3_fragility_unflagged_group_does_not_claim_zero_warnings():
+    html = html_lib.unescape(_html())
+    assert "Below the 3-of-4 flag threshold" in html
+    assert "not zero structural warnings" in html
+    assert "BIS credit gap" in html
+    assert "Berg & Pattillo (1999)" in html
