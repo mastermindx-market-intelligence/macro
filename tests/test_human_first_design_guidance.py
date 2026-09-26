@@ -94,6 +94,10 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("78 / 201", text)
         self.assertIn("not a concentration score or recommendation", text)
         self.assertIn("Do not create an overlap database", text)
+        self.assertIn("924 unique source tickers", text)
+        self.assertIn("**pure presentation projection**", text)
+        self.assertIn("mark the overlap result partial/unavailable", text)
+        self.assertIn("exact source ticker strings only", text.lower())
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
             with self.subTest(path=path):
