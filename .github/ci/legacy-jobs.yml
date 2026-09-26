@@ -5016,6 +5016,30 @@ jobs:
       - name: guards must refuse, not pass vacuously, on a sparse tree
         run: python -m pytest tests/test_sparse_guard_refusals.py -q
 
+  signal-foundry-regressions:
+    if: ${{ false }}
+    gate: code
+    # Hermetic Foundry regressions belong in PR proof, not only gate=data.
+    # Existing trusted executor/partitioner owns execution; no new workflow or runner.
+    paths:
+      - "engine/signal_foundry/**"
+      - "engine/trial_ledger.py"
+      - "engine/validation.py"
+      - "scripts/run_signal_foundry_*.py"
+      - "scripts/codex_signal_lane.py"
+      - "tests/test_sf_*.py"
+      - ".github/ci/legacy-jobs.yml"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: all hermetic Signal Foundry regressions
+        run: python -m pytest tests/test_sf_benchmark_labels.py tests/test_sf_*.py -q
+
   causal-factory:
     if: ${{ false }}
     gate: data
