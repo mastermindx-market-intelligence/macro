@@ -1,17 +1,24 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-26T10:08:15.490223+00:00",
+  "produced_at": "2026-09-26T10:17:07.329584+00:00",
   "as_of": "2026-09-25",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "degraded",
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "cortex_status": "fresh",
+    "tool_call_batches": 3,
+    "individual_tool_calls": 9,
     "context_stale": false,
-    "summary": "cortex degraded — model_unavailable"
+    "summary": "cortex ran (9 tool calls); memo as_of 2026-09-26T10:15:50+00:00"
   },
   "what_changed": [
+    {
+      "kind": "cortex_status_changed",
+      "id": "cortex",
+      "summary": "cortex status changed: degraded → fresh",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
     {
       "kind": "lobe_row_count_changed",
       "id": "risk-radar-review-log",
@@ -348,12 +355,6 @@
   },
   "operator_attention": [
     {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
-      "action_type": "ops_fix"
-    },
-    {
       "priority": 2,
       "area": "government-revenue-latest",
       "summary": "lobe government-revenue-latest is warn — age 610.14h vs SLA 36h",
@@ -623,24 +624,24 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-09-25",
+    "as_of": "2026-09-26",
     "counts": {
       "overdue": 70,
-      "due": 10,
+      "due": 13,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 233,
+      "accruing": 230,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "70 overdue, 10 due, 1 missing, 1 stale, 2 blocked, 233 accruing. Top due: qledger:placebo."
+    "morning_line": "70 overdue, 13 due, 1 missing, 1 stale, 2 blocked, 230 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,

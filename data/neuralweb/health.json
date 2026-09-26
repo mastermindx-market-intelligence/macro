@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-09-26T10:08:13.647283+00:00",
+  "produced_at": "2026-09-26T10:17:07.232492+00:00",
   "as_of": "2026-09-25",
   "overall_status": "degraded",
   "lobes": [
@@ -2940,51 +2940,59 @@
     }
   ],
   "cortex": {
-    "cortex_source": "previous_run",
-    "memo_as_of": "2026-09-25T22:39:35+00:00",
+    "cortex_source": "current_run",
+    "memo_as_of": "2026-09-26T10:15:50+00:00",
     "run_status": {
-      "status": "degraded",
-      "degraded": true,
-      "degradation_reason": "model_unavailable",
-      "model_used": "claude-sonnet-4-6",
+      "status": "ok",
+      "degraded": false,
+      "degradation_reason": null,
+      "model_used": "claude-opus-4-8",
       "provider_attempts": [
         {
-          "provider": "oauth",
-          "model": "claude-opus-4-8",
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
           "attempted": true,
-          "ok": false,
-          "error_type": "auth",
-          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
+          "ok": true,
+          "error_type": null,
+          "error_message": null
         },
         {
-          "provider": "oauth",
-          "model": "claude-opus-4-8",
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
           "attempted": true,
-          "ok": false,
-          "error_type": "auth",
-          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CfQxiDbnaYQHqHNSjQd6n'}"
+          "ok": true,
+          "error_type": null,
+          "error_message": null
         },
         {
-          "provider": "oauth",
-          "model": "claude-sonnet-4-6",
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
           "attempted": true,
-          "ok": false,
-          "error_type": "auth",
-          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
+          "ok": true,
+          "error_type": null,
+          "error_message": null
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
         }
       ],
-      "tool_call_batches": 0,
-      "individual_tool_calls": 0,
+      "tool_call_batches": 3,
+      "individual_tool_calls": 9,
       "expected_min_tool_calls": 1,
       "context_stale": false,
-      "context_as_of": "2026-09-25T21:28:50Z"
+      "context_as_of": "2026-09-26T10:04:26Z"
     },
     "probation": {
       "granted": false,
       "n": 8,
       "min_n": 30
     },
-    "status": "degraded"
+    "status": "fresh"
   },
   "workflow_conformance_misses": [
     {
@@ -3062,7 +3070,7 @@
     "degraded": 3,
     "not_locally_verifiable": 1,
     "unknown": 0,
-    "cortex_status": "degraded"
+    "cortex_status": "fresh"
   },
   "context_accrual": {
     "personality_forward_ledger": {
