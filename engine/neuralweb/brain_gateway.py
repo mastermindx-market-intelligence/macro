@@ -260,6 +260,7 @@ def _sanitize_brain_message(message: str, max_len: int = 2000) -> tuple[str, str
 
 # All ask_brain read tools + brain-gateway-specific tools + chart-command bus (W6b).
 _BRAIN_TOOLS = frozenset({
+    "analyze_financial_scenario",  # Pure supplied-input arithmetic; no signal authority.
     # Inherited ask_brain read tools (import schemas + dispatcher from ask_brain)
     "read_world_state",
     "query_spine",
@@ -347,6 +348,7 @@ _BRAIN_INTERNALS_TOOLS = frozenset({"context_search", "context_open"})
 
 # Brain-gateway-only tool names (not in ask_brain) — includes chart-command tools
 _BRAIN_ONLY_TOOLS = frozenset({
+    "analyze_financial_scenario",
     "get_quote",
     "get_symbol_context",
     "get_symbol_intel",
@@ -833,7 +835,9 @@ def _chart_command_tool_schemas() -> list[dict]:
 
 def _brain_tool_schemas() -> list[dict]:
     """Return brain-gateway-only schemas (excluding separately gated chart tools)."""
+    from engine.neuralweb.financial_scenarios import tool_schema
     return [
+        tool_schema(),
         {
             "name": "get_quote",
             "description": (
@@ -3594,6 +3598,9 @@ def _dispatch_brain_tool(
             }
 
     if tool_name in _BRAIN_ONLY_TOOLS:
+        if tool_name == "analyze_financial_scenario":
+            from engine.neuralweb.financial_scenarios import analyze
+            return analyze(tool_params)
         if tool_name == "get_quote":
             return _tool_get_quote(tool_params, terminal_data_dir, terminal_hub_url, root)
         if tool_name == "get_symbol_context":
@@ -6691,6 +6698,7 @@ _STAGE_LABELS: dict[str, tuple[str, str]] = {
 # leak, and the fallback below is a safety net, not a licence to ship a tool label-less
 # (test_tool_label_whitelist_covers_every_tool holds the line).
 _TOOL_LABELS: dict[str, tuple[str, str]] = {
+    "analyze_financial_scenario": ("Reconciling profit and cash", "核对利润与现金流"),
     # brain-gateway tools (market data, portfolio, charts)
     "get_quote":              ("Checking where it is trading",  "看它现在的价格"),
     "get_symbol_context":     ("Reading how the chart sits",    "看这只标的的走势结构"),

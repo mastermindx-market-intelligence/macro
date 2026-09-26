@@ -53,16 +53,17 @@ def _ids(modules: list[dict]) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# 1. Manifest + frontmatter validity of all 10 real files
+# 1. Manifest + frontmatter validity of all 11 real files
 # ---------------------------------------------------------------------------
 
 def test_manifest_shape():
     m = a.manifest()
     assert m["version"] == a.ANALYST_DOCTRINE_VERSION == 1
     mods = m["modules"]
-    assert len(mods) == 10, f"expected 10 analyst doctrine modules, got {len(mods)}"
+    assert len(mods) == 11, f"expected 11 analyst doctrine modules, got {len(mods)}"
 
     ids = [x["id"] for x in mods]
+    assert "play_financial_thesis" in ids
     assert len(ids) == len(set(ids)), "module ids must be unique"
 
     # ids equal filename stems on disk — i.e. every file parsed, none skipped
@@ -94,7 +95,7 @@ def test_every_file_on_disk_parses():
     # is pinned second, so adding a module is a deliberate one-line edit here
     # (lens_regional.md, 2026-08-04) rather than something that slips in unseen.
     assert len(loaded) == len(on_disk), f"{len(loaded)} of {len(on_disk)} files parsed"
-    assert len(on_disk) == 10, f"expected 10 .md files, found {on_disk}"
+    assert len(on_disk) == 11, f"expected 11 .md files, found {on_disk}"
 
     for m in loaded:
         # every lens/playbook carries triggers; the always-on protocol needs none
@@ -359,7 +360,7 @@ def test_two_libraries_stay_separate():
     tech_routed = _ids(tech.route("where is support?"))
     assert "protocol" in tech_routed and "lens_sr" in tech_routed
     assert len(tech._load()) == 11
-    assert len(a._load()) == 10
+    assert len(a._load()) == 11
 
     # no id bleed except the shared 'protocol' stem, and no body bleed at all
     a_ids, t_ids = {m["id"] for m in a._load()}, {m["id"] for m in tech._load()}
@@ -392,3 +393,15 @@ def test_fail_soft_missing_dir_and_junk_input(tmp_path):
         routed = a.route(msg)
         assert isinstance(routed, list)
         assert isinstance(a.prompt_block(routed), str)
+
+
+def test_financial_playbook_mixed_macro_route_preserves_discriminating_lenses():
+    ids = _ids(a.route("why is TLT down today and what does this mean for cash flow?"))
+    assert ids == ["protocol", "lens_catalyst", "lens_rates_curve", "play_financial_thesis"]
+
+@pytest.mark.parametrize("message", [
+    "营运资金和资本支出怎么理解",
+    "營運資金和資本支出怎麼理解",
+])
+def test_financial_playbook_routes_chinese_working_capital_and_capex(message):
+    assert "play_financial_thesis" in _ids(a.route(message))
