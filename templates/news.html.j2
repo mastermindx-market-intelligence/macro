@@ -208,19 +208,31 @@ html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","
 
 /* ---- CONTROLS ---- */
 .nx-controls{ display:flex; gap:12px; align-items:center; margin-bottom:6px; flex-wrap:wrap;
-  padding-bottom:12px; border-bottom:2px solid var(--nx-rule); }
-.seg{ display:inline-flex; gap:2px; }
+  padding-bottom:12px; border-bottom:2px solid var(--nx-rule); scroll-margin-top:12px; }
+.seg{ display:inline-flex; gap:2px; flex-wrap:wrap; }
 .seg-btn{ appearance:none; border:0; background:transparent; color:var(--muted); font-family:inherit;
   font-size:12px; font-weight:700; letter-spacing:.04em; padding:6px 11px; border-radius:4px; cursor:pointer;
   transition:color .16s, background .16s; white-space:nowrap; }
+.seg-btn{ min-height:40px; }
 .seg-btn:hover{ color:var(--text); background:color-mix(in srgb,var(--text) 6%,transparent); }
 .seg-btn.on{ background:var(--text); color:var(--nx-paper); }
 .nx-search{ flex:1; min-width:170px; max-width:300px; position:relative; margin-left:auto; }
 .nx-search input{ width:100%; font-family:inherit; font-size:12.5px; color:var(--text); padding:7px 10px 7px 29px;
   border-radius:4px; background:transparent; border:1px solid var(--nx-hair); outline:none; transition:border-color .16s; }
+.nx-search input{ min-height:40px; }
 .nx-search input:focus{ border-color:var(--nx-rule); }
 .nx-search svg{ position:absolute; left:9px; top:50%; transform:translateY(-50%); opacity:.5; }
 .nx-count{ font-size:11px; color:var(--muted); font-family:var(--num); flex:0 0 auto; }
+.nx-filter-status{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-left:auto; }
+.nx-clear{ appearance:none; min-height:40px; padding:7px 10px; border:1px solid var(--nx-hair); border-radius:var(--r-ctl);
+  background:transparent; color:var(--muted); font:700 11px/1.2 var(--font-ui); cursor:pointer; }
+.nx-clear:hover{ color:var(--text); border-color:var(--nx-brd); }
+.nx-triage-jump{ display:none; min-height:40px; align-items:center; gap:6px; margin-top:8px; padding:6px 10px;
+  border:1px solid var(--nx-hair); border-radius:var(--r-ctl); color:var(--text); font-size:11.5px; font-weight:700; }
+.nx-triage-jump:hover{ border-color:var(--nx-rule); background:var(--nx-card2); }
+/* Gated/grid/flex children must not override native hidden state. */
+#nxIntel[hidden],#nxIntel [hidden],#nxWire[hidden],#nxWire [hidden]{display:none!important}
+#nxIntel[data-state="quiet"] .nxi-health{display:none}
 
 /* ---- FEED — a story list, not a stack of cards ---- */
 .nx-feed{ display:flex; flex-direction:column; }
@@ -236,7 +248,7 @@ html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","
 .nx-tk{ font-family:var(--num); font-size:10.5px; font-weight:700; color:var(--muted);
   border:1px solid var(--nx-hair); padding:0 5px; border-radius:3px; }
 a.nx-tk:hover{ color:var(--ink-link, var(--link)); border-color:currentColor; }
-.nx-more{ margin:20px auto 4px; display:block; }
+.nx-more{ margin:20px auto 4px; display:block; min-height:40px; }
 .nx-empty{ text-align:center; color:var(--muted); font-size:13px; padding:34px; }
 
 /* ---- the one label a story carries ----
@@ -356,9 +368,14 @@ html[data-theme="light"] #nxConsequence .nx-empty{ background:var(--panel); bord
 .nxi-toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:12px 16px 4px; }
 .nxi-filter{ appearance:none; border:1px solid var(--nx-hair); background:transparent; color:var(--muted);
   border-radius:100px; padding:5px 10px; font:600 11px/1.2 inherit; cursor:pointer; }
+.nxi-filter{ min-height:40px; }
 .nxi-filter:hover{ color:var(--text); border-color:var(--nx-brd); }
 .nxi-filter.on{ color:var(--text); background:color-mix(in srgb,var(--nxi-accent) 12%,transparent);
   border-color:color-mix(in srgb,var(--nxi-accent) 36%,transparent); }
+.nxi-result-count{ color:var(--muted); font:600 10.5px/1.2 var(--num); white-space:nowrap; }
+.nxi-clear{ appearance:none; min-height:40px; border:1px solid var(--nx-hair); background:transparent; color:var(--muted);
+  border-radius:var(--r-ctl); padding:6px 10px; font:700 10.5px/1.2 var(--font-ui); cursor:pointer; }
+.nxi-clear:hover{ color:var(--text); border-color:var(--nx-brd); }
 .nxi-toolbar-note{ margin-left:auto; color:var(--muted); font-size:10.5px; }
 .nxi-list{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:10px 16px 16px; }
 .nxi-story{ min-width:0; border:1px solid var(--nx-hair); border-radius:14px; overflow:hidden;
@@ -488,6 +505,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   border-top:1px solid var(--nx-hair); color:var(--muted); font-size:10.5px; }
 .nxi-showmore{ appearance:none; border:0; background:transparent; color:var(--nxi-accent);
   font:700 11px/1 inherit; cursor:pointer; }
+.nxi-showmore{ min-height:40px; border:1px solid var(--nx-hair); border-radius:var(--r-ctl); padding:7px 10px; }
 @media(max-width:760px){
   .nxi-head{ grid-template-columns:1fr; } .nxi-health{ min-width:0; }
   .nxi-list{ grid-template-columns:1fr; }
@@ -651,8 +669,16 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   .nx-head{ padding-top:4px; margin-bottom:18px; }
   .nx-lead-title{ overflow-wrap:anywhere; }
   .nx-story-title{ font-size:17px; }
-  .nx-controls{ gap:8px; }
-  .nx-search{ order:3; max-width:none; flex-basis:100%; margin-left:0; }
+  .nx-controls{ gap:8px; align-items:stretch; }
+  .nx-triage-jump{ display:inline-flex; }
+  .seg{ order:1; flex-basis:100%; width:100%; gap:4px; }
+  .seg-btn{ flex:0 1 auto; }
+  .nx-search{ order:2; max-width:none; flex-basis:100%; margin-left:0; }
+  .nx-filter-status{ order:3; flex-basis:100%; margin-left:0; justify-content:space-between; }
+  .nxi-toolbar{ align-items:stretch; }
+  .nxi-filter{ flex:1 1 auto; }
+  .nxi-result-count{ align-self:center; }
+  .nxi-toolbar-note{ flex-basis:100%; }
   .nx-pulse-sent{ margin-left:0; flex-basis:100%; }
 }
 /* Motion: there is none left to gate on this page. The aurora's 12s opacity loop
@@ -673,6 +699,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   <p class="nx-sub">{{ t('The market-moving business and macro news that matters now — importance-ranked, fresh, and de-noised.','此刻真正影响市场的商业与宏观新闻——按重要性排序、保持新鲜、去除噪音。') }}</p>
   <div class="nx-updated">{{ t('Updated','更新于') }} <span class="rel-time num" data-ts="{{ macro_news.fetched_at if macro_news else '' }}"></span>
     {% if FEED %}· <span class="num">{{ FEED|length }}</span> {{ t('stories ranked','条已排序') }}{% endif %}</div>
+  {% if FEED %}<a class="nx-triage-jump" id="nxTriageJump" href="#nxControls">{{ t('Find & filter stories','查找并筛选新闻') }} <span aria-hidden="true">↓</span></a>{% endif %}
 </header>
 
 {# ============================ HERO ============================ #}
@@ -738,19 +765,22 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 
 {# ============================ CONTROLS + FEED ============================ #}
 {% if FEED %}
-<div class="nx-controls">
-  <div class="seg" id="nxSeg" role="tablist">
-    <button class="seg-btn on" data-lane="all">{{ t('All','全部') }}</button>
-    <button class="seg-btn" data-lane="markets">{{ t('Markets','市场') }}</button>
-    <button class="seg-btn" data-lane="macro">{{ t('Macro','宏观') }}</button>
-    <button class="seg-btn" data-lane="fed">{{ t('Fed','美联储') }}</button>
-    <button class="seg-btn" data-lane="companies">{{ t('Companies','公司') }}</button>
+<div class="nx-controls" id="nxControls">
+  <div class="seg" id="nxSeg" role="group" aria-label="Filter news by topic" data-label-en="Filter news by topic" data-label-zh="按主题筛选新闻">
+    <button type="button" class="seg-btn on" data-lane="all" aria-pressed="true">{{ t('All','全部') }}</button>
+    <button type="button" class="seg-btn" data-lane="markets" aria-pressed="false">{{ t('Markets','市场') }}</button>
+    <button type="button" class="seg-btn" data-lane="macro" aria-pressed="false">{{ t('Macro','宏观') }}</button>
+    <button type="button" class="seg-btn" data-lane="fed" aria-pressed="false">{{ t('Fed','美联储') }}</button>
+    <button type="button" class="seg-btn" data-lane="companies" aria-pressed="false">{{ t('Companies','公司') }}</button>
   </div>
   <div class="nx-search">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" placeholder="Search headlines, tickers…" aria-label="Search news">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" data-label-en="Search news" data-label-zh="搜索新闻" placeholder="Search headlines, tickers…" aria-label="Search news">
   </div>
-  <span class="nx-count" id="nxCount"></span>
+  <div class="nx-filter-status">
+    <span class="nx-count" id="nxCount" aria-live="polite"></span>
+    <button type="button" class="nx-clear" id="nxClear" hidden>{{ t('Clear filters','清除筛选') }}</button>
+  </div>
 </div>
 {% endif %}
 
@@ -760,9 +790,9 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 <section class="nxi" id="nxIntel" data-state="loading" hidden>
   <div class="nxi-head">
     <div>
-      <div class="nxi-kicker"><span class="nxi-pulse"></span>{{ t('Live story graph','实时事件图谱') }}</div>
+      <div class="nxi-kicker"><span class="nxi-pulse"></span>{{ t('Story updates','事件更新') }}</div>
       <h2 class="nxi-title">{{ t('Intelligence Desk','情报工作台') }}</h2>
-      <p class="nxi-sub">{{ t('One developing story per card — repeated reports merged, source receipts attached, market context checked, and X drafts held for review.','每张卡片对应一个持续发展的事件——合并重复报道、附上来源依据、核对市场背景，并将 X 草稿留待审核。') }}</p>
+      <p class="nxi-sub">{{ t('Developing stories with their sources and market context.','跟踪事件发展、相关来源和市场背景。') }}</p>
     </div>
     <div class="nxi-health">
       <strong id="nxIntelHealth">{{ t('Connecting to the desk','正在连接工作台') }}</strong>
@@ -775,11 +805,13 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     <div class="nxi-metric"><b id="nxiDrafts">—</b><span>{{ t('Draft-ready','草稿就绪') }}</span></div>
     <div class="nxi-metric"><b id="nxiSources">—</b><span>{{ t('Sources in view','当前来源') }}</span></div>
   </div>
-  <div class="nxi-toolbar" id="nxIntelToolbar" hidden>
-    <button class="nxi-filter on" data-intel-filter="all">{{ t('All stories','全部事件') }}</button>
-    <button class="nxi-filter" data-intel-filter="high_impact">{{ t('High impact','高影响') }}</button>
-    <button class="nxi-filter" data-intel-filter="confirmed">{{ t('Confirmed','已确认') }}</button>
-    <button class="nxi-filter" data-intel-filter="draft">{{ t('Draft ready','草稿就绪') }}</button>
+  <div class="nxi-toolbar" id="nxIntelToolbar" role="group" aria-label="Filter stories" data-label-en="Filter stories" data-label-zh="筛选事件" hidden>
+    <button type="button" class="nxi-filter on" data-intel-filter="all" aria-pressed="true">{{ t('All stories','全部事件') }}</button>
+    <button type="button" class="nxi-filter" data-intel-filter="high_impact" aria-pressed="false">{{ t('High impact','高影响') }}</button>
+    <button type="button" class="nxi-filter" data-intel-filter="confirmed" aria-pressed="false">{{ t('Confirmed','已确认') }}</button>
+    <button type="button" class="nxi-filter" data-intel-filter="draft" aria-pressed="false">{{ t('Draft ready','草稿就绪') }}</button>
+    <span class="nxi-result-count" id="nxIntelCount" aria-live="polite"></span>
+    <button type="button" class="nxi-clear" id="nxIntelClear" hidden>{{ t('Clear filter','清除筛选') }}</button>
     <span class="nxi-toolbar-note">{{ t('Outbound posting is separate and remains review-gated.','对外发布为独立流程，仍需人工审核。') }}</span>
   </div>
   <div class="nxi-list" id="nxIntelList" hidden></div>
@@ -899,7 +931,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   {% set acc = 'var(--up)' if (h.event and h.event.direction=='bullish') or h.ai_sentiment=='pos' or h.sentiment=='pos' else ('var(--down)' if (h.event and h.event.direction=='bearish') or h.ai_sentiment=='neg' or h.sentiment=='neg' else 'var(--link)') %}
   <article class="nx-story{{ ' hide' if loop.index0 >= 24 else '' }}" data-lane="{{ h.lane or 'markets' }}"
            data-idx="{{ loop.index0 }}"
-           data-search="{{ ((h.title or '') ~ ' ' ~ (h.tickers|join(' ') if h.tickers else '') ~ ' ' ~ (h.source_name or h.source or h.domain or ''))|lower|e }}"
+           data-search="{{ ((h.title or '') ~ ' ' ~ (h.title_zh or '') ~ ' ' ~ (h.tickers|join(' ') if h.tickers else '') ~ ' ' ~ (h.source_name or h.source or h.domain or ''))|lower|e }}"
            style="--acc:{{ acc }};">
     <div class="nx-story-main">
       <a class="nx-story-title" href="{{ h.url }}" target="_blank" rel="noopener">{{ t(h.title|e, (h.title_zh or h.title)|e) }}</a>
@@ -916,7 +948,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     </div>
   </article>
   {% endfor %}
-  <div class="nx-empty" id="nxEmpty" style="display:none;">{{ t('No stories match — try another lane or clear the search.','没有匹配的新闻——换个分类或清空搜索。') }}</div>
+  <div class="nx-empty" id="nxEmpty" style="display:none;">{{ t('No stories match these filters. Use Clear filters above to recover the full ranked list.','没有新闻匹配当前筛选。使用上方“清除筛选”可恢复完整排序列表。') }}</div>
 </section>
 {% if FEED|length > 24 %}<button class="gbtn nx-more" id="nxMore">{{ t('Show more','显示更多') }} <span class="num">(+{{ FEED|length - 24 }})</span></button>{% endif %}
 {% else %}
@@ -1042,13 +1074,21 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     var d=h/24; return Math.floor(d)+(zh?'天前':'d ago');
   }
   function stamps(){ document.querySelectorAll('.rel-time[data-ts]').forEach(function(el){ el.textContent=rel(el.getAttribute('data-ts')); }); }
-  stamps(); window.addEventListener('langchange', stamps);
+  stamps(); document.addEventListener('langchange', stamps);
 
-  // ---- bilingual search placeholder (set here, never as t() inside an attribute) ----
-  function setPh(){ var s=document.getElementById('nxSearch'); if(!s) return;
+  // ---- bilingual search/group labels (set here, never as t() inside an attribute) ----
+  function setPh(){ var s=document.getElementById('nxSearch');
     var zh=document.documentElement.getAttribute('data-lang')==='zh';
-    s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder; }
-  setPh(); window.addEventListener('langchange', setPh);
+    if(s){
+      s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder;
+      s.setAttribute('aria-label',s.getAttribute(zh?'data-label-zh':'data-label-en') || s.getAttribute('aria-label'));
+    }
+    ['nxSeg','nxIntelToolbar'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      el.setAttribute('aria-label',el.getAttribute(zh?'data-label-zh':'data-label-en') || el.getAttribute('aria-label'));
+    });
+  }
+  setPh(); document.addEventListener('langchange', setPh);
 
   // ---- lane + search filter over the ranked feed ----
   var feed=document.getElementById('nxFeed');
@@ -1056,7 +1096,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     var stories=[].slice.call(feed.querySelectorAll('.nx-story'));
     var seg=document.getElementById('nxSeg'), search=document.getElementById('nxSearch');
     var countEl=document.getElementById('nxCount'), emptyEl=document.getElementById('nxEmpty');
-    var moreBtn=document.getElementById('nxMore');
+    var moreBtn=document.getElementById('nxMore'), clearBtn=document.getElementById('nxClear');
     var lane='all', q='', expanded=false, CAP=24;
     function apply(){
       var shown=0;
@@ -1073,9 +1113,14 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
         var okLane=lane==='all'||el.getAttribute('data-lane')===lane;
         var okQ=!q||(el.getAttribute('data-search')||'').indexOf(q)>=0; return okLane&&okQ;
       }).length;
-      if(countEl) countEl.textContent = total+(document.documentElement.getAttribute('data-lang')==='zh'?' 条':' shown');
+      if(countEl){
+        var isZh=document.documentElement.getAttribute('data-lang')==='zh';
+        countEl.textContent = isZh ? ('显示 '+shown+' / '+stories.length+' 条') : (shown+' of '+stories.length+' shown');
+      }
       if(emptyEl) emptyEl.style.display = total? 'none':'block';
       if(moreBtn) moreBtn.style.display = (!expanded && !q && lane==='all' && total>CAP)? '':'none';
+      if(clearBtn) clearBtn.hidden = lane==='all' && !q;
+      if(seg) seg.querySelectorAll('.seg-btn').forEach(function(x){ x.setAttribute('aria-pressed', x.getAttribute('data-lane')===lane ? 'true':'false'); });
     }
     if(seg) seg.addEventListener('click', function(e){
       var b=e.target.closest('.seg-btn'); if(!b) return;
@@ -1083,8 +1128,15 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       b.classList.add('on'); lane=b.getAttribute('data-lane'); apply();
     });
     if(search) search.addEventListener('input', function(){ q=this.value.trim().toLowerCase(); apply(); });
+    if(clearBtn) clearBtn.addEventListener('click', function(){
+      lane='all'; q=''; expanded=false;
+      if(search) search.value='';
+      if(seg) seg.querySelectorAll('.seg-btn').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-lane')==='all'); });
+      apply();
+      if(search) search.focus();
+    });
     if(moreBtn) moreBtn.addEventListener('click', function(){ expanded=true; apply(); });
-    window.addEventListener('langchange', apply);
+    document.addEventListener('langchange', apply);
     apply();
   }
 
@@ -1101,6 +1153,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     var toolbarEl=document.getElementById('nxIntelToolbar');
     var footerEl=document.getElementById('nxIntelFooter');
     var moreEl=document.getElementById('nxIntelMore');
+    var resultCountEl=document.getElementById('nxIntelCount'), intelClear=document.getElementById('nxIntelClear');
     var healthEl=document.getElementById('nxIntelHealth');
     var updatedEl=document.getElementById('nxIntelUpdated');
     if(!listEl || !stateEl) return;
@@ -1408,13 +1461,20 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       listEl.hidden=!shown.length; stateEl.hidden=!!shown.length;
       if(!shown.length){
         stateEl.textContent='';
-        stateEl.appendChild(el('strong','',tx('No stories in this view','此视图暂无事件')));
-        stateEl.appendChild(el('p','',
-          tx('Nothing to act on — choose another filter or wait for the next confirmed development.','无需操作——请选择其他筛选条件，或等待下一条已确认进展。')));
+        if(filter!=='all'){
+          stateEl.appendChild(el('strong','',tx('No stories match this filter','没有事件匹配此筛选')));
+          stateEl.appendChild(el('p','',tx('Clear the filter to return to all active stories.','清除筛选可返回全部活跃事件。')));
+        }else{
+          stateEl.appendChild(el('strong','',tx('No stories in this view','此视图暂无事件')));
+          stateEl.appendChild(el('p','',tx('Nothing to act on — wait for the next confirmed development.','无需操作——等待下一条已确认进展。')));
+        }
       }
+      if(resultCountEl) text(resultCountEl,zh()?('显示 '+shown.length+' / '+filtered.length+' 条'):(shown.length+' of '+filtered.length+' shown'));
+      if(intelClear) intelClear.hidden=filter==='all';
+      if(toolbarEl) toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){ x.setAttribute('aria-pressed',(x.getAttribute('data-intel-filter')||'all')===filter?'true':'false'); });
       if(moreEl){
         moreEl.hidden=expanded||filtered.length<=CAP;
-        text(moreEl,tx('Show '+(filtered.length-CAP)+' more','再显示 '+(filtered.length-CAP)+' 条'));
+        text(moreEl,tx('Show '+Math.max(0,filtered.length-CAP)+' more','再显示 '+Math.max(0,filtered.length-CAP)+' 条'));
       }
       if(footerEl) footerEl.hidden=false;
     }
@@ -1437,7 +1497,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     function stateCopy(kind){
       return ({
         gate:[tx('Sign in to open the Intelligence Desk','登录后查看情报工作台'),
-          tx('The story graph, source receipts, and review drafts are available to registered accounts.','事件图谱、来源依据与审核草稿仅向注册账户开放。')],
+          tx('Sign in to read developing stories and their sources.','登录后可查看正在发展的事件及来源。')],
         down:[tx('The Intelligence Desk is reconnecting','情报工作台正在重新连接'),
           tx('Nothing to do — the live wire and ranked board use separate paths and remain available.','无需操作——实时快讯与排序新闻使用独立路径，仍可继续查看。')],
         quiet:[tx('The desk is quiet','工作台当前平静'),
@@ -1486,10 +1546,19 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){x.classList.remove('on');});
       b.classList.add('on'); filter=b.getAttribute('data-intel-filter')||'all'; expanded=false; render();
     });
+    if(intelClear) intelClear.addEventListener('click',function(){
+      filter='all'; expanded=false;
+      if(toolbarEl) toolbarEl.querySelectorAll('.nxi-filter').forEach(function(x){x.classList.toggle('on',(x.getAttribute('data-intel-filter')||'all')==='all');});
+      render();
+      if(toolbarEl){var allBtn=toolbarEl.querySelector('[data-intel-filter="all"]'); if(allBtn) allBtn.focus();}
+    });
     if(moreEl) moreEl.addEventListener('click',function(){expanded=true;render();});
-    window.addEventListener('langchange',function(){
-      if(mode==='ok') showDesk({health:health,stories:stories,updated_at:updatedAt});
-      else if(stateCopy(mode)) showState(mode);
+    document.addEventListener('langchange',function(){
+      if(mode==='ok'){
+        if(healthEl) text(healthEl,health.state==='live'?tx('Desk is ingesting','工作台正在接收数据'):tx('Desk is quiet','工作台当前平静'));
+        if(updatedEl) text(updatedEl,tx('Updated ','更新于 ')+age(updatedAt));
+        render();
+      }else if(stateCopy(mode)) showState(mode);
     });
     document.addEventListener('visibilitychange',function(){if(!document.hidden)poll();});
     poll(); timerId=setInterval(poll,POLL);
@@ -1723,8 +1792,8 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 
     var STATE_COPY = {
       gate: { h:['Sign in to see the live wire','登录后查看实时快讯'],
-              s:['The wire is open to every registered account. Your session has ended — sign back in and it picks up where it left off.',
-                 '实时快讯对所有已注册账户开放。您的登录状态已失效——重新登录即可继续查看。'],
+              s:['Sign in to read live headlines.',
+                 '登录后可阅读实时快讯。'],
               cta:['Sign in','登录'] },
       down: { h:['The live wire is not reachable right now','实时快讯暂时无法连接'],
               s:['Nothing to do — the ranked board below is built on a separate path and is current. The wire reconnects on its own.',
@@ -1836,7 +1905,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       var b = e.target.closest && e.target.closest('.seg-btn');
       if(b && mode === 'ok' && items.length) { renderList(); renderMeta(isStale()); }
     });
-    window.addEventListener('langchange', repaint);
+    document.addEventListener('langchange', repaint);
     document.addEventListener('visibilitychange', function(){
       if(document.hidden) return;
       if(mode === 'absent') return;                        // settled: nothing to re-ask

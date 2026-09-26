@@ -172,6 +172,58 @@ def test_lane_and_search_data_attributes_present():
     assert 'id="nxSeg"' in html and 'id="nxSearch"' in html
 
 
+def _css_rule(html: str, selector: str) -> str:
+    matches = re.findall(re.escape(selector) + r"\{([^}]*)\}", html, re.S)
+    assert matches, f"missing CSS rule for {selector}"
+    return "\n".join(matches)
+
+
+def test_mobile_triage_has_early_access_and_explicit_recovery():
+    html = _render_full()
+    assert 'id="nxTriageJump"' in html
+    assert 'href="#nxControls"' in html
+    assert '.nx-triage-jump{ display:none;' in html
+    assert '.nx-triage-jump{ display:inline-flex; }' in html
+    assert 'id="nxControls"' in html
+    assert 'id="nxClear"' in html
+    assert 'id="nxIntelCount"' in html
+    assert 'id="nxIntelClear"' in html
+    assert "clearBtn.addEventListener('click'" in html
+    assert "intelClear.addEventListener('click'" in html
+
+
+def test_mobile_triage_standalone_controls_meet_product_floor():
+    html = _render_full()
+    for selector in (
+        '.nx-triage-jump', '.seg-btn', '.nx-search input', '.nx-clear',
+        '.nx-more', '.nxi-filter', '.nxi-clear', '.nxi-showmore',
+    ):
+        rule = _css_rule(html, selector)
+        match = re.search(r"min-height:\s*(\d+)px", rule)
+        assert match and int(match.group(1)) >= 40, (selector, rule)
+
+
+def test_mobile_triage_reports_result_count_and_reset_state():
+    html = _render_full()
+    assert "shown+' of '+stories.length+' shown'" in html
+    assert "'显示 '+shown+' / '+stories.length+' 条'" in html
+    assert "clearBtn.hidden" in html
+    assert "shown.length+' of '+filtered.length+' shown'" in html
+    assert "'显示 '+shown.length+' / '+filtered.length+' 条'" in html
+    assert "resultCountEl" in html
+    assert "intelClear.hidden" in html
+    assert "No stories match this filter" in html
+    assert "Clear the filter to return to all active stories." in html
+    assert "aria-pressed" in html
+    assert 'id="nxSeg" role="tablist"' not in html
+    assert 'aria-label="<span' not in html
+
+
+def test_mobile_triage_does_not_restyle_live_wire_panel():
+    html = _render_full()
+    assert '.nxw{ margin:0 0 18px; border-radius:var(--nx-radius); overflow:hidden;' in html
+
+
 def test_release_board_renders():
     html = _render_full()
     assert "Nonfarm Payrolls" in html
@@ -675,3 +727,100 @@ def test_naive_duplicate_macro_news_kwarg_raises_typeerror():
         tmpl.render(**vm, macro_news=dict(vm["macro_news"]),
                     macro_releases=None, news_rejected=None, news_calibration=None,
                     financial_news=None, news_feed=[])
+
+
+# Session D collision integration: locale/search/gated-state defects recovered
+# from the frozen Web Chat UIUX lane and composed into the canonical #7591 carrier.
+def test_news_search_indexes_displayed_chinese_title_and_escapes_it():
+    vm = _full_vm()
+    vm["news_feed"][0]["title_zh"] = '芯片需求 "验证" <test>'
+    html = _env().get_template("news.html.j2").render(**vm)
+    index = re.search(r'<article[^>]*data-search="([^"]*)"', html, re.S).group(1)
+    assert "芯片需求" in index
+    assert "&lt;test&gt;" in index and "<test>" not in index
+
+
+def test_news_locale_events_use_document_and_controls_have_localizable_names():
+    html = _render_full()
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    assert "window.addEventListener('langchange'" not in src
+    for fn in ("stamps", "setPh", "apply", "repaint"):
+        assert "document.addEventListener('langchange', " + fn in src
+    assert 'id="nxSeg" role="group"' in html
+    assert 'data-label-zh="按主题筛选新闻"' in html
+    assert 'data-label-zh="搜索新闻"' in html
+    assert 'id="nxIntelToolbar" role="group"' in html
+    assert 'data-label-zh="筛选事件"' in html
+
+
+def test_news_intelligence_language_repaint_preserves_expanded_state():
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    marker = "document.addEventListener('langchange',function(){"
+    block = src[src.index(marker):src.index("document.addEventListener('visibilitychange'", src.index(marker))]
+    assert "showDesk(" not in block
+    assert "render();" in block
+    assert "expanded=false" not in block
+
+
+def test_news_gated_panels_honor_hidden_state_and_guest_copy_is_truthful():
+    html = _render_full()
+    assert "#nxIntel[hidden]" in html and "#nxIntel [hidden]" in html
+    assert "#nxWire[hidden]" in html and "#nxWire [hidden]" in html
+    assert 'display:none!important' in html
+    assert 'Your session has ended' not in html
+    assert 'Sign in to read live headlines.' in html
+    assert 'Sign in to read developing stories and their sources.' in html
+    assert 'Live story graph' not in html
+    assert 'Story updates' in html
+
+
+def test_news_document_language_switch_preserves_filter_and_refreshes_dynamic_ui():
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is needed for the source-owned DOM interaction contract")
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    start = src.index("(function(){", src.index("{% block body_scripts %}"))
+    script = src[start:src.index("  // ---- INTELLIGENCE DESK", start)] + "})();"
+    harness = r'''
+const assert=require('assert');
+class E {
+ constructor(attrs={}) {this.attrs=attrs;this.handlers={};this.classes=new Set();this.style={};this.textContent='';this.value='';this.placeholder='';this.hidden=false;}
+ getAttribute(k){return this.attrs[k]??null;} setAttribute(k,v){this.attrs[k]=String(v);}
+ addEventListener(k,fn){(this.handlers[k]??=[]).push(fn);}
+ emit(k,e={}){for(const fn of this.handlers[k]||[])fn.call(this,e);}
+ get classList(){return {add:x=>this.classes.add(x),remove:x=>this.classes.delete(x),toggle:(x,v)=>v?this.classes.add(x):this.classes.delete(x),contains:x=>this.classes.has(x)};}
+ focus(){document.activeElement=this;}
+}
+const stamp=new E({'data-ts':new Date(Date.now()-3600000).toISOString()});
+const stories=Array.from({length:30},(_,i)=>new E({'data-lane':i<5?'fed':'markets','data-search':'headline '+i+' 芯片'}));
+const buttons=['all','markets','macro','fed','companies'].map(x=>new E({'data-lane':x}));
+const seg=new E({'data-label-en':'Filter news by topic','data-label-zh':'按主题筛选新闻'}); seg.querySelectorAll=()=>buttons;
+buttons.forEach(b=>{b.closest=()=>b;b.click=()=>seg.emit('click',{target:b});});
+const search=new E({'data-ph-en':'Search headlines, tickers…','data-ph-zh':'搜索标题、代码…','data-label-en':'Search news','data-label-zh':'搜索新闻'});
+const count=new E(),empty=new E(),more=new E(),clear=new E();
+const feed=new E(); feed.querySelectorAll=()=>stories;
+const root=new E({'data-lang':'en'});
+global.document=new E(); document.documentElement=root;
+const intelToolbar=new E({'data-label-en':'Filter stories','data-label-zh':'筛选事件'});
+const ids={nxFeed:feed,nxSeg:seg,nxSearch:search,nxCount:count,nxEmpty:empty,nxMore:more,nxClear:clear,nxIntelToolbar:intelToolbar};
+document.getElementById=id=>ids[id]||null; document.querySelectorAll=q=>q.startsWith('.rel-time')?[stamp]:[];
+global.window=new E();
+'''
+    checks = r'''
+assert.equal(count.textContent,'24 of 30 shown');
+search.value='芯片'; search.emit('input'); assert.equal(count.textContent,'30 of 30 shown');
+buttons[3].click();
+assert.equal(buttons[3].getAttribute('aria-pressed'),'true'); assert.equal(search.value,'芯片');
+root.setAttribute('data-lang','zh'); document.emit('langchange');
+assert.equal(search.placeholder,'搜索标题、代码…'); assert.equal(search.getAttribute('aria-label'),'搜索新闻');
+assert.equal(seg.getAttribute('aria-label'),'按主题筛选新闻'); assert.equal(intelToolbar.getAttribute('aria-label'),'筛选事件');
+assert.ok(stamp.textContent.includes('小时前')); assert.equal(search.value,'芯片'); assert.equal(buttons[3].getAttribute('aria-pressed'),'true');
+console.log(JSON.stringify({passed:true}));
+'''
+    result = subprocess.run([node, "-e", harness + "\n" + script + "\n" + checks], capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads(result.stdout)["passed"]
