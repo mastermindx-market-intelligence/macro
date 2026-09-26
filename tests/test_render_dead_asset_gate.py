@@ -140,6 +140,24 @@ def test_render_lanes_recheck_the_healed_tree_immediately_before_commit() -> Non
         assert healed < final_guard < commit, lane
 
 
+def test_render_lanes_self_heal_a_persistent_venv_that_lost_pip() -> None:
+    """A surviving python executable must not make a pip-less venv permanently toxic."""
+    for lane in LANES:
+        text = _text(lane)
+        start = text.index("- name: python 3.12 venv")
+        end = text.index("\n      - name:", start + 1)
+        block = text[start:end]
+
+        assert 'if [ ! -x "$VENV/bin/python" ]; then' in block, lane
+        assert 'elif ! "$VENV/bin/python" -m pip --version >/dev/null 2>&1; then' in block, lane
+        assert '"$VENV/bin/python" -m ensurepip --upgrade' in block, lane
+        assert 'rm -rf -- "$VENV"' in block, lane
+        assert '"$PYBIN" -m venv "$VENV"' in block, lane
+        assert block.count('"$VENV/bin/python" -m pip --version') >= 3, lane
+        assert block.index("-m pip --version") < block.index("-m ensurepip --upgrade")
+        assert block.index("-m ensurepip --upgrade") < block.rindex("-m pip install")
+
+
 def test_render_metadata_replay_is_code_data_only() -> None:
     text = _text(ROOT / ".github" / "workflows" / "render.yml")
     replay = text.index("PUBLISH_COMMIT=$(push_metadata_replay_commit")
