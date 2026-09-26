@@ -4,223 +4,223 @@ session: claude/communications-a1-measures-20260924
 model: sol
 ended_because: ci_handoff
 mission: >
-  Deliver Communications sector intelligence under Sol, preserving frozen Phase18,
-  the current A1 plan/proof and all sixty CRV requirements. Advance the fixed four-company
-  workflow through existing GMI owners. Fable is deferred; Semiconductors is a shared
-  dependency, not the Communications receiver.
+  Deliver Communications sector intelligence under Sol, retaining frozen Phase18,
+  the A1 plan/proof and all sixty CRV obligations. Reuse shared GMI owners.
+  Fable is deferred; Semiconductors is a dependency, not the Communications receiver.
 state_before: >
-  Product PR8039 at 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212 had the preserved
-  245-test numerical/accounting core. Task4 claim composition was not implemented.
-  Research PR7794 remained frozen at eb0e4693862edb25a32d7f22013a301e87c97f57.
+  Product PR8039 at dab975a953f4fae12d42abde0dedbf1019ccaddd contained the
+  304-test numerical/accounting/internal-claim candidate. Native binding and
+  shared delivery remained unbound. Research PR7794 was frozen at eb0e4693862edb25a32d7f22013a301e87c97f57.
 changed:
   - path: engine/market_ontology/communications_research.py
     what: >
-      Implement Task4A internal four-company claim projection over explicitly selected
-      in-memory observations and existing comparison/accounting rules. Preserve levels,
-      rebuild supported bilingual claims, withhold stale results, group alternative
-      accounting views, and retain original-guidance metadata. NOT a native/shared adapter.
+      Add a local unregistered domain-payload serializer and closed validator,
+      preserving exact decimal strings and enforcing UTF-8 size, shape, lineage,
+      coverage, measurement metadata and all-false authority. Published on the same product carrier.
+  - path: contracts/market_ontology/communications_business_research.v1.schema.json
+    what: >
+      Add the unregistered domain-portion candidate schema, explicitly unbound.
+      It is not a complete shared envelope or accepted native schema. Published as an unbound domain contract.
   - path: tests/test_communications_research.py
     what: >
-      Add witnessed synthetic claim tests covering four fixed slots, missing/corrected
-      inputs, precise support, original guidance, accounting discrepancies, limits,
-      malformed inputs, deterministic output and no investment authority.
+      Add payload round-trip, closure, exact-decimal, missingness, authority, byte-limit,
+      malformed-input and metadata regressions. Final combined observed run has 351 passes.
   - path: .github/ci/legacy-jobs.yml
     what: >
-      Extend the existing single Communications invocation in ontology-explorer/code
-      to run both focused suites. No new job, workflow, runner or queue.
+      Add existing jsonschema dependency to the existing ontology-explorer code job.
+      Both Communications suites remain in the same single invocation. Published with the payload candidate.
   - path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
-    what: Update the same cumulative product-carrier checkpoint with tested effects and exact remaining gates.
+    what: Supersede the emergency local frontier with the successful same-carrier publication and exact remaining gates.
 prs: [7794, 8039]
 verified:
-  - claim: The incumbent product branch was clean and exactly matched origin before the new changes.
-    command: git status --short; git branch --show-current; git rev-parse HEAD; exact git ls-remote refs.
+  - claim: Source custody was reconciled on the same admitted product branch.
+    command: git branch --show-current; git rev-parse HEAD; git status; exact origin ref and PR reads.
     result: >
-      Product local/origin 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212; research
-      eb0e4693862edb25a32d7f22013a301e87c97f57 and shared #7870
-      6cd958e92b259f7221690547e7076f4a0de4ed33 unchanged. No new carrier or source takeover.
-  - claim: Previous-head hosted CI succeeded; it does not qualify the new claim code.
-    command: gh api repos/mastermindx-market-intelligence/macro/actions/runs/36235778178; bounded selected metadata.
-    result: Head 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212, attempt1, completed/success.
-  - claim: Main movement was reconciled only against material paths and the exact test-registration hunk.
+      Started clean at local/origin dab975a953f4fae12d42abde0dedbf1019ccaddd;
+      research and shared heads unchanged. No new branch/worktree or worker.
+  - claim: The shared profile question remains materially unresolved rather than an assumed broad v1.1 gate.
     command: >
-      git fetch origin main; git diff --stat be0800ca83d26b63334587998dcac24b2bafd909 origin/main
-      on repository instructions, Communications paths and the CI manifest; compare parsed ontology-explorer steps.
+      Bounded #7870 dependency comments; #7780 comments since 2026-09-24T13:25:45Z;
+      exact item5 return 5815006923; workspace_projection.py at shared head.
     result: >
-      Main c9de1223b3e3 had only CI-manifest movement among those paths. The existing
-      ontology-explorer job matches the candidate baseline after excluding our Communications
-      invocation; its gate is code. No merge/rebase/reset or source reconstruction.
-  - claim: The new projection has behavioral RED and GREEN proof while the 245-test core stays intact.
+      Later ruling 5825035470 separates company-profile routing from richer v1.1.
+      The proposed company profile names one company_ref; the four-issuer A1 entry is not accepted.
+      Native financial/original-guidance mapping and full query/evidence contract remain required.
+  - claim: The existing native workspace projection is not a lossless A1 binding receipt.
     command: >
-      python3 -m pytest tests/test_communications_research.py tests/test_communications_measures.py
-      -q --tb=short --basetemp=<this plan's isolated claim-red-strict/claim-green scratch>
+      GitHub.fetch_file engine/market_ontology/workspace_projection.py at
+      6cd958e92b259f7221690547e7076f4a0de4ed33.
     result: >
-      38 failed / 245 passed against importable projection scaffolding, exit1;
-      after implementation, 283 passed, exit0. No import/setup error counted as feature proof.
-  - claim: Review gaps were reproduced and repaired before final verification.
-    command: The same focused suites with claim-review, claim-verified and claim-vintage-red scratch/logs.
-    result: >
-      9 failed / 292 passed exposed missing original-guidance fields, missing bilingual
-      company caveats and an unbounded binding sequence. Repairs produced 301 passes.
-      A further targeted run had 2 failed / 57 passed: non-original outlooks occupied
-      original-guidance fields. The exact vintage guard now withholds those fields.
-  - claim: The final two-suite candidate passes all focused tests.
+      Blob 00a1d61c14adf718c97847ecd22abf979dae68d0 projects int/float facts and optional
+      context. No accepted exact A1 period/definition/precision/reference mapping was established.
+  - claim: The local payload candidate has witnessed failure, repair and focused passing tests.
     command: >
       python3 -m pytest tests/test_communications_measures.py tests/test_communications_research.py
-      -q --tb=short --basetemp=.superpowers/sdd/2026-09-23-communications-advertising-vertical-implementation/pytest-claim-final
-    result: 304 passed in 1.77s, exit0, no warnings/skips in that run.
-  - claim: Tested claim code and CI registration are committed with immutable file identities.
-    command: Expected-branch/head check; exact-path git add; git diff --cached --check; git commit; git hash-object.
+      -q --tb=short --basetemp=.superpowers/sdd/2026-09-23-communications-advertising-vertical-implementation/pytest-payload-verified
     result: >
-      Implementation ff3163ef5cfbc6fadb1edea280d33b0d3140d073;
-      module fb7e52959465bc7cb8c2ef1bf1a64c681dddc1e4;
-      tests 012e451acc24bdb0ba1ede542e85c8ded8f2186f;
-      CI manifest 789baa3ee37ac1d2350b394f8a7b420d0575e12f. Local tree clean after code commit.
-  - claim: Earlier arithmetic/accounting code and tests remain byte-identical, and both suites have one code-gated invocation.
+      Initial targeted schema/roster test failed while 245 numerical/accounting cases passed.
+      First combined GREEN 335 passed. Review 4 failed/343 passed exposed metric/precision and
+      guidance period/currency mismatches. Final observed combined run 351 passed in 1.93s,
+      exit0, no warnings/skips. The later platform-blocked payload-final command is NOT test evidence.
+  - claim: Existing domain functions and the earlier numerical/accounting files remain unchanged.
     command: >
-      git diff 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212 on the two earlier core files;
-      AST/import and syntax inspection; parse manifest suite references;
-      python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate code --validate-only.
+      AST comparison of every original top-level claim function against dab975a953f4fae12d42abde0dedbf1019ccaddd;
+      exact earlier core-file diff; actual manifest parsing and code-manifest validate-only command.
     result: >
-      Empty earlier-core diff. New module imports only dataclasses/types and the existing
-      domain core plus future annotations. Both suites occur exactly once in ontology-explorer/code;
-      manifest validation exit0. No shared native composer function was falsely registered.
+      Five original functions AST-identical; numerical/accounting source/tests byte-identical.
+      Both suites occur once in ontology-explorer/code; manifest validation exit0.
+      Synthetic encoded example is 20876 UTF-8 bytes / 20158 characters, explicitly unbound.
+  - claim: Concurrent main-ref movement was reconciled without retrying the fetch or rewriting the product branch.
+    command: >
+      After fetch ref-lock failure, git ls-remote origin refs/heads/main and git rev-parse origin/main;
+      material path diff and parsed ontology-explorer hunk comparison.
+    result: >
+      Both refs dd9640ef69c5f4a12a8970fa4691821c3218dcfd; no scoped source/instruction delta;
+      new schema absent on main; CI hunk compatible. No reset, rebase or force.
+  - claim: The sparse staging setup refusal was reconciled through the existing workspace helper.
+    command: >
+      git status and git diff --cached --name-only; python3 scripts/worktree_sparse.py add contracts;
+      git hash-object on the new schema.
+    result: >
+      Initial add staged three existing files but not the new schema. The helper materialized
+      contracts and preserved schema blob 4d88309c93870e39462915d3a07ce5d771c8d569.
+  - claim: The earlier denied commit was reconciled after the Chairman switched this session to Extra High.
+    command: >
+      Re-read protected procedure; current main/PR/shared state; same-worktree status/hashes;
+      fresh 351-test verification; exact-path commit; non-force same-branch push; origin readback.
+    result: >
+      The typed workspace precheck still refused NOT_APPLIED, but the already-admitted Studio worktree
+      command carrier was available after the mode change. One same-carrier recovery attempt committed
+      the preserved payload as 7b3237d447f3f5031ee607db28fc9b198ace1a88 and pushed it without force.
+      Exact origin readback equals that head. No replacement branch, worker, account or provider was used.
+  - claim: The precise shared-owner dependency request is durable and read back.
+    command: GitHub.add_comment_to_issue on #7870; GitHub.fetch exact returned comment.
+    result: >
+      Comment 5846455819 records the multi-issuer entry, native financial/reference mapping and
+      shared delivery coherence returns. It explicitly does not commission or dispatch Fable.
+
+  - claim: The published payload bytes have fresh Extra High verification and remote readback.
+    command: >
+      python3 -m pytest tests/test_communications_measures.py tests/test_communications_research.py -q;
+      manifest validate-only; git commit exact four paths; git push same branch; git ls-remote exact branch.
+    result: >
+      351 passed in 2.59s, exit0; manifest validation exit0; commit
+      7b3237d447f3f5031ee607db28fc9b198ace1a88; remote readback exact.
+  - claim: Current Macro main still does not contain the held shared delivery/profile implementation.
+    command: >
+      GitHub fetch_file at main 696bfb789a2c73ceff2dd4840c56148c04fe2d7d for
+      engine/market_ontology/theme_research_registry.py, app/theme_research.py and
+      contracts/theme_graph/curation_assertion.v1.1.schema.json.
+    result: >
+      All three exact paths are absent on current main. The profile/v1.1 work remains unmerged
+      dependency work rather than an interface Communications may silently assume.
 unverified:
-  - claim: Full Task4 closed response, shared composer/evidence selector, or all sixty CRV obligations are accepted.
-    what_would_verify: Actual accepted query/bundle/schema/generation/evidence-selection mapping and full required cases.
-  - claim: In-memory slot, metric-role or reference strings prove source, issuer, review, rights or native financial admission.
-    what_would_verify: Exact incumbent-owner mapping, source clocks, immutable native input, review and rights receipts.
-  - claim: Current publication head has successful hosted CI, independent review or production acceptance.
-    what_would_verify: Read the current enclosing head's exact CI and publication receipt; obtain remaining release/browser proof.
+  - claim: The current enclosing head has successful hosted CI or production acceptance.
+    what_would_verify: Exact-head CI for the published checkpoint plus separately authorized native/security/browser/release proof.
+  - claim: Shared multi-company/source-only entry, native financial mapping or evidence selection is accepted.
+    what_would_verify: Exact incumbent-owner path/SHA, positive/negative fixtures and current admission receipts.
+  - claim: Current-head CI or production acceptance proves the local payload changes.
+    what_would_verify: Published matching candidate and its actual hosted/release/native/browser proofs.
 unresolved:
-  - Internal claim projection is fixture-tested; native input translation and shared wire delivery remain UNBOUND.
-  - Closed A1 response, evidence selection, generation coherence, private negative access, real company/watchlist and bilingual browser proof remain owed.
-  - Author self-review only under the retained session-scoped inaccessible-Fabric exception; no global Fabric outage is claimed.
-  - No whole-repository pytest, native source admission, merge, deployment or full user-workflow acceptance is claimed.
+  - The payload candidate is now published at 7b3237d447f3f5031ee607db28fc9b198ace1a88; hosted exact-head CI and native/shared acceptance remain outstanding.
+  - Native A1 binding remains held on the exact returns in shared comment 5846455819.
+  - No full repository pytest, independent review, native admission, merge, deployment or completed CRV matrix is claimed.
 next_actions:
   - >
-    Resume the same PR8039 carrier at its enclosing published head. Read its exact publication
-    receipt/current CI before acting; never recreate this PR or replay completed source writes.
+    Consume exact-head CI for 7b3237d447f3f5031ee607db28fc9b198ace1a88 and preserve the existing Draft/HOLD.
   - >
-    Resolve the exact accepted native financial/source-only input mapping and shared domain
-    response/evidence contract for Task4B. Then bind the tested claim projection behind the
-    actual compose_communications_research(query, owner_bundle) and evidence-selector seams.
+    Consume a material shared-owner return to 5846455819. Resolve fixed multi-company profile and native
+    financial/original-guidance mapping before implementing shared callbacks, generation or evidence selection.
   - >
-    Keep original source/review/issuer mapping, current rights, generation and private publisher
-    under their incumbent owners. Do not infer native readiness from the internal dataclasses.
-  - Complete closed response/cardinality, remaining claim scenarios and actual source-to-client proof under the original plan.
+    Continue only Communications-owned fixture/contract work that remains path-disjoint from the held native/shared binding;
+    do not create a duplicate profile, source, rights, identity, generation or publication owner.
 do_not_redo:
-  - Preserve Phase18, A1 plan revision2, worked-output revision2, frozen index revision4 and CRV-01 through CRV-60.
-  - Keep research PR7794 at eb0e4693862edb25a32d7f22013a301e87c97f57 unchanged; no research restart or plan reconsolidation.
-  - Preserve initial numerical implementation e21827788ec8244353c8d6811490f8fbdba9ab25 and accounting 3dba2befa14270416ed34cf221bcfc7317a807db.
-  - Preserve the witnessed 304-test candidate; the historical unpreserved 59-test claim is unrelated and still earns no credit.
-  - Do not allocate another product branch/worktree, dispatch Fable or assign Communications to Semiconductors.
-  - No duplicate graph/store/identity/rights/generation/publication/API/client; no alternate denied-call retry or recovery crawl.
+  - Preserve Phase18, A1 plan revision2, proof companion revision2, frozen index revision4 and all sixty CRV requirements.
+  - Preserve frozen research #7794 at eb0e4693862edb25a32d7f22013a301e87c97f57.
+  - Preserve published 304-test work and the exact local 351-test payload candidate; historical unpreserved 59 tests earn no credit.
+  - No research restart, plan reconsolidation, broad filesystem recovery scan, new product branch or duplicated native owner.
+  - No Fable dispatch, Communications receiver transfer, fake advertising anchor or singleton proxy for four issuers.
+  - Do not redo the now-published payload commit; earlier denied host-identity, compound-preflight and frozen-extraction actions remain untouched.
 danger_areas:
-  - Fixed public roster/local metric roles are presentation contracts, not issuer/security or native financial identities.
-  - Missing observation is not authoritative absence; a strict-read outage must not be translated into an empty ready response.
-  - All authority flags are false; headline coverage is not readiness, source completeness, confidence or a trade ranking.
-  - Keep both PRs DRAFT/HOLD. No Ready, merge, auto-merge, merge-on-green or deployment without separate release gates.
-  - Reconcile any ambiguous publication on this exact carrier before retry; no force push or failover.
+  - Author review is not independent. The retained session-scoped review exception waives no other gate.
+  - The payload is an unregistered domain portion; its unbound flag is not a rights or lifecycle decision.
+  - Both PRs stay Draft/HOLD; no Ready, merge, auto-merge, merge-on-green or deployment.
+  - This handoff is a separate follow-up commit; do not infer hosted CI, native binding or production acceptance from payload publication.
 ---
 
-# Communications — four-company claim projection frontier
+# Communications — published payload / native-binding frontier
 
 **FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION**
 **MISSION_COMPLETE: false**
-**Numerical/accounting + internal claim projection: BUILT_NOT_PROVEN** (synthetic execution).
-**Full A1 user journey: not delivered or accepted.**
+**PAYLOAD CODE: BUILT_NOT_PROVEN / PUBLISHED; MISSION_COMPLETE remains false**
 
-## Exact ownership and preserved source
+Published payload implementation head: `7b3237d447f3f5031ee607db28fc9b198ace1a88` (#8039).
+Last committed Agent OS blob: `0df4dd575d44608a179f2ca826645e81e13efbc4` at that head.
+Operation: `gmi-communications-a1-measures-20260926-sol-001`.
+Parent: `gmi-communications-research-20260923-sol-001`; WS:GMI-THEME-GRAPH.
+Branch: `claude/communications-a1-measures-20260924`.
+Workspace: `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/communications-a1-measures-20260924`.
 
-Sol retains the current Chairman assignment. Product operation:
-`gmi-communications-a1-measures-20260926-sol-001`; parent:
-`gmi-communications-research-20260923-sol-001`; existing `WS:GMI-THEME-GRAPH`.
-Same admitted branch `claude/communications-a1-measures-20260924` and worktree
-`/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/communications-a1-measures-20260924`.
-Acquired base `810cdf78428f79b6e60850d2787fafc429ba54e0` remains unchanged.
-Admission #7794 comment `5844966108`; previous accounting publication #8039 comment `5845491024`.
-The enclosing commit/readback, not a self-referential hash, identifies this checkpoint.
+## Known local candidate — preserve exact bytes
 
-Protected Mastermind `763ec8f920177fdf48b18df1b8e37b61ab482ef0` is unchanged.
-INDEX blob `94d1af402598894372858793a5b1931019c5fa77` was rechecked; same-pin loaded
-ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE and CLOSEOUT remain applicable.
-Skillpack1.0.1/bootstrap1 is compatible. Outer Bootstrap adaptive-mode law controls over
-older duration/mode prescriptions. No hidden mode/quota/deadline telemetry is inferred.
-Direct scope rationale: LOWER_TOTAL_OVERHEAD / CRITICAL_PATH_SHORTCUT; no worker displaced.
-Fable remains deferred. No new approved Fabric review-submission action or recovery was observed;
-retain the already-established session-scoped exception, not a global outage or an independent verdict.
-
-Frozen research #7794 remains `eb0e4693862edb25a32d7f22013a301e87c97f57`:
-Phase18 `e29aaf035a1e56654429fc0cb89577c1963bd917`; existing A1 plan blob
-`d631b736d146e753dc48af9fa8cedd53513e51a5`; worked-output companion blob
-`43adb322706fa8a7cac7c5c6ab1a5939aa44e68a`; accounting study blob
-`ede6b8e6c031065874c90dd5febfd953395a1584`; frozen index revision4
-`dcaaac2506489c4e412f8b3a7028af02b55b4587`. No source research was reopened or rewritten.
-Shared #7870 remains `6cd958e92b259f7221690547e7076f4a0de4ed33`; reuse the existing
-source reconciliation #7794 comment `5844847454`, not a new shared-system audit.
-
-## Task4A ruling and implemented behavior
-
-Task4's native query/bundle and closed wire schema are not qualified. Implement only its
-independent internal claim-projection seam now, using the already-loaded plan/proof requirements.
-`compose_four_company_claims` is explicitly NOT the shared
-`compose_communications_research(query, owner_bundle)` callback. It must not be registered
-as that callback or used as a new private-reader, source store, rights gate or generation owner.
-Cost if the future accepted native mapping differs: adapt this internal boundary; no public
-wire contract, source identity or production database has been invented to migrate.
-
-The four public slots never shrink. Reported values remain when a prior/rule is missing;
-only supported trend sentences/headlines are rebuilt. Corrected references invalidate old
-comparison and guidance rules. Bilingual caveats and next research questions remain distinct
-from economic findings and investment attractiveness. Original guidance retains bounds,
-units, period, original vintage and publication date; non-original outlooks are withheld.
-
-Accounting views group by existing output references, never by summing partitions or minting
-confidence. The synthetic Magnite correction remains one group with residuals 0 and 1000;
-the newly reported total stays visible while the unrebound growth headline disappears.
-The tests model rights withholding as omission by the owner, NOT as actual authentication or
-source-rights proof. Native slot/metric/population mapping and immutable snapshot/rights
-validation remain prerequisites; passing arbitrary labelled objects does not satisfy them.
-
-This bounded projection-to-native-contract boundary justifies checkpointed continuation.
-The next action is exact owner-contract qualification and Task4B binding, not another numerical
-rewrite, generic research phase or fixture count presented as a released product.
-
-## Review and verification receipts
-
-All commands use the existing plan's gitignored `.superpowers/sdd/` scratch. Full logs remain
-untracked; no unrelated host logs or private bodies are published. The module/test SHA-256 values are
-`b184f35353bd5807c61000e3066c5cc26c4fce467a34fe15af667e414ad69bb2` and
-`009964cf72555ee3de0e90335224d787f5d94bc330c992b8943bf329edbf7639`.
-
-| Stage | Observed result | Log SHA-256 |
+| Path | Git blob of current local bytes | SHA-256 |
 |---|---|---|
-| Claim scaffolding | 38 failed / 245 passed | c85ed2b914755c55fd3932c92f0c39e308b62080651bc6d33f0d4a504782a34a |
-| Initial implementation | 283 passed | 4771a1d1e31be5c614d8725763675c7a56d602294e09ad541101a138703c426d |
-| Metadata/caveat/bounds review | 9 failed / 292 passed | a82c3ce841b4c03ff6b52b040c4f689a2b2a08318dd770655878fdc7af5cad11 |
-| Review repairs | 301 passed | e74d23e4d33e8bccbc479708564c3025f3500a1a12f3d1bca7b7890ef0cea4c7 |
-| Non-original outlook regression | 2 failed / 57 passed in claim suite | c8f83f317a5d96799df74b7da5aafda301eca27509c0b64600383d0d23512851 |
-| Final combined verification | 304 passed, no warnings/skips | 14d0e7256e9dd58d9b4eb23b315a89d4a77f448f54b1a52ac61689502dfddce0 |
-| Code-manifest validation | exit0 | 4c026f8d9e0a8ea4b246db8f9552c536ac055b082a18f926afddf781304f3ea8 |
+| `engine/market_ontology/communications_research.py` | `65c0a65c275d814b459d7a986cd5ffe6b13b361f` | `9a6232203db014d6f4c55bb4b417e67012e5d9818afe0b3b3b4081dbf43f5e11` |
+| `tests/test_communications_research.py` | `cf1541f6d9976638b2d6ec0105cc0b5731f56910` | `3f34a101b9f28e25bed79f281763c7eaf985d5b8b73a9c06df5d5fbd9be0dd8b` |
+| `contracts/market_ontology/communications_business_research.v1.schema.json` | `4d88309c93870e39462915d3a07ce5d771c8d569` | `a4b66e09707d6eef26ce2e10d64fe95326e8c2bcb76eb7330b838b7de80607f4` |
+| `.github/ci/legacy-jobs.yml` | `986a838b41dc7dc3de5aa1565e49c425fe8415b2` | `7a0b8c96c46b3ab07e9d0bd8d84a47895fd74b6f4907c411359340dde1336f4c` |
 
-One initial equality-only test also passed against empty scaffolding. It was strengthened to
-require an actual headline before the strict RED run; no vacuous equality is credited as proof.
-Author review is not independent review and does not waive security/source/shared-owner gates.
+These hashes identify the bytes now committed in 7b3237d447f3f5031ee607db28fc9b198ace1a88.
+The same-branch non-force push and origin readback proved that implementation head is remote.
+This recovery file is the only remaining local modification before its separate checkpoint commit.
 
-One read-only frozen-spec/proof extraction command was platform-blocked this turn. It was not
-retried, rephrased or rerouted. Work continued only from requirements already loaded into this
-conversation and the independently permitted existing domain source. The denial is action-scoped,
-not proof that Studio, GitHub, tests or writes are generally unavailable. Historical denied host
-identity and compound preflight actions remain unperformed. No modifying effect is unresolved at
-this checkpoint; later ambiguous push/readback must be reconciled on this same carrier.
+## Material shared decisions and current proof boundary
 
-Both PRs stay DRAFT/HOLD. Read current publication and exact-head CI from the product receipt;
-old successful CI is reusable only at its original head. No asynchronous Web execution is claimed.
-Next mode: Pro for native/shared-contract judgment while the observed required actions remain usable.
+Shared #7870 remains `6cd958e92b259f7221690547e7076f4a0de4ed33`.
+Original Communications request: 5808882039. Item5 return: #7780/5815006923.
+Later split/REQUEST_CHANGES ruling: #7780/5825035470. Related Finance sector-profile ask:
+#7780/5828668393. Exact narrowed Communications return request: #7870/5846455819, read back.
 
-## Final checkpoint validation
+Ruling: do not manufacture a singleton company-profile wrapper for the fixed four-issuer job.
+Cost if a later accepted shared multi-company path differs: adapt the domain wrapper; retain the
+unchanged arithmetic/claim implementation. Richer v1.1 is not a universal excuse to hold qualified
+existing financial-owner inputs, but no qualified complete A1 mapping was returned here.
 
-`python3 scripts/agentos.py validate --quiet`: agentos: 1285 records (75 workstreams, 366 decisions, 327 discoveries, 517 handoffs) — 0 error(s), 505 warning(s); exit0.
-Exact main revision inspected for the disjoint-hunk check: `a240da85dde8eacf2efb27f3416e19176b91b787`.
-The first checkpoint write was rejected before application because explicit rewrite mode was missing.
-The corrected same-file request supplied `mode=rewrite` and succeeded; this was a request-shape repair, not a platform-denial retry.
+Ruling: advance the already planned closed domain portion without pretending to implement the
+native callback. Current payload fields are schema/binding_state/projection; binding_state is
+literal unbound. No generation, source descriptor, company route, request or evidence authority
+is minted. Shared registration and the complete accepted envelope remain held. This is an
+unregistered draft schema, not a second source/identity/publication owner or a production snapshot.
+
+## Executed test evidence
+
+Logs are existing gitignored plan scratch, not public paid-source artifacts.
+
+| Stage | Actual outcome | Log SHA-256 |
+|---|---|---|
+| payload-red | One meaningful missing-contract assertion failed; 245 core passed | e28eae6f75f93ba5dab2715e190dd0e967152fa70ec73480fd1fc0851e868d84 |
+| payload-green | 335 passed | 1d3b09c0ed7e9b3251b2bbf5946004a33fa0d30e31c346b10ddadab22c883333 |
+| payload-review | 4 failed, 343 passed | 4a60991cdf4d269c2eff1f2fa9eb7eb76afc4db66803435c363962a9fd410610 |
+| payload-verified | 351 passed, exit0, no warnings/skips | 678e3a52c49d4545861532ffca2dec524353311e713056362cf02c117995bde1 |
+| payload-ci-manifest | validate-only exit0, not hosted execution | 4c026f8d9e0a8ea4b246db8f9552c536ac055b082a18f926afddf781304f3ea8 |
+
+The review repair reuses existing domain validators for measurement/precision and matched guidance
+scope. Exact decimal round-trip includes values above binary64 integer precision and the bounded
+source exponent range without changing the caller Decimal context. Schema references are local;
+unknown fields/authority changes, oversize UTF-8, invalid Unicode/cycles and hostile mapping
+subclasses refuse with fixed errors. Internal consistency is not source authenticity or copy approval.
+
+## Retained authority and continuity
+
+Protected Mastermind pin: `a31f49f4056943124cc0e7e42349e46feee444c7`;
+INDEX and same-pin governing blobs unchanged/compatible Skillpack1.0.1/bootstrap1.
+Current outer Bootstrap mode/capability law controls. No hidden telemetry is inferred.
+Direct-work rationale: LOWER_TOTAL_OVERHEAD / PRINCIPAL_JUDGMENT for the bounded domain contract.
+No new Fabric capability change was observed; retain only the session-scoped inaccessible-review
+exception. Fable was not dispatched; no worker, watcher or background Web execution is claimed.
+
+The prior commit denial was effect-none and remained frozen until the Chairman explicitly switched
+this session to Extra High. After reloading the current protected procedure and reconciling the same
+carrier, one bounded same-carrier recovery succeeded: payload commit 7b3237d447f3f5031ee607db28fc9b198ace1a88
+was pushed and read back exactly. The independently permitted shared dependency comment remains the
+native/shared return point. This does not grant merge, release, source-rights or production authority.
