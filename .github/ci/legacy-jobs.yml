@@ -3677,6 +3677,9 @@ jobs:
         run: pip install pytest pandas numpy pyyaml requests
       - name: china_news collector tests (incl. adapter-registered-without-akshare)
         run: python -m pytest tests/test_china_news.py -q
+      - name: optional news provider semantics and actual ordering consumer
+        # Source-only fixtures: no live data, vendor credentials or activation.
+        run: python -m pytest tests/test_news_ai_feed_contract.py -q
       - name: strict SEC filing parser, extraction, and sealed attestation contracts
         run: |
           python -m pytest \

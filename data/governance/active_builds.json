@@ -1,53 +1,155 @@
 {
   "schema": "active_builds.v1",
-  "generated_at": "2026-09-26T04:33:25.167147+00:00",
+  "generated_at": "2026-09-26T15:39:57.825855+00:00",
   "base": {
-    "sha": "61029975bd1f7f9561cb135aba97ec2470578857"
+    "sha": "58cb70c20518757ccdd267d9d5634b68ebf3caf0"
   },
   "merged_days": 14,
   "merged_truncated": true,
   "open_prs_truncated": true,
   "open_prs": [
     {
-      "number": 8033,
-      "title": "ci: run the CI control plane's own contracts on the PR code gate",
-      "head_ref": "claude/workflow-yaml-code-gate",
-      "updated_at": "2026-09-26T00:24:48Z",
+      "number": 8048,
+      "title": "docs(policy-watch): R1 decision-desk redesign study and Paper checkpoint",
+      "head_ref": "sol/policy-watch-redesign-study-20260926",
+      "updated_at": "2026-09-26T12:41:01Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 1,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "research/POLICY_WATCH_REDESIGN_R1_2026-09-26.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8047,
+      "title": "ci: deepen only the exact tested tree before history fallback",
+      "head_ref": "sol/8038-exact-tested-tree-history",
+      "updated_at": "2026-09-26T12:59:40Z",
+      "is_draft": true,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 3,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "scripts/run_ci_pack.py",
+        "tests/test_ci_pack_semantic.py",
+        "tests/test_run_ci_pack_fetch_fallback.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8045,
+      "title": "ci(data-health): close outcome-spine UK policy dependency",
+      "head_ref": "sol/data-health-outcome-spine-jinja2-20260926",
+      "updated_at": "2026-09-26T12:09:54Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 22,
+      "files_count": 1,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8044,
+      "title": "[HANDOFF] GitHub issue repair sweep \u2014 2026-09-26 checkpoint",
+      "head_ref": "sol/github-issue-repair-sweep-checkpoint-20260926",
+      "updated_at": "2026-09-26T11:33:31Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 1,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/GITHUB-ISSUE-REPAIR-SWEEP-2026-09-26.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8043,
+      "title": "[Agent OS][CLAUDE-COO] Preserve adapter recovery and four end-to-end environment handoffs",
+      "head_ref": "sol/claude-coo-environment-fanout-20260926",
+      "updated_at": "2026-09-26T10:54:52Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 1,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-26-CLAUDE-COO-FANOUT.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8042,
+      "title": "[NORTH STAR][W2] Bound qledger US nightly ledger scans",
+      "head_ref": "sol/northstar-qledger-bounded-20260926",
+      "updated_at": "2026-09-26T10:49:20Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 2,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "scripts/backfill_qledger_us.py",
+        "tests/test_backfill_qledger_us.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8041,
+      "title": "docs(design): human-first acceptance and one Sector Intelligence journey",
+      "head_ref": "claude/sector-human-first-20260926",
+      "updated_at": "2026-09-26T12:14:43Z",
+      "is_draft": true,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 8,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".claude/agents/builder.md",
+        ".claude/agents/designer.md",
+        ".claude/agents/reviewer.md",
+        ".github/ci/legacy-jobs.yml",
+        "agentos/decisions/DEC-HUMAN-FIRST-DESIGN-ACCEPTANCE.md",
+        "docs/DESIGN_DOCTRINE.md",
+        "research/SECTOR_INTELLIGENCE_CONSOLIDATED_EXPERIENCE_2026-09-26.md",
+        "tests/test_human_first_design_guidance.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8039,
+      "title": "[DRAFT/HOLD] Communications A1 \u2014 published claims; local payload held",
+      "head_ref": "claude/communications-a1-measures-20260924",
+      "updated_at": "2026-09-26T13:05:51Z",
+      "is_draft": true,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 6,
       "files_truncated": false,
       "files_error": false,
       "files": [
         ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci-main-heartbeat.yml",
-        ".github/workflows/ci.yml",
-        "config/house_law_checks.yml",
-        "docs/HOUSE_LAW_CI_GUARD_SUITE.md",
-        "scripts/audit_unrun_tests.py",
-        "scripts/check_ci_trigger_closure.py",
-        "scripts/nightly_backstop.py",
-        "scripts/run_ci_pack.py",
-        "tests/conftest.py",
-        "tests/test_audit_unrun_tests.py",
-        "tests/test_check_skip_only_suites.py",
-        "tests/test_ci_pack.py",
-        "tests/test_ci_trigger_closure.py",
-        "tests/test_contract_delta.py",
-        "tests/test_fence_checkout_contract.py",
-        "tests/test_merge_on_green.py",
-        "tests/test_nightly_backstop.py",
-        "tests/test_options_session_guards.py",
-        "tests/test_options_unit_seams.py",
-        "tests/test_render_dead_asset_gate.py",
-        "tests/test_trusted_ci_executor_workflow.py"
+        "agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md",
+        "engine/market_ontology/communications_measures.py",
+        "engine/market_ontology/communications_research.py",
+        "tests/test_communications_measures.py",
+        "tests/test_communications_research.py"
       ],
-      "protected_paths_touched": [
-        ".github/workflows/ci-main-heartbeat.yml",
-        ".github/workflows/ci.yml",
-        "scripts/check_ci_trigger_closure.py"
-      ]
+      "protected_paths_touched": []
     },
     {
       "number": 8027,
@@ -71,28 +173,125 @@
       "number": 8026,
       "title": "fix(china): keep EMERGING ENTER themes in Buy Now",
       "head_ref": "sol/cn-emerging-enter-theme-buy-now-20260925",
-      "updated_at": "2026-09-25T12:12:35Z",
+      "updated_at": "2026-09-26T15:17:59Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
-      "files_truncated": false,
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
+      "files_count": 100,
+      "files_truncated": true,
       "files_error": false,
       "files": [
+        "agentos/discoveries/DSC-CN-PROPHET-SEMICON-LEADERSHIP-GATE-AUDIT.md",
+        "docs/site_semantics/china.md",
         "engine/china_act_now.py",
-        "templates/_china_act_now_board.html.j2",
-        "tests/test_china_act_now.py"
+        "research/cn_prophet_audit/SEMICON_LEADERSHIP_AUDIT_2026-09-21.md",
+        "research/cn_prophet_audit/continuation_entry_20260923/.gitignore",
+        "research/cn_prophet_audit/continuation_entry_20260923/5cc-independent-review.md",
+        "research/cn_prophet_audit/continuation_entry_20260923/5cc-review-closure.md",
+        "research/cn_prophet_audit/continuation_entry_20260923/5cc-review-receipt.json",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/board.json",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-duplicate-evidence-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-final-demotions-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-missing-members-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-settling-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/candidate-source-conflict-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-current-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-missing-members-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-dark-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-dark-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-dark-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-dark-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-light-en-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-light-en-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-light-zh-1440.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/hover-settling-light-zh-390.png",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser/proof.json",
+        "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py",
+        "research/cn_prophet_audit/continuation_entry_20260923/cf9-independent-review.md",
+        "research/cn_prophet_audit/continuation_entry_20260923/cf9-review-closure.md",
+        "research/cn_prophet_audit/continuation_entry_20260923/cf9-review-receipt.json",
+        "research/cn_prophet_audit/continuation_entry_20260923/current-base-3c93-proof.json",
+        "research/cn_prophet_audit/continuation_entry_20260923/current-base-3c93-tests.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/derived-advice-qualified-tests.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/derived-advice-red.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/derived-advice-tests.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/evidence.json",
+        "research/cn_prophet_audit/continuation_entry_20260923/final-note-browser-tests.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/final-note-review.patch",
+        "research/cn_prophet_audit/continuation_entry_20260923/final-note-tests.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/final-tests.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/independent-review.md",
+        "research/cn_prophet_audit/continuation_entry_20260923/index-lock-recovery.json",
+        "research/cn_prophet_audit/continuation_entry_20260923/minor-review-browser-tests.txt",
+        "research/cn_prophet_audit/continuation_entry_20260923/minor-review-owner-tests.txt"
       ],
       "protected_paths_touched": []
     },
     {
       "number": 8024,
-      "title": "[DRAFT/HOLD] Rehydrate EDGAR earnings canonical filing identity",
+      "title": "[DRAFT] Audit EDGAR earnings canonical filing identity",
       "head_ref": "claude/market-experience-sec-anchor-migration-20260925",
-      "updated_at": "2026-09-25T12:10:15Z",
+      "updated_at": "2026-09-26T07:39:54Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
       "files_count": 2,
       "files_truncated": false,
       "files_error": false,
@@ -106,7 +305,7 @@
       "number": 8023,
       "title": "records(energy): wave 2 module rounds 3\u20136 \u2014 reviews, rulings R-ENE-23..30, registration packet, handoff \u00a712\u201313",
       "head_ref": "claude/energy-w2-r3-r6-records",
-      "updated_at": "2026-09-25T23:40:56Z",
+      "updated_at": "2026-09-26T15:28:41Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -157,7 +356,7 @@
       "number": 8021,
       "title": "fix(risk): keep missing evidence out of calm and recovery",
       "head_ref": "claude/risk-radar-reading-integrity-extract-20260925",
-      "updated_at": "2026-09-25T11:38:44Z",
+      "updated_at": "2026-09-26T14:24:23Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -221,14 +420,30 @@
       "number": 8015,
       "title": "fix(china): refresh Act Now sector intelligence before assembly",
       "head_ref": "sol/china-act-now-current-theme-intel-20260925",
-      "updated_at": "2026-09-25T10:43:13Z",
+      "updated_at": "2026-09-26T11:42:04Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 2,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 18,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        "research/cn_prophet_audit/current_theme_handoff_20260926/README.md",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/envelope-red.txt",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/handoff-run.txt",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/handoff_proof.json",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/handoff_proof.py",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/owner-tests.txt",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_close_only_unqualified.json",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_close_only_unqualified.txt",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_preflight_unqualified.json",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_preflight_unqualified.txt",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_proof.json",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_proof.py",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_proof_2026-09-23.json",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_proof_2026-09-24.json",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_run_2026-09-23.txt",
+        "research/cn_prophet_audit/current_theme_handoff_20260926/real_producer_run_2026-09-24.txt",
         "scripts/build_china.py",
         "tests/test_china_board_watch_lane.py"
       ],
@@ -238,7 +453,7 @@
       "number": 8014,
       "title": "feat(brain): verify streamed chart commands by Terminal ACK",
       "head_ref": "claude/cmx-a2c-stream-command-ack-20260925",
-      "updated_at": "2026-09-25T11:33:48Z",
+      "updated_at": "2026-09-26T12:55:26Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -257,30 +472,44 @@
       "number": 8012,
       "title": "[RESEARCH][DRAFT] Measure narrative handoff event microstructure",
       "head_ref": "sol/geopolitical-relief-event-study-20260924",
-      "updated_at": "2026-09-25T12:32:13Z",
+      "updated_at": "2026-09-26T11:20:19Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 22,
+      "files_count": 36,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        ".github/ci/legacy-jobs.yml",
+        "agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md",
+        "research/CROSS_SESSION_DAILY_HANDOFF_HK_RESULTS_2026-09-26.md",
+        "research/CROSS_SESSION_DAILY_HANDOFF_SOURCE_MANIFEST_2026-09-26.json",
         "research/CROSS_SESSION_DATA_CAPABILITY_CENSUS_2026-09-25.md",
         "research/CROSS_SESSION_NARRATIVE_HANDOFF_PREREG_2026-09-25.md",
+        "research/CROSS_SESSION_SOURCE_TIMING_ADVISORY_PREVIEW_2026-09-26.md",
         "research/CROSS_SESSION_SOURCE_TIMING_CENSUS_RAW_V0_2026-09-25.json",
         "research/CROSS_SESSION_SOURCE_TIMING_CENSUS_SPEC_2026-09-25.md",
+        "research/CROSS_SESSION_TRANSFER_PROSPECTIVE_PROTOCOL_2026-09-26.md",
+        "research/CROSS_SESSION_US_HK_MATCHED_CONTROL_MANIFEST_2026-09-26.json",
+        "research/CROSS_SESSION_US_TO_HK_MATCHED_CONTROL_PREREG_2026-09-26.md",
+        "research/CROSS_SESSION_US_TO_HK_MATCHED_CONTROL_RESULTS_2026-09-26.md",
+        "research/CROSS_SESSION_US_TO_HK_TRANSFER_PREREG_2026-09-26.md",
+        "research/HK_INTRADAY_HANDOFF_CANDIDATE_SPEC_2026-09-26.json",
         "research/NARRATIVE_HANDOFF_EVENT_MICROSTRUCTURE_STUDY_2026-09-24.md",
         "research/NARRATIVE_HANDOFF_PILOT_REPLAY_RECEIPT_2026-09-25.md",
+        "research/NARRATIVE_REPRICING_CONSUMER_INTEGRATION_RULING_2026-09-26.md",
         "research/NARRATIVE_REPRICING_V2_CLOCK_CLEAN_SOURCE_WAVE3_2026-09-25.json",
         "research/NARRATIVE_REPRICING_V2_CLOCK_CLEAN_TRAINING_WAVE1_2026-09-25.json",
         "research/NARRATIVE_REPRICING_V2_CLOCK_CLEAN_TRAINING_WAVE2_2026-09-25.json",
         "research/NARRATIVE_REPRICING_V2_CLOCK_CLEAN_WAVE1_RESULTS_2026-09-25.md",
+        "research/NARRATIVE_REPRICING_V2_CLOCK_CLEAN_WAVE2_RESULTS_2026-09-26.md",
         "research/NARRATIVE_REPRICING_V2_EVALUATION_SPLIT_2026-09-25.json",
         "research/NARRATIVE_REPRICING_V2_PREREG_2026-09-25.md",
         "research/NARRATIVE_REPRICING_V2_SOURCE_CLOCK_AUDIT_2026-09-25.json",
         "research/NARRATIVE_REPRICING_V2_SOURCE_CORPUS_CHECKPOINT_2026-09-25.md",
         "research/NARRATIVE_REPRICING_V2_SOURCE_FEATURE_TAXONOMY_2026-09-25.md",
         "research/NARRATIVE_REPRICING_V2_SOURCE_MANIFEST_2026-09-25.json",
+        "research/NARRATIVE_REPRICING_V2_WAVE3_CONTROL_RESULTS_2026-09-26.md",
         "research/cross_session_source_census.py",
         "research/event_microstructure_study.py",
         "scripts/research/replay_event_microstructure.py",
@@ -326,8 +555,8 @@
       "head_ref": "claude/finance-t11-connected-conformance",
       "updated_at": "2026-09-25T12:27:04Z",
       "is_draft": true,
-      "merge_state": "DIRTY",
-      "merge_state_raw": "DIRTY",
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
       "files_count": 34,
       "files_truncated": false,
       "files_error": false,
@@ -455,10 +684,10 @@
       "number": 8005,
       "title": "feat(brain): scope chart state and ACKs to Terminal origin",
       "head_ref": "claude/cmx-a2-origin-acks-20260925",
-      "updated_at": "2026-09-25T11:33:44Z",
+      "updated_at": "2026-09-26T12:50:46Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
       "files_count": 3,
       "files_truncated": false,
       "files_error": false,
@@ -517,25 +746,6 @@
         "tests/test_nuclear_research_temporal.py"
       ],
       "protected_paths_touched": []
-    },
-    {
-      "number": 7999,
-      "title": "fix(brain): bind Chart Bus v2 wire identity",
-      "head_ref": "claude/cmx-backend-command-wire-20260925",
-      "updated_at": "2026-09-25T11:44:35Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 2,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "engine/neuralweb/brain_gateway.py",
-        "tests/test_brain_gateway.py"
-      ],
-      "protected_paths_touched": [
-        "engine/neuralweb/brain_gateway.py"
-      ]
     },
     {
       "number": 7992,
@@ -631,7 +841,7 @@
       "number": 7988,
       "title": "perf(agentos): batch canonical workstream Git dates",
       "head_ref": "sol/agentos-batched-git-dates-20260924",
-      "updated_at": "2026-09-26T00:15:53Z",
+      "updated_at": "2026-09-26T08:03:37Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -699,11 +909,11 @@
       "number": 7982,
       "title": "feat(news): project owner-bound guidance changes to ticker context",
       "head_ref": "claude/news-guidance-comparison-20260924-sol-001",
-      "updated_at": "2026-09-25T03:13:53Z",
+      "updated_at": "2026-09-26T13:12:25Z",
       "is_draft": true,
-      "merge_state": "CLEAN",
-      "merge_state_raw": "CLEAN",
-      "files_count": 6,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 84,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -711,8 +921,86 @@
         "docs/superpowers/plans/2026-09-24-news-guidance-comparison.md",
         "engine/company_intelligence/guidance_comparison.py",
         "engine/financial_news.py",
+        "lib/news_guidance_view.py",
+        "mockups/evidence/news-guidance-20260926/EVIDENCE.yml",
+        "mockups/evidence/news-guidance-20260926/README.md",
+        "mockups/evidence/news-guidance-20260926/browser-results.json",
+        "mockups/evidence/news-guidance-20260926/capture-rest.cjs",
+        "mockups/evidence/news-guidance-20260926/correction.html",
+        "mockups/evidence/news-guidance-20260926/emit-owner-manifest.py",
+        "mockups/evidence/news-guidance-20260926/evidence/0193c660bcffe959.png",
+        "mockups/evidence/news-guidance-20260926/evidence/055be8d3062fbe4b.png",
+        "mockups/evidence/news-guidance-20260926/evidence/0a3f8e16cd759d24.png",
+        "mockups/evidence/news-guidance-20260926/evidence/15599c25aa5e2aa4.png",
+        "mockups/evidence/news-guidance-20260926/evidence/17b21c96a1b096b9.png",
+        "mockups/evidence/news-guidance-20260926/evidence/2213ca4ef3a22dc6.png",
+        "mockups/evidence/news-guidance-20260926/evidence/2cbdb5d3a09a376d.png",
+        "mockups/evidence/news-guidance-20260926/evidence/2de8154bef5d62bc.png",
+        "mockups/evidence/news-guidance-20260926/evidence/2e45e0fac28c576f.png",
+        "mockups/evidence/news-guidance-20260926/evidence/3a5a63590e0c766a.png",
+        "mockups/evidence/news-guidance-20260926/evidence/3b2f25a2d498d68c.png",
+        "mockups/evidence/news-guidance-20260926/evidence/3c8db25167aad68f.png",
+        "mockups/evidence/news-guidance-20260926/evidence/476d2e76a3ef6d69.png",
+        "mockups/evidence/news-guidance-20260926/evidence/4865652404fc7967.png",
+        "mockups/evidence/news-guidance-20260926/evidence/569ddf6043ab4586.png",
+        "mockups/evidence/news-guidance-20260926/evidence/6855e1acb1e99d74.png",
+        "mockups/evidence/news-guidance-20260926/evidence/6e4027bbe39e7922.png",
+        "mockups/evidence/news-guidance-20260926/evidence/831f1c053be6c877.png",
+        "mockups/evidence/news-guidance-20260926/evidence/8ad34100eb4f58a8.png",
+        "mockups/evidence/news-guidance-20260926/evidence/90d364ce56ad0967.png",
+        "mockups/evidence/news-guidance-20260926/evidence/9cc69d17dde1fb23.png",
+        "mockups/evidence/news-guidance-20260926/evidence/9e7dd2d979486f85.png",
+        "mockups/evidence/news-guidance-20260926/evidence/a00a9220477807b4.png",
+        "mockups/evidence/news-guidance-20260926/evidence/bf86372e2beb501b.png",
+        "mockups/evidence/news-guidance-20260926/evidence/c4029b771267787c.png",
+        "mockups/evidence/news-guidance-20260926/evidence/cb5eead057798c5a.png",
+        "mockups/evidence/news-guidance-20260926/evidence/cb7af270fdde2488.png",
+        "mockups/evidence/news-guidance-20260926/evidence/cdcd10fde9f65b9a.png",
+        "mockups/evidence/news-guidance-20260926/evidence/d60a9275713090a1.png",
+        "mockups/evidence/news-guidance-20260926/evidence/ee6f5e281b2f110d.png",
+        "mockups/evidence/news-guidance-20260926/evidence/efc65bf7fcbf5897.png",
+        "mockups/evidence/news-guidance-20260926/evidence/f8a45d7582e099c5.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-dark-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-dark-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-dark-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-dark-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-light-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-light-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-light-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-correction-light-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-dark-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-dark-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-dark-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-dark-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-light-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-light-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-light-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-missing-prior-light-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-dark-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-dark-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-dark-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-dark-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-light-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-light-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-light-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-normal-light-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-dark-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-dark-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-dark-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-dark-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-light-en-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-light-en-390.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-light-zh-1440.png",
+        "mockups/evidence/news-guidance-20260926/interaction-rate-light-zh-390.png",
+        "mockups/evidence/news-guidance-20260926/manifest.json",
+        "mockups/evidence/news-guidance-20260926/missing-prior.html",
+        "mockups/evidence/news-guidance-20260926/normal.html",
+        "mockups/evidence/news-guidance-20260926/rate.html",
         "scripts/build_news.py",
-        "tests/test_news_guidance_comparison.py"
+        "scripts/build_ticker_pages.py",
+        "templates/ticker.html.j2",
+        "tests/test_news_guidance_comparison.py",
+        "tests/test_news_guidance_display.py"
       ],
       "protected_paths_touched": []
     },
@@ -807,26 +1095,6 @@
       "protected_paths_touched": []
     },
     {
-      "number": 7966,
-      "title": "fix(news): preserve provider confidence, clocks, and ticker semantics",
-      "head_ref": "claude/news-provider-semantics-20260924-sol-001",
-      "updated_at": "2026-09-25T02:32:59Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 5,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "docs/superpowers/plans/2026-09-24-news-provider-semantics.md",
-        "engine/news_ai_feed.py",
-        "tests/test_news_ai_feed_contract.py",
-        "tests/test_news_rank_aging.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
       "number": 7965,
       "title": "[RIC][HOLD-FOR-SOL] Repair regime-conditioned release reaction lookup",
       "head_ref": "sol/ric-reaction-regime-cell-fix-20260924",
@@ -850,8 +1118,8 @@
       "head_ref": "sol/security-state-prophet-outlook-20260924",
       "updated_at": "2026-09-25T04:31:54Z",
       "is_draft": false,
-      "merge_state": "CLEAN",
-      "merge_state_raw": "CLEAN",
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
       "files_count": 12,
       "files_truncated": false,
       "files_error": false,
@@ -877,10 +1145,10 @@
       "number": 7955,
       "title": "fix(news): stop quiet and invalid attention from boosting stories",
       "head_ref": "claude/news-attention-direction-20260924-sol-001",
-      "updated_at": "2026-09-25T00:20:59Z",
+      "updated_at": "2026-09-26T13:24:27Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
       "files_count": 3,
       "files_truncated": false,
       "files_error": false,
@@ -919,7 +1187,7 @@
       "number": 7949,
       "title": "[DESIGN REVIEW / HOLD] Market OS shared shell: Paper studies and migration contract",
       "head_ref": "sol/market-os-shared-shell-design-20260924",
-      "updated_at": "2026-09-25T04:13:53Z",
+      "updated_at": "2026-09-26T13:16:35Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1004,7 +1272,7 @@
       "number": 7936,
       "title": "[AGENT OS][DRAFT] Record market experience direction and Meta-CEO continuation",
       "head_ref": "claude/market-experience-direction-records-20260924-astra-001",
-      "updated_at": "2026-09-25T12:12:49Z",
+      "updated_at": "2026-09-26T07:48:10Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1255,11 +1523,11 @@
       "number": 7907,
       "title": "docs(marketontology): Sol-led restart, B recovery and research-to-delivery packets",
       "head_ref": "sol/marketontology-meta-ceo-restart-20260924",
-      "updated_at": "2026-09-25T08:53:31Z",
+      "updated_at": "2026-09-26T09:45:36Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 9,
+      "files_count": 12,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -1271,7 +1539,10 @@
         "research/market_intelligence_productization/marketontology_handoffs/R1_PARITY_WORKFLOW_RESEARCH.md",
         "research/market_intelligence_productization/marketontology_handoffs/R2_TRANSMISSION_METHOD_RESEARCH.md",
         "research/market_intelligence_productization/marketontology_handoffs/R3_CONNECTED_DESK_RESEARCH.md",
-        "research/market_intelligence_productization/marketontology_handoffs/README.md"
+        "research/market_intelligence_productization/marketontology_handoffs/README.md",
+        "returns/R1/20260926-sol-r1/IMPLEMENTATION_HANDOFF.md",
+        "returns/R1/20260926-sol-r1/REPORT.md",
+        "returns/R1/20260926-sol-r1/SOURCES.csv"
       ],
       "protected_paths_touched": []
     },
@@ -1476,7 +1747,7 @@
       "number": 7891,
       "title": "[DRAFT/HOLD] Technology ex-Semiconductors Economic Change \u2014 implementation carrier",
       "head_ref": "claude/ssd-technology-ex-semis-impl-c887181119dd2aaf",
-      "updated_at": "2026-09-25T16:31:22Z",
+      "updated_at": "2026-09-26T13:31:32Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1593,7 +1864,7 @@
       "number": 7886,
       "title": "[GMI][RESEARCH/HOLD] Public reader added; cross-domain semantics and snapshot proof bounded",
       "head_ref": "sol/gmi-theme-research-leadership-20260924",
-      "updated_at": "2026-09-25T11:09:45Z",
+      "updated_at": "2026-09-26T13:14:43Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1691,7 +1962,7 @@
       "number": 7882,
       "title": "[Agent OS] Checkpoint Claude fabric auth client",
       "head_ref": "claude/ssd-claude-fabric-auth-client-checkpoint-20260923-7238cda1cfdfd83f",
-      "updated_at": "2026-09-24T12:56:35Z",
+      "updated_at": "2026-09-26T10:55:45Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1820,7 +2091,7 @@
       "number": 7870,
       "title": "[DRAFT/HOLD] Semiconductor Theme Intelligence B \u2014 implementation carrier",
       "head_ref": "claude/ssd-semiconductor-theme-intelligence-b-impl-988406e131fd90b9",
-      "updated_at": "2026-09-25T15:51:47Z",
+      "updated_at": "2026-09-26T12:57:39Z",
       "is_draft": true,
       "merge_state": "DIRTY",
       "merge_state_raw": "DIRTY",
@@ -2008,10 +2279,10 @@
     },
     {
       "number": 7860,
-      "title": "[HOLD] fix(china): preserve daily input dates in native signal receipts",
+      "title": "fix(china): preserve daily input dates in native signal receipts",
       "head_ref": "claude/cn-signal-input-receipt-20260923",
-      "updated_at": "2026-09-25T08:23:38Z",
-      "is_draft": true,
+      "updated_at": "2026-09-26T09:22:38Z",
+      "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
       "files_count": 15,
@@ -2356,13 +2627,13 @@
     },
     {
       "number": 7796,
-      "title": "[RESEARCH][HOLD] Basic Materials R1\u2013R20: T4 core started, principal defects pinned",
+      "title": "[RESEARCH][HOLD] Basic Materials R23: sector handoff corrected; identity/reader unbound",
       "head_ref": "sol/basic-materials-research-20260923",
-      "updated_at": "2026-09-25T03:25:40Z",
+      "updated_at": "2026-09-26T13:17:44Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 58,
+      "files_count": 59,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -2379,6 +2650,7 @@
         "research/basic_materials/BASIC_MATERIALS_R17_REVIEW_FINDING_AND_DISPOSITION_2026-09-24.md",
         "research/basic_materials/BASIC_MATERIALS_R18_NUMERIC_CORE_AND_SHARED_CONTRACT_BOUNDARY_2026-09-24.md",
         "research/basic_materials/BASIC_MATERIALS_R20_T4_CORE_PRINCIPAL_REVIEW_2026-09-24.md",
+        "research/basic_materials/BASIC_MATERIALS_R21_SECTOR_UMBRELLA_AND_THEME_DRILLDOWN_ARCHITECTURE_2026-09-26.md",
         "research/basic_materials/BASIC_MATERIALS_R2_METALS_ECONOMICS_2026-09-23.md",
         "research/basic_materials/BASIC_MATERIALS_R3_PRECIOUS_METALS_AND_FINANCIAL_CLAIMS_2026-09-23.md",
         "research/basic_materials/BASIC_MATERIALS_R4_BATTERY_AND_STRATEGIC_MATERIALS_2026-09-23.md",
@@ -2484,10 +2756,10 @@
       "number": 7794,
       "title": "[RESEARCH][HOLD] Communications sector economics and rerating research",
       "head_ref": "claude/communications-sector-research-20260923",
-      "updated_at": "2026-09-25T07:18:57Z",
+      "updated_at": "2026-09-26T09:42:56Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
       "files_count": 39,
       "files_truncated": false,
       "files_error": false,
@@ -2866,7 +3138,7 @@
       "number": 7781,
       "title": "fix(transmission): accessible scenario details and bilingual assets",
       "head_ref": "claude/uiux-transmission-scenarios-20260923",
-      "updated_at": "2026-09-25T12:36:06Z",
+      "updated_at": "2026-09-26T13:08:59Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2961,108 +3233,6 @@
         "research/semiconductors/SEMICONDUCTOR_RESEARCH_SYNTHESIS_AND_DESIGN_INPUTS_2026-09-23.md"
       ],
       "protected_paths_touched": []
-    },
-    {
-      "number": 7779,
-      "title": "research(prophet): publish consolidated US flagship master plan R5",
-      "head_ref": "claude/prophet-us-r5-master-plan-publication-20260923",
-      "updated_at": "2026-09-23T08:45:08Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 4,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "research/prophet_v4/r5_master_plan/BUILD_PROGRAM.md",
-        "research/prophet_v4/r5_master_plan/PROPHET_US_MASTER_PLAN_R5.md",
-        "research/prophet_v4/r5_master_plan/RESEARCH_DOCKET.md",
-        "research/prophet_v4/r5_master_plan/SOURCE_PUBLICATION_NOTE.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7778,
-      "title": "docs(agentos): checkpoint Web-Sol read-only cognition return",
-      "head_ref": "sol/agentos-web-sol-readonly-cognition-20260923",
-      "updated_at": "2026-09-24T08:11:24Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 1,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-23-readonly-cognition-return-r0.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7776,
-      "title": "fix(stocks): distinguish canonical issuer names from numeric sentinels",
-      "head_ref": "sol/dossier-canonical-name-sentinel-20260923",
-      "updated_at": "2026-09-25T22:44:33Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 7,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-23-dossier-name-sentinel.md",
-        "research/stock_dossier_sentinel_20260923/README.md",
-        "research/stock_dossier_sentinel_20260923/red.txt",
-        "research/stock_dossier_sentinel_20260923/tests-py312.txt",
-        "research/stock_dossier_sentinel_20260923/tests-py314.txt",
-        "scripts/check_stock_dossier_integrity.py",
-        "tests/test_check_stock_dossier_integrity.py"
-      ],
-      "protected_paths_touched": [
-        "scripts/check_stock_dossier_integrity.py"
-      ]
-    },
-    {
-      "number": 7775,
-      "title": "orch(audit): record terminal PR #722 + macro PR #7771 + terminal PR #721 plain-language/theme/validated-claims audits (2026-09-23)",
-      "head_ref": "claude/idle-audit-pr-711",
-      "updated_at": "2026-09-23T18:56:25Z",
-      "is_draft": false,
-      "merge_state": "DIRTY",
-      "merge_state_raw": "DIRTY",
-      "files_count": 7,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "orch/audits/macro_PR-7761.mm.md",
-        "orch/audits/macro_PR-7764.mm.md",
-        "orch/audits/macro_PR-7768.mm.md",
-        "orch/audits/macro_PR-7770.mm.md",
-        "orch/audits/macro_PR-7771.mm.md",
-        "orch/audits/mastermind-terminal_PR-722.mm.md",
-        "orch/audits/terminal_PR-721.mm.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7773,
-      "title": "[RESEARCH/DESIGN][HOLD] Robotics BOM, native evidence and Themes dossier vertical",
-      "head_ref": "sol/robotics-bom-research-20260923",
-      "updated_at": "2026-09-24T09:40:27Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 6,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/handoffs/GMI-ROBOTICS-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md",
-        "agentos/handoffs/GMI-ROBOTICS-RESEARCH-2026-09-23.md",
-        "docs/superpowers/plans/2026-09-23-robotics-theme-evidence-vertical-implementation.md",
-        "docs/superpowers/specs/2026-09-23-robotics-theme-evidence-vertical-design.md",
-        "research/robotics/ROBOTICS_DESIGN_EVIDENCE_AND_ACCEPTANCE_2026-09-23.md",
-        "research/robotics/ROBOTICS_RESEARCH_FOUNDATION_2026-09-23.md"
-      ],
-      "protected_paths_touched": []
     }
   ],
   "collisions": [
@@ -3099,17 +3269,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
-      "pr_b": 7870,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 3,
-      "any_protected": true
-    },
-    {
       "pr_a": 7905,
       "pr_b": 7870,
       "shared_files": [
@@ -3118,46 +3277,6 @@
         "tests/test_ci_pack.py"
       ],
       "shared_count": 3,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8033,
-      "pr_b": 8022,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        ".github/workflows/ci.yml"
-      ],
-      "shared_count": 2,
-      "any_protected": true
-    },
-    {
-      "pr_a": 8033,
-      "pr_b": 7930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8033,
-      "pr_b": 7924,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8033,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 2,
       "any_protected": false
     },
     {
@@ -3181,24 +3300,14 @@
       "any_protected": true
     },
     {
-      "pr_a": 8014,
-      "pr_b": 7999,
+      "pr_a": 7982,
+      "pr_b": 7963,
       "shared_files": [
-        "engine/neuralweb/brain_gateway.py",
-        "tests/test_brain_gateway.py"
+        "scripts/build_ticker_pages.py",
+        "templates/ticker.html.j2"
       ],
       "shared_count": 2,
-      "any_protected": true
-    },
-    {
-      "pr_a": 8005,
-      "pr_b": 7999,
-      "shared_files": [
-        "engine/neuralweb/brain_gateway.py",
-        "tests/test_brain_gateway.py"
-      ],
-      "shared_count": 2,
-      "any_protected": true
+      "any_protected": false
     },
     {
       "pr_a": 7930,
@@ -3251,7 +3360,43 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
+      "pr_b": 8041,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8045,
+      "pr_b": 8039,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8045,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8045,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8045,
       "pr_b": 8011,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3260,7 +3405,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 8006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3269,7 +3414,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7992,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3278,7 +3423,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7982,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3287,7 +3432,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7976,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3296,16 +3441,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
-      "pr_b": 7966,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7950,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3314,7 +3450,25 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
+      "pr_b": 7930,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8045,
+      "pr_b": 7924,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8045,
       "pr_b": 7909,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3323,7 +3477,16 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
+      "pr_b": 7905,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8045,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3332,7 +3495,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7897,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3341,7 +3504,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7891,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3350,7 +3513,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7888,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3359,7 +3522,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7872,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3368,16 +3531,16 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
-      "pr_b": 7871,
+      "pr_a": 8045,
+      "pr_b": 7870,
       "shared_files": [
-        ".github/workflows/ci.yml"
+        ".github/ci/legacy-jobs.yml"
       ],
       "shared_count": 1,
-      "any_protected": true
+      "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7865,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3386,7 +3549,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7861,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3395,8 +3558,422 @@
       "any_protected": false
     },
     {
-      "pr_a": 8033,
+      "pr_a": 8045,
       "pr_b": 7797,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 8039,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 8011,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 8006,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7950,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7930,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7924,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7905,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7872,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7870,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7865,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7861,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8041,
+      "pr_b": 7797,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 8011,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 8006,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7950,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7930,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7924,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7905,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7872,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7870,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7865,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7861,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7797,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8039,
+      "pr_b": 7794,
+      "shared_files": [
+        "agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8026,
+      "pr_b": 7875,
+      "shared_files": [
+        "docs/site_semantics/china.md"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8022,
+      "pr_b": 8012,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -3442,15 +4019,6 @@
     {
       "pr_a": 8022,
       "pr_b": 7976,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8022,
-      "pr_b": 7966,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -3593,6 +4161,177 @@
       "any_protected": false
     },
     {
+      "pr_a": 8012,
+      "pr_b": 8011,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 8006,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7950,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7930,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7924,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7905,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7872,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7870,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7865,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7861,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8012,
+      "pr_b": 7797,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
       "pr_a": 8011,
       "pr_b": 8006,
       "shared_files": [
@@ -3622,15 +4361,6 @@
     {
       "pr_a": 8011,
       "pr_b": 7976,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8011,
-      "pr_b": 7966,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -3810,15 +4540,6 @@
     },
     {
       "pr_a": 8006,
-      "pr_b": 7966,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8006,
       "pr_b": 7950,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3972,15 +4693,6 @@
     },
     {
       "pr_a": 7992,
-      "pr_b": 7966,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7992,
       "pr_b": 7950,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4125,15 +4837,6 @@
     },
     {
       "pr_a": 7982,
-      "pr_b": 7966,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7982,
       "pr_b": 7950,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4260,15 +4963,6 @@
     },
     {
       "pr_a": 7976,
-      "pr_b": 7966,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7976,
       "pr_b": 7950,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4386,141 +5080,6 @@
     },
     {
       "pr_a": 7976,
-      "pr_b": 7797,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7955,
-      "shared_files": [
-        "tests/test_news_rank_aging.py"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7950,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7924,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7909,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7899,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7897,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7891,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7888,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7872,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7870,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7865,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
-      "pr_b": 7861,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7966,
       "pr_b": 7797,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5323,6 +5882,11 @@
   ],
   "recent_merged": [
     {
+      "number": 8037,
+      "title": "feat(brain): route technician doctrine from chart context",
+      "merged_at": "2026-09-26T12:52:19Z"
+    },
+    {
       "number": 8035,
       "title": "fix(macro): re-bake the liquidity page's next-action line with current copy",
       "merged_at": "2026-09-25T23:24:17Z"
@@ -5331,6 +5895,11 @@
       "number": 8034,
       "title": "[MO-A][RECORDS] RIC F3 W2 handoff + workstream next_action after #8030",
       "merged_at": "2026-09-25T19:04:55Z"
+    },
+    {
+      "number": 8033,
+      "title": "ci: run the CI control plane's own contracts on the PR code gate",
+      "merged_at": "2026-09-26T12:04:01Z"
     },
     {
       "number": 8032,
@@ -5391,6 +5960,11 @@
       "number": 8000,
       "title": "fix(ship-loop): never PARK a hold whose rollup lacks the sweeper's proof anchors",
       "merged_at": "2026-09-25T13:37:38Z"
+    },
+    {
+      "number": 7999,
+      "title": "fix(brain): bind Chart Bus v2 wire identity",
+      "merged_at": "2026-09-26T12:41:29Z"
     },
     {
       "number": 7998,
@@ -5486,6 +6060,11 @@
       "number": 7968,
       "title": "fix(finance-intelligence): load theme.js so the nav theme + EN/\u4e2d\u6587 toggles work (Finance T8)",
       "merged_at": "2026-09-25T00:59:33Z"
+    },
+    {
+      "number": 7966,
+      "title": "fix(news): preserve provider confidence, clocks, and ticker semantics",
+      "merged_at": "2026-09-26T13:16:23Z"
     },
     {
       "number": 7964,
@@ -6588,6 +7167,11 @@
       "merged_at": "2026-09-21T02:21:41Z"
     },
     {
+      "number": 7567,
+      "title": "fix(china): retain continuing accumulation in action cards",
+      "merged_at": "2026-09-26T15:17:56Z"
+    },
+    {
       "number": 7566,
       "title": "orch(audit): record macro PR #7514 plain-language/theme/validated-claims audit (2026-09-20)",
       "merged_at": "2026-09-21T01:21:49Z"
@@ -7473,6 +8057,11 @@
       "merged_at": "2026-09-16T19:47:16Z"
     },
     {
+      "number": 7180,
+      "title": "fix(prophet): bind US picks to completed sessions and exact source",
+      "merged_at": "2026-09-26T07:49:13Z"
+    },
+    {
       "number": 7171,
       "title": "fix(earnings-wire): harden recovery publication path",
       "merged_at": "2026-09-22T16:27:48Z"
@@ -7791,36 +8380,6 @@
       "number": 7012,
       "title": "[MO-BB5] B-F12-B5-3a: GET /api/account gains a caller-scoped teams field \u2014 macro's first RLS-scoped PostgREST read, fail-closed",
       "merged_at": "2026-09-12T17:53:11Z"
-    },
-    {
-      "number": 7010,
-      "title": "[MO-A-W4] A-F04-W4-1: Theme Tracker reading-order section \u2014 uncalibrated research-priority ordering from recorded evidence dates (MO-DELTA-006, research_priority_only)",
-      "merged_at": "2026-09-12T18:24:41Z"
-    },
-    {
-      "number": 7009,
-      "title": "docs(research): close SCE current-version identification boundary",
-      "merged_at": "2026-09-13T06:12:00Z"
-    },
-    {
-      "number": 7007,
-      "title": "[MO-BB2b] B-F06-3: Second-issuer cockpit per the F06 scope freeze \u2014 eight panels over the shipped security-state view model, personal-impact card refolded (stacked on #6920)",
-      "merged_at": "2026-09-12T10:50:21Z"
-    },
-    {
-      "number": 7006,
-      "title": "[MO-BB3c] B-F09-6b: Capital-markets policy calendar section \u2014 dated policy events projected onto six frozen capital-markets windows, context only, beside the merged Policy watch chip",
-      "merged_at": "2026-09-12T23:34:18Z"
-    },
-    {
-      "number": 7004,
-      "title": "[MO-BB1] B-F07-2: Valuation under YOUR assumptions \u2014 adjustable growth, margin and multiple over V1's reported-fundamentals model, recomputed in the page (stacked on #6905)",
-      "merged_at": "2026-09-13T11:33:24Z"
-    },
-    {
-      "number": 7003,
-      "title": "[MO-B-REC] B-REC-B5-1: F00C ledger reconciled against the merged Terminal wave (12 rows) + Wave 2 boundary records (receipts 0014-0016, DECs, F00C rows) \u2014 stacked on #6997, carries #6981",
-      "merged_at": "2026-09-12T16:19:22Z"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
 "filter":"idx_ndx",
-"as_of":"2026-09-26 03:44 UTC",
+"as_of":"2026-09-26 14:49 UTC",
 "n":101,
 "total_reported":101,
 "unmapped_industries":[],
@@ -27,7 +27,7 @@
 "industry":"Internet Content & Information",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":4194.0
+"market_cap_b":4190.44
 },
 {
 "ticker":"GOOGL",
@@ -35,7 +35,7 @@
 "industry":"Internet Content & Information",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":4187.54
+"market_cap_b":4190.44
 },
 {
 "ticker":"MSFT",
@@ -155,7 +155,7 @@
 "industry":"Semiconductor Equipment & Materials",
 "sector":"Technology",
 "country":"USA",
-"market_cap_b":394.43
+"market_cap_b":394.46
 },
 {
 "ticker":"AMAT",
@@ -363,7 +363,7 @@
 "industry":"Software - Application",
 "sector":"Technology",
 "country":"USA",
-"market_cap_b":104.75
+"market_cap_b":104.48
 },
 {
 "ticker":"APP",
@@ -738,7 +738,7 @@
 "company":"Ferrovial N. V",
 "industry":"Engineering & Construction",
 "sector":"Industrials",
-"country":"Netherlands",
+"country":"Spain",
 "market_cap_b":40.5
 },
 {
