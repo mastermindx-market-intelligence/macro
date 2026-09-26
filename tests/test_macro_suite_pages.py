@@ -910,12 +910,14 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
-    """Neutralise the snapshot copy's contradiction so these tests exercise the boundary rule, not the contradiction precedence."""
+    """Neutralise the snapshot copy's contradiction and freshness so these tests exercise the boundary rule, not the precedence above it."""
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
-    # The shipped artifact currently carries a contradiction, which outranks
-    # a boundary watch. Clear it so this helper actually tests the 0.0 case.
+    # A contradiction or a stale required source outranks a boundary watch, and
+    # the nightly artifact can carry either (2026-09-25: STALE_SOURCE). Clear
+    # both so this helper actually tests the 0.0 case.
     availability = snapshot.setdefault("availability", {})
     availability["contradiction"] = {"present": False}
+    availability["state"] = availability["worst_freshness"] = "CURRENT"
     snapshot["headline"]["nearest_boundary"] = {
         "axis": snapshot["axes"]["items"][0]["axis_id"],
         "distance": distance, "null_reason": None}

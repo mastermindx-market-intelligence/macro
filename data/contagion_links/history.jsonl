@@ -369,3 +369,16 @@
 {"asof":"2026-09-23","data_session":"2026-09-23","session_source":"bench","market":"au","p_raw":0.158,"pct":0.494,"level":"low","top_exporter":"jp"}
 {"asof":"2026-09-23","data_session":"2026-09-23","session_source":"bench","market":"gb","p_raw":0.2064,"pct":0.6071,"level":"low","top_exporter":"au"}
 {"asof":"2026-09-23","data_session":"2026-09-23","session_source":"bench","market":"ez","p_raw":0.1818,"pct":0.5675,"level":"low","top_exporter":"gb"}
+{"asof":"2026-09-24","data_session":"2026-09-24","session_source":"bench","market":"us","p_raw":0.2254,"pct":0.6091,"level":"low","top_exporter":"ca"}
+{"asof":"2026-09-24","data_session":"2026-09-24","session_source":"bench","market":"cn","p_raw":0.1895,"pct":0.5556,"level":"low","top_exporter":"ca"}
+{"asof":"2026-09-24","data_session":"2026-09-24","session_source":"bench","market":"hk","p_raw":0.1955,"pct":0.5774,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-24","data_session":"2026-09-24","session_source":"bench","market":"jp","p_raw":0.1887,"pct":0.5377,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-24","data_session":"2026-09-24","session_source":"bench","market":"tw","p_raw":0.172,"pct":0.5258,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-24","data_session":"2026-09-24","session_source":"bench","market":"au","p_raw":0.166,"pct":0.5139,"level":"low","top_exporter":"cn"}
+{"asof":"2026-09-25","data_session":"2026-09-25","session_source":"bench","market":"hk","p_raw":0.1791,"pct":0.6369,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-25","data_session":"2026-09-25","session_source":"bench","market":"ca","p_raw":0.1897,"pct":0.6448,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-25","data_session":"2026-09-25","session_source":"bench","market":"jp","p_raw":0.1898,"pct":0.6012,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-25","data_session":"2026-09-25","session_source":"bench","market":"in","p_raw":0.185,"pct":0.6409,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-25","data_session":"2026-09-25","session_source":"bench","market":"au","p_raw":0.1502,"pct":0.5734,"level":"low","top_exporter":"cn"}
+{"asof":"2026-09-25","data_session":"2026-09-25","session_source":"bench","market":"gb","p_raw":0.2107,"pct":0.6766,"level":"low","top_exporter":"au"}
+{"asof":"2026-09-25","data_session":"2026-09-25","session_source":"bench","market":"ez","p_raw":0.1701,"pct":0.6151,"level":"low","top_exporter":"au"}

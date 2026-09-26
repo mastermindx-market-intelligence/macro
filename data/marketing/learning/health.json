@@ -66,9 +66,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 0,
-          "n_recent": 4,
-          "reason": "recent n=4, baseline n=0 — need 5 of each",
+          "n_baseline": 4,
+          "n_recent": 2,
+          "reason": "recent n=2, baseline n=4 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -76,7 +76,6 @@
           "metric": "last_nine",
           "n": 9,
           "problems": [
-            "only 1/9 of the visible grid carries a receipt (floor 3)",
             "5 near-repeat(s) in the visible grid"
           ],
           "repeats": 5,
@@ -87,7 +86,7 @@
           "unmeasured": 5,
           "value": 9,
           "verdict": "warn",
-          "with_receipt": 1
+          "with_receipt": 3
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -98,7 +97,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 80,
+      "n_rows": 82,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -121,9 +120,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 0,
-          "n_recent": 1,
-          "reason": "recent n=1, baseline n=0 — need 5 of each",
+          "n_baseline": 1,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=1 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -225,9 +224,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 0,
-          "n_recent": 3,
-          "reason": "recent n=3, baseline n=0 — need 5 of each",
+          "n_baseline": 3,
+          "n_recent": 6,
+          "reason": "recent n=6, baseline n=3 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -235,18 +234,17 @@
           "metric": "last_nine",
           "n": 9,
           "problems": [
-            "only 1/9 of the visible grid carries a receipt (floor 3)",
-            "6 near-repeat(s) in the visible grid"
+            "7 near-repeat(s) in the visible grid"
           ],
-          "repeats": 6,
+          "repeats": 7,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 6,
+          "unmeasured": 0,
           "value": 9,
           "verdict": "warn",
-          "with_receipt": 1
+          "with_receipt": 7
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -257,7 +255,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 54,
+      "n_rows": 60,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -374,7 +372,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-09-24T11:17:58Z",
+  "as_of": "2026-09-25T21:49:16Z",
   "halted": [],
   "metrics": [
     "approval_rate",

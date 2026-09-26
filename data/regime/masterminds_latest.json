@@ -1,17 +1,17 @@
 {
   "schema": "masterminds.latest.v2",
   "n": 3,
-  "built": "2026-09-23 20:48 UTC",
-  "asof": "2026-09-23",
+  "built": "2026-09-25 20:53 UTC",
+  "asof": "2026-09-24",
   "stale_after_min": 1440,
   "cards": [
     {
       "key": "mm_conservative",
       "name": "Mastermind \u2014 Conservative",
       "cagr": 7.92,
-      "sharpe": 1.13,
-      "maxdd": -17.4,
-      "asof": "2026-09-23",
+      "sharpe": 1.12,
+      "maxdd": -17.3,
+      "asof": "2026-09-24",
       "gross_now": 0.61,
       "alloc": [
         {
@@ -36,7 +36,7 @@
           "asset": "HG=F",
           "label_en": "Copper",
           "label_zh": "\u94dc",
-          "weight": 12.9
+          "weight": 12.8
         },
         {
           "asset": "BTC-USD",
@@ -49,10 +49,10 @@
     {
       "key": "mm_moderate",
       "name": "Mastermind \u2014 Moderate",
-      "cagr": 11.52,
+      "cagr": 11.51,
       "sharpe": 1.06,
       "maxdd": -24.2,
-      "asof": "2026-09-23",
+      "asof": "2026-09-24",
       "gross_now": 1.02,
       "alloc": [
         {
@@ -71,13 +71,13 @@
           "asset": "QQQ",
           "label_en": "Nasdaq 100",
           "label_zh": "\u7eb3\u6307100",
-          "weight": 22.0
+          "weight": 21.7
         },
         {
           "asset": "HG=F",
           "label_en": "Copper",
           "label_zh": "\u94dc",
-          "weight": 18.4
+          "weight": 18.3
         },
         {
           "asset": "BTC-USD",
@@ -90,11 +90,11 @@
     {
       "key": "mm_aggressive",
       "name": "Mastermind \u2014 Aggressive",
-      "cagr": 17.11,
+      "cagr": 17.09,
       "sharpe": 0.98,
       "maxdd": -35.0,
-      "asof": "2026-09-23",
-      "gross_now": 1.96,
+      "asof": "2026-09-24",
+      "gross_now": 1.95,
       "alloc": [
         {
           "asset": "SPY",
@@ -112,13 +112,13 @@
           "asset": "QQQ",
           "label_en": "Nasdaq 100",
           "label_zh": "\u7eb3\u6307100",
-          "weight": 35.2
+          "weight": 34.6
         },
         {
           "asset": "HG=F",
           "label_en": "Copper",
           "label_zh": "\u94dc",
-          "weight": 29.4
+          "weight": 29.3
         },
         {
           "asset": "BTC-USD",

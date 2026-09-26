@@ -1361,6 +1361,36 @@
       "at": "2026-09-24T19:09:45.751987+00:00",
       "activated": false,
       "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51096": {
+      "id": "wh-2026-09-25-first-lady-melania-trump-highlights-art-culture-and-the-next-generation-during-s",
+      "at": "2026-09-25T18:36:15.715047+00:00",
+      "activated": false,
+      "importance": 20
+    },
+    "https://www.whitehouse.gov/?p=51099": {
+      "id": "wh-2026-09-25-president-trump-first-lady-conclude-historic-china-state-visit",
+      "at": "2026-09-25T22:19:31.908156+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51134": {
+      "id": "wh-2026-09-25-congressional-bills-h-r-3657-h-r-7250-s-550-s-603-s-759-and-s-790-signed-into-la",
+      "at": "2026-09-25T22:19:33.462690+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51135": {
+      "id": "wh-2026-09-25-gold-star-mothers-and-familys-day-2026",
+      "at": "2026-09-25T22:19:34.586497+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51104": {
+      "id": "wh-2026-09-25-presidential-public-service-announcements-are-nothing-new",
+      "at": "2026-09-25T22:19:36.175391+00:00",
+      "activated": false,
+      "importance": 0
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

@@ -141,6 +141,51 @@ def test_sector_partial_has_l_en_l_zh_pairs():
     )
 
 
+def test_sector_partial_names_follow_the_page_language():
+    """A literal aria-label is English in both languages, and on the card it
+    overrode the visible Chinese text — a 中文 screen reader heard "Open the
+    Finance Intelligence dossier" (live 2026-09-25). Every name must instead
+    come from aria-labelledby/-describedby over an l-en/l-zh pair, whose
+    inactive half is display:none and so drops out of the accessible name."""
+    from html.parser import HTMLParser
+
+    class Descendants(HTMLParser):
+        """Classes found inside each element that carries an id."""
+
+        def __init__(self):
+            super().__init__()
+            self.stack: list[tuple[str, str | None]] = []
+            self.inside: dict[str, set[str]] = {}
+
+        def handle_starttag(self, tag, attrs):
+            a = dict(attrs)
+            for _, ident in self.stack:
+                if ident:
+                    self.inside[ident].update((a.get("class") or "").split())
+            if a.get("id"):
+                self.inside.setdefault(a["id"], set())
+            self.stack.append((tag, a.get("id")))
+
+        def handle_endtag(self, tag):
+            for i in range(len(self.stack) - 1, -1, -1):
+                if self.stack[i][0] == tag:
+                    del self.stack[i:]
+                    break
+
+    html = _render_partial(SECTOR_PARTIAL)
+    assert "aria-label=" not in html, "use aria-labelledby over the bilingual spans"
+    refs = re.findall(r'aria-(?:labelledby|describedby)="([^"]+)"', html)
+    ids = [i for ref in refs for i in ref.split()]
+    assert {"fi-sdd-head", "fi-sdd-name", "fi-sdd-cta", "fi-sdd-story"} <= set(ids)
+    parser = Descendants()
+    parser.feed(html)
+    for ident in ids:
+        assert ident in parser.inside, f"aria reference {ident!r} has no element in the partial"
+        assert {"l-en", "l-zh"} <= parser.inside[ident], (
+            f"{ident!r} must hold both language spans so its name switches with the page"
+        )
+
+
 # ---------------------------------------------------------------------------
 # (3) Tracker render — canonical theme count unchanged, Finance link in region
 # ---------------------------------------------------------------------------

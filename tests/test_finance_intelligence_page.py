@@ -155,6 +155,11 @@ def test_css_has_two_art_directions_and_zero_colour_literals():
     assert re.search(r"\brgb\(", css) is None
     assert re.search(r"\brgba\(", css) is None
 
+    # The page owns its canvas in both art directions: theme.css does not paint
+    # body, and the shell's 1200px box alone left the gutters, the nav band and
+    # the area below the content on the browser's white default in dark mode.
+    assert "body.fi-page { background: var(--fi-canvas); }" in css
+
     # Tier 1 (fi-panel) and tier 2 (fi-panel2) elevation rules both exist.
     assert ".fi-panel" in css
     assert ".fi-panel2" in css
@@ -420,10 +425,10 @@ def test_render_lane_owns_and_narrows_finance_intelligence_builder():
     assert "finance_intelligence.*" in render
 
 
-def test_build_site_wires_finance_intelligence_hook():
-    site_builder = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
-    assert "scripts.build_finance_intelligence_page" in site_builder
-    assert "finance_intelligence.html render failed" in site_builder
+# The build_site hook assertion lives in tests/test_finance_intelligence_site_wiring.py,
+# run by an always-on job: it reads the site builder as text, and the exclusive
+# finance-intelligence scope would otherwise have to carry that builder's whole
+# import closure.
 
 
 def test_shell_has_no_private_api_or_serving_route_reference():
@@ -451,6 +456,62 @@ def test_public_access_policy_lists_finance_intelligence_shell():
     assert "/finance_intelligence.html" in public
     assert "/finance_intelligence.css" in public
     assert "/finance_intelligence.js" in public
+
+
+def test_shell_loads_the_shared_theme_runtime():
+    """The nav's theme switch and EN/中文 toggle are wired by theme.js, so a
+    page that omits it renders both controls inert (T8 went live without it
+    on 2026-09-24 and neither toggle did anything). Mirror biocatalyst: load
+    theme.js deferred, ahead of the page runtime, in the template and in the
+    committed (render-stamped) site copy alike."""
+    html = _render()
+    theme_at = html.find('<script src="theme.js" defer></script>')
+    assert theme_at != -1
+    assert theme_at < html.find('<script src="finance_intelligence.js"')
+    site = ROOT / "site" / "finance_intelligence.html"
+    if site.exists():
+        committed = site.read_text(encoding="utf-8")
+        assert re.search(r'<script src="theme\.js(\?v=[0-9a-f]{8})?" defer></script>', committed)
+
+
+def test_hero_meta_carries_no_unfilled_aria_placeholder():
+    """No static aria pair may carry a spec placeholder. The frozen spec wrote
+    `{common_as_of}` / `{§D.12 label of freshness.state}` as instructions; the
+    template shipped them literally, so the hero as-of/cutoff spans and the
+    freshness/outer chips announced the placeholder next to the real value.
+    The as-of/cutoff spans are named by their visible text; the chips are named
+    by the runtime from the same label row it paints."""
+    placeholder = re.compile(r'data-aria-(?:en|zh)="[^"]*\{')
+    html = _render()
+    assert placeholder.search(html) is None
+    site = ROOT / "site" / "finance_intelligence.html"
+    if site.exists():
+        assert placeholder.search(site.read_text(encoding="utf-8")) is None
+
+
+def test_runtime_never_turns_a_missing_state_into_a_positive_fact():
+    """Product law: missing states are rendered as words. The runtime used to
+    default absent tokens to positive facts: a missing rights_state displayed the
+    licensed excerpt, a missing identity read "validated", an absent role became
+    "second-order beneficiary", and unknown plane or comparability tokens read
+    "on file" or "comparable". Review response 2026-09-25 (independent Opus
+    review, confirmed in headless Chromium)."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    for fabricated in (
+        "|| 'DIRECT_DISPLAY_OK'", "|| 'IDENTITY_VALIDATED'", "|| 'SECOND_ORDER_BENEFICIARY'",
+        "|| 'QUALITATIVE'", "|| 'DESCRIBED'", "|| 'MEASURED'",
+        "['On file', '有据可查']", "['Comparable', '可比']", "['ready', '就绪']",
+    ):
+        assert fabricated not in js, fabricated
+    assert "var state$ = node.state || 'MISSING';" in js
+    # D.23 fails CLOSED: only the two display states may show value/excerpt.
+    assert "var suppress = !(rights === 'DIRECT_DISPLAY_OK' || rights === 'DERIVED_DISPLAY_OK');" in js
+    # A source outage has its own words, never the generic "Read failed".
+    assert "source_outage: ['Evidence source temporarily unavailable" in js
+    # A malformed deep link is ignored instead of blanking the dossier.
+    assert "try { return decodeURIComponent(raw); } catch (e) { return null; }" in js
+    # A named record missing from source_records says so.
+    assert 'data-fi-mount="evidence-missing"' in _render()
 
 
 def test_shell_ships_the_not_connected_binding_until_integration():
