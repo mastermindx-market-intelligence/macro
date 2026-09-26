@@ -23,7 +23,7 @@ For user-facing work, review against `docs/DESIGN_DOCTRINE.md` §0: subject, dom
 assessment and useful next step should be apparent in the intended 3–4-second reading
 order, with material limitations visible at their point of consequence. Flag scattered
 equal-weight panels, automatic subtitle/description filler, machine vocabulary and
-lost navigation context as product defects, not optional polish. Confirm that depth,
+lost navigation/return context as product defects, not optional polish. Confirm that depth,
 complete cohorts and adverse evidence were organized rather than deleted.
 Separate your design assessment from observed human cold-reader evidence and from
 technical/journey tests. An AI review, screenshot count, green CI or zero open comments
