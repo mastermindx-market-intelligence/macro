@@ -750,3 +750,163 @@ def test_payload_allows_identical_accounting_echoes_and_reordered_support():
     before = deepcopy(payload)
     assert cr.validate_view(payload) is None
     assert payload == before
+
+
+# A1 Task4: readable accounting explanations from the existing synthetic AB
+# inputs. Reuse the one frozen test table; no production import of a fixture.
+def accounting_explanation_input(index, *, mutate=None):
+    from tests.test_communications_measures import accounting_case, accounting_rebind
+    records, recipe = accounting_case(index)
+    slot = ('meta', 'meta', 'alphabet', 'alphabet', 'trade_desk', 'magnite', 'magnite', 'magnite')[index]
+    if mutate is not None:
+        records, recipe = mutate(records, recipe)
+        recipe = accounting_rebind(recipe, records)
+    selections = tuple(PairSelection(records[0].ref, records[1].ref, None)
+                       if metric == records[0].metric else PairSelection(None, None, None)
+                       for metric, _, _ in EXAMPLES[slot])
+    return CompanyClaimInput(slot, records, selections, accounting_rules=(recipe,))
+
+
+@pytest.mark.parametrize('index,up,down', [
+    (0, 'revenue', 'research and development'),
+    (1, 'operating cash', 'property and equipment spending'),
+    (2, 'Search and other', 'Network'),
+    (3, None, 'property and equipment spending'),
+    (4, 'revenue', 'platform operations'),
+    (5, None, None),
+    (6, 'revenue', None),
+    (7, 'CTV', None),
+])
+def test_eight_accounting_views_explain_contributions_with_bilingual_bound_support(index, up, down):
+    item = accounting_explanation_input(index)
+    group = panel(compose_four_company_claims((item,)), item.slot).accounting[0]
+    explanations = getattr(group, 'explanations', ())
+    assert len(explanations) == len(group.views) == 1
+    text, view = explanations[0], group.views[0]
+    assert text is not None and 0 < len(text.en) <= 240 and 0 < len(text.zh) <= 240
+    assert text.refs == view.result.refs
+    assert text.rule_revisions == (view.result.rule_revision,)
+    assert text.interpretation_basis == 'published_figures'
+    if index == 5:
+        assert 'uses the reported total' in text.en and 'not independent confirmation' in text.en
+        assert '并非独立验证' in text.zh
+    else:
+        if up: assert 'Largest upward contribution: ' + up in text.en
+        else: assert 'upward contribution:' not in text.en
+        if down: assert 'Largest downward contribution: ' + down in text.en
+        else: assert 'downward contribution:' not in text.en
+        assert 'not causal evidence' in text.en and '并非因果证据' in text.zh
+    wire = json.loads(cr.encode_communications_payload((item,)))
+    emitted = wire['projection']['panels'][ROSTER.index(item.slot)]['accounting'][0]['explanations'][0]
+    assert emitted['en'] == text.en and emitted['zh'] == text.zh
+    assert cr.validate_view(wire) is None
+
+
+def test_accounting_explanation_prioritizes_unallocated_discrepancy_over_a_success_story():
+    def change(records, recipe):
+        return (replace(records[0], ref=records[0].ref+':corrected', value=D('190595')),)+records[1:], recipe
+    item = accounting_explanation_input(7, mutate=change)
+    group = panel(compose_four_company_claims((item,)), 'magnite').accounting[0]
+    texts = getattr(group, 'explanations', ())
+    assert len(texts) == 1 and texts[0] is not None
+    assert group.views[0].residual == D('1000')
+    assert 'does not reconcile' in texts[0].en and 'unallocated' in texts[0].en
+    assert 'Largest' not in texts[0].en and '差额尚未分配' in texts[0].zh
+    assert item.measures[0].ref in texts[0].refs
+    assert cr.validate_view(cr.compose_communications_payload((item,))) is None
+
+
+def test_missing_accounting_component_removes_its_explanation_not_reported_level():
+    item = accounting_explanation_input(0)
+    before = panel(compose_four_company_claims((item,)))
+    assert len(getattr(before.accounting[0], 'explanations', ())) == 1
+    missing = item.measures[-1].ref
+    after = panel(compose_four_company_claims((replace(item, measures=item.measures[:-1]),)))
+    assert after.accounting == ()
+    assert after.measures[1].current.value == D('18775')
+    assert missing not in repr(after)
+
+
+def test_unknown_component_copy_is_not_inferred_or_echoed_as_an_explanation():
+    item = accounting_explanation_input(0)
+    positive = panel(compose_four_company_claims((item,))).accounting[0]
+    assert len(getattr(positive, 'explanations', ())) == 1 and positive.explanations[0] is not None
+    recipe = item.accounting_rules[0]
+    term = replace(recipe.terms[0], component_key='PRIVATE_UNKNOWN_ROLE<script>')
+    item = replace(item, accounting_rules=(replace(recipe, terms=(term,)+recipe.terms[1:]),))
+    group = panel(compose_four_company_claims((item,))).accounting[0]
+    assert len(group.views) == 1 and group.explanations == (None,)
+    assert 'PRIVATE_UNKNOWN_ROLE' not in repr(group.explanations)
+
+
+def test_tied_accounting_contributions_do_not_choose_an_arbitrary_winner():
+    def tied(records, recipe):
+        # AB03's Search/YouTube pair each changes by 10; Network is unchanged.
+        out = list(records)
+        out[0] = replace(out[0], value=out[1].value+D('20'))
+        for current, prior, delta in ((2,3,'10'), (4,5,'10'), (6,7,'0')):
+            out[current] = replace(out[current], value=out[prior].value+D(delta))
+        return tuple(out), recipe
+    item = accounting_explanation_input(2, mutate=tied)
+    group = panel(compose_four_company_claims((item,)), 'alphabet').accounting[0]
+    texts = getattr(group, 'explanations', ())
+    assert len(texts) == 1 and texts[0] is not None
+    assert 'Multiple components tie for the largest upward contribution' in texts[0].en
+    assert 'Search and other' not in texts[0].en and 'YouTube' not in texts[0].en
+
+
+@pytest.mark.parametrize('mutation', ['text', 'zh', 'basis', 'refs', 'revision', 'count', 'wrong_view'])
+def test_accounting_explanation_cannot_drift_from_its_bound_view(mutation):
+    payload = cr.compose_communications_payload((accounting_magnite(),))
+    group = payload['projection']['panels'][3]['accounting'][0]
+    assert len(group.get('explanations', [])) == 2
+    if mutation == 'text': group['explanations'][0]['en'] = 'Buy now: an independently proven improvement.'
+    elif mutation == 'zh': group['explanations'][0]['zh'] = '此结果已独立验证。'
+    elif mutation == 'basis': group['explanations'][0]['interpretation_basis'] = 'exact_reported_values'
+    elif mutation == 'refs': group['explanations'][0]['refs'] = ['fixture:unsupported']
+    elif mutation == 'revision': group['explanations'][0]['rule_revisions'] = ['fixture:other-rule']
+    elif mutation == 'count': group['explanations'].pop()
+    else: group['explanations'].reverse()
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+def test_accounting_explanation_distinguishes_cost_reduction_from_revenue_growth():
+    def lower_cost(records, recipe):
+        out = list(records)
+        # AB07: hold the observed cost reduction, but only 1 unit of revenue growth.
+        out[2] = replace(out[2], value=out[3].value+D('1'))
+        out[0] = replace(out[0], value=out[1].value+D('2916'))
+        return tuple(out), recipe
+    item = accounting_explanation_input(6, mutate=lower_cost)
+    group = panel(compose_four_company_claims((item,)), 'magnite').accounting[0]
+    assert group.views[0].residual == 0
+    assert 'Largest upward contribution: cost of revenue (decrease).' in group.explanations[0].en
+    assert '营收成本（减少）' in group.explanations[0].zh
+
+
+def test_accounting_explanation_zero_change_is_about_displayed_components_only():
+    def no_change(records, recipe):
+        out = list(records)
+        for i in range(0, len(out), 2):
+            out[i] = replace(out[i], value=out[i+1].value)
+        return tuple(out), recipe
+    item = accounting_explanation_input(2, mutate=no_change)
+    text = panel(compose_four_company_claims((item,)), 'alphabet').accounting[0].explanations[0]
+    assert text.en == ('No displayed component changed across the selected periods. '
+                       'Reported-figure bridge, not causal evidence.')
+    assert cr.validate_view(cr.compose_communications_payload((item,))) is None
+
+
+def test_accounting_explanations_do_not_depend_on_caller_decimal_traps():
+    from decimal import Inexact, Rounded
+    item = accounting_explanation_input(0)
+    expected = cr.encode_communications_payload((item,))
+    with localcontext() as context:
+        context.prec = 1
+        context.traps[Inexact] = True
+        context.traps[Rounded] = True
+        context.clear_flags()
+        assert cr.encode_communications_payload((item,)) == expected
+        assert not any(context.flags.values())

@@ -72,6 +72,7 @@ class MeasureClaim:
 class AccountingViewGroup:
     outcome_refs: tuple[str, ...]
     views: tuple[AccountingBridgeResult, ...]
+    explanations: tuple[ClaimText | None, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -240,6 +241,90 @@ def _row(profile, selection, observed) -> MeasureClaim:
     return MeasureClaim(metric, current, prior, comparison, trend)
 
 
+# Display vocabulary for the frozen A1 accounting examples, NOT a native
+# metric registry or an admission rule. Unknown roles retain their numbers but
+# receive no inferred prose. The caller still owes accepted source/rule mapping.
+_ACCOUNTING_LABELS = MappingProxyType({
+    'revenue': ('revenue', '营收'),
+    'cost_of_revenue': ('cost of revenue', '营收成本'),
+    'research_development': ('research and development', '研发'),
+    'marketing_sales': ('marketing and sales', '营销与销售'),
+    'general_admin': ('general and administrative costs', '一般及行政费用'),
+    'operating_cash': ('operating cash', '经营现金流'),
+    'property_equipment': ('property and equipment spending', '物业及设备支出'),
+    'lease_principal': ('finance-lease principal', '融资租赁本金'),
+    'search_other': ('Search and other', '搜索及其他'),
+    'youtube_ads': ('YouTube advertising', 'YouTube广告'),
+    'network': ('Network', '广告网络'),
+    'platform_operations': ('platform operations', '平台运营'),
+    'sales_marketing': ('sales and marketing', '销售与营销'),
+    'technology_development': ('technology and development', '技术与开发'),
+    'derived_tac': ('derived TAC', '推算的流量获取成本'),
+    'ctv': ('CTV', '联网电视'),
+    'mobile': ('mobile', '移动端'),
+    'desktop': ('desktop', '桌面端'),
+})
+_ACCOUNTING_ROLES = MappingProxyType({
+    'meta': frozenset(('revenue', 'cost_of_revenue', 'research_development',
+        'marketing_sales', 'general_admin', 'operating_cash', 'property_equipment', 'lease_principal')),
+    'alphabet': frozenset(('search_other', 'youtube_ads', 'network', 'operating_cash', 'property_equipment')),
+    'trade_desk': frozenset(('revenue', 'platform_operations', 'sales_marketing',
+        'technology_development', 'general_admin')),
+    'magnite': frozenset(('revenue', 'derived_tac', 'cost_of_revenue', 'ctv', 'mobile', 'desktop')),
+})
+
+
+def _accounting_copy(slot, residual, relation, contributions):
+    """Explain signed contributions, not their causes or investment desirability.
+
+    Input is the existing comparator output. No new amount, ratio, interval,
+    independence score or causal inference is computed. A tie is a tie.
+    """
+    allowed = _ACCOUNTING_ROLES.get(slot, frozenset())
+    if not contributions or any(key not in allowed for key, _, _ in contributions):
+        return None
+    if residual != 0:
+        return ('The reported total does not reconcile with these components; the difference remains unallocated.',
+                '报告总额与这些分项无法核对一致；差额尚未分配。')
+    if relation == 'TARGET_DEPENDENT':
+        return ('This reconciliation uses the reported total in a derived component; it is not independent confirmation of that total.',
+                '此项核对的推算分项使用了报告总额；这并非独立验证该总额。')
+    if relation == 'DECLARED_DEPENDENCE':
+        return ('Some components share derived inputs; this accounting bridge is not independent corroboration.',
+                '部分分项共享推算输入；这项会计核对并非独立验证。')
+    if relation != 'INDEPENDENCE_UNASSESSED':
+        return None
+    en, zh = [], []
+    for upward in (True, False):
+        selected = [(key, value, delta) for key, value, delta in contributions if (value > 0 if upward else value < 0)]
+        if not selected:
+            continue
+        extreme = (max if upward else min)(value for _, value, _ in selected)
+        keys = [key for key, value, _ in selected if value == extreme]
+        direction, chinese = ('upward', '上行') if upward else ('downward', '下行')
+        if len(keys) > 1:
+            en.append(f'Multiple components tie for the largest {direction} contribution.')
+            zh.append(f'多个分项并列贡献最大的{chinese}变化。')
+        else:
+            label_en, label_zh = _ACCOUNTING_LABELS[keys[0]]
+            delta = next(delta for key, _, delta in selected if key == keys[0])
+            change_en, change_zh = ('increase', '增加') if delta > 0 else ('decrease', '减少')
+            en.append(f'Largest {direction} contribution: {label_en} ({change_en}).')
+            zh.append(f'最大{chinese}贡献：{label_zh}（{change_zh}）。')
+    if not en:
+        en.append('No displayed component changed across the selected periods.')
+        zh.append('所选期间内各展示分项均未发生变化。')
+    en.append('Reported-figure bridge, not causal evidence.')
+    zh.append('这是报告数值的会计核对，并非因果证据。')
+    return ' '.join(en), ''.join(zh)
+
+
+def _accounting_explanation(slot, view):
+    copy = _accounting_copy(slot, view.residual, view.evidence_relation,
+                            tuple((part.component_key, part.contribution, part.delta) for part in view.contributions))
+    return None if copy is None else _claim(*copy, (view.result,))
+
+
 def _accounting_views(item, rows, observed):
     grouped = {}
     for recipe in item.accounting_rules:
@@ -263,8 +348,12 @@ def _accounting_views(item, rows, observed):
             continue
         key = view.outcome_refs
         grouped.setdefault(key, {})[view.result.rule_revision] = view
-    return tuple(AccountingViewGroup(key, tuple(views[revision] for revision in sorted(views)))
-                 for key, views in sorted(grouped.items()))
+    groups = []
+    for key, views in sorted(grouped.items()):
+        ordered_views = tuple(views[revision] for revision in sorted(views))
+        groups.append(AccountingViewGroup(key, ordered_views,
+                      tuple(_accounting_explanation(item.slot, view) for view in ordered_views)))
+    return tuple(groups)
 
 
 def compose_four_company_claims(inputs: tuple[CompanyClaimInput, ...]) -> FourCompanyClaims:
@@ -506,7 +595,9 @@ def _view_links_valid(projection):
                 return False
             outcomes.add(key)
             revisions = set()
-            for view in group['views']:
+            if len(group['explanations']) != len(group['views']):
+                return False
+            for view, explanation in zip(group['views'], group['explanations']):
                 derived_count += 1
                 source_refs.update(view['result']['refs'])
                 if (group['outcome_refs'] != [view['current_output']['ref'], view['prior_output']['ref']]
@@ -526,6 +617,18 @@ def _view_links_valid(projection):
                 if (len(set(expected_refs)) != len(expected_refs)
                         or len(set(actual_refs)) != len(actual_refs)
                         or set(actual_refs) != set(expected_refs)):
+                    return False
+                copy = _accounting_copy(panel['slot'], Decimal(view['residual']), view['evidence_relation'],
+                        tuple((part['component_key'], Decimal(part['contribution']), Decimal(part['delta'])) for part in view['contributions']))
+                if copy is None:
+                    if explanation is not None:
+                        return False
+                elif (explanation is None or (explanation['en'], explanation['zh']) != copy
+                        or len(explanation['refs']) != len(set(explanation['refs']))
+                        or set(explanation['refs']) != set(actual_refs)
+                        or explanation['rule_revisions'] != [view['result']['rule_revision']]
+                        or explanation['interpretation_basis'] != (
+                            'exact_reported_values' if view['result']['status'] == 'COMPARABLE' else 'published_figures')):
                     return False
                 revisions.add(view['result']['rule_revision'])
     return len(source_refs) <= 96 and derived_count <= 32
