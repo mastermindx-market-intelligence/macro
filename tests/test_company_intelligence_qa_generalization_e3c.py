@@ -30,6 +30,7 @@ from engine.company_intelligence.qa_exchange import (
     accepted_qa_exchanges_for_transcript,
     validate_qa_exchange,
 )
+from engine.company_intelligence import qa_source_identity
 from engine.company_intelligence.qa_reconstruction import reconstruct_qa
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -93,8 +94,14 @@ def test_googl_fixture_is_the_frozen_receipt_revision() -> None:
 # --------------------------------------------------------------------------
 
 
-def test_unchanged_compiler_refuses_googl_and_publishes_nothing() -> None:
-    """E3-C pass rule §11.2(3) is NOT met: the generic compiler refuses GOOGL."""
+def test_googl_still_refuses_but_now_only_on_respondent_identity() -> None:
+    """GOOGL publishes nothing; after TFG-1 R2 the reason is narrower and more honest.
+
+    R2 resolves all nine questioners directly. The remaining blocker is that this
+    revision declares no management title anywhere, so no respondent role is
+    source-supported. GOOGL remains SPENT as OOS evidence
+    (DEC:E3C-GOOGL-OOS-REFUSAL-SPENDS-EVENT); this is a known-falsifier regression only.
+    """
     segments, sha = _googl()
     result = reconstruct_qa(
         event_id=GOOGL_EVENT_ID,
@@ -103,44 +110,28 @@ def test_unchanged_compiler_refuses_googl_and_publishes_nothing() -> None:
         segments=segments,
     )
     assert result["status"] == "failed"
-    assert result["failure"]["code"] == "operator_intro_identity_unparsed"
-    assert result["failure"]["boundary_segment_index"] == 0
     assert result["exchanges"] == []
-
-    # The publication gate is fail-closed: no workspace write, no typed absence
-    # invented, and the E2 event is left untouched.
-    assert accepted_qa_exchanges_for_transcript(
-        event_id=GOOGL_EVENT_ID,
-        document_id=GOOGL_DOCUMENT_ID,
-        document_sha256=sha,
-        segments=segments,
-    ) == []
+    assert qa_source_identity.roster(segments) == {}
 
 
-# --------------------------------------------------------------------------
-# Blocker 1 — the boundary cue is vendor-specific
-# --------------------------------------------------------------------------
+def test_googl_alternate_operator_dialect_is_now_admitted() -> None:
+    """The nine real intros end "Your line is now open", never "go ahead".
 
-
-def test_googl_operator_intros_do_not_carry_the_go_ahead_boundary_cue() -> None:
-    """Nine real analyst intros end "Your line is now open", never "go ahead"."""
+    Before R2 the detector keyed on the literal cue and saw exactly one boundary — the
+    pre-presentation IR handoff at segment 0, a false boundary. R2 removes terminal-cue
+    authority, so the nine real analyst handoffs are admitted and segment 0 is not.
+    """
     segments, sha = _googl()
     operators = [
         (index, " ".join(str(segment.get("text") or "").split()).casefold())
         for index, segment in enumerate(segments)
         if str(segment.get("role") or "").strip().casefold() == "operator"
     ]
-    with_cue = [index for index, text in operators if "go ahead" in text]
-    # Exactly one Operator segment carries the cue, and it is the pre-presentation
-    # IR handoff at segment 0 — not a Q&A boundary at all.
-    assert with_cue == [0]
-    assert "head of investor relations. please go ahead." in dict(operators)[0]
-
+    assert [i for i, t in operators if "go ahead" in t] == [0]
     analyst_intros = [index for index in RECEIPT_OPERATOR_INTRO_INDEXES if index != 0]
     assert len(analyst_intros) == 9
     for index in analyst_intros:
         assert "your line is now open" in dict(operators)[index]
-        assert "go ahead" not in dict(operators)[index]
 
     result = reconstruct_qa(
         event_id=GOOGL_EVENT_ID,
@@ -148,13 +139,8 @@ def test_googl_operator_intros_do_not_carry_the_go_ahead_boundary_cue() -> None:
         document_sha256=sha,
         segments=segments,
     )
-    # The generic detector therefore sees one boundary, and it is a false one.
-    assert result["qualifying_boundaries"] == [0]
-
-
-# --------------------------------------------------------------------------
-# Blocker 2 — this vendor publishes no management role at all
-# --------------------------------------------------------------------------
+    assert len(result["qualifying_boundaries"]) == 9
+    assert 0 not in result["qualifying_boundaries"]
 
 
 def test_googl_management_speech_carries_no_source_role() -> None:
