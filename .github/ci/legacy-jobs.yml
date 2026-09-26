@@ -5931,7 +5931,7 @@ jobs:
       # actually executes or it would have shipped dark — which is the exact class of
       # defect it exists to catch.
       - name: altdata reboot W2 — per-channel family routing + placebo tests + HOUSE-U5 ledger lane gate
-        run: python -m pytest tests/test_altdata_reboot_families.py tests/test_altdata_ledger_lane_gate.py -q
+        run: python -m pytest tests/test_altdata_reboot_families.py tests/test_altdata_ledger_lane_gate.py tests/test_intelligence_network_demand_audit.py -q
       # Metric-validity invariants (epistemics.qledger_metric_validity). grades.excess
       # is RAW, not direction-signed, so a pooled signed excess_mean over a
       # mixed-direction family measures universe drift rather than skill; a salience
