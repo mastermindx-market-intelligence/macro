@@ -180,6 +180,53 @@ not as canonical GMI theme identity. A selected visual mark continues directly t
 relevant Companies/Signals/Drivers research with the same filter context rather than
 making the user search for the object again.
 
+### Dated answer-first targets for the current native design pass
+
+These are **Sep-25 design examples from exact current owner bytes**, not timeless copy, a
+recommendation, or a substitute for binding the live owner in production. They demonstrate the
+reading hierarchy the native boards should achieve before exposing their controls.
+
+**Rotation — `subsector_rotation.json` / blob `6e0d03c6…`:**
+
+> **Technology and Communication Services are the only leading sectors. Technology is
+> strongest; Energy still has high relative strength but is weakening.**
+
+Supporting evidence: 2/11 sectors are in the leading quadrant, Technology has `rs_ratio 1.711`,
+`rs_mom +0.262`, `accel +2.987`, while Energy has `rs_ratio 1.317` but `rs_mom -1.075`,
+`accel -4.177` and the incumbent turn owner marks it topping. The board should make **level vs
+direction** visible immediately rather than asking the user to infer that distinction from dot
+positions.
+
+**Market breadth — `sector_central.json` / blob `9efa888b…`:**
+
+> **Breadth is narrow; Technology is the only sector with majority participation.**
+
+Supporting evidence: 1/11 sectors have breadth ≥50%, 4/11 are above their 200-day trend,
+Technology is 62% (49 advancing / 30 declining), and the next-highest sector breadth is Health
+Care at 34%. The broad risk context may stay visible, but it must not overwrite this local
+participation fact.
+
+**Discover / Technology Matrix — `sp500_heatmap.json` / blob `724538ac…`:**
+
+> **Technology participation is broad by company size, but sharply uneven by industry.**
+
+Exact `sector == Technology` population is 79 names: ≥$200B is 17/24 up, $50–200B is 16/26,
+$10–50B is 21/29, and there are no Technology names below $10B in this owner snapshot.
+Software Infrastructure is 5/15 up while Semiconductors are 13/14 and Computer Hardware 7/7.
+Do not pull the distinct `Information Technology` row into the 79-name cohort.
+
+**Discover / Semiconductor Bubbles — `themes_heatmap.json` / blob `0d63b7c2…`:**
+
+> **Semiconductors are broad across all 9 subthemes. Participation is strong, not uniform.**
+
+All 9/9 subthemes are positive over 1W and all 9 have >50% observed-member participation.
+Examples: Design Tools 6/6, Compute 7/8, Memory 4/5. Keep the complete 268-point source-local
+universe as evidence while visually emphasizing the selected Semiconductor family.
+
+Every first-read sentence must be regenerated/selected from the bound owner state or become
+unavailable when its conditions no longer hold. Do not ship these Sep-25 English sentences as
+hard-coded market commentary.
+
 ### D. Continue
 
 The primary supported next step is **View companies**. **Compare signals** is the
