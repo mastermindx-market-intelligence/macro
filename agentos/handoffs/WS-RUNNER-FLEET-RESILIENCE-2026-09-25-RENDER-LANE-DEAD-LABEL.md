@@ -270,10 +270,11 @@ next_actions:
     `nyse-calendar-freshness` is green WITHOUT #7870 landing and that carrier is no
     longer any part of the fleet's blocker. Retracted to its owner in 5835036878.
     Durable residue: a vertical importing #7870-only modules must not merge ahead of
-    it, which is exactly what #7908 did. Remaining main red is
-    `market-os-macro-suite-pages` (#6930's copy decision) alone. Still do NOT open a
-    `main-red-repair` for it: one-PR-per-pack leaves that heal with #6930, and
-    allowlisting is recorded as the wrong remedy for the import sweep.
+    it, which is exactly what #7908 did. Remaining main red WAS
+    `market-os-macro-suite-pages`, which I attributed to #6930's copy decision. That
+    attribution of the CARRIER was wrong too - see the 2026-09-26 entry below. Do NOT
+    open a `main-red-repair` for it: it is already healed, and allowlisting is recorded
+    as the wrong remedy for the import sweep.
   - >
     A RED CAN BE ALREADY FIXED ON MAIN AND STILL RED ON YOUR HEAD, because CI grades
     the MERGE REF at the moment it is taken. Run 36131411907 took its merge ref
@@ -299,6 +300,26 @@ next_actions:
     Remove `render-linux`'s `automatic_use_waiver` in the same act that restores the
     carrier, and set `status: live` with the real `carried_by` - the waiver text says
     so explicitly.
+  - >
+    RESOLVED 2026-09-26: main is GREEN and #8011's last inherited red is gone. Four
+    consecutive `completed/success` ci.yml baselines, newest 36239122567 (created
+    2026-09-26T11:32:03Z, sha bd23cfbd3f1). The heal was NOT #6930 - it shipped as
+    `1f2b713e37e fix(macro): stale-source next action drops banned copy; its tests stop
+    reading the day's data (#8032)`, and #6930 is still open. Retracted to that owner in
+    5847985820. DURABLE LESSON, earned TWICE in this one session: a red correctly
+    attributed to MAIN heals by whichever PR reaches main first, so naming the carrier
+    is a separate and far weaker claim than naming the owner-of-the-red. I published a
+    carrier twice (#7870, then #6930) and was wrong both times, each time planting a
+    false critical path on somebody else's PR. Attribute a red by logical job name;
+    state the remedy as "main must green", never as "<PR> must land".
+  - >
+    #8011 was carried forward onto that green base: `git merge origin/main`
+    (c54b1f2e807) clean with a clean tree, head d89988a3727 -> d1dee8989a1, 183 commits
+    of base picked up, the stale `merge-blocked` label removed, `merge-on-green` left
+    armed. Recorded on the PR in 5847982610. That makes THREE reds on this one PR
+    cleared by a base merge and none by a code change - nyse-calendar-freshness via
+    #8013, ontology-explorer via #8029, market-os-macro-suite-pages via #8032. When a
+    red's fix is timestamped after your run's merge ref, the base merge IS the fix.
 do_not_redo:
   - >
     Do not re-test the `cancel-in-progress` livelock hypothesis on render.yml or
@@ -331,6 +352,15 @@ do_not_redo:
     session to "check the fleet". Its breach path pushes a production ops alert.
     Import the module and call `fetch_live_jobs` + `evaluate` instead.
 danger_areas:
+  - >
+    A SESSION WORKTREE'S NAME IS NOT ITS BRANCH NAME. This tree is
+    `.claude/worktrees/recursing-villani-ee565f` but the PR head branch is
+    `claude/render-lane-dead-label-detector`. I pushed
+    `HEAD:worktree-recursing-villani-ee565f` from the worktree name and silently
+    created a NEW remote branch instead of updating #8011 - the push "succeeded",
+    printed a create-a-pull-request hint, and left the PR's head untouched. Read the
+    branch from `gh pr view <n> --json headRefName` or `git rev-parse --abbrev-ref
+    HEAD`, never from the directory. I deleted the stray ref in the same minute.
   - >
     `.github/runner-policy.yml` is a hand-maintained DECLARATION. Every rule in
     `check_runner_policy.py` reads it, so the moment capacity dies the file is wrong
