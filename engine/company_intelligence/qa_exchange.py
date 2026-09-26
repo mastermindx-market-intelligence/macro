@@ -23,6 +23,7 @@ EXCHANGE_SCHEMA = "qa_exchange.v1"
 EXTRACTOR_ID = RECONSTRUCTION_SCHEMA
 VALIDATOR_ID = "qa_exchange_validator.v1"
 RIGHTS_PROFILE = "rp_public_primary_v1"
+RIGHTS_PROFILES = frozenset({RIGHTS_PROFILE, "rp_internal_private_v1"})
 UNAVAILABLE_TOPIC = "unavailable"
 VALIDATION_STATE = "accepted"
 CLOCK_KNOWN = "known"

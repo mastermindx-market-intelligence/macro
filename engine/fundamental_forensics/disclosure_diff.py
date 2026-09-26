@@ -8,6 +8,7 @@ management intent, legal materiality, or an economic outcome.
 """
 from __future__ import annotations
 
+from bisect import bisect_left
 from collections import Counter
 from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
@@ -66,6 +67,47 @@ class Applicability(str, Enum):
     APPLICABLE = "applicable"
     NOT_APPLICABLE = "not_applicable"
     NOT_EVALUABLE = "not_evaluable"
+
+
+_SPAN_VALUE = re.compile(r"[ \t\n\f\r]*\+?([0-9]+)")
+
+
+def _span_value(value: str | None) -> int | None:
+    """A ``colspan``/``rowspan`` attribute as HTML's rules for parsing non-negative integers read it: ASCII
+    whitespace and an optional "+" are skipped, the leading run of ASCII digits is the value and anything after
+    it is ignored ("2.0", "2_0", "+2" and "3px" are 2, 2, 2 and 3; a non-ASCII digit or blank is an error)."""
+    match = _SPAN_VALUE.match(str(value or ""))
+    return int(match.group(1)) if match else None
+
+
+def _span_attribute(value: str | None, *, rowspan: bool = False) -> int:
+    """The span a consumer lays cells out by: 1 when absent or unparseable; a ``rowspan`` of 0 stays 0 (HTML:
+    to the end of the row group); a span above 64 is absurd for a release table and reads 1 -- the overflow is
+    reported separately (``_span_overflow``) so a consumer can refuse the table instead of misaligning it."""
+    span = _span_value(value)
+    if span is None:
+        return 1
+    if span == 0:
+        return 0 if rowspan else 1
+    return span if span <= 64 else 1
+
+
+def _span_overflow(value: str | None) -> bool:
+    span = _span_value(value)
+    return span is not None and span > 64
+
+
+def _heading_level(tag: str) -> int:
+    """1..6 for an ``h1``..``h6`` tag; 0 for anything else (a promoted paragraph, a plain-text heading)."""
+    return int(tag[1]) if len(tag) == 2 and tag[0] == "h" and tag[1] in "123456" else 0
+
+
+def _attribute_map(attrs: list[tuple[str, str | None]]) -> dict[str, str]:
+    """Attributes as HTML reads them: the FIRST occurrence of a name wins, later duplicates are ignored."""
+    mapping: dict[str, str] = {}
+    for name, value in attrs:
+        mapping.setdefault(str(name).casefold(), value or "")
+    return mapping
 
 
 def _compact_text(value: str) -> str:
@@ -242,6 +284,16 @@ class TableCell:
     column_index: int
     text: str
     source_span: SourceSpan
+    # Span attributes as the markup declared them (``colspan`` / ``rowspan``: 1 when absent or invalid, ``rowspan``
+    # 0 meaning "to the end of the row group", a declared span above 64 read as 1 and flagged) and the
+    # ordinal of the HTML row the cell sits in, counting rows that emit no cell (an empty ``tr`` covered by a
+    # rowspan still occupies a row).  They are layout facts consumers need to align columns; none of them enters
+    # ``to_dict`` or any id.  ``row_ordinal`` equals ``row_index`` when every row emitted a cell.
+    colspan: int = 1
+    rowspan: int = 1
+    row_ordinal: int = -1
+    row_group: int = 0
+    span_overflow: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -257,6 +309,20 @@ class TableCell:
 class NormalizedTable:
     table_id: str
     rows: tuple[tuple[TableCell, ...], ...]
+    # The table's own ``<caption>`` text (empty when none); not part of ``text()`` or ``to_dict``.
+    caption: str = ""
+    # Every HTML row in source order, including rows that emitted no cell: (row ordinal, row-group ordinal,
+    # row-group kind "thead" / "tbody" / "tfoot").  A layout fact; not part of ``text()`` or ``to_dict``.
+    row_layout: tuple[tuple[int, int, str], ...] = ()
+    # Every row group the markup OPENED, in source order, including one that holds no row: (row-group ordinal,
+    # kind).  An empty first ``<thead>`` is still the header group (CSS 2.1 §17.2).  A layout fact.
+    group_layout: tuple[tuple[int, str], ...] = ()
+    # True when the table was written inside another table's markup: it is emitted as its own block ahead of
+    # the outer table and carries none of the outer caption or band, so consumers treat it as unreadable (R83).
+    nested: bool = False
+    # True when another table was written inside this table's markup: the nested table's text is not part of
+    # this table's cells, so its band and labels are incomplete and consumers treat it as unreadable too (R91).
+    contains_nested: bool = False
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -292,6 +358,16 @@ class DisclosureBlock:
     topic_keys: tuple[str, ...]
     source_span: SourceSpan
     table: NormalizedTable | None = None
+    # 1..6 for a real ``h1``..``h6`` heading, 0 for a promoted paragraph or plain-text heading.  A layout fact
+    # for consumers that read section hierarchy; it does not enter ``to_dict`` or any id.
+    heading_level: int = 0
+    # True when visible text the extractor reads into no block -- text outside every block, a ``<center>`` or
+    # ``<figcaption>`` outside one, text directly inside a ``div`` that holds blocks, stray text inside a table
+    # outside its cells and caption (R100), drawn text in an element the extractor drops: svg text, ix:exclude,
+    # noscript, aria-hidden or class-hidden content (R109) -- lies between the previous block and this one
+    # (``unread_before``) or after the last block (``unread_after``).  Layout facts: not in ``to_dict`` or any id.
+    unread_before: bool = False
+    unread_after: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -552,6 +628,14 @@ class _RawCell:
     start: int
     end: int
     text_parts: list[str]
+    colspan: int = 1
+    rowspan: int = 1
+    # Ordinal of the HTML row (``tr``) the cell belongs to, counting rows that emit no cell; -1 when unknown.
+    row_ordinal: int = -1
+    # Ordinal of the row group (``thead`` / ``tbody`` / ``tfoot``, explicit or implied) the row belongs to.
+    row_group: int = 0
+    # True when a declared colspan/rowspan exceeded 64 and was read as 1.
+    span_overflow: bool = False
 
 
 @dataclass
@@ -561,6 +645,17 @@ class _RawTable:
     rows: list[list[_RawCell]] = field(default_factory=list)
     current_row: list[_RawCell] | None = None
     current_cell: _RawCell | None = None
+    caption_parts: list[str] = field(default_factory=list)
+    in_caption: bool = False
+    row_ordinal: int = -1
+    row_group: int = 0
+    open_group: str | None = None
+    group_kind: str = "tbody"
+    # Every HTML row in source order, including rows that emit no cell: (ordinal, group ordinal, group kind).
+    row_layout: list[tuple[int, int, str]] = field(default_factory=list)
+    group_layout: list[tuple[int, str]] = field(default_factory=list)
+    nested: bool = False
+    contains_nested: bool = False
 
 
 @dataclass
@@ -570,6 +665,14 @@ class _RawBlock:
     end: int
     text: str
     table_rows: tuple[tuple[_RawCell, ...], ...] = ()
+    table_caption: str = ""
+    heading_level: int = 0
+    table_layout: tuple[tuple[int, int, str], ...] = ()
+    table_groups: tuple[tuple[int, str], ...] = ()
+    table_nested: bool = False
+    table_contains_nested: bool = False
+    unread_before: bool = False
+    unread_after: bool = False
 
 
 @dataclass
@@ -578,6 +681,22 @@ class _Capture:
     start: int
     text_parts: list[str] = field(default_factory=list)
     has_block_child: bool = False
+    emitted: bool = False
+
+
+def _style_value(style: str, name: str) -> str | None:
+    """The value an inline ``style`` (comments and whitespace removed) gives property ``name``: the last
+    declaration wins unless an earlier one is ``!important`` (R109)."""
+    value: str | None = None
+    important = False
+    for declaration in style.split(";"):
+        prop, sep, raw = declaration.partition(":")
+        if not sep or prop != name:
+            continue
+        flag = raw.endswith("!important")
+        if flag or not important:
+            value, important = raw.removesuffix("!important"), important or flag
+    return value
 
 
 class _HtmlBlockExtractor(HTMLParser):
@@ -591,6 +710,11 @@ class _HtmlBlockExtractor(HTMLParser):
         "xbrli:context", "xbrli:unit", "link:schemaref", "link:linkbaseref",
     })
     _VOID_TAGS = frozenset({"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"})
+    # Dropped from every block, yet drawn: svg text, ix:exclude content, noscript fallback (R109).
+    _DRAWN_NONVISIBLE_TAGS = frozenset({"svg", "ix:exclude", "noscript"})
+    # How much of an ignored subtree is drawn (R109): nothing and never (display:none, a metadata tag), nothing
+    # unless a descendant sets visibility:visible (visibility:hidden), or everything the parser drops.
+    _UNDRAWN, _INVISIBLE, _DRAWN = 0, 1, 2
 
     def __init__(self, source: str) -> None:
         super().__init__(convert_charrefs=False)
@@ -599,11 +723,15 @@ class _HtmlBlockExtractor(HTMLParser):
         self.blocks: list[_RawBlock] = []
         self.captures: list[_Capture] = []
         self.tables: list[_RawTable] = []
+        # Visible text no emitted block may read: (offset, the captures open when it arrived) (R100).
+        self.unread: list[tuple[int, tuple[_Capture, ...]]] = []
         # This is deliberately a subtree depth, not just a stack of hidden
         # tags.  SEC metadata often nests ordinary ``div``/``span`` elements
         # under a hidden wrapper; treating only the outer tag as ignored can
         # leak text as soon as a child happens to have the same tag name.
         self.ignored_depth = 0
+        # One drawing state per open element of the ignored subtree (R109).
+        self.ignored_drawn: list[int] = []
 
     @staticmethod
     def _line_starts(source: str) -> tuple[int, ...]:
@@ -630,7 +758,7 @@ class _HtmlBlockExtractor(HTMLParser):
     def _is_nonvisible(cls, tag: str, attrs: list[tuple[str, str | None]]) -> bool:
         if tag in cls._NONVISIBLE_TAGS:
             return True
-        attr_map = {str(name).casefold(): (value or "") for name, value in attrs}
+        attr_map = _attribute_map(attrs)
         if "hidden" in attr_map:
             return True
         if attr_map.get("aria-hidden", "").casefold() == "true":
@@ -641,14 +769,48 @@ class _HtmlBlockExtractor(HTMLParser):
         classes = set(attr_map.get("class", "").casefold().split())
         return bool({"hidden", "ix-hidden", "inline-xbrl-hidden"} & classes)
 
+    @classmethod
+    def _drawing(cls, tag: str, attrs: list[tuple[str, str | None]], parent: int) -> int:
+        """How much of an element in an ignored subtree is drawn (R109).  A metadata or script tag, display:none,
+        or the hidden attribute with no inline display draws nothing, and nothing beneath it is drawn;
+        visibility:hidden draws nothing until a descendant sets visibility:visible.  Everything else the parser
+        drops is DRAWN: svg text, ix:exclude and noscript content, aria-hidden content (hidden from assistive
+        technology only), and a "hidden" class, whose effect depends on a stylesheet the parser does not read."""
+        if parent == cls._UNDRAWN:
+            return cls._UNDRAWN
+        if tag in cls._NONVISIBLE_TAGS and tag not in cls._DRAWN_NONVISIBLE_TAGS:
+            return cls._UNDRAWN
+        attr_map = _attribute_map(attrs)
+        style = re.sub(r"\s+", "", re.sub(r"/\*.*?\*/", "", attr_map.get("style", "").casefold(), flags=re.DOTALL))
+        display = _style_value(style, "display")
+        if display == "none" or ("hidden" in attr_map and display is None):
+            return cls._UNDRAWN
+        visibility = _style_value(style, "visibility")
+        if visibility in {"hidden", "collapse"}:
+            return cls._INVISIBLE
+        if visibility == "visible":
+            return cls._DRAWN
+        return parent
+
     def _append_text(self, value: str) -> None:
         if self.ignored_depth:
+            if value.strip() and self.ignored_drawn and self.ignored_drawn[-1] == self._DRAWN:
+                # Drawn text no block reads (R109).
+                self.unread.append((self._offset(), ()))
             return
         if self.tables:
             table = self.tables[-1]
             if table.current_cell is not None:
                 table.current_cell.text_parts.append(value)
+            elif table.in_caption:
+                table.caption_parts.append(value)
+            elif value.strip():
+                # Stray text inside a table, outside its cells and caption: no block reads it (R100).
+                self.unread.append((self._offset(), ()))
             return
+        if value.strip() and all(capture.tag == "div" for capture in self.captures):
+            # Outside every block, or directly inside divs only: read only if one of those divs is emitted (R100).
+            self.unread.append((self._offset(), tuple(self.captures)))
         for capture in self.captures:
             capture.text_parts.append(value)
 
@@ -658,17 +820,22 @@ class _HtmlBlockExtractor(HTMLParser):
         if self.ignored_depth:
             if tag not in self._VOID_TAGS:
                 self.ignored_depth += 1
+                self.ignored_drawn.append(self._drawing(tag, attrs, self.ignored_drawn[-1] if self.ignored_drawn else self._DRAWN))
             return
         if self._is_nonvisible(tag, attrs):
             if tag not in self._VOID_TAGS:
                 self.ignored_depth = 1
+                self.ignored_drawn = [self._drawing(tag, attrs, self._DRAWN)]
             return
         if tag == "br":
             self._append_text(" ")
             return
         if tag == "table":
             self._mark_block_child()
-            self.tables.append(_RawTable(start=start))
+            # Every table already open holds this one and loses its text, so each is flagged too (R91).
+            for open_table in self.tables:
+                open_table.contains_nested = True
+            self.tables.append(_RawTable(start=start, nested=bool(self.tables)))
             return
         if self.tables:
             table = self.tables[-1]
@@ -676,10 +843,42 @@ class _HtmlBlockExtractor(HTMLParser):
                 if table.current_row is not None and table.current_row:
                     table.rows.append(table.current_row)
                 table.current_row = []
+                table.row_ordinal += 1
+                table.row_layout.append((table.row_ordinal, table.row_group, table.group_kind))
+            elif tag in {"thead", "tbody", "tfoot"}:
+                if table.current_row is not None and table.current_row:
+                    table.rows.append(table.current_row)
+                table.current_row = None
+                table.row_group += 1
+                table.open_group = tag
+                table.group_kind = tag
+                table.group_layout.append((table.row_group, tag))
+            elif tag == "caption":
+                # HTML's "in cell" / "in row" insertion modes close an open cell and row before a caption starts
+                # (R83): a caption written inside an unclosed td is the table's caption, not cell text.
+                if table.current_cell is not None:
+                    table.current_cell.end = start
+                    table.current_cell = None
+                if table.current_row is not None and table.current_row:
+                    table.rows.append(table.current_row)
+                table.current_row = None
+                table.in_caption = True
             elif tag in {"td", "th"}:
                 if table.current_row is None:
                     table.current_row = []
-                cell = _RawCell(start=start, end=start, text_parts=[])
+                    table.row_ordinal += 1
+                    table.row_layout.append((table.row_ordinal, table.row_group, table.group_kind))
+                attr_map = _attribute_map(attrs)
+                cell = _RawCell(
+                    start=start,
+                    end=start,
+                    text_parts=[],
+                    colspan=_span_attribute(attr_map.get("colspan")),
+                    rowspan=_span_attribute(attr_map.get("rowspan"), rowspan=True),
+                    row_ordinal=table.row_ordinal,
+                    row_group=table.row_group,
+                    span_overflow=_span_overflow(attr_map.get("colspan")) or _span_overflow(attr_map.get("rowspan")),
+                )
                 table.current_row.append(cell)
                 table.current_cell = cell
             return
@@ -707,9 +906,14 @@ class _HtmlBlockExtractor(HTMLParser):
         if self.ignored_depth:
             if tag not in self._VOID_TAGS:
                 self.ignored_depth -= 1
+                if self.ignored_drawn:
+                    self.ignored_drawn.pop()
             return
         if self.tables:
             table = self.tables[-1]
+            if tag == "caption":
+                table.in_caption = False
+                return
             if tag in {"td", "th"} and table.current_cell is not None:
                 table.current_cell.end = end
                 table.current_cell = None
@@ -718,6 +922,17 @@ class _HtmlBlockExtractor(HTMLParser):
                 if table.current_row is not None and table.current_row:
                     table.rows.append(table.current_row)
                 table.current_row = None
+                return
+            if tag in {"thead", "tbody", "tfoot"}:
+                # A stray end tag with no open group is ignored, as HTML ignores it; a real one closes the group
+                # and the rows after it sit in an implied tbody.
+                if table.open_group == tag:
+                    if table.current_row is not None and table.current_row:
+                        table.rows.append(table.current_row)
+                    table.current_row = None
+                    table.row_group += 1
+                    table.open_group = None
+                    table.group_kind = "tbody"
                 return
             if tag == "table":
                 if table.current_row is not None and table.current_row:
@@ -729,7 +944,7 @@ class _HtmlBlockExtractor(HTMLParser):
                     " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
                 )
                 if _compact_text(text):
-                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows))
+                    self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested, table_contains_nested=table.contains_nested))
                 return
             return
         matching_index = next(
@@ -745,7 +960,8 @@ class _HtmlBlockExtractor(HTMLParser):
             if not text or (capture.tag == "div" and capture.has_block_child):
                 continue
             kind = BlockKind.HEADING if capture.tag.startswith("h") and len(capture.tag) == 2 else BlockKind.PARAGRAPH
-            self.blocks.append(_RawBlock(kind, capture.start, end, text))
+            self.blocks.append(_RawBlock(kind, capture.start, end, text, heading_level=_heading_level(capture.tag)))
+            capture.emitted = True
 
     def finish(self) -> tuple[_RawBlock, ...]:
         self.close()
@@ -758,16 +974,28 @@ class _HtmlBlockExtractor(HTMLParser):
                 " | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows
             )
             if _compact_text(text):
-                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows))
+                self.blocks.append(_RawBlock(BlockKind.TABLE, table.start, end, text, rows, _compact_text("".join(table.caption_parts)), table_layout=tuple(table.row_layout), table_groups=tuple(table.group_layout), table_nested=table.nested, table_contains_nested=table.contains_nested))
         for capture in self.captures:
             text = _compact_text("".join(capture.text_parts))
             if text and not (capture.tag == "div" and capture.has_block_child):
                 kind = BlockKind.HEADING if capture.tag.startswith("h") and len(capture.tag) == 2 else BlockKind.PARAGRAPH
-                self.blocks.append(_RawBlock(kind, capture.start, end, text))
+                self.blocks.append(_RawBlock(kind, capture.start, end, text, heading_level=_heading_level(capture.tag)))
+                capture.emitted = True
         unique: dict[tuple[str, int, int, str], _RawBlock] = {}
         for block in self.blocks:
             unique[(block.kind.value, block.start, block.end, block.text)] = block
-        return tuple(sorted(unique.values(), key=lambda item: (item.start, item.end, item.kind.value, item.text)))
+        ordered = sorted(unique.values(), key=lambda item: (item.start, item.end, item.kind.value, item.text))
+        # Visible text that no emitted block read marks the next block, or the last when none follows (R100).
+        starts = [block.start for block in ordered]
+        for offset, captures in self.unread:
+            if any(capture.emitted for capture in captures):
+                continue
+            index = bisect_left(starts, offset)
+            if index < len(ordered):
+                ordered[index].unread_before = True
+            elif ordered:
+                ordered[-1].unread_after = True
+        return tuple(ordered)
 
 
 def _looks_like_heading(text: str, registry: DisclosureDiffRegistry, form: str | None) -> bool:
@@ -828,14 +1056,14 @@ def _plain_table_block(lines: Sequence[tuple[int, str]], source: str) -> _RawBlo
                 local = cursor
             start = line_start + local
             end = start + len(piece)
-            cells.append(_RawCell(start=start, end=end, text_parts=[piece]))
+            cells.append(_RawCell(start=start, end=end, text_parts=[piece], row_ordinal=len(rows)))
             cursor = local + len(piece) + 1
         if cells:
             rows.append(tuple(cells))
     start = lines[0][0]
     end = lines[-1][0] + len(lines[-1][1])
     text = "\n".join(" | ".join(_compact_text("".join(cell.text_parts)) for cell in row) for row in rows)
-    return _RawBlock(BlockKind.TABLE, start, end, text, tuple(rows))
+    return _RawBlock(BlockKind.TABLE, start, end, text, tuple(rows), table_layout=tuple((index, 0, "tbody") for index in range(len(rows))))
 
 
 def _plain_text_blocks(source: str, registry: DisclosureDiffRegistry, form: str | None) -> tuple[_RawBlock, ...]:
@@ -970,9 +1198,11 @@ def normalize_filing(
     blocks: list[DisclosureBlock] = []
     current_section = preamble
 
+    unread_pending = False
     for source_order, raw_block in enumerate(raw_blocks):
         text = _compact_text(raw_block.text)
         if not text:
+            unread_pending = unread_pending or raw_block.unread_before
             continue
         span = source_locator.span(raw_block.start, raw_block.end)
         # SEC Inline XBRL frequently renders Item labels in styled <p>/<div>
@@ -1035,11 +1265,19 @@ def normalize_filing(
                             column_index=column_index,
                             text=cell_text,
                             source_span=cell_span,
+                            colspan=raw_cell.colspan,
+                            rowspan=raw_cell.rowspan,
+                            row_ordinal=raw_cell.row_ordinal if raw_cell.row_ordinal >= 0 else row_index,
+                            row_group=raw_cell.row_group,
+                            span_overflow=raw_cell.span_overflow,
                         )
                     )
                 if cells:
                     rows.append(tuple(cells))
-            table = NormalizedTable(table_id=table_id, rows=tuple(rows))
+            table = NormalizedTable(
+                table_id=table_id, rows=tuple(rows), caption=raw_block.table_caption, row_layout=raw_block.table_layout,
+                group_layout=raw_block.table_groups, nested=raw_block.table_nested, contains_nested=raw_block.table_contains_nested,
+            )
             text = table.text()
         block_id = stable_id(
             "disclosure_block",
@@ -1082,8 +1320,12 @@ def normalize_filing(
                 topic_keys=config.topic_keys_for(text, current_section.key),
                 source_span=span,
                 table=table,
+                heading_level=raw_block.heading_level if block_kind is BlockKind.HEADING else 0,
+                unread_before=unread_pending or raw_block.unread_before,
+                unread_after=raw_block.unread_after,
             )
         )
+        unread_pending = False
     return DisclosureDocument(
         document_id=document_id,
         entity_cik=entity_cik,

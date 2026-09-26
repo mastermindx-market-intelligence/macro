@@ -4078,6 +4078,7 @@ CURATED_EXCLUSIVE = {
     # closure is empty (stdlib only): the scope is the suite + the registration
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
+    "earnings-economic-dossier",
     # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
