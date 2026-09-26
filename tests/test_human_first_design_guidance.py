@@ -53,6 +53,14 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
                             for tokens in commands),
                         "The guidance suite must execute, not merely be named in paths.")
 
+    def test_sector_consolidation_keeps_one_product_grammar(self):
+        text = self.read("research/SECTOR_INTELLIGENCE_CONSOLIDATED_EXPERIENCE_2026-09-26.md")
+        self.assertIn("Rotation · Discover · Market breadth", text)
+        self.assertIn("Heatmap · Bubbles · Matrix · Table", text)
+        self.assertIn("Overview · Companies · Signals · Drivers · History", text)
+        self.assertIn("Cycle** capability is retained inside **History", text)
+        self.assertIn("reported / supplied / readable / filtered", text)
+        self.assertIn("rights_class: unresolved", text)
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
             with self.subTest(path=path):
