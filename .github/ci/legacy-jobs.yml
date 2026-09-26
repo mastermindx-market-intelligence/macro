@@ -5290,7 +5290,7 @@ jobs:
       - name: ontology explorer — identity, private transport, public shell
         run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
       - name: Communications A1 — bound deterministic comparisons (synthetic inputs only)
-        run: TZ=UTC python -m pytest tests/test_communications_measures.py -q
+        run: TZ=UTC python -m pytest tests/test_communications_measures.py tests/test_communications_research.py -q
 
   research-factory-authority:
     if: ${{ false }}
