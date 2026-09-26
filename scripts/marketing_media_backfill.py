@@ -86,7 +86,7 @@ def media_key(as_of: str, chart_id: str) -> str:
 
 
 def r2_key_for(as_of: str, chart_id: str, png_bytes: bytes) -> str:
-    """CONTENT-ADDRESSED R2 key: .../<as_of>/<chart_id>-<sha8>.png.
+    """CONTENT-ADDRESSED R2 key: .../<as_of>/<chart_id>-<sha256>.png.
 
     NOT media_publish.chart_key(). chart_id is a per-BUILD counter, not an
     identity: rebuild a day and `chart-001` means a different ticker than it did
@@ -98,14 +98,9 @@ def r2_key_for(as_of: str, chart_id: str, png_bytes: bytes) -> str:
     structurally impossible, keeps re-runs idempotent, and still lets two items
     with a byte-identical card share one object.
     """
-    import hashlib
-
     from engine.marketing import media_publish  # noqa: PLC0415
 
-    digest = hashlib.sha256(png_bytes).hexdigest()[:8]
-    safe_as_of = (str(as_of or "").strip() or "unknown").replace("/", "-")
-    safe_id = (str(chart_id or "").strip() or "chart").replace("/", "-")
-    return f"{media_publish.R2_MARKETING_PREFIX}/{safe_as_of}/{safe_id}-{digest}.png"
+    return media_publish.content_addressed_chart_key(as_of, chart_id, png_bytes)
 
 
 def _older_than(as_of: object, max_age_days: int, today: date | None = None) -> bool:
@@ -125,7 +120,8 @@ def _older_than(as_of: object, max_age_days: int, today: date | None = None) -> 
 
 def _iter_missing(items: list[dict], as_of: str | None,
                   max_age_days: int | None = None,
-                  today: date | None = None) -> list[tuple[dict, dict]]:
+                  today: date | None = None,
+                  *, include_expired: bool = False) -> list[tuple[dict, dict]]:
     """[(item, media_entry)] for every media entry with no public media_url.
 
     An entry that already carries an http(s) media_url is left alone — this
@@ -151,11 +147,52 @@ def _iter_missing(items: list[dict], as_of: str | None,
     for it in items:
         if as_of and str(it.get("as_of") or "") != as_of:
             continue
-        if bound is not None and _older_than(it.get("as_of"), bound, today):
+        media_entries = [
+            m for m in (it.get("media") or []) if isinstance(m, dict)
+        ]
+        expired = (
+            bound is not None
+            and _older_than(it.get("as_of"), bound, today)
+        )
+        if expired:
+            source = it.get("source") if isinstance(it.get("source"), dict) else {}
+            observed = source.get("media_repair")
+            unresolved = any(
+                not str(m.get("media_url") or "").lower().startswith(("http://", "https://"))
+                for m in media_entries
+            ) or (
+                not media_entries
+                and isinstance(observed, dict)
+                and observed.get("state") != "complete"
+            )
+            if include_expired and unresolved:
+                out.append((it, {
+                    "repair_state": "expired",
+                    "repair_reason": "content_expired_while_waiting_for_media",
+                    "repair_process": "outbox_retirement",
+                    "repairable": False,
+                }))
             continue
-        for m in it.get("media") or []:
-            if not isinstance(m, dict):
-                continue
+        if not media_entries:
+            from engine.marketing.outbox import (  # noqa: PLC0415
+                MEDIA_REPAIR_STATES, media_repair_observation,
+            )
+
+            source = it.get("source") if isinstance(it.get("source"), dict) else {}
+            observed = source.get("media_repair")
+            if not isinstance(observed, dict) or observed.get("state") not in MEDIA_REPAIR_STATES:
+                observed = media_repair_observation(
+                    [], chart_id=source.get("chart_id"),
+                )
+            if observed.get("state") != "complete":
+                out.append((it, {
+                    "repair_state": observed.get("state"),
+                    "repair_reason": observed.get("reason"),
+                    "repair_process": observed.get("repair_process"),
+                    "repairable": bool(observed.get("repairable")),
+                }))
+            continue
+        for m in media_entries:
             url = str(m.get("media_url") or "").strip()
             if url.lower().startswith(("http://", "https://")):
                 continue
@@ -186,14 +223,43 @@ def main() -> int:
     from engine.marketing.ledgers import append_jsonl, read_jsonl  # noqa: PLC0415
 
     items = read_jsonl(root / "data" / "marketing" / "outbox" / "items.jsonl")
-    missing = _iter_missing(items, args.as_of, args.max_age_days)
+    missing = _iter_missing(
+        items, args.as_of, args.max_age_days, include_expired=True,
+    )
     already = load_sidecar(root)
 
     # Dedup by R2 key: several items legitimately share one chart_id (the same
     # card reused across a day), and re-uploading identical bytes per item is
     # pure waste. Ordered so the report reads chronologically.
     todo: dict[str, dict] = {}
+    # A sidecar key is only as specific as as_of/chart_id. If two different
+    # artworks claim that key, publishing either would make the publisher attach
+    # the chosen URL to BOTH items. Such a key is therefore permanently excluded
+    # from this run; Content Studio must supersede the ambiguous records.
+    conflicted: set[str] = set()
+    observed_states: dict[str, int] = {}
     for it, m in missing:
+        repair_state = str(m.get("repair_state") or "")
+        if repair_state:
+            observed_states[repair_state] = observed_states.get(repair_state, 0) + 1
+        if repair_state == "no_specification":
+            print(
+                f"::warning title=marketing-media-no-specification::"
+                f"item={it.get('id')} reason={m.get('repair_reason') or 'unknown'}; "
+                f"Content Studio must revalidate and supersede or retire it — "
+                f"media backfill will not invent historical chart inputs",
+                flush=True,
+            )
+            continue
+        if repair_state == "expired":
+            print(
+                f"::warning title=marketing-media-expired::"
+                f"item={it.get('id')} reason={m.get('repair_reason') or 'unknown'}; "
+                f"Outbox retirement must preserve lineage and must not refresh "
+                f"the historical timestamp",
+                flush=True,
+            )
+            continue
         as_of = str(it.get("as_of") or "")
         chart_id = str(m.get("chart_id") or "")
         if not as_of or not chart_id:
@@ -202,22 +268,24 @@ def main() -> int:
         k = media_key(as_of, chart_id)
         if k in already:
             continue          # a previous run already published this one
+        if k in conflicted:
+            continue          # already proven ambiguous in this run
         spec = {"as_of": as_of, "chart_id": chart_id,
                 "svg_path": str(m.get("path") or ""),
                 "png_path": str(m.get("media_png_path") or "")}
         prior = todo.get(k)
         if prior is not None:
-            # The sidecar is a flat as_of/chart_id map, so two UNSTAMPED items
-            # sharing a chart_id but pointing at different artwork cannot both be
-            # recorded — one would silently inherit the other's chart. Same
-            # per-build-counter root cause as the R2 clobber r2_key_for guards
-            # (chart_id is not an identity). Publish the first, say so, and leave
-            # the second text-only: a missing image beats a wrong one.
+            # The sidecar is a flat as_of/chart_id map. If different artwork
+            # shares that key, writing ONE row would make every matching item
+            # inherit the same URL. Fail closed: remove the first candidate too.
             if prior["svg_path"] != spec["svg_path"]:
                 print(f"::warning title=media-backfill-chart-id-collision::"
                       f"{k} names two different charts ({prior['svg_path']} and "
-                      f"{spec['svg_path']}); publishing the first, second stays "
-                      f"text-only", flush=True)
+                      f"{spec['svg_path']}); refusing BOTH sidecar candidates — "
+                      f"Content Studio must supersede the ambiguous records",
+                      flush=True)
+                todo.pop(k, None)
+                conflicted.add(k)
             continue
         todo[k] = spec
 
@@ -259,15 +327,33 @@ def main() -> int:
                 continue
 
         r2_key = r2_key_for(spec["as_of"], spec["chart_id"], png_bytes)
-        url = media_publish.publish_chart_png(png_bytes, r2_key)
+        published_result = media_publish.publish_chart_png(
+            png_bytes, r2_key, return_result=True,
+        )
+        if isinstance(published_result, dict):
+            url = str(published_result.get("media_url") or "")
+            repair = published_result.get("media_repair") or {}
+        else:
+            # Compatibility with injected publishers in older tests/callers.
+            url = str(published_result or "")
+            repair = {}
         if not url:
-            log.warning("%s: upload returned no URL — skipping", k)
+            state = str(repair.get("state") or "upload_pending")
+            reason = str(repair.get("reason") or "hosted_media_unavailable")
+            print(
+                f"::warning title=marketing-media-{state}::"
+                f"{k} reason={reason} asset={r2_key}; no sidecar row written",
+                flush=True,
+            )
             failed += 1
             continue
 
         if not append_jsonl(sidecar_path(root),
                             {"key": k, "as_of": spec["as_of"],
-                             "chart_id": spec["chart_id"], "media_url": url}):
+                             "chart_id": spec["chart_id"], "media_url": url,
+                             "asset_key": r2_key,
+                             "sha256": published_result.get("media_sha256")
+                             if isinstance(published_result, dict) else None}):
             log.warning("%s: uploaded but the sidecar append FAILED — the image is "
                         "live in R2 but the publisher will not find it", k)
             failed += 1
