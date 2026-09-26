@@ -12,7 +12,7 @@ rubric axis, or a failure tag to site/ or to any other public/user-facing
 artifact. The CI "validated" guard (scripts/check_validated_claims.py) and the
 masterplan §3 row-14 ruling both stand on that line.
 
-THREE TIERS, cheapest first
+FOUR CHECKS, cheapest first
 ---------------------------
 1. ``mechanical_checks(row)`` — deterministic, free, no network. Stance line,
    doctrine-leak sentinels, invented-odds regexes, refusal markers, ZH language
@@ -25,11 +25,15 @@ THREE TIERS, cheapest first
    in its note) on axes it cannot settle from question + answer alone.
 3. ``run_benchmark`` — the frozen operator case. Same rubric, plus the case's
    expected_properties as extra judge context, over an answer generated NOW
-   against the REAL analyst doctrine. This is the regression tripwire: the
-   corpus tier tells you how the week went, the benchmark tells you whether the
-   system still reasons the way it did when the case was ratified.
+   against the REAL analyst doctrine.
+4. ``run_benchmark_pair`` — one frozen evidence packet asked naturally and with
+   explicit competing-hypothesis coaching. It uses the real gateway writing
+   hierarchy plus Analyst Doctrine and classifies the exact regression where
+   coaching is required to elicit reasoning the model can otherwise perform.
 
-A judge score is never authority. Nothing here ranks, gates, sizes, or escalates
+The corpus tier tells you how the week went; the frozen cases expose specific
+reasoning regressions. A judge score is never authority. Nothing here ranks,
+gates, sizes, or escalates
 anything; it is a weekly read on whether the assistant's answers are getting
 better or worse, for the operator's eyes only.
 """
@@ -337,6 +341,7 @@ _JUDGE_A_CHARS = 9000
 
 _EVAL_DIR = Path(__file__).resolve().parent / "eval"
 DEFAULT_BENCHMARK = "benchmark_bear_steepener_2026-07-29.json"
+ANALYTICAL_PAIR_BENCHMARK = "benchmark_natural_vs_coached_causality_2026-09-19.json"
 
 
 # ---------------------------------------------------------------------------
@@ -851,18 +856,15 @@ def _llm_cfg(root: Path | None, *, model: str, fallback_model: str) -> dict:
     return cfg
 
 
-def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
-              context: str) -> str | None:
-    """One unstreamed llm_auth call over the cfg's provider waterfall.
-
-    Mirrors engine/earnings_qual.py::_call_llm_auth — the clean single-shot
-    idiom in this repo. Returns None on any failure; never raises.
-    """
+def _one_shot_with_identity(
+    cfg: dict, system: str, user: str, *, max_tokens: int, context: str
+) -> tuple[str | None, str, str]:
+    """One unstreamed call plus the provider/model that actually served it."""
     try:
         from engine import llm_auth  # noqa: PLC0415
     except Exception as exc:  # noqa: BLE001
         log.warning("response_eval: llm_auth import failed (%s)", exc)
-        return None
+        return None, "", ""
     try:
         providers = llm_auth.build_providers(
             cfg,
@@ -871,10 +873,10 @@ def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
         )
     except Exception as exc:  # noqa: BLE001
         log.warning("response_eval: build_providers failed (%s)", exc)
-        return None
+        return None, "", ""
     if not providers:
         log.warning("response_eval: no LLM provider credential present (%s)", context)
-        return None
+        return None, "", ""
 
     def _do_call(client, model: str):
         kw: dict[str, Any] = {
@@ -896,10 +898,28 @@ def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
         return text, ("truncated" if sr == "max_tokens" else None), resp
 
     try:
-        text, _reason, _used = llm_auth.make_call(providers, _do_call, context=context)
+        text, _reason, used = llm_auth.make_call(
+            providers, _do_call, context=context
+        )
     except Exception as exc:  # noqa: BLE001
         log.warning("response_eval: %s call failed (%s)", context, exc)
-        return None
+        return None, "", ""
+    used_name = str(used or "")
+    used_model = ""
+    if used_name:
+        for provider in providers:
+            if str(provider.get("name") or "") == used_name:
+                used_model = str(provider.get("model") or "")
+                break
+    return text, used_name, used_model
+
+
+def _one_shot(cfg: dict, system: str, user: str, *, max_tokens: int,
+              context: str) -> str | None:
+    """Backward-compatible text-only wrapper around the identity-aware call."""
+    text, _provider, _model = _one_shot_with_identity(
+        cfg, system, user, max_tokens=max_tokens, context=context
+    )
     return text
 
 
@@ -958,6 +978,52 @@ def answer_via_llm_auth(
     return _answer
 
 
+def fast_answer_via_llm_auth(
+    root: Path | None = None,
+) -> Callable[[str, str], str | None]:
+    """One-shot answerer bound to the existing configured Brain Fast lane.
+
+    Used by the natural-vs-coached analytical benchmark so the measured model
+    matches the customer Fast primary/fallback instead of the cheap judge model.
+    It still excludes Codex: Fast owns DeepSeek + its configured inference
+    fallback, and this weekly QA turn must not consume the operator subscription.
+    """
+    lane = _brain_fast_lane(root)
+    model = str(lane.get("deepseek_model") or "deepseek-v4-pro").strip() or "deepseek-v4-pro"
+    fallback = str(lane.get("fallback_model") or JUDGE_FALLBACK_MODEL).strip() or JUDGE_FALLBACK_MODEL
+    raw_tokens = lane.get("max_tokens")
+    max_tokens = (
+        raw_tokens
+        if type(raw_tokens) is int and 1 <= raw_tokens <= 16000
+        else BENCHMARK_MAX_TOKENS
+    )
+    cfg = _llm_cfg(root, model=model, fallback_model=fallback)
+    raw_timeout = lane.get("client_timeout_s")
+    if (
+        not isinstance(raw_timeout, bool)
+        and isinstance(raw_timeout, (int, float))
+        and 1 <= float(raw_timeout) <= 600
+    ):
+        cfg["client_timeout_s"] = raw_timeout
+    raw_retries = lane.get("client_max_retries")
+    if type(raw_retries) is int and 0 <= raw_retries <= 2:
+        cfg["client_max_retries"] = raw_retries
+
+    def _answer(system: str, user: str) -> str | None:
+        text, provider, served_model = _one_shot_with_identity(
+            cfg, system, user,
+            max_tokens=max_tokens, context="response_eval_analytical_pair",
+        )
+        _answer.last_provider = provider  # type: ignore[attr-defined]
+        _answer.last_model_id = served_model  # type: ignore[attr-defined]
+        return text
+
+    _answer.model_id = model  # type: ignore[attr-defined]
+    _answer.last_provider = ""  # type: ignore[attr-defined]
+    _answer.last_model_id = ""  # type: ignore[attr-defined]
+    return _answer
+
+
 # ---------------------------------------------------------------------------
 # Tier 3 — the frozen benchmark
 # ---------------------------------------------------------------------------
@@ -1003,6 +1069,31 @@ def benchmark_system_prompt(question: str, lane: str = "fast") -> str:
         return ""
 
 
+def gateway_benchmark_system_prompt(
+    question: str, lane: str = "fast", lang: str = "en"
+) -> str:
+    """Build the real chat prompt hierarchy for a frozen no-tools benchmark.
+
+    Unlike benchmark_system_prompt, this intentionally includes the gateway's
+    top-level writing/honesty rules and lane shape before the live Analyst
+    Doctrine. The benchmark remains no-tools and uses a frozen evidence packet.
+    Never raises.
+    """
+    try:
+        from engine.neuralweb import brain_gateway as _gateway  # noqa: PLC0415
+
+        return (
+            _gateway._build_system_prompt(
+                "chat", "", internals_allowed=False, lane=lane
+            )
+            + _gateway._analyst_block_for(question, lane)
+            + _gateway._language_directive(lang)
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning("response_eval: gateway benchmark prompt unavailable (%s)", exc)
+        return ""
+
+
 def _doctrine_fingerprint() -> str:
     """Analyst-doctrine fingerprint, or "". Pins WHICH doctrine vintage scored."""
     try:
@@ -1021,6 +1112,12 @@ def _benchmark_extra_context(case: dict) -> str:
         "Weigh a missing property into the axis it belongs to, and name the "
         "missing ones in your note.",
     ]
+    if case.get("stance_required") is False:
+        lines.append(
+            "\nTASK-CONDITIONED CONCLUSION FOR THIS CASE: a trade stance is NOT required. "
+            "Absence of a stance must not reduce voice_compliance; do not reward a "
+            "forced action call on an explanatory/causal question."
+        )
     for prop in case.get("expected_properties") or []:
         if isinstance(prop, dict) and prop.get("check"):
             lines.append(f"- {prop.get('tag') or '?'}: {prop['check']}")
@@ -1112,4 +1209,171 @@ def run_benchmark(
         "system_chars": len(system),
         "doctrine_fingerprint": _doctrine_fingerprint(),
         "error": scored.get("error"),
+    }
+
+# ---------------------------------------------------------------------------
+# Tier 3B — paired natural-vs-coached analytical benchmark
+# ---------------------------------------------------------------------------
+
+def _pair_case_result(
+    case: dict,
+    *,
+    packet: str,
+    lane: str,
+    lang: str,
+    answer_fn: Callable[[str, str], str | None],
+    judge_fn: Callable[[str], str | None],
+) -> dict:
+    case_id = str(case.get("case_id") or "")
+    question = str(case.get("question_en") or "")
+    system = gateway_benchmark_system_prompt(question, lane=lane, lang=lang)
+    user = f"{packet}\n\n{question}" if packet else question
+    if not system:
+        return {
+            "case_id": case_id, "ok": False, "error": "system_prompt_unavailable",
+            "total": None, "passed": False, "analytical_pass": False,
+            "scores": {}, "tags": [], "answer": "", "mech": {},
+            "system_chars": 0,
+        }
+    try:
+        answer = answer_fn(system, user)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("response_eval: analytical pair answer_fn failed (%s)", exc)
+        answer = None
+    if not answer:
+        return {
+            "case_id": case_id, "ok": False, "error": "no_answer",
+            "total": None, "passed": False, "analytical_pass": False,
+            "scores": {}, "tags": [], "answer": "", "mech": {},
+            "system_chars": len(system),
+        }
+
+    row = {
+        "id": f"benchmark:analytical_pair:{case_id}",
+        "ts": "", "lane": lane, "lang": lang,
+        "question": question, "answer": answer, "flags": {},
+    }
+    scored = score_response(
+        row, judge_fn, extra_context=_benchmark_extra_context(case)
+    )
+    tags = list(scored.get("tags") or [])
+    analytical_forbidden = {
+        "single_cause_forcing", "headline_first", "invented_odds",
+    }
+    analytical_pass = bool(
+        scored.get("judged")
+        and scored.get("passed")
+        and not analytical_forbidden.intersection(tags)
+    )
+    actual_model = str(
+        getattr(answer_fn, "last_model_id", "")
+        or getattr(answer_fn, "model_id", "")
+        or ""
+    )
+    actual_provider = str(getattr(answer_fn, "last_provider", "") or "")
+    return {
+        "case_id": case_id,
+        "ok": bool(scored.get("judged")),
+        "error": scored.get("error"),
+        "total": scored.get("total"),
+        "passed": bool(scored.get("passed")),
+        "analytical_pass": analytical_pass,
+        "scores": scored.get("scores") or {},
+        "tags": tags,
+        "answer": answer,
+        "note": scored.get("note") or "",
+        "mech": scored.get("mech") or {},
+        "system_chars": len(system),
+        "judged_at_model": scored.get("judged_at_model") or "",
+        "answered_by_provider": actual_provider,
+        "answered_by_model": actual_model,
+    }
+
+
+def run_benchmark_pair(
+    root: Path | None = None,
+    judge_fn: Callable[[str], str | None] | None = None,
+    answer_fn: Callable[[str, str], str | None] | None = None,
+    *,
+    name: str = ANALYTICAL_PAIR_BENCHMARK,
+) -> dict:
+    """Score natural phrasing against an explicitly coached positive control.
+
+    The exact regression of interest is analytical_regression: the coached
+    question clears the analytical contract but the natural customer phrasing
+    does not. QA telemetry only; this grants no product or trading authority.
+    """
+    doc = load_benchmark(name)
+    if not doc:
+        return {
+            "ok": False, "error": "benchmark_absent", "benchmark_id": "",
+            "classification": "unjudged", "pair_passed": False,
+            "score_gap": None, "natural": {}, "coached": {},
+        }
+
+    cases = doc.get("cases")
+    if (
+        not isinstance(cases, list)
+        or len(cases) != 2
+        or [row.get("case_id") if isinstance(row, dict) else None for row in cases]
+        != ["natural", "coached"]
+    ):
+        return {
+            "ok": False, "error": "benchmark_malformed",
+            "benchmark_id": str(doc.get("benchmark_id") or name),
+            "classification": "unjudged", "pair_passed": False,
+            "score_gap": None, "natural": {}, "coached": {},
+        }
+
+    lane = str(doc.get("lane") or "fast")
+    lang = str(doc.get("lang") or "en")
+    packet = str(doc.get("packet_digest_fixture") or "")
+    if answer_fn is None:
+        answer_fn = fast_answer_via_llm_auth(root)
+    if judge_fn is None:
+        judge_fn = judge_via_llm_auth(root)
+
+    natural = _pair_case_result(
+        cases[0], packet=packet, lane=lane, lang=lang,
+        answer_fn=answer_fn, judge_fn=judge_fn,
+    )
+    coached = _pair_case_result(
+        cases[1], packet=packet, lane=lane, lang=lang,
+        answer_fn=answer_fn, judge_fn=judge_fn,
+    )
+
+    if not natural.get("ok") or not coached.get("ok"):
+        classification = "unjudged"
+    elif natural.get("analytical_pass") and coached.get("analytical_pass"):
+        classification = "pass"
+    elif not natural.get("analytical_pass") and coached.get("analytical_pass"):
+        classification = "analytical_regression"
+    elif natural.get("analytical_pass") and not coached.get("analytical_pass"):
+        classification = "coaching_regression"
+    else:
+        classification = "general_reasoning_failure"
+
+    n_total = natural.get("total")
+    c_total = coached.get("total")
+    score_gap = (
+        c_total - n_total
+        if isinstance(n_total, int) and isinstance(c_total, int)
+        else None
+    )
+    ok = bool(natural.get("ok") and coached.get("ok"))
+    return {
+        "ok": ok,
+        "error": None if ok else "pair_unjudged",
+        "benchmark_id": str(doc.get("benchmark_id") or name),
+        "classification": classification,
+        "pair_passed": classification == "pass",
+        "score_gap": score_gap,
+        "natural": natural,
+        "coached": coached,
+        "answered_by_model": (
+            natural.get("answered_by_model")
+            if natural.get("answered_by_model") == coached.get("answered_by_model")
+            else "mixed"
+        ),
+        "doctrine_fingerprint": _doctrine_fingerprint(),
     }

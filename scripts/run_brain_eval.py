@@ -302,14 +302,31 @@ def _notice(summary: dict, r2_note: str) -> None:
         if bench.get("total") is not None
         else f"benchmark not scored ({bench.get('error') or 'skipped'})"
     )
+    pair = summary.get("analytical_pair") or {}
+    pair_txt = f"analytical-pair {pair.get('classification') or 'unscored'}"
     top = ", ".join(f"{t}×{n}" for t, n in (summary.get("tags") or {}).items()) or "none"
     print(
         f"::notice title=brain-eval::{summary.get('iso_week')} "
         f"sampled {summary.get('sampled')} · judged {summary.get('judged')} · "
         f"pass {lanes} · mean {summary.get('mean_total')} · {bench_txt} · "
-        f"top tags: {top} · {r2_note}",
+        f"{pair_txt} · top tags: {top} · {r2_note}",
         flush=True,
     )
+
+
+def _compact_analytical_pair(raw: dict) -> dict:
+    """Drop generated prose/mechanical internals before summary/R2 archival."""
+    if not isinstance(raw, dict):
+        return {}
+    out = dict(raw)
+    for key in ("natural", "coached"):
+        row = out.get(key)
+        if isinstance(row, dict):
+            out[key] = {
+                k: v for k, v in row.items()
+                if k not in ("answer", "mech")
+            }
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -381,9 +398,28 @@ def main(argv: list[str] | None = None) -> int:
         # payload the admin panel renders. Keep the score, drop the prose.
         benchmark = {k: v for k, v in benchmark.items() if k not in ("answer", "mech")}
 
+    # 3B. Analytical pair — same evaluator, real gateway prompt hierarchy.
+    analytical_pair: dict = {}
+    if args.no_benchmark:
+        analytical_pair = {"error": "skipped_by_flag", "classification": "skipped"}
+    elif args.dry_run:
+        pair_case = _re.load_benchmark(_re.ANALYTICAL_PAIR_BENCHMARK)
+        analytical_pair = {
+            "benchmark_id": pair_case.get("benchmark_id", ""),
+            "error": "dry_run",
+            "classification": "dry_run",
+            "pair_passed": False,
+            "fixture_loaded": bool(pair_case),
+        }
+    else:
+        analytical_pair = _compact_analytical_pair(
+            _re.run_benchmark_pair(root, judge_fn)
+        )
+
     # 4. Summarise.
     summary = build_summary(results, benchmark, ingest=ingest,
                             refreshed=refreshed, dry_run=args.dry_run)
+    summary["analytical_pair"] = analytical_pair
     summary["sidecar_writes"] = written
     out = write_summary(root, summary)
 
