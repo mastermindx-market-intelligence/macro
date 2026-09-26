@@ -116,7 +116,45 @@ def _number(value: Any) -> Decimal:
     return result
 
 
-def _guidance(item: Mapping, workspace: Mapping) -> tuple[Decimal, Decimal, dict]:
+def _guidance_clocks(source: Mapping, workspace: Mapping, now: datetime) -> tuple[datetime, datetime]:
+    """Use the cited document's existing clock; never borrow a sibling's time.
+
+    Legacy lifecycle clocks belong to the issuer release and remain usable for
+    release-bound guidance only. Other source clocks are validated by their
+    existing owner. No timestamps, source identities or history are invented.
+    """
+    kind = source.get("kind")
+    if not isinstance(kind, str) or kind not in {"issuer_release", "transcript"}:
+        raise _Refusal("guidance_source_kind_unsupported")
+    raw = source.get("source_clock")
+    if raw is None:
+        if kind != "issuer_release":
+            raise _Refusal("guidance_source_clock_missing")
+        releases = [s for s in workspace["sources"] if isinstance(s, Mapping)
+                    and s.get("kind") == "issuer_release"]
+        if len(releases) != 1:
+            raise _Refusal("guidance_source_clock_ambiguous")
+        return (_clock(workspace["lifecycle"]["source_available_at"]),
+                _clock(workspace["lifecycle"]["observed_at"]))
+    from .qa_exchange import validate_source_clock
+    try:
+        clock = validate_source_clock(raw, document_id=source["document_id"],
+                                      source_sha256=source["source_sha256"])
+    except (ValueError, TypeError, KeyError) as exc:
+        raise _Refusal("guidance_source_clock_invalid") from exc
+    if clock["clock_state"] != "known":
+        raise _Refusal("guidance_source_clock_unknown")
+    try:
+        available = _clock(clock["source_available_at"])
+        observed = _clock(clock["system_recorded_at"])
+    except _Refusal as exc:
+        raise _Refusal("guidance_source_clock_invalid") from exc
+    if available > observed or observed > now:
+        raise _Refusal("guidance_source_clock_invalid")
+    return available, observed
+
+
+def _guidance(item: Mapping, workspace: Mapping, now: datetime) -> tuple[Decimal, Decimal, dict]:
     if item.get("status") == "withdrawn":
         raise _Refusal("guidance_withdrawn")
     if (item.get("schema") != "guidance_item.v1" or not isinstance(item.get("status"), str)
@@ -155,11 +193,12 @@ def _guidance(item: Mapping, workspace: Mapping) -> tuple[Decimal, Decimal, dict
     if (len(sources) != 1 or sources[0].get("receipt_state") != "byte_replayed"
             or sources[0].get("source_sha256") != (span.receipt or {}).get("source_sha256")):
         raise _Refusal("guidance_evidence_invalid")
+    available, observed = _guidance_clocks(sources[0], workspace, now)
     evidence = {"event_id": workspace["event_id"], "generation_id": workspace["generation_id"],
                 "document_id": span.document_id, "span_id": span.span_id,
                 "receipt_state": span.receipt_state,
-                "observed_at": _clock(workspace["lifecycle"]["observed_at"]).isoformat(),
-                "source_available_at": _clock(workspace["lifecycle"]["source_available_at"]).isoformat()}
+                "observed_at": observed.isoformat(),
+                "source_available_at": available.isoformat()}
     return low, high, evidence
 
 
@@ -187,17 +226,12 @@ def compare_guidance_workspaces(current: Any, prior: Any, *, as_of: datetime,
     reasons: list[str] = result["reasons"]
     try:
         now = _clock(as_of); result["as_of"] = now.isoformat()
-        c, issuer, observed = _workspace(current, now, ticker, expected_security_id)
+        c, issuer, _ = _workspace(current, now, ticker, expected_security_id)
         if prior is None:
             raise _Refusal("prior_not_supplied")
-        p, p_issuer, p_observed = _workspace(prior, now, None)
+        p, p_issuer, _ = _workspace(prior, now, None)
         if issuer != p_issuer:
             raise _Refusal("issuer_mismatch")
-        # Receipt order is not disclosure order: a backfilled old release may
-        # arrive last without becoming the company's latest outlook.
-        if (p_observed >= observed or _clock(p["lifecycle"]["source_available_at"])
-                > _clock(c["lifecycle"]["source_available_at"])):
-            raise _Refusal("revision_order_invalid")
         current_counts = Counter(_key(g) for g in c["guidance"])
         if not c["guidance"]:
             raise _Refusal("guidance_absent")
@@ -208,14 +242,18 @@ def compare_guidance_workspaces(current: Any, prior: Any, *, as_of: datetime,
                     raise _Refusal("guidance_invalid")
                 if current_counts[key] != 1:
                     raise _Refusal("current_ambiguous")
-                low, high, c_ev = _guidance(item, c)
+                low, high, c_ev = _guidance(item, c, now)
                 matches = [g for g in p["guidance"] if _key(g) == key]
                 if not matches:
                     raise _Refusal("prior_comparable_missing")
                 if len(matches) != 1:
                     raise _Refusal("prior_ambiguous")
                 previous = matches[0]
-                p_low, p_high, p_ev = _guidance(previous, p)
+                p_low, p_high, p_ev = _guidance(previous, p, now)
+                # Order the documents supporting THIS metric, not sibling releases.
+                if (_clock(p_ev["observed_at"]) >= _clock(c_ev["observed_at"])
+                        or _clock(p_ev["source_available_at"]) > _clock(c_ev["source_available_at"])):
+                    raise _Refusal("revision_order_invalid")
                 if item["unit"] != previous["unit"]:
                     raise _Refusal("measurement_mismatch")
                 if any(item.get(k) != previous.get(k) for k in ("basis", "currency", "scope")):

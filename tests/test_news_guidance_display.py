@@ -194,3 +194,54 @@ def test_guidance_only_ticker_can_render_with_no_headline_list():
     env=Environment(loader=FileSystemLoader(str(ROOT/'templates')),autoescape=True)
     html=env.get_template('ticker.html.j2').render(ticker='ACME',name='Synthetic',news=None,news_guidance=view(payload()),hero=None,stats=None,stale=False,jsonld_str='{}')
     assert 'data-news-guidance' in html and '76,000–78,000 vehicles' in html
+
+
+def test_existing_exclusive_dossier_gate_covers_guidance_dependency():
+    # Hosted contract-delta found this real import-closure hole: dossier tests
+    # import build_ticker_pages, which now imports the pure guidance formatter.
+    import fnmatch
+    import yaml
+    jobs = yaml.safe_load((ROOT / '.github/ci/legacy-jobs.yml').read_text())["jobs"]
+    job = jobs["conviction-profile"]
+    assert job["scope"] == "exclusive" and job["gate"] == "code"
+    assert any(fnmatch.fnmatchcase("lib/news_guidance_view.py", pattern)
+               for pattern in job["paths"]), "exclusive dossier gate omits its new import"
+
+
+@pytest.mark.parametrize("reason", ["guidance_source_clock_missing", "guidance_source_clock_unknown",
+                                    "guidance_source_clock_invalid", "guidance_source_clock_ambiguous"])
+def test_source_clock_absence_uses_existing_plain_timing_message(reason):
+    data = payload(prior=False); data["reasons"] = [reason]
+    display = view(data)
+    assert display["note_en"] == "Disclosure timing could not be verified."
+    assert display["note_zh"] == "无法核实披露时间。"
+    html = render(data)
+    assert reason not in html and 'Disclosure timing could not be verified.' in html
+    assert '-24,500' not in html
+
+
+@pytest.mark.parametrize("known", [True, False])
+def test_actual_news_to_ticker_path_preserves_source_clock_and_absence(tmp_path, monkeypatch, known):
+    from test_news_guidance_comparison import transcript_workspace
+    from engine import financial_news
+    from scripts import build_ticker_pages as pages
+    monkeypatch.setattr(financial_news.nc, "build_entity_map", lambda: {"tickers": {}})
+    records = financial_news.mastermind_by_ticker(
+        {"by_ticker": {"ACME": [{"title": "Synthetic source", "url": "https://example.test/a"}]}},
+        guidance_workspaces={"ACME": {"current": transcript_workspace(later=True, known=known),
+                                     "prior": transcript_workspace(), "expected_security_id": "xnas:ACME"}},
+        as_of=ASOF)
+    folder = tmp_path / "news"; folder.mkdir()
+    (folder / "by_ticker.json").write_text(json.dumps({"schema": "news_flow.v1", "tickers": records}))
+    ctx = pages.build_page_context("ACME", "Synthetic", "Technology", {},
+                                  pages.load_all_aggregates(tmp_path), "2026-09-24T16:00:00Z")
+    html = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True).get_template('ticker.html.j2').render(**ctx)
+    assert 'data-news-guidance' in html and 'Synthetic source' in html
+    if known:
+        assert 'Current disclosure: 2026-09-24 15:10 UTC' in html
+        assert 'Current disclosure: 2026-09-24 15:00 UTC' not in html
+        assert '-24,500 vehicles' in html
+    else:
+        assert 'Disclosure timing could not be verified.' in html
+        assert '-24,500 vehicles' not in html
+    assert 'fixture-release' not in html and 'guidance_source_clock' not in html

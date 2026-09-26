@@ -137,3 +137,104 @@ Evidence: `mockups/evidence/news-guidance-20260926/EVIDENCE.yml` and manifest/PN
 No live source pairing, independent review, deployment or product completion is asserted.
 Keep DRAFT/HOLD-FOR-SOL, no automatic merge. Next accepted source input must still come from the
 existing Company Intelligence owner; the previously denied source endpoint remains frozen.
+
+
+## R8 — source-specific chronology and the actual dossier CI dependency
+
+Continuation of the existing operation/PR/branch; no fourth carrier. Chairman's
+instruction to proceed without Executive remains controlling. The native Codex
+review routing401 and public source403 remain frozen; no retry or alternate
+credential, provider or endpoint was used. Direct work: PRINCIPAL_JUDGMENT at the
+source-clock/lineage contract, then LOWER_TOTAL_OVERHEAD for the bounded fix.
+This is author-discovered repair, not independent approval.
+
+### Reproduced failure and implemented boundary
+
+- [x] Consume R7 contract-delta job108392754105 in run36237834477. It found one
+  introduced dependency gap: conviction-profile is scope:exclusive and the
+  ticker builder now imports lib/news_guidance_view.py outside its declared
+  paths. Widen that existing job by exactly that path; no other job changes.
+- [x] Reproduce the timing defect against the prior comparator: transcript
+  guidance inherited the issuer-release lifecycle clock. Require the exact
+  cited source's existing event_source_clock.v1 for transcript guidance;
+  validate it through qa_exchange.validate_source_clock, including document
+  and source-hash association. Unknown/missing clocks do not borrow release time.
+- [x] Keep legacy lifecycle clocks only for a uniquely identified issuer-release
+  source. Multiple release sources cannot share one assumed clock. Explicit
+  unknown source clocks never fall back; unsupported source kinds are absent.
+- [x] Apply observed/disclosed pair order to EACH guidance item's actual source,
+  not an unrelated event-level release pair. Unchanged release clocks cannot
+  hide a later supported transcript; a late-arriving older transcript cannot
+  become a new outlook. All source times require zones and available <= recorded
+  <= calculation time. Existing workspace validation remains in force.
+- [x] Route the new absence reasons to the existing bilingual explanation:
+  'Disclosure timing could not be verified.' No new layout/CSS or machine slugs.
+- [x] Exercise actual financial_news -> existing by_ticker artifact loader ->
+  actual ticker context/template for both source-time-known and unknown cases.
+  Known transcript guidance prints15:10, not the sibling release15:00. Unknown
+  guidance shows the explanation without numbers or private source locators.
+
+### Proof
+
+Comparison corpus97 cases; display corpus44 cases. Expanded current source:
+258 PASS, exit0. Deliberately restore R7 comparator:22 FAIL/119 PASS across the
+comparison/display corpus; restore current bytes:258 PASS. Deliberately restore
+R7 manifest:the trigger regression fails. The ACTUAL run_ci_pack.load_legacy_jobs
+and select_jobs also select no conviction-profile job for formatter-only input
+under the old manifest, and select conviction-profile under the repaired one.
+That is exact owner-selector evidence, not a full-repository contract census.
+
+Composition with unchanged #7955 head29dc4ce4f5b3f03ba1fc5419a507b09e1b3b93d5
+and #7966 heade963555df1d7a71ead116d641a85c07e17f84241:366 PASS, exit0. Their
+source and remote branches remain unchanged. Shared manifest three-way merge is
+clean. No network/vendor/LLM, source endpoint, or real data tree was used.
+
+R7's four existing synthetic scenarios retain byte-identical public payloads
+and actual-template HTML under R8:normal, correction, rate and missing-prior.
+R7 screenshots remain their original captures, not newly claimed R8/live proof.
+The new timing-absence and source-specific timestamp behavior is tested through
+the actual template. No browser/theme/stylesheet modification is part of R8.
+
+Test snapshot setup gaps were repaired with unchanged exact-head dependencies
+before the valid source-clock RED. The first incomplete run's missing
+public_wire import is not evidence of a product defect. The full repo and its
+contract-delta census remain hosted gates, not claimed from selected-source tests.
+
+### Input-lineage ruling — automatic acquisition is not yet safe to connect
+
+The current Company Intelligence reader's read_all_event_source_revisions
+intentionally deduplicates consecutive issuer-release source hashes. A synthetic
+probe of its ACTUAL _receipt_from_revision/_dedupe_carry_forward_hops produced
+one release-revision row for two workspaces with distinct guidance transcript
+hashes but the same issuer release. Zero network calls. That behavior is correct
+for the release-history consumer; it is not a complete guidance-history API.
+
+Do not relabel that release projection, add a competing history store, or select
+a supposed prior guidance from the newest two returned release rows. Existing
+source owner #7331 already owns per-source clocks and revision-serving scope;
+#7575's rejected guidance extractor/formatter remains separately owned. News
+requires accepted guidance-document lineage, original source/observation clocks,
+a real same-period baseline and existing security binding before automatic input
+activation. R2 access remains separately unresolved. This ruling blocks only
+unsafe automatic pairing; source and UI repair did not require Executive OS.
+
+Exact evidence in the existing operation root:r8-trigger-red/green.log,
+r8-clock-red-complete.log,r8-clock-green.log,r8-message-red/green.log,
+r8-consumer-green.log,r8-original-clock-mutation.log,
+r8-original-trigger-mutation.log,r8-restored.log,r8-combined.log,
+r8-mutation-verification.json,r8-actual-ci-selector-proof.json,
+r8-source-lineage-probe.json,r8-r7-render-parity.json.
+
+Keep DRAFT/HOLD-FOR-SOL and no automatic merge. Current source changes require
+fresh exact-head independent review and concluded CI; previous green runs are
+not these bytes' acceptance. No automatic ingestion, production release or
+end-to-end product acceptance is claimed.
+
+Source-owner continuation reference consumed: #7331 comment5758713655 already
+accepts the Li Auto integration boundary. It calls for the existing
+`guidance_update` event type and a separate `extract_release_guidance` callback,
+then the incumbent #7331/#7426 producer/publisher after #7575's reviewed repair.
+Forecast updates, documentary corrections and actual outcomes remain distinct.
+News does not reopen that design or acquire any incumbent source custody; the
+new transcript-history finding is an additive consumer constraint, not a demand
+to replace the release-only revision projection or re-approve accepted work.

@@ -408,3 +408,93 @@ def test_receipt_identity_cannot_be_absent_on_both_sides(field, value):
         current["sources"][0][field] = value
     result = compare(current, workspace())
     assert not result["comparisons"] and "guidance_evidence_invalid" in result["reasons"]
+
+
+# R8: disclosure clocks belong to the exact cited source, not its release sibling.
+def transcript_workspace(*, later=False, known=True):
+    from engine.company_intelligence.qa_exchange import source_clock_payload
+    result = workspace(76000 if later else 100000, 78000 if later else 103000, later=later)
+    source = result["sources"][0]
+    source["kind"] = "transcript"
+    day = "24" if later else "23"
+    source["source_clock"] = source_clock_payload(
+        document_id=source["document_id"], source_sha256=source["source_sha256"],
+        source_available_at=f"2026-09-{day}T15:10:00+00:00" if known else None,
+        system_recorded_at=f"2026-09-{day}T15:20:00+00:00")
+    return result
+
+
+def test_transcript_guidance_uses_its_own_source_clock_not_release_clock():
+    c, p = transcript_workspace(later=True), transcript_workspace()
+    result = compare(c, p)
+    assert result["available"]
+    evidence = result["comparisons"][0]["evidence"]
+    assert evidence[0]["source_available_at"] == "2026-09-24T15:10:00+00:00"
+    assert evidence[0]["observed_at"] == "2026-09-24T15:20:00+00:00"
+    assert evidence[1]["observed_at"] == "2026-09-23T15:20:00+00:00"
+
+
+def test_transcript_clock_unknown_does_not_inherit_known_release_time():
+    result = compare(transcript_workspace(later=True, known=False), transcript_workspace())
+    assert not result["available"] and "guidance_source_clock_unknown" in result["reasons"]
+
+
+def test_transcript_clock_absent_does_not_inherit_known_release_time():
+    c = transcript_workspace(later=True); c["sources"][0].pop("source_clock")
+    result = compare(c, transcript_workspace())
+    assert not result["available"] and "guidance_source_clock_missing" in result["reasons"]
+
+
+@pytest.mark.parametrize("field,value", [
+    ("document_id", "wrong-source"), ("source_sha256", "0"*64),
+    ("rights_profile", "rp_unknown_v1"), ("clock_state", []),
+    ("source_available_at", "2026-09-24T15:10:00"),
+    ("system_recorded_at", "not-a-time"),
+    ("system_recorded_at", "2026-09-24T16:01:00+00:00"),
+    ("system_recorded_at", "2026-09-24T15:09:00+00:00"),
+])
+def test_invalid_or_future_source_clock_cannot_reach_news(field, value):
+    c = transcript_workspace(later=True); c["sources"][0]["source_clock"][field] = value
+    result = compare(c, transcript_workspace())
+    assert not result["available"] and "guidance_source_clock_invalid" in result["reasons"]
+
+
+def test_transcript_update_survives_unchanged_issuer_release_lifecycle_clock():
+    c, p = transcript_workspace(later=True), transcript_workspace()
+    c["lifecycle"] = deepcopy(p["lifecycle"])
+    result = compare(c, p)
+    assert result["available"] and result["comparisons"][0]["midpoint_delta"] == "-24500"
+
+
+def test_old_transcript_arriving_after_new_release_is_not_new_guidance():
+    c, p = transcript_workspace(later=True), transcript_workspace()
+    c["sources"][0]["source_clock"]["source_available_at"] = "2026-09-22T15:10:00+00:00"
+    result = compare(c, p)
+    assert not result["available"] and "revision_order_invalid" in result["reasons"]
+
+
+def test_explicit_unknown_release_source_clock_cannot_fall_back_to_lifecycle():
+    c, p = transcript_workspace(later=True, known=False), workspace()
+    c["sources"][0]["kind"] = "issuer_release"
+    result = compare(c, p)
+    assert not result["available"] and "guidance_source_clock_unknown" in result["reasons"]
+
+
+@pytest.mark.parametrize("kind", [None, "news_article", [], {}])
+def test_unrecognized_source_kind_cannot_borrow_the_event_clock(kind):
+    c = workspace(later=True); c["sources"][0]["kind"] = kind
+    result = compare(c, workspace())
+    assert not result["available"] and "guidance_source_kind_unsupported" in result["reasons"]
+
+
+def test_unknown_prior_transcript_clock_refuses_only_affected_comparison():
+    result = compare(transcript_workspace(later=True), transcript_workspace(known=False))
+    assert not result["available"] and "guidance_source_clock_unknown" in result["reasons"]
+
+
+def test_multiple_release_sources_cannot_share_one_lifecycle_clock():
+    c = workspace(later=True)
+    other = deepcopy(c["sources"][0]); other["document_id"] = "other-release"
+    c["sources"].append(other)
+    result = compare(c, workspace())
+    assert not result["available"] and "guidance_source_clock_ambiguous" in result["reasons"]

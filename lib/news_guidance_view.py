@@ -28,6 +28,10 @@ _REASONS = {
     "measurement_basis_missing": ("A comparable measurement basis is missing.", "缺少可比的计量口径。"),
     "guidance_evidence_invalid": ("Source support could not be verified.", "无法核实来源依据。"),
     "clock_invalid": ("Disclosure timing could not be verified.", "无法核实披露时间。"),
+    "guidance_source_clock_missing": ("Disclosure timing could not be verified.", "无法核实披露时间。"),
+    "guidance_source_clock_unknown": ("Disclosure timing could not be verified.", "无法核实披露时间。"),
+    "guidance_source_clock_invalid": ("Disclosure timing could not be verified.", "无法核实披露时间。"),
+    "guidance_source_clock_ambiguous": ("Disclosure timing could not be verified.", "无法核实披露时间。"),
     "revision_order_invalid": ("Disclosure order could not be verified.", "无法核实披露先后顺序。"),
     "event_state_ineligible": ("This event cannot supply a current comparison.", "该事件无法提供当前对比。"),
 }
