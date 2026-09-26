@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/darkpool.html.j2
+- site/darkpool.html
+manifest: mockups/evidence/uiux-darkpool-participation-trust-20260924/manifest.json

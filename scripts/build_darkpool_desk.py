@@ -55,6 +55,7 @@ PANEL_DEEP_PATH = config.data_dir() / "finra_short_volume" / "panel_deep.parquet
 ATS_DIR     = config.data_dir() / "finra_ats"
 NONATS_DIR  = config.data_dir() / "finra_otc_nonats"
 YAHOO_DIR   = config.data_dir() / "yahoo"
+BASKET_OHLCV_DIR = config.data_dir() / "baskets" / "ohlcv"
 
 # Min dates in panel for the page to be useful (roadmap 30-date floor)
 MIN_DATES = 30
@@ -117,38 +118,59 @@ def _load_panel() -> pd.DataFrame | None:
 
 
 def _load_yahoo(tickers: list[str]) -> tuple[dict[str, pd.Series], dict[str, pd.Series]]:
-    """Load consolidated daily volume AND close for the display universe.
+    """Load same-day consolidated volume + the existing Yahoo close basis.
 
-    Returns ({ticker: volume}, {ticker: close}); missing tickers are omitted gracefully.
-
-    Close was NOT loaded before 2026-08-05 — the desk read only `volume`. Without price
-    there is no way to pair hidden-volume intensity with what the quote actually did,
-    which is the confluence that makes the read lawful (raw off-exchange share is
-    forbidden as a STANDALONE direction signal — DO_NOT_REBUILD, PSS-AF1 row) and is
-    also how desks actually read this data. Price coverage is thinner than volume
-    coverage, so `n_with_price` is reported and rendered rather than assumed.
+    The normal Yahoo adapter runs early in the long nightly collect. The basket OHLCV
+    refresh runs later and has repeatedly carried the completed daily volume when the
+    earlier Yahoo batch still held a partial bar. Prefer that later same-provider volume
+    on dates it has, then fall back EXACT-DATE to Yahoo. Prices stay on the existing
+    Yahoo ``close`` series so this repair changes only the participation denominator.
+    Missing tickers/dates degrade to the prior Yahoo behavior.
     """
     vol: dict[str, pd.Series] = {}
     close: dict[str, pd.Series] = {}
+    basket_used = 0
     for tk in tickers:
-        p = YAHOO_DIR / f"{tk}.parquet"
-        if not p.exists():
-            continue
-        try:
-            df = pd.read_parquet(p)
-            df.index = pd.to_datetime(df.index).normalize()
-            if "volume" in df.columns:
-                s = df["volume"].dropna()
-                if not s.empty:
-                    vol[tk] = s
-            if "close" in df.columns:
-                c = df["close"].dropna()
-                if not c.empty:
-                    close[tk] = c
-        except Exception:  # noqa: BLE001
-            continue
-    log.info("yahoo loaded: volume %d/%d, close %d/%d tickers",
-             len(vol), len(tickers), len(close), len(tickers))
+        yahoo_vol: pd.Series | None = None
+        yp = YAHOO_DIR / f"{tk}.parquet"
+        if yp.exists():
+            try:
+                df = pd.read_parquet(yp)
+                df.index = pd.to_datetime(df.index).normalize()
+                if "volume" in df.columns:
+                    yv = pd.to_numeric(df["volume"], errors="coerce").dropna()
+                    yv = yv[yv > 0]
+                    if not yv.empty:
+                        yahoo_vol = yv[~yv.index.duplicated(keep="last")].sort_index()
+                if "close" in df.columns:
+                    c = pd.to_numeric(df["close"], errors="coerce").dropna()
+                    if not c.empty:
+                        close[tk] = c[~c.index.duplicated(keep="last")].sort_index()
+            except Exception:  # noqa: BLE001
+                pass
+
+        basket_vol: pd.Series | None = None
+        bp = BASKET_OHLCV_DIR / f"{tk}.parquet"
+        if bp.exists():
+            try:
+                bdf = pd.read_parquet(bp)
+                bdf.index = pd.to_datetime(bdf.index).normalize()
+                if "volume" in bdf.columns:
+                    bv = pd.to_numeric(bdf["volume"], errors="coerce").dropna()
+                    bv = bv[bv > 0]
+                    if not bv.empty:
+                        basket_vol = bv[~bv.index.duplicated(keep="last")].sort_index()
+            except Exception:  # noqa: BLE001
+                pass
+
+        if basket_vol is not None:
+            vol[tk] = basket_vol.combine_first(yahoo_vol) if yahoo_vol is not None else basket_vol
+            basket_used += 1
+        elif yahoo_vol is not None:
+            vol[tk] = yahoo_vol
+
+    log.info("market data loaded: volume %d/%d (%d using later basket OHLCV), close %d/%d",
+             len(vol), len(tickers), basket_used, len(close), len(tickers))
     return vol, close
 
 
@@ -223,7 +245,8 @@ def _compute_ticker_stats_v2(
 
     rows: list[dict] = []
     cov = {"n_total": 0, "n_with_participation": 0, "n_with_price": 0,
-           "n_with_z": 0, "n_with_venue": 0, "n_no_price": 0}
+           "n_with_z": 0, "n_with_venue": 0, "n_no_price": 0,
+           "n_invalid_participation_rows": 0, "n_invalid_current_participation": 0}
 
     for ticker, grp in panel.groupby("ticker"):
         tk = str(ticker)
@@ -239,6 +262,8 @@ def _compute_ticker_stats_v2(
             venue_by_ticker.get(tk),
         )
         d = asdict(m)
+        cov["n_invalid_participation_rows"] += int((m.extras or {}).get("participation_invalid_rows") or 0)
+        cov["n_invalid_current_participation"] += int(bool((m.extras or {}).get("participation_current_invalid")))
         d["asof"] = str(grp["date"].iloc[-1].date())
         d["finra_total_vol"] = int(grp.iloc[-1]["total_vol"])
         d["n_days"] = int(len(grp))
@@ -655,7 +680,7 @@ def main() -> int:
     panel_universe = panel[panel["ticker"].isin(display_universe)] if display_universe else panel
     tickers = list(panel_universe["ticker"].unique())
 
-    # Load yahoo volume + close (close drives the price confluence — see _load_yahoo)
+    # Load completed consolidated volume + Yahoo close (see _load_yahoo).
     yahoo_vol, yahoo_close = _load_yahoo(tickers)
 
     # Load ATS (latest two weeks for wow_pp) + the MATCHING non-ATS week
