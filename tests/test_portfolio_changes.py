@@ -738,6 +738,55 @@ def test_changes_endpoint_503_without_ctx(monkeypatch, tmp_path):
     m.app.dependency_overrides.clear()
 
 
+def test_portfolio_endpoints_fail_closed_when_private_store_is_unavailable(monkeypatch, tmp_path):
+    """Unknown holdings must not become an empty brief, change digest, or cached response."""
+    m, client = _client(monkeypatch, tmp_path, ctx=_ctx(), holdings=[],
+                        population="unspecified")
+    m._PORTFOLIO_CACHE.clear()
+    ctx_path = tmp_path / "site" / "data" / "portfolio_ctx.json"
+    poisoned_key = (
+        "u-test",
+        ctx_path.stat().st_mtime,
+        m._holdings_fingerprint([], "unspecified"),
+    )
+    m._PORTFOLIO_CACHE[poisoned_key] = ({"schema": "poisoned-cache"}, float("inf"))
+
+    try:
+        brief = client.get("/api/portfolio/brief",
+                           headers={"Authorization": "Bearer x"})
+        assert brief.status_code == 503, brief.text
+        assert brief.json()["detail"]["error"] == "portfolio_store_unavailable"
+        assert m._PORTFOLIO_CACHE == {poisoned_key: ({"schema": "poisoned-cache"}, float("inf"))}
+
+        changes = client.post("/api/portfolio/changes", json={},
+                              headers={"Authorization": "Bearer x"})
+        assert changes.status_code == 503, changes.text
+        assert changes.json()["detail"]["error"] == "portfolio_store_unavailable"
+    finally:
+        m.app.dependency_overrides.clear()
+        m._PORTFOLIO_CACHE.clear()
+
+
+def test_portfolio_endpoints_keep_genuine_empty_watchlist_state(monkeypatch, tmp_path):
+    """A successful empty result remains a normal, explicit zero-name account."""
+    m, client = _client(monkeypatch, tmp_path, ctx=_ctx(), holdings=[],
+                        population="watchlist_union")
+    m._PORTFOLIO_CACHE.clear()
+    try:
+        brief = client.get("/api/portfolio/brief",
+                           headers={"Authorization": "Bearer x"})
+        assert brief.status_code == 200, brief.text
+        assert brief.json()["population"]["mode"] == "watchlist_union"
+
+        changes = client.post("/api/portfolio/changes", json={},
+                              headers={"Authorization": "Bearer x"})
+        assert changes.status_code == 200, changes.text
+        assert changes.json()["population"] == "watchlist_union"
+    finally:
+        m.app.dependency_overrides.clear()
+        m._PORTFOLIO_CACHE.clear()
+
+
 def test_changes_endpoint_first_visit_flag_agrees_with_its_changes(monkeypatch, tmp_path):
     """B2 at the API tier: the empty-names snapshot must not come back as
     first_visit=true alongside a non-empty changes list."""
@@ -873,6 +922,24 @@ def test_two_error_paths_no_longer_claim_opposite_populations(monkeypatch, tmp_p
     assert query_fail == "unspecified"
 
 
+def test_private_store_unavailable_note_and_prompt_forbid_false_empty_narration():
+    """Trusted prompt owns behavior; tool result remains factual data, never an instruction."""
+    import engine.neuralweb.brain_gateway as gw  # noqa: PLC0415
+
+    result = gw._portfolio_store_unavailable("watchlist data unreachable")
+
+    assert result["available"] is False
+    assert result["error"] == "portfolio_store_unavailable"
+    note = result["note"].lower()
+    assert "could not be read this turn" in note
+    assert "account contents are unknown" in note
+    assert "do not report" not in note
+
+    prompt = gw._BRAIN_SYSTEM_PROMPT
+    assert "private Portfolio or Watchlist read is unavailable" in prompt
+    assert "never treat it as an empty or zero-name book" in prompt
+
+
 def test_brain_gateway_loader_also_refuses_to_guess(monkeypatch, tmp_path):
     """A2 applies to BOTH loaders. The gateway has its own inline copy of the
     positions→watchlist fallback, so fixing only app.main would leave the Brain tool
@@ -892,7 +959,8 @@ def test_brain_gateway_loader_also_refuses_to_guess(monkeypatch, tmp_path):
                         else ([{"id": "L1"}] if "watchlists?" in path
                               else [{"symbol": "NVDA"}]))
     out = gw._tool_get_portfolio_brief({}, repo, user_id="u1")
-    assert out["population"]["mode"] == "unspecified", out["population"]
+    assert out["available"] is False
+    assert out["error"] == "portfolio_store_unavailable"
 
     # genuinely empty positions → watchlist_union is correct and still reachable.
     monkeypatch.setattr(gw, "_sb_get",
