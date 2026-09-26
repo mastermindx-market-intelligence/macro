@@ -1,16 +1,16 @@
 # Design-system readability repair — 2026-09-26
 
-**Scope:** existing design-system PR #7394; supporting evidence and bounded projection/consumer contract, not another design constitution. **State: candidate / NOT_APPLIED_TO_PAPER / NOT_DEPLOYED.** No production CSS, component renderer, score, data, permission or trade authority changes in this document.
+**Scope:** existing design-system PR #7394; supporting evidence and bounded projection/consumer contract, not another design constitution. **State: candidate / R4_NATIVE_APPLIED_AND_VISUALLY_INSPECTED / NOT_DEPLOYED.** No production CSS, component renderer, score, data, permission or trade authority changes in this document.
 
 The Chairman assigned this session to the shared design system while other sessions specialize in individual pages. The product should supply prepared intelligence and a useful next step without removing analytical depth. Content authority remains `docs/DESIGN_DOCTRINE.md`; visual/composition authority remains `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md`; migration and acceptance remain `research/DESIGN_MIGRATION_FACTORY_V1.md` and the existing Reference Integrity Gate. The pending human-first amendment is #8041, inspected at `920c87a793efffa7993fdb156deaf10b2fadd671`; this record does not merge it or duplicate its decision.
 
-**R3 reconciliation:** another session has now added the source-derived light
+**R3 historical reconciliation:** another session added the source-derived light
 warning/up/down/link ink aliases to the same Paper file. Reuse the existing
 `--mx-light-ink-warn=#7D5922`; do not execute the older create-token example while
 that name exists. The rounded alias measures 6.317604:1 on white (5.580043:1 on
 raised light; 5.945232:1 on the canvas). The 6.326019:1 figure below remains the
-unrounded source-mixture calculation. Node `13N-0` still uses raw amber, so the
-consumer fix remains unapplied and still needs file-wide coordination.
+unrounded source-mixture calculation. At R3, node `13N-0` still used raw amber. R4 below supersedes that unapplied
+consumer state; retain the original calculations as baseline evidence.
 
 The existing contrast helper is now repaired in test-only commit
 `fe7b900e4c28ba2d4a4d327bb996526f09019753`: whole-selector admission plus 13
@@ -53,7 +53,7 @@ Illustrative copy patterns, **not live assessments**:
 
 Avoid customer copy such as 'runtime', 'hydration', 'admission', CI/PR identifiers or internal confidence enums. Keep that information in the existing engineering/evidence surface. Strong is not ready; fresh is not bullish; unknown is not neutral; locked identity is not missing data.
 
-## 2. Actual projection defect and bounded correction
+## 2. Baseline projection defect and bounded correction — R2/R3
 
 Editable identity: Paper file `01M2WGNCX9475G79JRKJTCM08P`, system page `p-1-0`, light component atlas `126-0`. The R2-observed token hash was `5ae876bc` with 79 projected tokens; R3 additions are noted above. This hash and the bridge snapshot are **not** file revisions or writer leases.
 
@@ -168,4 +168,79 @@ The primary task can be an investigation, comparison, monitoring setup or honest
 
 Procedure pin: Mastermind protected `763ec8f920177fdf48b18df1b8e37b61ab482ef0`, compatible Skillpack 1.0.1/bootstrap 1. Existing source carrier is #7394 / `sol/design-system-editable-reference-20260919`; original semantic head `bc01b258609cb4fcab0a3cf8089fdc5b7e21f803` remains historical evidence, not a review of this addition.
 
-Still required: exact-head source review/checks; native file-wide writer reconciliation; reuse of the now-existing role and the one-label consumer patch; after-image/computed-binding/actual-pair readback; complete button-state inspection; eventually real implementation fidelity and intended-user journey/comprehension proof. This record changes none of the #7394/#8041/#7630 release holds. No source merge, live UI change, specialist consumption, worker START or automatic wake is claimed.
+Completed R4 native slice: existing warning-role binding, eight neutral-button state specimens and working-template synchronization, with exact after-images/JSX and readbacks below. Remaining: current-head source review/checks, broader component/state/locale qualification, filled-control cases, real implementation fidelity and intended-user journey/comprehension proof. This changes none of the #7394/#8041/#7630 release holds. No source merge, live UI change, specialist consumption, worker START or automatic wake is claimed.
+
+
+## 7. R4 — applied native system slice
+
+M1, guarded Paper v4, file `01M2WGNCX9475G79JRKJTCM08P`, system page `p-1-0`.
+
+**Warning label:** `13N-0` now binds `var(--mx-light-ink-warn)`, the existing
+`#7D5922` alias. Its white-panel arithmetic is **6.317604:1**, versus
+**3.612765:1** before. Readback kept large hero `12F-0` and parent panel unchanged.
+No token was created or overwritten.
+
+**Neutral buttons:** eight existing default/hover/focus/disabled specimens on
+`ZJ-0` and `126-0` now use `minHeight/minWidth: var(--sp-8)` (44px), border-box and
+centered content. Their original colors remain. Enabled default/hover/focus
+text/background calculations are **11.564708:1** dark and **13.796661:1** light.
+Disabled opacity is deliberately retained and excluded from that enabled-text
+claim. These are static intended states, not runtime, keyboard, tap-target or
+focus-ring certification. No filled-button role was added unnecessarily.
+
+**Working authoring template:** existing `19T-0` now leads with **“Make the answer
+obvious. Keep the depth.”** An explicitly illustrative, non-live example precedes
+the fields for intended reader, useful default, material caveat, primary step and
+direct full-research route. Existing sections also record earned copy, actual
+information destinations, consumer pairs, four distinct proof types, and real
+result/return behavior. Stop/reference qualifications were moved to the handoff
+footer, not removed. This is the existing repository guidance's working projection,
+not a second packet, component registry or approval store.
+
+Structure remained **870 nodes / 10 artboards / 83 tokens**. No new board, page,
+palette, component identity or specialist-page edit. Figma was not accessed;
+historical reference identities were preserved. All three final images were
+opened and visually examined; no visible clipping or overlap was found in the
+touched areas. Author inspection is not independent acceptance or a user study.
+
+### Immutable evidence attachments
+
+Files live under `mockups/refs/design_system/paper-readability-r4-20260926/`:
+
+| Native target | Image | SHA256 |
+|---|---|---|
+| `126-0` Light atlas | `atlas-light.jpg` | `b99086a6eb20124ab939c11385d4377c50f5b540b1d6e59b70c698f8a606c27d` |
+| `ZJ-0` Dark atlas | `atlas-dark.jpg` | `f713c3241d2c78463afa2c06a0cfb38573e73619b789853d11519434b674eded` |
+| `19T-0` Working template | `prepared-answer-template.jpg` | `432d38222b1e1b8cfc526e79527af16eedea0dca7c954fca19f0e63a73b2b2d3` |
+
+Adjacent `.jsx` files are actual Paper exports, implementation input only.
+`native-receipts.json`, before/after bindings, control styles, template text and
+pair calculations are ordinary evidence attachments, not an approval manifest.
+
+Four separately reconciled operations returned `APPLIED_RESPONSE_OBSERVED`:
+`design-system-r4-warning-binding-20260926-001`,
+`design-system-r4-prepared-template-text-20260926-001`,
+`design-system-r4-controls-template-style-20260926-001`, and
+`design-system-r4-finish-own-nodes-20260926-001`.
+All sixteen template texts and eight minimum-size bindings were read back.
+The finish action released only the **27 named touched nodes**, not all working
+indicators. No unresolved effect remains from these operations.
+
+### Recovery and next action
+
+Protected source pin: `Mastermind@a31f49f4056943124cc0e7e42349e46feee444c7`;
+required procedure/runtime blobs matched the previous verified revision. Recovery
+reconciled earlier named phase-ending receipts and the latest M1 Forex modifier's
+observed finish and final verification. No later native modifier appeared in the
+retained M1 history; no guarded edit process was executing on M1 or the exposed
+Studio host. That supported a short foreground action under the current assignment,
+not a timeout-based lease expiry, universal-lock claim or live-writer displacement.
+Pre-effect/result record: #7394 comment `5849865112`.
+
+No denied action, uncertain effect, Figma route or specialist artifact was replayed.
+Next native work requires fresh custody and exact-target checks. Historical
+create-token and label-patch examples above must **not** be replayed against the
+now-corrected target. R4 did not rerun or widen R3's 100-test result or R2's
+288-pair campaign. Remaining work is broader component and filled-control states,
+locale/mobile parity, independent review, real journeys and human comprehension;
+production implementation and release remain separate obligations.

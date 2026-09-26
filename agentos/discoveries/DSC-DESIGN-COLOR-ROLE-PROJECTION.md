@@ -1,19 +1,19 @@
 ---
 key: DESIGN-COLOR-ROLE-PROJECTION
 claim: >
-  The Paper projection now has source-derived light warning/up/down/link text inks,
-  but its 10px STALE label still uses raw amber at 3.612765:1 on white and general
-  solid-label fill roles remain absent; source inks still need actual consumer-pair
-  checks because specific dark and hue-tinted combinations fail.
+  The Paper system STALE label now uses the existing source-derived warning ink at
+  6.317604:1 on white; the raw-amber binding is repaired, but broader dark/tinted,
+  filled-control, locale and runtime-interaction qualification remains
+  consumer-specific and is not implied by a shared token name.
 falsifier: >
   Re-read Paper file 01M2WGNCX9475G79JRKJTCM08P, page p-1-0, node 13N-0 and its
   ancestors with get_computed_styles, plus get_basic_info tokens; compare the current
   templates/theme.css blob and recalculate the actual foreground/background pairs.
-  A corrected binding or changed source invalidates the affected current-defect claim;
+  A regressed binding or changed source invalidates the affected R4 repair claim;
   actual browser disagreement invalidates the affected arithmetic projection.
 so_what: >
-  Project existing source roles instead of inventing page-local colors; repair the
-  single small label without repainting the large hero; measure actual flat, tinted
+  Reuse the corrected label and existing source roles; do not recreate tokens or
+  replay the repair. Preserve the large hero and measure actual flat, tinted
   and interaction-state pairs before adopting a primitive. Preserve explicit state
   text with an existing primary-text role where a semantic ink pair fails. Reconcile
   one-writer-per-file custody before touching shared Paper tokens.
@@ -25,7 +25,10 @@ verified_by: >
   macro PR #7394, research/DESIGN_SYSTEM_READABILITY_REPAIR_2026-09-26.md at
   987d3d7c9ae3dc8450e080c25a5f9fb8b1d79030; source theme blob
   41f0c3bdea3979faf4a57f2a98e31a4df54a5973; R3 native token/binding readback and
-  tests/test_prophet_verb_ink_contrast.py at fe7b900e4c28ba2d4a4d327bb996526f09019753.
+  tests/test_prophet_verb_ink_contrast.py at fe7b900e4c28ba2d4a4d327bb996526f09019753;
+  R4 native-receipts and style readbacks in
+  mockups/refs/design_system/paper-readability-r4-20260926/, documented in
+  research/DESIGN_SYSTEM_READABILITY_REPAIR_2026-09-26.md section 7.
 scope:
   - macro
   - templates/theme.css
@@ -74,18 +77,18 @@ existing helper below; it still does not implement arbitrary CSS or conditional 
 
 Continue through the incumbent design-system PR #7394 and its existing source branch.
 Keep #8041's doctrine/decision ownership and current per-page specialization intact.
-Native application remains held for file-wide writer reconciliation; after that gate,
-re-read current source/token/node identities, reuse the already-present warning ink
-without creating or overwriting it, bind the one small label and verify its after-state. Do not
+The bounded label, neutral-button and working-template native slice is applied and
+visually inspected. Preserve it; do not replay it. Next qualify broader component,
+filled-control, state/locale and real-journey cases under current custody. Do not
 infer custody, worker liveness or permission from this Agent OS record.
 
-## R3 — actual projection movement and evidence-consumer repair
+## R3 historical baseline — projection movement and evidence-consumer repair
 
 Native M1 readback now finds `--mx-light-ink-warn=#7D5922`, alongside light
 up/down/link ink aliases added by another session. This is the source warning
 mixture rounded to 8-bit RGB: the actual alias calculates to 6.317604:1 on white,
-not the unrounded mixture's 6.326019:1. Node `13N-0` still binds the old raw role.
-This session performed no native token or node mutation. Do not replay token creation.
+not the unrounded mixture's 6.326019:1. At R3, node `13N-0` still bound the raw role and this session performed no
+native mutation. R4 supersedes only that unapplied state. Do not replay token creation.
 
 Commit `fe7b900e4c28ba2d4a4d327bb996526f09019753` changes only the existing
 contrast test file: exact whole-selector admission prevents widget, combinator and
@@ -95,3 +98,22 @@ tests with current-main theme bytes and independently with the older branch them
 Reverting just admission reproduced the 10 failures. All 87 prior tests remain.
 The existing CI command already includes this file; no new runner/checker was added.
 This is test-source qualification, not general CSS-parser, browser or product acceptance.
+
+
+## R4 — native repair observed; broader qualification remains open
+
+Current `13N-0` binds `var(--mx-light-ink-warn)`. The light/dark neutral-button
+specimens retain their color roles and specify a 44px minimum using the existing
+spacing token. The existing authoring utility now projects the prepared-first-read,
+full-depth and real-return contract. No new token or board was created.
+
+Three final native images and JSX exports, four observed operation receipts, and
+computed-style/text readbacks accompany the repair record. The images were opened
+and examined. No visible clipping/overlap was observed in touched areas; this is
+author inspection, not independent reference approval. No browser interaction,
+human-comprehension, bilingual/phone parity or production claim follows. Only this
+session's 27 touched-node indicators were released.
+
+Retain R2/R3 calculations and test findings at their stated scope. The old label
+present-tense defect is superseded, not the wider consumer-pair warning. Figma
+remains excluded by Chairman direction; historical evidence stays preserved.

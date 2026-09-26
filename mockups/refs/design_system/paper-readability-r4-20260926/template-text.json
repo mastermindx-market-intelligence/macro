@@ -1,0 +1,69 @@
+{
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "updates": [
+    {
+      "nodeId": "19W-0",
+      "textContent": "DESIGN SYSTEM \u00b7 PREPARED-ANSWER TEMPLATE \u00b7 WORKING"
+    },
+    {
+      "nodeId": "19X-0",
+      "textContent": "Make the answer obvious. Keep the depth."
+    },
+    {
+      "nodeId": "19Y-0",
+      "textContent": "Start with the user\u2019s question, not a wall of modules. This working template projects repository guidance; reference approval and implementation proof remain separate."
+    },
+    {
+      "nodeId": "1A1-0",
+      "textContent": "ILLUSTRATIVE FIRST READ \u00b7 NOT LIVE DATA\nIndex up. Breadth weak. \u2192 Inspect participating sectors.\nUse the same comparison window; keep partial coverage beside the claim."
+    },
+    {
+      "nodeId": "1A7-0",
+      "textContent": "02 \u00b7 FIRST READ + USEFUL DEFAULT"
+    },
+    {
+      "nodeId": "1A8-0",
+      "textContent": "Question + intended reader: __________\nMain read + material caveat: __________\nUseful before setup: __________\nPrimary step + full-research route: __________"
+    },
+    {
+      "nodeId": "1AM-0",
+      "textContent": "Source components + editable aliases: __________\nExisting state variants: __________\nActual text/background pairs: __________\nMissing primitive \u2192 design-system owner; no local substitute."
+    },
+    {
+      "nodeId": "1AO-0",
+      "textContent": "07 \u00b7 EARNED COPY + ACCESSIBLE DEPTH"
+    },
+    {
+      "nodeId": "1AP-0",
+      "textContent": "First fold: answer + decisive comparison\nRemove repetition, not adverse evidence\nDemoted item \u2192 actual destination: __________\nFull results stay directly reachable; no disclosure maze."
+    },
+    {
+      "nodeId": "1AV-0",
+      "textContent": "09 \u00b7 FOUR SEPARATE PROOF TYPES"
+    },
+    {
+      "nodeId": "1AW-0",
+      "textContent": "TECHNICAL: actual data, layout, states and interactions\nDESIGN: reading order, earned copy and preserved depth\nHUMAN: unfamiliar intended-user responses; no walkthrough\nJOURNEY: complete the task, inspect evidence, return\nAttach exact receipts; unperformed evidence = NOT TESTED."
+    },
+    {
+      "nodeId": "1B0-0",
+      "textContent": "Comfortable targets: 44px product target\nVisible focus; keyboard, touch and zoom\nContrast on each actual surface/state\nNo hover-only information\nOne h1; panel sections use h2"
+    },
+    {
+      "nodeId": "1B5-0",
+      "textContent": "12 \u00b7 REAL RESULT + ACCEPTANCE"
+    },
+    {
+      "nodeId": "1B6-0",
+      "textContent": "Save / alert result owner: __________\nReturn: object, filters, selection, position\nDesign authority + independent review: __________\nReal journey + production evidence: __________\nHuman orientation: NOT TESTED until observed."
+    },
+    {
+      "nodeId": "1B8-0",
+      "textContent": "BEFORE BUILD \u00b7 EXISTING GATES STILL APPLY"
+    },
+    {
+      "nodeId": "1B9-0",
+      "textContent": "Resolve missing primitives, family scope and editable identity. RIG approves canonical reference status; a screenshot or tool approval does not. Handoff includes data mapping, responsive and degraded states, accessible interactions, real results and evidence. Unresolved material gaps return to design authority."
+    }
+  ]
+}
