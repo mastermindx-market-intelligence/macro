@@ -466,3 +466,295 @@ def test_cash_rule_malformed_input_ref_never_reaches_hash_lookup(ref):
     assert out.status == 'INCOMPATIBLE'
     assert out.value is None
     assert out.reason == 'INPUT_BINDING_MISMATCH'
+
+
+# AB01–AB08 are frozen DOCUMENTARY inputs with SYNTHETIC bindings. No native
+# source/rights/review receipt, source precision or present-day coverage is implied.
+from engine.market_ontology.communications_measures import (
+    AccountingDependency, AccountingRule, AccountingTerm, accounting_bridge,
+)
+
+_ACCOUNTING_CASES = (
+    ('AB01', 'meta', 'consolidated', 'operating_income', '1000000', PRIOR, '20441', '18775',
+     (('revenue', '47516', '60801', 1), ('cost_of_revenue', '8491', '11330', -1),
+      ('research_development', '12942', '21656', -1), ('marketing_sales', '2979', '3431', -1),
+      ('general_admin', '2663', '5609', -1))),
+    ('AB02', 'meta', 'consolidated', 'issuer_defined_fcf', '1000000', PRIOR, '8549', '784',
+     (('operating_cash', '25561', '31862', 1), ('property_equipment', '16538', '30116', -1),
+      ('lease_principal', '474', '962', -1))),
+    ('AB03', 'alphabet', 'google_advertising', 'advertising_revenue', '1000000', PRIOR, '71340', '81629',
+     (('search_other', '54190', '63271', 1), ('youtube_ads', '9796', '11055', 1),
+      ('network', '7354', '7303', 1))),
+    ('AB04', 'alphabet', 'consolidated', 'issuer_defined_fcf', '1000000', ('2026-01-01', '2026-03-31'), '10116', '-5855',
+     (('operating_cash', '45790', '39069', 1), ('property_equipment', '35674', '44924', -1))),
+    ('AB05', 'trade_desk', 'consolidated', 'operating_income', '1000', PRIOR, '116777', '101577',
+     (('revenue', '694039', '715057', 1), ('platform_operations', '150980', '184333', -1),
+      ('sales_marketing', '161131', '174404', -1), ('technology_development', '134251', '140742', -1),
+      ('general_admin', '130900', '114001', -1))),
+    ('AB06', 'magnite', 'consolidated', 'contribution_ex_tac', '1000', PRIOR, '161956', '189595',
+     (('revenue', '173332', '192823', 1), ('derived_tac', '11376', '3228', -1))),
+    ('AB07', 'magnite', 'consolidated', 'gross_profit', '1000', PRIOR, '108379', '130785',
+     (('revenue', '173332', '192823', 1), ('cost_of_revenue', '64953', '62038', -1))),
+    ('AB08', 'magnite', 'consolidated', 'contribution_ex_tac', '1000', PRIOR, '161956', '189595',
+     (('ctv', '71543', '97133', 1), ('mobile', '63772', '65771', 1), ('desktop', '26641', '26691', 1))),
+)
+
+
+def accounting_case(index=0):
+    case, issuer, scope, metric, scale, prior_period, before, after, rows = _ACCOUNTING_CASES[index]
+    population = f'fixture:{issuer}:{scope}'
+    def observation(value, name, period):
+        return measure(value, ref=f'{population}:{name}:{period[0]}', metric=name,
+                       definition_ref=f'fixture:def:{issuer}:{name}', population=population,
+                       period=period, scale=D(scale), domain='signed_amount',
+                       basis='issuer_defined' if name in ('issuer_defined_fcf', 'contribution_ex_tac') else 'reported_gaap',
+                       support=None, support_basis='unknown')
+    by_role = {'output_current': observation(after, metric, PERIOD),
+               'output_prior': observation(before, metric, prior_period)}
+    terms = []
+    for name, old, new, coefficient in rows:
+        current_role, prior_role = name + '_current', name + '_prior'
+        by_role[current_role] = observation(new, name, PERIOD)
+        by_role[prior_role] = observation(old, name, prior_period)
+        terms.append(AccountingTerm(name, current_role, prior_role, coefficient,
+                                    (f'fixture:coverage:{name}',)))
+    dependencies = ()
+    if case == 'AB06':
+        dependencies = (AccountingDependency('derived_tac_current', ('revenue_current', 'output_current')),
+                        AccountingDependency('derived_tac_prior', ('revenue_prior', 'output_prior')))
+    comparison = rule('accounting', *by_role.items(), revision=f'fixture:accounting:{case}:v1',
+                      interpretation_basis='published_figures')
+    return tuple(by_role.values()), AccountingRule(comparison, tuple(terms), dependencies)
+
+
+def accounting_rebind(recipe, observations, *, suffix=':rebound'):
+    pairs = tuple((binding.role, observation) for binding, observation
+                  in zip(recipe.comparison.bindings, observations))
+    comparison = rule('accounting', *pairs, revision=recipe.comparison.revision + suffix,
+                      interpretation_basis=recipe.comparison.interpretation_basis)
+    return replace(recipe, comparison=comparison)
+
+
+@pytest.mark.parametrize('index', range(8), ids=[row[0] for row in _ACCOUNTING_CASES])
+def test_eight_accounting_bridges_use_product_comparator_and_keep_scope(index):
+    observations, recipe = accounting_case(index)
+    out = accounting_bridge(measures=observations, rule=recipe)
+    assert (out.result.status, out.result.label, out.result.reason) == (
+        'QUALIFIED', 'ACCOUNTING_RECONCILED', 'PUBLISHED_FIGURES_ONLY')
+    assert out.reconstructed_current == observations[0].value
+    assert out.residual == 0
+    assert out.current_output == observations[0] and out.prior_output == observations[1]
+    assert out.outcome_refs == (observations[0].ref, observations[1].ref)
+    assert out.result.rule_revision == recipe.comparison.revision
+    assert out.result.refs == tuple(m.ref for m in observations)
+    assert tuple(p.component_key for p in out.contributions) == tuple(t.component_key for t in recipe.terms)
+    assert sum(p.contribution for p in out.contributions) == observations[0].value - observations[1].value
+    assert out.evidence_relation == ('TARGET_DEPENDENT' if index == 5 else 'INDEPENDENCE_UNASSESSED')
+    assert 'cash' not in out.result.label.lower()
+
+
+def test_sequential_consolidated_cash_keeps_negative_outcome_and_explicit_period():
+    observations, recipe = accounting_case(3)
+    out = accounting_bridge(measures=observations, rule=recipe)
+    assert out.reconstructed_current == D('-5855')
+    assert out.prior_output.period == ('2026-01-01', '2026-03-31')
+    assert out.current_output.population == 'fixture:alphabet:consolidated'
+    assert out.current_output.metric == 'issuer_defined_fcf'
+    assert out.result.value == D('-5855')
+
+
+@pytest.mark.parametrize('mutation', ['sign', 'component_value'])
+def test_bad_accounting_equation_keeps_residual_without_fabricated_balancer(mutation):
+    observations, recipe = accounting_case(0)
+    if mutation == 'sign':
+        recipe = replace(recipe, terms=(replace(recipe.terms[0], coefficient=-1),) + recipe.terms[1:])
+    else:
+        observations = observations[:2] + (replace(observations[2], value=observations[2].value + 10),) + observations[3:]
+    out = accounting_bridge(measures=observations, rule=recipe)
+    assert out.result.status == 'QUALIFIED' and out.result.label == 'ACCOUNTING_DISCREPANCY'
+    assert out.residual != 0
+    assert out.current_output.value == D('18775')
+    assert len(out.contributions) == len(recipe.terms)
+    assert all(part.component_key != 'residual' for part in out.contributions)
+
+
+def test_corrected_magnite_total_exposes_channel_conflict_despite_dependent_cost_identity():
+    cost_values, cost_rule = accounting_case(5)
+    channel_values, channel_rule = accounting_case(7)
+    def corrected(values, is_cost):
+        result = list(values)
+        result[0] = replace(result[0], ref=result[0].ref + ':corrected', value=D('190595'))
+        if is_cost:
+            result[4] = replace(result[4], ref=result[4].ref + ':corrected', value=D('2228'))
+        return tuple(result)
+    cost_values = corrected(cost_values, True)
+    channel_values = corrected(channel_values, False)
+    stale = accounting_bridge(measures=cost_values, rule=cost_rule)
+    assert stale.result.reason == 'INPUT_BINDING_MISMATCH' and stale.reconstructed_current is None
+    cost = accounting_bridge(measures=cost_values, rule=accounting_rebind(cost_rule, cost_values))
+    channel = accounting_bridge(measures=channel_values, rule=accounting_rebind(channel_rule, channel_values))
+    assert cost.residual == 0 and cost.evidence_relation == 'TARGET_DEPENDENT'
+    assert channel.residual == D('1000') and channel.reconstructed_current == D('189595')
+    assert channel.result.label == 'ACCOUNTING_DISCREPANCY'
+    assert cost.outcome_refs == channel.outcome_refs
+    assert cost.current_output.value == channel.current_output.value == D('190595')
+    assert tuple(p.contribution for p in channel.contributions) == (D('25590'), D('1999'), D('50'))
+    assert 'independent' not in cost.result.label.lower()
+
+
+def test_alternative_accounting_views_share_one_outcome_not_two_improvements():
+    a, ar = accounting_case(5)
+    b, br = accounting_case(7)
+    cost, channels = accounting_bridge(measures=a, rule=ar), accounting_bridge(measures=b, rule=br)
+    assert cost.outcome_refs == channels.outcome_refs
+    assert cost.result.rule_revision != channels.result.rule_revision
+    assert cost.current_output.value - cost.prior_output.value == D('27639')
+    assert channels.current_output.value - channels.prior_output.value == D('27639')
+    assert cost.evidence_relation == 'TARGET_DEPENDENT'
+    assert channels.evidence_relation == 'INDEPENDENCE_UNASSESSED'
+
+
+@pytest.mark.parametrize('field,changed', [('period', PRIOR), ('population', 'fixture:alphabet:search_only'),
+                                          ('currency', 'EUR'), ('metric', 'other_metric')])
+def test_rebound_accounting_input_still_cannot_cross_scope_or_period(field, changed):
+    observations, recipe = accounting_case(3)
+    observations = observations[:2] + (replace(observations[2], **{field: changed}),) + observations[3:]
+    out = accounting_bridge(measures=observations, rule=accounting_rebind(recipe, observations))
+    assert out.result.status == 'INCOMPATIBLE' and out.result.reason == 'ACCOUNTING_SCOPE_MISMATCH'
+    assert out.residual is None
+
+
+def test_accounting_scaling_converts_whole_equation_and_preserves_source_objects():
+    observations, recipe = accounting_case(2)
+    changed = list(observations)
+    changed[2] = replace(changed[2], value=changed[2].value * 1000, scale=changed[2].scale / 1000)
+    changed = tuple(changed)
+    out = accounting_bridge(measures=changed, rule=accounting_rebind(recipe, changed))
+    assert out.residual == 0 and out.reconstructed_current == D('81629')
+    assert out.current_output.scale == D('1000000')
+    assert out.contributions[0].contribution == D('9081')
+    assert observations[2].value == D('63271')
+
+
+@pytest.mark.parametrize('missing', ['component', 'current_value', 'current_output'])
+def test_missing_accounting_input_never_becomes_zero(missing):
+    observations, recipe = accounting_case(1)
+    if missing == 'component':
+        observations = observations[:-1]
+    else:
+        position = 0 if missing == 'current_output' else 2
+        observations = tuple(replace(m, value=None) if i == position else m for i, m in enumerate(observations))
+    out = accounting_bridge(measures=observations, rule=recipe)
+    assert out.result.status == ('INCOMPATIBLE' if missing == 'component' else 'UNAVAILABLE')
+    assert out.result.reason == ('INPUT_BINDING_MISMATCH' if missing == 'component' else 'POINT_VALUE_UNAVAILABLE')
+    assert out.reconstructed_current is None and out.residual is None
+
+
+def test_overlapping_net_subtotal_and_components_refuse_even_with_fitting_arithmetic():
+    observations, recipe = accounting_case(0)
+    terms = (replace(recipe.terms[0], covered_components=('fixture:net:costs', 'fixture:coverage:cost_of_revenue')),) + recipe.terms[1:]
+    out = accounting_bridge(measures=observations, rule=replace(recipe, terms=terms))
+    assert out.result.reason == 'ACCOUNTING_COMPONENT_OVERLAP'
+    assert out.result.status == 'INCOMPATIBLE'
+
+
+@pytest.mark.parametrize('bad', [True, 0, 2, -2, [], None])
+def test_accounting_coefficient_has_closed_integer_sign_domain(bad):
+    observations, recipe = accounting_case()
+    recipe = replace(recipe, terms=(replace(recipe.terms[0], coefficient=bad),) + recipe.terms[1:])
+    out = accounting_bridge(measures=observations, rule=recipe)
+    assert out.result.reason == 'INVALID_ACCOUNTING_RECIPE'
+
+
+@pytest.mark.parametrize('dependencies', [
+    (AccountingDependency('missing', ('output_current',)),),
+    (AccountingDependency('revenue_current', ('missing',)),),
+    (AccountingDependency('revenue_current', ('revenue_current',)),),
+    (AccountingDependency('revenue_current', ('cost_of_revenue_current',)),
+     AccountingDependency('cost_of_revenue_current', ('revenue_current',))),
+])
+def test_unknown_or_cyclic_accounting_dependence_is_not_silently_ignored(dependencies):
+    observations, recipe = accounting_case()
+    out = accounting_bridge(measures=observations, rule=replace(recipe, dependencies=dependencies))
+    assert out.result.status == 'INCOMPATIBLE' and out.result.reason == 'ACCOUNTING_DEPENDENCY_MISMATCH'
+
+
+def test_accounting_results_do_not_depend_on_caller_decimal_context_or_input_order():
+    observations, recipe = accounting_case(0)
+    expected = accounting_bridge(measures=observations, rule=recipe)
+    assert expected.result.label == 'ACCOUNTING_RECONCILED'
+    with localcontext() as context:
+        context.prec = 2
+        context.clear_flags()
+        assert accounting_bridge(measures=tuple(reversed(observations)), rule=recipe) == expected
+        assert not any(context.flags.values())
+    with pytest.raises(FrozenInstanceError):
+        expected.residual = D('99')
+
+
+def test_accounting_derivation_cannot_bind_current_component_to_prior_period_total():
+    observations, recipe = accounting_case(5)
+    wrong = (AccountingDependency('derived_tac_current', ('revenue_current', 'output_prior')),)
+    out = accounting_bridge(measures=observations, rule=replace(recipe, dependencies=wrong))
+    assert out.result.reason == 'ACCOUNTING_DEPENDENCY_MISMATCH'
+    assert out.reconstructed_current is None
+
+
+@pytest.mark.parametrize('index,position,mutation', [
+    (i, j, mutation) for i, case in enumerate(_ACCOUNTING_CASES)
+    for j in range(len(case[-1])) for mutation in ('sign', 'omitted', 'scale', 'duplicated')
+])
+def test_frozen_accounting_hostile_inputs_reach_real_product_refusal(index, position, mutation):
+    # These are 100 input perturbations, NOT a production-code mutation score.
+    observations, recipe = accounting_case(index)
+    current_position, prior_position = 2 + 2 * position, 3 + 2 * position
+    if mutation == 'sign':
+        terms = list(recipe.terms)
+        terms[position] = replace(terms[position], coefficient=-terms[position].coefficient)
+        recipe = replace(recipe, terms=tuple(terms))
+    elif mutation == 'omitted':
+        observations = tuple(m for i, m in enumerate(observations) if i not in (current_position, prior_position))
+    elif mutation == 'scale':
+        observations = tuple(replace(m, scale=m.scale * 1000) if i in (current_position, prior_position) else m
+                             for i, m in enumerate(observations))
+        recipe = accounting_rebind(recipe, observations)
+    else:
+        recipe = replace(recipe, terms=recipe.terms + (recipe.terms[position],))
+    out = accounting_bridge(measures=observations, rule=recipe)
+    assert out.result.label != 'ACCOUNTING_RECONCILED'
+    if mutation in ('sign', 'scale'):
+        assert out.result.label == 'ACCOUNTING_DISCREPANCY' and out.residual != 0
+    else:
+        assert out.result.status == 'INCOMPATIBLE' and out.reconstructed_current is None
+
+
+@pytest.mark.parametrize('target,bad', [
+    ('terms', None), ('terms', []), ('terms', ()), ('terms', ({},)),
+    ('dependencies', None), ('dependencies', []), ('dependencies', ({},)),
+])
+def test_malformed_accounting_containers_return_typed_refusal(target, bad):
+    observations, recipe = accounting_case()
+    out = accounting_bridge(measures=observations, rule=replace(recipe, **{target: bad}))
+    assert out.result.status == 'INCOMPATIBLE' and out.reconstructed_current is None
+    assert out.result.reason == ('INVALID_ACCOUNTING_RECIPE' if target == 'terms' else 'ACCOUNTING_DEPENDENCY_MISMATCH')
+
+
+@pytest.mark.parametrize('field,bad', [('component_key', []), ('current_role', {}),
+                                     ('prior_role', None), ('covered_components', 'revenue'),
+                                     ('covered_components', ([],)), ('covered_components', ())])
+def test_malformed_accounting_term_returns_typed_refusal(field, bad):
+    observations, recipe = accounting_case()
+    changed = replace(recipe.terms[0], **{field: bad})
+    out = accounting_bridge(measures=observations, rule=replace(recipe, terms=(changed,) + recipe.terms[1:]))
+    assert out.result.reason == 'INVALID_ACCOUNTING_RECIPE' and out.residual is None
+
+
+def test_exact_synthetic_accounting_stays_distinct_from_unknown_source_precision():
+    observations, recipe = accounting_case(0)
+    exact = tuple(replace(m, support=Interval(m.value, m.value, True, True), support_basis='exact') for m in observations)
+    exact_rule = replace(recipe, comparison=replace(recipe.comparison, interpretation_basis='underlying_interval'))
+    out = accounting_bridge(measures=exact, rule=exact_rule)
+    assert (out.result.status, out.result.reason) == ('COMPARABLE', None)
+    unknown = accounting_bridge(measures=observations, rule=exact_rule)
+    assert (unknown.result.status, unknown.result.reason) == ('QUALIFIED', 'PUBLISHED_FIGURES_ONLY')
+    assert out.evidence_relation == unknown.evidence_relation == 'INDEPENDENCE_UNASSESSED'

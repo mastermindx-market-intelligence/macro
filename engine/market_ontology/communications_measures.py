@@ -86,7 +86,7 @@ class CashRole:
 @dataclass(frozen=True)
 class ComparisonRule:
     revision: str
-    operation: Literal['period_absolute', 'period_pct', 'guidance', 'cash']
+    operation: Literal['period_absolute', 'period_pct', 'guidance', 'cash', 'accounting']
     bindings: tuple[InputBinding, ...]
     relation_ref: str
     review_ref: str
@@ -486,3 +486,212 @@ def cash_bridge(*, measures: tuple[Measure, ...], components: tuple[CashComponen
     return _result(rule, measures, status='QUALIFIED' if qualified else 'COMPARABLE', value=value,
                    label='CASH_BRIDGE', reason='PUBLISHED_FIGURES_ONLY' if qualified else None,
                    formula='sum(reviewed_signed_components)')
+
+
+@dataclass(frozen=True)
+class AccountingTerm:
+    """One reviewed pair of reported components, not a native assertion.
+
+    covered_components are explicit owner-reviewed partition slots. They are
+    not inferred from metric names and do not establish any canonical identity.
+    """
+    component_key: str
+    current_role: str
+    prior_role: str
+    coefficient: Literal[-1, 1]
+    covered_components: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class AccountingDependency:
+    """Retained owner-declared derivation lineage between exact bound inputs."""
+    role: str
+    input_roles: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class AccountingRule:
+    """A pure accounting recipe under the existing immutable review receipt.
+
+    This is not a rule store, native schema or a validator of review authority.
+    """
+    comparison: ComparisonRule
+    terms: tuple[AccountingTerm, ...]
+    dependencies: tuple[AccountingDependency, ...] = ()
+
+
+@dataclass(frozen=True)
+class AccountingContribution:
+    component_key: str
+    current_ref: str
+    prior_ref: str
+    coefficient: Literal[-1, 1]
+    delta: Decimal
+    contribution: Decimal
+
+
+@dataclass(frozen=True)
+class AccountingBridgeResult:
+    result: Result
+    current_output: Measure | None
+    prior_output: Measure | None
+    reconstructed_current: Decimal | None
+    residual: Decimal | None
+    contributions: tuple[AccountingContribution, ...]
+    evidence_relation: str
+
+    @property
+    def outcome_refs(self) -> tuple[str, ...]:
+        """Existing output identities group alternative views; no new id minted."""
+        if self.current_output is None or self.prior_output is None:
+            return ()
+        return (self.current_output.ref, self.prior_output.ref)
+
+
+def _accounting_dependence(dependencies, inputs: dict[str, Measure], component_roles: set[str]) -> str | None:
+    """Validate a bounded declared dependency DAG; never claim independence.
+
+    This retains an owner's declarations, not an inference from arithmetic or
+    a second evidence/lineage store. None denotes malformed/unbound dependence.
+    """
+    if type(dependencies) is not tuple or len(dependencies) > _MAX_INPUTS:
+        return None
+    graph: dict[str, tuple[str, ...]] = {}
+    for dep in dependencies:
+        if (type(dep) is not AccountingDependency or not _text(dep.role)
+                or dep.role not in component_roles or dep.role in graph
+                or type(dep.input_roles) is not tuple
+                or not 1 <= len(dep.input_roles) <= _MAX_INPUTS
+                or any(not _text(x) or x not in inputs for x in dep.input_roles)
+                or len(set(dep.input_roles)) != len(dep.input_roles)
+                or any(inputs[x].period != inputs[dep.role].period for x in dep.input_roles)):
+            return None
+        graph[dep.role] = dep.input_roles
+    done: set[str] = set()
+    visiting: set[str] = set()
+    def acyclic(role: str) -> bool:
+        if role in visiting:
+            return False
+        if role in done:
+            return True
+        visiting.add(role)
+        for child in graph.get(role, ()):
+            if not acyclic(child):
+                return False
+        visiting.remove(role)
+        done.add(role)
+        return True
+    if not all(acyclic(role) for role in graph):
+        return None
+    if any(x in ('output_current', 'output_prior') for values in graph.values() for x in values):
+        return 'TARGET_DEPENDENT'
+    return 'DECLARED_DEPENDENCE' if graph else 'INDEPENDENCE_UNASSESSED'
+
+
+def accounting_bridge(*, measures: tuple[Measure, ...], rule: AccountingRule) -> AccountingBridgeResult:
+    """Reconcile prior output + signed component changes with reported output.
+
+    All calculated amounts use the current output's original currency/scale.
+    Individual source Measure objects retain their original units and periods.
+    Reconciliation is documentary when source support is not exact. A residual
+    is exposed, never allocated to an invented component. Alternative partitions
+    retain the SAME outcome_refs; neither equality nor multiple views establishes
+    independent evidence. Native callers must validate immutable sources, review,
+    partition coverage and dependency declarations before constructing this input.
+    """
+    inputs = measures if type(measures) is tuple else ()
+    comparison = rule.comparison if type(rule) is AccountingRule else None
+    def refuse(reason: str, status='INCOMPATIBLE') -> AccountingBridgeResult:
+        return AccountingBridgeResult(_result(comparison, inputs, reason=reason, status=status),
+                                      None, None, None, None, (), 'INDEPENDENCE_UNASSESSED')
+    if type(rule) is not AccountingRule:
+        return refuse('RULE_REQUIRED' if rule is None else 'INVALID_ACCOUNTING_RECIPE',
+                      'UNAVAILABLE' if rule is None else 'INCOMPATIBLE')
+    problem = _rule_problem(comparison, 'accounting')
+    if problem:
+        return refuse(problem, 'UNAVAILABLE' if comparison is None else 'INCOMPATIBLE')
+    if (type(measures) is not tuple or not 1 <= len(measures) <= _MAX_INPUTS
+            or type(rule.terms) is not tuple or not 1 <= len(rule.terms) <= (_MAX_INPUTS - 2) // 2):
+        return refuse('INVALID_ACCOUNTING_RECIPE')
+    if not all(_measure(m) for m in measures):
+        return refuse('INVALID_MEASURE')
+    if len({m.ref for m in measures}) != len(measures):
+        return refuse('REPEATED_ECONOMIC_RECEIPT')
+    component_keys: set[str] = set()
+    component_roles: set[str] = set()
+    coverage: set[str] = set()
+    ordered_roles = ['output_current', 'output_prior']
+    for term in rule.terms:
+        if (type(term) is not AccountingTerm
+                or not all(_text(x) for x in (term.component_key, term.current_role, term.prior_role))
+                or type(term.coefficient) is not int or term.coefficient not in (-1, 1)
+                or term.component_key in component_keys
+                or type(term.covered_components) is not tuple
+                or not 1 <= len(term.covered_components) <= _MAX_INPUTS
+                or not all(_text(x) for x in term.covered_components)):
+            return refuse('INVALID_ACCOUNTING_RECIPE')
+        if (term.current_role in ordered_roles or term.prior_role in ordered_roles
+                or term.current_role == term.prior_role):
+            return refuse('INVALID_ACCOUNTING_RECIPE')
+        leaves = set(term.covered_components)
+        if len(leaves) != len(term.covered_components) or leaves & coverage:
+            return refuse('ACCOUNTING_COMPONENT_OVERLAP')
+        coverage.update(leaves)
+        component_keys.add(term.component_key)
+        component_roles.update((term.current_role, term.prior_role))
+        ordered_roles.extend((term.current_role, term.prior_role))
+    bindings = {binding.role: binding for binding in comparison.bindings}
+    by_ref = {m.ref: m for m in measures}
+    if (set(bindings) != set(ordered_roles)
+            or {binding.ref for binding in comparison.bindings} != set(by_ref)):
+        return refuse('INPUT_BINDING_MISMATCH')
+    if len({binding.ref for binding in comparison.bindings}) != len(comparison.bindings):
+        return refuse('REPEATED_ECONOMIC_RECEIPT')
+    bound = tuple((role, by_ref[bindings[role].ref]) for role in ordered_roles)
+    if not _bound(comparison, bound):
+        return refuse('INPUT_BINDING_MISMATCH')
+    ordered = dict(bound)
+    inputs = tuple(ordered.values())
+    current, prior = ordered['output_current'], ordered['output_prior']
+    if (not _same_scope(current, prior) or current.domain != prior.domain
+            or prior.period[1] >= current.period[0]):
+        return refuse('ACCOUNTING_SCOPE_MISMATCH')
+    # A1 deliberately requires one explicit source population. This does not
+    # invent a containment/identity bridge for differently scoped native inputs.
+    if any(m.unit != 'currency' or m.currency != current.currency
+           or m.population != current.population or m.domain not in ('signed_amount', 'nonnegative_amount')
+           for m in inputs):
+        return refuse('ACCOUNTING_SCOPE_MISMATCH')
+    for term in rule.terms:
+        a, b = ordered[term.current_role], ordered[term.prior_role]
+        if (a.period != current.period or b.period != prior.period
+                or not _same_scope(a, b) or a.domain != b.domain):
+            return refuse('ACCOUNTING_SCOPE_MISMATCH')
+    relation = _accounting_dependence(rule.dependencies, ordered, component_roles)
+    if relation is None:
+        return refuse('ACCOUNTING_DEPENDENCY_MISMATCH')
+    if any(m.value is None for m in inputs):
+        return refuse('POINT_VALUE_UNAVAILABLE', 'UNAVAILABLE')
+    contributions = []
+    with localcontext(_CONTEXT):
+        reconstructed_base = prior.value * prior.scale
+        for term in rule.terms:
+            a, b = ordered[term.current_role], ordered[term.prior_role]
+            delta_base = a.value * a.scale - b.value * b.scale
+            contribution_base = delta_base * term.coefficient
+            reconstructed_base += contribution_base
+            contributions.append(AccountingContribution(
+                term.component_key, a.ref, b.ref, term.coefficient,
+                delta_base / current.scale, contribution_base / current.scale,
+            ))
+        reconstructed = reconstructed_base / current.scale
+        residual = (current.value * current.scale - reconstructed_base) / current.scale
+    documentary = comparison.interpretation_basis == 'published_figures' or not all(_point_exact(m) for m in inputs)
+    qualified = documentary or residual != 0 or relation != 'INDEPENDENCE_UNASSESSED'
+    reason = ('ACCOUNTING_RESIDUAL' if residual != 0 else 'PUBLISHED_FIGURES_ONLY' if documentary
+              else 'DECLARED_ACCOUNTING_DEPENDENCE' if relation != 'INDEPENDENCE_UNASSESSED' else None)
+    result = _result(comparison, inputs, status='QUALIFIED' if qualified else 'COMPARABLE',
+                     value=reconstructed, label='ACCOUNTING_DISCREPANCY' if residual != 0 else 'ACCOUNTING_RECONCILED',
+                     reason=reason, formula='prior_output + sum(coefficient * (component_current - component_prior)); all scaled')
+    return AccountingBridgeResult(result, current, prior, reconstructed, residual,
+                                  tuple(contributions), relation)
