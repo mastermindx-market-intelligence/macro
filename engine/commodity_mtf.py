@@ -31,6 +31,7 @@ import numpy as np
 import pandas as pd
 
 from engine import cycles
+from lib import config
 
 #: Absolute fortnight phase origin — 1970-01-02 is a Friday. pandas ``"2W-FRI"`` keeps
 #: W-FRI's calendar-absolute WEEKS but phases the PAIRING of weeks into fortnights to the
@@ -293,9 +294,47 @@ def confluence_verdict(a: dict, asset: str, sig_last: "pd.Series | None" = None,
         key = "avoid_governor"
     head, sub, grade, head_zh, sub_zh, grade_zh = _VERDICTS[key]
 
+    # Display-tier guard only: the numerical signs below remain the inputs to
+    # conviction. A ladder label cannot establish agreement the table refutes.
+    is_commodity = (asset == "commodity_index" or
+                    asset in config.load().get("commodities", {}).get("complex_members", {}))
+    display_override = False
+    if is_commodity:
+        required = ("D", "3D", "W", "2W", "ME")
+        complete = all(isinstance((mtf.get(tf) or {}).get("macd_pos"), (bool, np.bool_))
+                       for tf in required)
+        if not complete:
+            head, sub, grade = ("Timeframe evidence incomplete",
+                "One or more timeframe readings are unavailable. Missing data cannot confirm alignment or an entry.", "WAIT")
+            head_zh, sub_zh, grade_zh = ("周期证据不完整",
+                "一个或多个周期读数缺失，不能据此确认共振或入场条件。", "等待")
+            display_override = True
+        elif key == "dip":
+            head, sub, grade = ("Pullback — recovery unconfirmed",
+                "Short-term conditions have weakened within a positive structural model. This alone does not establish a healthy pullback or an entry.", "WAIT")
+            head_zh, sub_zh, grade_zh = ("回调——恢复尚未确认",
+                "结构模型偏正面，但短期条件转弱；仅凭这一组合，不能判定为健康回调或入场机会。", "等待")
+            display_override = True
+        elif key == "trend" and not all(per_tf[tf] == "up" and mtf[tf]["macd_pos"]
+                                       and not mtf[tf].get("macd_cross_dn") for tf in required):
+            head, sub, grade = ("Timeframes disagree — entry unconfirmed",
+                "The structural model is positive, but the displayed timeframes do not all agree. Longer-term strength is not fresh entry permission.", "WAIT")
+            head_zh, sub_zh, grade_zh = ("各周期分歧——入场尚未确认",
+                "结构模型偏正面，但所列周期并非全部一致；长期较强不代表当前入场条件成立。", "等待")
+            display_override = True
+        elif key == "avoid" and not all(per_tf[tf] == "down" for tf in required):
+            head, sub, grade = ("Defensive structural read — timeframes mixed",
+                "The structural and short-term model lean negative, but the displayed timeframes are not uniformly down.", "CAUTION")
+            head_zh, sub_zh, grade_zh = ("结构读数偏防御——各周期分化",
+                "结构与短期模型倾向负面，但所列周期并非全部下行。", "谨慎")
+            display_override = True
+        elif key == "trend":
+            sub = "The displayed timeframe readings point up. Trend alignment alone is not new-entry permission."
+            sub_zh = "所列周期读数均向上，但趋势一致本身不代表新的入场条件成立。"
+
     # when the calibrated ladder independently fired the counter-trend state, use
     # ITS verbatim entry text so the commodity reads like the stock analyzer.
-    if state == "COUNTERTREND BOUNCE":
+    if state == "COUNTERTREND BOUNCE" and not display_override:
         et = ladder.get("entry", {}) or {}
         if et.get("text"):
             sub = et["text"]
