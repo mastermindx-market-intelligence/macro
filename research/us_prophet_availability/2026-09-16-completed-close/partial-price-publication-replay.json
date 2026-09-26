@@ -1,0 +1,89 @@
+{
+  "proof_class": "recorded_final_price_panels_reconstructed_into_fetch_store_alpha",
+  "production": false,
+  "raw_provider_response_replay": false,
+  "new_provider_calls": 0,
+  "peer_source_writes": 0,
+  "expected_session": "2026-09-15",
+  "seed_commit": "55c82c1249f3927f81d7df40b1fbd96eea7ba4c5",
+  "recorded_provider_receipt_sha256": "351e1e5a6fc01ab157264c8021185e35e1a3924ba6b833b4434dada95d880ead",
+  "collector_source_sha256": "6d2d28822d3dccd7951938e0dc55f442129c976f3df796160c72b52342b0784d",
+  "reconstruction": "Final matrices aligned to Close date domain; comparison keyed by date/ticker, not original response order or raw response identity.",
+  "groups": [
+    {
+      "group": "breadth",
+      "health_status": "ok",
+      "last_date": "2026-09-15",
+      "valid_completed_closes": 500,
+      "members": 503,
+      "seconds": 2.52,
+      "reconstructed_response_reads": 8,
+      "all_close_values_dates_and_tickers_equal": true,
+      "current_high_low_volume_values_equal": true
+    },
+    {
+      "group": "smallcap_breadth",
+      "health_status": "ok",
+      "last_date": "2026-09-15",
+      "valid_completed_closes": 599,
+      "members": 602,
+      "seconds": 1.93,
+      "reconstructed_response_reads": 9,
+      "all_close_values_dates_and_tickers_equal": true,
+      "current_high_low_volume_values_equal": true
+    },
+    {
+      "group": "midcap_breadth",
+      "health_status": "ok",
+      "last_date": "2026-09-15",
+      "valid_completed_closes": 400,
+      "members": 400,
+      "seconds": 0.92,
+      "reconstructed_response_reads": 6,
+      "all_close_values_dates_and_tickers_equal": true,
+      "current_high_low_volume_values_equal": true
+    }
+  ],
+  "alpha": {
+    "as_of": "2026-09-15",
+    "n": 1460,
+    "semantic_equal_to_recorded_result": false,
+    "sha256": "ea5ee207e242a930c090134182eab7966982b8ceb9f1e94d59bd29e0b3d3bbea",
+    "per_ticker_values_equal": true,
+    "sector_rankings_equal": true,
+    "top_members_and_values_equal": true,
+    "ordered_top_equal": false,
+    "ordered_top_difference": [
+      {
+        "position": 1,
+        "before": "SNDK",
+        "after": "SPHR"
+      },
+      {
+        "position": 2,
+        "before": "SPHR",
+        "after": "SNDK"
+      }
+    ]
+  },
+  "regressions": {
+    "drop_premerge_mask": {
+      "returncode": 1,
+      "summary": "1 failed, 7 passed, 33 deselected, 9 warnings in 3.58s"
+    },
+    "drop_final_mask": {
+      "returncode": 1,
+      "summary": "1 failed, 7 passed, 33 deselected, 10 warnings in 1.52s"
+    },
+    "restored": {
+      "returncode": 0,
+      "summary": "74 passed, 29 warnings in 4.75s"
+    }
+  },
+  "earlier_fixture_failures": [
+    "unequal final-field indices widened simulated response",
+    "constituent-order reconstruction differs from provider-order columns"
+  ],
+  "verification_boundary": "The complete producer/store replay succeeded; the final exact ordered-alpha equality assertion failed solely because two top-list members exchanged position under reconstructed column order. Per-ticker values, sector rankings and top member/value sets are exactly equal. No alpha-ranking code was changed; this is not exact ordered-output or production proof.",
+  "probe_final_ordered_equality_assertion": "FAILED; preserved explicitly"
+}
