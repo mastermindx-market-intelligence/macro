@@ -618,3 +618,37 @@ def test_specimen_language_toggle_updates_document_language(specimen):
         "The specimen changes the visible locale but not the document language; "
         "bind html lang to the resulting data-lang using the existing zh-CN/en mapping."
     )
+
+
+# Specimen-only layout: retain every example without widening the document.
+@pytest.mark.parametrize("selector", [r"\.spec-grid", r"\.do-dont"])
+def test_specimen_grid_minimum_fits_its_container(specimen, selector):
+    body = re.sub(r"\s+", "", _rule_body(specimen, selector))
+    assert "minmax(min(300px,100%),1fr)" in body
+
+
+def test_specimen_type_samples_reflow_without_reducing_the_ramp(specimen):
+    assert "flex-wrap:wrap" in re.sub(r"\s+", "", _rule_body(specimen, r"\.trow"))
+    sample = re.sub(r"\s+", "", _rule_body(specimen, r"\.trow > span"))
+    assert "max-width:100%" in sample and "overflow-wrap:anywhere" in sample
+    assert "font-size" not in sample
+
+
+def test_specimen_static_lens_and_long_buttons_fit_the_panel(specimen):
+    lens = re.sub(r"\s+", "", _rule_body(specimen, r"\.lens-pop-demo"))
+    assert "max-width:100%" in lens and "box-sizing:border-box" in lens
+    button = re.sub(r"\s+", "", _rule_body(specimen, r"\.wrap \.gbtn"))
+    assert "max-width:100%" in button and "white-space:normal" in button
+
+
+def test_specimen_wide_tables_keep_an_explicit_scroll_container(specimen):
+    tables = re.findall(r'<table class="mx-tbl"', specimen)
+    wrapped = re.findall(r'<div class="mx-tblbox"[^>]*>\s*<table class="mx-tbl"', specimen)
+    assert tables and len(wrapped) == len(tables), "Every wide table needs its existing scroll wrapper"
+    ladder = re.sub(r"\s+", "", _rule_body(specimen, r"\.mx-ladder"))
+    assert "overflow-x:auto" in ladder, "Late ladder cells must be reachable, not clipped"
+
+
+def test_specimen_long_reference_copy_can_wrap(specimen):
+    body = re.sub(r"\s+", "", _rule_body(specimen, r"\.mockup-note"))
+    assert "overflow-wrap:anywhere" in body

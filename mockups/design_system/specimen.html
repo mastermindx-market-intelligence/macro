@@ -46,18 +46,19 @@ body{ margin:0; background:var(--bg); color:var(--text); font-size:var(--fs-body
 .spec-sec{ margin-top:var(--sp-8); }
 .spec-sec > h2{ font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; margin:0 0 4px; }
 .spec-sec > .law{ color:var(--muted); font-size:var(--fs-sm); max-width:74ch; margin:0 0 var(--sp-4); }
-.spec-grid{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+.spec-grid{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); }
 .panel{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r-panel); padding:16px 18px; box-shadow:var(--card-shadow); }
-.mockup-note{ font-size:var(--fs-micro); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.mockup-note{ overflow-wrap:anywhere; font-size:var(--fs-micro); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
 .swrow{ display:flex; flex-wrap:wrap; gap:10px; }
 .sw{ width:118px; }
 .sw i{ display:block; height:44px; border-radius:var(--r-ctl); border:1px solid var(--line); }
 .sw b{ display:block; font-size:var(--fs-sm); margin-top:5px; }
 .sw small{ color:var(--muted); font-size:var(--fs-micro); font-family:var(--font-mono); }
 .swgrp{ font-size:var(--fs-micro); font-weight:700; letter-spacing:.06em; color:var(--muted); margin:10px 0 6px; text-transform:uppercase; }
-.trow{ display:flex; align-items:baseline; gap:var(--sp-4); border-bottom:1px dashed var(--line); padding:7px 0; }
+.trow{ display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--sp-4); border-bottom:1px dashed var(--line); padding:7px 0; }
+.trow > span{ min-width:0; max-width:100%; overflow-wrap:anywhere; }
 .trow small{ color:var(--muted); font-family:var(--font-mono); font-size:var(--fs-micro); width:150px; flex:none; }
-.do-dont{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+.do-dont{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); }
 .do-dont .panel{ position:relative; padding-top:34px; }
 .dd-chip{ position:absolute; top:10px; left:14px; font-size:var(--fs-micro); font-weight:700;
   letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:var(--r-pill);
@@ -129,7 +130,7 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
 .mx-rail li.now::before{ height:3px; background:var(--text); }
 .mx-rail li.now::after{ top:-1px; left:calc(50% - 6px); width:12px; height:12px; background:var(--text); border-color:var(--text); }
 /* count ladder — control form; active cell = weight (solid underline + 800), never hue */
-.mx-ladder{ display:flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:var(--r-btn); overflow:hidden; }
+.mx-ladder{ display:flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:var(--r-btn); overflow-x:auto; }
 .mx-ladder .mx-lad-total{ padding:8px 14px; font-weight:800; font-size:var(--fs-md); border-right:1px solid var(--line); background:var(--panel2); }
 .mx-ladder .mx-lad-total small{ display:block; font-size:var(--fs-micro); font-weight:600; color:var(--muted); }
 /* the display:block above out-specifies theme.css's html[data-lang] toggle (0-2-1 vs
@@ -142,8 +143,8 @@ html[data-lang="zh"] .mx-ladder .mx-lad-total small.l-en{ display:none; }
 .mx-ladder button b{ display:block; font-size:var(--fs-md); color:var(--text); font-variant-numeric:tabular-nums; }
 .mx-ladder button[aria-pressed="true"]{ color:var(--text); font-weight:800; box-shadow:inset 0 -3px 0 var(--text); }
 /* LENS static demo — production popovers are wired by theme.js from data-tip-en/zh */
-.lens-demo{ position:relative; display:inline-block; }
-.lens-pop-demo{ position:absolute; left:0; top:calc(100% + 8px); z-index:5; width:280px;
+.lens-demo{ position:relative; display:block; width:100%; }
+.lens-pop-demo{ position:absolute; left:0; top:calc(100% + 8px); z-index:5; width:306px; max-width:100%; box-sizing:border-box;
   background:var(--glass-bg); border:1px solid var(--glass-brd); border-radius:var(--r-card);
   -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
   box-shadow:var(--popover-shadow); padding:10px 12px; font-size:var(--fs-sm); }
@@ -158,7 +159,9 @@ html[data-lang="zh"] .mx-ladder .mx-lad-total small.l-en{ display:none; }
 .spark{ margin-top:10px; }
 .spark svg{ width:100%; height:44px; display:block; }
 .spark figcaption{ display:flex; justify-content:space-between; font-size:var(--fs-micro); color:var(--muted); font-variant-numeric:tabular-nums; }
-body.mobile-sim .wrap{ max-width:390px; }
+body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
+/* Specimen scaffolding only: long example labels wrap; product buttons are unchanged. */
+.wrap .gbtn{ max-width:100%; white-space:normal; }
 :where(.mx-chg-row, .mx-tabset button, .mx-disc summary, .mx-ladder button, .lens-trigger):focus-visible{
   outline:2px solid color-mix(in srgb, var(--link) 70%, transparent); outline-offset:2px; }
 @media (prefers-reduced-motion: reduce){
@@ -535,7 +538,7 @@ body.mobile-sim .wrap{ max-width:390px; }
 
     <div class="panel">
       <div class="mx-sec"><h3 class="l-en">Linked-by-reference (repo-bound)</h3><h3 class="l-zh">挂链组件（依赖仓库运行时）</h3></div>
-      <table class="mx-tbl" style="min-width:0">
+      <div class="mx-tblbox"><table class="mx-tbl" style="min-width:0">
         <tbody>
           <tr><td>SignalCard</td><td class="l-en">templates/_prophet_card.html.j2 (.pvcard + pv_css())</td><td class="l-zh">templates/_prophet_card.html.j2（.pvcard + pv_css()）</td></tr>
           <tr><td>Quality block</td><td class="l-en">.qual2 — two columns, no total row (packet §C; DNR:KILL-FUSED-COMPOSITE)</td><td class="l-zh">.qual2 — 双列、无合计行（规范 §C；DNR:KILL-FUSED-COMPOSITE）</td></tr>
@@ -543,7 +546,7 @@ body.mobile-sim .wrap{ max-width:390px; }
           <tr><td>PageShell</td><td class="l-en">_site_nav family (product) · _public_nav family (anonymous) — the only two</td><td class="l-zh">_site_nav 族（产品页）· _public_nav 族（匿名页）——仅此两族</td></tr>
           <tr><td>Live charts</td><td class="l-en">lib/illus.py + illus.css/js</td><td class="l-zh">lib/illus.py + illus.css/js</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
   </div>
 </section>
