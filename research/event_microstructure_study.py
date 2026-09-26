@@ -413,6 +413,128 @@ def repricing_first_pass(
     }
 
 
+EVIDENCE_STATES = frozenset(
+    {
+        "NARRATIVE_DETECTED",
+        "SOURCE_QUALITY_UNRESOLVED",
+        "SOURCE_QUALITY_RESOLVED",
+        "CAUSAL_REJECTED",
+        "CAUSAL_CONFIRMED",
+        "FIRST_IMPULSE_OBSERVED",
+        "CONTINUATION_OBSERVED",
+        "NO_CONTINUATION",
+        "CROSS_SESSION_ASSIMILATION_OBSERVED",
+        "CROSS_SESSION_NO_ASSIMILATION",
+        "CONFLICTED",
+        "DATA_GAP",
+    }
+)
+
+
+def classify_evidence_state(
+    *,
+    source_quality_resolved: bool,
+    causal_confirmed: bool | None = None,
+    first_impulse_observed: bool = False,
+    continuation_observed: bool | None = None,
+    cross_session_assimilated: bool | None = None,
+    source_confounded: bool = False,
+    data_gap: bool = False,
+) -> dict[str, Any]:
+    """Return a deterministic read-only evidence state.
+
+    This function deliberately does not infer any of its booleans from prices,
+    headlines, thresholds, or model output. Callers must supply states produced by
+    their frozen source/measurement contracts. The helper only prevents later
+    layers from collapsing distinct evidence conditions into a generic
+    "headline worked" label.
+
+    cross_session_assimilated is an optional, separately measured regional
+    handoff fact. It does not require same-session continuation because a target
+    region may have been closed at the event clock.
+    """
+    bool_fields = {
+        "source_quality_resolved": source_quality_resolved,
+        "first_impulse_observed": first_impulse_observed,
+        "source_confounded": source_confounded,
+        "data_gap": data_gap,
+    }
+    for field, value in bool_fields.items():
+        if not isinstance(value, bool):
+            raise StudyContractError(f"{field} must be boolean")
+    for field, value in {
+        "causal_confirmed": causal_confirmed,
+        "continuation_observed": continuation_observed,
+        "cross_session_assimilated": cross_session_assimilated,
+    }.items():
+        if value is not None and not isinstance(value, bool):
+            raise StudyContractError(f"{field} must be boolean or None")
+
+    if not source_quality_resolved and any(
+        value is not None
+        for value in (
+            causal_confirmed,
+            continuation_observed,
+            cross_session_assimilated,
+        )
+    ):
+        raise StudyContractError(
+            "downstream evidence cannot be promoted before source quality resolves"
+        )
+    if first_impulse_observed and causal_confirmed is not True:
+        raise StudyContractError(
+            "first impulse cannot be promoted without causal confirmation"
+        )
+    if continuation_observed is not None and not first_impulse_observed:
+        raise StudyContractError(
+            "continuation state requires an observed first impulse"
+        )
+
+    flags = {
+        "source_quality_resolved": source_quality_resolved,
+        "causal_confirmed": causal_confirmed,
+        "first_impulse_observed": first_impulse_observed,
+        "continuation_observed": continuation_observed,
+        "cross_session_assimilated": cross_session_assimilated,
+        "source_confounded": source_confounded,
+        "data_gap": data_gap,
+    }
+
+    if data_gap:
+        state = "DATA_GAP"
+    elif source_confounded:
+        state = "CONFLICTED"
+    elif not source_quality_resolved:
+        state = "SOURCE_QUALITY_UNRESOLVED"
+    elif causal_confirmed is False:
+        state = "CAUSAL_REJECTED"
+    elif cross_session_assimilated is False:
+        state = "CROSS_SESSION_NO_ASSIMILATION"
+    elif cross_session_assimilated is True:
+        state = "CROSS_SESSION_ASSIMILATION_OBSERVED"
+    elif causal_confirmed is None:
+        state = "SOURCE_QUALITY_RESOLVED"
+    elif not first_impulse_observed:
+        state = "CAUSAL_CONFIRMED"
+    elif continuation_observed is False:
+        state = "NO_CONTINUATION"
+    elif continuation_observed is True:
+        state = "CONTINUATION_OBSERVED"
+    else:
+        state = "FIRST_IMPULSE_OBSERVED"
+
+    return {
+        "schema": "research.narrative_evidence_state.v1",
+        "authority": dict(AUTHORITY),
+        "state": state,
+        "flags": flags,
+        "interpretation": (
+            "evidence_state_only; no score, rank, alert, trade, sizing, "
+            "portfolio, or execution authority"
+        ),
+    }
+
+
 def publication_ladder(
     claims: Sequence[Mapping[str, Any]],
     *,
