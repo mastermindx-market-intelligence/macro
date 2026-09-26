@@ -194,6 +194,42 @@ hierarchy, legible labels and aligned numerals under the existing type/token sys
 Avoid tiny low-contrast footnotes, rainbow status cards, heavy borders around every idea,
 and large empty expanses used to disguise missing hierarchy. Dark and light keep the
 same meaning and flow while retaining their distinct existing material treatments.
+### Responsive, accessibility and motion law for dense visual modes
+
+Desktop density is allowed only when the same research job remains obvious. A 1440px
+Discover view may use a narrow scope/filter rail, one dominant canvas and one coordinated
+inspector. The inspector is never an independent dashboard; it follows the selected mark/
+row and becomes the prepared family/sector summary when nothing more specific is selected.
+
+At tablet widths, collapse the scope rail into a filter/scope control before shrinking the
+primary visualization. The inspector may stack below or open as a sheet, but the selected
+object and return path remain the same.
+
+On mobile, do **not** scale the desktop Matrix, six-panel theme treemap or 268-point bubble
+plot into tiny controls:
+
+- Bubbles: default to the coordinated list / selected-family summary. A plot can remain an
+  overview, but overlapping points open an explicit cluster-choice sheet; individual tiny
+  marks are not treated as separate 44px touch controls.
+- Matrix: default to the industry/sector summary list with compact size-band counts; selecting
+  a row opens its company/size detail in the existing sheet. The full landscape grid is an
+  expert/large-screen representation.
+- Themes: show one selected family treemap at phone width plus family picker/search and a
+  compact comparison list; do not stack six miniature treemaps.
+
+Every dense visual has a list/table equivalent over the **same population and filters**.
+Keyboard users can reach the same selections, search and compare actions without hover.
+Focus returns to the initiating control after a sheet/drawer closes. Color is never the
+only carrier of sign/state; labels, direction and values remain available. Screen-reader
+copy announces the selected scope, measure, observation date and coverage before enumerating
+marks.
+
+Motion communicates selection/context, not fake market motion. Switching representation
+preserves the measured state and may cross-fade/reflow; it must not animate points to new
+coordinates in a way that implies an observed move. Selection halo/highlight may animate
+subtly, while reduced-motion mode removes nonessential transitions. A data mark can stay
+small when its area encodes data; the accessible action target lives in the linked list/
+cluster/sheet rather than falsifying mark geometry.
 
 ## 4. Keep, demote, retire
 
