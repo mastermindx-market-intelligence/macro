@@ -1,0 +1,75 @@
+{
+  "_fixture_only": true,
+  "_note": "Lane E display-contract fixture. Never publish as live market data.",
+  "schema": "theme_lanes.v1",
+  "asof": "2026-09-18",
+  "consumer_contract_schema": "theme_intelligence.consumer.v1",
+  "theme_baskets": {
+    "grid_electrification": "power_grid",
+    "memory_storage": "memory_storage",
+    "ai_semiconductors": "ai_semiconductors",
+    "copper_steel_electrify": "copper_steel"
+  },
+  "theme_context": {
+    "grid_electrification": {
+      "schema": "theme_intelligence.consumer.v1",
+      "identity": {"theme_id": "grid_electrification", "basket_id": "power_grid"},
+      "dimensions": {
+        "leadership": {"state": "OBSERVED", "label": "Leading", "label_zh": "领先", "reason_codes": ["OWNER_LEADERSHIP"]},
+        "thesis": {"state": "ACTIVE", "reason_codes": ["THESIS_ACTIVE"]},
+        "crowding": {"state": "ELEVATED", "label": "Extended", "label_zh": "偏拥挤", "reason_codes": ["OWNER_CROWDING_ELEVATED"]},
+        "entry": {"state": "UNAVAILABLE", "reason_codes": ["ENTRY_OWNER_NOT_JOINED"]},
+        "health": {"state": "CURRENT", "reason_codes": ["OWNER_INPUTS_CURRENT"], "stale_reasons": [], "missing_sources": []}
+      },
+      "specialist_context": {"lane": "working", "stage": "BROADENING", "reason_codes": ["STAGE_BROADENING"]},
+      "source_records": [{"dimension": "leadership", "record_ref": "leadership:power_grid:2026-09-18"}],
+      "clocks": {"observation": "2026-09-18", "availability": "2026-09-18T21:02:00Z", "computation": "2026-09-18T21:05:00Z", "publication": null},
+      "authority": {"is_context_only": true, "display_only": true, "not_a_signal": true, "may_rank": false, "may_gate": false, "may_size": false, "may_escalate": false, "may_trade": false}
+    },
+    "memory_storage": {
+      "schema": "theme_intelligence.consumer.v1",
+      "identity": {"theme_id": "memory_storage", "basket_id": "memory_storage"},
+      "dimensions": {
+        "leadership": {"state": "OBSERVED", "label": "Leading", "label_zh": "领先", "reason_codes": ["OWNER_LEADERSHIP"]},
+        "thesis": {"state": "ACTIVE", "reason_codes": ["THESIS_ACTIVE"]},
+        "crowding": {"state": "NOT_DETECTED", "reason_codes": ["HIGH_CROWDING_NOT_DETECTED"]},
+        "entry": {"state": "QUALIFIED", "label": "Qualified setup", "label_zh": "合格结构", "reason_codes": ["ENTRY_OWNER_QUALIFIED"], "source_records": [{"record_ref": "entry:memory_storage:2026-09-18"}]},
+        "health": {"state": "CURRENT", "reason_codes": ["OWNER_INPUTS_CURRENT"], "stale_reasons": [], "missing_sources": []}
+      },
+      "specialist_context": {"lane": "early", "stage": "PRECIPICE", "reason_codes": ["STAGE_PRECIPICE"]},
+      "source_records": [{"dimension": "entry", "record_ref": "entry:memory_storage:2026-09-18"}],
+      "clocks": {"observation": "2026-09-18", "availability": "2026-09-18T21:02:00Z", "computation": "2026-09-18T21:05:00Z", "publication": "2026-09-18T21:08:00Z"},
+      "authority": {"is_context_only": true, "display_only": true, "not_a_signal": true, "may_rank": false, "may_gate": false, "may_size": false, "may_escalate": false, "may_trade": false}
+    },
+    "ai_semiconductors": {
+      "schema": "theme_intelligence.consumer.v1",
+      "identity": {"theme_id": "ai_semiconductors", "basket_id": "ai_semiconductors"},
+      "dimensions": {
+        "leadership": {"state": "OBSERVED", "label": "Leading", "label_zh": "领先", "reason_codes": ["OWNER_LEADERSHIP"]},
+        "thesis": {"state": "INVALIDATED", "reason_codes": ["MACHINE_FALSIFIER_FIRED"]},
+        "crowding": {"state": "NOT_DETECTED", "reason_codes": ["HIGH_CROWDING_NOT_DETECTED"]},
+        "entry": {"state": "UNAVAILABLE", "reason_codes": ["ENTRY_OWNER_NOT_JOINED"]},
+        "health": {"state": "STALE", "reason_codes": ["MIXED_SNAPSHOT", "INPUT_STALE"], "stale_reasons": ["leadership older than thesis"], "missing_sources": []}
+      },
+      "specialist_context": {"lane": "review", "stage": "WATCH", "reason_codes": ["LANE_REVIEW", "STAGE_WATCH"]},
+      "source_records": [{"dimension": "thesis", "record_ref": "thesis:ai_semiconductors:2026-09-18"}],
+      "clocks": {"observation": "2026-09-18", "availability": null, "computation": "2026-09-18T21:05:00Z", "publication": null, "source_observation_times": {"leadership": "2026-09-17", "thesis": "2026-09-18"}},
+      "authority": {"is_context_only": true, "display_only": true, "not_a_signal": true, "may_rank": false, "may_gate": false, "may_size": false, "may_escalate": false, "may_trade": false}
+    },
+    "copper_steel_electrify": {
+      "schema": "theme_intelligence.consumer.v1",
+      "identity": {"theme_id": "copper_steel_electrify", "basket_id": "copper_steel"},
+      "dimensions": {
+        "leadership": {"state": "UNAVAILABLE", "reason_codes": ["OWNER_FIELD_NOT_JOINED"]},
+        "thesis": {"state": "UNKNOWN", "reason_codes": ["FALSIFIER_INPUT_MISSING"]},
+        "crowding": {"state": "UNKNOWN", "reason_codes": ["CROWDING_READ_ABSENT"]},
+        "entry": {"state": "UNAVAILABLE", "reason_codes": ["ENTRY_OWNER_NOT_JOINED"]},
+        "health": {"state": "PARTIAL", "reason_codes": ["MISSING_INPUTS"], "stale_reasons": [], "missing_sources": ["leadership", "entry"]}
+      },
+      "specialist_context": {"lane": "quiet", "stage": "WATCH", "reason_codes": ["STAGE_WATCH"]},
+      "source_records": [],
+      "clocks": {"observation": null, "availability": null, "computation": null, "publication": null},
+      "authority": {"is_context_only": true, "display_only": true, "not_a_signal": true, "may_rank": false, "may_gate": false, "may_size": false, "may_escalate": false, "may_trade": false}
+    }
+  }
+}

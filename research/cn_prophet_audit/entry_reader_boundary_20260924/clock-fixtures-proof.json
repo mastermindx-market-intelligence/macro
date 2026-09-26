@@ -1,0 +1,36 @@
+{
+  "schema": "theme_entry_reader.fixture_clock_repair.v1",
+  "procedure_pin": "5060527c1d52639eb1bfd84413ab7419e7470cbd",
+  "source_base": "7e587fa314b3ae5c300715afcc4d240a15ecde18",
+  "runtime_changed": false,
+  "engine_sha256": "f29023fb2f854f4ef8bb1a7bf7391d6072552931bcf1ea60955023f1a9086620",
+  "fixed_tests": [
+    "test_subsector_reader_exposes_private_payload_and_public_reference",
+    "test_group_context_rebuilds_owner_context_instead_of_trusting_embedded_authority"
+  ],
+  "before": {
+    "failed": 2,
+    "actual_observation": "2026-09-24; original fixed Sep18 inputs incorrectly evaluated against current wall clock"
+  },
+  "after": {
+    "passed": 47,
+    "failed": 0,
+    "command": "pytest -q --tb=short tests/test_thematic_state_leadership_receipt.py <40 original HEAD stock-board test function node IDs>; isolated basetemp",
+    "fixture_time": "2026-09-19",
+    "stale_negative_control": "both original readers still reject Sep01 at injected time",
+    "log": "clock-fixtures-tests.txt",
+    "log_sha256": "1887d5b42d2af5ecb4932a10ed750fb2134f7920e066bb5ff181f5fb7e21b9ca"
+  },
+  "unimplemented_reader_regressions": {
+    "historical_failed": 58,
+    "historical_passed": 12,
+    "rerun": false,
+    "published_active_suite": false,
+    "local_appendix_preserved": true
+  },
+  "indexed_tests_sha256": {
+    "tests/test_stock_board_v2.py": "3f92d421525a1ddabfb61626357384715db6ddec01566610f1ccf96d1ea9d7d1",
+    "tests/test_thematic_state_leadership_receipt.py": "66f21043bc3d74cb0d10f231f6a225748246d6cecc74e188b09f08de0358718f"
+  },
+  "mission_complete": false
+}

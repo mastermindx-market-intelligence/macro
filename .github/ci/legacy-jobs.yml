@@ -15080,6 +15080,90 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      # Lane E/Lane C current-source closure widening (hosted #7664 contract-delta, 2026-09-22).
+      # These are the exact newly reached import/data dependencies; exclusive scope must fail closed.
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_news.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "engine/ai_desk.py"
+      - "engine/ai_desk_scorer.py"
+      - "engine/altdata_ledger.py"
+      - "engine/altdata_models.py"
+      - "engine/altdata_picks.py"
+      - "engine/altdata_signals.py"
+      - "engine/catalyst_tone.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/desk_ledger.py"
+      - "engine/desk_scorer.py"
+      - "engine/entity_resolver.py"
+      - "engine/event_calendar.py"
+      - "engine/forward_calendar_context.py"
+      - "engine/gdelt_client.py"
+      - "engine/llm_auth.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/master_brain.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/name_resolver.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brief_context.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/read.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/ollama_provider.py"
+      - "engine/opex.py"
+      - "engine/passport.py"
+      - "engine/pooling.py"
+      - "engine/provider_health.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/regime_label.py"
+      - "engine/smart_money.py"
+      - "engine/spine.py"
+      - "engine/subsector_track_record.py"
+      - "engine/ticker_shape.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "scripts/__init__.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/radar_panel.js"
       - "tests/test_energy_economic_change_non_regression.py"
       - "tests/fixtures/energy_non_regression/**"
       - "data/baskets/membership.json"
@@ -15135,6 +15219,20 @@ jobs:
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
       - "lib/*"
+      - "engine/neuralweb/thematic_state.py"
+      - "site/theme_opportunity_context.css"
+      - "site/theme_opportunity_context.js"
+      - "templates/_theme_opportunity_visibility.html.j2"
+      - "templates/theme_opportunity_context.css"
+      - "templates/theme_opportunity_context.js"
+      - "tests/fixtures/theme_intelligence_consumer_v1.json"
+      - "tests/fixtures/theme_opportunity_visibility.json"
+      - "tests/test_theme_opportunity_context.py"
+      - "tests/test_theme_opportunity_visibility.py"
+      - "tests/test_theme_leadership_consumer_bridge.py"
+      - "tests/test_build_subsector_closed_session_leadership.py"
+      - "tests/test_subsector_closed_session_leadership.py"
+      - "tests/test_thematic_state_leadership_receipt.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
@@ -15163,10 +15261,18 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
-      - name: subsector rotation family — turn engine, state machine, alerts, scan, confluence
-        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_energy_economic_change_non_regression.py -q
-      - name: themes heatmap + Theme Tracker page (full suite; portfolio-ctx keeps its subset)
-        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py -q
+      - name: subsector rotation family — turn engine, state machine, Lane C leadership, alerts, scan, confluence + energy non-regression
+        run: python -m pytest tests/test_subsector_turn.py tests/test_subsector_rotation.py tests/test_subsector_rotation_alerts.py tests/test_subsector_scan.py tests/test_subsector_confluence.py tests/test_subsector_closed_session_leadership.py tests/test_build_subsector_closed_session_leadership.py tests/test_thematic_state_leadership_receipt.py tests/test_energy_economic_change_non_regression.py -q
+      - name: themes heatmap + Theme Tracker + Lane C→Lane A consumer bridge
+        run: python -m pytest tests/test_themes_heatmap.py tests/test_state_of_themes.py tests/test_theme_leadership_consumer_bridge.py -q
+      - name: Theme Intelligence visibility source contract — pre-mount package
+        run: >-
+          python -m pytest tests/test_theme_opportunity_context.py -q &&
+          python -m pytest tests/test_theme_opportunity_visibility.py -q
+          -k "not owned_surfaces_consume_one_component_contract_and_keep_deep_links"
+        # The excluded frozen assertion is the serialized route-owner mount boundary.
+        # It is not weakened or rewritten; integration proof must run the unchanged
+        # full file against the composed route overlay before source acceptance.
 
   ohlc-basis-coherence:
     # The breadth OHLC caches must share ONE yfinance adjustment basis across
@@ -17026,6 +17132,7 @@ jobs:
       - "site/flowleaders/leaders.json"
       - "site/leaderradar/radar.json"
       - "site/macro.html"
+      - "site/marketdata/subsector_confluence.json"
       - "site/marketdata/subsector_rotation.json"
       - "site/master_brief.json"
       - "site/qledger/track_record.json"

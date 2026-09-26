@@ -198,6 +198,92 @@ def _classify(buyable: bool, tier: str | None, state: str | None) -> str:
     return "neutral"
 
 
+def _group_entry_context(*, key: str, label: str, kind: str, as_of: str,
+                         cls: str, gate: dict, regime: dict) -> dict:
+    """Descriptive group-entry projection for the shared Theme Intelligence consumer.
+
+    This is an additive projection of existing owner fields only.  It carries no
+    rank/gate/size/escalation/trade authority and deliberately keeps entry
+    qualification/confirmation separate from the regime band.
+    """
+    tier = gate.get("tier_cascade")
+    regime_state = str(regime.get("state") or "").upper() or None
+    reason = str(gate.get("reason") or "").lower()
+    pending = (
+        str(gate.get("sub") or "").lower() == "pending"
+        or "pending confirmation" in reason
+        or "confirmation pending" in reason
+    )
+    headwind = bool(regime.get("headwind")) or regime_state in _HEADWIND_STATES
+    tailwind = bool(regime.get("tailwind")) or regime_state in _TAILWIND_STATES
+
+    if cls == "headwind" or headwind:
+        state = "HEADWIND"
+        reason_code = "GROUP_HEADWIND"
+    elif cls == "entry_now":
+        if pending:
+            state = "QUALIFIED_PENDING_CONFIRMATION"
+            reason_code = "GROUP_ENTRY_QUALIFIED_PENDING_CONFIRMATION"
+        else:
+            state = "QUALIFIED"
+            reason_code = "GROUP_ENTRY_QUALIFIED"
+    elif cls == "forming":
+        state = "FORMING"
+        reason_code = "GROUP_ENTRY_FORMING"
+    elif cls == "tailwind" or tailwind:
+        state = "DESCRIPTIVE_ONLY_TAILWIND"
+        reason_code = "GROUP_TAILWIND_ONLY"
+    elif cls == "late" or regime_state == "EXTENDED":
+        state = "DESCRIPTIVE_ONLY_EXTENDED"
+        reason_code = "GROUP_EXTENDED_NO_FRESH_ENTRY"
+    else:
+        state = "NOT_QUALIFIED"
+        reason_code = "GROUP_NOT_QUALIFIED"
+
+    reason_codes = [f"GROUP_CLASS_{str(cls or 'unknown').upper()}"]
+    if tier:
+        reason_codes.append(f"ENTRY_TIER_{tier}")
+    if pending:
+        reason_codes.append("CONFIRMATION_PENDING")
+    if regime_state:
+        reason_codes.append(f"REGIME_{regime_state}")
+    if headwind:
+        reason_codes.append("REGIME_HEADWIND")
+    elif tailwind:
+        reason_codes.append("REGIME_TAILWIND")
+
+    def clock(value, missing_reason: str) -> dict:
+        return {"value": value, "reason": None if value is not None else missing_reason}
+
+    return {
+        "state": state,
+        "reason_code": reason_code,
+        "value": tier,
+        "band": regime_state,
+        "reason_codes": reason_codes,
+        "source_records": [{
+            "ref": "site/marketdata/subsector_confluence.json",
+            "group_id": key,
+            "group_kind": kind,
+            "as_of": as_of,
+        }],
+        "clocks": {
+            "observation": clock(as_of, "owner_record_has_no_observation_clock"),
+            "availability": clock(None, "owner_record_has_no_availability_clock"),
+            "computation": clock(None, "owner_record_has_no_computation_clock"),
+            "publication": clock(None, "owner_record_has_no_publication_clock"),
+        },
+        "context_only": True,
+        "authority": {
+            "may_rank": False,
+            "may_gate": False,
+            "may_size": False,
+            "may_escalate": False,
+            "may_trade": False,
+        },
+    }
+
+
 def _subsector_factor(entry_weight: float, state: str | None) -> float:
     """A subsector's 0..1 buyability factor for the double-gate combined score: the stronger of
     its fresh cascade ENTRY weight (T1 1.0 .. T4 0.4) and its REGIME tailwind weight. 0 for a
@@ -238,6 +324,7 @@ def score_group(key: str, label: str, sector: str, tickers: list[str],
 
     cls = _classify(buyable, tier, state)
     px = float(close.iloc[-1])
+    as_of = str(close.index.max().date())
 
     # per-member funnel: each member's OWN T1-T4 gate + its leadership within the basket
     members_detail, n_priced = [], 0
@@ -264,8 +351,10 @@ def score_group(key: str, label: str, sector: str, tickers: list[str],
                 "stock_weight": (mv or {}).get("weight") or 0.0,
                 "stock_ticks": (mv or {}).get("ticks"),
                 "stock_bars_to_cross": (mv or {}).get("bars_to_cross"),
+                "stock_eligible": (None if mv is None else bool(mv.get("eligible"))),
                 "stock_buyable": signal_gate.is_buyable(mv),
                 "stock_state": (mv or {}).get("state"),
+                "stock_reason": (mv or {}).get("reason"),
             })
         members_detail.sort(key=lambda m: (-(m["stock_weight"] or 0.0),
                                            -(m["vs_basket"] if m["vs_basket"] is not None else -999)))
@@ -276,7 +365,7 @@ def score_group(key: str, label: str, sector: str, tickers: list[str],
         "n_members": len(set(tickers)), "n_priced": n_priced,
         "reliability": reliability(n_priced),
         "coverage_pct": meta.get("coverage_pct"), "n_live": meta.get("n_live"),
-        "start": meta.get("start"), "as_of": str(close.index.max().date()),
+        "start": meta.get("start"), "as_of": as_of,
         "price_level": round(px, 4),
         "class": cls,
         "entry": {
@@ -284,8 +373,12 @@ def score_group(key: str, label: str, sector: str, tickers: list[str],
             "ticks": gv.get("ticks"), "bars_to_cross": gv.get("bars_to_cross"),
             "fresh_bars": gv.get("fresh_bars"), "eligible": bool(gv.get("eligible")),
             "buyable": buyable, "above200": gv.get("above200"),
-            "reason": gv.get("reason"),
+            "sub": gv.get("sub"), "reason": gv.get("reason"),
         },
+        "entry_context": _group_entry_context(
+            key=key, label=label, kind=kind, as_of=as_of,
+            cls=cls, gate=gv, regime=reg,
+        ),
         "regime": {
             "state": state, "side": reg.get("side"), "label": reg.get("label"),
             "label_zh": reg.get("label_zh"), "action": reg.get("action"),

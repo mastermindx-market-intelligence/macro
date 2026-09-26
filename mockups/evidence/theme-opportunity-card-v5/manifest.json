@@ -1,0 +1,287 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-22T07:13:17Z",
+  "outcome": "captured",
+  "axes": {
+    "access": [
+      "local_fixture"
+    ],
+    "force_states": [
+      {
+        "name": "link-hover",
+        "kind": "hover"
+      },
+      {
+        "name": "link-focus",
+        "kind": "focus"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "honesty": {
+    "access": "local deterministic Lane E frozen visibility fixture rendered from the replacement _theme_opportunity_visibility.html.j2 + theme_opportunity_context.css working-tree source; not deployed-browser proof",
+    "authority": "visual evidence only; five dimensions remain independent and confer no ranking, gating, sizing, escalation, or trade authority",
+    "gaps": "production route mounting/deployment remains serialized behind incumbent route owners and is not claimed by this receipt"
+  },
+  "pages": [
+    {
+      "page_id": "theme-opportunity-visibility-v1-fixture",
+      "registry_route": "fixture://theme-opportunity-visibility-v1",
+      "route": "fixture://theme-opportunity-visibility-v1",
+      "route_kind": "local_fixture",
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        "not deployed; route-owner mounts intentionally excluded from PR #7664 source package"
+      ],
+      "metrics": {
+        "screenshot_completion": 1.0,
+        "strips": 3,
+        "dimensions": 15
+      },
+      "states": [
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "desktop-en-dark.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 93544,
+          "sha256": "7e57a20a3f455cab413ccc4615d09f39ea35cd7156cfbea3005021ee9404115a",
+          "width": 1440,
+          "height": 900,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "desktop-en-light.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 92361,
+          "sha256": "06d13df6fcc3b3faa7c94025ce517b6e93c7da96f14f265c385296a2d4e9f420",
+          "width": 1440,
+          "height": 900,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "desktop-zh-dark.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 93289,
+          "sha256": "1ea2a323b90f06b353dc8578b423e4690bb7475ea30e4432774fef26d236093f",
+          "width": 1440,
+          "height": 900,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "desktop-zh-light.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 92713,
+          "sha256": "2ad2e7c87c5cb88588e7b1a9d0dfd4f93211059434ee5d77ac67acc665405b2c",
+          "width": 1440,
+          "height": 900,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "mobile-en-dark.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "bytes": 93531,
+          "sha256": "77475dc54fd081e33e4e0b67b0dd54ce9f3a5133d607a06a3bdd7dce98edef78",
+          "width": 390,
+          "height": 1421,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "mobile-en-light.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "bytes": 92246,
+          "sha256": "016f9e3cfd562abea5c6a6867b63cef0354c39fe82570ffe1430b839fda3d4ea",
+          "width": 390,
+          "height": 1421,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "mobile-zh-dark.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "bytes": 98208,
+          "sha256": "fcba4e27c281ef16fa6a6745ded5d5f91d0eb123467b74466cd669cba1a3f512",
+          "width": 390,
+          "height": 1420,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "mobile-zh-light.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "bytes": 95510,
+          "sha256": "c6e9911ccff04f6b787973b5d7733debd232646d02b5a5b18c55b667b202e35e",
+          "width": 390,
+          "height": 1420,
+          "horizontal_overflow": false
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "desktop-en-dark-link-hover.png",
+          "force_state": "link-hover",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 94240,
+          "sha256": "d9e2f2c36589aae5af0da9a8cf012bc26f905bda454e40696e20ca40611b080c",
+          "width": 1440,
+          "height": 900,
+          "applied_force_state": "link-hover"
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "desktop-en-dark-link-focus.png",
+          "force_state": "link-focus",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 95567,
+          "sha256": "ebb472469dec0b60354f5ba93f54ebfcc1e872dd01ed7fa16a14363effa80006",
+          "width": 1440,
+          "height": 900,
+          "applied_force_state": "link-focus"
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "desktop-en-light-link-hover.png",
+          "force_state": "link-hover",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 92920,
+          "sha256": "188503007df33565444f82d165c55ecafef4afb481211865b7f00d991b97aa15",
+          "width": 1440,
+          "height": 900,
+          "applied_force_state": "link-hover"
+        },
+        {
+          "access": "local_fixture",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "desktop-en-light-link-focus.png",
+          "force_state": "link-focus",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "bytes": 94280,
+          "sha256": "73d924310d00fdff919aaed36ab26b3bd860938a97bbb8fc4342ce2f3733d7d1",
+          "width": 1440,
+          "height": 900,
+          "applied_force_state": "link-focus"
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "pages": 1,
+    "states": 12,
+    "captured": 12,
+    "failed": 0,
+    "horizontal_overflow_failures": 0
+  }
+}
