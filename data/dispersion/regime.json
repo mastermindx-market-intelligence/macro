@@ -397,7 +397,7 @@
     "n_days_used": 252,
     "dominant_equity_pc_share": 0.1707,
     "effective_universe_bets_pr": 23.54,
-    "idio_dispersion_share": 0.7186,
+    "idio_dispersion_share": 0.7115,
     "sector_pc_loadings": null,
     "note": "sector map not wired (deferred); display-only \u2014 DISP-EIGEN-1 registered, activation DEFERRED pending DISP-GATE-1 non-stationarity resolution",
     "display_only": true

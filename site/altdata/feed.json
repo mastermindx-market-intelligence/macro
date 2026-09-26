@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-26T09:49:05.885713+00:00",
+  "generated_utc": "2026-09-26T16:24:58.231755+00:00",
   "as_of": "2026-09-26",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -4108,48 +4108,34 @@
       "emoji": "\ud83d\udcb8",
       "label_en": "Corporate donors",
       "label_zh": "\u4f01\u4e1a\u6350\u8d60",
-      "rows": 4232,
+      "rows": 4234,
       "last_seen": "2026-09-20",
       "recent": [
         {
-          "BioGuideID": "C001039",
-          "CandidateName": "CAMMACK, KAT",
+          "BioGuideID": "S001213",
+          "CandidateName": "STEIL, BRYAN GEORGE",
           "CompanyCMTENM": "GENERAL MOTORS COMPANY POLITICAL ACTION COMMITTEE (GM PAC)",
           "TransactionDate": "2026-08-07",
-          "TransactionAmount": "2500",
+          "TransactionAmount": "3000",
           "Ticker": "GM",
-          "CommitteeName": "KAT FOR CONGRESS",
+          "CommitteeName": "STEIL FOR WISCONSIN, INC.",
           "Cycle": "2026",
           "TransactionType": "24K",
           "CompanyCMTEID": "C00076810",
           "Uploaded": "2026-09-20 23:34:23.671599",
-          "_first_seen": "2026-09-25T13:40:11.001843+00:00"
+          "_first_seen": "2026-09-26T13:19:09.129128+00:00"
         },
         {
           "BioGuideID": null,
           "CandidateName": null,
-          "CompanyCMTENM": "CITIGROUP INC. PAC - FEDERAL (CITI PAC - FEDERAL)",
+          "CompanyCMTENM": "EXXON MOBIL CORPORATION POLITICAL ACTION COMMITTEE (EXXONMOBIL PAC)",
           "TransactionDate": "2026-08-26",
-          "TransactionAmount": "2500",
-          "Ticker": "C",
-          "CommitteeName": "ACROSS THE AISLE PAC",
+          "TransactionAmount": "5000",
+          "Ticker": "XOM",
+          "CommitteeName": "NEW DEMOCRAT COALITION ACTION FUND",
           "Cycle": "2026",
           "TransactionType": "24K",
-          "CompanyCMTEID": "C00008474",
-          "Uploaded": "2026-09-20 23:34:23.671599",
-          "_first_seen": "2026-09-21T01:20:44.332161+00:00"
-        },
-        {
-          "BioGuideID": null,
-          "CandidateName": null,
-          "CompanyCMTENM": "MARSH & MCLENNAN COMPANIES, INC. POLITICAL ACTION COMMITTEE (MARSH PAC)",
-          "TransactionDate": "2026-08-26",
-          "TransactionAmount": "2500",
-          "Ticker": "MRSH",
-          "CommitteeName": "SCALISE LEADERSHIP FUND",
-          "Cycle": "2026",
-          "TransactionType": "24K",
-          "CompanyCMTEID": "C00457234",
+          "CompanyCMTEID": "C00121368",
           "Uploaded": "2026-09-20 23:34:23.671599",
           "_first_seen": "2026-09-21T01:20:44.332161+00:00"
         },
@@ -4378,16 +4364,16 @@
           "_first_seen": "2026-09-21T01:20:44.332161+00:00"
         },
         {
-          "BioGuideID": "T000490",
-          "CandidateName": "TAYLOR, DAVID",
-          "CompanyCMTENM": "UNION PACIFIC CORP. FUND FOR EFFECTIVE GOVERNMENT",
+          "BioGuideID": "S001198",
+          "CandidateName": "SULLIVAN, DAN",
+          "CompanyCMTENM": "THE HOME DEPOT INC. POLITICAL ACTION COMMITTEE",
           "TransactionDate": "2026-08-26",
-          "TransactionAmount": "-1000",
-          "Ticker": "UNP",
-          "CommitteeName": "DAVE TAYLOR FOR CONGRESS",
+          "TransactionAmount": "5000",
+          "Ticker": "HD",
+          "CommitteeName": "ALASKANS FOR DAN SULLIVAN",
           "Cycle": "2026",
           "TransactionType": "24K",
-          "CompanyCMTEID": "C00010470",
+          "CompanyCMTEID": "C00284885",
           "Uploaded": "2026-09-20 23:34:23.671599",
           "_first_seen": "2026-09-21T01:20:44.332161+00:00"
         },
@@ -4460,6 +4446,20 @@
           "CompanyCMTEID": "C00523936",
           "Uploaded": "2026-09-20 23:34:23.671599",
           "_first_seen": "2026-09-21T01:20:44.332161+00:00"
+        },
+        {
+          "BioGuideID": "B001257",
+          "CandidateName": "BILIRAKIS, GUS M",
+          "CompanyCMTENM": "IRON MOUNTAIN INCORPORATED EMPLOYEES PAC (IMPAC)",
+          "TransactionDate": "2026-08-25",
+          "TransactionAmount": "1000",
+          "Ticker": "IRM",
+          "CommitteeName": "BILIRAKIS FOR CONGRESS",
+          "Cycle": "2026",
+          "TransactionType": "24K",
+          "CompanyCMTEID": "C00523936",
+          "Uploaded": "2026-09-20 23:34:23.671599",
+          "_first_seen": "2026-09-21T01:20:44.332161+00:00"
         }
       ]
     },
@@ -4467,9 +4467,45 @@
       "emoji": "\ud83d\udcf0",
       "label_en": "Quiver news feed",
       "label_zh": "Quiver\u65b0\u95fb",
-      "rows": 2954,
+      "rows": 2958,
       "last_seen": "2026-09-26",
       "recent": [
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Sara+Jacobs%2C+Greg+Casar+and+Valerie+Foushee+propose+bill+to+tax+AI+companies+and+fund+jobs",
+          "time": "2026-09-26 06:19:53",
+          "headline": "Press Release: Sara Jacobs, Greg Casar and Valerie Foushee propose bill to tax AI companies and fund jobs",
+          "category": "legislation_automated",
+          "summary": "<p>Jacobs, Casar, and Foushee propose taxing large AI firms to fund public jobs and worker protections.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Lawmakers introd\u2026",
+          "image": "https://www.quiverquant.com/images/J000305_congress.png",
+          "_first_seen": "2026-09-26T13:19:09.660368+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+McGovern%2C+Casar+Introduce+Fair+Seeds+for+Farmers+Act",
+          "time": "2026-09-26 06:19:53",
+          "headline": "Press Release: McGovern, Casar Introduce Fair Seeds for Farmers Act",
+          "category": "legislation_automated",
+          "summary": "<p>Congressman McGovern\u2019s press releases on legislation, foreign policy, human rights, agriculture, and constituent services.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,2\u2026",
+          "image": "https://www.quiverquant.com/images/M000312_congress.png",
+          "_first_seen": "2026-09-26T13:19:09.660368+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Ramirez%2C+Jayapal%2C+and+Garc%C3%ADa+Call+for+Respect+for+Brazil%E2%80%99s+Electoral+Process",
+          "time": "2026-09-26 04:19:44",
+          "headline": "Press Release: Ramirez, Jayapal, and Garc\u00eda Call for Respect for Brazil\u2019s Electoral Process",
+          "category": "legislation_automated",
+          "summary": "<p>Members urge the U.S. to respect Brazil\u2019s elections, criticizing Trump administration actions they say interfere with democracy.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189\u2026",
+          "image": "https://www.quiverquant.com/images/R000617_congress.png",
+          "_first_seen": "2026-09-26T13:19:09.660368+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Rep.+Young+Kim+Urges+California+to+Protect+%2410+Million+for+Orange+County+Veterans+Cemetery",
+          "time": "2026-09-26 02:19:57",
+          "headline": "Press Release: Rep. Young Kim Urges California to Protect $10 Million for Orange County Veterans Cemetery",
+          "category": "legislation_automated",
+          "summary": "<p>Young Kim urges California to secure federal funding for a proposed Orange County veterans cemetery at Gypsum Canyon.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\"\u2026",
+          "image": "https://www.quiverquant.com/images/K000397_congress.png",
+          "_first_seen": "2026-09-26T13:19:09.660368+00:00"
+        },
         {
           "url": "https://www.quiverquant.com/news/Rocket+Lab+Launches+13th+Synspective+StriX+Satellite+on+97th+Electron+Mission",
           "time": "2026-09-26 01:50:21",
@@ -4507,6 +4543,15 @@
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
+          "url": "https://www.quiverquant.com/news/LAM+RESEARCH+CORP+%28%24LRCX%29+CEO+2026+Pay+Revealed",
+          "time": "2026-09-25 22:25:12",
+          "headline": "LAM RESEARCH CORP ($LRCX) CEO 2026 Pay Revealed",
+          "category": "insiders_automated",
+          "summary": "<p>We estimate that the CEO of LAM RESEARCH CORP ($LRCX), Timothy M. Archer, received a compensation of <strong>$40,354,475</strong> in 2026. This is an increase of 29.88% from an estimated <strong>$28,298,161</strong\u2026",
+          "image": "https://www.quiverquant.com/images/lrcx_rect_new.png",
+          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
+        },
+        {
           "url": "https://www.quiverquant.com/news/Axos+Financial%2C+Inc.+%28%24AX%29+CEO+2026+Pay+Revealed",
           "time": "2026-09-25 22:25:12",
           "headline": "Axos Financial, Inc. ($AX) CEO 2026 Pay Revealed",
@@ -4525,12 +4570,30 @@
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
-          "url": "https://www.quiverquant.com/news/LAM+RESEARCH+CORP+%28%24LRCX%29+CEO+2026+Pay+Revealed",
-          "time": "2026-09-25 22:25:12",
-          "headline": "LAM RESEARCH CORP ($LRCX) CEO 2026 Pay Revealed",
-          "category": "insiders_automated",
-          "summary": "<p>We estimate that the CEO of LAM RESEARCH CORP ($LRCX), Timothy M. Archer, received a compensation of <strong>$40,354,475</strong> in 2026. This is an increase of 29.88% from an estimated <strong>$28,298,161</strong\u2026",
-          "image": "https://www.quiverquant.com/images/lrcx_rect_new.png",
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Trahan%2C+Pappas+Urge+HHS+to+Release+LIHEAP+Funds+by+Nov.+1+Amid+Rising+Heating+Costs",
+          "time": "2026-09-25 22:20:30",
+          "headline": "Press Release: Trahan, Pappas Urge HHS to Release LIHEAP Funds by Nov. 1 Amid Rising Heating Costs",
+          "category": "legislation_automated",
+          "summary": "<p>Trahan and Pappas urge HHS to release LIHEAP funds on time as heating costs rise.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Lawmakers urge timely LIHEAP fundin\u2026",
+          "image": "https://www.quiverquant.com/images/T000482_congress.png",
+          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Hillary+Scholten+to+Co-Lead+Bipartisan+AI+Working+Group",
+          "time": "2026-09-25 22:20:30",
+          "headline": "Press Release: Hillary Scholten to Co-Lead Bipartisan AI Working Group",
+          "category": "legislation_automated",
+          "summary": "<p>Scholten joins a bipartisan AI working group focused on guardrails, accountability, national security, and small-business support.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(1\u2026",
+          "image": "https://www.quiverquant.com/images/S001221_congress.png",
+          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Bob+Latta+Commends+DOE+Funding+for+Ohio+Electric+Grid+Upgrades",
+          "time": "2026-09-25 22:20:30",
+          "headline": "Press Release: Bob Latta Commends DOE Funding for Ohio Electric Grid Upgrades",
+          "category": "legislation_automated",
+          "summary": "<p>Rep. Bob Latta praises DOE funding for Ohio grid modernization and transmission upgrades.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Funding announced for Ohio \u2026",
+          "image": "https://www.quiverquant.com/images/L000566_congress.png",
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
@@ -4552,39 +4615,12 @@
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
-          "url": "https://www.quiverquant.com/news/Press+Release%3A+Trahan%2C+Pappas+Urge+HHS+to+Release+LIHEAP+Funds+by+Nov.+1+Amid+Rising+Heating+Costs",
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Delia+Ramirez%2C+Bernie+Sanders%2C+and+House+Colleagues+Urge+U.S.+to+Respect+Brazil%E2%80%99s+Electoral+Process",
           "time": "2026-09-25 22:20:30",
-          "headline": "Press Release: Trahan, Pappas Urge HHS to Release LIHEAP Funds by Nov. 1 Amid Rising Heating Costs",
+          "headline": "Press Release: Delia Ramirez, Bernie Sanders, and House Colleagues Urge U.S. to Respect Brazil\u2019s Electoral Process",
           "category": "legislation_automated",
-          "summary": "<p>Trahan and Pappas urge HHS to release LIHEAP funds on time as heating costs rise.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Lawmakers urge timely LIHEAP fundin\u2026",
-          "image": "https://www.quiverquant.com/images/T000482_congress.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Press+Release%3A+Bob+Latta+Commends+DOE+Funding+for+Ohio+Electric+Grid+Upgrades",
-          "time": "2026-09-25 22:20:30",
-          "headline": "Press Release: Bob Latta Commends DOE Funding for Ohio Electric Grid Upgrades",
-          "category": "legislation_automated",
-          "summary": "<p>Rep. Bob Latta praises DOE funding for Ohio grid modernization and transmission upgrades.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Funding announced for Ohio \u2026",
-          "image": "https://www.quiverquant.com/images/L000566_congress.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Press+Release%3A+Hillary+Scholten+to+Co-Lead+Bipartisan+AI+Working+Group",
-          "time": "2026-09-25 22:20:30",
-          "headline": "Press Release: Hillary Scholten to Co-Lead Bipartisan AI Working Group",
-          "category": "legislation_automated",
-          "summary": "<p>Scholten joins a bipartisan AI working group focused on guardrails, accountability, national security, and small-business support.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(1\u2026",
-          "image": "https://www.quiverquant.com/images/S001221_congress.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Press+Release%3A+Steve+Cohen+Announces+%241.6+Million+in+FEMA+Grants+for+Shelby+County%2C+University+of+Memphis+and+Covington",
-          "time": "2026-09-25 22:20:30",
-          "headline": "Press Release: Steve Cohen Announces $1.6 Million in FEMA Grants for Shelby County, University of Memphis and Covington",
-          "category": "legislation_automated",
-          "summary": "<p>Congressman Cohen announced FEMA grants totaling $1.64 million for disaster preparedness and infrastructure repairs in Tennessee communities.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"c\u2026",
-          "image": "https://www.quiverquant.com/images/C001068_congress.png",
+          "summary": "<p>House Democrats urge the Trump administration to respect Brazil\u2019s elections and avoid interference ahead of the presidential vote.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(1\u2026",
+          "image": "https://www.quiverquant.com/images/R000617_congress.png",
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
@@ -4597,12 +4633,12 @@
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
-          "url": "https://www.quiverquant.com/news/Press+Release%3A+Delia+Ramirez%2C+Bernie+Sanders%2C+and+House+Colleagues+Urge+U.S.+to+Respect+Brazil%E2%80%99s+Electoral+Process",
+          "url": "https://www.quiverquant.com/news/Press+Release%3A+Steve+Cohen+Announces+%241.6+Million+in+FEMA+Grants+for+Shelby+County%2C+University+of+Memphis+and+Covington",
           "time": "2026-09-25 22:20:30",
-          "headline": "Press Release: Delia Ramirez, Bernie Sanders, and House Colleagues Urge U.S. to Respect Brazil\u2019s Electoral Process",
+          "headline": "Press Release: Steve Cohen Announces $1.6 Million in FEMA Grants for Shelby County, University of Memphis and Covington",
           "category": "legislation_automated",
-          "summary": "<p>House Democrats urge the Trump administration to respect Brazil\u2019s elections and avoid interference ahead of the presidential vote.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(1\u2026",
-          "image": "https://www.quiverquant.com/images/R000617_congress.png",
+          "summary": "<p>Congressman Cohen announced FEMA grants totaling $1.64 million for disaster preparedness and infrastructure repairs in Tennessee communities.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"c\u2026",
+          "image": "https://www.quiverquant.com/images/C001068_congress.png",
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
@@ -4612,6 +4648,24 @@
           "category": "press_release_summary",
           "summary": "<p>Microbot Medical reports high satisfaction with its LIBERTY system and expands its sales footprint into California.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>Microbot Medical Inc. recently announced i\u2026",
           "image": "https://www.quiverquant.com/images/mbot_rect_new.png",
+          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Lattice+Semiconductor+Gains+as+Investors+Appear+to+Revisit+Recent+AI+and+Security+Product+Launches",
+          "time": "2026-09-25 21:20:13",
+          "headline": "Lattice Semiconductor Gains as Investors Appear to Revisit Recent AI and Security Product Launches",
+          "category": "prices_automated",
+          "summary": "<p>Lattice Semiconductor (LSCC) is up 4.8% today. Here is some analysis on what might have caused this price movement. ([ir.latticesemi.com](https://ir.latticesemi.com/investor-overview/news-releases?page=1))</p><p><s\u2026",
+          "image": "https://www.quiverquant.com/images/lscc_rect_new.png",
+          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Masonglory+surges+as+traders+chase+a+very+low-float+setup+after+recent+corporate+changes",
+          "time": "2026-09-25 21:20:13",
+          "headline": "Masonglory surges as traders chase a very low-float setup after recent corporate changes",
+          "category": "prices_automated",
+          "summary": "<p>Masonglory Limited (MSGY) is up 298.5% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> A clear fundamental catalyst for today\u2019s jump is not obvious, so t\u2026",
+          "image": "https://www.quiverquant.com/images/msgy_rect_new.png",
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
@@ -4633,66 +4687,12 @@
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         },
         {
-          "url": "https://www.quiverquant.com/news/Masonglory+surges+as+traders+chase+a+very+low-float+setup+after+recent+corporate+changes",
+          "url": "https://www.quiverquant.com/news/GitLab+Falls+3.7%25+as+Post-Earnings+Momentum+Appears+to+Cool",
           "time": "2026-09-25 21:20:13",
-          "headline": "Masonglory surges as traders chase a very low-float setup after recent corporate changes",
+          "headline": "GitLab Falls 3.7% as Post-Earnings Momentum Appears to Cool",
           "category": "prices_automated",
-          "summary": "<p>Masonglory Limited (MSGY) is up 298.5% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> A clear fundamental catalyst for today\u2019s jump is not obvious, so t\u2026",
-          "image": "https://www.quiverquant.com/images/msgy_rect_new.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Microchip+Technology+jumps+as+Hailo+close+and+recovery+narrative+support+the+stock",
-          "time": "2026-09-25 21:20:13",
-          "headline": "Microchip Technology jumps as Hailo close and recovery narrative support the stock",
-          "category": "prices_automated",
-          "summary": "<p>Microchip Technology (MCHP) is up 5.4% today. Here is some analysis on what might have caused this price movement. ([ir.microchip.com](https://ir.microchip.com/?utm_source=openai))</p><p><strong>Analysis:</strong> \u2026",
-          "image": "https://www.quiverquant.com/images/mchp_rect_new.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Gartner+shares+rise+as+investors+appear+to+lean+into+AI+demand+and+prior+guidance+strength",
-          "time": "2026-09-25 21:20:13",
-          "headline": "Gartner shares rise as investors appear to lean into AI demand and prior guidance strength",
-          "category": "prices_automated",
-          "summary": "<p>Gartner (IT) is up 4.8% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> There does not appear to be a single fresh filing or headline that fully explains\u2026",
-          "image": "https://www.quiverquant.com/images/it_rect_new.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/AeroVironment+slips+as+investors+weigh+unchanged+outlook+and+recent+target+cuts",
-          "time": "2026-09-25 21:20:13",
-          "headline": "AeroVironment slips as investors weigh unchanged outlook and recent target cuts",
-          "category": "prices_automated",
-          "summary": "<p>AeroVironment (AVAV) is down 3.8% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most likely driver is a mix of post-earnings caution and lingering \u2026",
-          "image": "https://www.quiverquant.com/images/avav_rect_new.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Darden+Restaurants+Slides+After+Q1+Report+Highlights+Slower+Olive+Garden+Growth",
-          "time": "2026-09-25 21:20:13",
-          "headline": "Darden Restaurants Slides After Q1 Report Highlights Slower Olive Garden Growth",
-          "category": "prices_automated",
-          "summary": "<p>Darden Restaurants (DRI) is down 3.6% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The selloff appears tied to a muted reaction to fiscal first-quarte\u2026",
-          "image": "https://www.quiverquant.com/images/dri_rect_new.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/SentinelOne+Falls+6.6%25+as+Recent+Downgrade+and+Insider+Sales+Pressure+Sentiment",
-          "time": "2026-09-25 21:20:13",
-          "headline": "SentinelOne Falls 6.6% as Recent Downgrade and Insider Sales Pressure Sentiment",
-          "category": "prices_automated",
-          "summary": "<p>SentinelOne (S) is down 6.6% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most likely driver appears to be a mix of valuation pressure after a sha\u2026",
-          "image": "https://www.quiverquant.com/images/s_rect_new.png",
-          "_first_seen": "2026-09-26T02:15:09.950769+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/Lattice+Semiconductor+Gains+as+Investors+Appear+to+Revisit+Recent+AI+and+Security+Product+Launches",
-          "time": "2026-09-25 21:20:13",
-          "headline": "Lattice Semiconductor Gains as Investors Appear to Revisit Recent AI and Security Product Launches",
-          "category": "prices_automated",
-          "summary": "<p>Lattice Semiconductor (LSCC) is up 4.8% today. Here is some analysis on what might have caused this price movement. ([ir.latticesemi.com](https://ir.latticesemi.com/investor-overview/news-releases?page=1))</p><p><s\u2026",
-          "image": "https://www.quiverquant.com/images/lscc_rect_new.png",
+          "summary": "<p>GitLab (GTLB) is down 3.7% today. Here is some analysis on what might have caused this price movement.</p><p><strong>Analysis:</strong> The most likely explanation is that investors are taking profits after GitLab\u2019\u2026",
+          "image": "https://www.quiverquant.com/images/gtlb_rect_new.png",
           "_first_seen": "2026-09-26T02:15:09.950769+00:00"
         }
       ]
@@ -4885,9 +4885,22 @@
       "emoji": "\ud83d\udcd1",
       "label_en": "Bill summaries",
       "label_zh": "\u6cd5\u6848\u6458\u8981",
-      "rows": 1264,
-      "last_seen": "2026-09-25",
+      "rows": 1265,
+      "last_seen": "2026-09-26",
       "recent": [
+        {
+          "currentChamber": "House",
+          "title": "Less Bureaucracy, Better Child Care for Student Parents Act",
+          "congress": "119",
+          "number": "9606",
+          "originChamber": "House",
+          "billType": "HR",
+          "summary": "<p><strong>Less Bureaucracy, Better Child Care for Student Parents Act</strong></p><p>This bill transfers specified functions relating to child care access for eligible low-income parents in postsecondary education fr\u2026",
+          "url": "https://api.congress.gov/v3/bill/119/hr/9606?format=json",
+          "lastAction": "Introduced in House",
+          "lastActionDate": "2026-07-09",
+          "_first_seen": "2026-09-26T13:19:13.351439+00:00"
+        },
         {
           "currentChamber": "House",
           "title": "Less Bureaucracy, Better Family Engagement Act",
@@ -5199,19 +5212,6 @@
           "lastAction": "Introduced in House",
           "lastActionDate": "2026-09-10",
           "_first_seen": "2026-09-19T13:40:33.864102+00:00"
-        },
-        {
-          "currentChamber": "House",
-          "title": "Data Science and Literacy Act of 2026",
-          "congress": "119",
-          "number": "10347",
-          "originChamber": "House",
-          "billType": "HR",
-          "summary": "<p><strong>Data Science and Literacy Act of 2026</strong></p><p>This bill establishes a grant program for data literacy education and requires additional reporting regarding secondary school teachers.</p><p>Specifical\u2026",
-          "url": "https://api.congress.gov/v3/bill/119/hr/10347?format=json",
-          "lastAction": "Introduced in House",
-          "lastActionDate": "2026-09-10",
-          "_first_seen": "2026-09-19T13:40:33.864102+00:00"
         }
       ]
     },
@@ -5478,182 +5478,182 @@
       "emoji": "\ud83c\udfdb\ufe0f",
       "label_en": "Top shareholders",
       "label_zh": "\u4e3b\u8981\u80a1\u4e1c",
-      "rows": 409666,
+      "rows": 409918,
       "last_seen": "2026-09-26",
       "recent": [
         {
           "ticker": "COIN",
+          "owner_name": "KLP KAPITALFORVALTNING AS",
+          "owner_title": "Institution",
+          "shares": "83960",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "FMR LLC",
+          "owner_title": "Institution",
+          "shares": "1963471",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "BANQUE PICTET & CIE SA",
+          "owner_title": "Institution",
+          "shares": "4144678",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "COMMONWEALTH EQUITY SERVICES, LLC",
+          "owner_title": "Institution",
+          "shares": "4122704",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "BRIGHTON JONES LLC",
+          "owner_title": "Institution",
+          "shares": "4042874",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "JANE STREET GROUP, LLC",
+          "owner_title": "Institution",
+          "shares": "3936221",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "NEOS Investment Management LLC",
+          "owner_title": "Institution",
+          "shares": "3933172",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "CAPTRUST FINANCIAL ADVISORS",
+          "owner_title": "Institution",
+          "shares": "3900375",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "VIKING GLOBAL INVESTORS LP",
+          "owner_title": "Institution",
+          "shares": "3897092",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "PANAGORA ASSET MANAGEMENT INC",
+          "owner_title": "Institution",
+          "shares": "3885759",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "Squarepoint Ops LLC",
+          "owner_title": "Institution",
+          "shares": "3852820",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "KLP KAPITALFORVALTNING AS",
+          "owner_title": "Institution",
+          "shares": "3827000",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AMZN",
           "owner_name": "PUBLIC EMPLOYEES RETIREMENT SYSTEM OF OHIO",
           "owner_title": "Institution",
-          "shares": "84694",
+          "shares": "3817521",
           "_collected": "2026-09-26"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "STATE BOARD OF ADMINISTRATION OF FLORIDA RETIREMENT SYSTEM",
+          "owner_name": "Retirement Systems of Alabama",
           "owner_title": "Institution",
-          "shares": "8257584",
+          "shares": "3781681",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "BlackRock, Inc.",
+          "owner_title": "Institution",
+          "shares": "6674017",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "NOMURA ASSET MANAGEMENT INTERNATIONAL INC.",
+          "owner_title": "Institution",
+          "shares": "3184974",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "VANGUARD GROUP INC",
+          "owner_title": "Institution",
+          "shares": "3170089",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "MORGAN STANLEY",
+          "owner_title": "Institution",
+          "shares": "2557961",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "AORT",
+          "owner_name": "Juniper Investment Company, LLC",
+          "owner_title": "Institution",
+          "shares": "2098164",
           "_collected": "2026-09-26"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "ROYAL LONDON ASSET MANAGEMENT LTD",
+          "owner_name": "Clear Street Group Inc.",
           "owner_title": "Institution",
-          "shares": "8904735",
+          "shares": "4144837",
           "_collected": "2026-09-26"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "Ensign Peak Advisors, Inc",
+          "owner_name": "FIRST TRUST ADVISORS LP",
           "owner_title": "Institution",
-          "shares": "8837145",
+          "shares": "4210806",
           "_collected": "2026-09-26"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "AVIVA PLC",
+          "owner_name": "DAVIS SELECTED ADVISERS",
           "owner_title": "Institution",
-          "shares": "8628566",
+          "shares": "4276176",
           "_collected": "2026-09-26"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "Pictet Asset Management Holding SA",
+          "owner_name": "Cetera Investment Advisers",
           "owner_title": "Institution",
-          "shares": "8560088",
+          "shares": "4652594",
           "_collected": "2026-09-26"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "ACADIAN ASSET MANAGEMENT LLC",
+          "owner_name": "PUBLIC EMPLOYEES RETIREMENT ASSOCIATION OF COLORADO",
           "owner_title": "Institution",
-          "shares": "8453619",
+          "shares": "4883755",
           "_collected": "2026-09-26"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "STIFEL FINANCIAL CORP",
+          "owner_name": "SANDS CAPITAL MANAGEMENT, LLC",
           "owner_title": "Institution",
-          "shares": "8445681",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "CANADA LIFE ASSURANCE Co",
-          "owner_title": "Institution",
-          "shares": "8345507",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "FAYEZ SAROFIM & CO",
-          "owner_title": "Institution",
-          "shares": "8084635",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "Korea Investment CORP",
-          "owner_title": "Institution",
-          "shares": "6990711",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "ALKEON CAPITAL MANAGEMENT LLC",
-          "owner_title": "Institution",
-          "shares": "7964931",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "DnB Asset Management AS",
-          "owner_title": "Institution",
-          "shares": "7785587",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "NEW YORK STATE TEACHERS RETIREMENT SYSTEM",
-          "owner_title": "Institution",
-          "shares": "7539604",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "APG Asset Management N.V.",
-          "owner_title": "Institution",
-          "shares": "7314985",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "LAZARD ASSET MANAGEMENT LLC",
-          "owner_title": "Institution",
-          "shares": "7239349",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "WINDACRE PARTNERSHIP LLC",
-          "owner_title": "Institution",
-          "shares": "7185100",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "1832 Asset Management L.P.",
-          "owner_title": "Institution",
-          "shares": "7183134",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "AQR CAPITAL MANAGEMENT LLC",
-          "owner_title": "Institution",
-          "shares": "8922824",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "PRUDENTIAL FINANCIAL INC",
-          "owner_title": "Institution",
-          "shares": "8925205",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "Universal- Beteiligungs- und Servicegesellschaft mbH",
-          "owner_title": "Institution",
-          "shares": "9065084",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "ADAGE CAPITAL PARTNERS GP, L.L.C.",
-          "owner_title": "Institution",
-          "shares": "9156260",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "CITADEL ADVISORS LLC",
-          "owner_title": "Institution",
-          "shares": "10882003",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "Holocene Advisors, LP",
-          "owner_title": "Institution",
-          "shares": "10508481",
-          "_collected": "2026-09-26"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "BESSEMER GROUP INC",
-          "owner_title": "Institution",
-          "shares": "10096298",
+          "shares": "4861223",
           "_collected": "2026-09-26"
         }
       ]
@@ -5662,48 +5662,168 @@
       "emoji": "\ud83d\udcb0",
       "label_en": "Executive comp",
       "label_zh": "\u9ad8\u7ba1\u85aa\u916c",
-      "rows": 1754,
-      "last_seen": "2026-09-23",
+      "rows": 1770,
+      "last_seen": "2026-09-26",
       "recent": [
         {
-          "ticker": "CECO",
-          "name": "Peter Johansson",
+          "ticker": "CLSK",
+          "name": "Gary A. Vecchiarelli",
           "role": "CFO",
           "year": "2022",
-          "total_comp": "953395.0",
-          "salary": "151442.0",
-          "bonus": "155086.0",
-          "_collected": "2026-09-23"
+          "total_comp": "2116128.0",
+          "salary": "263828.0",
+          "bonus": null,
+          "_collected": "2026-09-26"
         },
         {
-          "ticker": "CECO",
-          "name": "Todd Gleason",
+          "ticker": "CLSK",
+          "name": "Scott E. Garrison",
+          "role": "CDO & EVP",
+          "year": "2024",
+          "total_comp": "2938089.0",
+          "salary": "299091.0",
+          "bonus": "485000.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Zachary K. Bradford",
+          "role": "Former CEO & President",
+          "year": "2025",
+          "total_comp": "48754996.0",
+          "salary": "1766855.0",
+          "bonus": "4916333.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "S. Matthew Schultz",
+          "role": "CEO & Chairman",
+          "year": "2025",
+          "total_comp": "44901507.0",
+          "salary": "862917.0",
+          "bonus": "5533333.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Gary A. Vecchiarelli",
+          "role": "CFO & President",
+          "year": "2025",
+          "total_comp": "16144711.0",
+          "salary": "521667.0",
+          "bonus": "1383333.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Taylor Monnig",
+          "role": "CTO/COO",
+          "year": "2025",
+          "total_comp": "11643857.0",
+          "salary": "554167.0",
+          "bonus": "900000.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Scott E. Garrison",
+          "role": "CDO & EVP",
+          "year": "2025",
+          "total_comp": "11643834.0",
+          "salary": "554167.0",
+          "bonus": "900000.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Zachary K. Bradford",
+          "role": "Former CEO & President",
+          "year": "2024",
+          "total_comp": "15441582.0",
+          "salary": "800000.0",
+          "bonus": "8886666.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "S. Matthew Schultz",
+          "role": "CEO & Chairman",
+          "year": "2024",
+          "total_comp": "13897921.0",
+          "salary": "720000.0",
+          "bonus": "8664666.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Taylor Monnig",
+          "role": "CTO/COO",
+          "year": "2024",
+          "total_comp": "2488094.0",
+          "salary": "299091.0",
+          "bonus": "435000.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Gary A. Vecchiarelli",
+          "role": "CFO & President",
+          "year": "2024",
+          "total_comp": "2021534.0",
+          "salary": "425000.0",
+          "bonus": "1191666.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Zachary K. Bradford",
+          "role": "Former CEO & President",
+          "year": "2023",
+          "total_comp": "6975812.0",
+          "salary": "600000.0",
+          "bonus": "2600000.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "S. Matthew Schultz",
+          "role": "CEO & Chairman",
+          "year": "2023",
+          "total_comp": "6278738.0",
+          "salary": "540000.0",
+          "bonus": "2340000.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Gary A. Vecchiarelli",
+          "role": "CFO & President",
+          "year": "2023",
+          "total_comp": "3131233.0",
+          "salary": "400000.0",
+          "bonus": "400000.0",
+          "_collected": "2026-09-26"
+        },
+        {
+          "ticker": "CLSK",
+          "name": "Zachary K. Bradford",
           "role": "CEO",
           "year": "2022",
-          "total_comp": "2534194.0",
-          "salary": "475771.0",
-          "bonus": "25990.0",
-          "_collected": "2026-09-23"
+          "total_comp": "27038892.0",
+          "salary": "500000.0",
+          "bonus": null,
+          "_collected": "2026-09-26"
         },
         {
-          "ticker": "CECO",
-          "name": "Lynn Watkins-Asiyanbi",
-          "role": "CALO",
-          "year": "2023",
-          "total_comp": "1669580.0",
-          "salary": "363462.0",
+          "ticker": "CLSK",
+          "name": "S. Matthew Schultz",
+          "role": "Executive Chairman",
+          "year": "2022",
+          "total_comp": "23148965.0",
+          "salary": "350000.0",
           "bonus": null,
-          "_collected": "2026-09-23"
-        },
-        {
-          "ticker": "CECO",
-          "name": "Peter Johansson",
-          "role": "CFO",
-          "year": "2023",
-          "total_comp": "1955114.0",
-          "salary": "389423.0",
-          "bonus": null,
-          "_collected": "2026-09-23"
+          "_collected": "2026-09-26"
         },
         {
           "ticker": "CECO",
@@ -5712,6 +5832,26 @@
           "year": "2023",
           "total_comp": "5577976.0",
           "salary": "515316.0",
+          "bonus": null,
+          "_collected": "2026-09-23"
+        },
+        {
+          "ticker": "CECO",
+          "name": "Todd Gleason",
+          "role": "CEO",
+          "year": "2024",
+          "total_comp": "3051771.0",
+          "salary": "717383.0",
+          "bonus": null,
+          "_collected": "2026-09-23"
+        },
+        {
+          "ticker": "CECO",
+          "name": "Peter Johansson",
+          "role": "CFO",
+          "year": "2024",
+          "total_comp": "1173572.0",
+          "salary": "437019.0",
           "bonus": null,
           "_collected": "2026-09-23"
         },
@@ -5729,9 +5869,29 @@
           "ticker": "CECO",
           "name": "Peter Johansson",
           "role": "CFO",
-          "year": "2024",
-          "total_comp": "1173572.0",
-          "salary": "437019.0",
+          "year": "2022",
+          "total_comp": "953395.0",
+          "salary": "151442.0",
+          "bonus": "155086.0",
+          "_collected": "2026-09-23"
+        },
+        {
+          "ticker": "CECO",
+          "name": "Peter Johansson",
+          "role": "CFO",
+          "year": "2023",
+          "total_comp": "1955114.0",
+          "salary": "389423.0",
+          "bonus": null,
+          "_collected": "2026-09-23"
+        },
+        {
+          "ticker": "CECO",
+          "name": "Lynn Watkins-Asiyanbi",
+          "role": "CALO",
+          "year": "2023",
+          "total_comp": "1669580.0",
+          "salary": "363462.0",
           "bonus": null,
           "_collected": "2026-09-23"
         },
@@ -5739,91 +5899,11 @@
           "ticker": "CECO",
           "name": "Todd Gleason",
           "role": "CEO",
-          "year": "2024",
-          "total_comp": "3051771.0",
-          "salary": "717383.0",
-          "bonus": null,
+          "year": "2022",
+          "total_comp": "2534194.0",
+          "salary": "475771.0",
+          "bonus": "25990.0",
           "_collected": "2026-09-23"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Mark R. Mummert",
-          "role": "COO",
-          "year": "2025",
-          "total_comp": "2477454.0",
-          "salary": "510577.0",
-          "bonus": "1012871.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Neal R. Sheorey",
-          "role": "CFO",
-          "year": "2024",
-          "total_comp": "3463336.0",
-          "salary": "600000.0",
-          "bonus": "1576174.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Kristin M. Coleman",
-          "role": "Former Executive Vice President, General Counsel and Corporate Secretary",
-          "year": "2024",
-          "total_comp": "4746800.0",
-          "salary": "645779.0",
-          "bonus": null,
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "J. Kent Masters, Jr.",
-          "role": "CEO",
-          "year": "2024",
-          "total_comp": "14368498.0",
-          "salary": "1400000.0",
-          "bonus": "7880872.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "J. Kent Masters, Jr.",
-          "role": "CEO",
-          "year": "2025",
-          "total_comp": "15513654.0",
-          "salary": "1400000.0",
-          "bonus": "7949640.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Melissa H. Anderson",
-          "role": "Executive Vice President, Chief Business Transformation Officer",
-          "year": "2025",
-          "total_comp": "3228404.0",
-          "salary": "571529.0",
-          "bonus": "1382978.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Neal R. Sheorey",
-          "role": "CFO",
-          "year": "2025",
-          "total_comp": "4125939.0",
-          "salary": "621923.0",
-          "bonus": "1963949.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Eric W. Norris",
-          "role": "Executive Vice President, Chief Commercial Officer",
-          "year": "2025",
-          "total_comp": "4212206.0",
-          "salary": "653933.0",
-          "bonus": "1963949.0",
-          "_collected": "2026-09-06"
         },
         {
           "ticker": "ALB",
@@ -5833,86 +5913,6 @@
           "total_comp": "3315087.0",
           "salary": "636571.0",
           "bonus": "1576174.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Eric W. Norris",
-          "role": "Executive Vice President, Chief Commercial Officer",
-          "year": "2024",
-          "total_comp": "3434139.0",
-          "salary": "640181.0",
-          "bonus": "1576174.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Netha N. Johnson, Jr.",
-          "role": "COO",
-          "year": "2025",
-          "total_comp": "5312779.0",
-          "salary": "459330.0",
-          "bonus": "1963949.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Melissa H. Anderson",
-          "role": "Executive Vice President, Chief Business Transformation Officer",
-          "year": "2024",
-          "total_comp": "2440430.0",
-          "salary": "551250.0",
-          "bonus": "985432.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Eric W. Norris",
-          "role": "Executive Vice President, Chief Commercial Officer",
-          "year": "2023",
-          "total_comp": "3446645.0",
-          "salary": "631973.0",
-          "bonus": "1646506.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Netha N. Johnson, Jr.",
-          "role": "COO",
-          "year": "2023",
-          "total_comp": "3233769.0",
-          "salary": "622420.0",
-          "bonus": "1646506.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Kristin M. Coleman",
-          "role": "Former Executive Vice President, General Counsel and Corporate Secretary",
-          "year": "2023",
-          "total_comp": "2550068.0",
-          "salary": "653000.0",
-          "bonus": null,
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "Neal R. Sheorey",
-          "role": "CFO",
-          "year": "2023",
-          "total_comp": "1089617.0",
-          "salary": "23077.0",
-          "bonus": "300000.0",
-          "_collected": "2026-09-06"
-        },
-        {
-          "ticker": "ALB",
-          "name": "J. Kent Masters, Jr.",
-          "role": "CEO",
-          "year": "2022",
-          "total_comp": "11118156.0",
-          "salary": "1139346.0",
-          "bonus": null,
           "_collected": "2026-09-06"
         }
       ]
@@ -6397,57 +6397,57 @@
     ],
     "hf": [
       {
-        "ticker": "CRM",
-        "downloads_30d": 4495178.0,
-        "wow_pct": 0.1,
+        "ticker": "NVDA",
+        "downloads_30d": 34357956.0,
+        "wow_pct": 1.7,
         "hot": true
       },
       {
-        "ticker": "NVDA",
-        "downloads_30d": 33784976.0,
-        "wow_pct": -0.0,
+        "ticker": "CRM",
+        "downloads_30d": 4501951.0,
+        "wow_pct": 0.3,
         "hot": false
       },
       {
         "ticker": "BABA",
-        "downloads_30d": 196054637.0,
+        "downloads_30d": 195968542.0,
         "wow_pct": -1.0,
         "hot": false
       },
       {
-        "ticker": "AAPL",
-        "downloads_30d": 2332566.0,
-        "wow_pct": -2.2,
-        "hot": false
-      },
-      {
         "ticker": "META",
-        "downloads_30d": 72153564.0,
-        "wow_pct": -3.1,
+        "downloads_30d": 72000086.0,
+        "wow_pct": -3.3,
         "hot": false
       },
       {
         "ticker": "GOOGL",
-        "downloads_30d": 200397435.0,
-        "wow_pct": -3.5,
+        "downloads_30d": 200201087.0,
+        "wow_pct": -3.6,
+        "hot": false
+      },
+      {
+        "ticker": "AAPL",
+        "downloads_30d": 2282761.0,
+        "wow_pct": -4.3,
         "hot": false
       },
       {
         "ticker": "AMZN",
-        "downloads_30d": 33518510.0,
-        "wow_pct": -5.4,
+        "downloads_30d": 33558589.0,
+        "wow_pct": -5.3,
         "hot": false
       },
       {
         "ticker": "IBM",
-        "downloads_30d": 11997446.0,
-        "wow_pct": -5.4,
+        "downloads_30d": 11888227.0,
+        "wow_pct": -6.3,
         "hot": false
       },
       {
         "ticker": "MSFT",
-        "downloads_30d": 28419790.0,
-        "wow_pct": -6.8,
+        "downloads_30d": 28170319.0,
+        "wow_pct": -7.6,
         "hot": false
       }
     ],
@@ -27025,8 +27025,8 @@
       },
       {
         "ticker": "NET",
-        "stars": 15915,
-        "wow_pct": 1.03,
+        "stars": 15919,
+        "wow_pct": 1.05,
         "hot": true
       },
       {
@@ -27037,8 +27037,8 @@
       },
       {
         "ticker": "IBM",
-        "stars": 7831,
-        "wow_pct": 0.26,
+        "stars": 7833,
+        "wow_pct": 0.28,
         "hot": true
       },
       {
@@ -27049,43 +27049,43 @@
       },
       {
         "ticker": "MSFT",
-        "stars": 192928,
-        "wow_pct": 0.13,
+        "stars": 192975,
+        "wow_pct": 0.15,
         "hot": true
       },
       {
         "ticker": "PLTR",
-        "stars": 22097,
-        "wow_pct": 0.1,
+        "stars": 22098,
+        "wow_pct": 0.11,
         "hot": true
       },
       {
-        "ticker": "ESTC",
-        "stars": 77990,
-        "wow_pct": 0.07,
+        "ticker": "GOOGL",
+        "stars": 200354,
+        "wow_pct": 0.09,
         "hot": false
       },
       {
-        "ticker": "GOOGL",
-        "stars": 200317,
+        "ticker": "MDB",
+        "stars": 28595,
+        "wow_pct": 0.09,
+        "hot": false
+      },
+      {
+        "ticker": "ESTC",
+        "stars": 77998,
+        "wow_pct": 0.08,
+        "hot": false
+      },
+      {
+        "ticker": "META",
+        "stars": 250746,
         "wow_pct": 0.07,
         "hot": false
       },
       {
         "ticker": "AMD",
         "stars": 6819,
-        "wow_pct": 0.06,
-        "hot": false
-      },
-      {
-        "ticker": "MDB",
-        "stars": 28587,
-        "wow_pct": 0.06,
-        "hot": false
-      },
-      {
-        "ticker": "META",
-        "stars": 250735,
         "wow_pct": 0.06,
         "hot": false
       },
@@ -27097,8 +27097,8 @@
       },
       {
         "ticker": "GTLB",
-        "stars": 24546,
-        "wow_pct": 0.0,
+        "stars": 24548,
+        "wow_pct": 0.01,
         "hot": false
       },
       {
@@ -29170,16 +29170,6 @@
         "summary": "Gender Delusion Disqualification Act   This bill prohibits individuals with a gender &nbsp; dysphoria   diagnosis from occupying certain positions in executive agencies or obtaining or renewing certain federal credentials. ( Gender   dysphori a refers to the distress that may accompany the incongrue"
       },
       {
-        "title": "Water Resources Development Act of 2026",
-        "sector": "Infrastructure",
-        "chamber": "House",
-        "bill": "HR9497",
-        "last_action": "Reported to House",
-        "last_action_date": "2026-09-03",
-        "url": "https://api.congress.gov/v3/bill/119/hr/9497?format=json",
-        "summary": "Water Resources Development Act of 2026   This bill authorizes and modifies certain water resource infrastructure projects and programs of the U.S. Army Corps of Engineers and makes related requirements. For example, the bill authorizes and modifies various water resources feasibility studies and pr"
-      },
-      {
         "title": "To designate the facility of the United States Postal Service located at 9995 Southeast Federal Highway in Hobe Sound, Florida, as the \"Spec",
         "sector": "Infrastructure",
         "chamber": "House",
@@ -29188,6 +29178,16 @@
         "last_action_date": "2026-09-03",
         "url": "https://api.congress.gov/v3/bill/119/hr/10279?format=json",
         "summary": "This bill designates the facility of the United States Postal Service located at 9995 Southeast Federal Highway in Hobe Sound, Florida, as the \"Special Operations Chief Petty Officer Aaron Carson Vaughn Post Office Building\"."
+      },
+      {
+        "title": "Water Resources Development Act of 2026",
+        "sector": "Infrastructure",
+        "chamber": "House",
+        "bill": "HR9497",
+        "last_action": "Reported to House",
+        "last_action_date": "2026-09-03",
+        "url": "https://api.congress.gov/v3/bill/119/hr/9497?format=json",
+        "summary": "Water Resources Development Act of 2026   This bill authorizes and modifies certain water resource infrastructure projects and programs of the U.S. Army Corps of Engineers and makes related requirements. For example, the bill authorizes and modifies various water resources feasibility studies and pr"
       },
       {
         "title": "Earned Wage Access Consumer Protection Act",
@@ -29240,16 +29240,6 @@
         "summary": "Cancer Care Planning and Communications Act    This bill&nbsp;provides for&nbsp;Medicare&nbsp;coverage and payment&nbsp;of cancer care planning and coordination services for individuals who are diagnosed with or treated for cancer, including the development of treatment plans, follow-up care, and an"
       },
       {
-        "title": "Lindsey O. Graham Sanctioning Russia and Iran Act of 2026",
-        "sector": "Defense",
-        "chamber": "Senate",
-        "bill": "HR5334",
-        "last_action": "Passed Senate",
-        "last_action_date": "2026-08-07",
-        "url": "https://api.congress.gov/v3/bill/119/hr/5334?format=json",
-        "summary": "Lindsey O. Graham Sanctioning Russia and Iran Act of 2026   This bill imposes a variety of sanctions, tariffs, and prohibitions related to Russia, extends an Iran-related sanctions law, and expands a tax deduction&nbsp;for teacher expenses to include early childhood educators.  For example, under th"
-      },
-      {
         "title": "A bill to provide for a ten-year statute of limitations for export control violations under the Export Control Reform Act of 2018.",
         "sector": "Trade",
         "chamber": "Senate",
@@ -29263,16 +29253,6 @@
         "title": "A concurrent resolution setting forth the congressional budget for the United States Government for fiscal year 2027 and setting forth the a",
         "sector": "Healthcare",
         "chamber": "Senate",
-        "bill": "SCONRES38",
-        "last_action": "Introduced in Senate",
-        "last_action_date": "2026-08-07",
-        "url": "https://api.congress.gov/v3/bill/119/sconres/38?format=json",
-        "summary": "This concurrent resolution establishes the congressional budget for the federal government for FY2027, sets forth budgetary levels for FY2028-FY2036, and provides reconciliation instructions for legislation that increases the deficit.&nbsp;  The resolution recommends levels and amounts for FY2027-FY"
-      },
-      {
-        "title": "A concurrent resolution setting forth the congressional budget for the United States Government for fiscal year 2027 and setting forth the a",
-        "sector": "Healthcare",
-        "chamber": "Senate",
         "bill": "SCONRES39",
         "last_action": "Introduced in Senate",
         "last_action_date": "2026-08-07",
@@ -29280,14 +29260,34 @@
         "summary": "This concurrent resolution establishes the congressional budget for the federal government for FY2027, sets forth budgetary levels for FY2028-FY2036, and provides reconciliation instructions for legislation that increases or decreases the deficit.&nbsp;  The resolution recommends levels and amounts "
       },
       {
-        "title": "Nurse Overtime and Patient Safety Act of 2026",
+        "title": "Lindsey O. Graham Sanctioning Russia and Iran Act of 2026",
+        "sector": "Defense",
+        "chamber": "Senate",
+        "bill": "HR5334",
+        "last_action": "Passed Senate",
+        "last_action_date": "2026-08-07",
+        "url": "https://api.congress.gov/v3/bill/119/hr/5334?format=json",
+        "summary": "Lindsey O. Graham Sanctioning Russia and Iran Act of 2026   This bill imposes a variety of sanctions, tariffs, and prohibitions related to Russia, extends an Iran-related sanctions law, and expands a tax deduction&nbsp;for teacher expenses to include early childhood educators.  For example, under th"
+      },
+      {
+        "title": "A concurrent resolution setting forth the congressional budget for the United States Government for fiscal year 2027 and setting forth the a",
         "sector": "Healthcare",
-        "chamber": "House",
-        "bill": "HR10056",
-        "last_action": "Introduced in House",
+        "chamber": "Senate",
+        "bill": "SCONRES38",
+        "last_action": "Introduced in Senate",
+        "last_action_date": "2026-08-07",
+        "url": "https://api.congress.gov/v3/bill/119/sconres/38?format=json",
+        "summary": "This concurrent resolution establishes the congressional budget for the federal government for FY2027, sets forth budgetary levels for FY2028-FY2036, and provides reconciliation instructions for legislation that increases the deficit.&nbsp;  The resolution recommends levels and amounts for FY2027-FY"
+      },
+      {
+        "title": "Nurse Overtime and Patient Safety Act",
+        "sector": "Healthcare",
+        "chamber": "Senate",
+        "bill": "S5319",
+        "last_action": "Introduced in Senate",
         "last_action_date": "2026-08-06",
-        "url": "https://api.congress.gov/v3/bill/119/hr/10056?format=json",
-        "summary": "Nurse Overtime and Patient Safety Act of 2026   This bill requires certain providers, as a condition of Medicare participation, to limit mandatory overtime for nurses.  Specifically, the bill prohibits hospitals, ambulatory surgical centers, home health agencies, rural health clinics, federally qual"
+        "url": "https://api.congress.gov/v3/bill/119/s/5319?format=json",
+        "summary": "Nurse Overtime and Patient Safety Act    This bill requires certain providers, as a condition of Medicare participation, to limit mandatory overtime for nurses.   Specifically, the bill prohibits hospitals, ambulatory surgical centers, home health agencies, rural health clinics, federally qualified "
       }
     ],
     "congress_holdings": {
@@ -30278,6 +30278,13 @@
         "year": 2025
       },
       {
+        "ticker": "CLSK",
+        "top_exec": "Zachary K. Bradford",
+        "role": "Former CEO & President",
+        "total_comp": 48754996.0,
+        "year": 2025
+      },
+      {
         "ticker": "AXP",
         "top_exec": "Stephen J. Squeri",
         "role": "CEO",
@@ -30290,13 +30297,6 @@
         "role": "CEO",
         "total_comp": 46883031.0,
         "year": 2024
-      },
-      {
-        "ticker": "DIS",
-        "top_exec": "Robert A. Iger",
-        "role": "CEO; Former Executive Chairman",
-        "total_comp": 45842574.0,
-        "year": 2025
       }
     ],
     "earnings": [
@@ -30607,7 +30607,21 @@
           "patent_cluster",
           "trump"
         ],
-        "why": "app_demand: 4.77\u2605 \u00d7 20,203,272 reviews \u00b7 cnbc_pick: Jason Snipe \u00b7 github_momentum: +0.13% stars \u00b7 patent_cluster: 491 grants, 48 IPC classes \u00b7 trump: MICROSOFT CORP"
+        "why": "app_demand: 4.77\u2605 \u00d7 20,203,272 reviews \u00b7 cnbc_pick: Jason Snipe \u00b7 github_momentum: +0.15% stars \u00b7 patent_cluster: 491 grants, 48 IPC classes \u00b7 trump: MICROSOFT CORP"
+      },
+      {
+        "ticker": "NVDA",
+        "score": 6,
+        "weighted_score": 1.75,
+        "channel_list": [
+          "analyst_upgrade_cluster",
+          "github_momentum",
+          "hf_model_momentum",
+          "patent_cluster",
+          "retail_buzz",
+          "special_situation"
+        ],
+        "why": "analyst_upgrade_cluster: net upgrades +42 revision delta \u00b7 github_momentum: +0.18% stars \u00b7 hf_model_momentum: +1.7% model downloads \u00b7 patent_cluster: 270 grants, 27 IPC classes \u00b7 retail_buzz: 207 WSB mentions \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "CRWD",
@@ -30632,20 +30646,7 @@
           "retail_buzz",
           "stocktwits_bull"
         ],
-        "why": "analyst_upgrade_cluster: net upgrades +26 revision delta \u00b7 github_momentum: +0.1% stars \u00b7 gov_contract: $17,295,684 awarded \u00b7 retail_buzz: 91 WSB mentions \u00b7 stocktwits_bull: 100% bull \u00b7 324,401 watching"
-      },
-      {
-        "ticker": "NVDA",
-        "score": 5,
-        "weighted_score": 1.4,
-        "channel_list": [
-          "analyst_upgrade_cluster",
-          "github_momentum",
-          "patent_cluster",
-          "retail_buzz",
-          "special_situation"
-        ],
-        "why": "analyst_upgrade_cluster: net upgrades +42 revision delta \u00b7 github_momentum: +0.18% stars \u00b7 patent_cluster: 270 grants, 27 IPC classes \u00b7 retail_buzz: 207 WSB mentions \u00b7 special_situation: Acquisitions"
+        "why": "analyst_upgrade_cluster: net upgrades +26 revision delta \u00b7 github_momentum: +0.11% stars \u00b7 gov_contract: $17,295,684 awarded \u00b7 retail_buzz: 91 WSB mentions \u00b7 stocktwits_bull: 100% bull \u00b7 324,401 watching"
       },
       {
         "ticker": "MMC",

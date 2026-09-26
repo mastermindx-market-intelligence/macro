@@ -1,4 +1,3 @@
-
 :root{
   --blue:#285FFF; --indigo:#4559DC; --ink:#0B1733; --text:#344054; --muted:#4C5A6C;
   --faint:#5F6A7A; --red:#D30B0B; --amber:#F5AD42; --green:#1a7f43; --teal:#1F8A70;
@@ -353,3 +352,14 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
   .cx-step:not(:last-child)::before{background:color-mix(in srgb,var(--accent) 20%,var(--grid));animation:none}
   *{transition:none!important}
 }
+
+/* Scenario detail uses native disclosure; retain the four-row glance view. */
+.sx-card .sx-item .nm{white-space:normal;overflow:visible;overflow-wrap:anywhere;min-width:0}
+.sx-card details.sx-extra{margin:6px 0 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.sx-extra>summary{display:flex;align-items:center;gap:6px;min-height:40px;padding:6px 0;box-sizing:border-box;list-style:none;color:var(--ink-link,var(--ink));font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation}
+.sx-extra>summary::-webkit-details-marker{display:none}
+.sx-extra>summary::after{content:'+';margin-left:auto}
+.sx-extra[open]>summary::after{content:'−'}
+.sx-extra>summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.sx-extra>summary .sx-hide,.sx-extra[open]>summary .sx-show{display:none}
+.sx-extra[open]>summary .sx-hide{display:inline}
