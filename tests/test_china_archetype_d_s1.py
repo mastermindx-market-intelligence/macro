@@ -263,6 +263,23 @@ def test_no_network_render_skips_stock_library_drips(monkeypatch) -> None:
     assert build_china._build_china_library_for_page(alpha=None) is None
 
 
+def test_direct_china_library_no_network_render_imports_no_collectors(monkeypatch) -> None:
+    import importlib
+
+    from scripts import build_china_library
+
+    def forbidden_import(name, *args, **kwargs):
+        if name.startswith("collectors."):
+            raise AssertionError(f"render lane imported network collector {name}")
+        return real_import(name, *args, **kwargs)
+
+    real_import = importlib.import_module
+    monkeypatch.setattr(importlib, "import_module", forbidden_import)
+    monkeypatch.setenv("RENDER_NO_DRIP", "1")
+    monkeypatch.delenv("CHINA_FAST_RENDER", raising=False)
+    build_china_library._refresh_context_drips()
+
+
 def test_no_network_render_disables_live_news_fetches(monkeypatch) -> None:
     from engine import china_news
 
