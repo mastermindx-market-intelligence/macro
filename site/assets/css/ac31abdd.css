@@ -769,6 +769,7 @@ body.page-macro .sc-band-watch{color:var(--ink-warn, var(--warn));background:rgb
 body.page-macro .sc-band-calm{color:var(--ink-up, var(--up));background:rgba(62,200,122,.1);border:1px solid rgba(62,200,122,.2)}
 body.page-macro .sc-band-elev{color:var(--ink-info, var(--info));background:rgba(77,142,245,.1);border:1px solid rgba(77,142,245,.2)}
 body.page-macro .sc-band-high{color:var(--ink-down, var(--down));background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.2)}
+body.page-macro .sc-band-unavailable{color:var(--ink-3,var(--muted));background:var(--panel2);border:1px solid var(--line)}
 body.page-macro .dd-ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
 body.page-macro .dd-box{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 13px;text-align:center}
 body.page-macro .dd-horizon{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}

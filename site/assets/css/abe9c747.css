@@ -2382,6 +2382,7 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 #dlg-risk .riskdlg-scare[data-band="sc-band-watch"]{--rkc-c:var(--warn);}
 #dlg-risk .riskdlg-scare[data-band="sc-band-elev"]{--rkc-c:var(--info);}
 #dlg-risk .riskdlg-scare[data-band="sc-band-calm"]{--rkc-c:var(--muted);}
+#dlg-risk .riskdlg-scare[data-band="sc-band-unavailable"]{--rkc-c:var(--muted);}
 #dlg-risk .rkc-sc-ico{display:none;}
 #dlg-risk .sc-name{font-size:var(--fs-sm);font-weight:650;}
 #dlg-risk .sc-score{font-size:var(--fs-body);font-weight:750;}
