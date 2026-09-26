@@ -14320,6 +14320,8 @@ jobs:
       # cover the new suite's imports and its engine/template subjects.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
         run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
+      - name: RIC rates direction preregistration and synthetic no-lookahead
+        run: python -m pytest tests/test_rates_direction_research.py tests/test_rates_swing_proxy_pilot.py tests/test_rates_swing_proxy_extended.py tests/test_rates_swing_phase_reset_exploratory.py tests/test_rate_shock_driver_transition.py tests/test_cpi_catalyst_rate_shadow.py tests/test_inflation_catalyst_rate_response_shadow.py tests/test_curve_system_dns.py tests/test_month_end_yield_extension_replication.py tests/test_month_end_yield_extension_prospective.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
@@ -14341,6 +14343,36 @@ jobs:
       - "tests/test_news_event_ledger.py"
       - "tests/test_phase_buildout.py"
       - "tests/test_policy_lever.py"
+      - "tests/test_rates_direction_research.py"
+      - "tests/test_rates_swing_proxy_pilot.py"
+      - "tests/test_rates_swing_proxy_extended.py"
+      - "tests/test_rates_swing_phase_reset_exploratory.py"
+      - "tests/test_rate_shock_driver_transition.py"
+      - "tests/test_cpi_catalyst_rate_shadow.py"
+      - "tests/test_inflation_catalyst_rate_response_shadow.py"
+      - "tests/test_curve_system_dns.py"
+      - "tests/test_month_end_yield_extension_replication.py"
+      - "tests/test_month_end_yield_extension_prospective.py"
+      - "research/rates_direction/month_end_yield_extension_prospective.py"
+      - "research/rates_direction/MONTH_END_YIELD_EXTENSION_PROSPECTIVE_V1.md"
+      - "research/rates_direction/month_end_yield_extension_replication.py"
+      - "research/rates_direction/MONTH_END_YIELD_EXTENSION_REPLICATION_V1.md"
+      - "research/rates_direction/inflation_catalyst_rate_response_shadow.py"
+      - "research/rates_direction/INFLATION_CATALYST_RATE_RESPONSE_SHADOW_V1.md"
+      - "research/rates_direction/curve_system_dns.py"
+      - "research/rates_direction/CURVE_SYSTEM_DNS_V1.md"
+      - "research/rates_direction/cpi_catalyst_rate_shadow.py"
+      - "research/rates_direction/CPI_CATALYST_RATE_SHADOW_V1.md"
+      - "research/rates_direction/rate_shock_driver_transition.py"
+      - "research/rates_direction/RATE_SHOCK_DRIVER_TRANSITION_V1.md"
+      - "research/rates_direction/swing_phase_reset_exploratory.py"
+      - "research/rates_direction/SWING_PHASE_RESET_EXPLORATORY_V1.md"
+      - "research/rates_direction/swing_proxy_extended.py"
+      - "research/rates_direction/swing_proxy_pilot.py"
+      - "research/rates_direction/uploaded_formula_probe.py"
+      - "engine/rates_direction_research.py"
+      - "scripts/research/ric_rates_direction.py"
+      - "research/rates_direction/prereg_v1.json"
       - "tests/test_rates_command.py"
       - "tests/test_yield_momentum.py"
       - "tests/test_inputs_yield_curve.py"

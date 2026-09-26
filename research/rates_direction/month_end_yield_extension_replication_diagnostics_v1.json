@@ -1,0 +1,151 @@
+{
+  "schema": "ric.month_end_yield_extension_replication.post_result_diagnostics.v1",
+  "selection_status": "POST_RESULT_DESCRIPTIVE_NOT_PROMOTION_EVIDENCE",
+  "dgs10": {
+    "all": {
+      "raw": {
+        "n": 236,
+        "mean_bp": -1.1864406779660988,
+        "t_hac": -3.267,
+        "p_hac": 0.0011,
+        "negative_fraction": 0.5254237288135594
+      },
+      "excess": {
+        "n": 236,
+        "mean_bp": -1.2417860917513246,
+        "t_hac": -3.276,
+        "p_hac": 0.0011,
+        "negative_fraction": 0.559322033898305
+      },
+      "median_raw_bp": -0.9999999999999787,
+      "median_excess_bp": -1.0763157894736857
+    },
+    "quarter_end_months": {
+      "raw": {
+        "n": 78,
+        "mean_bp": 0.29487179487179677,
+        "t_hac": 0.502,
+        "p_hac": 0.6156,
+        "negative_fraction": 0.41025641025641024
+      },
+      "excess": {
+        "n": 78,
+        "mean_bp": 0.13644104433578294,
+        "t_hac": 0.199,
+        "p_hac": 0.8419,
+        "negative_fraction": 0.47435897435897434
+      }
+    },
+    "non_quarter_end_months": {
+      "raw": {
+        "n": 158,
+        "mean_bp": -1.9177215189873382,
+        "t_hac": -4.37,
+        "p_hac": 0.0,
+        "negative_fraction": 0.5822784810126582
+      },
+      "excess": {
+        "n": 158,
+        "mean_bp": -1.9221767032373651,
+        "t_hac": -4.334,
+        "p_hac": 0.0,
+        "negative_fraction": 0.6012658227848101
+      }
+    },
+    "calendar_2022_2026": {
+      "raw": {
+        "n": 56,
+        "mean_bp": -0.24999999999998992,
+        "t_hac": -0.387,
+        "p_hac": 0.699,
+        "negative_fraction": 0.4642857142857143
+      },
+      "excess": {
+        "n": 56,
+        "mean_bp": -0.5357022513949652,
+        "t_hac": -0.767,
+        "p_hac": 0.4428,
+        "negative_fraction": 0.5357142857142857
+      }
+    },
+    "calendar_2022_2026_non_quarter": {
+      "raw": {
+        "n": 38,
+        "mean_bp": -0.44736842105262187,
+        "t_hac": -0.647,
+        "p_hac": 0.5178,
+        "negative_fraction": 0.5
+      },
+      "excess": {
+        "n": 38,
+        "mean_bp": -0.6764082784125048,
+        "t_hac": -0.947,
+        "p_hac": 0.3437,
+        "negative_fraction": 0.5789473684210527
+      }
+    },
+    "trim_largest_5pct_abs_raw": {
+      "absolute_cut_bp": 10.999999999999988,
+      "raw": {
+        "n": 225,
+        "mean_bp": -0.7866666666666638,
+        "t_hac": -2.688,
+        "p_hac": 0.0072,
+        "negative_fraction": 0.5111111111111111
+      }
+    },
+    "five_year_buckets": [
+      {
+        "years": [
+          2007,
+          2011
+        ],
+        "n": 60,
+        "raw_mean_bp": -2.316666666666664,
+        "excess_mean_bp": -2.183936545910228,
+        "negative_fraction": 0.55
+      },
+      {
+        "years": [
+          2012,
+          2016
+        ],
+        "n": 60,
+        "raw_mean_bp": -0.649999999999999,
+        "excess_mean_bp": -0.729634916167423,
+        "negative_fraction": 0.55
+      },
+      {
+        "years": [
+          2017,
+          2021
+        ],
+        "n": 60,
+        "raw_mean_bp": -1.4666666666666677,
+        "excess_mean_bp": -1.4707983975089247,
+        "negative_fraction": 0.5333333333333333
+      },
+      {
+        "years": [
+          2022,
+          2026
+        ],
+        "n": 56,
+        "raw_mean_bp": -0.24999999999998992,
+        "excess_mean_bp": -0.5357022513949652,
+        "negative_fraction": 0.4642857142857143
+      }
+    ]
+  },
+  "full_family_width_bonferroni_upper_bound": {
+    "DGS2:raw": 0.0,
+    "DGS2:excess": 0.0,
+    "DGS5:raw": 0.0,
+    "DGS5:excess": 0.0,
+    "DGS10:raw": 0.023100000000000002,
+    "DGS10:excess": 0.023100000000000002,
+    "DGS30:raw": 0.0315,
+    "DGS30:excess": 0.0315
+  },
+  "authority": false
+}

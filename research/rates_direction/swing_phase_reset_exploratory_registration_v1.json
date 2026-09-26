@@ -1,0 +1,8 @@
+{
+  "family": "ric_swing_phase_reset_v1",
+  "new_configs": 7,
+  "literal_n": 7,
+  "ledger_before_sha256": "be7f4529707f2132f34f3625910afae4543aae2171d1c9eb70790147b6623063",
+  "ledger_after_sha256": "c1167ac1e528c2a2022194b2aebf004a3f52120abedc8c9ae273d3515e5c1c60",
+  "freeze_sha256": "afed4a45cb58e8802885a23991999d03ec5eee249b8849ce22b8b76d17fd58fe"
+}

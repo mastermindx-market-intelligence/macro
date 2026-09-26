@@ -1,0 +1,47 @@
+{
+  "schema": "ric.inflation_catalyst_rate_response.freeze.v1",
+  "frozen_at": "2026-09-25T01:25:00.250611+00:00",
+  "eligible_outcomes_opened": false,
+  "freeze_date": "2026-09-24",
+  "spec": {
+    "freeze_date": "2026-09-24",
+    "z_threshold": 0.35,
+    "move_floor_bp": 2.0,
+    "minimum_events": 12,
+    "minimum_active": 8,
+    "promotion_review_events": 24,
+    "families": {
+      "cpi": [
+        "cpi_headline",
+        "cpi_core"
+      ],
+      "pce": [
+        "pce_headline",
+        "pce_core"
+      ]
+    },
+    "expectation_cutoff": "exact_release_date_minus_1_calendar_day",
+    "actual_basis": "official_published_metric",
+    "actual_source": "official_release_document",
+    "actual_availability_cutoff": "16:00 America/New_York release day",
+    "primary_horizon": "h0",
+    "secondary_horizons": [
+      "h1",
+      "h5"
+    ],
+    "baseline": "prior_5_observation_dgs10_direction",
+    "evidence_tier": "prospective_actual_catalyst_to_rates_research_only"
+  },
+  "files": {
+    "research/rates_direction/inflation_catalyst_rate_response_shadow.py": "67097047914ed7d07281acc507771912a8401140613a4c6f2459e7fc337100db",
+    "research/rates_direction/INFLATION_CATALYST_RATE_RESPONSE_SHADOW_V1.md": "1b670201e97aa78cc5c9838708132e8197f2900f1af8adaebdcd62ac3d3d34b8",
+    "tests/test_inflation_catalyst_rate_response_shadow.py": "4464d24b42e1984d0f4407651a3bab3e5d417d5c0c9c015986ad24327863cda3",
+    "research/rates_direction/cpi_catalyst_rate_shadow.py": "b992c5542bcaa1a7f7640a2fd364841b10cb32bd175e1baeb1097adfebd6ccd0"
+  },
+  "release_ledger_sha256_at_freeze": "91feb939d87d569f28c2d634a0c07d02257ccea9d3517ec6342b1bfee6866a1f",
+  "dgs10_sha256_at_freeze": "7369b3a15097c9ff06e765ca76476f34263ad2ae3759827e878fdea44f6bfbf9",
+  "trial_ledger_before_sha256": "6b9ea3981b7fa17f66ec6c5c2342153bb2afad60ec9b9ca91c7ad7bc5c75baac",
+  "prior_family_trials": 0,
+  "new_configs": 1,
+  "authority": false
+}

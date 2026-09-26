@@ -1,0 +1,222 @@
+{
+  "schema": "ric.rate_shock_driver_transition.result.v1",
+  "spec": {
+    "impulse_bars": 5,
+    "threshold_history": 252,
+    "threshold_quantile": 0.8,
+    "threshold_floor_bp": 15.0,
+    "volatility_bars": 20,
+    "barrier_vol_scale": 2.23606797749979,
+    "barrier_floor_bp": 10.0,
+    "horizon_bars": 10,
+    "real_be_dominance_ratio": 1.5,
+    "term_premium_state_bp": 5.0,
+    "credit_state_bp": 10.0,
+    "oil_state_pct": 3.0,
+    "curve_state_bp": 10.0,
+    "auction_recency_calendar_days": 3,
+    "auction_trailing": 8,
+    "auction_min_trailing": 5,
+    "auction_strong_z": 0.6,
+    "shrinkage": 12.0,
+    "minimum_training_events": 30,
+    "minimum_primary_events": 50,
+    "minimum_subgroup_events": 20,
+    "start": "2017-01-03",
+    "end": "2025-12-31",
+    "primary_start": "2022-01-01",
+    "primary_model": "decomp_term",
+    "primary_baseline": "impulse_direction",
+    "evidence_tier": "retrospective_seen_history_market_proxy_not_promotion"
+  },
+  "registration": {
+    "family": "ric_rate_shock_driver_transition_v1",
+    "registered": 5,
+    "literal_n": 5,
+    "ledger_before_sha256": "c1167ac1e528c2a2022194b2aebf004a3f52120abedc8c9ae273d3515e5c1c60",
+    "ledger_after_sha256": "14daaffde73125a52ffeac70a90e661c3d7716ae7221c390faed8b207680643d",
+    "freeze_sha256": "e40e976e8d774adf34564f71fe3ff969f8eaff759ad9e7975d3340a24c53d3d9"
+  },
+  "event_count": 89,
+  "forecast_count": 59,
+  "data_sha256": {
+    "dgs10": "7369b3a15097c9ff06e765ca76476f34263ad2ae3759827e878fdea44f6bfbf9",
+    "dgs2": "0cb9aa029d0d435b013b25421ba8c9365b61dcda07deaea386061396760c4eec",
+    "real10": "7a5a5d0dd54049c41a24c64cebc00f74723dc646fc34ecab3520bfe5f530e62d",
+    "be10": "0786c9669f03f3be1926759411ea4934e70039af9ae57a493c5b6989d2014923",
+    "oil": "64754ecdf162a2a0b086bc910dedc8d9f07e34054151de7ba7c19d169e2f1d10",
+    "hy": "84b749c30fbe5137fb3163afbe88794234c4e6d5c17bada561402158b39944c1",
+    "vintages": "5d0159ef8d98bbac445cb2fd0818443dc5a795e29eceb9a745ec4792a2b92d9e",
+    "auctions": "af810e6528d36e653c14a5cd149b4d5be0a1c3e437ef6b26ca4ce9f1f4bcc067"
+  },
+  "event_sha256": "e438f628b9013467af1129731fe11980982dca091ee48b3174da2da208c324c2",
+  "prediction_sha256": "6ba88d1e39c5bd281ceb24d59f8fa57368a0a4c13c7a6213f2586bbcc669052b",
+  "partitions": {
+    "development_2017_2021": {
+      "forecast_events": 2,
+      "scored_events": 2,
+      "outcome_counts": {
+        "reversal": 1,
+        "no_hit": 1
+      },
+      "direction_counts": {
+        "1": 1,
+        "-1": 1
+      },
+      "driver_counts": {
+        "INFLATION": 2
+      },
+      "models": {
+        "unconditional": {
+          "brier": 0.6785684781123599,
+          "log_loss": 1.1176881716502978,
+          "brier_improvement_vs_primary_baseline": 0.07758946303943692,
+          "relative_brier_improvement_vs_primary_baseline": 0.10261012788049399
+        },
+        "impulse_direction": {
+          "brier": 0.7561579411517968,
+          "log_loss": 1.2244752217993273
+        },
+        "decomposition": {
+          "brier": 0.636224587744627,
+          "log_loss": 1.0306845849635218,
+          "brier_improvement_vs_primary_baseline": 0.11993335340716982,
+          "relative_brier_improvement_vs_primary_baseline": 0.15860886579394332
+        },
+        "decomp_term": {
+          "brier": 0.5919943884134733,
+          "log_loss": 0.9688014889969131,
+          "brier_improvement_vs_primary_baseline": 0.1641635527383235,
+          "relative_brier_improvement_vs_primary_baseline": 0.21710220022058604
+        },
+        "crossasset": {
+          "brier": 0.5919943884134733,
+          "log_loss": 0.968801488996913,
+          "brier_improvement_vs_primary_baseline": 0.16416355273832356,
+          "relative_brier_improvement_vs_primary_baseline": 0.2171022002205861
+        },
+        "full": {
+          "brier": 0.5919943884134733,
+          "log_loss": 0.968801488996913,
+          "brier_improvement_vs_primary_baseline": 0.16416355273832356,
+          "relative_brier_improvement_vs_primary_baseline": 0.2171022002205861
+        }
+      },
+      "authority": false
+    },
+    "seen_primary_2022_2025": {
+      "forecast_events": 57,
+      "scored_events": 57,
+      "outcome_counts": {
+        "continuation": 24,
+        "no_hit": 11,
+        "reversal": 22
+      },
+      "direction_counts": {
+        "1": 28,
+        "-1": 29
+      },
+      "driver_counts": {
+        "MIXED": 9,
+        "REAL": 45,
+        "INFLATION": 3
+      },
+      "models": {
+        "unconditional": {
+          "brier": 0.6661189630674194,
+          "log_loss": 1.0970745378993743,
+          "brier_improvement_vs_primary_baseline": -0.0010177193051682473,
+          "relative_brier_improvement_vs_primary_baseline": -0.0015301720072140536
+        },
+        "impulse_direction": {
+          "brier": 0.6651012437622511,
+          "log_loss": 1.0980817821833517
+        },
+        "decomposition": {
+          "brier": 0.6722077489061064,
+          "log_loss": 1.1080987216897542,
+          "brier_improvement_vs_primary_baseline": -0.007106505143855273,
+          "relative_brier_improvement_vs_primary_baseline": -0.010684847172523984
+        },
+        "decomp_term": {
+          "brier": 0.6821224544611575,
+          "log_loss": 1.1182098328318453,
+          "brier_improvement_vs_primary_baseline": -0.01702121069890642,
+          "relative_brier_improvement_vs_primary_baseline": -0.025591909289814634
+        },
+        "crossasset": {
+          "brier": 0.6919558410286384,
+          "log_loss": 1.1354214603854351,
+          "brier_improvement_vs_primary_baseline": -0.026854597266387233,
+          "relative_brier_improvement_vs_primary_baseline": -0.04037670582974695
+        },
+        "full": {
+          "brier": 0.7003806610585155,
+          "log_loss": 1.1481124530330429,
+          "brier_improvement_vs_primary_baseline": -0.03527941729626428,
+          "relative_brier_improvement_vs_primary_baseline": -0.05304367963093955
+        }
+      },
+      "authority": false
+    }
+  },
+  "all_dates": {
+    "forecast_events": 59,
+    "scored_events": 59,
+    "outcome_counts": {
+      "reversal": 23,
+      "no_hit": 12,
+      "continuation": 24
+    },
+    "direction_counts": {
+      "1": 29,
+      "-1": 30
+    },
+    "driver_counts": {
+      "INFLATION": 5,
+      "MIXED": 9,
+      "REAL": 45
+    },
+    "models": {
+      "unconditional": {
+        "brier": 0.66654098052657,
+        "log_loss": 1.0977733051451681,
+        "brier_improvement_vs_primary_baseline": 0.0016469309438014205,
+        "relative_brier_improvement_vs_primary_baseline": 0.0024647721330026606
+      },
+      "impulse_direction": {
+        "brier": 0.6681879114703715,
+        "log_loss": 1.1023663055601645
+      },
+      "decomposition": {
+        "brier": 0.670987980731141,
+        "log_loss": 1.105474513665136,
+        "brier_improvement_vs_primary_baseline": -0.002800069260769677,
+        "relative_brier_improvement_vs_primary_baseline": -0.004190541631631773
+      },
+      "decomp_term": {
+        "brier": 0.6790672657815751,
+        "log_loss": 1.113145143210322,
+        "brier_improvement_vs_primary_baseline": -0.01087935431120371,
+        "relative_brier_improvement_vs_primary_baseline": -0.016281878382479714
+      },
+      "crossasset": {
+        "brier": 0.6885673172111753,
+        "log_loss": 1.1297733257620959,
+        "brier_improvement_vs_primary_baseline": -0.020379405740803814,
+        "relative_brier_improvement_vs_primary_baseline": -0.03049951277322303
+      },
+      "full": {
+        "brier": 0.6967065501213954,
+        "log_loss": 1.1420341152691065,
+        "brier_improvement_vs_primary_baseline": -0.02851863865102401,
+        "relative_brier_improvement_vs_primary_baseline": -0.04268056659131669
+      }
+    },
+    "authority": false
+  },
+  "primary_sample_floor_met": true,
+  "policy_futures_excluded_for_roll_contamination": true,
+  "seen_history": true,
+  "authority": false
+}

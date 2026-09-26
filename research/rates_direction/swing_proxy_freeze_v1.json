@@ -1,0 +1,31 @@
+{
+  "schema": "ric.swing_proxy.freeze.v1",
+  "operation": "rates-direction-20260924-sol-001",
+  "frozen_at": "2026-09-24T14:15:23.690573+00:00",
+  "primary_outcomes_opened": false,
+  "source_sha256": "687b93d52beeb141dbfc3ea3eff787b67da7b36daa8effedc19568cbe544d070",
+  "spec": {
+    "warmup_bars": 80,
+    "minimum_training_labels": 40,
+    "horizon_bars": 12,
+    "delay_bars": 1,
+    "recency_bars": 3,
+    "volatility_bars": 24,
+    "trend_bars": 5,
+    "barrier_floor_bp": 5.0,
+    "bp_per_source_unit": 100.0,
+    "shrinkage": 12.0,
+    "minimum_active_episodes": 50,
+    "primary": "MPR",
+    "capture_at": "2026-09-24T12:51:03Z",
+    "evidence_tier": "corrected_history_proxy_feasibility_not_pine_parity"
+  },
+  "files": {
+    "research/rates_direction/swing_proxy_pilot.py": "7b409b2b2bdf432655478e92c8063c7e5272f476eb8b17333c41925da484641e",
+    "research/rates_direction/uploaded_formula_probe.py": "fc76d6e78b1899c24ebb7b9726eb3c762cbf0dac1e0357062f16e4fae4d1d186",
+    "research/rates_direction/SWING_PROXY_PILOT_V1.md": "89727126e4558d9dd2d8af50714f1e4f5126be0110ef13463fcf3741db15fd1d",
+    "tests/test_rates_swing_proxy_pilot.py": "d3301867e90a3b4fc3e8ba9a23f06d4c94a972af1e65c37888c582ecab7ccce0",
+    "engine/validation.py": "9680d00241fa58ccb504b679d1ee19d64b52b6f46b6bf87a5149969bc7ec4e3b"
+  },
+  "ledger_before_sha256": "a9fc70ac22fcbca53b1d496b4262631095a4322886b49291a216c3f03a2de179"
+}

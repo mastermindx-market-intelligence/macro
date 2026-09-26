@@ -1,0 +1,18 @@
+{
+  "schema": "ric.inflation_catalyst_rate_response.registration.v1",
+  "freeze_commit": "41d16e1ecfd877f95871d2b8bdb116a97c0d53f4",
+  "freeze_sha256": "9c1b66186f3809dd54f56c2888f3628ed952d07f7ef7de1a4321036b5cdaacc8",
+  "family": "ric_inflation_catalyst_rate_response_v1",
+  "literal_n": 1,
+  "config_hash": "675da315accb83ab",
+  "registered_at": "2026-09-25T01:25:46.277303+00:00",
+  "info_cutoff": "2026-09-25T01:25:00.250611+00:00",
+  "trial_ledger_after_sha256": "8288759f9755a793530ecdc9a341d38daa64b6052fdb6d62a255cb69dabba509",
+  "initial_report": {
+    "prospective_events": 0,
+    "signal_observable": 0,
+    "active": 0,
+    "eligible_outcomes_opened": false
+  },
+  "authority": false
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "ric.curve_system_dns.integrity.v1",
+  "same_author_verification": true,
+  "independent_review": false,
+  "freeze_commit": "08ddb2c550ec84a4de9c780121a938dc0d02a1cf",
+  "freeze_sha256": "d5cc51df97335fa4fa6993d7574925533da4e16186faae8f389137ec454eb8c1",
+  "predictions_sha256": "29fd579355ff8d9b3424ecc5ef3e65822780ee7a5376b914483917ef65666594",
+  "summary_sha256": "8614e219879331571fca6dd9e07df4d3777eaadbb4497c420542026b8bf2dcde",
+  "registration_sha256": "e2c5b7b7c19a41b73ff2c0bcc2f8df18ad7f566f2bfb37e4377a872281ef3ce8",
+  "prediction_rows": 131464,
+  "unique_model_horizon_origins": 131464,
+  "probabilities_normalized_finite": true,
+  "purged_fit_before_calibration_before_origin": true,
+  "saved_row_summaries_recomputed_exactly": true,
+  "trial_ledger_prefix_preserved": true,
+  "family_literal_n": 12,
+  "primary_relative_mse_reduction": -0.19031330686955766,
+  "authority": false,
+  "notes": [
+    "Corrected-history chronological research only; not point-in-time certified.",
+    "Secondary directional Brier diagnostics were predeclared but cannot supersede the failed primary MSE test."
+  ]
+}

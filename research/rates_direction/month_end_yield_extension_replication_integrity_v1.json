@@ -1,0 +1,45 @@
+{
+  "schema": "ric.month_end_yield_extension_replication.integrity.v1",
+  "same_author_verification": true,
+  "independent_review": false,
+  "freeze_commit": "cfef07d2424a27604698c65eed03df3e0fe8c747",
+  "freeze_sha256": "e99d0788148c875768dfa755f2db5bdd94c4fb8c3181b4f107a2814d45fc5b0a",
+  "registration_sha256": "deed993281afeeabdb5f86f8554ddf65794eae45e0a3de23a041ee88f6626ff7",
+  "summary_sha256": "7ecd8a9d89b24c45da83603991d2eb6a8b7bede9dbe109adc8bf0a6f7c0aa20c",
+  "raw_reconstruction": {
+    "DGS2": {
+      "n": 236,
+      "raw_mean_bp": -1.2881355932203395,
+      "excess_mean_bp": -1.3373393726695668,
+      "first_event": "2007-01-31",
+      "last_event": "2026-08-31"
+    },
+    "DGS5": {
+      "n": 236,
+      "raw_mean_bp": -1.555084745762712,
+      "excess_mean_bp": -1.6216937949726424,
+      "first_event": "2007-01-31",
+      "last_event": "2026-08-31"
+    },
+    "DGS10": {
+      "n": 236,
+      "raw_mean_bp": -1.1864406779660988,
+      "excess_mean_bp": -1.2417860917513246,
+      "first_event": "2007-01-31",
+      "last_event": "2026-08-31"
+    },
+    "DGS30": {
+      "n": 236,
+      "raw_mean_bp": -1.144067796610169,
+      "excess_mean_bp": -1.2106722817800109,
+      "first_event": "2007-01-31",
+      "last_event": "2026-08-31"
+    }
+  },
+  "ledger_prefix_preserved": true,
+  "family_literal_n_after": 21,
+  "exact_amendment_suffix_rows": 8,
+  "all_primary_means_recomputed": true,
+  "post_result_diagnostics_file": "research/rates_direction/month_end_yield_extension_replication_diagnostics_v1.json",
+  "authority": false
+}
