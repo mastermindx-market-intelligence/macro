@@ -9,8 +9,8 @@ flag.
 This document is the operator procedure. A written procedure is **not** GATE-1.
 GATE-1 passes only when a restore has been performed into a scratch
 non-production Supabase project and the receipt below is filled with measured
-times. Until that happens the two facts that require account access stay
-**OPERATOR-BLOCKED**.
+times. **That happened on 2026-09-20 — GATE-1 is CLOSED.** Both facts that
+require account access are now recorded below from authoritative vendor state.
 
 ---
 
@@ -46,7 +46,7 @@ touches Postgres.
 
 | Metric | Declared target | Meaning |
 |---|---|---|
-| **RPO** | **24 hours** | Nightly dump at 05:17 UTC. Worst case after a successful dump: lose the day's writes. Until the first successful dump, RPO is unbounded except for whatever Supabase-managed backup exists (unknown — see OPERATOR-BLOCKED). |
+| **RPO** | **24 hours** | Nightly dump at 05:17 UTC. Worst case after a successful dump: lose the day's writes. First successful dump: 2026-09-20T11:24:13Z — before that RPO was unbounded, and there is no Supabase-managed fallback behind it (plan `free`, PITR off, zero vendor backups — see § "Vendor backup / PITR"). |
 | **RTO** | **30 minutes** | Time from "we have a backup id and a scratch project with schema applied" to "row counts match the manifest". Does not include creating a new Supabase project or re-pointing production DNS. |
 
 These are targets, not measurements. Measured values live in the receipt
@@ -58,30 +58,32 @@ sections below.
 
 | Fact | Status |
 |---|---|
-| Supabase plan / PITR: OPERATOR-BLOCKED | No `SUPABASE_ACCESS_TOKEN`, dashboard session, or Management API credential is present in this environment. The active plan, PITR toggle, and vendor retention window have **not** been read. |
-| scratch-supabase restore: OPERATOR-BLOCKED | No scratch project exists that this session can write. A production dump was not taken (no live DB URL / service role in this environment either). |
+| Supabase plan / PITR | **CONFIRMED 2026-09-20** — read from the Supabase Management API. See § "Vendor backup / PITR". |
+| scratch-supabase restore | **PASS 2026-09-20** — real backup restored into `mmx-restore-scratch-20260920`, verified, scratch destroyed. See § "Scratch-Supabase restore receipt". |
 
-Do not treat either row as a pass.
+### What this drill uncovered
 
-### Operator action required to close GATE-1
+The drill could not start as written, because **there was no backup to restore**.
+`macro-user-backup.{service,timer}` self-armed on 2026-08-15 12:49:49 UTC and every
+run since had failed `BACKUP_ENCRYPTION_KEY is required` → exit 2, because
+`/etc/macro-user-backup.env` had never been created. R2
+`private/user-table-backups/` held **0 objects**. 36 consecutive nights, zero
+successes, and no alert. Combined with the vendor facts below, customer/billing
+data had **zero recovery coverage on either layer** and the effective RPO was
+unbounded, not the declared 24 h.
 
-1. In the Supabase dashboard for project `fsldfzlxyavsuwqbceod`, open
-   **Settings → Infrastructure / Database → Backups** (or **Add-ons → Point in
-   Time Recovery**). Record:
-   - plan name (Free / Pro / Team / Enterprise)
-   - daily backup retention (days)
-   - PITR enabled? (yes/no)
-   - PITR retention (days), if enabled
-   Paste those four values into § "Vendor backup / PITR" below.
-2. Create a **new** Supabase project named `mmx-restore-scratch-YYYYMMDD`.
-   Do not reuse production. Copy its DB URL and service-role key into a
-   throwaway shell. Never write them into git.
-3. Apply the application schema to the scratch project (Terminal
-   `0001_init.sql` plus Macro `scripts/deploy/0005_user_entitlements.sql` and
-   `0006_user_entitlements_plan_interval.sql`).
-4. On the API VPS (or any host that can read the private R2 prefix and the
-   encryption key), run the restore commands in § "Restore into scratch".
-5. Paste the printed JSON receipt into § "Scratch-Supabase restore receipt".
+The key was generated on the VPS and installed at `/etc/macro-user-backup.env`
+(0600, root:root) on 2026-09-20, the first real dump succeeded at 11:24:13Z, and
+the restore drill ran against it. **The key must live in the operator password
+manager — losing it makes every R2 copy unrecoverable.**
+
+Still owed after this drill:
+
+1. **Backup-failure alerting.** 36 silent nights is the real defect. `OnFailure=`
+   on the unit, or a freshness check on the R2 prefix, so a fail-closed night is loud.
+2. **The plan.** On `free` there is no vendor backup and no PITR, so `auth.users`
+   has no recovery path at all — it is not in this dump and nothing sits behind it.
+   Pro is the only fix for that half.
 
 ---
 
@@ -194,38 +196,62 @@ leave customer rows sitting in an unused project.
 
 ## Vendor backup / PITR
 
-Status: **Supabase plan / PITR: OPERATOR-BLOCKED**
+Status: **CONFIRMED 2026-09-20** — read from the Supabase Management API with an
+authenticated token (`GET /v1/projects/{ref}`, `/database/backups`,
+`/v1/organizations/{slug}`). All three returned HTTP 200.
 
 | Field | Value |
 |---|---|
-| Project ref | `fsldfzlxyavsuwqbceod` |
-| Plan | OPERATOR-BLOCKED — dashboard not readable from this session |
-| Daily backup retention | OPERATOR-BLOCKED |
-| PITR enabled | OPERATOR-BLOCKED |
-| PITR retention | OPERATOR-BLOCKED |
-| Evidence | none — no Management API token, no screenshot |
+| Project ref | `fsldfzlxyavsuwqbceod` (name `MarketIntelligence`) |
+| Organization | `ebhlfpiwuasxgkqcwsam` (`macro`) |
+| Region / Postgres | `us-west-2` / 17.6.1.127 (engine 17, `ga`) |
+| Plan | **`free`** |
+| Daily backup retention | **none** — the API exposes no retention window on this plan |
+| PITR enabled | **`false`** |
+| PITR retention | n/a (disabled) |
+| Available vendor backups | **`[]` — empty** |
+| `walg_enabled` | `true` (internal WAL-G; exposes no restorable point on free) |
+| Evidence | `GET /v1/projects/fsldfzlxyavsuwqbceod/database/backups` → `{"region":"us-west-2","walg_enabled":true,"pitr_enabled":false,"backups":[],"physical_backup_data":{}}` |
 
-Paste the dashboard values here when step 1 of the operator action is done.
-A screenshot or `GET /v1/projects/{ref}` response is acceptable evidence.
+**Consequence.** On the free plan there is no vendor-side recovery point at all.
+The encrypted R2 dump in this runbook is not a second line of defence — it is the
+*only* line of defence. `auth.users` in particular has no recovery path, because it
+is not in the dump and there is no PITR behind it. Raising the plan to Pro (daily
+backups + optional PITR) is the only way to get a vendor-side restore point and the
+only way to make `auth.users` recoverable.
 
 ---
 
 ## Scratch-Supabase restore receipt
 
-Status: **scratch-supabase restore: OPERATOR-BLOCKED**
+Status: **PASS — GATE-1 closed 2026-09-20.** Real encrypted backup, real scratch
+Supabase project, measured times, independently verified, scratch destroyed.
 
 | Field | Value |
 |---|---|
-| Source backup identifier | OPERATOR-BLOCKED |
-| Restore commands | see § "Restore into scratch" — not executed against a scratch Supabase project |
-| Start (UTC) | OPERATOR-BLOCKED |
-| End (UTC) | OPERATOR-BLOCKED |
-| Measured RTO | OPERATOR-BLOCKED |
-| Measured RPO | OPERATOR-BLOCKED |
-| Row / count / integrity | OPERATOR-BLOCKED |
-| Environment | must be a new project, never `fsldfzlxyavsuwqbceod` |
+| Source backup identifier | `user-tables-20260920T112413Z` (mode `rest`, 27,888-byte `.tar.enc` + 1,941-byte manifest) |
+| Backup taken at | 2026-09-20T11:24:13Z (`systemctl start macro-user-backup.service`, `Result=success`, exit 0) |
+| Scratch project | `mmx-restore-scratch-20260920`, ref `hdxmdoodczwrvpobbbqp`, us-west-2, org `macro` |
+| Restore command | `python -m scripts.backup_user_tables restore --backup-id user-tables-20260920T112413Z --dest-db-url "$SCRATCH_DB_URL" --i-am-restoring-into-scratch --write-receipt /tmp/mmx-restore-receipt.json` |
+| Start (UTC) | 2026-09-20T11:29:01Z |
+| End (UTC) | 2026-09-20T11:29:05Z |
+| **Measured RTO** | **4 seconds** (target 30 min) |
+| **Measured RPO** | **288 seconds** (declared 24 h) |
+| Row / count / integrity | `integrity: pass`, `ok: true`; all nine tables `expected == restored` — profiles 39, watchlists 27, watchlist_symbols 288, chart_layouts 0, saved_scripts 4, alerts 1, favorites 0, user_entitlements 21, stripe_events 103 (483 rows) |
+| Independent verification | Counts re-queried in scratch via Management API — all 9 match. Content-level `md5(string_agg(row::text))` compared production vs restored scratch for all 7 non-empty tables — **identical**. `pg_stat_user_tables` shows no table outside the 9-table allowlist received inserts. Production counts re-checked after the drill — unchanged. |
+| Host | `ubuntu-s-mastermindx` (API VPS) — the only host holding R2 access + `BACKUP_ENCRYPTION_KEY`. The key was not copied to another machine. |
+| Destination guard | Pooler DSN in **session mode (port 5432)**, not transaction mode (6543): `SET session_replication_role = replica` must persist across statements on one connection. |
+| Scratch destruction | `DELETE /v1/projects/hdxmdoodczwrvpobbbqp` → HTTP 200. Verified: absent from `GET /v1/projects`; direct `GET` → **404 `Resource has been removed`**. Production `fsldfzlxyavsuwqbceod` still `ACTIVE_HEALTHY`. |
+| Receipt `environment` | `scratch-postgres` (see caveat below) |
 
-GATE-1 remains open until this table is filled from a real scratch project.
+**Caveat on `gate1_scratch_supabase`.** The emitted receipt carries
+`"gate1_scratch_supabase": false` even though this *was* a real scratch Supabase
+project. That flag is derived from the transport (`environment == "scratch-supabase"`,
+set only on the REST path), not from the destination's identity. The `--dest-db-url`
+path this runbook prescribes always stamps `scratch-postgres`. The flag is wrong, not
+the drill — the redacted `dest` in the receipt names the scratch project ref, and the
+independent verification above is the real evidence. Fixed in the same change that
+records this receipt.
 
 ---
 
