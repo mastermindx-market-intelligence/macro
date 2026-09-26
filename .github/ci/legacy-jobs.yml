@@ -5046,6 +5046,12 @@ jobs:
           tests/test_causal_audit.py tests/test_causal_inventory.py
           tests/test_causal_schema.py tests/test_causal_scout.py
           tests/test_causal_targets.py tests/test_sf_brainstorm.py -q
+      - name: frozen Signal Foundry numerical battery and clock regressions
+        run: >
+          python -m pytest
+          tests/test_sf_harness.py tests/test_sf_clock_repair.py
+          tests/test_sf_results.py tests/test_sf_spec.py tests/test_sf_transforms.py
+          tests/test_sf_screen.py tests/test_sf_seeds.py -q
 
   rlt-rebalance-calendar-pulse:
     if: ${{ false }}
