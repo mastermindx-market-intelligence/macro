@@ -223,11 +223,12 @@ def build() -> str:
     bi = next(i for i, b in enumerate(bands) if b["cur"])
     if bi < 3:
         nxt = bands[bi + 1]
-        next_note = f"Next de-risk: a sustained score above {(25, 50, 75)[bi]} trims equity to {nxt['weight']}%."
+        next_note_en = f"Next de-risk: a sustained score above {(25, 50, 75)[bi]} trims equity to {nxt['weight']}%."
         next_note_zh = f"下一步降险：分数持续高于 {(25, 50, 75)[bi]} 时，股票权重降至 {nxt['weight']}%。"
     else:
-        next_note = "Fully defensive; a validated capitulation washout (Fed-put present) can re-deploy to fully invested."
-        next_note_zh = "完全防守；经验证的投降式恐慌底（美联储看跌在场）可再部署至满仓。"
+        next_note_en = ("Fully defensive; a buyable washout (capitulation with the Fed-put present) "
+                        "can re-deploy to fully invested.")
+        next_note_zh = "完全防守；出现可买入的恐慌底（投降且美联储看跌在场）时可再部署至满仓。"
 
     # dislocation / capitulation chips
     cap_now = int(cf["capitulation_score"].dropna().iloc[-1]) if "capitulation_score" in cf and cf["capitulation_score"].notna().any() else 0
@@ -298,7 +299,7 @@ def build() -> str:
         "score": score, "band_label": band_label, "band_label_zh": band_label_zh,
         "band_key": band_key, "band_color": band_color,
         "equity_w": equity_w, "cash_w": cash_w,
-        "last_switch": last_switch, "next_note": next_note, "next_note_zh": next_note_zh,
+        "last_switch": last_switch, "next_note": next_note_en, "next_note_zh": next_note_zh,
         "legs": legs,
         "disloc": {"verdict": disloc_verdict, "verdict_zh": disloc_verdict_zh,
                    "put_absent": put_absent, "capitulation": cap_now},

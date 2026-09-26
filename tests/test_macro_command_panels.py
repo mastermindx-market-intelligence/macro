@@ -1033,7 +1033,15 @@ def test_fragments_carry_the_authenticity_marker(built: tuple[str, Path]) -> Non
     assert "data-mc-fragment" in money
     assert "data-mc-tabbody=\"liquidity\"" in money
     assert "data-mc-tabbody=\"central_banks\"" in money
-    assert "class=\"mc-move\"" in money
+    # Which figure a tab body shows is the day's data: a stale required source
+    # renders the typed empty state instead of the movement block (2026-09-25,
+    # both money tabs). Either one is a real figure. The offer link, or
+    # nothing at all, is not.
+    for tab in ("liquidity", "central_banks"):
+        body = re.search(r'data-mc-tabbody="' + tab + r'".*?(?=<div class="mc-figure-tabbody"|\Z)',
+                         money, re.S)
+        assert body, tab
+        assert ('class="mc-move"' in body.group(0)) != ('class="mc-empty"' in body.group(0)), tab
 
 
 def test_production_path_ignores_contract_forbidden_fixture_keys() -> None:

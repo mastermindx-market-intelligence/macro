@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb_cycle_pattern_state.v1",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "model_epoch": "price_c4414dcb",
   "gate_status": {
     "up": {
@@ -28,7 +28,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": null,
@@ -43,7 +43,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": null,
@@ -58,7 +58,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "bloc:AAXJ",
@@ -73,7 +73,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "bloc:EEM",
@@ -88,22 +88,22 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "bloc:EFA",
       "native_id": "EFA",
       "family": "bloc",
       "phase_v2": "Downturn",
-      "hazard_1m_p": 0.372,
-      "hazard_3m_p": 0.4,
-      "hazard_6m_p": 0.5882,
+      "hazard_1m_p": null,
+      "hazard_3m_p": null,
+      "hazard_6m_p": null,
       "hazard_src": {
-        "1m": "MODEL",
-        "3m": "MODEL",
-        "6m": "MODEL"
+        "1m": null,
+        "3m": null,
+        "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "bloc:ILF",
@@ -118,22 +118,22 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "bloc:VGK",
       "native_id": "VGK",
       "family": "bloc",
       "phase_v2": "Downturn",
-      "hazard_1m_p": 0.3511,
-      "hazard_3m_p": 0.4,
-      "hazard_6m_p": 0.5882,
+      "hazard_1m_p": null,
+      "hazard_3m_p": null,
+      "hazard_6m_p": null,
       "hazard_src": {
-        "1m": "MODEL",
-        "3m": "MODEL",
-        "6m": "MODEL"
+        "1m": null,
+        "3m": null,
+        "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "bloc:VPL",
@@ -148,14 +148,14 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "bloc:VXUS",
       "native_id": "VXUS",
       "family": "bloc",
       "phase_v2": "Downturn",
-      "hazard_1m_p": 0.372,
+      "hazard_1m_p": 0.3511,
       "hazard_3m_p": 0.4,
       "hazard_6m_p": 0.5882,
       "hazard_src": {
@@ -163,7 +163,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "cn_basket:cn_ai_compute",
@@ -964,7 +964,7 @@
       "entity_id": "country:ECH",
       "native_id": "ECH",
       "family": "country",
-      "phase_v2": "Expansion",
+      "phase_v2": "Downturn",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -973,7 +973,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EIDO",
@@ -988,13 +988,13 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EPOL",
       "native_id": "EPOL",
       "family": "country",
-      "phase_v2": "Peak",
+      "phase_v2": "Expansion",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -1003,7 +1003,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWA",
@@ -1018,7 +1018,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWC",
@@ -1033,7 +1033,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWD",
@@ -1048,7 +1048,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWG",
@@ -1063,7 +1063,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWH",
@@ -1078,7 +1078,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWI",
@@ -1093,7 +1093,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWJ",
@@ -1108,7 +1108,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWL",
@@ -1123,14 +1123,14 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWN",
       "native_id": "EWN",
       "family": "country",
       "phase_v2": "Downturn",
-      "hazard_1m_p": 0.1954,
+      "hazard_1m_p": 0.2222,
       "hazard_3m_p": 0.4,
       "hazard_6m_p": 0.5882,
       "hazard_src": {
@@ -1138,7 +1138,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWP",
@@ -1153,7 +1153,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWQ",
@@ -1168,7 +1168,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWS",
@@ -1183,7 +1183,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWT",
@@ -1198,7 +1198,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWU",
@@ -1213,7 +1213,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWW",
@@ -1228,7 +1228,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWY",
@@ -1243,7 +1243,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EWZ",
@@ -1258,13 +1258,13 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:EZA",
       "native_id": "EZA",
       "family": "country",
-      "phase_v2": "Expansion",
+      "phase_v2": "Downturn",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -1273,13 +1273,13 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:FXI",
       "native_id": "FXI",
       "family": "country",
-      "phase_v2": "Recovery",
+      "phase_v2": "Trough",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -1288,7 +1288,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:INDA",
@@ -1303,7 +1303,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "country:TUR",
@@ -1318,7 +1318,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-25"
+      "date": "2026-09-26"
     },
     {
       "entity_id": "us_basket:ai_agents",
@@ -1333,7 +1333,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:ai_infra",
@@ -1348,7 +1348,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:ai_neoclouds",
@@ -1363,7 +1363,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:ai_semiconductors",
@@ -1378,7 +1378,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:ai_software",
@@ -1393,7 +1393,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:big_pharma",
@@ -1408,7 +1408,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:critical_minerals",
@@ -1423,7 +1423,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:crypto",
@@ -1438,7 +1438,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:crypto_rails",
@@ -1453,7 +1453,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:cybersecurity",
@@ -1468,7 +1468,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:data_center_power",
@@ -1483,7 +1483,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:defense",
@@ -1498,7 +1498,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:defensives",
@@ -1513,13 +1513,13 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:energy_complex",
       "native_id": "energy_complex",
       "family": "us_basket",
-      "phase_v2": "Peak",
+      "phase_v2": "Downturn",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -1528,7 +1528,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:housing",
@@ -1543,7 +1543,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:industrial_distribution",
@@ -1558,22 +1558,22 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:insurance",
       "native_id": "insurance",
       "family": "us_basket",
       "phase_v2": "Downturn",
-      "hazard_1m_p": null,
-      "hazard_3m_p": null,
-      "hazard_6m_p": null,
+      "hazard_1m_p": 0.25,
+      "hazard_3m_p": 0.4,
+      "hazard_6m_p": 0.5882,
       "hazard_src": {
-        "1m": null,
-        "3m": null,
-        "6m": null
+        "1m": "MODEL",
+        "3m": "MODEL",
+        "6m": "MODEL"
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:mag7",
@@ -1588,7 +1588,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:managed_care",
@@ -1603,7 +1603,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:memory_storage",
@@ -1618,22 +1618,22 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:non_ai_software",
       "native_id": "non_ai_software",
       "family": "us_basket",
-      "phase_v2": "Peak",
-      "hazard_1m_p": 0.8878,
-      "hazard_3m_p": 1.0,
-      "hazard_6m_p": 1.0,
+      "phase_v2": "Downturn",
+      "hazard_1m_p": null,
+      "hazard_3m_p": null,
+      "hazard_6m_p": null,
       "hazard_src": {
-        "1m": "MODEL",
-        "3m": "MODEL",
-        "6m": "MODEL"
+        "1m": null,
+        "3m": null,
+        "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:non_ai_tech",
@@ -1648,7 +1648,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:nuclear_power",
@@ -1663,26 +1663,11 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:obesity_glp1",
       "native_id": "obesity_glp1",
-      "family": "us_basket",
-      "phase_v2": "Downturn",
-      "hazard_1m_p": 0.3511,
-      "hazard_3m_p": 0.4,
-      "hazard_6m_p": 0.5882,
-      "hazard_src": {
-        "1m": "MODEL",
-        "3m": "MODEL",
-        "6m": "MODEL"
-      },
-      "date": "2026-09-24"
-    },
-    {
-      "entity_id": "us_basket:payments_fintech",
-      "native_id": "payments_fintech",
       "family": "us_basket",
       "phase_v2": "Downturn",
       "hazard_1m_p": null,
@@ -1693,7 +1678,22 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
+    },
+    {
+      "entity_id": "us_basket:payments_fintech",
+      "native_id": "payments_fintech",
+      "family": "us_basket",
+      "phase_v2": "Downturn",
+      "hazard_1m_p": 0.1954,
+      "hazard_3m_p": 0.4,
+      "hazard_6m_p": 0.5882,
+      "hazard_src": {
+        "1m": "MODEL",
+        "3m": "MODEL",
+        "6m": "MODEL"
+      },
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:power_grid",
@@ -1708,7 +1708,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:quantum_computing",
@@ -1723,7 +1723,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:regional_banks",
@@ -1738,7 +1738,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:reshoring",
@@ -1753,7 +1753,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:retail",
@@ -1768,13 +1768,13 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:robotics_automation",
       "native_id": "robotics_automation",
       "family": "us_basket",
-      "phase_v2": "Downturn",
+      "phase_v2": "Peak",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -1783,7 +1783,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:semicap_equipment",
@@ -1798,7 +1798,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:space_economy",
@@ -1813,7 +1813,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:travel",
@@ -1828,7 +1828,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:uranium_miners",
@@ -1843,7 +1843,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_comm",
@@ -1858,7 +1858,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_discretionary",
@@ -1873,7 +1873,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_energy",
@@ -1888,7 +1888,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_financials",
@@ -1903,7 +1903,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_health",
@@ -1918,7 +1918,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_industrials",
@@ -1933,7 +1933,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_materials",
@@ -1948,7 +1948,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_realestate",
@@ -1963,7 +1963,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_staples",
@@ -1978,7 +1978,7 @@
         "3m": "MODEL",
         "6m": "MODEL"
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_tech",
@@ -1993,7 +1993,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_basket:us_sector_utilities",
@@ -2008,22 +2008,22 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLB",
       "native_id": "XLB",
       "family": "us_sector",
       "phase_v2": "Downturn",
-      "hazard_1m_p": 0.1954,
-      "hazard_3m_p": 0.4,
-      "hazard_6m_p": 0.5882,
+      "hazard_1m_p": null,
+      "hazard_3m_p": null,
+      "hazard_6m_p": null,
       "hazard_src": {
-        "1m": "MODEL",
-        "3m": "MODEL",
-        "6m": "MODEL"
+        "1m": null,
+        "3m": null,
+        "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLC",
@@ -2038,13 +2038,13 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLE",
       "native_id": "XLE",
       "family": "us_sector",
-      "phase_v2": "Expansion",
+      "phase_v2": "Downturn",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -2053,7 +2053,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLF",
@@ -2068,7 +2068,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLI",
@@ -2083,13 +2083,13 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLK",
       "native_id": "XLK",
       "family": "us_sector",
-      "phase_v2": "Downturn",
+      "phase_v2": "Expansion",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -2098,28 +2098,13 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLP",
       "native_id": "XLP",
       "family": "us_sector",
       "phase_v2": "Downturn",
-      "hazard_1m_p": 0.1954,
-      "hazard_3m_p": 0.4,
-      "hazard_6m_p": 0.5882,
-      "hazard_src": {
-        "1m": "MODEL",
-        "3m": "MODEL",
-        "6m": "MODEL"
-      },
-      "date": "2026-09-24"
-    },
-    {
-      "entity_id": "us_sector:XLRE",
-      "native_id": "XLRE",
-      "family": "us_sector",
-      "phase_v2": "Downturn",
       "hazard_1m_p": null,
       "hazard_3m_p": null,
       "hazard_6m_p": null,
@@ -2128,7 +2113,22 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
+    },
+    {
+      "entity_id": "us_sector:XLRE",
+      "native_id": "XLRE",
+      "family": "us_sector",
+      "phase_v2": "Trough",
+      "hazard_1m_p": null,
+      "hazard_3m_p": null,
+      "hazard_6m_p": null,
+      "hazard_src": {
+        "1m": null,
+        "3m": null,
+        "6m": null
+      },
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLU",
@@ -2143,7 +2143,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLV",
@@ -2158,7 +2158,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     },
     {
       "entity_id": "us_sector:XLY",
@@ -2173,7 +2173,7 @@
         "3m": null,
         "6m": null
       },
-      "date": "2026-09-24"
+      "date": "2026-09-25"
     }
   ],
   "truth_summary": {

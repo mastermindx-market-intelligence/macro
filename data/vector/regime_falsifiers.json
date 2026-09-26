@@ -1,41 +1,41 @@
 {
   "schema": "btc_regime_ledger.v1",
-  "as_of": "2026-09-25",
+  "as_of": "2026-09-26",
   "horizon_days": 90,
-  "n_matured": 8,
+  "n_matured": 9,
   "tiers": {
     "T1": {
       "status": "INELIGIBLE_PENDING",
       "agreement": 0.0,
-      "n_quarters": 0.6,
+      "n_quarters": 0.7,
       "demote_weight_to": null,
       "falsifies_if": "sign-agreement < 0.45 over \u22658 graded quarters"
     },
     "T2": {
       "status": "INELIGIBLE_PENDING",
       "agreement": 0.0,
-      "n_quarters": 0.6,
+      "n_quarters": 0.7,
       "demote_weight_to": null,
       "falsifies_if": "sign-agreement < 0.45 over \u22658 graded quarters"
     },
     "T3": {
       "status": "INELIGIBLE_PENDING",
-      "agreement": 0.5,
-      "n_quarters": 0.6,
+      "agreement": 0.556,
+      "n_quarters": 0.7,
       "demote_weight_to": null,
       "falsifies_if": "sign-agreement < 0.45 over \u22658 graded quarters"
     },
     "T4": {
       "status": "INELIGIBLE_PENDING",
       "agreement": 0.0,
-      "n_quarters": 0.6,
+      "n_quarters": 0.7,
       "demote_weight_to": null,
       "falsifies_if": "sign-agreement < 0.45 over \u22658 graded quarters"
     },
     "T5": {
       "status": "INELIGIBLE_PENDING",
       "agreement": 0.0,
-      "n_quarters": 0.6,
+      "n_quarters": 0.7,
       "demote_weight_to": null,
       "falsifies_if": "sign-agreement < 0.45 over \u22658 graded quarters"
     }
@@ -47,7 +47,7 @@
     "demote_weight_to": null,
     "note": "ETF/flow leg is structurally CONTEXT-ONLY (2024+ history). It can be graded once \u22658 quarters accrue, but cannot be promoted to an apriori tier regardless of performance."
   },
-  "honesty_note": "8 matured rows graded. Pending \u22658 graded quarters: T1, T2, T3, T4, T5. ETF/flow leg: INELIGIBLE_PENDING (0.2 quarters). CONTEXT-ONLY \u2014 demotion is display metadata, never re-fits engine weights.",
-  "honesty_note_zh": "\u5df2\u8bc4\u5206 8 \u6761\u6210\u719f\u8bb0\u5f55\u3002\u5f85\u8fbe\u5230\u22658\u4e2a\u5b63\u5ea6\uff1aT1, T2, T3, T4, T5\u3002ETF/\u8d44\u91d1\u6d41\u5c42\uff1aINELIGIBLE_PENDING\uff080.2\u5b63\u5ea6\uff09\u3002\u4ec5\u4f9b\u53c2\u8003 \u2014\u2014 \u964d\u7ea7\u4ec5\u4e3a\u5c55\u793a\u5143\u6570\u636e\uff0c\u4e0d\u91cd\u65b0\u62df\u5408\u5f15\u64ce\u6743\u91cd\u3002",
+  "honesty_note": "9 matured rows graded. Pending \u22658 graded quarters: T1, T2, T3, T4, T5. ETF/flow leg: INELIGIBLE_PENDING (0.2 quarters). CONTEXT-ONLY \u2014 demotion is display metadata, never re-fits engine weights.",
+  "honesty_note_zh": "\u5df2\u8bc4\u5206 9 \u6761\u6210\u719f\u8bb0\u5f55\u3002\u5f85\u8fbe\u5230\u22658\u4e2a\u5b63\u5ea6\uff1aT1, T2, T3, T4, T5\u3002ETF/\u8d44\u91d1\u6d41\u5c42\uff1aINELIGIBLE_PENDING\uff080.2\u5b63\u5ea6\uff09\u3002\u4ec5\u4f9b\u53c2\u8003 \u2014\u2014 \u964d\u7ea7\u4ec5\u4e3a\u5c55\u793a\u5143\u6570\u636e\uff0c\u4e0d\u91cd\u65b0\u62df\u5408\u5f15\u64ce\u6743\u91cd\u3002",
   "context_only": true
 }
