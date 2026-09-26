@@ -442,6 +442,71 @@ primitives is fine only when the Sector owner population and semantics remain un
 New Sector visual components should therefore be pure presenters over typed owner DTOs/read-
 only projections in the existing Sector module. If an owner field is unavailable, the
 presenter renders the shared unavailable/list fallback rather than computing a substitute.
+### BFF extension law for future Rotation / source-local Theme modes
+
+The current `sector-intelligence` route already has the correct security/transport shape:
+fixed source allow-list, authenticated same-origin Macro upstream, manual-redirect refusal,
+`private, no-store`, byte ceiling, content-type/body validation, exact owner-envelope guard
+and a receipt carrying source path/date/fetch-time/content hash. Preserve all of it.
+
+Current payload sizes at Macro `5da7c999…` are well below the existing 4 MiB ceiling:
+`subsector_rotation.json` is about 0.74M characters and `themes_heatmap.json` about 0.32M.
+Do not raise the limit merely to add these jobs. If a future owner payload exceeds the
+ceiling, create/extend a bounded existing-owner projection rather than accepting arbitrary
+large JSON through this route.
+
+Two additive feed keys are technically sufficient **after** their existing rights/use gate
+permits the intended Terminal display:
+
+- `rotation` → `/marketdata/subsector_rotation.json`;
+- `themeMap` → `/marketdata/themes_heatmap.json`.
+
+Do not overload the existing `themes` key: it currently means canonical
+`neuralweb.theme_state.v1` (18 current themes), while `themeMap` is the source-local Finviz
+40-family / 268-subtheme plane. Their identities, populations, clocks and authority differ.
+
+Before those paths enter the BFF `PATHS` allow-list, the existing Theme Graph/rights owner must
+record that the intended new Terminal display is allowed. While `finviz_themes` remains
+`rights_class: unresolved`, production code should **not add the feed keys at all**; a hidden
+or disabled UI state is safer than a reachable route that the product is not permitted to use.
+
+When admitted, use narrow envelope guards instead of a generic object check. At minimum:
+
+- `rotation`: source is the expected owner family; `subsectors`, `themes`, `sectors` are
+  bounded arrays; `n_subsectors`, `n_themes`, `n_sectors` equal their array lengths; the
+  declared turn schema is the incumbent `subsector_rotation.turn.v1`. Row parsers require
+  source keys/names and finite owner coordinates before a mark becomes selectable.
+- `themeMap`: `map_type == themes`, source is the expected owner family, `size_basis == count`,
+  bounded `tiles` / `sectors` arrays, and `n_tiles == tiles.length`. Tile parsers require the
+  source-local key, family, label, finite positive member count and only finite observed
+  performance values; null/missing values stay unavailable, never zero.
+
+A malformed row must not silently shrink the visible denominator. Either preserve a declared
+population plus explicit unreadable count, or fail the affected visual/list to partial/
+unavailable. Reuse the reported/supplied/readable/filtered law already required for company
+populations.
+
+The route's `observedAt` remains **Terminal fetch time**, not a source-availability or
+historical knowledge clock. The content hash can distinguish current bytes, but it does not
+authorize an as-known replay. Source/version history continues to come from the source owner's
+own PIT/correction lineage, not from repeated BFF fetch timestamps.
+
+### Fetch plan
+
+Do not expand today's `SECTOR_FEEDS` eager loop into an eager fetch of every future feed.
+Resolve required sources from the active surface:
+
+- workspace Rotation: current selection/context feeds + `rotation` after admission;
+- workspace Discover Industry×Cap: current `heatmap` plus the minimal selection/context feed;
+- workspace Discover Themes/Bubbles: `themeMap` after admission plus minimal selection/context;
+- Market breadth: current `sector`; add `heatmap` only for the visible concentration/detail
+  work that needs it;
+- selected-object detail: keep the current R5 owner set, then add accepted evidence projections
+  only when the active destination needs them.
+
+Successful reads may remain in the current account-bound in-memory `received` map for return
+speed, but identity/revision invalidation stays exactly fail-closed as today. No service worker,
+localStorage, second API cache or background refresh plane is introduced.
 
 ## 8. Native and delivery gates
 
