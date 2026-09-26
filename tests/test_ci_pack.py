@@ -756,6 +756,31 @@ def test_selection_fails_safe_toward_running_everything() -> None:
         assert job in hit, f"{job.job_id} must run when {probe} changes"
 
 
+
+def test_publish_r2_client_owns_company_intelligence_refresh_contract() -> None:
+    """Source-, workflow-, and test-only CI edits must run the real R2 suite."""
+    jobs = PACK.load_legacy_jobs(MANIFEST)
+    by_id = {job.job_id: job for job in jobs}
+    job = by_id["publish-r2-client"]
+
+    assert job.gate == "data"
+    commands = "\n".join(
+        str(step.get("run", ""))
+        for step in job.definition["steps"]
+        if isinstance(step, dict)
+    )
+    assert "tests/test_company_intelligence_refresh.py" in commands
+
+    for changed in (
+        "scripts/refresh_company_intelligence.py",
+        ".github/workflows/company-intelligence.yml",
+        "tests/test_company_intelligence_refresh.py",
+    ):
+        selected, reason = PACK.select_jobs(jobs, [changed])
+        assert "publish-r2-client" in {item.job_id for item in selected}, reason
+
+
+
 def test_declared_scope_must_cover_paths_the_job_itself_reads() -> None:
     """A scope narrower than the job's own commands is a hard manifest error.
 
