@@ -135,6 +135,74 @@ Do not replace the earlier row-level figures; they answer the declared row-level
 This section adds the parent-level dependence correction that a future reviewer needs in order not to
 over-read those figures.
 
+
+## 4B. Session-phase robustness
+
+A secondary structural audit split the already-fixed event and control clocks by the U.S. cash-session
+boundary. The split was not optimized: June-September 2026 daylight-time RTH is 13:30-20:00 UTC;
+earlier clocks are labeled premarket.
+
+Using the original SMH-minus-QQQ +5->+35 construction:
+
+| Slice | Event agreement | Same-clock control agreement |
+|---|---:|---:|
+| RTH, all | 5/8 = **62.5%** | 8/16 = **50.0%** |
+| RTH, clean-primary | 3/5 = **60.0%** | 4/10 = **40.0%** |
+| Premarket, all | 4/4 = **100.0%** | 2/4 = **50.0%** |
+| Premarket, clean-primary | 2/2 = **100.0%** | 1/3 = **33.3%** |
+
+The candidate is therefore not exclusively an RTH-clock artifact, but the headline 75% event
+agreement is materially helped by a **four-event premarket slice**. That slice is too small to
+support a separate premarket hypothesis. No session-specific promotion or threshold is authorized.
+
+## 4C. Cross-asset specificity audit
+
+A second post-outcome diagnostic asked whether the apparent transfer is genuinely
+**semiconductor-relative**, or whether the same frozen +5->+35 event windows carry a broader U.S.
+growth/risk impulse.
+
+No event, clock, HK outcome, or matched-control date was reselected. The incumbent Massive/Polygon
+minute transport was used for SPY, QQQ and SMH at the already-frozen clocks.
+
+### Development events
+
+| U.S. response | All 12 sign agreement | Pearson | Spearman | Clean 7 sign agreement | Clean Pearson | Clean Spearman |
+|---|---:|---:|---:|---:|---:|---:|
+| SPY absolute | 7/12 = 58.3% | +0.388 | +0.399 | 5/7 = 71.4% | +0.397 | +0.357 |
+| QQQ absolute | 8/12 = 66.7% | +0.560 | +0.455 | 6/7 = 85.7% | +0.689 | +0.607 |
+| QQQ minus SPY | 10/12 = **83.3%** | +0.530 | +0.525 | 6/7 = **85.7%** | +0.681 | +0.893 |
+| SMH minus QQQ | 9/12 = 75.0% | +0.461 | +0.448 | 5/7 = 71.4% | +0.448 | +0.393 |
+
+### Same-clock matched controls
+
+| U.S. response | All controls | Pearson | Spearman | Clean-parent controls | Pearson | Spearman |
+|---|---:|---:|---:|---:|---:|---:|
+| SPY absolute | 13/23 = 56.5% | -0.176 | -0.242 | 8/14 = 57.1% | -0.288 | -0.385 |
+| QQQ absolute | 13/23 = 56.5% | -0.268 | -0.205 | 8/14 = 57.1% | -0.408 | -0.302 |
+| QQQ minus SPY | 14/23 = 60.9% | -0.356 | -0.210 | 9/14 = 64.3% | -0.561 | -0.347 |
+| SMH minus QQQ | 10/20 = 50.0% | -0.181 | -0.317 | 5/13 = 38.5% | -0.500 | -0.736 |
+
+A standardized two-variable descriptive regression of HSI next-open gap on QQQ absolute and
+SMH-minus-QQQ gave the larger coefficient to QQQ in both the full and clean development slices.
+This is descriptive only; the sample is too small for model-selection claims.
+
+### Specificity ruling
+
+The development evidence does **not** support calling the surviving relationship a
+semiconductor-specific handoff. A better description is:
+
+> during source-resolved geopolitical repricing episodes, the realized U.S. growth/technology
+> response relative to the broad market may contain cross-session information about the next
+> Hong Kong cash open.
+
+QQQ-minus-SPY was discovered after the development HK outcomes were already visible. It therefore
+cannot replace the original SMH-minus-QQQ prospective primary or inherit its historical evidence.
+It is admitted only as a **versioned prospective challenger** under
+`CROSS_SESSION_TRANSFER_PROSPECTIVE_AMENDMENT_V1_1_2026-09-26.md`.
+
+SPY absolute, QQQ absolute and SMH absolute remain nuisance diagnostics, not additional candidate
+families. This freezes the candidate count rather than continuing post-hoc predictor search.
+
 ## 5. Missingness
 
 Four pre-frozen matched controls remained missing under the exact-clock law:
@@ -159,10 +227,13 @@ Unsupported / falsified:
 
 Still alive as a **prospective hypothesis only**:
 
-> In source-resolved geopolitical repricing episodes, the realized U.S.
-> semiconductor-relative response may contain information about the direction of the next
-> Hong Kong cash-session gap that is not present in ordinary same-clock/non-event U.S.
-> semiconductor moves.
+> In source-resolved geopolitical repricing episodes, the realized U.S. growth/technology
+> response relative to the broad market may contain information about the direction of the next
+> Hong Kong cash-session gap beyond ordinary same-clock/non-event moves.
+
+The original SMH-minus-QQQ construction remains the frozen V1 prospective primary for continuity.
+The semiconductor-specific interpretation itself is no longer supported. QQQ-minus-SPY is a
+post-development challenger only.
 
 The development sample is small, concentrated in the 2026 Iran/Hormuz complex, and the
 hypothesis was discovered after event HSI outcomes were opened. The matched controls reduce

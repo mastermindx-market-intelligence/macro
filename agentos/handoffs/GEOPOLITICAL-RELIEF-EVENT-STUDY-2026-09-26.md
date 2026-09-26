@@ -15,6 +15,18 @@ state_before: >-
   already committed. Exact-head ci and fences later failed because this handoff file was missing
   AgentOS YAML frontmatter; no research-code failure was identified.
 changed:
+  - path: research/CROSS_SESSION_US_TO_HK_MATCHED_CONTROL_RESULTS_2026-09-26.md
+    what: >-
+      Add parent-event dependence, session-phase, and cross-asset specificity robustness; reject
+      the semiconductor-specific interpretation without rewriting the original prospective primary.
+  - path: research/CROSS_SESSION_TRANSFER_PROSPECTIVE_AMENDMENT_V1_1_2026-09-26.md
+    what: >-
+      Freeze QQQ-minus-SPY as the sole post-development prospective challenger while preserving
+      SMH-minus-QQQ as the V1 primary and fixing the candidate-family count at two.
+  - path: research/CROSS_SESSION_SOURCE_CORPUS_AMENDMENT_2026-09-26.json
+    what: >-
+      Append the pre-protocol WSJ rejection report as development-only SOURCE_CONFOUNDED evidence
+      without mutating the frozen source census or reading outcomes.
   - path: agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md
     what: >-
       Repair the durable continuation record to the current AgentOS handoff schema, bind it to the
@@ -48,6 +60,7 @@ verified:
 unverified:
   - "Repaired exact-head ci and fences have not yet completed."
   - "Prospective cross-session transfer generalization on future events remains unproven."
+  - "The QQQ-minus-SPY challenger has zero prospective observations at this amendment boundary."
   - "Stable Hong Kong first-five-minute target-region data capability remains unproven."
 unresolved:
   - "Current PR head must regain exact-head ci + fences before the research carrier is considered green."
@@ -140,9 +153,14 @@ Final capability state: BUILT_NOT_PROVEN / DEVELOPMENT_EVIDENCE / PROSPECTIVE_PR
 
 ### Surviving development hypothesis
 
-For future source-resolved geopolitical repricing events, the realized U.S. semiconductor-relative
-response may contain information about the next Hong Kong cash-session gap beyond ordinary
-same-clock/non-event moves.
+For future source-resolved geopolitical repricing events, the realized U.S. growth/technology
+response relative to the broad market may contain information about the next Hong Kong cash-session
+gap beyond ordinary same-clock/non-event moves.
+
+The semiconductor-specific interpretation is no longer supported. SMH-minus-QQQ remains the frozen
+V1 prospective primary only because changing it retroactively would contaminate the preregistration.
+QQQ-minus-SPY is frozen separately as the V1.1 challenger and starts prospective life only from the
+amendment commit clock.
 
 Development event rows:
 - 12 overlapping measured rows: sign agreement 9/12 = 75.0%;
@@ -297,3 +315,87 @@ Return point:
 - branch `sol/geopolitical-relief-event-study-20260924`
 - this AgentOS handoff
 - protected Mastermind pin above.
+
+
+## 2026-09-26 continuation addendum — specificity correction
+
+### Governance / verification
+
+- Current protected Mastermind source was re-read at
+  `a31f49f4056943124cc0e7e42349e46feee444c7`; the Skillpack INDEX blob remains
+  `94d1af402598894372858793a5b1931019c5fa77`.
+- The repaired AgentOS frontmatter cleared hosted exact-head `fences` at
+  `f54213e8be83877b0df84cac6c8522a82af63ff2`, workflow run 36273234603 / run 21869.
+- Exact GitHub head `f54213e...` was materialized in a detached M2 worktree and ran the three
+  research suites: **32 passed**. `python3 scripts/agentos.py validate` returned **0 errors**
+  (77 estate-wide warnings), `git status --short` was empty, and the verifier exited 0.
+- Full hosted CI at the eventual post-amendment head remains required before calling the carrier green.
+- Current Macro main moved substantially since the historical PR base, but bounded compatibility
+  checks found `collectors/polygon_options.py`, `scripts/agentos.py`,
+  `engine/neuralweb/brain_market_intel.py`, and `engine/neuralweb/brain_analogues.py`
+  byte-identical base->current-main. The exact Market Memory CI hunk extended by this PR is also
+  unchanged on main.
+
+### Parent-event and session-phase fragility
+
+Matched-control row reuse inflated the apparent row-level separation. Parent-event collapse leaves:
+- all parents: event 72.7% vs parent-control 54.5%, +18.2 pp;
+- clean-primary: event 71.4% vs parent-control 42.9%, +28.6 pp;
+- descriptive bootstrap intervals cross zero.
+
+Using the fixed daylight-time U.S. RTH boundary:
+- RTH events: 5/8 vs controls 8/16;
+- clean RTH: 3/5 vs clean controls 4/10;
+- premarket events: 4/4 vs controls 2/4.
+
+The premarket n is too small for a separate claim.
+
+### Cross-asset specificity ruling
+
+The semiconductors-specific interpretation is rejected by nested development diagnostics.
+
+Clean seven-event readings:
+- SPY absolute: 5/7, Pearson +0.397;
+- QQQ absolute: 6/7, Pearson +0.689;
+- QQQ-minus-SPY: 6/7, Pearson +0.681, Spearman +0.893;
+- SMH-minus-QQQ: 5/7, Pearson +0.448.
+
+Same-clock clean-parent controls:
+- QQQ-minus-SPY: 9/14, Pearson -0.561, Spearman -0.347;
+- SMH-minus-QQQ: 5/13, Pearson -0.500, Spearman -0.736.
+
+Therefore:
+- do not describe the surviving candidate as a semiconductor transfer effect;
+- preserve SMH-minus-QQQ as the already-frozen V1 primary;
+- freeze QQQ-minus-SPY as a development-selected V1.1 prospective challenger;
+- SPY/QQQ/SMH absolute returns are nuisance baselines only;
+- do not add more candidate families from these development outcomes.
+
+### Source and data status
+
+- The WSJ rejection report at 2026-09-26T00:26Z predates the V1 prospective clock
+  (2026-09-26T11:16:23Z), so it is development-only SOURCE_CONFOUNDED evidence.
+- A bounded post-boundary source check found no qualifying exact-clock event to admit; this is not a
+  completeness/no-event population claim.
+- HK 5-minute Eastmoney remains degraded: the non-target HSBC canary still returns
+  `RemoteDisconnected`; adding browser-like headers and referer produced the same failure.
+  The header-defect hypothesis is falsified. Target HK intraday outcomes remain unread.
+
+### Ledger / owner ruling
+
+QLedger remains the sole canonical claim-grading/promotion ledger, but the current intraday
++ cross-session geometry is not shoehorned into its day-horizon claim contract. Chronicle remains
+the canonical deterministic/nightly event spine for its registered sources and must not be advanced
+intraday. Current prospective custody is the existing live event facts plus this bounded research
+carrier; no second event or evaluation plane is created.
+
+### Exact next action
+
+1. Reconcile the post-amendment exact head and require hosted `fences` + full `ci` success.
+2. Preserve V1 primary and V1.1 challenger unchanged.
+3. On the first qualifying event **after the V1.1 amendment commit clock**, record both candidate
+   measurements and matched controls before using the HSI outcome for any protocol change.
+4. Keep HK intraday source restoration with its existing data owner; no more same-state Eastmoney
+   retries from this research lane.
+5. No Brain/product/trading projection until the declared prospective review boundary and a separate
+   acceptance decision.
