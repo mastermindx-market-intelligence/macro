@@ -1,0 +1,97 @@
+{
+  "schema": "research_vault.catalog_measurement.r7",
+  "measurement_scope": "complete pinned committed catalog, not a live R2 four-set census",
+  "repository": "mastermindx-market-intelligence/macro",
+  "commit": "459eafb838d9944e58e6a65413e282f2a13826ef",
+  "path": "data/research_vault/catalog.json",
+  "expected_git_blob": "54ed63983248afad543ff46ed327a076d67475b4",
+  "observed_git_blob": "54ed63983248afad543ff46ed327a076d67475b4",
+  "byte_length": 2715583,
+  "full_byte_identity_match": true,
+  "generated_at": "2026-09-16T06:09:42.758496+00:00",
+  "measured_at_utc": "2026-09-16T06:26:52.518547+00:00",
+  "native_process": {
+    "pid": 30386,
+    "exit_code": 0,
+    "device": "Mac-Studio.ts.net lan",
+    "scope": "bounded public repository read, isolated temporary evidence files; no M1 access"
+  },
+  "declared_count": 2208,
+  "observed_rows": 2208,
+  "distinct_id_values": 2208,
+  "nonempty_fields": {
+    "summary_points": 2197,
+    "tickers": 0,
+    "tags": 9,
+    "desk": 9,
+    "pages": 2103,
+    "language": 2103
+  },
+  "needs_metadata_is_true": 0,
+  "raw_institution_values": 95,
+  "top_raw_institution_counts": [
+    ["Goldman Sachs", 888],
+    ["S&T", 221],
+    ["J.P. Morgan", 191],
+    ["UBS", 166],
+    ["Other", 109],
+    ["Deutsche Bank", 83],
+    ["Bank of America", 71],
+    ["Morgan Stanley", 64],
+    ["Societe Generale", 28],
+    ["TS Lombard", 27],
+    ["Rabobank", 23],
+    ["Citi", 19]
+  ],
+  "stored_published_at_range": ["2026-07-20T20:50:56Z", "2026-09-16T03:20:57Z"],
+  "method": {
+    "bytes": "Read at most 4,000,001 bytes; refuse >4,000,000; compare Git blob SHA-1 with connector metadata before JSON analysis.",
+    "nonempty": "Count bool(row.get(field)); this is presence, not semantic/type validation.",
+    "ids": "Count distinct raw row.get('id') values; no valid-ID shape or canonical-entity claim.",
+    "metadata_flag": "Count row.get('needs_metadata') is True; other states are not independently classified.",
+    "institutions": "Count raw institution field values without alias consolidation or independence inference.",
+    "time": "Use stored metadata strings; no inference of original-publication or operational-known-at clocks."
+  },
+  "derived_percentages": {
+    "summary_points": 99.5018,
+    "tickers": 0.0,
+    "tags": 0.4076,
+    "desk": 0.4076,
+    "pages": 95.2446,
+    "language": 95.2446,
+    "Goldman_Sachs_raw_label": 40.2174,
+    "S_and_T_raw_label": 10.0091,
+    "Other_raw_label": 4.9366
+  },
+  "not_measured": [
+    "applicable-company-report denominator",
+    "full original PDFs",
+    "source-body hashes",
+    "complete excerpt corpus",
+    "canonical R2/catalog/corpus/receipt equality",
+    "live retrieval accuracy",
+    "independent source count",
+    "historical availability",
+    "new account marginal value"
+  ],
+  "source_code_pins": {
+    "engine/research_vault/corpus.py": "0b035b34489a4efd2ae7a3c59d153b3d1977701a",
+    "app/research.py": "bca9b965057df653607765107ef789692c47dcdc",
+    "site/research_vault_app.js": "1f0b673da6c3d6a44ad3d74b2994f70b9a4311c8",
+    "lib/dataos/identity.py": "d9d5018aac47910bf2c802b1a74114a99511f74f",
+    "config/identity_seams.yml": "d9de4f2570e94ec80994e0a9c9224c69b253d719",
+    "engine/research_vault/ingest.py": "d005c052ebb76c465d45818db0df8d0b3db79c00"
+  },
+  "blocked_followups": [
+    {
+      "action": "Additional native fetch of excerpts.json and brain_market_intel.py",
+      "result": "OpenAI could not determine safety status; blocked; not retried/rerouted"
+    },
+    {
+      "action": "Additional native local-catalog analytics",
+      "result": "OpenAI could not determine safety status; blocked; not retried/rerouted"
+    }
+  ],
+  "serialization": "Normalized from the successful native tool result; not a second execution. Native raw catalog is not included in this package.",
+  "no_new_model_or_product_tests": true
+}

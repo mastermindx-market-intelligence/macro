@@ -1,0 +1,107 @@
+--- a/engine/neuralweb/brain_market_intel.py
++++ b/engine/neuralweb/brain_market_intel.py
+@@ -1904,8 +1904,25 @@
+     return body_text, cap_truncated or not fully_covered
+ 
+ 
++def _source_guard_error(guard, *, phase, report_id, query, catalog_item, document=None):
++    """Internal request-local source check, not a model argument or new permission owner."""
++    if guard is None:
++        return None
++    try:
++        decision = guard(phase=phase, report_id=report_id, query=query,
++                         catalog_item=catalog_item, document=document)
++    except Exception:
++        decision = "source_unavailable"
++    if decision is True:
++        return None
++    allowed_errors = {"selection_invalid", "selection_stale", "source_access_denied",
++                      "source_mismatch", "source_unavailable"}
++    code = decision if isinstance(decision, str) and decision in allowed_errors else "source_unavailable"
++    return _report_error(code, "The selected source could not be verified for this request. No source text is returned.", report_id=report_id)
++
++
+ def _research_report(root: Path, report_id, *, query="", user_ctx,
+-                     now: datetime) -> dict:
++                     now: datetime, _source_guard=None) -> dict:
+     """One report's generic body or exact-question evidence for a PRO member.
+ 
+     Order is deliberate and each step is its own gate:
+@@ -1948,17 +1965,27 @@
+ 
+     evidence_query = str(query or "")
+     evidence_requested = _evidence_requested(evidence_query)
++    if _source_guard is not None and not evidence_requested:
++        return _report_error("source_request_invalid", "A selected source requires a specific evidence question.", report_id=rid)
+     preflight = _peek_report_view(uid, now)
+     if (isinstance(preflight, dict)
+             and preflight.get("remaining") == 0):
+         return _report_error(
+             "view_limit_reached", _REPORT_ERR_LIMIT,
+             report_id=rid, remaining=0, limit=preflight.get("limit"))
++    gate_error = _source_guard_error(_source_guard, phase="admission", report_id=rid,
++                                    query=evidence_query, catalog_item=item)
++    if gate_error is not None:
++        return gate_error
+     document = (
+         _load_evidence_document(rid)
+         if evidence_requested
+         else _load_corpus_document(rid)
+     )
++    gate_error = _source_guard_error(_source_guard, phase="source", report_id=rid,
++                                    query=evidence_query, catalog_item=item, document=document)
++    if gate_error is not None:
++        return gate_error
+     # Independent re-check (defense in depth alongside the corpus owner's own
+     # fail-closed gate) so the note can distinguish an identity gap from a scan.
+     identity_ok = bool(_sha256_or_empty((document or {}).get("content_sha256"))) \
+@@ -2118,6 +2145,10 @@
+                 )
+ 
+         if pending_evidence_charge:
++            gate_error = _source_guard_error(_source_guard, phase="before_debit", report_id=rid,
++                                            query=evidence_query, catalog_item=item, document=document)
++            if gate_error is not None:
++                return gate_error
+             allowed, info = _charge_report_view(uid, now)
+             if not allowed:
+                 return _report_error(
+@@ -2128,6 +2159,12 @@
+                 "limit": _nonnegative_int((info or {}).get("limit")),
+             }
+             projected["access"] = {"decision": "allowed", "metered": True}
++            gate_error = _source_guard_error(_source_guard, phase="after_debit", report_id=rid,
++                                            query=evidence_query, catalog_item=item, document=document)
++            if gate_error is not None:
++                return _report_error("access_changed_after_accounting",
++                                     "The source decision changed after the allowance call. No text is served; no refund or persisted debit is inferred.",
++                                     report_id=rid, quota=response["quota"])
+ 
+     return response
+ 
+@@ -2141,6 +2178,7 @@
+     report_id: str = "",
+     user_ctx: dict | None = None,
+     now: datetime | None = None,
++    _source_guard=None,
+ ) -> dict:
+     """Keyword-search the research vault — THIRD-PARTY views, not the desk's own.
+ 
+@@ -2181,6 +2219,8 @@
+         reference = reference.replace(tzinfo=timezone.utc)
+     reference = reference.astimezone(timezone.utc)
+ 
++    if _source_guard is not None and not _is_report_mode(mode):
++        return _report_error("source_request_invalid", "Selected-source checks belong to report mode only.")
+     # --- report mode (W4 + R1B evidence) ----------------------------------- #
+     # First because it does not use the catalog search ranking. `query` is passed
+     # only to the deterministic corpus passage selector; `limit` remains ignored.
+@@ -2189,7 +2229,7 @@
+     if _is_report_mode(mode):
+         try:
+             return _research_report(root, report_id, query=query, user_ctx=user_ctx,
+-                                    now=reference)
++                                    now=reference, _source_guard=_source_guard)
+         except Exception:  # noqa: BLE001 — retrieval must not take the turn down
+             return _report_error("vault_unavailable", _REPORT_ERR_VAULT,
+                                  report_id=str(report_id or ""))
