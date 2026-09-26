@@ -484,3 +484,453 @@ def test_main_wires_overlay_none_to_the_persisted_fallback():
     main_body = src.split("\ndef main(", 1)[1].split('\nif __name__', 1)[0]
     assert "if overlay is None:" in main_body
     assert "overlay = _last_rendered_overlay()" in main_body
+
+
+# --- CA-DISCOVERY-SHADOW: broaden research recall without changing the board ---
+def _ca_disc_fixture(n=215):
+    cand, align, entry = [], {}, {}
+    for i in range(n):
+        ticker = f"C{i:03d}.TO"
+        cand.append((float(n - i), {
+            "ticker": ticker, "alpha": float(i) / 10,
+            "board_pos": i + 1, "featured": i < 5, "group": "hostile-extra",
+        }))
+        if i % 3 == 0:
+            align[ticker] = {"aligned": True}
+        elif i % 3 == 1:
+            align[ticker] = {"near": True}
+        status = ("buy_now", "await_confluence", "extended", "blocked", None)[i % 5]
+        if status is not None:
+            entry[ticker] = {"status": status}
+    return cand, align, entry
+
+
+def test_ca_discovery_is_uncapped_and_carries_no_rank_or_score():
+    from engine import canada_discovery_challenger as cadc
+    cand, align, entry = _ca_disc_fixture()
+    rows = cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")
+    assert len(rows) == 215
+    assert len({r["security_ref_raw"] for r in rows}) == 215
+    forbidden = {"alpha", "score", "rank", "board_pos", "featured", "group"}
+    assert all(not (forbidden & set(r)) for r in rows)
+    assert rows[0]["candidate_origin"] == "scored_screen+alignment_aligned"
+
+
+def test_ca_discovery_availability_reuses_owner_entry_status_without_upgrading_it():
+    from engine import canada_discovery_challenger as cadc
+    statuses = {
+        "OPEN.TO": "partial",
+        "PULL.TO": "wait_pullback",
+        "RAN.TO": "extended",
+        "BLOCK.TO": "avoid",
+        "WAIT.TO": "buy_soon",
+    }
+    cand = [(1.0, {"ticker": t}) for t in [*statuses, "MISS.TO"]]
+    entry = {t: {"status": s} for t, s in statuses.items()}
+    align = {t: {"aligned": True} for t in statuses}
+    rows = {r["security_ref_raw"]: r for r in
+            cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")}
+    assert rows["OPEN.TO"]["availability_status"] == cadc.ENTRY_OPEN
+    assert rows["PULL.TO"]["availability_status"] == cadc.WAIT_PULLBACK
+    assert rows["RAN.TO"]["availability_status"] == cadc.RAN_DONT_CHASE
+    assert rows["BLOCK.TO"]["availability_status"] == cadc.BLOCKED
+    assert rows["WAIT.TO"]["availability_status"] == cadc.WAIT_CONFLUENCE
+    assert rows["MISS.TO"]["availability_status"] == cadc.UNAVAILABLE_DATA
+
+
+def test_ca_discovery_never_calls_unaligned_timing_open_an_open_entry():
+    from engine import canada_discovery_challenger as cadc
+    cand = [(1.0, {"ticker": "BLOCKED.TO"})]
+    entry = {"BLOCKED.TO": {"status": "partial"}}
+    row = cadc.build_candidates(
+        cadc.freeze_evidence(cand, {}, entry), "2026-09-16"
+    )[0]
+    assert row["availability_status"] == cadc.WAIT_CONFLUENCE
+    assert row["availability_source"] == "alignment_blocked+entry_signal:partial"
+
+
+def test_ca_discovery_does_not_mutate_or_read_published_board_fields():
+    import copy
+    from engine import canada_discovery_challenger as cadc
+    cand, align, entry = _ca_disc_fixture(9)
+    before = copy.deepcopy(cand)
+    rows_a = cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")
+    for _score, row in cand:
+        row["board_pos"] = 999
+        row["featured"] = not bool(row["featured"])
+        row["group"] = "changed"
+    rows_b = cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")
+    assert rows_a == rows_b
+    assert before != cand  # hostile extras really changed; output did not
+
+
+def test_ca_discovery_registration_is_after_artifact_persist_and_before_return():
+    from pathlib import Path
+    source = (Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py").read_text()
+    persist = source.index("_write_canada_standouts(board, site)")
+    register = source.index("_register_ca_shadow_challengers(", persist)
+    return_board = source.index("    return board", register)
+    assert persist < register < return_board
+
+    helper = source.index("def _register_ca_shadow_challengers(")
+    helper_end = source.index("\ndef _build_canonical_board", helper)
+    block = source[helper:helper_end]
+    assert "canada_discovery_challenger.freeze_population_contract" in block
+    assert "populations.prealignment_research" in block
+    assert "canada_discovery_challenger.build_candidates" in block
+
+
+def test_ca_discovery_persists_only_zero_authority_lane_b_rows(tmp_path, monkeypatch):
+    import pandas as pd
+    from engine import board_shadow as bs
+    from engine import canada_discovery_challenger as cadc
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.delenv("CN_LANE", raising=False)
+    monkeypatch.setattr(bs, "_read_incumbent_positions", lambda *_a, **_k: {})
+    bs.CHALLENGER_REGISTRY.clear()
+    cand, align, entry = _ca_disc_fixture(12)
+    frozen = cadc.freeze_evidence(cand, align, entry)
+    try:
+        bs.register_challenger("CA", cadc.DEFINITION,
+                               discovery_fn=lambda asof: cadc.build_candidates(frozen, asof))
+        receipt = bs.write_shadow([], market="CA", asof="2026-09-18")
+        assert receipt["written"] == 12
+        stored = pd.read_parquet(tmp_path / "prophet_shadow" / "ca_discovery.parquet")
+        assert len(stored) == 12
+        assert not stored["published_authority"].fillna(False).astype(bool).any()
+        assert not stored["visible_to_user"].fillna(False).astype(bool).any()
+    finally:
+        bs.CHALLENGER_REGISTRY.clear()
+
+# --- CA-NATIVE-INTEL / CA-RANK-RACE: typed ACCRUING family, zero authority ---
+def test_ca_native_authority_types_are_explicit_and_non_fused():
+    from engine import canada_native_intelligence as cni
+
+    assert cni.RESIDUAL_MOMENTUM_STATUS == "ACCRUING"
+    assert cni.RESIDUAL_MOMENTUM_AUTHORITY == "name_intelligence_shadow"
+    assert cni.RESIDUAL_MOMENTUM_DEFINITION == "ca_residual_momentum_rank_v1"
+    assert cni.C1_OIL_STATUS == "ACCRUING"
+    assert cni.C1_OIL_AUTHORITY == "sector_context_only"
+    assert cni.ANTICIPATION_US_GATE_DISPOSITION == "SCREEN_SHADOW"
+    assert not hasattr(cni, "master_score")
+    assert not hasattr(cni, "composite_score")
+
+
+def test_ca_residual_ranker_scores_only_incumbent_calls_and_keeps_missing_null():
+    from engine import canada_native_intelligence as cni
+
+    calls = [
+        {"ticker": "A.TO", "edge_z": 1.4},
+        {"ticker": "B.TO", "edge_z": 0.2},
+        {"ticker": "MISS.TO", "edge_z": None},
+        {"ticker": "NAN.TO", "edge_z": float("nan")},
+    ]
+    out = cni.rank_residual_calls(calls)
+    assert set(out) == {"A.TO", "B.TO", "MISS.TO", "NAN.TO"}
+    assert out["A.TO"]["score_raw"] > out["B.TO"]["score_raw"]
+    assert out["A.TO"]["score_conservative"] is None
+    assert out["B.TO"]["score_conservative"] is None
+    assert out["MISS.TO"] == {
+        "score_raw": None,
+        "score_conservative": None,
+    }
+    assert out["NAN.TO"] == {
+        "score_raw": None,
+        "score_conservative": None,
+    }
+
+
+def test_ca_residual_ranker_dedupes_incumbent_identity_without_originating_names():
+    from engine import canada_native_intelligence as cni
+
+    calls = [
+        {"ticker": "A.TO", "edge_z": 0.4},
+        {"ticker": "A.TO", "edge_z": 9.9},
+        {"ticker": "B.TO", "edge_z": -0.2},
+        {"ticker": None, "edge_z": 1.0},
+    ]
+    out = cni.rank_residual_calls(calls)
+    assert list(out) == ["A.TO", "B.TO"]
+    assert out["A.TO"]["score_raw"] == pytest.approx(0.4)
+    assert out["B.TO"]["score_raw"] == pytest.approx(-0.2)
+
+
+def test_ca_residual_ranker_persists_same_population_in_existing_lane_a(
+    tmp_path, monkeypatch,
+):
+    import pandas as pd
+    from engine import board_shadow as bs
+    from engine import canada_native_intelligence as cni
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.delenv("CN_LANE", raising=False)
+    monkeypatch.setattr(
+        bs, "_read_incumbent_positions",
+        lambda *_a, **_k: {"A.TO": 1, "B.TO": 2, "MISS.TO": 3},
+    )
+    bs.CHALLENGER_REGISTRY.clear()
+    calls = [
+        {"ticker": "A.TO", "edge_z": 1.2, "board_definition": "ca_prophet_branch_b_v1"},
+        {"ticker": "B.TO", "edge_z": 0.3, "board_definition": "ca_prophet_branch_b_v1"},
+        {"ticker": "MISS.TO", "edge_z": None, "board_definition": "ca_prophet_branch_b_v1"},
+    ]
+    try:
+        bs.register_challenger(
+            "CA", cni.RESIDUAL_MOMENTUM_DEFINITION,
+            rank_fn=cni.rank_residual_calls,
+        )
+        receipt = bs.write_shadow(calls, market="CA", asof="2026-09-18")
+        assert receipt["written"] == 3
+        stored = pd.read_parquet(tmp_path / "prophet_shadow" / "ca_rank_pairs.parquet")
+        assert set(stored["ticker"]) == {"A.TO", "B.TO", "MISS.TO"}
+        assert set(stored["challenger_definition"]) == {
+            cni.RESIDUAL_MOMENTUM_DEFINITION
+        }
+        assert set(stored["population_n"]) == {3}
+        assert stored["challenger_offlist_n"].max() == 0
+        by = stored.set_index("ticker")
+        assert int(by.loc["A.TO", "challenger_rank"]) == 1
+        assert int(by.loc["B.TO", "challenger_rank"]) == 2
+        assert pd.isna(by.loc["MISS.TO", "challenger_rank"])
+        assert stored["challenger_score_conservative"].isna().all()
+    finally:
+        bs.CHALLENGER_REGISTRY.clear()
+
+
+def test_ca_builder_registers_native_rank_race_after_publication():
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
+    ).read_text()
+    persist = source.index("_write_canada_standouts(board, site)")
+    register = source.index("_register_ca_shadow_challengers(", persist)
+    return_board = source.index("    return board", register)
+    assert persist < register < return_board
+
+    helper = source.index("def _register_ca_shadow_challengers(")
+    helper_end = source.index("\ndef _build_canonical_board", helper)
+    block = source[helper:helper_end]
+    assert "canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION" in block
+    assert "canada_discovery_challenger.DEFINITION" in block
+
+
+
+def test_ca_population_contract_separates_immutable_official_and_research():
+    from dataclasses import FrozenInstanceError
+    from engine import canada_discovery_challenger as cadc
+
+    cand = [
+        (3.0, {"ticker": "A.TO", "score": 99}),
+        (2.0, {"ticker": "B.V", "score": 88}),
+        (1.0, {"ticker": "C.TO", "score": 77}),
+    ]
+    board = {
+        "buy": [{"ticker": "A.TO", "group": "entry_open", "board_pos": 1}],
+        "watch": [{"ticker": "B.V", "watch_reason": "knife"}],
+    }
+    contract = cadc.freeze_population_contract(
+        official_board=board,
+        candidates=cand,
+        align_map={"A.TO": {"aligned": True}, "B.V": {"near": True}},
+        entry_signals={"A.TO": {"status": "buy_now"}},
+    )
+
+    assert contract.official_screen.status == cadc.PopulationStatus.OBSERVED
+    assert [(m.ticker, m.lane, m.owner_group) for m in contract.official_screen.members] == [
+        ("A.TO", "buy", "entry_open"),
+        ("B.V", "watch", "watch"),
+    ]
+    assert contract.prealignment_research.status == cadc.PopulationStatus.OBSERVED
+    assert [m.ticker for m in contract.prealignment_research.members] == [
+        "A.TO", "B.V", "C.TO",
+    ]
+
+    # The contract is a snapshot, not an alias to producer rows.
+    board["buy"][0]["ticker"] = "MUTATED.TO"
+    cand[0][1]["ticker"] = "MUTATED-RESEARCH.TO"
+    assert contract.official_screen.members[0].ticker == "A.TO"
+    assert contract.prealignment_research.members[0].ticker == "A.TO"
+    with pytest.raises(FrozenInstanceError):
+        contract.official_screen.status = cadc.PopulationStatus.UNAVAILABLE
+
+
+def test_ca_population_contract_distinguishes_zero_from_unavailable_and_watch_only():
+    from engine import canada_discovery_challenger as cadc
+
+    unavailable = cadc.freeze_population_contract(
+        official_board=None, candidates=None, align_map=None, entry_signals=None,
+    )
+    assert unavailable.official_screen.status == cadc.PopulationStatus.UNAVAILABLE
+    assert unavailable.prealignment_research.status == cadc.PopulationStatus.UNAVAILABLE
+
+    observed_zero = cadc.freeze_population_contract(
+        official_board={"buy": [], "watch": []},
+        candidates=[], align_map={}, entry_signals={},
+    )
+    assert observed_zero.official_screen.status == cadc.PopulationStatus.OBSERVED_ZERO
+    assert observed_zero.prealignment_research.status == cadc.PopulationStatus.OBSERVED_ZERO
+
+    watch_only = cadc.freeze_population_contract(
+        official_board={"buy": [], "watch": [{"ticker": "WATCH.V"}]},
+        candidates=[(1.0, {"ticker": "WATCH.V"})],
+        align_map={}, entry_signals={},
+    )
+    assert watch_only.official_screen.status == cadc.PopulationStatus.OBSERVED
+    assert [(m.ticker, m.lane) for m in watch_only.official_screen.members] == [
+        ("WATCH.V", "watch"),
+    ]
+
+
+def test_ca_population_contract_refuses_official_identity_absent_from_research():
+    from engine import canada_discovery_challenger as cadc
+
+    with pytest.raises(ValueError, match="absent from pre-alignment research"):
+        cadc.freeze_population_contract(
+            official_board={"buy": [{"ticker": "OFFLIST.TO"}], "watch": []},
+            candidates=[(1.0, {"ticker": "A.TO"})],
+            align_map={}, entry_signals={},
+        )
+
+
+def test_ca_research_population_keeps_valid_zero_distinct_and_refuses_unknown_session():
+    from engine import canada_discovery_challenger as cadc
+
+    unavailable = cadc.freeze_research_population(None, None, None)
+    with pytest.raises(cadc.ResearchPopulationUnavailable):
+        cadc.build_candidates(unavailable, "2026-09-18")
+
+    observed_zero = cadc.freeze_research_population([], {}, {})
+    assert observed_zero.status == cadc.PopulationStatus.OBSERVED_ZERO
+    assert cadc.build_candidates(observed_zero, "2026-09-18") == []
+
+    observed = cadc.freeze_research_population(
+        [(1.0, {"ticker": "RAW.V"})], {}, {},
+    )
+    for invalid_asof in (None, "", "None", "2026-09-18T00:00:00"):
+        with pytest.raises(ValueError, match="source session"):
+            cadc.build_candidates(observed, invalid_asof)
+
+
+def test_ca_builder_registers_discovery_from_typed_population_contract():
+    source = (
+        Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
+    ).read_text()
+    helper = source.index("def _register_ca_shadow_challengers(")
+    helper_end = source.index("\ndef _build_canonical_board", helper)
+    block = source[helper:helper_end]
+
+    assert "freeze_population_contract(" in block
+    assert ".prealignment_research" in block
+    assert "freeze_evidence(" not in block
+
+
+def test_ca_inherited_us_gate_dispositions_are_closed_and_immutable():
+    from engine import canada_native_intelligence as cni
+
+    assert {item.value for item in cni.InheritedGateDisposition} == {
+        "STRUCTURAL_COMMON", "MARKET_VALIDATED", "SCREEN_SHADOW", "RETIRE",
+    }
+    assert dict(cni.INHERITED_US_GATE_DISPOSITIONS) == {
+        cni.ANTICIPATION_PROFILE_CONTEXT_USE: cni.InheritedGateDisposition.SCREEN_SHADOW,
+        cni.ANTICIPATION_POTENTIAL_SCORE_USE: cni.InheritedGateDisposition.SCREEN_SHADOW,
+    }
+    for use in cni.INHERITED_US_GATE_DISPOSITIONS:
+        assert cni.require_inherited_gate_disposition(
+            use, cni.InheritedGateDisposition.SCREEN_SHADOW,
+        ) is cni.InheritedGateDisposition.SCREEN_SHADOW
+    with pytest.raises(TypeError):
+        cni.INHERITED_US_GATE_DISPOSITIONS["new-use"] = (
+            cni.InheritedGateDisposition.MARKET_VALIDATED
+        )
+    with pytest.raises(KeyError, match="unclassified inherited US gate use"):
+        cni.require_inherited_gate_disposition(
+            "unknown-use", cni.InheritedGateDisposition.SCREEN_SHADOW,
+        )
+    with pytest.raises(ValueError, match="expected MARKET_VALIDATED"):
+        cni.require_inherited_gate_disposition(
+            cni.ANTICIPATION_PROFILE_CONTEXT_USE,
+            cni.InheritedGateDisposition.MARKET_VALIDATED,
+        )
+
+
+def test_ca_builder_binds_actual_anticipation_uses_before_consumption():
+    source = (
+        Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
+    ).read_text()
+
+    profile_audit = source.index(
+        "ca_native_intelligence.ANTICIPATION_PROFILE_CONTEXT_USE"
+    )
+    gate_load = source.index('_load_gate("US")')
+    potential_audit = source.index(
+        "ca_native_intelligence.ANTICIPATION_POTENTIAL_SCORE_USE"
+    )
+    potential_call = source.index("name_score.potential_score(")
+    candidate_freeze = source.index("cand.append(sc)")
+    anticipation_write = source.index('rec["anticipation"] = _ant')
+    entry_read = source.index("entry_signal.assess")
+
+    assert source.count("require_inherited_gate_disposition(") == 2
+    assert "CA inherited US anticipation disabled" in source
+    assert profile_audit < gate_load
+    assert potential_audit < potential_call
+    assert candidate_freeze < anticipation_write
+    assert entry_read < potential_call
+
+
+def test_ca_official_population_requires_both_computed_lanes_for_zero():
+    from engine import canada_discovery_challenger as cadc
+
+    missing_watch = cadc.freeze_official_screen({"buy": []})
+    null_buy = cadc.freeze_official_screen({"buy": None, "watch": []})
+    partial_watch = cadc.freeze_official_screen({
+        "buy": None,
+        "watch": [{"ticker": "WATCH.TO"}],
+    })
+
+    assert missing_watch == cadc.OfficialScreenPopulation(
+        cadc.PopulationStatus.UNAVAILABLE, (),
+    )
+    assert null_buy == cadc.OfficialScreenPopulation(
+        cadc.PopulationStatus.UNAVAILABLE, (),
+    )
+    assert partial_watch == cadc.OfficialScreenPopulation(
+        cadc.PopulationStatus.UNAVAILABLE, (),
+    )
+
+    explicit_zero = cadc.freeze_official_screen({"buy": [], "watch": []})
+    assert explicit_zero.status == cadc.PopulationStatus.OBSERVED_ZERO
+
+
+def test_ca_discovery_contract_failure_does_not_disable_native_rank_race(monkeypatch):
+    from engine import board_shadow as bs
+    from engine import canada_discovery_challenger as cadc
+    from engine import canada_native_intelligence as cni
+    from scripts import build_canada_library as bcal
+
+    registrations = []
+
+    def record_register(market, definition, **kwargs):
+        registrations.append((market, definition, tuple(sorted(kwargs))))
+
+    monkeypatch.setattr(bs, "register_challenger", record_register)
+    monkeypatch.setattr(
+        cadc, "freeze_population_contract",
+        lambda **_kwargs: (_ for _ in ()).throw(ValueError("discovery unavailable")),
+    )
+
+    bcal._register_ca_shadow_challengers(
+        board={"buy": [], "watch": []},
+        candidates=[],
+        align_map={},
+        entry_signals={},
+    )
+
+    assert registrations == [
+        ("CA", cni.RESIDUAL_MOMENTUM_DEFINITION, ("rank_fn",)),
+    ]

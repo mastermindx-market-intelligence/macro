@@ -37,6 +37,7 @@ from engine.cycles import analyze  # noqa: E402
 from engine.residual_alpha import compute_residual_alpha  # noqa: E402
 from engine.setups import CA_ALPHA_WEIGHT, rank_setups, setup_score  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's alpha/alignment gate)
+from engine import canada_native_intelligence as ca_native_intelligence  # noqa: E402
 from engine.technicals import season_line, seasonality, snapshot  # noqa: E402
 from lib import config, store  # noqa: E402
 from lib.ticker_popularity import attach_latest_volume, latest_volume_map  # noqa: E402
@@ -808,6 +809,64 @@ def _write_canada_standouts(board: dict, site: Path) -> None:
         json.dumps(board, separators=(",", ":"), default=str))
 
 
+def _register_ca_shadow_challengers(
+    *, board: dict, candidates: list, align_map: dict, entry_signals: dict,
+) -> None:
+    """Register independent CA rank/discovery shadows after public persistence.
+
+    Lane-A rank registration depends only on the incumbent calls supplied later by
+    ``build_canada.py``.  Lane-B discovery additionally needs the frozen research
+    population.  A Lane-B contract failure therefore must not suppress Lane A.
+    """
+    try:
+        from engine import (
+            board_shadow,
+            canada_discovery_challenger,
+            canada_native_intelligence,
+        )
+    except Exception as exc:  # noqa: BLE001 — additive shadow research only
+        log.warning(
+            "CA shadow modules unavailable (%s) — published board and render "
+            "continue unchanged", exc,
+        )
+        return
+
+    try:
+        board_shadow.register_challenger(
+            "CA",
+            canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION,
+            rank_fn=canada_native_intelligence.rank_residual_calls,
+        )
+    except Exception as exc:  # noqa: BLE001 — Lane A is zero-authority research
+        log.warning(
+            "CA native rank-challenger registration failed (%s) — discovery "
+            "registration remains independently eligible", exc,
+        )
+
+    try:
+        populations = canada_discovery_challenger.freeze_population_contract(
+            official_board=board,
+            candidates=candidates,
+            align_map=align_map,
+            entry_signals=entry_signals,
+        )
+
+        def discovery_fn(asof_arg: str) -> list[dict]:
+            return canada_discovery_challenger.build_candidates(
+                populations.prealignment_research, asof_arg,
+            )
+
+        board_shadow.register_challenger(
+            "CA", canada_discovery_challenger.DEFINITION,
+            discovery_fn=discovery_fn,
+        )
+    except Exception as exc:  # noqa: BLE001 — Lane B is zero-authority research
+        log.warning(
+            "CA discovery-challenger registration failed (%s) — native rank race, "
+            "published board, and render continue unchanged", exc,
+        )
+
+
 def _build_canonical_board(cand: list, as_of, align_map: dict, sig_verdict: dict,
                            profiles: dict, entry_sig: dict, risk_sig: dict,
                            eligible: int, disp_regime: dict | None,
@@ -901,10 +960,33 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
     # forward anticipation cone — hoist the engine + its gate ONCE (the cone is close-driven and the
     # S&P/TSX benchmark close is read once for the residual-alpha leg; both reads would otherwise repeat
     # per name). None-safe: if the engine is unavailable, the cone is simply skipped for every name.
+    #
+    # CA-NATIVE-INTEL Wave 9 disposition: SCREEN_SHADOW.  This inherited US
+    # calibration may shape display/profile context only; it is not
+    # MARKET_VALIDATED for Canada and must not bind the Canada board population,
+    # rank, or entry permission.
+    _ca_ant_profile_disposition = ca_native_intelligence.InheritedGateDisposition.RETIRE
+    _ca_ant_potential_disposition = ca_native_intelligence.InheritedGateDisposition.RETIRE
     try:
+        _ca_ant_profile_disposition = (
+            ca_native_intelligence.require_inherited_gate_disposition(
+                ca_native_intelligence.ANTICIPATION_PROFILE_CONTEXT_USE,
+                ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW,
+            )
+        )
+        _ca_ant_potential_disposition = (
+            ca_native_intelligence.require_inherited_gate_disposition(
+                ca_native_intelligence.ANTICIPATION_POTENTIAL_SCORE_USE,
+                ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW,
+            )
+        )
         from engine.anticipation import anticipate as _anticipate, load_gate as _load_gate
         _ant_gate = _load_gate("US")
-    except Exception:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001 — unknown/mismatched use retires fail-closed
+        log.warning(
+            "CA inherited US anticipation disabled (%s) — profile and potential "
+            "uses remain fail-closed", exc,
+        )
         _anticipate = None
         _ant_gate = None
     try:
@@ -999,7 +1081,11 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
         # composite), so the quality axis is simply absent — never read as neutral.
         # forward anticipation cone (close-only) — feeds the risk-shape entry tilt + favourable-cone
         # note in the shared engine; best-effort (skips quietly on thin history).
-        if _anticipate is not None:
+        if (
+            _anticipate is not None
+            and _ca_ant_profile_disposition
+            is ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW
+        ):
             try:
                 _ant = _anticipate(close.dropna(), bench=_tsx_close, asset_class="ca_equity",
                                    gate=_ant_gate)
@@ -1043,8 +1129,15 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
         try:
             rec.setdefault("ticker", ticker)
             _sel_z = ((prof.get("axes") or {}).get("selection") or {}).get("z")
+            _potential_rec = rec
+            if (
+                _ca_ant_potential_disposition
+                is not ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW
+                and rec.get("anticipation")
+            ):
+                _potential_rec = {**rec, "anticipation": None}
             rec["conviction"]["potential"] = name_score.potential_score(
-                rec, market="CA", edge_z=_sel_z,
+                _potential_rec, market="CA", edge_z=_sel_z,
                 regime_stress=float((prof.get("risk") or {}).get("macro_stress") or 0.0))
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("CA potential score for %s failed (%s)", ticker, e)
@@ -1225,6 +1318,16 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
                                        entry_sig, risk_sig, eligible, disp_regime,
                                        overlay)
         _write_canada_standouts(board, site)
+
+        # Register both zero-authority shadow races strictly AFTER the official
+        # artifact is serialized.  The helper isolates Lane A from Lane B failures.
+        _register_ca_shadow_challengers(
+            board=board,
+            candidates=cand,
+            align_map=align_map,
+            entry_signals=entry_sig,
+        )
+
         log.info("wrote canada_standouts.json (%d buy of %d eligible / %d universe)",
                  len(board["buy"]), eligible, len(cand))
     log.info("canada library: %d analyzed, %d limited (recent listings), %d skipped (empty/failed), %d setups",
