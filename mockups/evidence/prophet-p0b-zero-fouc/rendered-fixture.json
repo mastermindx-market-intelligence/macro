@@ -112,7 +112,7 @@
         {
           "path": "templates/_prophet_card.html.j2",
           "role": "jinja_template",
-          "sha256": "27b08e4f5a5c1aa0ad29108ed9ec6bfc2ce970b820fc46ab3a066c0ba3798e35"
+          "sha256": "6456238a83789e19c430d39bf150f26f80af20b08c5fb950007a133ae8fc05e5"
         },
         {
           "path": "templates/_risk_radar_card.css.j2",
@@ -461,7 +461,7 @@
         {
           "path": "templates/_prophet_card.html.j2",
           "role": "jinja_template",
-          "sha256": "27b08e4f5a5c1aa0ad29108ed9ec6bfc2ce970b820fc46ab3a066c0ba3798e35"
+          "sha256": "6456238a83789e19c430d39bf150f26f80af20b08c5fb950007a133ae8fc05e5"
         },
         {
           "path": "templates/_risk_radar_card.css.j2",

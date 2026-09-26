@@ -13797,6 +13797,9 @@ jobs:
       - "templates/_stock_decision.css.j2"
       - "templates/_track_record_dlg.html.j2"
       - "templates/_us_board_cards.html.j2"
+      # Packet 2 plan records are rendered by dashboard.html.j2 through this
+      # partial, so the curated import closure must own it explicitly.
+      - "templates/_us_prophet_plan_cards.html.j2"
       - "templates/canada.html.j2"
       - "templates/china.html.j2"
       - "templates/dashboard.html.j2"

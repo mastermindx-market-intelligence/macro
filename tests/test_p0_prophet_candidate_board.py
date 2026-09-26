@@ -543,7 +543,9 @@ def test_historical_plan_wall_does_not_borrow_candidate_date(as_of, first_resolv
     assert visible + locked == gate["total"] == 5
     assert visible == (2 if first_resolved else 3)
     assert f"first {visible} of 5 tracked plan rows" in text
-    assert len(soup.select("#us-life-grid a[data-ticker]")) == 3
+    # Historical plan rows are record-only <article>. Assert the shared card
+    # contract, not the candidate board's old actionable <a> root.
+    assert len(soup.select("#us-life-grid .pvcard[data-ticker]")) == 3
     assert not soup.select('#us-life-grid [data-ticker="PLAN3"], #us-life-grid [data-ticker="PLAN4"]')
 
 
