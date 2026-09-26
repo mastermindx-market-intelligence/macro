@@ -54,6 +54,8 @@ def test_deepen_single_exact_tree_fetch_when_healthy(
 
     def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
         calls.append(list(cmd))
+        if "--is-shallow-repository" in cmd:
+            return subprocess.CompletedProcess(cmd, 0, stdout="false\n", stderr="")
         return subprocess.CompletedProcess(cmd, 0)
 
     monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
@@ -62,19 +64,46 @@ def test_deepen_single_exact_tree_fetch_when_healthy(
         root=Path.cwd(),
         tested_tree_sha=TESTED_TREE_SHA,
     )
-    assert calls == [
-        [
-            "git",
-            "fetch",
-            "--no-recurse-submodules",
-            "--no-tags",
-            "--depth=2147483647",
-            "origin",
-            TESTED_TREE_SHA,
-        ]
+    assert len(calls) == 2
+    assert calls[0] == [
+        "git",
+        "fetch",
+        "--no-recurse-submodules",
+        "--no-tags",
+        "--depth=2147483647",
+        "origin",
+        TESTED_TREE_SHA,
     ]
+    assert calls[1][-2:] == ["rev-parse", "--is-shallow-repository"]
     assert "--tags" not in calls[0]
     assert "+refs/heads/*:refs/remotes/origin/*" not in calls[0]
+
+
+def test_exact_tree_success_that_remains_shallow_enters_legacy_fallback(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    calls: list[list[str]] = []
+
+    def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
+        calls.append(list(cmd))
+        if "--is-shallow-repository" in cmd:
+            return subprocess.CompletedProcess(cmd, 0, stdout="true\n", stderr="")
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
+    run_ci_pack._prepare_provided_actions(
+        _fetch_depth_zero_job(),
+        root=Path.cwd(),
+        tested_tree_sha=TESTED_TREE_SHA,
+    )
+    assert len(calls) == 3
+    assert calls[0][-1] == TESTED_TREE_SHA
+    assert calls[1][-2:] == ["rev-parse", "--is-shallow-repository"]
+    assert "+refs/heads/*:refs/remotes/origin/*" in calls[2]
+    out = capsys.readouterr().out
+    warning_lines = [line for line in out.splitlines() if "::warning" in line]
+    assert len(warning_lines) == 1
+    assert "exact tested-tree deepen remained shallow" in warning_lines[0]
 
 
 def test_exact_tree_failure_enters_legacy_all_branches_fallback(
