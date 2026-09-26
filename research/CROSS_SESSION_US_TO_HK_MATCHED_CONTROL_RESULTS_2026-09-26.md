@@ -91,6 +91,50 @@ Do not convert the correlation differences into a significance statistic. Severa
 share U.S. dates and HSI target gaps at different frozen clocks, so observations are not
 independent.
 
+
+## 4A. Parent-event collapse robustness check
+
+The row-level matched-control comparison above reuses some nearby U.S. control dates at different
+frozen clocks. That is valid for the declared same-clock control geometry, but the repeated dates mean
+the row-level percentage-point gap should not be read as 20 or 13 fully independent controls.
+
+A post-result robustness pass therefore collapsed the frozen controls back to their parent event:
+
+- each event keeps its binary event sign-agreement result;
+- each event's valid prior/next controls are averaged into one parent-level control-agreement rate;
+- parents with zero valid controls remain DATA_GAP and are excluded from the paired delta;
+- no dates, clocks, returns, or inclusion rules were changed.
+
+All parents with at least one valid matched control:
+- parent events: **11**
+- mean event agreement: **72.7%**
+- mean parent-control agreement: **54.5%**
+- mean paired difference: **+18.2 percentage points**
+- parent deltas: **4 positive / 4 zero / 3 negative**
+
+Clean-primary parents:
+- parent events: **7**
+- mean event agreement: **71.4%**
+- mean parent-control agreement: **42.9%**
+- mean paired difference: **+28.6 percentage points**
+- parent deltas: **3 positive / 2 zero / 2 negative**
+
+A fixed-seed parent-level bootstrap was run only as a descriptive fragility check, not as a
+confirmatory p-value or promotion test. Its 5th-95th percentile mean-delta interval crossed zero for
+both the all-parent and clean-primary slices.
+
+Interpretation:
+
+- collapsing reused control dates reduces the apparent row-level separation;
+- the clean-primary event-conditioned relationship still remains directionally stronger than its
+  own matched controls;
+- the development evidence is **not** strong enough to claim statistical separation or alpha;
+- the prospective protocol remains the only legitimate path to promotion.
+
+Do not replace the earlier row-level figures; they answer the declared row-level control question.
+This section adds the parent-level dependence correction that a future reviewer needs in order not to
+over-read those figures.
+
 ## 5. Missingness
 
 Four pre-frozen matched controls remained missing under the exact-clock law:
