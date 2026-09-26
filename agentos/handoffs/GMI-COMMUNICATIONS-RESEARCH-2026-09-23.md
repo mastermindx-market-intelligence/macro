@@ -5,222 +5,222 @@ model: sol
 ended_because: ci_handoff
 mission: >
   Deliver Communications sector intelligence under Sol, preserving frozen Phase18,
-  the A1 plan/proof and all sixty CRV requirements. Advance the fixed four-company
-  workflow through the existing shared GMI owners. Fable remains deferred;
-  Semiconductors is a shared dependency, not the Communications receiver.
+  the current A1 plan/proof and all sixty CRV requirements. Advance the fixed four-company
+  workflow through existing GMI owners. Fable is deferred; Semiconductors is a shared
+  dependency, not the Communications receiver.
 state_before: >
-  Separate product PR 8039 had the 97-test numerical core at implementation
-  e21827788ec8244353c8d6811490f8fbdba9ab25 and published checkpoint
-  44716436f65fc71a713a3e79f67fe9ef63c233fd. Accounting bridges and claim composition
-  remained unfinished. Research PR 7794 stayed frozen at eb0e4693862edb25a32d7f22013a301e87c97f57.
+  Product PR8039 at 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212 had the preserved
+  245-test numerical/accounting core. Task4 claim composition was not implemented.
+  Research PR7794 remained frozen at eb0e4693862edb25a32d7f22013a301e87c97f57.
 changed:
-  - path: engine/market_ontology/communications_measures.py
+  - path: engine/market_ontology/communications_research.py
     what: >
-      Add a distinct pure accounting bridge under the existing exact comparison-rule
-      receipt; preserve the three prior APIs. Retain source units/periods, signed
-      component changes, residuals, explicit partition coverage and declared dependence.
-  - path: tests/test_communications_measures.py
+      Implement Task4A internal four-company claim projection over explicitly selected
+      in-memory observations and existing comparison/accounting rules. Preserve levels,
+      rebuild supported bilingual claims, withhold stale results, group alternative
+      accounting views, and retain original-guidance metadata. NOT a native/shared adapter.
+  - path: tests/test_communications_research.py
     what: >
-      Extend the preserved 97 tests to 245: eight documentary AB bridges, correction
-      and alternative-view cases, 100 hostile input perturbations, scope/period/unit
-      refusal, malformed recipes, dependency clocks and caller-context immutability.
+      Add witnessed synthetic claim tests covering four fixed slots, missing/corrected
+      inputs, precise support, original guidance, accounting discrepancies, limits,
+      malformed inputs, deterministic output and no investment authority.
+  - path: .github/ci/legacy-jobs.yml
+    what: >
+      Extend the existing single Communications invocation in ontology-explorer/code
+      to run both focused suites. No new job, workflow, runner or queue.
   - path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
-    what: >
-      Update the same cumulative record on 8039 with implementation, test, review,
-      source-compatibility and exact next-action evidence. Research remains untouched.
+    what: Update the same cumulative product-carrier checkpoint with tested effects and exact remaining gates.
 prs: [7794, 8039]
 verified:
-  - claim: The incumbent product carrier was clean and exactly matched origin before this continuation.
-    command: git status --short --branch; git rev-parse HEAD; git ls-remote origin on the exact product/research/shared refs.
+  - claim: The incumbent product branch was clean and exactly matched origin before the new changes.
+    command: git status --short; git branch --show-current; git rev-parse HEAD; exact git ls-remote refs.
     result: >
-      Local and origin product 44716436f65fc71a713a3e79f67fe9ef63c233fd;
-      research eb0e4693862edb25a32d7f22013a301e87c97f57 and shared
-      6cd958e92b259f7221690547e7076f4a0de4ed33 unchanged. No replacement carrier.
-  - claim: New main movement does not change the scoped module, test, CI step or repository instructions.
+      Product local/origin 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212; research
+      eb0e4693862edb25a32d7f22013a301e87c97f57 and shared #7870
+      6cd958e92b259f7221690547e7076f4a0de4ed33 unchanged. No new carrier or source takeover.
+  - claim: Previous-head hosted CI succeeded; it does not qualify the new claim code.
+    command: gh api repos/mastermindx-market-intelligence/macro/actions/runs/36235778178; bounded selected metadata.
+    result: Head 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212, attempt1, completed/success.
+  - claim: Main movement was reconciled only against material paths and the exact test-registration hunk.
     command: >
-      git fetch origin main; git diff --stat 810cdf78428f79b6e60850d2787fafc429ba54e0 origin/main
-      -- engine/market_ontology/communications_measures.py tests/test_communications_measures.py
-      .github/ci/legacy-jobs.yml AGENTS.md CLAUDE.md
+      git fetch origin main; git diff --stat be0800ca83d26b63334587998dcac24b2bafd909 origin/main
+      on repository instructions, Communications paths and the CI manifest; compare parsed ontology-explorer steps.
     result: >
-      Empty scoped diff at main be0800ca83d26b63334587998dcac24b2bafd909.
-      No merge/rebase/reset of the product branch.
-  - claim: The accounting tests have witnessed behavioral RED and GREEN evidence.
+      Main c9de1223b3e3 had only CI-manifest movement among those paths. The existing
+      ontology-explorer job matches the candidate baseline after excluding our Communications
+      invocation; its gate is code. No merge/rebase/reset or source reconstruction.
+  - claim: The new projection has behavioral RED and GREEN proof while the 245-test core stays intact.
     command: >
-      python3 -m pytest tests/test_communications_measures.py -q --tb=short
-      --basetemp=.superpowers/sdd/2026-09-23-communications-advertising-vertical-implementation/pytest-accounting-red-strict
+      python3 -m pytest tests/test_communications_research.py tests/test_communications_measures.py
+      -q --tb=short --basetemp=<this plan's isolated claim-red-strict/claim-green scratch>
     result: >
-      33 new failures against importable pending scaffolding, 97 previous tests passed,
-      exit1. After implementation, 130 passed, exit0. No import failure counted as RED.
-  - claim: Author review found and repaired an actual cross-period dependency defect.
+      38 failed / 245 passed against importable projection scaffolding, exit1;
+      after implementation, 283 passed, exit0. No import/setup error counted as feature proof.
+  - claim: Review gaps were reproduced and repaired before final verification.
+    command: The same focused suites with claim-review, claim-verified and claim-vintage-red scratch/logs.
+    result: >
+      9 failed / 292 passed exposed missing original-guidance fields, missing bilingual
+      company caveats and an unbounded binding sequence. Repairs produced 301 passes.
+      A further targeted run had 2 failed / 57 passed: non-original outlooks occupied
+      original-guidance fields. The exact vintage guard now withholds those fields.
+  - claim: The final two-suite candidate passes all focused tests.
     command: >
-      The same focused pytest command with isolated pytest-accounting-review scratch,
-      then pytest-accounting-verified after exact dependency-period validation.
+      python3 -m pytest tests/test_communications_measures.py tests/test_communications_research.py
+      -q --tb=short --basetemp=.superpowers/sdd/2026-09-23-communications-advertising-vertical-implementation/pytest-claim-final
+    result: 304 passed in 1.77s, exit0, no warnings/skips in that run.
+  - claim: Tested claim code and CI registration are committed with immutable file identities.
+    command: Expected-branch/head check; exact-path git add; git diff --cached --check; git commit; git hash-object.
     result: >
-      Review run 1 failed, 244 passed: a current derived component accepted a prior-period
-      target. Fixed at the bound dependency validator. Final 245 passed in 1.25s,
-      exit0, no warnings/skips in that run.
-  - claim: The expanded accounting implementation is committed with exact file identities.
-    command: git commit; git rev-parse HEAD; git hash-object on source, tests and the unchanged CI manifest.
-    result: >
-      Commit 3dba2befa14270416ed34cf221bcfc7317a807db;
-      module c8cffd56b5ee102e00fc0499a1c6e150f7db4a9c;
-      tests ef7223ce3e273c6aaebc719dff54c856c9c09063;
-      CI manifest dd911a2546e2de94d37355e40205b926bd829049.
-  - claim: The original candidate's hosted CI was observed without rerun or cancellation.
-    command: gh api actions/runs/36233422663 and its bounded jobs summary in the macro repository.
-    result: >
-      Run is for 44716436f65fc71a713a3e79f67fe9ef63c233fd, attempt1, still in progress.
-      Contract-delta, planner and eleven packs succeeded; ci-pack-4 was running.
-      This is not all-green proof or proof of the later accounting commit.
-  - claim: Record and existing CI-manifest validation pass without altering the original APIs.
+      Implementation ff3163ef5cfbc6fadb1edea280d33b0d3140d073;
+      module fb7e52959465bc7cb8c2ef1bf1a64c681dddc1e4;
+      tests 012e451acc24bdb0ba1ede542e85c8ded8f2186f;
+      CI manifest 789baa3ee37ac1d2350b394f8a7b420d0575e12f. Local tree clean after code commit.
+  - claim: Earlier arithmetic/accounting code and tests remain byte-identical, and both suites have one code-gated invocation.
     command: >
-      python3 scripts/agentos.py validate --quiet; python3 scripts/run_ci_pack.py --workflow
-      .github/ci/legacy-jobs.yml --gate code --validate-only; AST comparison against 44716436f65fc71a713a3e79f67fe9ef63c233fd.
+      git diff 0cfc2cac72e9aba83d8d21ab8c0d3de062d14212 on the two earlier core files;
+      AST/import and syntax inspection; parse manifest suite references;
+      python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate code --validate-only.
     result: >
-      Agent OS 1285 records, 0 errors, 505 warnings, exit0; manifest validation exit0.
-      Original compare_period, compare_guidance and cash_bridge function ASTs are unchanged.
-      Standard-library-only imports; one unchanged ontology-explorer/code suite invocation.
+      Empty earlier-core diff. New module imports only dataclasses/types and the existing
+      domain core plus future annotations. Both suites occur exactly once in ontology-explorer/code;
+      manifest validation exit0. No shared native composer function was falsely registered.
 unverified:
-  - claim: Full A1 user workflow or all sixty CRV requirements are accepted.
-    what_would_verify: >
-      Accepted native financial/source/identity/private mapping, shared registered composer/API/client,
-      complete claim-scoped output and real source-to-company/watchlist/browser proof.
-  - claim: Comparison-rule, coverage-slot or dependency-reference strings prove owner admission.
-    what_would_verify: Exact native source/review/partition/lineage receipts through the incumbent owners.
-  - claim: Hosted checks and production proof for the latest enclosing head are accepted.
-    what_would_verify: Exact-head CI and separately authorized shared/security/release/browser receipts.
-  - claim: Independent review has been performed.
-    what_would_verify: A genuine independent return through an approved available review carrier.
+  - claim: Full Task4 closed response, shared composer/evidence selector, or all sixty CRV obligations are accepted.
+    what_would_verify: Actual accepted query/bundle/schema/generation/evidence-selection mapping and full required cases.
+  - claim: In-memory slot, metric-role or reference strings prove source, issuer, review, rights or native financial admission.
+    what_would_verify: Exact incumbent-owner mapping, source clocks, immutable native input, review and rights receipts.
+  - claim: Current publication head has successful hosted CI, independent review or production acceptance.
+    what_would_verify: Read the current enclosing head's exact CI and publication receipt; obtain remaining release/browser proof.
 unresolved:
-  - Accounting and numerical cores are fixture-tested, not an integrated or production-proven A1 view.
-  - Task4 fixed-slot claim composition, closed response and source-to-client mapping remain to be implemented.
-  - Actual shared signed/exact/source-only representation and financial/private/identity input remain gated.
-  - No global pytest pass, native admission, merge, deployment or current-source completeness is claimed.
+  - Internal claim projection is fixture-tested; native input translation and shared wire delivery remain UNBOUND.
+  - Closed A1 response, evidence selection, generation coherence, private negative access, real company/watchlist and bilingual browser proof remain owed.
+  - Author self-review only under the retained session-scoped inaccessible-Fabric exception; no global Fabric outage is claimed.
+  - No whole-repository pytest, native source admission, merge, deployment or full user-workflow acceptance is claimed.
 next_actions:
   - >
-    Continue on the same 8039 branch; verify the enclosing published head and consume only its
-    CI. Do not repeat the completed original product-PR creation or use the frozen research branch.
+    Resume the same PR8039 carrier at its enclosing published head. Read its exact publication
+    receipt/current CI before acting; never recreate this PR or replay completed source writes.
   - >
-    Implement Task4's fixed four-company claim composition from the existing plan/proof,
-    reusing the accounting/numerical core. Group alternative bridges by outcome_refs, never
-    sum them; preserve levels while removing unsupported growth/interpretation sentences.
+    Resolve the exact accepted native financial/source-only input mapping and shared domain
+    response/evidence contract for Task4B. Then bind the tested claim projection behind the
+    actual compose_communications_research(query, owner_bundle) and evidence-selector seams.
   - >
-    Keep fixture-only composition separate from actual accepted shared query/bundle translation.
-    Tasks5-8 remain gated on source, security, shared-owner and production proof.
+    Keep original source/review/issuer mapping, current rights, generation and private publisher
+    under their incumbent owners. Do not infer native readiness from the internal dataclasses.
+  - Complete closed response/cardinality, remaining claim scenarios and actual source-to-client proof under the original plan.
 do_not_redo:
-  - Preserve Phase18, plan revision2, proof companion revision2, frozen index revision4 and CRV-01 through CRV-60.
-  - Preserve research PR7794 at eb0e4693862edb25a32d7f22013a301e87c97f57; no research restart or plan reconsolidation.
-  - Preserve the tested 97-case baseline and 245-case accounting candidate; the unpreserved historical 59 tests receive no credit.
-  - Do not allocate a new product branch/worktree, dispatch Fable or make Semiconductors the Communications receiver.
-  - Do not clone shared graph/store/identity/rights/publication/API/client or turn synthetic inputs into native current evidence.
-  - No repeated filesystem recovery scans, unchanged tool probes or retries of historical denied actions.
+  - Preserve Phase18, A1 plan revision2, worked-output revision2, frozen index revision4 and CRV-01 through CRV-60.
+  - Keep research PR7794 at eb0e4693862edb25a32d7f22013a301e87c97f57 unchanged; no research restart or plan reconsolidation.
+  - Preserve initial numerical implementation e21827788ec8244353c8d6811490f8fbdba9ab25 and accounting 3dba2befa14270416ed34cf221bcfc7317a807db.
+  - Preserve the witnessed 304-test candidate; the historical unpreserved 59-test claim is unrelated and still earns no credit.
+  - Do not allocate another product branch/worktree, dispatch Fable or assign Communications to Semiconductors.
+  - No duplicate graph/store/identity/rights/generation/publication/API/client; no alternate denied-call retry or recovery crawl.
 danger_areas:
-  - Author self-review is not independent; the session-scoped review exception waives no source/security/shared-owner/release gate.
-  - Keep both PRs Draft/HOLD with no auto-merge, merge-on-green, ready transition or deployment.
-  - Reconcile any ambiguous publication on this exact product carrier before retry; no force push or failover.
-  - Current outer Bootstrap adaptive-mode law controls; no hidden duration/model/quota or mode-based permission is inferred.
+  - Fixed public roster/local metric roles are presentation contracts, not issuer/security or native financial identities.
+  - Missing observation is not authoritative absence; a strict-read outage must not be translated into an empty ready response.
+  - All authority flags are false; headline coverage is not readiness, source completeness, confidence or a trade ranking.
+  - Keep both PRs DRAFT/HOLD. No Ready, merge, auto-merge, merge-on-green or deployment without separate release gates.
+  - Reconcile any ambiguous publication on this exact carrier before retry; no force push or failover.
 ---
 
-# Communications — accounting comparison continuation
+# Communications — four-company claim projection frontier
 
 **FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION**
 **MISSION_COMPLETE: false**
-**Numerical + accounting core: BUILT_NOT_PROVEN** (synthetic fixture execution).
-**Full A1 research journey: not implemented/accepted.**
+**Numerical/accounting + internal claim projection: BUILT_NOT_PROVEN** (synthetic execution).
+**Full A1 user journey: not delivered or accepted.**
 
-The scoped arithmetic-to-accounting unit is complete as a tested candidate. The next unit crosses
-into claim composition and the source/private/shared response boundary; its fixtures may advance,
-but no native interface may be guessed from these in-memory adapter types. This is the bounded
-continuation point, not a source lease transfer, worker START, autonomous wake or mission completion.
-The enclosing Git commit and its immutable remote readback are the checkpoint identity; the product
-PR carries the final publication receipt. Never create a second PR from a stale publication next_action.
+## Exact ownership and preserved source
 
-## Authority, carrier and immutable input frontier
+Sol retains the current Chairman assignment. Product operation:
+`gmi-communications-a1-measures-20260926-sol-001`; parent:
+`gmi-communications-research-20260923-sol-001`; existing `WS:GMI-THEME-GRAPH`.
+Same admitted branch `claude/communications-a1-measures-20260924` and worktree
+`/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/communications-a1-measures-20260924`.
+Acquired base `810cdf78428f79b6e60850d2787fafc429ba54e0` remains unchanged.
+Admission #7794 comment `5844966108`; previous accounting publication #8039 comment `5845491024`.
+The enclosing commit/readback, not a self-referential hash, identifies this checkpoint.
 
-Sol retains the Chairman's current CONTINUE assignment. Parent operation:
-`gmi-communications-research-20260923-sol-001`; product operation:
-`gmi-communications-a1-measures-20260926-sol-001`; existing `WS:GMI-THEME-GRAPH`.
-Source admission: #7794 comment `5844966108`; original publication receipt: #8039 comment `5845156475`.
-Branch: `claude/communications-a1-measures-20260924`.
-Workspace: `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/communications-a1-measures-20260924`.
-Acquired base: `810cdf78428f79b6e60850d2787fafc429ba54e0`.
-Initial numerical implementation: `e21827788ec8244353c8d6811490f8fbdba9ab25`.
-Accounting implementation: `3dba2befa14270416ed34cf221bcfc7317a807db`.
+Protected Mastermind `763ec8f920177fdf48b18df1b8e37b61ab482ef0` is unchanged.
+INDEX blob `94d1af402598894372858793a5b1931019c5fa77` was rechecked; same-pin loaded
+ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE and CLOSEOUT remain applicable.
+Skillpack1.0.1/bootstrap1 is compatible. Outer Bootstrap adaptive-mode law controls over
+older duration/mode prescriptions. No hidden mode/quota/deadline telemetry is inferred.
+Direct scope rationale: LOWER_TOTAL_OVERHEAD / CRITICAL_PATH_SHORTCUT; no worker displaced.
+Fable remains deferred. No new approved Fabric review-submission action or recovery was observed;
+retain the already-established session-scoped exception, not a global outage or an independent verdict.
 
-Protected procedure pin: Mastermind `763ec8f920177fdf48b18df1b8e37b61ab482ef0`.
-INDEX was read completely. Same-pin ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE and
-CLOSEOUT reads match the previously fully loaded governing blobs. Compatible Skillpack1.0.1/bootstrap1.
-The outer current Bootstrap supersedes older duration/mode prescriptions. Direct work rationale:
-CRITICAL_PATH_SHORTCUT / LOWER_TOTAL_OVERHEAD on the existing isolated carrier, with no worker displaced.
-No new review tool-schema recovery was observed; retain the established session-scoped inaccessible
-Fabric review exception. Fable was not dispatched; no global Fabric outage is asserted.
+Frozen research #7794 remains `eb0e4693862edb25a32d7f22013a301e87c97f57`:
+Phase18 `e29aaf035a1e56654429fc0cb89577c1963bd917`; existing A1 plan blob
+`d631b736d146e753dc48af9fa8cedd53513e51a5`; worked-output companion blob
+`43adb322706fa8a7cac7c5c6ab1a5939aa44e68a`; accounting study blob
+`ede6b8e6c031065874c90dd5febfd953395a1584`; frozen index revision4
+`dcaaac2506489c4e412f8b3a7028af02b55b4587`. No source research was reopened or rewritten.
+Shared #7870 remains `6cd958e92b259f7221690547e7076f4a0de4ed33`; reuse the existing
+source reconciliation #7794 comment `5844847454`, not a new shared-system audit.
 
-Frozen research input remains #7794 `eb0e4693862edb25a32d7f22013a301e87c97f57`:
-- Phase18 baseline `e29aaf035a1e56654429fc0cb89577c1963bd917`.
-- A1 plan `docs/superpowers/plans/2026-09-23-communications-advertising-vertical-implementation.md`,
-  blob `d631b736d146e753dc48af9fa8cedd53513e51a5`.
-- Proof companion `research/communications/COMMUNICATIONS_FIRST_VERTICAL_PROOF_CASES_2026-09-23.md`,
-  blob `43adb322706fa8a7cac7c5c6ab1a5939aa44e68a`.
-- Accounting examples `research/communications/COMMUNICATIONS_A1_ACCOUNTING_AND_INTERPRETATION_2026-09-24.md`,
-  blob `ede6b8e6c031065874c90dd5febfd953395a1584`.
-- Frozen index revision4 `dcaaac2506489c4e412f8b3a7028af02b55b4587`,
-  blob `d40e2cda3a7f80d7f9cb9377292e60cb125c7c73`.
-All sixty original obligations and the broader sector roadmap remain. Test totals are not CRV acceptance.
+## Task4A ruling and implemented behavior
 
-Shared #7870 remains `6cd958e92b259f7221690547e7076f4a0de4ed33`. Reuse #7794 comment
-`5844847454`: registered loader exists and unmapped-source/dependent-prose withholding changed in
-source; no admitted Communications private bundle, signed/exact source-only profile or matching
-A1 browser contract is established. No shared source custody was taken.
+Task4's native query/bundle and closed wire schema are not qualified. Implement only its
+independent internal claim-projection seam now, using the already-loaded plan/proof requirements.
+`compose_four_company_claims` is explicitly NOT the shared
+`compose_communications_research(query, owner_bundle)` callback. It must not be registered
+as that callback or used as a new private-reader, source store, rights gate or generation owner.
+Cost if the future accepted native mapping differs: adapt this internal boundary; no public
+wire contract, source identity or production database has been invented to migrate.
 
-## Rulings and review results
+The four public slots never shrink. Reported values remain when a prior/rule is missing;
+only supported trend sentences/headlines are rebuilt. Corrected references invalidate old
+comparison and guidance rules. Bilingual caveats and next research questions remain distinct
+from economic findings and investment attractiveness. Original guidance retains bounds,
+units, period, original vintage and publication date; non-original outlooks are withheld.
 
-**Task3 ruling:** AB01–AB08 include profit and revenue, not only cash. Add `accounting_bridge`
-in the SAME domain module rather than label all equations CASH_BRIDGE. Its in-memory AccountingRule
-wraps the existing immutable ComparisonRule/review receipt; the additive `accounting` operation does
-not change the three earlier APIs or any shared/native schema. Cost if future native mapping needs
-a different adapter: revise this domain mapping, not the source/identity/financial owners.
+Accounting views group by existing output references, never by summing partitions or minting
+confidence. The synthetic Magnite correction remains one group with residuals 0 and 1000;
+the newly reported total stays visible while the unrebound growth headline disappears.
+The tests model rights withholding as omission by the owner, NOT as actual authentication or
+source-rights proof. Native slot/metric/population mapping and immutable snapshot/rights
+validation remain prerequisites; passing arbitrary labelled objects does not satisfy them.
 
-The helper retains explicit component coverage and owner-declared dependency roles. Coverage slots
-are not a new ontology; their strings do not prove admission. The owner must validate both declarations.
-A1 currently requires one explicit population per accounting partition and same-period dependency inputs;
-no implicit cross-population containment, cross-period derivation, gross/net bridge or FX conversion.
-Positive cost changes are multiplied by reviewed minus signs once. Calculations use the current output's
-source scale; source Measure objects retain their own scales and reporting periods.
+This bounded projection-to-native-contract boundary justifies checkpointed continuation.
+The next action is exact owner-contract qualification and Task4B binding, not another numerical
+rewrite, generic research phase or fixture count presented as a released product.
 
-A residual is returned without inventing a balancing component. Two Magnite decompositions retain the
-same existing outcome_refs, not two economic improvements. A corrected total of 190595 leaves the
-unchanged channel reconstruction at 189595 with residual1000, while the cost identity remains marked
-TARGET_DEPENDENT even when it balances. No equality is represented as independent corroboration.
-Unknown source precision remains documentary arithmetic; no derived underlying confidence/support is invented.
+## Review and verification receipts
 
-Author review reproduced a current-component/prior-total dependency mismatch that the first validator
-accepted. The repair checks exact bound reporting periods before accepting a dependency. The failing
-case passes with the complete suite; this is author review, not independent review. No other approval
-or release gate was waived. Original research arithmetic was never imported as production truth.
+All commands use the existing plan's gitignored `.superpowers/sdd/` scratch. Full logs remain
+untracked; no unrelated host logs or private bodies are published. The module/test SHA-256 values are
+`b184f35353bd5807c61000e3066c5cc26c4fce467a34fe15af667e414ad69bb2` and
+`009964cf72555ee3de0e90335224d787f5d94bc330c992b8943bf329edbf7639`.
 
-## Compact execution evidence
-
-Command: `python3 -m pytest tests/test_communications_measures.py -q --tb=short --basetemp=<owned plan scratch>`.
-Scratch prefix: `.superpowers/sdd/2026-09-23-communications-advertising-vertical-implementation/`.
-
-| Stage | Actual result | Log SHA-256 |
+| Stage | Observed result | Log SHA-256 |
 |---|---|---|
-| Strict accounting scaffold | 33 failed / 97 passed, exit1 | `cd107d7801603a7524c35967b3efcc1d2b1f7de3c70cc82059edccd7ccf0bbf2` |
-| Accounting implementation | 130 passed, exit0 | `65f79c5bde76a63d1faf52eeac94949759d286ee93b2063ce54654f22a438a47` |
-| Author adversarial review | 1 failed / 244 passed, exit1 | `9f7740ad0495fd35ccd25a2adcc7861675993416112e0cc70250756ca84ec46d` |
-| Final exact candidate | 245 passed, exit0, no warnings/skips | `37564bf642af18660da5c09c8cc17a97f76ba4885f596fdebf5bb5a6a6893ecb` |
+| Claim scaffolding | 38 failed / 245 passed | c85ed2b914755c55fd3932c92f0c39e308b62080651bc6d33f0d4a504782a34a |
+| Initial implementation | 283 passed | 4771a1d1e31be5c614d8725763675c7a56d602294e09ad541101a138703c426d |
+| Metadata/caveat/bounds review | 9 failed / 292 passed | a82c3ce841b4c03ff6b52b040c4f689a2b2a08318dd770655878fdc7af5cad11 |
+| Review repairs | 301 passed | e74d23e4d33e8bccbc479708564c3025f3500a1a12f3d1bca7b7890ef0cea4c7 |
+| Non-original outlook regression | 2 failed / 57 passed in claim suite | c8f83f317a5d96799df74b7da5aafda301eca27509c0b64600383d0d23512851 |
+| Final combined verification | 304 passed, no warnings/skips | 14d0e7256e9dd58d9b4eb23b315a89d4a77f448f54b1a52ac61689502dfddce0 |
+| Code-manifest validation | exit0 | 4c026f8d9e0a8ea4b246db8f9552c536ac055b082a18f926afddf781304f3ea8 |
 
-The 100 sign/omission/scale/duplicate cases perturb INPUTS; they are not a code-mutation score.
-Module SHA-256: `8eff356dde93de1a7424d540b8e5c53ab5e746f33230bde97de59bb99352bff8`.
-Test SHA-256: `27d282ea65c57c9d9e5354ed007e9adde9a3c105d668c06e7223041f966ab0e4`.
-The existing ontology-explorer/code invocation is unchanged and still names this entire suite once.
-Earlier 97-test RED/GREEN and publication evidence remain at checkpoint
-`44716436f65fc71a713a3e79f67fe9ef63c233fd`; do not repeat or discard it.
+One initial equality-only test also passed against empty scaffolding. It was strengthened to
+require an actual headline before the strict RED run; no vacuous equality is credited as proof.
+Author review is not independent review and does not waive security/source/shared-owner gates.
 
-No whole-repository pytest, broad filesystem scan, native admission, paid publication, browser proof,
-watchlist write, merge or deployment occurred. The original pilot-context failure was
-`inactive_base_context`, not permission to bypass CI. Current exact-head results remain a release gate.
+One read-only frozen-spec/proof extraction command was platform-blocked this turn. It was not
+retried, rephrased or rerouted. Work continued only from requirements already loaded into this
+conversation and the independently permitted existing domain source. The denial is action-scoped,
+not proof that Studio, GitHub, tests or writes are generally unavailable. Historical denied host
+identity and compound preflight actions remain unperformed. No modifying effect is unresolved at
+this checkpoint; later ambiguous push/readback must be reconciled on this same carrier.
 
-Next: Task4 fixed four-company claim composition and honest partial/corrected output on #8039,
-then accepted native/shared delivery integration. Pro remains usable on observed actions; no switch
-or invisible capability/permission is inferred from the selected mode.
+Both PRs stay DRAFT/HOLD. Read current publication and exact-head CI from the product receipt;
+old successful CI is reusable only at its original head. No asynchronous Web execution is claimed.
+Next mode: Pro for native/shared-contract judgment while the observed required actions remain usable.
+
+## Final checkpoint validation
+
+`python3 scripts/agentos.py validate --quiet`: agentos: 1285 records (75 workstreams, 366 decisions, 327 discoveries, 517 handoffs) — 0 error(s), 505 warning(s); exit0.
+Exact main revision inspected for the disjoint-hunk check: `a240da85dde8eacf2efb27f3416e19176b91b787`.
+The first checkpoint write was rejected before application because explicit rewrite mode was missing.
+The corrected same-file request supplied `mode=rewrite` and succeeded; this was a request-shape repair, not a platform-denial retry.
