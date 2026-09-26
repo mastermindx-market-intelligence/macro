@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-25",
+  "date": "2026-09-26",
   "regime": "mixed / no clear trend",
   "breadth": 0.15,
   "favored": [
@@ -9,17 +9,17 @@
     "equity_intl"
   ],
   "correlation": "diversified",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
       "verdict": "diversified",
-      "absorption_pctile": 0.25,
+      "absorption_pctile": 0.23,
       "n_markets": 6,
-      "absorption_ratio": 0.339,
-      "mean_abs_corr": 0.215,
+      "absorption_ratio": 0.337,
+      "mean_abs_corr": 0.214,
       "dominant_cluster": [
         "US",
         "Commodities",
@@ -130,7 +130,7 @@
         0.392,
         0.361,
         0.352,
-        0.339
+        0.337
       ],
       "spark_asof": "2026-09-25"
     },
@@ -176,14 +176,14 @@
       {
         "pair": "copper_gold",
         "ratio": 0.002,
-        "trend": "elevated",
-        "pctile": 81.0
+        "trend": "mid",
+        "pctile": 76.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 66.489,
+        "ratio": 67.261,
         "trend": "mid",
-        "pctile": 26.0
+        "pctile": 29.0
       },
       {
         "pair": "oil_gold",
@@ -193,7 +193,7 @@
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.178,
+        "ratio": 0.179,
         "trend": "mid",
         "pctile": 59.0
       }
@@ -204,7 +204,7 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 1.07,
+          "value": 1.1,
           "unit": "%",
           "state": "positive carry"
         },
@@ -226,8 +226,8 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.265,
-          "t": 4.378,
+          "r": 0.268,
+          "t": 4.406,
           "q": 0.0
         },
         {
@@ -279,14 +279,14 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-09-23",
+      "asof": "2026-09-24",
       "state": "calm",
-      "score": 27.0,
-      "spread_bp": -1.0
+      "score": 33.0,
+      "spread_bp": 0.0
     },
     "confirm": {
       "verdict": "diverge",
-      "agree_pct": 100,
+      "agree_pct": 50,
       "n_blind_flags": 1,
       "flags_top": [
         {
@@ -327,7 +327,7 @@
       }
     },
     "shadow": {
-      "pressure_pctile": 0.25,
+      "pressure_pctile": 0.23,
       "incumbent_state": "caution",
       "shadow_state": "caution",
       "escalated": false

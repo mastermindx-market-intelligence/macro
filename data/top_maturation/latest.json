@@ -8,14 +8,14 @@
     "model": null,
     "probabilities": false
   },
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "data_last_day": "2026-09-24",
   "tape_lag_sessions": 1,
   "universe_n": 2618,
   "null_state": false,
   "macro_backdrop": {
     "froth_quadrant": "benign",
-    "stage3_count": 294
+    "stage3_count": 295
   },
   "tiers": [
     {
@@ -51019,7 +51019,7 @@
             "ticker": "CNK",
             "name": "Cinemark Holdings, Inc.",
             "name_zh": "喜满客影城",
-            "href": null,
+            "href": "/stocks/CNK.html",
             "spark": [
               32.37,
               33.44,
@@ -64875,7 +64875,7 @@
     }
   ],
   "_vintage": {
-    "generated_utc": "2026-09-25T18:55:14Z",
+    "generated_utc": "2026-09-26T07:25:50Z",
     "source": "scripts/build_top_maturation.py",
     "store_vintage": {
       "store": "massive_stock_day",
@@ -64927,7 +64927,7 @@
     "n_segments": 8183,
     "n_sessions": 1312,
     "trailing_sessions": 760,
-    "scan_seconds": 147.15,
+    "scan_seconds": 74.62,
     "readable": true,
     "n_extended": 215,
     "per_state": {
@@ -65083,7 +65083,7 @@
     "library_rows": 33598,
     "thresholds_present": true,
     "ext_variant_stamp": null,
-    "tier_seconds": 18.2,
+    "tier_seconds": 17.98,
     "n_themes": 12,
     "n_us_stock_metadata": 2859,
     "n_screened_post_intersection": 2618,
@@ -65245,7 +65245,7 @@
         "library_rows": 33598,
         "thresholds_present": true,
         "ext_variant_stamp": null,
-        "tier_seconds": 18.2,
+        "tier_seconds": 17.98,
         "n_themes": 12
       },
       "r63": {
@@ -65380,7 +65380,7 @@
         "library_rows": 29801,
         "thresholds_present": true,
         "ext_variant_stamp": "r63",
-        "tier_seconds": 17.3
+        "tier_seconds": 16.36
       },
       "atrz": {
         "readable": true,
@@ -66105,9 +66105,9 @@
         "library_rows": 123988,
         "thresholds_present": true,
         "ext_variant_stamp": "atrz",
-        "tier_seconds": 33.71
+        "tier_seconds": 31.68
       }
     },
-    "total_seconds": 240.28
+    "total_seconds": 160.92
   }
 }

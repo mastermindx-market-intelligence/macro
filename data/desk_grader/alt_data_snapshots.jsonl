@@ -4236,3 +4236,9 @@
 {"date":"2026-09-25","ticker":"NFLX","rank":null,"score":20,"lean":1,"broken":true}
 {"date":"2026-09-25","ticker":"RDNT","rank":null,"score":18,"lean":1,"broken":true}
 {"date":"2026-09-25","ticker":"META","rank":7,"score":46,"lean":1,"broken":false}
+{"date":"2026-09-25","ticker":"AMD","rank":11,"score":41,"lean":1,"broken":false}
+{"date":"2026-09-25","ticker":"ACN","rank":12,"score":40,"lean":1,"broken":false}
+{"date":"2026-09-25","ticker":"CLSK","rank":19,"score":33,"lean":1,"broken":false}
+{"date":"2026-09-25","ticker":"NOW","rank":24,"score":31,"lean":1,"broken":false}
+{"date":"2026-09-25","ticker":"MLM","rank":null,"score":14,"lean":1,"broken":true}
+{"date":"2026-09-25","ticker":"PINS","rank":null,"score":13,"lean":1,"broken":true}

@@ -399,8 +399,8 @@
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "inflation_system-US-905e48751110060b"
+    "note": "Same reference period as the predecessor print; no source value changed (no-change republication).",
+    "predecessor_generation_id": "inflation_system-US-a924a9adb4e52efe"
   },
   "drivers": {
     "balance_sheet": [
@@ -521,11 +521,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-25T17:09:19Z",
+    "built_at": "2026-09-26T05:44:13Z",
     "calculation_as_of": "2026-09-25",
-    "code_version": "70579fa0fa229f61d995492f9d74ea27d51f17a3",
-    "content_sha256": "a924a9adb4e52efe0effcf987b839facc3d50be34e4e4db5a538f5027d571234",
-    "generation_id": "inflation_system-US-a924a9adb4e52efe",
+    "code_version": "28245bc0a290ea9aaa5984992261bb24cb5512b0",
+    "content_sha256": "49bf30bfcb497128f7de25d0791ff9570023bf8bf280c43f4d83c588278dd084",
+    "generation_id": "inflation_system-US-49bf30bfcb497128",
     "producer": "engine.market_os.macro_workspaces.inflation",
     "rendered_at": null
   },
@@ -968,7 +968,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "release_radar_champion_projection",
-        "calculation_as_of": "2026-09-25T09:07:10Z",
+        "calculation_as_of": "2026-09-25T21:26:14Z",
         "collected_at": null,
         "coverage": null,
         "definition_id": "next_release_forecast.core.release_radar_projection.point",
