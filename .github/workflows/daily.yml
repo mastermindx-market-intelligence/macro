@@ -150,11 +150,18 @@ jobs:
     # 2026-08-05: 185 nearly bit a FOURTH time. When the M1 host went down (ENOSPC) the
     # macstudio label failed over to a COLD spare (mac-builder-5: fresh venv, no warm
     # GHA/R2 caches) and the collectors step took 172m — a 13-minute margin under the
-    # cap, on a run that had already lost three nights. The fleet can always fail over
-    # to a cold runner, so the cap must clear the COLD pace, not the warm one: 240m is
-    # ~1.4x the observed 172m. The job still exits as soon as its steps finish; a
-    # larger cap costs nothing on a healthy night and buys the commit on a slow one.
-    timeout-minutes: 240
+    # cap, on a run that had already lost three nights.
+    # 2026-09-25: 240 bit a FIFTH time. Authoritative run 36078806272 on mac-builder-5
+    # spent 230m in `run collectors`, committed the market-data checkpoint successfully,
+    # then hit the hard job cap while the alarm-bounded push was still running. The W2
+    # ledger had already warned us: 2026-09-23/24 were 226.7m/226.3m (94.5%/94.3% of
+    # cap) and 2026-09-17 reached 242.5m (101.1%). A GitHub job-level timeout does not
+    # execute a later `if: cancelled()` salvage step, so the cap must clear the whole
+    # collector + local checkpoint + bounded-push path. 300m gives ~22% headroom over
+    # the observed 245m wall-clock kill and matches the existing engine cap. This is
+    # containment while collector creep receives structural follow-up, not permission
+    # for unbounded nightly growth. The job still exits as soon as its work finishes.
+    timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
       # ── CAPITAL-STRUCTURE HANDOFF CONTRACT (2026-08-06 job split) ──────────
@@ -724,12 +731,14 @@ jobs:
       # COMMIT/PUSH SPLIT (2026-07-17, run 29542087837 postmortem): the local commit above
       # is atomic and integrity-complete (fully-staged tree, asia paths reset out, empty-
       # guarded) — everything below is pure network publish. It lives in a SEPARATE
-      # always()-guarded step so a job-timeout cancel during the push can never again
-      # discard an already-committed night of collections (a hung git push ate 57m and
-      # the 150m cap killed the step mid-publish; the commit existed only on the runner).
-      # Every git network op is alarm-bounded (macOS runners have no GNU timeout;
-      # perl alarm survives execve — SIGALRM kills a hung op, the loop retries).
-      - name: push market data (survives a job-cap cancel; alarm-bounded git ops)
+      # always()-guarded step so ordinary earlier-step failures/cancellation do not hide
+      # an already-committed night of collections. A GitHub JOB-LEVEL timeout is different:
+      # it hard-stops the running step and does not schedule later steps (reproduced by
+      # run 36078806272 on 2026-09-25), which is why the job cap above must cover this
+      # bounded network-publish window. Every git network op is alarm-bounded (macOS
+      # runners have no GNU timeout; perl alarm survives execve — SIGALRM kills a hung
+      # op, the loop retries).
+      - name: push market data (commit already local; alarm-bounded git ops)
         id: pushdata
         if: always() && steps.commitdata.outputs.committed == 'true'
         run: |
@@ -786,8 +795,10 @@ jobs:
           done
           push_lost
           echo "::warning::could not push collected market data after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
-      # Last-ditch publish if the job was CANCELLED mid-push (cap timeout): one bounded
-      # attempt inside the post-cancel grace window. The commit already exists locally;
+      # Last-ditch publish for a CANCELLED mid-push path when GitHub still schedules
+      # later steps: one bounded attempt inside that cancellation grace window. This is
+      # deliberately NOT a job-timeout rescue — a hard job-level timeout skips this step,
+      # as run 36078806272 proved on 2026-09-25. The commit already exists locally;
       # losing it costs the whole night's collections (2026-07-16 incident).
       - name: salvage push (job cancelled mid-publish — one bounded attempt)
         if: cancelled() && steps.commitdata.outputs.committed == 'true'
@@ -951,11 +962,13 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.publish_r2 --dirs massive_stock_day || echo "::warning::massive_stock_day R2 publish failed (non-fatal — R2 copy goes stale; the engine job's strict audit_r2 anchor goes red within 26h)"
-      # W2: per-band timings row + >85%-of-cap tripwire. always() so a job-cap cancel
-      # still records the night in the grace window (elapsed ≈ cap → the warning fires).
+      # W2: per-band timings row + >85%-of-cap tripwire. always() records failed or
+      # cancelled paths only when GitHub still schedules later steps. A hard job-level
+      # timeout skips this finish step, so the cap above must keep the normal path inside
+      # the measurable window rather than relying on post-timeout telemetry.
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 240
+        run: bash scripts/ci/nightly_timings_finish.sh 300
 
   # ── CAPITAL-STRUCTURE LANE (its own job since 2026-08-06) ─────────────────
   # WHY ITS OWN JOB. This is an all-or-nothing SEC publication protocol. Its
