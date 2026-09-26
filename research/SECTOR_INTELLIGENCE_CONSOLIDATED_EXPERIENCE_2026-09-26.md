@@ -162,6 +162,47 @@ joins or historical identity. Do not create an overlap database or copy membersh
 persistence plane. Because the current Finviz-local taxonomy remains rights/use gated for a new
 Terminal display, this overlap lens is currently **private/native design + internal research**
 until the same existing display gate is accepted.
+#### Deterministic overlap projection contract
+
+Once the existing source-local display gate permits this data in Terminal, compute overlap as
+a **pure presentation projection** from the already-bound `themeMap` payload. Do not add a
+second source, store or API:
+
+```text
+for each selected family F:
+  supplied_tiles(F) = tiles where tile.sector == F
+  readable_tickers(F) = exact non-empty tile.members[].t values across supplied_tiles(F)
+  family_set(F) = set(readable_tickers(F))
+
+pair_shared(A,B) = family_set(A) ∩ family_set(B)
+pair_left_only(A,B) = family_set(A) - family_set(B)
+pair_right_only(A,B) = family_set(B) - family_set(A)
+selected_union = union(family_set(F) for each selected F)
+family_frequency(t) = count of selected family sets containing exact ticker t
+```
+
+Key laws:
+
+- dedupe a ticker across multiple subthemes **within one family** before family-level overlap;
+- exact source ticker strings only; no client-side alias/corporate-action repair;
+- preserve source family order and selected-family order for display; sorting a list is
+  presentation only and never changes the sets;
+- if a requested family is absent, its tiles are malformed, or required member arrays are not
+  readable, mark the overlap result partial/unavailable instead of treating that family as the
+  empty set;
+- if individual member identities are unreadable, preserve supplied/readable counts and do not
+  let the shorter readable set masquerade as complete;
+- zero shared names is a valid zero only when both family populations are proven readable;
+- pair overlap percentages always name their denominator (`shared / unique-A`, `shared /
+  unique-B`); Jaccard may be disclosed as a technical metric but is not the customer headline;
+- repeated source ticker membership does not authorize canonical issuer, portfolio, exposure,
+  risk or trade conclusions.
+
+Required unit cases for the future presenter: same ticker repeated in two subthemes of one family
+counts once; the same ticker in two selected families counts once in `pair_shared`; exact aliases
+remain distinct; missing family/member arrays produce partial rather than zero; selection-order
+changes do not change counts; the current six-family dated fixture reproduces 330 family→company
+edges, 201 unique source tickers,78 names in2+ families and36 in3+.
 
 **Saved view.** Do not make a decorative `Saved views` control look operational. A real
 Sector view is persisted only after an existing canonical saved-state owner is deliberately
@@ -378,7 +419,7 @@ The richer 2026-09-26 Finviz design study adds useful current-snapshot and struc
 evidence without changing source authority:
 
 - The recorded owner themes payload contains **40 source-local theme families, 268
-  subthemes and 924 memberships**. A focused six-family canvas is a prepared comparison,
+  subthemes and 924 unique source tickers**. A focused six-family canvas is a prepared comparison,
   not the full universe; the product must state the scope and provide a family picker/
   search so all 40 remain reachable.
 - In that payload, `n_members=924` is the unique source-ticker population while the same
