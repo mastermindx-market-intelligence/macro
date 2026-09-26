@@ -1,35 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-25T22:19:36.178198+00:00",
+  "as_of": "2026-09-26T17:09:57.817627+00:00",
   "posts_seen": 15,
-  "seen_total": 232,
-  "evaluated": 4,
+  "seen_total": 234,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-25-president-trump-first-lady-conclude-historic-china-state-visit",
-      "importance": 5,
+      "id": "wh-2026-09-26-presidential-message-on-national-hunting-and-fishing-day",
+      "importance": 18,
       "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-25-congressional-bills-h-r-3657-h-r-7250-s-550-s-603-s-759-and-s-790-signed-into-la",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-25-gold-star-mothers-and-familys-day-2026",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-25-presidential-public-service-announcements-are-nothing-new",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
+      "degraded_reason": "served_by:codex"
     }
   ]
 }

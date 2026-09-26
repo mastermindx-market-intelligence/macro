@@ -8,7 +8,7 @@
   "scope_en": "Republic of Korea national economy; KOSPI is market context.",
   "scope_zh": "大韩民国全国经济；KOSPI仅作市场背景。",
   "asof": "2026-09-23",
-  "built": "2026-09-25 20:50 UTC",
+  "built": "2026-09-26 09:21 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -536,7 +536,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2025-04",
-      "age_days": 542,
+      "age_days": 543,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -544,7 +544,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 177,
+      "age_days": 178,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -552,7 +552,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-07",
-      "age_days": 86,
+      "age_days": 87,
       "state": "stale",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -560,7 +560,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 55,
+      "age_days": 56,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"

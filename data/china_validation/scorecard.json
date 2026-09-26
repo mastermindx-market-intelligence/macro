@@ -1,7 +1,7 @@
 {
   "schema": "china_validation.v1",
   "is_context_only": true,
-  "generated_utc": "2026-09-25T13:06:47.650462+00:00",
+  "generated_utc": "2026-09-26T13:09:23.796043+00:00",
   "fdr_alpha": 0.1,
   "horizons": [
     5,
@@ -15,49 +15,49 @@
       "status": "validated",
       "tier": "confirmer",
       "proven": false,
-      "n_obs": 25,
+      "n_obs": 24,
       "n_weeks": 6,
       "n_indep": 2,
       "by_horizon": {
         "5": {
-          "mean_ic": 0.2308,
-          "ic_ir": 0.802,
-          "t_hac": 2.939,
-          "p_hac": 0.0033,
-          "hit": 0.84,
-          "n": 25,
+          "mean_ic": 0.2325,
+          "ic_ir": 0.775,
+          "t_hac": 2.809,
+          "p_hac": 0.005,
+          "hit": 0.833,
+          "n": 24,
           "n_weeks": 8,
           "n_indep": 7,
           "sampling_step_td": 1.0,
           "hac_lags": 5,
           "overlap_ratio": 5.0,
           "incremental": {
-            "surviving_frac": 0.57,
-            "ic_delta": -0.0993
+            "surviving_frac": 0.549,
+            "ic_delta": -0.1048
           }
         },
         "10": {
-          "mean_ic": 0.2907,
-          "ic_ir": 1.292,
-          "t_hac": 3.587,
-          "p_hac": 0.0003,
-          "hit": 0.875,
-          "n": 24,
+          "mean_ic": 0.3,
+          "ic_ir": 1.35,
+          "t_hac": 3.768,
+          "p_hac": 0.0002,
+          "hit": 0.913,
+          "n": 23,
           "n_weeks": 8,
           "n_indep": 5,
           "sampling_step_td": 1.0,
           "hac_lags": 10,
           "overlap_ratio": 10.0,
           "incremental": {
-            "surviving_frac": 0.554,
-            "ic_delta": -0.1297
+            "surviving_frac": 0.519,
+            "ic_delta": -0.1444
           }
         },
         "21": {
-          "mean_ic": 0.2135,
-          "ic_ir": 0.827,
-          "t_hac": 2.415,
-          "p_hac": 0.0157,
+          "mean_ic": 0.2021,
+          "ic_ir": 0.724,
+          "t_hac": 2.077,
+          "p_hac": 0.0378,
           "hit": 0.714,
           "n": 14,
           "n_weeks": 6,
@@ -66,8 +66,8 @@
           "hac_lags": 21,
           "overlap_ratio": 21.0,
           "incremental": {
-            "surviving_frac": 0.229,
-            "ic_delta": -0.1647
+            "surviving_frac": 0.292,
+            "ic_delta": -0.143
           }
         },
         "63": {
@@ -86,11 +86,11 @@
       },
       "sign_expected": 1,
       "sign_ok": true,
-      "t_hac": 2.415,
-      "mean_ic": 0.2135,
+      "t_hac": 2.077,
+      "mean_ic": 0.2021,
       "is_context_only": true,
       "n_gate": "6/40 distinct weeks, 2/8 non-overlapping windows (from 14 overlapping rows)",
-      "q_fdr": 0.0942
+      "q_fdr": 0.2265
     },
     "fundflow": {
       "family": "fundflow",

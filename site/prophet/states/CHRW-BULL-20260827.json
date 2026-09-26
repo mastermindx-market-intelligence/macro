@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CHRW-BULL-20260827",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.8,
@@ -14,23 +14,23 @@
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.356,
+    "dist_to_stop_r": -0.003,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 64.4,
-    "p1": -0.9041,
-    "p2": -0.4521,
+    "horizon_pct_used": 66.7,
+    "p1": -0.6685,
+    "p2": -0.3342,
     "p3": null,
-    "move_r": -1.356,
+    "move_r": -1.003,
     "mfe_r": 1.637,
     "mae_r": -1.479
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: between_t1_t2 \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": "2026-09-15",
   "_first_t2_ts": null,
-  "days_elapsed": 29,
-  "tau": 0.6444
+  "days_elapsed": 30,
+  "tau": 0.6667
 }

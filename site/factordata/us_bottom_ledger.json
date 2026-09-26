@@ -1,12 +1,12 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-09-25",
+ "as_of": "2026-09-26",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-09-25",
-  "n_new_flags": 63,
-  "n_newly_graded": 51,
+  "as_of": "2026-09-26",
+  "n_new_flags": 0,
+  "n_newly_graded": 12,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
   "n_rows": 2726,
@@ -17,29 +17,29 @@
   "unreadable_flag_dates": []
  },
  "maturity_state": "maturing",
- "n_accruing": 2675,
- "n_matured": 51,
+ "n_accruing": 2663,
+ "n_matured": 63,
  "first_maturity_est": null,
  "accrual_by_source": {
   "board_buy": 2383,
   "prophet_plan": 343
  },
  "summary": {
-  "pin5": 0.2157,
-  "held_pct": 0.5294,
-  "prox_med": 0.0895
+  "pin5": 0.2063,
+  "held_pct": 0.5238,
+  "prox_med": 0.1006
  },
  "cohorts": [
   {
    "source": "board_buy",
    "lane": "unknown",
-   "n": 51,
-   "prox_med": 0.08946938489986334,
-   "pin5": 0.21568627450980393,
-   "held_pct": 0.5294117647058824,
-   "broke_pct": 0.19607843137254902,
-   "mfe60_med": 0.08958331914017026,
-   "fwd60_med": -0.04705980367851981,
+   "n": 63,
+   "prox_med": 0.10063338945077316,
+   "pin5": 0.20634920634920634,
+   "held_pct": 0.5238095238095238,
+   "broke_pct": 0.15873015873015872,
+   "mfe60_med": 0.10067771671754411,
+   "fwd60_med": -0.03833324926091719,
    "undercut_med": 0.0012157172409883454
   }
  ],

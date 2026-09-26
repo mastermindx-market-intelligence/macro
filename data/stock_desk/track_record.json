@@ -1,9 +1,9 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-25",
+  "as_of": "2026-09-26",
   "scored_total": 187,
-  "open": 97,
-  "unscored_neutral": 297,
+  "open": 99,
+  "unscored_neutral": 301,
   "overall": {
     "n": 187,
     "hits": 121,
@@ -64,7 +64,7 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "187 leans scored, hit-rate 0.647 (directional accuracy 0.433). Chance alone would land a hit-rate near 0.7512 (directional accuracy near 0.5075) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "187 leans scored, hit-rate 0.647 (directional accuracy 0.433). Chance alone would land a hit-rate near 0.7513 (directional accuracy near 0.5072) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
     {
       "id": "2026-08-27-VIRT-20260828103731-4",

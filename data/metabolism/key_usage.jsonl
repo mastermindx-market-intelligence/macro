@@ -2811,3 +2811,12 @@
 {"schema":"metabolism.key_usage.v1","ts":"2026-09-25T20:56:20+00:00","key_id":"claude_code_oauth_6","status":429,"headers":{}}
 {"schema":"metabolism.key_usage.v1","ts":"2026-09-25T20:56:22+00:00","key_id":"claude_code_oauth_6","status":429,"headers":{}}
 {"schema":"metabolism.key_usage.v1","ts":"2026-09-25T21:13:37+00:00","key_id":"deepseek_api_key","status":200,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:06+00:00","key_id":"claude_code_oauth_3","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:07+00:00","key_id":"claude_code_oauth_3","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:08+00:00","key_id":"claude_code_oauth_3","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:08+00:00","key_id":"claude_code_oauth_5","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:09+00:00","key_id":"claude_code_oauth_5","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:10+00:00","key_id":"claude_code_oauth_5","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:11+00:00","key_id":"claude_code_oauth_6","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:12+00:00","key_id":"claude_code_oauth_6","status":429,"headers":{}}
+{"schema":"metabolism.key_usage.v1","ts":"2026-09-26T09:27:13+00:00","key_id":"claude_code_oauth_6","status":429,"headers":{}}

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PPC-BULL-20260604",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 34.9,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Deep Giveback \u2014 Reassess",
   "components": {
-    "validity": 16.2,
+    "validity": 42.9,
     "progress": 32.8,
-    "pace": 0.3,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.26,
+    "dist_to_stop_r": 0.534,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 86.7,
-    "p1": -0.4935,
-    "p2": -0.2467,
+    "horizon_pct_used": 88.9,
+    "p1": -0.3105,
+    "p2": -0.1552,
     "p3": null,
-    "move_r": -0.74,
+    "move_r": -0.466,
     "mfe_r": 1.794,
     "mae_r": -0.74
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-19",
   "_first_t1_ts": "2026-08-21",
   "_first_t2_ts": null,
-  "days_elapsed": 39,
-  "tau": 0.8667
+  "days_elapsed": 40,
+  "tau": 0.8889
 }

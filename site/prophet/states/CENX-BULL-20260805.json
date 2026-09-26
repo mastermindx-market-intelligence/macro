@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CENX-BULL-20260805",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.158,
+    "dist_to_stop_r": -0.16,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
-    "p1": -0.7719,
-    "p2": -0.3859,
+    "horizon_pct_used": 104.4,
+    "p1": -0.7733,
+    "p2": -0.3866,
     "p3": null,
-    "move_r": -1.158,
+    "move_r": -1.16,
     "mfe_r": 0.0,
-    "mae_r": -1.158
+    "mae_r": -1.16
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.0681152318170462e-06,
-  "_mae": -13.464999084472659,
+  "_mae": -13.490000610351565,
   "_max_p1": 6.122758565875874e-08,
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 47,
+  "tau": 1.0444
 }

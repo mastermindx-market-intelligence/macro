@@ -1,7 +1,7 @@
 {
  "schema": "etf_board_track.v1",
- "generated_at": "2026-09-25T21:00:40Z",
- "as_of": "2026-09-25",
+ "generated_at": "2026-09-26T09:35:08Z",
+ "as_of": "2026-09-28",
  "first_board": "2026-08-14",
  "benchmark": "SPY",
  "horizons": [
@@ -9,33 +9,33 @@
   21,
   63
  ],
- "n_boards_logged": 25,
- "n_snapshot_rows": 502,
- "n_graded_total": 460,
+ "n_boards_logged": 26,
+ "n_snapshot_rows": 522,
+ "n_graded_total": 462,
  "collecting": false,
  "per_horizon": {
   "h5": {
    "horizon": 5,
-   "n_rows": 502,
-   "n_graded": 353,
-   "n_pending": 149,
-   "n_immature": 101,
+   "n_rows": 522,
+   "n_graded": 355,
+   "n_pending": 167,
+   "n_immature": 119,
    "n_unpriceable": 48,
    "n_boards": 20,
    "n_names": 30,
-   "n_vs_bench": 337,
-   "n_ahead": 173,
-   "median_excess_bench": 0.003175,
-   "mean_excess_bench": 0.005678,
+   "n_vs_bench": 355,
+   "n_ahead": 181,
+   "median_excess_bench": 0.002144,
+   "mean_excess_bench": 0.005741,
    "median_ret": 0.004861,
    "state": "open"
   },
   "h21": {
    "horizon": 21,
-   "n_rows": 502,
+   "n_rows": 522,
    "n_graded": 107,
-   "n_pending": 395,
-   "n_immature": 347,
+   "n_pending": 415,
+   "n_immature": 367,
    "n_unpriceable": 48,
    "n_boards": 6,
    "n_names": 27,
@@ -48,10 +48,10 @@
   },
   "h63": {
    "horizon": 63,
-   "n_rows": 502,
+   "n_rows": 522,
    "n_graded": 0,
-   "n_pending": 502,
-   "n_immature": 454,
+   "n_pending": 522,
+   "n_immature": 474,
    "n_unpriceable": 48,
    "n_boards": 0,
    "n_names": 0,
@@ -72,7 +72,7 @@
    "n_accum": 6,
    "net_conviction_pp": 2.9742,
    "ret": 0.01573,
-   "excess_bench": null
+   "excess_bench": 0.00305
   },
   {
    "as_of": "2026-09-17",
@@ -82,7 +82,7 @@
    "n_accum": 6,
    "net_conviction_pp": -4.7864,
    "ret": 0.01003,
-   "excess_bench": null
+   "excess_bench": -0.00265
   },
   {
    "as_of": "2026-09-17",
@@ -92,7 +92,7 @@
    "n_accum": 5,
    "net_conviction_pp": 10.5923,
    "ret": -0.04126,
-   "excess_bench": null
+   "excess_bench": -0.05394
   },
   {
    "as_of": "2026-09-17",
@@ -102,7 +102,7 @@
    "n_accum": 5,
    "net_conviction_pp": 9.3638,
    "ret": 0.07547,
-   "excess_bench": null
+   "excess_bench": 0.06278
   },
   {
    "as_of": "2026-09-17",
@@ -112,7 +112,7 @@
    "n_accum": 5,
    "net_conviction_pp": 3.5455,
    "ret": -0.02093,
-   "excess_bench": null
+   "excess_bench": -0.03361
   },
   {
    "as_of": "2026-09-17",
@@ -122,7 +122,7 @@
    "n_accum": 4,
    "net_conviction_pp": 3.9484,
    "ret": -0.03356,
-   "excess_bench": null
+   "excess_bench": -0.04624
   },
   {
    "as_of": "2026-09-17",
@@ -132,7 +132,7 @@
    "n_accum": 4,
    "net_conviction_pp": 3.6612,
    "ret": 0.00472,
-   "excess_bench": null
+   "excess_bench": -0.00796
   },
   {
    "as_of": "2026-09-17",
@@ -142,7 +142,17 @@
    "n_accum": 4,
    "net_conviction_pp": 3.3962,
    "ret": 0.13097,
-   "excess_bench": null
+   "excess_bench": 0.11829
+  },
+  {
+   "as_of": "2026-09-17",
+   "ticker": "TSM",
+   "rank": 9,
+   "horizon": 5,
+   "n_accum": 4,
+   "net_conviction_pp": -0.6268,
+   "ret": 0.03667,
+   "excess_bench": 0.02399
   },
   {
    "as_of": "2026-09-17",
@@ -152,7 +162,7 @@
    "n_accum": 3,
    "net_conviction_pp": 4.2971,
    "ret": 0.0771,
-   "excess_bench": null
+   "excess_bench": 0.06442
   },
   {
    "as_of": "2026-09-17",
@@ -162,7 +172,17 @@
    "n_accum": 3,
    "net_conviction_pp": 3.7757,
    "ret": -0.03663,
-   "excess_bench": null
+   "excess_bench": -0.04931
+  },
+  {
+   "as_of": "2026-09-17",
+   "ticker": "BABA",
+   "rank": 12,
+   "horizon": 5,
+   "n_accum": 3,
+   "net_conviction_pp": 2.7023,
+   "ret": -0.03091,
+   "excess_bench": -0.04359
   },
   {
    "as_of": "2026-09-17",
@@ -172,7 +192,7 @@
    "n_accum": 3,
    "net_conviction_pp": 0.6766,
    "ret": -0.0644,
-   "excess_bench": null
+   "excess_bench": -0.07708
   },
   {
    "as_of": "2026-09-17",
@@ -182,7 +202,7 @@
    "n_accum": 3,
    "net_conviction_pp": 0.2297,
    "ret": -0.01502,
-   "excess_bench": null
+   "excess_bench": -0.0277
   },
   {
    "as_of": "2026-09-17",
@@ -192,7 +212,7 @@
    "n_accum": 3,
    "net_conviction_pp": -2.343,
    "ret": 0.06158,
-   "excess_bench": null
+   "excess_bench": 0.0489
   },
   {
    "as_of": "2026-09-17",
@@ -202,7 +222,7 @@
    "n_accum": 2,
    "net_conviction_pp": 7.6119,
    "ret": 0.09667,
-   "excess_bench": null
+   "excess_bench": 0.08399
   },
   {
    "as_of": "2026-09-17",
@@ -212,7 +232,7 @@
    "n_accum": 2,
    "net_conviction_pp": 5.8113,
    "ret": 0.10527,
-   "excess_bench": null
+   "excess_bench": 0.09259
   },
   {
    "as_of": "2026-09-17",
@@ -222,7 +242,7 @@
    "n_accum": 2,
    "net_conviction_pp": 3.3435,
    "ret": -0.01843,
-   "excess_bench": null
+   "excess_bench": -0.03111
   },
   {
    "as_of": "2026-09-16",
@@ -1243,26 +1263,6 @@
    "net_conviction_pp": 0.8369,
    "ret": -0.01947,
    "excess_bench": -0.00852
-  },
-  {
-   "as_of": "2026-09-08",
-   "ticker": "BWXT",
-   "rank": 16,
-   "horizon": 5,
-   "n_accum": 3,
-   "net_conviction_pp": 0.698,
-   "ret": -0.07051,
-   "excess_bench": -0.05956
-  },
-  {
-   "as_of": "2026-09-08",
-   "ticker": "AVGO",
-   "rank": 17,
-   "horizon": 5,
-   "n_accum": 3,
-   "net_conviction_pp": 0.1544,
-   "ret": -0.06825,
-   "excess_bench": -0.0573
   }
  ],
  "source_ledger": "data/etf_board_ledger/"

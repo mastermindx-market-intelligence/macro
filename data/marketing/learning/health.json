@@ -66,9 +66,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 4,
-          "n_recent": 2,
-          "reason": "recent n=2, baseline n=4 — need 5 of each",
+          "n_baseline": 6,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=6 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -224,9 +224,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 3,
-          "n_recent": 6,
-          "reason": "recent n=6, baseline n=3 — need 5 of each",
+          "n_baseline": 9,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=9 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -372,7 +372,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-09-25T21:49:16Z",
+  "as_of": "2026-09-26T10:48:06Z",
   "halted": [],
   "metrics": [
     "approval_rate",

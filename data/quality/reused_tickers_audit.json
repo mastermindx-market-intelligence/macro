@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-25",
+ "asof": "2026-09-26",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1767d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1768d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -259,7 +259,7 @@
     {
      "name": "DOMO",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-09-24) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-09-25) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "DOUG",
@@ -669,7 +669,7 @@
     {
      "name": "TBPH",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-09-24) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-09-25) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "TCMD",
@@ -766,7 +766,7 @@
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 60435
+  "ledger_rows": 60455
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
@@ -785,8 +785,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-09-24",
-     "days_past_death": 1767,
+     "store_tip": "2026-09-25",
+     "days_past_death": 1768,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -1031,8 +1031,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-09-24",
-     "days_past_death": 1224,
+     "store_tip": "2026-09-25",
+     "days_past_death": 1225,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
@@ -1707,8 +1707,8 @@
     {
      "ticker": "JYNT",
      "registry_last": "2023-03-03",
-     "store_tip": "2026-09-24",
-     "days_past_death": 1301,
+     "store_tip": "2026-09-25",
+     "days_past_death": 1302,
      "overlap": {
       "n_overlap": 722,
       "ret_corr_full": 1.0,
@@ -2558,7 +2558,7 @@
     },
     {
      "ticker": "DOMO",
-     "store_tip": "2026-09-24",
+     "store_tip": "2026-09-25",
      "acked": false
     },
     {
@@ -2578,7 +2578,7 @@
     },
     {
      "ticker": "TBPH",
-     "store_tip": "2026-09-24",
+     "store_tip": "2026-09-25",
      "acked": false
     }
    ]
