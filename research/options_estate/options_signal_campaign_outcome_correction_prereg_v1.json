@@ -1,0 +1,213 @@
+{
+  "schema": "options.campaign_outcome_correction_prereg/v1",
+  "policy_id": "sep03_mixed_generation_outcome_quarantine/v1",
+  "policy_version": 1,
+  "status": "preregistered_inactive_no_history_mutation",
+  "registered_on": "2026-09-19",
+  "operation": "oa-campaign-outcome-correction-prereg-20260919-sol-001",
+  "parent_operation": "options-alpha-product-integration-20260917-sol-001",
+  "source_pin": "4e7761e42435622ad8ba181ba617e2a4bae6f015",
+  "incident": {
+    "publication_commit": "55d267539a7a25b3b941cb7af0d6eb3be98f642c",
+    "publication_subject": "data: asia collection 2026-09-03",
+    "publication_changed_path_count": 2034,
+    "parent_commit": "dec799d09abd53e6fae0656f919e13082b419305",
+    "last_lawful_campaign_checkpoint_commit": "0b467285660be0834ecf3d96a33655b2b19a0848",
+    "incident_checkpoint_id": "ocp_e3255025e9e8d98b72c3e9ec",
+    "incident_computed_at": "2026-09-03T20:37:25.569588Z"
+  },
+  "physical_identity": {
+    "lawful_campaigns_git_blob": "7a4a752be85918ec9c6345d5cdb4bbb86e3d701c",
+    "lawful_outcomes_git_blob": "4693ea464344add6719ec4d5460ab1a46f5eaa77",
+    "lawful_checkpoint_git_blob": "785415ab2c5bd737d19fda94085768daada22d7f",
+    "incident_campaigns_git_blob": "c581121767ca51bf20a8917d1a5a394f9db701d9",
+    "incident_outcomes_git_blob": "a67be30ab30255e62fa01d22f11f8e65417a160d",
+    "incident_checkpoint_git_blob": "c697a71d2d2d958301897a2135af98d97d140aa7"
+  },
+  "lawful_prefix": {
+    "campaigns": {
+      "records": 6526,
+      "prefix_sha256": "13d4a80b16ea543716ed90e75fedb9532bdf27d5fb61d8b466bb91911b6741b2"
+    },
+    "outcomes": {
+      "records": 24578,
+      "prefix_sha256": "183c5f5bfc3a5f394c463b527ed2588314e21b9e5a3288fab881f64cd68db75e"
+    },
+    "source_receipts": {
+      "episodes": {
+        "records": 6902,
+        "prefix_sha256": "c5d8883f8dbb6fee027bdaa44c19c741887c8b7e458908903de3dfb02e723cdc"
+      },
+      "h60_outcomes": {
+        "records": 5709,
+        "prefix_sha256": "5deff9ade046da8665b1c2bb9b4172aa28f56fcfbe7dd2a32ea1e377f33b6165"
+      },
+      "session_outcomes": {
+        "records": 20364,
+        "prefix_sha256": "d9ae3badf3c51b064ffcece773d5102eee585828b84dd2a5baf515865fbb10df"
+      }
+    }
+  },
+  "incident_generation": {
+    "campaigns": {
+      "records": 8385,
+      "prefix_sha256": "0c242957703d4a3a0031f0bf7322195c6d41f665391380e30626aea31bf95514",
+      "disposition": "valid_campaign_revisions_do_not_quarantine"
+    },
+    "outcomes": {
+      "records": 28423,
+      "prefix_sha256": "bfde356d4e54265164840e46f06e391afbed3c35449cda4786013eb95f432160"
+    },
+    "source_claims": {
+      "episodes": {
+        "records": 8872,
+        "prefix_sha256": "577173f25929afeb245e9a432d69fb7d8e204ccd4d4028ad6273eca3addacab5"
+      },
+      "h60_outcomes": {
+        "records": 6525,
+        "prefix_sha256": "129b56d4c457dbc2789a33e901367f84735d461a8f67790c6661bc2189ccb96c"
+      },
+      "session_outcomes": {
+        "records": 23771,
+        "prefix_sha256": "6b95148d169de919bfb9cfa5e11bcb4fc842e8bc4e9fce0584cae827aa3c604e"
+      }
+    }
+  },
+  "quarantine": {
+    "applies_to": "data/options_signal_campaign/outcomes.jsonl",
+    "start_row": 24579,
+    "end_row": 28423,
+    "record_count": 3845,
+    "contiguous_suffix_of_incident_generation": true,
+    "computed_at_exact": "2026-09-03T20:37:25.569588Z",
+    "invalid_by_horizon": {
+      "h60": 748,
+      "eod": 756,
+      "1d": 740,
+      "3d": 882,
+      "5d": 719
+    },
+    "distinct_campaign_revision_identities": 2716,
+    "reconstructable_with_same_claimed_cutoff": 1746,
+    "impossible_with_same_claimed_cutoff": 2099,
+    "impossible_session_split": {
+      "1d": 740,
+      "3d": 603,
+      "eod": 756
+    },
+    "evidence_disposition": "quarantined_invalid_historical_outcome",
+    "training_eligible": false,
+    "calibration_eligible": false,
+    "candidate_evidence_eligible": false,
+    "promotion_eligible": false,
+    "option_pnl_authority": false
+  },
+  "correction_law": {
+    "retain_original_raw_rows": true,
+    "delete_or_truncate_original_rows": false,
+    "rewrite_original_rows": false,
+    "restamp_expected_hashes": false,
+    "backfill_original_historical_keys": false,
+    "reinterpret_original_computed_at": false,
+    "mutate_campaign_revisions": false,
+    "create_replacement_ledger": false,
+    "create_replacement_campaign_identity": false,
+    "raw_physical_history_remains_audit_visible": true,
+    "quarantine_exact_semantic_keys_as_occupied": true,
+    "later_valid_rows_must_append_after_incident_generation": true,
+    "later_valid_rows_must_pass_normal_source_receipt_validation": true,
+    "quarantined_keys_may_not_be_reissued_as_if_original_history_were_valid": true,
+    "correction_must_be_owner_native_versioned_and_receipted": true
+  },
+  "effective_view_after_activation": {
+    "campaigns": "validate_all_campaign_revisions_normally",
+    "outcomes_before_quarantine": "validate_normally_and_admit",
+    "quarantined_outcomes": "retain_raw_but_exclude_from_effective_outcome_and_calibration_views",
+    "outcomes_after_quarantine": "validate_normally_and_admit_if_key_is_not_quarantined_or_duplicate",
+    "raw_count_and_effective_count": "report_separately",
+    "missing_or_unavailable": "never_convert_to_loss_win_or_zero",
+    "old_checkpoint": "preserve_as_incident_evidence_not_current_authority",
+    "current_checkpoint": "owner_native_new_checkpoint_or_activation_receipt_must_bind_correction_policy_and_physical_prefix"
+  },
+  "activation_preconditions": [
+    "macro_7265_durability_and_campaign_runtime_protected",
+    "macro_7263_shared_publisher_recovery_protected_and_real_publication_loop_proven",
+    "macro_7193_broad_writer_exclusion_protected_and_natural_non_sweep_proven",
+    "campaign_correction_reader_implementation_reviewed_on_existing_owner",
+    "incident_and_lawful_prefix_identities_match_with_append_only_extension_allowed",
+    "normal_nightly_post_correction_effective_view_and_publication_proven"
+  ],
+  "implementation_constraints": {
+    "source_owner": "existing_options_signal_campaign_owner",
+    "implementation_may_start_before_7265_closes": false,
+    "manifest_or_policy_is_data_control_not_a_new_ledger": true,
+    "row_range_special_case_in_engine_code": false,
+    "incident_identity_must_come_from_reviewed_manifest_or_policy": true,
+    "persistent_digest_database": false,
+    "longer_timeout_as_primary_fix": false,
+    "weaker_integrity_checks": false,
+    "current_whole_file_git_blob_equality_required": false,
+    "action_time_validation_uses_prefix_identity_not_prereg_whole_file_identity": true
+  },
+  "authority": {
+    "may_score": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_issue": false,
+    "may_trade": false,
+    "may_train": false,
+    "may_publish_probability": false,
+    "may_compute_option_pnl": false,
+    "may_change_candidate_formation": false,
+    "may_promote": false
+  },
+  "source_pin_observation": {
+    "source_pin": "4e7761e42435622ad8ba181ba617e2a4bae6f015",
+    "campaigns_git_blob": "c581121767ca51bf20a8917d1a5a394f9db701d9",
+    "outcomes_git_blob": "a67be30ab30255e62fa01d22f11f8e65417a160d",
+    "checkpoint_git_blob": "c697a71d2d2d958301897a2135af98d97d140aa7",
+    "incident_blobs_matched_at_preregistration": true,
+    "action_time_whole_file_blob_equality_required": false
+  },
+  "activation_identity": {
+    "campaigns": {
+      "incident_records": 8385,
+      "incident_prefix_sha256": "0c242957703d4a3a0031f0bf7322195c6d41f665391380e30626aea31bf95514",
+      "action_time_file_may_equal_or_strictly_append_incident_generation": true,
+      "rows_before_or_inside_incident_prefix_may_change": false
+    },
+    "outcomes": {
+      "lawful_records": 24578,
+      "lawful_prefix_sha256": "183c5f5bfc3a5f394c463b527ed2588314e21b9e5a3288fab881f64cd68db75e",
+      "incident_records": 28423,
+      "incident_prefix_sha256": "bfde356d4e54265164840e46f06e391afbed3c35449cda4786013eb95f432160",
+      "quarantine_start_row": 24579,
+      "quarantine_end_row": 28423,
+      "action_time_file_may_equal_or_strictly_append_incident_generation": true,
+      "rows_before_or_inside_incident_prefix_may_change": false
+    },
+    "checkpoint": {
+      "incident_checkpoint_id": "ocp_e3255025e9e8d98b72c3e9ec",
+      "incident_checkpoint_git_blob": "c697a71d2d2d958301897a2135af98d97d140aa7",
+      "preserve_incident_checkpoint_as_evidence": true,
+      "current_owner_native_checkpoint_may_differ_after_lawful_append": true
+    },
+    "action_time_validation": {
+      "current_campaigns_record_count_must_be_at_least_incident_records": true,
+      "current_outcomes_record_count_must_be_at_least_incident_records": true,
+      "campaigns_incident_prefix_must_match_exactly": true,
+      "outcomes_incident_prefix_must_match_exactly": true,
+      "lawful_outcomes_prefix_must_match_exactly": true,
+      "later_campaign_or_outcome_rows_must_validate_under_normal_owner_receipt_law": true,
+      "current_whole_file_git_blob_may_differ_after_lawful_append": true
+    },
+    "falsifiers": {
+      "accept_valid_append_after_unchanged_incident_prefix": true,
+      "reject_any_mutation_inside_campaign_incident_prefix": true,
+      "reject_any_mutation_inside_outcome_incident_prefix": true,
+      "reject_shifted_quarantine_boundary": true,
+      "reject_current_file_shorter_than_incident_generation": true
+    }
+  }
+}
