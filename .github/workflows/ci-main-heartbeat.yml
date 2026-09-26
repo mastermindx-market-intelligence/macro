@@ -208,7 +208,8 @@ jobs:
         run: python scripts/check_workflow_yaml.py --selftest
       - name: "all workflow files must parse with on:/jobs: blocks"
         run: python scripts/check_workflow_yaml.py .github/workflows
-      # Skip-only suites (mirror ci.yml's workflow-yaml job). Worth a heartbeat
+      # Skip-only suites (mirror the ci-control-plane-contracts legacy job, which
+      # has hosted the skip-only census since 2026-09-25). Worth a heartbeat
       # slot precisely because this guard rots on MAIN, not on a PR: a merge that
       # drops a package from an install line, or a nightly bot edit, can strand a
       # suite whose own path filter no PR happens to touch again. Pure stdlib +

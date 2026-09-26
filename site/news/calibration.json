@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-09-24",
-  "n_events_logged": 881,
+  "asof": "2026-09-25",
+  "n_events_logged": 901,
   "n_events_graded": 578,
   "classes": [
     {
@@ -86,12 +86,12 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 297,
+      "n": 300,
       "n_graded": 217,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.0027183016856415472,
-      "avg_rel_21d": -0.0031744589962121217,
+      "avg_rel_5d": 0.002828362361524804,
+      "avg_rel_21d": -0.0034312647997835504,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -103,7 +103,7 @@
       "n_graded": 14,
       "hit_5d": 0.2857142857142857,
       "hit_21d": 0.5555555555555556,
-      "avg_rel_5d": 0.02003000238095238,
+      "avg_rel_5d": 0.02002107380952381,
       "avg_rel_21d": 0.06291725555555555,
       "wilson_low_5d": 0.117212,
       "wilson_high_5d": 0.546495,
@@ -114,12 +114,12 @@
       "direction": "bearish",
       "n": 26,
       "n_graded": 17,
-      "hit_5d": 0.47058823529411764,
+      "hit_5d": 0.4117647058823529,
       "hit_21d": 0.1111111111111111,
-      "avg_rel_5d": -0.005686058823529412,
+      "avg_rel_5d": -0.004061333333333333,
       "avg_rel_21d": 0.043358,
-      "wilson_low_5d": 0.261648,
-      "wilson_high_5d": 0.690371,
+      "wilson_low_5d": 0.216108,
+      "wilson_high_5d": 0.639949,
       "verdict": "insufficient"
     },
     {
@@ -129,7 +129,7 @@
       "n_graded": 23,
       "hit_5d": 0.6956521739130435,
       "hit_21d": 0.4666666666666667,
-      "avg_rel_5d": 0.011917855072463767,
+      "avg_rel_5d": 0.011522347826086958,
       "avg_rel_21d": 0.0019163166666666656,
       "wilson_low_5d": 0.491339,
       "wilson_high_5d": 0.843962,
@@ -138,24 +138,24 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 199,
+      "n": 210,
       "n_graded": 174,
-      "hit_5d": 0.5114942528735632,
+      "hit_5d": 0.5057471264367817,
       "hit_21d": 0.4236111111111111,
-      "avg_rel_5d": 8.995881226053605e-05,
+      "avg_rel_5d": 0.00021975383141762414,
       "avg_rel_21d": 0.01832127025462963,
-      "wilson_low_5d": 0.437778,
-      "wilson_high_5d": 0.584714,
+      "wilson_low_5d": 0.432141,
+      "wilson_high_5d": 0.579105,
       "verdict": "context_only"
     },
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 93,
+      "n": 95,
       "n_graded": 24,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": -0.010353334722222223,
+      "avg_rel_5d": -0.009586675000000001,
       "avg_rel_21d": -0.03208877777777778,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
@@ -164,7 +164,7 @@
     {
       "event_type": "management_change",
       "direction": "mixed",
-      "n": 16,
+      "n": 17,
       "n_graded": 14,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -181,7 +181,7 @@
       "n_graded": 16,
       "hit_5d": 0.3125,
       "hit_21d": 0.3,
-      "avg_rel_5d": -0.002099473958333333,
+      "avg_rel_5d": -0.0022186822916666665,
       "avg_rel_21d": -0.013576975000000002,
       "wilson_low_5d": 0.141644,
       "wilson_high_5d": 0.555961,
@@ -207,8 +207,8 @@
       "n_graded": 30,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.0017991106349206354,
-      "avg_rel_21d": 0.029114465440115436,
+      "avg_rel_5d": 0.0026568023015873018,
+      "avg_rel_21d": 0.02916769271284271,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -229,7 +229,7 @@
     {
       "event_type": "product_delay",
       "direction": "bearish",
-      "n": 4,
+      "n": 5,
       "n_graded": 4,
       "hit_5d": 0.75,
       "hit_21d": 0.25,
@@ -242,7 +242,7 @@
     {
       "event_type": "product_launch",
       "direction": "bullish",
-      "n": 14,
+      "n": 16,
       "n_graded": 5,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1346,
+    "n_sampled": 1367,
     "n_graded": 0,
     "classes": []
   }
