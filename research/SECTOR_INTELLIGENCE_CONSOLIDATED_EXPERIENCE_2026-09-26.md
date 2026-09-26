@@ -127,8 +127,18 @@ answer different but coordinated questions:
   with mark area carrying one explicit source measure. Dense/overlapping marks open an
   explicit cluster choice or linked list; never jitter coordinates or place overlapping
   invisible touch targets over every mark.
-- **Matrix:** whether breadth changes by industry and company-size tier. Grid and cluster/
-  summary representations share the same scope and measure.
+- **Matrix:** whether breadth changes by classification and size. It has two source-qualified
+  scales rather than one synthetic universal grid:
+  - **Broad market — Sector × Size:** use the existing S&P 500 / 400 / 600 breadth-owner
+    membership and close matrices. The size axis is the owner's large/mid/small index segment;
+    do not pretend those segments are exact market-cap cutoffs. This view can reach the broad
+    S&P-1500 spectrum without borrowing a second taxonomy.
+  - **Selected sector — Industry × Cap:** use an owner feed that actually supplies industry,
+    market cap and returns together. The current S&P-500 heatmap owner supports this for its
+    covered names; the Technology design slice contains 79 names and does not contain a
+    lower-cap population below its observed floor. Missing lower-cap industry cells remain
+    unavailable until an existing classification owner is lawfully extended/bound.
+  Grid and cluster/summary representations share the same selected scope and measure.
 - **Table:** exact values, complete reachable population and sorting/filtering without
   changing owner semantics.
 
@@ -219,6 +229,11 @@ evidence without changing source authority:
   counts. A source that reports 79 members but supplies no member rows is partial/
   unavailable at member level, never 0 / 0 complete. Malformed identities may not be
   fabricated, and usable rows may not silently redefine the denominator.
+- Do not fill the broad Matrix by silently joining the current Finviz NDX/Russell screener
+  files to the breadth plane. Those files are useful internal research inputs, but they are
+  a different source/rights contract and do not become a production industry owner by visual
+  convenience. A broader lower-cap Industry × Cap view requires an accepted existing owner
+  for both classification and the intended display use.
 
 ## 6. States and testable interactions
 
