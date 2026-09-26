@@ -5284,7 +5284,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx jsonschema
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell

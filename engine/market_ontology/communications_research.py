@@ -14,13 +14,18 @@ withheld bodies. This is not a new evidence/rights/correction store or cache.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
+from decimal import Decimal
+from functools import lru_cache
+import json
+from pathlib import Path
 from types import MappingProxyType
 
 from engine.market_ontology.communications_measures import (
-    AccountingBridgeResult, AccountingRule, ComparisonRule, Guidance, InputBinding,
-    Measure, Result, accounting_bridge, compare_guidance, compare_period,
-    _measure, _text,  # Same domain's structural validation, NEVER native admission.
+    AccountingBridgeResult, AccountingContribution, AccountingRule, ComparisonRule,
+    Guidance, InputBinding, Interval, Measure, Result,
+    accounting_bridge, compare_guidance, compare_period,
+    _guidance, _measure, _same_scope, _text,  # Domain validation, NEVER native admission.
 )
 
 
@@ -306,3 +311,224 @@ def compose_four_company_claims(inputs: tuple[CompanyClaimInput, ...]) -> FourCo
                                     original_guidance=item.guide if guide_result is not None else None,
                                     limitation_en=caveat_en, limitation_zh=caveat_zh))
     return FourCompanyClaims(tuple(panels), sum(panel.headline is not None for panel in panels))
+
+
+# Unregistered domain response candidate; no native generation/profile is minted.
+MAX_VIEW_BYTES = 256 * 1024
+_PAYLOAD_TYPES = frozenset((FourCompanyClaims, CompanyClaims, MeasureClaim, ClaimText,
+    ProjectionAuthority, AccountingViewGroup, AccountingBridgeResult,
+    AccountingContribution, Measure, Guidance, Interval, Result))
+
+
+def _plain_projection(value, depth=0):
+    """Explicit closed conversion, never deepcopy or caller-provided conversion hooks."""
+    if depth > 24:
+        raise ClaimInputError('INVALID_CLAIM_VIEW')
+    kind = type(value)
+    if kind in _PAYLOAD_TYPES:
+        return {field.name: _plain_projection(getattr(value, field.name), depth + 1)
+                for field in fields(kind)}
+    if kind is tuple:
+        if len(value) > 96:
+            raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+        return [_plain_projection(item, depth + 1) for item in value]
+    if kind is Decimal:
+        if not value.is_finite():
+            raise ClaimInputError('INVALID_CLAIM_VIEW')
+        parts = value.as_tuple()
+        if len(parts.digits) > 384 or abs(parts.exponent) > 384:
+            raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+        text = format(value, 'f')
+        if len(text) > 384:
+            raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+        return text
+    if value is None or kind in (str, int, bool):
+        return value
+    raise ClaimInputError('INVALID_CLAIM_VIEW')
+
+
+def _encoded_view(payload):
+    # Bound shape BEFORE JSON/schema traversal. Only ordinary JSON values are
+    # accepted: no mapping subclasses, iterators, floats, callbacks or cycles.
+    nodes = 0
+    text_bytes = 0
+    def guard(value, depth=0):
+        nonlocal nodes, text_bytes
+        nodes += 1
+        if depth > 32 or nodes > 16384:
+            raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+        kind = type(value)
+        if kind is str:
+            if len(value) > MAX_VIEW_BYTES:
+                raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+            try:
+                text_bytes += len(value.encode('utf-8'))
+            except UnicodeError:
+                raise ClaimInputError('INVALID_CLAIM_VIEW') from None
+            if text_bytes > MAX_VIEW_BYTES:
+                raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+        elif kind is dict:
+            if len(value) > 96 or any(type(key) is not str for key in value):
+                raise ClaimInputError('INVALID_CLAIM_VIEW')
+            for key, item in value.items():
+                guard(key, depth + 1)
+                guard(item, depth + 1)
+        elif kind is list:
+            if len(value) > 96:
+                raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+            for item in value:
+                guard(item, depth + 1)
+        elif kind is int:
+            if abs(value) > 96:
+                raise ClaimInputError('INVALID_CLAIM_VIEW')
+        elif value is not None and kind is not bool:
+            raise ClaimInputError('INVALID_CLAIM_VIEW')
+    guard(payload)
+    encoded = json.dumps(payload, ensure_ascii=False, allow_nan=False,
+                         separators=(',', ':')).encode('utf-8')
+    if len(encoded) > MAX_VIEW_BYTES:
+        raise ClaimInputError('CLAIM_OUTPUT_LIMIT')
+    return encoded
+
+
+@lru_cache(maxsize=1)
+def _view_validator():
+    # This is a shipped code contract, not a data reader. The path is fixed;
+    # no request chooses a file or reference resolver, and all $refs are local.
+    from jsonschema import Draft202012Validator, FormatChecker
+    path = Path(__file__).resolve().parents[2] / 'contracts/market_ontology/communications_business_research.v1.schema.json'
+    try:
+        schema = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        raise ClaimInputError('CLAIM_CONTRACT_UNAVAILABLE') from None
+    Draft202012Validator.check_schema(schema)
+    return Draft202012Validator(schema, format_checker=FormatChecker())
+
+
+def _wire_decimal(text):
+    # Fixed-point output may expand a valid source coefficient by up to 32 zeroes.
+    # Recover a bounded equivalent WITHOUT context-sensitive normalize/rounding.
+    value = Decimal(text)
+    sign, digits, exponent = value.as_tuple()
+    digits = list(digits)
+    while len(digits) > 48 and digits[-1] == 0 and exponent < 32:
+        digits.pop()
+        exponent += 1
+    return Decimal((sign, tuple(digits), exponent))
+
+
+def _payload_measure(record):
+    data = dict(record)
+    data['period'] = tuple(data['period'])
+    for key in ('value', 'scale'):
+        if data[key] is not None:
+            data[key] = _wire_decimal(data[key])
+    if data['support'] is not None:
+        support = data['support']
+        data['support'] = Interval(_wire_decimal(support['lower']), _wire_decimal(support['upper']),
+                                   support['lower_inclusive'], support['upper_inclusive'])
+    candidate = Measure(**data)
+    return candidate if _measure(candidate) else None
+
+
+def _payload_guidance(record):
+    data = dict(record)
+    data['period'] = tuple(data['period'])
+    for key in ('lower', 'upper', 'scale'):
+        if data[key] is not None:
+            data[key] = _wire_decimal(data[key])
+    candidate = Guidance(**data)
+    return candidate if _guidance(candidate) else None
+
+
+def _view_links_valid(projection):
+    """Internal consistency only: it does not authenticate sources or approve copy."""
+    if projection['headline_issuer_count'] != sum(p['headline'] is not None for p in projection['panels']):
+        return False
+    source_refs, derived_count = set(), 0
+    def matches(claim, results):
+        refs = list(dict.fromkeys(ref for result in results for ref in result['refs']))
+        revisions = list(dict.fromkeys(result['rule_revision'] for result in results))
+        return claim['refs'] == refs and claim['rule_revisions'] == revisions
+    for panel in projection['panels']:
+        rows = panel['measures']
+        for row in rows:
+            actual, prior, result, trend = (row[key] for key in ('current','prior','comparison','trend'))
+            source_refs.update(m['ref'] for m in (actual, prior) if m is not None)
+            for measurement in (actual, prior):
+                if measurement is not None and (_payload_measure(measurement) is None
+                        or measurement['metric'] != row['metric']):
+                    return False
+            if result is not None:
+                derived_count += 1
+                if actual is None or prior is None or result['refs'] != [actual['ref'], prior['ref']]:
+                    return False
+            if trend is not None and (result is None or result['value'] is None
+                    or result['status'] not in ('COMPARABLE','QUALIFIED') or not matches(trend, (result,))):
+                return False
+        if panel['headline'] is not None:
+            if (any(row['trend'] is None for row in rows)
+                    or rows[0]['current']['period'] != rows[1]['current']['period']
+                    or rows[0]['prior']['period'] != rows[1]['prior']['period']
+                    or not matches(panel['headline'], tuple(row['comparison'] for row in rows))):
+                return False
+        guide, result = panel['original_guidance'], panel['guidance']
+        if (guide is None) != (result is None):
+            return False
+        if guide is not None:
+            derived_count += 1
+            source_refs.add(guide['ref'])
+            if (panel['slot'] == 'alphabet' or rows[0]['current'] is None
+                    or result['refs'] != [rows[0]['current']['ref'], guide['ref']]):
+                return False
+            native_free_guide = _payload_guidance(guide)
+            if native_free_guide is None or not _same_scope(
+                    _payload_measure(rows[0]['current']), native_free_guide, same_period=True):
+                return False
+        outcomes = set()
+        for group in panel['accounting']:
+            key = tuple(group['outcome_refs'])
+            if key in outcomes:
+                return False
+            outcomes.add(key)
+            revisions = set()
+            for view in group['views']:
+                derived_count += 1
+                source_refs.update(view['result']['refs'])
+                if (group['outcome_refs'] != [view['current_output']['ref'], view['prior_output']['ref']]
+                        or view['result']['rule_revision'] in revisions):
+                    return False
+                if any(_payload_measure(view[key]) is None for key in ('current_output','prior_output')):
+                    return False
+                revisions.add(view['result']['rule_revision'])
+    return len(source_refs) <= 96 and derived_count <= 32
+
+
+def validate_view(payload) -> None:
+    """Validate closed domain structure/lineage, NOT source, rights or identity.
+
+    An internally consistent false statement is still false. Native admission,
+    source verification, copy review and shared release acceptance remain required.
+    """
+    _encoded_view(payload)
+    if not _view_validator().is_valid(payload) or not _view_links_valid(payload['projection']):
+        raise ClaimInputError('INVALID_CLAIM_VIEW')
+
+
+def compose_communications_payload(inputs: tuple[CompanyClaimInput, ...]) -> dict:
+    """Unregistered domain portion only; not the shared query/bundle callback.
+
+    'unbound' is an invariant of this constructor, not an inferred rights verdict.
+    The incumbent owner must accept the full request/generation/evidence/identity
+    mapping before any shared registration. No current paid snapshot is written.
+    """
+    projection = _plain_projection(compose_four_company_claims(inputs))
+    payload = {'schema': 'communications_business_research.v1',
+               'binding_state': 'unbound', 'projection': projection}
+    validate_view(payload)
+    return payload
+
+
+def encode_communications_payload(inputs: tuple[CompanyClaimInput, ...]) -> bytes:
+    """Return bounded UTF-8 JSON; no storage, network or public publication."""
+    return _encoded_view(compose_communications_payload(inputs))

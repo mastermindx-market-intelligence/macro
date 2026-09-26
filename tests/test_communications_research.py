@@ -416,3 +416,232 @@ def test_retained_original_guidance_disappears_after_actual_rule_is_invalidated(
     out = panel(compose_four_company_claims((item,)))
     assert out.headline is not None
     assert out.guidance is None and out.original_guidance is None
+
+
+# Task4B domain-payload candidate: no native or shared registration is claimed.
+from copy import deepcopy
+import json
+from pathlib import Path
+from engine.market_ontology import communications_research as cr
+
+
+def payload_example():
+    return cr.compose_communications_payload(tuple(company(s) for s in ROSTER))
+
+
+def test_domain_payload_has_four_slots_and_cannot_claim_native_binding():
+    payload = payload_example()
+    assert set(payload) == {'schema', 'binding_state', 'projection'}
+    assert payload['schema'] == 'communications_business_research.v1'
+    assert payload['binding_state'] == 'unbound'
+    assert [p['slot'] for p in payload['projection']['panels']] == list(ROSTER)
+    assert payload['projection']['headline_issuer_count'] == 4
+    assert payload['projection']['expected_issuer_count'] == 4
+    assert cr.validate_view(payload) is None
+    assert 'generation' not in payload and 'request' not in payload
+    assert not any(payload['projection']['authority'].values())
+
+
+def test_payload_preserves_decimal_value_scale_and_unknown_precision_losslessly():
+    item = replace_record(company(), 0, value=D('9007199254740993.0000001'))
+    payload = cr.compose_communications_payload((item,))
+    measure = payload['projection']['panels'][0]['measures'][0]['current']
+    assert measure['value'] == '9007199254740993.0000001'
+    assert measure['scale'] == '1000000'
+    assert measure['support'] is None and measure['support_basis'] == 'unknown'
+    encoded = cr.encode_communications_payload((item,))
+    assert type(encoded) is bytes
+    assert json.loads(encoded) == payload
+    assert b'9007199254740993.0000001' in encoded
+
+
+def test_payload_keeps_current_level_but_not_unsupported_growth():
+    item = company()
+    missing = item.pairs[0].prior_ref
+    item = replace(item, measures=tuple(m for m in item.measures if m.ref != missing))
+    payload = cr.compose_communications_payload((item,))
+    row = payload['projection']['panels'][0]['measures'][0]
+    assert row['current']['value'] == '60801'
+    assert row['prior'] is None and row['comparison'] is None and row['trend'] is None
+    assert payload['projection']['panels'][0]['headline'] is None
+    assert missing not in json.dumps(payload)
+
+
+def test_payload_preserves_original_guidance_without_unit_or_vintage_relabeling():
+    payload = payload_example()
+    panel = payload['projection']['panels'][2]
+    guide = panel['original_guidance']
+    assert guide['lower'] == '750' and guide['scale'] == '1000000'
+    assert guide['upper'] is None and guide['upper_inclusive'] is None
+    assert guide['published'] == company('trade_desk').guide.published
+    assert guide['period'] == list(CURRENT)
+    assert guide['vintage'] == 'original_company_guidance'
+    assert panel['guidance']['label'] == 'BELOW_ORIGINAL_FLOOR'
+    assert payload['projection']['panels'][1]['original_guidance'] is None
+
+
+def test_payload_groups_accounting_alternatives_without_summing_them():
+    payload = cr.compose_communications_payload((accounting_magnite(),))
+    groups = payload['projection']['panels'][3]['accounting']
+    assert len(groups) == 1 and len(groups[0]['views']) == 2
+    assert {v['residual'] for v in groups[0]['views']} == {'0'}
+    assert {v['evidence_relation'] for v in groups[0]['views']} == {'TARGET_DEPENDENT', 'INDEPENDENCE_UNASSESSED'}
+    for view in groups[0]['views']:
+        assert [view['current_output']['ref'], view['prior_output']['ref']] == groups[0]['outcome_refs']
+    assert 'total_improvement' not in groups[0]
+    assert cr.validate_view(payload) is None
+
+
+@pytest.mark.parametrize('bad', [True, 1, 'false', None])
+def test_payload_authority_is_literal_false_not_falsy_or_truthy(bad):
+    payload = payload_example()
+    payload['projection']['authority']['can_rank'] = bad
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+@pytest.mark.parametrize('bad', [60801, 1.5, True, 'NaN', 'Infinity', '1e20', '0' * 400])
+def test_payload_numeric_fields_refuse_nondecimal_or_unbounded_forms(bad):
+    payload = payload_example()
+    payload['projection']['panels'][0]['measures'][0]['current']['value'] = bad
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+@pytest.mark.parametrize('where', ['root', 'panel', 'measurement', 'authority'])
+def test_payload_is_closed_and_errors_never_echo_private_values(where):
+    payload = payload_example()
+    targets = {'root': payload, 'panel': payload['projection']['panels'][0],
+               'measurement': payload['projection']['panels'][0]['measures'][0]['current'],
+               'authority': payload['projection']['authority']}
+    targets[where]['unknown'] = 'PRIVATE_PAYLOAD_CANARY'
+    with pytest.raises(ClaimInputError) as error:
+        cr.validate_view(payload)
+    assert str(error.value) == 'INVALID_CLAIM_VIEW'
+    assert 'PRIVATE_PAYLOAD_CANARY' not in str(error.value)
+
+
+@pytest.mark.parametrize('mutation', ['count', 'order', 'duplicate', 'missing', 'binding', 'claim_ref', 'outcome_ref'])
+def test_payload_rejects_internally_inconsistent_coverage_and_lineage(mutation):
+    payload = cr.compose_communications_payload((company(), accounting_magnite()))
+    projection = payload['projection']
+    if mutation == 'count': projection['headline_issuer_count'] = 4
+    elif mutation == 'order': projection['panels'].reverse()
+    elif mutation == 'duplicate': projection['panels'][1] = deepcopy(projection['panels'][0])
+    elif mutation == 'missing': projection['panels'].pop()
+    elif mutation == 'binding': payload['binding_state'] = 'admitted'
+    elif mutation == 'claim_ref': projection['panels'][0]['headline']['refs'].append('fixture:unserved')
+    else: projection['panels'][3]['accounting'][0]['outcome_refs'][0] = 'fixture:wrong_total'
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+def test_payload_byte_limit_counts_utf8_not_characters(monkeypatch):
+    inputs = tuple(company(s) for s in ROSTER)
+    encoded = cr.encode_communications_payload(inputs)
+    assert len(encoded) > len(encoded.decode('utf-8'))
+    monkeypatch.setattr(cr, 'MAX_VIEW_BYTES', len(encoded))
+    assert cr.encode_communications_payload(inputs) == encoded
+    monkeypatch.setattr(cr, 'MAX_VIEW_BYTES', len(encoded) - 1)
+    with pytest.raises(ClaimInputError, match='^CLAIM_OUTPUT_LIMIT$'):
+        cr.encode_communications_payload(inputs)
+
+
+def test_payload_oversize_is_refused_before_schema_and_never_truncated():
+    payload = payload_example()
+    payload['oversize'] = '界' * 100000
+    with pytest.raises(ClaimInputError, match='^CLAIM_OUTPUT_LIMIT$'):
+        cr.validate_view(payload)
+
+
+def test_payload_validation_does_not_mutate_the_candidate():
+    payload = payload_example()
+    before = deepcopy(payload)
+    cr.validate_view(payload)
+    assert payload == before
+    assert payload['projection']['panels'][0]['limitation_zh']
+
+
+def test_committed_domain_schema_closes_every_object_and_is_valid_draft_202012():
+    from jsonschema import Draft202012Validator
+    path = Path(__file__).resolve().parents[1] / 'contracts/market_ontology/communications_business_research.v1.schema.json'
+    assert path.is_file(), 'The domain response needs its committed schema, not an unregistered Python-only shape.'
+    schema = json.loads(path.read_text())
+    Draft202012Validator.check_schema(schema)
+    def walk(value):
+        if isinstance(value, dict):
+            if value.get('type') == 'object':
+                assert value.get('additionalProperties') is False
+            for child in value.values(): walk(child)
+        elif isinstance(value, list):
+            for child in value: walk(child)
+    walk(schema)
+    assert not list(Draft202012Validator(schema).iter_errors(payload_example()))
+
+
+@pytest.mark.parametrize('mutation', ['metric', 'exact_support', 'guide_period', 'guide_currency'])
+def test_payload_validator_refuses_misleading_embedded_measurement_metadata(mutation):
+    payload = payload_example()
+    panel = payload['projection']['panels'][0]
+    current = panel['measures'][0]['current']
+    if mutation == 'metric': current['metric'] = 'costs'
+    elif mutation == 'exact_support':
+        current['support_basis'] = 'exact'
+        current['support'] = {'lower':'60000','upper':'62000','lower_inclusive':True,'upper_inclusive':True}
+    elif mutation == 'guide_period': panel['original_guidance']['period'] = ['2026-07-01','2026-09-30']
+    else: panel['original_guidance']['currency'] = 'EUR'
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+@pytest.mark.parametrize('bad', [None, 4, 'not a payload', [], {'schema':'other'}])
+def test_payload_malformed_outer_shape_returns_fixed_refusal(bad):
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(bad)
+
+
+def test_payload_invalid_unicode_is_sanitized_without_a_serializer_trace():
+    payload = payload_example()
+    payload['projection']['panels'][0]['limitation_en'] = '\ud800PRIVATE_CANARY'
+    with pytest.raises(ClaimInputError) as error:
+        cr.validate_view(payload)
+    assert str(error.value) == 'INVALID_CLAIM_VIEW'
+
+
+def test_payload_cycle_is_bounded_before_json_or_schema_traversal():
+    payload = payload_example()
+    payload['cycle'] = payload
+    with pytest.raises(ClaimInputError, match='^CLAIM_OUTPUT_LIMIT$'):
+        cr.validate_view(payload)
+
+
+def test_payload_never_invokes_mapping_subclass_callbacks():
+    class Hostile(dict):
+        def items(self):
+            raise AssertionError('An untrusted callback ran')
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(Hostile(payload_example()))
+
+
+@pytest.mark.parametrize('value', [D('123456789012345678901234567890123456789012345678E+32'), D('1E-32'), D('100.0000')])
+def test_payload_roundtrip_accepts_full_bounded_source_decimal_range(value):
+    item = replace_record(company(), 0, value=value)
+    with localcontext() as context:
+        context.prec = 2
+        context.clear_flags()
+        encoded = cr.encode_communications_payload((item,))
+        payload = json.loads(encoded)
+        assert payload['projection']['panels'][0]['measures'][0]['current']['value'] == format(value, 'f')
+        assert context.prec == 2 and not any(context.flags.values())
+
+
+def test_payload_schema_never_requests_remote_reference_resolution():
+    path = Path(__file__).resolve().parents[1] / 'contracts/market_ontology/communications_business_research.v1.schema.json'
+    schema = json.loads(path.read_text())
+    def walk(value):
+        if type(value) is dict:
+            if '$ref' in value: assert value['$ref'].startswith('#/$defs/')
+            for child in value.values(): walk(child)
+        elif type(value) is list:
+            for child in value: walk(child)
+    walk(schema)
