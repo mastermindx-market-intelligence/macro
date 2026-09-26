@@ -12540,10 +12540,10 @@ jobs:
         run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
-      # test_china_intel_visits_render.py is the SOL-repair template render
-      # test (renders china_intel.html.j2 through the real builder env).
-      - name: china_intel_hub institutional-visit dossier block (P1)
-        run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py -q
+      # Template render ownership stays here with the china_intel_hub lane:
+      # institutional-visit truth plus the accepted Paper p-7-1 production shell.
+      - name: china_intel_hub template render contracts (visits + Paper vNext)
+        run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py tests/test_china_intel_paper_vnext.py -q
       - name: Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
         run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_intelligence_hub_glance_copy.py tests/test_ticker_shape.py -q
       # R1A-M (2026-09-02): exact market pulse roster/markup (needs the same
