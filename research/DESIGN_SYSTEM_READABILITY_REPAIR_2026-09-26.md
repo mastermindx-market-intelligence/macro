@@ -316,3 +316,83 @@ without deleting its analytical depth. The specimen language fix remains source-
 until post-fix browser proof and normal source/review/release gates conclude. A local
 headless browser cleanup left one owned exiting process; do not describe termination
 signals as confirmed process disappearance or target any other user's browser.
+
+
+## 9. R6 — readable narrow layouts, with current-main integration preserved
+
+**Source repair / local-browser qualified; not merged, deployed or applied to Paper.**
+The R5 native state/action proposal remains held by the explicit shared-file
+custody disposition Mastermind#927/comment5850272241. No shared token, specialist
+page, Figma connection or refused cleanup was modified in R6.
+
+### The actual failure and repair
+
+The existing specimen expanded to453px at390px and320px viewport widths.
+A fixed type-label/sample row let the46px display word escape; narrow grid
+minimums, a static lens, an unbounded example button and a linked-reference table
+also lacked usable narrow containment. Late ladder cells were clipped.
+
+The repair is confined to the specimen scaffold: natural type-row wrapping;
+container-bounded grid minimums, lens and example buttons; wrapping long reference
+copy; the existing table scroll wrapper; and reachable rather than clipped ladder
+controls. All456 human text nodes, the font ramp and example figures are preserved.
+No page-wide overflow hiding, font reduction, content deletion or product CSS retune.
+
+Initial code commit `2cd5745b675225cf6afbafbfb598defc67427530` passed20 branch-source
+browser cells. That did **not** establish current-main compatibility. GitHub's
+actual integration `6d8eae603bf095d63c356c82792224f5f2fb72c5` added newer regime-spine
+examples; only8/20 integrated cells passed, with12 narrow cells still overflowing.
+The failed integration report is retained rather than erased.
+
+The second root cause was a missing source-owned preview binding. Current theme
+already applies the correct mobile spine layout under `.mockup-spine-390`.
+Adding that class to the specimen's outer wrapper reuses those existing rules for
+all spine examples; no duplicate mobile CSS or `page-macro` body class is added.
+Current-main sections are preserved through normal integration, not overlaid by
+old branch content. The final tested integrated specimen blob is
+`a12ee3fe51387297c835a7c8ee822498684fc86d`; final foundations test blob is
+`1fb822812d18f8b2517fcb14c39cf77c839edbad`. Source theme remains
+`41f0c3bdea3979faf4a57f2a98e31a4df54a5973`.
+
+### Discriminating verification
+
+Seven cases were added to the already CI-enrolled foundations suite. The first
+six failed before the scaffold repair; restoring the original layout reproduced
+those six failures. The preview-binding case separately failed before its fix,
+and removing only the binding restored that failure. Final bounded foundations:
+**39 passed /2 deselected** on branch and integrated-source compositions.
+The two unrun whole-template-corpus scans are explicitly excluded locally:
+`test_no_page_template_shadows_the_ramp_except_documented_overrides` and
+`test_no_consumer_wires_the_new_primitives_yet`. This is not a full-repository pass.
+
+The final integrated layout passed **20/20 local Chrome cells**:
+320/360/390/768/1440 CSS pixels × dark/light × EN/ZH. Checks required no document
+horizontal overflow, correct theme/visible locale and `html lang`, real Enter
+opening and Space closing of the existing disclosure, retained focus, no internal
+disclosure overflow, table-end reachability and the last ladder control visible
+when focused. Zero JavaScript exceptions were observed. The prior R5 language
+repair is thus now browser-qualified on this specimen; screen-reader/Safari,
+physical touch, production transport and human comprehension remain untested.
+
+The observed390px spine has all five market rows, the existing name/stance,
+rail and travel layout, and a preserved marker-free unavailable row. Actual
+phone screenshots of typography, Chinese disclosure and the spine were opened
+and visually examined. They contain historical illustrative values, not current
+market recommendations. No font files are exported.
+
+Evidence is under `mockups/refs/design_system/specimen-reflow-r6-20260926/`:
+source identities, original and failed-integration reports, final measurement,
+RED/mutation/GREEN logs, the bounded browser probe and three actual screenshots.
+The inherited browser-report scope label was corrected without altering measured
+cells; exact source hashes, not that label, bind the result. Final GitHub
+integration equality and release status are recorded in #7394's checkpoint.
+
+### Remaining boundary
+
+This closes the observed source-layout defect only. The R5 native proposal,
+shared filled/action-state design, actual save/alert owners, independent review,
+reference acceptance and production/customer validation remain separate work.
+R4 native edits and R3 contrast evidence are preserved, not replayed.
+Owned browser controllers ended after the bounded probes; OS exiting child
+entries remained at the final observation. Shutdown signals are not claimed as
+process disappearance. No user browser, new worker or watcher was targeted.

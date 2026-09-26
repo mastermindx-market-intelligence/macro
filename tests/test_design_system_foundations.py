@@ -652,3 +652,10 @@ def test_specimen_wide_tables_keep_an_explicit_scroll_container(specimen):
 def test_specimen_long_reference_copy_can_wrap(specimen):
     body = re.sub(r"\s+", "", _rule_body(specimen, r"\.mockup-note"))
     assert "overflow-wrap:anywhere" in body
+
+
+def test_specimen_binds_the_existing_mobile_spine_preview(specimen):
+    # The owner CSS intentionally scopes narrow spine rows to page-macro or this
+    # preview adapter. The specimen must use the adapter, not copy production CSS.
+    assert re.search(r'<div class="wrap mockup-spine-390">', specimen)
+    assert not re.search(r'<body[^>]*class="[^"]*page-macro', specimen)

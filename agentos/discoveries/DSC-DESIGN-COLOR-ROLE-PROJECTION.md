@@ -117,3 +117,23 @@ session's 27 touched-node indicators were released.
 Retain R2/R3 calculations and test findings at their stated scope. The old label
 present-tense defect is superseded, not the wider consumer-pair warning. Figma
 remains excluded by Chairman direction; historical evidence stays preserved.
+
+
+## R6 — readable component reference, not a new palette
+
+The related specimen's phone overflow is repaired in its local layout scaffold.
+All456 human text nodes and the type ramp are retained. Current-main integration
+exposed a second missing `.mockup-spine-390` binding; using the existing owner
+adapter fixed the newer spine examples without copying CSS or removing sections.
+The final tested integrated specimen/test blobs are a12ee3fe51387297c835a7c8ee822498684fc86d
+and1fb822812d18f8b2517fcb14c39cf77c839edbad.20/20 local browser cells pass narrow
+containment, actual document language, keyboard disclosure and table/ladder reach;
+39 bounded foundations tests pass, two whole-template-corpus scans unrun locally.
+Original and integration failure evidence remains in the R6 readability record.
+
+This is local specimen proof, not whole-site accessibility, Paper mutation or
+production acceptance. R5's native state/action proposal remains unapplied under
+Mastermind#927/comment5850272241's explicit file-wide hold. Preserve the existing
+R4 label/token/button/template effects and their source-specific limits. Continue
+through #7394; do not create another palette, component registry, writer or review
+obligation. The current cumulative continuation remains comment5846051051.

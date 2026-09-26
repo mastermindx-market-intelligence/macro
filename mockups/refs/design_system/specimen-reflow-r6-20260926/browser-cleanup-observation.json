@@ -1,0 +1,5 @@
+{
+  "observed_processes": "44378     1 ?NE    0.0      0 (Google Chrome)\n60865     1 ?NE    0.0      0 (Google Chrome)\n61457     1 ?NE    0.0      0 (Google Chrome)\n62247     1 ?NE    0.0      0 (Google Chrome)\n62643     1 ?NE    0.0      0 (Google Chrome)\n62876     1 ?NE    0.0      0 (Google Chrome)\n",
+  "ps_exit": 0,
+  "meaning": "Owned test controllers completed; browser shutdown was requested, but OS exiting entries can remain. No process-disappearance claim; do not target any other browser or repeat termination loops."
+}
