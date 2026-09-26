@@ -1,0 +1,134 @@
+[
+  {
+    "adjudicated_at": null,
+    "adjudication_note": null,
+    "created": "2026-09-21",
+    "evidence": {
+      "asof": "2026-09-21",
+      "canonical_queue_admission": false,
+      "control_comparisons": [
+        {
+          "control_count": 15,
+          "control_node_id": "ltheme:ths:306380",
+          "jaccard": 0.06060606060606061,
+          "node_id": "ltheme:ths:301096",
+          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+          "semantic_mapping_proven": false,
+          "shared_company_node_ids": [
+            "co:cn:002407.SZ",
+            "co:cn:300568.SZ"
+          ],
+          "shared_count": 2,
+          "source_count": 20,
+          "state": "DESCRIPTIVE_ONLY"
+        },
+        {
+          "control_count": 16,
+          "control_node_id": "ltheme:ths:308991",
+          "jaccard": 0.0,
+          "node_id": "ltheme:ths:301096",
+          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+          "semantic_mapping_proven": false,
+          "shared_company_node_ids": [],
+          "shared_count": 0,
+          "source_count": 20,
+          "state": "DESCRIPTIVE_ONLY"
+        }
+      ],
+      "knowledge_cutoff": "2026-09-21",
+      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+      "primary_source_ids": [
+        "THS_DEF_301096",
+        "DOE_SODIUM_GRID_2017",
+        "DOE_SODIUM_EV_2023"
+      ],
+      "recorded_company_count": 20,
+      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+    },
+    "evidence_refs": [
+      "ev:71d2e310f882057e",
+      "ev:93906972aca25852",
+      "ev:a8cd1b7326fe6ff8",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+    ],
+    "kind": "mapping",
+    "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+    "proposal_id": "prop:de400c2bb566c04c",
+    "proposed_by": "llm_proposed",
+    "ratified_by": null,
+    "status": "proposed",
+    "subject": {
+      "canonical_theme": "theme:grid_electrification",
+      "local_theme": "ltheme:ths:301096"
+    }
+  },
+  {
+    "adjudicated_at": null,
+    "adjudication_note": null,
+    "created": "2026-09-21",
+    "evidence": {
+      "asof": "2026-09-21",
+      "canonical_queue_admission": false,
+      "control_comparisons": [
+        {
+          "control_count": 15,
+          "control_node_id": "ltheme:ths:306380",
+          "jaccard": 0.03333333333333333,
+          "node_id": "ltheme:ths:301174",
+          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+          "semantic_mapping_proven": false,
+          "shared_company_node_ids": [
+            "co:cn:603067.SS"
+          ],
+          "shared_count": 1,
+          "source_count": 16,
+          "state": "DESCRIPTIVE_ONLY"
+        },
+        {
+          "control_count": 16,
+          "control_node_id": "ltheme:ths:308991",
+          "jaccard": 0.0,
+          "node_id": "ltheme:ths:301174",
+          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+          "semantic_mapping_proven": false,
+          "shared_company_node_ids": [],
+          "shared_count": 0,
+          "source_count": 16,
+          "state": "DESCRIPTIVE_ONLY"
+        }
+      ],
+      "knowledge_cutoff": "2026-09-21",
+      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+      "primary_source_ids": [
+        "THS_DEF_301174",
+        "DOE_VANADIUM_GRID_2017"
+      ],
+      "recorded_company_count": 16,
+      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+    },
+    "evidence_refs": [
+      "ev:71d2e310f882057e",
+      "ev:93906972aca25852",
+      "ev:a8cd1b7326fe6ff8",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+    ],
+    "kind": "mapping",
+    "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+    "proposal_id": "prop:a1b11d839c5d789d",
+    "proposed_by": "llm_proposed",
+    "ratified_by": null,
+    "status": "proposed",
+    "subject": {
+      "canonical_theme": "theme:grid_electrification",
+      "local_theme": "ltheme:ths:301174"
+    }
+  }
+]
