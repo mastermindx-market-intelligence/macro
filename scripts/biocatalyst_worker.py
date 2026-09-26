@@ -1332,7 +1332,7 @@ _PRIOR_PRIVATE_EXTRA_ROOTS = (
     "biocatalyst/derived/clinicaltrials/history",
     "biocatalyst/derived/clinicaltrials/prospective",
 )
-_PROSPECTIVE_GENERATION_SCHEMAS = frozenset(("1.3.0", "1.5.0", "1.7.0"))
+_PROSPECTIVE_GENERATION_SCHEMAS = frozenset(("1.3.0", "1.5.0", "1.7.0", "1.9.0"))
 
 
 def _write_private_prospective_immutable(
@@ -2554,6 +2554,7 @@ def run_once(
     now_fn: Callable[[], datetime] = _utc_now,
     publisher_factory: Callable[[Path], PublicGenerationPublisher] = PublicGenerationPublisher,
     activation_verifier: ActivationVerifier = _default_activation_verifier,
+    wmn_inputs: Mapping[str, Any] | None = None,
 ) -> WorkerResult:
     """Run one bounded evidence transaction through injectable collector/store seams."""
 
@@ -2727,6 +2728,7 @@ def run_once(
                 history_evidence_by_nct=history_evidence_by_nct,
                 prospective_models_by_nct=prospective_models_by_nct,
                 prospective_evidence_by_nct=prospective_evidence_by_nct,
+                wmn_inputs=wmn_inputs,
             )
 
             # Construct the dedicated client only after every local source,
