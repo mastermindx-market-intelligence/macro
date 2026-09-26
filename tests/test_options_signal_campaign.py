@@ -174,6 +174,32 @@ def _read_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines()]
 
 
+def test_session_outcome_parts_are_one_campaign_prefix_with_global_ordinals(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / campaign_engine.SESSION_PATH
+    base.parent.mkdir(parents=True, exist_ok=True)
+    rows = [copy.deepcopy(BASE_SESSION) for _ in range(3)]
+    for index, row in enumerate(rows, start=1):
+        row["outcome_id"] = f"fixture-outcome-{index}"
+        row["episode_id"] = f"fixture-episode-{index}"
+    encoded = [canonical_bytes(row) + b"\n" for row in rows]
+    base.write_bytes(encoded[0])
+    parts = base.parent / "outcomes_session_parts"
+    parts.mkdir()
+    (parts / "part-000001.jsonl").write_bytes(encoded[1])
+    (parts / "part-000002.jsonl").write_bytes(encoded[2])
+
+    snapshot = campaign_engine.load_ledger(base, campaign_engine.SESSION_PATH)
+    assert snapshot.raw == b"".join(encoded)
+    assert [item.ordinal for item in snapshot.rows] == [1, 2, 3]
+    assert [item.raw for item in snapshot.rows] == [item[:-1] for item in encoded]
+    receipt = campaign_engine._receipt(snapshot)
+    assert receipt["path"] == campaign_engine.SESSION_PATH
+    assert receipt["records"] == 3
+    assert receipt["prefix_sha256"] == hashlib.sha256(b"".join(encoded)).hexdigest()
+
+
 def test_census_keeps_singletons_exact_contracts_stable_and_zero_authority(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -751,3 +777,70 @@ def test_campaign_refuses_an_owner_valid_training_eligible_h60_source(
 
     with pytest.raises(CampaignContractError, match="unexpectedly permits training"):
         run(root_dir=root)
+
+@pytest.mark.parametrize("dangling_kind", ["base", "parts"])
+def test_campaign_shared_session_reader_rejects_dangling_symlink(
+    tmp_path: Path, dangling_kind: str,
+) -> None:
+    base = tmp_path / campaign_engine.SESSION_PATH
+    base.parent.mkdir(parents=True, exist_ok=True)
+    if dangling_kind == "base":
+        base.symlink_to(base.parent / "missing-session-ledger.jsonl")
+        expected = "session outcome base is not a regular file"
+    else:
+        base.write_bytes(b"")
+        (base.parent / "outcomes_session_parts").symlink_to(
+            base.parent / "missing-session-parts"
+        )
+        expected = "session outcome parts path is not a directory"
+
+    with pytest.raises(CampaignContractError, match=expected):
+        campaign_engine.load_ledger(base, campaign_engine.SESSION_PATH)
+
+def test_prefix_receipt_verification_does_not_rehash_large_prefix_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    encoded = [
+        canonical_bytes({"row": index}) + b"\n"
+        for index in range(1, 6)
+    ]
+    snapshot = campaign_engine._snapshot_from_raw(
+        tmp_path / "source.jsonl",
+        "source.jsonl",
+        b"".join(encoded),
+    )
+    receipts = []
+    for count in (4, 1, 3, 2, 4):
+        receipts.append(
+            {
+                "path": "source.jsonl",
+                "records": count,
+                "prefix_sha256": hashlib.sha256(
+                    b"".join(encoded[:count])
+                ).hexdigest(),
+            }
+        )
+
+    original_sha256 = campaign_engine._sha256
+    large_hash_calls: list[int] = []
+
+    def tracked_sha256(raw: bytes) -> str:
+        if len(raw) > max(len(item) for item in encoded):
+            large_hash_calls.append(len(raw))
+        return original_sha256(raw)
+
+    monkeypatch.setattr(campaign_engine, "_sha256", tracked_sha256)
+    cache: campaign_engine.PrefixCache = {}
+    for receipt in receipts:
+        assert (
+            campaign_engine._verify_receipt(
+                receipt,
+                snapshot,
+                "source.jsonl",
+                cache,
+            )
+            == receipt["records"]
+        )
+
+    assert large_hash_calls == []
