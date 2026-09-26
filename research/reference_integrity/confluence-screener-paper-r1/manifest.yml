@@ -1,0 +1,53 @@
+schema: mastermind.rig_manifest.v1
+reference_id: confluence-screener-paper-r1
+scope: full
+status: revise
+
+surface:
+  route: confluence_screener.html
+  registry_row: "macro:confluence_screener"
+  archetype: discovery_board
+
+author:
+  identity: "Sol Web CEO · product-design-system-convergence · 2026-09-22"
+  role: designer
+
+reference_files:
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/REFERENCE.md
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-en-desktop.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-en-desktop.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-zh-desktop.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-zh-desktop.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-en-mobile.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-en-mobile.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/dark-zh-mobile.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/light-zh-mobile.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/global-zero-dark-en.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/entitled-hydration-dark-en.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+  - path: mockups/refs/reference_integrity/confluence-screener-paper-r1/proposal/honesty-open-dark-en.jpg
+    frozen_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  verdict: verdict.yml
+
+# No prior RIG cycle exists for confluence_screener.html on the captured main tree.
+# This remains one full cycle. The original defective freeze is preserved in Git
+# history; this manifest points only at the refreshed candidate evidence.
+# No migration is authorized while this candidate is in review.
+

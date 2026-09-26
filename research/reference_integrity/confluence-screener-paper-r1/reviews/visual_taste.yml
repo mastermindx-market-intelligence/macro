@@ -1,0 +1,217 @@
+# Native M2 Fabric critic receipt; child=a228eb6a1bdbab1a4
+# pass1_sha256=77fbe062ee7e0b976821cb943976cdb87983ae51596ed7ec166940ccfc9640c5
+# corrected_pass2_sha256=aedfcb3485772096bb2d056394eb4a8a467c4b2098d5051823d6f4485c6d13fe
+# previous pass-2 attempt invalidated before publication: stale rationale source commit
+schema: mastermind.rig_review.v1
+reference_id: confluence-screener-paper-r1
+role: visual_taste
+artifact_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+
+reviewer:
+  identity: "rig-confluence-7727-reviewer-b-opus-fabric"
+  model: opus
+  independent_of_author: true
+
+quarantine:
+  first_pass_inputs:
+    - user/business job
+    - production-before artifact (screenshots + source)
+    - proposed-after artifact (frozen files + crops)
+    - capability ledger (baseline.yml)
+  rationale_received_after_first_pass: true
+
+first_pass:
+  frozen_at: "2026-09-25T12:14:29.373Z"
+  verdict: BLOCK
+  findings:
+    - id: VTC-001
+      severity: blocker
+      finding: >-
+        The screen's whole answer is gone from the top — production leads with "3 setups lining up today" as a 32px `.hero-state` with the numeral in accent (confluence_screener.html.j2:75-76,232-233; production/light-en-desktop.png hero y≈280-310), while proposal/light-en-desktop.jpg y≈150-320 leads with a two-line rhetorical question and demotes the count to a gray meta chip "Active setups · runtime count", and proposal/dark-en-mobile.jpg + light-en-mobile.jpg drop the count from the first screen entirely, so on mobile the eye lands on a question and never finds the answer.
+    - id: VTC-002
+      severity: blocker
+      finding: >-
+        The type hero is a placeholder word — production's single loudest element is `.lc-wr-big` at 30px mono in `var(--up)` printing 6.7/10 with `older years: 5.9/10` beneath (template:104-107,291-297), but proposal/light-en-desktop.jpg x≈1180-1390 y≈455-500 renders "runtime | runtime" as two equal lowercase words, so the frozen reference specifies a layout whose primary metric has no numeric weight, no digit alignment, and no tested width, and nothing in the artifact proves the ledger's core number is still scannable.
+    - id: VTC-003
+      severity: blocker
+      finding: >-
+        Rank-to-rank comparison is destroyed — production renders three structurally identical cards so 6.7 / 6.5 / 6.5 and the three leg stacks align vertically for instant comparison (production/light-en-desktop.png y≈520-1465), whereas proposal/light-en-desktop.jpg y≈640-750 collapses ranks 2-3 into two ~40px rows whose legs and evidence are one undifferentiated gray run-on ("D · runtime leg · W · runtime leg · TF · runtime leg · seen/yr/last runtime · wins/10 runtime · Δrandom runtime pp · cross-era runtime") in a format sharing no axis with rank 1, defeating baseline.yml core interaction "scan the ranked top-three" and capability ledger.rank_order.
+    - id: VTC-004
+      severity: blocker
+      finding: >-
+        The render is a spec board wearing the product's clothes and would become law as such — proposal/light-en-desktop.jpg y≈845-960 ships a LOADING/EMPTY/STALE/ERROR/DISABLED annotation strip as page content, the filter chips are labeled with CSS interaction states ("All · focused" light desktop x≈995-1100; "Daily + weekly · hover" dark desktop x≈1060-1215; "All · focus-visible" mobile x≈28-130; ZH rank-1 title "代表性信号组合 · 悬停状态" in light-zh-desktop.jpg x≈100-280 y≈365), mobile adds a "Filters · open state / Esc closes / Apply disabled" panel, and the footer fuses product legal copy with process metadata ("Context, not investment advice · RIG approval and browser proof still required"), colliding head-on with baseline.yml rejected_variants "A design-tool artifact becoming token/reference/release authority."
+    - id: VTC-005
+      severity: blocker
+      finding: >-
+        Brand identity is broken at the wordmark and stripped at the shell — every desktop and mobile proposal render sets the logotype as "MASTERMIN DX · Signals" (proposal/light-en-desktop.jpg x≈32-240 y≈34-52; also dark, mobile, and ZH as "MASTERMIN DX · 信号"), splitting a wordmark production renders solid as "MASTERMINDX", and the entire shared `_site_nav.html.j2` shell (flag market nav, search, Mastermind/Terminal, gear, Ask Mastermind copilot — visible across production/*-desktop.png y≈0-100) is replaced by a bare title plus two toggles, so the page no longer reads as part of MastermindX and the reference depicts a layout unbuildable without deleting a shared include it has no authority over.
+    - id: VTC-006
+      severity: major
+      finding: >-
+        ZH is now a string swap rather than a designed locale — production honors the Asia convention with win metrics in red and ticker chips deliberately counter-flipped to green (template:104 `var(--up)` under the zh `--up/--down` swap plus the explicit `html[data-lang="zh"] .tkr` rule at :170-175; see production/light-zh-desktop.png score x≈1135-1220 y≈490 red and CMI/ETR chips x≈310-510 y≈727 green), while proposal/light-zh-desktop.jpg x≈1240-1310 y≈365-400 renders 运行时 · 近期验证 in the same green as EN, erasing a genuinely thoughtful piece of the product for an entire audience.
+    - id: VTC-007
+      severity: major
+      finding: >-
+        The signature pre-attentive graphic is deleted with nothing equivalent in its place — production's `.w10` ten-block wins bar (template:33-36,118-122,322) lets you read hit rate without reading, and it appears in every card in both themes (production/dark-en-desktop.png x≈210-330 y≈731/1029/1363), but the proposal replaces it everywhere with the phrase "wins/10 runtime" buried mid-run-on (proposal/light-en-desktop.jpg x≈615-700 y≈582), converting a glance into a read and costing both visual information compression and a distinctive brand element (capability ledger.wins_per_10).
+    - id: VTC-008
+      severity: major
+      finding: >-
+        The honesty stance — the product's actual personality — is demoted twice: the amber `.stance` pill "Watch & research — don't chase" (template:77-79,235-238; production/light-en-desktop.png x≈215-450 y≈340) is gone from the hero, replaced by meta chips about the mock, and the five-bullet `.honesty` panel that production always shows (template:403-417) is collapsed in proposal/light-en-desktop.jpg x≈725-1410 y≈780-830 into a gray one-liner with "Open guidance ›", so an honesty-first product now hides its disclosure behind a disclosure.
+    - id: VTC-009
+      severity: major
+      finding: >-
+        Density is distributed backwards for a screener — the hero occupies ~250px to deliver a question and three decorative bars while the ledger rows carrying the evidence are crushed to ~40px at roughly 10px type (proposal/light-en-desktop.jpg: hero y≈100-340 vs rank-2/3 rows y≈670-745), i.e. airy-and-empty where nothing is being said and cramped where everything is, and the ZH desktop leaves ~270px of dead canvas below the footer (light-zh-desktop.jpg y≈815-1080), so the compression win is achieved by deletion rather than by better packing.
+    - id: VTC-010
+      severity: major
+      finding: >-
+        The page goes full-bleed against production's deliberate `.wrap{max-width:1080px;margin:0 auto}` (template:60), so proposal rank-2/3 rows span ~1345px with related evidence split across a ~505px gray run-on at x≈260-770 and a separate mono cluster at x≈785-1290 (proposal/light-en-desktop.jpg y≈683-735), producing long unaided saccades between two halves of the same row with no column rules, alignment, or grouping to carry the eye.
+    - id: VTC-011
+      severity: major
+      finding: >-
+        Dark is a neutral-gray inversion rather than the designed mode it is in production — the template treats dark as base (`:43` defaults to `'dark'`; `:191` "DARK (base)") and differentiates the modes materially, even giving tooltips a dotted rule in dark versus a solid hairline with a wash-on-hover in light (:192-203), while proposal/dark-en-desktop.jpg is layout-identical to its light twin on a flat hueless #131316 with cards at ~#1a1a1d whose boundaries nearly vanish in the state strip at y≈855-960, losing production's navy-tinted ground and hero radial (`.hero::before` :71-72).
+    - id: VTC-012
+      severity: major
+      finding: >-
+        The material that makes this page look like itself is flattened out of both modes — production's hero is a glass card (`var(--glass-bg)`/`--glass-blur`/`--glass-shadow`, template:69-70) with a radial accent wash and the hand-built three-tick-converging-into-a-node SVG motif that literally draws "lining up" (:81-82,245-258), whereas proposal hero (light/dark-en-desktop.jpg y≈100-340) is a plain bordered rectangle with three equal-length blue/gold/blue bars labeled "signal", which reads as a generic dashboard starter and, worse, implies a magnitude encoding that is not data.
+    - id: VTC-013
+      severity: major
+      finding: >-
+        The free rank-1 payoff loses its affordance — production's `.tkr` chip is a two-tier link (mono ticker + 11px company name, tinted and bordered, href="stocks/TICKER.html", template:129-133,367-371; production/light-en-desktop.png x≈320-515 y≈770 "CMI Cummins / ETR Entergy"), but the frozen reference represents it only as a single flat gray pill "DEMO representative only" (proposal/light-en-desktop.jpg x≈1185-1390 y≈582) and as unlinked "DEMO / DEMO-2" pills in entitled-hydration-dark-en.jpg x≈515-645 y≈267, so the core interaction "open the rank-1 matching ticker links" has no visible affordance anywhere in the artifact.
+    - id: VTC-014
+      severity: major
+      finding: >-
+        A daily product loses its dateline and gains a control plane it was ruled out of — the hero eyebrow changes from "SETUP TAPE · 2026-09-21" (template:226) to the category label "SIGNAL STACK · DISCOVERY" (proposal/light-en-desktop.jpg x≈58-238 y≈134) with the as-of date surviving only inside the meta run-on, while a new All/Daily+weekly/Consistent only/Reset chip bar plus a mobile "Filters ▾" flyout (light-en-desktop.jpg x≈995-1405 y≈378-408; light-en-mobile.jpg y≈295-330) pushes the surface toward the command center that baseline.yml design_lineage "Design Migration Factory archetype B" expressly forbids for this discovery board.
+    - id: VTC-015
+      severity: major
+      finding: >-
+        Evidence type is pushed under production's prose floor and into contrast risk — production's smallest prose tokens are `.lc-since` 11.5px and `.chip` 12px with `.honesty li` at 13px (template:101,126,152), yet the proposal renders sample basis, era comparison, and state-card bodies at roughly 10px in muted gray on both themes (proposal/dark-en-desktop.jpg rank-3 meta x≈262-770 y≈718-740; state cards y≈870-945), which at that size sits at or below the 4.5:1 normal-text threshold and needs measured proof rather than assertion either way.
+    - id: VTC-016
+      severity: major
+      finding: >-
+        A third accent hue appears with no job — production runs one accent (`--info` blue) plus `--up` green and `--warn` amber, with all primary buttons on `--fill-info` (template:143-144; production/light-en-desktop.png "Start free trial" x≈1013-1130 y≈1086 blue), while the proposal puts its primary CTA and every Unlock button in violet (proposal/light-en-desktop.jpg x≈586-702 y≈790-818 and x≈1292-1390 y≈678-698) while still using blue for chips and hero bars, so the palette gains an unearned second brand color and drifts off the blue the product is known by.
+    - id: VTC-017
+      severity: major
+      finding: >-
+        The frozen reference is not internally consistent and so cannot be law as-is — the hero body copy differs between viewports ("Prioritize names where several independent timing signals agree…" desktop vs "Use convergence to decide what deserves attention." mobile, light-en-desktop.jpg y≈256-278 vs light-en-mobile.jpg y≈215-240), the subtitle drops "governed Paper reference" on mobile, and the ZH desktop ships four state cards to EN's five (light-zh-desktop.jpg y≈730-785 omits DISABLED), leaving implementers to guess which cell is normative.
+    - id: VTC-018
+      severity: minor
+      finding: >-
+        The open honesty panel boxes each of the five bullets in its own bordered card (honesty-open-dark-en.jpg y≈143-470), adding five borders and ~60px of chrome that fragment one coherent stance into five separate warnings, where production's single `.honesty` panel with amber square markers (template:149-153) reads tighter and more assured.
+    - id: VTC-019
+      severity: minor
+      finding: >-
+        Small craft signals are dropped without replacement — the green status dot preceding every leg (`.leg-txt::before` with its soft ring, template:116) is absent from all proposal leg rows (proposal/light-en-desktop.jpg y≈515-540), and the global-zero panel loses production's centered 🔭 treatment (template:429-433), leaving the leg list flatter and less alive than the shipped version.
+  strengths:
+    - >-
+      global-zero-dark-en.jpg is genuinely excellent product thinking: it states the distinction the baseline cares most about in plain words ("This is a global-zero state, not an empty filtered view"), preserves production's voice and meaning from template:431-435 ("Strong setups are intentionally rare" / "Get notified when setups fire"), and keeps the ghost-CTA affordance — this state reads better than production's twee telescope treatment.
+    - >-
+      entitled-hydration-dark-en.jpg models the paid boundary honestly and correctly: public evidence visibly does not move or disappear and only ticker identities appear, using DEMO/DEMO-2 placeholders rather than invented names, which respects both the GATING LAW in build_confluence_screener.py:81-83,139-148 and the recorded rejected variants "Fake blurred paid ticker names" and "Invented live market values."
+    - >-
+      Promoting the sample basis out of hover and into always-visible inline text is a real improvement: production hides months/fires denominators in `data-tip-rc-en` tooltips (template:290,296,330) that simply do not exist on touch, and the proposal's inline "recent runtime · runtime mo/fires · older runtime · runtime mo/fires" makes capability ledger.validation_sample_basis reachable on mobile for the first time.
+    - >-
+      Giving rank 1 a full card while compressing ranks 2-3 is a defensible and honest hierarchy idea — rank 1 is the free, actionable row, and matching visual weight to actual user value is the right instinct even though this execution overshoots.
+    - >-
+      The dashed lock border on the ranks 2-3 group is lineage-consistent rather than invented, echoing production's `.locked{border:1px dashed color-mix(in srgb,var(--info) 34%,var(--line))}` at template:136-137.
+    - >-
+      honesty-open-dark-en.jpg preserves all five production honesty bullets with their meaning and their amber square marker intact (matching `.honesty li::before`, template:153), so the content itself was respected even where its placement was not.
+    - >-
+      Pairing the CTA band and the honesty summary side by side (proposal/light-en-desktop.jpg y≈778-830) reclaims real vertical space versus production's two stacked full-width blocks, and the added TF badge alongside D/W legibly extends the timeframe tier without disturbing the existing `.leg-tf` d/w color logic.
+
+second_pass:
+  amended_at: "2026-09-25T12:33:00.784Z"
+  amendments:
+    - finding: VTC-001
+      action: upheld
+      severity_after: blocker
+      note: >-
+        Binding verified independently: REVEAL_PROVENANCE.txt:3 FROZEN_ARTIFACT_COMMIT=78745328c878a80bcedcb2b114620ce5832f4ab9 now matches REVEAL_PROPOSAL.yml:5 frozen_sha and INPUTS.txt, so this rationale describes the bytes I judged. Scope narrowed, severity unchanged. REVEAL_DECISION.md §5 makes the question 'Which names line up across the signal stack today?' now-protected structural law and §4.1 mandates a 'question/answer header', so I withdraw the clause objecting to a question-led hero — recording plainly that as glance-tier law I judge it worse than production's 32px `.hero-state` answer, since the first pixel of a daily screener should be the answer, not the prompt. The unprotected half is fatal and unrescued: the law says question/answer and the answer is absent. hero.current_answer RETAIN explains only why the count is not hardcoded ('runtime count remains data-bound'), which does not explain its total omission from all four mobile heroes (dark/light-en-mobile.jpg y≈75-270 contains eyebrow, three-line question, two-line body and three bars, with no count chip), while desktop demotes it to a gray meta chip (light-en-desktop.jpg x≈205-372 y≈300-320). task.scan_now asserts EQUIVALENT on an 'answer-first hero'; on half the matrix there is no answer, and an assertion the frozen pixels refute cannot discharge the finding.
+    - finding: VTC-002
+      action: downgraded
+      severity_after: major
+      note: >-
+        The corrected rationale supplies a principled constraint I under-weighted: REVEAL_REFERENCE.md:28 and authority_delta auth.market_values (direction weaker, warranted true) establish that `runtime`/`DEMO` placeholders exist to avoid inventing market facts, aligning with baseline.yml rejected_variants 'Invented live market values in design fixtures'. That is the right call and I withdraw any implication numbers should have been faked. The typographic consequence survives because an honest placeholder need not be a variable-width lowercase word: a neutral numeric-shaped token preserving 30px weight, tabular alignment and the `/10` unit would assert no market fact while proving the metric is still the type hero. As frozen, light-en-desktop.jpg x≈1180-1390 y≈455-500 renders 'runtime | runtime' at roughly card-title weight, so the reference demonstrates neither scale, nor digit alignment, nor width tolerance for its primary number. Repairable by token shape rather than layout rethink.
+    - finding: VTC-003
+      action: upheld
+      severity_after: blocker
+      note: >-
+        The corrected rationale changes the claim but not the pixels, and it expressly assigns this exact question to me. REVEAL_PROPOSAL.yml now rates task.read_public_receipt and task.compare_evidence EQUIVALENT on the ground that the public facts are textually retained — which I accept as literally true — but its own notes reserve the decision: 'The evidence is intentionally compact; visual scanning/density remains an independent taste-review question rather than an author-side claim of superiority', and information_economics findings[2] repeats that the critic 'must judge whether the typography and compression remain sufficiently scannable'. My judgment is that they are not. Facts present as text are not facts that can be compared: light-en-desktop.jpg y≈683-735 renders ranks 2-3 as ~40px rows of undifferentiated ~10px gray run-on sharing no axis, alignment, or component vocabulary with rank 1, so a reader cannot perform the board's defining act of comparing rank 1 against rank 2 at a glance. REVEAL_DECISION.md §5 requires 'for each surfaced rank: explicit evidence/leg stack and validation/freshness context'; a run-on sentence satisfies 'present' but not 'explicit'. Under the severity rubric this materially worsens scannability as canonical law.
+    - finding: VTC-004
+      action: downgraded
+      severity_after: major
+      note: >-
+        Half withdrawn on genuine revealed law. REVEAL_DECISION.md §4.6 and §5 require the governed reference to preserve 'loading, empty, stale, error, disabled, filter, hover/focus, and applicable interaction states', add.state_contract makes them explicit design requirements, and REVEAL_REFERENCE.md:38,76,84 scopes the artifact as design evidence that is not production/browser proof — so a state-specimen strip is required rather than spec-board contamination, and that clause is withdrawn outright. The execution defect stands unrebutted: representing a focus state means drawing the ring, not printing the pseudo-class into the product label, yet chips read 'All · focused' (light-en-desktop.jpg x≈995-1100), 'Daily + weekly · hover' (dark-en-desktop.jpg x≈1060-1215), 'All · focus-visible' (mobile x≈28-130), the ZH rank-1 card title reads '代表性信号组合 · 悬停状态' (light-zh-desktop.jpg x≈100-280 y≈365), and the footer fuses process metadata into product legal copy ('Context, not investment advice · RIG approval and browser proof still required'). add.state_contract asserts these treatments are 'represented'; they are labeled, and an implementer reading these cells as law can ship those strings.
+    - finding: VTC-005
+      action: downgraded
+      severity_after: major
+      note: >-
+        The nav half is explained by a boundary I could not see in quarantine: REVEAL_REFERENCE.md:8-13 identifies these as Paper artboards projecting the route body, :11 holds that 'Repository product law remains authoritative' with the projection as implementation input only, and REVEAL_DECISION.md §7 confirms production templates remain untouched — so omitting the shared `_site_nav.html.j2` include is an artboard scope boundary, not a proposal to delete site chrome. Clause withdrawn. The wordmark is addressed nowhere in REVEAL_PROPOSAL.yml, REVEAL_REFERENCE.md or REVEAL_DECISION.md and remains a rendered typo in every frozen cell: 'MASTERMIN DX · Signals' across the EN cells and 'MASTERMIN DX · 信号' in ZH (light-en-desktop.jpg x≈32-240 y≈34-52), splitting a wordmark production sets solid. A reference proposed for canonical status that misspells the company in all eight cells cannot be adopted as drawn.
+    - finding: VTC-006
+      action: upheld
+      severity_after: major
+      note: >-
+        Untouched by the corrected rationale. parity.theme_locale RETAIN defines the target as matrix presence ('Eight-cell Dark/Light × EN/ZH × desktop/mobile reference matrix'), task.mobile_bilingual claims EQUIVALENT on 'the same evidence/state grammar', and REVEAL_REFERENCE.md:51 asserts EN/ZH remains first-class — none of which addresses colour semantics. The pixels show the substantive loss: production inverts twice for CJK, with win metrics red under the zh `--up/--down` swap and ticker chips deliberately counter-flipped back to green by the explicit `html[data-lang='zh'] .tkr` rule at template:170-175 (production/light-zh-desktop.png score x≈1135-1220 y≈490 red, CMI/ETR chips x≈310-510 y≈727 green), whereas proposal/light-zh-desktop.jpg x≈1240-1310 y≈365-400 renders 运行时 · 近期验证 in the identical green as EN. Preserving the grammar while discarding the colour convention is precisely the mechanical-localization failure the finding names; an asserted first-class locale that is a pure string swap in the pixels is not first-class.
+    - finding: VTC-007
+      action: downgraded
+      severity_after: minor
+      note: >-
+        Substantially rescued as a lawful authorial choice. ledger.wins_per_10 is RELOCATE, not RETAIN, with destination 'Compact result evidence/receipt line rather than the primary card hero' and reachability 'Visible in the refreshed evidence receipt on rank 1 and ranks 2–3 across desktop and mobile' — and the pixels match that intent exactly, with baseline.yml marking this capability importance: supporting rather than core. Demoting a supporting readout out of the card hero is a defensible call I should credit rather than fault. The residue is a genuine but small taste loss the author does not dispute and expressly hands to me: production's ten-block `.w10` bar (template:33-36,118-122) let hit rate be read without reading, while 'wins/10 runtime' buried mid-run-on (light-en-desktop.jpg x≈615-700 y≈582) converts a glance into a read and drops a distinctive mark. Lawful relocation that I judge marginally worse, hence polish.
+    - finding: VTC-008
+      action: downgraded
+      severity_after: minor
+      note: >-
+        Largely rescued by content genuinely carried elsewhere, which is the kind of rationale that should move a finding. honesty.guidance IMPROVE targets 'Hero/context warning plus a compact How to read this honestly disclosure below the result set, with a governed expanded/open specimen preserving all five production explanations', and the pixels bear both halves out: honesty-open-dark-en.jpg y≈143-470 preserves all five explanations verbatim, so 'the content is lost' is withdrawn, and the warning is in fact moved earlier as claimed — 'Convergence increases attention priority. It does not authorize a position.' at light-en-desktop.jpg x≈1143-1380 y≈266-296 plus 'Evidence is not a trade instruction' in the mobile hero body — with auth.trade rated equal and warranted on evidence the pixels support. Residue is polish only: the amber `.stance` pill (template:77-79) was a pre-attentive coloured glance object and a right-rail sentence is not, so the warning now costs a read instead of a look.
+    - finding: VTC-009
+      action: upheld
+      severity_after: major
+      note: >-
+        One sub-clause withdrawn, core upheld and expressly reserved to me. REVEAL_REFERENCE.md:28 fixes desktop artboards at 1440×1080, so the ~270px below the ZH footer is a canvas-fill artifact rather than a design choice and that clause is withdrawn. The distribution finding is not contested: information_economics now concedes 'The density is an explicit review surface: functional parity is restored, but the Visual/Taste critic must judge whether the typography and compression remain sufficiently scannable.' Judged: the distribution is backwards for a screener. light-en-desktop.jpg spends the hero's ~240px (y≈100-340) on a question plus decorative bars while crushing the rows that carry every piece of evidence to ~40px at roughly 10px type (y≈670-745) — airy where nothing is being said, cramped where everything is. Right-dense would be the inverse.
+    - finding: VTC-010
+      action: upheld
+      severity_after: major
+      note: >-
+        No revealed constraint addresses measure or max-width. REVEAL_REFERENCE.md:28 fixes the artboard at 1440 wide, but canvas width does not dictate running content to 32px gutters inside it; production's `.wrap{max-width:1080px;margin:0 auto}` (template:60) is a deliberate reading-measure decision the proposal silently discards, and nothing in the corrected packet claims otherwise. The consequence is visible and unmitigated: rank-2/3 rows span ~1345px with related evidence split between a ~505px gray run-on at x≈260-770 and a separate mono cluster at x≈785-1290 (light-en-desktop.jpg y≈683-735), with no column rule, alignment or grouping to carry the eye across the gap — which is also a direct contributor to the scanning failure in VTC-003.
+    - finding: VTC-011
+      action: upheld
+      severity_after: major
+      note: >-
+        Rationale asserts rather than demonstrates. REVEAL_REFERENCE.md:51 lists Dark/Light as first-class and information_economics preserved[2] repeats it, but nothing in the corrected packet explains the flat hueless ground, the removed hero radial, or the near-invisible card boundaries in dark. Production treats dark as the base mode (template:43 defaults to 'dark'; :191 'DARK (base)') and designs the two modes divergently down to tooltip affordance — a dotted rule that brightens in dark versus a solid hairline that washes on hover in light (:192-203) — whereas proposal/dark-en-desktop.jpg is layout-identical to its light twin on #131316 with ~#1a1a1d cards whose edges effectively vanish in the state strip at y≈855-960. Presence of a dark cell in the matrix is not evidence that dark was designed.
+    - finding: VTC-012
+      action: upheld
+      severity_after: major
+      note: >-
+        One clause fully withdrawn on protected law; the rest stands unrebutted. REVEAL_DECISION.md §4 permits a decorative convergence motif 'only when it makes no unsupported semantic claim' and bars 4H/3D/2W labels absent a route contract, and REVEAL_REFERENCE.md:60 records that removal with the motif reduced to neutral 'signal' decoration — so the three equal-length bars are a deliberate, law-compliant repair and my 'implies a magnitude encoding that is not data' clause is withdrawn outright, since equal lengths plus a neutral label are the correct way to mark a non-claim. The material finding is unaffected and unaddressed: production's hero is a glass card (`--glass-bg`/`--glass-blur`/`--glass-shadow`, template:69-70) with a radial accent wash and a hand-built SVG of three ticks converging into a node that literally draws 'lining up' (:81-82,245-258); replacing that with a plain bordered rectangle plus three bars in both modes (light/dark-en-desktop.jpg y≈100-340) is a real loss of characterfulness that nothing in DECISION §4 required, and it is the largest single reason the board now reads as a generic dashboard rather than as itself.
+    - finding: VTC-013
+      action: downgraded
+      severity_after: minor
+      note: >-
+        Rescued by a real constraint the corrected rationale supplies. access.rank1_free_tickers RETAIN now states 'DEMO-only labels are used in the design fixture' and task.use_free_match explains the fixture 'reserves actual links for implementation' with the note 'No live market identity is invented in Paper', which is coherent, matches REVEAL_DECISION.md §5's requirement for 'a representative entitled/unlocked transition using non-live placeholders in design evidence', and is consistent with REVEAL_REFERENCE.md:11 leaving the existing `.tkr` component in authoritative repository source. I withdraw the implication that identities were wrongly withheld. Small residue: chip structure and link affordance are not market facts, so the two-tier mono-ticker-plus-name treatment and link styling (template:129-133,367-371) could have been shown with DEMO content and are not, leaving the page's one free payoff unspecified in the reference — a minor repair, not a design failure.
+    - finding: VTC-014
+      action: downgraded
+      severity_after: minor
+      note: >-
+        The dominant clause is withdrawn on protected law. REVEAL_DECISION.md §4.2 makes 'filter controls that change the candidate view without changing evidence truth' part of the protected ranked_screener composition, §6 narrowly supersedes the archetype reading baseline.yml relied on, and add.presentation_filters bounds them tightly ('may not change deterministic rank, producer eligibility, or access truth. RIG may reject this addition without affecting the rest of the reference') — so the command-center objection is wrong and I withdraw it without reservation. The freshness half is also largely carried elsewhere: ledger.occurrence_freshness RETAIN places 'occurrence/history/frequency and last-seen context' in the evidence receipt on every rank, and 'last runtime' is present there. Residue is the hero dateline alone: the eyebrow drops 'SETUP TAPE · 2026-09-21' (template:226) for the category label 'SIGNAL STACK · DISCOVERY' (light-en-desktop.jpg x≈58-238 y≈134), leaving a daily product's hero with no as-of anchor — polish, since the fact itself survives in the receipt.
+    - finding: VTC-015
+      action: upheld
+      severity_after: major
+      note: >-
+        Explicitly reserved to me and therefore unrebutted. information_economics findings[2] states that typography and compression scannability is the Visual/Taste critic's call rather than an author-side claim, and REVEAL_REFERENCE.md:76 defers only browser/runtime proof of overflow and interaction behaviour — legibility of frozen pixels is measurable from the frozen pixels and is not covered by that deferral. Production's prose floor is `.lc-since` 11.5px with `.chip` 12px and `.honesty li` 13px (template:101,126,152), while the proposal sets sample basis, era comparison and state-card bodies at roughly 10px muted gray in both themes (dark-en-desktop.jpg rank-3 meta x≈262-770 y≈718-740; state cards y≈870-945). My pass-1 wording declined to assert a ratio and required measurement; that requirement remains unmet in either direction and the corrected packet supplies nothing toward it, which matters because this is the type carrying the evidence the whole board exists to convey.
+    - finding: VTC-016
+      action: downgraded
+      severity_after: minor
+      note: >-
+        Mitigated by a revealed authority boundary. REVEAL_REFERENCE.md:11 states 'Repository product law remains authoritative. Paper is a governed editable projection and generated JSX is implementation input only', and REVEAL_DECISION.md §8 confirms the ruling creates no component or token authority and §5 calls the composition one 'of existing primitives' — so the violet in the artboard is not token-binding and should not reach the shipped palette. The observation stands as drawn (primary CTA and every Unlock button in violet at light-en-desktop.jpg x≈586-702 y≈790-818 and x≈1292-1390 y≈678-698 alongside blue chips and bars, against production's single `--fill-info` accent at template:143-144), but with token authority explicitly withheld this is projection polish rather than a brand decision.
+    - finding: VTC-017
+      action: upheld
+      severity_after: major
+      note: >-
+        One clause resolved, two unrebutted. The sha discrepancy I raised is withdrawn as resolved: REVEAL_PROVENANCE.txt now binds RATIONALE_BRANCH_HEAD=28c8c71afefb603095fd59ef7bb20d4d323f931c and FROZEN_ARTIFACT_COMMIT=78745328c878a80bcedcb2b114620ce5832f4ab9 matching REVEAL_PROPOSAL.yml:5, which I verified rather than accepted — that was a packaging defect in the review bundle, not a defect in the artifact, and it should not count against the proposal. I also verified and withdraw nothing against REVEAL_REFERENCE.md:65-66, since the mobile Loading+Empty second tile row and the corrected 'EN · Light' label are both genuinely present. What survives is unaddressed by the corrected packet: EN desktop ships five state tiles while ZH desktop ships four with DISABLED absent (light-zh-desktop.jpg y≈730-785), directly against REVEAL_REFERENCE.md:74 and add.state_contract's claim that disabled treatment is represented in the primary matrix; and hero body copy differs between viewports (light-en-desktop.jpg y≈256-278 versus light-en-mobile.jpg y≈215-240). A reference intended as canonical law must be internally consistent cell to cell.
+    - finding: VTC-018
+      action: upheld
+      severity_after: minor
+      note: >-
+        Unaddressed by every corrected file. honesty.guidance requires only that a governed open specimen preserve all five production explanations, which it does, and says nothing about their treatment. The polish observation is unchanged: boxing each of the five bullets in its own bordered card (honesty-open-dark-en.jpg y≈143-470) spends five borders and ~60px of chrome to fragment one coherent stance into five separate warnings, where production's single `.honesty` panel with amber square markers (template:149-153) reads tighter and more assured — a small loss of composure on the one panel where composure is the message.
+    - finding: VTC-019
+      action: upheld
+      severity_after: minor
+      note: >-
+        Telescope clause withdrawn; leg-dot clause upheld. state.global_zero RETAIN establishes the global-zero specimen as governed and my own pass-1 strengths already judged its restraint an improvement over production's emoji treatment, so faulting the missing 🔭 was inconsistent of me and I withdraw it without reservation. The `.leg-txt::before` green status dot with its soft ring (template:116) remains absent from every proposal leg row (light-en-desktop.jpg y≈515-540), with ledger.signal_legs RETAIN addressing leg depth and the neutral TF placeholder but nothing about leg treatment, leaving the stack flatter and less alive than the shipped version.
+  verdict: BLOCK

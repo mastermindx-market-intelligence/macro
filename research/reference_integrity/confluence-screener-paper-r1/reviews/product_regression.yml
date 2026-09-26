@@ -1,0 +1,264 @@
+# Native M2 Fabric critic receipt; child=aeb875d02cb01fe11
+# pass1_sha256=0ce502e85d5981a6fdc967f2b39a362eca7da36226b11147e8e42352fbfa95cf
+# corrected_pass2_sha256=5e874780e8620ea3c69643f1439dbc80d24bd284fb300efd548f7e127f0a2bfd
+# previous pass-2 attempt invalidated before publication: stale rationale source commit
+schema: mastermind.rig_review.v1
+reference_id: confluence-screener-paper-r1
+role: product_regression
+artifact_sha: 78745328c878a80bcedcb2b114620ce5832f4ab9
+
+reviewer:
+  identity: "rig-confluence-7727-reviewer-a-opus-fabric"
+  model: opus
+  independent_of_author: true
+
+quarantine:
+  first_pass_inputs:
+    - user/business job
+    - production-before artifact (screenshots + source)
+    - proposed-after artifact (frozen files + crops)
+    - capability ledger (baseline.yml)
+  rationale_received_after_first_pass: true
+
+first_pass:
+  frozen_at: "2026-09-25T12:14:01.505Z"
+  verdict: BLOCK
+  findings:
+    - id: PRC-001
+      severity: blocker
+      capability: hero.current_answer
+      finding: >-
+        The hero's answer is replaced by a question — production renders the literal count "3 setups lining up today" with the as-of eyebrow "SETUP TAPE · 2026-09-21" (production/dark-en-desktop.png hero; geometry.json `"hero": "3 setups lining up today"`; template lines 226-234), while every proposal cell shows only "Which names line up across the signal stack today?" with the count demoted to a grey placeholder chip "Active setups · runtime count" (proposal/dark-en-desktop.jpg hero right of eyebrow; zh: "活跃组合 · 运行时数量"), so the page's primary one-glance answer becomes a headline the user must reconstruct.
+    - id: PRC-002
+      severity: blocker
+      capability: ledger.rank_order
+      finding: >-
+        The deterministic top-three ledger is split into two incomparable containers — rank 1 gets a full card while ranks 2-3 are compressed into a bordered two-row strip labelled "Ranks 2–3 · public evidence" with ~140-character middot-run meta lines (proposal/dark-en-desktop.jpg y≈640-750; zh "第 2–3 名 · 公开证据" y≈530-635) — whereas production renders three structurally identical `.lc` cards in one `.ledger` column (template lines 268-271, 90-94; production/dark-en-desktop.png ranks 01/02/03), destroying like-for-like rank comparison and implying ranks 2-3 are a lesser class of evidence rather than the next two rows of the same ordering.
+    - id: PRC-003
+      severity: blocker
+      capability: ledger.validation_pair
+      finding: >-
+        The honest recent/older pairing is broken asymmetrically — on all four mobile cells rank 1 shows a single large green "runtime / recent validation" with the older-era reading exiled into the grey micro-run ("older runtime · runtime mo/fires", proposal/dark-en-mobile.jpg and light-en-mobile.jpg card #1), and on desktop ranks 2-3 the pair is a text run where "recent runtime" is coloured and "older runtime" is not (proposal/dark-en-desktop.jpg rows #2/#3), versus production which keeps "6.7/10 · wins recently (2018+)" directly above "older years: 5.9/10" in every cell including mobile (template lines 286-297; production/dark-en-mobile.png), reinstating exactly the "one flattering rate" the capability exists to prevent.
+    - id: PRC-004
+      severity: blocker
+      capability: honesty.guidance
+      finding: >-
+        The always-visible five-bullet honesty block is collapsed behind a disclosure — production prints all five bullets inline on every cell including 390px (template lines 403-417; production/dark-en-mobile.png "HOW TO READ THIS HONESTLY"), while the proposal's default state shows only the telegraphic run "Leads ≠ proof · survivor bias · sample size · month-collapsed history · watch, not buy" plus "Open guidance ›" (proposal/dark-en-desktop.jpg right band y≈790-820; zh "展开说明 ›"), converting a core disclosure from unavoidable to opt-in and violating the plain-language glance-tier doctrine with the "≠" glyph.
+    - id: PRC-005
+      severity: blocker
+      capability: access.rank1_free_tickers
+      finding: >-
+        The free rank-1 matching-ticker row has no real-path design — production renders wrapping `.tkr` anchors to `stocks/<TICKER>.html` with company names ("CMI Cummins", "ETR Entergy", production/dark-en-desktop.png y≈769; template lines 361-372) whereas the proposal terminates the rank-1 meta row with a single static chip "DEMO representative only" (proposal/dark-en-desktop.jpg y≈581, mobile "DEMO" chip), so the screener's one free click-through affordance, its multi-ticker wrap behaviour, and its link target are entirely unspecified.
+    - id: PRC-006
+      severity: major
+      capability: parity.theme_locale
+      finding: >-
+        The ZH cells drop the investment-advice disclaimer that production renders in both locales — EN footer carries "Context, not investment advice" (proposal/dark-en-desktop.jpg and light-en-desktop.jpg footer right) but ZH footers end at "...构建器 + 受保护 payload。" with no "仅供参考，非投资建议" (proposal/dark-zh-desktop.jpg, light-zh-desktop.jpg, dark-zh-mobile.jpg footers), while production template line 442 emits the `l-zh` disclaimer unconditionally.
+    - id: PRC-007
+      severity: major
+      capability: parity.theme_locale
+      finding: >-
+        Locale parity fails on controls and states as well as copy — EN desktop exposes four filter chips including "Reset" and five state tiles including "DISABLED", ZH desktop exposes three chips (no 重置) and four tiles (no 禁用) (compare proposal/light-en-desktop.jpg y≈392/y≈870 against proposal/light-zh-desktop.jpg y≈305/y≈757), and the same control is labelled "All · focused" (en desktop), "All · focus-visible" (en mobile), "全部 · 焦点" (zh desktop) and "全部 · 键盘焦点" (zh mobile).
+    - id: PRC-008
+      severity: major
+      capability: state.global_zero
+      finding: >-
+        A filter bar is added to a list the builder hard-caps at three rows (`top3 = eligible[:3]`, build_confluence_screener.py:118), creating a zero-result filtered view that production cannot produce and that the baseline explicitly warns must not be confused with global zero — the proposal ships both an in-body "EMPTY · No combinations match these filters" tile (proposal/dark-en-desktop.jpg y≈890) and a separate global-zero screen (proposal/global-zero-dark-en.jpg), so two visually similar "nothing here" states now compete on the same surface while "Consistent only" can silently hide the only qualifying rows.
+    - id: PRC-009
+      severity: major
+      capability: ledger.signal_legs
+      finding: >-
+        For two of three ranks the enumerable leg stack becomes inline prose — production renders each leg as its own `.leg` row with a D/W timeframe chip and a semantic dot (template lines 302-317; production/dark-en-desktop.png rank 02 "W MA Buy (100) / D RSI-21 Oversold Entry / W RSI Stack (7/14/21)"), while the proposal flattens ranks 2-3 to "D · runtime leg · W · runtime leg · TF · runtime leg" inside a wrapping meta run (proposal/dark-en-desktop.jpg rows #2/#3; zh identical), and invents a third timeframe token "TF" that the template cannot emit since `leg.tf` is only 'W' or the D fallback (template lines 305-313).
+    - id: PRC-010
+      severity: major
+      capability: ledger.validation_sample_basis
+      finding: >-
+        The entire explanatory tier that qualifies the numbers is unrepresented — production attaches `cs-tipped` tooltips carrying the eligibility gates ("≥40 fires pooled · ≥24 distinct months · ≥10 tickers", template lines 230-231), the ranking method ("Wilson lower bound ... minus the random-entry baseline", lines 275-276), the win definition ("up after 21 trading days", line 290) and the baseline caveat ("percentage points of win rate, not return", lines 328-329), plus the dotted-underline discoverability cue visible in production/dark-en-desktop.png, whereas no proposal cell shows any tipped affordance and the open-state guidance drops the instruction entirely ("inspect the months and fire counts behind the rate", proposal/honesty-open-dark-en.jpg bullet 3, replacing production's "Hover or tap any win rate to see how many months it rests on", template line 410).
+    - id: PRC-011
+      severity: major
+      capability: ledger.rank_order
+      finding: >-
+        Authority is inflated at the same moment the caveats are removed — ranks 2-3 are badged "public evidence" / "公开证据" and the rank chips are restyled from production's cautious `01/02/03` monospace ordinal into assertive `#1/#2/#3` (proposal/dark-en-desktop.jpg y≈655 and rank chips; contrast template line 276 `'%02d'|format(c.rank)` and its "a line-up with fewer months behind it is pushed down, not up" tip), presenting a searched, Wilson-discounted, 3-row heuristic ordering as adjudicated evidence rather than a lead list.
+    - id: PRC-012
+      severity: major
+      capability: hero.current_answer
+      finding: >-
+        The as-of date and provenance footer vanish from every cell — production prints "SETUP TAPE · 2026-09-21" in the hero eyebrow and "Data as of 2026-09-21 · large-cap US universe · updated daily." in `.site-foot` (template lines 226, 441; geometry.json title "Signals Lining Up — 2026-09-21"), while both proposal footers carry design-process text instead ("Editable reference · Method/honesty disclosure remains required ... RIG approval and browser proof still required", proposal/light-en-desktop.jpg y≈986), leaving a daily-updating screener with no visible freshness anchor and leaking release-gate metadata into the product surface.
+    - id: PRC-013
+      severity: major
+      capability: access.rank23_no_leak
+      finding: >-
+        The honest lock treatment is reduced from an explained panel to a button — production renders a dashed `.locked` block with a lock icon, the tipped count "2 stocks lining up now", the reason line "Unlock this line-up's matching tickers with the free trial." and a trial CTA per gated row (template lines 379-396; production/dark-en-desktop.png y≈1087/1422), while the proposal offers only "runtime matches" inline plus an "Unlock tickers →" button and a section-level "Tickers locked" tag (proposal/dark-en-desktop.jpg rows #2/#3), removing the per-row statement that the count is public and the names are not.
+    - id: PRC-014
+      severity: major
+      capability: ledger.rank_order
+      finding: >-
+        The mock silently assumes short, uniform data — every rank label is the 25-character "runtime combination label" placed on a single table row beside a ~140-character meta run, whereas real labels run 60-75 characters ("Weekly reclaims 100-day line + weekly RSI stack curls up + RSI-21 washed out", production/dark-en-desktop.png rank 02), `active_count` and `active_tickers` are unbounded lists, and leg counts vary with `leg_indices` (build_confluence_screener.py:126-137), so the proposal's densest rows have no demonstrated wrap, truncation, or overflow behaviour at either 1440px or 390px.
+    - id: PRC-015
+      severity: major
+      capability: ledger.wins_per_10
+      finding: >-
+        The segmented wins-per-10 visual is deleted in favour of text — production renders a ten-cell `.w10` bar with free/gated tone plus "6.7 in 10 recently" (macro at template lines 33-37; chip at 320-324; production/dark-en-desktop.png y≈731), while every proposal cell reduces this to the token "wins/10 runtime" inside the meta run (proposal/dark-en-desktop.jpg y≈582 and rows #2/#3), removing the only pre-attentive comparison device on the page.
+    - id: PRC-016
+      severity: minor
+      capability: ledger.random_baseline_consistency
+      finding: >-
+        Only the positive consistency branch is designed — the proposal shows "✓ cross-era runtime" / "跨时期 runtime" on rank 1 and "cross-era runtime" on ranks 2-3 (proposal/dark-en-desktop.jpg y≈582), with no treatment for the two negative states the template can render, "older years didn't back it up" and "Hasn't beaten random entry in the recent half" (template lines 343-357), so a failing combination has no specified appearance.
+    - id: PRC-017
+      severity: minor
+      capability: access.entitled_hydration
+      finding: >-
+        The hydrated state omits the CTA transform production performs — `showUnlockedCta()` rewrites the band to "Paid view unlocked / All matching stocks available to your plan are visible above. / Open Mastermind →" (template lines 552-573), but proposal/entitled-hydration-dark-en.jpg shows only the ranks 2-3 rows with DEMO chips and leaves the CTA band unrepresented, and no post-hydration empty-tickers fallback is shown despite the script's "No stock matches this one today." branch (template lines 542-547).
+    - id: PRC-018
+      severity: minor
+      capability: ledger.occurrence_freshness
+      finding: >-
+        Occurrence and freshness are demoted from a labelled line under the combo title to three tokens at the tail of a grey meta run — production renders "Seen 1254 times since 1965 · about 20.4 a year · last 2026-09-18" directly beneath each title (template lines 279-284; production/dark-en-desktop.png y≈568), the proposal renders "seen runtime · ~runtime/yr · last runtime" after seven other tokens (proposal/dark-en-desktop.jpg y≈582), so history depth and last-fire recency stop being scannable per row.
+    - id: PRC-019
+      severity: minor
+      capability: honesty.guidance
+      finding: >-
+        The concrete survivorship denominator is written out of the copy — production's bullet reads "The list covers {{ universe_n }} large, established US companies" rendering as 245 and repeats it in the CTA sub ("screen all 245 names", template lines 408, 422), while the proposal's open state rewrites the sentence to "The universe is large, established US companies that made it" with no numeric slot (proposal/honesty-open-dark-en.jpg bullet 2) and the CTA sub becomes "Full screener · matching tickers · build your own combinations".
+    - id: PRC-020
+      severity: minor
+      capability: parity.theme_locale
+      finding: >-
+        The proposal substitutes its own header chrome for the shared site nav and duplicates the theme/locale control plane, with the ZH cells offering a single "中文" chip and no visible route back to EN (proposal/dark-zh-desktop.jpg top right, versus "EN / 中文" in proposal/dark-en-desktop.jpg), the wordmark mis-set as "MASTERMIN DX", and production's nav, search and Mastermind/Terminal entries (rendered via `_site_nav.html.j2`, template line 211; production/dark-en-desktop.png top bar) absent from every cell.
+    - id: PRC-021
+      severity: minor
+      capability: state.global_zero
+      finding: >-
+        Runtime states are invented that a statically generated page cannot enter — "STALE · Last confirmed snapshot", "ERROR · Signal data unavailable", "LOADING" and "DISABLED" tiles ship in the page body of every desktop and mobile cell (proposal/light-en-desktop.jpg y≈870-940; proposal/dark-en-mobile.jpg y≈1210-1390), although `render()` writes a fully materialised HTML file and the only asynchronous path is the premium fetch, whose documented failure behaviour is to leave the rendered wall silently unchanged (template lines 601-603), so the tiles both overstate the page's data model and sit inside the product surface as a spec gallery.
+    - id: PRC-022
+      severity: minor
+      capability: parity.theme_locale
+      finding: >-
+        Design-process vocabulary leaks into customer-facing slots across locales — the rank-1 title reads "代表性信号组合 · 悬停状态" ("hover state") in both ZH cells (proposal/dark-zh-desktop.jpg y≈371), a filter chip is labelled "Daily + weekly · hover" on EN desktop, and the established ZH product term 共振 used throughout production (template lines 214, 233, 388, 431) is replaced with 对齐/运行时.
+  strengths:
+    - >-
+      The paid-payload boundary is respected without cheating: ranks 2-3 carry counts and "Unlock tickers" but never names, and the hydration render uses honest "DEMO" / "DEMO-2" chips with the note "no live or protected ticker names · server entitlement remains the reveal authority" (proposal/entitled-hydration-dark-en.jpg footnote), matching the gating law at build_confluence_screener.py:81-83,146-148 and avoiding the rejected fake-blur variant.
+    - >-
+      The global-zero screen is explicitly and correctly disambiguated, stating "This is a global-zero state, not an empty filtered view" and preserving the notify CTA (proposal/global-zero-dark-en.jpg), which is a sharper articulation of state.global_zero than production's empty block alone.
+    - >-
+      The honesty open state preserves all five production bullets with their meaning intact, including survivor bias, thin-sample wobble, month-collapsed counting and the watch-not-buy stance (proposal/honesty-open-dark-en.jpg), so the disclosure content itself was not diluted, only relocated.
+    - >-
+      Sample denominators are promoted from hover-only tooltips into visible inline text ("runtime mo/runtime fires" for both eras, proposal/dark-en-desktop.jpg y≈582), which is a genuine improvement over production where ledger.validation_sample_basis is reachable only via `cs-tipped` hover (template lines 287-297).
+    - >-
+      The hero right rail keeps a non-authorising framing — "Convergence increases attention priority. It does not authorize a position." / "一致性提高关注优先级，不等于开仓授权。" (proposal/dark-en-desktop.jpg, dark-zh-desktop.jpg) — which correctly carries the discovery-board, not-a-trade-instruction stance.
+    - >-
+      No invented market values appear anywhere: dates, tickers, win rates and counts are all left as explicit `runtime` slots bound to the deterministic builder (proposal/dark-en-desktop.jpg throughout), honouring the rejected-variant rule against fabricated live data in design fixtures.
+
+second_pass:
+  amended_at: "2026-09-25T12:32:48.108Z"
+  amendments:
+    - finding: PRC-001
+      action: downgraded
+      severity_after: major
+      note: >-
+        Two real constraints move this. REVEAL_DECISION.md §5 makes the literal question 'Which names line up across the signal stack today?' now-protected structural law and §4 item 1 defines the composition as a 'question/answer header'; the question is also verbatim baseline.yml:26-29 user_job, so the headline change is lawful and I do not judge that law wrong. REVEAL_PROPOSAL.yml hero.current_answer RETAIN adds a constraint I could not see — 'runtime count remains data-bound, never hardcoded by the reference' — so 'Active setups · runtime count' is a deliberate non-invented slot, not a deletion. Upheld at major on the residue the rationale does not reach: the law requires an answer as well as a question, and in all eight cells the answer slot renders at grey secondary-chip weight against production's 32px hero (`.hero-state`, template line 75), so task.scan_now's EQUIVALENT grade overstates a hierarchy change the pixels show as a demotion.
+    - finding: PRC-002
+      action: downgraded
+      severity_after: major
+      note: >-
+        REVEAL_DECISION.md §4 item 3 authorizes 'ranked evidence rows/cards' and item 5 makes the entitlement transformation a first-class composition element, so grouping ranks 2-3 at the paid boundary is lawful structure, and auth.rank ('presentation filters may not rerank') is warranted — order and rank authority genuinely survive. REVEAL_PROPOSAL.yml information_economics also supplies a principled reason for the density asymmetry: 'Paid rows remain more information-dense ... because public evidence may not disappear merely because ticker identities are gated.' But the disposition's own words are 'Ranked result cards #1..#3', which the frozen pixels contradict (#1 is a card, #2/#3 are table rows in a separate dashed container, proposal/dark-en-desktop.jpg y≈640-750), and routing density to the taste critic does not dispose of it: scanning the ranked three is baseline core_interaction 1, so like-for-like comparability is a product-regression question, upheld at major.
+    - finding: PRC-003
+      action: downgraded
+      severity_after: major
+      note: >-
+        The corrected rationale carries the datum and the pixels confirm it: ledger.validation_pair IMPROVE states 'compact mobile receipts wrap rather than drop either era', and both eras plus sample basis are in fact present on every rank and viewport ('recent runtime · runtime mo/fires · older runtime · runtime mo/fires' in proposal/dark-en-mobile.jpg and light-en-mobile.jpg; '近期 runtime ... 较早 runtime' in the ZH mobile cells), so my pass-1 characterisation of a dropped era is corrected to a demoted era and the blocker does not stand. Upheld at major because baseline ledger.validation_pair is about comparison, not presence — 'instead of seeing one flattering rate' — and a 20px green mono recent hero against a 9px grey older token inside a wrapped run is not a comparable pair; task.compare_evidence EQUIVALENT is therefore unwarranted on the strength of presence alone, and this is not purely a taste question the packet can route away.
+    - finding: PRC-004
+      action: downgraded
+      severity_after: major
+      note: >-
+        REVEAL_PROPOSAL.yml honesty.guidance IMPROVE describes exactly the observed pattern with a real justification — 'Moves the warning earlier while keeping the full production guidance visibly reachable' — and both halves check out in the pixels: the hero carries 'Evidence is not a trade instruction' / '证据用于筛选与研究，不自动成为交易指令' earlier than production's footer block, and proposal/honesty-open-dark-en.jpg preserves all five production explanations intact. REVEAL_DECISION.md §4 item 7 requires a 'methodology/honesty disclosure' without mandating an always-open one. Upheld at major only for the interaction regression itself: production prints all five bullets unavoidably in every cell including 390px (template lines 403-417), and 'visibly reachable' behind 'Open guidance ›' is not visible, with the compact summary reduced to the off-doctrine 'Leads ≠ proof' glyph run on the plain-language glance tier.
+    - finding: PRC-005
+      action: downgraded
+      severity_after: major
+      note: >-
+        REVEAL_REFERENCE.md line 28 and auth.market_values supply a legitimate constraint — the fixture uses runtime/DEMO placeholders 'rather than inventing market facts' — so the absence of real tickers is correct practice, not dishonesty. But the corrected packet's own words defeat its EQUIVALENT grade: task.use_free_match says rank 1 'reserves actual links for implementation', which concedes the reference does not specify the screener's only free click-through, while access.rank1_free_tickers RETAIN simultaneously claims a 'Matching now row with public ticker links' that proposal/dark-en-desktop.jpg y≈581 does not show — one static 'DEMO representative only' chip, and a bare 'DEMO' on mobile. Downgraded from blocker because the slot and its label exist and proposal/entitled-hydration-dark-en.jpg demonstrates the multi-chip pattern ('DEMO', 'DEMO-2'), giving implementers a workaround the rank-1 row itself never provides.
+    - finding: PRC-006
+      action: upheld
+      severity_after: major
+      note: >-
+        Unmoved, and the corrected packet weakens rather than strengthens its own position: authority_delta auth.trade still asserts direction 'equal', warranted true, but its evidence pointer is now 'proposal/honesty-open-dark-en.jpg' — an EN-only specimen — so the ZH trade-disclaimer gap is entirely unevidenced, while task.mobile_bilingual EQUIVALENT claims the ZH cells preserve 'the same evidence/state grammar'. The pixels show no 仅供参考，非投资建议 in any ZH cell (proposal/dark-zh-desktop.jpg, light-zh-desktop.jpg, dark-zh-mobile.jpg) against EN's 'Context, not investment advice', and production emits the l-zh disclaimer unconditionally (template line 442). REVEAL_DECISION.md §3 and §5 require preserving locale truth, so the protected law reinforces this finding instead of resolving it.
+    - finding: PRC-007
+      action: upheld
+      severity_after: major
+      note: >-
+        REVEAL_PROPOSAL.yml add.state_contract now asserts flatly that 'Focus/focus-visible, hover, expanded/open and disabled treatments are represented' and REVEAL_REFERENCE.md line 74 repeats it for 'the primary matrix'; the frozen pixels show those claims hold only for the EN half — ZH desktop carries four state tiles with no 禁用/DISABLED and three filter chips with no 重置/Reset (proposal/light-zh-desktop.jpg y≈305 and y≈757 against proposal/light-en-desktop.jpg y≈392 and y≈870). An assertion of parity that the frozen bytes contradict does not move a finding, and the four labels for one control (All · focused / All · focus-visible / 全部 · 焦点 / 全部 · 键盘焦点) still show eight cells that are not one governed composition.
+    - finding: PRC-008
+      action: downgraded
+      severity_after: minor
+      note: >-
+        The protection resolves the scope-creep charge and I judge the law sound, not wrong: REVEAL_DECISION.md §4 item 2 makes 'filter controls that change the candidate view without changing evidence truth' part of the protected ranked_screener identity and §5 lists filter states as MUST-preserve, while add.presentation_filters bounds them correctly ('may not change deterministic rank, producer eligibility, or access truth ... RIG may reject this addition without affecting the rest of the reference') — a deliberate refusal to mint a second authority. state.global_zero RETAIN keeps filter-empty 'a distinct state' and the pixels honour it ('never imply zero signals globally' / '不等于全局为零'). Residual minor only: filtering a set the builder hard-caps at three rows (build_confluence_screener.py:118) returns little to the user while its main observable effect is manufacturing a second, visually similar empty state.
+    - finding: PRC-009
+      action: upheld
+      severity_after: major
+      note: >-
+        The TF half is withdrawn on genuine constraint: REVEAL_DECISION.md §5 and §7 require the reference to prove three-leg tolerance 'without minting a special third-leg semantic' and REVEAL_REFERENCE.md lines 28/49 define TF as a neutral layout-capacity label, which is the correct answer to that law and which I could not have known. The flattening half is upheld at major against direct contradiction: ledger.signal_legs RETAIN claims leg rows 'stay explicit on every rank and locale' and task.read_signal_stack grades EQUIVALENT because 'Every refreshed rank exposes D/W runtime-leg capacity', yet on 2 of 3 ranks in all eight cells the legs are inline prose inside the wrapping meta run ('D · runtime leg · W · runtime leg · TF · runtime leg', proposal/dark-en-desktop.jpg rows #2/#3) rather than the enumerable `.leg` rows of template lines 302-317.
+    - finding: PRC-010
+      action: upheld
+      severity_after: major
+      note: >-
+        Nothing in the corrected rationale carries this capability. ledger.validation_sample_basis RETAIN covers month/fire denominators only, which the pixels do show; the finding is about the tier that qualifies the numbers — eligibility gates (template lines 230-231), the Wilson-lower-bound ranking method (275-276), the 21-trading-day win definition (290) and the 'percentage points of win rate, not return' caveat (328-329). REVEAL_DECISION.md §4 item 7 requires a 'methodology/honesty disclosure', and neither the primary matrix nor proposal/honesty-open-dark-en.jpg contains any of that methodology, while the hover/focus representation REVEAL_REFERENCE.md line 74 claims is spent on the filter chips ('Daily + weekly · hover', 'All · focused'). The reference therefore migrates the decision-grade numbers while leaving their qualifications behind.
+    - finding: PRC-011
+      action: downgraded
+      severity_after: minor
+      note: >-
+        I over-read the badge and the corrected law settles it: REVEAL_DECISION.md §5 uses 'rank 2–3 public count/evidence' as its own term for the public-versus-protected split, so 'Ranks 2–3 · public evidence' means 'this part is public', not 'this is adjudicated proof', and §4's 'the rank itself is ordinal evidence organization, not lifecycle state' plus auth.rank's warranted 'equal' grade dispose of the inflation charge for the ordering. Residual minor: the restyled #1/#2/#3 ordinals arrive without production's cautious ranking qualifier ('a line-up with fewer months behind it is pushed down, not up', template line 273), which is the PRC-010 loss surfacing as tone rather than an independent overclaim.
+    - finding: PRC-012
+      action: upheld
+      severity_after: major
+      note: >-
+        The corrected 'Preserved truth contract' (REVEAL_REFERENCE.md lines 42-54) still lists per-combo occurrence/last-seen but never the page-level as-of or provenance line, and ledger.occurrence_freshness RETAIN is scoped to the per-rank receipt, so nothing carries production's 'SETUP TAPE · 2026-09-21' hero eyebrow or 'Data as of 2026-09-21 · large-cap US universe · updated daily.' (template lines 226, 441). The footer slot in all eight cells instead holds process text ending 'RIG approval and browser proof still required' (proposal/light-en-desktop.jpg y≈986); REVEAL_REFERENCE.md line 84's disclaimer that these files do not approve anything explains why that sentence exists but not why it occupies the customer-facing provenance slot of a reference implementers will build from.
+    - finding: PRC-013
+      action: downgraded
+      severity_after: minor
+      note: >-
+        The corrected rationale identifies a real improvement I under-credited: access.rank23_no_leak IMPROVE makes the server boundary legible 'without fake blurred or placeholder ticker names', and the pixels carry an explicit count-only statement — 'Combo identity, legs + validation stay public · only matching ticker identities unlock' / '组合身份、信号腿和验证结果保持公开。仅当前匹配股票身份需解锁' — plus 'Tickers locked'. task.respect_paid_boundary BETTER is warranted on the evidence. Residual minor: that explanation now appears once per group rather than once per row, so a user landing on row #3 alone sees only 'runtime matches' and 'Unlock tickers →' where production gave each gated row its own reasoned lock panel.
+    - finding: PRC-014
+      action: upheld
+      severity_after: major
+      note: >-
+        The rationale reassigns the proof burden without discharging it: parity.mobile_no_horizontal_scroll RETAIN and REVEAL_REFERENCE.md line 76 both defer no-horizontal-overflow to separate browser proof, which is a fair boundary but means the reference cannot be credited with that capability at all. Nothing in the corrected packet addresses the design question — 60-75 character real combo labels ('Weekly reclaims 100-day line + weekly RSI stack curls up + RSI-21 washed out', production/dark-en-desktop.png rank 02), unbounded active_tickers, and variable leg_indices depth (build_confluence_screener.py:126-137) against a single-row composition whose every placeholder is the 25-character 'runtime combination label' — and information_economics now openly concedes 'paid rows become visibly denser', which raises rather than answers the overflow question.
+    - finding: PRC-015
+      action: downgraded
+      severity_after: minor
+      note: >-
+        The corrected reachability clause is a binding constraint that the pixels satisfy: ledger.wins_per_10 RELOCATE requires it 'Visible in the refreshed evidence receipt on rank 1 and ranks 2–3 across desktop and mobile ... without moving it behind entitlement', and 'wins/10 runtime' is present on all three ranks in all eight cells. baseline.yml marks this capability supporting rather than core, so an authorised relocation that preserves the datum and keeps it public is legitimate; only the pre-attentive segmented-bar form (`.w10`, template lines 33-37) is lost, which is polish.
+    - finding: PRC-016
+      action: upheld
+      severity_after: minor
+      note: >-
+        ledger.random_baseline_consistency RETAIN claims the edge and cross-era evidence 'remain public evidence on every rank', which the pixels support as tokens ('Δrandom runtime pp · cross-era runtime'), but the finding is about the branches that are never drawn. The three governed specimens (REVEAL_REFERENCE.md lines 32-38) cover global zero, entitled hydration and open honesty only, so the two negative states the template renders — 'older years didn't back it up' and 'Hasn't beaten random entry in the recent half' (template lines 343-357) — still have no specified appearance anywhere in the candidate.
+    - finding: PRC-017
+      action: upheld
+      severity_after: minor
+      note: >-
+        The corrected access.entitled_hydration RETAIN is scoped narrowly to identities — the specimen 'keeps public evidence fixed and reveals only DEMO ticker identities after the protected-payload boundary' — and cta.paid_continuation RETAIN covers only the rest-state CTA, so neither disposition claims or carries the post-hydration transform of that CTA ('Paid view unlocked' / 'All matching stocks available to your plan are visible above.' / 'Open Mastermind →', template lines 552-573), nor the hydrated-but-empty fallback (lines 542-547). Both remain unrepresented in proposal/entitled-hydration-dark-en.jpg.
+    - finding: PRC-018
+      action: upheld
+      severity_after: minor
+      note: >-
+        ledger.occurrence_freshness RETAIN asserts the context 'remains in the evidence receipt on every rank', and the tokens are indeed present ('seen runtime · ~runtime/yr · last runtime'), so nothing is deleted. Upheld at minor because the finding was about placement, which the rationale confirms rather than rebuts: production gives each card a labelled line directly under the title ('Seen 1254 times since 1965 · about 20.4 a year · last 2026-09-18', template lines 279-284), the candidate puts the same three facts eighth in a grey middot run, and per-row history depth and recency stop being scannable.
+    - finding: PRC-019
+      action: upheld
+      severity_after: minor
+      note: >-
+        auth.market_values ('weaker', warranted) correctly explains why no literal 245 is printed, and I accept that constraint, but it does not explain the loss of the binding site: proposal/honesty-open-dark-en.jpg rewrites the bullet to 'The universe is large, established US companies that made it' with no slot at all, while its own footnote says 'runtime universe count and market values bind in implementation'. Production carries the number twice (template lines 408, 422), so the survivorship denominator has nowhere to land at runtime under this reference.
+    - finding: PRC-020
+      action: downgraded
+      severity_after: minor
+      note: >-
+        The site-nav component is withdrawn: baseline.yml declares shared_surfaces: [] and REVEAL_REFERENCE.md scopes the artifact to eight single-route Paper artboards, so omitting global chrome is a legitimate scoping choice I over-read in pass 1. Upheld on the narrow residue that no corrected document addresses and the pixels still show — the 'MASTERMIN DX' wordmark mis-set in all eight cells, and the ZH cells offering a lone '中文' chip with no visible route back to EN where the EN cells offer the 'EN / 中文' pair, which is a locale-parity defect in the candidate's own replacement chrome.
+    - finding: PRC-021
+      action: upheld
+      severity_after: minor
+      note: >-
+        The protection resolves the scope-creep half and I judge the law defensible rather than wrong: REVEAL_DECISION.md §4 item 6 and §5 make loading/empty/stale/error/disabled mandatory ranked_screener composition, and §3's requirement to preserve 'null, stale' truth is coherent here because the daily artifact can go stale and the protected fetch can fail — my pass-1 claim that a static page 'cannot enter' these states was too narrow. Upheld at minor on the placement residue only: unlike the three properly separated governed specimens, these tiles are rendered inside the product page body in all eight primary cells, so the reference ships a spec gallery inside the composition an implementer will build.
+    - finding: PRC-022
+      action: downgraded
+      severity_after: minor
+      note: >-
+        The runtime/DEMO/TF half is withdrawn — REVEAL_REFERENCE.md line 28 establishes these as a deliberate anti-invention discipline and REVEAL_DECISION.md §5 forbids inventing unsupported semantics, which is correct practice. Upheld on the half no corrected document covers: the ZH rank-1 title reads '代表性信号组合 · 悬停状态' ('hover state') in both ZH desktop cells, putting an interaction-state annotation in a customer-facing title slot, and the established ZH product term 共振 that production uses in hero, lock and empty copy (template lines 214, 233, 388, 431) is silently replaced by 对齐 across all four ZH cells.
+  verdict: BLOCK
