@@ -1,9 +1,9 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-09-26T15:07:20.282310+00:00",
+  "generated_at": "2026-09-26T19:24:14.447676+00:00",
   "n_ledgers": 34,
-  "n_closed": 25,
-  "n_grader_starved": 9,
+  "n_closed": 26,
+  "n_grader_starved": 8,
   "n_log_only": 0,
   "ledgers": [
     {
@@ -14,8 +14,8 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 112603,
-      "n_graded": 166380,
+      "n_logged": 112670,
+      "n_graded": 168198,
       "last_graded_at": "2026-09-26T15:03:29.568862+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -28,8 +28,8 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 166380,
-      "n_graded": 166380,
+      "n_logged": 168198,
+      "n_graded": 168198,
       "last_graded_at": "2026-09-26T15:03:29.568862+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -159,7 +159,7 @@
       "n_graded": 230,
       "last_graded_at": null,
       "tune_step": "N",
-      "verdict": "GRADER-STARVED"
+      "verdict": "CLOSED"
     },
     {
       "key": "risk_radar_forward_log",
