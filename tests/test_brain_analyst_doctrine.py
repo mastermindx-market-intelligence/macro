@@ -392,3 +392,87 @@ def test_fail_soft_missing_dir_and_junk_input(tmp_path):
         routed = a.route(msg)
         assert isinstance(routed, list)
         assert isinstance(a.prompt_block(routed), str)
+
+
+# Event Intelligence: existing router, no new model/data/authority plane.
+@pytest.mark.parametrize('message', [
+ 'Explain the CPI release', 'Assess PPI components', 'Prepare for payrolls',
+ 'What matters in PCE?', 'Assess this Treasury auction', 'Analyze the FOMC statement',
+ 'Interpret initial jobless claims', 'Read the GDP revision', 'Explain options expiry',
+ 'Review the economic calendar', 'Explain this earnings release',
+ '解读消费者物价指数', '分析非农就业', '国债拍卖应关注什么', '经济日历有哪些重点',
+ '解读初请失业金', '通胀数据公布前关注什么', '解读财报',
+])
+def test_event_led_question_routes_catalyst(message):
+    modules=a.route(message)
+    assert any(m['id']=='lens_catalyst' for m in modules)
+    block=a.prompt_block(modules)
+    assert 'EVENT-LED' in block and 'TAPE-LED' in block
+
+@pytest.mark.parametrize('clause',[
+ 'EVENT-LED', 'TAPE-LED', 'Before release', 'After release', 'Correction',
+ 'reference period', 'timestamp-matched', 'No forecast is not no context',
+ 'same economic episode', 'not proof of causation',
+ 'No tool or source access is granted',
+])
+def test_event_method_contract_reaches_prompt(clause):
+    assert clause in a.prompt_block(a.route('CPI release'))
+
+
+def test_event_method_preserves_sentinel_and_removes_numeric_causation_shortcut():
+    block=a.prompt_block(a.route('what happened just now'))
+    assert a.LEAK_SENTINELS[-1] in block
+    assert 'A 7% oil spike explains a 2% equity fall' not in block
+    assert 'only for TAPE-LED' in block
+
+
+def test_always_protocol_no_longer_forces_every_question_through_today_tape():
+    protocol=next(m for m in a.route('') if m['id']=='protocol')
+    assert 'EVENT-LED' in protocol['body']
+    assert 'concepts or historical' in protocol['body']
+    assert 'every market question, in this order' not in protocol['body']
+
+@pytest.mark.parametrize('message',[
+ 'CPI release treasury yields curve fed inflation today',
+ 'Read the GDP revision and payrolls in this regime',
+ 'Analyze the FOMC statement and the auction: rates, inflation, today',
+ '国债拍卖和通胀数据公布后如何解读收益率',
+])
+def test_event_method_survives_existing_prompt_budget(message):
+    modules=a.route(message)
+    assert 'lens_catalyst' in {m['id'] for m in modules}
+    assert sum(len(m['body']) for m in modules)<=12000
+    assert sum(not m['always'] for m in modules)<=3
+    assert len(a.prompt_block(modules))<=12500
+
+@pytest.mark.parametrize('message',['my portfolio in a federal shutdown','my portfolio about shopping habits'])
+def test_event_short_triggers_do_not_leak_into_unrelated_words(message):
+    assert 'lens_catalyst' not in {m['id'] for m in a.route(message)}
+
+@pytest.mark.parametrize('module_id',['lens_rates_curve','play_tape_reading'])
+def test_duration_example_is_arithmetically_consistent_and_conditional(module_id):
+    from decimal import Decimal
+    modules={m['id']:m for m in a._load()}
+    body=modules[module_id]['body']
+    expected=-Decimal(16)*Decimal(13)/Decimal(100)
+    assert f'{expected:.2f}%' in body  # 13 basis points, 16-year modified duration
+    assert 'hypothetical' in body and 'first-order' in body
+    assert 'exactly your' not in body
+    assert 'market added a cut' not in body
+
+
+def test_event_causal_ceiling_survives_always_protocol():
+    body=next(m['body'] for m in a.route('') if m['id']=='protocol')
+    assert 'Pattern examples in other lenses are hypotheses' in body
+    assert 'not calibrated causal rules' in body
+
+@pytest.mark.parametrize('message',[
+    'CPI release tomorrow: oil gold dollar credit spreads yields curve TLT outlook',
+    'Prepare for CPI release: what happens next week to oil gold credit and yields?',
+    'CPI release and my portfolio in Canada, TSX, USDCAD, Bank of Canada',
+])
+def test_explicit_event_survives_competing_real_lenses(message):
+    modules=a.route(message)
+    assert 'lens_catalyst' in {m['id'] for m in modules}
+    assert sum(len(m['body']) for m in modules)<=a._CHAR_BUDGET
+    assert len(a.prompt_block(modules))<=a._CHAR_BUDGET+500
