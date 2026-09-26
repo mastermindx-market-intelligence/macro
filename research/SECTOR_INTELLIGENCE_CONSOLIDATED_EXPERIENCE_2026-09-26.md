@@ -38,14 +38,26 @@ contract: use only an exposed authorized action. No silent deletion or guessed p
 
 ## 2. One journey, at two levels
 
-**Sector Central** is the group-discovery workspace. Preserve its existing parent
-contract: Rotation / Discover / Market breadth, with one selected group and contextual
-Overview / Members / Cycle access. **Sector Intelligence** is the expanded detail of
-that same selected object, not another unrelated dashboard.
+**Sector Central** is the single customer-facing product. Preserve the strongest
+existing parent workspace contract:
 
-The expanded detail uses one local destination set:
+**Rotation · Discover · Market breadth**
+
+Those are user jobs, not three competing dashboards. **Discover** carries the richer
+visual-research modes inside the same job: **Heatmap · Bubbles · Matrix · Table**. Switching
+representation preserves the applicable market, source-local universe, selected
+theme/subtheme/group, measure, date/window, filters and company selection. A visualization
+mode is never promoted into another top-level product/navigation family.
+
+The expanded selected-object depth uses one local destination set:
 
 **Overview · Companies · Signals · Drivers · History**
+
+The useful old **Cycle** capability is retained inside **History** as the Cycle-position
+state (Price / Cycle position / supported historical measures), using its strong one-chart
+plus one-inspector composition. Do not expose both Cycle and History as peer destinations.
+**Sector Intelligence** therefore becomes selected-object depth inside Sector Central,
+not another unrelated dashboard.
 
 - Overview: the group's assessment, visual supporting evidence, material caution and
   next investigation.
@@ -55,7 +67,9 @@ The expanded detail uses one local destination set:
   scope available. No newly fused confidence score or trade permission.
 - Drivers: source-grounded business/catalyst evidence; a meaningful unavailable state
   when absent, not fabricated orders, pricing or narratives.
-- History: actual dated observations and changes. No invented curve, replay or performance.
+- History: actual dated observations and changes, including the preserved Cycle-position
+  job and source-local membership changes when their point-in-time owner is bound. No invented
+  curve, replay, performance or continuity across incompatible source versions.
 
 Evidence is contextual: a Sources control or value-level explanation opens a consistent
 source panel and returns to the prior location. CI, pull-request, implementation and
@@ -104,6 +118,24 @@ The Semiconductor pocket provides the next level of investigation. Show relative
 performance on a shared zero axis and keep absolute return in an aligned column. Selecting
 a row coordinates one company inspector. Bars encode actual values, not decorative trend
 lines. Do not call six illustrative overview rows the full cohort.
+
+For **Discover**, the prepared answer precedes visualization mechanics. The richer modes
+answer different but coordinated questions:
+
+- **Heatmap:** where strength/weakness is concentrated across the selected hierarchy.
+- **Bubbles:** how return and participation distribute across many source-local subthemes,
+  with mark area carrying one explicit source measure. Dense/overlapping marks open an
+  explicit cluster choice or linked list; never jitter coordinates or place overlapping
+  invisible touch targets over every mark.
+- **Matrix:** whether breadth changes by industry and company-size tier. Grid and cluster/
+  summary representations share the same scope and measure.
+- **Table:** exact values, complete reachable population and sorting/filtering without
+  changing owner semantics.
+
+The current Finviz-shaped design study uses exact source-local observations as evidence,
+not as canonical GMI theme identity. A selected visual mark continues directly to the
+relevant Companies/Signals/Drivers research with the same filter context rather than
+making the user search for the object again.
 
 ### D. Continue
 
@@ -157,13 +189,46 @@ not establish that a source is still current or unavailable in production today.
 - Missing Business Pulse/history/route evidence stays missing. Honest placeholders are
   not a reason to display backend implementation lectures in the default viewport.
 
+### Current-source integration boundaries
+
+The richer 2026-09-26 Finviz design study adds useful current-snapshot and structural
+evidence without changing source authority:
+
+- The recorded owner themes payload contains **40 source-local theme families, 268
+  subthemes and 924 memberships**. A focused six-family canvas is a prepared comparison,
+  not the full universe; the product must state the scope and provide a family picker/
+  search so all 40 remain reachable.
+- Current checked-in Finviz structure equals the latest recorded tree-change vintage
+  (2026-08-15) while visible price/performance evidence is later. Structure clocks and
+  performance clocks stay separate. The existing Theme Graph/PIT owner, not Sector
+  Central, owns membership valid_from / valid_to.
+- A same calendar asof does not prove byte/semantic identity. The archived and published
+  Sep-25 subtheme-performance observations differ for 267/268 shared rows in the inspected
+  evidence. Do not splice them into one smooth history until the source owner proves a
+  comparable lineage/version transition.
+- The dated Sep-24 revisions, earnings, leadership, crowding/extension and valuation
+  examples come from existing Macro PR #7976 at its exact candidate revision. They remain
+  candidate **display/context research**, not accepted production evidence or rank/gate/
+  size/trade authority; the UI keeps each leg's date and maturity visible.
+- finviz_themes remains rights_class: unresolved for new GMI/public emissions. Existing
+  grandfathered owner paths are path-scoped, not a transferable license to every new
+  downstream customer surface. Paper/private design can proceed; production exposure of
+  the source-local taxonomy/membership requires the existing Theme Graph/rights owner to
+  accept that intended use.
+- Company-population truth uses separate **reported / supplied / readable / filtered**
+  counts. A source that reports 79 members but supplies no member rows is partial/
+  unavailable at member level, never 0 / 0 complete. Malformed identities may not be
+  fabricated, and usable rows may not silently redefine the denominator.
+
 ## 6. States and testable interactions
 
 | State | Human result | Proof required |
 |---|---|---|
 | Ready, dated snapshot | Clear subject/read and available research next step | Four-second protocol + next-step task |
 | Stale data | Date/age visible; no live label | Stale example uses unchanged last-known values |
-| Partial cohort | Coverage stated beside affected comparison | Missing members never converted to zero |
+| Partial cohort | Reported/supplied/readable/filtered coverage stated beside the affected comparison | Missing members never converted to zero or silently shrink the denominator |
+| Dense/overlapping visual marks | Explicit cluster/list choice and one coordinated inspector | No arbitrary nearest result, coordinate jitter or overlapping touch targets pretending to be distinct controls |
+| Source-version conflict | Current and archived/versioned observations remain separately labelled | Same date alone never authorizes a historical join |
 | Conflicting signal scopes | Plain description and accessible separate evidence | No fused score or invented permission |
 | No business/history data | Explain the specific missing capability briefly | No fake chart/catalyst/replay |
 | Empty company filter | Helpful reset; original cohort preserved | Filter reset and selection restoration |
@@ -183,10 +248,25 @@ unavailable to this session; do not claim to have independently reviewed its act
 or screenshots. The present contract changes the acceptance/hierarchy target, and must
 be compared against that candidate rather than blindly applied over it.
 
-First native slice after lawful custody: one consolidated Overview plus its company
-selection and Sources open states on the existing page, followed by actual-node visual
-inspection. Fix defects before expanding. Preserve original artboard IDs in the mapping
-and carry the same interaction/data contract into Terminal's existing components.
+The first consolidation slice now has known native effects on the existing page:
+`19GV-1` is the consolidated Overview and has received the population/signal/navigation
+and relative-scale corrections; `1GL2-1` is the first Discover/Bubbles artboard with the
+correct outer Rotation / Discover / Market breadth hierarchy and subordinate representation
+modes. Preserve those effects; do not recreate either board.
+
+Further native mutations are currently held because another same-file Paper operation
+(Policy Watch R2) completed its screens but its scoped working-indicator release was blocked
+before dispatch and its own checkpoint explicitly does not claim file-window/custody
+release. The Paper adapter exposes no read-only working-indicator census. Process silence
+is therefore insufficient proof of release. Continue source/design research and payload
+preparation, but do not clear another owner's nodes or switch carrier/mode/host to obtain
+that refused effect.
+
+After lawful file-window reconciliation, repair/refine the same Overview/Bubbles boards,
+then add Matrix/Themes/Evidence/Compare/Sources under this one information architecture.
+Fix visible/product-truth defects before theme/device multiplication. Preserve original
+artboard IDs in the mapping and carry the same interaction/data contract into Terminal's
+existing components.
 
 No source-law PR, Paper response, mock browser test or CI result is production proof.
 The commissioning owner's structural review and independent human-comprehension evidence
