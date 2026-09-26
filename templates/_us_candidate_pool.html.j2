@@ -80,10 +80,21 @@
   search.addEventListener('input',filter); outside.addEventListener('change',filter);
   for(var j=0;j<views.length;j++) views[j].addEventListener('click',function(){setView(this.dataset.ucpView);});
   var contextRequestSerial=0;
+  function contextText(value, fallback){
+    if(typeof value==='string' && value.trim()) return value;
+    if(typeof value==='number' && Number.isFinite(value)) return String(value);
+    return fallback || 'Unavailable';
+  }
+  function contextItems(value){
+    if(!Array.isArray(value)) return [];
+    return value.map(function(item){
+      return item && typeof item==='object' && !Array.isArray(item) ? item : {};
+    });
+  }
   function appendLine(parent, label, value){
     var item=document.createElement('div'); item.className='ucp-context-item';
     var k=document.createElement('span'); k.className='ucp-context-k'; k.textContent=label;
-    var v=document.createElement('span'); v.className='ucp-context-v'; v.textContent=value || 'Unavailable';
+    var v=document.createElement('span'); v.className='ucp-context-v'; v.textContent=contextText(value);
     item.appendChild(k); item.appendChild(v); parent.appendChild(item);
   }
   function showContext(ticker, state, body){
@@ -95,18 +106,18 @@
       appendLine(grid,'Authority',body.authority==='context_only'?'Context only':String(body.authority||'Unavailable'));
       appendLine(grid,'Event',String(body.event_id||'Unavailable'));
       appendLine(grid,'Event date',String(body.event_date||'Unavailable'));
-      var reported=(body.reported||[])[0], guidance=(body.guidance||[])[0];
-      appendLine(grid,reported&&reported.label||'Reported',reported&&reported.value||'Unavailable');
-      appendLine(grid,guidance&&guidance.label||'Guidance',guidance&&guidance.value||'Unavailable');
-      var cov=(body.coverage_states||[]).map(function(x){return x.label+': '+x.state;}).join(' · ');
-      appendLine(grid,'Coverage',cov||'Unavailable');
-      appendLine(grid,'Lifecycle',String(body.lifecycle_state||'Unavailable'));
-      var watch=(body.watch||[]).slice(0,3);
+      var reported=contextItems(body.reported)[0], guidance=contextItems(body.guidance)[0];
+      appendLine(grid,contextText(reported&&reported.label,'Reported'),reported&&reported.value);
+      appendLine(grid,contextText(guidance&&guidance.label,'Guidance'),guidance&&guidance.value);
+      var cov=contextItems(body.coverage_states).slice(0,3).map(function(x){return contextText(x.label,'Coverage')+': '+contextText(x.state);}).join(' · ');
+      appendLine(grid,'Coverage',cov);
+      appendLine(grid,'Lifecycle',contextText(body.lifecycle_state));
+      var watch=contextItems(body.watch).slice(0,3);
       for(var wi=0;wi<watch.length;wi++){
-        appendLine(grid,String(watch[wi].label||'Watch'),String(watch[wi].value||'Unavailable'));
+        appendLine(grid,contextText(watch[wi].label,'Watch'),watch[wi].value);
       }
-      var sources=(body.source_states||[]).map(function(x){return x.kind+': '+x.status;}).join(' · ');
-      appendLine(grid,'Sources',sources||'Unavailable');
+      var sources=contextItems(body.source_states).slice(0,8).map(function(x){return contextText(x.kind,'Source')+': '+contextText(x.status);}).join(' · ');
+      appendLine(grid,'Sources',sources);
     }else if(state==='loading'){
       appendLine(grid,'Company context','Loading company context…');
     }else if(state==='not-covered'){
@@ -143,7 +154,15 @@
       .catch(function(){if(requestSerial===contextRequestSerial) showContext(ticker,'unavailable',{});})
       .finally(function(){btn.disabled=false;});
   });
-  root.addEventListener('candidate-pool-hydrated',filter);
+  root.addEventListener('candidate-pool-hydrated',function(){
+    ++contextRequestSerial;
+    var panel=root.querySelector('[data-ucp-context-panel]');
+    if(panel){
+      panel.replaceChildren(); panel.hidden=true;
+      delete panel.dataset.ticker; delete panel.dataset.state;
+    }
+    filter();
+  });
   setView(root.dataset.view); filter();
 })();
 </script>

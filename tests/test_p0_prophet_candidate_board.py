@@ -764,6 +764,67 @@ async function main() {
     assert(s.panel.textContent.includes('Lifecycle'));assert(s.panel.textContent.includes('Sources'));
     assert(s.panel.textContent.includes('Unavailable'));count++;
   }
+  {
+    const extras=[
+      ['available string',200,{...body(),available:'true'},'unavailable'],
+      ['available false',200,{...body(),available:false},'unavailable'],
+      ['wrong code 404',404,{code:'not_found',ticker:'AAPL'},'unavailable'],
+      ['401',401,{},'unavailable'],['403',403,{},'unavailable'],['429',429,{},'unavailable'],
+    ];
+    for(const [name,status,payload,state] of extras){
+      const s=setup();click(s,0);await response(s,0,status,payload);expect(s,'AAPL',state);count++;
+    }
+  }
+  {
+    const malformed=[
+      ['watch',{}],['watch',[null]],
+      ['coverage_states',{}],['coverage_states',[null]],
+      ['source_states',{}],['source_states',[null]],
+    ];
+    for(const [field,value] of malformed){
+      const s=setup();click(s,0);
+      await response(s,0,200,{...body(),lifecycle_state:'corrected',[field]:value});
+      expect(s,'AAPL','ready');
+      assert(s.panel.textContent.includes('synthetic-AAPL'),'valid context erased by malformed '+field);
+      count++;
+    }
+  }
+  {
+    for(const field of ['reported','guidance']){
+      const s=setup();click(s,0);await response(s,0,200,{...body(),[field]:{label:'Pretend',value:100}});
+      expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Unavailable'));count++;
+    }
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,{...body(),reported:[{label:'Measured',value:0}]});
+    expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Measured 0'));count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,{...body(),reported:[{label:'Measured',value:{n:1}}]});
+    expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Measured Unavailable'));assert(!s.panel.textContent.includes('[object Object]'));count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,{...body(),lifecycle_state:{phase:'corrected'}});
+    expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Lifecycle Unavailable'));assert(!s.panel.textContent.includes('[object Object]'));count++;
+  }
+  {
+    const s=setup();click(s,0);
+    const coverage=Array.from({length:4},(_,i)=>({label:'Coverage '+i,state:'state'+i}));
+    await response(s,0,200,{...body(),coverage_states:coverage});expect(s,'AAPL','ready');
+    assert(s.panel.textContent.includes('Coverage 2: state2'));assert(!s.panel.textContent.includes('Coverage 3: state3'));count++;
+  }
+  {
+    const s=setup();click(s,0);
+    const sources=Array.from({length:9},(_,i)=>({kind:'source_'+i,status:'present'}));
+    await response(s,0,200,{...body(),source_states:sources});expect(s,'AAPL','ready');
+    assert(s.panel.textContent.includes('source_7: present'));assert(!s.panel.textContent.includes('source_8: present'));count++;
+  }
+  {
+    const s=setup();click(s,0);expect(s,'AAPL','loading');
+    s.root.listeners['candidate-pool-hydrated']();
+    assert.equal(s.panel.hidden,true);assert.equal(s.panel.dataset.ticker,undefined);assert.equal(s.panel.dataset.state,undefined);
+    await response(s,0,200,body());assert.equal(s.panel.hidden,true);assert.equal(s.panel.textContent,'');count++;
+  }
   console.log('COMPANY_CONTEXT_CASES_PASS='+count);
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});
@@ -794,7 +855,7 @@ def _run_company_context_contract(source: str):
 def test_company_context_latest_selection_typed_response_and_source_projection():
     result = _run_company_context_contract(_company_context_source())
     assert result.returncode == 0, result.stderr or result.stdout
-    assert 'COMPANY_CONTEXT_CASES_PASS=19' in result.stdout
+    assert 'COMPANY_CONTEXT_CASES_PASS=39' in result.stdout
 
 
 def test_company_context_contract_rejects_boundary_regressions():
@@ -804,7 +865,12 @@ def test_company_context_contract_rejects_boundary_regressions():
         (" && body.authority==='context_only'", ''),
         ("body && body.code==='event_workspace_not_covered' && body.ticker===ticker", 'true'),
         ("    showContext(ticker,'loading',{});", ''),
-        ("      appendLine(grid,'Lifecycle',String(body.lifecycle_state||'Unavailable'));", ''),
+        ("      appendLine(grid,'Lifecycle',contextText(body.lifecycle_state));", ''),
+        ("    if(!Array.isArray(value)) return [];", ''),
+        ("    if(typeof value==='number' && Number.isFinite(value)) return String(value);", ''),
+        (".slice(0,3).map(function(x){return contextText(x.label,'Coverage')", ".map(function(x){return contextText(x.label,'Coverage')"),
+        (".slice(0,8).map(function(x){return contextText(x.kind,'Source')", ".map(function(x){return contextText(x.kind,'Source')"),
+        ("    ++contextRequestSerial;", ''),
     ]
     for old, new in mutations:
         assert old in source, old
