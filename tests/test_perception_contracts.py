@@ -230,3 +230,21 @@ class TestDeescalation:
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-v"]))
+
+
+def test_quad_vector_momentum_discloses_reconstructed_basis():
+    hist = [{"date": "2026-06-04", "Q1": .8, "Q2": .1, "Q3": .05, "Q4": .05},
+            {"date": "2026-06-05", "Q1": .7, "Q2": .1, "Q3": .05, "Q4": .15}]
+    full = _full_row_frame()
+    latest = {"quad": "Q1", "regime_one": {"asof": "2026-06-05", "forward": {
+        "p_quad": {"value": {"Q1": .7, "Q2": .1, "Q3": .05, "Q4": .15},
+                   "history_filtered": hist,
+                   "history_basis": "reconstructed_with_current_fit",
+                   "history_replay_eligible": False,
+                   "model_fit_asof": "2026-06-05"}}}}
+    out = build_quad_vector(latest, full, full.index[-1])
+    assert out["transition_momentum"]["gaining"] == "Q4"
+    assert out["transition_momentum"]["basis"] == "reconstructed_with_current_fit"
+    assert out["transition_momentum"]["historical_replay_eligible"] is False
+    assert out["model_fit_asof"] == "2026-06-05"
+    assert out["confidence_basis"] == "heuristic_not_calibrated_probability"

@@ -1,0 +1,41 @@
+{
+  "reviewed_head": "e4d6bf36da7a8960ea46010a085fc46db854bdc1",
+  "review_operation": "regime-hmm-w0-review-terra-r2-20260909-sol-001",
+  "review_model": "gpt-5.6-terra",
+  "review_native_session": "01a08617-7957-7181-baeb-faec23260767",
+  "review_sandbox": "read-only",
+  "review_exit_code": 0,
+  "review_verdict": "PASS; no introduced blocker",
+  "review_tests_run": false,
+  "review_result_sha256": "e8a60184e3cd09b80f8af64f2829913c4d2920932dcc2a9a8dbcf56a3d6f62c1",
+  "independent_review_limit": "e4 semantic source; later CI-registration/test/docs delta requires its own review",
+  "focused_tests_e4": {
+    "passed": 82,
+    "seconds": 4.7
+  },
+  "ci_registration_red": {
+    "failed": 1,
+    "passed": 4,
+    "seconds": 2.54,
+    "reason": "regime suite absent from resolved CI run steps"
+  },
+  "repaired_focused_suite": {
+    "passed": 87,
+    "seconds": 6.25
+  },
+  "rounding_boundary_cases": [
+    "0.9998 accepted",
+    "1.0002 accepted",
+    "0.9997 refused",
+    "1.0003 refused"
+  ],
+  "ci_manifest_change": "one existing unrun-macro-panels job; no added job/workflow; existing command plus four suites; hmmlearn==0.3.3",
+  "baseline_change": "removed exactly four grandfathered rows, added none",
+  "manifest_validation": {
+    "jobs": 210,
+    "exit_code": 0,
+    "execution": false
+  },
+  "natural_production_proven": false,
+  "capital_policy_changed": false
+}
