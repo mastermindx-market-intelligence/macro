@@ -5941,7 +5941,7 @@ def main() -> int:
                   "lightweight-charts.js",
                   "allocation_scorecard.js", "live.js", "risk_state_live.js",
                   "risk_envelope_live.js",
-                  "china_risk_state_live.js", "release_publications_live.js",
+                  "china_risk_state_live.js", "release_publications_live.js", "release_radar.js",
                   "wh_banner.js", "heatmap.js",
                   "subsector_rotation.js", "subsectors.js", "subsectors_china.js",
                   # vendored (self-hosted) third-party libs — were CDN <script> tags
