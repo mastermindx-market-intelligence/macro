@@ -309,3 +309,69 @@ def test_v2_first_pass_missing_plus5_response_stays_data_gap():
         out["response_from_impulse_end"]["30m"]["residual_return_bps"]
         is None
     )
+
+
+def test_evidence_state_rejects_later_equity_move_without_causal_confirmation():
+    out = s.classify_evidence_state(
+        source_quality_resolved=True,
+        causal_confirmed=False,
+        cross_session_assimilated=True,
+    )
+    assert out["state"] == "CAUSAL_REJECTED"
+    assert out["flags"]["cross_session_assimilated"] is True
+    assert out["authority"]["may_trade"] is False
+
+
+def test_evidence_state_conflict_dominates_positive_progression():
+    out = s.classify_evidence_state(
+        source_quality_resolved=True,
+        causal_confirmed=True,
+        first_impulse_observed=True,
+        continuation_observed=True,
+        source_confounded=True,
+    )
+    assert out["state"] == "CONFLICTED"
+
+
+def test_evidence_state_keeps_data_gap_distinct_from_no_continuation():
+    gap = s.classify_evidence_state(
+        source_quality_resolved=True,
+        causal_confirmed=True,
+        data_gap=True,
+    )
+    no_continuation = s.classify_evidence_state(
+        source_quality_resolved=True,
+        causal_confirmed=True,
+        first_impulse_observed=True,
+        continuation_observed=False,
+    )
+    assert gap["state"] == "DATA_GAP"
+    assert no_continuation["state"] == "NO_CONTINUATION"
+
+
+def test_evidence_state_requires_causal_confirmation_before_first_impulse():
+    with pytest.raises(s.StudyContractError):
+        s.classify_evidence_state(
+            source_quality_resolved=True,
+            causal_confirmed=False,
+            first_impulse_observed=True,
+        )
+
+
+def test_evidence_state_does_not_promote_cross_session_before_causal_resolution():
+    out = s.classify_evidence_state(
+        source_quality_resolved=True,
+        causal_confirmed=None,
+        cross_session_assimilated=True,
+    )
+    assert out["state"] == "SOURCE_QUALITY_RESOLVED"
+    assert out["flags"]["cross_session_assimilated"] is True
+
+
+def test_evidence_state_can_record_regional_no_assimilation_after_confirmation():
+    out = s.classify_evidence_state(
+        source_quality_resolved=True,
+        causal_confirmed=True,
+        cross_session_assimilated=False,
+    )
+    assert out["state"] == "CROSS_SESSION_NO_ASSIMILATION"
