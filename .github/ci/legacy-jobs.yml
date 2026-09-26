@@ -12685,6 +12685,12 @@ jobs:
       # owner definition. This does not compute Availability or widen B1/B3 admission.
       - name: prophet strategy definition owner projection (B4 prerequisite only)
         run: python -m pytest tests/test_prophet_strategy_definition.py -q
+      # RQ1 is a research-only PIT projection over the incumbent B1 candidate-episode
+      # and Entry Radar owner facts. Keep it in this existing CODE-gated turn/organ
+      # lane so future-known leakage, missingness, provenance, and authority-false
+      # regressions bind the carrier without adding a job, runner, or live authority.
+      - name: prophet RQ1 PIT research matrix (owner clocks, missingness, zero live authority)
+        run: python -m pytest tests/test_prophet_research_matrix.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
