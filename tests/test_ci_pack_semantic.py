@@ -284,7 +284,9 @@ def test_fetch_depth_zero_action_is_materialized_for_the_exact_tree(
 
     def run(command: list[str], *, cwd: Path, **_kwargs: object) -> object:
         calls.append((list(command), cwd))
-        return SimpleNamespace(returncode=0)
+        if "--is-shallow-repository" in command:
+            return SimpleNamespace(returncode=0, stdout="false\n", stderr="")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     monkeypatch.setattr(PACK, "_trusted_git_environment", lambda _root: {})
     monkeypatch.setattr(PACK.subprocess, "run", run)
@@ -301,7 +303,17 @@ def test_fetch_depth_zero_action_is_materialized_for_the_exact_tree(
                 SHA_TREE,
             ],
             tmp_path,
-        )
+        ),
+        (
+            [
+                "git",
+                "-C",
+                str(tmp_path),
+                "rev-parse",
+                "--is-shallow-repository",
+            ],
+            tmp_path,
+        ),
     ]
 
 
