@@ -1,9 +1,9 @@
 {
   "display_only": true,
   "organ": "hk_narrative",
-  "as_of": "2026-09-24",
-  "generated_utc": "2026-09-24T13:17:16+00:00",
-  "freshness": "ok",
+  "as_of": "2026-09-26",
+  "generated_utc": "2026-09-26T13:05:01+00:00",
+  "freshness": "degraded",
   "entities": [
     {
       "slug": "alibaba",
@@ -25,15 +25,15 @@
       "ticker": "0700.HK",
       "name_en": "Tencent",
       "name_zh": "\u817e\u8baf",
-      "attention_shock_z": 2.781,
+      "attention_shock_z": -0.248,
       "tone_pctile": null,
-      "narrative_state": "attention_spike",
+      "narrative_state": "quiet",
       "young": false,
-      "n_obs": 80,
-      "as_of_date": "2026-09-24",
+      "n_obs": 79,
+      "as_of_date": "2026-09-25",
       "no_data_reason": null,
-      "state_en": "in the news",
-      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
+      "state_en": "quiet",
+      "state_zh": "\u5e73\u9759"
     },
     {
       "slug": "meituan",
@@ -115,15 +115,15 @@
       "ticker": "0981.HK",
       "name_en": "SMIC",
       "name_zh": "\u4e2d\u82af\u56fd\u9645",
-      "attention_shock_z": 1.076,
+      "attention_shock_z": 3.985,
       "tone_pctile": null,
-      "narrative_state": "quiet",
+      "narrative_state": "attention_spike",
       "young": false,
       "n_obs": 80,
-      "as_of_date": "2026-09-22",
+      "as_of_date": "2026-09-25",
       "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     }
   ],
   "note": "context, not a signal / \u8206\u60c5\u53c2\u8003\uff0c\u975e\u4e70\u5356\u4fe1\u53f7",
@@ -150,15 +150,15 @@
       "ticker": "0700.HK",
       "name_en": "Tencent",
       "name_zh": "\u817e\u8baf",
-      "attention_shock_z": 2.781,
+      "attention_shock_z": -0.248,
       "tone_pctile": null,
-      "narrative_state": "attention_spike",
+      "narrative_state": "quiet",
       "young": false,
-      "n_obs": 80,
-      "as_of_date": "2026-09-24",
+      "n_obs": 79,
+      "as_of_date": "2026-09-25",
       "no_data_reason": null,
-      "state_en": "in the news",
-      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
+      "state_en": "quiet",
+      "state_zh": "\u5e73\u9759"
     },
     {
       "slug": "meituan",
@@ -225,19 +225,19 @@
       "ticker": "0981.HK",
       "name_en": "SMIC",
       "name_zh": "\u4e2d\u82af\u56fd\u9645",
-      "attention_shock_z": 1.076,
+      "attention_shock_z": 3.985,
       "tone_pctile": null,
-      "narrative_state": "quiet",
+      "narrative_state": "attention_spike",
       "young": false,
       "n_obs": 80,
-      "as_of_date": "2026-09-22",
+      "as_of_date": "2026-09-25",
       "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "state_en": "in the news",
+      "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     }
   ],
   "n_watched": 8,
   "n_live": 7,
   "warming_up": false,
-  "is_stale": false
+  "is_stale": true
 }

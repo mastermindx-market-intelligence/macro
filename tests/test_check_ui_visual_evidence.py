@@ -1330,20 +1330,45 @@ def _design_governance_steps():
     return jobs["design-governance"]["steps"]
 
 
+def _p0b_receipt_closure_steps():
+    import yaml
+
+    manifest = guard.REPO_ROOT / ".github" / "ci" / "legacy-jobs.yml"
+    jobs = yaml.safe_load(manifest.read_text(encoding="utf-8"))["jobs"]
+    assert "p0b-receipt-closure" in jobs, (
+        "the p0b-receipt-closure job is gone from .github/ci/legacy-jobs.yml; "
+        "the receipt-closure gate would then be wired to nothing (it left "
+        "design-governance on 2026-09-24 so a sibling gate's red can no longer "
+        "shadow its verdict — #6872)")
+    return jobs["p0b-receipt-closure"]["steps"]
+
+
 def test_diff_scoped_steps_fail_closed_without_a_comparison_base():
     base_dependent = [
         s for s in _design_governance_steps()
         if "merge-base" in (s.get("run") or "")
     ]
-    # The diff-scoped gates depend on the base: the forward-only design
-    # ratchet, the visual-evidence gate, and the p0b receipt-closure gate.
-    # Deleting one to satisfy the per-step assertions below fails here instead.
-    assert len(base_dependent) == 3, (
-        "expected exactly 3 base-dependent design-governance steps "
-        "(forward-only ratchet + visual evidence + p0b receipt-closure), "
+    # The diff-scoped design gates depend on the base: the forward-only design
+    # ratchet and the visual-evidence gate. Deleting one to satisfy the
+    # per-step assertions below fails here instead.
+    assert len(base_dependent) == 2, (
+        "expected exactly 2 base-dependent design-governance steps "
+        "(forward-only ratchet + visual evidence), "
         f"found {len(base_dependent)}")
+    # The p0b receipt-closure gate is base-dependent too, but lives in its OWN
+    # job since 2026-09-24 (#6872: as a trailing design-governance step it was
+    # skipped behind the ratchet's red and never printed its verdict). Pin it
+    # there with the same fail-closed contract, so moving it cannot drop it.
+    p0b_base_dependent = [
+        s for s in _p0b_receipt_closure_steps()
+        if "merge-base" in (s.get("run") or "")
+    ]
+    assert len(p0b_base_dependent) == 1, (
+        "expected exactly 1 base-dependent p0b-receipt-closure step "
+        f"(the receipt-closure gate), found {len(p0b_base_dependent)}")
+    assert "check_p0b_receipt_closure.py --diff-file" in p0b_base_dependent[0]["run"]
 
-    for step in base_dependent:
+    for step in base_dependent + p0b_base_dependent:
         run = step["run"]
         name = step.get("name", "<unnamed>")
         assert "exit 0" not in run, (

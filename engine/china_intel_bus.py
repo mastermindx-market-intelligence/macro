@@ -34,6 +34,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 from lib import config
+from engine.narrative_crossmarket import context_for_briefing
 
 log = logging.getLogger(__name__)
 
@@ -480,6 +481,9 @@ def _digest_text(b: dict) -> str:
             cmd_line_parts.append(f"{ticker} ({stage}{edge_str})")
         parts.append("COMMAND TOP-2: " + " · ".join(cmd_line_parts)
                      + f" (universe={cmd.get('n_universe','?')}, context-only)")
+    context = b.get("us_theme_context") or {}
+    if context.get("status") == "CURRENT" and context.get("summary"):
+        parts.append(context["summary"])
     if not parts:
         return "China intelligence bus: no surfaces built yet."
     return "\n".join(parts)
@@ -579,6 +583,7 @@ def _command_block() -> dict | None:
                 }
                 for d in command[:10]
             ],
+            "us_theme_context": context_for_briefing(data.get("us_theme_context"), site=_site_dir()),
             "discovery_n": len(data.get("discovery") or []),
             "is_context_only": True,
         }
@@ -667,6 +672,8 @@ def briefing(asof: date | str | None = None) -> dict:
         except Exception as e:  # noqa: BLE001
             log.debug("china_intel_bus: %s block failed (%s)", key, e)
             b[key] = None
+    # Keep foreign/local observations separate from local stock rankings.
+    b["us_theme_context"] = (b.get("command") or {}).get("us_theme_context")
     # hoist synthesis to the top level for the hub + bot
     a = b.get("analysis") or {}
     b["conviction"] = a.get("conviction") or []

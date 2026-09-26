@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GATX-BULL-20260917",
-  "asof": "2026-09-24",
+  "asof": "2026-09-26",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 70.6,
-  "raw_confidence": 72.0,
+  "raw_confidence": 70.0,
   "delta_vs_base": 10.6,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
-    "progress": 25.8,
+    "progress": 20.7,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 67.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.412,
-    "dist_to_t1_r": 1.088,
-    "dist_to_t2_r": 2.588,
-    "horizon_pct_used": 13.3,
-    "p1": 0.2748,
-    "p2": 0.1374,
+    "dist_to_stop_r": 1.308,
+    "dist_to_t1_r": 1.192,
+    "dist_to_t2_r": 2.692,
+    "horizon_pct_used": 17.8,
+    "p1": 0.2054,
+    "p2": 0.1027,
     "p3": null,
-    "move_r": 0.412,
+    "move_r": 0.308,
     "mfe_r": 0.412,
     "mae_r": -0.001
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-09-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 6,
-  "tau": 0.1333
+  "days_elapsed": 8,
+  "tau": 0.1778
 }

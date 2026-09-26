@@ -131,6 +131,11 @@ on:
       - "scripts/build_crossmarket.py"
       - "scripts/build_crypto.py"
       - "scripts/build_cycle.py"
+      # B-F09-3 debt-maturity producer: this lane never runs it, but
+      # build_stock_library imports its load_debt_maturity_facts reader, so an
+      # edit here changes the debt_maturity/cash_runway blocks in every stockdata
+      # JSON the spine re-bakes.
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_demand.py"
       - "scripts/build_discovery.py"
       - "scripts/build_flow_desk.py"
@@ -165,6 +170,7 @@ on:
       - "scripts/build_measurement.py"
       - "scripts/build_methodology.py"
       - "scripts/build_news.py"
+      - "scripts/build_ontology_explorer.py"
       - "scripts/build_options_command.py"
       - "scripts/build_options_entry_state.py"
       - "scripts/build_options_flow.py"
@@ -180,6 +186,7 @@ on:
       - "scripts/build_regime_prior.py"
       - "scripts/build_reports.py"
       - "scripts/build_research_pages.py"
+      - "scripts/build_research_screener.py"
       - "scripts/build_research_vault.py"
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
@@ -535,7 +542,7 @@ jobs:
               # OIP E8 leaf-page narrowing — rationale in the step's YAML comment block.
               templates/options.html.j2|templates/options_screener.html.j2|scripts/build_options_command.py|scripts/build_options_screener.py) echo gex;;
               templates/baskets.html.j2|templates/methodology.html.j2|templates/government_revenue.html.j2|scripts/build_baskets.py|scripts/build_methodology.py|scripts/build_government_revenue.py|scripts/build_government_revenue_candidates.py|scripts/check_government_revenue_projection.py|config/government_revenue/candidate_issuance_corrections.v1.json|contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json|config/market_reference.yml|scripts/build_market_reference.py) echo baskets;;
-              templates/dashboard.html.j2|templates/stock.html.j2|templates/news.html.j2|templates/ticker.html.j2|templates/ticker_index.html.j2|templates/fundamental_forensics.*|templates/biocatalyst.*|templates/finance_intelligence.*|scripts/build_site.py|scripts/build_ticker_pages.py|scripts/build_fundamental_forensics.py|scripts/build_biocatalyst.py|scripts/build_finance_intelligence_page.py) echo macro;;
+              templates/dashboard.html.j2|templates/stock.html.j2|templates/news.html.j2|templates/ticker.html.j2|templates/ticker_index.html.j2|templates/fundamental_forensics.*|templates/finance_intelligence.*|templates/biocatalyst.*|scripts/build_site.py|scripts/build_ticker_pages.py|scripts/build_fundamental_forensics.py|scripts/build_finance_intelligence_page.py|scripts/build_biocatalyst.py) echo macro;;
               templates/special_situations.html.j2|templates/_special_situations_*.html.j2|scripts/build_special_situations.py) echo sits;;
               templates/*|scripts/build_*.py|config.yml|lib/*) echo all;;
               *) echo skip;;
@@ -802,13 +809,14 @@ jobs:
           # build_site reads the COMMITTED regime/latest.json (no engine.run needed) and
           # renders macro.html + the US stock pages + news.html + the stock library.
           spine() {
-            run_py "S&P allocation vector (build_spvector)"        scripts.build_spvector
-            run_py "alternative data desk (build_alt_data)"        scripts.build_alt_data
-            run_py "13F smart-money tracker (build_smart_money)"   scripts.build_smart_money
-            run_py "policy-lever card (build_policy_lever)"        scripts.build_policy_lever
-            run_py "macro dashboard + US stocks (build_site)"      scripts.build_site
-            run_py "research screener (build_research_screener)"   scripts.build_research_screener
-            run_py "congressional trades desk (build_congress)"    scripts.build_congress
+            run_py "S&P allocation vector (build_spvector)" scripts.build_spvector
+            run_py "alternative data desk (build_alt_data)" scripts.build_alt_data
+            run_py "13F smart-money tracker (build_smart_money)" scripts.build_smart_money
+            run_py "policy-lever card (build_policy_lever)" scripts.build_policy_lever
+            run_py "macro dashboard + US stocks (build_site)" scripts.build_site
+            run_py "ontology shell" scripts.build_ontology_explorer
+            run_py "research screener (build_research_screener)" scripts.build_research_screener
+            run_py "congressional trades desk (build_congress)" scripts.build_congress
           }
 
           # ---- US page-renderers: deterministic JSON merges + chrome (NO LLM) ----

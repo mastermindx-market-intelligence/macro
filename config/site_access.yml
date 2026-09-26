@@ -110,6 +110,13 @@ public:
     - /biocatalyst.html
     - /biocatalyst.css
     - /biocatalyst.js
+    # WTI Live Trace presentation assets only; every current value is served
+    # by authenticated /api/ontology/explorer/v1, never by these files.
+    - /ontology.css
+    - /ontology.js
+    - /stock-dashboard.css
+    - /hk-stock-v36.js
+    - /canada-stock-v36.js
     # Finance Intelligence is the same shell/payload split. The HTML and its
     # paired presentation/client assets carry no read-model payload; the
     # same-origin read-model route remains behind authenticated, no-store

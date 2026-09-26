@@ -1,35 +1,48 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-09-23",
+ "as_of": "2026-09-26",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-09-23",
-  "n_new_flags": 62,
-  "n_newly_graded": 0,
+  "as_of": "2026-09-26",
+  "n_new_flags": 0,
+  "n_newly_graded": 12,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
-  "n_rows": 2603,
+  "n_rows": 2726,
   "store_repairs": {
    "renormalized": 0,
    "unreadable": []
   },
   "unreadable_flag_dates": []
  },
- "maturity_state": "accruing",
- "n_accruing": 2603,
- "n_matured": 0,
- "first_maturity_est": "2026-09-25",
+ "maturity_state": "maturing",
+ "n_accruing": 2663,
+ "n_matured": 63,
+ "first_maturity_est": null,
  "accrual_by_source": {
-  "board_buy": 2260,
+  "board_buy": 2383,
   "prophet_plan": 343
  },
  "summary": {
-  "pin5": null,
-  "held_pct": null,
-  "prox_med": null
+  "pin5": 0.2063,
+  "held_pct": 0.5238,
+  "prox_med": 0.1006
  },
- "cohorts": [],
+ "cohorts": [
+  {
+   "source": "board_buy",
+   "lane": "unknown",
+   "n": 63,
+   "prox_med": 0.10063338945077316,
+   "pin5": 0.20634920634920634,
+   "held_pct": 0.5238095238095238,
+   "broke_pct": 0.15873015873015872,
+   "mfe60_med": 0.10067771671754411,
+   "fwd60_med": -0.03833324926091719,
+   "undercut_med": 0.0012157172409883454
+  }
+ ],
  "baseline_ref": "calibration/bottom_ruler_baseline.json",
  "reliability": {
   "tier": "display",
@@ -38,8 +51,8 @@
   "one_grader_law": "grades are computed once at maturity and never recomputed (SA-R14)"
  },
  "integrity_projection": {
-  "raw_rows": 2603,
-  "effective_rows": 2603,
+  "raw_rows": 2726,
+  "effective_rows": 2726,
   "excluded_prophet_rows": 0,
   "error": null,
   "effect": "raw learning rows remain append-only; Prophet rows require a stable plan source_ref and the current canonical signal-family date, and correction/quarantine authority excludes superseded claims from grades and cohorts"

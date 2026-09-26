@@ -135,12 +135,12 @@ def test_ai_feed_disabled_without_key(monkeypatch):
 def test_ai_feed_normalises_shape_and_ai_fields():
     art = {"title": "Acme beats Q2 earnings", "link": "https://reuters.com/x",
            "source": "Reuters", "publishDate": "2026-07-22T10:00:00Z",
-           "tickers": ["ACME"], "sentiment": "positive", "confidence": 0.9,
+           "tickers": ["ACME"], "sentiment": "positive", "importance": 0.9,
            "summary": "Acme reported strong Q2 results."}
     h = aif._normalise_ai(art, _NOW)
     assert h is not None
     assert h["ai_sentiment"] == "pos"
-    assert h["ai_importance"] == 90.0            # 0.9 confidence -> 0-100
+    assert h["ai_importance"] == 90.0            # explicit importance 0.9 -> 0-100
     assert "ACME" in h["tickers"]
     assert h["provider"] == "ai_feed"
     # a well-formed AI item ranks (proves the connector output is ranker-ready)
@@ -152,9 +152,9 @@ def test_ai_feed_drops_titleless():
 
 
 def test_ai_feed_sentiment_and_importance_variants():
-    # numeric sentiment + 0..1 relevance
+    # numeric sentiment + explicit 0..1 importance
     h = aif._normalise_ai({"title": "X moves", "url": "https://cnbc.com/x",
-                           "sentiment": -0.5, "relevance": 0.4,
+                           "sentiment": -0.5, "importance": 0.4,
                            "publishDate": "2026-07-22T00:00:00Z"}, _NOW)
     assert h["ai_sentiment"] == "neg"
     assert h["ai_importance"] == 40.0

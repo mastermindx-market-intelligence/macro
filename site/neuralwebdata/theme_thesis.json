@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-09-23",
-  "generated_at": "2026-09-23T21:24:43Z",
+  "as_of": "2026-09-26",
+  "generated_at": "2026-09-26T10:07:24Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-23",
+      "as_of": "2026-09-26",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:7919297ed9524a8e64ccf717e54efbf69439826323c3ff47c425d6e8ebbda034",
-      "prev_content_hash": "sha256:839b001074b3a80413fd5005c896e111b6e23871c8a882dd670ff0bf583474ae",
+      "content_hash": "sha256:5750c9205f54504955bca233d54d0f1f48d302b052835640d5de6e85b787c032",
+      "prev_content_hash": "sha256:bcf977e3a7fdb1b2ab5cb6a6503920840b0fe9b5fd19655d8a5c20136fc2ad1d",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -101,17 +101,17 @@
             "source_artifact": "data/foresight/log.jsonl",
             "observations": [
               {
-                "as_of": "2026-09-16",
-                "value": 0.654,
+                "as_of": "2026-09-23",
+                "value": 0.497,
                 "condition_met": false
               },
               {
-                "as_of": "2026-09-23",
+                "as_of": "2026-09-26",
                 "value": 0.497,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 1
+            "corrections_superseded": 0
           }
         },
         {
@@ -135,7 +135,7 @@
           "rule_en": "If crowding on the ai_semiconductors or ai_infra basket exceeds 0.7 (z-score), the risk-adjusted opportunity is diminished — variant perception has become consensus.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.532"
+          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.643"
         },
         {
           "id": "ai_semi_f4",
@@ -155,10 +155,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-23",
+      "as_of": "2026-09-26",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:e12941614bee95d6cf206bf7322ad2fdefc7b4ae0fc2d11dcaec4672e86fc35e",
-      "prev_content_hash": "sha256:0c6e97447bd98288f49fe810b10d8699338750362468195cdda06bc30f93b4e0",
+      "content_hash": "sha256:982629b83526165e04c9eddf6e6636495fca8dae234b8e6c90a990bfcd87e12a",
+      "prev_content_hash": "sha256:0203f3e612de04364d82b983dae3b022980c402b648a388753858477c0fee5df",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -224,12 +224,12 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-09-23",
+                "as_of": "2026-09-26",
                 "value": 0.655,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 0
+            "corrections_superseded": 1
           }
         },
         {
@@ -508,10 +508,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-23",
+      "as_of": "2026-09-26",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:4ced63288c6c55f4d7f1206877921f68a67a79e1553f91bc7dbe82514b8e47e0",
-      "prev_content_hash": "sha256:22f7c4cff9a623b08061f994e8a076d873ffcc80eb12554ac07bb196232cee48",
+      "content_hash": "sha256:4235fe287e2afcd2dd6bcce86605d50c7b001d78d6e9d71367d54e18e75ce183",
+      "prev_content_hash": "sha256:4ced63288c6c55f4d7f1206877921f68a67a79e1553f91bc7dbe82514b8e47e0",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -577,7 +577,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=56.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=59.0"
         },
         {
           "id": "robo_f3",
@@ -1578,7 +1578,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-23T21:24:43Z",
-  "inputs_hash": "sha256:3e1c255372903331db6cf1b0a4a0121c1daad6f668869cda57dc1051f0c7ae4d",
+  "produced_at": "2026-09-26T10:07:24Z",
+  "inputs_hash": "sha256:37c0386edd5fcc5bbf35b73df5deb5c71520688c011ba80e6bc5362f907aa9aa",
   "tier": "display"
 }

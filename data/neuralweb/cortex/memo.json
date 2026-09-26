@@ -1,16 +1,37 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-24T11:29:41+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
+  "as_of": "2026-09-26T10:15:50+00:00",
+  "summary": "Context-only committee read: the US has entered a low-confidence Q2 Reflation regime, but the tape is MIXED rather than cleanly risk-on. The most important tension is not the headline caution score itself: that state\u2019s measured 21-session pullback rate is 16.0% versus a 17.8% base rate, so it is an early watch rather than a measured edge. The actionable analytical issue is internal inconsistency\u2014very weak breadth, extreme real yields and rising rate pressure, poor-quality mechanical liquidity expansion, and only 50% cross-asset agreement coexist with calm volatility, tight credit, an above-200-day SPY, and improving leading-cycle data. No signal, trade, ranking, sizing change, or escalation is originated here.",
+  "what_fired": [
+    "Risk Radar moved from calm to caution, led by rates/inflation pressure at 80.3 and breadth internals at 77.3; the radar remains advisory and below-base-rate on its measured 21-day drawdown outcome.",
+    "US regime changed from Q3 to Q2 Reflation with confidence only 0.195 and transition state NEW_REGIME.",
+    "Breadth is materially weak: 26.0% above the 50-day average, 46.2% above the 200-day average, 40 new lows versus 12 new highs, with breadth divergence present.",
+    "Liquidity quantity is expanding, but the expansion is mechanical and classified stress-expansion; the RRP buffer is exhausted and credit stress confirmation is active.",
+    "Factor weather is mixed. Quality is the nominal leader, but leader IC is only 0.0042; the factor panel has just 11 dates, history floor is unmet, and factor attention has no graded record.",
+    "Pair G factor contradictions did not fire because the ledger remains dormant until at least 60 panel dates.",
+    "The spine query was dominated by Canadian-board context claims using unsigned MFE proxies. Those rows are not suitable evidence for directional macro conclusions; multiple terminal states were STOPPED despite positive MFE.",
+    "Kernel review shows no engine is armed. Radar is negative overall at 21 and 63 days; alt-data is negative in Q2 at 5 and 21 days; policy, stock-desk, thematic-desk, and narrative-desk families are generally negative or held/vacuous. Positive board-family figures use unsigned MFE proxies and have vacuous or sub-threshold arming tests."
+  ],
+  "contradictions_review": "Current graph tensions are: bonds/FX diverge from the equity regime with only 50% agreement; expanding liquidity conflicts with stress-expansion quality; ticker-level demand and tape readings contain 39 directional divergences; and six buy-lane names have rising put skew, which is de-escalation context only. Several older graph edges still reference Q3 and should not be treated as current-Q2 conclusions without refresh. Master Brain review adds material governance conflicts: growth-over-value underweights face IWF/IWD +5.90% over 20 days; semiconductor underweights face SMH +5.56% over 20 days, an above-200-day trend, and an 86.9th-percentile reading; the China-equity overweight conflicts with Q4 growth-scare, contracting liquidity, and broken China AI-compute leadership. These are attention items, not counter-signals.",
+  "decaying_families": [
+    "Radar: pooled 21-day and 63-day signed-excess estimates are negative; no arming test passed.",
+    "Alt-data: Q2 signed excess is negative at both 5 and 21 days; pooled out-of-sample performance is losing.",
+    "Policy and policy-intent: negative signed-excess estimates, thin samples, and no armed state.",
+    "Stock-desk and thematic-desk: negative longer-horizon estimates across regimes; arming evidence is vacuous or too thin.",
+    "Narrative-brain and AI-desk: negative 63-day estimates with no valid arming evidence.",
+    "Factor composite: non-tradeable; investment, low-volatility, low-beta, and composite legs have negative IC, while the live panel is immature."
+  ],
   "deserves_operator": [
-    "[context_stale] cortex deliberated over world_state from 2026-09-23T21:21:56Z; current run=2026-09-24T11:29:41+00:00"
+    "Review breadth deterioration against narrow technology leadership using the pre-committed recovery/persistence test; do not infer a short signal.",
+    "Resolve the liquidity quantity-quality contradiction: mechanical expansion and an empty RRP buffer coexist with stress confirmation.",
+    "Require cross-asset confirmation before treating the new, low-confidence Q2 label as settled.",
+    "Score or close overdue Master Brain theses. Explicitly reconcile growth and semiconductor underweights with their apparent falsifier conditions and current relative strength.",
+    "Review the July 9 China-equity overweight thesis against current Q4/contracting-liquidity/broken-leadership evidence; China market-state freshness is currently insufficient.",
+    "Audit stale Q3-labelled contradiction edges after the regime transition so historical graph nodes are not mistaken for current-state evidence."
   ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-25",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -22,72 +43,66 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 88,
-      "total_rows": 96
+      "ungradeable": 90,
+      "total_rows": 98
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfNBpV7cHRUSjxFWr3ZPs'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfNBqnQCL8WoqE4LBnhW6'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfNBvQ6u4F2PnK3VjD5jT'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfNC9rYjrzCUKwKdLb2DJ'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 3,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
-    "context_stale": true,
-    "context_as_of": "2026-09-23T21:21:56Z"
+    "context_stale": false,
+    "context_as_of": "2026-09-26T10:04:26Z"
   }
 }

@@ -1,15 +1,15 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-24",
-  "scored_total": 182,
+  "as_of": "2026-09-26",
+  "scored_total": 187,
   "open": 99,
-  "unscored_neutral": 290,
+  "unscored_neutral": 301,
   "overall": {
-    "n": 182,
-    "hits": 116,
+    "n": 187,
+    "hits": 121,
     "misses": 66,
-    "hit_rate": 0.637,
-    "dir_accuracy": 0.418
+    "hit_rate": 0.647,
+    "dir_accuracy": 0.433
   },
   "by_lean": {
     "constructive": {
@@ -27,11 +27,11 @@
       "dir_accuracy": null
     },
     "cautious": {
-      "n": 71,
-      "hits": 54,
+      "n": 76,
+      "hits": 59,
       "misses": 17,
-      "hit_rate": 0.761,
-      "dir_accuracy": 0.592
+      "hit_rate": 0.776,
+      "dir_accuracy": 0.618
     },
     "avoid": {
       "n": 1,
@@ -43,18 +43,18 @@
   },
   "by_conviction": {
     "low": {
-      "n": 152,
-      "hits": 95,
+      "n": 155,
+      "hits": 98,
       "misses": 57,
-      "hit_rate": 0.625,
-      "dir_accuracy": 0.388
+      "hit_rate": 0.632,
+      "dir_accuracy": 0.4
     },
     "medium": {
-      "n": 28,
-      "hits": 19,
+      "n": 30,
+      "hits": 21,
       "misses": 9,
-      "hit_rate": 0.679,
-      "dir_accuracy": 0.607
+      "hit_rate": 0.7,
+      "dir_accuracy": 0.633
     },
     "high": {
       "n": 2,
@@ -64,8 +64,53 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "182 leans scored, hit-rate 0.637 (directional accuracy 0.418). Chance alone would land a hit-rate near 0.7513 (directional accuracy near 0.5076) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "187 leans scored, hit-rate 0.647 (directional accuracy 0.433). Chance alone would land a hit-rate near 0.7513 (directional accuracy near 0.5072) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "2026-08-27-VIRT-20260828103731-4",
+      "ticker": "VIRT",
+      "lean": "cautious",
+      "conviction": "medium",
+      "outcome": "hit",
+      "realized": -0.2094,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-08-27-ALV-20260828135550-6",
+      "ticker": "ALV",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0681,
+      "check_by": "2026-09-24"
+    },
+    {
+      "id": "2026-08-26-VIRT-20260827130338-2",
+      "ticker": "VIRT",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.1959,
+      "check_by": "2026-09-23"
+    },
+    {
+      "id": "2026-08-26-PGR-20260827130338-5",
+      "ticker": "PGR",
+      "lean": "cautious",
+      "conviction": "medium",
+      "outcome": "hit",
+      "realized": -0.0894,
+      "check_by": "2026-09-23"
+    },
+    {
+      "id": "2026-08-26-PGR-20260827143813-5",
+      "ticker": "PGR",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0894,
+      "check_by": "2026-09-23"
+    },
     {
       "id": "2026-08-18-HWM-20260819191449-4",
       "ticker": "HWM",
@@ -128,51 +173,6 @@
       "outcome": "miss",
       "realized": -0.2126,
       "check_by": "2026-09-09"
-    },
-    {
-      "id": "2026-07-29-TPR-6",
-      "ticker": "TPR",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.2876,
-      "check_by": "2026-09-09"
-    },
-    {
-      "id": "2026-07-28-YETI-3",
-      "ticker": "YETI",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.2485,
-      "check_by": "2026-09-08"
-    },
-    {
-      "id": "2026-07-28-LLY-6",
-      "ticker": "LLY",
-      "lean": "cautious",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.1131,
-      "check_by": "2026-09-08"
-    },
-    {
-      "id": "2026-08-07-ROIV-20260809100621-3",
-      "ticker": "ROIV",
-      "lean": "cautious",
-      "conviction": "medium",
-      "outcome": "miss",
-      "realized": 0.1509,
-      "check_by": "2026-09-07"
-    },
-    {
-      "id": "2026-08-07-WT-20260809100621-6",
-      "ticker": "WT",
-      "lean": "cautious",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": 0.1586,
-      "check_by": "2026-09-07"
     }
   ]
 }

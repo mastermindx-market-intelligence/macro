@@ -85,9 +85,10 @@ artifacts:
   - research/MACRO_RELEASE_INTEL_MASTERPLAN_BY_FABLE.md
   - research/TRANSMISSION_INTELLIGENCE_MASTERPLAN_BY_FABLE.md
 next_action: >
-  Complete PR #6543 F0 independent review/merge, then submit the frozen RIC-F1, RIC-F2 and RIC-F3
-  packets through canonical Executive admission/routing as three disjoint operations and call a lane
-  active only after its concrete Fable/worker carrier/session ACK is proven.
+  RIC F3: confirm fixed_grid_origin.v4 liveness on the first nightly data/transmission/latest.json
+  after PR #8030 (merged 2026-09-25), then execute W3 — the display-only yield_momentum consumer
+  block in engine/credit_momentum.py beside interim_tlt (handoff RATES-INFLATION-COMMAND-2026-09-25).
+  RIC-F1/F2 packets still go through canonical Executive admission as disjoint operations.
 ---
 
 ## Why this workstream exists
