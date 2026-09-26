@@ -1,0 +1,28 @@
+schema: mastermind.rig_manifest.v1
+reference_id: confluence-screener-paper-r2
+scope: full
+status: draft
+
+surface:
+  route: confluence_screener.html
+  registry_row: "macro:confluence_screener"
+  archetype: discovery_board
+
+author:
+  identity: "Sol CEO · Confluence R2 reference revision · 2026-09-25"
+  role: designer
+
+lineage:
+  predecessors:
+    - confluence-screener-paper-r1
+
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  continuity: continuity.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  verdict: verdict.yml
+
+[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]

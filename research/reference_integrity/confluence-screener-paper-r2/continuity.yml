@@ -1,0 +1,137 @@
+# Mechanically derived from confluence-screener-paper-r1/verdict.yml.
+# R2 admission state: every open predecessor item is explicitly CARRIED_BLOCK.
+# No row may become RESOLVED_BY_CHANGE without checkable R2 evidence and changed_files.
+schema: mastermind.rig_continuity.v1
+reference_id: confluence-screener-paper-r2
+predecessors:
+- reference_id: confluence-screener-paper-r1
+  verdict: REVISE
+  source: on_disk
+  closure:
+  - id: PRC-001
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: Downgraded to major in pass 2, but the runtime answer remains materially demoted; R2 must restore answer-first hierarchy without hardcoding data.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: PRC-002
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: Downgraded to major, but top-three like-for-like comparison remains materially worse; R2 must use one comparable evidence grammar.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: PRC-003
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: Downgraded to major, but recent/older validation remains visually asymmetric; R2 must make both eras directly comparable.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: PRC-004
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: Downgraded to major, but a critical honesty interaction became opt-in; R2 must preserve unavoidable glance-tier honesty.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: PRC-005
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: Downgraded to major, but the free rank-1 ticker link/wrap interaction is not demonstrated; R2 must prove that grammar with DEMO identities.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: VTC-001
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: 'Still blocker after pass 2: the daily screener''s answer is not the dominant visual fact.'
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: VTC-002
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: Downgraded to major, but placeholder typography does not prove numeric scale/alignment/width tolerance.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: VTC-003
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: 'Still blocker after pass 2: ranks 2-3 are compressed into non-comparable run-on evidence.'
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: VTC-004
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: 'Downgraded to major: interaction states are labeled as product copy instead of demonstrated visually.'
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: VTC-005
+    kind: blocker
+    disposition: CARRIED_BLOCK
+    predecessor_note: 'Downgraded to major: shared-nav omission is scoped out, but the frozen reference still misspells MASTERMINDX in every governed cell.'
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-HERO-ANSWER
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Keep the protected question but restore a dedicated visually primary runtime answer/count slot in every EN/ZH, Dark/Light, desktop/mobile cell; no hardcoded live value.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-RANK-COMPARABILITY
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Rank 1-3 must share one comparable evidence grammar; entitlement may hide identities but may not collapse public evidence into a materially less scannable row class.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-VALIDATION-PAIR
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Recent and older validation plus sample basis must be adjacent and comparably legible on every rank and viewport; the recent rate may not dominate as the only glance-tier metric.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-HONESTY
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Critical honesty must remain directly visible without requiring disclosure; expanded detail may supplement it, and symbol-only shorthand such as "≠" may not replace plain-language truth.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-FREE-MATCH
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Demonstrate the rank-1 matching-ticker interaction with DEMO-only identities, including link affordance, ticker/company hierarchy and multi-ticker wrapping, without inserting live names.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-STATE-VISUALS
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Focus, hover, loading, empty, stale, error and disabled states must be represented visually, not printed as pseudo-class/specification copy; RIG/browser-proof prose must not appear in customer-facing UI.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-BRAND
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Correct MASTERMINDX branding in every governed cell and keep shared site navigation outside the route-body projection rather than minting a second nav/control plane.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-LOCALE-PARITY
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Preserve ZH disclaimer, controls, state coverage, locale-switch reachability and the shipped language-sensitive color semantics; no EN-only state or visual contract is allowed.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-LEG-STACK
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Use explicit structured builder-owned D/W leg rows and prove variable leg depth; third-row capacity must not mint an unsupported "TF" timeframe semantic.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-FRESHNESS
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Restore a visible as-of/provenance/freshness anchor and remove design-process metadata from the product footer.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-LOCK-HYDRATION
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Preserve per-row paid-lock truth including public count and why identities are hidden, and prove post-entitlement hydration/CTA/fallback behavior with non-live identities.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-READING-MEASURE
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Restore a sane reading measure and canonical type floor; critical evidence may not be compressed into near-10px muted run-on text on desktop or mobile.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-DARK-IDENTITY
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Give dark mode an intentional treatment and preserve a distinctive nonsemantic convergence identity, or an equally characterful replacement, without unsupported 4H/3D/2W semantics.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-FILTER-TRUTH
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: If presentation filters remain, prove they only filter the already-ranked result set and distinguish filter-empty from global-zero; otherwise remove them from the successor.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+  - id: R2-CONTINUITY
+    kind: condition
+    disposition: CARRIED_BLOCK
+    predecessor_note: Freeze R2 as a new successor with continuity closure for every open PRC/VTC finding and every condition in this verdict, then run a fresh dual rationale-quarantined review against the new frozen SHA.
+    note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
+
+[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]
