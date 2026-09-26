@@ -39,6 +39,10 @@ FILING KEY (Wave 1B, contract freeze Q2): accession is captured because without
 RESUMABILITY: a per-CIK manifest (data/edgar/earnings_8k_dates_manifest.json) tracks
 which CIKs have been fully fetched (key = str(cik), value = ISO timestamp). Run the
 collector again and already-fetched CIKs are skipped. Pass --force to re-fetch all.
+Legacy stores that predate accession/form capture can be inspected with
+--audit-identity plus explicit --cik values or --all-legacy. That audit is strictly
+read-only: it builds the canonical-key candidate in memory and emits a receipt; it
+never writes the parquet, manifest, coverage JSON, or another migration registry.
 
 SENTINEL STAGING DETERMINATION (one-shot backfill):
   This store is produced by a one-shot backfill (this script). It does NOT need to run
@@ -495,7 +499,7 @@ def _representative_ticker_for_cik(df: pd.DataFrame, cik: int) -> str:
     return ticker
 
 
-def rehydrate_canonical_filing_identity(
+def audit_canonical_filing_identity(
     existing: pd.DataFrame,
     target_ciks: list[int],
     *,
@@ -509,7 +513,8 @@ def rehydrate_canonical_filing_identity(
     leaves no accession/form-legacy row for that CIK.
 
     Failures are recorded and the pre-migration rows for that CIK are preserved.
-    The returned candidate is safe to write only when safe_to_apply is true.
+    The returned candidate is qualification evidence only. A true
+    candidate_ready_for_migration flag does not authorize or perform a write.
     """
     current = existing.copy()
     targets = sorted({int(cik) for cik in target_ciks})
@@ -627,7 +632,7 @@ def rehydrate_canonical_filing_identity(
         | _blank_column_mask(target_rows, "form")
     ) if not target_rows.empty else pd.Series(dtype=bool)
     receipt = {
-        "schema": "edgar_earnings_8k.identity_rehydration.v1",
+        "schema": "edgar_earnings_8k.identity_audit.v1",
         "targets": targets,
         "target_count": len(targets),
         "successful_ciks": len(details),
@@ -646,7 +651,7 @@ def rehydrate_canonical_filing_identity(
             _blank_column_mask(target_rows, "report_date").sum()
         ) if not target_rows.empty else 0,
         "residual_target_legacy_rows": int(residual_target_legacy.sum()),
-        "safe_to_apply": (
+        "candidate_ready_for_migration": (
             len(targets) > 0
             and not failures
             and int(residual_target_legacy.sum()) == 0
@@ -655,50 +660,23 @@ def rehydrate_canonical_filing_identity(
     return current, receipt
 
 
-def run_identity_rehydration(
+def run_identity_audit(
     *,
     ciks: list[int],
-    apply: bool = False,
     fetcher=None,
 ) -> tuple[pd.DataFrame, dict]:
-    """Dry-run or apply canonical filing identity for an explicit CIK set."""
+    """Read the incumbent store and build a canonical-key candidate in memory.
+
+    This audit has no write path. A migration must be a separate admitted
+    effect with its own metadata-coherence and publication proof.
+    """
     existing = load_existing()
-    candidate, receipt = rehydrate_canonical_filing_identity(
+    candidate, receipt = audit_canonical_filing_identity(
         existing, ciks, fetcher=fetcher
     )
-    receipt["apply_requested"] = bool(apply)
-    receipt["applied"] = False
-    if apply:
-        if not receipt["safe_to_apply"]:
-            raise RuntimeError(
-                "canonical filing identity rehydration refused: "
-                f"{receipt['failed_ciks']} failed CIK(s), "
-                f"{receipt['residual_target_legacy_rows']} residual legacy row(s)"
-            )
-        path = _store_path()
-        path.parent.mkdir(parents=True, exist_ok=True)
-        candidate.to_parquet(path)
-
-        # Reconcile the incumbent resumability manifest with the rows just
-        # re-fetched. No second migration registry is created.
-        manifest = load_manifest()
-        stamp = datetime.now(timezone.utc).isoformat()
-        for item in receipt["details"]:
-            key = str(int(item["cik"]))
-            entry = dict(manifest.get(key) or {})
-            entry.update({
-                "ticker": item["ticker"],
-                "status": "ok",
-                "n_filings": int(item["after_rows"]),
-                "n_shards_missing": 0,
-                "identity_schema": "cik_accession_v1",
-                "identity_rehydrated_at": stamp,
-                "ts": stamp,
-            })
-            manifest[key] = entry
-        save_manifest(manifest)
-        receipt["applied"] = True
-        receipt["manifest_entries_updated"] = len(receipt["details"])
+    receipt["store_written"] = False
+    receipt["manifest_written"] = False
+    receipt["coverage_written"] = False
     return candidate, receipt
 
 
@@ -934,11 +912,11 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--max-errors", type=int, default=100,
                    help="Stop after this many per-CIK errors (default 100).")
     p.add_argument(
-        "--rehydrate-identity",
+        "--audit-identity",
         action="store_true",
         help=(
-            "Re-fetch legacy CIKs to restore canonical accession/form identity. "
-            "Dry-run unless --apply is also supplied."
+            "Read-only SEC audit of legacy CIKs for canonical accession/form "
+            "identity. Never writes the store or manifest."
         ),
     )
     p.add_argument(
@@ -946,23 +924,18 @@ def main(argv: list[str] | None = None) -> None:
         action="append",
         type=int,
         default=[],
-        help="CIK to rehydrate; repeat for multiple CIKs.",
+        help="CIK to audit; repeat for multiple CIKs.",
     )
     p.add_argument(
         "--all-legacy",
         action="store_true",
-        help="With --rehydrate-identity, target every legacy CIK in the store.",
-    )
-    p.add_argument(
-        "--apply",
-        action="store_true",
-        help="Write the rehydrated parquet only when every target passes.",
+        help="With --audit-identity, target every legacy CIK in the store.",
     )
     args = p.parse_args(argv)
 
-    if args.rehydrate_identity:
+    if args.audit_identity:
         if args.force or args.incremental:
-            p.error("--rehydrate-identity is separate from --force/--incremental")
+            p.error("--audit-identity is separate from --force/--incremental")
         if args.cik and args.all_legacy:
             p.error("choose explicit --cik values or --all-legacy, not both")
         existing = load_existing()
@@ -972,16 +945,13 @@ def main(argv: list[str] | None = None) -> None:
             else sorted({int(cik) for cik in args.cik})
         )
         if not targets:
-            p.error("--rehydrate-identity requires --cik or --all-legacy")
-        _candidate, receipt = run_identity_rehydration(
-            ciks=targets,
-            apply=args.apply,
-        )
+            p.error("--audit-identity requires --cik or --all-legacy")
+        _candidate, receipt = run_identity_audit(ciks=targets)
         print(json.dumps(receipt, indent=2, sort_keys=True))
         return
 
-    if args.cik or args.all_legacy or args.apply:
-        p.error("--cik/--all-legacy/--apply require --rehydrate-identity")
+    if args.cik or args.all_legacy:
+        p.error("--cik/--all-legacy require --audit-identity")
 
     run_backfill(
         force=args.force,
