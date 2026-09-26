@@ -618,6 +618,8 @@ def compute_gex(
     by_exp = g.groupby("expiration").agg(
         gamma_net=("_net_gex", "sum"),
         delta_net=("_net_delta", "sum"),
+        vanna_net=("_net_vanna", "sum"),
+        charm_net=("_net_charm", "sum"),
     ).reset_index()
     by_exp["expiration"] = pd.to_datetime(by_exp["expiration"]).dt.date.astype(str)
     by_expiry_rows = [
@@ -625,6 +627,8 @@ def compute_gex(
             "exp": row.expiration,
             "gamma_net": _f(row.gamma_net / 1e6, 4),
             "delta_net": _f(row.delta_net / 1e6, 4),
+            "vanna_net": _f(row.vanna_net / 1e6, 4),
+            "charm_net": _f(row.charm_net / 1e6, 4),
         }
         for row in by_exp.itertuples()
     ]
