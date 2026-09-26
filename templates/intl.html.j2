@@ -403,6 +403,8 @@
   .tb-state.ts-failed-rebound { background:color-mix(in srgb,var(--down) 18%,transparent); color:var(--ink-down, var(--down)); border:1px solid color-mix(in srgb,var(--down) 40%,transparent); }
   .tb-state.ts-basing { background:color-mix(in srgb,var(--info) 10%,transparent); color:var(--ink-info, var(--info)); border:1px solid color-mix(in srgb,var(--info) 28%,transparent); }
   .tb-state.ts-downtrend { background:color-mix(in srgb,var(--down) 10%,transparent); color:var(--ink-down, var(--down)); border:1px solid color-mix(in srgb,var(--down) 28%,transparent); }
+  .tb-state.ts-risk-alert { background:color-mix(in srgb,var(--down) 16%,transparent); color:var(--ink-down, var(--down)); border:1px solid color-mix(in srgb,var(--down) 38%,transparent); }
+  .tb-state.ts-risk-stale { background:color-mix(in srgb,var(--warn) 12%,transparent); color:var(--ink-warn, var(--warn)); border:1px solid color-mix(in srgb,var(--warn) 32%,transparent); }
   .tb-state.ts-calm { background:var(--panel2); color:var(--muted); border:1px solid var(--line); }
   .tb-stance { font-size:11.5px; color:var(--text); line-height:1.35; margin-bottom:6px; font-weight:500; }
   .tb-metrics { display:flex; gap:10px; flex-wrap:wrap; font-size:11px; color:var(--muted); }
@@ -431,6 +433,8 @@
   .ts-chip.ts-recovery { background:color-mix(in srgb,var(--up) 8%,transparent); color:var(--ink-up, var(--up)); border-color:color-mix(in srgb,var(--up) 24%,transparent); }
   .ts-chip.ts-basing { background:color-mix(in srgb,var(--info) 8%,transparent); color:var(--ink-info, var(--info)); border-color:color-mix(in srgb,var(--info) 24%,transparent); }
   .ts-chip.ts-downtrend { background:color-mix(in srgb,var(--down) 8%,transparent); color:var(--ink-down, var(--down)); border-color:color-mix(in srgb,var(--down) 24%,transparent); }
+  .ts-chip.ts-risk-alert { background:color-mix(in srgb,var(--down) 14%,transparent); color:var(--ink-down, var(--down)); border-color:color-mix(in srgb,var(--down) 34%,transparent); }
+  .ts-chip.ts-risk-stale { background:color-mix(in srgb,var(--warn) 10%,transparent); color:var(--ink-warn, var(--warn)); border-color:color-mix(in srgb,var(--warn) 28%,transparent); }
   .ts-chip.ts-calm { background:var(--panel2); color:var(--muted); }
   /* pullback-risk radar strip inside turn tiles (#2684 risk_radar_intl.v1, display-only) */
   .tb-rd { margin-top:auto; padding-top:8px; border-top:1px dashed var(--line); }
@@ -442,6 +446,7 @@
   .tb-rd-chip.rd-caution { background:color-mix(in srgb,#d4a017 14%,transparent); color:var(--ink-warn, var(--warn)); border-color:color-mix(in srgb,#d4a017 35%,transparent); }
   .tb-rd-chip.rd-elevated { background:color-mix(in srgb,var(--down) 12%,transparent); color:var(--ink-down, var(--down)); border-color:color-mix(in srgb,var(--down) 30%,transparent); }
   .tb-rd-chip.rd-risk-off { background:color-mix(in srgb,var(--down) 18%,transparent); color:var(--ink-down, var(--down)); border-color:color-mix(in srgb,var(--down) 40%,transparent); }
+  .tb-rd-chip.rd-stale { background:color-mix(in srgb,var(--warn) 12%,transparent); color:var(--ink-warn, var(--warn)); border-color:color-mix(in srgb,var(--warn) 32%,transparent); }
   .tb-rd-line { font-size:11px; color:var(--text); line-height:1.35; margin-top:5px; }
   .tb-rd-foot { margin:12px 2px 0; line-height:1.5; }
   /* turn-tile rich-lens popover: "stretch" gauge (cloned by theme.js into .lens-pop,
@@ -549,12 +554,14 @@
         {# hover receipt: what the dial actually weighs (cap-weighted, US counts most).
            data-tip-en/zh only — CI forbids translated text in title= attributes. #}
         {% set _rk_cov = (RK.coverage_pct|round|int) if (RK and RK.coverage_pct is not none) else None %}
-        {% set _rk_receipt_en = ('Weighs ' ~ RK.n_available ~ ' markets by size — the US counts most. Covers ~' ~ _rk_cov ~ '% of world market value. ' ~ (RK.breadth_above_200d ~ ' above their 200-day line' if RK.breadth_above_200d is not none else '') ~ (' · median 3-mo move ' ~ RK.median_mom_3m ~ '%' if RK.median_mom_3m is not none else '')) if (RK and _rk_cov is not none) else '' %}
-        {% set _rk_receipt_zh = ('按市值加权覆盖 ' ~ RK.n_available ~ ' 个市场（美国权重最大），约占全球市值 ' ~ _rk_cov ~ '%。' ~ (RK.breadth_above_200d ~ ' 站上200日线' if RK.breadth_above_200d is not none else '') ~ (' · 3个月中位涨跌 ' ~ RK.median_mom_3m ~ '%' if RK.median_mom_3m is not none else '')) if (RK and _rk_cov is not none) else '' %}
+        {% set _rk_receipt_en = ('Weighs ' ~ RK.n_available ~ ' markets by size — the US counts most. Covers ~' ~ _rk_cov ~ '% of world market value. ' ~ (RK.breadth_above_200d ~ ' above their 200-day line' if RK.breadth_above_200d is not none else '') ~ (' · median 20-day move ' ~ RK.median_mom_20d ~ '%' if RK.median_mom_20d is not none else '') ~ (' · stressed dial weight ' ~ RK.stress_weight_pct ~ '%' if RK.stress_weight_pct is not none else '')) if (RK and _rk_cov is not none) else '' %}
+        {% set _rk_receipt_zh = ('按市值加权覆盖 ' ~ RK.n_available ~ ' 个市场（美国权重最大），约占全球市值 ' ~ _rk_cov ~ '%。' ~ (RK.breadth_above_200d ~ ' 站上200日线' if RK.breadth_above_200d is not none else '') ~ (' · 20日中位涨跌 ' ~ RK.median_mom_20d ~ '%' if RK.median_mom_20d is not none else '') ~ (' · 压力状态权重 ' ~ RK.stress_weight_pct ~ '%' if RK.stress_weight_pct is not none else '')) if (RK and _rk_cov is not none) else '' %}
         <div class="wc-gside"{% if _rk_receipt_en %} data-tip-en="{{ _rk_receipt_en }}" data-tip-zh="{{ _rk_receipt_zh }}"{% endif %}>
           <div class="wc-verdict v-{{ _rk_state }}"><span class="l-en">{{ _verdict_en }}</span><span class="l-zh">{{ _verdict_zh }}</span></div>
           <div class="wc-gauge-cap">{{ t('World risk appetite', '全球风险偏好') }}</div>
-          {% if RK and RK.top_drags %}
+          {% if RK and RK.label_en != 'Risk-on' and RK.confirmation_en %}
+          <div class="wc-substance"><span class="l-en">{{ RK.confirmation_en }}</span><span class="l-zh">{{ RK.confirmation_zh }}</span></div>
+          {% elif RK and RK.top_drags %}
           <div class="wc-substance"><span class="l-en">Dragged by {% for d in RK.top_drags %}{{ d.flag }} {{ d.name }}{% if not loop.last %} · {% endif %}{% endfor %}</span><span class="l-zh">拖累：{% for d in RK.top_drags %}{{ d.name_zh }}{% if not loop.last %} · {% endif %}{% endfor %}</span></div>
           {% elif RK %}
           <div class="wc-substance"><span class="l-en">Broad strength — no major market breaking down</span><span class="l-zh">普涨——无主要市场破位</span></div>
@@ -625,8 +632,8 @@
 {% if turn_board %}
 <div class="act-h"><span class="aq">{{ t("What's moving now?", '当下在动什么？') }}</span><span class="as">{{ t('Every market read straight from its price — hottest first.', '每个市场直接读自其价格——最紧迫者在前。') }}</span></div>
 {# ---- pullback-risk radar plain-word maps (states + stances; enums stay in hover receipts) ---- #}
-{% set RD_STATE_EN = {'calm': 'Calm', 'watch': 'Watch', 'caution': 'Caution', 'elevated': 'Elevated', 'risk-off': 'Risk-off'} %}
-{% set RD_STATE_ZH = {'calm': '平静', 'watch': '留意', 'caution': '谨慎', 'elevated': '偏高', 'risk-off': '避险'} %}
+{% set RD_STATE_EN = {'calm': 'Calm', 'watch': 'Watch', 'caution': 'Caution', 'elevated': 'Elevated', 'risk-off': 'Risk-off', 'stale': 'Stale'} %}
+{% set RD_STATE_ZH = {'calm': '平静', 'watch': '留意', 'caution': '谨慎', 'elevated': '偏高', 'risk-off': '避险', 'stale': '已过期'} %}
 {% set RD_STANCE_EN = {'watch': "watch, don't chase", 'caution': 'get ready to protect gains', 'elevated': 'protect gains', 'risk-off': 'protect gains, stand aside'} %}
 {% set RD_STANCE_ZH = {'watch': '观察，勿追高', 'caution': '准备保护收益', 'elevated': '保护收益', 'risk-off': '保护收益，观望'} %}
 {# ---- turn-tile rich-lens popover copy (plain-word reads + accent/glyph maps) ---- #}
@@ -686,20 +693,23 @@
     {# determine tile heat class #}
     {% set _ts = tile.state %}
     {% set _qa = tile.get('recovery_assessment') or {} %}
+    {% set _rc = tile.get('risk_context') or {} %}
     {% set _mb = tile.get('macro_backdrop') or {} %}
-    {% set _display_ts = _qa.get('css') or _ts %}
-    {% set _display_en = _qa.get('label_en') or tile.state_en or tile.state %}
-    {% set _display_zh = _qa.get('label_zh') or tile.state_zh or tile.state %}
-    {% set _stance_en = _qa.get('stance_en') or tile.stance_en %}
-    {% set _stance_zh = _qa.get('stance_zh') or tile.stance_zh %}
-    {% if _qa.get('heat') == 'hot' or _ts in ['crash', 'breaking'] %}{% set _tile_cls = 'tb-hot' %}
-    {% elif _qa.get('heat') == 'warm' or _ts in ['topping', 'parabolic', 'extended'] %}{% set _tile_cls = 'tb-warm' %}
+    {% set _display_ts = _qa.get('css') or _rc.get('css') or tile.get('display_css') or _ts %}
+    {% set _display_en = _qa.get('label_en') or _rc.get('label_en') or tile.get('display_state_en') or tile.state_en or tile.state %}
+    {% set _display_zh = _qa.get('label_zh') or _rc.get('label_zh') or tile.get('display_state_zh') or tile.state_zh or tile.state %}
+    {% set _stance_en = _qa.get('stance_en') or _rc.get('stance_en') or tile.get('display_stance_en') or tile.stance_en %}
+    {% set _stance_zh = _qa.get('stance_zh') or _rc.get('stance_zh') or tile.get('display_stance_zh') or tile.stance_zh %}
+    {% set _display_heat = _qa.get('heat') or _rc.get('heat') or tile.get('display_heat') %}
+    {% if _display_heat == 'hot' or _ts in ['crash', 'breaking'] %}{% set _tile_cls = 'tb-hot' %}
+    {% elif _display_heat == 'warm' or _ts in ['topping', 'parabolic', 'extended'] %}{% set _tile_cls = 'tb-warm' %}
     {% else %}{% set _tile_cls = 'tb-cool' %}
     {% endif %}
     {# pullback-risk radar (#2684, display-only) — schema risk_radar_intl.v1; absent/degraded → skipped #}
     {% set _rd = tile.get('risk_radar') %}
     {% if not (_rd and _rd.get('state')) %}{% set _rd = none %}{% endif %}
-    {% set _rd_state = _rd.get('state') if _rd else none %}
+    {% set _rd_stale = tile.get('risk_radar_stale') if _rd else false %}
+    {% set _rd_state = ('stale' if _rd_stale else _rd.get('state')) if _rd else none %}
     {% set _rd_prob = (_rd.get('drawdown_prob') or {}) if _rd else {} %}
     {% set _rd_h21 = _rd_prob.get('h21') %}
     {% set _rd_b21 = _rd_prob.get('base_h21') %}
@@ -707,7 +717,7 @@
     {# ---- per-tile popover helpers (dates trimmed to MM-DD; stretch pctile → int) ---- #}
     {% set _since_s = tile.since[5:] if tile.since else none %}
     {% set _peak_s = tile.peak_date[5:] if tile.peak_date else none %}
-    {% set _kind = _qa.get('lens_kind') or TB_KIND.get(tile.state, 'source') %}
+    {% set _kind = _qa.get('lens_kind') or _rc.get('lens_kind') or TB_KIND.get(tile.state, 'source') %}
     {% set _grp = _qa.get('glyph') or TB_GRP.get(tile.state, 'flat') %}
     {% set _ext_i = (tile.ext_pctile|round|int) if tile.ext_pctile is not none else none %}
     {% set _cf = tile.get('confirmation') %}
@@ -738,8 +748,8 @@
         </div>
         {% endif %}
         <div class="lens-body">
-          <span class="l-en">{{ _qa.get('read_en') or TB_READ_EN.get(tile.state, '') }} <b>{{ _stance_en }}.</b></span>
-          <span class="l-zh">{{ _qa.get('read_zh') or TB_READ_ZH.get(tile.state, '') }} <b>{{ _stance_zh }}。</b></span>
+          <span class="l-en">{{ _qa.get('read_en') or _rc.get('read_en') or TB_READ_EN.get(tile.state, '') }} <b>{{ _stance_en }}.</b></span>
+          <span class="l-zh">{{ _qa.get('read_zh') or _rc.get('read_zh') or TB_READ_ZH.get(tile.state, '') }} <b>{{ _stance_zh }}。</b></span>
         </div>
         {% if _cf and _cf.get('read_en') %}
         <div class="lens-body">
@@ -762,7 +772,7 @@
         {% if tile.dd_pct is not none %}{% set _ = _rc_en.append('<b>Off high</b> ' ~ '%.1f'|format(tile.dd_pct) ~ '%') %}{% set _ = _rc_zh.append('<b>距高</b> ' ~ '%.1f'|format(tile.dd_pct) ~ '%') %}{% endif %}
         {% if tile.macd_state %}{% set _ = _rc_en.append('<b>Momentum</b> ' ~ ('improving' if tile.macd_state == 'bull' else 'fading')) %}{% set _ = _rc_zh.append('<b>动能</b> ' ~ ('转强' if tile.macd_state == 'bull' else '转弱')) %}{% endif %}
         {# pullback odds, demoted off the tile face (they were printed on every tile at rest) #}
-        {% if _rd_h21 is not none %}{% set _ = _rc_en.append('<b>≥5% dip in a month</b> ~' ~ (_rd_h21*100)|round|int ~ '%' ~ (' vs ~' ~ (_rd_b21*100)|round|int ~ '% base' if _rd_b21 is not none else '')) %}{% set _ = _rc_zh.append('<b>一个月内≥5%回撤</b> 约' ~ (_rd_h21*100)|round|int ~ '%' ~ ('（基准约' ~ (_rd_b21*100)|round|int ~ '%）' if _rd_b21 is not none else '')) %}
+        {% if _rd_h21 is not none and not _rd_stale %}{% set _ = _rc_en.append('<b>≥5% dip in a month</b> ~' ~ (_rd_h21*100)|round|int ~ '%' ~ (' vs ~' ~ (_rd_b21*100)|round|int ~ '% base' if _rd_b21 is not none else '')) %}{% set _ = _rc_zh.append('<b>一个月内≥5%回撤</b> 约' ~ (_rd_h21*100)|round|int ~ '%' ~ ('（基准约' ~ (_rd_b21*100)|round|int ~ '%）' if _rd_b21 is not none else '')) %}
         {# honest provenance travels WITH the number it qualifies (it used to be a Tier-1
            footer sentence describing a figure the user could no longer see at rest) #}
         {% set _ = _rc_en.append('<b>Odds from</b> ' ~ ('own history + this radar&#39;s live record' if (_rd_lift is not none and _rd_lift != 1.0) else 'own history only — radar record still building')) %}{% set _ = _rc_zh.append('<b>概率来源</b> ' ~ ('自身历史 + 该雷达实时记录' if (_rd_lift is not none and _rd_lift != 1.0) else '仅自身历史——雷达记录仍在累积')) %}{% endif %}
@@ -805,7 +815,9 @@
           <span class="tb-rd-chip rd-{{ _rd_state }}">{{ t(RD_STATE_EN.get(_rd_state, _rd_state), RD_STATE_ZH.get(_rd_state, _rd_state)) }}</span>
         </div>
         <div class="tb-rd-line">
-          {% if _rd_state == 'calm' %}
+          {% if _rd_state == 'stale' %}
+          <span class="l-en">Refresh required — risk read is {{ tile.get('risk_radar_age_days') or '?' }} days old</span><span class="l-zh">需要刷新——风险读数已滞后 {{ tile.get('risk_radar_age_days') or '?' }} 天</span>
+          {% elif _rd_state == 'calm' %}
           {{ t('nothing to do', '无需操作') }}
           {% else %}
           <span class="l-en">{{ _rd.get('dominant_label_en') or 'driver elevated' }} — {{ RD_STANCE_EN.get(_rd_state, RD_STANCE_EN['watch']) }}</span><span class="l-zh">{{ _rd.get('dominant_label_zh') or _rd.get('dominant_label_en') or '驱动升高' }}——{{ RD_STANCE_ZH.get(_rd_state, RD_STANCE_ZH['watch']) }}</span>
@@ -962,8 +974,8 @@
         <td><span class="gbar"><span class="gfill g-{{ e.drawdown_band }}" style="width:{{ e.drawdown_risk or 0 }}%"></span></span>{{ num(e.drawdown_risk,'',0) }}</td>
         <td class="l">
           {% if _rt %}
-            <span class="ts-chip ts-{{ _rt.state }}">
-              <span class="l-en">{{ _rt.state_en }}</span><span class="l-zh">{{ _rt.state_zh }}</span>
+            <span class="ts-chip ts-{{ _rt.get('display_css') or _rt.state }}">
+              <span class="l-en">{{ _rt.get('display_state_en') or _rt.state_en }}</span><span class="l-zh">{{ _rt.get('display_state_zh') or _rt.state_zh }}</span>
             </span>
           {% elif e.ext_grade == 'parabolic' %}<span class="chip warn">{{ t('parabolic', '抛物') }}</span>
           {% elif e.ext_grade == 'stretched' %}<span class="chip caut">{{ t('stretched', '拉伸') }}</span>
@@ -2092,9 +2104,9 @@ document.querySelectorAll('.more-btn[data-more]').forEach(function(btn){
   function fmt(x){ return (x >= 0 ? '+' : '') + x.toFixed(1) + '%'; }
   function stateChip(cc){
     var t = turnLookup[cc]; if (!t) return '';
-    return '<span class="ts-chip ts-' + t.state + '" style="margin-left:4px">'
-      + '<span class="l-en">' + (t.state_en || t.state) + '</span>'
-      + '<span class="l-zh">' + (t.state_zh || t.state) + '</span></span>';
+    return '<span class="ts-chip ts-' + (t.display_css || t.state) + '" style="margin-left:4px">'
+      + '<span class="l-en">' + (t.display_state_en || t.state_en || t.state) + '</span>'
+      + '<span class="l-zh">' + (t.display_state_zh || t.state_zh || t.state) + '</span></span>';
   }
 
   function render(h){

@@ -169,11 +169,135 @@ def test_turn_board_cards_size_independently_and_hovers_stay_concise():
     assert ".tb-tile { display:flex; flex-direction:column;" in template
     # the pullback strip is pinned to the tile floor so the faces line up
     assert ".tb-rd { margin-top:auto;" in template
+    assert "t.display_state_en || t.state_en" in template
     # the two verbose face blocks must NOT come back — they belong to the hover lens
     assert '<div class="tb-confirm">' not in template
     assert '<div class="tb-context">' not in template
     assert "Higher = pricier than its own history" not in template
     assert "Price state and recovery quality are separate" not in template
+
+
+def _quiet_cn_state() -> dict:
+    return {
+        "cc": "CN", "name": "China", "name_zh": "中国", "flag": "🇨🇳",
+        "state": "calm", "state_en": "Quiet", "state_zh": "平静",
+        "stance_en": "Nothing to do", "stance_zh": "无需操作",
+        "css": "state-calm", "urgency": 0, "since": "2026-09-01",
+        "dd_pct": -7.0, "ext_raw_pct": -1.0, "ext_pctile": 35.0,
+        "ext_z": -0.5, "mom20_pct": -0.3, "mom5_pct": -0.6,
+        "rs20_pct": -1.0, "rsi": 42.0, "rsi_at_high": None,
+        "rsi_divergence": False, "macd_state": "bear",
+        "macd_cross_date": None, "dd_vel_10d": -0.5, "vol_z": 0.2,
+        "above_ma20": False, "above_ma50": True, "above_ma200": False,
+        "was_parabolic_40d": False, "peak_date": None,
+        "data_limited": False, "events": [],
+    }
+
+
+def test_risk_context_prevents_quiet_from_reading_as_all_clear():
+    """A quiet price turn plus loud leading risk must not look like an all-clear."""
+    from engine.intl_market_state import apply_risk_context
+
+    radar = {"state": "risk-off", "asof": "2026-09-14", "can_force": False,
+             "dominant_label_en": "Breadth breakdown (all-boats)",
+             "dominant_label_zh": "广度普跌（普跌）"}
+    out = apply_risk_context(_quiet_cn_state(), radar, page_asof="2026-09-14")
+
+    assert out["state"] == "calm"
+    assert out["risk_radar"] is radar
+    assert out["risk_context"]["advisory"] is True
+    assert out["display_state_en"] == "Quiet tape · risk alert"
+    assert out["display_stance_en"] == "No break yet — leading pullback risk is high"
+
+
+def test_stale_radar_never_hides_an_active_price_break():
+    from engine.intl_market_state import apply_risk_context
+
+    state = _quiet_cn_state()
+    state.update({"state": "breaking", "state_en": "Breaking down",
+                  "state_zh": "正在破位", "stance_en": "Reduce risk now",
+                  "stance_zh": "立即降低风险", "urgency": 8})
+    radar = {"state": "risk-off", "asof": "2026-09-01", "can_force": False}
+    out = apply_risk_context(state, radar, page_asof="2026-09-14")
+
+    assert out["risk_radar_stale"] is True
+    assert out.get("display_state_en") is None
+    assert out["state_en"] == "Breaking down"
+
+
+def test_missing_radar_date_is_unresolved_when_page_date_is_known():
+    from engine.intl_market_state import apply_risk_context
+
+    radar = {"state": "risk-off", "can_force": False}
+    out = apply_risk_context(_quiet_cn_state(), radar, page_asof="2026-09-14")
+
+    assert out["risk_radar_stale"] is True
+    assert out["risk_radar_age_days"] is None
+    assert out["display_state_en"] == "Risk read stale"
+    assert out["display_stance_en"] == "Refresh required — quiet is not an all-clear"
+
+
+def test_stale_radar_hides_old_probability_receipts():
+    from engine.intl_market_state import apply_risk_context
+
+    vm = _perf_vm()
+    radar = {
+        "state": "risk-off", "asof": "2026-09-01", "can_force": False,
+        "drawdown_prob": {"h21": 0.50, "base_h21": 0.31, "lift_h21": 1.6},
+    }
+    vm["turn_board"] = [
+        apply_risk_context(_quiet_cn_state(), radar, page_asof="2026-09-14")
+    ]
+    html = _env().get_template("intl.html.j2").render(**vm, mode="macro")
+
+    assert "Risk read stale" in html
+    assert "Refresh required — risk read is 13 days old" in html
+    assert "≥5% dip in a month" not in html
+
+
+def test_render_cn_quiet_plus_risk_off_is_not_a_bare_quiet_tile():
+    from engine.intl_market_state import apply_risk_context
+
+    vm = _perf_vm()
+    radar = {"state": "risk-off", "asof": "2026-09-14", "can_force": False,
+             "dominant_label_en": "Breadth breakdown (all-boats)",
+             "dominant_label_zh": "广度普跌（普跌）",
+             "drawdown_prob": {"h21": 0.50, "base_h21": 0.31, "lift_h21": 1.6}}
+    vm["turn_board"] = [
+        apply_risk_context(_quiet_cn_state(), radar, page_asof="2026-09-14")
+    ]
+    vm["records"][0]["turn"] = vm["turn_board"][0]
+    html = _env().get_template("intl.html.j2").render(**vm, mode="macro")
+
+    assert "Quiet tape · risk alert" in html
+    assert "No break yet — leading pullback risk is high" in html
+    assert "The price-only tape is quiet, but the leading pullback radar is risk-off" in html
+    assert "Breadth breakdown (all-boats)" in html
+    assert "ts-risk-alert" in html
+    assert "Nothing to do" not in html
+
+
+def test_extra_market_context_attaches_china_radar_without_writing_ledgers(monkeypatch):
+    from scripts import build_intl
+
+    radar = {"state": "risk-off", "asof": "2026-09-14", "can_force": False,
+             "dominant_label_en": "Breadth breakdown (all-boats)"}
+    monkeypatch.setattr(build_intl, "_readonly_radar_snapshot", lambda _profile: radar)
+    states = {"CN": _quiet_cn_state()}
+
+    out = build_intl._attach_extra_market_risk_context(
+        states, page_asof="2026-09-14", market_codes=("CN",)
+    )
+    assert out["CN"]["risk_radar"] is radar
+    assert out["CN"]["display_state_en"] == "Quiet tape · risk alert"
+
+
+def test_builder_joins_extra_market_risk_before_world_verdict_compose():
+    builder = (ROOT / "scripts" / "build_intl.py").read_text(encoding="utf-8")
+
+    attach_pos = builder.index("_world_states = _attach_extra_market_risk_context(")
+    compose_pos = builder.index("perf = intl_performance.performance_panel(")
+    assert attach_pos < compose_pos
 
 
 def test_universe_ticker_conversion():

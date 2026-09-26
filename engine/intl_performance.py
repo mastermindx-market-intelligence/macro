@@ -401,6 +401,9 @@ _STATE_HEALTH: dict[str, float] = {
 _BREAKDOWN_STATES = {"crash", "breaking"}
 # States that qualify a market as a "drag" (ranked worst-first for the headline).
 _DRAG_STATES = {"crash", "breaking", "topping", "downtrend"}
+# Loud leading-risk states are context, not score overrides.  They can deny the
+# overconfident green label while leaving the continuous score untouched.
+_LOUD_RISK_STATES = {"elevated", "risk-off"}
 
 
 def _wr_cfg() -> dict:
@@ -533,14 +536,19 @@ def risk_appetite(closes: pd.DataFrame | None = None,
     per_market: dict[str, dict] = {}
     above_200d = 0
     n_above_denom = 0
-    all_moms: list[float] = []          # for the hover receipt (full available universe)
+    all_moms: list[float] = []          # 3m receipt (full available universe)
+    all_fast_moms: list[float] = []     # 20-session confirmation receipt
 
     for cc in cap_share:
         local = _local_index(cc)
         usd = _usd_index(cc)
         trend = _trend_leg(local) if local is not None else None
         mom = _mom_leg(usd)
-        st = (states.get(cc) or {}).get("state")
+        state_ctx = states.get(cc) or {}
+        st = state_ctx.get("state")
+        radar_state = ((state_ctx.get("risk_radar") or {}).get("state")
+                       if isinstance(state_ctx.get("risk_radar"), dict) else None)
+        radar_stale = bool(state_ctx.get("risk_radar_stale"))
         state_h = _STATE_HEALTH.get(st) if st in _STATE_HEALTH else None
         if trend is None and mom is None and state_h is None:
             continue                    # market entirely unavailable — drop it
@@ -567,13 +575,20 @@ def risk_appetite(closes: pd.DataFrame | None = None,
                     n_above_denom += 1
                     if px.iloc[-1] > ma200.iloc[-1]:
                         above_200d += 1
+        mom20 = None
         if mom is not None and usd is not None:
             _mr = _ret(usd, 63)
             if _mr is not None:
                 all_moms.append(_mr)
+            mom20 = _ret(usd, 20)
+            if mom20 is not None:
+                all_fast_moms.append(mom20)
 
-        per_market[cc] = {"h": round(health, 3), "state": st, "weight_pct": None,
-                          "cap_share": cap_share[cc]}
+        per_market[cc] = {
+            "h": round(health, 3), "state": st, "weight_pct": None,
+            "cap_share": cap_share[cc], "mom20_pct": mom20,
+            "risk_radar_state": radar_state, "risk_radar_stale": radar_stale,
+        }
 
     if not per_market:
         return None
@@ -589,24 +604,67 @@ def risk_appetite(closes: pd.DataFrame | None = None,
     coverage_den = sum(cap_share.values()) or 1.0
     coverage_pct = round(100.0 * coverage_num / coverage_den, 1)
 
-    # breakdown share: cap-share of markets actively breaking (crash/breaking)
+    # Breakdown keeps the original raw-cap receipt.  Stress and loud leading-risk
+    # shares use the SAME sqrt-dampened weights as the dial itself, so the verdict
+    # cannot call the tape green while a material part of its own composition is
+    # already topping/breaking or flashing a fresh elevated/risk-off radar.
     breakdown_num = sum(cap_share[cc] for cc in per_market
                         if (states.get(cc) or {}).get("state") in _BREAKDOWN_STATES)
     breakdown_share_pct = round(100.0 * breakdown_num / coverage_num, 1) if coverage_num else 0.0
+    stress_weight_pct = round(
+        100.0 * sum(weights[cc] for cc, pm in per_market.items()
+                    if pm.get("state") in _DRAG_STATES) / wtot, 1
+    ) if wtot else 0.0
+    loud_risk_weight_pct = round(
+        100.0 * sum(weights[cc] for cc, pm in per_market.items()
+                    if pm.get("risk_radar_state") in _LOUD_RISK_STATES
+                    and not pm.get("risk_radar_stale")) / wtot, 1
+    ) if wtot else 0.0
 
-    # --- verdict (display semantics — the SCORE is never floored/overridden) ---
-    # Branch order matters: the breakdown-share warning must be checked BEFORE the
-    # score>=60 gate so a split tape sitting anywhere in the 40-60 band still reads
-    # "Split tape" (a US+CN crash carrying ~68% of covered cap can land the score at
-    # ~57 — plain "Neutral" would hide it). Risk-off (score<40) still wins outright.
+    med_mom = round(float(np.median(all_moms)), 1) if all_moms else None
+    med_fast_mom = round(float(np.median(all_fast_moms)), 1) if all_fast_moms else None
+    breadth_ratio = (above_200d / n_above_denom) if n_above_denom else None
+    confirm_cfg = _wr_cfg().get("risk_on_confirmation", {}) or {}
+    min_breadth = float(confirm_cfg.get("min_breadth_ratio", 0.65))
+    min_fast_mom = float(confirm_cfg.get("min_median_mom_20d", 0.0))
+    max_stress = float(confirm_cfg.get("max_stress_weight_pct", 25.0))
+    max_loud_risk = float(confirm_cfg.get("max_loud_risk_weight_pct", 20.0))
+    risk_on_confirmed = bool(
+        breadth_ratio is not None and breadth_ratio >= min_breadth
+        and med_fast_mom is not None and med_fast_mom > min_fast_mom
+        and stress_weight_pct < max_stress
+        and loud_risk_weight_pct < max_loud_risk
+    )
+
+    # Verdict is a display interpretation, never a score override.  "Risk-on" now
+    # requires broad + fast confirmation.  Otherwise a high slow score is shown as
+    # a split tape, which is exactly the condition the underlying receipts describe.
+    split_tape = bool(
+        breakdown_share_pct >= 20
+        or stress_weight_pct >= max_stress
+        or loud_risk_weight_pct >= max_loud_risk
+    )
     if score < 40:
         label_en, label_zh, tone = "Risk-off", "风险规避", "down"
-    elif breakdown_share_pct >= 20:
+    elif split_tape:
         label_en, label_zh, tone = "Split tape", "分化行情", "warn"
-    elif score >= 60:
+    elif score >= 60 and risk_on_confirmed:
         label_en, label_zh, tone = "Risk-on", "风险偏好", "up"
+    elif score >= 60:
+        label_en, label_zh, tone = "Split tape", "分化行情", "warn"
     else:
         label_en, label_zh, tone = "Neutral", "中性", "flat"
+
+    breadth_text = f"{above_200d}/{n_above_denom}" if n_above_denom else "—"
+    fast_text = f"{med_fast_mom:+.1f}%" if med_fast_mom is not None else "—"
+    loud_en = (f" · {loud_risk_weight_pct:.0f}% under fresh leading-risk alerts"
+               if loud_risk_weight_pct > 0 else "")
+    loud_zh = (f" · {loud_risk_weight_pct:.0f}%受新鲜领先风险警报覆盖"
+               if loud_risk_weight_pct > 0 else "")
+    confirmation_en = (f"{breadth_text} above 200-day trend · median 20-day move {fast_text} · "
+                       f"{stress_weight_pct:.0f}% of dial weight stressed{loud_en}")
+    confirmation_zh = (f"{breadth_text} 站上200日趋势 · 20日中位涨跌 {fast_text} · "
+                       f"仪表权重中{stress_weight_pct:.0f}%处于压力状态{loud_zh}")
 
     # --- top drags: worst markets by w_i·(1−h_i), state in the drag set --------
     def _meta(cc: str) -> dict:
@@ -630,20 +688,33 @@ def risk_appetite(closes: pd.DataFrame | None = None,
     drags.sort(key=lambda d: d["_rank"], reverse=True)
     top_drags = [{k: v for k, v in d.items() if k != "_rank"} for d in drags[:3]]
 
-    med_mom = round(float(np.median(all_moms)), 1) if all_moms else None
-
     return {
         "score": score,
         "label_en": label_en, "label_zh": label_zh, "tone": tone,
         "breadth_above_200d": f"{above_200d}/{n_above_denom}" if n_above_denom else None,
+        "breadth_ratio": round(breadth_ratio, 3) if breadth_ratio is not None else None,
         "median_mom_3m": med_mom,
+        "median_mom_20d": med_fast_mom,
         "coverage_pct": coverage_pct,
         "n_available": len(per_market),
         "n_universe": len(cap_share),
         "breakdown_share_pct": breakdown_share_pct,
+        "stress_weight_pct": stress_weight_pct,
+        "loud_risk_weight_pct": loud_risk_weight_pct,
+        "risk_on_confirmed": risk_on_confirmed,
+        "confirmation_en": confirmation_en,
+        "confirmation_zh": confirmation_zh,
         "top_drags": top_drags,
-        "per_market": {cc: {"h": pm["h"], "state": pm["state"], "weight_pct": pm["weight_pct"]}
-                       for cc, pm in per_market.items()},
+        "per_market": {
+            cc: {
+                "h": pm["h"], "state": pm["state"], "weight_pct": pm["weight_pct"],
+                "mom20_pct": (round(pm["mom20_pct"], 1)
+                              if pm.get("mom20_pct") is not None else None),
+                "risk_radar_state": pm.get("risk_radar_state"),
+                "risk_radar_stale": pm.get("risk_radar_stale", False),
+            }
+            for cc, pm in per_market.items()
+        },
     }
 
 
@@ -697,8 +768,20 @@ def global_read(records: list[dict], board: list[dict], rrg: dict | None,
             names_zh = "、".join(d["name_zh"] for d in drags[:2])
             drag_en = f" — dragged by {names_en}"
             drag_zh = f"——受{names_zh}拖累"
-        parts_en.append(f"World risk appetite {risk['label_en'].lower()} ({int(risk['score'])}/100){drag_en}.")
-        parts_zh.append(f"全球风险偏好{risk['label_zh']}（{int(risk['score'])}/100）{drag_zh}。")
+        if risk.get("label_en") == "Split tape":
+            parts_en.append(f"World tape is split ({int(risk['score'])}/100){drag_en}.")
+            parts_zh.append(f"全球行情分化（{int(risk['score'])}/100）{drag_zh}。")
+        else:
+            parts_en.append(
+                f"World risk appetite is {risk['label_en'].lower()} "
+                f"({int(risk['score'])}/100){drag_en}."
+            )
+            zh_lead = {
+                "Risk-on": "全球风险偏好偏强",
+                "Neutral": "全球风险偏好中性",
+                "Risk-off": "全球市场偏向避险",
+            }.get(risk.get("label_en"), f"全球风险偏好读数为{risk.get('label_zh', '—')}")
+            parts_zh.append(f"{zh_lead}（{int(risk['score'])}/100）{drag_zh}。")
     return {"en": " ".join(parts_en), "zh": "".join(parts_zh), "dominant_quad": dom}
 
 

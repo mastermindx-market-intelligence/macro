@@ -146,7 +146,9 @@ def test_risk_appetite_bounds():
     assert ra["tone"] in {"up", "warn", "flat", "down"}
     # v2 contract keys present
     for k in ("coverage_pct", "n_available", "n_universe", "breakdown_share_pct",
-              "top_drags", "per_market", "breadth_above_200d", "median_mom_3m"):
+              "stress_weight_pct", "loud_risk_weight_pct", "risk_on_confirmed",
+              "top_drags", "per_market", "breadth_above_200d", "median_mom_3m",
+              "median_mom_20d"):
         assert k in ra, k
 
 
@@ -210,6 +212,101 @@ def test_wr_all_healthy_is_risk_on():
     assert ra["top_drags"] == []
     assert ra["n_available"] == 10
     assert ra["coverage_pct"] == 100.0
+
+
+def test_wr_fast_rollover_blocks_green_even_without_stressed_states():
+    """The green label needs a positive fast tape, not only healthy long trends.
+
+    Every state stays `uptrend` and every index remains above its long averages,
+    but all ten markets roll over during the final 20 sessions.  The continuous
+    score remains high; the verdict must still refuse a false-green Risk-on.
+    """
+    idx = pd.bdate_range("2023-06-01", periods=400)
+
+    def _rollover(start: float) -> pd.Series:
+        lr = np.r_[np.full(380, np.log(1.0008)), np.full(20, np.log(0.9995))]
+        return pd.Series(start * np.exp(np.cumsum(lr)), index=idx)
+
+    closes = _wr_intl_frame()
+    for ticker in _INTL_SPECS:
+        closes[ticker] = _rollover(100.0)
+    extra = {"US": _rollover(4000.0), "CN": _rollover(3000.0),
+             "HK": _rollover(18000.0)}
+    states = {cc: {"state": "uptrend"} for cc in _ALL_CCS}
+
+    ra = P.risk_appetite(closes, extra_closes=extra, states=states)
+
+    assert ra is not None
+    assert ra["score"] >= 60
+    assert ra["stress_weight_pct"] == 0.0
+    assert ra["breakdown_share_pct"] == 0.0
+    assert ra["median_mom_20d"] < 0.0
+    assert ra["risk_on_confirmed"] is False
+    assert ra["label_en"] == "Split tape"
+
+
+def test_wr_stressed_weight_blocks_a_green_risk_on_label():
+    """A high slow score cannot print Risk-on while a material share of the
+    actual dial weight is already topping, breaking or carrying crash damage.
+
+    This reproduces the production contradiction: JP breaking, KR crash damage,
+    AU/EZ turn risk, but the slow composite still clears 60 because US and the
+    remaining long trends are healthy.  The score remains descriptive; only the
+    overconfident green verdict is denied.
+    """
+    closes = _wr_intl_frame()
+    extra = {"US": _wr_trend(4000.0, 0.0006, seed=20),
+             "CN": _wr_trend(3000.0, 0.0006, seed=21),
+             "HK": _wr_trend(18000.0, 0.0006, seed=22)}
+    states = {cc: {"state": "uptrend"} for cc in _ALL_CCS}
+    states.update({"JP": {"state": "breaking"}, "KR": {"state": "crash"},
+                   "AU": {"state": "topping"}, "EZ": {"state": "topping"}})
+
+    ra = P.risk_appetite(closes, extra_closes=extra, states=states)
+    assert ra is not None
+    assert ra["score"] >= 60, ra
+    assert ra["breakdown_share_pct"] < 20, ra
+    assert ra["stress_weight_pct"] >= 25, ra
+    assert ra["risk_on_confirmed"] is False
+    assert ra["label_en"] == "Split tape"
+    assert ra["tone"] == "warn"
+
+
+def test_wr_fresh_loud_risk_weight_blocks_green_and_explains_why():
+    closes = _wr_intl_frame()
+    extra = {"US": _wr_trend(4000.0, 0.0006, seed=20),
+             "CN": _wr_trend(3000.0, 0.0006, seed=21),
+             "HK": _wr_trend(18000.0, 0.0006, seed=22)}
+    states = {cc: {"state": "uptrend"} for cc in _ALL_CCS}
+    states["EZ"]["risk_radar"] = {"state": "risk-off"}
+    states["CN"]["risk_radar"] = {"state": "elevated"}
+
+    ra = P.risk_appetite(closes, extra_closes=extra, states=states)
+
+    assert ra is not None
+    assert ra["score"] >= 70
+    assert ra["stress_weight_pct"] == 0.0
+    assert ra["loud_risk_weight_pct"] >= 20.0
+    assert ra["label_en"] == "Split tape"
+    assert "leading-risk alerts" in ra["confirmation_en"]
+
+
+def test_wr_stale_loud_radars_do_not_deny_an_otherwise_confirmed_green():
+    closes = _wr_intl_frame()
+    extra = {"US": _wr_trend(4000.0, 0.0006, seed=20),
+             "CN": _wr_trend(3000.0, 0.0006, seed=21),
+             "HK": _wr_trend(18000.0, 0.0006, seed=22)}
+    states = {cc: {"state": "uptrend"} for cc in _ALL_CCS}
+    for cc in ("EZ", "CN"):
+        states[cc]["risk_radar"] = {"state": "risk-off"}
+        states[cc]["risk_radar_stale"] = True
+
+    ra = P.risk_appetite(closes, extra_closes=extra, states=states)
+
+    assert ra is not None
+    assert ra["loud_risk_weight_pct"] == 0.0
+    assert ra["risk_on_confirmed"] is True
+    assert ra["label_en"] == "Risk-on"
 
 
 def test_wr_heavy_crash_beats_equal_weight_and_leads_with_big_markets():
@@ -416,6 +513,18 @@ def test_global_read_is_bilingual_text():
     assert "Goldilocks" not in gr["en"]
     assert "growth OK, inflation calm" in gr["en"]
     assert "增长尚可、通胀温和" in gr["zh"]
+
+
+def test_global_read_uses_natural_risk_wording_without_zh_duplication():
+    risk = {
+        "score": 68, "label_en": "Risk-on", "label_zh": "风险偏好",
+        "top_drags": [],
+    }
+    gr = P.global_read([], [], None, risk)
+
+    assert "World risk appetite is risk-on (68/100)." in gr["en"]
+    assert "全球风险偏好偏强（68/100）。" in gr["zh"]
+    assert "全球风险偏好风险偏好" not in gr["zh"]
 
 
 def test_performance_panel_smoke():

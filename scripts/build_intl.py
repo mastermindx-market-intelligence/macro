@@ -146,6 +146,66 @@ def _cgl_compact_summary(artifact: dict | None) -> dict | None:
     }
 
 
+def _readonly_radar_snapshot(profile) -> dict:
+    """Read one existing international Risk Radar plus its current authority receipt.
+
+    This path is deliberately read-only: no snapshot_and_grade(), tuner or scorecard
+    writer is called.  The nightly owner remains the sole forward-ledger advancer.
+    """
+    from engine import risk_radar_intl as _rri
+    from engine import risk_radar_intl_audit as _rra
+
+    radar = _rri.snapshot(profile)
+    if not isinstance(radar, dict) or not radar.get("state"):
+        return radar if isinstance(radar, dict) else {}
+    try:
+        scorecard = _rra.scorecard(profile.key, log_governance=False)
+        radar["forward_log"] = scorecard
+        radar["can_force"] = bool(scorecard.get("can_force"))
+    except Exception as exc:  # noqa: BLE001 — display context fails open
+        log.warning("world_risk: %s read-only radar scorecard failed (%s)", profile.key, exc)
+        radar.setdefault("can_force", False)
+    return radar
+
+
+def _attach_extra_market_risk_context(
+    states: dict[str, dict],
+    *,
+    page_asof: object,
+    market_codes: tuple[str, ...] = ("CN", "HK"),
+) -> dict[str, dict]:
+    """Attach the canonical CN/HK leading-risk radars to their world-board rows."""
+    from engine import risk_radar_intl as _rri
+    from engine.intl_market_state import apply_risk_context
+
+    profiles = {"CN": _rri.CN_PROFILE, "HK": _rri.HK_PROFILE}
+    out = dict(states or {})
+    for cc in market_codes:
+        if cc not in out or cc not in profiles:
+            continue
+        try:
+            radar = _readonly_radar_snapshot(profiles[cc])
+            out[cc] = apply_risk_context(out[cc], radar, page_asof=page_asof)
+        except Exception as exc:  # noqa: BLE001 — one extra market cannot kill render
+            log.warning("world_risk: %s risk context failed (fail-open): %s", cc, exc)
+    return out
+
+
+def _attach_record_risk_context(
+    states: dict[str, dict], records: list[dict], *, page_asof: object
+) -> dict[str, dict]:
+    """Join the seven record-owned radars onto the same state objects the dial sees."""
+    from engine.intl_market_state import apply_risk_context
+
+    out = dict(states or {})
+    for rec in records or []:
+        cc = str(rec.get("cc") or "")
+        radar = rec.get("risk_radar")
+        if cc in out and isinstance(radar, dict) and radar.get("state"):
+            out[cc] = apply_risk_context(out[cc], radar, page_asof=page_asof)
+    return out
+
+
 def main() -> int:
     try:
         from engine.intl_run import run
@@ -296,6 +356,16 @@ def main() -> int:
             if _wcc4 in _world_states:
                 _world_states[_wcc4]["confirmation"] = _confirmation
 
+        # Join every radar BEFORE composing the world dial.  The seven core-market
+        # radars already belong to latest.records; CN/HK use their existing owner
+        # profiles through a read-only scorecard path.  No ledger advances here.
+        _world_states = _attach_record_risk_context(
+            _world_states, latest.get("records") or [], page_asof=latest.get("date")
+        )
+        _world_states = _attach_extra_market_risk_context(
+            _world_states, page_asof=latest.get("date")
+        )
+
         # Hong Kong needs two authorities that the price-only turn state cannot
         # supply by itself:
         #   1) a validated external-driver radar (rates / USD-HKD / breadth), and
@@ -305,13 +375,8 @@ def main() -> int:
         _hk_state = _world_states.get("HK")
         if isinstance(_hk_state, dict):
             try:
-                from engine import risk_radar_intl as _wr_rri
                 from engine.intl_recovery_quality import assess_recovery as _wr_assess_recovery
                 from engine.intl_recovery_quality import macro_backdrop as _wr_macro_backdrop
-
-                _hk_radar = _wr_rri.snapshot(_wr_rri.HK_PROFILE)
-                if _hk_radar.get("state"):
-                    _hk_state["risk_radar"] = _hk_radar
 
                 _hk_state["recovery_assessment"] = _wr_assess_recovery(
                     _hk_state,
@@ -781,6 +846,8 @@ def main() -> int:
 
         # Build turn_board: urgency-sorted (desc), ties by dd_pct ascending
         if _itr_states:
+            from engine.intl_market_state import apply_risk_context as _itr_apply_risk_context
+
             _tb_rows = []
             for _cc3, _st in _itr_states.items():
                 _meta3 = _tb_meta(_cc3)
@@ -789,9 +856,12 @@ def main() -> int:
                 _row["name"]     = _meta3.get("name", _cc3)
                 _row["name_zh"]  = _meta3.get("name_zh", _cc3)
                 _row["flag"]     = _meta3.get("flag", "")
-                # Preserve HK's directly attached profile radar; the seven core
-                # markets continue to use the record-level join below.
-                _row["risk_radar"] = _st.get("risk_radar") or _radar_by_cc.get(_cc3)
+                # Preserve already-attached CN/HK context and apply the same
+                # contradiction-safe display synthesis to any fallback record radar.
+                _radar = _st.get("risk_radar") or _radar_by_cc.get(_cc3)
+                _row = _itr_apply_risk_context(
+                    _row, _radar, page_asof=latest.get("date")
+                )
                 _tb_rows.append(_row)
             turn_board = sorted(
                 _tb_rows,
