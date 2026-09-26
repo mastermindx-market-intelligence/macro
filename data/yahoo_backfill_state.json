@@ -1,10 +1,15 @@
 {
  "done": {
+  "AAAU": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 2039
+  },
   "AAC-UN": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 61
+   "rows": 62
   },
   "AACBU": {
    "backfilled": "2026-08-10",
@@ -128,9 +133,9 @@
   },
   "ABDBY": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1221
+   "rows": 1222
   },
   "ABEO": {
    "backfilled": "2026-08-10",
@@ -146,15 +151,15 @@
   },
   "ABHBY": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 933
+   "rows": 934
   },
   "ABIT": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6704
+   "rows": 6705
   },
   "ABM": {
    "backfilled": "2026-09-10",
@@ -188,9 +193,9 @@
   },
   "ABR-PF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1248
+   "rows": 1249
   },
   "ABSI": {
    "backfilled": "2026-08-27",
@@ -362,9 +367,9 @@
   },
   "ACR-PD": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1345
+   "rows": 1346
   },
   "ACRE": {
    "backfilled": "2026-09-23",
@@ -512,9 +517,9 @@
   },
   "ADHC": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4319
+   "rows": 4320
   },
   "ADIG": {
    "backfilled": "2026-08-10",
@@ -824,9 +829,9 @@
   },
   "AGM-PI": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 86
+   "rows": 87
   },
   "AGMH": {
    "backfilled": "2026-09-17",
@@ -908,9 +913,9 @@
   },
   "AGYP": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4248
+   "rows": 4249
   },
   "AGYS": {
    "backfilled": "2026-08-10",
@@ -932,9 +937,9 @@
   },
   "AHL-PF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 449
+   "rows": 450
   },
   "AHR": {
    "backfilled": "2026-08-10",
@@ -944,15 +949,15 @@
   },
   "AHRO": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5063
+   "rows": 5064
   },
   "AHRT-PA": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1832
+   "rows": 1833
   },
   "AHT": {
    "backfilled": "2026-08-10",
@@ -962,9 +967,9 @@
   },
   "AHT-PI": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2228
+   "rows": 2229
   },
   "AI": {
    "backfilled": "2026-08-10",
@@ -1226,9 +1231,9 @@
   },
   "AKRBY": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 915
+   "rows": 916
   },
   "AKTS": {
    "backfilled": "2026-08-10",
@@ -1244,9 +1249,9 @@
   },
   "AKVA": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5011
+   "rows": 5012
   },
   "AKZOF": {
    "backfilled": "2026-08-10",
@@ -1286,9 +1291,9 @@
   },
   "ALCUF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 850
+   "rows": 851
   },
   "ALCYF": {
    "backfilled": "2026-08-10",
@@ -1472,9 +1477,9 @@
   },
   "ALRTF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6980
+   "rows": 6981
   },
   "ALSAF": {
    "backfilled": "2026-08-10",
@@ -1580,9 +1585,9 @@
   },
   "AMBIQ": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 893
+   "rows": 894
   },
   "AMBP": {
    "backfilled": "2026-08-10",
@@ -1616,9 +1621,9 @@
   },
   "AMFN": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6722
+   "rows": 6723
   },
   "AMG": {
    "backfilled": "2026-08-10",
@@ -1652,9 +1657,9 @@
   },
   "AMLM": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4288
+   "rows": 4289
   },
   "AMLP": {
    "backfilled": "2026-08-11",
@@ -1790,9 +1795,9 @@
   },
   "AMXOF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3422
+   "rows": 3423
   },
   "AMZE": {
    "backfilled": "2026-08-10",
@@ -1838,9 +1843,9 @@
   },
   "ANFIF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3508
+   "rows": 3509
   },
   "ANGX": {
    "backfilled": "2026-08-10",
@@ -2102,9 +2107,9 @@
   },
   "ARCPF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 445
+   "rows": 446
   },
   "ARCT": {
    "backfilled": "2026-08-28",
@@ -2114,9 +2119,9 @@
   },
   "ARCXF": {
    "backfilled": "2026-08-10",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4128
+   "rows": 4129
   },
   "ARDT": {
    "backfilled": "2026-09-17",
@@ -2280,9 +2285,9 @@
   },
   "ARTM": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7964
+   "rows": 7965
   },
   "ARTV": {
    "backfilled": "2026-08-11",
@@ -2507,9 +2512,9 @@
   },
   "ATDS": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7032
+   "rows": 7033
   },
   "ATEN": {
    "backfilled": "2026-08-11",
@@ -2674,9 +2679,9 @@
   },
   "AUB-PA": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1586
+   "rows": 1587
   },
   "AUC": {
    "backfilled": "2026-08-11",
@@ -2792,9 +2797,9 @@
   },
   "AVCRF": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4344
+   "rows": 4345
   },
   "AVEX": {
    "backfilled": "2026-08-11",
@@ -2804,9 +2809,9 @@
   },
   "AVNI": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5368
+   "rows": 5369
   },
   "AVNS": {
    "backfilled": "2026-08-11",
@@ -3025,9 +3030,9 @@
   },
   "BACK": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1914
+   "rows": 1915
   },
   "BAER": {
    "backfilled": "2026-08-11",
@@ -3282,9 +3287,9 @@
   },
   "BBLR": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4319
+   "rows": 4320
   },
   "BBNX": {
    "backfilled": "2026-08-11",
@@ -3419,9 +3424,9 @@
   },
   "BCHMF": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3904
+   "rows": 3905
   },
   "BCHT": {
    "backfilled": "2026-08-11",
@@ -3443,9 +3448,9 @@
   },
   "BCOW": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1938
+   "rows": 1939
   },
   "BCPC": {
    "backfilled": "2026-08-11",
@@ -3455,9 +3460,9 @@
   },
   "BCPPF": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 978
+   "rows": 979
   },
   "BCRX": {
    "backfilled": "2026-08-11",
@@ -3484,9 +3489,9 @@
   },
   "BDPT": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3072
+   "rows": 3073
   },
   "BDRX": {
    "backfilled": "2026-08-11",
@@ -3532,9 +3537,9 @@
   },
   "BEKAY": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3681
+   "rows": 3682
   },
   "BELFA": {
    "backfilled": "2026-09-06",
@@ -3728,9 +3733,9 @@
   },
   "BGMSP": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5153
+   "rows": 5154
   },
   "BGS": {
    "backfilled": "2026-08-11",
@@ -3752,9 +3757,9 @@
   },
   "BHATF": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1801
+   "rows": 1802
   },
   "BHAVU": {
    "backfilled": "2026-08-11",
@@ -3818,9 +3823,9 @@
   },
   "BHR-PD": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1974
+   "rows": 1975
   },
   "BHRB": {
    "backfilled": "2026-08-11",
@@ -3980,6 +3985,7 @@
   "BKE": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 8656
   },
   "BKH": {
@@ -3996,9 +4002,9 @@
   },
   "BKHAU": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 630
+   "rows": 631
   },
   "BKKT": {
    "backfilled": "2026-08-11",
@@ -4050,9 +4056,9 @@
   },
   "BLBLF": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1138
+   "rows": 1139
   },
   "BLD": {
    "backfilled": "2026-08-11",
@@ -4103,9 +4109,9 @@
   },
   "BLMZF": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 545
+   "rows": 546
   },
   "BLND": {
    "backfilled": "2026-08-11",
@@ -4163,9 +4169,9 @@
   },
   "BMBOY": {
    "backfilled": "2026-08-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2581
+   "rows": 2582
   },
   "BMGL": {
    "backfilled": "2026-08-11",
@@ -4229,15 +4235,15 @@
   },
   "BMTM": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3057
+   "rows": 3058
   },
   "BMXXY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1042
+   "rows": 1043
   },
   "BN": {
    "backfilled": "2026-08-13",
@@ -4307,9 +4313,14 @@
   },
   "BNNCY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 196
+   "rows": 197
+  },
+  "BNO": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 4105
   },
   "BNPQY": {
    "backfilled": "2026-08-13",
@@ -4361,9 +4372,9 @@
   },
   "BNY-PK": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 383
+   "rows": 384
   },
   "BNZI": {
    "backfilled": "2026-08-13",
@@ -4415,9 +4426,9 @@
   },
   "BORAY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 52
+   "rows": 53
   },
   "BORR": {
    "backfilled": "2026-08-13",
@@ -4505,9 +4516,9 @@
   },
   "BPCGY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3224
+   "rows": 3225
   },
   "BPOP": {
    "backfilled": "2026-08-13",
@@ -4523,9 +4534,9 @@
   },
   "BPTH": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4632
+   "rows": 4633
   },
   "BQ": {
    "backfilled": "2026-08-13",
@@ -4577,9 +4588,9 @@
   },
   "BRGAY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2633
+   "rows": 2634
   },
   "BRK-A": {
    "backfilled": "2026-08-19",
@@ -4655,9 +4666,9 @@
   },
   "BRPSF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 565
+   "rows": 566
   },
   "BRQSF": {
    "backfilled": "2026-08-13",
@@ -4667,9 +4678,9 @@
   },
   "BRRLY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1949
+   "rows": 1950
   },
   "BRRWW": {
    "backfilled": "2026-08-13",
@@ -4751,9 +4762,9 @@
   },
   "BSAI": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4237
+   "rows": 4238
   },
   "BSBK": {
    "backfilled": "2026-08-13",
@@ -4793,9 +4804,9 @@
   },
   "BSLK": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 530
+   "rows": 531
   },
   "BSP": {
    "backfilled": "2026-08-13",
@@ -4870,9 +4881,9 @@
   },
   "BTCY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2665
+   "rows": 2666
   },
   "BTE": {
    "backfilled": "2026-08-13",
@@ -5050,9 +5061,9 @@
   },
   "BW-PA": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1353
+   "rows": 1354
   },
   "BWA": {
    "backfilled": "2026-08-18",
@@ -5092,9 +5103,9 @@
   },
   "BWMG": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7103
+   "rows": 7104
   },
   "BWMN": {
    "backfilled": "2026-08-13",
@@ -5182,9 +5193,9 @@
   },
   "BYLTF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2136
+   "rows": 2137
   },
   "BYND": {
    "backfilled": "2026-08-13",
@@ -5236,9 +5247,9 @@
   },
   "BZLEY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 140
+   "rows": 141
   },
   "BZLFY": {
    "backfilled": "2026-08-13",
@@ -5308,9 +5319,9 @@
   },
   "CAHO": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1210
+   "rows": 1211
   },
   "CAI": {
    "backfilled": "2026-09-17",
@@ -5518,9 +5529,9 @@
   },
   "CBDW": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 926
+   "rows": 927
   },
   "CBFV": {
    "backfilled": "2026-09-06",
@@ -5584,9 +5595,9 @@
   },
   "CBSTQ": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1861
+   "rows": 1862
   },
   "CBT": {
    "backfilled": "2026-08-13",
@@ -5639,6 +5650,7 @@
   "CCCC": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 1502
   },
   "CCCTU": {
@@ -5715,9 +5727,9 @@
   },
   "CCPUF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1157
+   "rows": 1158
   },
   "CCRN": {
    "backfilled": "2026-08-13",
@@ -5953,9 +5965,9 @@
   },
   "CETI": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7964
+   "rows": 7965
   },
   "CETX": {
    "backfilled": "2026-08-13",
@@ -5983,9 +5995,9 @@
   },
   "CFACY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 794
+   "rows": 795
   },
   "CFFI": {
    "backfilled": "2026-08-13",
@@ -6007,9 +6019,9 @@
   },
   "CFG-PI": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 289
+   "rows": 290
   },
   "CFR": {
    "backfilled": "2026-08-13",
@@ -6277,9 +6289,9 @@
   },
   "CICN": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7850
+   "rows": 7851
   },
   "CIF": {
    "backfilled": "2026-08-13",
@@ -6294,9 +6306,9 @@
   },
   "CIG-C": {
    "backfilled": "2026-09-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4853
+   "rows": 4854
   },
   "CIGI": {
    "backfilled": "2026-08-13",
@@ -6468,9 +6480,9 @@
   },
   "CLNV": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4281
+   "rows": 4282
   },
   "CLOU": {
    "backfilled": "2026-09-16",
@@ -6552,9 +6564,9 @@
   },
   "CMBMF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1822
+   "rows": 1823
   },
   "CMBT": {
    "backfilled": "2026-08-13",
@@ -6648,9 +6660,9 @@
   },
   "CMRF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 309
+   "rows": 310
   },
   "CMS": {
    "backfilled": "2026-08-13",
@@ -6684,15 +6696,15 @@
   },
   "CNBMF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 226
+   "rows": 227
   },
   "CNBP": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1694
+   "rows": 1695
   },
   "CNC": {
    "backfilled": "2026-08-13",
@@ -6702,9 +6714,9 @@
   },
   "CNDIF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 195
+   "rows": 196
   },
   "CNDT": {
    "backfilled": "2026-08-13",
@@ -6798,9 +6810,9 @@
   },
   "CNSWY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 198
+   "rows": 199
   },
   "CNTMF": {
    "backfilled": "2026-08-13",
@@ -6870,15 +6882,15 @@
   },
   "CODI-PA": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2329
+   "rows": 2330
   },
   "CODI-PC": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1723
+   "rows": 1724
   },
   "CODX": {
    "backfilled": "2026-08-13",
@@ -6894,9 +6906,9 @@
   },
   "COF-PN": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1297
+   "rows": 1298
   },
   "COHN": {
    "backfilled": "2026-08-13",
@@ -6971,9 +6983,9 @@
   },
   "COPL-UN": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 344
+   "rows": 345
   },
   "COPR": {
    "backfilled": "2026-08-13",
@@ -7071,6 +7083,11 @@
    "refreshed": "2026-09-26",
    "rows": 735
   },
+  "CPER": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 3736
+  },
   "CPF": {
    "backfilled": "2026-08-13",
    "last_obs": "2026-09-25",
@@ -7157,9 +7174,9 @@
   },
   "CPTAF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 715
+   "rows": 716
   },
   "CR": {
    "backfilled": "2026-09-04",
@@ -7247,9 +7264,9 @@
   },
   "CREG": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7547
+   "rows": 7548
   },
   "CRESY": {
    "backfilled": "2026-08-13",
@@ -7355,9 +7372,9 @@
   },
   "CRSF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1068
+   "rows": 1069
   },
   "CRSP": {
    "backfilled": "2026-08-13",
@@ -7379,9 +7396,9 @@
   },
   "CRTMF": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 581
+   "rows": 582
   },
   "CRTO": {
    "backfilled": "2026-08-13",
@@ -7415,9 +7432,9 @@
   },
   "CSAN": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5
+   "rows": 6
   },
   "CSB": {
    "backfilled": "2026-08-13",
@@ -7613,9 +7630,9 @@
   },
   "CUBWU": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 569
+   "rows": 570
   },
   "CUBWW": {
    "backfilled": "2026-09-01",
@@ -7673,9 +7690,9 @@
   },
   "CURYY": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 208
+   "rows": 209
   },
   "CUT": {
    "backfilled": "2026-08-13",
@@ -8097,9 +8114,9 @@
   },
   "DBRG-PJ": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2269
+   "rows": 2270
   },
   "DBVT": {
    "backfilled": "2026-08-13",
@@ -8372,9 +8389,9 @@
   },
   "DGAC-UN": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 84
+   "rows": 85
   },
   "DGII": {
    "backfilled": "2026-09-24",
@@ -8582,15 +8599,15 @@
   },
   "DLR-PJ": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2297
+   "rows": 2298
   },
   "DLR-PL": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1754
+   "rows": 1755
   },
   "DLTH": {
    "backfilled": "2026-08-13",
@@ -8606,15 +8623,15 @@
   },
   "DMAAU": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 417
+   "rows": 418
   },
   "DMAN": {
    "backfilled": "2026-08-13",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3958
+   "rows": 3959
   },
   "DMB": {
    "backfilled": "2026-08-13",
@@ -8732,9 +8749,9 @@
   },
   "DOMO": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2
+   "rows": 3
   },
   "DOO": {
    "backfilled": "2026-09-06",
@@ -8804,9 +8821,9 @@
   },
   "DREM": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2431
+   "rows": 2432
   },
   "DRH": {
    "backfilled": "2026-08-14",
@@ -8864,9 +8881,9 @@
   },
   "DSGT": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2893
+   "rows": 2894
   },
   "DSGX": {
    "backfilled": "2026-08-14",
@@ -9086,9 +9103,9 @@
   },
   "DX-PC": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1661
+   "rows": 1662
   },
   "DXC": {
    "backfilled": "2026-08-14",
@@ -9206,9 +9223,9 @@
   },
   "EBRCZ": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 893
+   "rows": 894
   },
   "EBS": {
    "backfilled": "2026-09-10",
@@ -9242,9 +9259,9 @@
   },
   "ECGI": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4729
+   "rows": 4730
   },
   "ECHO": {
    "backfilled": "2026-08-10",
@@ -9318,9 +9335,9 @@
   },
   "EDGM": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 963
+   "rows": 964
   },
   "EDIT": {
    "backfilled": "2026-08-14",
@@ -9384,15 +9401,15 @@
   },
   "EFC-PC": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 913
+   "rows": 914
   },
   "EFC-PD": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 695
+   "rows": 696
   },
   "EFOR": {
    "backfilled": "2026-08-18",
@@ -9456,9 +9473,9 @@
   },
   "EGMCF": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2297
+   "rows": 2298
   },
   "EGP": {
    "backfilled": "2026-08-14",
@@ -9600,9 +9617,9 @@
   },
   "ELMGF": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1221
+   "rows": 1222
   },
   "ELMT": {
    "backfilled": "2026-09-15",
@@ -9857,9 +9874,9 @@
   },
   "EOSS": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2442
+   "rows": 2443
   },
   "EOT": {
    "backfilled": "2026-08-14",
@@ -9941,9 +9958,9 @@
   },
   "EQH-PC": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1436
+   "rows": 1437
   },
   "EQIX": {
    "backfilled": "2026-08-14",
@@ -9989,9 +10006,9 @@
   },
   "ERBKY": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 74
+   "rows": 75
   },
   "ERIC": {
    "backfilled": "2026-08-14",
@@ -10061,9 +10078,9 @@
   },
   "ESGH": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 803
+   "rows": 804
   },
   "ESGU": {
    "backfilled": "2026-09-19",
@@ -10182,6 +10199,7 @@
   "ETRA": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 2
   },
   "ETS": {
@@ -10192,9 +10210,9 @@
   },
   "ETSS-UN": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 91
+   "rows": 92
   },
   "ETSY": {
    "backfilled": "2026-08-14",
@@ -10299,9 +10317,9 @@
   },
   "EVOTF": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4267
+   "rows": 4268
   },
   "EVR": {
    "backfilled": "2026-08-14",
@@ -10317,9 +10335,9 @@
   },
   "EVRYF": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 186
+   "rows": 187
   },
   "EVTC": {
    "backfilled": "2026-08-14",
@@ -10353,9 +10371,9 @@
   },
   "EWSB": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 421
+   "rows": 422
   },
   "EWTX": {
    "backfilled": "2026-08-14",
@@ -10443,9 +10461,9 @@
   },
   "EXSNY": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 94
+   "rows": 95
   },
   "EXTR": {
    "backfilled": "2026-08-14",
@@ -10593,9 +10611,9 @@
   },
   "FAURY": {
    "backfilled": "2026-08-14",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1203
+   "rows": 1204
   },
   "FBAK": {
    "backfilled": "2026-08-14",
@@ -10982,15 +11000,15 @@
   },
   "FHN-PF": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1358
+   "rows": 1359
   },
   "FHN-PH": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 127
+   "rows": 128
   },
   "FHTX": {
    "backfilled": "2026-08-18",
@@ -11066,9 +11084,9 @@
   },
   "FITB-PK": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1767
+   "rows": 1768
   },
   "FIVN": {
    "backfilled": "2026-08-18",
@@ -11242,6 +11260,16 @@
    "last_obs": "2025-01-08",
    "refreshed": "2026-09-15",
    "rows": 3100
+  },
+  "FMAC": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 91
+  },
+  "FMACU": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 126
   },
   "FMAO": {
    "backfilled": "2026-08-18",
@@ -11455,15 +11483,15 @@
   },
   "FOXO": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1008
+   "rows": 1009
   },
   "FOXOD": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 49
+   "rows": 50
   },
   "FPA": {
    "backfilled": "2026-09-06",
@@ -11521,9 +11549,9 @@
   },
   "FRFFF": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3267
+   "rows": 3268
   },
   "FRFHF": {
    "backfilled": "2026-08-18",
@@ -11773,15 +11801,15 @@
   },
   "FTRK": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 49
+   "rows": 50
   },
   "FTRSF": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1919
+   "rows": 1920
   },
   "FTS": {
    "backfilled": "2026-08-18",
@@ -12031,9 +12059,9 @@
   },
   "GALDY": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 529
+   "rows": 530
   },
   "GAMB": {
    "backfilled": "2026-08-18",
@@ -12049,9 +12077,9 @@
   },
   "GAMG": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6728
+   "rows": 6729
   },
   "GAMI": {
    "backfilled": "2026-08-18",
@@ -12191,6 +12219,11 @@
    "refreshed": "2026-09-26",
    "rows": 1501
   },
+  "GDHG": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 868
+  },
   "GDOT": {
    "backfilled": "2026-08-18",
    "last_obs": "2026-09-25",
@@ -12211,9 +12244,9 @@
   },
   "GDV-PK": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1248
+   "rows": 1249
   },
   "GDXD": {
    "backfilled": "2026-08-18",
@@ -12552,9 +12585,9 @@
   },
   "GLED-UN": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 141
+   "rows": 142
   },
   "GLGI": {
    "backfilled": "2026-08-18",
@@ -12606,9 +12639,9 @@
   },
   "GLOP-PC": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1755
+   "rows": 1756
   },
   "GLP": {
    "backfilled": "2026-08-19",
@@ -12714,9 +12747,9 @@
   },
   "GNENY": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1387
+   "rows": 1388
   },
   "GNK": {
    "backfilled": "2026-08-18",
@@ -12732,9 +12765,9 @@
   },
   "GNL-PD": {
    "backfilled": "2026-08-18",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 762
+   "rows": 763
   },
   "GNLN": {
    "backfilled": "2026-08-18",
@@ -12894,15 +12927,15 @@
   },
   "GPAEF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3356
+   "rows": 3357
   },
   "GPAIF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 916
+   "rows": 917
   },
   "GPAT": {
    "backfilled": "2026-08-19",
@@ -13116,9 +13149,9 @@
   },
   "GRRMY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 948
+   "rows": 949
   },
   "GRTX": {
    "backfilled": "2026-08-19",
@@ -13242,9 +13275,9 @@
   },
   "GTIJF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 634
+   "rows": 635
   },
   "GTLS": {
    "backfilled": "2026-08-19",
@@ -13356,9 +13389,9 @@
   },
   "GWBK": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1735
+   "rows": 1736
   },
   "GWH": {
    "backfilled": "2026-08-19",
@@ -13563,6 +13596,11 @@
    "refreshed": "2026-09-26",
    "rows": 4431
   },
+  "HBNB": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 331
+  },
   "HBR": {
    "backfilled": "2026-09-25",
    "last_obs": "2026-09-25",
@@ -13613,9 +13651,9 @@
   },
   "HCICU": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 160
+   "rows": 161
   },
   "HCKT": {
    "backfilled": "2026-09-25",
@@ -13657,7 +13695,7 @@
    "backfilled": "2026-08-19",
    "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 509
+   "rows": 50
   },
   "HCXY": {
    "backfilled": "2026-08-19",
@@ -13805,9 +13843,9 @@
   },
   "HIG-PG": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1984
+   "rows": 1985
   },
   "HIHO": {
    "backfilled": "2026-08-19",
@@ -13871,9 +13909,9 @@
   },
   "HLEO": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 732
+   "rows": 733
   },
   "HLF": {
    "backfilled": "2026-08-19",
@@ -13925,9 +13963,9 @@
   },
   "HLNCF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1044
+   "rows": 1045
   },
   "HLNE": {
    "backfilled": "2026-08-10",
@@ -13961,9 +13999,9 @@
   },
   "HMKIY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 386
+   "rows": 387
   },
   "HMN": {
    "backfilled": "2026-08-19",
@@ -13991,9 +14029,9 @@
   },
   "HNKLY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 39
+   "rows": 40
   },
   "HNNA": {
    "backfilled": "2026-08-19",
@@ -14079,9 +14117,9 @@
   },
   "HPHTY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2700
+   "rows": 2701
   },
   "HPK": {
    "backfilled": "2026-09-19",
@@ -14091,9 +14129,9 @@
   },
   "HPNN": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6991
+   "rows": 6992
   },
   "HPQ": {
    "backfilled": "2026-08-19",
@@ -14205,9 +14243,9 @@
   },
   "HSTA": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4280
+   "rows": 4281
   },
   "HSTM": {
    "backfilled": "2026-08-19",
@@ -14354,9 +14392,9 @@
   },
   "HWH": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5
+   "rows": 6
   },
   "HWKE": {
    "backfilled": "2026-08-19",
@@ -14396,9 +14434,9 @@
   },
   "HYEX": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2732
+   "rows": 2733
   },
   "HYFM": {
    "backfilled": "2026-08-19",
@@ -14684,9 +14722,9 @@
   },
   "IDXG": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-03",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 10
+   "rows": 50
   },
   "IE": {
    "backfilled": "2026-08-19",
@@ -14858,9 +14896,9 @@
   },
   "IHRTB": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1445
+   "rows": 1446
   },
   "IHS": {
    "backfilled": "2026-08-19",
@@ -14900,9 +14938,9 @@
   },
   "IIPR-PA": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2241
+   "rows": 2242
   },
   "IJJ": {
    "backfilled": "2026-09-06",
@@ -15152,9 +15190,9 @@
   },
   "INIKF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1464
+   "rows": 1465
   },
   "INIO": {
    "backfilled": "2026-08-19",
@@ -15218,9 +15256,9 @@
   },
   "INSD": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1484
+   "rows": 1485
   },
   "INSG": {
    "backfilled": "2026-08-19",
@@ -15236,9 +15274,9 @@
   },
   "INTK": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4068
+   "rows": 4069
   },
   "INTR": {
    "backfilled": "2026-08-19",
@@ -15284,9 +15322,9 @@
   },
   "INVU": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6713
+   "rows": 6714
   },
   "INVX": {
    "backfilled": "2026-08-19",
@@ -15302,9 +15340,9 @@
   },
   "IOBTQ": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1225
+   "rows": 1226
   },
   "ION": {
    "backfilled": "2026-08-19",
@@ -15452,9 +15490,9 @@
   },
   "IQEPY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2312
+   "rows": 2313
   },
   "IQMX": {
    "backfilled": "2026-08-19",
@@ -15494,9 +15532,9 @@
   },
   "IRIDQ": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7369
+   "rows": 7370
   },
   "IRIX": {
    "backfilled": "2026-09-06",
@@ -15608,9 +15646,9 @@
   },
   "ISUNQ": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2619
+   "rows": 2620
   },
   "ITA": {
    "backfilled": "2026-08-19",
@@ -15662,9 +15700,9 @@
   },
   "ITRMF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2087
+   "rows": 2088
   },
   "ITRN": {
    "backfilled": "2026-08-19",
@@ -15710,9 +15748,9 @@
   },
   "IVBIY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1862
+   "rows": 1863
   },
   "IVDA": {
    "backfilled": "2026-08-30",
@@ -15728,9 +15766,9 @@
   },
   "IVEVF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1857
+   "rows": 1858
   },
   "IVF": {
    "backfilled": "2026-08-19",
@@ -15758,9 +15796,9 @@
   },
   "IVPR": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 770
+   "rows": 771
   },
   "IVR": {
    "backfilled": "2026-09-14",
@@ -15776,9 +15814,9 @@
   },
   "IVTJY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1894
+   "rows": 1895
   },
   "IVV": {
    "backfilled": "2026-08-19",
@@ -15986,9 +16024,9 @@
   },
   "JBHHY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 686
+   "rows": 687
   },
   "JBHT": {
    "backfilled": "2026-08-19",
@@ -16034,9 +16072,9 @@
   },
   "JCDXY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3082
+   "rows": 3083
   },
   "JCI": {
    "backfilled": "2026-08-19",
@@ -16076,9 +16114,9 @@
   },
   "JENA-UN": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 332
+   "rows": 333
   },
   "JEPI": {
    "backfilled": "2026-08-19",
@@ -16178,9 +16216,9 @@
   },
   "JMREY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 324
+   "rows": 325
   },
   "JMSB": {
    "backfilled": "2026-09-15",
@@ -16221,6 +16259,7 @@
   "JOUT": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 9814
   },
   "JOYY": {
@@ -16243,9 +16282,9 @@
   },
   "JPNPY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 121
+   "rows": 122
   },
   "JPNU": {
    "backfilled": "2026-09-19",
@@ -16286,6 +16325,7 @@
   "JSM": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 5721
   },
   "JSML": {
@@ -16350,9 +16390,9 @@
   },
   "JYSKY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2956
+   "rows": 2957
   },
   "KAI": {
    "backfilled": "2026-08-19",
@@ -16422,9 +16462,9 @@
   },
   "KBNT": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1537
+   "rows": 1538
   },
   "KBR": {
    "backfilled": "2026-08-19",
@@ -16590,15 +16630,15 @@
   },
   "KIM-PM": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2207
+   "rows": 2208
   },
   "KIM-PN": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 683
+   "rows": 684
   },
   "KINS": {
    "backfilled": "2026-08-19",
@@ -16608,9 +16648,9 @@
   },
   "KITT": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1012
+   "rows": 1013
   },
   "KITTW": {
    "backfilled": "2026-09-04",
@@ -16662,9 +16702,9 @@
   },
   "KLPPY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 133
+   "rows": 134
   },
   "KLRS": {
    "backfilled": "2026-08-19",
@@ -16800,9 +16840,9 @@
   },
   "KOAN": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 8429
+   "rows": 8430
   },
   "KOD": {
    "backfilled": "2026-08-19",
@@ -16842,9 +16882,9 @@
   },
   "KPEA": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1346
+   "rows": 1347
   },
   "KPEAD": {
    "backfilled": "2026-08-19",
@@ -16866,9 +16906,9 @@
   },
   "KRFG": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7804
+   "rows": 7805
   },
   "KRG": {
    "backfilled": "2026-08-19",
@@ -16884,9 +16924,9 @@
   },
   "KRNTY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1972
+   "rows": 1973
   },
   "KRO": {
    "backfilled": "2026-09-16",
@@ -17010,9 +17050,9 @@
   },
   "KWGBF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 8006
+   "rows": 8007
   },
   "KWHIY": {
    "backfilled": "2026-08-19",
@@ -17034,9 +17074,9 @@
   },
   "KXIAY": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 244
+   "rows": 245
   },
   "KXIN": {
    "backfilled": "2026-08-29",
@@ -17075,9 +17115,9 @@
   },
   "LAAOF": {
    "backfilled": "2026-08-19",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1029
+   "rows": 1030
   },
   "LAB": {
    "backfilled": "2026-08-19",
@@ -17213,9 +17253,9 @@
   },
   "LCRXF": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 480
+   "rows": 481
   },
   "LCUT": {
    "backfilled": "2026-09-06",
@@ -17225,9 +17265,9 @@
   },
   "LDGYY": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2122
+   "rows": 2123
   },
   "LDI": {
    "backfilled": "2026-08-23",
@@ -17344,9 +17384,9 @@
   },
   "LFIN": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2206
+   "rows": 2207
   },
   "LFMD": {
    "backfilled": "2026-08-20",
@@ -17374,9 +17414,9 @@
   },
   "LFT-PA": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1353
+   "rows": 1354
   },
   "LFTO": {
    "backfilled": "2026-08-20",
@@ -17512,9 +17552,9 @@
   },
   "LIFX": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1722
+   "rows": 1723
   },
   "LII": {
    "backfilled": "2026-08-20",
@@ -17572,9 +17612,9 @@
   },
   "LIPO": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 935
+   "rows": 936
   },
   "LIQT": {
    "backfilled": "2026-08-20",
@@ -17590,9 +17630,9 @@
   },
   "LITH": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4309
+   "rows": 4310
   },
   "LITS": {
    "backfilled": "2026-08-20",
@@ -17649,9 +17689,9 @@
   },
   "LLOBF": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3318
+   "rows": 3319
   },
   "LMAT": {
    "backfilled": "2026-08-20",
@@ -17691,9 +17731,9 @@
   },
   "LNC-PD": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 966
+   "rows": 967
   },
   "LND": {
    "backfilled": "2026-09-23",
@@ -17739,9 +17779,9 @@
   },
   "LNXSY": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1679
+   "rows": 1680
   },
   "LOAR": {
    "backfilled": "2026-09-23",
@@ -18099,9 +18139,9 @@
   },
   "LXP-PC": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5479
+   "rows": 5480
   },
   "LXU": {
    "backfilled": "2026-08-27",
@@ -18129,9 +18169,9 @@
   },
   "LYRA": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1608
+   "rows": 1609
   },
   "LYTS": {
    "backfilled": "2026-08-20",
@@ -18345,9 +18385,9 @@
   },
   "MAXNQ": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1502
+   "rows": 1503
   },
   "MB": {
    "backfilled": "2026-08-20",
@@ -18435,9 +18475,9 @@
   },
   "MBSHY": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 69
+   "rows": 70
   },
   "MBUU": {
    "backfilled": "2026-08-20",
@@ -18554,9 +18594,9 @@
   },
   "MDLK": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2432
+   "rows": 2433
   },
   "MDLN": {
    "backfilled": "2026-08-20",
@@ -18566,9 +18606,9 @@
   },
   "MDOUF": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1952
+   "rows": 1953
   },
   "MDRR": {
    "backfilled": "2026-08-20",
@@ -18637,9 +18677,9 @@
   },
   "MEHA": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 222
+   "rows": 223
   },
   "MEI": {
    "backfilled": "2026-08-20",
@@ -18847,9 +18887,9 @@
   },
   "MGTI": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6511
+   "rows": 6512
   },
   "MGTX": {
    "backfilled": "2026-08-20",
@@ -18937,9 +18977,9 @@
   },
   "MINR": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 331
+   "rows": 332
   },
   "MINY": {
    "backfilled": "2026-08-20",
@@ -19009,9 +19049,9 @@
   },
   "MIUFY": {
    "backfilled": "2026-08-20",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4049
+   "rows": 4050
   },
   "MKC": {
    "backfilled": "2026-08-20",
@@ -19063,9 +19103,9 @@
   },
   "MLCG": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3284
+   "rows": 3285
   },
   "MLCIL": {
    "backfilled": "2026-08-21",
@@ -19075,9 +19115,9 @@
   },
   "MLCMF": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3558
+   "rows": 3559
   },
   "MLCO": {
    "backfilled": "2026-08-21",
@@ -19165,9 +19205,9 @@
   },
   "MMTC": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6721
+   "rows": 6722
   },
   "MMTX": {
    "backfilled": "2026-08-21",
@@ -19207,9 +19247,9 @@
   },
   "MNESP": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4434
+   "rows": 4435
   },
   "MNGU": {
    "backfilled": "2026-09-19",
@@ -19321,9 +19361,9 @@
   },
   "MOTS": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2164
+   "rows": 2165
   },
   "MOV": {
    "backfilled": "2026-09-23",
@@ -19333,9 +19373,9 @@
   },
   "MOVAA": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 38
+   "rows": 39
   },
   "MOVE": {
    "backfilled": "2026-08-21",
@@ -19477,21 +19517,21 @@
   },
   "MS-PA": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5086
+   "rows": 5087
   },
   "MS-PP": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1043
+   "rows": 1044
   },
   "MS-PQ": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 538
+   "rows": 539
   },
   "MSA": {
    "backfilled": "2026-08-21",
@@ -19555,9 +19595,9 @@
   },
   "MSPR": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1084
+   "rows": 1085
   },
   "MSS": {
    "backfilled": "2026-08-21",
@@ -19651,9 +19691,9 @@
   },
   "MTNE-UN": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 101
+   "rows": 102
   },
   "MTRX": {
    "backfilled": "2026-09-06",
@@ -19916,6 +19956,7 @@
   "NAVI": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 3129
   },
   "NBBK": {
@@ -20057,21 +20098,21 @@
   },
   "NECPY": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 261
+   "rows": 262
   },
   "NEE-PS": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 568
+   "rows": 569
   },
   "NEE-PV": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 142
+   "rows": 143
   },
   "NEOG": {
    "backfilled": "2026-08-21",
@@ -20123,9 +20164,9 @@
   },
   "NEWH": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4928
+   "rows": 4929
   },
   "NEWT": {
    "backfilled": "2026-08-30",
@@ -20177,9 +20218,9 @@
   },
   "NEXNY": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3503
+   "rows": 3504
   },
   "NEXR": {
    "backfilled": "2026-08-21",
@@ -20261,9 +20302,9 @@
   },
   "NGTF": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2785
+   "rows": 2786
   },
   "NGVC": {
    "backfilled": "2026-08-21",
@@ -20345,15 +20386,15 @@
   },
   "NIMU": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 9822
+   "rows": 9823
   },
   "NIMUD": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 9822
+   "rows": 9823
   },
   "NINE": {
    "backfilled": "2026-08-21",
@@ -20579,9 +20620,9 @@
   },
   "NOEMU": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 460
+   "rows": 461
   },
   "NOG": {
    "backfilled": "2026-08-21",
@@ -20663,9 +20704,9 @@
   },
   "NPPNY": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2476
+   "rows": 2477
   },
   "NRDE": {
    "backfilled": "2026-08-21",
@@ -20681,9 +20722,9 @@
   },
   "NREF-PA": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1553
+   "rows": 1554
   },
   "NRGD": {
    "backfilled": "2026-08-21",
@@ -20868,11 +20909,13 @@
   "NTRB": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 1251
   },
   "NTRBW": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 1251
   },
   "NTRP": {
@@ -20931,9 +20974,9 @@
   },
   "NUMD": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3017
+   "rows": 3018
   },
   "NUMI": {
    "backfilled": "2026-08-21",
@@ -20955,9 +20998,9 @@
   },
   "NUTR": {
    "backfilled": "2026-08-21",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 254
+   "rows": 255
   },
   "NUTX": {
    "backfilled": "2026-08-29",
@@ -21165,9 +21208,9 @@
   },
   "NXGB": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7052
+   "rows": 7053
   },
   "NXGL": {
    "backfilled": "2026-08-22",
@@ -21277,9 +21320,9 @@
   },
   "OAK-PB": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2044
+   "rows": 2045
   },
   "OBAI": {
    "backfilled": "2026-08-22",
@@ -21319,9 +21362,9 @@
   },
   "OCAC-UN": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 75
+   "rows": 76
   },
   "OCFC": {
    "backfilled": "2026-08-22",
@@ -21349,9 +21392,9 @@
   },
   "OCTLF": {
    "backfilled": "2026-09-05",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 15
+   "rows": 16
   },
   "OCTV": {
    "backfilled": "2026-08-22",
@@ -21583,9 +21626,9 @@
   },
   "OMAGQ": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7680
+   "rows": 7681
   },
   "OMCC": {
    "backfilled": "2026-08-22",
@@ -21643,9 +21686,9 @@
   },
   "ONAR": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1676
+   "rows": 1677
   },
   "ONB": {
    "backfilled": "2026-08-22",
@@ -21726,9 +21769,9 @@
   },
   "ONXYY": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1498
+   "rows": 1499
   },
   "OPAD": {
    "backfilled": "2026-08-22",
@@ -21910,9 +21953,9 @@
   },
   "ORISF": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 485
+   "rows": 486
   },
   "ORKA": {
    "backfilled": "2026-08-22",
@@ -22012,9 +22055,9 @@
   },
   "OTAI-UN": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 96
+   "rows": 97
   },
   "OTCM": {
    "backfilled": "2026-08-22",
@@ -22378,9 +22421,9 @@
   },
   "PBMLF": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4812
+   "rows": 4813
   },
   "PBNC": {
    "backfilled": "2026-08-22",
@@ -22569,9 +22612,9 @@
   },
   "PDIV": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4319
+   "rows": 4320
   },
   "PDSB": {
    "backfilled": "2026-08-22",
@@ -22587,15 +22630,15 @@
   },
   "PEB-PG": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1352
+   "rows": 1353
   },
   "PEB-PH": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1299
+   "rows": 1300
   },
   "PEBK": {
    "backfilled": "2026-09-06",
@@ -22779,9 +22822,9 @@
   },
   "PGACU": {
    "backfilled": "2026-09-06",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 451
+   "rows": 452
   },
   "PGC": {
    "backfilled": "2026-08-22",
@@ -22797,9 +22840,9 @@
   },
   "PGGCY": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2424
+   "rows": 2425
   },
   "PGNY": {
    "backfilled": "2026-08-22",
@@ -23126,9 +23169,9 @@
   },
   "PLUN-UN": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 104
+   "rows": 105
   },
   "PLUR": {
    "backfilled": "2026-08-22",
@@ -23174,9 +23217,9 @@
   },
   "PMBPF": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1577
+   "rows": 1578
   },
   "PMEC": {
    "backfilled": "2026-08-28",
@@ -23186,9 +23229,9 @@
   },
   "PMHS": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4434
+   "rows": 4435
   },
   "PMI": {
    "backfilled": "2026-08-22",
@@ -23198,9 +23241,9 @@
   },
   "PMMBF": {
    "backfilled": "2026-08-22",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1763
+   "rows": 1764
   },
   "PMN": {
    "backfilled": "2026-08-22",
@@ -23252,9 +23295,9 @@
   },
   "PNMXO": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4085
+   "rows": 4086
   },
   "PNRG": {
    "backfilled": "2026-08-23",
@@ -23378,9 +23421,9 @@
   },
   "PPLAF": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1017
+   "rows": 1018
   },
   "PPLC": {
    "backfilled": "2026-09-04",
@@ -23444,15 +23487,15 @@
   },
   "PREC": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2861
+   "rows": 2862
   },
   "PREDQ": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4712
+   "rows": 4713
   },
   "PREM": {
    "backfilled": "2026-08-23",
@@ -23528,9 +23571,9 @@
   },
   "PRIF-PL": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1150
+   "rows": 1151
   },
   "PRK": {
    "backfilled": "2026-08-23",
@@ -23636,9 +23679,9 @@
   },
   "PRZM": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6835
+   "rows": 6836
   },
   "PRZO": {
    "backfilled": "2026-08-23",
@@ -23660,15 +23703,15 @@
   },
   "PSA-PG": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2300
+   "rows": 2301
   },
   "PSA-PS": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1184
+   "rows": 1185
   },
   "PSBD": {
    "backfilled": "2026-08-23",
@@ -23738,9 +23781,9 @@
   },
   "PSEC-PA": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1307
+   "rows": 1308
   },
   "PSHG": {
    "backfilled": "2026-08-23",
@@ -24008,15 +24051,15 @@
   },
   "PYPTF": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3101
+   "rows": 3102
   },
   "PYTCY": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3707
+   "rows": 3708
   },
   "PZT": {
    "backfilled": "2026-08-23",
@@ -24080,9 +24123,9 @@
   },
   "QIND": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4222
+   "rows": 4223
   },
   "QMCO": {
    "backfilled": "2026-08-23",
@@ -24331,9 +24374,9 @@
   },
   "QXO-PB": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 326
+   "rows": 327
   },
   "R": {
    "backfilled": "2026-09-04",
@@ -24343,9 +24386,9 @@
   },
   "RAASY": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1413
+   "rows": 1414
   },
   "RACC": {
    "backfilled": "2026-08-23",
@@ -24498,9 +24541,9 @@
   },
   "RCIAF": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3405
+   "rows": 3406
   },
   "RCKT": {
    "backfilled": "2026-08-23",
@@ -24546,9 +24589,9 @@
   },
   "RDGL": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7058
+   "rows": 7059
   },
   "RDGT": {
    "backfilled": "2026-08-23",
@@ -24570,9 +24613,9 @@
   },
   "RDIB": {
    "backfilled": "2026-09-11",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6720
+   "rows": 6721
   },
   "RDIV": {
    "backfilled": "2026-08-23",
@@ -24653,9 +24696,9 @@
   },
   "REEAF": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1298
+   "rows": 1299
   },
   "REED": {
    "backfilled": "2026-08-23",
@@ -24737,9 +24780,9 @@
   },
   "RENEF": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1058
+   "rows": 1059
   },
   "RENT": {
    "backfilled": "2026-08-23",
@@ -25006,9 +25049,9 @@
   },
   "RITE": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6035
+   "rows": 6036
   },
   "RITM": {
    "backfilled": "2026-08-23",
@@ -25036,9 +25079,9 @@
   },
   "RKGRY": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 131
+   "rows": 132
   },
   "RKT": {
    "backfilled": "2026-08-23",
@@ -25143,9 +25186,9 @@
   },
   "RMTHF": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 141
+   "rows": 142
   },
   "RMTI": {
    "backfilled": "2026-08-23",
@@ -25329,9 +25372,9 @@
   },
   "ROYUY": {
    "backfilled": "2026-08-23",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 91
+   "rows": 92
   },
   "RPAY": {
    "backfilled": "2026-08-23",
@@ -25533,9 +25576,9 @@
   },
   "RVPH": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1450
+   "rows": 1451
   },
   "RVSB": {
    "backfilled": "2026-08-28",
@@ -25713,9 +25756,9 @@
   },
   "RYLBF": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 711
+   "rows": 712
   },
   "RYN": {
    "backfilled": "2026-08-24",
@@ -25785,9 +25828,9 @@
   },
   "SAFLY": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3243
+   "rows": 3244
   },
   "SAFRY": {
    "backfilled": "2026-08-24",
@@ -25815,9 +25858,9 @@
   },
   "SAGU-UN": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 97
+   "rows": 98
   },
   "SAH": {
    "backfilled": "2026-08-24",
@@ -25886,9 +25929,9 @@
   },
   "SANT": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6191
+   "rows": 6192
   },
   "SAP": {
    "backfilled": "2026-08-24",
@@ -25940,9 +25983,9 @@
   },
   "SB-PD": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3081
+   "rows": 3082
   },
   "SBAC": {
    "backfilled": "2026-08-24",
@@ -26047,9 +26090,9 @@
   },
   "SBXD-UN": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 528
+   "rows": 529
   },
   "SCBFY": {
    "backfilled": "2026-08-24",
@@ -26250,13 +26293,14 @@
   },
   "SCYT": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7255
+   "rows": 7256
   },
   "SCZM": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 3515
   },
   "SD": {
@@ -26392,9 +26436,9 @@
   },
   "SELXF": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 653
+   "rows": 654
   },
   "SENEA": {
    "backfilled": "2026-08-24",
@@ -26620,9 +26664,9 @@
   },
   "SHEL": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 10718
+   "rows": 10719
   },
   "SHEN": {
    "backfilled": "2026-08-24",
@@ -26668,15 +26712,15 @@
   },
   "SHMP": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3094
+   "rows": 3095
   },
   "SHMXY": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 375
+   "rows": 376
   },
   "SHNY": {
    "backfilled": "2026-08-24",
@@ -26818,9 +26862,9 @@
   },
   "SITC": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 8469
+   "rows": 8470
   },
   "SITE": {
    "backfilled": "2026-08-24",
@@ -26866,9 +26910,9 @@
   },
   "SKFG": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1346
+   "rows": 1347
   },
   "SKHY": {
    "backfilled": "2026-08-24",
@@ -27207,9 +27251,9 @@
   },
   "SMIT": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7963
+   "rows": 7964
   },
   "SMJF": {
    "backfilled": "2026-08-24",
@@ -27237,15 +27281,15 @@
   },
   "SMNR": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 253
+   "rows": 254
   },
   "SMOFF": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2959
+   "rows": 2960
   },
   "SMP": {
    "backfilled": "2026-08-24",
@@ -27327,9 +27371,9 @@
   },
   "SNBH": {
    "backfilled": "2026-08-24",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1446
+   "rows": 1447
   },
   "SNBRQ": {
    "backfilled": "2026-08-24",
@@ -27399,9 +27443,9 @@
   },
   "SNROY": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 260
+   "rows": 261
   },
   "SNT": {
    "backfilled": "2026-08-25",
@@ -27435,9 +27479,9 @@
   },
   "SNYR": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6
+   "rows": 7
   },
   "SO": {
    "backfilled": "2026-08-25",
@@ -27567,9 +27611,9 @@
   },
   "SOPAQ": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1223
+   "rows": 1224
   },
   "SOPH": {
    "backfilled": "2026-08-27",
@@ -27597,9 +27641,9 @@
   },
   "SOUL-UN": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 367
+   "rows": 368
   },
   "SOUNW": {
    "backfilled": "2026-09-04",
@@ -27669,9 +27713,9 @@
   },
   "SPEC": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 734
+   "rows": 735
   },
   "SPFI": {
    "backfilled": "2026-08-25",
@@ -27933,9 +27977,9 @@
   },
   "SRSR": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7310
+   "rows": 7311
   },
   "SRTA": {
    "backfilled": "2026-08-25",
@@ -27981,9 +28025,9 @@
   },
   "SSKN": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 5258
+   "rows": 5259
   },
   "SSL": {
    "backfilled": "2026-08-25",
@@ -28005,9 +28049,9 @@
   },
   "SSRGF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 886
+   "rows": 887
   },
   "SSRM": {
    "backfilled": "2026-08-25",
@@ -28017,9 +28061,9 @@
   },
   "SSSGY": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1428
+   "rows": 1429
   },
   "SST": {
    "backfilled": "2026-08-25",
@@ -28059,9 +28103,9 @@
   },
   "STAI": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 407
+   "rows": 408
   },
   "STBA": {
    "backfilled": "2026-08-25",
@@ -28167,9 +28211,9 @@
   },
   "STNDF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1414
+   "rows": 1415
   },
   "STNE": {
    "backfilled": "2026-08-25",
@@ -28251,9 +28295,9 @@
   },
   "STT-PG": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2633
+   "rows": 2634
   },
   "STTK": {
    "backfilled": "2026-08-25",
@@ -28317,9 +28361,9 @@
   },
   "SUIC": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4217
+   "rows": 4218
   },
   "SUIG": {
    "backfilled": "2026-08-25",
@@ -28359,9 +28403,9 @@
   },
   "SUNFF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1807
+   "rows": 1808
   },
   "SUNS": {
    "backfilled": "2026-08-25",
@@ -28538,15 +28582,15 @@
   },
   "SYANY": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3100
+   "rows": 3101
   },
   "SYAXF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3210
+   "rows": 3211
   },
   "SYBT": {
    "backfilled": "2026-08-25",
@@ -28562,9 +28606,9 @@
   },
   "SYHO": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7024
+   "rows": 7025
   },
   "SYIEY": {
    "backfilled": "2026-08-25",
@@ -28586,9 +28630,9 @@
   },
   "SYNSY": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 27
+   "rows": 28
   },
   "SYNT": {
    "backfilled": "2026-09-05",
@@ -28622,9 +28666,9 @@
   },
   "T-PC": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1660
+   "rows": 1661
   },
   "TAC": {
    "backfilled": "2026-08-25",
@@ -28771,15 +28815,15 @@
   },
   "TBNRL": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 982
+   "rows": 983
   },
   "TBPH": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2
+   "rows": 3
   },
   "TBRG": {
    "backfilled": "2026-09-06",
@@ -28831,9 +28875,9 @@
   },
   "TCMEF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 220
+   "rows": 221
   },
   "TCMFF": {
    "backfilled": "2026-08-25",
@@ -28879,9 +28923,9 @@
   },
   "TDBCP": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 763
+   "rows": 764
   },
   "TDC": {
    "backfilled": "2026-08-25",
@@ -28915,9 +28959,9 @@
   },
   "TDS-PV": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1286
+   "rows": 1287
   },
   "TDTH": {
    "backfilled": "2026-08-25",
@@ -28993,9 +29037,9 @@
   },
   "TETEF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1141
+   "rows": 1142
   },
   "TETH": {
    "backfilled": "2026-08-25",
@@ -29005,9 +29049,9 @@
   },
   "TETUF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1176
+   "rows": 1177
   },
   "TEVA": {
    "backfilled": "2026-08-25",
@@ -29095,9 +29139,9 @@
   },
   "TGVSY": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 204
+   "rows": 205
   },
   "TH": {
    "backfilled": "2026-08-25",
@@ -29191,9 +29235,9 @@
   },
   "TIPS": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 7954
+   "rows": 7955
   },
   "TIPT": {
    "backfilled": "2026-08-25",
@@ -29203,9 +29247,9 @@
   },
   "TIRXF": {
    "backfilled": "2026-08-25",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1422
+   "rows": 1423
   },
   "TISI": {
    "backfilled": "2026-08-25",
@@ -29299,9 +29343,9 @@
   },
   "TLSS": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3100
+   "rows": 3101
   },
   "TLX": {
    "backfilled": "2026-08-26",
@@ -29341,9 +29385,9 @@
   },
   "TMGI": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3255
+   "rows": 3256
   },
   "TMHC": {
    "backfilled": "2026-09-06",
@@ -29389,9 +29433,9 @@
   },
   "TMSOF": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1105
+   "rows": 1106
   },
   "TMUSI": {
    "backfilled": "2026-08-26",
@@ -29449,9 +29493,9 @@
   },
   "TNRSF": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3409
+   "rows": 3410
   },
   "TNXT": {
    "backfilled": "2026-08-26",
@@ -29773,9 +29817,9 @@
   },
   "TRXA": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4283
+   "rows": 4284
   },
   "TS": {
    "backfilled": "2026-08-26",
@@ -29917,9 +29961,9 @@
   },
   "TTOO": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 3051
+   "rows": 3052
   },
   "TTT": {
    "backfilled": "2026-08-26",
@@ -29987,11 +30031,16 @@
    "refreshed": "2026-09-26",
    "rows": 613
   },
+  "TWI": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 8395
+  },
   "TWNPQ": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 410
+   "rows": 411
   },
   "TWO": {
    "backfilled": "2026-08-26",
@@ -30006,9 +30055,9 @@
   },
   "TWOH": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 49
+   "rows": 50
   },
   "TWST": {
    "backfilled": "2026-08-26",
@@ -30084,9 +30133,9 @@
   },
   "UA": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2642
+   "rows": 2643
   },
   "UAA": {
    "backfilled": "2026-08-26",
@@ -30214,6 +30263,11 @@
    "refreshed": "2026-09-26",
    "rows": 8248
   },
+  "UGA": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 4674
+  },
   "UGI": {
    "backfilled": "2026-08-26",
    "last_obs": "2026-09-25",
@@ -30300,9 +30354,9 @@
   },
   "UMAV": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6673
+   "rows": 6674
   },
   "UMBF": {
    "backfilled": "2026-08-26",
@@ -30352,6 +30406,11 @@
    "refreshed": "2026-09-26",
    "rows": 7521
   },
+  "UNG": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 4892
+  },
   "UNIB": {
    "backfilled": "2026-08-26",
    "last_obs": "2026-09-25",
@@ -30363,6 +30422,11 @@
    "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
    "rows": 2877
+  },
+  "UNL": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 4208
   },
   "UNLYF": {
    "backfilled": "2026-08-26",
@@ -30450,9 +30514,9 @@
   },
   "UPYY": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1129
+   "rows": 1130
   },
   "URBN": {
    "backfilled": "2026-08-26",
@@ -30543,11 +30607,16 @@
    "refreshed": "2026-09-26",
    "rows": 862
   },
+  "USL": {
+   "backfilled": "2026-09-26",
+   "last_obs": "2026-09-25",
+   "rows": 4730
+  },
   "USLG": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2594
+   "rows": 2595
   },
   "USMF": {
    "backfilled": "2026-09-16",
@@ -30701,9 +30770,9 @@
   },
   "VACI-UN": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 225
+   "rows": 226
   },
   "VAI": {
    "backfilled": "2026-09-11",
@@ -31121,9 +31190,9 @@
   },
   "VISM": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 6367
+   "rows": 6368
   },
   "VISN": {
    "backfilled": "2026-08-26",
@@ -31217,9 +31286,9 @@
   },
   "VMCUF": {
    "backfilled": "2026-08-26",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1147
+   "rows": 1148
   },
   "VMET": {
    "backfilled": "2026-08-26",
@@ -31421,9 +31490,9 @@
   },
   "VRCI": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4434
+   "rows": 4435
   },
   "VRDN": {
    "backfilled": "2026-08-27",
@@ -31541,9 +31610,9 @@
   },
   "VSOGF": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1395
+   "rows": 1396
   },
   "VSS": {
    "backfilled": "2026-08-27",
@@ -31553,9 +31622,9 @@
   },
   "VSTD": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1003
+   "rows": 1004
   },
   "VSTM": {
    "backfilled": "2026-09-10",
@@ -31925,9 +31994,9 @@
   },
   "WENC-UN": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 102
+   "rows": 103
   },
   "WERN": {
    "backfilled": "2026-08-29",
@@ -32039,9 +32108,9 @@
   },
   "WHR-PA": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 141
+   "rows": 142
   },
   "WILC": {
    "backfilled": "2026-08-27",
@@ -32063,9 +32132,9 @@
   },
   "WINV": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1249
+   "rows": 1250
   },
   "WISE": {
    "backfilled": "2026-08-27",
@@ -32118,6 +32187,7 @@
   "WLDN": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 4991
   },
   "WLDS": {
@@ -32146,15 +32216,15 @@
   },
   "WLY": {
    "backfilled": "2026-08-29",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 13692
+   "rows": 13693
   },
   "WLYB": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 11096
+   "rows": 11097
   },
   "WM": {
    "backfilled": "2026-08-27",
@@ -32320,9 +32390,9 @@
   },
   "WSKEF": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2390
+   "rows": 2391
   },
   "WSM": {
    "backfilled": "2026-08-27",
@@ -32411,6 +32481,7 @@
   "WTTR": {
    "backfilled": "2026-09-26",
    "last_obs": "2026-09-25",
+   "refreshed": "2026-09-26",
    "rows": 2326
   },
   "WTW": {
@@ -32493,9 +32564,9 @@
   },
   "WZZZY": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2235
+   "rows": 2236
   },
   "XAIR": {
    "backfilled": "2026-08-27",
@@ -32781,9 +32852,9 @@
   },
   "XRN-PB": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 208
+   "rows": 209
   },
   "XRPC": {
    "backfilled": "2026-08-27",
@@ -32961,9 +33032,9 @@
   },
   "YHNAU": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 506
+   "rows": 507
   },
   "YI": {
    "backfilled": "2026-09-18",
@@ -33135,9 +33206,9 @@
   },
   "ZENVF": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 1289
+   "rows": 1290
   },
   "ZEO": {
    "backfilled": "2026-08-29",
@@ -33183,9 +33254,9 @@
   },
   "ZIONP": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 4961
+   "rows": 4962
   },
   "ZIVO": {
    "backfilled": "2026-08-27",
@@ -33207,9 +33278,9 @@
   },
   "ZLDPY": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 340
+   "rows": 341
   },
   "ZLNDY": {
    "backfilled": "2026-08-27",
@@ -33225,9 +33296,9 @@
   },
   "ZMTBY": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 2566
+   "rows": 2567
   },
   "ZNB": {
    "backfilled": "2026-08-27",
@@ -33249,9 +33320,9 @@
   },
   "ZPTA": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 624
+   "rows": 625
   },
   "ZRCN": {
    "backfilled": "2026-09-06",
@@ -33291,9 +33362,9 @@
   },
   "ZTOEF": {
    "backfilled": "2026-08-27",
-   "last_obs": "2026-09-24",
+   "last_obs": "2026-09-25",
    "refreshed": "2026-09-26",
-   "rows": 342
+   "rows": 343
   },
   "ZUMZ": {
    "backfilled": "2026-09-06",
@@ -33339,24 +33410,24 @@
   }
  },
  "last_run": {
-  "attempted": 5362,
+  "attempted": 5370,
   "batch_errors": 0,
   "batch_size": 160,
   "budget_exhausted": false,
   "budget_s": 480.0,
   "cap": 400,
   "census": {
-   "already_stored": 6305,
+   "already_stored": 6316,
    "bucket_1_current": 0,
    "bucket_2_recent": 15,
    "bucket_3_rest": 0,
-   "hub_current_surface": 41,
-   "hub_universe": 54,
-   "ledger_tickers": 8634,
-   "missing": 2438,
-   "parked": 1742,
+   "hub_current_surface": 44,
+   "hub_universe": 59,
+   "ledger_tickers": 8647,
+   "missing": 2440,
+   "parked": 1747,
    "queue": 15,
-   "union_needed": 8634,
+   "union_needed": 8647,
    "unsupported_sample": [
     "()",
     "0001",
@@ -33374,9 +33445,9 @@
    "unsupported_symbols": 886
   },
   "dry_run": false,
-  "elapsed_s": 315.4,
-  "no_data": 5,
-  "parked": 5,
+  "elapsed_s": 322.1,
+  "no_data": 4,
+  "parked": 8,
   "period": "max",
   "planned": 15,
   "ratio_anomalies": 18,
@@ -33391,7 +33462,7 @@
     "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "LFGY": [
-    "20.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "20.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "MINY": [
     "20.0% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -33412,7 +33483,7 @@
     "34.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SDTY": [
-    "20.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SLTY": [
     "20.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -33433,26 +33504,26 @@
     "17.1% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAX": [
-    "16.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "17.0% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ]
   },
-  "refresh_attempted": 5347,
+  "refresh_attempted": 5355,
   "refresh_cadence_d": 1.0,
-  "refresh_cap": 5347,
-  "refresh_current_returned": 4949,
+  "refresh_cap": 5355,
+  "refresh_current_returned": 5305,
   "refresh_expected_session": "2026-09-25",
-  "refresh_noncurrent_returned": 388,
-  "refresh_planned": 5347,
+  "refresh_noncurrent_returned": 43,
+  "refresh_planned": 5355,
   "refresh_ran": true,
   "refresh_scope": "all_unmaintained",
   "refresh_unattempted": 0,
-  "refreshable": 5347,
-  "refreshed": 5337,
-  "remaining": 4,
-  "schema_rejected": 9,
-  "short_history": 58,
-  "started_utc": "2026-09-26T04:18:09+00:00",
-  "written": 11
+  "refreshable": 5355,
+  "refreshed": 5348,
+  "remaining": 3,
+  "schema_rejected": 6,
+  "short_history": 57,
+  "started_utc": "2026-09-26T15:24:33+00:00",
+  "written": 12
  },
  "parked": {
   "A11": {
@@ -35275,6 +35346,13 @@
    "parked_utc": "2026-08-31T03:10:02+00:00",
    "reason": "fetch_failed"
   },
+  "BTMCQ": {
+   "attempts": 3,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "note": "the stored series could not be re-pulled; the EXISTING parquet is KEPT UNTOUCHED (stale-but-present beats absent \u2014 the ~7d bar-lag bound reports its staleness honestly downstream). NOT a delisting or death claim, and not a coverage loss",
+   "parked_utc": "2026-09-26T15:24:41+00:00",
+   "reason": "refresh_failed"
+  },
   "BTMWQ": {
    "attempts": 3,
    "error": "[backfill] no data returned for vendor symbol 'BTMWQ'",
@@ -36304,6 +36382,13 @@
    "parked_utc": "2026-09-01T03:49:49+00:00",
    "reason": "fetch_failed"
   },
+  "DEFI": {
+   "attempts": 3,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "note": "the stored series could not be re-pulled; the EXISTING parquet is KEPT UNTOUCHED (stale-but-present beats absent \u2014 the ~7d bar-lag bound reports its staleness honestly downstream). NOT a delisting or death claim, and not a coverage loss",
+   "parked_utc": "2026-09-26T15:24:41+00:00",
+   "reason": "refresh_failed"
+  },
   "DELT": {
    "attempts": 3,
    "error": "[backfill] no data returned for vendor symbol 'DELT'",
@@ -36331,6 +36416,13 @@
    "note": "no data returned for the requested symbol; NOT a delisting or death claim \u2014 this lane cannot distinguish a 404 from a renamed, non-US, or otherwise unreachable listing",
    "parked_utc": "2026-09-01T03:49:49+00:00",
    "reason": "fetch_failed"
+  },
+  "DFKCY": {
+   "attempts": 3,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "note": "the stored series could not be re-pulled; the EXISTING parquet is KEPT UNTOUCHED (stale-but-present beats absent \u2014 the ~7d bar-lag bound reports its staleness honestly downstream). NOT a delisting or death claim, and not a coverage loss",
+   "parked_utc": "2026-09-26T15:24:41+00:00",
+   "reason": "refresh_failed"
   },
   "DFLIW": {
    "attempts": 3,
@@ -38992,6 +39084,13 @@
    "parked_utc": "2026-09-04T00:35:04+00:00",
    "reason": "fetch_failed"
   },
+  "ISSC": {
+   "attempts": 3,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "note": "the stored series could not be re-pulled; the EXISTING parquet is KEPT UNTOUCHED (stale-but-present beats absent \u2014 the ~7d bar-lag bound reports its staleness honestly downstream). NOT a delisting or death claim, and not a coverage loss",
+   "parked_utc": "2026-09-26T15:24:41+00:00",
+   "reason": "refresh_failed"
+  },
   "ISV": {
    "attempts": 3,
    "error": "[backfill] no data returned for vendor symbol 'ISV'",
@@ -39138,6 +39237,13 @@
    "note": "no data returned for the requested symbol; NOT a delisting or death claim \u2014 this lane cannot distinguish a 404 from a renamed, non-US, or otherwise unreachable listing",
    "parked_utc": "2026-09-04T00:35:08+00:00",
    "reason": "fetch_failed"
+  },
+  "JPEIF": {
+   "attempts": 3,
+   "error": "[refresh] no data returned for vendor symbol 'JPEIF'",
+   "note": "the stored series could not be re-pulled; the EXISTING parquet is KEPT UNTOUCHED (stale-but-present beats absent \u2014 the ~7d bar-lag bound reports its staleness honestly downstream). NOT a delisting or death claim, and not a coverage loss",
+   "parked_utc": "2026-09-26T15:24:41+00:00",
+   "reason": "refresh_failed"
   },
   "JPMPC": {
    "attempts": 3,
@@ -39347,6 +39453,13 @@
    "error": "[backfill] no data returned for vendor symbol 'KLARA-B'",
    "note": "no data returned for the requested symbol; NOT a delisting or death claim \u2014 this lane cannot distinguish a 404 from a renamed, non-US, or otherwise unreachable listing",
    "parked_utc": "2026-09-04T00:35:10+00:00",
+   "reason": "fetch_failed"
+  },
+  "KLXER": {
+   "attempts": 3,
+   "error": "[backfill] no data returned for vendor symbol 'KLXER'",
+   "note": "no data returned for the requested symbol; NOT a delisting or death claim \u2014 this lane cannot distinguish a 404 from a renamed, non-US, or otherwise unreachable listing",
+   "parked_utc": "2026-09-26T15:24:35+00:00",
    "reason": "fetch_failed"
   },
   "KMD": {
@@ -41231,6 +41344,13 @@
    "note": "no data returned for the requested symbol; NOT a delisting or death claim \u2014 this lane cannot distinguish a 404 from a renamed, non-US, or otherwise unreachable listing",
    "parked_utc": "2026-09-09T03:34:01+00:00",
    "reason": "fetch_failed"
+  },
+  "NRRWF": {
+   "attempts": 3,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "note": "the stored series could not be re-pulled; the EXISTING parquet is KEPT UNTOUCHED (stale-but-present beats absent \u2014 the ~7d bar-lag bound reports its staleness honestly downstream). NOT a delisting or death claim, and not a coverage loss",
+   "parked_utc": "2026-09-26T15:24:41+00:00",
+   "reason": "refresh_failed"
   },
   "NRSNW": {
    "attempts": 3,
@@ -43899,6 +44019,13 @@
    "parked_utc": "2026-09-16T03:37:20+00:00",
    "reason": "refresh_failed"
   },
+  "SWAGW": {
+   "attempts": 3,
+   "error": "[backfill] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "note": "no data returned for the requested symbol; NOT a delisting or death claim \u2014 this lane cannot distinguish a 404 from a renamed, non-US, or otherwise unreachable listing",
+   "parked_utc": "2026-09-26T15:24:35+00:00",
+   "reason": "fetch_failed"
+  },
   "SWASTIK": {
    "attempts": 3,
    "error": "[backfill] no data returned for vendor symbol 'SWASTIK'",
@@ -45686,52 +45813,17 @@
   }
  },
  "pending": {
-  "BTMCQ": {
-   "attempts": 2,
-   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-09-26T04:18:17+00:00"
-  },
-  "DEFI": {
-   "attempts": 2,
-   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-09-26T04:18:17+00:00"
-  },
-  "DFKCY": {
-   "attempts": 2,
-   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-09-26T04:18:17+00:00"
+  "FMACR": {
+   "attempts": 1,
+   "error": "[backfill] no data returned for vendor symbol 'FMACR'",
+   "last_attempt": "2026-09-26T15:24:35+00:00"
   },
   "HLLK": {
-   "attempts": 1,
+   "attempts": 2,
    "error": "[refresh] no data returned for vendor symbol 'HLLK'",
-   "last_attempt": "2026-09-26T04:18:33+00:00"
-  },
-  "ISSC": {
-   "attempts": 2,
-   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-09-26T04:18:17+00:00"
-  },
-  "JPEIF": {
-   "attempts": 2,
-   "error": "[refresh] no data returned for vendor symbol 'JPEIF'",
-   "last_attempt": "2026-09-26T04:18:17+00:00"
-  },
-  "KLXER": {
-   "attempts": 2,
-   "error": "[backfill] no data returned for vendor symbol 'KLXER'",
-   "last_attempt": "2026-09-26T04:18:11+00:00"
-  },
-  "NRRWF": {
-   "attempts": 2,
-   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-09-26T04:18:17+00:00"
-  },
-  "SWAGW": {
-   "attempts": 2,
-   "error": "[backfill] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-09-26T04:18:11+00:00"
+   "last_attempt": "2026-09-26T15:24:49+00:00"
   }
  },
  "schema": "yahoo_backfill_state/1",
- "updated_utc": "2026-09-26T04:23:23+00:00"
+ "updated_utc": "2026-09-26T15:29:55+00:00"
 }
