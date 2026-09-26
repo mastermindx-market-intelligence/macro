@@ -432,6 +432,39 @@ filter edits may replace the current URL entry, but their values remain encoded 
 detail and returning restores the exact filtered view. No context lives only in component
 memory if it matters to Back/Forward or a saved view.
 
+### Current Terminal implementation frontier — preserve R6
+
+Terminal PR #754 advanced to R6 at `4afebc251c1e91963c4392c63aed3822b51b0847`.
+Treat this as **implemented intermediate capability / DO_NOT_REDO**, not final product
+acceptance:
+
+- fresh Sector Central visits now have a real workspace state;
+- Discover exposes all 11 exact sector-owner rows with search/source-order and optional return/
+  participation sorting;
+- Market breadth renders the same exact sector population on a common 0–100 advancing-share
+  scale with missing ≠ zero;
+- selected sector → explicit source group → complete company table → Back preserves search,
+  sort, focus and scroll;
+- contextual Sources, EN/ZH, theme parity and responsive 1440/820/390 behavior have a dedicated
+  91/91 local qualification; the prior R5 detail qualification remains 86/86.
+
+Do not recreate that journey. The R6 gap to this contract is bounded:
+
+1. its breadth hero currently summarizes positive 1M returns (`3/11`) rather than breadth;
+   correct it to a breadth-derived answer/denominator;
+2. its Discover hero says `Find the leadership` rather than serving the derived market read;
+3. `Sector research` is temporarily shown as a peer workspace tab; final architecture moves
+   research into selected-object detail and reserves the workspace job set for Rotation /
+   Discover / Market breadth;
+4. fresh-visit Discover is acceptable **only as an interim default while Rotation display is
+   rights/use blocked**. Once Rotation is admitted and actually implemented, fresh visits move
+   to Rotation; do not add an empty placeholder;
+5. the older persistent responsive shard remains a release gate until the stale pre-owner
+   fixtures/expectations are migrated. R6's dedicated qualification does not waive it.
+
+Meta-CEO exact-head integration review: Terminal #754 review `5328079963`. It preserves R6
+and returns these corrections without transferring branch custody.
+
 ### Component-level vertical slices
 
 Keep `SectorIntelligenceWorkspace` as the single mounted root under Discover's existing
