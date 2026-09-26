@@ -28,6 +28,7 @@ import hashlib
 import logging
 import re
 from pathlib import Path
+from typing import Iterable
 
 log = logging.getLogger(__name__)
 
@@ -167,6 +168,31 @@ def _always_modules(modules: list[dict]) -> list[dict]:
     )
 
 
+def _context_match_text(context_terms: Iterable[str] | None) -> str:
+    """Normalize bounded trusted chart-context terms for trigger matching only.
+
+    The returned text is NEVER inserted into a prompt. It exists solely to let
+    canonical chart state (attached indicator ids, timeframe labels, etc.) route
+    the same doctrine modules a user could name explicitly.
+    """
+    if context_terms is None:
+        return ""
+    terms: list[str] = []
+    try:
+        for raw in context_terms:
+            if not isinstance(raw, str):
+                continue
+            term = raw.strip()
+            if not term:
+                continue
+            terms.append(term[:96])
+            if len(terms) >= 64:
+                break
+    except Exception:  # noqa: BLE001
+        return ""
+    return " ".join(terms).lower()
+
+
 # ---------------------------------------------------------------------------
 # The library core — one instance per doctrine directory
 # ---------------------------------------------------------------------------
@@ -232,42 +258,66 @@ class _Library:
 
     # -- routing ------------------------------------------------------------
 
-    def route(self, message: str | None) -> list[dict]:
-        """Route a user message to the modules that should shape the answer.
+    def route(
+        self,
+        message: str | None,
+        *,
+        context_terms: Iterable[str] | None = None,
+    ) -> list[dict]:
+        """Route user intent plus trusted chart context to doctrine modules.
 
-        Always-modules (the protocol) come first, priority desc.  Then each
-        non-always module is scored by the count of DISTINCT triggers matched in
-        the message; modules scoring >= 1 are sorted (score desc, priority desc,
-        id asc) and at most max_routed are taken.  If nothing scored and the
-        message is non-empty, fall back to the default modules.  Empty/None
-        message → always only.  Finally, drop routed modules from the lowest
-        rank up until the summed body length is under char_budget
-        (always-modules are never dropped)."""
+        User-language matches rank ahead of context-only matches. Context terms
+        are bounded server-supplied labels such as an attached trend suite or an
+        intraday timeframe; they affect trigger selection only and are never
+        inserted into the assembled prompt.
+
+        If neither user text nor context matches, a non-empty user message keeps
+        the historical default-lens fallback. Empty user text with no matching
+        context keeps the historical protocol-only behavior.
+        """
         modules = self.load()
         always = _always_modules(modules)
 
         msg = (message or "").strip()
-        if not msg:
+        message_lc = msg.lower()
+        context_lc = _context_match_text(context_terms)
+        if not msg and not context_lc:
             return self.apply_budget(always, [])
 
-        message_lc = msg.lower()
         non_always = [m for m in modules if not m.get("always")]
 
-        scored: list[tuple[int, dict]] = []
+        scored: list[tuple[int, int, int, dict]] = []
         for m in non_always:
-            score = sum(1 for t in m["triggers"] if _trigger_matches(t, message_lc))
-            if score >= 1:
-                scored.append((score, m))
+            user_score = sum(
+                1 for t in m["triggers"]
+                if message_lc and _trigger_matches(t, message_lc)
+            )
+            context_score = sum(
+                1 for t in m["triggers"]
+                if context_lc and _trigger_matches(t, context_lc)
+            )
+            if user_score or context_score:
+                scored.append((1 if user_score else 0, user_score, context_score, m))
 
         if scored:
-            scored.sort(key=lambda sm: (-sm[0], -sm[1]["priority"], sm[1]["id"]))
-            routed = [m for _, m in scored[:self.max_routed]]
-        else:
+            scored.sort(
+                key=lambda sm: (
+                    -sm[0],
+                    -sm[1],
+                    -sm[2],
+                    -sm[3]["priority"],
+                    sm[3]["id"],
+                )
+            )
+            routed = [m for _, _, _, m in scored[:self.max_routed]]
+        elif msg:
             defaults = sorted(
                 (m for m in non_always if m.get("default")),
                 key=lambda m: (-m["priority"], m["id"]),
             )
             routed = defaults[:self.max_routed]
+        else:
+            routed = []
 
         return self.apply_budget(always, routed)
 
@@ -359,9 +409,13 @@ def _load(dir_path: Path | None = None) -> list[dict]:
     return _DEFAULT.load(dir_path)
 
 
-def route(message: str | None) -> list[dict]:
-    """Route a user message to the technician doctrine modules for the read."""
-    return _DEFAULT.route(message)
+def route(
+    message: str | None,
+    *,
+    context_terms: Iterable[str] | None = None,
+) -> list[dict]:
+    """Route user text plus optional trusted chart-context terms."""
+    return _DEFAULT.route(message, context_terms=context_terms)
 
 
 def _apply_budget(always: list[dict], routed: list[dict]) -> list[dict]:

@@ -1,9 +1,9 @@
 {
-  "checked_at": "2026-09-25T16:53:34+00:00",
-  "expected_session": "2026-09-24",
+  "checked_at": "2026-09-26T05:27:14+00:00",
+  "expected_session": "2026-09-25",
   "store_before": "2026-09-24",
-  "store_after": "2026-09-24",
+  "store_after": "2026-09-25",
   "status": "fresh",
-  "healed": false,
-  "heal_attempted": false
+  "healed": true,
+  "heal_attempted": true
 }

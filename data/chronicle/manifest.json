@@ -1,9 +1,9 @@
 {
   "adapters": {
     "earnings": {
-      "count": 8398,
+      "count": 8422,
       "dropped_from_source": 531,
-      "gap": "coverage: 2135/2294 tickers carried reported surprises; 531 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
+      "gap": "coverage: 2142/2301 tickers carried reported surprises; 531 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
       "retracted_by_authority": 0
     },
     "earnings_call": {
@@ -25,7 +25,7 @@
       "retracted_by_authority": 0
     },
     "regime_flip": {
-      "count": 10,
+      "count": 11,
       "dropped_from_source": 0,
       "gap": null,
       "retracted_by_authority": 0
@@ -43,19 +43,19 @@
       "retracted_by_authority": 0
     }
   },
-  "as_of": "2026-09-25",
+  "as_of": "2026-09-26",
   "coverage": {
     "end": "2026-09-25",
-    "note": "16306 events across 772 distinct date(s)",
+    "note": "16331 events across 772 distinct date(s)",
     "start": "2013-04-02"
   },
-  "elapsed_s": 3.267,
+  "elapsed_s": 3.173,
   "gap_notes": [
-    "earnings: coverage: 2135/2294 tickers carried reported surprises; 531 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
+    "earnings: coverage: 2142/2301 tickers carried reported surprises; 531 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
     "macro_release: 27/27 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:013751e38fdea245be4475e7d348846ccc72056bb0b2e759025a97870229cfb3",
+  "inputs_hash": "sha256:0b96dde1030c39c53588cec410e2dcb831530bfc37e1886c9e5bc505bd65093d",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
@@ -66,17 +66,17 @@
     "events": {
       "path": "data/chronicle/events.jsonl",
       "present": true,
-      "rows": 16306,
-      "sha256": "sha256:23965449d1beb4e2f483e4d253de3b4de86e2bd399e02ee56a3502d7293804c0"
+      "rows": 16331,
+      "sha256": "sha256:f8ae718d0df9746364aab299e4bc0feda820f81978bdf931fea91c961d832e9e"
     },
     "state_log": {
       "path": "data/chronicle/state_log.jsonl",
       "present": true,
-      "rows": 37,
-      "sha256": "sha256:a43a5971223bc1c847f0eae4732a29e99611fb2fca0995a192c8dfc915a2f810"
+      "rows": 38,
+      "sha256": "sha256:2c4d5b28adcaffabfeb12b9c7441010bd2707a36422025ccef8ab48f039e8083"
     }
   },
-  "produced_at": "2026-09-25T21:32:27Z",
+  "produced_at": "2026-09-26T10:07:56Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,
@@ -87,11 +87,11 @@
     },
     "data/chronicle/state_log.jsonl": {
       "present": true,
-      "sha256": "sha256:a43a5971223bc1c847f0eae4732a29e99611fb2fca0995a192c8dfc915a2f810"
+      "sha256": "sha256:2c4d5b28adcaffabfeb12b9c7441010bd2707a36422025ccef8ab48f039e8083"
     },
     "data/earnings/earnings.parquet": {
       "present": true,
-      "sha256": "sha256:40a5b1074fe460d7ea308931f291da0285cacbb8fc1965a302868b864bdf7a31"
+      "sha256": "sha256:7b35123ed57f0a3c271227e89f4c1128f8aac67f883cb3990444afa7ce8b5004"
     },
     "data/prophet/ledger.jsonl": {
       "present": true,
@@ -107,15 +107,15 @@
     },
     "data/release_forecast/forward_ledger.jsonl": {
       "present": true,
-      "sha256": "sha256:4a9f7ff9c0f473cfab9683c22046c9ebe59a13704523f2991531aea1b1d60ec2"
+      "sha256": "sha256:e2a56f08c6d5c1fb53f404bb7fc9f019ce0bc90d588ff6997f45afa6f0713f25"
     },
     "data/research_vault/catalog.json": {
       "present": true,
-      "sha256": "sha256:6c75b7326df25bbca1dcf1f1b6c50429df05f8b60f74ee7222f29d313074b0ff"
+      "sha256": "sha256:159a4121a579db5bc05d9f1198d4c7d25d271cb6bd824fcfe59f654dec092399"
     },
     "data/risk_radar/forward_log.jsonl": {
       "present": true,
-      "sha256": "sha256:ef1ad77ed92bbc10c7a195e86a94d95c406568d947e9582274785eec7ecbd1c7"
+      "sha256": "sha256:2054f593893dea9a940a4c098d24c225d3da1c010baef3d5791d162d98c9b43e"
     }
   },
   "tier": "display"

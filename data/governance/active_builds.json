@@ -1,47 +1,53 @@
 {
   "schema": "active_builds.v1",
-  "generated_at": "2026-09-25T16:05:52.848629+00:00",
+  "generated_at": "2026-09-26T04:33:25.167147+00:00",
   "base": {
-    "sha": "d0cc2e019e6dc5f6f616192291bbed9821368098"
+    "sha": "61029975bd1f7f9561cb135aba97ec2470578857"
   },
   "merged_days": 14,
   "merged_truncated": true,
   "open_prs_truncated": true,
   "open_prs": [
     {
-      "number": 8031,
-      "title": "ci(heal): host the Finance site-wiring assertion in public-render-fastlane (integration-baseline red)",
-      "head_ref": "claude/heal-probe-finance-site-wiring",
-      "updated_at": "2026-09-25T14:04:12Z",
+      "number": 8033,
+      "title": "ci: run the CI control plane's own contracts on the PR code gate",
+      "head_ref": "claude/workflow-yaml-code-gate",
+      "updated_at": "2026-09-26T00:24:48Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 2,
+      "files_count": 22,
       "files_truncated": false,
       "files_error": false,
       "files": [
         ".github/ci/legacy-jobs.yml",
-        "tests/test_finance_intelligence_site_wiring.py"
+        ".github/workflows/ci-main-heartbeat.yml",
+        ".github/workflows/ci.yml",
+        "config/house_law_checks.yml",
+        "docs/HOUSE_LAW_CI_GUARD_SUITE.md",
+        "scripts/audit_unrun_tests.py",
+        "scripts/check_ci_trigger_closure.py",
+        "scripts/nightly_backstop.py",
+        "scripts/run_ci_pack.py",
+        "tests/conftest.py",
+        "tests/test_audit_unrun_tests.py",
+        "tests/test_check_skip_only_suites.py",
+        "tests/test_ci_pack.py",
+        "tests/test_ci_trigger_closure.py",
+        "tests/test_contract_delta.py",
+        "tests/test_fence_checkout_contract.py",
+        "tests/test_merge_on_green.py",
+        "tests/test_nightly_backstop.py",
+        "tests/test_options_session_guards.py",
+        "tests/test_options_unit_seams.py",
+        "tests/test_render_dead_asset_gate.py",
+        "tests/test_trusted_ci_executor_workflow.py"
       ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 8030,
-      "title": "[MO-A] RIC F3 W2: trailing publication-lag tolerance \u2014 yield momentum measured at the last captured row (fixed_grid_origin.v4)",
-      "head_ref": "claude/ric-f3-w2-trailing-lag-20260925",
-      "updated_at": "2026-09-25T15:42:30Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "engine/yield_momentum.py",
-        "research/RIC_F3_W2_TRAILING_PUBLICATION_LAG_2026-09-25.md",
-        "tests/test_yield_momentum.py"
-      ],
-      "protected_paths_touched": []
+      "protected_paths_touched": [
+        ".github/workflows/ci-main-heartbeat.yml",
+        ".github/workflows/ci.yml",
+        "scripts/check_ci_trigger_closure.py"
+      ]
     },
     {
       "number": 8027,
@@ -100,7 +106,7 @@
       "number": 8023,
       "title": "records(energy): wave 2 module rounds 3\u20136 \u2014 reviews, rulings R-ENE-23..30, registration packet, handoff \u00a712\u201313",
       "head_ref": "claude/energy-w2-r3-r6-records",
-      "updated_at": "2026-09-25T12:11:58Z",
+      "updated_at": "2026-09-25T23:40:56Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -288,7 +294,7 @@
       "number": 8011,
       "title": "ci(fleet): page-bake lanes are starved of a runner, not livelocked \u2014 dead-man switch for a job held queued with no carrier",
       "head_ref": "claude/render-lane-dead-label-detector",
-      "updated_at": "2026-09-25T15:35:28Z",
+      "updated_at": "2026-09-25T20:31:07Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -320,8 +326,8 @@
       "head_ref": "claude/finance-t11-connected-conformance",
       "updated_at": "2026-09-25T12:27:04Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
       "files_count": 34,
       "files_truncated": false,
       "files_error": false,
@@ -532,30 +538,6 @@
       ]
     },
     {
-      "number": 7994,
-      "title": "fix(fable-mode): verify returns and qualify Codex discovery",
-      "head_ref": "claude/fable-mode-r31-codex-20260925",
-      "updated_at": "2026-09-25T08:11:33Z",
-      "is_draft": false,
-      "merge_state": "CLEAN",
-      "merge_state_raw": "CLEAN",
-      "files_count": 9,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".agents/skills/fable-mode/SKILL.md",
-        ".claude/skills/fable-mode/SKILL.md",
-        ".claude/skills/fable-mode/references/harness-adapters.md",
-        ".claude/skills/fable-mode/references/long-horizon.md",
-        ".claude/skills/fable-mode/references/orchestration.md",
-        "config/fable_mode_core.md",
-        "config/grader_manifest.yml",
-        "docs/evidence/fable-mode-r31/qualification.json",
-        "tests/test_grader_manifest.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
       "number": 7992,
       "title": "fix(deploy): fail closed before VPS disk exhaustion",
       "head_ref": "sol/vps-disk-hygiene-20260925",
@@ -649,7 +631,7 @@
       "number": 7988,
       "title": "perf(agentos): batch canonical workstream Git dates",
       "head_ref": "sol/agentos-batched-git-dates-20260924",
-      "updated_at": "2026-09-25T12:22:09Z",
+      "updated_at": "2026-09-26T00:15:53Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -807,7 +789,7 @@
       "number": 7967,
       "title": "feat(heatmap): add US and China sector-theme switching",
       "head_ref": "sol/market-heatmap-sector-theme-toggle-20260924",
-      "updated_at": "2026-09-25T11:12:59Z",
+      "updated_at": "2026-09-26T00:27:31Z",
       "is_draft": false,
       "merge_state": "DIRTY",
       "merge_state_raw": "DIRTY",
@@ -1297,11 +1279,11 @@
       "number": 7905,
       "title": "feat(earnings): validate private PG economic facts at source scope (CDV-1 Task 1)",
       "head_ref": "claude/cdv1-t1-pg-profile-facts",
-      "updated_at": "2026-09-25T15:14:00Z",
+      "updated_at": "2026-09-25T23:14:54Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 80,
+      "files_count": 89,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -1316,6 +1298,9 @@
         "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R1_2026-09-25.md",
         "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R2_2026-09-25.md",
         "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R3_2026-09-25.md",
+        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R4_2026-09-25.md",
+        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R5_2026-09-25.md",
+        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R6_2026-09-25.md",
         "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R10_2026-09-24.md",
         "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R11_2026-09-24.md",
         "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R12_2026-09-24.md",
@@ -1336,6 +1321,9 @@
         "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R1_2026-09-25.md",
         "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R2_2026-09-25.md",
         "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R3_2026-09-25.md",
+        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R4_2026-09-25.md",
+        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R5_2026-09-25.md",
+        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R6_2026-09-25.md",
         "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R10_2026-09-24.md",
         "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R11_2026-09-24.md",
         "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R12_2026-09-24.md",
@@ -1384,7 +1372,10 @@
         "tests/test_pg_envelope_f1.py",
         "tests/test_pg_envelope_f1_probes_r1.py",
         "tests/test_pg_envelope_f1_probes_r2.py",
-        "tests/test_pg_envelope_f1_probes_r3.py"
+        "tests/test_pg_envelope_f1_probes_r3.py",
+        "tests/test_pg_envelope_f1_probes_r4.py",
+        "tests/test_pg_envelope_f1_probes_r5.py",
+        "tests/test_pg_envelope_f1_probes_r6.py"
       ],
       "protected_paths_touched": []
     },
@@ -1394,8 +1385,8 @@
       "head_ref": "sol/sector-strength-measurement-20260922",
       "updated_at": "2026-09-24T11:54:47Z",
       "is_draft": false,
-      "merge_state": "CLEAN",
-      "merge_state_raw": "CLEAN",
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
       "files_count": 10,
       "files_truncated": false,
       "files_error": false,
@@ -1485,7 +1476,7 @@
       "number": 7891,
       "title": "[DRAFT/HOLD] Technology ex-Semiconductors Economic Change \u2014 implementation carrier",
       "head_ref": "claude/ssd-technology-ex-semis-impl-c887181119dd2aaf",
-      "updated_at": "2026-09-25T13:31:24Z",
+      "updated_at": "2026-09-25T16:31:22Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -3010,7 +3001,7 @@
       "number": 7776,
       "title": "fix(stocks): distinguish canonical issuer names from numeric sentinels",
       "head_ref": "sol/dossier-canonical-name-sentinel-20260923",
-      "updated_at": "2026-09-24T21:38:42Z",
+      "updated_at": "2026-09-25T22:44:33Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -3029,6 +3020,49 @@
       "protected_paths_touched": [
         "scripts/check_stock_dossier_integrity.py"
       ]
+    },
+    {
+      "number": 7775,
+      "title": "orch(audit): record terminal PR #722 + macro PR #7771 + terminal PR #721 plain-language/theme/validated-claims audits (2026-09-23)",
+      "head_ref": "claude/idle-audit-pr-711",
+      "updated_at": "2026-09-23T18:56:25Z",
+      "is_draft": false,
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
+      "files_count": 7,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "orch/audits/macro_PR-7761.mm.md",
+        "orch/audits/macro_PR-7764.mm.md",
+        "orch/audits/macro_PR-7768.mm.md",
+        "orch/audits/macro_PR-7770.mm.md",
+        "orch/audits/macro_PR-7771.mm.md",
+        "orch/audits/mastermind-terminal_PR-722.mm.md",
+        "orch/audits/terminal_PR-721.mm.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7773,
+      "title": "[RESEARCH/DESIGN][HOLD] Robotics BOM, native evidence and Themes dossier vertical",
+      "head_ref": "sol/robotics-bom-research-20260923",
+      "updated_at": "2026-09-24T09:40:27Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 6,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/GMI-ROBOTICS-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md",
+        "agentos/handoffs/GMI-ROBOTICS-RESEARCH-2026-09-23.md",
+        "docs/superpowers/plans/2026-09-23-robotics-theme-evidence-vertical-implementation.md",
+        "docs/superpowers/specs/2026-09-23-robotics-theme-evidence-vertical-design.md",
+        "research/robotics/ROBOTICS_DESIGN_EVIDENCE_AND_ACCEPTANCE_2026-09-23.md",
+        "research/robotics/ROBOTICS_RESEARCH_FOUNDATION_2026-09-23.md"
+      ],
+      "protected_paths_touched": []
     }
   ],
   "collisions": [
@@ -3065,6 +3099,17 @@
       "any_protected": false
     },
     {
+      "pr_a": 8033,
+      "pr_b": 7870,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        ".github/workflows/ci.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 3,
+      "any_protected": true
+    },
+    {
       "pr_a": 7905,
       "pr_b": 7870,
       "shared_files": [
@@ -3073,6 +3118,46 @@
         "tests/test_ci_pack.py"
       ],
       "shared_count": 3,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8033,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        ".github/workflows/ci.yml"
+      ],
+      "shared_count": 2,
+      "any_protected": true
+    },
+    {
+      "pr_a": 8033,
+      "pr_b": 7930,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8033,
+      "pr_b": 7924,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8033,
+      "pr_b": 7905,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
       "any_protected": false
     },
     {
@@ -3166,16 +3251,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
-      "pr_b": 8022,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 8011,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3184,7 +3260,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 8006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3193,7 +3269,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7992,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3202,7 +3278,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7982,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3211,7 +3287,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7976,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3220,7 +3296,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7966,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3229,7 +3305,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7950,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3238,25 +3314,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
-      "pr_b": 7930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8031,
-      "pr_b": 7924,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7909,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3265,16 +3323,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3283,7 +3332,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7897,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3292,7 +3341,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7891,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3301,7 +3350,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7888,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3310,7 +3359,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7872,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3319,16 +3368,16 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
-      "pr_b": 7870,
+      "pr_a": 8033,
+      "pr_b": 7871,
       "shared_files": [
-        ".github/ci/legacy-jobs.yml"
+        ".github/workflows/ci.yml"
       ],
       "shared_count": 1,
-      "any_protected": false
+      "any_protected": true
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7865,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3337,7 +3386,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7861,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3346,7 +3395,7 @@
       "any_protected": false
     },
     {
-      "pr_a": 8031,
+      "pr_a": 8033,
       "pr_b": 7797,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5274,6 +5323,31 @@
   ],
   "recent_merged": [
     {
+      "number": 8035,
+      "title": "fix(macro): re-bake the liquidity page's next-action line with current copy",
+      "merged_at": "2026-09-25T23:24:17Z"
+    },
+    {
+      "number": 8034,
+      "title": "[MO-A][RECORDS] RIC F3 W2 handoff + workstream next_action after #8030",
+      "merged_at": "2026-09-25T19:04:55Z"
+    },
+    {
+      "number": 8032,
+      "title": "fix(macro): stale-source next action drops banned copy; its tests stop reading the day's data",
+      "merged_at": "2026-09-25T19:06:51Z"
+    },
+    {
+      "number": 8031,
+      "title": "ci: host the Finance site-wiring assertion in public-render-fastlane (frees one job on each packing probe)",
+      "merged_at": "2026-09-25T20:47:26Z"
+    },
+    {
+      "number": 8030,
+      "title": "[MO-A] RIC F3 W2: trailing publication-lag tolerance \u2014 yield momentum measured at the last captured row (fixed_grid_origin.v4)",
+      "merged_at": "2026-09-25T17:32:05Z"
+    },
+    {
       "number": 8029,
       "title": "fix(ci): strip the nightly's banner tag in the ontology byte guard (ci-pack-0 heal)",
       "merged_at": "2026-09-25T13:35:58Z"
@@ -5332,6 +5406,11 @@
       "number": 7995,
       "title": "[MO-A] agentos(market-os): Meta-CEO A wave-2 handoff (F04 served + MOR-2b landed); remove stray root PR_BODY.md",
       "merged_at": "2026-09-25T05:33:05Z"
+    },
+    {
+      "number": 7994,
+      "title": "fix(fable-mode): verify returns and qualify Codex discovery",
+      "merged_at": "2026-09-25T18:48:59Z"
     },
     {
       "number": 7993,
@@ -5997,6 +6076,11 @@
       "number": 7755,
       "title": "[MO-A10] A-F10-W1: Retire the Intelligence Hub entry card to the admin-only Calibration Lab (MO-PAID-039 dead link)",
       "merged_at": "2026-09-23T02:52:37Z"
+    },
+    {
+      "number": 7753,
+      "title": "feat(china): connect source-bound US theme context to China intelligence",
+      "merged_at": "2026-09-25T23:23:33Z"
     },
     {
       "number": 7752,
@@ -7584,11 +7668,6 @@
       "merged_at": "2026-09-20T08:44:08Z"
     },
     {
-      "number": 7078,
-      "title": "[MO-B] Wave 4 record \u2014 Meta-CEO B 2026-09-11T12",
-      "merged_at": "2026-09-11T17:47:29Z"
-    },
-    {
       "number": 7070,
       "title": "[MO-A W11] intraday_flow: coverage-true feed words, bilingual tape chips, 8-of-N counted board (round 1)",
       "merged_at": "2026-09-21T22:11:33Z"
@@ -7674,11 +7753,6 @@
       "merged_at": "2026-09-21T07:31:53Z"
     },
     {
-      "number": 7046,
-      "title": "[MO-A] fix: alerts EN truncation amputated sentences + deleted risk caveat (heal W3)",
-      "merged_at": "2026-09-11T21:23:55Z"
-    },
-    {
       "number": 7045,
       "title": "[MO-A] fix: research_vault side is desk type, not a rating; summary + facet hygiene (heal W2)",
       "merged_at": "2026-09-16T09:53:06Z"
@@ -7729,11 +7803,6 @@
       "merged_at": "2026-09-13T06:12:00Z"
     },
     {
-      "number": 7008,
-      "title": "[MO-A-W4] A-F01-W4-1: Treasury curve-shape hero on the rates_curves route \u2014 today vs prior close vs prior month, context only (MO-DELTA-012)",
-      "merged_at": "2026-09-11T18:01:55Z"
-    },
-    {
       "number": 7007,
       "title": "[MO-BB2b] B-F06-3: Second-issuer cockpit per the F06 scope freeze \u2014 eight panels over the shipped security-state view model, personal-impact card refolded (stacked on #6920)",
       "merged_at": "2026-09-12T10:50:21Z"
@@ -7747,6 +7816,11 @@
       "number": 7004,
       "title": "[MO-BB1] B-F07-2: Valuation under YOUR assumptions \u2014 adjustable growth, margin and multiple over V1's reported-fundamentals model, recomputed in the page (stacked on #6905)",
       "merged_at": "2026-09-13T11:33:24Z"
+    },
+    {
+      "number": 7003,
+      "title": "[MO-B-REC] B-REC-B5-1: F00C ledger reconciled against the merged Terminal wave (12 rows) + Wave 2 boundary records (receipts 0014-0016, DECs, F00C rows) \u2014 stacked on #6997, carries #6981",
+      "merged_at": "2026-09-12T16:19:22Z"
     }
   ]
 }

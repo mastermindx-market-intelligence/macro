@@ -1,11 +1,11 @@
 {
-  "action_awards_attempted": 152,
-  "action_awards_succeeded": 152,
+  "action_awards_attempted": 144,
+  "action_awards_succeeded": 144,
   "action_page_size": 5000,
-  "actions_seen": 29760,
+  "actions_seen": 33216,
   "actions_total": 35521,
   "award_event_spine": {
-    "action_versions_seen": 29760,
+    "action_versions_seen": 33216,
     "action_versions_total": 35530,
     "activation_state": "live",
     "award_action_versions_row_count": 35530,
@@ -230,14 +230,14 @@
     "coverage_manifest_changed_this_run": false,
     "coverage_manifest_id": "award-coverage-4c6b9a67f7f044aaa6563af2277dac0f7ddd1b976ae383f74aba8b0ea022343f",
     "coverage_scope": "USAspending award-detail and transaction observations collected from bounded recipient-query discovery; not a complete federal procurement corpus or issuer attribution.",
-    "event_eligible_action_versions_seen": 29760,
-    "event_eligible_snapshots_seen": 152,
+    "event_eligible_action_versions_seen": 33216,
+    "event_eligible_snapshots_seen": 144,
     "full_receipt_bound_baseline_this_run": false,
-    "last_observed_at": "2026-09-25T12:42:24.352899+00:00",
+    "last_observed_at": "2026-09-26T01:12:23.252463+00:00",
     "projection_generation_id": "award-event-d848d79e70334451fd36694f",
     "projection_semantic_sha256": "d848d79e70334451fd36694f4329e09ee033ecc23a686c11a94892651befba67",
     "schema_version": "government_revenue.award_event_projection_state.v1",
-    "snapshots_seen": 152,
+    "snapshots_seen": 144,
     "snapshots_total": 408,
     "source_exhausted": false,
     "state_is_stale_because": null,
@@ -246,8 +246,8 @@
     "truncated_by_safety_cap": true
   },
   "award_search_limit_per_entity": 200,
-  "awards_seen": 3168,
-  "awards_total": 3903,
+  "awards_seen": 2768,
+  "awards_total": 3904,
   "baseline_activation": {
     "activated_this_run": false,
     "blocked_by": "collection",
@@ -271,11 +271,11 @@
       {
         "applicable": true,
         "comparison": "==",
-        "detail": "award_bounded_complete_entities 17 != requested_entities 21",
+        "detail": "award_bounded_complete_entities 14 != requested_entities 21",
         "name": "award_bounded_complete_entities_equals_requested_entities",
         "observed": {
           "name": "award_bounded_complete_entities",
-          "value": 17
+          "value": 14
         },
         "required": {
           "name": "requested_entities",
@@ -347,15 +347,15 @@
       {
         "applicable": true,
         "comparison": "==",
-        "detail": "detail_succeeded 152 == detail_candidates 152",
+        "detail": "detail_succeeded 144 == detail_candidates 144",
         "name": "detail_succeeded_equals_detail_candidates",
         "observed": {
           "name": "detail_succeeded",
-          "value": 152
+          "value": 144
         },
         "required": {
           "name": "detail_candidates",
-          "value": 152
+          "value": 144
         },
         "satisfied": true
       },
@@ -377,15 +377,15 @@
       {
         "applicable": true,
         "comparison": "==",
-        "detail": "action_awards_bounded_complete 152 == detail_candidates 152",
+        "detail": "action_awards_bounded_complete 144 == detail_candidates 144",
         "name": "action_awards_bounded_complete_equals_detail_candidates",
         "observed": {
           "name": "action_awards_bounded_complete",
-          "value": 152
+          "value": 144
         },
         "required": {
           "name": "detail_candidates",
-          "value": 152
+          "value": 144
         },
         "satisfied": true
       },
@@ -470,34 +470,34 @@
     "persistence_failure_reason": null,
     "safety_cap_note": "A declared page cap that was retrieved cleanly counts as a complete bounded sample and is not an activation blocker; raising the cap would widen coverage but would not have changed this run's verdict.",
     "schema_version": "government_revenue.baseline_activation_diagnostics.v1",
-    "summary": "Collection did not meet every receipt-bound baseline condition, so no baseline activated even though persistence succeeded. Unmet: award_bounded_complete_entities 17 != requested_entities 21.",
+    "summary": "Collection did not meet every receipt-bound baseline condition, so no baseline activated even though persistence succeeded. Unmet: award_bounded_complete_entities 14 != requested_entities 21.",
     "unsatisfied_conditions": [
       "award_bounded_complete_entities_equals_requested_entities"
     ],
     "unsatisfied_details": [
-      "award_bounded_complete_entities 17 != requested_entities 21"
+      "award_bounded_complete_entities 14 != requested_entities 21"
     ]
   },
   "bounded": true,
   "collection_receipts": {
-    "new_receipts_this_run": 338,
+    "new_receipts_this_run": 318,
     "path": "collection_receipts.jsonl",
     "raw_response_bodies_persisted": false,
-    "receipt_payloads_sha256": "5c8a96054f14497e26444eac2dba0ceb8225ad9c650a9d46ed95f2d3e80ffeca",
-    "receipts_total": 20904,
-    "response_receipts_this_run": 338,
-    "run_id": "usaspending-40a6f0b80467654c777a3aa5",
+    "receipt_payloads_sha256": "67b63278194e2fe82366c37b151f2762f4cf65faa2cd9e0ee5b8a54786361bb4",
+    "receipts_total": 21222,
+    "response_receipts_this_run": 318,
+    "run_id": "usaspending-3131023fc0eb89eae810a6c8",
     "schema_version": "government_revenue.collection_receipt.v1"
   },
   "coverage_scope": "bounded recipient-query award data plus bounded award-detail/action sample; not full USAspending coverage",
-  "detail_awards_attempted": 152,
+  "detail_awards_attempted": 144,
   "detail_awards_limit_per_entity": 8,
-  "detail_awards_succeeded": 152,
-  "effective_at": "2026-09-25",
+  "detail_awards_succeeded": 144,
+  "effective_at": "2026-09-26",
   "entities_configured_total": 21,
   "entities_mapped": 21,
   "entities_requested": 21,
-  "entities_with_awards": 19,
+  "entities_with_awards": 18,
   "errors": [
     {
       "error": "award pagination did not reach explicit hasNext=false",
@@ -506,14 +506,14 @@
       "ticker": "LMT"
     },
     {
-      "error": "award pagination did not reach explicit hasNext=false",
-      "reason": "max_pages_reached_with_has_next",
+      "error": "HTTP 503",
+      "reason": "request_failed",
       "stage": "awards",
       "ticker": "RTX"
     },
     {
-      "error": "HTTPSConnectionPool(host='api.usaspending.gov', port=443): Read timed out. (read timeout=60)",
-      "reason": "request_failed",
+      "error": "award pagination did not reach explicit hasNext=false",
+      "reason": "max_pages_reached_with_has_next",
       "stage": "awards",
       "ticker": "NOC"
     },
@@ -536,26 +536,26 @@
       "ticker": "HII"
     },
     {
-      "error": "award pagination did not reach explicit hasNext=false",
-      "reason": "max_pages_reached_with_has_next",
+      "error": "HTTPSConnectionPool(host='api.usaspending.gov', port=443): Read timed out. (read timeout=60)",
+      "reason": "request_failed",
       "stage": "awards",
       "ticker": "BA"
-    },
-    {
-      "error": "award pagination did not reach explicit hasNext=false",
-      "reason": "max_pages_reached_with_has_next",
-      "stage": "awards",
-      "ticker": "TDG"
     },
     {
       "error": "HTTP 502",
       "reason": "request_failed",
       "stage": "awards",
+      "ticker": "TDG"
+    },
+    {
+      "error": "HTTPSConnectionPool(host='api.usaspending.gov', port=443): Read timed out. (read timeout=60)",
+      "reason": "request_failed",
+      "stage": "awards",
       "ticker": "HWM"
     },
     {
-      "error": "award pagination did not reach explicit hasNext=false",
-      "reason": "max_pages_reached_with_has_next",
+      "error": "HTTP 502",
+      "reason": "request_failed",
       "stage": "awards",
       "ticker": "KTOS"
     },
@@ -566,8 +566,8 @@
       "ticker": "LDOS"
     },
     {
-      "error": "HTTP 502",
-      "reason": "request_failed",
+      "error": "award pagination did not reach explicit hasNext=false",
+      "reason": "max_pages_reached_with_has_next",
       "stage": "awards",
       "ticker": "TXT"
     },
@@ -578,20 +578,20 @@
       "ticker": "CW"
     },
     {
-      "error": "award pagination did not reach explicit hasNext=false",
-      "reason": "max_pages_reached_with_has_next",
+      "error": "HTTPSConnectionPool(host='api.usaspending.gov', port=443): Read timed out. (read timeout=60)",
+      "reason": "request_failed",
       "stage": "awards",
       "ticker": "TDY"
     },
     {
-      "error": "HTTPSConnectionPool(host='api.usaspending.gov', port=443): Read timed out. (read timeout=60)",
-      "reason": "request_failed",
+      "error": "award pagination did not reach explicit hasNext=false",
+      "reason": "max_pages_reached_with_has_next",
       "stage": "awards",
       "ticker": "HEI"
     },
     {
-      "error": "award pagination did not reach explicit hasNext=false",
-      "reason": "max_pages_reached_with_has_next",
+      "error": "HTTPSConnectionPool(host='api.usaspending.gov', port=443): Read timed out. (read timeout=60)",
+      "reason": "request_failed",
       "stage": "awards",
       "ticker": "VSAT"
     },
@@ -611,7 +611,7 @@
   "lookback_days": 1826,
   "max_action_pages_per_award": 100,
   "max_pages_per_entity": 2,
-  "observed_at": "2026-09-25T12:42:24.352899+00:00",
+  "observed_at": "2026-09-26T01:12:23.252463+00:00",
   "page_size": 100,
   "partial": true,
   "rails": {
@@ -632,31 +632,31 @@
       "denominators": {
         "identity_failures": 0,
         "normalization_failures": 0,
-        "queries_attempted": 152,
-        "queries_bounded_sample_complete": 152,
-        "queries_complete": 152,
+        "queries_attempted": 144,
+        "queries_bounded_sample_complete": 144,
+        "queries_complete": 144,
         "queries_failed": 0,
         "queries_not_requested": 0,
         "queries_partial": 0,
-        "queries_source_exhausted": 152,
+        "queries_source_exhausted": 144,
         "queries_truncated_by_safety_cap": 0,
-        "sampled_awards": 152
+        "sampled_awards": 144
       },
       "last_successful_observed_at": null,
       "pages": {
         "missing_has_next_awards": 0,
-        "requested": 152,
+        "requested": 144,
         "safety_cap_per_award": 100,
-        "succeeded": 152,
+        "succeeded": 144,
         "unresolved_has_next_awards": 0
       },
       "records": {
-        "accepted": 29760,
+        "accepted": 33216,
         "ledger_total": 35521,
-        "normalized": 29760,
-        "raw": 29760
+        "normalized": 33216,
+        "raw": 33216
       },
-      "response_receipts": 152,
+      "response_receipts": 144,
       "state": "partial"
     },
     "award_detail": {
@@ -675,23 +675,23 @@
         "truncated_by_safety_cap": false
       },
       "denominators": {
-        "attempted": 152,
-        "candidate_awards": 152,
+        "attempted": 144,
+        "candidate_awards": 144,
         "skipped_missing_generated_award_id": 0,
-        "succeeded": 152
+        "succeeded": 144
       },
       "last_successful_observed_at": null,
       "pages": {
-        "requested": 152,
+        "requested": 144,
         "safety_cap_per_entity": 8,
-        "succeeded": 152
+        "succeeded": 144
       },
       "records": {
-        "candidate_awards": 152,
-        "details_fetched": 152,
-        "ledger_total": 3903
+        "candidate_awards": 144,
+        "details_fetched": 144,
+        "ledger_total": 3904
       },
-      "response_receipts": 152,
+      "response_receipts": 144,
       "state": "partial"
     },
     "awards": {
@@ -714,13 +714,13 @@
         "entities_requested": 21,
         "full_configured_universe": true,
         "normalization_failures": 0,
-        "queries_bounded_sample_complete": 17,
+        "queries_bounded_sample_complete": 14,
         "queries_complete": 4,
-        "queries_failed": 2,
-        "queries_partial": 15,
+        "queries_failed": 3,
+        "queries_partial": 14,
         "queries_recipient_terms_truncated": 0,
         "queries_source_exhausted": 4,
-        "queries_truncated_by_safety_cap": 13,
+        "queries_truncated_by_safety_cap": 10,
         "queries_zero_rows_for_configured_query": 0,
         "recipient_query_terms_safety_cap": 8,
         "records_rejected_without_identity": 0
@@ -728,23 +728,23 @@
       "last_successful_observed_at": null,
       "pages": {
         "missing_has_next_entities": 0,
-        "requested": 38,
+        "requested": 37,
         "safety_cap_per_entity": 2,
-        "succeeded": 34,
-        "unresolved_has_next_entities": 13
+        "succeeded": 30,
+        "unresolved_has_next_entities": 10
       },
       "records": {
-        "accepted": 3168,
-        "ledger_total": 3903,
-        "normalized": 3168,
-        "raw": 3168
+        "accepted": 2768,
+        "ledger_total": 3904,
+        "normalized": 2768,
+        "raw": 2768
       },
-      "response_receipts": 34,
+      "response_receipts": 30,
       "state": "partial"
     }
   },
   "schema_version": "government_revenue.ingest_status.v2",
-  "snapshots_total": 5689,
+  "snapshots_total": 5701,
   "source_urls": [
     "https://api.usaspending.gov/api/v2/search/spending_by_award/",
     "https://api.usaspending.gov/api/v2/awards/{award_id}/",
