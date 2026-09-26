@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HLI-BULL-20260630",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.2,
@@ -14,13 +14,13 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 37.6,
-    "overlay": 55.0
+    "overlay": 47.0
   },
   "geometry": {
     "dist_to_stop_r": -0.131,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 148.9,
+    "horizon_pct_used": 151.1,
     "p1": -0.7542,
     "p2": -0.3771,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 67,
-  "tau": 1.4889
+  "days_elapsed": 68,
+  "tau": 1.5111
 }

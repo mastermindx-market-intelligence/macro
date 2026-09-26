@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KALU-BULL-20260810",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 39.9,
-  "raw_confidence": 39.5,
-  "delta_vs_base": -20.1,
+  "management_confidence": 39.5,
+  "raw_confidence": 38.9,
+  "delta_vs_base": -20.5,
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 39.1,
+    "validity": 38.7,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.499,
+    "dist_to_stop_r": 0.495,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 97.8,
-    "p1": -0.3343,
-    "p2": -0.1671,
+    "horizon_pct_used": 100.0,
+    "p1": -0.3368,
+    "p2": -0.1684,
     "p3": null,
-    "move_r": -0.501,
+    "move_r": -0.505,
     "mfe_r": 0.0,
     "mae_r": -0.553
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 44,
-  "tau": 0.9778
+  "days_elapsed": 45,
+  "tau": 1.0
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ALHC-BULL-20260825",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -6.227,
+    "dist_to_stop_r": -6.044,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 68.9,
-    "p1": -4.8184,
-    "p2": -2.4091,
+    "horizon_pct_used": 71.1,
+    "p1": -4.6962,
+    "p2": -2.348,
     "p3": null,
-    "move_r": -7.227,
+    "move_r": -7.044,
     "mfe_r": 0.406,
     "mae_r": -7.502
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 31,
-  "tau": 0.6889
+  "days_elapsed": 32,
+  "tau": 0.7111
 }

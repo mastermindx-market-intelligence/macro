@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SONO-BULL-20260716",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 45.2,
@@ -11,26 +11,26 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 50.4,
+    "progress": 53.9,
     "pace": 0.0,
     "retention": 100.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.007,
-    "dist_to_t1_r": 0.493,
-    "dist_to_t2_r": 1.993,
-    "horizon_pct_used": 155.6,
-    "p1": 0.6714,
-    "p2": 0.3357,
+    "dist_to_stop_r": 2.1,
+    "dist_to_t1_r": 0.4,
+    "dist_to_t2_r": 1.9,
+    "horizon_pct_used": 157.8,
+    "p1": 0.7336,
+    "p2": 0.3668,
     "p3": null,
-    "move_r": 1.007,
-    "mfe_r": 1.007,
+    "move_r": 1.1,
+    "mfe_r": 1.1,
     "mae_r": -0.244
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -39,12 +39,12 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 2.810000076293946,
+  "_mfe": 3.070000305175782,
   "_mae": -0.6799996948242182,
-  "_max_p1": 0.6714456574179078,
+  "_max_p1": 0.7335723548807122,
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 70,
-  "tau": 1.5556
+  "days_elapsed": 71,
+  "tau": 1.5778
 }
