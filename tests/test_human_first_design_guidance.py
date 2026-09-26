@@ -1,6 +1,8 @@
 """Guard source enrollment only; these tests cannot prove human comprehension."""
 from pathlib import Path
 import unittest
+import shlex
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -38,6 +40,18 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("cannot prove actual human comprehension", text)
         self.assertIn("code-review PASS is not product", text)
         self.assertIn("Do not edit the artifact", text)
+
+    def test_ci_executes_guidance_suite_in_existing_code_gate(self):
+        manifest = yaml.safe_load(self.read(".github/ci/legacy-jobs.yml"))
+        job = manifest["jobs"]["design-governance"]
+        self.assertEqual(job["gate"], "code")
+        self.assertNotIn("paths", job)  # Existing unscoped governance owner.
+        commands = [shlex.split(step["run"]) for step in job["steps"]
+                    if "run" in step and "if" not in step]
+        self.assertTrue(any(tokens[:3] == ["python3", "-m", "pytest"]
+                            and "tests/test_human_first_design_guidance.py" in tokens
+                            for tokens in commands),
+                        "The guidance suite must execute, not merely be named in paths.")
 
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
