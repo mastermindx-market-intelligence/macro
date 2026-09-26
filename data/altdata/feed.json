@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-26T16:24:58.231755+00:00",
+  "generated_utc": "2026-09-26T20:08:38.043840+00:00",
   "as_of": "2026-09-26",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -15460,6 +15460,14 @@
         "detail": "M&A / Divestitures"
       },
       {
+        "ticker": "CLH",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "CPTKW",
         "category": "Acquisitions",
         "confidence": "high",
@@ -17246,7 +17254,7 @@
       {
         "ticker": "MDRR",
         "category": "Acquisitions",
-        "confidence": "medium",
+        "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -18796,6 +18804,14 @@
         "detail": "Divestitures"
       },
       {
+        "ticker": "SOBR",
+        "category": "Deal Terminations",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Deal Terminations"
+      },
+      {
         "ticker": "KRSA",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19612,14 +19628,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RUBI",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "TOPS",
         "category": "Acquisitions",
         "confidence": "high",
@@ -20332,6 +20340,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "SID",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
         "ticker": "AVAH",
         "category": "Acquisitions",
         "confidence": "high",
@@ -20836,14 +20852,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "EMAT",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "CMBT",
         "category": "Divestitures",
         "confidence": "high",
@@ -21106,6 +21114,14 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "CTRM",
+        "category": "Divestitures",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
       },
       {
         "ticker": "DTSS",
@@ -25436,6 +25452,30 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "CLLS",
+        "category": "Strategic Reviews",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Strategic Reviews"
+      },
+      {
+        "ticker": "JBDI",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "MAKO",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "TCBIO",
         "category": "Delistings",
         "confidence": "high",
@@ -25506,6 +25546,14 @@
         "activist": false,
         "filer": null,
         "detail": "Strategic Reviews"
+      },
+      {
+        "ticker": "NVT",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "MITT-PC",
@@ -25628,12 +25676,28 @@
         "detail": "Delistings"
       },
       {
+        "ticker": "MG",
+        "category": "Going-Private",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Going-Private"
+      },
+      {
         "ticker": "MBRX",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "PAAI",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "XFLT",
@@ -25900,6 +25964,14 @@
         "detail": "Going-Private"
       },
       {
+        "ticker": "WHK",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "BWMN",
         "category": "Acquisitions",
         "confidence": "high",
@@ -26105,6 +26177,17 @@
         "hot": true
       },
       {
+        "ticker": "WDAY",
+        "net_up_30d": 34,
+        "breadth": 0.94,
+        "est_chg_30d": 4.69,
+        "n_analysts": 36,
+        "bull_ratio": 0.97,
+        "rising": true,
+        "revision_delta": 34,
+        "hot": true
+      },
+      {
         "ticker": "OKTA",
         "net_up_30d": 33,
         "breadth": 0.81,
@@ -26273,9 +26356,20 @@
         "ticker": "V",
         "net_up_30d": 24,
         "breadth": 0.75,
-        "est_chg_30d": 0.35,
+        "est_chg_30d": 0.06,
         "n_analysts": 32,
         "bull_ratio": 0.88,
+        "rising": true,
+        "revision_delta": 24,
+        "hot": true
+      },
+      {
+        "ticker": "XYZ",
+        "net_up_30d": 24,
+        "breadth": 0.67,
+        "est_chg_30d": 0.36,
+        "n_analysts": 36,
+        "bull_ratio": 0.83,
         "rising": true,
         "revision_delta": 24,
         "hot": true
@@ -26322,28 +26416,6 @@
         "bull_ratio": 1.0,
         "rising": true,
         "revision_delta": 23,
-        "hot": true
-      },
-      {
-        "ticker": "ISRG",
-        "net_up_30d": 23,
-        "breadth": 0.92,
-        "est_chg_30d": 0.17,
-        "n_analysts": 25,
-        "bull_ratio": 0.96,
-        "rising": true,
-        "revision_delta": 23,
-        "hot": true
-      },
-      {
-        "ticker": "CARR",
-        "net_up_30d": 22,
-        "breadth": 1.0,
-        "est_chg_30d": 0.09,
-        "n_analysts": 22,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 22,
         "hot": true
       }
     ],
@@ -26476,163 +26548,163 @@
     ],
     "short_interest": [
       {
-        "ticker": "DEI",
-        "days_to_cover": 26.8,
-        "si_change_pct": 3.1,
-        "short_shares": 29724365.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
         "ticker": "OTTR",
-        "days_to_cover": 26.6,
-        "si_change_pct": -1.6,
-        "short_shares": 4805121.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "MPT",
-        "days_to_cover": 20.9,
-        "si_change_pct": 3.9,
-        "short_shares": 150075140.0,
-        "settlement": "2026-08-31",
+        "days_to_cover": 23.0,
+        "si_change_pct": -0.3,
+        "short_shares": 4790407.0,
+        "settlement": "2026-09-15",
         "hot": true
       },
       {
         "ticker": "TROW",
-        "days_to_cover": 20.5,
-        "si_change_pct": 5.1,
-        "short_shares": 26224508.0,
-        "settlement": "2026-08-31",
+        "days_to_cover": 20.4,
+        "si_change_pct": 4.6,
+        "short_shares": 27437346.0,
+        "settlement": "2026-09-15",
         "hot": true
       },
       {
-        "ticker": "RDNT",
-        "days_to_cover": 19.5,
-        "si_change_pct": 2.6,
-        "short_shares": 9940889.0,
-        "settlement": "2026-08-31",
+        "ticker": "EZPW",
+        "days_to_cover": 20.3,
+        "si_change_pct": -2.1,
+        "short_shares": 12248958.0,
+        "settlement": "2026-09-15",
         "hot": true
       },
       {
-        "ticker": "SBH",
+        "ticker": "ACHC",
         "days_to_cover": 18.8,
-        "si_change_pct": 1.2,
-        "short_shares": 20191781.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "CXT",
-        "days_to_cover": 18.3,
-        "si_change_pct": 10.7,
-        "short_shares": 8009245.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "LKFN",
-        "days_to_cover": 18.1,
-        "si_change_pct": 3.5,
-        "short_shares": 2356600.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "DCOM",
-        "days_to_cover": 18.0,
-        "si_change_pct": 11.9,
-        "short_shares": 3874581.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "GIII",
-        "days_to_cover": 17.1,
-        "si_change_pct": 1.1,
-        "short_shares": 7670871.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "PFBC",
-        "days_to_cover": 17.0,
-        "si_change_pct": -1.9,
-        "short_shares": 1221961.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "HASI",
-        "days_to_cover": 16.9,
-        "si_change_pct": 8.3,
-        "short_shares": 13940675.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "PCRX",
-        "days_to_cover": 16.9,
-        "si_change_pct": 0.4,
-        "short_shares": 7328377.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "KMB",
-        "days_to_cover": 16.7,
-        "si_change_pct": 12.6,
-        "short_shares": 50091962.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "XPEL",
-        "days_to_cover": 16.5,
-        "si_change_pct": -0.5,
-        "short_shares": 2585676.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "TR",
-        "days_to_cover": 16.2,
-        "si_change_pct": 0.3,
-        "short_shares": 2192388.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "OZK",
-        "days_to_cover": 16.0,
-        "si_change_pct": 2.7,
-        "short_shares": 16209608.0,
-        "settlement": "2026-08-31",
-        "hot": true
-      },
-      {
-        "ticker": "HTO",
-        "days_to_cover": 15.9,
-        "si_change_pct": 6.6,
-        "short_shares": 5186435.0,
-        "settlement": "2026-08-31",
+        "si_change_pct": -4.8,
+        "short_shares": 21509968.0,
+        "settlement": "2026-09-15",
         "hot": true
       },
       {
         "ticker": "TGTX",
-        "days_to_cover": 15.9,
+        "days_to_cover": 18.5,
         "si_change_pct": 0.1,
-        "short_shares": 30128901.0,
-        "settlement": "2026-08-31",
+        "short_shares": 30153733.0,
+        "settlement": "2026-09-15",
         "hot": true
       },
       {
-        "ticker": "IDCC",
+        "ticker": "DEI",
+        "days_to_cover": 18.3,
+        "si_change_pct": 3.7,
+        "short_shares": 30824867.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "SBH",
+        "days_to_cover": 17.9,
+        "si_change_pct": -1.4,
+        "short_shares": 19898465.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "OZK",
+        "days_to_cover": 17.6,
+        "si_change_pct": 1.9,
+        "short_shares": 16512969.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "NOVT",
+        "days_to_cover": 17.4,
+        "si_change_pct": 1.6,
+        "short_shares": 4972389.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "JBGS",
+        "days_to_cover": 16.4,
+        "si_change_pct": 2.8,
+        "short_shares": 12482544.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "RLI",
+        "days_to_cover": 16.4,
+        "si_change_pct": -0.3,
+        "short_shares": 8413967.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "LIF",
+        "days_to_cover": 15.9,
+        "si_change_pct": -7.2,
+        "short_shares": 8310724.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "LKFN",
+        "days_to_cover": 15.7,
+        "si_change_pct": 2.2,
+        "short_shares": 2409222.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "SLG",
+        "days_to_cover": 15.6,
+        "si_change_pct": 4.9,
+        "short_shares": 11331695.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "NTST",
         "days_to_cover": 15.5,
-        "si_change_pct": 5.1,
-        "short_shares": 2739629.0,
-        "settlement": "2026-08-31",
+        "si_change_pct": -0.4,
+        "short_shares": 14225191.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "MPT",
+        "days_to_cover": 15.1,
+        "si_change_pct": -3.2,
+        "short_shares": 145296024.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "PTGX",
+        "days_to_cover": 15.1,
+        "si_change_pct": 5.5,
+        "short_shares": 8140194.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "CERT",
+        "days_to_cover": 15.0,
+        "si_change_pct": -0.6,
+        "short_shares": 28814125.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "CXT",
+        "days_to_cover": 14.9,
+        "si_change_pct": -0.2,
+        "short_shares": 7989917.0,
+        "settlement": "2026-09-15",
+        "hot": true
+      },
+      {
+        "ticker": "BOH",
+        "days_to_cover": 14.8,
+        "si_change_pct": 5.0,
+        "short_shares": 3845365.0,
+        "settlement": "2026-09-15",
         "hot": true
       }
     ],

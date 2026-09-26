@@ -1,9 +1,9 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-09-26",
-  "generated_utc": "2026-09-26T16:25:16.771147+00:00",
+  "generated_utc": "2026-09-26T20:08:56.651601+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
-  "regime_read": "Convergence favors semiconductors, AI infrastructure and select cybersecurity names, but several signals are sentiment-heavy and the desk has no scored history yet [track_record]. PLTR is the clearest no-chase case because its six-channel convergence coincides with +47.2pp relative strength and an extended flag [retail_buzz] [gov_contract] [extended].",
+  "regime_read": "Convergence is concentrated in AI infrastructure, semiconductors, and cybersecurity, but several signals mix fundamental activity with crowded sentiment. With no completed track-record observations, conviction remains modest; NVDA and AMAT show the cleanest non-extended alignment, while PLTR is too extended to chase.",
   "brain_present": true,
   "brain_usable": true,
   "article3": {
@@ -11,7 +11,7 @@
     "lift_lb": null,
     "reason": "insufficient-n: n=17 < min_n=25",
     "evidence_asof": "2026-09-26",
-    "evaluated_at": "2026-09-26T09:48:05+00:00"
+    "evaluated_at": "2026-09-26T20:07:32+00:00"
   },
   "is_context_only": true,
   "calibration": {
@@ -20,13 +20,13 @@
     "open": 26,
     "note": "No theses scored yet \u2014 the track record begins once the first check-by dates pass. Keep conviction modest until it does."
   },
-  "n_signals": 90,
-  "n_broken": 35,
+  "n_signals": 91,
+  "n_broken": 33,
   "signals": [
     {
       "ticker": "NVDA",
-      "signal_score": 81,
-      "conviction": "low",
+      "signal_score": 93,
+      "conviction": "medium",
       "action": "ACCUMULATE",
       "direction": "long",
       "source": "brain",
@@ -49,7 +49,7 @@
       "off_high_252": -4.3,
       "ret_20d": -1.2,
       "above_50dma": true,
-      "entry_tier": "T3",
+      "entry_tier": "T2",
       "affiliations": [
         {
           "actor": "Jensen Huang",
@@ -83,14 +83,14 @@
         }
       ],
       "n_affiliated_actors": 6,
-      "thesis": "NVDA combines unanimous analyst bullishness, large open-source/model demand, 270 patents and disclosed holdings by Nancy Pelosi, Marjorie Taylor Greene and Michael McCaul [analyst_upgrade_cluster] [github_momentum] [patent_cluster] [actor:Nancy Pelosi] [actor:Marjorie Taylor Greene] [actor:Michael McCaul]. Relative strength is only +10.4pp, so the evidence does not indicate a technically extended entry, but heavy retail attention raises crowding risk [retail_buzz].",
+      "thesis": "The broadest convergence in the pack combines unanimous analyst positioning, model and developer activity, a patent cluster, and disclosed holdings by multiple politicians [analyst_upgrade_cluster] [hf_model_momentum] [github_momentum] [patent_cluster] [actor:Nancy Pelosi] [actor:Marjorie Taylor Greene] [actor:Michael McCaul]. Retail attention adds momentum but also raises crowding risk [retail_buzz]. Relative strength is positive without being flagged extended.",
       "second_order": [
-        "MU \u2014 advanced-memory demand is a direct complement to accelerated-computing deployments.",
-        "HUT \u2014 its documented pivot toward AI power and data-center infrastructure could benefit from continued compute build-out [label_mismatch:HUT].",
-        "AI power and cooling infrastructure \u2014 greater accelerator deployment increases data-center electrical and thermal requirements."
+        "TSM \u2014 leading-edge foundry demand is a downstream implication of sustained AI-accelerator activity",
+        "AVGO \u2014 networking and custom accelerators can benefit from continued AI-cluster buildouts",
+        "AI data-center power and cooling \u2014 higher accelerator deployment increases supporting-infrastructure demand"
       ],
       "falsifier": {
-        "text": "Developer momentum and patent activity weaken while analyst sentiment rolls over and NVDA begins materially underperforming SPY.",
+        "text": "Model and developer momentum rolls over while analyst support weakens and the shares begin materially underperforming SPY.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "NVDA",
@@ -105,10 +105,10 @@
     {
       "ticker": "MSFT",
       "signal_score": 74,
-      "conviction": "high",
+      "conviction": "low",
       "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
+      "direction": "long",
+      "source": "brain",
       "weighted_score": 2.35,
       "convergence_score": 6,
       "channels": [
@@ -141,9 +141,23 @@
         }
       ],
       "n_affiliated_actors": 2,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
+      "thesis": "App demand, developer momentum, patent activity, and the disclosed OpenAI partnership form a coherent adoption-and-innovation cluster [app_demand] [github_momentum] [patent_cluster] [actor:Sam Altman]. Bill Ackman's disclosed affiliation adds an influential-capital signal [actor:Bill Ackman], but the Trump-linked sell signal conflicts with the bullish channels [trump]. At +30.9 percentage points versus SPY over 60 days, the name is close enough to the extension threshold to favor patience.",
+      "second_order": [
+        "NVDA \u2014 continued cloud-AI adoption implies ongoing accelerator demand",
+        "Data-center power and cooling \u2014 expanding cloud workloads require supporting physical infrastructure",
+        "Enterprise software partners \u2014 broader AI-tool adoption can lift complementary workflow applications"
+      ],
+      "falsifier": {
+        "text": "App and developer activity decelerate together while the Trump-linked sell signal persists and relative strength breaks down.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "MSFT",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 60
+        }
+      },
       "clamped": null
     },
     {
@@ -172,13 +186,14 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": "CRWD shows alignment across smart-money additions, net buying by two congressional members, an 89% analyst bull ratio and a positive Trump-linked signal [13f_add] [congress_buy] [analyst_upgrade_cluster] [trump]. At +26.8pp versus SPY it is strong but below the desk's extension threshold, leaving a possible entry while limiting conviction because no operating-demand channel is included.",
+      "thesis": "Institutional additions, net buying by two congressional members, a pro-buy Trump-linked signal, and broad analyst support point in the same direction [13f_add] [congress_buy] [trump] [analyst_upgrade_cluster]. The stock is not flagged extended, but its already-strong relative performance and the political nature of part of the evidence limit conviction.",
       "second_order": [
-        "PANW/FTNT \u2014 cybersecurity peers could benefit if the buying reflects broader security-budget resilience.",
-        "Cloud-security vendors \u2014 continued enterprise security spending would support adjacent identity, endpoint and network platforms."
+        "PANW \u2014 sustained cybersecurity spending can support the broader platform-security group",
+        "Cloud-security vendors \u2014 continued enterprise security demand can spread beyond endpoint protection",
+        "Identity-security providers \u2014 stronger cyber budgets often extend into access and identity controls"
       ],
       "falsifier": {
-        "text": "Institutional and congressional additions reverse while analyst bullishness falls and relative strength breaks down.",
+        "text": "Institutional additions reverse and congressional net buying turns negative as analyst support falls.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "CRWD",
@@ -229,21 +244,21 @@
         }
       ],
       "n_affiliated_actors": 2,
-      "thesis": "PLTR has genuine six-channel alignment through accelerating federal contracts, unanimous analyst bullishness, developer momentum and disclosed links to Marjorie Taylor Greene and Cathie Wood [gov_contract] [analyst_upgrade_cluster] [github_momentum] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. However, +47.2pp relative strength and the explicit extended flag mean the entry is gone; retail and Stocktwits enthusiasm add crowding rather than a reason to chase [retail_buzz] [stocktwits_bull] [extended].",
+      "thesis": "Federal-contract acceleration, analyst support, developer momentum, and disclosed affiliations create a coherent government-software demand signal [gov_contract] [analyst_upgrade_cluster] [github_momentum] [actor:Marjorie Taylor Greene] [actor:Cathie Wood]. Retail and Stocktwits enthusiasm reinforce momentum but increase crowding risk [retail_buzz] [stocktwits_bull]. The stock is explicitly extended at +47.2 percentage points versus SPY, so the signal is not an acceptable entry.",
       "second_order": [
-        "Government IT integrators \u2014 faster federal analytics procurement could lift implementation and integration demand.",
-        "CRWD \u2014 stronger federal technology spending may spill into adjacent cybersecurity procurement.",
-        "Cloud infrastructure providers \u2014 expanding analytics workloads require additional compute and storage capacity."
+        "Government IT integrators \u2014 stronger federal software adoption can expand implementation demand",
+        "Cybersecurity vendors \u2014 greater interagency data sharing raises adjacent security requirements",
+        "Cloud infrastructure \u2014 deployment of data-intensive government applications requires additional compute capacity"
       ],
       "falsifier": {
-        "text": "Federal-contract acceleration turns negative and developer momentum fades before the stock works off its extended condition.",
+        "text": "Federal-contract acceleration turns negative and developer momentum weakens before the valuation crowding clears.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "PLTR",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 60
+          "horizon_d": 45
         }
       },
       "clamped": null
@@ -323,7 +338,7 @@
       "off_high_252": -10.8,
       "ret_20d": 15.7,
       "above_50dma": true,
-      "entry_tier": "T1",
+      "entry_tier": null,
       "affiliations": [
         {
           "actor": "Ro Khanna",
@@ -332,21 +347,21 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": "MU links maximum measured insider purchase intensity, 446 patents and unanimous Stocktwits bullishness with a newly introduced federal assessment of advanced-memory competitiveness [insider_mspr] [patent_cluster] [stocktwits_bull] [bill:HR10170]. Its +1.2pp relative performance is not extended, but earnings in four days create binary event risk, so the convergence is better watched through the report [special_situation].",
+      "thesis": "Maximum measured insider-purchase intensity, a substantial patent cluster, and bullish investor sentiment align with the proposed federal assessment of advanced-memory competitiveness [insider_mspr] [patent_cluster] [stocktwits_bull] [bill:HR10170]. Weak recent relative performance leaves room for rerating, but earnings in four days create material event risk and justify watching rather than entering immediately.",
       "second_order": [
-        "AMAT \u2014 additional leading-edge memory investment would support semiconductor-equipment demand.",
-        "NVDA \u2014 greater advanced-memory availability supports accelerator-system deployment.",
-        "HBM packaging and test suppliers \u2014 tighter advanced-memory requirements increase packaging and qualification intensity."
+        "Semiconductor equipment \u2014 stronger advanced-memory investment would support fabrication-tool demand",
+        "Memory packaging and testing \u2014 advanced-memory growth increases back-end complexity",
+        "AI servers \u2014 greater availability of advanced memory supports accelerator-system deployments"
       ],
       "falsifier": {
-        "text": "The earnings report shows weakening advanced-memory demand or margins and insider purchase intensity does not persist.",
+        "text": "Earnings show weakening memory demand or guidance and insider-purchase intensity does not persist afterward.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MU",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 40
+          "horizon_d": 60
         }
       },
       "clamped": null
@@ -676,7 +691,7 @@
       "off_high_252": -49.6,
       "ret_20d": 2.3,
       "above_50dma": true,
-      "entry_tier": "T2",
+      "entry_tier": null,
       "affiliations": [
         {
           "actor": "Cathie Wood",
@@ -1064,7 +1079,7 @@
       "off_high_252": -21.1,
       "ret_20d": 7.8,
       "above_50dma": true,
-      "entry_tier": null,
+      "entry_tier": "T1",
       "affiliations": [
         {
           "actor": "Paul Singer",
@@ -1330,7 +1345,7 @@
       "off_high_252": -15.8,
       "ret_20d": -0.5,
       "above_50dma": false,
-      "entry_tier": null,
+      "entry_tier": "T2",
       "affiliations": [],
       "n_affiliated_actors": 0,
       "thesis": null,
@@ -2007,35 +2022,6 @@
       "clamped": null
     },
     {
-      "ticker": "RDNT",
-      "signal_score": 17,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.5,
-      "convergence_score": 2,
-      "channels": [
-        "short_squeeze",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 4.2,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -16.2,
-      "ret_20d": -6.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "MLM",
       "signal_score": 14,
       "conviction": "medium",
@@ -2084,6 +2070,35 @@
       "rolling_over": true,
       "off_high_252": -31.0,
       "ret_20d": -5.6,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "PINS",
+      "signal_score": 13,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.6,
+      "convergence_score": 2,
+      "channels": [
+        "activist_13d",
+        "app_demand"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -17.3,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -46.4,
+      "ret_20d": -17.4,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],

@@ -1,6 +1,6 @@
 {
  "schema": "options_entry.gate.v3",
- "generated_at": "2026-09-26 09:45 UTC",
+ "generated_at": "2026-09-26 20:04 UTC",
  "scored": false,
  "status": "building_history",
  "weight": 0.0,
@@ -1124,8 +1124,8 @@
   "S-WALL": {
    "n_eligible": 534,
    "n_priced": 534,
-   "wall_touches": 324,
-   "fixed_stop_touches": 277,
+   "wall_touches": 328,
+   "fixed_stop_touches": 282,
    "wall_before_fixed": 284,
    "price_store_available": true,
    "limitation": "close-path study understates intraday touches; a bar may pierce the wall intraday and close back above it. Full stop-out comparison is W2.3."
@@ -1735,7 +1735,7 @@
   "S-DOI: building history (fires=123/39 dates=16/14 overlap_dates=13; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-VOI: building history (fires=297/133 dates=41/34 overlap_dates=34; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-VOI-fast (5d): fires=297/133 dates=41/34 overlap_dates=34 \u2192 descriptive_status=building_history",
-  "S-WALL: 534/534 eligible fires priced (price_store_available=True); wall_touches=324, fixed\u22125%_touches=277, wall_before_fixed=284. LIMITATION: close-path study understates intraday touches; a bar may pierce the wall intraday and close back above it. Full stop-out comparison is W2.3.",
+  "S-WALL: 534/534 eligible fires priced (price_store_available=True); wall_touches=328, fixed\u22125%_touches=282, wall_before_fixed=284. LIMITATION: close-path study understates intraday touches; a bar may pierce the wall intraday and close back above it. Full stop-out comparison is W2.3.",
   "S-IVSPREAD-F: building history (fires=237/231 dates=41/40 overlap_dates=40; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-SKEW_DECEL: building history (fires=59/413 dates=33/41 overlap_dates=33; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-TOP_RISK: building history (fires=329/138 dates=41/38 overlap_dates=38; need 30 fires, 30 dates, 30 overlapping dates/bucket) \u2014 CAUTION-ONLY (RO-3): beneficial direction = flagged fires show WORSE outcomes (correctly identifies bad entries). NEVER initiates a negative position.",
