@@ -1440,6 +1440,8 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     manifest = _yaml(MANIFEST)
     code_job = manifest["jobs"]["stock-dashboard-first-frame"]
     code_suite = "tests/test_stock_dashboard_first_frame.py"
+    opportunity_suite = "tests/test_canada_theme_action_map.py"
+    client_harness = "tests/canada_theme_client_contract_harness.cjs"
     data_suite = "tests/test_stock_dashboard_first_frame_data.py"
 
     assert code_job["gate"] == "code"
@@ -1472,24 +1474,45 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png",
         "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
         "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
+        "scripts/build_canada.py",
+        "scripts/__init__.py",
+        "scripts/canada_theme_action_map.py",
+        "scripts/render_canada_opportunity_map_fixture.py",
+        "scripts/verify_canada_opportunity_map.cjs",
+        "mockups/evidence/canada-opportunity-map-20260909/**",
+        opportunity_suite,
+        client_harness,
         code_suite,
     }
     assert required_paths <= set(code_job["paths"])
-    assert any(code_suite in str(step.get("run") or "") for step in code_job["steps"])
-    assert _job_pip_packages(code_job) == {"beautifulsoup4", "jinja2", "pytest"}
+    code_runs = "\n".join(str(step.get("run") or "") for step in code_job["steps"])
+    assert code_suite in code_runs
+    assert opportunity_suite in code_runs
+    assert _job_pip_packages(code_job) == {
+        "beautifulsoup4", "jinja2", "pytest", "pyyaml",
+    }
 
     data_job = manifest["jobs"]["engine-render-guards"]
     data_runs = "\n".join(str(step.get("run") or "") for step in data_job["steps"])
     assert data_job["gate"] == "data"
     assert data_suite in data_runs
     assert code_suite not in data_runs
+    assert opportunity_suite not in data_runs
 
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed in (
         [code_suite],
+        [opportunity_suite],
+        [client_harness],
         ["templates/hk.html.j2"],
         ["site/canada-stock-v36.js"],
+        ["scripts/build_canada.py"],
+        ["scripts/__init__.py"],
+        ["scripts/canada_theme_action_map.py"],
+        ["scripts/render_canada_opportunity_map_fixture.py"],
+        ["scripts/verify_canada_opportunity_map.cjs"],
+        ["mockups/evidence/canada-opportunity-map-20260909/mobile-layout-canada.json"],
         ["scripts/render_stock_dashboard_fixture.py"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"],
@@ -4348,6 +4371,25 @@ def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:
         "in .github/ci/legacy-jobs.yml to cover the listed files — widening is "
         "always the safe direction."
     )
+
+
+def test_conviction_profile_declares_canada_theme_action_map_dependency() -> None:
+    """The curated dossier job must own the extracted Canada theme helper.
+
+    Full-tree contract-delta reaches this module through the job's existing
+    import closure. Sparse worktrees can under-enumerate that edge, so pin the
+    exact declaration and selector behavior independently.
+    """
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["conviction-profile"]
+    dependency = "scripts/canada_theme_action_map.py"
+
+    assert job.exclusive is True
+    assert dependency in job.paths
+    selected, reason = PACK.select_jobs([job], [dependency])
+    assert [item.job_id for item in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, [dependency])
+    assert match and match[1] == "declared", match
 
 
 def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -> None:

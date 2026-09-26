@@ -34,6 +34,7 @@ import plotly.graph_objects as go  # noqa: E402
 from engine.ledger_lane import nightly_advance_enabled as _ledger_advance_enabled  # noqa: E402
 from lib import config, illus, site_assets, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from scripts.canada_theme_action_map import _safe_canada_theme_action_map  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_canada")
@@ -1469,6 +1470,11 @@ def main() -> int:
         # comment plus the owed-session digest receipt (execution packet §17)
         # are the guard for that residual form.
         vm["setups"] = setups
+
+        # Existing Canada theme intelligence projected into the stock journey.
+        # Read-only consumer: theme owner keeps action/rank authority; Prophet keeps
+        # stock selection authority.  Separate clocks are rendered in the template.
+        vm["theme_actions"] = _safe_canada_theme_action_map(setups, site)
 
         # ── top_setups: top-5 buy rows for the glance card ───────────────────
         # MUST run AFTER vm["setups"] is assigned above (the first cut ran before it

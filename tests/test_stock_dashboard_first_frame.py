@@ -1363,7 +1363,11 @@ def test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic(
 
     assert receipts[0] == receipts[1]
     receipt = receipts[0]
-    assert receipt == json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    # P0B remains the current-source evidence owner for HK. Canada now has a
+    # bounded successor receipt in test_canada_theme_action_map.py so the old
+    # Canada P0B evidence stays immutable rather than being silently rewritten.
+    p0b = json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    assert receipt["markets"]["hk"] == p0b["markets"]["hk"]
     assert receipt["schema"] == "mastermind.stock_dashboard_rendered_fixture.v1"
     assert receipt["proof_class"] == "rendered_fixture"
     assert receipt["transform"] == (
@@ -1491,7 +1495,6 @@ def test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic(
     ("market", "receipt_name", "composer"),
     (
         ("hk", "mobile-layout.json", "hk-stock-v36.js"),
-        ("ca", "mobile-layout-canada.json", "canada-stock-v36.js"),
     ),
 )
 def test_committed_browser_receipts_are_self_binding_fixture_proof(
@@ -1512,7 +1515,6 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
     assert browser["fixture_market"] == market
     historical_hashes = {
         "hk": "71427ce354ff3f40e2cc7a9e298c840453465fc3a7fcf285ea32b2a486c89a3a",
-        "ca": "caffaacaae9d50b4a31be2ee0b6e61fa1cb0463a7c797e8154886f69e7a03fbc",
     }
     historical = browser["historical_baseline"]
     assert historical["schema"] == (
@@ -1552,18 +1554,6 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
                 "state": "composer-failed",
                 "path": "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png",
                 "sha256": "17f9d95a4765f569cc01c074a8a9cd60facdcadbb4fbcf223d345d8e47fdbee4",
-            },
-        ],
-        "ca": [
-            {
-                "state": "js-disabled",
-                "path": "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
-                "sha256": "17b369e5f17c29d558acc2306d754ea5a9eb33543c6fd47897eb048e7da0a9e2",
-            },
-            {
-                "state": "composer-failed",
-                "path": "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
-                "sha256": "ed067c82a490126c908eb9f53202e90e36c15dd27c57c4d464760db3861afe33",
             },
         ],
     }
