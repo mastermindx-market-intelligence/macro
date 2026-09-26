@@ -1792,11 +1792,13 @@
   #us-standouts.st-table-mode .nb-grid-section { display:none; }
   /* Packet 2 — Today | Candidates | Plans: exactly one population on screen. */
   #us-standouts:not([data-prophet-src="today"]) #us-today { display:none; }
-  #us-standouts:not([data-prophet-src="candidates"]) #us-candidates { display:none; }
+  #us-standouts:not([data-prophet-src="candidates"]) #us-candidates,
+  #us-standouts:not([data-prophet-src="candidates"]) #us-candidate-pool { display:none; }
   #us-standouts:not([data-prophet-src="plans"]) #us-plan-block { display:none; }
   /* Grid/Table belongs to Candidates only; Today reuses canonical cards and
      Plans remains the historical record wall. */
   #us-standouts:not([data-prophet-src="candidates"]) #us-st-view-toggle { display:none; }
+  #us-today button.mx-sec-link { border:0; background:transparent; color:var(--link); font:inherit; cursor:pointer; min-height:40px; padding:0 8px; }
   /* count chips row (id matches stocktable.js hard-coded lookup) */
   #st-count-chips { display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; margin:8px 0; }
   .st-chip { display:inline-block; font-size:10px; font-weight:700; padding:2px 9px;

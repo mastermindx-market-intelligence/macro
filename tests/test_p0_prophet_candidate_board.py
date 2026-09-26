@@ -645,3 +645,176 @@ if (!count.innerHTML.includes('Showing <b>18</b> of <b>18</b>')) throw new Error
 """
     proc = subprocess.run([node, "-e", harness], capture_output=True, text=True)
     assert proc.returncode == 0, proc.stderr or proc.stdout
+
+
+# Packet 2 consumes the same source JavaScript; no alternate event/context owner.
+_COMPANY_CONTEXT_HARNESS = r"""
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const source = JSON.parse(require('node:fs').readFileSync(0, 'utf8')).source;
+class Element {
+  constructor(tag='div', text='') {
+    this.tagName=tag.toUpperCase(); this._text=text; this.children=[];
+    this.dataset={}; this.listeners={}; this.attributes={}; this.hidden=false;
+    this.disabled=false; this.value=''; this.checked=false;
+  }
+  set textContent(v) { this._text=String(v); this.children=[]; }
+  get textContent() { return this._text+this.children.map(x=>x.textContent).join(' '); }
+  set innerHTML(_v) { throw new Error('Context must remain inert text, not HTML'); }
+  appendChild(x) { this.children.push(x); return x; }
+  replaceChildren() { this.children=[]; this._text=''; }
+  setAttribute(k,v) { this.attributes[k]=String(v); }
+  addEventListener(k,fn) { this.listeners[k]=fn; }
+  scrollIntoView() {}
+}
+function setup() {
+  const root=new Element(), panel=new Element(), search=new Element('input'), outside=new Element('input');
+  root.dataset.view='table';
+  const views=['table','grid'].map(v=>{const e=new Element('button');e.dataset.ucpView=v;return e;});
+  const rows=['AAPL','MSFT'].map((t,i)=>{const e=new Element('div',t+' synthetic candidate');e.dataset={ticker:t,offBoard:String(i===1)};return e;});
+  const buttons=rows.map(r=>{const e=new Element('button');e.dataset.ucpContext=r.dataset.ticker;return e;});
+  const map={'#ucp-search':search,'#ucp-outside':outside,'[data-ucp-context-panel]':panel,
+    '[data-ucp-matched]':new Element(),'[data-ucp-loaded]':new Element(),'.ucp-no-match':new Element()};
+  root.querySelector=s=>map[s];
+  root.querySelectorAll=s=>s==='[data-ucp-view]'?views:s==='.ucp-row'?rows:[];
+  root.contains=b=>buttons.includes(b);
+  const pending=[];
+  vm.runInNewContext(source, {
+    document:{getElementById:id=>id==='us-candidate-pool'?root:null,createElement:t=>new Element(t)},
+    fetch:(url,options)=>new Promise((resolve,reject)=>pending.push({url,options,resolve,reject})),
+  }, {timeout:1000});
+  assert.equal(pending.length,0,'no eager request');
+  return {root,panel,search,outside,views,rows,buttons,pending};
+}
+function body(ticker='AAPL') {
+  return {schema:'event_workspace_public_glance.v1',available:true,ticker,authority:'context_only',
+    event_id:'synthetic-'+ticker,event_date:'2026-09-24',reported:[],guidance:[],coverage_states:[]};
+}
+function click(s,index) {
+  const b=s.buttons[index];s.root.listeners.click({target:{closest:()=>b}});
+  assert.equal(s.pending.length,index+1);
+  assert.equal(s.pending[index].url,'/api/event-workspace/'+b.dataset.ucpContext);
+  assert.equal(s.pending[index].options.credentials,'same-origin');
+  return b;
+}
+async function response(s,index,status,payload,kind='json') {
+  const p=s.pending[index];
+  if(kind==='network') p.reject(new Error('network failure'));
+  else p.resolve({status,ok:status>=200&&status<300,json:()=>kind==='bad-json'?Promise.reject(new Error('invalid JSON')):Promise.resolve(payload)});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(s.buttons[index].disabled,false,'button restored even after a superseded request');
+}
+function expect(s,ticker,state) {
+  assert.equal(s.panel.dataset.ticker,ticker);
+  assert.equal(s.panel.dataset.state,state);
+  assert.deepEqual(s.rows.map(x=>x.textContent),['AAPL synthetic candidate','MSFT synthetic candidate']);
+  assert.equal(s.pending.length,s.buttons.filter(x=>s.pending.some(p=>p.url.endsWith(x.dataset.ucpContext))).length,'no retry');
+}
+async function main() {
+  let count=0;
+  const cases=[
+    ['valid',200,body(),'ready'],
+    ['wrong ticker',200,body('MSFT'),'unavailable'],
+    ['wrong schema',200,{...body(),schema:'wrong'},'unavailable'],
+    ['missing authority',200,{...body(),authority:undefined},'unavailable'],
+    ['escalated authority',200,{...body(),authority:'entry_authorized'},'unavailable'],
+    ['typed absence',404,{code:'event_workspace_not_covered',ticker:'AAPL'},'not-covered'],
+    ['generic 404',404,{detail:'Not Found'},'unavailable'],
+    ['wrong ticker 404',404,{code:'event_workspace_not_covered',ticker:'MSFT'},'unavailable'],
+    ['503',503,{},'unavailable'],
+    ['null 200',200,null,'unavailable'],
+    ['bad JSON',200,null,'unavailable','bad-json'],
+    ['network',200,null,'unavailable','network'],
+  ];
+  for(const [name,status,payload,state,kind] of cases) {
+    const s=setup();click(s,0);await response(s,0,status,payload,kind);expect(s,'AAPL',state);count++;
+  }
+  for(const kind of ['json','http','network']) {
+    const s=setup();click(s,0);click(s,1);
+    expect(s,'MSFT','loading');
+    await response(s,1,200,body('MSFT'));expect(s,'MSFT','ready');
+    await response(s,0,kind==='http'?503:200,body(),kind==='network'?'network':'json');
+    expect(s,'MSFT','ready');count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,body());click(s,1);
+    expect(s,'MSFT','loading');assert(s.panel.textContent.includes('Loading company context'));
+    assert(!s.panel.textContent.includes('synthetic-AAPL'),'old facts must leave while next selection loads');
+    await response(s,1,200,body('MSFT'));count++;
+  }
+  {
+    const s=setup();click(s,0);
+    const hostile='<img src=x onerror=alert(1)>';
+    await response(s,0,200,{...body(),lifecycle_state:'corrected',
+      watch:[{label:'Watch A',value:hostile},{label:'Watch B',value:'b'},{label:'Watch C',value:'c'},{label:'Watch D',value:'must be truncated'}],
+      source_states:[{kind:'issuer_release',status:'present'},{kind:'public_wire',status:'absent'}]});
+    expect(s,'AAPL','ready');const text=s.panel.textContent;
+    for(const expected of ['corrected',hostile,'Watch C','issuer_release: present','public_wire: absent','B4 Availability']) assert(text.includes(expected),expected);
+    assert(!text.includes('must be truncated'));
+    function tags(e){return [e.tagName,...e.children.flatMap(tags)];}
+    assert(!tags(s.panel).includes('IMG'));assert(!tags(s.panel).includes('SCRIPT'));count++;
+    s.views[1].listeners.click.call(s.views[1]);assert.equal(s.root.dataset.view,'grid');
+    s.search.value='MSFT';s.search.listeners.input();assert.deepEqual(s.rows.map(x=>x.hidden),[true,false]);
+    s.search.value='';s.outside.checked=true;s.outside.listeners.change();assert.deepEqual(s.rows.map(x=>x.hidden),[true,false]);
+    s.views[0].listeners.click.call(s.views[0]);assert.equal(s.root.dataset.view,'table');
+    s.root.listeners['candidate-pool-hydrated']();assert.deepEqual(s.rows.map(x=>x.hidden),[true,false]);count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,body());expect(s,'AAPL','ready');
+    assert(s.panel.textContent.includes('Lifecycle'));assert(s.panel.textContent.includes('Sources'));
+    assert(s.panel.textContent.includes('Unavailable'));count++;
+  }
+  console.log('COMPANY_CONTEXT_CASES_PASS='+count);
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});
+"""
+
+
+def _company_context_source() -> str:
+    import re
+    template = (ROOT / 'templates' / '_us_candidate_pool.html.j2').read_text(encoding='utf-8')
+    scripts = re.findall(r'<script>(.*?)</script>', template, flags=re.S)
+    assert len(scripts) == 1, 'One existing candidate context controller is required'
+    return scripts[0]
+
+
+def _run_company_context_contract(source: str):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which('node')
+    assert node, 'Node is required by this existing code-gated JavaScript contract'
+    return subprocess.run(
+        [node, '-e', _COMPANY_CONTEXT_HARNESS],
+        input=json.dumps({'source': source}), capture_output=True, text=True, timeout=15,
+    )
+
+
+def test_company_context_latest_selection_typed_response_and_source_projection():
+    result = _run_company_context_contract(_company_context_source())
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert 'COMPANY_CONTEXT_CASES_PASS=19' in result.stdout
+
+
+def test_company_context_contract_rejects_boundary_regressions():
+    source = _company_context_source()
+    mutations = [
+        ('if(requestSerial===contextRequestSerial) ', ''),
+        (" && body.authority==='context_only'", ''),
+        ("body && body.code==='event_workspace_not_covered' && body.ticker===ticker", 'true'),
+        ("    showContext(ticker,'loading',{});", ''),
+        ("      appendLine(grid,'Lifecycle',String(body.lifecycle_state||'Unavailable'));", ''),
+    ]
+    for old, new in mutations:
+        assert old in source, old
+        result = _run_company_context_contract(source.replace(old, new))
+        assert result.returncode != 0, 'Contract missed mutation: ' + old
+
+
+def test_today_keeps_lossless_candidate_pool_in_its_own_view():
+    """An expanded Candidates roster must not cover Today or the plan records."""
+    source = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert '#us-standouts:not([data-prophet-src="candidates"]) #us-candidate-pool { display:none; }' in source
+    assert '#us-today button.mx-sec-link' in source
+    assert 'min-height:40px' in source

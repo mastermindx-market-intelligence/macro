@@ -166,6 +166,8 @@ jobs:
       # pyarrow only; no render deps needed for this module's own kills).
       - name: HK discovery challenger — K-D1-K-D9 (hk_discovery_v1)
         run: python -m pytest tests/test_hk_discovery_challenger.py -q
+      - name: Prophet discovery outcomes - canonical grading and degraded clocks
+        run: python -m pytest tests/test_grading.py -q
 
   board-contradictions:
     if: ${{ false }}
@@ -12650,6 +12652,10 @@ jobs:
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
+      - name: Shared Prophet card - record identity and explicit unavailable action
+        run: python -m pytest tests/test_prophet_card_shared.py -q
+      - name: Prophet Today and Company context - owner selection and typed responses
+        run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"

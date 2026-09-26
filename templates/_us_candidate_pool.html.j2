@@ -79,6 +79,7 @@
   }
   search.addEventListener('input',filter); outside.addEventListener('change',filter);
   for(var j=0;j<views.length;j++) views[j].addEventListener('click',function(){setView(this.dataset.ucpView);});
+  var contextRequestSerial=0;
   function appendLine(parent, label, value){
     var item=document.createElement('div'); item.className='ucp-context-item';
     var k=document.createElement('span'); k.className='ucp-context-k'; k.textContent=label;
@@ -99,6 +100,15 @@
       appendLine(grid,guidance&&guidance.label||'Guidance',guidance&&guidance.value||'Unavailable');
       var cov=(body.coverage_states||[]).map(function(x){return x.label+': '+x.state;}).join(' · ');
       appendLine(grid,'Coverage',cov||'Unavailable');
+      appendLine(grid,'Lifecycle',String(body.lifecycle_state||'Unavailable'));
+      var watch=(body.watch||[]).slice(0,3);
+      for(var wi=0;wi<watch.length;wi++){
+        appendLine(grid,String(watch[wi].label||'Watch'),String(watch[wi].value||'Unavailable'));
+      }
+      var sources=(body.source_states||[]).map(function(x){return x.kind+': '+x.status;}).join(' · ');
+      appendLine(grid,'Sources',sources||'Unavailable');
+    }else if(state==='loading'){
+      appendLine(grid,'Company context','Loading company context…');
     }else if(state==='not-covered'){
       appendLine(grid,'Company context','Not covered for this ticker');
     }else{
@@ -114,18 +124,23 @@
   root.addEventListener('click',function(ev){
     var btn=ev.target.closest('[data-ucp-context]'); if(!btn || !root.contains(btn)) return;
     var ticker=String(btn.dataset.ucpContext||'').trim().toUpperCase(); if(!ticker) return;
+    var requestSerial=++contextRequestSerial;
     btn.disabled=true;
+    showContext(ticker,'loading',{});
     fetch('/api/event-workspace/'+encodeURIComponent(ticker),{credentials:'same-origin',headers:{Accept:'application/json'}})
       .then(function(resp){
-        if(resp.status===404) return resp.json().catch(function(){return {};}).then(function(body){return {state:'not-covered',body:body};});
+        if(resp.status===404) return resp.json().catch(function(){return {};}).then(function(body){
+          var absent=body && body.code==='event_workspace_not_covered' && body.ticker===ticker;
+          return {state:absent?'not-covered':'unavailable',body:absent?body:{}};
+        });
         if(!resp.ok) return {state:'unavailable',body:{}};
         return resp.json().then(function(body){
-          var ok=body && body.schema==='event_workspace_public_glance.v1' && body.available===true && body.ticker===ticker;
+          var ok=body && body.schema==='event_workspace_public_glance.v1' && body.available===true && body.ticker===ticker && body.authority==='context_only';
           return {state:ok?'ready':'unavailable',body:ok?body:{}};
         }).catch(function(){return {state:'unavailable',body:{}};});
       })
-      .then(function(result){showContext(ticker,result.state,result.body);})
-      .catch(function(){showContext(ticker,'unavailable',{});})
+      .then(function(result){if(requestSerial===contextRequestSerial) showContext(ticker,result.state,result.body);})
+      .catch(function(){if(requestSerial===contextRequestSerial) showContext(ticker,'unavailable',{});})
       .finally(function(){btn.disabled=false;});
   });
   root.addEventListener('candidate-pool-hydrated',filter);
