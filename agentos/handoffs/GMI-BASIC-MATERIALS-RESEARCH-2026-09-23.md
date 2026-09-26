@@ -5,16 +5,58 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R27_PROTOTYPE_SOURCE_REPAIRS_VERIFIED_VISUAL_REVIEW_HELD
+research_stage: R28_DEPENDENCY_FINDINGS_RETURNED_TO_INCUMBENT_REVIEW
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
 
 # Basic Materials — minimum continuing frontier
 
-Updated 2026-09-26 through R27. This updates the incumbent cumulative checkpoint, not a second state owner. The full R26 frontier remains at the same path in `d057cdad93550ba8dda0b185181155d2b299263a`, blob `bee1355213185fc3c84061b76fffa931023c56ad`; R25 is at `6e6d1bba49f2eabb68650b8fe7d7e0ec9f363fee`. Do not replay those records without a material contradiction.
+Updated 2026-09-26 through R28. This updates the incumbent cumulative checkpoint, not a second state owner. The full R26 frontier remains at the same path in `d057cdad93550ba8dda0b185181155d2b299263a`, blob `bee1355213185fc3c84061b76fffa931023c56ad`; R25 is at `6e6d1bba49f2eabb68650b8fe7d7e0ec9f363fee`. Do not replay those records without a material contradiction.
 
-## Mission, authority and topology
+## R28 current frontier — dependency evidence returned to incumbent review
+
+R28 advances a concrete blocker in the existing Workbench dependency; it does not repeat R27's static declarations or alter the Materials prototype. This section supersedes only the older next-action wording below. R27's complete frontier remains immutable at `af738d5f06eafc7b6f9a59f334a1113c1f161673`, checkpoint blob `f4b29b20c9a5f0750033d23a48a05825b5387862`.
+
+**Before:** the C3 Macro project/visual-context dependency was unbound, and its candidate still owed independent non-author review. **After:** actual candidate-module tests reproduce three concrete boundary defects; the complete reproducer and source receipts are delivered to the now-observed incumbent review. This is an evidence/coordination result, not an installed context, source repair or Materials product capability.
+
+### Exact dependency and current reviewer
+
+Mastermind #988 remains OPEN/DRAFT at exact observed head `66f935a6255c0a3c2f594b97f2c471489f26d96b`, branch `sol/workbench-attended-target-context-20260925-sol-001`. The candidate's two paths are `control_plane/workbench_attended_context.py` (blob `1ae718c276779f53152d9b7592d5ff81b24a4ff6`) and `tests/test_workbench_attended_context.py` (blob `92d960f2e3ffcbbc134b7e47c146a63a027dd563`). Its context is binding evidence only; Action/Browser permission and the real target-provider/consumer are still separate.
+
+Initial source discussion showed independent review outstanding, so Sol performed bounded consumer qualification under `PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD`, not a worker dispatch. A fresh pre-publication read found the concurrent C4 reviewer pickup: #988 comment `5850921560`, `fleet-attended-context-currentness-review-20260926-sol-c4-001`, parent `fleet-cluster-convergence-20260926-sol-c4-001`, GitHub user `mastermidx4`. Do not create a competing continuing review or source repair. This is observed foreground pickup evidence, not an Executive START/Job or a claim that its tests have completed.
+
+Supplementary evidence was posted on the SAME PR as **review `5328088857`**, explicitly anchored to the exact head and addressed to that reviewer. Readback: `state=COMMENTED`, `submitted_at=2026-09-26T23:34:06Z`, correct commit. This is not an APPROVE or formal CHANGES_REQUESTED state. The full Python code block was extracted from canonical readback and matched the executed reproducer byte-for-byte. Review URL: https://github.com/mastermindx-market-intelligence/Mastermind/pull/988#pullrequestreview-5328088857 . Delivery is not reviewer consumption, repair, acceptance or custody transfer.
+
+### Reproduced findings, not another schema fragment
+
+1. **R28-F1 / time boundary:** the broker captures time before owner callbacks and reuses it afterward. Prepare and resolve accept an 11,000-ms-old snapshot against a 10,000-ms ceiling. With snapshot-age tolerance independently widened only in synthetic expiry tests, prepare accepts an option expiring at 32,000 ms when the callback returns at 33,000; resolve returns a context expiring at 62,000 when its callback returns at 63,000. Caller and target remain valid in the context-expiry case. The minimal repair is a fresh post-owner time fence for the relevant deadlines, not a new retry/permission owner. No production Action/Browser bypass was demonstrated.
+2. **R28-F2 / self-unreadable ref:** a currently accepted 2,024-character Unicode resource yields a 17,287-byte encoded option payload. The same broker's decoder caps it at 16,384, so immediate prepare refuses its own newly issued option. Refuse unsupported input before mint or make mint/decode bounds consistent; do not raise budgets silently or normalize identity.
+3. **R28-F3 / closed error:** a lone-surrogate malformed reference escapes as UnicodeEncodeError because the initial UTF-8 length conversion precedes the exception guard. Keep it inside the existing opaque AttendedContextError boundary.
+
+Actual full module and original test files were fetched at the immutable head and Git-blob verified before and after testing. They remained unchanged. An isolated temporary source-read directory on the permitted Studio carrier held synthetic review tests; no worktree, branch, host configuration, installed owner, credential, browser, live target or production application was changed.
+
+Original targeted suite: **21 PASS**. Seven independent cases: **1 PASS / 6 FAIL**. Final combined run: **22 PASS / 6 FAIL, pytest exit 1**, Python 3.14.7. Four failures are the prepare/resolve freshness/expiry boundary cases, not four independent defects. Expiry-only probes use a 600,000-ms snapshot-age ceiling to remove freshness as a confounder. The review tests invoke the actual broker with fake clocks, synthetic owners and a synthetic signing key; they do not navigate, render, or call a network endpoint.
+
+Reproducer SHA256 `19b4dddb57b29e8fa30b564fbc0e7c5fd6d2b859d6ae84874a3ce2b5c45ab5b0`; final structured evidence SHA256 `0f3618777cade6cf7a06a61cfb0926d537d7ae229084aeccff3cfe26b5cdf017`; final test-log SHA256 `83d1d93ab84b4dde7b1db9bfd499824e4daa515e01d65ab69fd12a938c03d2d5`. The review contains the complete reproducer, exact commands and observations, so continuity does not depend on `/tmp/materials-r28-context-review-7_mye9ur`.
+
+No D8/full-repository suite, fresh CI/current-base integration, production acceptance, browser/assistive review, Materials economics test, P5 test or source admission was claimed. Initial pytest invocations warned about a cache path derived from `/dev/null`; the final isolated invocation disabled the optional cache provider and set the temporary root. No filesystem permissions were changed. A separate conversation-container raw-file copy failed DNS resolution and was not retried; the pure dependency review used the already-permitted Studio exact-source path, not a substitute browser or a retry of any historical denied Materials action.
+
+### Preserved scope, effects and exact next action
+
+No R27 HTML/verifier/review-note, #7984 core, #7870 shared implementation, R25 source-local proposal, Paper document, original source, identity, rights or production path was changed by R28. All 44 requirements, eight tasks, five originals/four company journeys, ten families/eight lenses and R21 sector-first architecture remain. All earlier denied effects remain held. Do not infer that a source-review success reopens the denied cash/browser/metadata actions.
+
+Bounded checks found no newer return on the existing #539 request or GMI parent #7886 / shared discussion #7780; this is not proof of global owner inactivity. Public Slack discovery found only Workbench build notifications and no matched shared-operation thread; no Slack message, new commission, worker or watcher was created. No unchanged pool/Workbench/Paper/browser probe was repeated.
+
+**Primary next action:** consume the incumbent C4 #988 review/repair disposition for R28-F1/F2/F3 on that same PR, verify the returned exact source and regressions, then obtain the existing #539 owner-qualified Macro target/consumer and separate visual-action permission. Review the preserved exact R27 prototype only after that real action gate is met. A comment or source merge is not the binding. Do not duplicate C4's now-observed review or repeat this suite on unchanged source merely because another chat turn starts.
+
+**Independent dependency:** consume an actual accepted GMI scope/ref/K1/P5/sector-reader return; do not produce another R25 scope proposal. #7984 still requires its original permitted recovery and source custody. No standing background execution or ownership transfer is created.
+
+Current procedure pin: **Mastermind `4c6b206d3fb7fbc6d077faf61ae361bedf259925`**, compatible Skillpack 1.0.1/bootstrap 1. Same-pin INDEX `94d1af402598894372858793a5b1931019c5fa77`, ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, REVIEW_RETURN `f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`, and dialogue law `6ad84a651df5f224ba553509a64f0f4d40364016` were loaded/read; unchanged earlier body details remain dated evidence. Current outer bootstrap mode directions govern over obsolete mode-duration text. No mode switch or served-model/quota telemetry inferred.
+
+**Boundary:** source counterexamples and their handoff to an actual observed incumbent review are complete; the next semantic repair and consumer binding remain with their existing owners. Keep the current working mode for return adjudication; Extra High only when a permitted iterative implementation step materially benefits. **CHECKPOINTED_CONTINUATION / MISSION_COMPLETE=false / EFFECT_UNKNOWN=none observed.** Verify this update's returned commit/blob and its one-file delta before claiming durability.
+
+## Mission, authority and topology — preserved R27 detail
 
 Deliver Materials Economics as a **sector-first dossier**: what changed, which operating business or financial right captures it, what reaches retained cash/per-share economics, what was expected and what evidence matters next. Preserve **44 core requirements, T1–T8, five originals/four real company journeys, ten research families/eight lenses, and V0–V4 ambition**. Arithmetic-only, source-only, shell-only, shared-merge or CI-green is not acceptance.
 
