@@ -5809,7 +5809,12 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
+      # Once §8 is adjudicated the same factory pattern (technology @ #7891)
+      # will be applied here.
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "tests/test_finance_intelligence_projection.py"
+      - "tests/test_finance_research_registration.py"
       # FIN-T9 entry points — sector deep-dive card on the Theme Tracker
       # + Financials launch module (skip-mode while PR #7669 is OPEN).
       - "templates/_finance_sector_deep_dive.html.j2"
@@ -5882,7 +5887,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
 
 
   consumer-cyclical-economic-change:
