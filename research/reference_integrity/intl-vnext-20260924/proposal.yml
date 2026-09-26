@@ -1,203 +1,203 @@
 schema: mastermind.rig_proposal.v1
 reference_id: intl-vnext-20260924
 proposed_artifact:
-  frozen_sha: a8c85c9bc9a463301654475f8e140443118b3753
+  frozen_sha: d39235e031c79fe90b2c789521545e68782edc4a
   paths:
   - mockups/refs/institutionalize/intl/reference-r3.html
   screenshots:
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-desktop-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-desktop-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-desktop-light-en.png
     viewport: desktop
     theme: light
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-desktop-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-mobile-dark-en.png
     viewport: mobile
     theme: dark
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-mobile-dark-zh.png
     viewport: mobile
     theme: dark
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-mobile-light-en.png
     viewport: mobile
     theme: light
     locale: en
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-mobile-light-zh.png
     viewport: mobile
     theme: light
     locale: zh
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-desktop-dark-en-horizon-12m.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-desktop-dark-en-horizon-12m.png
     viewport: desktop
     theme: dark
     locale: en
     state: horizon-12m
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-light-zh-horizon-1m.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-mobile-light-zh-horizon-1m.png
     viewport: mobile
     theme: light
     locale: zh
     state: horizon-1m
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-jp-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-jp-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-jp-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-jp-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-jp-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
     state: country-jp
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-gb-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-gb-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-gb-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-gb-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-gb-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
     state: country-gb
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-kr-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-kr-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-kr
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-tw-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-tw-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-tw
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-in-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-in-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-in
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-au-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-au-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-au
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-country-ez-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-country-ez-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: country-ez
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-loading-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-loading-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-loading
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-loading-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-loading-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-loading
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-empty-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-empty-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-empty
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-empty-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-empty-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-empty
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-stale-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-stale-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-stale
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-stale-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-stale-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-stale
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-error-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-error-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: global-pulse-error
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-organ-error-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-organ-error-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: global-pulse-error
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-desktop-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-desktop-dark-zh.png
     viewport: desktop
     theme: dark
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-desktop-light-en.png
     viewport: desktop
     theme: light
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-desktop-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-desktop-light-zh.png
     viewport: desktop
     theme: light
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-mobile-dark-en.png
     viewport: mobile
     theme: dark
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-dark-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-mobile-dark-zh.png
     viewport: mobile
     theme: dark
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-light-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-mobile-light-en.png
     viewport: mobile
     theme: light
     locale: en
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-repair-mobile-light-zh.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/stocks-r3-successor-mobile-light-zh.png
     viewport: mobile
     theme: light
     locale: zh
     state: intl-stocks-preservation
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-fixed-paths-desktop-dark-en.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-fixed-paths-desktop-dark-en.png
     viewport: desktop
     theme: dark
     locale: en
     state: fixed-84-session-price-paths
-  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-repair-mobile-dark-zh-initial-locale.png
+  - path: mockups/refs/reference_integrity/intl-vnext-20260924/proposal-r3-successor-mobile-dark-zh-initial-locale.png
     viewport: mobile
     theme: dark
     locale: zh
