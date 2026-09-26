@@ -227,6 +227,81 @@ It is admitted only as a **versioned prospective challenger** under
 SPY absolute, QQQ absolute and SMH absolute remain nuisance diagnostics, not additional candidate
 families. This freezes the candidate count rather than continuing post-hoc predictor search.
 
+
+## 4D. Broad daily QQQ-minus-SPY control
+
+After the challenger was frozen, the obvious generic-momentum confound was measured over the same
+June 14 through September 24 U.S./HK daily window used by the earlier SMH-minus-QQQ broad control.
+
+Per ordinary U.S. session:
+- predictor = same-day QQQ close return minus SPY close return;
+- target = HSI close on that observed HK date -> first later observed HSI open;
+- no forward fill or event conditioning.
+
+Result across **66** ordinary U.S./HK session pairs:
+- sign agreement: **28/66 = 42.4%**
+- Pearson: **-0.136**
+- Spearman: **-0.129**
+- median next-HSI-open gap after positive daily QQQ-minus-SPY: **-7.49 bp**
+- median after negative daily QQQ-minus-SPY: **+12.23 bp**
+
+Therefore the development challenger is not explained by generic daily growth-relative momentum
+in this window. This is still post-development robustness, not prospective validation.
+
+## 4E. Within-day pre-event placebo
+
+A fixed post-outcome falsifier reused each development event date but shifted the identical
+30-minute U.S. geometry one hour earlier:
+
+- event measurement: +5 -> +35 minutes after the source clock;
+- placebo measurement: -55 -> -25 minutes before the source clock;
+- same SPY/QQQ/SMH symbols;
+- same next-HSI-open target already open in the development sample;
+- no event, clock, or row was selected by the placebo outcome.
+
+All 12 development events:
+
+| Construction | Event window | Pre-event placebo |
+|---|---:|---:|
+| QQQ minus SPY | 10/12 = **83.3%** | 5/12 = **41.7%** |
+| SMH minus QQQ | 9/12 = **75.0%** | 6/12 = **50.0%** |
+
+Seven clean-primary events:
+
+| Construction | Event window | Pre-event placebo |
+|---|---:|---:|
+| QQQ minus SPY | 6/7 = **85.7%** | 2/7 = **28.6%** |
+| SMH minus QQQ | 5/7 = **71.4%** | 4/7 = **57.1%** |
+
+For clean QQQ-minus-SPY, the event-window Pearson/Spearman were +0.681 / +0.893, while the
+pre-event placebo was -0.460 / -0.429.
+
+This argues against the measured cross-session relationship merely reflecting a same-day trend that
+was already present before the headline. The placebo itself was chosen after development outcomes
+were known, so it remains falsifier-style robustness only and cannot promote either candidate.
+
+## 4F. Cross-family retrospective source gate
+
+The development sample remains concentrated in the 2026 Iran/Hormuz complex.
+
+A bounded source-only recovery attempt used the existing owners before considering any new price
+measurement:
+
+1. M2 has no materialized `wires.json` at the Brain reader's configured live/dev path ladder.
+2. The committed `site/news/macro.json` nightly snapshots were recovered through Git history.
+3. The artifact's available committed history begins on **2026-06-20**.
+4. One snapshot per calendar day from 2026-06-20 through 2026-08-25 was scanned for bounded
+   Russia/Ukraine, Israel/Gaza, Taiwan military, Red Sea/Houthi, ceasefire/truce and shipping-security
+   source terms.
+5. No clean non-Iran geopolitical event with an exact source clock was recovered from that owner;
+   false-positive Taiwan Semiconductor company headlines were excluded.
+
+Therefore retrospective cross-family generalization is currently **SOURCE_GATED** under existing
+owners. Do not fabricate a cross-family sample from research prose or silently import a second
+historical event corpus. The clean path remains the frozen future prospective protocol unless a
+separately governed public-source historical corpus is preregistered before its market outcomes are
+inspected.
+
 ## 5. Missingness
 
 Four pre-frozen matched controls remained missing under the exact-clock law:

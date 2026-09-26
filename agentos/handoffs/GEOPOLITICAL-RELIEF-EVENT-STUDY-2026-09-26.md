@@ -432,3 +432,33 @@ QQQ-minus-SPY:
 - descriptive bootstrap 5th percentile = 0 in both slices.
 
 This preserves the challenger as fragile prospective research, not a validated signal.
+
+
+### Final development robustness before stable-head validation
+
+Broad daily QQQ-minus-SPY control:
+- 66 ordinary U.S./HK session pairs;
+- sign agreement 28/66 = 42.4%;
+- Pearson -0.136; Spearman -0.129.
+This does not explain the event-conditioned challenger.
+
+Fixed within-day pre-event placebo (-55 -> -25 minutes relative to each source clock):
+- QQQ-minus-SPY all: event 10/12 vs placebo 5/12;
+- QQQ-minus-SPY clean: event 6/7 vs placebo 2/7;
+- clean placebo Pearson/Spearman -0.460 / -0.429 versus event +0.681 / +0.893.
+The placebo was selected post-outcome and is robustness only.
+
+Cross-family source recovery:
+- no M2 wires.v1 file is materialized at the incumbent Brain path ladder;
+- committed nightly macro-news history begins 2026-06-20;
+- one snapshot/day through 2026-08-25 yielded no clean non-Iran geopolitical exact-clock candidate
+  under the bounded Russia/Ukraine, Israel/Gaza, Taiwan military, Red Sea/Houthi,
+  ceasefire/truce/shipping-security scan.
+Cross-family retrospective generalization is therefore SOURCE_GATED under existing owners.
+
+Exact-head code verification at `3974ac45...`:
+- minimal GitHub-byte package compile: PASS;
+- full three-suite research set: **37 passed** after including its frozen census fixture;
+- the earlier 34-pass/3-fail run was verifier packaging only (fixture omitted), not a branch failure.
+
+No prospective protocol geometry changed from these robustness checks.
