@@ -2621,6 +2621,8 @@ jobs:
       - "scripts/build_options_issue_desk.py"
       - "scripts/build_options_prophet.py"
       - "scripts/build_options_screener.py"
+      # Skylit R2 Stage 0 research analyzer (tests in options gap discipline).
+      - "scripts/research_skylit_r2_exposure_decomposition.py"
       - "scripts/build_options_signal_campaign.py"
       - "scripts/build_options_signal_episode.py"
       - "scripts/build_options_sparse_selector_prereg.py"
@@ -10672,6 +10674,9 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
+      # Skylit R2 Stage 0 is imported by tests/test_options_gap_discipline.py.
+      # Keep the exclusive options owner closed over the research analyzer.
+      - "scripts/research_skylit_r2_exposure_decomposition.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
