@@ -324,7 +324,62 @@ evidence without changing source authority:
 | Route or save not connected | Control does not claim a successful action | Negative action test; no fake toast/persistence |
 | Mobile / keyboard | Same task and return path, not shrunk desktop | Touch targets, focus order, Escape/back |
 
-## 7. Native and delivery gates
+## 7. Engineering mapping to the incumbent Terminal and Macro owners
+
+This contract does not authorize a second route or a replacement workspace. The current
+production-shaped entry already exists:
+
+- `/discover?tab=sectors` is owned by `DiscoverWorkspace`; keep it as the Sector Central entry.
+- `SectorIntelligenceWorkspace` is the incumbent selected-object workspace and already owns
+  the Overview / Companies / Signals / Drivers / History state, source overlay, company
+  comparison and URL/back behavior. Extend/refactor this component; do not mount a second
+  Sector dashboard beside it.
+- Preserve the current wire value `sectorView=intelligence` for Overview compatibility unless
+  a separately proven migration requires a rename. Display copy can remain `Overview`.
+
+Add the outer Sector-Central job state **inside** the existing `tab=sectors` URL namespace,
+not through another Discover top-level tab. A bounded state grammar is:
+
+- `sectorJob=rotation|discover|breadth`;
+- `sectorRep=heatmap|bubbles|matrix|table` when `sectorJob=discover`;
+- the existing `sectorView`, `sector`, `group`, `sectorCompany`, `sectorQuery`, `sectorSort`,
+  `sectorExpanded`, `sectorTheme` and contextual `sectorSources=1` remain selected-object
+  depth/context state.
+
+Back/Forward must restore both levels. Opening selected-object depth from a Rotation/Discover/
+Breadth mark must retain the originating job, representation, filters and selected object so
+closing/back returns to the same research context.
+
+### Existing data-owner mapping
+
+| Product job | Existing owner / current BFF | Implementation boundary |
+|---|---|---|
+| Overview / Companies / current Signals | `sector_central.json` + `subsector_confluence.json` through the current `sector-intelligence` BFF | Keep the current exact-envelope guard, auth/no-store policy and owner clocks. Fix population completeness; do not loosen envelopes for old fixtures. |
+| Market breadth — first version | `sector_central.json` already carries market context and per-sector `heat_1D`, `heat_1M`, `heat_YTD`, `adv`, `dec`, `breadth_pct`; selected-sector concentration can use current `sp500_heatmap.json` BFF feed | Render existing owner facts. Do not derive a new breadth score or invent ETF-flow rows not bound to an owner. |
+| Rotation | Existing Macro `site/marketdata/subsector_rotation.json` owns `rs_ratio`, `rs_mom`, `accel`, `quadrant`, paths, turn states and the context-only track record | Do not rebuild rotation coordinates in Terminal. Add a read-only BFF projection only after the existing rights/use owner accepts the intended Terminal display. |
+| Discover — selected-sector Industry × Cap | Existing `sp500_heatmap.json` BFF feed supplies ticker, exact sector label, industry, market cap and performance together | Build a pure presentation projection over the exact owner population. `Technology` stays 79 names; never alias the separate `Information Technology` row. |
+| Discover — source-local Themes / Bubbles | Existing Macro `site/marketdata/themes_heatmap.json` contains the 40-family / 268-subtheme source-local plane | Paper/internal research may use it now. New Terminal display waits for the existing Finviz-theme rights/use gate; do not direct-fetch around the BFF. |
+| Discover — broad Sector × Size | Existing S&P500/400/600 breadth membership + close-matrix owners provide the internal source plane | No public/customer projection exists yet for the combined per-name mid/small data. Extend an existing publisher/consumer boundary first; do not add a browser route to internal files. |
+| Evidence / durability | Existing Macro #7976 candidate owns named revisions, earnings, leadership, fragility and valuation research legs | Consume only after that owner exposes an accepted projection/maturity. Keep clocks and legs separate; no fused score. |
+| Saved view / monitor | Existing canonical Terminal saved-state, watchlist and alert owners | Deliberately extend/bind those owners; never create Sector-local persistence. |
+
+### Reuse versus non-reuse
+
+Reuse the existing AppShell, `/discover` composer, `MobileSheet`, language/tokens, keyboard/
+focus patterns, source-overlay controller and authenticated BFF discipline. Avoid another
+modal/sheet manager, route owner, source cache or saved-state service.
+
+Do **not** embed the existing global `HeatmapView` as Sector Central's Discover surface. That
+component uses the Terminal manifest + flow index, a static interim sector map, a liquidity-
+capped render universe and different 1D/flow semantics. It remains the separate global
+`Discover › Heatmap` product. Reusing its visual interaction ideas or genuinely generic
+primitives is fine only when the Sector owner population and semantics remain unchanged.
+
+New Sector visual components should therefore be pure presenters over typed owner DTOs/read-
+only projections in the existing Sector module. If an owner field is unavailable, the
+presenter renders the shared unavailable/list fallback rather than computing a substitute.
+
+## 8. Native and delivery gates
 
 There is one designer per active Paper file. Current observation found other live
 same-file modifiers; the per-call bridge mutex and page-disjointness are not a lease.
