@@ -1,20 +1,20 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-09-25",
-  "generated_utc": "2026-09-25T09:16:13Z",
+  "as_of": "2026-09-26",
+  "generated_utc": "2026-09-26T10:08:18Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 317,
     "by_state": {
       "overdue": 70,
-      "due": 10,
+      "due": 13,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 233
+      "accruing": 230
     },
     "n_acknowledged": 0,
     "top_due": {
@@ -22,7 +22,7 @@
       "due_at": "2026-06-22",
       "owner_program": "qualitative-intelligence"
     },
-    "morning_line": "80 due/overdue, 1 missing, 233 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
+    "morning_line": "83 due/overdue, 1 missing, 230 accruing, 1 stale, 2 blocked. Top due: qledger:placebo."
   },
   "rows": [
     {
@@ -133,8 +133,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 4030,
-        "n_past_check_by": 3622
+        "n_open": 4086,
+        "n_past_check_by": 3632
       },
       "allowed_actions": [
         "inspect",
@@ -181,8 +181,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 4030,
-        "n_past_check_by": 3622
+        "n_open": 4086,
+        "n_past_check_by": 3632
       },
       "allowed_actions": [
         "inspect",
@@ -229,8 +229,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 39532,
-        "n_past_check_by": 28580
+        "n_open": 40870,
+        "n_past_check_by": 29055
       },
       "allowed_actions": [
         "inspect",
@@ -277,8 +277,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 39532,
-        "n_past_check_by": 28580
+        "n_open": 40870,
+        "n_past_check_by": 29055
       },
       "allowed_actions": [
         "inspect",
@@ -417,7 +417,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 197,
+        "n_open": 202,
         "n_past_check_by": 197
       },
       "allowed_actions": [
@@ -465,8 +465,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 5274,
-        "n_past_check_by": 3998
+        "n_open": 5416,
+        "n_past_check_by": 4028
       },
       "allowed_actions": [
         "inspect",
@@ -577,8 +577,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 1516,
-        "n_past_check_by": 592
+        "n_open": 1564,
+        "n_past_check_by": 598
       },
       "allowed_actions": [
         "inspect",
@@ -609,7 +609,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 349,
+        "n_open": 353,
         "n_past_check_by": 336
       },
       "allowed_actions": [
@@ -1059,8 +1059,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 19,
-        "n_past_check_by": 6
+        "n_open": 20,
+        "n_past_check_by": 7
       },
       "allowed_actions": [
         "inspect",
@@ -2383,7 +2383,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 13602,
-        "n_past_check_by": 1886
+        "n_past_check_by": 2216
       },
       "allowed_actions": [
         "inspect",
@@ -2628,13 +2628,109 @@
       "packet": null
     },
     {
+      "clock_id": "experiments:picklab-us-plab_lh_compounder",
+      "source_system": "experiments",
+      "subject_id": "picklab-us-plab_lh_compounder",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-26",
+      "as_of": "2026-06-15",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-us-plab_lh_edge_durability",
+      "source_system": "experiments",
+      "subject_id": "picklab-us-plab_lh_edge_durability",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-26",
+      "as_of": "2026-06-15",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
+      "clock_id": "experiments:picklab-us-plab_lh_washout_survivor",
+      "source_system": "experiments",
+      "subject_id": "picklab-us-plab_lh_washout_survivor",
+      "subject_type": "track_record",
+      "owner_program": null,
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-26",
+      "as_of": "2026-06-15",
+      "state": "due",
+      "date_state": "due",
+      "readiness": {
+        "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
+        "cadence": "daily",
+        "status": "accruing",
+        "floor": "undeclared"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
       "clock_id": "rule_experiments:disp_gate_1",
       "source_system": "rule_experiments",
       "subject_id": "disp_gate_1",
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-25",
+      "due_at": "2026-09-26",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2666,7 +2762,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-25",
+      "due_at": "2026-09-26",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2698,7 +2794,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-25",
+      "due_at": "2026-09-26",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2730,7 +2826,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-25",
+      "due_at": "2026-09-26",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -2801,12 +2897,9 @@
       "readiness": {
         "as_of": "2026-09-01",
         "stale_chips": [
-          "market",
           "reliability",
           "contradictions",
           "bottom_sensors",
-          "cortex",
-          "claim_reliability",
           "government_revenue"
         ]
       },
@@ -2890,8 +2983,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 109538,
-        "n_with_falsifier": 1009,
+        "n_claims": 112535,
+        "n_with_falsifier": 1038,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
@@ -2907,99 +3000,6 @@
       "evidence_refs": [
         "data/qledger/claims.jsonl"
       ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-us-plab_lh_compounder",
-      "source_system": "experiments",
-      "subject_id": "picklab-us-plab_lh_compounder",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-26",
-      "as_of": "2026-06-15",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-us-plab_lh_edge_durability",
-      "source_system": "experiments",
-      "subject_id": "picklab-us-plab_lh_edge_durability",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-26",
-      "as_of": "2026-06-15",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "experiments:picklab-us-plab_lh_washout_survivor",
-      "source_system": "experiments",
-      "subject_id": "picklab-us-plab_lh_washout_survivor",
-      "subject_type": "track_record",
-      "owner_program": null,
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-26",
-      "as_of": "2026-06-15",
-      "state": "accruing",
-      "date_state": "accruing",
-      "readiness": {
-        "maturation": "PL-R4: first SCOREABLE read at refire_lockout_sessions=63d from first fires (entry books need >=21 matured obs; long-hold >=10). Ruler: 126d_252d_sector_relative_spy_excess_descriptive. SA-R5: replay may authorize shadow experiments at Tier-0; promotion requires pre-registered gauntlet (Tier-2).",
-        "cadence": "daily",
-        "status": "accruing"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [],
       "regenerate_cmd": null,
       "acknowledged": false,
       "review": null,
@@ -9716,7 +9716,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 99,
+        "n_open": 104,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9748,7 +9748,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 42,
+        "n_open": 46,
         "n_past_check_by": 0
       },
       "allowed_actions": [

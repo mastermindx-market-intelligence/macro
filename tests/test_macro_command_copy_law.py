@@ -315,6 +315,30 @@ def test_all_fifteen_built_pages_are_clean_outside_details(tmp_path_factory) -> 
     assert dirty == [], dirty
 
 
+@pytest.mark.parametrize(("token", "context", "headline"), (
+    ("WAIT_FOR_SOURCES", {"state": "STALE_SOURCE"}, {}),
+    ("TREAT_AS_UNSETTLED", {"state": "CURRENT", "contradiction": {"kind_raw": "k"}}, {}),
+    ("WATCH_BOUNDARY", {"state": "CURRENT"},
+     {"nearest_boundary": {"distance_present": True, "axis_label": "Liquidity"}}),
+    ("WATCH_ONLY", {"state": "CURRENT"}, {}),
+))
+def test_every_next_action_branch_is_clean_whatever_state_the_data_is_in(
+        token: str, context: dict, headline: dict) -> None:
+    """The page test above only sees the branch today's snapshot selects.
+
+    Its next-action copy sits in the reading path. On 2026-09-25 a stale
+    liquidity source selected WAIT_FOR_SOURCES and exposed "accepted print",
+    which had been banned all along, and the red hit every full-suite PR.
+    WATCH_BOUNDARY carried "axis" the same way. Checking each branch's text
+    here keeps that verdict from depending on the nightly data.
+    """
+    from lib import macro_suite_view
+    action = macro_suite_view._next_action(context, headline)
+    assert action["token"] == token
+    for lang in ("en", "zh"):
+        assert guard.find_violations(f"<p>{action['text'][lang]}</p>") == [], (token, lang)
+
+
 def test_built_hub_has_exactly_one_analyst_control_and_zero_endpoint_literals(
         built_hub: str) -> None:
     import re
