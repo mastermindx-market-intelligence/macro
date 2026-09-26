@@ -3172,10 +3172,18 @@ def _prepare_provided_actions(
             env=git_env,
             check=True,
         )
-        return
     except subprocess.CalledProcessError:
         print(
             "::warning title=run-ci-pack::exact tested-tree deepen failed; "
+            "retrying legacy all-branches deepen",
+            flush=True,
+        )
+    else:
+        shallow = _git_cmd(root, git_env, "rev-parse", "--is-shallow-repository")
+        if shallow.returncode == 0 and (shallow.stdout or "").strip().lower() == "false":
+            return
+        print(
+            "::warning title=run-ci-pack::exact tested-tree deepen remained shallow; "
             "retrying legacy all-branches deepen",
             flush=True,
         )
