@@ -94,3 +94,46 @@ is not permission to bypass release. The live R2 source denial remains frozen.
 Mastermind Executive read preflight now returns 401 / manual reauthentication
 required; no request was submitted, and no alternate credential or dispatcher
 was used. Authentication recovery is distinct from a Pro/Extra High switch.
+
+
+## R7 — ticker News display (2026-09-26, same carrier)
+
+Current Chairman explicitly directs operation without the incomplete Executive plugin.
+No Executive authentication is required for this source-only continuation. Native Codex review
+was attempted once in the existing ChatGPT realm; routing returned401, process exited1 and no
+review was produced. No retry/provider switch, independent approval or worker START is claimed.
+
+Bounded implementation: `lib/news_guidance_view.py` formats only the existing public comparator
+output; `scripts/build_ticker_pages.py` consumes that view from its already-loaded News record;
+`templates/ticker.html.j2` adds native details inside its EXISTING News section. No new source,
+identity join, history, publisher, HTTP route, model or ranking. Default input absence adds no
+panel and leaves existing headline/stance values unchanged. No #7591 mobile News mutation.
+
+The presenter currently understands vehicle-delivery counts and revenue-growth percentages.
+Unknown measurement semantics are visibly unavailable; it never invents a currency scale.
+Values remain producer-supplied decimal strings, including relative percentages and percentage
+points. Source-correction and missing-prior states stay explicit. Four comparisons are shown;
+unsupported/omitted counts are disclosed. Original disclosure dates and calculation time remain
+distinct. Public rendering does not leak raw source locators and preserves bilingual escaping.
+
+Execution and proof:
+- New tests first:30 RED; implementation30 GREEN. Three glance/singular-unit tests then RED and
+  repaired. Guidance-only/no-headline case RED and repaired. Final display suite37 cases.
+- Final display + existing comparator/Financial News/shared-primitives suites:231 PASS.
+- Combined with unchanged#7955 and#7966 sources:339 PASS; shared CI three-way merge clean.
+- Wider ticker suite in selected-source snapshot:19 FAIL/109 PASS/1 SKIP on UNCHANGED original
+  builder/template, exactly the same19 failures as the changed candidate. Missing unrelated
+  index/Pressure Watch/JS assets in this snapshot are not product fixes or waived CI.
+- Existing earnings-release-identity code gate runs the new display suite; its minimal install
+  line gains jinja2. No new CI job or runner.
+- Real Chrome/Puppeteer fixture matrix32 cases, both themes/languages and390/1440 widths:
+  keyboard Enter/Space, correct locale visibility and within-panel layout passed. Canonical
+  viewport rerun uses390x844/1440x900 and preserves REST plus opened screenshots.
+- Existing canonical capture emitter produced mastermind.p0_evidence.v2 through its PageDriver
+  seam from recorded REAL browser bytes. Existing visual-evidence gate PASS. Design-system
+  enforce-added PASS with0 new blockers. No invented parallel evidence schema or palette.
+
+Evidence: `mockups/evidence/news-guidance-20260926/EVIDENCE.yml` and manifest/PNG siblings.
+No live source pairing, independent review, deployment or product completion is asserted.
+Keep DRAFT/HOLD-FOR-SOL, no automatic merge. Next accepted source input must still come from the
+existing Company Intelligence owner; the previously denied source endpoint remains frozen.

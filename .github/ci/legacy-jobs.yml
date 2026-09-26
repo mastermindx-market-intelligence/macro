@@ -15296,7 +15296,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jinja2
       - name: EDGAR filing identity join + release binding (Wave 1B)
         run: >-
           python -m pytest
@@ -15306,7 +15306,7 @@ jobs:
           tests/test_marketing_edgar_earnings_wire.py -q -rs
 
       - name: owner-bound guidance comparison and News projection
-        run: python -m pytest tests/test_news_guidance_comparison.py -q
+        run: python -m pytest tests/test_news_guidance_comparison.py tests/test_news_guidance_display.py -q
   market-memory-contract:
     # Public-safe temporal-context and product-shell contract. Private captures,
     # credentials, and provider responses remain absent; the option availability
