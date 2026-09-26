@@ -81,6 +81,11 @@ class HumanFirstDesignGuidanceTests(unittest.TestCase):
         self.assertIn("must **not** write a default", text)
         self.assertIn("Keep `SectorIntelligenceWorkspace` as the single mounted root", text)
         self.assertIn("Fetch only the owner feeds required by the active job/detail surface", text)
+        self.assertIn("`rotation` → `/marketdata/subsector_rotation.json`", text)
+        self.assertIn("`themeMap` → `/marketdata/themes_heatmap.json`", text)
+        self.assertIn("production code should **not add the feed keys at all**", text)
+        self.assertIn("Terminal fetch time", text)
+        self.assertIn("Do not expand today's `SECTOR_FEEDS` eager loop", text)
     def test_existing_cross_model_entrypoints_keep_doctrine_link(self):
         for path in ("AGENTS.md", "CLAUDE.md"):
             with self.subTest(path=path):
