@@ -158,3 +158,63 @@ def test_ai_feed_sentiment_and_importance_variants():
                            "publishDate": "2026-07-22T00:00:00Z"}, _NOW)
     assert h["ai_sentiment"] == "neg"
     assert h["ai_importance"] == 40.0
+
+
+# qbus.novelty_z is an attention-volume anomaly, NOT factual story novelty.
+# Quiet subjects and invalid observations must not receive burst credit.
+import pytest
+
+
+@pytest.mark.parametrize("z", [-100.0, -3.0, -0.1, "-3", 0.0])
+def test_rank_nonpositive_attention_never_lifts(z):
+    base = {"quality": 60, "seendate": _iso(0)}
+    assert nc.rank_score({**base, "novelty_z": z}, _NOW) == nc.rank_score(base, _NOW)
+
+
+@pytest.mark.parametrize("z", [float("nan"), float("inf"), -float("inf"),
+                              "NaN", "Infinity", "-Infinity", True, False,
+                              None, "not-a-number", {}, []])
+def test_rank_invalid_attention_is_neutral(z):
+    base = {"quality": 60, "seendate": _iso(0)}
+    assert nc.rank_score({**base, "novelty_z": z}, _NOW) == nc.rank_score(base, _NOW)
+
+
+def test_rank_attention_numeric_overflow_is_neutral():
+    base = {"quality": 60, "seendate": _iso(0)}
+    assert nc.rank_score({**base, "novelty_z": 10 ** 10000}, _NOW) == nc.rank_score(base, _NOW)
+
+
+@pytest.mark.parametrize("z,expected", [(0, 33.6), (0.75, 37.6), (1.5, 41.6),
+                                       (3, 49.6), (9, 49.6), ("1.5", 41.6)])
+def test_rank_positive_attention_keeps_existing_scale(z, expected):
+    assert nc.rank_score({"quality": 60, "seendate": _iso(0),
+                          "novelty_z": z}, _NOW) == expected
+
+
+def test_rank_preserves_raw_negative_attention_for_diagnostics():
+    headline = {"quality": 60, "seendate": _iso(0), "novelty_z": -3.0}
+    original = dict(headline)
+    nc.rank_score(headline, _NOW)
+    assert headline == original
+
+
+def test_build_news_enrich_orders_burst_above_quiet_without_llm(monkeypatch):
+    from scripts import build_news
+    from engine import news_llm
+
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return _NOW if tz is None else _NOW.astimezone(tz)
+
+    monkeypatch.setattr(build_news, "datetime", FrozenDateTime)
+    monkeypatch.setattr(news_llm, "annotate", lambda items: None)
+    monkeypatch.setattr(news_llm, "provider_label", lambda: "")
+    common = {"quality": 60, "seendate": _iso(0), "domain": "reuters.com"}
+    rows = [{**common, "title": "Quiet subject", "novelty_z": -3.0},
+            {**common, "title": "Genuine burst", "novelty_z": 3.0},
+            {**common, "title": "Higher quality fact", "quality": 65}]
+    assert build_news._enrich([rows]) == ""
+    assert [row["title"] for row in rows] == [
+        "Genuine burst", "Higher quality fact", "Quiet subject"]
+    assert [row["rank_score"] for row in rows] == [49.6, 36.4, 33.6]
