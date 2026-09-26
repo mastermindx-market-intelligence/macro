@@ -34,6 +34,17 @@ WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
 FENCES = ROOT / ".github" / "workflows" / "fences.yml"
 
+# A `ci-trigger-closure: data` marker on a path in this file flags a NAME that a test
+# hands to the planner: a select_jobs() diff, a closure-membership assert, a fake
+# manifest's paths. The test never reads that file itself, so
+# check_ci_trigger_closure.py, which gates direct reads only, must not demand it
+# among ci-control-plane-contracts' paths. The planner is another matter. A test
+# that runs it over the real tree (infer_job_scopes on MANIFEST,
+# suite_dependency_closure on a real suite) parses every suite and import chain it
+# reaches, so its verdict depends on the whole tree, and no exclusive paths list
+# can name the whole tree. The job's note in .github/ci/legacy-jobs.yml says where
+# that residual is caught.
+
 SPEC = importlib.util.spec_from_file_location(
     "run_ci_pack", ROOT / "scripts" / "run_ci_pack.py"
 )
@@ -735,7 +746,7 @@ def test_selection_fails_safe_toward_running_everything() -> None:
     # 2. a global invalidator can change what ANY job means
     for invalidator in ("scripts/run_ci_pack.py", "tests/conftest.py",
                         "requirements.txt", "worker/requirements-dev.txt",
-                        "config/dag.yml", "config/synapse.yml",
+                        "config/dag.yml", "config/synapse.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
                         ".github/ci/legacy-jobs.yml"):
         selected, reason = PACK.select_jobs(jobs, [invalidator])
         assert len(selected) == len(jobs), f"{invalidator} must force a full run"
@@ -798,26 +809,26 @@ def test_real_manifest_has_non_vacuous_derived_scopes() -> None:
     assert "synapse-read-gate" in scoped
     assert "falsifier-tripwires" in scoped
     assert "tests/test_falsifier_tripwires.py" in scoped["falsifier-tripwires"]
-    assert "engine/falsifier_tripwires.py" in scoped["falsifier-tripwires"]
-    assert "lib/store.py" in scoped["falsifier-tripwires"]
-    assert "lib/config.py" in scoped["falsifier-tripwires"]
+    assert "engine/falsifier_tripwires.py" in scoped["falsifier-tripwires"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    assert "lib/store.py" in scoped["falsifier-tripwires"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    assert "lib/config.py" in scoped["falsifier-tripwires"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     assert "unrun-dark-guards" in scoped
-    assert ".claude/hooks/gh_quota_guard.py" in scoped["unrun-dark-guards"]
+    assert ".claude/hooks/gh_quota_guard.py" in scoped["unrun-dark-guards"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
 
 
 def test_derived_closure_follows_relative_first_party_imports() -> None:
     """Package-local imports are ownership edges, not optional implementation detail."""
     closure = suite_dependency_closure("tests/test_admin_modules.py")
-    assert "admin/ai_cost.py" in closure.files
-    assert "admin/config_store.py" in closure.files
-    assert "admin/flags.py" in closure.files
-    assert "admin/paths.py" in closure.files
+    assert "admin/ai_cost.py" in closure.files  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    assert "admin/config_store.py" in closure.files  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    assert "admin/flags.py" in closure.files  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    assert "admin/paths.py" in closure.files  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
 
     materializer = suite_dependency_closure(
         "tests/test_capital_structure_share_count_materializer.py"
     )
-    assert "engine/capital_structure/share_count_materializer.py" in materializer.files
-    assert "engine/capital_structure/share_count_truth.py" in materializer.files
+    assert "engine/capital_structure/share_count_materializer.py" in materializer.files  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    assert "engine/capital_structure/share_count_truth.py" in materializer.files  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
 
 
 def _declared_scan_dirs(rel: str) -> tuple[str, ...]:
@@ -883,8 +894,8 @@ def test_whole_tree_glob_job_owns_every_scanned_code_root() -> None:
     # And the probe that pins non-vacuity: an existing file OUTSIDE the scanner
     # suite's dependency closure, i.e. one the narrowed scope would have lost.
     closure = suite_dependency_closure("tests/test_all_exports_resolve.py").files
-    assert "engine/market_state.py" not in closure
-    selected, reason = PACK.select_jobs(jobs, ["engine/market_state.py"])
+    assert "engine/market_state.py" not in closure  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    selected, reason = PACK.select_jobs(jobs, ["engine/market_state.py"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     assert export_guard in selected, reason
 
 
@@ -1321,7 +1332,7 @@ def test_startability_accepts_only_provable_narrowings_of_a_trigger() -> None:
     `data/smart_money/**` each match a strict subset of `data/**`, so an edit that
     reaches the job always starts the run.  A tree no trigger covers still fails.
     """
-    triggers = ("data/**", "engine/**", "*", "config/dag.yml")
+    triggers = ("data/**", "engine/**", "*", "config/dag.yml")  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     for covered in (
         "data/**",                      # literal member
         "data/**/*.parquet",            # suffix-narrowed child of data/**
@@ -1359,14 +1370,14 @@ def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs() -> None
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     cases = {
         "govrev": [
-            "research/GOVERNMENT_REVENUE_FORESIGHT_HANDOFF_2026-08-09.md",
-            "scripts/build_government_revenue_candidates.py",
+            "research/GOVERNMENT_REVENUE_FORESIGHT_HANDOFF_2026-08-09.md",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "scripts/build_government_revenue_candidates.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
             "tests/test_government_revenue_candidate_projection.py",
         ],
         "tripwires": [
             "data/cycle_ontology/falsifiers.json",
             "data/cycle_ontology/tripwire_state.json",
-            "engine/falsifier_tripwires.py",
+            "engine/falsifier_tripwires.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
             "tests/test_falsifier_tripwires.py",
         ],
     }
@@ -1445,16 +1456,16 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     assert code_job["gate"] == "code"
     assert code_job["scope"] == "exclusive"
     required_paths = {
-        "templates/hk.html.j2",
-        "templates/canada.html.j2",
-        "templates/stock-dashboard.css",
-        "templates/dashboard-icons.js",
-        "site/hk-stock-v36.js",
-        "site/canada-stock-v36.js",
-        "site/stock-dashboard.css",
-        "site/dashboard-icons.js",
-        "scripts/render_stock_dashboard_fixture.py",
-        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "templates/hk.html.j2",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "templates/canada.html.j2",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "templates/stock-dashboard.css",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "templates/dashboard-icons.js",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "site/hk-stock-v36.js",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "site/canada-stock-v36.js",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "site/stock-dashboard.css",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "site/dashboard-icons.js",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "scripts/render_stock_dashboard_fixture.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
         "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json",
         "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json",
@@ -1488,9 +1499,9 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed in (
         [code_suite],
-        ["templates/hk.html.j2"],
-        ["site/canada-stock-v36.js"],
-        ["scripts/render_stock_dashboard_fixture.py"],
+        ["templates/hk.html.j2"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        ["site/canada-stock-v36.js"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        ["scripts/render_stock_dashboard_fixture.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json"],
@@ -1517,7 +1528,7 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     the source job.
     """
     manifest = _yaml(MANIFEST)
-    checker = "scripts/check_validated_claims.py"
+    checker = "scripts/check_validated_claims.py"  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     allowlist = "data/regime/validated_claims_allowlist.json"
 
     source_job = manifest["jobs"]["validated-claims-source"]
@@ -1545,11 +1556,11 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed, owners in (
-        (["templates/dashboard.html.j2"], {"validated-claims-source"}),
-        (["engine/flow_signing.py"], {"validated-claims-source"}),
-        (["lib/pages.py"], {"validated-claims-source"}),
-        (["scripts/build_spvector.py"], {"validated-claims-source"}),
-        (["scripts/render_china_fast.py"], {"validated-claims-source"}),
+        (["templates/dashboard.html.j2"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        (["engine/flow_signing.py"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        (["lib/pages.py"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        (["scripts/build_spvector.py"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        (["scripts/render_china_fast.py"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ([checker], {"validated-claims-source", "validated-claims-contract"}),
         ([allowlist], {"validated-claims-source", "validated-claims-contract"}),
         (["tests/test_validated_claims_source_scope.py"], {"validated-claims-contract"}),
@@ -1557,8 +1568,11 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
         selected, reason = PACK.select_jobs(code_jobs, changed)
         assert owners <= {job.job_id for job in selected}, (changed, reason)
         assert "unowned path" not in reason, reason
-    for changed in (["scripts/check_design_system.py"], ["scripts/capture_page_evidence.py"],
-                    ["scripts/research/build_delivery_waterfall.py"]):
+    for changed in (
+        ["scripts/check_design_system.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        ["scripts/capture_page_evidence.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        ["scripts/research/build_delivery_waterfall.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ):
         selected, reason = PACK.select_jobs(code_jobs, changed)
         assert "validated-claims-source" not in {job.job_id for job in selected}, (
             changed, reason)
@@ -1574,20 +1588,20 @@ def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     selected, reason = PACK.select_jobs(
-        jobs, [".claude/hooks/gh_quota_guard.py"]
+        jobs, [".claude/hooks/gh_quota_guard.py"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     )
     assert "full suite" not in reason, reason
     assert len(selected) < len(jobs) * 4 // 5, (len(selected), len(jobs), reason)
     assert any(job.job_id == "unrun-dark-guards" for job in selected)
     mixed, mixed_reason = PACK.select_jobs(
         jobs,
-        [".claude/hooks/gh_quota_guard.py", "engine/spine.py"],
+        [".claude/hooks/gh_quota_guard.py", "engine/spine.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     )
     assert "full suite" not in mixed_reason, mixed_reason
     assert len(mixed) < len(jobs), mixed_reason
 
 
-@pytest.mark.parametrize("graph", ["config/dag.yml", "config/synapse.yml"])
+@pytest.mark.parametrize("graph", ["config/dag.yml", "config/synapse.yml"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
 def test_graph_metadata_is_a_global_invalidator(graph: str) -> None:
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     selected, reason = PACK.select_jobs(jobs, [graph])
@@ -2859,7 +2873,7 @@ def test_proven_manifest_job_delta_forces_changed_job_without_full_suite(
     ]
     plan = PACK.build_plan(
         jobs,
-        [PACK.LEGACY_MANIFEST_PATH, "engine/market_state.py"],
+        [PACK.LEGACY_MANIFEST_PATH, "engine/market_state.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         changed_from="a" * 40,
         scope_mode="active",
         pack_count=12,
@@ -2898,7 +2912,7 @@ def test_global_invalidator_widens_the_plan_without_inferring_scopes(
     ]
     plan = PACK.build_plan(
         jobs,
-        ["scripts/run_ci_pack.py", "engine/market_state.py"],
+        ["scripts/run_ci_pack.py", "engine/market_state.py"],  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         changed_from="base-sha",
         scope_mode="active",
         pack_count=12,
@@ -3590,18 +3604,18 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
     triggers = workflow.get("on") or workflow.get(True)
     paths = set(triggers["pull_request"]["paths"])
     required_paths = {
-        "app/company_intelligence.py",
-        "app/earnings.py",
+        "app/company_intelligence.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "app/earnings.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "tests/test_company_intelligence_api.py",
-        "site/assets/js/company-intelligence-dossier.js",
-        "templates/ticker.html.j2",
-        "engine/earnings_narrative/public_wire.py",
-        "engine/earnings_narrative/context_packets.py",
-        "engine/earnings_narrative/private_publication.py",
-        "engine/neuralweb/earnings_context_reader.py",
-        "engine/prophet_bridge.py",
-        "scripts/build_earnings_public_wire.py",
-        "scripts/publish_earnings_private_store.py",
+        "site/assets/js/company-intelligence-dossier.js",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "templates/ticker.html.j2",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "engine/earnings_narrative/public_wire.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "engine/earnings_narrative/context_packets.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "engine/earnings_narrative/private_publication.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "engine/neuralweb/earnings_context_reader.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "engine/prophet_bridge.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "scripts/build_earnings_public_wire.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "scripts/publish_earnings_private_store.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "templates/earnings_wire/**",
         "tests/test_earnings_public_wire.py",
         "tests/test_earnings_api.py",
@@ -3609,9 +3623,9 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
         "tests/test_prophet_bridge.py",
         "tests/test_earnings_worker_launchd.py",
         "tests/test_earnings_worker_terminal.py",
-        "ops/bootstrap_earnings_worker.sh",
-        "ops/launchd/com.mastermind.earnings-worker.plist",
-        "ops/launchd/run_earnings_worker.sh",
+        "ops/bootstrap_earnings_worker.sh",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "ops/launchd/com.mastermind.earnings-worker.plist",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "ops/launchd/run_earnings_worker.sh",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "tests/test_ticker_dossier_render_lane.py",
     }
     assert required_paths <= paths
@@ -3971,7 +3985,7 @@ def test_every_government_revenue_suite_is_named_by_a_run_step() -> None:
 
 
 _RUNTIME_SCHEMA_RE = re.compile(r'"([A-Za-z0-9_.]+\.schema\.json)"')
-_WORKSPACE = ROOT / "engine" / "government_revenue" / "workspace.py"
+_WORKSPACE = ROOT / "engine" / "government_revenue" / "workspace.py"  # ci-trigger-closure: data — text-scanned for schema names, not imported; declared in ci-control-plane-contracts paths
 
 
 def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> None:
@@ -4024,6 +4038,13 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-25: the CI control plane's own contracts (this suite included), moved
+    # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
+    # because its suites read most of the repository: inferred, the job would add
+    # one to every packing probe below. Its paths are the suites' import closure
+    # plus the files they read. The cover-their-own-import-closure test and
+    # check_ci_trigger_closure.py (both run in this job) keep that list honest.
+    "ci-control-plane-contracts",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
     # this file's own packing-ceiling probe: templates/index.html 132 jobs /
     # 5,810 weight > 5,800; the two code probes over their job ceilings too).
@@ -4360,42 +4381,42 @@ def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -
     """
     required = {
         "biocatalyst-history": (
-            "engine/path_risk_signals.py",
+            "engine/path_risk_signals.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
             "engine/stock_identity/__init__.py",
-            "engine/stock_identity/authority.py",
-            "engine/stock_identity/fingerprint.py",
-            "engine/stock_identity/plane.py",
-            "engine/us_candidate_episode.py",
+            "engine/stock_identity/authority.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/fingerprint.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/plane.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/us_candidate_episode.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ),
         "biocatalyst-serving": (
-            "engine/path_risk_signals.py",
+            "engine/path_risk_signals.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
             "engine/stock_identity/__init__.py",
-            "engine/stock_identity/authority.py",
-            "engine/stock_identity/fingerprint.py",
-            "engine/stock_identity/plane.py",
-            "engine/us_candidate_episode.py",
+            "engine/stock_identity/authority.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/fingerprint.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/plane.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/us_candidate_episode.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ),
         "defense-rail-laws": (
             "engine/stock_identity/__init__.py",
-            "engine/stock_identity/authority.py",
-            "engine/stock_identity/fingerprint.py",
-            "engine/stock_identity/plane.py",
+            "engine/stock_identity/authority.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/fingerprint.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/plane.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ),
         "flow-surface": (
-            "engine/path_risk_signals.py",
+            "engine/path_risk_signals.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
             "engine/stock_identity/__init__.py",
-            "engine/stock_identity/authority.py",
-            "engine/stock_identity/fingerprint.py",
-            "engine/stock_identity/plane.py",
-            "engine/us_candidate_episode.py",
+            "engine/stock_identity/authority.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/fingerprint.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/plane.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/us_candidate_episode.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ),
         "unrun-government-revenue-grader": (
-            "engine/path_risk_signals.py",
+            "engine/path_risk_signals.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
             "engine/stock_identity/__init__.py",
-            "engine/stock_identity/authority.py",
-            "engine/stock_identity/fingerprint.py",
-            "engine/stock_identity/plane.py",
-            "engine/us_candidate_episode.py",
+            "engine/stock_identity/authority.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/fingerprint.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/stock_identity/plane.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+            "engine/us_candidate_episode.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ),
     }
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
@@ -4420,10 +4441,10 @@ def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None
     job = jobs["unrun-picks-boards"]
 
     assert job.exclusive is True
-    assert "site/theme.css" in job.paths
-    selected, reason = PACK.select_jobs([job], ["site/theme.css"])
+    assert "site/theme.css" in job.paths  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    selected, reason = PACK.select_jobs([job], ["site/theme.css"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     assert [item.job_id for item in selected] == [job.job_id], reason
-    match = PACK._job_diff_match(job, ["site/theme.css"])
+    match = PACK._job_diff_match(job, ["site/theme.css"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     assert match and match[1] == "declared", match
 
 
@@ -4438,10 +4459,10 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
     curated = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)
                if job.exclusive}
     probes = [
-        "templates/index.html",
-        "site/theme.css",
+        "templates/index.html",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "site/theme.css",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "engine/prophet/plan_book.py",
-        "scripts/build_free_content.py",
+        "scripts/build_free_content.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ]
     owned_losses: list[str] = []
     for job_id, job in sorted(curated.items()):
@@ -4957,11 +4978,40 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     a curation candidate, left to its owner. An exclusive declaration for it
     would have to cover that closure (#8010's manifest comment: 538
     uncovered paths), which is why it has none.
+
+    2026-09-25: this test now runs on the PR code gate. Until today its host
+    job, ``workflow-yaml``, was ``gate: data``, and ci.yml's ci-pack runs
+    only ``gate: code`` jobs. That is how #8010's breach above merged green:
+    the breach was a function of the PR tree, but nothing that ran on the
+    PR measured it. The control plane's own contracts, this test included,
+    moved to ``ci-control-plane-contracts`` (``gate: code``, ``scope:
+    exclusive``, weight 1,400). Being exclusive, that job rides none of the
+    three probes. ``workflow-yaml`` became ``gate: code`` with what was left
+    (weight 438 -> 90), and ``engine-render-guards`` took the data-reading
+    half of its suites (860 -> 875). Both still ride all three probes, and
+    no job enters or leaves any of them. Re-measured, full manifest,
+    inference on, main 9f5fa770022 before -> after:
+
+        templates/index.html          134 jobs, 5,800 -> 5,467 weight
+        scripts/build_free_content.py 132 jobs, 5,585 -> 5,252 weight
+        engine/prophet/plan_book.py   127 jobs, 5,534 -> 5,201 weight
+
+    No ceiling moves. The job bounds are still full, so the rule above for
+    the next entrant stands. What changed is where a MANIFEST entrant reds.
+    Adding or re-scoping a job edits .github/ci/legacy-jobs.yml, which is
+    one of ci-control-plane-contracts' declared paths, so the #8010 shape
+    now reds its own PR, where it can still be curated, instead of main. A
+    probe can also drift with no manifest edit: an inferred scope widens as
+    the tree moves (build_free_content.py's +1 above). That PR touches
+    none of the job's paths, so it merges without running this test, and
+    the drift surfaces after merge, on integration-baseline.yml. That lane
+    runs this file on every source push to main and every 4 hours, and
+    merge-on-green pauses ordinary merges while it is red.
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 134, 5_800),
-        ("scripts/build_free_content.py", 132, 5_600),
+        ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         ("engine/prophet/plan_book.py", 127, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
@@ -4995,13 +5045,13 @@ def test_deliberately_unscoped_gates_stay_always_on() -> None:
     # no claim on engine internals; the other two walk trees that include
     # engine/**, so they ride all three.
     expected = {
-        "design-governance": ("templates/index.html",
-                              "scripts/build_free_content.py"),
-        "board-shadow-substrate": ("templates/index.html",
-                                   "scripts/build_free_content.py",
+        "design-governance": ("templates/index.html",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+                              "scripts/build_free_content.py"),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+        "board-shadow-substrate": ("templates/index.html",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+                                   "scripts/build_free_content.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
                                    "engine/prophet/plan_book.py"),
-        "reference-integrity": ("templates/index.html",
-                                "scripts/build_free_content.py",
+        "reference-integrity": ("templates/index.html",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+                                "scripts/build_free_content.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
                                 "engine/prophet/plan_book.py"),
     }
     problems: list[str] = []
@@ -5015,7 +5065,7 @@ def test_deliberately_unscoped_gates_stay_always_on() -> None:
                 f"{job_id}: gained scope:exclusive — deliberate always-on "
                 "breadth curated away; see the wave-8 note")
     selected_names = {}
-    for probe in ("templates/index.html", "scripts/build_free_content.py",
+    for probe in ("templates/index.html", "scripts/build_free_content.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
                   "engine/prophet/plan_book.py"):
         sel, _ = PACK.select_jobs(scoped_jobs, [probe])
         selected_names[probe] = {job.job_id for job in sel}
@@ -5039,7 +5089,7 @@ def test_inline_js_owns_the_rendered_tree_it_lints() -> None:
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
     inline_js = jobs["inline-js"]
     assert inline_js.exclusive
-    for probe in ("site/theme.css", "site/index.html", "templates/index.html"):
+    for probe in ("site/theme.css", "site/index.html", "templates/index.html"):  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         match = PACK._job_diff_match(inline_js, [probe])
         assert match and match[1] == "declared", (probe, match)
 
@@ -5127,7 +5177,7 @@ def _released_cpython_versions() -> set[tuple[int, int, int]]:
     exactly the thing under test, and a guard that dies the same way it is
     meant to detect proves nothing.
     """
-    source = (ROOT / "engine" / "capital_structure" / "document_terms.py").read_text()
+    source = (ROOT / "engine" / "capital_structure" / "document_terms.py").read_text()  # ci-trigger-closure: data — parsed, not imported (docstring above); declared in ci-control-plane-contracts paths
     tree = ast.parse(source)
     allowlist = None
     for node in ast.walk(tree):
@@ -5542,7 +5592,7 @@ P0B_JOB = "p0b-receipt-closure"
 P0B_GATE_NEEDLE = "check_p0b_receipt_closure.py --diff-file"
 # The exact pinned paths #6872 (merge ac61896da96c) changed without the receipts.
 P0B_6872_PINNED_MOVES = (
-    "templates/_navlinks.html.j2",
+    "templates/_navlinks.html.j2",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
 )
 
@@ -5676,7 +5726,7 @@ def test_p0b_receipt_closure_job_would_block_6872_diff_shape(
     pin_sets, refuse = guard.derive_pin_sets(ROOT)
     assert refuse is None, refuse
     changed = set(P0B_6872_PINNED_MOVES) | {
-        "templates/ontology.css", "site/ontology.html", "app/main.py",
+        "templates/ontology.css", "site/ontology.html", "app/main.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     }
     findings = guard.evaluate(changed, pin_sets)
     assert len(findings) >= 4, findings

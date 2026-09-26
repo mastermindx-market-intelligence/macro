@@ -8,11 +8,11 @@
     "Silver"
   ],
   "index": {
-    "ew": 1001.18,
-    "vw": 1303.12,
-    "chg_1m_pct": -2.8,
+    "ew": 997.82,
+    "vw": 1296.17,
+    "chg_1m_pct": -3.1,
     "ts_trend": "up",
-    "ts_momentum": 0.723,
+    "ts_momentum": 0.716,
     "mtf": {
       "grade": "TREND-FOLLOW",
       "headline": "Aligned uptrend across timeframes",
@@ -23,34 +23,34 @@
       "ladder_state": "TURN SIGNALED"
     },
     "shock_state": "normal",
-    "shock_z": -0.981,
+    "shock_z": -1.052,
     "velocity": {
-      "r5": 0.3,
-      "r20": -1.6,
-      "r60": 7.4,
-      "r252": 27.4,
-      "accel": -0.014,
-      "impulse": -0.573
+      "r5": -0.0,
+      "r20": -1.9,
+      "r60": 7.0,
+      "r252": 27.0,
+      "accel": -0.021,
+      "impulse": -0.682
     },
     "benchmarks": {
       "DBC": {
-        "last": 33.18,
-        "chg_1m_pct": 6.1
+        "last": 32.62,
+        "chg_1m_pct": 7.2
       },
       "GSG": {
-        "last": 36.48,
-        "chg_1m_pct": 7.7
+        "last": 35.89,
+        "chg_1m_pct": 9.4
       }
     }
   },
   "breadth": {
-    "n_members": 16,
+    "n_members": 17,
     "n_up_trend": 13,
-    "pct_up_trend": 0.812,
+    "pct_up_trend": 0.765,
     "n_bull_momentum": 6,
-    "n_low_risk": 2,
-    "trend_diversity": 0.571,
-    "breadth_pctile": 0.892
+    "n_low_risk": 4,
+    "trend_diversity": 0.575,
+    "breadth_pctile": 0.891
   },
   "confluence": {
     "asof": "2026-09-25",
@@ -106,20 +106,13 @@
         "class": "precious",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 23.8,
+        "bottom_score": 8.0,
         "top_score": 0.0,
         "capitulation_score": 0.0,
-        "turn_score": 62.5,
+        "turn_score": 16.7,
         "euphoria_score": 0.0,
         "rollover_score": 0.0,
         "bottom_fired": [
-          {
-            "code": "curl",
-            "label_en": "Momentum curl up",
-            "label_zh": "\u52a8\u91cf\u4e0a\u94a9",
-            "explain_en": "Short-term momentum has hooked higher after the wash.",
-            "explain_zh": "\u6d17\u76d8\u4e4b\u540e\uff0c\u77ed\u5468\u671f\u52a8\u91cf\u5df2\u7ecf\u4e0a\u94a9\u3002"
-          },
           {
             "code": "cycle_bottom",
             "label_en": "Cycle in trough/recovery",
@@ -129,7 +122,7 @@
           }
         ],
         "top_fired": [],
-        "n_bottom_applicable": 8,
+        "n_bottom_applicable": 9,
         "n_top_applicable": 8,
         "turn_developing": false,
         "basing": false,
@@ -141,10 +134,10 @@
         "class": "precious",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 23.8,
+        "bottom_score": 20.0,
         "top_score": 0.0,
         "capitulation_score": 0.0,
-        "turn_score": 62.5,
+        "turn_score": 41.7,
         "euphoria_score": 0.0,
         "rollover_score": 0.0,
         "bottom_fired": [
@@ -164,7 +157,7 @@
           }
         ],
         "top_fired": [],
-        "n_bottom_applicable": 8,
+        "n_bottom_applicable": 9,
         "n_top_applicable": 8,
         "turn_developing": false,
         "basing": false,
@@ -176,26 +169,19 @@
         "class": "precious",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 38.1,
+        "bottom_score": 19.0,
         "top_score": 0.0,
-        "capitulation_score": 0.0,
-        "turn_score": 100.0,
+        "capitulation_score": 15.4,
+        "turn_score": 25.0,
         "euphoria_score": 0.0,
         "rollover_score": 0.0,
         "bottom_fired": [
           {
-            "code": "curl",
-            "label_en": "Momentum curl up",
-            "label_zh": "\u52a8\u91cf\u4e0a\u94a9",
-            "explain_en": "Short-term momentum has hooked higher after the wash.",
-            "explain_zh": "\u6d17\u76d8\u4e4b\u540e\uff0c\u77ed\u5468\u671f\u52a8\u91cf\u5df2\u7ecf\u4e0a\u94a9\u3002"
-          },
-          {
-            "code": "armed",
-            "label_en": "Technical arm triggered",
-            "label_zh": "\u6280\u672f\u89e6\u53d1",
-            "explain_en": "The technical-arm detector just triggered on this member.",
-            "explain_zh": "\u8be5\u54c1\u79cd\u7684\u6280\u672f\u89e6\u53d1\u5668\u521a\u521a\u70b9\u4eae\u3002"
+            "code": "oversold_ltf",
+            "label_en": "Oversold short-term",
+            "label_zh": "\u77ed\u5468\u671f\u8d85\u5356",
+            "explain_en": "Short-term oscillators are deeply oversold on this snapshot.",
+            "explain_zh": "\u77ed\u5468\u671f\u632f\u8361\u6307\u6807\u5728\u672c\u5feb\u7167\u4e0a\u5904\u4e8e\u6df1\u5ea6\u8d85\u5356\u3002"
           },
           {
             "code": "cycle_bottom",
@@ -216,14 +202,14 @@
         "name": "copper",
         "label": "Copper",
         "class": "industrial",
-        "state": "Neutral",
+        "state": "Extended \u2014 late cycle",
         "null_reason": null,
         "bottom_score": 0.0,
-        "top_score": 27.3,
+        "top_score": 40.9,
         "capitulation_score": 0.0,
         "turn_score": 0.0,
         "euphoria_score": 30.8,
-        "rollover_score": 22.2,
+        "rollover_score": 55.6,
         "bottom_fired": [],
         "top_fired": [
           {
@@ -241,6 +227,13 @@
             "explain_zh": "\u5927\u578b\u6295\u673a\u8d44\u91d1\u5728\u671f\u8d27\u76d8\u4e0a\u62e5\u6324\u505a\u591a\u3002",
             "tip_en": "COT crowded long",
             "tip_zh": "COT\u5927\u5e45\u504f\u591a"
+          },
+          {
+            "code": "curl_dn",
+            "label_en": "Momentum rolling over",
+            "label_zh": "\u52a8\u91cf\u4e0b\u94a9",
+            "explain_en": "Short-term momentum has hooked lower after the run.",
+            "explain_zh": "\u4e0a\u6da8\u4e4b\u540e\uff0c\u77ed\u5468\u671f\u52a8\u91cf\u5df2\u7ecf\u4e0b\u94a9\u3002"
           },
           {
             "code": "cycle_top",
@@ -355,10 +348,10 @@
         "state": "Neutral",
         "null_reason": null,
         "bottom_score": 0.0,
-        "top_score": 11.1,
+        "top_score": 27.8,
         "capitulation_score": 0.0,
         "turn_score": 0.0,
-        "euphoria_score": 18.2,
+        "euphoria_score": 45.5,
         "rollover_score": 0.0,
         "bottom_fired": [],
         "top_fired": [
@@ -368,6 +361,13 @@
             "label_zh": "\u4e2d\u5468\u671f\u8d85\u4e70",
             "explain_en": "The slower oscillator is also overbought \u2014 the stretch has lasted.",
             "explain_zh": "\u66f4\u957f\u5468\u671f\u632f\u8361\u6307\u6807\u4e5f\u8d85\u4e70\u2014\u2014\u62c9\u4f38\u5df2\u7ecf\u6301\u7eed\u3002"
+          },
+          {
+            "code": "stretch",
+            "label_en": "Price stretched above 200-day",
+            "label_zh": "\u4ef7\u683c\u5927\u5e45\u504f\u79bb200\u65e5\u5747\u7ebf",
+            "explain_en": "Price is sitting far above its 200-day trend \u2014 late, not early.",
+            "explain_zh": "\u4ef7\u683c\u8fdc\u9ad8\u4e8e200\u65e5\u5747\u7ebf\u2014\u2014\u504f\u665a\uff0c\u4e0d\u662f\u504f\u65e9\u3002"
           }
         ],
         "n_bottom_applicable": 7,
@@ -426,22 +426,13 @@
         "class": "grain",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 28.6,
+        "bottom_score": 9.5,
         "top_score": 18.2,
-        "capitulation_score": 46.2,
+        "capitulation_score": 15.4,
         "turn_score": 0.0,
         "euphoria_score": 15.4,
         "rollover_score": 22.2,
         "bottom_fired": [
-          {
-            "code": "shock_bottom",
-            "label_en": "Washout from a shock outside this market",
-            "label_zh": "\u5916\u90e8\u629b\u538b\u7838\u51fa\u7684\u6d17\u76d8",
-            "explain_en": "A washout driven by a shock this market did not generate on its own.",
-            "explain_zh": "\u8fd9\u662f\u672c\u5e02\u573a\u81ea\u8eab\u9a71\u52a8\u89e3\u91ca\u4e0d\u4e86\u7684\u629b\u538b\u6d17\u76d8\u3002",
-            "tip_en": "Engine flag: exogenous washout",
-            "tip_zh": "\u5f15\u64ce\u6807\u8bb0\uff1a\u5916\u751f\u51b2\u51fb\u6d17\u76d8"
-          },
           {
             "code": "oversold_ltf",
             "label_en": "Oversold short-term",
@@ -512,7 +503,7 @@
             "explain_zh": "\u957f\u5468\u671f\u5904\u4e8e\u9876\u5cf0\u6216\u5f00\u59cb\u4e0b\u884c\u3002"
           }
         ],
-        "n_bottom_applicable": 9,
+        "n_bottom_applicable": 8,
         "n_top_applicable": 8,
         "turn_developing": false,
         "basing": false,
@@ -525,11 +516,11 @@
         "state": "Neutral",
         "null_reason": null,
         "bottom_score": 17.4,
-        "top_score": 25.0,
+        "top_score": 10.0,
         "capitulation_score": 30.8,
         "turn_score": 0.0,
         "euphoria_score": 15.4,
-        "rollover_score": 42.9,
+        "rollover_score": 0.0,
         "bottom_fired": [
           {
             "code": "oversold_htf",
@@ -555,13 +546,6 @@
             "label_zh": "\u77ed\u5468\u671f\u8d85\u4e70",
             "explain_en": "Short-term oscillators are stretched into overbought.",
             "explain_zh": "\u77ed\u5468\u671f\u632f\u8361\u6307\u6807\u5df2\u8fdb\u5165\u8d85\u4e70\u3002"
-          },
-          {
-            "code": "curl_dn",
-            "label_en": "Momentum rolling over",
-            "label_zh": "\u52a8\u91cf\u4e0b\u94a9",
-            "explain_en": "Short-term momentum has hooked lower after the run.",
-            "explain_zh": "\u4e0a\u6da8\u4e4b\u540e\uff0c\u77ed\u5468\u671f\u52a8\u91cf\u5df2\u7ecf\u4e0b\u94a9\u3002"
           }
         ],
         "n_bottom_applicable": 8,
@@ -620,21 +604,13 @@
         "class": "soft",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 13.0,
+        "bottom_score": 0.0,
         "top_score": 20.0,
         "capitulation_score": 0.0,
-        "turn_score": 30.0,
+        "turn_score": 0.0,
         "euphoria_score": 30.8,
         "rollover_score": 0.0,
-        "bottom_fired": [
-          {
-            "code": "curl",
-            "label_en": "Momentum curl up",
-            "label_zh": "\u52a8\u91cf\u4e0a\u94a9",
-            "explain_en": "Short-term momentum has hooked higher after the wash.",
-            "explain_zh": "\u6d17\u76d8\u4e4b\u540e\uff0c\u77ed\u5468\u671f\u52a8\u91cf\u5df2\u7ecf\u4e0a\u94a9\u3002"
-          }
-        ],
+        "bottom_fired": [],
         "top_fired": [
           {
             "code": "overbought_htf",
@@ -665,13 +641,22 @@
         "class": "soft",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 13.0,
+        "bottom_score": 21.7,
         "top_score": 0.0,
-        "capitulation_score": 0.0,
+        "capitulation_score": 15.4,
         "turn_score": 30.0,
         "euphoria_score": 0.0,
         "rollover_score": 0.0,
         "bottom_fired": [
+          {
+            "code": "cot_short",
+            "label_en": "Big speculators are crowded short",
+            "label_zh": "\u5927\u578b\u6295\u673a\u8005\u62e5\u6324\u505a\u7a7a",
+            "explain_en": "Large speculators are crowded on the short side of the futures book.",
+            "explain_zh": "\u5927\u578b\u6295\u673a\u8d44\u91d1\u5728\u671f\u8d27\u76d8\u4e0a\u62e5\u6324\u505a\u7a7a\u3002",
+            "tip_en": "COT crowded short",
+            "tip_zh": "COT\u5927\u5e45\u504f\u7a7a"
+          },
           {
             "code": "curl",
             "label_en": "Momentum curl up",
@@ -693,11 +678,11 @@
         "class": "soft",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 21.7,
-        "top_score": 10.0,
+        "bottom_score": 8.7,
+        "top_score": 0.0,
         "capitulation_score": 15.4,
-        "turn_score": 30.0,
-        "euphoria_score": 15.4,
+        "turn_score": 0.0,
+        "euphoria_score": 0.0,
         "rollover_score": 0.0,
         "bottom_fired": [
           {
@@ -706,26 +691,9 @@
             "label_zh": "\u4e2d\u5468\u671f\u8d85\u5356",
             "explain_en": "The slower oscillator is still oversold \u2014 the wash has breadth in time.",
             "explain_zh": "\u66f4\u957f\u5468\u671f\u632f\u8361\u6307\u6807\u4ecd\u8d85\u5356\u2014\u2014\u6d17\u76d8\u5728\u65f6\u95f4\u4e0a\u6709\u5bbd\u5ea6\u3002"
-          },
-          {
-            "code": "curl",
-            "label_en": "Momentum curl up",
-            "label_zh": "\u52a8\u91cf\u4e0a\u94a9",
-            "explain_en": "Short-term momentum has hooked higher after the wash.",
-            "explain_zh": "\u6d17\u76d8\u4e4b\u540e\uff0c\u77ed\u5468\u671f\u52a8\u91cf\u5df2\u7ecf\u4e0a\u94a9\u3002"
           }
         ],
-        "top_fired": [
-          {
-            "code": "cot_long",
-            "label_en": "Big speculators are crowded long",
-            "label_zh": "\u5927\u578b\u6295\u673a\u8005\u62e5\u6324\u505a\u591a",
-            "explain_en": "Large speculators are crowded on the long side of the futures book.",
-            "explain_zh": "\u5927\u578b\u6295\u673a\u8d44\u91d1\u5728\u671f\u8d27\u76d8\u4e0a\u62e5\u6324\u505a\u591a\u3002",
-            "tip_en": "COT crowded long",
-            "tip_zh": "COT\u5927\u5e45\u504f\u591a"
-          }
-        ],
+        "top_fired": [],
         "n_bottom_applicable": 8,
         "n_top_applicable": 7,
         "turn_developing": false,
@@ -762,38 +730,38 @@
   "assets": {
     "gold": {
       "label": "Gold",
-      "price": 4336.4,
-      "chg": -3.2,
+      "price": 4321.2,
+      "chg": -3.6,
       "alloc": 0,
       "risk": "Elevated",
       "trend": "up",
       "action": "SELL",
-      "conviction": -20.1
+      "conviction": -15.0
     },
     "silver": {
       "label": "Silver",
-      "price": 65.22,
-      "chg": -1.5,
+      "price": 64.25,
+      "chg": -3.0,
       "alloc": 0,
       "risk": "Elevated",
       "trend": "up",
       "action": "SELL",
-      "conviction": -25.8
+      "conviction": -20.7
     },
     "copper": {
       "label": "Copper",
-      "price": 6.76,
-      "chg": 2.5,
+      "price": 6.7,
+      "chg": 1.5,
       "alloc": 50,
       "risk": "Elevated",
       "trend": "up",
       "action": "HOLD",
-      "conviction": -0.7
+      "conviction": -7.5
     },
     "oil": {
       "label": "Oil \u00b7 WTI",
-      "price": 92.66,
-      "chg": 8.0,
+      "price": 92.41,
+      "chg": 7.8,
       "alloc": 100,
       "risk": "Calm",
       "trend": "up",
@@ -821,13 +789,13 @@
   },
   "ratios": {
     "copper_gold": {
-      "value": 0.0016,
-      "chg_20d_pct": 5.82,
+      "value": 0.0015,
+      "chg_20d_pct": 5.22,
       "dir": "up"
     },
     "gold_silver": {
-      "value": 66.4888,
-      "chg_20d_pct": -2.52,
+      "value": 67.2613,
+      "chg_20d_pct": -1.39,
       "dir": "down"
     }
   }

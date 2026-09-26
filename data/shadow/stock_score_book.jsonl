@@ -6292,3 +6292,13 @@
 {"date": "2026-09-24", "ticker": "WYNN", "score": 0.0, "percentile": 0.0975609756097561, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-09-24", "ticker": "WD", "score": 0.0, "percentile": 0.0975609756097561, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-09-24", "ticker": "PLNT", "score": 0.0, "percentile": 0.0975609756097561, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "VKTX", "score": 53.0, "percentile": 0.8508064516129032, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "TME", "score": 68.0, "percentile": 0.967741935483871, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "PL", "score": 14.0, "percentile": 0.6370967741935484, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "ONON", "score": 12.0, "percentile": 0.5524193548387096, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "BILI", "score": 0.0, "percentile": 0.10483870967741936, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "GMED", "score": 35.0, "percentile": 0.7056451612903226, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "MATX", "score": 29.0, "percentile": 0.6854838709677419, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "KEYS", "score": 55.0, "percentile": 0.875, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "CL", "score": 0.0, "percentile": 0.10483870967741936, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-24", "ticker": "MNSO", "score": 0.0, "percentile": 0.10483870967741936, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EFX-BULL-20260701",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 21.9,
@@ -10,27 +10,27 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 1.2,
+    "validity": 0.1,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.078,
+    "dist_to_stop_r": 0.029,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 162.2,
-    "p1": -0.6149,
-    "p2": -0.3074,
+    "horizon_pct_used": 164.4,
+    "p1": -0.6471,
+    "p2": -0.3236,
     "p3": null,
-    "move_r": -0.922,
+    "move_r": -0.971,
     "mfe_r": 0.873,
-    "mae_r": -0.922
+    "mae_r": -0.971
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 22.030004882812506,
-  "_mae": -23.269998168945307,
+  "_mae": -24.489999389648432,
   "_max_p1": 0.5821113722502974,
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 73,
-  "tau": 1.6222
+  "days_elapsed": 74,
+  "tau": 1.6444
 }

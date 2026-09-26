@@ -1,10 +1,10 @@
 {
   "schema": "winner_autopsy_manifest.v1",
-  "as_of": "2026-09-25",
+  "as_of": "2026-09-26",
   "n_cases": 154,
   "watch_available": true,
-  "watch_as_of": "2026-09-25",
-  "elapsed_seconds": 147.61,
+  "watch_as_of": "2026-09-26",
+  "elapsed_seconds": 139.86,
   "_display_only": true,
   "_horizon_role": "hold_thesis",
   "_version": "v1"

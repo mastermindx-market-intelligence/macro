@@ -2223,3 +2223,11 @@
 {"date": "2026-09-25", "ticker": "LUNG", "sga_score": 44, "gate_tier": null, "weeks_in_stage": 5, "earnings_present": true, "sentiment": 0.1, "performance": 4.5, "session_source": "stage_source_asof"}
 {"date": "2026-09-25", "ticker": "MXCT", "sga_score": 44, "gate_tier": null, "weeks_in_stage": 4, "earnings_present": true, "sentiment": -0.5, "performance": 2.5, "session_source": "stage_source_asof"}
 {"date": "2026-09-25", "ticker": "PGY", "sga_score": 44, "gate_tier": null, "weeks_in_stage": 3, "earnings_present": true, "sentiment": 0.6111111111111112, "performance": 4.583333333333334, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "VKTX", "sga_score": 67, "gate_tier": "T2", "weeks_in_stage": 4, "earnings_present": true, "sentiment": 0.6111111111111112, "performance": 6.25, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "VALU", "sga_score": 53, "gate_tier": null, "weeks_in_stage": 2, "earnings_present": false, "sentiment": null, "performance": null, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "QCOM", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 4, "earnings_present": true, "sentiment": 0.16666666666666666, "performance": 0.0, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "RGR", "sga_score": 46, "gate_tier": null, "weeks_in_stage": 1, "earnings_present": false, "sentiment": null, "performance": null, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "CV", "sga_score": 45, "gate_tier": null, "weeks_in_stage": 3, "earnings_present": true, "sentiment": 0.1, "performance": 5.0, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "SEI", "sga_score": 45, "gate_tier": null, "weeks_in_stage": 3, "earnings_present": true, "sentiment": 0.85, "performance": 8.5, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "BBNX", "sga_score": 44, "gate_tier": null, "weeks_in_stage": 4, "earnings_present": true, "sentiment": 0.6111111111111112, "performance": 7.5, "session_source": "stage_source_asof"}
+{"date": "2026-09-25", "ticker": "CBLL", "sga_score": 44, "gate_tier": null, "weeks_in_stage": 4, "earnings_present": true, "sentiment": 0.85, "performance": 9.2, "session_source": "stage_source_asof"}

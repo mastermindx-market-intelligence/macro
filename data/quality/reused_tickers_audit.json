@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-25",
+ "asof": "2026-09-26",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -760,13 +760,13 @@
   }
  ],
  "ledger_identity": {
-  "ledger": "/Users/chriswong/actions-runner-2/_work/macro/macro/data/signal_archive/track_record.parquet",
+  "ledger": "/Users/chriswong/actions-runner-4/_work/macro/macro/data/signal_archive/track_record.parquet",
   "declared_duplicates": [],
   "undeclared_candidates": [],
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 60435
+  "ledger_rows": 60438
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
@@ -1031,8 +1031,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-09-24",
-     "days_past_death": 1224,
+     "store_tip": "2026-09-25",
+     "days_past_death": 1225,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
@@ -1707,8 +1707,8 @@
     {
      "ticker": "JYNT",
      "registry_last": "2023-03-03",
-     "store_tip": "2026-09-24",
-     "days_past_death": 1301,
+     "store_tip": "2026-09-25",
+     "days_past_death": 1302,
      "overlap": {
       "n_overlap": 722,
       "ret_corr_full": 1.0,

@@ -343,3 +343,9 @@
 {"asof": "2026-09-25", "domain": "us", "field": "cross_asset_verdict", "from_value": "confirm", "to_value": "diverge", "macro_context_id": "e03e9b65fefb8175"}
 {"asof": "2026-09-25", "domain": "fx", "field": "fx_regime_radar", "from_value": null, "to_value": "intervention_risk", "macro_context_id": "e03e9b65fefb8175"}
 {"asof": "2026-09-25", "domain": "canada", "field": "canada_cycle_tag", "from_value": "late", "to_value": "mid", "macro_context_id": "e03e9b65fefb8175"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_quad", "from_value": "Q3", "to_value": "Q2", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_transition_state", "from_value": "TRANSITIONING", "to_value": "NEW_REGIME", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_liquidity_quality", "from_value": "contracting", "to_value": "stress-expansion", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_liquidity_overlay", "from_value": "contracting", "to_value": "expanding", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "market", "field": "market_state_verdict", "from_value": "RISK_ON", "to_value": "MIXED", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "bonds", "field": "bond_curve_lean", "from_value": "steepener", "to_value": "neutral", "macro_context_id": "582c64b90047a0d7"}
