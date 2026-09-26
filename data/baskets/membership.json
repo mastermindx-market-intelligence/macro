@@ -5369,8 +5369,8 @@
           "ticker": "APP",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Technology constituent"
+          "removed": "2026-08-03",
+          "rationale": "S&P 500 Technology constituent; GICS moved from Application Software to Advertising as of the 2026-07-31 close; Communication Services from 2026-08-03."
         },
         {
           "ticker": "AVGO",
@@ -5812,6 +5812,25 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Technology constituent"
+        },
+        {
+          "ticker": "P",
+          "added": "2026-09-21",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "S&P 500 Technology constituent from 2026-09-21; Everpure added in the September 2026 quarterly rebalance."
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-17",
+          "action": "remove",
+          "note": "APP: GICS reclassified from Information Technology/Application Software to Communication Services/Advertising as of the 2026-07-31 close; old-sector mask closes 2026-08-03."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "add",
+          "note": "P: S&P 500 addition effective 2026-09-21; historical mask starts on the official effective date."
         }
       ]
     },
@@ -6785,6 +6804,20 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Health Care constituent"
+        },
+        {
+          "ticker": "ILMN",
+          "added": "2026-09-21",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "S&P 500 Health Care constituent from 2026-09-21; Illumina added in the September 2026 quarterly rebalance."
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-23",
+          "action": "add",
+          "note": "ILMN: S&P 500 addition effective 2026-09-21; historical mask starts on the official effective date."
         }
       ]
     },
@@ -7168,8 +7201,8 @@
           "ticker": "EA",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Communication Services constituent"
+          "removed": "2026-08-05",
+          "rationale": "S&P 500 Communication Services constituent; S&P 500 deletion effective 2026-08-05 after the acquisition closed; last regular trading session 2026-08-04."
         },
         {
           "ticker": "ECHO",
@@ -7280,8 +7313,8 @@
           "ticker": "TTD",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Communication Services constituent"
+          "removed": "2026-09-21",
+          "rationale": "S&P 500 Communication Services constituent; S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600."
         },
         {
           "ticker": "TTWO",
@@ -7303,6 +7336,42 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Communication Services constituent"
+        },
+        {
+          "ticker": "APP",
+          "added": "2026-08-03",
+          "curated_added": "2026-09-17",
+          "removed": null,
+          "rationale": "S&P 500 Communication Services constituent from 2026-08-03; GICS reclassified AppLovin from Application Software to Advertising as of the 2026-07-31 close."
+        },
+        {
+          "ticker": "RDDT",
+          "added": "2026-08-18",
+          "curated_added": "2026-09-17",
+          "removed": null,
+          "rationale": "S&P 500 Communication Services constituent from 2026-08-18; Reddit replaced AvalonBay Communities."
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-17",
+          "action": "add",
+          "note": "APP: GICS reclassified to Communication Services/Advertising as of the 2026-07-31 close; new-sector mask starts 2026-08-03."
+        },
+        {
+          "date": "2026-09-17",
+          "action": "remove",
+          "note": "EA: S&P 500 deletion effective 2026-08-05 after acquisition; historical mask closes before the first non-member session."
+        },
+        {
+          "date": "2026-09-17",
+          "action": "add",
+          "note": "RDDT: S&P 500 addition effective 2026-08-18, replacing AVB; historical mask starts on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "remove",
+          "note": "TTD: S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600; historical mask closes on the official effective date."
         }
       ]
     },
@@ -7364,8 +7433,8 @@
           "ticker": "BLDR",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Industrials constituent"
+          "removed": "2026-09-21",
+          "rationale": "S&P 500 Industrials constituent; S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600."
         },
         {
           "ticker": "BR",
@@ -7877,6 +7946,61 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Industrials constituent"
+        },
+        {
+          "ticker": "HONA",
+          "added": "2026-06-29",
+          "curated_added": "2026-09-17",
+          "removed": null,
+          "rationale": "S&P 500 Industrials constituent from 2026-06-29; Honeywell Aerospace spin-off added by S&P DJI."
+        },
+        {
+          "ticker": "DD",
+          "added": "2026-08-03",
+          "curated_added": "2026-09-17",
+          "removed": null,
+          "rationale": "S&P 500 Industrials constituent from 2026-08-03; GICS reclassified DuPont from Specialty Chemicals to Industrial Conglomerates as of the 2026-07-31 close."
+        },
+        {
+          "ticker": "FERG",
+          "added": "2026-08-05",
+          "curated_added": "2026-09-17",
+          "removed": null,
+          "rationale": "S&P 500 Industrials constituent from 2026-08-05; Ferguson Enterprises replaced Electronic Arts."
+        },
+        {
+          "ticker": "BE",
+          "added": "2026-09-21",
+          "curated_added": "2026-09-23",
+          "removed": null,
+          "rationale": "S&P 500 Industrials constituent from 2026-09-21; Bloom Energy added in the September 2026 quarterly rebalance."
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-17",
+          "action": "add",
+          "note": "HONA: S&P 500 addition effective 2026-06-29 (Honeywell Aerospace spin-off); historical mask starts on the official effective date."
+        },
+        {
+          "date": "2026-09-17",
+          "action": "add",
+          "note": "DD: GICS reclassified to Industrials/Industrial Conglomerates as of the 2026-07-31 close; new-sector mask starts 2026-08-03."
+        },
+        {
+          "date": "2026-09-17",
+          "action": "add",
+          "note": "FERG: S&P 500 addition effective 2026-08-05, replacing EA; historical mask starts on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "remove",
+          "note": "BLDR: S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600; historical mask closes on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "add",
+          "note": "BE: S&P 500 addition effective 2026-09-21; historical mask starts on the official effective date."
         }
       ]
     },
@@ -7917,8 +8041,8 @@
           "ticker": "CAG",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Consumer Staples constituent"
+          "removed": "2026-06-30",
+          "rationale": "S&P 500 Consumer Staples constituent; S&P 500 deletion effective 2026-06-30; moved to S&P SmallCap 600."
         },
         {
           "ticker": "CASY",
@@ -8113,8 +8237,8 @@
           "ticker": "TAP",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Consumer Staples constituent"
+          "removed": "2026-09-21",
+          "rationale": "S&P 500 Consumer Staples constituent; S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600."
         },
         {
           "ticker": "TGT",
@@ -8136,6 +8260,18 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Consumer Staples constituent"
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-17",
+          "action": "remove",
+          "note": "CAG: S&P 500 deletion effective 2026-06-30; historical mask closes on the official effective date."
+        },
+        {
+          "date": "2026-09-23",
+          "action": "remove",
+          "note": "TAP: S&P 500 deletion effective 2026-09-21; moved to S&P SmallCap 600; historical mask closes on the official effective date."
         }
       ]
     },
@@ -8561,8 +8697,8 @@
           "ticker": "AVB",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Real Estate constituent"
+          "removed": "2026-08-18",
+          "rationale": "S&P 500 Real Estate constituent; S&P 500 deletion effective 2026-08-18 after acquisition by Vivmark Residential."
         },
         {
           "ticker": "BXP",
@@ -8760,6 +8896,13 @@
           "removed": null,
           "rationale": "S&P 500 Real Estate constituent"
         }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-17",
+          "action": "remove",
+          "note": "AVB: S&P 500 deletion effective 2026-08-18 after acquisition; historical mask closes on the official effective date."
+        }
       ]
     },
     "us_sector_materials": {
@@ -8834,8 +8977,8 @@
           "ticker": "DD",
           "added": "2023-05-09",
           "curated_added": "2026-06-28",
-          "removed": null,
-          "rationale": "S&P 500 Materials constituent"
+          "removed": "2026-08-03",
+          "rationale": "S&P 500 Materials constituent; GICS moved from Specialty Chemicals to Industrial Conglomerates as of the 2026-07-31 close; Industrials from 2026-08-03."
         },
         {
           "ticker": "DOW",
@@ -8955,6 +9098,13 @@
           "curated_added": "2026-06-28",
           "removed": null,
           "rationale": "S&P 500 Materials constituent"
+        }
+      ],
+      "changelog": [
+        {
+          "date": "2026-09-17",
+          "action": "remove",
+          "note": "DD: GICS reclassified from Materials/Specialty Chemicals to Industrials/Industrial Conglomerates as of the 2026-07-31 close; old-sector mask closes 2026-08-03."
         }
       ]
     }
