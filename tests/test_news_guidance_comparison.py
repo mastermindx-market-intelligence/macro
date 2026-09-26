@@ -740,3 +740,53 @@ def test_two_release_revisions_still_cannot_certify_transcript_guidance_history(
     assert len(history)==2
     result=history_context(history)
     assert not result["available"] and result["reasons"]==["release_history_guidance_source_mismatch"]
+
+
+# Source contract: china_news.panel can retain policy tone while news is None.
+@pytest.mark.parametrize("china_news_leg", [None, {}, {"headlines": []}, {"headlines": [{"title": "Synthetic China headline", "domain": "example.test"}]}])
+def test_news_builder_preserves_other_artifacts_when_china_has_only_policy_tone(monkeypatch, tmp_path, china_news_leg):
+    import engine, sys, types
+    from scripts import build_news
+    from engine import financial_news, news_llm
+
+    financial_headline = {"title": "Synthetic issuer outlook update", "domain": "example.test", "url": "https://example.test/release", "sentiment": "neutral"}
+    macro_headline = {"title": "Synthetic macro headline", "domain": "example.test"}
+    feed = {"market": [financial_headline], "by_ticker": {"ACME": [financial_headline]}, "mag7": {}, "sectors": {}, "baskets": {}}
+    china = {"schema": "china_news.v1", "is_context_only": True, "tone": {"label_en": "Neutral"}, "news": china_news_leg}
+    original_china = deepcopy(china)
+    monkeypatch.setattr(financial_news, "feed", lambda: feed)
+    monkeypatch.setattr(financial_news.nc, "build_entity_map", lambda: {"tickers": {}})
+    monkeypatch.setattr(build_news.config, "ROOT", tmp_path)
+    monkeypatch.setattr(build_news.config, "load", lambda: {"storage": {"site_dir": "site"}})
+    monkeypatch.setattr(news_llm, "annotate", lambda _items: None)
+    monkeypatch.setattr(news_llm, "provider_label", lambda: "")
+    kept = []
+    boundaries = {
+        "macro_news": {"macro_headlines": lambda: {"headlines": [macro_headline]}, "upcoming_catalysts": lambda **kw: [], "DISCLAIMER_TEXT": "", "DISCLAIMER_TEXT_ZH": "", "THEME_LABEL": {}},
+        "news_rss": {"start_reject_log": lambda: ([], None), "stop_reject_log": lambda _token: None},
+        "news_ai_feed": {"enabled": lambda: False},
+        "china_news": {"panel": lambda: china},
+        "news_vector": {"enabled": lambda: False, "recent_panel": lambda: None},
+        "macro_surprise": {"build_release_cards": lambda **kw: None},
+        "news_event_ledger": {"persist_kept_events": lambda items, **kw: kept.extend(items) or 0, "persist_reject_sample": lambda *args, **kw: 0},
+    }
+    for name, members in boundaries.items():
+        module = types.ModuleType("engine." + name)
+        for key, value in members.items():
+            setattr(module, key, value)
+        monkeypatch.setitem(sys.modules, "engine." + name, module)
+        monkeypatch.setattr(engine, name, module, raising=False)
+
+    vm = build_news.build(guidance_workspaces={"ACME": {"expected_security_id": "xnas:ACME", "current": workspace(76000, 78000, later=True), "prior": workspace()}})
+    artifacts = tmp_path / "site" / "news"
+    financial = json.loads((artifacts / "financial.json").read_text())
+    by_ticker = json.loads((artifacts / "by_ticker.json").read_text())
+    assert financial["market"][0]["title"] == financial_headline["title"]
+    assert by_ticker["tickers"]["ACME"]["n_recent"] == 1
+    assert by_ticker["tickers"]["ACME"]["guidance_context"]["comparisons"][0]["midpoint_delta"] == "-24500"
+    assert json.loads((artifacts / "macro.json").read_text())["headlines"][0]["title"] == macro_headline["title"]
+    assert (artifacts / "china.json").exists() and (artifacts / "rejected.json").exists()
+    assert (artifacts / "macro_releases.json").exists()
+    assert [item["title"] for item in kept] == [macro_headline["title"], financial_headline["title"]]
+    assert vm["china"]["tone"] == original_china["tone"]
+    assert vm["china"]["news"] is None if china_news_leg is None else vm["china"]["news"] is china_news_leg

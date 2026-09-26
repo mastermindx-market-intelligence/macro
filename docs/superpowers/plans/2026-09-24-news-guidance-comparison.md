@@ -308,3 +308,18 @@ browser captures remain old captures; no fresh browser claim or geometry change.
 Remaining source ownership stays #7331/#7426, China leaf #7575 and current native
 identity/rights/publication owners. Do not duplicate the source repair or invoke
 the frozen native Codex401 route without evidenced authentication recovery.
+
+
+## R12 — package imports and partial-feed isolation
+
+Chairman waived independent review for this News program (#7953/comment5846527711); no Codex or Executive is required. Tests, rights, source custody, concluded CI and live proof remain.
+
+1. CI36241566288/job108411480647 failed test collection because the display suite used top-level sibling imports while the actual repository contains tests/__init__.py. Restoring that exact empty package marker in the selected-source snapshot reproduced the SAME ModuleNotFoundError. Six imports were qualified as tests.test_news_guidance_comparison and published alone at5ce68c946d59ef759bff183d6a37421d046d84fc. Both owning suites:180 PASS in default mode and180 PASS in importlib mode; original-import mutation reproduced the error; restore180 PASS. Immediate post-write PR metadata lag failed a local assertion; original ref/commit/file were reconciled without a second write. No product code changed in that commit.
+
+2. The completed #7966 engine-render36244615003/job108425929756 also recorded build_news failing with NoneType.get. Source inspection shows china_news.panel legitimately returns a policy-tone panel with news=None. The unguarded chained .get in build_news aborts all later News artifacts on exactly that valid partial input. A source-contract-shaped test reproduces this exception at the real builder line; empty/headline controls already pass. The failing run did not preserve a traceback or raw input, so do not claim this identifies every possible cause of that historical run.
+
+The bounded repair changes one condition to `(china.get("news") or {}).get("headlines")`. It does not overwrite the source's null with an empty feed, hide its tone, change ranking or claim fresh coverage. Four cases exercise the real build/_enrich/financial ticker writer, preserving financial/macro/China/reject/release artifacts and the supplied guidance comparison. Only collectors/model calls/ledger effects are isolated. Default-model-independent behavior is preserved.
+
+Proof:301 PASS across existing comparator/display/Financial News/news_common/qkernel suites; original-builder mutation fails the null-news case,3 valid controls pass; restored301 PASS. Composition with already-merged #7955/#7966 through current main95cd34c335dc9541f0e513669751ab2b764c0de8:409 PASS, shared CI manifest clean; all temporary source inputs restored. Initial missing news_llm.py in the isolated snapshot was supplied unchanged before the valid RED; no dependency setup error counts as product evidence. Existing source-gated comparison suite owns these regression cases; no new CI job.
+
+The old dossier guard failure on the company name Infinity is already repaired in current-main check_stock_dossier_integrity.py; do not duplicate its source owner or disable numeric-sentinel validation. Current renders remain GitHub-owned; no duplicate dispatch/cancellation. This source repair does not establish deployed freshness, automatic guidance acquisition, full-repository success or product acceptance. Earlier source-access and source-owner holds remain.

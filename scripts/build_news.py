@@ -251,7 +251,7 @@ def build(write: bool = True, *, guidance_workspaces: dict | None = None) -> dic
             sections.append(fin.get("sectors", {}).get(etf, {}).get("headlines", []))
         for bk in (fin.get("baskets", {}) or {}).values():
             sections.append(bk.get("headlines", []))
-    if china and china.get("news", {}).get("headlines"):
+    if china and (china.get("news") or {}).get("headlines"):
         sections.append(china["news"]["headlines"])
     vm["llm_provider"] = _enrich([s for s in sections if s])
 
