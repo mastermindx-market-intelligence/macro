@@ -1,6 +1,6 @@
 {
-  "collected_at": "2026-09-25T21:25:10+00:00",
-  "completed_at": "2026-09-25T21:26:05+00:00",
+  "collected_at": "2026-09-26T10:00:35+00:00",
+  "completed_at": "2026-09-26T10:01:38+00:00",
   "dry_run": false,
   "integrity_profile": "release_target_artifact_sha256_bytes.v1",
   "publication_status": "complete",
@@ -9,7 +9,7 @@
   "series": {
     "CPIAUCSL": {
       "artifact_bytes": 134327,
-      "artifact_sha256": "abc6b65a873a3d6de63d85379c86b61f71f99480354f46915c391d506970718b",
+      "artifact_sha256": "f7b2111e4aca8f248447fd7f1dcdebbfa61011f68bfad7155f9c4ac6eb4c07b6",
       "path": "data/fred_vintage/release_targets/CPIAUCSL_all_vintages.parquet",
       "period_max": "2026-08-01",
       "period_min": "1947-01-01",
@@ -20,7 +20,7 @@
     },
     "CPILFESL": {
       "artifact_bytes": 119283,
-      "artifact_sha256": "eb38de291704a08d59e7723ac86f232db6f3ac9ce8ece91a02e18841e2489b1a",
+      "artifact_sha256": "3cf62d4ce24fa92affa61dbf50b25f12bc0f959c72ffcf0085434eb0390ddecd",
       "path": "data/fred_vintage/release_targets/CPILFESL_all_vintages.parquet",
       "period_max": "2026-08-01",
       "period_min": "1957-01-01",
@@ -31,7 +31,7 @@
     },
     "PAYEMS": {
       "artifact_bytes": 180283,
-      "artifact_sha256": "5fe02dde232efad7799d14b5331bd83d4ba2f849dc82e687bd49ade357debaee",
+      "artifact_sha256": "9a72f07b24651e829f13cc683a3f1e58959dea4e22a780bbb90ccf58cc03b638",
       "path": "data/fred_vintage/release_targets/PAYEMS_all_vintages.parquet",
       "period_max": "2026-08-01",
       "period_min": "1939-01-01",
@@ -42,7 +42,7 @@
     },
     "PCEPI": {
       "artifact_bytes": 202276,
-      "artifact_sha256": "af950e37821d5896b29ddce153dfee9ea0a7222330f1567c162dbe154c2041e9",
+      "artifact_sha256": "21e9fe23f6ed2ef29b6ca21c5485127363a7b65cf4f1834408fac7644b331d3b",
       "path": "data/fred_vintage/release_targets/PCEPI_all_vintages.parquet",
       "period_max": "2026-07-01",
       "period_min": "1959-01-01",
@@ -53,7 +53,7 @@
     },
     "PCEPILFE": {
       "artifact_bytes": 203226,
-      "artifact_sha256": "6279621a8855e404f2efcfa25512b5c105d731177882379475f1ce862ecbec40",
+      "artifact_sha256": "ae88de97e51f58650ccd3c2a33d93975aa423762a337a6fa0629195174816bc5",
       "path": "data/fred_vintage/release_targets/PCEPILFE_all_vintages.parquet",
       "period_max": "2026-07-01",
       "period_min": "1959-01-01",
@@ -64,7 +64,7 @@
     },
     "PPIFES": {
       "artifact_bytes": 17096,
-      "artifact_sha256": "dfa5b6255751afb0ef39f950ce5948ebf6403b71f86a1f329cc54617182a1d76",
+      "artifact_sha256": "56552e10059a83e5d60c48e02e315674b734d1adb6b1875304c53f768951203f",
       "path": "data/fred_vintage/release_targets/PPIFES_all_vintages.parquet",
       "period_max": "2026-08-01",
       "period_min": "2010-04-01",
@@ -75,7 +75,7 @@
     },
     "PPIFIS": {
       "artifact_bytes": 17400,
-      "artifact_sha256": "0dddb217e1581381b80c679f15d5583ff4fbb752400af376e9c1b779fca8b6b4",
+      "artifact_sha256": "616d4930b5c071e13b78a59aa7660577a7e9670af5b54fe3c7d424e0554e4592",
       "path": "data/fred_vintage/release_targets/PPIFIS_all_vintages.parquet",
       "period_max": "2026-08-01",
       "period_min": "2009-11-01",
