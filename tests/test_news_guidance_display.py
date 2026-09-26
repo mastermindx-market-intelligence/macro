@@ -299,3 +299,31 @@ def test_invalid_history_has_a_plain_bilingual_explanation(monkeypatch):
     data = public_guidance_context(history_context([None]))
     result = view(data)
     assert result['note_en']=='Release history could not be verified.' and result['note_zh']
+
+
+def test_guidance_gate_is_curated_without_unrelated_page_fanout():
+    import fnmatch
+    import yaml
+    jobs = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())["jobs"]
+    owner = jobs["earnings-release-identity"]
+    assert owner.get("scope") == "exclusive" and owner.get("gate") == "code"
+    for suite in ("tests/test_news_guidance_comparison.py", "tests/test_news_guidance_display.py"):
+        selected = [name for name, job in jobs.items()
+                    if any(suite in step.get("run", "") for step in job.get("steps", []))]
+        assert selected == ["earnings-release-identity"], (suite, selected)
+    for subject in ("engine/company_intelligence/guidance_comparison.py",
+                    "tests/test_news_guidance_comparison.py",
+                    "tests/test_news_guidance_display.py",
+                    "engine/financial_news.py", "scripts/build_news.py",
+                    "scripts/build_ticker_pages.py", "templates/ticker.html.j2",
+                    "templates/ticker_index.html.j2", "lib/news_guidance_view.py",
+                    "engine/news_ai_feed.py", "engine/news_events.py", "engine/news_llm.py",
+                    "lib/massive_ticker.py", "tests/test_edgar_filing_identity_join.py",
+                    "tests/test_earnings_release_binding.py", "tests/test_edgar_earnings_8k.py",
+                    "tests/test_marketing_edgar_earnings_wire.py"):
+        assert any(fnmatch.fnmatchcase(subject, pattern) for pattern in owner["paths"]), subject
+    assert not any(fnmatch.fnmatchcase("templates/index.html", pattern)
+                   for pattern in owner["paths"]), "ticker tests must not claim the unrelated landing page"
+    deps = "\n".join(step.get("run", "") for step in jobs["conviction-profile"]["steps"]
+                     if "pip install" in step.get("run", ""))
+    assert "requests" not in deps.split(), "preserve the valuation job's collector-free environment"
