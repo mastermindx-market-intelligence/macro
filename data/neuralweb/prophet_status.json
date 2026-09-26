@@ -1,6 +1,6 @@
 {
   "schema": "prophet.status/v1",
-  "as_of": "2026-09-25T09:25:45+00:00",
+  "as_of": "2026-09-25T21:40:53+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "markets": {
     "us": {
@@ -11,13 +11,13 @@
       "data_gaps": [],
       "maturity_state": "accruing",
       "retro_grades": {
-        "total_rows": 12726,
-        "matured_rows": 12726,
+        "total_rows": 13533,
+        "matured_rows": 13533,
         "graded_col_counts": {
-          "excess_spy": 12726,
-          "mae_close_excess_spy": 12726,
-          "excess_sector": 12536,
-          "mae_close_excess_sector": 12536
+          "excess_spy": 13533,
+          "mae_close_excess_spy": 13533,
+          "excess_sector": 13320,
+          "mae_close_excess_sector": 13320
         },
         "note": "one-grader law (SA-R14); win_rate from committed scoreboard only"
       },
@@ -28,7 +28,7 @@
         "horizons_available": []
       },
       "board_outcomes": {
-        "as_of": "2026-09-23",
+        "as_of": "2026-09-24",
         "n_picks": null,
         "status": null
       },
@@ -53,14 +53,14 @@
         "as_of": "2026-09-25",
         "advance_status": "advanced",
         "advance_error": null,
-        "n_newly_graded": 0,
-        "n_accruing": 2663,
-        "n_matured": 0,
-        "pin5": null,
-        "held_pct": null,
-        "status": "accruing",
+        "n_newly_graded": 51,
+        "n_accruing": 2675,
+        "n_matured": 51,
+        "pin5": 0.2157,
+        "held_pct": 0.5294,
+        "status": "maturing",
         "reliability": "display-tier bottom-calling learning instrument (policy-free; no ranking/sizing authority) \u2014 measures proximity to the eventual low and floor durability; live cohorts compared against the committed panel baseline as they mature",
-        "first_maturity_est": "2026-09-25"
+        "first_maturity_est": null
       },
       "engine_label": "Prophet US",
       "engine_label_zh": "\u5148\u77e5\u7f8e\u80a1"
@@ -79,12 +79,12 @@
         "fill_basis_note": "t1_hl2 \u2014 accruing"
       },
       "fitness_card": {
-        "as_of": "2026-09-24",
+        "as_of": "2026-09-25",
         "hit_quality": null,
         "process_integrity": null
       },
       "audit_scoreboard": {
-        "as_of": "2026-09-24",
+        "as_of": "2026-09-25",
         "status": null,
         "n_matured": null
       },
@@ -115,7 +115,7 @@
       "data_gaps": [],
       "maturity_state": "accruing",
       "scorecard": {
-        "status": "accruing",
+        "status": "scored",
         "n_matured": null,
         "as_of": null,
         "survivorship_note": null
@@ -186,21 +186,21 @@
           "artifact": "us-audit-scoreboard",
           "path": "site/factordata/us_audit_scoreboard.json",
           "status": "stale",
-          "age_hours": 1161.4,
+          "age_hours": 1173.7,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-track-history",
           "path": "site/factordata/us_track_history.json",
           "status": "ok",
-          "age_hours": 9.4,
+          "age_hours": 21.7,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-board-outcomes",
           "path": "site/factordata/us_board_outcomes.json",
-          "status": "stale",
-          "age_hours": 57.4,
+          "status": "ok",
+          "age_hours": 45.7,
           "sla_hours": 48
         }
       ],
@@ -213,13 +213,13 @@
         {
           "artifact": "site-china-standouts",
           "path": "data/metabolism/fitness/standouts_cn.json",
-          "status": "stale",
-          "age_hours": 33.4,
+          "status": "ok",
+          "age_hours": 21.7,
           "sla_hours": 30.0
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "degraded"
+      "overall_health": "ok"
     },
     "hk": {
       "market": "hk",
@@ -228,7 +228,7 @@
           "artifact": "hk-board-ledger",
           "path": "data/board_ledger/hk_board.parquet",
           "status": "ok",
-          "age_hours": 19.9,
+          "age_hours": 5.8,
           "sla_hours": 48
         }
       ],
@@ -242,7 +242,7 @@
           "artifact": "ca-board-ledger",
           "path": "data/board_ledger/ca_board.parquet",
           "status": "ok",
-          "age_hours": 0.1,
+          "age_hours": 0.0,
           "sla_hours": 48
         }
       ],
@@ -256,7 +256,7 @@
           "artifact": "intl-setups",
           "path": "site/factordata/intl_setups.json",
           "status": "ok",
-          "age_hours": 1.1,
+          "age_hours": 0.0,
           "sla_hours": 48
         }
       ],
@@ -273,10 +273,10 @@
       "open_count": 0,
       "closed_count": 100,
       "outcome_mix": {
-        "INVALIDATED": 27,
-        "T1_HIT": 7,
-        "EXPIRED": 47,
-        "NO_ENTRY": 19
+        "NO_ENTRY": 22,
+        "EXPIRED": 49,
+        "INVALIDATED": 22,
+        "T1_HIT": 7
       }
     },
     "index": {
@@ -288,7 +288,7 @@
     "block_id": "pick_lab",
     "data_gaps": [],
     "us_lab": {
-      "as_of": "2026-09-23",
+      "as_of": "2026-09-24",
       "book_count": null,
       "fire_count": 0,
       "status": null
