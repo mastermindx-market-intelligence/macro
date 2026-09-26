@@ -1,8 +1,9 @@
 """scripts/build_polygon_universe.py — Polygon reference-universe cache.
 
-Builds data/polygon_universe/reference.parquet: per-ticker GICS sector + USD market cap,
-consumed by the charting-app's ingest/build_universe.py to enrich the nightly heatmap
-manifest (~8.7k names) with real sector grouping and cap sizing.
+Builds data/polygon_universe/reference.parquet: per-ticker GICS sector + USD market cap.
+GICS labels come from the established structural sources below; market-cap lookup coverage
+also includes every active member of the existing 49-basket house catalogue, even when that
+name has no GICS label. Consumers keep missing GICS/cap values null-honest.
 
 SECTOR SOURCES (priority order):
   1. data/breadth/constituents.parquet    — S&P 500 GICS labels (best provenance)
@@ -19,8 +20,9 @@ MARKET CAP SOURCE:
 
 CACHE POLICY:
   Refresh if the parquet is absent OR its `asof` column is >= STALE_DAYS
-  calendar days old (default 1 — nightly refresh, ~2 min of rate-limited
-  fetches for ~500 names). Freshness is judged from the asof COLUMN, never
+  calendar days old (default 1 — nightly refresh, roughly 3 min of rate-limited
+  fetches for the current ~700-name house/GICS union). Freshness is judged from
+  the asof COLUMN, never
   file mtime: CI checkouts rewrite files with mtime = checkout time, so a
   committed months-old cache always looks brand-new by mtime and the rebuild
   short-circuits forever. Same-day re-runs exit immediately (idempotent).
@@ -163,6 +165,24 @@ def build_gics_map() -> dict[str, str]:
     return gics
 
 
+def _load_house_basket_tickers() -> set[str]:
+    """Active ticker union from the existing house basket membership owner."""
+    bpath = config.data_dir() / "baskets" / "membership.json"
+    if not bpath.exists():
+        return set()
+    try:
+        baskets = json.loads(bpath.read_text()).get("baskets", {})
+    except Exception as e:  # noqa: BLE001
+        log.warning("build_polygon_universe: basket membership load failed: %s", e)
+        return set()
+    return {
+        str(member["ticker"])
+        for basket in baskets.values()
+        for member in basket.get("members", [])
+        if member.get("ticker") and not member.get("removed")
+    }
+
+
 # ── Polygon market cap fetch ───────────────────────────────────────────────────
 
 def _polygon_key() -> str | None:
@@ -291,14 +311,19 @@ def build(
     # 2. Load checkpoint of already-fetched market caps
     checkpoint = {} if force else _load_checkpoint()
 
-    # 3. Decide which tickers to fetch caps for:
-    #    - all tickers with a known GICS label (the ones the heatmap cares about)
-    #    - exclude crypto / international suffixes (no /reference endpoint data)
-    #    - accept both hyphen form (BRK-B, BF-B stored in constituents.parquet) and
-    #      dot form (BRK.B) — _fetch_mcap normalises '-' -> '.' before calling Polygon
+    # 3. Decide which tickers to fetch caps for independently of GICS coverage.
+    #    House theme membership is the existing catalogue owner; a ticker does not
+    #    need a GICS label merely to receive a reference market-cap lookup.
+    #    Keep unknown GICS as null rather than dropping the name before fetch.
+    cap_targets = set(gics) | _load_house_basket_tickers()
+
+    # Exclude unsupported symbol shapes while retaining class-share forms.
     import re
-    us_like = [t for t in gics if re.match(r"^[A-Z]{1,5}([.\-][AB])?$", t)]
-    log.info("build_polygon_universe: %d US-like tickers in GICS map", len(us_like))
+    us_like = [t for t in cap_targets if re.match(r"^[A-Z]{1,5}([.\-][AB])?$", t)]
+    log.info(
+        "build_polygon_universe: %d US-like cap targets (%d GICS-labelled)",
+        len(us_like), len(gics),
+    )
 
     # 4. Fetch market caps (rate-limited, checkpointed)
     mcaps = fetch_mcaps(us_like, checkpoint, dry_run=dry_run)
