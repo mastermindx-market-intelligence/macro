@@ -751,9 +751,11 @@ jobs:
         # shared builder_failstreak ops lane. Always exits 0 — never blocks the
         # deploy; brun() semantics untouched.
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # fallback transport for _notify() — the Watchlist webhook is the one channel
+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when
+          # present, else uses this).
+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python -m scripts.check_builder_failstreaks --art-dir "$RUNNER_TEMP/band" --art-dir "$RUNNER_TEMP/band2" --ledger data/ci/builder_failstreaks_asia.json --lane asia || echo "::warning::builder fail-streak check failed (non-fatal)"
       - name: rebuild China/HK stock-search libraries (resilient — guarantees the analyzers ship)
         # FAILURE-PATH safety net (asia-lane runtime diet, 2026-07-11): build_china

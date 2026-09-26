@@ -3280,9 +3280,11 @@ jobs:
         # gap (nightly itself dead) starts a fresh streak. Resilient: always exits 0 —
         # never blocks the deploy, never changes brun()'s never-abort semantics.
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # fallback transport for _notify() — the Watchlist webhook is the one channel
+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when
+          # present, else uses this).
+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python -m scripts.check_builder_failstreaks --art-dir "$RUNNER_TEMP/band" --lane nightly || echo "::warning::builder fail-streak check failed (non-fatal)"
       - name: timings band — tail-desks (W2)
         run: python3 scripts/nightly_timings.py mark --band tail-desks || echo "::warning::timings band mark failed (non-fatal)"
@@ -4202,11 +4204,13 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
         run: python -m scripts.build_recurring_briefs --cadence daily_after_us_close || echo "::warning::recurring briefs producer failed (non-fatal)"
-      - name: notify (telegram/discord; skips when secrets absent)
+      - name: notify (discord; skips when no webhook is provisioned)
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # fallback transport for _notify() — the Watchlist webhook is the one channel
+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when
+          # present, else uses this).
+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python -m scripts.notify
       - name: push priority alerts (W6b — ops-tier push spine ENABLED; operator Article-2 event 2026-07-04)
         # Neural Web W6b: push high-priority alerts above `alert_push.threshold` (default 60)
@@ -4223,9 +4227,11 @@ jobs:
         # Resilient: always exits 0 — a dispatch error never blocks the daily build.
         # Signal-sentinel migrations (vector/commodity) are phase 3 — not in this step.
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # fallback transport for _notify() — the Watchlist webhook is the one channel
+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when
+          # present, else uses this).
+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python -m scripts.push_alerts || echo "::warning::push_alerts failed (non-fatal)"
       - name: archive signal layer (append-only point-in-time model outputs; resilient)
         # LAST data-producing step: append today's latest.json / bond_health.json /
@@ -4746,9 +4752,11 @@ jobs:
         # the >=3-night streak is met. Same env block as the notify/push-alerts
         # steps above.
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # fallback transport for _notify() — the Watchlist webhook is the one channel
+          # that is actually provisioned (send_discord prefers DISCORD_WEBHOOK_URL when
+          # present, else uses this).
+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python -m scripts.check_nw_health_escalation || echo "::warning::check_nw_health_escalation failed (non-fatal)"
       - name: build neuralweb daily brief (PR-D — NW daily brief surface, engine phase)
         if: always()

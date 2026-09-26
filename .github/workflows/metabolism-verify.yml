@@ -182,11 +182,17 @@ jobs:
       - name: notify on failure
         if: failure()
         env:
-          TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # Was an inline Telegram curl. TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID do not exist
+          # in this repo, so "$TOKEN" was always empty and this step exited 0 without ever
+          # notifying. Same transport precedence as heartbeat.yml: prefer a dedicated
+          # DISCORD_WEBHOOK_URL if one is ever provisioned, else fall back to
+          # DISCORD_WEBHOOK_WATCHLIST — the one channel that IS provisioned.
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          [ -n "$TOKEN" ] || exit 0
-          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
-            -d chat_id="$CHAT_ID" \
-            -d text="[Metabolism] metabolism-verify run failed: ${RUN_URL}" || true
+          HOOK="${DISCORD_WEBHOOK_URL:-$DISCORD_WEBHOOK_WATCHLIST}"
+          [ -n "$HOOK" ] || exit 0
+          curl -s -H 'Content-Type: application/json' \
+            -d "{\"content\": \"[Metabolism] metabolism-verify run failed: ${RUN_URL}\"}" \
+            "$HOOK" >/dev/null || true
