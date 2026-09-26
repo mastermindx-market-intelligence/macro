@@ -606,8 +606,9 @@ def build_matrix(
         Path to the ThetaData EOD store root (string or Path), or None to use
         the env-default from thetadata_store.store_root().
     asof:
-        Reference date "YYYY-MM-DD".  When None, the most recent date with OI
-        data is used.
+        Reference date "YYYY-MM-DD". When None, choose the latest common
+        OI/EOD/underlying-price session (bounded to the latest 64 EOD sessions).
+        An explicit date is never silently substituted.
 
     Returns
     -------
@@ -634,11 +635,32 @@ def build_matrix(
     if not oi_all.empty:
         oi_all = _normalise_date(oi_all)
 
+    latest_oi_date = (
+        str(max(oi_all["date"].dropna()))
+        if not oi_all.empty and "date" in oi_all.columns else None
+    )
+    requested_date = asof
     if asof is None:
-        if oi_all.empty or "date" not in oi_all.columns:
+        if latest_oi_date is None:
             log.warning("options_matrix: no OI data for %s — returning thin-chain null", root)
             return _null_payload(root, asof_ts, "no OI data in store")
-        asof = str(sorted(oi_all["date"].unique())[-1])
+        # OPRA's next publication can exist before that day's EOD/Greeks. Select
+        # a same-session tuple through the existing narrow EOD-session reader;
+        # never splice newer OI into an older, relabelled price snapshot.
+        cutoff = (pd.Timestamp(latest_oi_date) + pd.Timedelta(days=1)).date().isoformat()
+        eod_dates = eod_sessions_before(cutoff, root, limit=64, store=store)
+        candidates = sorted(set(eod_dates) & set(oi_all["date"].dropna()), reverse=True)
+        for candidate in candidates:
+            greek_frame = _load_parquets("greeks", root, [pd.Timestamp(candidate).year], store)
+            if greek_frame.empty or "date" not in greek_frame.columns:
+                continue
+            greek_frame = _normalise_date(greek_frame)
+            same_session = greek_frame[greek_frame["date"] == candidate]
+            if _extract_spot(same_session, pd.DataFrame()) is not None:
+                asof = candidate
+                break
+        if asof is None:
+            return _null_payload(root, asof_ts, "no common OI/EOD/underlying-price session in latest 64 EOD sessions")
 
     # ── OI[t-1]: the parquet dated `asof` ───────────────────────────────────
     oi_t1 = _load_oi(root, asof, store)
@@ -780,6 +802,9 @@ def build_matrix(
     # computed by re-pricing the book on a spot grid (gex_engine.gamma_profile)
     # instead of the retired cumulative-by-strike walk — see _compute_levels.
     chain_rows: list[tuple[float, float, float, float, bool]] = []
+    # Normalize and index this immutable root/session frame once. Re-scanning it
+    # per contract made the restored SPY path quadratic (5,056 Greek rows).
+    contract_ivs = _contract_iv_lookup(greeks_w)
     for _, row in oi_t1_w.iterrows():
         k   = float(row["strike"])
         exp = _to_iso_date(row.get("expiration", ""))
@@ -790,7 +815,7 @@ def build_matrix(
             continue
 
         # IV for this contract: prefer greeks, else median_iv
-        iv_contract = _lookup_iv(greeks_w, k, exp, right)
+        iv_contract = _lookup_iv(greeks_w, k, exp, right, lookup=contract_ivs)
         dte_days    = _dte(exp, asof)
         T_years     = dte_days / 365.0
         gamma       = _bs_gamma_scalar(spot, k, T_years, iv_contract, median_iv)
@@ -1009,6 +1034,14 @@ def build_matrix(
         },
         "_build_meta": {
             "asof_date":    asof,
+            "session_selection": "explicit_date" if requested_date is not None else "latest_common_session",
+            "source_dates": {
+                "eod": asof if not eod_t1.empty else None,
+                "greeks": asof if not greeks_t1.empty else None,
+                "oi_publication": asof,
+                "previous_oi_publication": t2_date,
+                "latest_oi_publication": latest_oi_date,
+            },
             "t2_date":      t2_date,
             "n_cells":      len(cells_out),
             "n_expiries":   len(expiry_set),
@@ -1119,30 +1152,39 @@ def _null_payload(root: str, asof_ts: str, reason: str) -> dict:
 
 
 def _extract_spot(greeks_df: pd.DataFrame, eod_df: pd.DataFrame) -> float | None:
-    """Extract spot price from greeks (underlying_price) or EOD close."""
-    if not greeks_df.empty and "underlying_price" in greeks_df.columns:
-        v = greeks_df["underlying_price"].dropna()
-        if not v.empty:
-            return float(v.iloc[0])
-    if not eod_df.empty and "close" in eod_df.columns:
-        # Use ATM close as proxy — pick highest-OI strike's close
-        v = eod_df["close"].dropna()
-        if not v.empty:
-            return float(v.median())
-    return None
+    """Only an observed underlying reference is spot; option close is premium.
+
+    Keep the two-argument interface for existing callers. The EOD matrix reader
+    does not publish underlying prices, so its close column is never a fallback.
+    """
+    if greeks_df.empty or "underlying_price" not in greeks_df.columns:
+        return None
+    values = pd.to_numeric(greeks_df["underlying_price"], errors="coerce")
+    values = values[np.isfinite(values) & (values > 0)]
+    return float(values.iloc[0]) if not values.empty else None
 
 
-def _lookup_iv(greeks_df: pd.DataFrame, strike: float, expiry: str, right: str) -> float:
-    """Return IV for (strike, expiry, right) from greeks, or 0.0 if not found.
+def _contract_iv_lookup(greeks_df: pd.DataFrame) -> dict[tuple[float, str, str], object]:
+    """First nonmissing IV per exact contract, matching the scalar reader.
 
-    Both sides normalized to plain ISO date to match regardless of parquet storage type.
+    This is a per-build index of the already loaded frame, not another cache or
+    source reader. Keep numeric conversion at lookup time: an invalid IV in an
+    unused contract must not change the behavior of a valid contract's query.
     """
     if greeks_df.empty or "implied_vol" not in greeks_df.columns:
-        return 0.0
-    mask = (
-        (greeks_df["strike"].astype(float) == strike) &
-        (greeks_df["expiration"].apply(_to_iso_date) == expiry) &
-        (greeks_df["right"].astype(str).str.upper().str[:1] == right[:1])
-    )
-    sub = greeks_df[mask]["implied_vol"].dropna()
-    return float(sub.iloc[0]) if not sub.empty else 0.0
+        return {}
+    strikes = greeks_df["strike"].astype(float)
+    expiries = greeks_df["expiration"].apply(_to_iso_date)
+    rights = greeks_df["right"].astype(str).str.upper().str[:1]
+    result: dict[tuple[float, str, str], object] = {}
+    for strike, expiry, right, iv in zip(strikes, expiries, rights, greeks_df["implied_vol"]):
+        if pd.notna(iv):
+            result.setdefault((strike, expiry, right), iv)
+    return result
+
+
+def _lookup_iv(greeks_df: pd.DataFrame, strike: float, expiry_str: str, right: str,
+               *, lookup: dict[tuple[float, str, str], object] | None = None) -> float:
+    """IV for (strike, expiry, right), or zero when absent; duplicates keep the first nonmissing value."""
+    values = _contract_iv_lookup(greeks_df) if lookup is None else lookup
+    return float(values.get((strike, expiry_str, right[:1]), 0.0))

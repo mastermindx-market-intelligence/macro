@@ -29,7 +29,9 @@ SCHEDULING NOTE:
     max 6 attempts = 2h window) before invoking this script with --publish.
     Set MATRIX_FRESHNESS_BYPASS=1 to skip the wait (one-shot smoke / CI).
 
-INERT per-root: each root failure logs + skips; never aborts the run.
+Isolated per-root: failures skip that root, allow healthy roots to finish, and
+make the final process status nonzero. Source failures never replace a dated
+valid matrix with a newly built empty artifact.
 DISPLAY-TIER: no ranking, scoring, or money-path interaction.
 OI TIMING LAW: all OI uses OI[t-1]; delta_oi = OI[t-1] − OI[t-2] (both lagged).
 """
@@ -57,6 +59,7 @@ R2_PREFIX = "options_structure/matrix/"
 # ── default roots ─────────────────────────────────────────────────────────────
 DEFAULT_ROOTS = [
     "SPY", "QQQ", "IWM", "NVDA", "TSLA", "AAPL", "MSFT", "META", "AMD", "GOOGL",
+    "MU", "ARM",
 ]
 
 
@@ -135,7 +138,7 @@ def main() -> None:
     parser.add_argument(
         "--roots", nargs="+", default=DEFAULT_ROOTS,
         metavar="ROOT",
-        help="Option root symbols to process (default: SPY QQQ IWM NVDA TSLA AAPL MSFT META AMD GOOGL)",
+        help="Option root symbols to process (default: SPY QQQ IWM NVDA TSLA AAPL MSFT META AMD GOOGL MU ARM)",
     )
     parser.add_argument(
         "--publish", action="store_true", default=False,
@@ -179,7 +182,7 @@ def main() -> None:
                 "options_matrix_builder: --publish requested but R2 creds incomplete "
                 "(need R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET)"
             )
-            # Continue — we will still write local JSONs; just skip upload
+            sys.exit(1)  # --publish is an obligation, not an optional success claim.
 
     # ── per-root loop ─────────────────────────────────────────────────────────
     results: dict[str, dict] = {}   # root → {"n_cells", "uploaded", "error"}
@@ -191,6 +194,16 @@ def main() -> None:
         except Exception as e:  # noqa: BLE001
             log.error("options_matrix_builder: build failed for %s — %s", root, e)
             results[root] = {"n_cells": 0, "uploaded": False, "error": str(e)}
+            continue
+
+        # A null matrix is a source failure, not a fresh observation of zero exposure.
+        # Preserve any existing dated artifact; its own session remains the honest clock.
+        no_data = payload.get("_no_data_reason")
+        if no_data or not payload.get("cells") or payload.get("spot") is None:
+            reason = no_data or "no usable matrix cells or underlying reference"
+            log.error("options_matrix_builder: withheld %s — %s", root, reason)
+            results[root] = {"n_cells": 0, "uploaded": False, "error": None, "no_data": reason}
+            clear_parquet_cache()
             continue
 
         # write local JSON
@@ -214,8 +227,8 @@ def main() -> None:
         results[root] = {
             "n_cells":   n_cells,
             "uploaded":  uploaded,
-            "error":     None,
-            "no_data":   payload.get("_no_data_reason"),
+            "error":     "R2 publication failed" if args.publish and not uploaded else None,
+            "no_data":   None,
         }
 
         # release per-root cache after each root to bound memory on large universes
@@ -233,6 +246,8 @@ def main() -> None:
         print(f"  {root:10s}  cells={d['n_cells']:4d}  {status}{no_data_note}")
     print(f"\npublished={published}  failed={failed}  no_data={no_data}")
     print("---")
+    if failed or no_data:
+        sys.exit(1)
 
     if failed:
         sys.exit(1)

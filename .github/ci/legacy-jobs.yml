@@ -2624,6 +2624,7 @@ jobs:
       - "scripts/build_flow_surface.py"
       - "scripts/build_options_focused_quote.py"
       - "scripts/build_options_issue_desk.py"
+      - "scripts/build_options_matrix.py"
       - "scripts/build_options_prophet.py"
       - "scripts/build_options_screener.py"
       - "scripts/build_options_signal_campaign.py"
