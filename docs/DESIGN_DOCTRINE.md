@@ -14,6 +14,106 @@ Users come for fast, accurate signals and data. They do not come to read. Big pa
 internal vocabulary, unexplained numbers, and complex comparisons on a primary surface
 are defects, exactly like a wrong number would be.
 
+## 0. Human consumption, not interface study
+
+Chairman clarification, 2026-09-26. This section applies across all Mastermind product
+pages, Paper studies, prototypes, design reviews and implementation handoffs. It tightens
+this existing doctrine; it does not establish another design system, token family,
+navigation owner, lifecycle or trading authority.
+
+### The first four seconds
+
+Design the primary viewport so an unfamiliar intended user can identify **the subject,
+the dominant assessment and the useful next step in 3–4 seconds**. A material limitation
+must be visible beside the claim or action it limits. This is an orientation test, not a
+requirement to absorb an entire research dossier in four seconds.
+
+The product does the synthesis; the reader must not reconstruct it from equally weighted
+cards, contradictory enums or scattered footnotes. One dominant answer, a small number
+of supporting visual anchors and a clear continuation form the default hierarchy.
+Complexity is organized, not erased: research depth, complete member grids, history,
+signal distinctions and adverse evidence retain deliberate, accessible homes.
+
+### Copy earns space; budgets are ceilings, not quotas
+
+- A heading does **not** automatically earn a subtitle. A card does **not** automatically
+  earn a description or explanatory footer. Remove the default title/subtitle/paragraph
+  template when labels, values or a visual already communicate the same information.
+- Keep supporting copy only when it changes interpretation, prevents an important error
+  or enables the next action. Do not replace paragraphs with compressed jargon or tiny,
+  low-contrast text. Units, dates, benchmark/cohort labels and accessible control names
+  are meaningful information, not expendable clutter.
+- Use a specific conclusion where an empty heading such as "What matters now" would make
+  the reader search for the answer. Avoid slogans and unexplained imperative copy.
+- Prefer aligned comparisons, honest shared-scale charts and descriptive labels to prose
+  explaining how to compare scattered metrics. Charts must encode actual supported data;
+  decorative paths, invented history and incomparable scales are not simplification.
+- Show a material caution in plain language at its point of consequence. Move raw field
+  names, source filenames, owner/admission vocabulary, CI/PR status and implementation
+  instructions to the appropriate evidence or operator surface. Do not turn a customer
+  screen into a compliance report or hide a relevant risk in a tooltip.
+
+### One product grammar and one coherent journey
+
+Reuse the existing global navigation family, route archetype, tokens and component
+semantics. Shared grammar means consistent hierarchy, spacing, naming, state meanings
+and interactions; it does not force a chart, screener and research article into one
+identical card layout.
+
+Name destinations by user jobs, not how the backend is organized. Selecting a sector,
+subsector or company must preserve the applicable market, object identity, benchmark,
+date/window, filters and return position. Tab changes and drilldowns need an obvious
+back path. Disclosure must work with keyboard and touch, not hover alone. A button or
+"view all" affordance needs its destination/open state in the design contract; an
+unconnected control is not a completed workflow.
+
+When two studies describe the same product, decide their roles and merge useful jobs
+into one current framework before adding more variants. Preserve their source/evidence
+lineage and a disposition map; do not publish two competing navigational systems or
+silently delete capabilities. Internal source records are contextual evidence, not a
+second top-level customer dashboard merely because the data exists.
+
+### Useful action without invented trade authority
+
+Law 1 does not require a new trade recommendation. "Inspect companies", "Compare the
+signals", "Wait for current data" or a clearly unavailable action can be the useful next
+step. Translate an accepted owner-issued signal faithfully. Never invent, fuse, rank,
+size or promote a trade to make the page feel decisive. When evidence conflicts, show
+what differs in plain language and retain each source's scope; do not average away the
+conflict or make the reader decode raw enums.
+
+### Acceptance is not rendering
+
+Use the existing PR/design review receipt, not a new approval registry. Record separately:
+
+1. **Technical proof:** exact artifact/head, data identity, layout, contrast, overflow,
+   controls and relevant keyboard/touch/return-state checks. A successful Paper write or
+   screenshot belongs here only.
+2. **Design assessment:** primary hierarchy, reading order, unnecessary copy, substantive
+   depth, visual comparisons and consistency with the shared shell. State the reviewer
+   and concrete failures; a screenshot count or word-count reduction cannot pass this.
+3. **Cold-reader evidence:** show the exact primary viewport without a walkthrough for
+   four seconds, then ask what it concerns, what the main read is and where they would go
+   next; check that a visible critical limitation was not misunderstood. Preserve the
+   participant/reviewer type, prompt, actual response and outcome. Author self-review,
+   an AI critique or a timed browser capture must not be described as observed human
+   comprehension. Missing evidence is **not yet tested**, never an inferred pass.
+4. **Journey evidence:** complete the named real user task, inspect deeper evidence and
+   return without losing context. Production acceptance still needs the existing real
+   data/auth/persistence and release gates; a design study cannot prove those.
+
+Repair the primary journey before multiplying theme, locale and device variants. A
+representative desktop and mobile composition may be needed to assess the framework;
+that is different from spreading an unreviewed failure across a full matrix. The
+existing light/dark, EN/ZH, accessibility and responsive release requirements remain.
+An existing Chairman/delegated review may satisfy its actual reserved gate; this section
+does not demand a new human approval for every routine reversible edit.
+
+Every design handoff must inline the first-four-seconds target, intended reading order,
+what copy was demoted and why, preserved depth, navigation/return contract and outstanding
+acceptance evidence. Future sessions inherit this requirement through the existing
+CLAUDE/AGENTS design-doctrine links; "continue" is not permission to expand an unfit design.
+
 ---
 
 ## 1. The three tiers (progressive disclosure)
@@ -147,8 +247,8 @@ upgrade).
 
 ## 5. Builder checklist (pre-ship, every user-facing PR)
 
-1. **The 5-second test:** a cold reader states what the panel means and what to do.
-   If they can't, it fails — regardless of how accurate it is.
+1. **The 4-second test:** use §0's cold-reader protocol. Record what the reader
+   actually understood; absent human evidence is not yet tested, not an inferred pass.
 2. Every panel has a stance (Law 1), even "nothing — watch."
 3. No banned vocabulary on Tier 1 (Law 2 table); receipts live on Tier 2.
 4. Numbers translated (Law 3); budgets respected (Law 4); one as-of, one footnote.

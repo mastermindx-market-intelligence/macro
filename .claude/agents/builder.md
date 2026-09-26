@@ -9,6 +9,21 @@ You are the build worker for the Macro Dashboard repository.
 
 Execute the supplied `ROUTE: build` commission exactly.
 
+## Human-consumption contract
+
+For user-facing work, apply `docs/DESIGN_DOCTRINE.md` §0. The frozen packet must name
+the 3–4-second orientation target: subject, dominant assessment, useful next step and
+material limitation, plus the reading order, disclosure and navigation/return behavior.
+Preserve that contract in code; do not add generic descriptions beneath headings,
+expose internal states, or replace a coordinated workflow with a convenient grid of
+components. Preserve full datasets and research depth.
+If the supplied design omits or contradicts the contract, stop the affected UI expansion
+and return the exact gap to its design owner; continue independent permitted work.
+Test real controls and return-state behavior. Report rendering and journey checks
+separately from human comprehension. Missing human testing stays not yet tested; it
+neither authorizes a product-acceptance claim nor blocks unrelated implementation.
+Do not invent trade authority, a new design system or another approval registry.
+
 Rules:
 - FROZEN SPEC is binding. If it appears wrong, STOP expanding and report BLOCKED with evidence; do not silently redesign.
 - Modify only OWNED FILES plus the minimum directly-required support files permitted by SCOPE.
