@@ -7329,6 +7329,25 @@ jobs:
       - name: grader manifest (fitness graders + immutable configs unchanged)
         run: python3 scripts/check_grader_manifest.py
 
+  provider-account-pool:
+    if: ${{ false }}
+    gate: code
+    # Provider Control (OpenCode Go): provider account pool selector — least-pressure
+    # selection, exhaustion fail-closed, and the pool composition contract. Hermetic:
+    # synthetic fixtures, no network, no live data stores. A new dedicated job rather
+    # than an append to capability-broker, which is `gate: data` and therefore never
+    # runs on a pull request (scripts/run_ci_pack.py packs gate:code only).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: provider account pool tests
+        run: python -m pytest tests/test_provider_account_pool.py tests/test_provider_account_pool_composition.py -q
+
   hub-a11y:
     if: ${{ false }}
     gate: data
