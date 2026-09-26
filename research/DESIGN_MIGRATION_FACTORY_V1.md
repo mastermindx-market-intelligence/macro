@@ -104,6 +104,9 @@ page-local substitute.
                          establishes primitive authority; a tool-only primitive is provisional.
                          Synchronize the governed editable projection after repository acceptance
                          and before relying on that primitive as migration design input.
+                         State the foreground/background/interaction-state pair for important
+                         text and solid-label controls. Name source roles separately from
+                         editable aliases; a token name alone is not a contrast pass.
 3C STATE + INTERACTION   Dark + Light × EN + ZH × desktop + mobile, plus materially distinct
    MATRIX                data/availability states as applicable (loading / empty / stale /
                          partial / denied / error / corrected / success) and materially distinct
@@ -118,10 +121,17 @@ page-local substitute.
                          state hooks/forced-state capture only where they truthfully represent
                          the implemented state.
 4  PRIMARY QUESTION      one sentence (registry `primary_user_question`)
+                         FIRST READ: subject, owned assessment, consequential limitation and
+                         useful continuation, in intended reading order. These are semantic
+                         obligations, not a quota of boxes, subtitles or paragraphs.
+                         DEFAULT TASK: the useful prepared view before custom configuration;
+                         preserve the full population, comparisons and direct expert access.
 5  PRIMITIVES TO REUSE   the §11 components this page composes (explicit list)
 6  MODULE DISPOSITIONS   table: current module → RETAIN / COMPRESS / MERGE-INTO <x> /
                          DEMOTE-TO <tier/tab/page> / REMOVE (landing named) — every current
-                         first-level module appears exactly once
+                         first-level module appears exactly once. Name the actual destination
+                         and show that the ordinary task remains coherent after demotion;
+                         do not hide an adverse fact or force reconstruction across disclosures.
 7  MUST NOT CHANGE       engine outputs, payload schemas, canonical counts, access
                          boundaries, URLs, ledger/data writes — verified in review
 8  FILES IN SCOPE        exhaustive
@@ -134,10 +144,28 @@ page-local substitute.
                          packet-specific bans
 10 STATES                the four states' copy (EN+ZH) written IN the packet
 11 EVIDENCE REQUIRED     the §0.2 screenshot matrix + forced-state shots + harness capture
+                         Separate TECHNICAL proof (data/binding, layout and interactions),
+                         DESIGN assessment (hierarchy, earned copy, depth), COLD-READER
+                         evidence (actual intended-user responses, no author walkthrough),
+                         and REAL-JOURNEY proof (task, result, deeper evidence, return).
+                         Unperformed evidence is NOT TESTED, never inferred from a render.
 12 ACCEPTANCE            §0 gates + packet-specific checks (each testable by a stranger)
+                         RESULT + RETURN: identify the real success/failure owner; requests
+                         are not saves or active alerts. Preserve applicable subject/listing,
+                         market, filters, benchmark/window, selection and return position.
+                         Reset incompatible market state explicitly. Inspecting evidence or
+                         receiving a refresh must not silently replace the inspected object.
 13 COLLISIONS            open PRs/lanes on these files (gh pr list + ACTIVE_BUILD_MAP)
 14 ROLLBACK              revert story (template-scoped by default)
 ```
+
+The existing fields above also carry the human-first doctrine: clear initial orientation,
+earned copy, accessible depth and a complete task. They create no new approval store or
+mandatory extra approval for routine reversible work. The pending doctrine amendment in
+#8041 and its final accepted successor remain the content-law owner. A measured worked
+repair and unsupported-pair dispositions are recorded in
+`research/DESIGN_SYSTEM_READABILITY_REPAIR_2026-09-26.md`; that record is candidate evidence,
+not a RIG receipt or proof that its native Paper patch has been applied.
 
 Packets are committed under `research/migration_packets/MP-<seq>-<slug>.md` BEFORE the builder
 is spawned; the spawn prompt inlines §0 gates and the packet path plus committed reference
