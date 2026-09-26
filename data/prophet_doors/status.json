@@ -1,21 +1,21 @@
 {
-  "appended": 16,
-  "asof": "2026-09-24",
+  "appended": 1,
+  "asof": "2026-09-25",
   "candidates": {
     "R": 3,
-    "T": 19,
+    "T": 20,
     "W": 4
   },
   "deduped": {
-    "R": 0,
-    "T": 7,
-    "W": 3
+    "R": 3,
+    "T": 19,
+    "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-25",
+      "asof": "2026-09-26",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,26 +27,21 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 19
+        "ohlcv_absent": 3
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Industrial Automation": {
-          "theme_thrust_frac": 0.0714,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Semiconductors": {
-          "theme_thrust_frac": 0.0882,
+        "Nanotechnology": {
+          "theme_thrust_frac": 0.1176,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 58,
-      "tickers_read": 77
+      "tickers_ok": 34,
+      "tickers_read": 37
     },
     "keys": [
       "relay_count_3d",
@@ -66,14 +61,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 117,
-      "n_covered": 20,
+      "members_indexed": 129,
+      "n_covered": 0,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-24",
+      "last_session": "2026-09-25",
       "n_tickers": 1547,
       "ok": true,
       "reason": null,
@@ -83,14 +78,9 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 1,
-      "n_covered": 1,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -111,28 +101,11 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "TMO",
-      "CRVL",
-      "RNG"
-    ],
+    "R": [],
     "T": [
-      "CDNS",
-      "KLAC",
-      "LSCC",
-      "MCHP",
-      "MPWR",
-      "SNPS",
-      "STX",
-      "ON",
-      "PDFS",
-      "TXN",
-      "ETN",
-      "PRLB"
+      "DHR"
     ],
-    "W": [
-      "WMT"
-    ]
+    "W": []
   },
   "n_universe": 1492,
   "overflow": {
@@ -140,41 +113,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-25 22:07:47",
-  "runtime_s": 108.2,
+  "run_utc": "2026-09-26 11:06:58",
+  "runtime_s": 123.4,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -1,
+    "age_days": 0,
     "asof": "2026-09-25",
-    "n_members": 117,
+    "n_members": 129,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 4.007,
+        "emerging_score": 4.214,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.462,
+        "emerging_score": 2.367,
         "rank": 2,
         "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 2.355,
+        "emerging_score": 2.084,
         "rank": 3,
         "theme": "Space Tech"
       },
       {
-        "emerging_score": 1.381,
+        "emerging_score": 1.559,
         "rank": 4,
         "theme": "Industrial Automation"
       },
       {
-        "emerging_score": 1.36,
+        "emerging_score": 1.55,
         "rank": 5,
-        "theme": "Wearables"
+        "theme": "Nanotechnology"
       }
     ]
   },
@@ -185,14 +158,14 @@
     ],
     "aligned": 4,
     "asof_max": "2026-09-25",
-    "asof_mismatch": 4,
-    "asof_run": "2026-09-24",
+    "asof_mismatch": 0,
+    "asof_run": "2026-09-25",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.8,
+    "runtime_s": 22.1,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 67,
