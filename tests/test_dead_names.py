@@ -225,6 +225,26 @@ def test_resolve_seed_beats_company_tickers(monkeypatch, tmp_path):
     assert out["ATVI"]["method"] == "seed"
 
 
+def test_polygon_cik_accepts_massive_key_alias(monkeypatch):
+    monkeypatch.delenv("POLYGON_API_KEY", raising=False)
+    monkeypatch.setenv("MASSIVE_API_KEY", "massive-test-key")
+    monkeypatch.setattr(dn.config, "load", dict)
+    seen = {}
+
+    class Resp:
+        status_code = 200
+        def json(self):
+            return {"results": {"cik": "0000123456"}}
+
+    import requests
+    def fake_get(url, params, timeout):
+        seen.update(url=url, params=params)
+        return Resp()
+    monkeypatch.setattr(requests, "get", fake_get)
+    assert dn._polygon_cik("OLD") == 123456
+    assert seen["params"]["apiKey"] == "massive-test-key"
+
+
 def test_resolve_records_unresolved(monkeypatch, tmp_path):
     _redirect(monkeypatch, tmp_path)
     out = dn.resolve_dead_ciks(["ZZZZ_NOPE"], use_polygon=False)

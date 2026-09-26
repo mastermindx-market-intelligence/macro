@@ -490,6 +490,24 @@ class TestPitMembershipWiring:
         assert set(panel["members"]) == {"OLDCO", "GONE"}
         assert "NEWCO" not in panel["members"]  # PIT shows NEWCO not yet listed
 
+    def test_pit_group_filter_preserves_src_column(self, tmp_path):
+        """Historical group requests must not silently expand to all S&P 1500 names."""
+        pit_path = self._make_pit_parquet([
+            {"ticker": "LARGE", "start_date": "2000-01-01", "end_date": None, "src": "sp500"},
+            {"ticker": "MID",   "start_date": "2000-01-01", "end_date": None, "src": "sp400"},
+            {"ticker": "SMALL", "start_date": "2000-01-01", "end_date": None, "src": "sp600"},
+        ], tmp_path)
+        closes = {
+            t: pd.Series([100.0] * 200, index=pd.bdate_range("2000-01-01", periods=200))
+            for t in ("LARGE", "MID", "SMALL")
+        }
+        panel = grading.as_of_panel(
+            closes, "2005-01-01", group="sp500", ledger=pd.DataFrame(),
+            include_dead=False, pit_path=pit_path,
+        )
+        assert panel["survivorship"] == "pit"
+        assert panel["members"] == ["LARGE"]
+
     def test_pit_excludes_expired_members(self, tmp_path):
         """A name whose end_date < asof should NOT appear in the panel."""
         pit_path = self._make_pit_parquet([
