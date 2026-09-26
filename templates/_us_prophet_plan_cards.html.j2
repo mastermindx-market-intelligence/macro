@@ -77,6 +77,7 @@
     'invalidation': p.get('invalidation'),
     't1': (_rd_targets[0] if _rd_targets|length > 0 else none),
     't2': (_rd_targets[1] if _rd_targets|length > 1 else none),
+    'action_unavailable': ('recommended_action' in p) and p.get('recommended_action') is none,
     'history_available': false,
     'management_available': p.get('management_status') == 'available' and not p.get('management_error')
   }

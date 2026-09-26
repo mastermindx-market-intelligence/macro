@@ -671,6 +671,7 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
         </div>
         {% if _rd.pulse_en %}<div><b style="color:var(--text)">{{ t('Published plan read','已发布计划读数') }}</b><br>{{ t(_rd.pulse_en|e, (_rd.pulse_zh or _rd.pulse_en)|e) }}</div>{% endif %}
         <div>{{ t('This record preserves model-plan terms; it does not restate management actions or infer a user position.','此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。') }}</div>
+        {% if _rd.action_unavailable is sameas true %}<div data-action-state="unavailable">{{ t('Action guidance unavailable.','操作指引暂缺。') }}</div>{% endif %}
         {% if _rd.history_available is sameas false %}<div data-history-state="unavailable"><b style="color:var(--text)">{{ t('Outcome history','结果历史') }}</b><br>{{ t('Not connected in this view yet.','此视图暂未接入。') }}</div>{% endif %}
         {% if not _rd.management_available %}<div>{{ t('Management state unavailable for this record.','此记录的管理状态暂缺。') }}</div>{% endif %}
       </div>

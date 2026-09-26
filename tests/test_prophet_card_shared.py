@@ -334,6 +334,9 @@ def test_record_only_plan_detail_is_scoped_and_source_bound():
     assert "p.get('management_status') == 'available'" in plan_partial
     assert "does not restate management actions or infer a user position" in _SRC
     assert "'history_available': false" in plan_partial
+    assert "'action_unavailable': ('recommended_action' in p) and p.get('recommended_action') is none" in plan_partial
+    assert 'data-action-state="unavailable"' in _SRC
+    assert "Action guidance unavailable." in _SRC
     assert 'data-history-state="unavailable"' in _SRC
     assert "Not connected in this view yet." in _SRC
     assert "fetch(" not in plan_partial and "XMLHttpRequest" not in plan_partial
@@ -358,3 +361,55 @@ def test_plan_record_partial_is_valid_jinja_syntax():
         encoding="utf-8"
     )
     Environment(autoescape=True).parse(plan_partial)
+
+
+def test_plan_action_unavailable_requires_explicit_null_key():
+    """Absent action evidence stays absent; only an explicit null earns the neutral row."""
+    from jinja2 import DictLoader, Environment
+
+    plan_partial = (ROOT / "templates" / "_us_prophet_plan_cards.html.j2").read_text(
+        encoding="utf-8"
+    )
+    shared = (ROOT / "templates" / "_prophet_card.html.j2").read_text(encoding="utf-8")
+    env = Environment(
+        loader=DictLoader({
+            "_us_prophet_plan_cards.html.j2": plan_partial,
+            "_prophet_card.html.j2": shared,
+        }),
+        autoescape=True,
+    )
+    env.globals["tr"] = lambda value: value
+    env.globals["us_stance_projection"] = lambda *_args, **_kwargs: {
+        "verb": None, "stance_basis": "no_read",
+    }
+
+    base = {
+        "id": "TEST-BULL-20260901",
+        "asset": "TEST",
+        "lifecycle_state": "invalidated",
+        "management_status": "available",
+        "management_error": None,
+        "entry": 10.0,
+        "invalidation": 9.0,
+        "targets": [11.0, 12.0],
+        "horizon_days": 20,
+    }
+    absent = env.get_template("_us_prophet_plan_cards.html.j2").render(
+        items=[dict(base)], cand_map={}, trg_map={}, episode_map={}
+    )
+    explicit_null = env.get_template("_us_prophet_plan_cards.html.j2").render(
+        items=[dict(base, recommended_action=None)],
+        cand_map={}, trg_map={}, episode_map={}
+    )
+    non_null = env.get_template("_us_prophet_plan_cards.html.j2").render(
+        items=[dict(base, recommended_action="hold")],
+        cand_map={}, trg_map={}, episode_map={}
+    )
+
+    assert 'data-action-state="unavailable"' not in absent
+    assert "Action guidance unavailable." not in absent
+    assert 'data-action-state="unavailable"' in explicit_null
+    assert "Action guidance unavailable." in explicit_null
+    assert "操作指引暂缺。" in explicit_null
+    assert 'data-action-state="unavailable"' not in non_null
+    assert "Action guidance unavailable." not in non_null
