@@ -15,9 +15,13 @@ import re
 import sys
 from collections.abc import Callable, Mapping, Sequence
 from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
 
-from research import event_microstructure_study as study
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
+
+from research import event_microstructure_study as study  # noqa: E402
 
 SCHEMA = "research.event_microstructure_replay.v1"
 AGGS_PATH = "/v2/aggs/ticker/{symbol}/range/1/minute/{session}/{session}"

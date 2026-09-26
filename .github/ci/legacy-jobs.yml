@@ -15431,7 +15431,10 @@ jobs:
           tests/test_market_memory_context_deploy.py
           tests/test_regime_latest_json_boundary.py
           tests/test_release_target_truth.py
-          tests/test_build_market_memory_page.py -q
+          tests/test_build_market_memory_page.py
+          tests/test_event_microstructure_study.py
+          tests/test_event_microstructure_replay.py
+          tests/test_cross_session_source_census.py -q
 
   group-pulse:
     # GR0 of the Group Reads program: engine/group_pulse.py, the basket-level
