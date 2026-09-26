@@ -1,0 +1,26 @@
+test_au_complete_exact_parity (__main__.NumericalTests.test_au_complete_exact_parity) ... ok
+test_au_missing_input_oracle (__main__.NumericalTests.test_au_missing_input_oracle) ... ok
+test_ca_complete_exact_parity (__main__.NumericalTests.test_ca_complete_exact_parity) ... ok
+test_ca_missing_input_oracle (__main__.NumericalTests.test_ca_missing_input_oracle) ... ok
+test_cn_complete_exact_parity (__main__.NumericalTests.test_cn_complete_exact_parity) ... ok
+test_cn_missing_input_oracle (__main__.NumericalTests.test_cn_missing_input_oracle) ... ok
+test_ez_complete_exact_parity (__main__.NumericalTests.test_ez_complete_exact_parity) ... ok
+test_ez_missing_input_oracle (__main__.NumericalTests.test_ez_missing_input_oracle) ... ok
+test_gb_complete_exact_parity (__main__.NumericalTests.test_gb_complete_exact_parity) ... ok
+test_gb_missing_input_oracle (__main__.NumericalTests.test_gb_missing_input_oracle) ... ok
+test_hk_complete_exact_parity (__main__.NumericalTests.test_hk_complete_exact_parity) ... ok
+test_hk_missing_input_oracle (__main__.NumericalTests.test_hk_missing_input_oracle) ... ok
+test_in_complete_exact_parity (__main__.NumericalTests.test_in_complete_exact_parity) ... ok
+test_in_missing_input_oracle (__main__.NumericalTests.test_in_missing_input_oracle) ... ok
+test_jp_complete_exact_parity (__main__.NumericalTests.test_jp_complete_exact_parity) ... ok
+test_jp_missing_input_oracle (__main__.NumericalTests.test_jp_missing_input_oracle) ... ok
+test_kr_complete_exact_parity (__main__.NumericalTests.test_kr_complete_exact_parity) ... ok
+test_kr_missing_input_oracle (__main__.NumericalTests.test_kr_missing_input_oracle) ... ok
+test_tw_complete_exact_parity (__main__.NumericalTests.test_tw_complete_exact_parity) ... ok
+test_tw_missing_input_oracle (__main__.NumericalTests.test_tw_missing_input_oracle) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.281s
+
+OK
+{"tests": 20, "failures": 0, "errors": 0, "baseline": false, "synthetic_only": true, "source_unchanged": true, "oracle": "independent_rowwise_available_weight_plus_actual_percentile"}

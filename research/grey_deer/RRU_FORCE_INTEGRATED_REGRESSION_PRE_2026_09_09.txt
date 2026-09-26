@@ -1,0 +1,17 @@
+............................................................................................risk_radar_intl(?) failed: 'NoneType' object has no attribute 'disclaimer'
+....F.risk_radar_intl(cn) failed: synthetic unavailable source
+................................................................................................................
+======================================================================
+FAIL: test_projection_does_not_change_source_authority_or_input (RRU_COMPOSITION_EDGE_TESTS_2026_09_08.CompositionEdges.test_projection_does_not_change_source_authority_or_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_EDGE_TESTS_2026_09_08.py", line 76, in test_projection_does_not_change_source_authority_or_input
+    self.assertTrue(rd['can_force'])
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 210 tests in 15.720s
+
+FAILED (failures=1)
+{"tests": 210, "failures": 1, "errors": 0, "source_unchanged": true, "synthetic_only": true}

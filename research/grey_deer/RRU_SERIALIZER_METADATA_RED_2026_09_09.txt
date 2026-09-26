@@ -1,0 +1,99 @@
+test_corrected_entry_must_retain_composition_and_calibration_identity (__main__.ConstructionSerialization.test_corrected_entry_must_retain_composition_and_calibration_identity) ... FAIL
+test_legacy_entry_still_serializes_without_new_composition_claims (__main__.ConstructionSerialization.test_legacy_entry_still_serializes_without_new_composition_claims) ... ok
+test_modern_empty (__main__.ConstructionSerialization.test_modern_empty) ... FAIL
+test_modern_list (__main__.ConstructionSerialization.test_modern_list) ... FAIL
+test_modern_nonfinite (__main__.ConstructionSerialization.test_modern_nonfinite) ... FAIL
+test_modern_null (__main__.ConstructionSerialization.test_modern_null) ... FAIL
+test_modern_old (__main__.ConstructionSerialization.test_modern_old) ... FAIL
+test_modern_truthy (__main__.ConstructionSerialization.test_modern_truthy) ... FAIL
+test_modern_unavailable (__main__.ConstructionSerialization.test_modern_unavailable) ... FAIL
+test_valid_partial_metadata_is_copied_without_aliasing (__main__.ConstructionSerialization.test_valid_partial_metadata_is_copied_without_aliasing) ... FAIL
+
+======================================================================
+FAIL: test_corrected_entry_must_retain_composition_and_calibration_identity (__main__.ConstructionSerialization.test_corrected_entry_must_retain_composition_and_calibration_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 18, in test_corrected_entry_must_retain_composition_and_calibration_identity
+    self.assertEqual(entry.get('composition'), out['composition'],
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     'Current serializer loses construction and applicability before grading')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != {'status': 'COMPLETE', 'freshness': 'not_[1044 chars].v1'} : Current serializer loses construction and applicability before grading
+
+======================================================================
+FAIL: test_modern_empty (__main__.ConstructionSerialization.test_modern_empty)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 40, in test
+    self.assertIsNone(entry, 'Explicit invalid modern metadata must not become a legacy entry')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'asof': '2026-09-08', 'market': None, 'state': 'risk-off', 'alert': True, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None} is not None : Explicit invalid modern metadata must not become a legacy entry
+
+======================================================================
+FAIL: test_modern_list (__main__.ConstructionSerialization.test_modern_list)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 40, in test
+    self.assertIsNone(entry, 'Explicit invalid modern metadata must not become a legacy entry')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'asof': '2026-09-08', 'market': None, 'state': 'risk-off', 'alert': True, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None} is not None : Explicit invalid modern metadata must not become a legacy entry
+
+======================================================================
+FAIL: test_modern_nonfinite (__main__.ConstructionSerialization.test_modern_nonfinite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 40, in test
+    self.assertIsNone(entry, 'Explicit invalid modern metadata must not become a legacy entry')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'asof': '2026-09-08', 'market': None, 'state': 'risk-off', 'alert': True, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None} is not None : Explicit invalid modern metadata must not become a legacy entry
+
+======================================================================
+FAIL: test_modern_null (__main__.ConstructionSerialization.test_modern_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 40, in test
+    self.assertIsNone(entry, 'Explicit invalid modern metadata must not become a legacy entry')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'asof': '2026-09-08', 'market': None, 'state': 'risk-off', 'alert': True, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None} is not None : Explicit invalid modern metadata must not become a legacy entry
+
+======================================================================
+FAIL: test_modern_old (__main__.ConstructionSerialization.test_modern_old)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 40, in test
+    self.assertIsNone(entry, 'Explicit invalid modern metadata must not become a legacy entry')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'asof': '2026-09-08', 'market': None, 'state': 'risk-off', 'alert': True, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None} is not None : Explicit invalid modern metadata must not become a legacy entry
+
+======================================================================
+FAIL: test_modern_truthy (__main__.ConstructionSerialization.test_modern_truthy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 40, in test
+    self.assertIsNone(entry, 'Explicit invalid modern metadata must not become a legacy entry')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'asof': '2026-09-08', 'market': None, 'state': 'risk-off', 'alert': True, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None} is not None : Explicit invalid modern metadata must not become a legacy entry
+
+======================================================================
+FAIL: test_modern_unavailable (__main__.ConstructionSerialization.test_modern_unavailable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 40, in test
+    self.assertIsNone(entry, 'Explicit invalid modern metadata must not become a legacy entry')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'asof': '2026-09-08', 'market': None, 'state': 'risk-off', 'alert': True, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None} is not None : Explicit invalid modern metadata must not become a legacy entry
+
+======================================================================
+FAIL: test_valid_partial_metadata_is_copied_without_aliasing (__main__.ConstructionSerialization.test_valid_partial_metadata_is_copied_without_aliasing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py", line 49, in copy_test
+    self.assertIn('composition', entry)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'composition' not found in {'asof': '2026-09-08', 'market': None, 'state': 'watch', 'alert': False, 'dominant_scare': None, 'top_score': None, 'conjunction': False, 'scares': {}, 'drawdown_prob': None, 'traj_phase': None, 'traj_intensity': None, 'traj_off_peak': None, 'traj_odds_now': None, 'logged_at': '2026-09-09T11:57:45+00:00', 'graded': None}
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.052s
+
+FAILED (failures=9)
+{"tests": 10, "failures": 9, "errors": 0, "source_unchanged": true, "ledger_io": false, "synthetic_only": true}
