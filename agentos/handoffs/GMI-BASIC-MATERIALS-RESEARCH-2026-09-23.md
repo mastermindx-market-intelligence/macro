@@ -5,128 +5,116 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R24_NATIVE_SCOPE_GAP_CONFIRMED_PARENT_NOTICE_PERSISTED
+research_stage: R25_SOURCE_LOCAL_COMPATIBILITY_PROPOSAL_READY
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
 
 # Basic Materials — minimum continuing frontier
 
-Updated 2026-09-26 through R24. The complete preceding frontier is retained at this same path in commit `506682bea26932acaa04dc40ccc6c33bddb06136`, blob `a23eaef4e8111ca004e5fb426b29cdab1fb607a2`. R18–R21 chronology remains at `03997c06855e5dee7681b763bdc69159fd79f61a`, blob `e9dbd9907e68e9c0f9ac5dfa58c9049af57161c5`. Do not replay those records without a material contradiction.
+Updated 2026-09-26 through R25. The prior cumulative frontier remains at this same path in `48be143b38296d38845d1274694202d9414ea253`, blob `d359ae1bfba3530f4a710202682ab4dc6c5649f6`; the complete R23 frontier is at `506682bea26932acaa04dc40ccc6c33bddb06136`, blob `a23eaef4e8111ca004e5fb426b29cdab1fb607a2`. Do not replay historical research without a material contradiction.
 
-## Mission and authority
+## Mission, authority and preserved scope
 
-Deliver the Chairman's Materials Economics capability as a **sector-first dossier**: what changed, which operating business or financial right captures it, what reaches retained cash/per-share economics, what was expected and what evidence matters next. Preserve **44 core requirements, eight task identities, five original documents/four real company journeys, ten research families/eight lenses, and V0–V4 ambition**. A shell, arithmetic, source-only fallback, shared merge or green CI is not full product acceptance.
+Deliver the Chairman's Materials Economics capability as a **sector-first dossier**: what changed, which operating business or financial right captures it, what reaches retained cash/per-share economics, what was expected and what evidence matters next. Preserve **44 core requirements, T1–T8, five originals/four real company journeys, ten research families/eight lenses, and V0–V4 ambition**. No arithmetic-only, source-only, shell-only, shared-merge or CI-green acceptance.
 
-Sol retains Materials responsibility under the current live Chairman continuation. Direct R24 diagnosis/coordination was retained for `PRINCIPAL_JUDGMENT` and `LOWER_TOTAL_OVERHEAD`. No Fable/other worker dispatch, new receiver, PICKUP_ACK, START, Executive Attempt or autonomous wake was created. This record grants no product/shared writer, source-admission, identity, rights, runtime, release or trading authority.
+Sol retains Materials principal responsibility under the live Chairman continuation. R25 direct design/adjudication was retained for `PRINCIPAL_JUDGMENT` and `LOWER_TOTAL_OVERHEAD`. No Fable/other worker was assigned, started or consulted; no new PICKUP_ACK, Executive Attempt or autonomous return. The record grants no source/native/shared writer, identity, rights, runtime, release or trading authority.
 
-Incumbent carriers remain: research #7796 / `sol/basic-materials-research-20260923`; economics #7984; shared integration #7870. Preserve research-only Draft/HOLD, no product code on #7796, no replacement/rebase/force/release, and existing #7462/#7669 custody. R24 did not refresh the whole-state metadata of these three PRs; their prior states are historical, not newly proven.
+Research #7796 / `sol/basic-materials-research-20260923` remains the incumbent records carrier, not a product branch. Product core #7984 remains separate. #7870 remains the shared implementation owner; preserve #7462/#7669 and all incumbent page/template/source custody. No merge, rebase, force, replacement branch, release or deployment.
 
-## R24 capability delta — native source scope, not just a reader
+## R25 material result
 
-**Before:** the sector integration gap was framed mainly as Materials identity/outer-inner join plus an authenticated reader.
+**Before:** R24 proved the chosen native assertion path requires a theme; the reader-only fix could not represent the mandatory unanchored sources.
 
-**After:** the pinned shared assertion requires a canonical theme and embeds it in its source reference. The existing company-first v1.1 proposal does not amend that assertion scope. A sector-reader-only repair therefore cannot carry the mandatory unanchored Materials proof subjects through this chosen native owner.
+**After:** the existing canonical integration packet contains a concrete Materials compatibility proposal, alternatives adjudicated, exact mode/null semantics, codec/ref/K1 change map, same-statement/multiple-view invariants, five-original application, and the required native acceptance return. This is **SPEC_ONLY**, not a shared schema enrollment or product fix.
 
-This is a **pinned-source compatibility finding**, not a product fix, a claim about an unobserved latest shared head, or a conclusion that all other owners are unusable. R21 is unchanged: sector dossier first, reusable #7984 core below it, later #7870 drilldowns only for accepted canonical themes; no `theme:basic_materials`.
+Canonical packet:
+`agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md`
 
-All sources below were read at immutable tree `6cd958e92b259f7221690547e7076f4a0de4ed33`:
+- R25 amendment commit: `d447fe08a5f86c58ddce5aa1376ee229d7cefd6f`.
+- Blob: `3a52842000a0d2f1aa72dc4edfd989dc99350378`.
+- Prepared UTF-8 bytes: 24469; SHA256 `3910bb68a7a13e4c3af16cbfd981db7ee97c50c07f5f0ace3f69edf73c123e88`.
+- Native update returned the same blob as the prepared bytes; exact-ref readback covered the decision, mode rules and ref/codec boundary.
+- Full preceding packet preserved at the same path in `acde066d1d6fa756a64508114d1c457b613be054`, blob `68dbec7623c8e8225954f140f8800799be535f80`.
 
-| Source | Git blob | Finding |
-|---|---|---|
-| `contracts/theme_graph/curation_assertion.v1.schema.json` | `ff3928f0c54aa164ef8283d9da45af67e6a0d971` | `/properties/scope` requires nonempty `canonical_theme_id` and rejects extra fields. |
-| `engine/theme_graph/curation_assertion.py` | `9458ec4820095be3df8874f44c784f3ee98bb64c` | `source_ref_for` validates the assertion and returns `gmi-curation://<scope.canonical_theme_id>/<curation_revision>`. |
-| `engine/market_ontology/theme_research_registry.py` | `a2c798db603242ab59c493c4028f453be9d788f1` | The actual registration binds one exact theme and a nonempty slice tuple. |
-| `app/theme_research.py` | `9cdf988e514eab38d0e2217e394c6e208a11d33a` | Closed request requires an anchor and exact registration; existing auth/fresh rights are reused, not a sector-private binding. |
-| `engine/market_ontology/semiconductor_owner_bundle.py` | `2ee1792fb0bd4985af18aef86ad2a5f18c40324d` | Loader explicitly serves the PUBLIC half and declares `private_assertions_unbound`. |
-| `research/theme_graph/CURATION_ASSERTION_V1_1_PROPOSAL_2026-09-24.md` | `ca7223db241b82e13a15ce981716e0c3498f31b2` | Section8 proposes `theme_anchor | company_profile` dispatch, but section1 retains v1 scope while amending predicate/observation and adding economic-right/supply branches. Proposal is not enrollment, code or admission. |
+### Decision and limits
 
-**An anchorless request is not an anchorless native assertion.** A company-profile proposal also does not admit a sector selector. Changing the retained assertion's theme changes its content/revision/source ref; do not re-mint one source merely because it appears in a different presentation.
+Prefer explicit `source_local` scope within the existing shared versioned assertion owner; preserve `theme_anchor` for genuinely theme-bound statements. Proposed `scope_mode` and its exact literals are **owner-review inputs**, not accepted wire vocabulary. Keep all six existing scope fields: source-local has explicit null theme; theme-bound has nonempty theme requiring separate ontology validation. Missing/unknown mode, mixed mode/anchor pairs and foreign sector/company/page-profile keys refuse. No source/subject identity is invented merely to fit the page.
 
-### Narrow reproducible qualification
+Reject nullable-theme-only without ref/codec behavior, fake `theme:basic_materials`, sector text in a theme field, unrelated theme substitution or dropping proof companies. Keep source identity independent of page placement. The SAME retained revision used in two accepted views keeps the same native reference; genuine retained-content changes still produce new correction revisions. Later mapping knowledge does not rewrite historical belief or retained assertions.
 
-Eight local `jsonschema.Draft202012Validator` cases ran against the **manually transcribed exact scope fragment**, not the full native module. Baseline: `canonical_theme_id: ai_semiconductors`; `application`, `technology_facet`, `region`, `period`, `denominator` all null. Each case changes only the named field(s).
+Use the four incumbent functions and existing evidence/K1 owner. No new URI literal or namespace was minted/standardized; the shared owner must return a collision-disjoint accepted derivation/parser, exact native-schema binding and real roundtrip. Existing P5 must prove v1 bytes/revisions/refs/complete K1 reference objects unchanged. Source-local mode is not read-all or permission. Rights still derive from original `source.source_uri`, not new refs, locator or page identity; keep entitlement-first handling and suppress dependent output on refusal.
 
-| Case | Observed fragment result |
-|---|---|
-| Existing anchor-shaped baseline | Valid shape |
-| Remove `canonical_theme_id` | Refused: `required` |
-| Set theme to null | Refused: `type` |
-| Set theme to empty string | Refused: `minLength` |
-| Replace theme field with `sector_ref: sector:materials` | Refused: `required` + `additionalProperties` |
-| Add `company_ref: co:us:EXAMPLE` to baseline | Refused: `additionalProperties` |
-| Set theme text to fabricated `basic_materials` | Valid shape ONLY; not ontology admission |
-| Put `sector:xlb` in the theme field | Valid shape ONLY; not ontology admission |
+Sector identity/outer-inner join and T5 private reader remain UNBOUND. The proposed company-profile branch is not a sector-aggregate grant. No new API/auth/client/store, source collector, publisher, identity allocator or implicit source admission.
 
-**8/8 expectations matched: three shape-only passes and five refusals.** The misleading positive controls are NOT fixes. No actual assertion was minted, stamped, retained, admitted or served.
+### Five-original application and preserved product topology
 
-Portable report `R24_SCOPE_QUALIFICATION.json`: SHA256 `6d2583d59eabea4b48c8ec6c496acd45d82edfa0ef390c2018c8f7196fafa7d0`. It was created under `/mnt/data/basic_materials_r24/` in this conversation; that local path is not canonical storage or promised future availability. Source selector, baseline, cases and limits above preserve reproducibility without the export.
+Nutrien: combined manufactured-phosphate economics, not global/whole-company profitability. NOVONIX: qualification and collaboration remain two originals/propositions, never inferred qualification completion or a count-derived success probability. Wheaton/Antamina: financial participation/threshold economics, not ownership or extra physical supply. Weyerhaeuser: actual total investment cash versus adjusted FAD, not structural-sector reclassification or automatically sustainable FCF. AMS/Conch missingness and Canadian Nutrien identity uncertainty remain.
 
-These are new scope-boundary probes, not repeated economic fixtures. **Product tests0; full native validator/API/storage/browser runs0; independent reviews0; source admissions0.** Historical R18/R22 checks were not rerun or added to R24's count.
+R21 remains binding: Basic Materials sector dossier first; reusable #7984 core below it; later accepted canonical-theme drilldowns through #7870. Closed outer `sector_dossier_read_model.v1` is referenced, not extended/forked. No Finance 52-slice or `sector:financials` copy. Finance's fixture-connected shell is not production private-reader proof. Data-free shell and pure projection may advance only under their own admission, current source custody and design law, using explicit unavailable inputs. They do not acquire native data/identity rights or core-output-schema acceptance by being offline. No #7870-only imports on a main-based merge candidate before the accepted dependency topology exists.
 
-## Existing owner route and persisted parent notice
+## Verification actually executed
 
-Existing shared ruling #7780 comment `5814333887` identifies #7870 as the single shared integration writer and company-first dispatch as separately gated. It is source evidence, not a new assignment.
+The provided R24 scope export was checked against SHA256 `6d2583d59eabea4b48c8ec6c496acd45d82edfa0ef390c2018c8f7196fafa7d0` and remained byte-identical. Its eight cases were reused with explicit candidate mode tags; five mutations of those same inputs tested missing/unknown mode, conflicting mode/anchor and page-profile injection.
 
-Fresh native parent read: **#7886** at head `bcfe4e24e6282dc08cf5866698c53c76f50564be`, branch `sol/gmi-theme-research-leadership-20260924`, open/draft. Its body identifies the existing v1.1/company-first acceptance target and Research Vault/private-publication obligations. Its older sibling-head summaries are NOT fresh #7870/#7984 status; parent runtime liveness is not inferred.
+**13/13 candidate-shape expectations matched: 4 shape-valid, 9 refused.** The two fake/misclassified theme-string controls still pass shape only; ontology membership is deliberately not claimed. This is the proposed complete SCOPE fragment only, using Draft202012Validator, not a native v1.1 schema/module or full assertion.
 
-After a bounded same-parent discussion read, Sol posted **#7886 comment `5846397542`**, read back with `created_at=updated_at=2026-09-26T12:48:35Z`. It carries the exact source gap, eight limited checks and required owner action. This is **parent visibility**, not a new commission, child, implementation carrier, compatibility queue or accepted transfer. Posting is not proof of push notification, target consumption or ACK/START.
+Report `R25_SCOPE_DESIGN_QUALIFICATION.json` SHA256 `09f028c514f673225a20b6023f8f6457a76b6e1365808d1d65089cc58bec6abc`; local research runner `qualify_scope_candidate.py`. Sandbox copies under `/mnt/data/basic_materials_r25/` are portable aids, not canonical storage or promised future availability. The canonical packet describes the fragment delta, inputs and limits. No new economic corpus or production test programme.
 
-The original Materials AM1–AM4 request remains **#7773 comment `5809093547`**, amended in R23 at `2026-09-26T12:08:08Z`; it was not edited again in R24. Parent notice and original request have different purposes; no request is re-homed. No owner acceptance is claimed.
+Ten packet-consistency checks passed before its commit: exactly eight task rows, balanced fences, incomplete mission, no implementation authority, no TODO/TBD placeholders, no P5 claim, no minted URI literal, preservation of six incumbent scope fields, both NOVONIX originals and the previous-packet reference. This is structural self-review, not independent review or full 44-requirement product validation.
 
-### Exact shared-owner acceptance criterion
+**R25 native/product tests0; P5 runs0; independent reviews0; sources minted/admitted0; storage/API/browser runs0; worker launches0; blocked-action retries0; merge/deployment/private-browser proof0.** Historical R18/R22/R24 checks are not added to R25 counts.
 
-Fold this into the **existing v1.1/company-first owner revision**, not a Materials evidence system:
+## Source and procedure pins
 
-1. Identify an already accepted non-theme owner-native assertion/ref/K1 path, or return a versioned scope/ref amendment from the incumbent owner. No locally invented schema authority or source-ref namespace.
-2. Name the non-theme source-subject identity, ref derivation and K1 native-schema binding. Unknown company identity remains unknown; no ticker/CIK/theme substitution.
-3. Preserve v1 encoded bodies, revisions, source refs and K1 reference IDs through the proposal's existing **P5** corpus. No auto-upgrade or re-encoding retained rows; no duplicate preservation programme.
-4. Separately accept the closed sector identity/outer-inner join, authenticated reader, current rights, generations and complete source dependencies. A callback/profile discriminator/snapshot is not permission or private-reader proof.
-5. Reuse the existing five-original/four-company proof set. Wheaton/Antamina's financial right and Weyerhaeuser's cash evidence must not gain a fake theme or disappear to obtain a green test.
+Protected Mastermind re-read remains `763ec8f920177fdf48b18df1b8e37b61ab482ef0`, Skillpack1.0.1/bootstrap1. INDEX blob `94d1af402598894372858793a5b1931019c5fa77`; same-pin ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9` were loaded/reconfirmed. Current outer bootstrap adaptive-mode law controls over obsolete mode-duration wording; no selected-mode, served-model, quota or runtime telemetry inferred.
 
-This is a compatibility/acceptance requirement, not a new shared implementation grant, ninth task or fixture corpus. Return exact accepted signatures or a scope-level hold on the original Materials discussion. Sol retains responsibility for consuming the return; no background polling loop is established.
+The shared proposal was read through its known branch, file-specific only, and still returned blob `ca7223db241b82e13a15ce981716e0c3498f31b2`, equal to the R24 inspected tree. This is not a whole-PR head/status or owner-consumption refresh.
 
-## Preserved completed work and product holds
+Exact additional source reads at `6cd958e92b259f7221690547e7076f4a0de4ed33`:
+- outer evidence schema `contracts/theme_graph/evidence.v1.schema.json`, blob `8f909df8ee4c5858512035d2dfef21eac982a34d`: nonempty string source_ref; existing evidence identity hash; no sector/theme discriminator is required by that outer row.
+- `app/theme_research.py`, blob `9cdf988e514eab38d0e2217e394c6e208a11d33a`: `_attributable_family` uses source_uri, and `_filter_bundle_for_rights` withholds dependent interpretation blocks. This source logic was read, not executed.
+- `engine/theme_graph/admission.py`, blob `a5da6cdfbf047867e52ec7a35356797a3501b1e4`: a private-root classifier, not source-writer custody or a native private reader.
 
-R23 canonical packet correction is complete: `agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md`, commit `acde066d1d6fa756a64508114d1c457b613be054`, blob `68dbec7623c8e8225954f140f8800799be535f80`. This frontier adds native-scope compatibility before its identity/reader next action; do not redo its corrected T4–T8 table.
+## Independent workspace question narrowed, not repaired
 
-R21 architecture: `research/basic_materials/BASIC_MATERIALS_R21_SECTOR_UMBRELLA_AND_THEME_DRILLDOWN_ARCHITECTURE_2026-09-26.md`, blob `4acb9647da524e628596671fae6e2557b102c7ed`. The closed outer `sector_dossier_read_model.v1` is referenced, not forked/extended. Finance's 52 slices and `sector:financials` are not Materials facts. R22's qualified Finance builder has `FI_READ_URL = ""`; fixture-connected Finance is not production private-reader proof. R23's Materials-to-XLB display mapping and Technology-first static STSI plan are not Materials identity/private-publication admission. No private assertions in public `site/sectordata` by analogy.
+To avoid another wrong-repository workspace attempt, the accepted installer source was inspected, not run: Mastermind `scripts/install_mastermind_workspace_cli.sh`, blob `2da770d2776a36a5a31ffd605fb9869832f7f5c4` at the protected pin.
 
-**#7984 last reconciled R23 head:** `36f330b1f7829a289a44937bca0007c734d6df5e`, `claude/basic-materials-core-v0`, Draft/HOLD/RED; not refreshed in R24. Historical2pass/1cash-failure was not rerun. After genuine recovery of the denied write and incumbent custody: existing cash RED -> minimal GREEN -> strict decimal grammar -> duplicate-role refusal -> chronology -> commercial progression/contractual participation -> output schema/wider T4. After each GREEN run the full Materials file plus `tests/test_market_ontology_exposure_map.py`. Preserve the already-working missing-quantity-basis refusal. No skipping the RED, duplicate core/carrier, Ready, merge or V0 acceptance claim.
+It derives `source_repo` from the Git common directory of the repository containing the installer, copies that repository's workspace payload and pins the source root into the wrapper. Its install-target setting changes the wrapper destination, NOT the selected source repository. Therefore installing the same Mastermind script under a different launcher filename does not establish a Macro workspace. Do not override the host-selected repository, call the payload directly, transplant scripts into Macro or make an ad hoc clone/worktree to evade this gate.
 
-Historical M1 workspace `/Users/chriswong/lanes/wt/basic-materials-core-v0`, source clone `/Users/chriswong/lanes/repos/macro`, interpreter `$HOME/lanes/venv/bin/python` (3.12). No current lease inspection/release/transfer is claimed.
+No installer, wrapper, workspace, lease or host configuration changed. The installed M2 launcher evidence remains R23's Mastermind binding; a supported Macro-specific host route is **not yet proven**, not universally unavailable. The historical #7984 M1 workspace is unchanged/uninspected. Resolve a separately admitted T4b workspace through the incumbent host/source owner before code; do not spend another turn repeating the Mastermind-only status check.
 
-H1 shared compatibility including native scope remains unaccepted; H2/H3 store/private/current-rights unresolved; H4 partial (historical NYSE NTR/WY observations, not four journeys; Canadian Nutrien unresolved); H5 template custody preserved; H6/H7 independent release and actual original retention/review/rights owed. Exact sector identity/outer-inner join and T5 reader remain UNBOUND. Native source-to-private-browser proof is still required.
+The C3 Workbench action catalog was also inspected: its command actions expose only pinned canary recipes and do not expose worker dispatch. No Workbench action ran; this is not evidence that the whole fabric is unavailable or that another product-write action is permitted.
 
-## Procedure, capability and effects
+## Transport, effects and durable receipts
 
-Protected re-pin: Mastermind `763ec8f920177fdf48b18df1b8e37b61ab482ef0`; INDEX `94d1af402598894372858793a5b1931019c5fa77`; compatible Skillpack1.0.1/bootstrap1. Same-pin loaded ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`, RECONCILE_STATE `1373b72a13fb4a084b0331eb2bcf2d4a680d9738`, WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`, CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`. Current bootstrap mode law controls over obsolete mode-duration wording; no mode/served-model/quota telemetry or self-switch is invented.
+Original compatibility discussion remains **#7773 comment5809093547** (R23 amendment); it was not relocated or edited in R25. Parent visibility remains **#7886 comment5846397542**. R25 amended that same parent comment in place to point to the concrete canonical packet and required owner result, retaining the complete prior R24 notice below it. Readback: `updated_at=2026-09-26T13:14:43Z`. No new request queue, child, receiver, START, source transfer or notification/consumption claim. Exact shared acceptance still must return on the original discussion.
 
-**New R24 refusal:** one Studio `start_process` batch reading current Macro main, PR7796/7984/7870 metadata and recent comments on7773/7796/7870 was blocked BEFORE dispatch: "we couldn't determine the safety status of the request." No PID/process or mutation began. `TOOL_DEGRADED / EFFECT_NONE`, not EFFECT_UNKNOWN and not retry permission. It was not retried, split into equivalent current-status requests or rerouted; those questions remain unrefreshed.
+Native GitHub remained the source/comment write carrier. Macro resource metadata reported push permission, independently of source authority. File-specific preimages fenced the existing handoff (`68dbec...`) and this checkpoint (`d359ae...`). No local source workspace or shared/product writer was acquired. One research packet write and one existing parent-comment edit are reconciled; this checkpoint adds their cumulative record. Obtain its final containing commit/blob from actual update/readback, then verify the immutable diff from R24 contains only these two existing Agent OS paths.
 
-Independent native GitHub exact-file reads, source-filename discovery (not head/liveness proof), #7886 reads, Macro resource permission (push reported), sandbox scope calculation and parent write/readback succeeded. Those successes do NOT establish recovery of any denied action. For this record-only checkpoint, native read of the exact file on the existing research branch returned blob `a23eaef4e8111ca004e5fb426b29cdab1fb607a2`; update is fenced to that blob. This is a file-level custody check, not a current whole-PR/runtime/worker claim; no local workspace or product lease is acquired.
+No new platform refusal occurred in R25. This does not recover earlier denied actions. Preserve R19 cash patch; R18 reviewer launch; R13 browser/additional identity/alias/delivery; `.local/bin/pool` path read; R23 compound source-policy read; R24 current-status batch. None was retried, split into equivalent requests, delegated or rerouted. Whole-state metadata of #7796/#7984/#7870 was not refreshed; file-specific read/write/readback is not a substitute runtime/status claim.
 
-R23's installed launcher selects Mastermind, not Macro: no override, direct payload, ad hoc checkout or repeated wrong-repository lookup. R23's compound source-policy read refusal remains. Preserve all earlier denials: R19 cash patch; R18 reviewer launch (dry run succeeded, actual launch never dispatched); R13 browser/additional identity/alias/delivery; `.local/bin/pool` path read. No retry/rephrasing/tool/host/provider/account switch or delegated evasion. A new turn/mode or unrelated success grants no recovery permission. R17 Qwen locality refusal is a separate fact.
+## Frozen code and remaining gates
 
-Material effects: parent notice5846397542 persisted/read back; this existing cumulative checkpoint updated in place. No product/shared code/schema, native records, source-ref namespace, identity, rights, UI, economics, CI workflow, credential, publisher or trading output changed; no worker/merge/release/deployment/private-browser proof. Obtain this checkpoint's returned commit/blob and verify the immutable diff before claiming persistence.
+#7984 last reconciled head remains historical `36f330b1f7829a289a44937bca0007c734d6df5e`, Draft/HOLD/RED; historical2pass/1cash-failure not rerun. Resume only after genuine permitted cash-write recovery and existing custody: cash RED -> minimal GREEN -> strict decimal grammar -> duplicate roles -> chronology -> commercial/contractual mechanisms -> output schema/wider T4; full Materials and exposure-map regression after each GREEN. Preserve working missing-quantity-basis refusal. No skip/replacement/Ready/merge or core-only V0 acceptance.
 
-## Minimum source map and DO_NOT_REDO
+Historical M1 workspace `/Users/chriswong/lanes/wt/basic-materials-core-v0`; source `/Users/chriswong/lanes/repos/macro`; interpreter `$HOME/lanes/venv/bin/python` (3.12). No current lease release/transfer claimed.
 
-Full R23 frontier at the same path/commit above preserves detailed earlier receipts. Key sources: R20 review creation `628437cb3a75d599e14c065f6ed8d2b4a1916f95` / #7984 comment5826147289; R18 report `c7b815ba8e5badda1518969dae3ab874d32a2aee` and qualification `39a07a481c8e273285eab9d8e0a282128816541f`; R11 matrix `443a29e64069c029e48aed14a2ea11f51e705257`; plan `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R9 requirements `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9`; R8 spec `354ac7e305d43be8e4fe2b21dab54cbe2cf60736` / manifest `7aabc80d34278609e717fcbdfef56c080bfc9dce`; R15 sources `200fd463cf7f902022dcf14cde7dc24583110737`; R14 worksheet `4da2e39f6ffae09cb25e3cb1a6a15feebdc9d221`; R13 identities `3f54410ae6a0caeb36a0698f76a4beb4f48e3e63`. R16/R17 helper proof remains research, not production/independent review.
+H1 shared scope/ref/K1/numeric compatibility remains unaccepted. H2/H3 native retention/store/private/current-rights proof unresolved. H4 partial historical NYSE NTR/WY, not four journeys. H5 shared/template custody preserved. H6/H7 independent release and actual original retention/review/rights owed. T5 exact sector identity/outer-inner/private reader remains UNBOUND. All five originals/four real private-browser journeys remain required; sources do not acquire SEC rights by analogy.
 
-Proof subjects remain Nutrien combined manufactured-phosphate unit economics; NOVONIX's separate qualification/collaboration originals; Wheaton/Antamina financial participation; Weyerhaeuser actual investment cash versus adjusted distribution metrics. Preserve scope, native clocks, unknowns and all four company/private journeys. Research relevance never reclassifies an issuer. Public AI Brief/Prophet/membership/rank/entry/weights remain unchanged.
+## DO_NOT_REDO and minimum history
 
-Do not redo R1–R23 surveys, worksheets, economic cases, T5/T6 correction, wrong-workspace probes, denied calls or these R24 scope probes without a material invalidator. Do not repost the parent notice without new evidence. Reuse the owner's existing v1.1/P5 corpus and the Materials proof set.
+Do not repeat R1–R24 research/source worksheets, R24 gap probes, equivalent economic fixtures, the R23 T5/T6 correction, fake-theme alternatives, the now-specified R25 mode design, or wrong-repository workspace lookup. No new scope-design iteration unless owner source, behavior, authority or evidence materially changes. Next work must advance actual owner acceptance or separately admitted product capability, not create an R26 variant of the same proposal.
 
-## Next action and continuation boundary
+R21 architecture unchanged at blob `4acb9647da524e628596671fae6e2557b102c7ed`. R8 spec/manifest `354ac7e305d43be8e4fe2b21dab54cbe2cf60736` / `7aabc80d34278609e717fcbdfef56c080bfc9dce`; R9 matrix `6465ff8586bfc6dd38ddbf843cbaae783eb7d5c9`; plan `dbd993f57fc636ab2675a2ebba3e1e2296064778`; R11 matrix `443a29e64069c029e48aed14a2ea11f51e705257`; R15 source set `200fd463cf7f902022dcf14cde7dc24583110737`; R14 worksheet `4da2e39f6ffae09cb25e3cb1a6a15feebdc9d221`; R13 identities `3f54410ae6a0caeb36a0698f76a4beb4f48e3e63`. R18/R20 exact receipts and R16/R17 research-helper limits are preserved by the prior cumulative frontier. No original requirement or proof subject is removed.
 
-**Primary:** obtain the existing v1.1 owner's exact non-theme assertion/ref/K1 disposition through the original Materials discussion; parent notice5846397542 is the risk pointer. Scope/ref compatibility comes before claiming that a sector-private reader makes the native path viable. Qualify accepted owner signatures with the existing proof subjects; otherwise retain the precise native-scope hold. Current source/custody must be reconciled through permitted recovery before shared/product effects.
+## Exact next action and boundary
 
-**Independent:** data-free Materials shell work still requires its own current design/template custody/admission; it supplies neither native scope nor private-reader proof. #7984 requires genuine action recovery plus incumbent custody. No more equivalent reports or unchanged comment polling in place of those dependencies.
+**Primary:** obtain the existing shared owner's decision on the R25 canonical proposal, then consume exact accepted scope/ref/parser/K1 signatures and P5/native roundtrip evidence or a precise hold on the original #7773 discussion. This is an actual native-owner acceptance step, not another request to rediscover the gap. Shared implementation remains on #7870; Materials does not seize that writer or invent a namespace.
 
-Boundary: a new native-contract contradiction has been narrowly reproduced and posted to the verified existing GMI coordination carrier; the next implementation unit needs shared version/scope acceptance or separately admitted independent product work. Broader current-status reads are refused, so no stale-state shared takeover/release follows. This is a recoverable source-acceptance boundary, not completion, custody transfer, platform-wide outage or automatic wake.
+**Independent admitted path:** resolve the supported Macro source-workspace route with its incumbent owner for a bounded pure T4b projection or data-free shell; preserve current design/path custody and explicit unavailable native inputs. Do not use this path to retry the denied #7984 cash patch. No live private/source assumption is needed for an honestly offline slice, but its own modification gates remain mandatory.
 
-**Resume surface/mode:** current attended Sol session for source-boundary adjudication; native GitHub record actions are verified. Keep the current working mode. Extra High may later suit permitted code/test work but cannot lift an action denial.
+Boundary: the Materials compatibility choice is now decision-ready, source-persisted and supplied on the existing parent channel; the next unit crosses shared-owner native acceptance or distinct host/product custody. The installer inspection resolved why renaming the existing launcher is not that custody route. This is not mission completion, a custody transfer, an all-lanes-unavailable claim or a background worker. Keep the current working mode for owner adjudication; request Extra High only for a materially useful permitted iterative implementation phase, not to evade a denial.
 
 **FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION**  
 **MISSION_COMPLETE: false**  
