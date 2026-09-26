@@ -7047,6 +7047,20 @@ jobs:
       # markupsafe is the whole closure, verified green against exactly that set.
       - name: chat-nav suite (the assertions outside the <nav> element)
         run: python -m pytest tests/test_chat_nav_sync.py -q
+      # ...and the OTHER thing those two selftest steps above emit: an annotation.
+      # Both guards PROVE themselves by drifting a mkdtemp fixture and requiring a
+      # red, and both printed that red as a `::error::` workflow command — which
+      # GitHub's collector scrapes out of stdout regardless of the step's exit
+      # status, so a PASSING selftest published a red annotation on every PR that
+      # ran this pack (run 36099187934, job 107957833159, PR #7908). The chat-nav
+      # one told its reader to hand-edit templates/chat.html, the practice that
+      # guard exists to abolish, about a file the PR never touched. This suite pins
+      # both directions: the selftests stay quiet AND keep their text, and the real
+      # paths still emit the annotation on real drift. Rides this job because its
+      # two subjects are the two script steps immediately above; deps are the same
+      # pytest/jinja2/markupsafe/pyyaml closure already installed at the top.
+      - name: selftest annotation quiet (a green selftest must not annotate the PR)
+        run: python -m pytest tests/test_selftest_annotation_quiet.py -q
       # ui.asset_stamp — the OTHER half of this law, and the reason it bit users. The
       # `--fix` above rewrites the site copy of every plain-copy pair FROM templates/,
       # and it runs AFTER the stamping sweep in every lane, so a ?v= stamp written only

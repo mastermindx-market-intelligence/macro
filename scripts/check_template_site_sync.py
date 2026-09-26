@@ -202,13 +202,42 @@ def find_pairs(root: Path):
             yield entry.name, entry, site_copy
 
 
-def check(root: Path, fix: bool = False) -> list[str]:
+def report(level: str, title: str, message: str, *, annotate: bool = True) -> None:
+    """Print one finding — as a GitHub workflow command only when `annotate`.
+
+    `annotate=False` is the fixture caller: ``selftest()`` builds a mkdtemp pair
+    that the refusal path is SUPPOSED to reject, and proves the guard by watching
+    it reject one. GitHub's annotation collector scrapes ``::error::`` out of a
+    step's stdout regardless of the step's exit status, so that proof was posting
+    a red annotation on every PR that ran this guard's selftest step — naming
+    templates/wrongway.html, a file that exists only inside the temp directory,
+    and telling the reader to heal it. (Same defect, same round, as
+    scripts/sync_chat_nav.py; measured 2026-09-25.)
+
+    Suppressing the message would cost the selftest its point: what it proves is
+    that the refusal says the right THING, not merely that ``check.refused`` is
+    populated. So the text is unchanged and still printed; only the ``::`` prefix
+    that promotes a line to an annotation is withheld, and only for a finding
+    whose subject is the fixture. ``flush=True`` because stdout is block-buffered
+    when piped in CI and an annotation must start its own flushed line.
+    """
+    if annotate:
+        print(f"::{level} title={title}::{message}", flush=True)
+    else:
+        print(f"selftest: fixture {level} [{title}]: {message}", flush=True)
+
+
+def check(root: Path, fix: bool = False, *, annotate: bool = True) -> list[str]:
     """Return the names of diverged pairs (after fixing them when fix=True).
 
     In fix mode, pairs that could NOT be fixed (bake unavailable) are recorded
     in ``check.unfixed``, and pairs whose site copy --fix REFUSED to clobber
     (see template_is_the_stale_side) in ``check.refused`` — so main() can report
     honestly and exit nonzero rather than reporting a clobber as a heal.
+
+    `annotate=False` keeps this run's findings out of GitHub's annotation feed
+    while printing the identical text — for ``selftest()``, whose subject is a
+    fixture and not this repo. See ``report()``.
     """
     diverged = []
     check.unfixed = []
@@ -244,12 +273,13 @@ def check(root: Path, fix: bool = False) -> list[str]:
                 print(f"WARNING: site/{name} diverged but the bake is unavailable — NOT fixed")
             elif stale_template:
                 check.refused.append(name)
-                print(f"::error title=template-site-sync wrong-direction fix refused::"
-                      f"REFUSED: templates/{name} carries a ?v= stamp that disagrees with the "
-                      f"file on disk while every stamp in site/{name} is current — templates/ is "
-                      f"the stale side here, so copying it over site/ would ship bytes the edge "
-                      f"caches `immutable, max-age=1y`. Heal templates/{name} FROM site/{name} "
-                      f"instead (see #3676), then re-run.")
+                report("error", "template-site-sync wrong-direction fix refused",
+                       f"REFUSED: templates/{name} carries a ?v= stamp that disagrees with the "
+                       f"file on disk while every stamp in site/{name} is current — templates/ is "
+                       f"the stale side here, so copying it over site/ would ship bytes the edge "
+                       f"caches `immutable, max-age=1y`. Heal templates/{name} FROM site/{name} "
+                       f"instead (see #3676), then re-run.",
+                       annotate=annotate)
             else:
                 site_copy.write_bytes(expected)
                 print(f"FIXED: site/{name} restored from templates/{name}")
@@ -265,6 +295,13 @@ def check(root: Path, fix: bool = False) -> list[str]:
 
 
 def selftest() -> int:
+    """Guard the guard — every check() call here passes ``annotate=False``.
+
+    The wrongway.html refusal below is the POINT of the exercise and its subject
+    lives under mkdtemp, so it is not this repo's finding and must not reach
+    GitHub's annotation feed. The message still prints, unchanged; see
+    ``report()``.
+    """
     tmp = Path(tempfile.mkdtemp(prefix="check_template_site_sync_selftest_"))
     try:
         (tmp / "templates").mkdir()
@@ -294,12 +331,12 @@ def selftest() -> int:
         site_page.write_text(
             f'<script src="app.js?v={live}" defer></script>\n<link href="extra.css">\n')
 
-        bad = check(tmp)
+        bad = check(tmp, annotate=False)
         if bad != ["diverged.js", "wrongway.html"]:
             print(f"selftest FAIL: expected ['diverged.js', 'wrongway.html'], got {bad}")
             return 1
         site_before = site_page.read_bytes()
-        bad = check(tmp, fix=True)
+        bad = check(tmp, fix=True, annotate=False)
         if bad != ["diverged.js", "wrongway.html"]:
             print(f"selftest FAIL: --fix changed which pairs are diverged: {bad}")
             return 1
@@ -312,7 +349,7 @@ def selftest() -> int:
         if site_page.read_bytes() != site_before:
             print("selftest FAIL: --fix clobbered a site copy whose stamps were current")
             return 1
-        if check(tmp) != ["wrongway.html"]:
+        if check(tmp, annotate=False) != ["wrongway.html"]:
             print("selftest FAIL: the refused pair must stay reported as diverged")
             return 1
         print("selftest PASS: divergence detected, --fix restores from templates/, "
