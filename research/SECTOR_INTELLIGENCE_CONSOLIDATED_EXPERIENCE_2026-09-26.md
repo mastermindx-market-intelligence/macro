@@ -105,6 +105,63 @@ a direct numeric comparison; different parent-relative references require an exp
 warning rather than a synthetic ranking. Shared companies/memberships are disclosed so
 overlapping thematic groups are not counted as independent bets. Comparison never fuses
 named evidence legs into one score.
+**Overlap / hidden concentration.** Source-local themes are many-to-many classifications, so a
+screen full of different theme labels can still be the same underlying source tickers. Treat
+overlap as a contextual lens inside Themes/Compare/selected-object inspection, **not** another
+top-level workspace or Discover representation.
+
+The lens keeps three denominators separate:
+
+1. **subtheme-membership edges** — one source ticker may appear in several subthemes inside the
+   same family;
+2. **family→company edges** — one source ticker counted once per selected family;
+3. **unique source tickers** — the union across the selected families.
+
+Never label an edge count `companies`, and never turn `number of themes` into `number of
+independent bets`. The source-local overlap read also does **not** establish common revenue
+exposure, factor correlation, issuer-level canonical identity across ticker changes, portfolio
+diversification, or economic substitutability. Those require their existing identity/exposure/
+portfolio owners.
+
+For the current Sep-25 private design selection of **Semiconductors / Artificial Intelligence /
+Cloud Computing / Hardware / Industrial Automation / Robotics**, exact owner bytes contain:
+
+- **519 subtheme-membership edges**;
+- **330 family→company edges**;
+- **201 unique source tickers**;
+- **78 / 201** source tickers appear in at least two selected families;
+- **36 / 201** appear in at least three;
+- family-count distribution: 123 in one family, 42 in two, 23 in three, 12 in four,
+  and one name in all six — **NVDA**.
+
+Useful pair examples from the same dated source snapshot:
+
+- AI ↔ Cloud: **34 shared source tickers**; 34/56 of Cloud's unique names also appear in AI
+  (60.7%), while 34/84 of AI appears in Cloud (40.5%);
+- AI ↔ Hardware: **25 shared**;
+- Semiconductors ↔ AI: **17 shared**;
+- Industrial Automation ↔ Robotics: **13 shared**, representing 13/34 of Robotics (38.2%)
+  and 13/43 of Industrial Automation (30.2%).
+
+These are descriptive source-membership facts, not a concentration score or recommendation.
+
+Product presentation:
+
+- a selected family summary may say **`47 unique companies · 17 also in AI`** rather than
+  showing a raw membership count as if it were unique exposure;
+- Compare adds a compact overlap strip: **shared / left-only / right-only**, followed by the
+  exact shared-name list;
+- the multi-family picker may show **`201 unique names · 78 repeat across 2+ selected
+  families`** as a quiet scope receipt;
+- selecting a ticker can show the other selected families/subthemes that contain that same
+  source ticker, with the source-local identity caveat;
+- mobile uses the shared-name list/sheet; do not force a tiny Venn/chord diagram.
+
+Use the existing Theme Graph / security-identity owner when the product needs canonical issuer
+joins or historical identity. Do not create an overlap database or copy membership into a new
+persistence plane. Because the current Finviz-local taxonomy remains rights/use gated for a new
+Terminal display, this overlap lens is currently **private/native design + internal research**
+until the same existing display gate is accepted.
 
 **Saved view.** Do not make a decorative `Saved views` control look operational. A real
 Sector view is persisted only after an existing canonical saved-state owner is deliberately
@@ -324,6 +381,10 @@ evidence without changing source authority:
   subthemes and 924 memberships**. A focused six-family canvas is a prepared comparison,
   not the full universe; the product must state the scope and provide a family picker/
   search so all 40 remain reachable.
+- In that payload, `n_members=924` is the unique source-ticker population while the same
+  268 subthemes contain **2,339 subtheme-membership edges**. Across the current six-family
+  design selection, 330 family→company edges collapse to 201 unique source tickers. Preserve
+  these denominator distinctions anywhere overlap or coverage is shown.
 - The Sep-25 stock heatmap design fixture intentionally uses exact source
   `sector == Technology`, which yields 79 names. The same owner snapshot also contains one
   distinct `Information Technology` sector row (`P`). Do not silently alias those strings
