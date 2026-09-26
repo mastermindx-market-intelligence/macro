@@ -24,5 +24,3 @@ files:
     product_regression: reviews/product_regression.yml
     visual_taste: reviews/visual_taste.yml
   verdict: verdict.yml
-
-[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]

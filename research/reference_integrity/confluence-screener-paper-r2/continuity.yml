@@ -133,5 +133,3 @@ predecessors:
     disposition: CARRIED_BLOCK
     predecessor_note: Freeze R2 as a new successor with continuity closure for every open PRC/VTC finding and every condition in this verdict, then run a fresh dual rationale-quarantined review against the new frozen SHA.
     note: Unresolved at R2 admission; this exact predecessor obligation remains blocking until a checkable R2 design change and evidence closes it.
-
-[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]
