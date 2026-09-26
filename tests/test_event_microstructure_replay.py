@@ -154,3 +154,121 @@ def test_cli_operational_mode_requires_historical_observed_at():
                 "--mode", "operational_pit",
             ]
         )
+
+
+# ---------------------------------------------------------------------------
+# Prospective cross-session capture harness
+# ---------------------------------------------------------------------------
+
+from scripts.research import capture_cross_session_transfer as capture
+
+
+def _capture_admission(available_at: str, *, source_state: str = "SOURCE_RESOLVED") -> dict:
+    return capture.admit_source_event(
+        event_id="evt-prospective",
+        event_time=available_at,
+        available_at=available_at,
+        observed_at=available_at,
+        event_class="ceasefire_deescalation_or_escalation",
+        source_state=source_state,
+        source_name="wire",
+        source_ref="wire:evt-prospective",
+        headline="Attributed material geopolitical development",
+    )
+
+
+def test_capture_admission_preserves_original_and_challenger_freeze_clocks():
+    development = _capture_admission("2026-09-26T11:16:23Z")
+    assert development["state"] == "DEVELOPMENT_ONLY"
+    assert development["primary_v1_eligible"] is False
+    assert development["challenger_v1_1_eligible"] is False
+
+    primary_only = _capture_admission("2026-09-26T12:00:00Z")
+    assert primary_only["state"] == "PROSPECTIVE_V1_ONLY"
+    assert primary_only["primary_v1_eligible"] is True
+    assert primary_only["challenger_v1_1_eligible"] is False
+
+    both = _capture_admission("2026-09-26T21:41:02Z")
+    assert both["state"] == "PROSPECTIVE_V1_1"
+    assert both["primary_v1_eligible"] is True
+    assert both["challenger_v1_1_eligible"] is True
+    assert both["outcome_state"] == "NOT_READ"
+
+
+def test_capture_confounded_source_is_not_clean_primary():
+    out = _capture_admission(
+        "2026-09-26T21:41:02Z",
+        source_state="SOURCE_CONFOUNDED",
+    )
+    assert out["primary_v1_eligible"] is True
+    assert out["clean_primary_eligible"] is False
+
+
+def test_capture_measure_us_refuses_pre_v1_event_before_any_transport_call():
+    admission = _capture_admission("2026-09-26T11:16:23Z")
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="predates"):
+        capture.measure_us_response(admission, transport=transport)
+    assert calls == []
+
+
+def test_capture_measure_us_uses_only_frozen_us_symbols_and_no_hk_outcome():
+    admission = _capture_admission("2026-09-26T21:41:02Z")
+    calls = []
+    fixtures = {
+        "SPY": [
+            _vendor_row("2026-09-26T21:46:02Z", 100.0),
+            _vendor_row("2026-09-26T22:16:02Z", 101.0),
+        ],
+        "QQQ": [
+            _vendor_row("2026-09-26T21:46:02Z", 200.0),
+            _vendor_row("2026-09-26T22:16:02Z", 204.0),
+        ],
+        "SMH": [
+            _vendor_row("2026-09-26T21:46:02Z", 300.0),
+            _vendor_row("2026-09-26T22:16:02Z", 309.0),
+        ],
+    }
+
+    def transport(path, params):
+        symbol = path.split("/")[4]
+        calls.append(symbol)
+        return fixtures[symbol]
+
+    out = capture.measure_us_response(admission, transport=transport)
+    assert calls == ["SPY", "QQQ", "SMH"]
+    assert out["primary_v1"]["return_bps"] == pytest.approx(100.0)
+    assert out["challenger_v1_1"]["return_bps"] == pytest.approx(100.0)
+    assert out["nuisance_baselines_bps"]["SPY"] == pytest.approx(100.0)
+    assert out["nuisance_baselines_bps"]["QQQ"] == pytest.approx(200.0)
+    assert out["nuisance_baselines_bps"]["SMH"] == pytest.approx(300.0)
+    assert out["hk_outcome_state"] == "NOT_READ_BY_THIS_HARNESS"
+    assert out["matched_control_state"] == "NOT_SELECTED_BY_THIS_HARNESS"
+    assert out["persistence"] == "none_stdout_only"
+    assert out["authority"]["may_trade"] is False
+    assert out["authority"]["may_write_qledger"] is False
+    assert out["authority"]["may_write_chronicle"] is False
+
+
+def test_capture_measure_us_omits_challenger_before_amendment_clock():
+    admission = _capture_admission("2026-09-26T12:00:00Z")
+    fixtures = {
+        symbol: [
+            _vendor_row("2026-09-26T12:05:00Z", 100.0),
+            _vendor_row("2026-09-26T12:35:00Z", 101.0),
+        ]
+        for symbol in ("SPY", "QQQ", "SMH")
+    }
+
+    def transport(path, params):
+        return fixtures[path.split("/")[4]]
+
+    out = capture.measure_us_response(admission, transport=transport)
+    assert out["primary_v1"]["eligible"] is True
+    assert out["challenger_v1_1"]["eligible"] is False
+    assert out["challenger_v1_1"]["return_bps"] is None
