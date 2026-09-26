@@ -926,10 +926,21 @@ def mastermind_by_ticker(feed_dict: dict | None, *,
         pair = guidance_workspaces.get(t) if isinstance(guidance_workspaces, dict) else None
         if isinstance(pair, dict):
             from engine.company_intelligence.guidance_comparison import (
-                compare_guidance_workspaces, public_guidance_context,
+                compare_guidance_workspaces, compare_release_guidance_history,
+                public_guidance_context,
             )
-            out[t]["guidance_context"] = public_guidance_context(
-                compare_guidance_workspaces(pair.get("current"), pair.get("prior"),
-                                            as_of=as_of, ticker=t,
-                                            expected_security_id=pair.get("expected_security_id")))
+            if "release_revisions" in pair:
+                # Existing verified release-reader output, not transcript history.
+                # Never prefer one conflicting input mode or fetch a fallback.
+                ambiguous = "current" in pair or "prior" in pair
+                context = compare_release_guidance_history(
+                    None if ambiguous else pair.get("release_revisions"),
+                    event_id=pair.get("event_id"), as_of=as_of, ticker=t,
+                    expected_security_id=pair.get("expected_security_id"))
+                if ambiguous:
+                    context["reasons"] = ["guidance_input_ambiguous"]
+            else:
+                context = compare_guidance_workspaces(pair.get("current"), pair.get("prior"),
+                    as_of=as_of, ticker=t, expected_security_id=pair.get("expected_security_id"))
+            out[t]["guidance_context"] = public_guidance_context(context)
     return out

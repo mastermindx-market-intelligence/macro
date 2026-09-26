@@ -238,3 +238,73 @@ Forecast updates, documentary corrections and actual outcomes remain distinct.
 News does not reopen that design or acquire any incumbent source custody; the
 new transcript-history finding is an additive consumer constraint, not a demand
 to replace the release-only revision projection or re-approve accepted work.
+
+
+## R9 — existing release history to News baseline selection (2026-09-26)
+
+Approved parent mission continues on #7982; this is a bounded reader-output
+consumer, not permission to fetch the denied source or take #7331/#7426 custody.
+The earlier prohibition remains exact: an issuer-release index is not complete
+transcript-guidance history. This slice consumes ONLY release-backed guidance
+from the existing verified oldest-first single-event revision result.
+
+`compare_release_guidance_history` selects the final release and its immediate
+predecessor and delegates all calculations to the existing comparator. It does
+not sort, search farther back for a convenient baseline, globally deduplicate,
+read a network endpoint, or persist history. Every supplied revision must bind
+the same canonical event and its own generation/source/lifecycle metadata and
+carry the existing workspace receipt shape. Raw-byte authenticity and complete
+chain acquisition stay with the existing reader; shape validation of a Python
+dict is never represented as cryptographic verification.
+
+The bounded consumer refuses more than 64 revisions instead of truncating;
+requires increasing receipt order and nondecreasing disclosure order; rejects
+duplicate generations/consecutive release copies while retaining A -> B -> A;
+never revives an older outlook after a latest actual-only release. Transcript-
+bound guidance is refused even when the same workspaces also contain valid
+issuer releases. Missing prior, incompatible periods, source corrections,
+physical counts/rates and exact existing security identity keep their existing
+semantics. Scope is one existing canonical event, not invented cross-event
+history or a new event/type alias.
+
+Existing `financial_news.mastermind_by_ticker` now accepts owner output in its
+existing optional input map as `{event_id, release_revisions,
+expected_security_id}`. Explicit `{current, prior, expected_security_id}` inputs
+remain unchanged. Supplying both modes is a named conflict, never silently
+resolved. Same News artifact, same ticker builder/template, no extra ticker
+keys, no news-count/sentiment/rank/trade changes. Default production builds
+still do not acquire this history; live source access/activation/release are
+separate remaining gates. No source-reader, extractor, template, stylesheet,
+publisher, CI job, endpoint, credential or worker change is made in R9.
+
+Proof:
+- Initial history-selection cases: 29 RED on missing consumer, then GREEN.
+- Source mode -> actual News writer and actual ticker loader/context/template
+  exercised. The existing revision reader runs with only its byte-transport
+  seam mocked; owner-valid manifest chain + raw workspace receipts yield two
+  release revisions in five unique bounded byte reads. Corrupt workspace bytes
+  raise the unchanged reader's integrity error before selection. No real HTTP.
+- Existing release-only deduplication correctly returns one revision for two
+  transcript changes with the same release; the new consumer rejects it as
+  incomplete for guidance, not an unchanged outlook.
+- Two different release revisions with transcript guidance also refuse; having
+  two release rows is not sufficient evidence of transcript completeness.
+- Expanded News/comparison/display/common suite: 297 PASS, exit0.
+- Compose unchanged #7955@29dc4ce4f5b3f03ba1fc5419a507b09e1b3b93d5 and
+  #7966@e963555df1d7a71ead116d641a85c07e17f84241: 405 PASS, exit0; rank-test
+  and CI manifest three-way composition clean; all temporary inputs restored.
+- Discriminating mutations: choose earliest instead of adjacent baseline ->
+  FAIL; permit transcript guidance from release history -> FAIL after that
+  test's valid baseline passed; restore -> 297 PASS. The first transcript
+  mutation probe had mistakenly identical release fixture bodies and failed
+  before its subject; it is explicitly discarded, not credited as proof.
+- Existing CI selector includes all changed/imported reader boundaries in the
+  existing earnings-release-identity gate. No CI declaration change in R9.
+
+All data in these tests is synthetic. The work proves the reader-output-to-
+News/ticker consumer path, not accepted upstream extraction, live acquisition,
+independent review, merge, deployment, or production product acceptance. Old
+browser captures remain old captures; no fresh browser claim or geometry change.
+Remaining source ownership stays #7331/#7426, China leaf #7575 and current native
+identity/rights/publication owners. Do not duplicate the source repair or invoke
+the frozen native Codex401 route without evidenced authentication recovery.

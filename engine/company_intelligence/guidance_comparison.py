@@ -3,7 +3,8 @@
 Pure, known-now descriptive context. Callers supply owner-native workspace
 bodies obtained through the existing verified readers. Association checks here
 do not certify the upstream extractor or recreate its byte-replay authority.
-No source fetch, history selection, storage, ambient clock, model, or trade input.
+No source fetch, storage, ambient clock, model, or trade input. The bounded
+release-history selector consumes the existing owner reader without replacing it.
 """
 from __future__ import annotations
 
@@ -209,6 +210,13 @@ def _fmt(value: Decimal) -> str:
     return "0" if text in {"-0", ""} else text
 
 
+def _empty_context() -> dict[str, Any]:
+    return {"schema": SCHEMA, "authority": AUTHORITY,
+        "is_context_only": True, "display_only": True, "prophet_flags": dict(_FLAGS),
+        "temporal_basis": "known_now", "as_of": None, "available": False,
+        "comparisons": [], "reasons": [], "consensus": None}
+
+
 def compare_guidance_workspaces(current: Any, prior: Any, *, as_of: datetime,
                                 ticker: str | None = None,
                                 expected_security_id: str | None = None) -> dict[str, Any]:
@@ -219,10 +227,7 @@ def compare_guidance_workspaces(current: Any, prior: Any, *, as_of: datetime,
     require explicit equal currency/accounting basis; v1 physical counts/rates
     can compare directly, while any supplied basis/scope must still agree.
     """
-    result: dict[str, Any] = {"schema": SCHEMA, "authority": AUTHORITY,
-        "is_context_only": True, "display_only": True, "prophet_flags": dict(_FLAGS),
-        "temporal_basis": "known_now", "as_of": None, "available": False,
-        "comparisons": [], "reasons": [], "consensus": None}
+    result = _empty_context()
     reasons: list[str] = result["reasons"]
     try:
         now = _clock(as_of); result["as_of"] = now.isoformat()
@@ -297,6 +302,93 @@ def compare_guidance_workspaces(current: Any, prior: Any, *, as_of: datetime,
     result["reasons"] = sorted(set(reasons))
     result["available"] = bool(result["comparisons"])
     return result
+
+
+def compare_release_guidance_history(revisions: Any, *, event_id: str,
+                                    as_of: datetime, ticker: str | None = None,
+                                    expected_security_id: str | None = None) -> dict[str, Any]:
+    """Compare adjacent releases from the existing verified history reader.
+
+    Input is the complete, oldest-first output for ONE event from the existing
+    Company Intelligence release-revision reader. The reader, not this selector,
+    authenticates raw workspace bytes and chain completeness. Receipt checks here
+    bind metadata and refuse malformed transport; a dict is not proof of replay.
+
+    Only the final release and its immediate predecessor may supply a baseline.
+    No sorting, back-search, deduplication, transcript-history inference or I/O.
+    The 64-revision display bound refuses rather than silently truncating history.
+    A later actual-only release never revives an older guidance comparison.
+    """
+    result = _empty_context()
+    try:
+        now = _clock(as_of); result["as_of"] = now.isoformat()
+        if not isinstance(revisions, list):
+            raise _Refusal("release_history_invalid")
+        if not revisions:
+            raise _Refusal("release_history_empty")
+        if len(revisions) > 64:
+            raise _Refusal("release_history_bound_exceeded")
+        if not isinstance(event_id, str) or not event_id:
+            raise _Refusal("release_history_identity_mismatch")
+        workspaces: list[Mapping] = []
+        generations: set[str] = set()
+        previous_clocks = None
+        previous_source = None
+        for revision in revisions:
+            if not isinstance(revision, Mapping):
+                raise _Refusal("release_history_invalid")
+            ws, _, observed = _workspace(revision.get("workspace"), now, None)
+            if ws["event_id"] != event_id:
+                raise _Refusal("release_history_identity_mismatch")
+            sources = [source for source in ws["sources"] if isinstance(source, Mapping)
+                       and source.get("kind") == "issuer_release"]
+            if len(sources) != 1:
+                raise _Refusal("release_history_guidance_source_mismatch")
+            source = sources[0]
+            native = {"generation_id": ws["generation_id"],
+                      "source_sha256": source.get("source_sha256"),
+                      "source_available_at": ws["lifecycle"]["source_available_at"],
+                      "observed_at": ws["lifecycle"]["observed_at"],
+                      "lifecycle_state": ws["lifecycle"]["state"], "form": source.get("form")}
+            if any(key not in revision or revision[key] != value for key, value in native.items()):
+                raise _Refusal("release_history_metadata_mismatch")
+            try:
+                _source_sha(native["source_sha256"], field_name="source_sha256")
+            except (ValueError, TypeError) as exc:
+                raise _Refusal("release_history_metadata_mismatch") from exc
+            if previous_source == native["source_sha256"]:
+                raise _Refusal("release_history_duplicate_source")
+            previous_source = native["source_sha256"]
+            receipt = revision.get("workspace_receipt")
+            if (not isinstance(receipt, Mapping) or set(receipt) != {"sha256", "bytes"}
+                    or not isinstance(receipt.get("sha256"), str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", receipt["sha256"])
+                    or type(receipt.get("bytes")) is not int or not 0 < receipt["bytes"] <= 524288):
+                raise _Refusal("release_history_receipt_invalid")
+            if ws["generation_id"] in generations:
+                raise _Refusal("release_history_duplicate_generation")
+            generations.add(ws["generation_id"])
+            available = _clock(native["source_available_at"])
+            if previous_clocks is not None and (observed <= previous_clocks[1] or available < previous_clocks[0]):
+                raise _Refusal("release_history_order_invalid")
+            previous_clocks = (available, observed)
+            workspaces.append(ws)
+        # The release-only index cannot guarantee completeness of transcript
+        # guidance, even when a transcript happens to be in one returned body.
+        for ws in workspaces[-2:]:
+            release = next(source for source in ws["sources"]
+                           if isinstance(source, Mapping) and source.get("kind") == "issuer_release")
+            for guidance in ws["guidance"]:
+                if not isinstance(guidance, Mapping):
+                    raise _Refusal("guidance_invalid")
+                span = guidance.get("source_span")
+                if not isinstance(span, Mapping) or span.get("document_id") != release.get("document_id"):
+                    raise _Refusal("release_history_guidance_source_mismatch")
+        return compare_guidance_workspaces(workspaces[-1], workspaces[-2] if len(workspaces) > 1 else None,
+            as_of=now, ticker=ticker, expected_security_id=expected_security_id)
+    except _Refusal as exc:
+        result["reasons"] = [str(exc)]
+        return result
 
 
 def public_guidance_context(context: Mapping[str, Any]) -> dict[str, Any]:

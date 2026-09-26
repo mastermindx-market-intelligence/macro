@@ -35,6 +35,16 @@ _REASONS = {
     "revision_order_invalid": ("Disclosure order could not be verified.", "无法核实披露先后顺序。"),
     "event_state_ineligible": ("This event cannot supply a current comparison.", "该事件无法提供当前对比。"),
 }
+for _history_reason in (
+    "release_history_invalid", "release_history_bound_exceeded", "release_history_identity_mismatch",
+    "release_history_metadata_mismatch", "release_history_receipt_invalid",
+    "release_history_duplicate_generation", "release_history_duplicate_source", "release_history_order_invalid",
+):
+    _REASONS[_history_reason] = ("Release history could not be verified.", "无法核实公告历史。")
+_REASONS["release_history_empty"] = ("No release guidance history is available.", "暂无公告指引历史。")
+_REASONS["release_history_guidance_source_mismatch"] = (
+    "This history does not cover the guidance source.", "该历史记录未涵盖这项指引的来源。")
+_REASONS["guidance_input_ambiguous"] = ("Conflicting guidance inputs; comparison unavailable.", "指引输入存在冲突，暂不提供对比。")
 _UNAVAILABLE = ("Guidance comparison unavailable.", "指引对比暂不可用。")
 
 

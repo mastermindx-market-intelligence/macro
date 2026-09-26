@@ -219,8 +219,10 @@ def test_news_ticker_membership_is_checked_before_auxiliary_context(monkeypatch)
     assert result["OTHER"]["guidance_context"]["reasons"]==["issuer_listing_mismatch"]
 
 
-def test_existing_news_builder_writes_comparison_on_same_per_ticker_artifact(monkeypatch,tmp_path):
+@pytest.mark.parametrize("input_mode", ["explicit_pair", "release_history"])
+def test_existing_news_builder_writes_comparison_on_same_per_ticker_artifact(monkeypatch,tmp_path,input_mode):
     import engine,sys,types
+    from pathlib import Path
     from engine import financial_news as news
     from scripts import build_news
     monkeypatch.setattr(news.nc,"build_entity_map",lambda:{"tickers":{}})
@@ -247,12 +249,31 @@ def test_existing_news_builder_writes_comparison_on_same_per_ticker_artifact(mon
         for key,fn in functions.items():setattr(module,key,fn)
         monkeypatch.setitem(sys.modules,"engine."+name,module)
         monkeypatch.setattr(engine,name,module,raising=False)
-    build_news.build(guidance_workspaces={"ACME":{"expected_security_id":"xnas:ACME","current":workspace(76000,78000,later=True),"prior":workspace()}})
+    if input_mode == "release_history":
+        history, transport_calls = transport_release_history(monkeypatch,
+            [workspace(), workspace(76000,78000,later=True,status="revised")])
+        assert len(transport_calls) == 5
+        source_input = {"expected_security_id":"xnas:ACME", "event_id":EVENT,
+                        "release_revisions":history}
+    else:
+        source_input = {"expected_security_id":"xnas:ACME",
+                        "current":workspace(76000,78000,later=True),"prior":workspace()}
+    build_news.build(guidance_workspaces={"ACME":source_input})
     artifact=json.loads((tmp_path/"site/news/by_ticker.json").read_text())
     row=artifact["tickers"]["ACME"]
     assert artifact["schema"]=="news_flow.v1" and row["n_recent"]==1
     assert row["guidance_context"]["comparisons"][0]["midpoint_delta"]=="-24500"
     assert row["guidance_context"]["as_of"]==ASOF.isoformat()
+    if input_mode == "release_history":
+        from scripts import build_ticker_pages as pages
+        from jinja2 import Environment, FileSystemLoader
+        aggregate = pages.load_all_aggregates(tmp_path/"site")
+        page = pages.build_page_context("ACME","Synthetic","Technology",{},aggregate,ASOF.isoformat())
+        html = Environment(loader=FileSystemLoader(str(Path(build_news.__file__).parents[1]/"templates")),
+                           autoescape=True).get_template("ticker.html.j2").render(**page)
+        assert "76,000–78,000 vehicles" in html and "-24,500 vehicles" in html
+        assert len(transport_calls) == 5
+
 
 
 
@@ -498,3 +519,224 @@ def test_multiple_release_sources_cannot_share_one_lifecycle_clock():
     c["sources"].append(other)
     result = compare(c, workspace())
     assert not result["available"] and "guidance_source_clock_ambiguous" in result["reasons"]
+
+
+# R9: selection consumes the existing release-history reader, not another store.
+def release_revision(ws):
+    from engine.neuralweb.company_intelligence_reader import _receipt_from_revision
+    body = json.dumps(ws, sort_keys=True, allow_nan=False).encode()
+    return _receipt_from_revision(ws, generation_id=ws['generation_id'],
+        workspace_receipt={'sha256': sha256(body).hexdigest(), 'bytes': len(body)})
+
+
+def history_context(revisions, *, event_id=EVENT, ticker=None, expected_security_id=None):
+    from engine.company_intelligence import guidance_comparison as comparison
+    fn = getattr(comparison, 'compare_release_guidance_history', None)
+    assert callable(fn), 'Release history is not connected to guidance baseline selection'
+    return fn(revisions, event_id=event_id, as_of=ASOF, ticker=ticker,
+              expected_security_id=expected_security_id)
+
+
+def release_history():
+    return [release_revision(workspace()),
+            release_revision(workspace(76000, 78000, later=True, status='revised'))]
+
+
+def test_release_history_selects_the_latest_adjacent_disclosures_without_mutating_input():
+    history = release_history(); before = deepcopy(history)
+    result = history_context(history)
+    expected = compare(history[-1]['workspace'], history[-2]['workspace'])
+    assert result == expected and result['comparisons'][0]['midpoint_delta'] == '-24500'
+    assert history == before
+
+
+@pytest.mark.parametrize('bad', [None, {}, 'history', (1, 2), [None]])
+def test_malformed_release_history_is_absent(bad):
+    result = history_context(bad)
+    assert not result['available'] and result['reasons'] == ['release_history_invalid']
+
+
+def test_missing_release_history_is_not_zero_change():
+    result = history_context([])
+    assert not result['available'] and result['reasons'] == ['release_history_empty']
+
+
+def test_first_release_has_no_invented_baseline():
+    result = history_context(release_history()[:1])
+    assert not result['available'] and result['reasons'] == ['prior_not_supplied']
+
+
+@pytest.mark.parametrize('field,value', [
+    ('generation_id', 'f'*24), ('source_sha256', '0'*64),
+    ('source_available_at', '2026-09-20T15:00:00+00:00'),
+    ('observed_at', '2026-09-20T15:00:00+00:00'),
+    ('lifecycle_state', 'complete'), ('form', 'invented'),
+])
+def test_release_history_metadata_must_match_its_workspace(field, value):
+    history = release_history(); history[-1][field] = value
+    result = history_context(history)
+    assert not result['available'] and result['reasons'] == ['release_history_metadata_mismatch']
+
+
+@pytest.mark.parametrize('receipt', [None, {}, {'sha256':'bad','bytes':20},
+    {'sha256':'0'*64,'bytes':True}, {'sha256':'0'*64,'bytes':0},
+    {'sha256':'0'*64,'bytes':524289}])
+def test_release_history_requires_owner_workspace_receipt_shape(receipt):
+    history = release_history(); history[-1]['workspace_receipt'] = receipt
+    result = history_context(history)
+    assert not result['available'] and result['reasons'] == ['release_history_receipt_invalid']
+
+
+def test_release_history_refuses_order_changes_instead_of_sorting_to_a_good_answer():
+    result = history_context(list(reversed(release_history())))
+    assert not result['available'] and result['reasons'] == ['release_history_order_invalid']
+
+
+def test_release_history_refuses_a_mixed_event_even_when_issuer_and_horizon_match():
+    history = release_history(); history[0]['workspace']['event_id'] = 'evt_cik0000000001_2026q2_results'
+    result = history_context(history)
+    assert not result['available'] and result['reasons'] == ['release_history_identity_mismatch']
+
+
+def test_release_history_cannot_replay_duplicate_generations():
+    history = release_history(); history[-1]['generation_id'] = history[0]['generation_id']
+    history[-1]['workspace']['generation_id'] = history[0]['generation_id']
+    result = history_context(history)
+    assert not result['available'] and result['reasons'] == ['release_history_duplicate_generation']
+
+
+def test_release_history_does_not_globally_deduplicate_return_to_earlier_outlook():
+    history = release_history()
+    earlier = deepcopy(history[0]['workspace']); earlier['generation_id'] = 'c'*24
+    earlier['lifecycle']['source_available_at'] = '2026-09-24T15:30:00+00:00'
+    earlier['lifecycle']['observed_at'] = '2026-09-24T15:30:00+00:00'
+    earlier['generated_at'] = '2026-09-24T15:30:00+00:00'
+    history.append(release_revision(earlier))
+    result = history_context(history)
+    assert result['available'] and result['comparisons'][0]['midpoint_delta'] == '24500'
+    assert result['comparisons'][0]['evidence'][0]['generation_id'] == 'c'*24
+
+
+def test_release_history_does_not_fall_back_past_the_latest_actual_only_release():
+    history = release_history(); actual = deepcopy(history[-1]['workspace'])
+    actual['guidance'] = []; history[-1] = release_revision(actual)
+    result = history_context(history)
+    assert not result['available'] and result['reasons'] == ['guidance_absent']
+
+
+def test_release_history_never_treats_transcript_rows_as_complete_guidance_history():
+    history = [release_revision(transcript_workspace()), release_revision(transcript_workspace(later=True))]
+    result = history_context(history)
+    assert not result['available'] and result['reasons'] == ['release_history_guidance_source_mismatch']
+
+
+def test_release_history_refuses_oversize_instead_of_truncating_a_baseline():
+    result = history_context([release_history()[0]] * 65)
+    assert not result['available'] and result['reasons'] == ['release_history_bound_exceeded']
+
+
+def test_release_history_keeps_security_binding_as_a_separate_required_join():
+    history = release_history()
+    result = history_context(history, ticker='ACME')
+    assert not result['available'] and result['reasons'] == ['listing_binding_missing']
+    security = history[-1]['workspace']['issuer']['listings'][0]['security_id']
+    result = history_context(history, ticker='ACME', expected_security_id=security)
+    assert result['available']
+
+
+def test_release_history_does_not_search_older_revisions_for_a_convenient_baseline():
+    history = release_history(); middle = deepcopy(history[0]['workspace'])
+    middle['generation_id'] = 'd'*24
+    middle['guidance'][0]['horizon'] = 'FY2026 Q3'
+    middle['lifecycle']['observed_at'] = '2026-09-23T18:00:00+00:00'
+    middle['lifecycle']['source_available_at'] = '2026-09-23T18:00:00+00:00'
+    middle['sources'][0]['source_sha256'] = 'd'*64
+    history.insert(1, release_revision(middle))
+    result = history_context(history)
+    assert not result['available'] and result['reasons'] == ['prior_comparable_missing']
+
+
+
+def transport_release_history(monkeypatch, workspaces, *, corrupt=False):
+    """Exercise the actual legacy reader; only byte transport is replaced."""
+    from engine.neuralweb import company_intelligence_reader as reader
+    from engine.company_intelligence.event_workspace import validate_workspace_manifest
+    base = 'https://example.test/company_intelligence/event_workspaces'
+    objects = {}; previous_id = previous_sha = None
+    for ws in workspaces:
+        body = json.dumps(ws,sort_keys=True,allow_nan=False).encode()
+        generation = ws['generation_id']
+        manifest = {'schema':'event_workspace_manifest.v2','generation_id':generation,
+            'generated_at':ws['generated_at'],'status':'ready','event_count':1,
+            'files':{f'workspaces/{ws["event_id"]}.json':{'bytes':len(body),'sha256':sha256(body).hexdigest()}},
+            'aliases':{},'authority':'context_only','warnings':[],
+            'previous_generation_id':previous_id,'previous_manifest_sha256':previous_sha}
+        validate_workspace_manifest(manifest)
+        raw_manifest = json.dumps(manifest,sort_keys=True,allow_nan=False).encode()
+        objects[f'{base}/generations/{generation}/manifest.json'] = raw_manifest
+        objects[f'{base}/generations/{generation}/workspaces/{ws["event_id"]}.json'] = body
+        previous_id, previous_sha = generation, sha256(raw_manifest).hexdigest()
+    objects[f'{base}/manifest.json'] = raw_manifest
+    if corrupt:
+        key = f'{base}/generations/{previous_id}/workspaces/{workspaces[-1]["event_id"]}.json'
+        objects[key] += b' '
+    calls = []
+    def fetch(url, *, limit, allow_404=False):
+        calls.append(url)
+        assert url in objects, 'Unexpected endpoint in synthetic transport'
+        assert len(objects[url]) <= limit
+        return objects[url]
+    monkeypatch.setattr(reader,'_fetch_bytes',fetch)
+    result = reader.read_all_event_source_revisions([EVENT],base_url='https://example.test/company_intelligence')
+    return result[EVENT], calls
+
+
+def test_existing_reader_output_drives_selection_with_raw_receipts(monkeypatch):
+    old, current = workspace(), workspace(76000,78000,later=True,status='revised')
+    history, calls = transport_release_history(monkeypatch,[old,current])
+    result = history_context(history)
+    assert result['available'] and result['comparisons'][0]['midpoint_delta']=='-24500'
+    assert len(calls)==5 and len(set(calls))==5
+    assert history[0]['workspace_receipt']['sha256']==sha256(json.dumps(old,sort_keys=True,allow_nan=False).encode()).hexdigest()
+
+
+def test_existing_reader_rejects_corrupt_bytes_before_selection(monkeypatch):
+    from engine.neuralweb.company_intelligence_reader import WorkspaceChainIntegrityError
+    with pytest.raises(WorkspaceChainIntegrityError):
+        transport_release_history(monkeypatch,[workspace(),workspace(76000,78000,later=True)],corrupt=True)
+
+
+def test_release_history_rejects_consecutive_source_copies_as_new_revisions():
+    history=release_history()
+    copied=deepcopy(history[0]['workspace'])
+    copied['generation_id']=history[-1]['generation_id']
+    copied['lifecycle']=deepcopy(history[-1]['workspace']['lifecycle'])
+    history[-1]=release_revision(copied)
+    result=history_context(history)
+    assert not result['available'] and result['reasons']==['release_history_duplicate_source']
+
+
+
+def test_release_reader_deduplication_cannot_hide_a_transcript_change_as_release_guidance(monkeypatch):
+    older, newer = transcript_workspace(), transcript_workspace(later=True)
+    release = deepcopy(workspace()["sources"][0]); release["document_id"] = "distinct-release"
+    for ws in (older,newer):
+        ws["sources"].append(deepcopy(release))
+    history, calls = transport_release_history(monkeypatch,[older,newer])
+    assert len(history)==1 and len(calls)==5  # owner's release-only deduplication
+    result = history_context(history)
+    assert not result["available"]
+    assert result["reasons"]==["release_history_guidance_source_mismatch"]
+
+
+
+def test_two_release_revisions_still_cannot_certify_transcript_guidance_history(monkeypatch):
+    workspaces = [transcript_workspace(),transcript_workspace(later=True)]
+    for i,ws in enumerate(workspaces):
+        release = deepcopy(workspace(76000 if i else 100000, 78000 if i else 103000, later=bool(i))["sources"][0])
+        release["document_id"] = "distinct-release-"+str(i)
+        ws["sources"].append(release)
+    history,_ = transport_release_history(monkeypatch,workspaces)
+    assert len(history)==2
+    result=history_context(history)
+    assert not result["available"] and result["reasons"]==["release_history_guidance_source_mismatch"]

@@ -245,3 +245,57 @@ def test_actual_news_to_ticker_path_preserves_source_clock_and_absence(tmp_path,
         assert 'Disclosure timing could not be verified.' in html
         assert '-24,500 vehicles' not in html
     assert 'fixture-release' not in html and 'guidance_source_clock' not in html
+
+
+# R9: the same ticker artifact accepts an owner release history, not a chosen pair.
+def test_owner_release_history_reaches_the_existing_news_artifact_and_ticker(monkeypatch, tmp_path):
+    from test_news_guidance_comparison import release_history, EVENT
+    from engine import financial_news
+    from scripts import build_ticker_pages as pages
+    history = release_history()
+    security = history[-1]['workspace']['issuer']['listings'][0]['security_id']
+    monkeypatch.setattr(financial_news.nc, 'build_entity_map', lambda: {})
+    feed = {'by_ticker': {'ACME': [{'title':'Existing story', 'url':'https://example.test/story'}]}}
+    supplied = {'ACME': {'release_revisions': history, 'event_id': EVENT, 'expected_security_id': security}}
+    before = deepcopy(supplied)
+    news = financial_news.mastermind_by_ticker(feed, guidance_workspaces=supplied, as_of=ASOF)
+    assert news['ACME']['guidance_context']['available'], 'Source history never reached the comparator'
+    assert supplied == before
+    baseline = financial_news.mastermind_by_ticker(feed)
+    assert {k:v for k,v in news['ACME'].items() if k!='guidance_context'} == baseline['ACME']
+    target = tmp_path/'news'; target.mkdir()
+    (target/'by_ticker.json').write_text(json.dumps({'schema':'news_flow.v1','tickers':news}))
+    agg = pages.load_all_aggregates(tmp_path)
+    ctx = pages.build_page_context('ACME','Synthetic','Technology',{},agg,ASOF.isoformat())
+    html = Environment(loader=FileSystemLoader(str(ROOT/'templates')),autoescape=True).get_template('ticker.html.j2').render(**ctx)
+    assert '76,000–78,000 vehicles' in html and '-24,500 vehicles' in html
+    assert 'fixture-release' not in html
+    assert pages.build_page_context('OTHER','Other','Technology',{},agg,ASOF.isoformat())['news_guidance'] is None
+
+
+def test_release_history_and_manual_pair_are_not_silently_prioritized(monkeypatch):
+    from test_news_guidance_comparison import release_history, EVENT
+    from engine import financial_news
+    history = release_history(); security = history[-1]['workspace']['issuer']['listings'][0]['security_id']
+    pair = {'release_revisions':history,'event_id':EVENT,'expected_security_id':security,
+            'current':history[-1]['workspace'],'prior':history[0]['workspace']}
+    monkeypatch.setattr(financial_news.nc,'build_entity_map',lambda:{})
+    result = financial_news.mastermind_by_ticker({'by_ticker':{'ACME':[]}},guidance_workspaces={'ACME':pair},as_of=ASOF)
+    context = result['ACME']['guidance_context']
+    assert not context['available'] and context['reasons'] == ['guidance_input_ambiguous']
+
+
+def test_release_history_does_not_create_new_ticker_keys(monkeypatch):
+    from test_news_guidance_comparison import release_history, EVENT
+    from engine import financial_news
+    monkeypatch.setattr(financial_news.nc,'build_entity_map',lambda:{})
+    result = financial_news.mastermind_by_ticker({'by_ticker':{'ACME':[]}},
+        guidance_workspaces={'OTHER':{'release_revisions':release_history(),'event_id':EVENT}},as_of=ASOF)
+    assert set(result)=={'ACME'} and 'guidance_context' not in result['ACME']
+
+
+def test_invalid_history_has_a_plain_bilingual_explanation(monkeypatch):
+    from test_news_guidance_comparison import history_context
+    data = public_guidance_context(history_context([None]))
+    result = view(data)
+    assert result['note_en']=='Release history could not be verified.' and result['note_zh']
