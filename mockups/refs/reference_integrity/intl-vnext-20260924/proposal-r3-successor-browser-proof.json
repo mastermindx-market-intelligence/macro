@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.intl_r3_browser_evidence.v4",
-  "source_commit": "UNFROZEN_WORKTREE",
+  "source_commit": "d39235e031c79fe90b2c789521545e68782edc4a",
   "artifact": "mockups/refs/institutionalize/intl/reference-r3.html",
   "artifact_sha256": "a98059fc47f93b37680392963a590667e350953ed7cdc9db8c5629283d21d272",
   "stocks_artifact": "site/intl_stocks.html",
