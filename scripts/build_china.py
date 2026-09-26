@@ -110,8 +110,9 @@ def _theme_intel_for_act_now(
     no-network rerenders reuse the persisted artifact. Nothing is restamped:
     stale or malformed evidence still fails closed in china_act_now.
     """
-    persisted_doc = _load_json(baskets_json_path) or {}
-    persisted = persisted_doc.get("theme_intel")
+    persisted_doc = _load_json(baskets_json_path)
+    persisted = (persisted_doc.get("theme_intel")
+                 if isinstance(persisted_doc, dict) else None)
     if not refresh:
         return persisted if isinstance(persisted, dict) else None
 

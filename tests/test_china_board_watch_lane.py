@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = (ROOT / "templates" / "china.html.j2").read_text()
@@ -236,3 +238,46 @@ def test_act_now_data_lane_refreshes_even_same_session_artifact(tmp_path, monkey
     )
     assert calls == ["china"]
     assert got["revision"] == "same-session-correction"
+
+
+@pytest.mark.parametrize("envelope", [["wrong-root"], "wrong-root", True, 7, [], None])
+def test_act_now_bad_envelope_does_not_prevent_owner_refresh(tmp_path, monkeypatch, envelope):
+    import json
+    from scripts import build_china
+    p = tmp_path / "baskets.json"
+    p.write_text(json.dumps(envelope))
+    original = p.read_bytes()
+    current = {"as_of": "2026-09-23", "themes": []}
+    calls = []
+
+    def compute(region):
+        calls.append(region)
+        return current
+
+    monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", compute)
+    assert build_china._theme_intel_for_act_now(p) is current
+    assert calls == ["china"]
+    assert p.read_bytes() == original
+
+
+@pytest.mark.parametrize("envelope", [["wrong-root"], "wrong-root", True, 7, [], None])
+def test_act_now_bad_envelope_rerender_keeps_sector_cards(tmp_path, monkeypatch, envelope):
+    import json
+    from scripts import build_china
+    from engine.china_act_now import assemble_act_now
+    p = tmp_path / "baskets.json"
+    p.write_text(json.dumps(envelope))
+    original = p.read_bytes()
+
+    def forbidden(_region):
+        raise AssertionError("a site-only render must not refresh theme intelligence")
+
+    monkeypatch.setattr("engine.theme_scoring.compute_theme_intel", forbidden)
+    intel = build_china._theme_intel_for_act_now(p, refresh=False)
+    assert intel is None
+    sector = {"ticker": "512480.SS", "name": "Sector control",
+              "entry": {"urgency": "now", "tag": "BUY NOW"}}
+    board = assemble_act_now([sector], intel, None)
+    assert len(board["lanes"]["buy_now"]) == 1
+    assert board["lanes"]["buy_now"][0]["kind"] == "SECTOR"
+    assert p.read_bytes() == original
