@@ -35,14 +35,16 @@
     "region": "hong_kong",
     "series": "_HSI",
     "role": "broad_hong_kong_cash_market_benchmark",
-    "data_owner": "existing Macro Hong Kong daily OHLC owner identified by CROSS_SESSION_DATA_CAPABILITY_CENSUS_2026-09-25.md",
+    "data_owner": "incumbent collectors/hk_prices.py HkPriceAdapter Yahoo transport; canonical hk store persists close+volume, while this advisory may read transport-returned Open/Close in memory without persistence",
     "calendar_basis": "observed daily bar dates only for this advisory diagnostic; no authoritative holiday/half-day claim",
     "primary_advisory_endpoint": "previous observed cash close -> next observed HSI session open gap (bps)",
     "secondary_endpoints": [
       "previous observed close -> next observed session close (bps)",
       "next observed open -> next observed session close (bps)"
     ],
-    "intraday_first_5m_status": "SOURCE_GATE — unchanged; this daily diagnostic does not satisfy the preregistered primary first-5-minute endpoint"
+    "intraday_first_5m_status": "SOURCE_GATE — unchanged; this daily diagnostic does not satisfy the preregistered primary first-5-minute endpoint",
+    "read_path": "no-persistence bounded yf.download(^HSI) through the same incumbent yfinance source family; no data/hk write, no new collector, no new regional data plane",
+    "price_basis": "match incumbent HkPriceAdapter transport setting auto_adjust=true; index-level diagnostic only"
   },
   "analysis_law": {
     "directional_transform": {
