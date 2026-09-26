@@ -1,0 +1,56 @@
+{
+  "scope": "Nonshipping standalone Prophet-first homepage prototype",
+  "production_source_pr": 7034,
+  "production_source_head_observed": "175bfd3bb20a2a6503d670f55055a77cd420a53f",
+  "prototype_source": {
+    "path": "research/homepage_prophet_first/prototype.html",
+    "bytes": 22733,
+    "sha256": "a132093fa4eb759647f3170907811e1a2c5cfb5d35e6e81ffac7ef38999b45eb",
+    "git_blob_sha": "a3b5e08bfce71bd05b263b396daf7bb53d157937"
+  },
+  "tests": {
+    "structural_assertions": {"passed": 7, "failed": 0},
+    "deliberate_structural_mutations": {"detected": 10, "escaped": 0, "unchanged_controls_passed": 10},
+    "responsive_language_state_cases": {"passed": 36, "failed": 0, "widths": [320, 390, 768, 1024, 1440, 1920], "languages": ["en", "zh"], "states": ["historical", "empty", "unavailable"], "horizontal_overflow_px": 0, "page_errors": 0, "external_requests": 0},
+    "unknown_state_cases": 12,
+    "language_roundtrip_contexts": 12,
+    "no_javascript": "passed",
+    "keyboard": "passed",
+    "browser": "Chromium 144.0.7559.96",
+    "transport": "set_content in memory, not URL navigation"
+  },
+  "test_source_git_blobs": {
+    "tests/test_product_contract.py": "f1ac5f162ae9bb247ea64480f9aff09f4c1ddc2a",
+    "tests/verify_mutations.py": "bcd6a83d935fb654d47866f1a0d59481d32fd8dd",
+    "tests/verify_browser.py": "efeeff9206f5a5d74ebe3ec02096c16280e04ee0"
+  },
+  "retained_failures": [
+    "Initial representative rejected-direction fixture failed all seven initial structural assertions; this was an excerpt-based fixture, not complete original-homepage execution.",
+    "Local HTTP browser navigation was rejected as ERR_BLOCKED_BY_ADMINISTRATOR. It was not retried; no policy or blocked URL was bypassed. Later evidence is offline in-memory rendering only.",
+    "An ambiguous harness data-state selector matched the body and the review link. The selector was narrowed to links, without changing the product.",
+    "A decorative pseudo-element caused 5px horizontal overflow at390EN. A single-rule control changed its negative inset to zero: document width395 became390. The correction did not hide global overflow."
+  ],
+  "source_data": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "b5c3d35ca4725992933680ddbdafd374e9ae162b",
+    "path": "site/prophet/showcase.json",
+    "git_blob_sha": "598ff702353792a4373cce6058337d94f5f33753",
+    "schema": "prophet.showcase/v2",
+    "kind": "delayed_winners",
+    "as_of": "2026-08-21",
+    "selection": "Selected for winners; not a representative track record or current feed",
+    "fields_used": "HOOD historical BUY, price108.13, zone103.00-108.10, grade61 and source cautions; GLXY WAIT and do-not-chase caution",
+    "range_geometry": "Illustrative price-position axis102-110; band=(103-102)/8 through(108.10-102)/8; marker=(108.13-102)/8. No fabricated price series or forecast."
+  },
+  "acceptance_limits": {
+    "original_full_homepage_executed": false,
+    "normal_route_or_live_api_verified": false,
+    "authenticated_journey_verified": false,
+    "repository_ci_claimed_green": false,
+    "independent_product_review_complete": false,
+    "conversion_or_retention_improvement_proven": false,
+    "production_source_modified": false,
+    "production_deployed": false,
+    "automatically_installed_skillpack_change": false
+  }
+}
