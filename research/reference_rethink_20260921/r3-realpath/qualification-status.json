@@ -1,0 +1,26 @@
+{
+  "scope": "Source-backed Chromium qualification; review consumer only, not production integration",
+  "status": "NOT_PASSED",
+  "source_commit": "49f462dc67f6ea850a77d261a8a1a6a8f810b6df",
+  "integrated_main": "259477158b3363aee5a704946b9b46a1309708dc",
+  "protected_procedure_pin": "9a7ed19091dd82609f8ee405687f16c861c4d8c1",
+  "browser": "Chromium 151.0.7922.34 on Mac-Studio.local",
+  "fixture_only": false,
+  "entries": 46,
+  "content_revision": "3986cc832462d070ff26ce142d2e412a0dd839b96aacd4b483a7b2b069fd5495",
+  "html_sha256": "997fe6efbc19ba943e18b725da0b5073ca404d29d8a27520513da57e29316481",
+  "first_run": {
+    "process": 37225,
+    "exit_code": 1,
+    "passed_before_failure": ["canonical registry and rendered-owner validation", "keyboard search, alias, query reload", "Chinese aliases and coverage names", "dashboard board recovery", "risk versus strength semantics", "quadrant choice persistence and nondirectional confirmation"],
+    "failed_assertion": "qualify_real_guide.py:82 — dialog contains document.activeElement after Tab",
+    "classification": "UNRESOLVED: product defect versus overly strict harness/browser-chrome focus assumption not determined",
+    "diagnostic_attempt": "A separate focus-sequence diagnostic was blocked by the tool layer; it was not rerouted or claimed executed"
+  },
+  "independent_remaining_run": {"process": 42838, "exit_code": 0, "receipt": "remaining-routes.json", "route_cases": 184},
+  "integration_edit": "NOT_APPLIED: request to change CI enrollment and guide-view context mounting was explicitly refused; guide-view readback is unchanged",
+  "ci": "Two introduced pytest suites remain unenrolled; contract-delta and ci-gate remain unclosed. No waiver or gate weakening applied",
+  "not_proven": ["native Tab focus confinement", "full visual-state matrix", "new no-JavaScript proof", "real Macro embedded integration", "independent review", "merge", "deployment", "production acceptance"],
+  "production_changed": false,
+  "mission_complete": false
+}

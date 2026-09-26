@@ -1,0 +1,12 @@
+{
+  "guide_unrun": [],
+  "source_selection": {
+    "lib/market_guide.py": true,
+    "research/reference_rethink_20260921/guide-client.js": true,
+    "research/reference_rethink_20260921/guide-view.js": true,
+    "research/reference_rethink_20260921/guide-presentation.json": true,
+    "research/reference_rethink_20260921/render_shared_preview.py": true
+  },
+  "all_passed": true,
+  "source": "existing run_ci_pack and audit_unrun_tests implementations; no waiver"
+}

@@ -1,0 +1,340 @@
+{
+  "status": "PROVISIONAL_DESIGN_CANDIDATE",
+  "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+  "file_name": "Mastermind · Market Guide · Re-envisioning",
+  "url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-1-0",
+  "token_hash": "ba3cae48",
+  "tokens": [
+    {
+      "name": "--light-bg",
+      "value": "#F7F8FA"
+    },
+    {
+      "name": "--light-panel",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "--light-panel2",
+      "value": "#EEF1F6"
+    },
+    {
+      "name": "--light-text",
+      "value": "#1C2430"
+    },
+    {
+      "name": "--light-muted",
+      "value": "#5D6B7E"
+    },
+    {
+      "name": "--light-line",
+      "value": "#C9CCD1"
+    },
+    {
+      "name": "--light-info",
+      "value": "#285FFF"
+    },
+    {
+      "name": "--dark-bg",
+      "value": "#0F1115"
+    },
+    {
+      "name": "--dark-panel",
+      "value": "#181B21"
+    },
+    {
+      "name": "--dark-panel2",
+      "value": "#1E222A"
+    },
+    {
+      "name": "--dark-text",
+      "value": "#D7DCE3"
+    },
+    {
+      "name": "--dark-muted",
+      "value": "#8B93A1"
+    },
+    {
+      "name": "--dark-line",
+      "value": "#3A4150"
+    },
+    {
+      "name": "--dark-info",
+      "value": "#5B9BF0"
+    },
+    {
+      "name": "--light-warn",
+      "value": "#B9791A"
+    },
+    {
+      "name": "--dark-warn",
+      "value": "#E0A030"
+    },
+    {
+      "name": "--font-ui",
+      "value": "Inter"
+    },
+    {
+      "name": "--fs-display",
+      "value": "46px"
+    },
+    {
+      "name": "--fs-h1",
+      "value": "28px"
+    },
+    {
+      "name": "--fs-h2",
+      "value": "17px"
+    },
+    {
+      "name": "--fs-md",
+      "value": "15px"
+    },
+    {
+      "name": "--r-panel",
+      "value": "14px"
+    }
+  ],
+  "artboards": [
+    {
+      "id": "3W-0",
+      "canvas": "4A-0",
+      "name": "Market Guide · Dark · EN · Desktop",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "native_source": "paper-source/dark-en-1440.jsx.txt",
+      "source_sha256": "a18106ccaf71f2d20927d1419703ef4d4b57350bf3dd1f787dfc277dcb78f728",
+      "screenshot": "paper-snapshots/dark-en-1440-0.png",
+      "screenshot_sha256": "9a72b1b13d4fa1f4413d8067b41947a22cba80581389f91f9eb4d802d8659b70"
+    },
+    {
+      "id": "BA-0",
+      "canvas": "BM-0",
+      "name": "Market Guide · Dark · EN · Mobile",
+      "theme": "dark",
+      "lang": "en",
+      "width": 390,
+      "native_source": "paper-source/dark-en-390.jsx.txt",
+      "source_sha256": "3143faca8004b019eefa1d138953a7818a8eb9a859aec2c2ad67f82ed0b2c5cd",
+      "screenshot": "paper-snapshots/dark-en-390-0.png",
+      "screenshot_sha256": "73dd74684d2ebf3cc32a6072847d2b93b523ffaa7f56c452e41467ada0fb27a4"
+    },
+    {
+      "id": "IO-0",
+      "canvas": "J2-0",
+      "name": "Market Guide · Dark · ZH · Desktop",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "native_source": "paper-source/dark-zh-1440.jsx.txt",
+      "source_sha256": "ca1d355cd03ec6c560dccd3d68d9a7edb4589b8b13f2d8dbe28caef3a371928a",
+      "screenshot": "paper-snapshots/dark-zh-1440-0.png",
+      "screenshot_sha256": "a815cf3c8eac9b722eaa10c2c50c84427ecd4ae884ee0f5e5867e3fb3b97ae39"
+    },
+    {
+      "id": "Q2-0",
+      "canvas": "QE-0",
+      "name": "Market Guide · Dark · ZH · Mobile",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "native_source": "paper-source/dark-zh-390.jsx.txt",
+      "source_sha256": "7dcf67300ef3f1f062163dbf0b8f9d7e48f7f32180aa42382ea53c3ee4747b14",
+      "screenshot": "paper-snapshots/dark-zh-390-0.png",
+      "screenshot_sha256": "94c2d8776735b5af73b427010fcb1109d12c1aa41ac11bdc41368c97988734f4"
+    },
+    {
+      "id": "14C-0",
+      "name": "Score reading · dark · en · 1440",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "compact": false,
+      "native_source": "paper-source/detail-dark-en-1440.jsx.txt",
+      "source_sha256": "06a49d4bdf38505d55f20381cd38be3dcda8ce1cb6868950c2d897697ae1218a",
+      "screenshot": "paper-snapshots/detail-dark-en-1440-0.png",
+      "screenshot_sha256": "c5ebfa8f5b5f903609814c245bfc53c4b181315b2161e8c7e6a3dff39d0abe30"
+    },
+    {
+      "id": "1F8-0",
+      "name": "Score reading · dark · en · 390",
+      "theme": "dark",
+      "lang": "en",
+      "width": 390,
+      "compact": false,
+      "native_source": "paper-source/detail-dark-en-390.jsx.txt",
+      "source_sha256": "8442addf1c36f7b092db7a5a30f753bdd76ec13120589e7b195da1a2f521d0c3",
+      "screenshot": "paper-snapshots/detail-dark-en-390-0.png",
+      "screenshot_sha256": "da43639df77f3a5eb2d22a63ce772b4535a440f07417e150d364debcd3e9fea2"
+    },
+    {
+      "id": "1NE-0",
+      "name": "Context help · dark · en · 520",
+      "theme": "dark",
+      "lang": "en",
+      "width": 520,
+      "compact": true,
+      "native_source": "paper-source/detail-dark-en-520.jsx.txt",
+      "source_sha256": "b8a2ec57a059e6c11877a241c3345476702334e0731f4bb98e0a184db7128917",
+      "screenshot": "paper-snapshots/detail-dark-en-520-0.png",
+      "screenshot_sha256": "6de157087068bf224734b3ff2fb47929f9d5d2586f5dd4654108930b9839b22d"
+    },
+    {
+      "id": "19S-0",
+      "name": "Score reading · dark · zh · 1440",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "compact": false,
+      "native_source": "paper-source/detail-dark-zh-1440.jsx.txt",
+      "source_sha256": "9fa88820224d0baf5c059a28e340e11a53d4780ac7764ac4fb6f3dd3664ac9e4",
+      "screenshot": "paper-snapshots/detail-dark-zh-1440-0.png",
+      "screenshot_sha256": "230f133509671fb9f8f0065cc1dc6cd585dd459065faac5191720efaf2af092c"
+    },
+    {
+      "id": "1KO-0",
+      "name": "Score reading · dark · zh · 390",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "compact": false,
+      "native_source": "paper-source/detail-dark-zh-390.jsx.txt",
+      "source_sha256": "4767c5f7c63c497aff8623605d2dbab9314f74d6413f84e72251e74d979ed622",
+      "screenshot": "paper-snapshots/detail-dark-zh-390-0.png",
+      "screenshot_sha256": "551740e03d60dcc9cfdef0f906d7cfc4804c4fb3d44a80b763d1de65d185e2a2"
+    },
+    {
+      "id": "1QA-0",
+      "name": "Context help · dark · zh · 520",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 520,
+      "compact": true,
+      "native_source": "paper-source/detail-dark-zh-520.jsx.txt",
+      "source_sha256": "090f252d4e1198886e80a0e27f03b837f4d0bdcceee2242bcf61e8d4c26c40b8",
+      "screenshot": "paper-snapshots/detail-dark-zh-520-0.png",
+      "screenshot_sha256": "82b2d8c4aad4261c73f0983824d0020e9383736a70ecbea223d5d756913c4e1d"
+    },
+    {
+      "id": "TQ-0",
+      "name": "Score reading · light · en · 1440",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "compact": false,
+      "native_source": "paper-source/detail-light-en-1440.jsx.txt",
+      "source_sha256": "686275388d819f034ecb18056a3794ae83656f2b22c02257ad5f42987c58292b",
+      "screenshot": "paper-snapshots/detail-light-en-1440-0.png",
+      "screenshot_sha256": "7951cf52c6e4c952cee6246081a0311a70d59e79eede7b21e197b1fa84d3ffec"
+    },
+    {
+      "id": "1CI-0",
+      "name": "Score reading · light · en · 390",
+      "theme": "light",
+      "lang": "en",
+      "width": 390,
+      "compact": false,
+      "native_source": "paper-source/detail-light-en-390.jsx.txt",
+      "source_sha256": "582304c107fa8413742bede04adbd22ecb2f53f7abae7716f14f798afc9988ec",
+      "screenshot": "paper-snapshots/detail-light-en-390-0.png",
+      "screenshot_sha256": "9dae16e45cbcf8ff50daa9e2c81bbe110a942b9cf249b82c75e547c7c45a83cf"
+    },
+    {
+      "id": "WG-0",
+      "name": "Context help · light · en · 520",
+      "theme": "light",
+      "lang": "en",
+      "width": 520,
+      "compact": true,
+      "native_source": "paper-source/detail-light-en-520.jsx.txt",
+      "source_sha256": "a5c050f21467e7f549910d2b3ae790dd8a5764464faf69c795f7943f1cfcfb06",
+      "screenshot": "paper-snapshots/detail-light-en-520-0.png",
+      "screenshot_sha256": "6fee89d3c8776a4eee56fbe99a168be07a83e44cd66106764a56d144bc3efbe9"
+    },
+    {
+      "id": "172-0",
+      "name": "Score reading · light · zh · 1440",
+      "theme": "light",
+      "lang": "zh",
+      "width": 1440,
+      "compact": false,
+      "native_source": "paper-source/detail-light-zh-1440.jsx.txt",
+      "source_sha256": "05015ff7807c7e96678e10ba5bfc039fb5db48215c533eab2e9fdbb33f5711e2",
+      "screenshot": "paper-snapshots/detail-light-zh-1440-0.png",
+      "screenshot_sha256": "166d08502365eae2a3a05d835aacfb875ce2d98635ba887df99c4710d68ca149"
+    },
+    {
+      "id": "1HY-0",
+      "name": "Score reading · light · zh · 390",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "compact": false,
+      "native_source": "paper-source/detail-light-zh-390.jsx.txt",
+      "source_sha256": "5d95ccaed1a64a7fb78ebb59c20071a952416083cd4a8c599700dc9e16e13e2f",
+      "screenshot": "paper-snapshots/detail-light-zh-390-0.png",
+      "screenshot_sha256": "05d466b7b2eff4a1d5b546888d69fd716c8f0f78ee6edc4fa258c79a1cddd45e"
+    },
+    {
+      "id": "1OU-0",
+      "name": "Context help · light · zh · 520",
+      "theme": "light",
+      "lang": "zh",
+      "width": 520,
+      "compact": true,
+      "native_source": "paper-source/detail-light-zh-520.jsx.txt",
+      "source_sha256": "11a9da867a754f6b6f488a25dff2c44932c5975e57c94a499f9ab5dcfe8615f6",
+      "screenshot": "paper-snapshots/detail-light-zh-520-0.png",
+      "screenshot_sha256": "b25d71b0fafdb7acdbd5a7aeaa605fa457f336f2f5479c12f928c9ae5384cea0"
+    },
+    {
+      "id": "1-0",
+      "canvas": "K-0",
+      "name": "Market Guide · Light · EN · Desktop",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "native_source": "paper-source/light-en-1440.jsx.txt",
+      "source_sha256": "7a2e429a14da9eb7ff9a207b7b203f468ad0da05f2a8b7018651d857b291556e",
+      "screenshot": "paper-snapshots/light-en-1440-0.png",
+      "screenshot_sha256": "04284a8ed58ac5477dd88ebf91a556e15a2657e81be230efc7411ec18a4dabea"
+    },
+    {
+      "id": "7M-0",
+      "canvas": "7Y-0",
+      "name": "Market Guide · Light · EN · Mobile",
+      "theme": "light",
+      "lang": "en",
+      "width": 390,
+      "native_source": "paper-source/light-en-390.jsx.txt",
+      "source_sha256": "7d2fb8e686828612ec2290e5282608d0ee60c61fdee32d44a4df83989946c12a",
+      "screenshot": "paper-snapshots/light-en-390-0.png",
+      "screenshot_sha256": "a795e0a585a3ba3b1115f8f5c3e4083cd7ddaa5da3df2c07dfea11ed5ad4d41f"
+    },
+    {
+      "id": "EY-0",
+      "canvas": "FC-0",
+      "name": "Market Guide · Light · ZH · Desktop",
+      "theme": "light",
+      "lang": "zh",
+      "width": 1440,
+      "native_source": "paper-source/light-zh-1440.jsx.txt",
+      "source_sha256": "78dbf9c2b5c9a1d5040ea8b5a0020928910e5cf8fab0c2f6dd23cf0013ef5ba0",
+      "screenshot": "paper-snapshots/light-zh-1440-0.png",
+      "screenshot_sha256": "21bec63f6710f718c5f1f90ad37a9081cb2bfa5a850148c91581fe30e9617ee6"
+    },
+    {
+      "id": "ME-0",
+      "canvas": "MQ-0",
+      "name": "Market Guide · Light · ZH · Mobile",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "native_source": "paper-source/light-zh-390.jsx.txt",
+      "source_sha256": "760d69bc94c9ad54a792a12981f158683bf47d2a3035097c099af37137719886",
+      "screenshot": "paper-snapshots/light-zh-390-0.png",
+      "screenshot_sha256": "d455b9d703f2fbddc7dba4aef6a8242b08c2a445bad48191b931343e10a8a4d9"
+    }
+  ],
+  "approval": "not independently adjudicated; no production conformance claim"
+}

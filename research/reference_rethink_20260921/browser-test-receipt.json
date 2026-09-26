@@ -1,0 +1,25 @@
+{
+  "scope": "design prototype only; not a production acceptance run",
+  "checks": [
+    "question-led home; full catalog not dumped at rest",
+    "slash focuses search",
+    "English alias search",
+    "query URL survives reload",
+    "Chinese alias search in English UI",
+    "empty state and inert query markup",
+    "all 46 registry entries retained",
+    "quick help state switch, Escape, focus and scroll restoration",
+    "existing entry hash opens the right guide and visible limitation",
+    "browser history restores the selected entry",
+    "unknown entry has actionable fallback",
+    "24 browser states captured: home/detail/help × light/dark × EN/ZH × 1440/390; no page overflow",
+    "all 46 detail routes render in EN desktop and ZH mobile without horizontal overflow",
+    "JavaScript-disabled bilingual disclosure fallback retains 46 entries",
+    "no uncaught browser errors",
+    "zero external requests during guide/search/help flows"
+  ],
+  "count": 16,
+  "browser_errors": [],
+  "external_requests": [],
+  "prototype_sha256": "c688441a586d750251848b51e2bbbe40f2c8daae40187ea68220a6cf23e769c7"
+}

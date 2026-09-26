@@ -10886,7 +10886,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2
+        run: pip install pytest pyyaml jinja2 beautifulsoup4
       # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
       # scripts.build_site, which imports numpy/pandas/plotly -- none on this job's
       # minimal line. It was collected fine (the import is inside the test body, not at
@@ -10905,6 +10905,10 @@ jobs:
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
       # immediately above.
+      - name: Market Guide shared projection and preview contracts
+        run: python -m pytest tests/test_market_guide.py tests/test_market_guide_preview.py -q
+      - name: Market Guide shared reader and contextual-help DOM contracts
+        run: node --test tests/test_market_guide_client.cjs tests/test_market_guide_view.cjs
       - name: public glossary directory (view-model contract + rendered-page wiring)
         run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
       # Finance Intelligence site-builder hook (2026-09-25). The suite reads

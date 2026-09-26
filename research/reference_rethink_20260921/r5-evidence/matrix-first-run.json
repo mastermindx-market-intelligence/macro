@@ -1,0 +1,13 @@
+{
+  "subject": "d9d4d5d908c2aafe8f2112eca8e383c15493878c",
+  "full_qualification": "FAILED",
+  "passed_before_failure": [
+    "46 real records validated",
+    "native focus containment and Escape",
+    "184 EN/ZH desktop/mobile routes",
+    "exact back/forward and recovery"
+  ],
+  "failure": "qualify_real_guide.py line 130 target theme assertion",
+  "cause": "The qualifier toggled Dark on every hash navigation, although same-document fragment navigation retains the current dark theme. It thereby switched back to Light.",
+  "repair": "Check current theme before toggling; retain target-theme assertion unchanged. New output directory for requalification."
+}

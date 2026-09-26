@@ -1,0 +1,200 @@
+(
+    <div style={{ backgroundColor: 'var(--dark-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>
+      <div style={{ alignItems: 'center', backgroundColor: 'var(--dark-panel)', borderBottomColor: 'var(--dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '64px', justifyContent: 'space-between', paddingInline: '40px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px' }}>
+          <div style={{ alignItems: 'center', backgroundColor: 'var(--dark-info)', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '28px', justifyContent: 'center', width: '28px' }}>
+            <div style={{ boxSizing: 'border-box', color: '#FFFFFF', display: 'flex', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 700, lineHeight: '24px' }}>
+              M
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-Bold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', lineHeight: '24px' }}>
+            MASTERMIND
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+          United States China Hong Kong Canada Research
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+          EN ☼
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '28px', paddingBlock: '32px', paddingInline: '80px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+            ← Macro dashboard
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.08em', lineHeight: '24px' }}>
+            GUIDE · NOT LIVE DATA
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '46px', fontWeight: 600, letterSpacing: '-0.035em', lineHeight: '56px' }}>
+            Understand the signal.
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>
+            What it means. How to read it. Where to use it.
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '14px', height: '56px', paddingInline: '18px', width: '100%' }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+            <circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="var(--dark-muted)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="m16 16 5 5" fill="none" stroke="var(--dark-muted)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>
+            Search a signal or a question…
+          </div>
+          <div style={{ borderColor: 'var(--dark-line)', borderRadius: '4px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', paddingInline: '8px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '24px' }}>
+              /
+            </div>
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+            What are you trying to understand?
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', width: '100%' }}>
+            <div style={{ alignItems: 'start', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '20px', minWidth: '0px', padding: '22px', width: '0px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+                <path d="M4 18V13M10 18V9M16 18V5M22 18V2" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '5px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                  How strong is the market?
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+                  Trend, participation and the big picture.
+                </div>
+              </div>
+            </div>
+            <div style={{ alignItems: 'start', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '20px', minWidth: '0px', padding: '22px', width: '0px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+                <path d="M12 3 21 7v6c0 5-9 10-9 10S3 18 3 13V7Z" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 8v5m0 3v1" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '5px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                  Is risk building?
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+                  Stress, volatility and warning signals.
+                </div>
+              </div>
+            </div>
+            <div style={{ alignItems: 'start', backgroundColor: 'var(--dark-panel)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '20px', minWidth: '0px', padding: '22px', width: '0px' }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: '0' }}>
+                <path d="M12 2v20M2 12h20" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m4 8 4-4m8 16 4-4" fill="none" stroke="var(--dark-info)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '5px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '24px' }}>
+                  What is driving the backdrop?
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+                  Growth, inflation and financial conditions.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--dark-panel2)', borderColor: 'var(--dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '48px', padding: '32px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '12px', minWidth: '0px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', lineHeight: '24px' }}>
+              START WITH THE BIG PICTURE
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '28px', fontWeight: 600, letterSpacing: '-0.025em', lineHeight: '36px' }}>
+              Six inputs. One market read.
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', maxWidth: '400px' }}>
+              The Market State Score brings the market’s moving parts into one view.
+            </div>
+            <div style={{ boxSizing: 'border-box', paddingTop: '8px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+                Explore Market State Score →
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+              Quick explanation
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '18px', minWidth: '0px', width: '0px' }}>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.08em', lineHeight: '24px' }}>
+                READ THE PATTERN
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '24px' }}>
+                Illustration only
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', gap: '8px', width: '100%' }}>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    Trend
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    Risk appetite
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    Volatility
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', gap: '8px', width: '100%' }}>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    Breadth
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    Liquidity
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', minWidth: '0px', paddingBlock: '10px', paddingInline: '4px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '18px', textAlign: 'center' }}>
+                    Stress
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center', width: '100%' }}>
+                Read together → Market State Score
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '4px', width: '100%' }}>
+              <div style={{ borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '8px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  Under pressure
+                </div>
+              </div>
+              <div style={{ backgroundColor: 'var(--dark-panel)', borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '8px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-text)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  Mixed
+                </div>
+              </div>
+              <div style={{ borderRadius: '7px', boxSizing: 'border-box', flexBasis: '0%', flexGrow: '1', justifyItems: 'center', paddingBlock: '8px', paddingInline: '3px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', justifyContent: 'center', lineHeight: '24px', textAlign: 'center' }}>
+                  Supportive
+                </div>
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
+              When inputs disagree, look beyond the headline.
+            </div>
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '24px' }}>
+            Looking for a specific term?
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--dark-info)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '24px' }}>
+            Browse all signals →
+          </div>
+        </div>
+      </div>
+    </div>
+  )
