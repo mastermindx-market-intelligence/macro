@@ -14523,8 +14523,12 @@ jobs:
       # permanently lost session 2026-07-31; first-writer-wins; and the migrated store's
       # standing invariant that every chains stamp and every summary row is an NYSE
       # session. Reads the committed store, so it also fails if a future writer regresses.
+      # Options Workbench R0 (2026-09-17): keep the gamma-regime curve-sign regression
+      # in the same modeling-core owner as gex_engine.py. The suite exercises the
+      # public compute_gex payload plus ascending/descending/multiple crossings; a waiver
+      # would leave the exact numerical fix this job owns dark.
       - name: GEX modeling core — walls/surface model, greeks + dealer-sign engine, polygon per-strike accrual
-        run: python -m pytest tests/test_gex_model.py tests/test_gex_engine.py tests/test_polygon_gex.py tests/test_polygon_gex_session_stamps.py -q
+        run: python -m pytest tests/test_gex_model.py tests/test_gex_engine.py tests/test_gex_regime_curve_sign.py tests/test_polygon_gex.py tests/test_polygon_gex_session_stamps.py -q
       # MSC R2.4 (2026-08-01): the live Level Report Card publisher. Wired at birth —
       # pure pandas/pytest, same import closure as the step above (pandas+pyarrow only).
       # R2.4b (2026-08-02) adds the nulls/index-lane suite AND back-wires the two

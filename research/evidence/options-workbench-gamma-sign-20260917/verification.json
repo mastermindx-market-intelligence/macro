@@ -1,0 +1,60 @@
+{
+  "source_base": "b337352ceadcae29c5247e4ef26e3a26358f7971",
+  "skillpack": "7a191cc11039199843d4734c7df8d5523280e09c",
+  "synthetic": true,
+  "deployed": false,
+  "tests": {
+    "baseline_passed": 15,
+    "original_regressions_failed": 5,
+    "original_controls_passed": 5,
+    "focused_passed": 144,
+    "expanded_initial": {
+      "passed": 331,
+      "failed": 2,
+      "reason": "tracked site fixtures omitted by sparse checkout"
+    },
+    "expanded_after_site_materialization": {
+      "passed": 333,
+      "failed": 0
+    }
+  },
+  "examples": [
+    {
+      "spot": 99.0,
+      "net_gex_bn": 0.00026117280625332896,
+      "gamma_flip": 99.90070460785732,
+      "dist_to_flip_pct": -0.91,
+      "gamma_regime": "long",
+      "regime_passport": {
+        "basis": "assumption",
+        "structurally_constant": false,
+        "is_index_product": true,
+        "verdict": "display-only",
+        "note": "dealer long-call/short-put sign is an unobservable assumption; even for indices SPY vs SPX can contradict same-day \u2014 read as assumption, not observed"
+      }
+    },
+    {
+      "spot": 101.0,
+      "net_gex_bn": -0.0003179334504699553,
+      "gamma_flip": 99.90067816564793,
+      "dist_to_flip_pct": 1.09,
+      "gamma_regime": "short",
+      "regime_passport": {
+        "basis": "assumption",
+        "structurally_constant": false,
+        "is_index_product": true,
+        "verdict": "display-only",
+        "note": "dealer long-call/short-put sign is an unobservable assumption; even for indices SPY vs SPX can contradict same-day \u2014 read as assumption, not observed"
+      }
+    }
+  ],
+  "hashes": {
+    "gamma-baseline.log": "044a3c1fd44c91419096aab811320a25e53125c4d0217b7230523ff24b638835",
+    "gamma-red.log": "96bec9d22700f62a0873f8bb08efd3cc3e2dc30592ca3e3d59bb83826d78306f",
+    "gamma-green.log": "a289e4db55ba4150644db28b96294d101e9f3d9d7700fed1b9aca3ac1853486f",
+    "gamma-original-discrimination.log": "49401f731aa408431acb03eb5eb898b053f155f0a1a0c997814e5ddc3ab24e62",
+    "gamma-expanded-complete.log": "9ce720e4a0b5260d1b72da06fd62bf09023b1df513a3b891ad1fc7494841728f",
+    "engine/gex_engine.py": "4d4db331d12a39edb4a73b1f855e593d0faf617cb1ae29984b58ca47f9ede7d7",
+    "tests/test_gex_regime_curve_sign.py": "e06841d6966fd744768a1a02073f9b7d4dd3fb806db3d8d81994ab176a528bda"
+  }
+}
