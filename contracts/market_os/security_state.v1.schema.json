@@ -208,9 +208,16 @@
               "additionalProperties": false,
               "required": ["ref", "state", "reason"],
               "properties": {
-                "ref": { "type": "null" },
+                "ref": { "type": ["string", "null"] },
+                "refs": {
+                  "type": "array",
+                  "items": { "type": "string", "minLength": 1 },
+                  "uniqueItems": true
+                },
                 "state": { "$ref": "#/$defs/coverageState" },
-                "reason": { "type": ["string", "null"] }
+                "reason": { "type": ["string", "null"] },
+                "published_asof": { "type": ["string", "null"], "format": "date" },
+                "source_asof": { "type": ["string", "null"], "format": "date" }
               }
             },
             "entry": {

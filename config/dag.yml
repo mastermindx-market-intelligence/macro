@@ -816,6 +816,15 @@ lanes:
           Prophet nightly step and before the Prophet checkpoint. continue-on-error
           in the live workflow; declares the new scripts.prophet_board_acceptance
           module so dag-conformance does not treat the step as undeclared lane drift.
+      - id: refresh_security_state_prophet_outlook
+        module: scripts.refresh_security_state_prophet_outlook
+        note: >
+          Market OS bounded post-checkpoint projection refresh. Invoked inside the
+          existing Prophet checkpoint carrier only after the accepted checkpoint
+          commit is current on origin/main and its site/prophet/index.json hash
+          matches the proven build delta. Reuses the canonical Security State
+          compiler and existing ticker-page renderer for the AAPL/MSFT allowlist;
+          transactional and display-only, with no rank/gate/size/signal authority.
       - id: build_prophet_stage_shadow
         module: scripts.build_prophet_stage_shadow
         note: >

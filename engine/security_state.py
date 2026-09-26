@@ -54,6 +54,7 @@ from lib.evidence_foundation import (
 )
 from lib.dataos.identity import IdentityError, parse_listing_key
 from lib.dataos.identity import security_id as _render_security_id
+from lib.nyse_calendar import ET
 from engine.company_intelligence.contracts import ContractError
 from engine.company_intelligence.events import parse_canonical_event_id
 
@@ -251,6 +252,14 @@ _WARNING_TEXT: dict[str, dict[str, str]] = {
 }
 
 _PROPHET_REASON = "PROPHET_OWNER_OUTPUT_ABSENT"
+_PROPHET_NO_CURRENT_PLAN = "PROPHET_NO_CURRENT_PLAN"
+_PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED = "PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED"
+_PROPHET_SOURCE_DELAYED = "PROPHET_SOURCE_DELAYED"
+_PROPHET_SOURCE_UNKNOWN = "PROPHET_SOURCE_UNKNOWN"
+_PROPHET_OWNER_OUTPUT_STALE = "PROPHET_OWNER_OUTPUT_STALE"
+_PROPHET_OWNER_CLOCK_FUTURE = "PROPHET_OWNER_CLOCK_FUTURE"
+_PROPHET_OWNER_CONFLICTED = "PROPHET_OWNER_CONFLICTED"
+_PROPHET_MULTIPLE_CURRENT_PLANS = "PROPHET_MULTIPLE_CURRENT_PLANS"
 
 # Decision Spine required axes (Sol blocker 1): state + change. legs.evidence
 # REMAINS a leg but is supporting metadata for change's provenance, not its
@@ -1236,11 +1245,180 @@ def _build_change_leg(
     }
 
 
-def _build_opportunity_context_leg(*, blob: Mapping[str, Any]) -> dict[str, Any]:
+def _prophet_outlook_from_owner_read(
+    owner_read: Mapping[str, Any] | None,
+    *,
+    decision_date: date,
+) -> dict[str, Any]:
+    """Project one bounded Prophet owner read into Opportunity Context.
+
+    The compiler does not read the plan book and does not reimplement Prophet
+    lifecycle law. The producer passes only the owner publication clock and
+    stable refs it already selected as current/open. Missing owner input keeps
+    the pre-integration behavior byte-for-byte.
+    """
+    if owner_read is None:
+        return {"ref": None, "state": "UNAVAILABLE", "reason": _PROPHET_REASON}
+    if not isinstance(owner_read, Mapping):
+        raise SecurityStateCompilationError("prophet_owner_read must be a mapping")
+
+    disposition = str(owner_read.get("disposition") or "").strip().lower()
+    published_raw = _null_to_none(owner_read.get("published_asof"))
+    source_raw = _null_to_none(owner_read.get("source_asof"))
+
+    def _date_field(value: Any, field: str) -> date | None:
+        if value is None:
+            return None
+        text = str(value).strip()
+        try:
+            parsed = date.fromisoformat(text)
+        except ValueError as exc:
+            raise SecurityStateCompilationError(
+                f"prophet_owner_read.{field} is not a valid ISO date: {value!r}"
+            ) from exc
+        return parsed
+
+    published = _date_field(published_raw, "published_asof")
+    source_asof = _date_field(source_raw, "source_asof")
+
+    refs_raw = owner_read.get("current_plan_refs")
+    if refs_raw is None:
+        refs: list[str] = []
+    elif isinstance(refs_raw, Sequence) and not isinstance(refs_raw, (str, bytes, bytearray)):
+        refs = []
+        seen: set[str] = set()
+        for raw in refs_raw:
+            ref = str(raw or "").strip()
+            if not ref:
+                raise SecurityStateCompilationError(
+                    "prophet_owner_read.current_plan_refs contains an empty ref"
+                )
+            if ref in seen:
+                raise SecurityStateCompilationError(
+                    f"prophet_owner_read.current_plan_refs duplicates {ref!r}"
+                )
+            seen.add(ref)
+            refs.append(ref)
+    else:
+        raise SecurityStateCompilationError(
+            "prophet_owner_read.current_plan_refs must be a sequence"
+        )
+
+    def _with_clocks(
+        *,
+        ref: str | None,
+        refs_out: Sequence[str],
+        state: str,
+        reason: str | None,
+    ) -> dict[str, Any]:
+        out: dict[str, Any] = {
+            "ref": ref,
+            "refs": list(refs_out),
+            "state": state,
+            "reason": reason,
+        }
+        out["published_asof"] = published.isoformat() if published is not None else None
+        out["source_asof"] = source_asof.isoformat() if source_asof is not None else None
+        return out
+
+    if disposition == "unavailable":
+        return _with_clocks(
+            ref=None, refs_out=(), state="UNAVAILABLE", reason=_PROPHET_REASON
+        )
+    if disposition == "conflicted":
+        return _with_clocks(
+            ref=None,
+            refs_out=(),
+            state="CONFLICTED",
+            reason=_PROPHET_OWNER_CONFLICTED,
+        )
+    if disposition != "found":
+        raise SecurityStateCompilationError(
+            f"unknown prophet_owner_read.disposition: {disposition!r}"
+        )
+    if published is None:
+        raise SecurityStateCompilationError(
+            "prophet_owner_read.published_asof is required for a found owner read"
+        )
+
+    ref = refs[0] if len(refs) == 1 else None
+    if published > decision_date:
+        return _with_clocks(
+            ref=None,
+            refs_out=refs,
+            state="CONFLICTED",
+            reason=_PROPHET_OWNER_CLOCK_FUTURE,
+        )
+
+    source_unknown_raw = owner_read.get("source_unknown")
+    source_delayed_raw = owner_read.get("source_delayed")
+    if source_asof is not None and source_asof > published:
+        return _with_clocks(
+            ref=ref,
+            refs_out=refs,
+            state="CONFLICTED",
+            reason=_PROPHET_OWNER_CONFLICTED,
+        )
+    if published < decision_date:
+        return _with_clocks(
+            ref=ref,
+            refs_out=refs,
+            state="STALE",
+            reason=_PROPHET_OWNER_OUTPUT_STALE,
+        )
+    if (
+        source_asof is None
+        or not isinstance(source_unknown_raw, bool)
+        or not isinstance(source_delayed_raw, bool)
+        or source_unknown_raw
+    ):
+        return _with_clocks(
+            ref=ref,
+            refs_out=refs,
+            state="PARTIAL",
+            reason=_PROPHET_SOURCE_UNKNOWN,
+        )
+    source_delayed = source_delayed_raw
+    if source_delayed:
+        return _with_clocks(
+            ref=ref,
+            refs_out=refs,
+            state="PARTIAL",
+            reason=(
+                _PROPHET_SOURCE_DELAYED
+                if refs
+                else _PROPHET_NO_CURRENT_PLAN_SOURCE_DELAYED
+            ),
+        )
+    if not refs:
+        return _with_clocks(
+            ref=None,
+            refs_out=(),
+            state="NOT_APPLICABLE",
+            reason=_PROPHET_NO_CURRENT_PLAN,
+        )
+    return _with_clocks(
+        ref=ref,
+        refs_out=refs,
+        state="AVAILABLE",
+        reason=_PROPHET_MULTIPLE_CURRENT_PLANS if len(refs) > 1 else None,
+    )
+
+
+def _build_opportunity_context_leg(
+    *,
+    blob: Mapping[str, Any],
+    prophet_owner_read: Mapping[str, Any] | None,
+    decision_date: date,
+) -> dict[str, Any]:
     entry_signal = blob.get("entry_signal")
     null_reason = blob.get("entry_signal_null_reason")
     entry_available = entry_signal is not None
-    prophet = {"ref": None, "state": "UNAVAILABLE", "reason": _PROPHET_REASON}
+
+    prophet = _prophet_outlook_from_owner_read(
+        prophet_owner_read,
+        decision_date=decision_date,
+    )
     entry = {
         "state": "AVAILABLE" if entry_available else "UNAVAILABLE",
         "available": entry_available,
@@ -1248,14 +1426,9 @@ def _build_opportunity_context_leg(*, blob: Mapping[str, Any]) -> dict[str, Any]
     }
     market_incorporation = {"ref": None, "state": "NOT_COVERED"}
     dislocation = {"ref": None, "state": "NOT_COVERED"}
-    # This leg's own coverage_state tracks its one actionable sub-facet — entry
-    # timing — never null-means-neutral (blob.entry_signal_null_reason is always
-    # carried when absent). prophet/market_incorporation/dislocation are typed,
-    # individually-disclosed sub-nulls (prophet UNAVAILABLE: could exist today
-    # and does not; market_incorporation/dislocation NOT_COVERED: not modelled
-    # by this build) that do not independently swing the leg's own rollup —
-    # "prophet unavailable" is exercised by asserting that fixed sub-field
-    # directly, not by an overall-leg severity swing.
+    # This leg's own coverage_state still tracks its one actionable sub-facet —
+    # entry timing. Prophet is display/context-only and may never widen rank,
+    # gate, size, signal or new-entry authority merely by becoming readable.
     coverage_state = "AVAILABLE" if entry_available else "UNAVAILABLE"
     return {
         "prophet": prophet, "entry": entry,
@@ -1459,6 +1632,7 @@ def compile_security_state(
     issuer_migration_matches: Sequence[Mapping[str, Any]] = (),
     security_migration_matches: Sequence[Mapping[str, Any]] = (),
     manifest_sha256: str | None = None,
+    prophet_owner_read: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compile ``security_state.v1`` for one owner-composed security subject.
 
@@ -1550,7 +1724,11 @@ def compile_security_state(
         evidence_leg = _build_evidence_leg(recipe_id=recipe["recipe_id"], compilation=compilation)
 
     state_leg = _build_state_leg(blob=blob)
-    opportunity_leg = _build_opportunity_context_leg(blob=blob)
+    opportunity_leg = _build_opportunity_context_leg(
+        blob=blob,
+        prophet_owner_read=prophet_owner_read,
+        decision_date=now_dt.astimezone(ET).date(),
+    )
     catalyst_leg = _build_catalyst_leg(workspace=effective_workspace, workspace_disposition=effective_disposition)
     personal_impact_leg = _build_personal_impact_leg()
     risk_leg = _build_risk_leg(
