@@ -446,6 +446,18 @@ def _view_links_valid(projection):
     if projection['headline_issuer_count'] != sum(p['headline'] is not None for p in projection['panels']):
         return False
     source_refs, derived_count = set(), 0
+    observations = {}
+
+    def consistent_record(record, slot):
+        # One ephemeral response check, not an identity/revision/source store.
+        # Match the input composer's rule: a reference cannot acquire another
+        # issuer, record kind, value or context between visible output copies.
+        known = observations.get(record['ref'])
+        if known is not None:
+            return known[0] == slot and known[1] == record
+        observations[record['ref']] = (slot, record)
+        return True
+
     def matches(claim, results):
         refs = list(dict.fromkeys(ref for result in results for ref in result['refs']))
         revisions = list(dict.fromkeys(result['rule_revision'] for result in results))
@@ -457,7 +469,8 @@ def _view_links_valid(projection):
             source_refs.update(m['ref'] for m in (actual, prior) if m is not None)
             for measurement in (actual, prior):
                 if measurement is not None and (_payload_measure(measurement) is None
-                        or measurement['metric'] != row['metric']):
+                        or measurement['metric'] != row['metric']
+                        or not consistent_record(measurement, panel['slot'])):
                     return False
             if result is not None:
                 derived_count += 1
@@ -482,8 +495,9 @@ def _view_links_valid(projection):
                     or result['refs'] != [rows[0]['current']['ref'], guide['ref']]):
                 return False
             native_free_guide = _payload_guidance(guide)
-            if native_free_guide is None or not _same_scope(
-                    _payload_measure(rows[0]['current']), native_free_guide, same_period=True):
+            if (native_free_guide is None or not consistent_record(guide, panel['slot'])
+                    or not _same_scope(_payload_measure(rows[0]['current']),
+                                       native_free_guide, same_period=True)):
                 return False
         outcomes = set()
         for group in panel['accounting']:
@@ -498,7 +512,20 @@ def _view_links_valid(projection):
                 if (group['outcome_refs'] != [view['current_output']['ref'], view['prior_output']['ref']]
                         or view['result']['rule_revision'] in revisions):
                     return False
-                if any(_payload_measure(view[key]) is None for key in ('current_output','prior_output')):
+                if any(_payload_measure(view[key]) is None
+                       or not consistent_record(view[key], panel['slot'])
+                       for key in ('current_output','prior_output')):
+                    return False
+                expected_refs = [view['current_output']['ref'], view['prior_output']['ref']]
+                for contribution in view['contributions']:
+                    expected_refs.extend((contribution['current_ref'], contribution['prior_ref']))
+                actual_refs = view['result']['refs']
+                # The accounting core admits unique component receipts. An
+                # omitted, extra or repeated pointer cannot become support;
+                # its list order is not a statement about evidence independence.
+                if (len(set(expected_refs)) != len(expected_refs)
+                        or len(set(actual_refs)) != len(actual_refs)
+                        or set(actual_refs) != set(expected_refs)):
                     return False
                 revisions.add(view['result']['rule_revision'])
     return len(source_refs) <= 96 and derived_count <= 32

@@ -357,6 +357,17 @@ def test_corrected_accounting_discrepancy_survives_projection_without_stale_head
     assert len(out.accounting) == 1 and len(out.accounting[0].views) == 2
     assert {v.residual for v in out.accounting[0].views} == {D('0'),D('1000')}
     assert all(v.current_output.value == D('190595') for v in out.accounting[0].views)
+    # The stricter response validator must preserve this useful disagreement,
+    # not suppress a legitimate correction merely because alternatives differ.
+    wire = json.loads(cr.encode_communications_payload((item,)))
+    served = wire['projection']['panels'][3]
+    assert served['headline'] is None and served['original_guidance'] is None
+    assert served['measures'][0]['current']['value'] == '190595'
+    alternatives = served['accounting'][0]['views']
+    assert len(alternatives) == 2
+    assert {view['residual'] for view in alternatives} == {'0', '1000'}
+    assert all(view['current_output'] == served['measures'][0]['current'] for view in alternatives)
+    assert cr.validate_view(wire) is None
 
 
 def test_absolute_loss_change_retains_supported_direction_without_fake_percentage():
@@ -645,3 +656,97 @@ def test_payload_schema_never_requests_remote_reference_resolution():
         elif type(value) is list:
             for child in value: walk(child)
     walk(schema)
+
+
+# CRV-10/25/51/55/56: response references retain the same meaning as the
+# already-checked input observations. These are internal-consistency checks,
+# never source authenticity, native identity, or a new correction registry.
+@pytest.mark.parametrize('which,field,changed', [
+    ('current_output', 'value', '190595'),
+    ('current_output', 'period', ['2026-07-01', '2026-09-30']),
+    ('current_output', 'population', 'fixture:other-population'),
+    ('current_output', 'definition_ref', 'fixture:other-definition'),
+    ('current_output', 'currency', 'EUR'),
+    ('current_output', 'scale', '1000000'),
+    ('current_output', 'basis', 'other_reported_basis'),
+    ('prior_output', 'value', '160956'),
+    ('prior_output', 'period', ['2025-01-01', '2025-03-31']),
+])
+def test_payload_same_immutable_ref_cannot_change_in_an_accounting_echo(which, field, changed):
+    payload = cr.compose_communications_payload((accounting_magnite(),))
+    view = payload['projection']['panels'][3]['accounting'][0]['views'][0]
+    view[which][field] = changed
+    before = deepcopy(payload)
+    # The mutation is structurally legal. Only the identity-consistency check
+    # can catch this conflicting echo of a still-present immutable observation.
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+    assert payload == before  # Reject; never silently rewrite the source record.
+
+
+@pytest.mark.parametrize('mutation', [
+    'current_component', 'prior_component', 'current_output', 'prior_output',
+    'extra_unused_support', 'duplicate_support',
+])
+def test_payload_accounting_support_is_exactly_the_declared_outputs_and_components(mutation):
+    payload = cr.compose_communications_payload((accounting_magnite(),))
+    view = payload['projection']['panels'][3]['accounting'][0]['views'][0]
+    if mutation in ('current_component', 'prior_component'):
+        key = 'current_ref' if mutation == 'current_component' else 'prior_ref'
+        view['contributions'][0][key] = 'fixture:withheld-component-canary'
+    elif mutation in ('current_output', 'prior_output'):
+        ref = view[mutation]['ref']
+        view['result']['refs'].remove(ref)
+    elif mutation == 'extra_unused_support':
+        view['result']['refs'].append('fixture:unselected-support-canary')
+    else:
+        view['result']['refs'].append(view['result']['refs'][-1])
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError) as error:
+        cr.validate_view(payload)
+    assert str(error.value) == 'INVALID_CLAIM_VIEW'
+    assert 'canary' not in str(error.value)
+
+
+def test_payload_cannot_reuse_one_observation_for_two_issuer_panels():
+    payload = cr.compose_communications_payload((company('meta'), company('trade_desk')))
+    meta, trade_desk = payload['projection']['panels'][0], payload['projection']['panels'][2]
+    trade_desk['measures'][0]['current'] = deepcopy(meta['measures'][0]['current'])
+    # Remove all changed comparison references to isolate cross-panel reuse,
+    # rather than accidentally testing the pre-existing guidance/ref mismatch.
+    trade_desk['measures'][0]['comparison'] = None
+    trade_desk['measures'][0]['trend'] = None
+    trade_desk['headline'] = None
+    trade_desk['guidance'] = None
+    trade_desk['original_guidance'] = None
+    payload['projection']['headline_issuer_count'] = 1
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+def test_payload_guidance_cannot_reuse_an_actual_observation_reference():
+    payload = cr.compose_communications_payload((company(),))
+    panel = payload['projection']['panels'][0]
+    actual_ref = panel['measures'][0]['current']['ref']
+    panel['original_guidance']['ref'] = actual_ref
+    panel['guidance']['refs'] = [actual_ref, actual_ref]
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+def test_payload_allows_identical_accounting_echoes_and_reordered_support():
+    payload = cr.compose_communications_payload((accounting_magnite(),))
+    panel = payload['projection']['panels'][3]
+    row = panel['measures'][0]
+    views = panel['accounting'][0]['views']
+    assert len(views) == 2
+    for view in views:
+        assert view['current_output'] == row['current']
+        assert view['prior_output'] == row['prior']
+        view['result']['refs'].reverse()  # Reference membership is not term order.
+    before = deepcopy(payload)
+    assert cr.validate_view(payload) is None
+    assert payload == before
