@@ -36,6 +36,7 @@
     var n = parseInt(h, 16); if (isNaN(n)) return hex;
     return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
   }
+  function finite(v) { return typeof v === "number" && isFinite(v); }
   function lang() {
     return document.documentElement.getAttribute("data-lang") || (localStorage.getItem("lang") === "zh" ? "zh" : "en");
   }
@@ -165,7 +166,10 @@
       bottomColor: alpha(c.bull, 0.04), lineWidth: 1.5, lineType: LWC.LineType.WithSteps,
       priceLineVisible: false, lastValueVisible: false,
       priceFormat: { type: "price", precision: 2, minMove: 0.01 } }, 2);
-    aS.setData(dates.map(function (t, k) { return { time: t, value: +(alloc[i0 + k]).toFixed(3) }; }));
+    aS.setData(dates.map(function (t, k) {
+      var av = alloc[i0 + k];
+      return finite(av) ? { time: t, value: +av.toFixed(3) } : { time: t };
+    }));
     this.S.alloc = aS;
 
     try {

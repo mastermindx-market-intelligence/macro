@@ -193,40 +193,138 @@ def _dx(index):
 # Lightweight-Charts v5 data emitter for the Risk-Index-vs-Strategy chart
 # (replaces the Plotly fig with the bespoke interactive chart system; site/vector_chart.js)
 # --------------------------------------------------------------------------- #
-def emit_risk_strategy_json(site: Path, sig: pd.DataFrame) -> None:
-    """Emit site/vector_risk_strategy.json — the compact columnar feed for the interactive
-    Lightweight-Charts v5 backtest chart. Per day: price, risk_index, and per-variant
-    allocation + strategy equity; plus de-noised buy/sell markers per variant. All four
-    variants ship so the variant tabs can switch the shaded regime + equity curve client-
-    side. Daily full-res (LWC is canvas — no SVG-per-point cost). No look-ahead."""
-    close = sig["close"]
-    dates = [d.strftime("%Y-%m-%d") for d in sig.index]
-    variants = [v for v in ("optimal", "conservative", "moderate", "aggressive")
-                if f"alloc_{v}" in sig.columns]
-    alloc, equity, markers = {}, {}, {}
+def _risk_strategy_payload(sig: pd.DataFrame) -> dict:
+    """Build the chart contract without collapsing unavailable model state to zero.
+
+    A real 0% allocation is a valid decision. A missing allocation is UNKNOWN and
+    must remain null all the way to the browser; otherwise the UI turns a source
+    or model failure into an apparently deliberate cash position.
+    """
+    close = pd.to_numeric(sig["close"], errors="coerce")
+    dates = [pd.Timestamp(d).strftime("%Y-%m-%d") for d in sig.index]
+    variants = [
+        v for v in ("optimal", "conservative", "moderate", "aggressive")
+        if f"alloc_{v}" in sig.columns
+    ]
+    alloc: dict[str, list[float | None]] = {}
+    equity: dict[str, list[float | None]] = {}
+    markers: dict[str, list[dict]] = {}
     hodl = (1 + close.pct_change().fillna(0)).cumprod()
+
+    def finite_or_none(value, digits: int):
+        if pd.isna(value) or not np.isfinite(float(value)):
+            return None
+        rounded = round(float(value), digits)
+        return int(rounded) if digits == 0 else rounded
+
     for v in variants:
-        a = sig[f"alloc_{v}"].fillna(0.0)
-        alloc[v] = [round(float(x), 3) for x in a]
-        equity[v] = [round(float(x), 4) for x in alloc_equity(close, a)]
-        # markers only where the allocation MATERIALLY changes (de-noise the continuous grid)
-        d = a.diff().fillna(0.0)
+        raw = pd.to_numeric(sig[f"alloc_{v}"], errors="coerce")
+        alloc[v] = [finite_or_none(x, 3) for x in raw]
+        equity[v] = [finite_or_none(x, 4) for x in alloc_equity(close, raw)]
+
+        # A marker requires two observed decisions. Crossing an unavailable
+        # observation is not a buy/sell event and must not be presented as one.
         mk = []
-        for i in range(len(a)):
-            if abs(float(d.iloc[i])) >= 0.10:
-                mk.append({"t": dates[i], "dir": "buy" if d.iloc[i] > 0 else "sell",
-                           "to": round(float(a.iloc[i]), 2)})
+        for i in range(1, len(raw)):
+            prev, cur = raw.iloc[i - 1], raw.iloc[i]
+            if pd.isna(prev) or pd.isna(cur):
+                continue
+            delta = float(cur) - float(prev)
+            if abs(delta) >= 0.10:
+                mk.append({
+                    "t": dates[i],
+                    "dir": "buy" if delta > 0 else "sell",
+                    "to": round(float(cur), 2),
+                })
         markers[v] = mk
-    payload = {
+
+    observed_at = dates[-1] if dates else None
+    missing_price_dates = [
+        dates[i] for i, value in enumerate(close)
+        if pd.isna(value) or not np.isfinite(float(value))
+    ]
+    missing_allocation_dates = {
+        v: [dates[i] for i, value in enumerate(values) if value is None]
+        for v, values in alloc.items()
+    }
+    issues = []
+    if not variants:
+        issues.append({
+            "code": "NO_ALLOCATION_VARIANTS",
+            "message_en": "No allocation variants are available for replay.",
+            "message_zh": "没有可用于回放的配置变体。",
+        })
+    if missing_price_dates:
+        issues.append({
+            "code": "PRICE_UNAVAILABLE",
+            "message_en": "Price history is incomplete; interactive replay is unavailable.",
+            "message_zh": "价格历史不完整；交互式回放暂不可用。",
+        })
+    if any(missing_allocation_dates.values()):
+        issues.append({
+            "code": "ALLOCATION_UNAVAILABLE",
+            "message_en": "Allocation history is incomplete; missing decisions are not treated as 0% cash.",
+            "message_zh": "配置历史不完整；缺失决策不会被视为 0% 现金仓位。",
+        })
+    valid = bool(variants) and not missing_price_dates and not any(missing_allocation_dates.values())
+    return {
+        "schema": "mastermind.vector_risk_strategy.v2",
+        "valid": valid,
+        "issues": issues,
+        "missing": {
+            "price_dates": missing_price_dates,
+            "allocation_dates": missing_allocation_dates,
+        },
+        "meta": {
+            "observed_at": observed_at,
+            "availability_clock": "NOT_ASSERTED",
+            "fields": {
+                "price": {
+                    "source_id": "signals.close",
+                    "unit": "USD",
+                    "available_at": None,
+                },
+                "risk": {
+                    "source_id": "signals.risk_index",
+                    "unit": "index_0_100",
+                    "available_at": None,
+                },
+                "allocation": {
+                    "source_id": "signals.alloc_optimal",
+                    "variant_source_pattern": "signals.alloc_<variant>",
+                    "unit": "fraction_0_1",
+                    "available_at": None,
+                },
+            },
+        },
         "dates": dates,
-        "price": [round(float(x)) for x in close],
-        "risk": [round(float(x)) if pd.notna(x) else None for x in sig.get("risk_index", pd.Series(index=sig.index))],
-        "alloc": alloc, "equity": equity, "markers": markers,
-        "hodl": [round(float(x), 4) for x in hodl],
+        "price": [finite_or_none(x, 0) for x in close],
+        "risk": [
+            finite_or_none(x, 0)
+            for x in sig.get("risk_index", pd.Series(index=sig.index, dtype=float))
+        ],
+        "alloc": alloc,
+        "equity": equity,
+        "markers": markers,
+        "hodl": [finite_or_none(x, 4) for x in hodl],
         "variants": variants,
     }
-    (site / "vector_risk_strategy.json").write_text(json.dumps(payload, separators=(",", ":")))
-    log.info("wrote %s/vector_risk_strategy.json (%d days x %d variants)", site, len(dates), len(variants))
+
+
+def emit_risk_strategy_json(site: Path, sig: pd.DataFrame) -> None:
+    """Emit the qualified Lightweight-Charts feed used by vector_chart.js."""
+    payload = _risk_strategy_payload(sig)
+    dates = payload["dates"]
+    variants = payload["variants"]
+    (site / "vector_risk_strategy.json").write_text(
+        json.dumps(payload, separators=(",", ":"))
+    )
+    log.info(
+        "wrote %s/vector_risk_strategy.json (%d days x %d variants)",
+        site,
+        len(dates),
+        len(variants),
+    )
 
 
 def _cockpit_axis_rows(master: dict, regime: dict) -> list[dict]:
@@ -4594,6 +4692,7 @@ def main() -> int:
     btc_options_contract = build_btc_options()
     reserve_risk_asof = store.last_date("checkonchain", "reserve_risk")
     vdd_asof = store.last_date("checkonchain", "vdd_multiple")
+    chart_contract = _risk_strategy_payload(sig)
 
     vm = {
         "as_of": sig.index.max().strftime("%b %d, %Y"),
@@ -4837,6 +4936,7 @@ def main() -> int:
         "sizing": sizing,
         "catalyst": catalyst,
         "cards": cards,
+        "chart_contract": chart_contract,
         "cross": cross_asset(close),
         "calib": calib,
         "timeline": timeline,
