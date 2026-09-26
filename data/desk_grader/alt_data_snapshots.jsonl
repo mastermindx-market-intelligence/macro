@@ -4319,3 +4319,4 @@
 {"date":"2026-09-26","ticker":"UNP","departed":true,"left_desk":"2026-09-26","last_rank":21,"last_score":30}
 {"date":"2026-09-26","ticker":"USPH","departed":true,"left_desk":"2026-09-26","last_rank":27,"last_score":28}
 {"date":"2026-09-26","ticker":"VST","departed":true,"left_desk":"2026-09-26","last_rank":null,"last_score":19}
+{"date":"2026-09-26","ticker":"PINS","rank":null,"score":13,"lean":1,"broken":true}
