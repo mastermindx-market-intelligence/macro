@@ -41,14 +41,21 @@ html body.page-vector{
 body.page-vector::before{opacity:.46}
 .site-nav .nav-links>.nav-dd:nth-last-child(3) .nav-sub>.nav-dd-menu{left:auto;right:100%}
 .site-nav .nav-links>.nav-dd:nth-last-child(3) .nav-sub::after{left:auto;right:100%}
-.vector-wrap{width:min(1500px,calc(100% - 40px));margin:0 auto;padding:8px 0 76px}
-.shelf{position:relative;margin-top:18px;background:color-mix(in srgb,var(--panel) 96%,transparent);
-  border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--card-shadow)}
-.shelf::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--btc);opacity:.88}
-.shelf-inner{padding:22px 24px}
-.shelf-head{display:flex;align-items:baseline;gap:10px;margin-bottom:15px}
-.shelf-kicker{font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--btc)}
-.shelf-title{margin:0;font-size:16px;line-height:1.2;font-weight:760;letter-spacing:-.01em}
+.vector-wrap{width:min(1320px,calc(100% - 48px));margin:0 auto;padding:4px 0 76px}
+.vector-tabs{display:flex;align-items:center;gap:26px;min-height:48px;border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none}
+.vector-tabs::-webkit-scrollbar{display:none}
+.vector-tabs a{position:relative;display:flex;align-items:center;min-height:48px;color:var(--muted);
+  font-size:12.5px;font-weight:560;text-decoration:none;white-space:nowrap}
+.vector-tabs a:first-child{color:var(--text);font-weight:700}
+.vector-tabs a:first-child::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--info)}
+.shelf{position:relative;margin-top:0;background:transparent;border:0;border-bottom:1px solid var(--line);
+  border-radius:0;overflow:visible;box-shadow:none}
+.shelf::before{display:none}
+.shelf-inner{padding:24px 0 18px}
+.shelf-head{display:flex;align-items:baseline;gap:10px;margin-bottom:0}
+.shelf-kicker{display:none}
+.shelf-title{margin:0;font-size:15px;line-height:1.2;font-weight:680;letter-spacing:-.01em}
 .shelf-sub{margin-left:auto;color:var(--muted);font-size:11.5px;white-space:nowrap}
 .num{font-family:var(--num);font-variant-numeric:tabular-nums}
 .tone-up{--tone:var(--up)}.tone-down{--tone:var(--down)}.tone-flat{--tone:var(--muted)}
@@ -59,31 +66,32 @@ body.page-vector::before{opacity:.46}
 a{color:var(--ink-link, var(--link))}
 
 /* S1 — the read */
-.hero{padding:26px 28px 22px;background:
-  linear-gradient(110deg,color-mix(in srgb,var(--btc) 5%,var(--panel)),var(--panel) 43%)}
-.hero-line{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.wordmark{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:780;letter-spacing:.01em}
-.wordmark .mark{color:var(--btc);font:800 26px/1 var(--font-ui)}
+.hero{padding:28px 0 30px;background:transparent}
+.hero-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wordmark{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:680;letter-spacing:-.035em}
+.wordmark .mark{display:inline-grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);
+  border-radius:10px;color:var(--btc);font:700 21px/1 var(--font-ui);background:var(--panel)}
 .live-quote{display:flex;align-items:baseline;gap:8px;margin-left:auto}
-.live-price{font:760 19px/1 var(--num);font-variant-numeric:tabular-nums}
-.live-change{font:700 12px/1 var(--num);font-variant-numeric:tabular-nums}
-.asof-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid var(--line);
-  border-radius:999px;color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums}
-.asof-chip i{width:5px;height:5px;border-radius:50%;background:var(--btc)}
-.hero-read{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:28px;align-items:end;margin:28px 0 8px}
-.stance{margin:0;font-size:clamp(42px,6vw,82px);font-weight:820;letter-spacing:-.055em;line-height:.92;
-  color:var(--text);text-wrap:balance}
-.hero-summary{max-width:720px;margin:14px 0 0;color:var(--muted);font-size:14px}
-.master-meter{padding:14px 16px;border-left:1px solid var(--line)}
-.meter-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-.meter-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700}
-.meter-score{font:760 24px/1 var(--num);font-variant-numeric:tabular-nums;color:var(--tone,var(--muted))}
-.meter-rail{position:relative;height:4px;margin:11px 0 7px;border-radius:4px;background:var(--line)}
-.meter-rail::before{content:"";position:absolute;left:50%;top:-3px;width:1px;height:10px;background:var(--muted);opacity:.45}
-.meter-rail i{position:absolute;top:-3px;width:2px;height:10px;border-radius:2px;background:var(--tone,var(--muted));
-  left:calc({{ master.gauge if master and master.ok else 50 }}% - 1px)}
-.meter-note{font-size:10.5px;color:var(--muted)}
-.tape-shell{position:relative;padding:14px 12px 4px;border-top:1px solid var(--line)}
+.live-price{font:680 24px/1 var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+.live-change{font:650 11.5px/1 var(--num);font-variant-numeric:tabular-nums}
+.asof-chip{display:inline-flex;align-items:center;gap:6px;padding-left:12px;border-left:1px solid var(--line);
+  color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums}
+.asof-chip i{width:5px;height:5px;border-radius:50%;background:var(--info)}
+.hero-read{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:42px;align-items:end;margin:34px 0 24px}
+.hero-kicker{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-link,var(--link));font-weight:650}
+.stance{max-width:820px;margin:9px 0 0;font-size:clamp(38px,4.4vw,58px);font-weight:660;
+  letter-spacing:-.055em;line-height:.98;color:var(--text);text-wrap:balance}
+.hero-summary{max-width:860px;margin:14px 0 0;color:var(--muted);font-size:13.5px;line-height:1.62}
+.hero-position{padding-left:28px;border-left:1px solid var(--line)}
+.hero-position-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.hero-position-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:650}
+.hero-position-action{margin-top:8px;color:var(--text);font-size:13px;font-weight:650}
+.hero-position-value{margin-top:12px;font:680 32px/1 var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.hero-position-value span{font:500 13px/1 var(--font-ui);letter-spacing:0}
+.hero-position-rail{height:5px;margin:13px 0 8px;border-radius:5px;background:var(--panel2);overflow:hidden}
+.hero-position-rail i{display:block;height:100%;background:var(--info);border-radius:inherit}
+.hero-position-note{font-size:10.5px;line-height:1.45;color:var(--muted)}
+.tape-shell{position:relative;padding:18px 18px 8px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 .tape-legend{position:absolute;top:18px;left:14px;z-index:2;display:flex;gap:13px;align-items:center;
   color:var(--muted);font-size:10px;pointer-events:none}
 .tape-legend span{display:inline-flex;align-items:center;gap:5px}
@@ -234,8 +242,10 @@ a{color:var(--ink-link, var(--link))}
   .axis-row{grid-template-columns:minmax(170px,1fr) 130px 150px 105px 24px}
 }
 @media(max-width:780px){
-  .vector-wrap{width:min(100% - 24px,1500px)}.shelf-inner{padding:18px}
-  .hero{padding:20px 18px}.hero-read{grid-template-columns:1fr;gap:16px}.master-meter{border-left:none;border-top:1px solid var(--line);padding:13px 0 0}
+  .vector-wrap{width:min(100% - 24px,1320px)}.shelf-inner{padding:18px 0}
+  .vector-tabs{gap:20px}
+  .hero{padding:22px 0}.hero-read{grid-template-columns:1fr;gap:20px}
+  .hero-position{border-left:none;border-top:1px solid var(--line);padding:18px 0 0}
   .decision-grid{grid-template-columns:1fr}.decision-main{border-right:none;border-bottom:1px solid var(--line);padding:22px 18px}.decision-detail{padding:20px 18px}
   .axis-row{grid-template-columns:1fr auto 24px;gap:8px 12px;padding:13px 17px}
   .axis-spark{grid-column:1/2;width:100%;height:28px}.axis-micro{grid-column:2/3;grid-row:2;text-align:right}.axis-row>.qm{grid-column:3;grid-row:1/3}
@@ -264,8 +274,22 @@ a{color:var(--ink-link, var(--link))}
 <body class="page-vector">
 {% include "_site_nav.html.j2" %}
 <main class="vector-wrap">
+  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final %}
+  {% set action_code = decision.final.action_code if decision_ok else none %}
+  {% set decision_tone = 'bull' if action_code == 'INCREASE_EXPOSURE' else ('bear' if action_code in ['REDUCE_EXPOSURE','STAY_OUT'] else 'neutral') %}
+  {% set target_pct = decision.final.exposure_pct if decision_ok else none %}
+  {% set L = decision.advisory.levels if decision and decision.advisory and decision.advisory.levels else {} %}
 
-  <section class="shelf" data-shelf="S1">
+  <nav class="vector-tabs" aria-label="{{ t('Bitcoin research sections','比特币研究分区') }}">
+    <a href="#overview">{{ t('Overview','概览') }}</a>
+    <a href="#cycle-lab">{{ t('Cycle & risk','周期与风险') }}</a>
+    <a href="#strategy-track-record">{{ t('Strategy','策略') }}</a>
+    <a href="#onchain-lab">{{ t('On-chain','链上') }}</a>
+    <a href="#derivatives-desk">{{ t('Derivatives','衍生品') }}</a>
+    <a href="crypto.html">{{ t('Crypto Intelligence','加密资产研究') }} ↗</a>
+  </nav>
+
+  <section class="shelf" id="overview" data-shelf="S1">
     <div class="hero">
       <div class="hero-line">
         <div class="wordmark"><span class="mark">₿</span><span>Bitcoin Vector</span></div>
@@ -278,17 +302,37 @@ a{color:var(--ink-link, var(--link))}
       {% set hero_tone = master.tone if master and master.ok else 'neutral' %}
       <div class="hero-read">
         <div>
-          <h1 class="stance">{{ t(master.band if master and master.ok else 'READ UNAVAILABLE', master.band_zh if master and master.ok else '暂无判断') }}</h1>
+          <div class="hero-kicker">
+            {{ t('Market read','市场判断') }} ·
+            {{ t(master.band if master and master.ok else 'Unavailable', master.band_zh if master and master.ok else '暂不可用') }}
+          </div>
+          <h1 class="stance">
+            {% if hero_tone == 'bull' %}{{ t('Constructive backdrop.','整体环境偏积极。') }}
+            {% elif hero_tone == 'bear' %}{{ t('Defensive backdrop.','整体环境偏防守。') }}
+            {% else %}{{ t('Mixed backdrop.','整体环境分化。') }}{% endif %}
+          </h1>
           <p class="hero-summary">
-            {% if hero_tone == 'bull' %}{{ t('The long-cycle read is constructive, while short-term direction remains uncertain.','长周期判断偏积极，但短期方向仍不确定。') }}
-            {% elif hero_tone == 'bear' %}{{ t('The long-cycle read is defensive, while short-term direction remains uncertain.','长周期判断偏防守，但短期方向仍不确定。') }}
-            {% else %}{{ t('The long-cycle evidence is mixed; position size matters more than short-term prediction.','长周期证据分化；仓位管理比短期预测更重要。') }}{% endif %}
+            {% if master and master.ok %}{{ t(master.headline_en, master.headline_zh) }}
+            {% else %}{{ t('The market read is unavailable. Supporting evidence remains inspectable below.','市场判断暂不可用；下方支撑证据仍可查看。') }}{% endif %}
           </p>
         </div>
-        <div class="master-meter {{ tone_class(hero_tone) }}">
-          <div class="meter-top"><span class="meter-label">{{ t('Master read','总读数') }}</span><span class="meter-score">{{ "%+d"|format(master.score) if master and master.ok else '—' }}</span></div>
-          <div class="meter-rail"><i></i></div>
-          <div class="meter-note">{{ master.n_bull if master and master.ok else 0 }} {{ t('supportive','项支撑') }} · {{ master.n_bear if master and master.ok else 0 }} {{ t('cautious','项谨慎') }}</div>
+        <div class="hero-position">
+          <div class="hero-position-top">
+            <span class="hero-position-label">{{ t('Model stance','模型立场') }}</span>
+            <span class="hero-position-label">{{ t('Final authority','最终口径') }}</span>
+          </div>
+          <div class="hero-position-action">
+            {% if decision_ok %}{{ t(decision.final.action_en, decision.final.action_zh) }}
+            {% else %}{{ t('Decision unavailable','决策暂不可用') }}{% endif %}
+          </div>
+          <div class="hero-position-value">
+            {% if decision_ok %}{{ target_pct }}% <span>BTC</span>{% else %}—{% endif %}
+          </div>
+          <div class="hero-position-rail">{% if decision_ok %}<i style="width:{{ target_pct }}%"></i>{% endif %}</div>
+          <div class="hero-position-note">
+            {{ t('Model allocation — not your account. Short-term direction remains uncertain.',
+                 '模型仓位——并非您的账户仓位。短期方向仍不确定。') }}
+          </div>
         </div>
       </div>
       <div class="tape-shell">
@@ -313,14 +357,9 @@ a{color:var(--ink-link, var(--link))}
     </div>
   </section>
 
-  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final %}
-  {% set action_code = decision.final.action_code if decision_ok else none %}
-  {% set decision_tone = 'bull' if action_code == 'INCREASE_EXPOSURE' else ('bear' if action_code in ['REDUCE_EXPOSURE','STAY_OUT'] else 'neutral') %}
-  {% set target_pct = decision.final.exposure_pct if decision_ok else none %}
-  {% set L = decision.advisory.levels if decision and decision.advisory and decision.advisory.levels else {} %}
   <section class="shelf {{ tone_class(decision_tone) }}" data-shelf="S2" data-verdict data-decision-schema="{{ decision.schema }}" data-decision-status="{{ decision.status }}"{% if decision_ok %} data-decision-exposure="{{ target_pct }}"{% endif %}>
     <div class="shelf-inner">
-      <div class="shelf-head"><span class="shelf-kicker">S2</span><h2 class="shelf-title">{{ t('What To Do','该怎么做') }}</h2><span class="shelf-sub">{{ t('one action · one sizing source','一个行动 · 一个仓位来源') }}</span></div>
+      <div class="shelf-head"><span class="shelf-kicker">S2</span><h2 class="shelf-title">{{ t('Decision & levels','决策与关键价位') }}</h2><span class="shelf-sub">{{ t('one final target · explicit review levels','一个最终目标 · 明确复核价位') }}</span></div>
     </div>
     <div class="decision-grid">
       <div class="decision-main">
@@ -355,7 +394,7 @@ a{color:var(--ink-link, var(--link))}
 
   <section class="shelf" data-shelf="S3">
     <div class="shelf-inner">
-      <div class="shelf-head"><span class="shelf-kicker">S3</span><h2 class="shelf-title">{{ t('Why','为什么') }}</h2><span class="shelf-sub">{{ t('six governing drivers','六个主导因素') }}</span></div>
+      <div class="shelf-head"><span class="shelf-kicker">S3</span><h2 class="shelf-title">{{ t('Drivers','驱动因素') }}</h2><span class="shelf-sub">{{ t('six governing evidence axes','六个主导证据维度') }}</span></div>
     </div>
     <div class="axis-board">
       {% for row in presentation.axes %}
@@ -372,7 +411,7 @@ a{color:var(--ink-link, var(--link))}
 
   <section class="shelf" data-shelf="S4">
     <div class="shelf-inner">
-      <div class="shelf-head"><span class="shelf-kicker">S4</span><h2 class="shelf-title">{{ t("What We're Watching",'正在观察') }}</h2><span class="shelf-sub">{{ t('conditions that could change the read','可能改变判断的条件') }}</span></div>
+      <div class="shelf-head"><span class="shelf-kicker">S4</span><h2 class="shelf-title">{{ t('Watch conditions','观察条件') }}</h2><span class="shelf-sub">{{ t('what could change the read','哪些变化会改变判断') }}</span></div>
     </div>
     <div class="watch-grid">
       {% for w in presentation.watch %}
@@ -392,7 +431,7 @@ a{color:var(--ink-link, var(--link))}
 
   <section class="shelf" data-shelf="S5">
     <div class="shelf-inner">
-      <div class="shelf-head"><span class="shelf-kicker">S5</span><h2 class="shelf-title">{{ t('The Complex','加密市场全景') }}</h2><span class="shelf-sub">{{ t('Bitcoin in context','把比特币放回全市场') }}</span></div>
+      <div class="shelf-head"><span class="shelf-kicker">S5</span><h2 class="shelf-title">{{ t('Market context','市场背景') }}</h2><span class="shelf-sub">{{ t('Bitcoin across the broader complex','比特币在更广泛市场中的位置') }}</span></div>
     </div>
     <div class="complex-grid">
       {% for c in presentation.complex %}
@@ -410,7 +449,7 @@ a{color:var(--ink-link, var(--link))}
 
   <section class="shelf" data-shelf="S6">
     <div class="shelf-inner">
-      <div class="shelf-head"><span class="shelf-kicker">S6</span><h2 class="shelf-title">{{ t('Study Shelf','研究架') }}</h2><span class="shelf-sub">{{ t('depth on demand','按需查看深度') }}</span></div>
+      <div class="shelf-head"><span class="shelf-kicker">S6</span><h2 class="shelf-title">{{ t('Research depth','深度研究') }}</h2><span class="shelf-sub">{{ t('open the evidence when you need it','需要时展开证据') }}</span></div>
     </div>
     <div class="study-list">
       <details class="study-fold" id="cycle-lab">
