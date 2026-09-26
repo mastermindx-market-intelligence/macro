@@ -824,10 +824,17 @@ def _continuation_display_lanes(lanes, theme_intel, observed_at=None):
                     and isinstance(extension, (int, float)) and not isinstance(extension, bool)
                     and math.isfinite(extension)
                 )
+                theme_enter = (
+                    final == "enter" and td.get("label") == "emerging"
+                    and source_action == "enter" and complete and clean is False
+                )
                 if continuation:
                     lane = "buy_now"
                     row.update(entry_route="continuation", reco="accumulate",
                                reco_en="CONTINUATION", reco_zh="趋势增持")
+                elif theme_enter:
+                    lane = "buy_now"
+                    row["entry_route"] = "theme_enter"
                 elif lane == "buy_now" and (clean is not True or not complete):
                     lane = "wait_pullback"
                 elif lane == "buy_now":
