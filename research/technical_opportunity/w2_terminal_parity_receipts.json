@@ -1,0 +1,39 @@
+{
+  "schema_version": "toi.w2_terminal_parity_receipts.v1",
+  "measured_surface": "https://app.mastermind-x.com/api/intraday",
+  "measurement_environment": "authorized Mac via production HTTP; no vendor credential used",
+  "terminal_pin": "a4be9a3f4b51246200cb1b7c4f1d44730066a9a9",
+  "macro_clock_oracle": "engine/entry_radar/four_hour.py + engine/session_digest.session_window_et @ 021b2ae3a4a6a508f3e0fc56d00a85b21adf1be3",
+  "cases": [
+    {
+      "dates": ["2026-09-10", "2026-03-06", "2026-03-09"],
+      "symbols": ["AAPL", "SPY", "NVDA", "JPM", "XOM"],
+      "n_cases": 15,
+      "result": "PASS",
+      "detail": "Production 4H exactly matched a 09:30-anchored resample of production 5m history. Each source day had 78 5m rows. The corresponding 195M source split is 39/39. The March pair spans the US DST change."
+    },
+    {
+      "dates": ["2025-11-28"],
+      "symbols": ["AAPL", "SPY", "NVDA", "JPM", "XOM"],
+      "n_cases": 5,
+      "result": "FAIL",
+      "detail": "Production 5m history returned 43 rows through a 13:00-stamped row on a 13:00 early close. The canonical actual-close filter admits 42 rows through 12:55. Production 4H included the 13:00 row, changing close and/or volume in all five cases. Canonical 195M source split is 39/3."
+    },
+    {
+      "dates": ["2026-06-15"],
+      "symbols_sample_n": 20,
+      "n_cases": 20,
+      "result": "HOLD",
+      "detail": "Sampled symbols without stored 5m history returned six 1h rows beginning at 10:00 ET and two derived 4H bars. Terminal falls back from missing 5m to provider-built 1h history, so exact 09:30-open whole-universe parity is not proven."
+    }
+  ],
+  "summary": {
+    "strict_4h_parity_cases": 20,
+    "pass": 15,
+    "fail": 5,
+    "pass_rate": 0.75,
+    "whole_universe_result": "HOLD"
+  },
+  "blocking_finding": "Actual exchange close is not load-bearing in the Terminal stored-history session filter; whole-universe fallback also depends on provider-built 1h bars when 5m is absent.",
+  "w3_admission": "HOLD"
+}
