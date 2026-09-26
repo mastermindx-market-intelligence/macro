@@ -6047,6 +6047,11 @@ jobs:
       # read-side guard that stops a focus refetch from reverting a just-made edit.
       - name: watchlist workspace — entry parser, stage map, focus-refetch guard (W2)
         run: python -m pytest tests/test_watchlist_workspace_js.py -q
+      # A local mutation is acknowledged against the binding that produced it. This
+      # regression catches a debounced write being lost or retargeted when the user
+      # switches lists before the timer fires, including the same-ID refresh path.
+      - name: watchlist persistence — pending writes stay with their source list
+        run: python -m pytest tests/test_watchlist_pending_persist_js.py -q
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
