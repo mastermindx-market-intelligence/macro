@@ -186,6 +186,30 @@ A standardized two-variable descriptive regression of HSI next-open gap on QQQ a
 SMH-minus-QQQ gave the larger coefficient to QQQ in both the full and clean development slices.
 This is descriptive only; the sample is too small for model-selection claims.
 
+
+### Challenger parent-event collapse
+
+Because the same frozen control dates can appear at different clocks, QQQ-minus-SPY was also
+collapsed to one control-agreement average per parent event after the V1.1 challenger definition
+was frozen.
+
+All 12 development parents:
+- event agreement: **83.3%**
+- mean parent-control agreement: **62.5%**
+- paired mean difference: **+20.8 percentage points**
+- parent deltas: **6 positive / 4 zero / 2 negative**
+
+Seven clean-primary parents:
+- event agreement: **85.7%**
+- mean parent-control agreement: **64.3%**
+- paired mean difference: **+21.4 percentage points**
+- parent deltas: **4 positive / 2 zero / 1 negative**
+
+A fixed-seed descriptive parent bootstrap had a 5th percentile mean delta of exactly **0** in
+both the full and clean slices. Therefore the challenger remains directionally interesting but
+fragile development evidence. This does not upgrade the V1.1 challenger, alter its frozen
+prospective clock, or create a significance/promotion claim.
+
 ### Specificity ruling
 
 The development evidence does **not** support calling the surviving relationship a

@@ -399,3 +399,36 @@ carrier; no second event or evaluation plane is created.
    retries from this research lane.
 5. No Brain/product/trading projection until the declared prospective review boundary and a separate
    acceptance decision.
+
+
+### Prospective capture harness
+
+Commit `5e8ebffe5790ebf41de8fbaa80688b1b225c3347` adds
+`scripts/research/capture_cross_session_transfer.py`, a research-only two-stage capture path:
+
+1. `admit_source_event` freezes source facts and stamps V1/V1.1 eligibility clocks only.
+2. `measure_us_response` may fetch only SPY, QQQ and SMH from the incumbent U.S. minute
+   transport and compute the frozen +5->+35 primary/challenger geometry.
+
+Hard boundaries:
+- a pre-V1 event is refused by `measure_us_response` before any transport call;
+- a V1-only event cannot emit a V1.1 challenger measurement;
+- the harness never reads HSI/HK outcomes;
+- it never chooses matched controls;
+- it writes no QLedger, Chronicle, Market Memory, vendor store, alert or product state;
+- persistence is stdout-only.
+
+Exact-head lightweight verification at `5e8ebffe...`:
+- Python compile of research kernel + replay adapter + capture harness: PASS;
+- `tests/test_event_microstructure_replay.py`: **12 passed**;
+- isolated temp package removed after the run.
+
+### Challenger parent-level robustness
+
+After the challenger was frozen, the same parent-event dependence correction was applied to
+QQQ-minus-SPY:
+- all parents: event 83.3% vs parent-control 62.5%, delta +20.8 pp;
+- clean-primary: event 85.7% vs parent-control 64.3%, delta +21.4 pp;
+- descriptive bootstrap 5th percentile = 0 in both slices.
+
+This preserves the challenger as fragile prospective research, not a validated signal.
