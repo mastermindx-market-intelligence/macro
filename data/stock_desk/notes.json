@@ -1,172 +1,171 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-09-24",
-  "generated_at": "2026-09-25T22:06:50.114322+00:00",
+  "generated_at": "2026-09-26T10:20:41.310899+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-24-ETN-20260925220650-1",
-      "ticker": "ETN",
-      "name": "Eaton Corp Plc",
+      "id": "2026-09-24-DHR-20260926102041-1",
+      "ticker": "DHR",
+      "name": "Danaher Corp",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "Short-term bottoming is real but only a daily-grade turn on a mixed weekly picture, and the net-liquidity headwind plus the prior left-translated (early-topped) cycle undercuts the odds. The verdict is neutral and the only driver is entry, so there is no validated edge to lean on.",
+      "horizon_d": 20,
+      "thesis": "The neutral verdict fits a daily turn that lacks weekly confirmation, while the deteriorating Health Care basket is the relevant validated risk brake. The setup warrants watching rather than extrapolating the board rank.",
       "evidence": [
-        "ladder: BOTTOMING / TURN SIGNALED (daily only, weekly not turned)",
-        "macro: US net liquidity contracting + elevated macro-risk for a macro-sensitive name",
-        "cycle: left translation (bearish structural tell)",
-        "verdict: Neutral \u2014 no clear edge; driver list is only 'entry'",
-        "caution: Data-Center Power & Cooling basket below long-term trend"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Weekly timeframe has not turned",
+        "Health Care basket deteriorating",
+        "Net income growth -7.3%"
       ],
-      "dissent": "Best bull case is that price is 5.4% above the 50-DMA with a fresh swing low and MACD positive \u2014 momentum could simply continue, consistent with the desk's finding that extended leaders keep running.",
+      "dissent": "Price is above both major moving averages with positive MACD, so the bottoming turn could develop into sustained relative strength.",
       "falsifier": {
-        "text": "Weekly timeframe turns up (cycle low confirmed on the bigger picture) and price breaks above the last swing high.",
+        "text": "A confirmed weekly upturn accompanied by continued closes above the rising 10-day average would shift the read constructive.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-05",
+      "check_by": "2026-10-22",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-24-FORM-20260925220650-2",
+      "id": "2026-09-24-FORM-20260926102041-2",
       "ticker": "FORM",
       "name": "FormFactor, Inc.",
       "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "The residual-alpha selection is positive across earnings-surprise, revisions, and momentum (momentum z +1.82), the quality axis is clean, and the entry is not blocked. This is a high-confluence leader despite the WFE basket deteriorating, so the constructive lean holds at the desk's typical reduced conviction.",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The residual-alpha selection leg, unblocked entry, and clean accounting flag support a tentative constructive lean as the daily cycle turns. Conviction stays low because the weekly trend is unresolved and prior constructive calls have had weak directional accuracy.",
       "evidence": [
-        "selection z +1.28: SUE +1.38 (fresh 29d), revisions +0.74, momentum +1.82",
-        "quality z +0.32, accounting clean",
-        "high-confluence leader verdict (constructive band)",
-        "cycle: middle translation, no failed cycle, off-high -19.3% (room)",
-        "caution: Semiconductor Equipment (WFE) basket deteriorating \u2014 trim, not avoid"
+        "Verdict: High-confluence leader (context)",
+        "Selection z 1.28; percentile 69",
+        "Entry unblocked",
+        "Accounting flag clean",
+        "Above 50-day and 200-day averages"
       ],
-      "dissent": "Extreme high-beta/low-vol factor profile (low_vol -2.93, low_beta -2.73) and -21.9% net-income growth: any tape wobble hits this name disproportionately, and the WFE basket flag is a real fundamental warning.",
+      "dissent": "The stock remains 15.7% above its 50-day average, carries very high volatility and beta exposure, and net income fell 21.9%, leaving it vulnerable if the turn fails.",
       "falsifier": {
-        "text": "Price loses the 50-DMA and the weekly timeframe turns down, or the Semiconductor Equipment basket continues deteriorating into negative territory.",
+        "text": "A loss of the 95.41 cycle low or a failed daily cycle would negate the constructive setup.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "FORM",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 30
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-11-05",
+      "check_by": "2026-10-22",
       "engine_verdict": "High-confluence leader (context)"
     },
     {
-      "id": "2026-09-24-DHR-20260925220650-3",
-      "ticker": "DHR",
-      "name": "Danaher Corp",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The signal is a young bottoming turn on a mixed weekly picture, but the board state is already 'HOLD \u2014 EXTENDED' with RSI 68 and daily phase stretched, and quality/selection axes are below parity. A strong-name chase is not warranted, but there is no bearish signal to short either \u2014 neutral respects the extension brake.",
-      "evidence": [
-        "ladder: BOTTOMING / TURN SIGNALED, but board: 'HOLD \u2014 EXTENDED'",
-        "entry: extension present, RSI 68, off-high -7.2%",
-        "selection z -0.48 (momentum z -0.83, revisions z -0.45)",
-        "caution: Health Care (Equal-Weight) basket deteriorating",
-        "verdict: Neutral \u2014 no clear edge, no drivers"
-      ],
-      "dissent": "The cycle low is only 8 days old with a right translation (the strong one) and Price is 9.1% above the 50-DMA \u2014 if the weekly turns up, this could run as a lagging Health Care mega-cap catch-up.",
-      "falsifier": {
-        "text": "Weekly timeframe turns down and price breaks below the 10-day average, erasing the 8-day-old cycle low.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-05",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-24-ITT-20260925220650-4",
+      "id": "2026-09-24-ITT-20260926102041-3",
       "ticker": "ITT",
       "name": "ITT Inc.",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "A with-trend FRESH BUY on both daily and weekly timeframes is a legitimately strong chart, but the deterministic verdict remains neutral with no selection edge (SUE -1.73) and an accounting 'watch' flag. The strong tape and the neutral verdict conflict, so we watch rather than chase.",
+      "horizon_d": 20,
+      "thesis": "The fresh-buy technical setup is favorable, but the deterministic profile still finds no clear edge and flags accounting quality for review. With selection only near the middle of the board, the evidence does not justify a relative-performance call.",
       "evidence": [
-        "ladder: FRESH BUY / BUY ZONE, with-trend bullish, both daily and weekly agree",
-        "caution: accounting quality 'watch' (flags: watch)",
-        "selection z +0.17 \u2014 SUE -1.73 fresh 22d (no PEAD support)",
-        "verdict: Neutral \u2014 no clear edge",
-        "entry not blocked, but macro-risk elevated for macro-sensitive name"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry percentile 64 and unblocked",
+        "Bullish weekly regime",
+        "Accounting flag watch",
+        "SUE z -1.73"
       ],
-      "dissent": "A synchronized daily+weekly FRESH BUY just 15 days after a swing low with MACD crossing up is one of the strongest technical reads on this board \u2014 the accounting 'watch' may be noise, and a neutral call could under-participate if the cycle confirms.",
+      "dissent": "Weekly and daily trends agree, price is above both major moving averages, and the cycle is not blocked, which could produce continued outperformance.",
       "falsifier": {
-        "text": "Weekly timeframe confirms the fresh-buy cycle and price clears the prior 52-week high while accounting clean-up fails to materialize any issue.",
+        "text": "Sustained relative strength versus the S&P 500 alongside a confirmed higher weekly cycle would shift the read constructive.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-05",
+      "check_by": "2026-10-22",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-24-MRK-20260925220650-5",
-      "ticker": "MRK",
-      "name": "Merck + Co. Inc.",
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The verdict is 'Constructive \u2014 building a base' with a strong entry axis (trend-quality present) and momentum z +1.93, but SUE -1.23 and an accounting 'watch' flag plus a deteriorating Health Care basket keep this a low-conviction constructive at most \u2014 watch the base, don't size it.",
-      "evidence": [
-        "verdict: Constructive \u2014 building a base (band: neutral)",
-        "entry z +1.25 with trend-quality present, off-high only -4.9%",
-        "momentum z +1.93 (context alpha)",
-        "caution: accounting 'watch' + Health Care (Equal-Weight) basket deteriorating",
-        "SUE -1.23 fresh 26d \u2014 no earnings-surprise tailwind"
-      ],
-      "dissent": "Quality factor z -0.68 with accruals -1.01 suggests deteriorating earnings quality; the 'building a base' narrative can fail if the seasonal October support (+2.5% avg) dissolves into a momentum unwind.",
-      "falsifier": {
-        "text": "Price falls back below the 10-day average and the 8-day-old cycle low at ~143 is taken out, breaking the base.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "MRK",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-11-05",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-24-CNK-20260925220650-6",
+      "id": "2026-09-24-CNK-20260926102041-4",
       "ticker": "CNK",
       "name": "Cinemark Holdings, Inc.",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "CNK is a Leader verdict (constructive band) but the entry axis is below parity with 'extension' and 'over-200dma' flags; the board says 'HOLD \u2014 EXTENDED'. The caution is purely entry timing on an intact leader, so by desk rule we do not short it \u2014 neutral, watch for a base.",
+      "horizon_d": 15,
+      "thesis": "CNK remains a leader with an unblocked turn, so extension alone is not a short signal; however, the validated macro-risk brake and late, stretched cycle argue against chasing. The accountable stance is neutral pending either consolidation or renewed confirmation.",
       "evidence": [
-        "verdict: Leader \u00b7 poor entry \u2014 wait for a base",
-        "entry z -0.06 (present: extension, over-200dma)",
-        "board state: 'HOLD \u2014 EXTENDED', off-high only -3.5%",
-        "selection z +1.11 (revisions +0.9, momentum +1.33) \u2014 leader intact",
-        "no bearish signal: cycle not blocked, no bearish caution"
+        "Verdict: High-confluence leader (context)",
+        "Selection z 1.12; percentile 67",
+        "Daily phase stretched and investor phase late",
+        "Macro risk elevated for a macro-sensitive name",
+        "Price 26.2% above 200-day average"
       ],
-      "dissent": "Momentum z +1.33 on a small-cap with 26.5% above the 200-DMA can persist; the poor entry read may miss a continued squeeze higher as momentum leaders keep running through extended territory.",
+      "dissent": "Positive revisions, momentum, and a fresh daily momentum crossover could allow leadership to persist despite the extension.",
       "falsifier": {
-        "text": "Price breaks below the 10-day average and the 6-day-old cycle low at 33.93, starting a genuine base rather than extending.",
+        "text": "A successful consolidation followed by a confirmed weekly upturn and continued relative strength would shift the read constructive.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-05",
-      "engine_verdict": "Leader \u00b7 poor entry \u2014 wait for a base"
+      "check_by": "2026-10-15",
+      "engine_verdict": "High-confluence leader (context)"
+    },
+    {
+      "id": "2026-09-24-ETN-20260926102041-5",
+      "ticker": "ETN",
+      "name": "Eaton Corp Plc",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The unblocked entry and improving daily turn are offset by a left-translated prior cycle and deterioration in its Data-Center Power & Cooling basket. Those risk controls support the profile's no-clear-edge verdict rather than a directional bet.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Prior cycle left-translated",
+        "Data-Center Power & Cooling basket deteriorating",
+        "Entry percentile 64 and unblocked",
+        "Weekly timeframe has not turned"
+      ],
+      "dissent": "Positive MACD, improving net income, and price above both major moving averages could turn the current setup into renewed leadership.",
+      "falsifier": {
+        "text": "A confirmed weekly upturn with a right-translated new cycle would shift the read constructive.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-22",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-24-BIIB-20260926102041-6",
+      "ticker": "BIIB",
+      "name": "Biogen",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The building-base verdict and new, right-translated daily cycle support a tentative constructive lean, with the entry still unblocked. Confidence is restrained by weak earnings growth, accounting scrutiny, basket deterioration, and the poor historical directional accuracy of constructive calls.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Daily cycle new and right-translated",
+        "Entry unblocked",
+        "Accounting flag watch",
+        "Big Pharma basket deteriorating"
+      ],
+      "dissent": "The weekly timeframe remains mixed and price sits only 0.5% below its 52-week high, so a failed breakout could expose the weak fundamental trend.",
+      "falsifier": {
+        "text": "A failed daily cycle with price losing the recent swing-low structure would reverse the constructive read.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "BIIB",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 15
+        }
+      },
+      "check_by": "2026-10-15",
+      "engine_verdict": "Constructive \u2014 building a base"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
