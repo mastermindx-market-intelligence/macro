@@ -1,7 +1,7 @@
 {
   "status": "CHECKPOINTED_CONTINUATION",
   "mission_complete": false,
-  "revision": "R3 glance-first decision candidate",
+  "revision": "R4 glance-first + degraded-state decision candidate",
   "observed_date_utc": "2026-09-27",
   "scope": "Continue the Chairman's Forex redesign: an instantly understandable, visually refined and robust research journey. This is a design candidate, not a production release.",
   "authority_boundary": "Current outer Chairman continuation supplies this task's intent. This record grants no successor lease, admission, denied-effect replay, production or trading authority.",
@@ -25,20 +25,20 @@
     "calibration_sample_end": "2026-06-18"
   },
   "artifact": {
-    "role": "Immutable R3 qualification archive only; not an authoritative Drive state mirror or a new Agent OS",
-    "drive_file_id": "1FMG2g4Lv4o6EW-Bu8A_ojo3T3vJIjn2k",
-    "drive_url": "https://drive.google.com/file/d/1FMG2g4Lv4o6EW-Bu8A_ojo3T3vJIjn2k/view",
-    "file_name": "Forex_R3_Design_and_Verification_2026-09-26.zip",
+    "role": "Immutable R4 qualification archive only; not an authoritative Drive state mirror or a new Agent OS",
+    "drive_file_id": "1HX2MVVsCXe6bGHfkArKGgayrM2dgRezO",
+    "drive_url": "https://drive.google.com/file/d/1HX2MVVsCXe6bGHfkArKGgayrM2dgRezO/view",
+    "file_name": "Forex_R4_Design_and_Verification_2026-09-26.zip",
     "shared_on_readback": false,
-    "size_bytes": 2417156,
-    "sha256": "c7b3f2a2379b49e787019324e2ebe67ec48570f77e732d35d232312ae1cd8a42",
-    "verification": "Uploaded once as a new Drive file, downloaded again, and matched by exact byte count and SHA-256. ZIP contains 64 entries; all 63 manifest-tracked entries plus MANIFEST.sha256.json were verified with zero mismatches.",
-    "zip_entries": 64,
-    "manifest_entries": 63,
-    "root": "Forex_R3/",
+    "size_bytes": 2420729,
+    "sha256": "c675b35a23b3bd37b8ac25993c9c5fb4cdffdc2ee7e2e99468b129b495f4e607",
+    "verification": "Uploaded once as a new Drive file, downloaded again, and matched by exact byte count and SHA-256. ZIP contains 67 entries; all 66 manifest-tracked entries plus MANIFEST.sha256.json were verified with zero mismatches.",
+    "zip_entries": 67,
+    "manifest_entries": 66,
+    "root": "Forex_R4/",
     "entry_point": "Forex_R2_Interactive_Preview.html",
-    "entry_point_legacy_name_note": "The self-contained entry filename is retained from R2 so the verified build/test harness is not renamed during a design-only refinement.",
-    "entry_point_sha256": "37945958f318daa1d1658c1a3cf755a3da624f60034a1d249f3c1abc80a0f89c",
+    "entry_point_legacy_name_note": "Legacy self-contained entry filename retained to avoid renaming a qualified build/test harness during design refinement.",
+    "entry_point_sha256": "797301010247aca0b877d91e49dbe8c041cc503901dce1dac534c3dc8e4e7ee1",
     "source_files": [
       "app.js",
       "model.js",
@@ -46,22 +46,25 @@
       "styles.css",
       "index.html",
       "build_preview.py",
-      "tests/r3_experience.py"
+      "tests/r3_experience.py",
+      "tests/r4_degraded.py"
     ],
     "handoff": "PRODUCTION_HANDOFF.md",
     "brief_and_execution": "DESIGN_AND_EXECUTION.md",
     "qualification": "evidence/final-qualification.json",
-    "visual_review": "evidence/R3_VISUAL_REVIEW.md",
+    "visual_reviews": [
+      "evidence/R3_VISUAL_REVIEW.md",
+      "evidence/R4_DEGRADED_VISUAL_REVIEW.md"
+    ],
     "manifest": "MANIFEST.sha256.json",
-    "immutable_archive_note": "R2 remains immutable and separately addressable; R3 is a new archive rather than an overwrite."
+    "immutable_archive_note": "R2 and R3 remain immutable and separately addressable; R4 is a new archive rather than an overwrite."
   },
   "verified_delta": [
-    "R2 truth and interaction contracts are preserved: one-month/USD ranking, exact signed values, missing-data honesty, Back/Forward state, disabled unconnected activation and no new trade authority.",
-    "R3 hero now exposes exactly three glance facts: leader, breadth and principal constraint. The default example reads JPY +1.9%, 7/9 currencies below USD, and a −2.9 pp JPY short-rate disadvantage.",
-    "Desktop replaces stacked side cards with one composed 'What matters next' panel; cross-asset context becomes a compact secondary action instead of a competing dashboard card.",
-    "At narrow widths the attention panel moves before the full nine-currency table, so consequential investigation precedes the long reference list.",
-    "JPY detail now presents a two-sided evidence balance: 'What stands out' versus 'What pushes back'. Historical cheapness remains explicitly 'Not bullish evidence'; rate and intervention constraints remain visible.",
-    "Dark/light and EN/ZH layouts remain deliberate; Chinese keeps red-up/green-down while signs and source values remain unchanged."
+    "R3 glance hierarchy remains intact: three hero facts, one composed attention panel, mobile priorities before the long ranking, and balanced JPY evidence.",
+    "R4 promotes stale-data honesty into the detail itself: a visible warning says the snapshot is older and current conditions may differ before the user reads the retained values.",
+    "The stale-detail stance changes from the fresh 'Watch — don’t chase' to 'Stand aside · older data'; old evidence remains visible but current-data watch preparation remains disabled.",
+    "JPY last-known +1.9% and −2.9 pp values remain unchanged in the stale example; no missing/stale value is converted to neutral or zero.",
+    "Dark/light and EN/ZH behavior, fixed comparison basis, exact sign semantics, history state and claim-boundary protections remain inherited from R3."
   ],
   "qualification": {
     "r3_experience_checks": "PASS_AFTER_RED",
@@ -96,13 +99,14 @@
       "final-overview-light.png",
       "final-overview-mobile-en.png",
       "final-overview-mobile-zh.png",
-      "final-yen-detail.png"
+      "final-yen-detail.png",
+      "final-stale-detail.png"
     ],
     "final_capture_javascript_errors": 0,
     "final_capture_outbound_requests": 0,
-    "bundle_sha256": "37945958f318daa1d1658c1a3cf755a3da624f60034a1d249f3c1abc80a0f89c",
+    "bundle_sha256": "797301010247aca0b877d91e49dbe8c041cc503901dce1dac534c3dc8e4e7ee1",
     "transport": "Own authored HTML rendered with Playwright page.set_content in about:blank; outbound requests aborted. Not a served production route.",
-    "interruption": "A combined command hit the tool timeout while entering the browser matrix; model tests had already completed. The matrix was then run standalone and passed 20/20 cells with 1,040 checks. No source change was made in response to the timeout.",
+    "interruption": "The combined verifier again reached the tool timeout after R3 + 31/31 model tests while entering the long browser matrix. The matrix was run standalone and passed 20/20 cells / 1,040 checks; remaining suites were then run separately. No source change was made in response to the timeout.",
     "excluded_proof": [
       "Paper R3 application",
       "production-shaped live data",
@@ -115,7 +119,9 @@
       "Safari or Firefox",
       "intended-user comprehension",
       "whole-repository production suite"
-    ]
+    ],
+    "r4_degraded_state_checks": "PASS_AFTER_RED",
+    "r4_red_finding": "After fixing the test setup to open the intentionally collapsed preview controls, the valid RED showed that stale detail did not explain why age mattered and reused the fresh Watch stance."
   },
   "native_frontier": {
     "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -157,8 +163,8 @@
     "legacy_checkpoint_supersession": "The initial two-artboard R1 local checkpoint and its host/carrier observations are historical only. The current census and last prior operation above supersede its state counts, not its refusal fences."
   },
   "effects": {
-    "new_drive_archive": "R3 uploaded once as a new Drive file and reconciled by exact download/hash; R2 archive untouched.",
-    "github_change_scope": "This cumulative checkpoint only; no production source, frontend, engine, data or deployment path changed.",
+    "new_drive_archive": "R4 uploaded once as a new Drive file and reconciled by exact download/hash; R2 and R3 archives untouched.",
+    "github_change_scope": "Cumulative evidence checkpoint only; no production source, frontend, FX engine, data, watch or deployment path changed.",
     "effect_unknown_in_this_continuation": [],
     "worker_or_watcher_started": false,
     "runtime_or_admission_changed": false,
@@ -167,7 +173,9 @@
     "merge_or_deployment_performed": false
   },
   "open_material_gates": [
-    "Genuine shared-file custody release and current action permission before native edits; the R3 HTML is not a proven Paper payload.",
+    "Genuine shared-file custody release and current action permission before native edits; the R4 HTML is not a proven Paper payload.",
+    "Current Forex template owner #7409 must be reconciled before implementation because it changes templates/forex.html.j2 and tests/test_build_forex_stance.py.",
+    "Shared light-theme owner #7466 must be composed rather than overwritten for templates/site theme CSS/JS.",
     "Actual existing FX view-model and latest.json source contract, freshness and licensing integration; no new data engine or score.",
     "Actual existing watch/alert owner, authenticated persistence, failed/unknown-save reconciliation and exact event-return proof.",
     "Producer/documentation adjudication: CONTEXT is described as unweighted while some printed CONTEXT rows have nonzero weights; no UI reweighting performed.",
@@ -175,29 +183,41 @@
   ],
   "do_not_redo": [
     "Do not recreate 1N0G-0 or restart R1 artboards.",
-    "Do not overwrite or replace the immutable R2 archive; R3 has its own Drive identity.",
+    "Do not overwrite or replace immutable R2 or R3 archives; R4 has its own Drive identity.",
     "Do not clear other sessions' indicators or use another carrier to replay a refused effect.",
     "Do not replace the existing FX engine, event ledger, watch owner, theme or navigation authority.",
     "Do not call local green tests native or production acceptance.",
     "Do not regress mobile ordering: investigation priorities precede the nine-currency reference table at narrow widths.",
-    "Do not promote JPY historical cheapness into bullish evidence."
+    "Do not promote JPY historical cheapness into bullish evidence.",
+    "Do not let stale detail reuse a fresh stance or hide the age qualification."
   ],
-  "boundary": "R3 glance-first design/qualification is preserved in a new immutable archive and cumulative GitHub checkpoint; native integration is held by the exact shared-file custody gate. Parent mission remains incomplete and no unattended execution is claimed.",
-  "next_action": "After a genuine original-owner/canonical custody return and current permission reconciliation, re-pin procedure and apply the smallest R3 overview slice to existing dark/light boards: three-fact hero plus composed attention panel plus fixed-scale ranking. Inspect real native screenshots before adapting existing mobile/locale boards and finishing 1N0G-0.",
-  "resume_surface": "A current Chairman-authorized Mastermind session reading this cumulative checkpoint, the immutable R3 archive and minimum fresh custody/source state.",
+  "boundary": "R4 glance-first/degraded-state design and qualification are preserved in a new immutable archive and this cumulative checkpoint; native integration is held by exact shared-file custody. Parent mission remains incomplete and no unattended execution is claimed.",
+  "next_action": "After genuine original-owner/canonical Paper custody release and current permission reconciliation, re-pin procedure and apply the smallest R4 overview/detail slice to existing boards: three-fact hero + composed attention panel + fixed-scale ranking + explicit stale qualification/stand-aside state. Inspect real native dark/light screenshots before adapting existing mobile/locale boards and finishing 1N0G-0.",
+  "resume_surface": "A current Chairman-authorized Mastermind session reading this cumulative checkpoint, immutable R4 archive, latest #927 custody return, and current production source owners #7409/#7466.",
   "mode": {
     "user_reported_selected_mode": "Extra High",
     "platform_served_identity": "UNKNOWN",
     "direct_work_reason": "PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD",
     "next_phase_preference": "Retain Extra High for tool-intensive native integration once custody clears; mode alone never clears custody."
   },
-  "native_r3": "NOT_APPLIED_TO_PAPER",
-  "prior_artifact": {
-    "revision": "R2 answer-first interactive candidate",
-    "drive_file_id": "1pBd2GyQekG8D72rNCzMtJ9PSuQZSmh9E",
-    "file_name": "Forex_R2_Design_and_Verification_2026-09-26.zip",
-    "size_bytes": 1118923,
-    "sha256": "4e7ecb9d0a9505e7a1550c08d070ad4b68150e977247f0a51d54de8574c9fa73",
-    "disposition": "IMMUTABLE_DO_NOT_OVERWRITE"
-  }
+  "native_r4": "NOT_APPLIED_TO_PAPER",
+  "prior_artifacts": [
+    {
+      "revision": "R2 answer-first interactive candidate",
+      "drive_file_id": "1pBd2GyQekG8D72rNCzMtJ9PSuQZSmh9E",
+      "file_name": "Forex_R2_Design_and_Verification_2026-09-26.zip",
+      "size_bytes": 1118923,
+      "sha256": "4e7ecb9d0a9505e7a1550c08d070ad4b68150e977247f0a51d54de8574c9fa73",
+      "disposition": "IMMUTABLE_DO_NOT_OVERWRITE"
+    },
+    {
+      "revision": "R3 glance-first decision candidate",
+      "drive_file_id": "1FMG2g4Lv4o6EW-Bu8A_ojo3T3vJIjn2k",
+      "file_name": "Forex_R3_Design_and_Verification_2026-09-26.zip",
+      "size_bytes": 2417156,
+      "sha256": "c7b3f2a2379b49e787019324e2ebe67ec48570f77e732d35d232312ae1cd8a42",
+      "entry_point_sha256": "37945958f318daa1d1658c1a3cf755a3da624f60034a1d249f3c1abc80a0f89c",
+      "disposition": "IMMUTABLE_DO_NOT_OVERWRITE"
+    }
+  ]
 }
