@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.covariance_spine.v1",
-  "as_of": "2026-09-26",
+  "as_of": "2026-09-27",
   "display_only": true,
   "authority": "context",
   "descriptive_not_gauntleted": true,
@@ -55,7 +55,7 @@
         ],
         "unmeasurable": {
           "altdata": 15,
-          "altdata_conv": 1,
+          "altdata_conv": 2,
           "basket_turn.v1": 7,
           "ca_board": 13,
           "china_news": 3,
@@ -79,7 +79,7 @@
           "radar": 13,
           "reflex.commodity_shock": 6,
           "reflex.cortex_attention": 10,
-          "reflex.options_flow_attention": 7,
+          "reflex.options_flow_attention": 8,
           "reflex.regime_stale_selfheal": 9,
           "stock_desk": 5,
           "stock_personality": 1,
@@ -102,7 +102,7 @@
     ],
     "unmeasurable": {
       "altdata": 15,
-      "altdata_conv": 1,
+      "altdata_conv": 2,
       "basket_turn.v1": 7,
       "ca_board": 13,
       "china_news": 3,
@@ -126,7 +126,7 @@
       "radar": 13,
       "reflex.commodity_shock": 6,
       "reflex.cortex_attention": 10,
-      "reflex.options_flow_attention": 7,
+      "reflex.options_flow_attention": 8,
       "reflex.regime_stale_selfheal": 9,
       "stock_desk": 5,
       "stock_personality": 1,

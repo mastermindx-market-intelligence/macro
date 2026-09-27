@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_graph.v1",
   "artifact_id": "confluence-graph",
-  "asof": "2026-09-24",
+  "asof": "2026-09-25",
   "is_context_only": true,
   "display_only": true,
   "hard_law": "HARD LAW: confluence never gates, never ranks, never raises a priority.  All edges are display_only=True.  Cross-engine hard gates require their own pre-registered gauntlet (China falsification precedent).  Edge promotion beyond display requires a registered gauntlet result in config/qual_ladder.yml.",
@@ -11,7 +11,7 @@
       "type": "engine",
       "label": "altdata",
       "meta": {
-        "n_spine_rows": 3244
+        "n_spine_rows": 3253
       }
     },
     {
@@ -19,7 +19,7 @@
       "type": "engine",
       "label": "altdata_conv",
       "meta": {
-        "n_spine_rows": 1
+        "n_spine_rows": 3
       }
     },
     {
@@ -123,7 +123,7 @@
       "type": "engine",
       "label": "desk:stock_desk",
       "meta": {
-        "n_spine_rows": 187
+        "n_spine_rows": 194
       }
     },
     {
@@ -147,7 +147,7 @@
       "type": "engine",
       "label": "intel_hub",
       "meta": {
-        "n_spine_rows": 6390
+        "n_spine_rows": 6400
       }
     },
     {
@@ -155,7 +155,7 @@
       "type": "engine",
       "label": "macro_context",
       "meta": {
-        "n_spine_rows": 613
+        "n_spine_rows": 624
       }
     },
     {
@@ -211,7 +211,7 @@
       "type": "engine",
       "label": "reflex.cortex_attention",
       "meta": {
-        "n_spine_rows": 222
+        "n_spine_rows": 228
       }
     },
     {
@@ -219,7 +219,7 @@
       "type": "engine",
       "label": "reflex.options_flow_attention",
       "meta": {
-        "n_spine_rows": 784
+        "n_spine_rows": 799
       }
     },
     {
@@ -235,7 +235,7 @@
       "type": "engine",
       "label": "stock_desk",
       "meta": {
-        "n_spine_rows": 106
+        "n_spine_rows": 109
       }
     },
     {
@@ -259,7 +259,7 @@
       "type": "engine",
       "label": "thematic_desk",
       "meta": {
-        "n_spine_rows": 47
+        "n_spine_rows": 50
       }
     },
     {
@@ -267,7 +267,7 @@
       "type": "engine",
       "label": "track_record",
       "meta": {
-        "n_spine_rows": 302195
+        "n_spine_rows": 302265
       }
     },
     {
@@ -283,7 +283,7 @@
       "type": "engine",
       "label": "us_importance_v0",
       "meta": {
-        "n_spine_rows": 51965
+        "n_spine_rows": 52125
       }
     },
     {
@@ -291,7 +291,7 @@
       "type": "engine",
       "label": "us_importance_v0_pit",
       "meta": {
-        "n_spine_rows": 51965
+        "n_spine_rows": 52125
       }
     },
     {
@@ -16368,6 +16368,16 @@
       "note": "structural: data/transmission/latest.json consumed by scripts/build_macro_snapshot.py"
     },
     {
+      "src": "artifact:transmission-latest",
+      "dst": "module:engine/credit_momentum.py",
+      "edge_type": "feeds",
+      "n": null,
+      "stable": null,
+      "display_only": true,
+      "regime": null,
+      "note": "structural: data/transmission/latest.json consumed by engine/credit_momentum.py"
+    },
+    {
       "src": "module:scripts/build_rates_command.py",
       "dst": "artifact:rates-command-latest",
       "edge_type": "feeds",
@@ -22065,7 +22075,7 @@
       "stable": null,
       "display_only": true,
       "regime": null,
-      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=40 ticker-level demand-vs-supply divergences b=n_divergences=40, top tickers=['URI', 'GNRC', 'HL', 'ANET', "
+      "note": "pair_id=briefing-divergences kind=directional-opposition severity=tension a=40 ticker-level demand-vs-supply divergences b=n_divergences=40, top tickers=['LRCX', 'PANW', 'XYZ', 'HL', "
     },
     {
       "src": "data/regime/latest.json:cross_asset_confirm (bonds/FX)",
@@ -22469,12 +22479,12 @@
       },
       "b": {
         "artifact": "site/intelligence/briefing.json",
-        "reading": "n_divergences=40, top tickers=['URI', 'GNRC', 'HL', 'ANET', 'ONTO']"
+        "reading": "n_divergences=40, top tickers=['LRCX', 'PANW', 'XYZ', 'HL', 'ANET']"
       },
       "kind": "directional-opposition",
       "severity": "tension",
       "as_of": "2026-09-26",
-      "note": "40 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: URI, GNRC, HL, ANET, ONTO.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
+      "note": "40 ticker-level demand (news_dir) vs supply (alt+radar) direction disagreements detected by engine/briefing.py.  Top 5: LRCX, PANW, XYZ, HL, ANET.  These are pre-computed; no recomputation here.  Display-only context (news_dir×supply_dir sign-product < 0 or early_edge/crowded_top labels).",
       "display_only": true
     },
     {
@@ -22528,7 +22538,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/confluence.py",
-  "produced_at": "2026-09-26T20:06:21Z",
-  "inputs_hash": "sha256:ca7067ae89e6059651d3394169b7c137d5496b0322e91067c377f19c5c3986b2",
+  "produced_at": "2026-09-27T08:30:03Z",
+  "inputs_hash": "sha256:07c3135bbf96bcfdf0c585cf28178ad8ebc460b33bb703b98dfe2102fa40ea3c",
   "tier": "display"
 }

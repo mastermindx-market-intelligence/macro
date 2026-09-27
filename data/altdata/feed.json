@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-27T05:00:53.392463+00:00",
+  "generated_utc": "2026-09-27T08:31:53.796114+00:00",
   "as_of": "2026-09-27",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -13228,6 +13228,14 @@
         "detail": "Strategic Reviews"
       },
       {
+        "ticker": "QNCX",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "ROOT",
         "category": "Issuer Tenders",
         "confidence": "medium",
@@ -17692,6 +17700,14 @@
         "detail": "Divestitures"
       },
       {
+        "ticker": "BWIN",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "ZYME",
         "category": "Acquisitions",
         "confidence": "high",
@@ -18820,6 +18836,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "NIKI",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "ENRDW",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19085,6 +19109,14 @@
       },
       {
         "ticker": "BRAG",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "TECH",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -21052,6 +21084,14 @@
         "detail": "Going-Private"
       },
       {
+        "ticker": "DEVSF",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "WORX",
         "category": "Delistings",
         "confidence": "high",
@@ -21493,6 +21533,14 @@
       },
       {
         "ticker": "MTEX",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
+        "ticker": "MDCXW",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -22871,6 +22919,14 @@
         "ticker": "STEP",
         "category": "Acquisitions",
         "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "TMQ",
+        "category": "Acquisitions",
+        "confidence": "medium",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -24628,6 +24684,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "EMCGF",
+        "category": "Deal Terminations",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Deal Terminations"
+      },
+      {
         "ticker": "LIDR",
         "category": "Delistings",
         "confidence": "high",
@@ -24655,14 +24719,6 @@
         "ticker": "CIRC",
         "category": "Acquisitions",
         "confidence": "medium",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "PH",
-        "category": "Acquisitions",
-        "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -24997,11 +25053,11 @@
       },
       {
         "ticker": "NOMA",
-        "category": "Strategic Reviews",
-        "confidence": "medium",
+        "category": "Acquisitions",
+        "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Strategic Reviews"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "PRTHU",
@@ -25221,14 +25277,6 @@
       },
       {
         "ticker": "ELMT",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "FCNCN",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -25476,12 +25524,68 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "ADUS",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "AIRJW",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "BWMN",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "PRDO",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "PDM",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "TCBIO",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "THRY",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
+        "ticker": "VCYT",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "AXM",
@@ -25965,14 +26069,6 @@
       },
       {
         "ticker": "WHK",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "BWMN",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -30922,15 +31018,15 @@
         "why": "analyst_upgrade_cluster: net upgrades +23 revision delta \u00b7 unusual_options: 4.28\u00d7 vol/OI, call-skew"
       },
       {
-        "ticker": "PH",
+        "ticker": "GOOGL",
         "score": 3,
         "weighted_score": 0.95,
         "channel_list": [
-          "material_8k",
-          "news_sentiment",
-          "special_situation"
+          "app_demand",
+          "cnbc_pick",
+          "github_momentum"
         ],
-        "why": "material_8k: 3 material 8-Ks (items 8.01) \u00b7 news_sentiment: 0.92 bullish news (50 art) \u00b7 special_situation: Acquisitions"
+        "why": "app_demand: 4.7\u2605 \u00d7 26,634,995 reviews \u00b7 cnbc_pick: Karen Finerman \u00b7 github_momentum: +0.14% stars"
       }
     ]
   }
