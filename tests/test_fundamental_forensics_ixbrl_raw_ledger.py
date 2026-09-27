@@ -102,8 +102,19 @@ _FROZEN_FIF1 = (
     "engine/fundamental_forensics/synthetic_filing_package.py",
     "tests/fixtures/fundamental_forensics/expected_financial_intelligence_packet_v1.json",
 )
+# FIF-3A4 (DEC:FIF-3A4R-CROSS-FILING-LINEAGE-ACCEPTED-ON-MAIN, protocol §10)
+# commissions exactly one product change to ``query.py``: effective-root
+# unification in ``_select_source_group`` from cutoff-visible lineage evidence.
+# The byte-freeze on that one file was the *A4R research wave's* self-restraint,
+# not a permanent kernel law, so it is released here for the authorized change.
+# What the freeze actually protected — accepted A3 source identity — is still
+# asserted directly and independently by ``_LEDGER_SHA``, ``_AAPL_QUERY_HASH``
+# and ``_AAPL_QUERY_RESPONSE_SHA`` in this file, and by the FIF-3A4 battery in
+# ``tests/test_fundamental_forensics_cross_filing_lineage.py``.
+# ``raw_ledger.py`` and ``metric_registry.py`` remain byte-frozen: A4 must not
+# touch occurrence identity, ``logical_key``, ``_duplicates_agree``,
+# ``FactEventType`` membership, or the metric catalog.
 _FROZEN_KERNEL = (
-    "engine/fundamental_forensics/query.py",
     "engine/fundamental_forensics/raw_ledger.py",
     "engine/fundamental_forensics/metric_registry.py",
 )

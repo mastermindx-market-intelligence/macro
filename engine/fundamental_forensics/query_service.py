@@ -49,6 +49,7 @@ MAX_CELLS = _MAX_CELLS
 
 _REQUEST_SCHEMA = "fundamental_forensics.financial_query_request/v1"
 _RESPONSE_SCHEMA = "fundamental_forensics.financial_query_response/v1"
+_LINEAGE_DISCLOSURE_SCHEMA = "fundamental_forensics.financial_query_lineage/v1"
 _LAWFUL_GOLDEN_DELIVERY_KIND = "committed_golden_fixture"
 _LAWFUL_GOLDEN_DELIVERY_KEYS = frozenset(
     {"kind", "attested", "production_issuer_service"}
@@ -125,6 +126,11 @@ class FinancialQueryDataset:
     filing_metadata: Any
     registry: Any
     delivery: Mapping[str, Any] | None = None
+    # FIF-3A4 cross-filing lineage evidence. Empty is the FIF-3A3/FIP1
+    # contract and keeps every accepted response hash byte-identical. A
+    # non-empty bundle must be accepted positive immutable confirmations only;
+    # the kernel fail-closes anything else as unavailable.
+    lineage_evidence: Any = ()
 
 
 class FinancialQueryAdmissionError(Exception):
@@ -524,6 +530,7 @@ def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) ->
                 max_periods=_MAX_PERIODS,
                 max_cells=_MAX_CELLS,
             ),
+            lineage_evidence=getattr(dataset, "lineage_evidence", ()) or (),
         )
         matrix = engine.query_matrix(
             tickers=[binding.ticker],
@@ -572,6 +579,25 @@ def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) ->
     delivery = _canonical_query_delivery(dataset.delivery)
     if delivery is not None:
         envelope["delivery"] = delivery
+
+    # FIF-3A4: disclose the cross-filing lineage this answer actually stands
+    # on, so "which filing supports this number" is answerable from the
+    # receipt itself. Absent evidence emits nothing, so every accepted
+    # FIF-3A3/FIP1 response stays byte-identical. This never enters
+    # ``receipt`` and therefore never perturbs ``query_hash``.
+    applied = engine.applied_lineage_evidence(matrix)
+    if applied:
+        envelope["lineage"] = {
+            "schema": _LINEAGE_DISCLOSURE_SCHEMA,
+            "relation": "xbrl_confirmation",
+            "is_reported_revision": False,
+            "note": (
+                "A later filing repeated this exact fact. Confirmation links "
+                "source vintages; it is not an amendment, recast, restatement "
+                "or correction."
+            ),
+            "confirmations": [item.to_dict() for item in applied],
+        }
 
     response_body = canonical_json(envelope).encode("utf-8")
 
