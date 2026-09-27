@@ -74,7 +74,7 @@ another not. `GAP` = no delivered test pins it.
 |---|---|---|---|
 | 01 | Reuse | `test_shared_contract_is_probed_lazily_and_is_two_armed_on_the_unmerged_base`, `test_shared_contract_degrade_is_typed_when_the_import_itself_fails`, `test_mining_code_and_tests_never_import_the_semiconductor_module`, `test_no_import_of_semiconductor_theme_research_anywhere` | PARTIAL by construction — the "no Mining copy" half is pinned four ways; the "one accepted shared validator **is imported**" half is pinned only as a lazy two-armed probe, because #7870 is not on main. Completes when #7870 merges; no action before then. |
 | 04 | Reuse | — | DEFERRED-LAWFUL — legacy Robotics/Semiconductor parity cannot run until #7870 is on main. Audit B already ruled the shape: `xfail(strict=True)`. Not a gap. |
-| 08 | Workflow | `test_copper_complete_is_ready_and_authority_literal_false`, `test_rare_earth_complete_is_ready_and_authority_literal_false` | **PARTIAL — clause 2 UNPINNED.** Both positive witnesses are pinned. The clause "a wholly empty economic path **fails**" has no test: every `ready` assertion in the suite is positive (`== "ready"`, or `in {"ready","degraded"}`). Measured behaviour is `degraded` + named absence, which R-MIN-34 (§6.2) rules as satisfying "fails". Needs the pin, not a code change. |
+| 08 | Workflow | `test_copper_complete_is_ready_and_authority_literal_false`, `test_rare_earth_complete_is_ready_and_authority_literal_false`, `test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices` | **CLOSED 2026-09-27 — COVERED_SUITE_GREEN (R-MIN-35). The "PARTIAL — clause 2 UNPINNED" verdict below is SUPERSEDED, and its "measured behaviour is `degraded`" reading held on W-C only; W-R returned `ready` and a behaviour change shipped.** Historical verdict:  **PARTIAL — clause 2 UNPINNED.** Both positive witnesses are pinned. The clause "a wholly empty economic path **fails**" has no test: every `ready` assertion in the suite is positive (`== "ready"`, or `in {"ready","degraded"}`). Measured behaviour is `degraded` + named absence, which R-MIN-34 (§6.2) rules as satisfying "fails". Needs the pin, not a code change. |
 | 09 | Identity | `test_missing_issuer_refuses_financial_join` | COVERED (renamed). |
 | 10 | Identity | — | UNPINNED, satisfied by absence of capability; becomes live at **T03**. See §6.1. |
 | 11 | Identity | `test_source_only_business_stays_useful` | COVERED (planned name shipped verbatim). |
@@ -127,7 +127,18 @@ in T03's packet, not T04b's**, and `scratchpad/T03_FREEZE_PACKET.md` must carry 
 A reported measure without a period is under-specified for a consumer even when it makes no
 ownership claim. Raise with T03; do not fold it into this obligation.
 
-### 6.2 MGD-08 clause 2 — R-MIN-34: `degraded` + named absence satisfies "fails"
+### 6.2 MGD-08 clause 2 — **CLOSED 2026-09-27 (R-MIN-35); the claim below is PARTLY REFUTED**
+
+> **CORRECTION ISSUED.** MGD-08 clause 2 is no longer UNPINNED: it is
+> `COVERED_SUITE_GREEN`, pinned by `tests/test_mining_composition.py::test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices`.
+> R-MIN-34's TARGET stands (`degraded` with a named absence, never `refused`), but its
+> premise that the delivered code already MET that target was measured on COPPER alone.
+> On W-R the path returned `ready` over a wholly empty panel, so a behaviour change was
+> owed and has shipped. MGD-18 / R-MIN-15 / plan §6 is untouched and still green: its
+> subject is a SUBMITTED block withheld pending a threshold (case
+> `missing_stream_threshold` ships one packet), whereas clause 2's subject submits
+> nothing. Retained below for the audit trail.
+
 
 > "…a wholly empty economic path fails."
 
@@ -165,11 +176,26 @@ Not done unless:
    that head) / `NOT_RUN` / `DEFERRED` with a reason / `GAP` with an owning task. A row may
    not claim `PASSED` from the presence of a test name alone — R-MIN-33f's lesson applied to
    records: presence is not conclusion.
-3. MGD-08 and MGD-10 are carried as `UNPINNED` with their owning task (T04b and T03
-   respectively), never as `PASSED`. Silently reconciling either into `PASSED` by pointing at
-   a neighbouring test is the failure this packet exists to prevent — and neither may be
-   recorded as a code defect, because §6 measured that it is not one.
-4. R-MIN-34 is tabled in the rulings file before any lane implements the §6.2 pin.
+3. **AMENDED 2026-09-27 by R-MIN-35 — MGD-08 is exempt from this item.** MGD-08 is now
+   `COVERED_SUITE_GREEN`, pinned two-armed across both slices, and it WAS a code defect on
+   the W-R slice: a wholly empty economic path returned `ready`. Do NOT revert it to
+   `UNPINNED` to satisfy this criterion, and do NOT re-open the defect question — the
+   measurement is in R-MIN-35 with its falsifying assertion recorded. The clause below
+   ("neither may be recorded as a code defect, because §6 measured that it is not one")
+   was measured on the COPPER slice alone and is WITHDRAWN for MGD-08. It continues to
+   bind MGD-10, whose ledger status is `SATISFIED_BY_ABSENCE_OF_CAPABILITY` until T04b
+   mints the `period` field that makes its second arm expressible. Original text, retained
+   for the audit trail and still binding for MGD-10: ~~MGD-08 and MGD-10 are carried as
+   `UNPINNED` with their owning task (T04b and T03 respectively), never as `PASSED`.
+   Silently reconciling either into `PASSED` by pointing at a neighbouring test is the
+   failure this packet exists to prevent — and neither may be recorded as a code defect,
+   because §6 measured that it is not one.~~ The anti-pattern that clause guards against
+   is UNCHANGED and still binds every row: a row may never claim coverage by pointing at a
+   neighbouring test. MGD-08 does not claim it that way — it names a test written FOR it,
+   which failed before the fix and passes after.
+4. R-MIN-34 is tabled in the rulings file, **and R-MIN-35 — which amends it and closes
+   the §6.2 pin — is tabled beneath it with R-MIN-34's row carrying the `AMENDED BY`
+   marker.** No lane implements the §6.2 pin: it is already delivered.
 5. The carrier trace at `eb6f05c0` is byte-unchanged — verified by re-reading its sha256, not
    by intent.
 

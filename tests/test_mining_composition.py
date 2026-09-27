@@ -793,3 +793,51 @@ def test_minor_h_empty_source_label_degrades_to_synthetic_source():
     bundle = _replace(case.bundle, financial_packets=(empty_packet,))
     result = composition.compose_mining_research(case.query, bundle)
     assert result["economics"]["native_blocks"][0]["source_label"] == "synthetic-source"
+
+def test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices():
+    """MGD-08 clause 2 / R-MIN-34 as amended 2026-09-27: a wholly empty economic path
+    degrades — it never reports ``ready``.
+
+    Two-armed on purpose, and both arms are load-bearing:
+
+    * the EMPTY arm is the obligation — a bundle carrying no ``financial_packets`` at all
+      submitted nothing, so every content channel of the economics panel is empty and the
+      payload must not claim readiness over it;
+    * the POPULATED arm is the positive control — without it, a pipeline that degraded
+      *everything* would satisfy the empty arm vacuously and this pin would be a negative
+      assertion with no subject.
+
+    Both delivered slices are covered because the W-R vocabulary mints
+    ``stream_threshold_unknown`` on every payload, and that code used to short-circuit
+    ``_summarize_status`` to ``ready`` before the native-block channel was consulted: rare
+    earth reported ``ready`` over an empty panel (headline: "the contract explanation is
+    retained") while copper degraded on the identical input. The threshold code explains
+    why a *submitted* block was withheld — ``missing_stream_threshold`` ships one packet
+    and stays ``ready``, which this pin does not disturb — so it may not also excuse a
+    path that submitted nothing.
+    """
+    for name in ("copper_complete", "rare_earth_complete"):
+        case = synthetic_case(name)
+
+        # Positive control: the same fixture, economic input intact.
+        populated = composition.compose_mining_research(case.query, case.bundle)
+        assert populated["summary"]["status"] == "ready", (name, populated["summary"])
+        assert len(populated["economics"]["native_blocks"]) == 1, name
+        _validate(populated)
+
+        # The obligation: strip every economic packet and nothing else.
+        empty = composition.compose_mining_research(
+            case.query, _replace(case.bundle, financial_packets=())
+        )
+        economics = empty["economics"]
+        # Every content channel of the panel is empty ...
+        assert economics["native_blocks"] == [], (name, economics["native_blocks"])
+        assert economics["derived"] == [], (name, economics["derived"])
+        assert economics["reported_economic_context"]["context_block_count"] == 0, name
+        # ... so the path degrades rather than silently succeeding.
+        assert economics["status"] == "degraded", (name, economics["status"])
+        assert empty["summary"]["status"] == "degraded", (name, empty["summary"])
+        # An empty collection never becomes a fabricated total.
+        assert empty["authorized_coverage"]["industry_total"] is None, name
+        # A degraded payload is still a VALID payload, never a raised exception.
+        _validate(empty)

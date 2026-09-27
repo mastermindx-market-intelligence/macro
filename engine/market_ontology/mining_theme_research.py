@@ -407,17 +407,25 @@ def _summarize_status(
     limitations: list[str],
     *,
     has_native_blocks: bool,
+    has_economic_input: bool,
 ) -> str:
     if "denied_source" in limitations:
         return "refused"
-    # The contract explanation is retained even with no native block (PLAN §6 verbatim test);
-    # MGD-18 / R-MIN-15: a missing threshold keeps the contract explanation -> ready.
-    if "stream_threshold_unknown" in limitations:
-        return "ready"
     if has_native_blocks:
         return "ready"
-    if not limitations:
-        return "degraded"
+    # The contract explanation is retained even with no native block (PLAN §6 verbatim test);
+    # MGD-18 / R-MIN-15: a missing threshold keeps the contract explanation -> ready.
+    #
+    # Scoped to a path that actually SUBMITTED economic input (MGD-08 clause 2, R-MIN-34 as
+    # amended 2026-09-27). The threshold code explains why a submitted block was WITHHELD --
+    # case ``missing_stream_threshold`` ships one packet and stays ``ready`` -- so it may not
+    # also excuse a path that submitted nothing. Unscoped, this clause fired before the
+    # native-block channel was consulted, and because the W-R slice vocabulary mints
+    # ``stream_threshold_unknown`` on every payload, every rare-earth dossier reported
+    # ``ready`` over a wholly empty economics panel while copper degraded on identical input.
+    if has_economic_input and "stream_threshold_unknown" in limitations:
+        return "ready"
+    # No block, and either nothing was submitted or nothing survived: degrade. Never ready.
     return "degraded"
 
 
@@ -887,7 +895,11 @@ def compose_mining_research(
         limitations.append("omitted:expectations")
 
     domain_label = MINING_DEFINITIONS[query.slice_key]["anchor_theme_id"]
-    status = _summarize_status(limitations, has_native_blocks=bool(native_blocks))
+    status = _summarize_status(
+        limitations,
+        has_native_blocks=bool(native_blocks),
+        has_economic_input=bool(bundle.financial_packets),
+    )
     headline = _headline_for(status, limitations=limitations, domain_label=domain_label)
     # Belt-and-braces: a literal headline that contains badge vocabulary must never be
     # constructed by the closed _headline_for table. If a future refactor accidentally

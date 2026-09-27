@@ -40,11 +40,10 @@
     "NOT_RUN": "Owning task has not landed on main."
   },
   "counts": {
-    "PARTIAL_BY_CONSTRUCTION": 1,
-    "NOT_RUN": 30,
+    "COVERED_SUITE_GREEN": 6,
     "DEFERRED_LAWFUL": 1,
-    "UNPINNED": 1,
-    "COVERED_SUITE_GREEN": 5,
+    "NOT_RUN": 30,
+    "PARTIAL_BY_CONSTRUCTION": 1,
     "SATISFIED_BY_ABSENCE_OF_CAPABILITY": 2
   },
   "obligations": [
@@ -116,9 +115,9 @@
       "family": "Workflow",
       "owning_task": "T04",
       "planned_test": "tests/test_mining_composition.py::test_two_positive_economic_paths",
-      "delivered_test": null,
-      "status": "UNPINNED",
-      "note": "Clause 1 is pinned. Clause 2 (a wholly empty economic path fails) is NOT pinned by any delivered test. R-MIN-34 rules that `degraded` + `native_blocks == []` + the named absence SATISFIES it, so the owed work is the two-armed pin in T04b, not a behaviour change. NOT a code defect."
+      "delivered_test": "tests/test_mining_composition.py::test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices",
+      "status": "COVERED_SUITE_GREEN",
+      "note": "CLOSED 2026-09-27. Clause 1 was already pinned by the two positive witnesses. Clause 2 is now pinned two-armed across BOTH delivered slices, and closing it required a BEHAVIOUR CHANGE, not only a test: R-MIN-34's \"NOT a code defect\" held on W-C only. On W-R a wholly empty economic path returned `ready` over a panel whose native_blocks, derived and context_block_count were all empty, because the rare-earth slice vocabulary mints `stream_threshold_unknown` on every payload and that code short-circuited `_summarize_status` to `ready` before the native-block channel was consulted. Scoped the threshold clause to `has_economic_input` and tested `has_native_blocks` first; zero of the 11 casebook cases change status, all 7 mining suites green (174 passed). MGD-18 / R-MIN-15 / plan §6 is untouched and stays green because its subject is different: case `missing_stream_threshold` SUBMITS one packet and has it withheld, whereas clause 2's subject submits nothing. Amended at source by R-MIN-35; R-MIN-34's row carries the AMENDED BY marker. This discharges MGD-08 ONLY -- T04b still owes the MGD-10 `period` arm, which is genuinely deferred until T04b mints that field."
     },
     {
       "obligation_id": "MGD-09",
