@@ -6,7 +6,7 @@ objective: >
   declared authority for every decision-bearing output and advisory evidence
   unable to silently override it. Each wave is complete only at its separately
   authorized acceptance boundary.
-status: blocked
+status: in_progress
 program: crypto-intelligence
 repos: [macro]
 owner: ceo-sol
@@ -32,48 +32,33 @@ waves:
     status: in_progress
     depends_on: [P0A]
     next_action: >
-      Do not submit a CEO runtime request while the current protected Sol Skillpack
-      keeps the Personal-Pro modifying path dependency-gated. Resume only after a
-      production-proven write path is canonically released; then load a fresh
-      MMX/SOL_STATE_V1, prove the required Slack/Relay/admission gates, re-run the
-      Macro main/open-PR collision fence and admit exactly one P0B implementation
-      carrier. Implement DEC:CRYPTO-H5-BTC-BUDGET-AUTHORITY and return PR,
-      exact-head tests and real H5 browser proof to Sol.
+      Consume exact-head PR #8050 CI/fences for the canonical-budget source
+      candidate, then reconcile open #7645 before changing templates/crypto.html.j2.
+      Add one explicit H5 unavailable state to the accepted template and prove
+      valid-zero, canonical-unavailable/integrity-failure, and happy-path allocation
+      on the real generated route in EN/ZH and both themes. Do not alter total-budget
+      authority or the existing class split during that template integration.
+    note: >
+      Source implementation is BUILT_NOT_PROVEN at
+      fc93f8e7eeec8c70b285191aa2374e88f71332c3: build_crypto no longer reads
+      alloc_optimal as H5 total-budget authority; btc.decision/v1 now projects the
+      canonical budget into crypto.cockpit/v1 and the existing class overlay only
+      splits an available target.
 next_action: >
-  Unblock the canonical Executive OS Personal-Pro modifying path under its owning
-  program. Current protected Mastermind 51f9942733b86e550bb9169d2a43462bd28e774f
-  still requires B2/C2 production proof before EXECOS/CEO_REQUEST_V1 and a fresh
-  MMX/SOL_STATE_V1 handshake. Independent S0-R1/MAS-112 and C1/MAS-109 principal
-  provisioning remain concrete gates. Once those and all then-current COMMISSION_WAVE
-  gates are production-proven, re-run P0B's collision fence and admit one
-  implementation attempt. Do not create a substitute runtime carrier.
+  Keep PR #8050 as the source carrier for the implemented canonical H5 budget
+  seam. After its exact-head CI/fences return, reconcile #7645's Crypto template
+  custody and add the fail-closed H5 unavailable presentation there; then capture
+  real-route browser proof. Paper board application remains a separate design lane.
 blocked_by:
   - >
-    Current protected Mastermind Skillpack at
-    51f9942733b86e550bb9169d2a43462bd28e774f, docs/sol_skills/COMMISSION_WAVE.md,
-    states that EXECOS/CEO_REQUEST_V1 may be used only after B2/C2 have proven it
-    and that any missing runtime/transport gate forbids submission.
+    Open Macro PR #7645 owns templates/crypto.html.j2 and site/crypto.html. The
+    canonical-budget source seam is disjoint and implemented, but P0B cannot add or
+    prove the required H5 unavailable presentation until that template carrier is
+    reconciled.
   - >
-    No fresh MMX/SOL_STATE_V1 was recovered from the connected Slack principal;
-    #ceo-control-room contains only older setup/operating messages and no
-    discoverable #sol-runtime channel was available during the current gate check.
-  - >
-    Mastermind PR #146 merged G7 autonomy-arm implementation as protected merge
-    51f9942733b86e550bb9169d2a43462bd28e774f, but its own completion class is
-    proof-required and explicitly leaves exact host install, provider readiness,
-    arm, boot re-attestation, one bounded real intent, disarm/re-arm and Agent OS
-    closeout outstanding. Merge therefore is not production admission proof.
-  - >
-    DSC:PERSONAL-PRO-INGRESS-PRINCIPAL-GAP — the current Slack workspace does not
-    expose a qualified disposable S0-R1 fixture bot in C0BRUL9F2V7 and does not
-    expose the dedicated production Relay bot in prepared private C1 channel
-    C0BSGABKBFY. Historical S0 fixture credentials are unsafe to reuse until secure
-    rotation/revocation because a later token-isolation proof recorded model-visible
-    exposure.
-  - >
-    Accepted Personal-Pro source law requires S0-R1 PASS plus accepted C1 before B2,
-    then accepted B2 plus C2 production modifying canary before a real P0B CEO
-    operation may be called admitted.
+    Production acceptance still requires exact-head PR #8050 CI/fences and real
+    generated-route H5 proof for valid 0%, integrity-invalid/unavailable, and
+    happy-path canonical allocations after template reconciliation.
 owns_paths:
   - "engine/btc_decision.py"
   - "contracts/btc_decision.schema.json"
@@ -222,3 +207,19 @@ least-privilege host principal remain unproven.
 
 Therefore P0B is blocked upstream before B2. No current Executive operation identity or
 Job exists for P0B, and no Slack/Linear/GitHub projection may imply otherwise.
+
+
+## 2026-09-27 P0B source execution supersession
+
+Current protected Mastermind law `c01d890f6536539496f2d6744f3143ff49da296d` plus the Chairman's live continuation permitted this already-assigned, custody-clear source repair directly in the active Sol session. This supersedes only the historical claim above that P0B source implementation itself had to wait for a new Personal-Pro Executive/Slack runtime Job. It does not retroactively create such a Job, change Executive OS lifecycle truth, or waive any runtime/transport gate for work that actually requires those systems.
+
+P0B source authority is now **BUILT_NOT_PROVEN** at `fc93f8e7eeec8c70b285191aa2374e88f71332c3`:
+- the existing `btc.decision/v1` owner projects the only downstream total-budget value;
+- `crypto.cockpit/v1` exposes that decision status/final exposure as an existing display receipt;
+- `build_crypto` derives H5 total exposure only from the canonical projection;
+- the existing BTC/ETH/alt class grid remains split-only;
+- valid zero is distinct from unavailable; integrity-invalid state fails closed before Crypto page publication.
+
+Local verification on the candidate: Crypto CI-owner tests **34 passed**; Vector CI-owner tests **95 passed**; Python compile and diff checks passed. These are local receipts, not exact-head GitHub acceptance.
+
+Open #7645 owns the current Crypto template/publication bytes, so H5 unavailable-state UI integration and real browser acceptance remain fenced there. Do not touch #7645's template from this carrier and do not call P0B complete until that ownership is reconciled, exact-head checks pass, and the real generated H5 path proves valid-zero, unavailable/integrity-failure and happy-path states.

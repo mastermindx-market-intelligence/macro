@@ -41,8 +41,13 @@ evidence:
     defines btc.decision/v1 as the sole final exposure projection and fails closed
     on integrity errors.
   - >
-    scripts/build_crypto.py at main ce4a33aeeed779530942560c5b05f4df8ab0306c
-    has _allocation() derive H5 total exposure from latest["alloc_optimal"] directly.
+    Historical defect evidence: scripts/build_crypto.py at main
+    ce4a33aeeed779530942560c5b05f4df8ab0306c derived H5 total exposure directly
+    from latest["alloc_optimal"].
+  - >
+    Source implementation candidate fc93f8e7eeec8c70b285191aa2374e88f71332c3
+    on PR #8050 replaces that bypass with the existing btc.decision/v1 budget
+    projection; local Crypto owner tests are 34/34 and Vector owner tests 95/95.
   - >
     site/crypto.html at main ce4a33aeeed779530942560c5b05f4df8ab0306c says
     Bitcoin Vector sets total crypto exposure and the class overlay only splits it.
@@ -88,3 +93,40 @@ file or parallel allocation truth store merely to bridge the two pages.
 Only a separately commissioned architecture decision that changes the program-level
 owner of total crypto exposure, with point-in-time replay and forward promotion
 proof, may replace Bitcoin DecisionState as H5 budget authority.
+
+## 2026-09-27 implementation checkpoint — canonical budget seam closed in source
+
+This decision is now implemented in source commit `fc93f8e7eeec8c70b285191aa2374e88f71332c3` on Draft PR #8050.
+
+Current protected Mastermind law for the modifying continuation is `c01d890f6536539496f2d6744f3143ff49da296d`, INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1. The Chairman's live continuation supplied current intent. The older P0B narrative requiring a redundant Personal-Pro Executive request before routine source modification is superseded by this current protected law only for this already-assigned, custody-clear source execution. It does **not** waive collision, effect, CI, release, transport or production-proof gates.
+
+### What changed
+
+- `engine/btc_decision.py` now exposes `project_budget()`, a minimal fail-closed projection of the existing `btc.decision/v1` authority. Integrity-invalid decisions may retain diagnostic final fields inside the full DecisionState, but the projected downstream budget is unavailable and carries no exposure.
+- `scripts/build_vector.py` now writes that canonical budget projection into the existing `crypto.cockpit/v1` receipt. Its hero exposure and `authority.sizing_source` now come from `btc.decision/v1.final.exposure_pct`, not a direct raw signal read. H5 is named as a consumer of the existing cockpit contract.
+- `scripts/build_crypto.py` no longer derives H5 total exposure from `signals.alloc_optimal`. It builds the canonical DecisionState through the existing `engine.btc_decision` owner, projects the canonical budget, and passes that budget into the pre-existing BTC/ETH/alt class split. The class grid can split an available total budget but cannot originate or rescue it.
+- valid 0% remains a real 0% crypto budget with 100% cash; unavailable or integrity-invalid DecisionState yields no BTC/ETH/alt/cash values.
+- if canonical budget or class-split inputs are unavailable, `build_crypto` fails explicitly with `Crypto H5 budget unavailable` before rendering `crypto.html`. It does not silently publish 0% or 100% cash.
+
+No new DecisionState file, optimizer, allocation model, alert owner, or durable truth store was created.
+
+### TDD / verification receipts
+
+RED first:
+- old `_allocation(signals, market)` rejected the canonical budget argument;
+- missing cockpit state defaulted hero exposure to 0%;
+- no explicit H5 fail-closed build guard existed.
+
+GREEN on final source bytes:
+- focused H5/cockpit cases: **5 passed**;
+- full existing Crypto CI owner command (`test_crypto_cockpit_contract.py`, `test_crypto_wave2.py`, `test_crypto_wave3.py`, `test_crypto_house_style.py`): **34 passed, 0 failed**;
+- exact existing Vector CI owner command including `test_btc_decision.py` and R2 suites: **95 passed, 0 failed**;
+- Python compile and `git diff --check`: PASS.
+
+The first broader Crypto run in the intentionally sparse worktree had four environment-only failures because `site/`, `content/`, and `data/` were not checked out. Those exact dependencies were added without a full checkout; the unchanged suites then passed. Existing temporary Chromium cleanup warnings remain and are not asserted resolved.
+
+### Remaining P0B acceptance boundary
+
+Open PR #7645 still owns `templates/crypto.html.j2` / `site/crypto.html`. This source carrier deliberately did **not** touch those paths. The current H5 template cannot truthfully render the new unavailable allocation object because it assumes numeric percentages. Therefore P0B is **BUILT_NOT_PROVEN**, not complete.
+
+Exact next integration action after #7645 is reconciled: add one explicit H5 unavailable state to the accepted Crypto template, consuming `allocation.available` / canonical decision metadata without changing the class split or total-budget authority; then prove valid 0%, integrity-invalid/unavailable, and happy-path allocations on the real generated route in EN/ZH and both themes. Only after exact-head CI/fences and real H5 browser proof may P0B be accepted.
