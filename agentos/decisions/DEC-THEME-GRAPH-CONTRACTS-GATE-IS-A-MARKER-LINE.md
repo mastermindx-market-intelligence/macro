@@ -49,7 +49,7 @@ evidence:
   - "Same line numbers verified independently at 1e38d5c955dc and a0d7b054ff23"
   - "Controls on the read: 21 occurrences of 'def ' (positive), 0 occurrences of a nonsense token (negative)"
   - "Shared owner's empirical confirmation on materialised data: 1168 identity_resolution rows violating the state<->ids biconditional, exit 0"
-  - "Macro PR #7870 comment 5852920768 (this measurement posted to the shared owner, including this seat's own exposure)"
+  - "Macro PR #7780 comment 5852920768 (this measurement posted to the shared owner on the Sol coordination carrier, including this seat's own exposure; verified by .issue_url, not by recall)"
 affects:
   - "WS:GMI-THEME-GRAPH"
   - "scripts/check_theme_graph_contracts.py"
