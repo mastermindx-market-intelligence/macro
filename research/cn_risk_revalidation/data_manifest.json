@@ -1,0 +1,307 @@
+{
+  "construction": {
+    "construction_hash": "a09fce6e68960eaa89dd05c387fc6f547ede35e89a9a097d42559acb6fe16f74",
+    "contract": {
+      "bands": {
+        "caution": 72.0,
+        "elevated": 83.0,
+        "risk_off": 91.0,
+        "watch": 58.0
+      },
+      "base_probabilities": {
+        "h10": 0.16,
+        "h21": 0.305,
+        "h5": 0.072
+      },
+      "benchmark": [
+        "china",
+        "000001.SS"
+      ],
+      "breadth_code": "cn_breadth",
+      "breadth_group": "china_breadth",
+      "component_legs": [
+        [
+          "rateshock",
+          [
+            "us_rate_2y",
+            "us_real_rate",
+            "us_rate_10y"
+          ],
+          1.0
+        ],
+        [
+          "usd",
+          [
+            "usd_cnh"
+          ],
+          0.6
+        ],
+        [
+          "diff",
+          [
+            "us_cn_diff"
+          ],
+          0.8
+        ],
+        [
+          "breadth",
+          [
+            "cn_breadth"
+          ],
+          1.0
+        ]
+      ],
+      "context_gate": "benchmark_below_causal_200_session_mean",
+      "dxy_backfill_change_sessions": 63,
+      "engine_source_sha256": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+      "loud_state_cap_when_gate_closed": "caution",
+      "percentile_window_sessions": 504,
+      "probability_surface": {
+        "h10": {
+          "calm": 0.13,
+          "caution": 0.18,
+          "elevated": 0.21,
+          "risk-off": 0.32,
+          "watch": 0.16
+        },
+        "h21": {
+          "calm": 0.27,
+          "caution": 0.35,
+          "elevated": 0.4,
+          "risk-off": 0.5,
+          "watch": 0.32
+        },
+        "h5": {
+          "calm": 0.06,
+          "caution": 0.09,
+          "elevated": 0.12,
+          "risk-off": 0.15,
+          "watch": 0.08
+        }
+      },
+      "profile_key": "cn",
+      "rate_and_fx_change_sessions": 21
+    },
+    "hash_algorithm": "sha256"
+  },
+  "csi300_replication_qualification": {
+    "basis": "No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed but is not used as confirmatory replication evidence.",
+    "cash_index_series_available": false,
+    "exact_candidates_checked": [
+      "data/china/000300.SS.parquet",
+      "data/china/000300.SH.parquet",
+      "data/china/CSI300.parquet"
+    ],
+    "exact_candidates_present": [],
+    "proxy_available": true,
+    "proxy_path": "data/china/510300.SS.parquet",
+    "proxy_symbol": "510300.SS",
+    "quantitative_replication_performed": false,
+    "verdict": "INSUFFICIENT_EVIDENCE"
+  },
+  "evidence_class": "reconstructed_history_plus_separate_issued_forward_ledger",
+  "frozen_source_files": {
+    "engine/indicators.py": {
+      "bytes": 2777,
+      "path": "engine/indicators.py",
+      "sha256": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5"
+    },
+    "engine/risk_radar_intl.py": {
+      "bytes": 53482,
+      "path": "engine/risk_radar_intl.py",
+      "sha256": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7"
+    },
+    "lib/store.py": {
+      "bytes": 8300,
+      "path": "lib/store.py",
+      "sha256": "77051ae1e522e415e2b8c3be51f51187f2571d53a049472a52ca54e9ee1a3c4b"
+    },
+    "scripts/calibrate_risk_radar_intl.py": {
+      "bytes": 15223,
+      "path": "scripts/calibrate_risk_radar_intl.py",
+      "sha256": "ec613aa8b38f317ebd4ed8a4ab9dca153db9c632898c40a5edae663e69c26458"
+    }
+  },
+  "historical_claim_provenance": {
+    "claimed_composite_lift": 2.07,
+    "claimed_csi300_lift": 2.22,
+    "claimed_permutation_p": 0.01,
+    "claimed_split_half": [
+      2.28,
+      2.0
+    ],
+    "exact_original_extreme_trigger_recoverable": false,
+    "immutable_result_artifact_committed_with_claim": false,
+    "record": "merged PR #711 prose and production docstring",
+    "research_harness_committed_with_claim": false
+  },
+  "historical_snapshot_pit_status": "causal_transform_on_snapshot_not_vintage_pit",
+  "probability_surface_provenance": {
+    "baked_surface_location": "engine/risk_radar_intl.py::CN_PROFILE",
+    "current_calibrator_generated_baked_surface": false,
+    "current_calibrator_policy": "flat_at_base_for_prob_cal; raw state rates descriptive_only",
+    "overlay_present": false
+  },
+  "source_files": {
+    "china_10y": {
+      "bytes": 256857,
+      "columns": [
+        "cgb_2y",
+        "cgb_5y",
+        "cgb_10y",
+        "cgb_30y",
+        "cgb_10y2y"
+      ],
+      "first_date": "2002-01-04",
+      "last_date": "2026-09-23",
+      "path": "data/china_property/cgb.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "repo_store",
+      "role": "differential_subleg",
+      "rows": 6178,
+      "sha256": "32b42dbde1937ede0582a1303ef1dfc9635502a3c7d225134d749e91f3680b3e",
+      "vintage_identifier_available": false
+    },
+    "china_breadth": {
+      "bytes": 157929,
+      "columns": [
+        "n_members",
+        "pct_above_50",
+        "pct_above_200",
+        "nh",
+        "nl",
+        "adv",
+        "dec",
+        "ad_line"
+      ],
+      "first_date": "1991-03-12",
+      "last_date": "2026-09-23",
+      "path": "data/china_breadth/breadth.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "repo_store",
+      "role": "breadth_subleg",
+      "rows": 8901,
+      "sha256": "270504c850f3586849fbeb4cf595d2406fc4bf45d32212a6383a1ba8c1d3f04e",
+      "vintage_identifier_available": false
+    },
+    "cn_forward_ledger": {
+      "bytes": 25056,
+      "path": "data/risk_radar_intl/cn_forward_log.jsonl",
+      "provider": "committed_forward_ledger",
+      "role": "genuinely_issued_forward_evidence",
+      "rows": 34,
+      "sha256": "11577f99d426d3b8295acf5870d27e8ce3758c0c7003e2d0dd4f08b434602b7e"
+    },
+    "csi300_etf_proxy": {
+      "bytes": 77934,
+      "columns": [
+        "close",
+        "volume"
+      ],
+      "first_date": "2012-05-04",
+      "last_date": "2026-09-23",
+      "path": "data/china/510300.SS.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "repo_store_yahoo_adjusted",
+      "role": "available_proxy_not_used_for_confirmatory_replication",
+      "rows": 3485,
+      "sha256": "5fd8228d7a1bc54832ac9fda1769ec623cc46a815c5820410a245c3fe21f5a16",
+      "vintage_identifier_available": false
+    },
+    "dxy": {
+      "bytes": 214261,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1971-01-04",
+      "last_date": "2026-09-23",
+      "path": "data/yahoo/DX-Y.NYB.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "repo_store_yahoo",
+      "role": "pre_cnh_fx_backfill",
+      "rows": 14161,
+      "sha256": "dee55311cc22f15384ede15a63a05c9097766aebfc7c80650335d534471b4b30",
+      "vintage_identifier_available": false
+    },
+    "shanghai_composite": {
+      "bytes": 131930,
+      "columns": [
+        "close",
+        "volume"
+      ],
+      "first_date": "1997-07-02",
+      "last_date": "2026-09-23",
+      "path": "data/china/000001.SS.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "repo_store",
+      "role": "canonical_benchmark_and_context_gate",
+      "rows": 7083,
+      "sha256": "fde7953ffe4db529895db48ace0bb182412f041a163988a8e009c1ca90614e67",
+      "vintage_identifier_available": false
+    },
+    "us_10y": {
+      "bytes": 171458,
+      "columns": [
+        "us10y"
+      ],
+      "first_date": "1962-01-02",
+      "last_date": "2026-09-21",
+      "path": "data/fred/DGS10.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "FRED_snapshot",
+      "role": "rate_and_differential_subleg",
+      "rows": 16165,
+      "sha256": "34b9744f940966ea982b9445e7583e21fc41232d531b8a46c11969a181b6c4a8",
+      "vintage_identifier_available": false
+    },
+    "us_10y_real": {
+      "bytes": 61841,
+      "columns": [
+        "us10y_real"
+      ],
+      "first_date": "2003-01-02",
+      "last_date": "2026-09-21",
+      "path": "data/fred/DFII10.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "FRED_snapshot",
+      "role": "rate_subleg",
+      "rows": 5934,
+      "sha256": "82194cc322bd53a4107e9bf04ee02fa5855a37468241579aafb0628a4e920158",
+      "vintage_identifier_available": false
+    },
+    "us_2y": {
+      "bytes": 135615,
+      "columns": [
+        "us2y"
+      ],
+      "first_date": "1976-06-01",
+      "last_date": "2026-09-21",
+      "path": "data/fred/DGS2.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "FRED_snapshot",
+      "role": "rate_subleg",
+      "rows": 12573,
+      "sha256": "bfaeca464df49b4a71b668d70267875da2204574ec8e335ff7ab7df412d9540f",
+      "vintage_identifier_available": false
+    },
+    "usd_cnh": {
+      "bytes": 78108,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "2013-02-11",
+      "last_date": "2026-09-23",
+      "path": "data/yahoo/CNH_F.parquet",
+      "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+      "provider": "repo_store_yahoo",
+      "role": "fx_subleg",
+      "rows": 3360,
+      "sha256": "f8392d542451d8e345da37fc06072a34b6b75eb2aaf2d01264418ba25a281184",
+      "vintage_identifier_available": false
+    }
+  }
+}

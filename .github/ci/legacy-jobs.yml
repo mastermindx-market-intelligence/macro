@@ -3070,6 +3070,7 @@ jobs:
           tests/test_risk_radar_scorecard.py
           tests/test_vsb_radar_alert.py
           tests/test_risk_radar_intl_profiles.py
+          tests/test_cn_risk_radar_revalidation.py
           tests/test_gd4a_cnhk_ledger_repair.py
           tests/test_risk_radar_dlg_country_wiring.py
           tests/test_risk_radar_dlg_partial.py

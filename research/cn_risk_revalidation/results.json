@@ -1,0 +1,2964 @@
+{
+  "band_cutoff_assessment": {
+    "cutoff_optimality_basis": "The fixed production cuts were tested as-is. No preregistered neighborhood sensitivity or threshold search was permitted, so optimality is not established.",
+    "cutoff_optimality_verdict": "INSUFFICIENT_EVIDENCE",
+    "exact_cutoffs": {
+      "caution": 72.0,
+      "elevated": 83.0,
+      "risk_off": 91.0,
+      "watch": 58.0
+    },
+    "minimum_state_effective_n_by_horizon": {
+      "h10": 12,
+      "h21": 12,
+      "h5": 12
+    },
+    "monotonic_ordering_verdict": "KEEP_BUT_RELABEL",
+    "post_hoc_threshold_search_performed": false,
+    "supported_material_inversion": false
+  },
+  "base_sha": "8db6896dab2199a4b7fc61a005c225380cac7cd6",
+  "calibration": {
+    "h10": {
+      "base_probability": 0.16,
+      "brier": 0.1258699404761905,
+      "brier_skill_vs_baked_base": 0.021047831561793795,
+      "delayed_expanding_base": {
+        "delayed_base_brier": 0.13387037636957064,
+        "production_brier_on_overlap": 0.12979135938359934,
+        "production_skill_vs_delayed_base": 0.03046990003755956,
+        "rows": 5451
+      },
+      "dependence_aware_inversions": [
+        {
+          "block_ci": [
+            -0.018096422802677457,
+            0.08375372498007022
+          ],
+          "difference": 0.031190164774412776,
+          "higher_state": "watch",
+          "lower_state": "calm",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.04554091345524855,
+            0.06233822866236009
+          ],
+          "difference": 0.00746047430830038,
+          "higher_state": "caution",
+          "lower_state": "watch",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.06026854443999387,
+            0.14850184657936813
+          ],
+          "difference": 0.04329710144927537,
+          "higher_state": "elevated",
+          "lower_state": "caution",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            0.013383968252707532,
+            0.19578486620278365
+          ],
+          "difference": 0.10610587002096439,
+          "higher_state": "risk-off",
+          "lower_state": "elevated",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        }
+      ],
+      "intercept_slope": {
+        "episode_qualification_met": true,
+        "hit_episodes": 58,
+        "hits": 865,
+        "intercept": -0.04818089554001493,
+        "nonhit_episodes": 51,
+        "powered_bins": 5,
+        "qualified": true,
+        "rows": 5712,
+        "slope": 1.0160121472883545
+      },
+      "point_inversions": [],
+      "rows": 5712,
+      "state_separation": {
+        "block_ci": [
+          0.011973394350705288,
+          0.19849029336792362
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "difference": 0.10610587002096439,
+        "elevated_effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 8,
+          "nonhit_episodes": 10,
+          "nonoverlap_ceiling": 571,
+          "rows": 240
+        },
+        "elevated_rate": 0.20416666666666666,
+        "material_inversion": false,
+        "risk_off_effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 9,
+          "nonhit_episodes": 9,
+          "nonoverlap_ceiling": 571,
+          "rows": 477
+        },
+        "risk_off_rate": 0.31027253668763105
+      },
+      "states": [
+        {
+          "block_ci": [
+            0.09098444244861219,
+            0.15665293537124525
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 12,
+          "episode_ci": [
+            0.06394540733852194,
+            0.18900467690901662
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 12,
+          "forecast": 0.12999999999999995,
+          "hit_episodes": 10,
+          "nonhit_episodes": 2,
+          "nonoverlap_ceiling": 571,
+          "observed": 0.12221892613467814,
+          "rows": 3371,
+          "state": "calm"
+        },
+        {
+          "block_ci": [
+            0.1056432686875566,
+            0.20651209845640375
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 34,
+          "episode_ci": [
+            0.09837793531236154,
+            0.21147449644334024
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 34,
+          "forecast": 0.15999999999999998,
+          "hit_episodes": 17,
+          "nonhit_episodes": 17,
+          "nonoverlap_ceiling": 571,
+          "observed": 0.1534090909090909,
+          "rows": 704,
+          "state": "watch"
+        },
+        {
+          "block_ci": [
+            0.11241891396676157,
+            0.2183371289056087
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 27,
+          "episode_ci": [
+            0.1051813835076411,
+            0.25888707112714815
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 27,
+          "forecast": 0.18000000000000002,
+          "hit_episodes": 14,
+          "nonhit_episodes": 13,
+          "nonoverlap_ceiling": 571,
+          "observed": 0.1608695652173913,
+          "rows": 920,
+          "state": "caution"
+        },
+        {
+          "block_ci": [
+            0.10144608312583797,
+            0.3099680328354085
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 18,
+          "episode_ci": [
+            0.06018518518518518,
+            0.36826330532212875
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 18,
+          "forecast": 0.21,
+          "hit_episodes": 8,
+          "nonhit_episodes": 10,
+          "nonoverlap_ceiling": 571,
+          "observed": 0.20416666666666666,
+          "rows": 240,
+          "state": "elevated"
+        },
+        {
+          "block_ci": [
+            0.19737564595700022,
+            0.41800708976859413
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 18,
+          "episode_ci": [
+            0.13002446056767425,
+            0.47982571214392783
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 18,
+          "forecast": 0.31999999999999995,
+          "hit_episodes": 9,
+          "nonhit_episodes": 9,
+          "nonoverlap_ceiling": 571,
+          "observed": 0.31027253668763105,
+          "rows": 477,
+          "state": "risk-off"
+        }
+      ]
+    },
+    "h21": {
+      "base_probability": 0.305,
+      "brier": 0.20194800912120678,
+      "brier_skill_vs_baked_base": 0.018867450195440783,
+      "delayed_expanding_base": {
+        "delayed_base_brier": 0.21163000191790418,
+        "production_brier_on_overlap": 0.20474485172223245,
+        "production_skill_vs_delayed_base": 0.03253390414059831,
+        "rows": 5429
+      },
+      "dependence_aware_inversions": [
+        {
+          "block_ci": [
+            -0.027373794241743486,
+            0.09827521856311863
+          ],
+          "difference": 0.033827563609449385,
+          "higher_state": "watch",
+          "lower_state": "calm",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.05029713577549012,
+            0.10206550657393311
+          ],
+          "difference": 0.024120027735937744,
+          "higher_state": "caution",
+          "lower_state": "watch",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.029753721314296357,
+            0.23398150770436418
+          ],
+          "difference": 0.10164136118334588,
+          "higher_state": "elevated",
+          "lower_state": "caution",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.05764663158817409,
+            0.18588514005970014
+          ],
+          "difference": 0.062432665373841845,
+          "higher_state": "risk-off",
+          "lower_state": "elevated",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        }
+      ],
+      "intercept_slope": {
+        "episode_qualification_met": true,
+        "hit_episodes": 73,
+        "hits": 1649,
+        "intercept": -0.12234593435983884,
+        "nonhit_episodes": 36,
+        "powered_bins": 5,
+        "qualified": true,
+        "rows": 5701,
+        "slope": 0.9943958343976385
+      },
+      "point_inversions": [],
+      "rows": 5701,
+      "state_separation": {
+        "block_ci": [
+          -0.06270803504915402,
+          0.18377055734658934
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "difference": 0.062432665373841845,
+        "elevated_effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 12,
+          "nonhit_episodes": 6,
+          "nonoverlap_ceiling": 271,
+          "rows": 234
+        },
+        "elevated_rate": 0.41025641025641024,
+        "material_inversion": false,
+        "risk_off_effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 10,
+          "nonhit_episodes": 8,
+          "nonoverlap_ceiling": 271,
+          "rows": 476
+        },
+        "risk_off_rate": 0.4726890756302521
+      },
+      "states": [
+        {
+          "block_ci": [
+            0.205307597245805,
+            0.29979338136760614
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 12,
+          "episode_ci": [
+            0.18267249311647188,
+            0.3204435782498538
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 12,
+          "forecast": 0.27,
+          "hit_episodes": 11,
+          "nonhit_episodes": 1,
+          "nonoverlap_ceiling": 271,
+          "observed": 0.25066745772767723,
+          "rows": 3371,
+          "state": "calm"
+        },
+        {
+          "block_ci": [
+            0.222870963042334,
+            0.35143073593073587
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 34,
+          "episode_ci": [
+            0.20926566841727487,
+            0.3513838137957442
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 34,
+          "forecast": 0.31999999999999995,
+          "hit_episodes": 23,
+          "nonhit_episodes": 11,
+          "nonoverlap_ceiling": 271,
+          "observed": 0.2844950213371266,
+          "rows": 703,
+          "state": "watch"
+        },
+        {
+          "block_ci": [
+            0.22681290975663193,
+            0.39864992972387336
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 27,
+          "episode_ci": [
+            0.22291866055965728,
+            0.46094277871621614
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 27,
+          "forecast": 0.3499999999999999,
+          "hit_episodes": 17,
+          "nonhit_episodes": 10,
+          "nonoverlap_ceiling": 271,
+          "observed": 0.30861504907306436,
+          "rows": 917,
+          "state": "caution"
+        },
+        {
+          "block_ci": [
+            0.2781245377218935,
+            0.5350991519082063
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 18,
+          "episode_ci": [
+            0.22794032147742818,
+            0.5677425262909134
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 18,
+          "forecast": 0.4,
+          "hit_episodes": 12,
+          "nonhit_episodes": 6,
+          "nonoverlap_ceiling": 271,
+          "observed": 0.41025641025641024,
+          "rows": 234,
+          "state": "elevated"
+        },
+        {
+          "block_ci": [
+            0.34781895937277263,
+            0.5800988796034574
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 18,
+          "episode_ci": [
+            0.27406976744186046,
+            0.6372410220167222
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 18,
+          "forecast": 0.5,
+          "hit_episodes": 10,
+          "nonhit_episodes": 8,
+          "nonoverlap_ceiling": 271,
+          "observed": 0.4726890756302521,
+          "rows": 476,
+          "state": "risk-off"
+        }
+      ]
+    },
+    "h5": {
+      "base_probability": 0.072,
+      "brier": 0.06525348959244359,
+      "brier_skill_vs_baked_base": 0.010919999009048609,
+      "delayed_expanding_base": {
+        "delayed_base_brier": 0.06851592803079792,
+        "production_brier_on_overlap": 0.06747310016480498,
+        "production_skill_vs_delayed_base": 0.015220225368970941,
+        "rows": 5461
+      },
+      "dependence_aware_inversions": [
+        {
+          "block_ci": [
+            -0.01017403948413688,
+            0.05332563629307093
+          ],
+          "difference": 0.020044800571721366,
+          "higher_state": "watch",
+          "lower_state": "calm",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.04925180725665294,
+            0.01578232037041667
+          ],
+          "difference": -0.01692193675889328,
+          "higher_state": "caution",
+          "lower_state": "watch",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.006589928182452419,
+            0.15994529831576484
+          ],
+          "difference": 0.07355072463768116,
+          "higher_state": "elevated",
+          "lower_state": "caution",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        },
+        {
+          "block_ci": [
+            -0.04684218710182072,
+            0.08413555163434307
+          ],
+          "difference": 0.020193637621023525,
+          "higher_state": "risk-off",
+          "lower_state": "elevated",
+          "material_point_inversion": false,
+          "supported_material_inversion": false
+        }
+      ],
+      "intercept_slope": {
+        "episode_qualification_met": true,
+        "hit_episodes": 48,
+        "hits": 406,
+        "intercept": 0.05202009083200916,
+        "nonhit_episodes": 61,
+        "powered_bins": 5,
+        "qualified": true,
+        "rows": 5717,
+        "slope": 1.0602150159216348
+      },
+      "point_inversions": [],
+      "rows": 5717,
+      "state_separation": {
+        "block_ci": [
+          -0.04625106923216587,
+          0.0833370948812855
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "difference": 0.020193637621023525,
+        "elevated_effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 6,
+          "nonhit_episodes": 12,
+          "nonoverlap_ceiling": 1143,
+          "rows": 240
+        },
+        "elevated_rate": 0.13333333333333333,
+        "material_inversion": false,
+        "risk_off_effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 7,
+          "nonhit_episodes": 11,
+          "nonoverlap_ceiling": 1143,
+          "rows": 482
+        },
+        "risk_off_rate": 0.15352697095435686
+      },
+      "states": [
+        {
+          "block_ci": [
+            0.03968938549024468,
+            0.07644157037426363
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 12,
+          "episode_ci": [
+            0.026626926331949064,
+            0.08947564807541239
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 12,
+          "forecast": 0.060000000000000026,
+          "hit_episodes": 9,
+          "nonhit_episodes": 3,
+          "nonoverlap_ceiling": 1143,
+          "observed": 0.05665974488282409,
+          "rows": 3371,
+          "state": "calm"
+        },
+        {
+          "block_ci": [
+            0.046741537602613674,
+            0.11197809860673369
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 34,
+          "episode_ci": [
+            0.03536287916970962,
+            0.12594583714730503
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 34,
+          "forecast": 0.07999999999999999,
+          "hit_episodes": 13,
+          "nonhit_episodes": 21,
+          "nonoverlap_ceiling": 1143,
+          "observed": 0.07670454545454546,
+          "rows": 704,
+          "state": "watch"
+        },
+        {
+          "block_ci": [
+            0.03554879402189997,
+            0.0890987867060269
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 27,
+          "episode_ci": [
+            0.030807769100637344,
+            0.1148897384223641
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 27,
+          "forecast": 0.09000000000000001,
+          "hit_episodes": 13,
+          "nonhit_episodes": 14,
+          "nonoverlap_ceiling": 1143,
+          "observed": 0.059782608695652176,
+          "rows": 920,
+          "state": "caution"
+        },
+        {
+          "block_ci": [
+            0.04910645815074496,
+            0.2265193370165746
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 18,
+          "episode_ci": [
+            0.015461934972244252,
+            0.2730782676247813
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 18,
+          "forecast": 0.12000000000000005,
+          "hit_episodes": 6,
+          "nonhit_episodes": 12,
+          "nonoverlap_ceiling": 1143,
+          "observed": 0.13333333333333333,
+          "rows": 240,
+          "state": "elevated"
+        },
+        {
+          "block_ci": [
+            0.08657843428835794,
+            0.22561919157989024
+          ],
+          "block_valid_reps": 5000,
+          "effective_n_ceiling": 18,
+          "episode_ci": [
+            0.04032184213635826,
+            0.2689124487004103
+          ],
+          "episode_valid_reps": 5000,
+          "episodes": 18,
+          "forecast": 0.14999999999999997,
+          "hit_episodes": 7,
+          "nonhit_episodes": 11,
+          "nonoverlap_ceiling": 1143,
+          "observed": 0.15352697095435686,
+          "rows": 482,
+          "state": "risk-off"
+        }
+      ]
+    }
+  },
+  "claims": {
+    "5d / 10d / 21d ladder": {
+      "basis": "The surface is mechanically monotone, but its current calibrator explicitly seeds flat-at-base and the loud-state episode floor is not met across all horizons; supported material inversion=False.",
+      "verdict": "INSUFFICIENT_EVIDENCE"
+    },
+    "98th-percentile intensity semantics": {
+      "basis": "current score is 98.02; valid only as a causal trailing-504-session composite percentile, not 98% drawdown odds or all-history extremity.",
+      "verdict": "KEEP_BUT_RELABEL"
+    },
+    ">=10%/42d historical lift ~2.07x": {
+      "basis": "exact emitted production risk-off lift 2.64x with 18 effective episodes; the historical record is 2.07x, and its original executable harness was not committed.",
+      "metric_source": "emitted_production_risk_off",
+      "observed_lift": 2.6351194618418,
+      "reasons": [
+        "directional lift survives a majority of stability slices but misses robust promotion"
+      ],
+      "verdict": "KEEP_BUT_RELABEL"
+    },
+    ">=5%/21d risk-off probability = 50%": {
+      "basis": "observed 0.473 versus displayed 0.500; effective episodes 18; block CI [0.34781895937277263, 0.5800988796034574]; episode CI [0.27406976744186046, 0.6372410220167222].",
+      "reasons": [
+        "effective episodes 18; hits/non-hits 10/8"
+      ],
+      "verdict": "INSUFFICIENT_EVIDENCE"
+    },
+    "context gate value-add": {
+      "basis": "gate-minus-ungated Brier difference -0.0021; elevated-plus lift difference 0.22x; effective gated elevated-plus episodes 18; continuous ranking score unchanged.",
+      "verdict": "KEEP_BUT_RELABEL"
+    },
+    "elevated vs risk-off separation": {
+      "basis": "risk-off minus elevated observed 5%/21d rate 0.062; block CI [-0.06270803504915402, 0.18377055734658934]; effective episodes 18/18.",
+      "reasons": [
+        "positive point separation but interval overlaps zero"
+      ],
+      "verdict": "KEEP_BUT_RELABEL"
+    },
+    "extreme China external-driver hazard": {
+      "basis": "emitted risk-off lift is 1.63x for 5%/21d and 2.64x for 10%/42d; effective episodes 18/18. Call this an elevated external-driver hazard, not an exact crisis probability.",
+      "verdict": "KEEP_BUT_RELABEL"
+    }
+  },
+  "classification": "research_only_no_production_behavior_change",
+  "context_gate": {
+    "brier_difference_block_ci": [
+      -0.0046969939484301105,
+      0.00025176504122087067
+    ],
+    "brier_difference_gated_minus_ungated": -0.00211278723031047,
+    "continuous_ap_difference": 0.0,
+    "elevated_plus_lift_difference_block_ci": [
+      0.010822490966292732,
+      0.4595085644643761
+    ],
+    "elevated_plus_lift_difference_gated_minus_ungated": 0.22069088818804827,
+    "gated_brier": 0.20194800912120678,
+    "gated_elevated_plus_effective_n": {
+      "effective_n_ceiling": 18,
+      "episodes": 18,
+      "hit_episodes": 12,
+      "nonhit_episodes": 6,
+      "nonoverlap_ceiling": 271,
+      "rows": 710
+    },
+    "gated_elevated_plus_lift": 1.5630651098830706,
+    "gated_risk_off_lift": 1.6342028017999195,
+    "historical_10pct_42d_gated_lift": 2.6351194618418,
+    "historical_10pct_42d_ungated_lift": 2.032326553785921,
+    "ranking_score_unchanged": true,
+    "risk_off_lift_difference_block_ci": [
+      -0.01924217483316758,
+      0.49281695728490804
+    ],
+    "risk_off_lift_difference_gated_minus_ungated": 0.22031474809450757,
+    "rows": 5701,
+    "ungated_brier": 0.20406079635151725,
+    "ungated_elevated_plus_lift": 1.3423742216950223,
+    "ungated_risk_off_lift": 1.413888053705412
+  },
+  "csi300_replication": {
+    "basis": "No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed but is not used as confirmatory replication evidence.",
+    "cash_index_series_available": false,
+    "exact_candidates_checked": [
+      "data/china/000300.SS.parquet",
+      "data/china/000300.SH.parquet",
+      "data/china/CSI300.parquet"
+    ],
+    "exact_candidates_present": [],
+    "proxy_available": true,
+    "proxy_path": "data/china/510300.SS.parquet",
+    "proxy_symbol": "510300.SS",
+    "quantitative_replication_performed": false,
+    "verdict": "INSUFFICIENT_EVIDENCE"
+  },
+  "current_snapshot": {
+    "asof": "2026-09-23",
+    "composite_percentile": 0.9801587301587301,
+    "context_gate_open": true,
+    "intensity_score_0_100": 98.01587301587301,
+    "semantics": "causal rank within the trailing 504 available sessions of the composite; not a drawdown probability or confidence level",
+    "state": "risk-off",
+    "state_ungated": "risk-off"
+  },
+  "data_provenance": {
+    "construction": {
+      "construction_hash": "a09fce6e68960eaa89dd05c387fc6f547ede35e89a9a097d42559acb6fe16f74",
+      "contract": {
+        "bands": {
+          "caution": 72.0,
+          "elevated": 83.0,
+          "risk_off": 91.0,
+          "watch": 58.0
+        },
+        "base_probabilities": {
+          "h10": 0.16,
+          "h21": 0.305,
+          "h5": 0.072
+        },
+        "benchmark": [
+          "china",
+          "000001.SS"
+        ],
+        "breadth_code": "cn_breadth",
+        "breadth_group": "china_breadth",
+        "component_legs": [
+          [
+            "rateshock",
+            [
+              "us_rate_2y",
+              "us_real_rate",
+              "us_rate_10y"
+            ],
+            1.0
+          ],
+          [
+            "usd",
+            [
+              "usd_cnh"
+            ],
+            0.6
+          ],
+          [
+            "diff",
+            [
+              "us_cn_diff"
+            ],
+            0.8
+          ],
+          [
+            "breadth",
+            [
+              "cn_breadth"
+            ],
+            1.0
+          ]
+        ],
+        "context_gate": "benchmark_below_causal_200_session_mean",
+        "dxy_backfill_change_sessions": 63,
+        "engine_source_sha256": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+        "loud_state_cap_when_gate_closed": "caution",
+        "percentile_window_sessions": 504,
+        "probability_surface": {
+          "h10": {
+            "calm": 0.13,
+            "caution": 0.18,
+            "elevated": 0.21,
+            "risk-off": 0.32,
+            "watch": 0.16
+          },
+          "h21": {
+            "calm": 0.27,
+            "caution": 0.35,
+            "elevated": 0.4,
+            "risk-off": 0.5,
+            "watch": 0.32
+          },
+          "h5": {
+            "calm": 0.06,
+            "caution": 0.09,
+            "elevated": 0.12,
+            "risk-off": 0.15,
+            "watch": 0.08
+          }
+        },
+        "profile_key": "cn",
+        "rate_and_fx_change_sessions": 21
+      },
+      "hash_algorithm": "sha256"
+    },
+    "csi300_replication_qualification": {
+      "basis": "No exact CSI300 cash-index history is available. The 510300.SS ETF proxy is disclosed but is not used as confirmatory replication evidence.",
+      "cash_index_series_available": false,
+      "exact_candidates_checked": [
+        "data/china/000300.SS.parquet",
+        "data/china/000300.SH.parquet",
+        "data/china/CSI300.parquet"
+      ],
+      "exact_candidates_present": [],
+      "proxy_available": true,
+      "proxy_path": "data/china/510300.SS.parquet",
+      "proxy_symbol": "510300.SS",
+      "quantitative_replication_performed": false,
+      "verdict": "INSUFFICIENT_EVIDENCE"
+    },
+    "evidence_class": "reconstructed_history_plus_separate_issued_forward_ledger",
+    "frozen_source_files": {
+      "engine/indicators.py": {
+        "bytes": 2777,
+        "path": "engine/indicators.py",
+        "sha256": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5"
+      },
+      "engine/risk_radar_intl.py": {
+        "bytes": 53482,
+        "path": "engine/risk_radar_intl.py",
+        "sha256": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7"
+      },
+      "lib/store.py": {
+        "bytes": 8300,
+        "path": "lib/store.py",
+        "sha256": "77051ae1e522e415e2b8c3be51f51187f2571d53a049472a52ca54e9ee1a3c4b"
+      },
+      "scripts/calibrate_risk_radar_intl.py": {
+        "bytes": 15223,
+        "path": "scripts/calibrate_risk_radar_intl.py",
+        "sha256": "ec613aa8b38f317ebd4ed8a4ab9dca153db9c632898c40a5edae663e69c26458"
+      }
+    },
+    "historical_claim_provenance": {
+      "claimed_composite_lift": 2.07,
+      "claimed_csi300_lift": 2.22,
+      "claimed_permutation_p": 0.01,
+      "claimed_split_half": [
+        2.28,
+        2.0
+      ],
+      "exact_original_extreme_trigger_recoverable": false,
+      "immutable_result_artifact_committed_with_claim": false,
+      "record": "merged PR #711 prose and production docstring",
+      "research_harness_committed_with_claim": false
+    },
+    "historical_snapshot_pit_status": "causal_transform_on_snapshot_not_vintage_pit",
+    "probability_surface_provenance": {
+      "baked_surface_location": "engine/risk_radar_intl.py::CN_PROFILE",
+      "current_calibrator_generated_baked_surface": false,
+      "current_calibrator_policy": "flat_at_base_for_prob_cal; raw state rates descriptive_only",
+      "overlay_present": false
+    },
+    "source_files": {
+      "china_10y": {
+        "bytes": 256857,
+        "columns": [
+          "cgb_2y",
+          "cgb_5y",
+          "cgb_10y",
+          "cgb_30y",
+          "cgb_10y2y"
+        ],
+        "first_date": "2002-01-04",
+        "last_date": "2026-09-23",
+        "path": "data/china_property/cgb.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "repo_store",
+        "role": "differential_subleg",
+        "rows": 6178,
+        "sha256": "32b42dbde1937ede0582a1303ef1dfc9635502a3c7d225134d749e91f3680b3e",
+        "vintage_identifier_available": false
+      },
+      "china_breadth": {
+        "bytes": 157929,
+        "columns": [
+          "n_members",
+          "pct_above_50",
+          "pct_above_200",
+          "nh",
+          "nl",
+          "adv",
+          "dec",
+          "ad_line"
+        ],
+        "first_date": "1991-03-12",
+        "last_date": "2026-09-23",
+        "path": "data/china_breadth/breadth.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "repo_store",
+        "role": "breadth_subleg",
+        "rows": 8901,
+        "sha256": "270504c850f3586849fbeb4cf595d2406fc4bf45d32212a6383a1ba8c1d3f04e",
+        "vintage_identifier_available": false
+      },
+      "cn_forward_ledger": {
+        "bytes": 25056,
+        "path": "data/risk_radar_intl/cn_forward_log.jsonl",
+        "provider": "committed_forward_ledger",
+        "role": "genuinely_issued_forward_evidence",
+        "rows": 34,
+        "sha256": "11577f99d426d3b8295acf5870d27e8ce3758c0c7003e2d0dd4f08b434602b7e"
+      },
+      "csi300_etf_proxy": {
+        "bytes": 77934,
+        "columns": [
+          "close",
+          "volume"
+        ],
+        "first_date": "2012-05-04",
+        "last_date": "2026-09-23",
+        "path": "data/china/510300.SS.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "repo_store_yahoo_adjusted",
+        "role": "available_proxy_not_used_for_confirmatory_replication",
+        "rows": 3485,
+        "sha256": "5fd8228d7a1bc54832ac9fda1769ec623cc46a815c5820410a245c3fe21f5a16",
+        "vintage_identifier_available": false
+      },
+      "dxy": {
+        "bytes": 214261,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first_date": "1971-01-04",
+        "last_date": "2026-09-23",
+        "path": "data/yahoo/DX-Y.NYB.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "repo_store_yahoo",
+        "role": "pre_cnh_fx_backfill",
+        "rows": 14161,
+        "sha256": "dee55311cc22f15384ede15a63a05c9097766aebfc7c80650335d534471b4b30",
+        "vintage_identifier_available": false
+      },
+      "shanghai_composite": {
+        "bytes": 131930,
+        "columns": [
+          "close",
+          "volume"
+        ],
+        "first_date": "1997-07-02",
+        "last_date": "2026-09-23",
+        "path": "data/china/000001.SS.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "repo_store",
+        "role": "canonical_benchmark_and_context_gate",
+        "rows": 7083,
+        "sha256": "fde7953ffe4db529895db48ace0bb182412f041a163988a8e009c1ca90614e67",
+        "vintage_identifier_available": false
+      },
+      "us_10y": {
+        "bytes": 171458,
+        "columns": [
+          "us10y"
+        ],
+        "first_date": "1962-01-02",
+        "last_date": "2026-09-21",
+        "path": "data/fred/DGS10.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "FRED_snapshot",
+        "role": "rate_and_differential_subleg",
+        "rows": 16165,
+        "sha256": "34b9744f940966ea982b9445e7583e21fc41232d531b8a46c11969a181b6c4a8",
+        "vintage_identifier_available": false
+      },
+      "us_10y_real": {
+        "bytes": 61841,
+        "columns": [
+          "us10y_real"
+        ],
+        "first_date": "2003-01-02",
+        "last_date": "2026-09-21",
+        "path": "data/fred/DFII10.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "FRED_snapshot",
+        "role": "rate_subleg",
+        "rows": 5934,
+        "sha256": "82194cc322bd53a4107e9bf04ee02fa5855a37468241579aafb0628a4e920158",
+        "vintage_identifier_available": false
+      },
+      "us_2y": {
+        "bytes": 135615,
+        "columns": [
+          "us2y"
+        ],
+        "first_date": "1976-06-01",
+        "last_date": "2026-09-21",
+        "path": "data/fred/DGS2.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "FRED_snapshot",
+        "role": "rate_subleg",
+        "rows": 12573,
+        "sha256": "bfaeca464df49b4a71b668d70267875da2204574ec8e335ff7ab7df412d9540f",
+        "vintage_identifier_available": false
+      },
+      "usd_cnh": {
+        "bytes": 78108,
+        "columns": [
+          "close_price",
+          "close",
+          "volume"
+        ],
+        "first_date": "2013-02-11",
+        "last_date": "2026-09-23",
+        "path": "data/yahoo/CNH_F.parquet",
+        "point_in_time_status": "causal_transform_on_latest_repository_snapshot",
+        "provider": "repo_store_yahoo",
+        "role": "fx_subleg",
+        "rows": 3360,
+        "sha256": "f8392d542451d8e345da37fc06072a34b6b75eb2aaf2d01264418ba25a281184",
+        "vintage_identifier_available": false
+      }
+    }
+  },
+  "discoveries": [
+    "The current production calibrator explicitly treats raw state rates as descriptive and emits a flat-at-base probability surface; it is not the provenance of the baked CN ladder.",
+    "Merged PR #711 and the engine docstring preserve the 2.07x claim, but no executable research harness, immutable result artifact, or exact original extreme trigger accompanied the claim.",
+    "No exact CSI300 cash-index series was found. The available 510300.SS ETF proxy is disclosed but withheld from confirmatory replication under the preregistration.",
+    "Historical transforms are causal on repository snapshots, but vintage identifiers are unavailable; this is not fully vintage point-in-time evidence.",
+    "Issued forward rows remain a separate evidence class and are not pooled with reconstructed history; the ledger lacks exact model-cohort and independent-episode identifiers."
+  ],
+  "forward_ledger": {
+    "authority_floors_met": false,
+    "authority_interpretation": "not eligible: fewer than 25 matured issued rows",
+    "can_force": false,
+    "cohort_identifiers": {
+      "construction_hash": [],
+      "model": [],
+      "model_version": [],
+      "profile": [],
+      "source_sha": []
+    },
+    "cohort_identifiers_present": false,
+    "cohort_qualification": "unverifiable_from_ledger_schema",
+    "episode_identifiers_present": false,
+    "evidence_class": "genuinely_issued_forward",
+    "invalid_lines": 0,
+    "loud_count_floor_met": false,
+    "matured_all_hits": 9,
+    "matured_asof_range": [
+      "2026-06-26",
+      "2026-08-25"
+    ],
+    "matured_loud_alerts": 5,
+    "matured_loud_hits": 2,
+    "matured_risk_off_hits": 1,
+    "matured_risk_off_rows": 4,
+    "matured_rows": 16,
+    "matured_state_counts": {
+      "caution": 9,
+      "elevated": 1,
+      "risk-off": 4,
+      "watch": 2
+    },
+    "pending_asof_range": [
+      "2026-08-26",
+      "2026-09-23"
+    ],
+    "pending_rows": 18,
+    "pool_with_reconstructed_history": false,
+    "production_force_count_floor_met": false,
+    "research_count_floor_met": false,
+    "research_recalibration_floor_met": false,
+    "september_pending_rows": 14,
+    "source_sha256": "11577f99d426d3b8295acf5870d27e8ce3758c0c7003e2d0dd4f08b434602b7e",
+    "total_rows": 34,
+    "total_state_counts": {
+      "caution": 12,
+      "elevated": 5,
+      "risk-off": 13,
+      "watch": 4
+    }
+  },
+  "harness_path": "scripts/research/cn_risk_radar_revalidation.py",
+  "harness_sha256": "19e3fe00f8979108c4ac397d05ec38c82c8faa6afc11c903ce7990aa8a05a82f",
+  "operation_key": "cn-risk-p1-radar-revalidation-20260923-solpro-001",
+  "prereg_sha": "db5590accaa03f78396ca91b6874f04b9bcf4cf3",
+  "proposed_followup": [
+    "Do not retune production in this PR. Open a separately preregistered calibration candidate only after the forward authority floors and independent loud-state episode floors mature.",
+    "Recover or rebuild the original PR #711 validation harness under a new provenance-only commission; do not retroactively call the present reconstruction byte-identical replication.",
+    "Acquire a lawful exact CSI300 cash-index history for the canonical replication; any 510300.SS ETF-proxy study requires its own separately preregistered, explicitly proxy-labeled analysis."
+  ],
+  "run_parameters": {
+    "bootstrap_reps": 5000,
+    "episode_gap_sessions": 42,
+    "moving_block_length_sessions": 42,
+    "permutation_reps": 5000,
+    "seed": 20260923
+  },
+  "schema": "cn_risk_radar_revalidation.v1",
+  "targets": {
+    "10pct_42d": {
+      "base_rate": 0.1686619718309859,
+      "baseline_comparison": {
+        "breadth_only": {
+          "average_precision": 0.26771888295372015,
+          "elevated_plus_lift": 1.8158601234183456,
+          "elevated_plus_rows": 1133,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 2.1229223285937775,
+          "risk_off_rows": 782,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.58793821661852,
+          "rows": 5680
+        },
+        "rates_only": {
+          "average_precision": 0.23317263095298563,
+          "elevated_plus_lift": 1.3258502810186599,
+          "elevated_plus_rows": 1033,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.583778991620671,
+          "risk_off_rows": 584,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5754868385799513,
+          "rows": 5680
+        },
+        "trend_context": {
+          "average_precision": 0.17976091818505197,
+          "elevated_plus_lift": 1.1233698929375637,
+          "elevated_plus_rows": 2697,
+          "elevated_threshold": 0.5,
+          "risk_off_lift": 1.1233698929375637,
+          "risk_off_rows": 2697,
+          "risk_off_threshold": 0.5,
+          "roc_auc": 0.5352317451559307,
+          "rows": 5680
+        },
+        "ungated_composite": {
+          "average_precision": 0.2873220453850743,
+          "elevated_plus_lift": 1.8679715330109972,
+          "elevated_plus_rows": 1076,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 2.032326553785921,
+          "risk_off_rows": 706,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.6553633593564172,
+          "rows": 5680
+        }
+      },
+      "benchmark": "Shanghai Composite (000001.SS)",
+      "confirmatory": true,
+      "continuous_discrimination": {
+        "ap_over_base": 1.703537805623405,
+        "average_precision": 0.2873220453850743,
+        "roc_auc": 0.6553633593564172
+      },
+      "elevated_plus": {
+        "base_rate": 0.1686619718309859,
+        "block_ci": [
+          1.7044014237920473,
+          3.2666298233454967
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.414985590778098,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 7,
+          "nonhit_episodes": 11,
+          "nonoverlap_ceiling": 135,
+          "rows": 694
+        },
+        "episode_rate_ci": [
+          0.18366496598639456,
+          0.6323117780228709
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 288,
+        "lift": 2.460457364947387,
+        "rows": 694
+      },
+      "eligible_rows": 5680,
+      "first_eligible_date": "2003-03-03",
+      "horizon": 42,
+      "last_eligible_date": "2026-07-27",
+      "permutation": {
+        "risk_off": {
+          "invalid_reps": 0,
+          "observed": 2.6351194618418,
+          "p_value": 0.0065986802639472104,
+          "valid_reps": 5000
+        },
+        "ungated_risk_off": {
+          "invalid_reps": 0,
+          "observed": 2.032326553785921,
+          "p_value": 0.0061987602479504095,
+          "valid_reps": 5000
+        }
+      },
+      "risk_off": {
+        "base_rate": 0.1686619718309859,
+        "block_ci": [
+          1.8170383702444428,
+          3.5852280285557896
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.4444444444444444,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 8,
+          "nonhit_episodes": 10,
+          "nonoverlap_ceiling": 135,
+          "rows": 468
+        },
+        "episode_rate_ci": [
+          0.2122887064614058,
+          0.6509902109107837
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 208,
+        "lift": 2.6351194618418,
+        "rows": 468
+      },
+      "stability": {
+        "emitted_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.07179087007413187,
+              "conditional_rate": 0.3163841807909605,
+              "eligible_rows": 2563,
+              "first_date": "2016-01-04",
+              "hits": 56,
+              "last_date": "2026-07-27",
+              "lift": 4.4070253009088685,
+              "rows": 177
+            },
+            "pre_2016": {
+              "base_rate": 0.24831568816169394,
+              "conditional_rate": 0.5223367697594502,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 152,
+              "last_date": "2015-12-31",
+              "lift": 2.103519006899491,
+              "rows": 291
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.1686619718309859,
+              "conditional_rate": 0.4444444444444444,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5680,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 208,
+              "last_date": "2026-07-27",
+              "lift": 2.6351194618418,
+              "rows": 468
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.1350210970464135,
+              "conditional_rate": 0.3081232492997199,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5214,
+              "excluded_rows": 466,
+              "first_date": "2003-03-03",
+              "hits": 110,
+              "last_date": "2026-07-27",
+              "lift": 2.2820378151260505,
+              "rows": 357
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.15277010859561937,
+              "conditional_rate": 0.43675417661097854,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5433,
+              "excluded_rows": 247,
+              "first_date": "2003-03-03",
+              "hits": 183,
+              "last_date": "2026-07-27",
+              "lift": 2.8588981223222243,
+              "rows": 419
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.16862088218872137,
+              "conditional_rate": 0.48091603053435117,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5373,
+              "excluded_rows": 307,
+              "first_date": "2003-03-03",
+              "hits": 189,
+              "last_date": "2026-07-27",
+              "lift": 2.8520550022749105,
+              "rows": 393
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.16772323854374208,
+              "conditional_rate": 0.4444444444444444,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5521,
+              "excluded_rows": 159,
+              "first_date": "2003-03-03",
+              "hits": 208,
+              "last_date": "2026-07-27",
+              "lift": 2.649868010559155,
+              "rows": 468
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.17054860442733397,
+              "conditional_rate": 0.4516971279373368,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5195,
+              "excluded_rows": 485,
+              "first_date": "2003-03-03",
+              "hits": 173,
+              "last_date": "2026-07-27",
+              "lift": 2.6484950108741137,
+              "rows": 383
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.23098591549295774,
+              "conditional_rate": 0.5286885245901639,
+              "eligible_rows": 2840,
+              "first_date": "2003-03-03",
+              "hits": 129,
+              "last_date": "2014-11-13",
+              "lift": 2.2888344662135145,
+              "rows": 244
+            },
+            "second": {
+              "base_rate": 0.10633802816901408,
+              "conditional_rate": 0.35267857142857145,
+              "eligible_rows": 2840,
+              "first_date": "2014-11-14",
+              "hits": 79,
+              "last_date": "2026-07-27",
+              "lift": 3.3165799432355727,
+              "rows": 224
+            }
+          }
+        },
+        "ungated_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.07179087007413187,
+              "conditional_rate": 0.18032786885245902,
+              "eligible_rows": 2563,
+              "first_date": "2016-01-04",
+              "hits": 66,
+              "last_date": "2026-07-27",
+              "lift": 2.511849607982894,
+              "rows": 366
+            },
+            "pre_2016": {
+              "base_rate": 0.24831568816169394,
+              "conditional_rate": 0.5176470588235295,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 176,
+              "last_date": "2015-12-31",
+              "lift": 2.0846329229366165,
+              "rows": 340
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.1686619718309859,
+              "conditional_rate": 0.34277620396600567,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5680,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 242,
+              "last_date": "2026-07-27",
+              "lift": 2.032326553785921,
+              "rows": 706
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.1350210970464135,
+              "conditional_rate": 0.21972318339100347,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5214,
+              "excluded_rows": 466,
+              "first_date": "2003-03-03",
+              "hits": 127,
+              "last_date": "2026-07-27",
+              "lift": 1.6273248269896197,
+              "rows": 578
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.15277010859561937,
+              "conditional_rate": 0.3302891933028919,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5433,
+              "excluded_rows": 247,
+              "first_date": "2003-03-03",
+              "hits": 217,
+              "last_date": "2026-07-27",
+              "lift": 2.1620014303790502,
+              "rows": 657
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.16862088218872137,
+              "conditional_rate": 0.353968253968254,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5373,
+              "excluded_rows": 307,
+              "first_date": "2003-03-03",
+              "hits": 223,
+              "last_date": "2026-07-27",
+              "lift": 2.0991958372753077,
+              "rows": 630
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.16772323854374208,
+              "conditional_rate": 0.34277620396600567,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5521,
+              "excluded_rows": 159,
+              "first_date": "2003-03-03",
+              "hits": 242,
+              "last_date": "2026-07-27",
+              "lift": 2.043701319758442,
+              "rows": 706
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.17054860442733397,
+              "conditional_rate": 0.39243027888446214,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5195,
+              "excluded_rows": 485,
+              "first_date": "2003-03-03",
+              "hits": 197,
+              "last_date": "2026-07-27",
+              "lift": 2.3009879219015588,
+              "rows": 502
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.23098591549295774,
+              "conditional_rate": 0.5221843003412969,
+              "eligible_rows": 2840,
+              "first_date": "2003-03-03",
+              "hits": 153,
+              "last_date": "2014-11-13",
+              "lift": 2.260675934404395,
+              "rows": 293
+            },
+            "second": {
+              "base_rate": 0.10633802816901408,
+              "conditional_rate": 0.21549636803874092,
+              "eligible_rows": 2840,
+              "first_date": "2014-11-14",
+              "hits": 89,
+              "last_date": "2026-07-27",
+              "lift": 2.026522136523259,
+              "rows": 413
+            }
+          }
+        }
+      },
+      "target": "10pct_42d",
+      "threshold": 0.1,
+      "ungated_elevated_plus": {
+        "base_rate": 0.1686619718309859,
+        "block_ci": [
+          1.3383354607522653,
+          2.4145186149113056
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.3150557620817844,
+        "effective_n": {
+          "effective_n_ceiling": 20,
+          "episodes": 20,
+          "hit_episodes": 8,
+          "nonhit_episodes": 12,
+          "nonoverlap_ceiling": 135,
+          "rows": 1076
+        },
+        "episode_rate_ci": [
+          0.13373668564795207,
+          0.545677572889903
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 339,
+        "lift": 1.8679715330109972,
+        "rows": 1076
+      },
+      "ungated_risk_off": {
+        "base_rate": 0.1686619718309859,
+        "block_ci": [
+          1.4278302221746464,
+          2.751020346840981
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.34277620396600567,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 9,
+          "nonhit_episodes": 9,
+          "nonoverlap_ceiling": 135,
+          "rows": 706
+        },
+        "episode_rate_ci": [
+          0.12763135041250542,
+          0.5593657833670185
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 242,
+        "lift": 2.032326553785921,
+        "rows": 706
+      }
+    },
+    "5pct_10d": {
+      "base_rate": 0.15143557422969187,
+      "baseline_comparison": {
+        "breadth_only": {
+          "average_precision": 0.2167662251132794,
+          "elevated_plus_lift": 1.6153186658899794,
+          "elevated_plus_rows": 1161,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.9777304533008824,
+          "risk_off_rows": 798,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.553190400831931,
+          "rows": 5712
+        },
+        "rates_only": {
+          "average_precision": 0.17783229419916866,
+          "elevated_plus_lift": 1.215089044070968,
+          "elevated_plus_rows": 1038,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.408589634832015,
+          "risk_off_rows": 586,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5362579320263652,
+          "rows": 5712
+        },
+        "trend_context": {
+          "average_precision": 0.15505505569825367,
+          "elevated_plus_lift": 1.0477470626984413,
+          "elevated_plus_rows": 2729,
+          "elevated_threshold": 0.5,
+          "risk_off_lift": 1.0477470626984413,
+          "risk_off_rows": 2729,
+          "risk_off_threshold": 0.5,
+          "roc_auc": 0.5134414827835823,
+          "rows": 5712
+        },
+        "ungated_composite": {
+          "average_precision": 0.20518930775138042,
+          "elevated_plus_lift": 1.4661021317329996,
+          "elevated_plus_rows": 1099,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.625469097376612,
+          "risk_off_rows": 715,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.6008652035524029,
+          "rows": 5712
+        }
+      },
+      "benchmark": "Shanghai Composite (000001.SS)",
+      "confirmatory": false,
+      "continuous_discrimination": {
+        "ap_over_base": 1.3549610703767456,
+        "average_precision": 0.20518930775138042,
+        "roc_auc": 0.6008652035524029
+      },
+      "elevated_plus": {
+        "base_rate": 0.15143557422969187,
+        "block_ci": [
+          1.2533932957022202,
+          2.3751361704665888
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.27475592747559274,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 10,
+          "nonhit_episodes": 8,
+          "nonoverlap_ceiling": 571,
+          "rows": 717
+        },
+        "episode_rate_ci": [
+          0.11584448347615958,
+          0.4487661812297734
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 197,
+        "lift": 1.8143420320700414,
+        "rows": 717
+      },
+      "eligible_rows": 5712,
+      "first_eligible_date": "2003-03-03",
+      "horizon": 10,
+      "last_eligible_date": "2026-09-09",
+      "permutation": {
+        "risk_off": {
+          "invalid_reps": 0,
+          "observed": 2.048874831860981,
+          "p_value": 0.0027994401119776045,
+          "valid_reps": 5000
+        },
+        "ungated_risk_off": {
+          "invalid_reps": 0,
+          "observed": 1.625469097376612,
+          "p_value": 0.013397320535892822,
+          "valid_reps": 5000
+        }
+      },
+      "risk_off": {
+        "base_rate": 0.15143557422969187,
+        "block_ci": [
+          1.4169696577019715,
+          2.7305291178677122
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.31027253668763105,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 9,
+          "nonhit_episodes": 9,
+          "nonoverlap_ceiling": 571,
+          "rows": 477
+        },
+        "episode_rate_ci": [
+          0.13216566669135743,
+          0.4832124192226565
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 148,
+        "lift": 2.048874831860981,
+        "rows": 477
+      },
+      "stability": {
+        "emitted_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.08246628131021194,
+              "conditional_rate": 0.20430107526881722,
+              "eligible_rows": 2595,
+              "first_date": "2016-01-04",
+              "hits": 38,
+              "last_date": "2026-09-09",
+              "lift": 2.477389207114863,
+              "rows": 186
+            },
+            "pre_2016": {
+              "base_rate": 0.2088546679499519,
+              "conditional_rate": 0.37800687285223367,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 110,
+              "last_date": "2015-12-31",
+              "lift": 1.8099038750851186,
+              "rows": 291
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.15143557422969187,
+              "conditional_rate": 0.31027253668763105,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5712,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 148,
+              "last_date": "2026-09-09",
+              "lift": 2.048874831860981,
+              "rows": 477
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.12580522925350512,
+              "conditional_rate": 0.1885245901639344,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5278,
+              "excluded_rows": 434,
+              "first_date": "2003-03-03",
+              "hits": 69,
+              "last_date": "2026-09-09",
+              "lift": 1.49854335374284,
+              "rows": 366
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.14189557940694925,
+              "conditional_rate": 0.3037383177570093,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5497,
+              "excluded_rows": 215,
+              "first_date": "2003-03-03",
+              "hits": 130,
+              "last_date": "2026-09-09",
+              "lift": 2.140576323987539,
+              "rows": 428
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.1498988412727607,
+              "conditional_rate": 0.3208955223880597,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5437,
+              "excluded_rows": 275,
+              "first_date": "2003-03-03",
+              "hits": 129,
+              "last_date": "2026-09-09",
+              "lift": 2.14074718432378,
+              "rows": 402
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.15111906893464638,
+              "conditional_rate": 0.31027253668763105,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5585,
+              "excluded_rows": 127,
+              "first_date": "2003-03-03",
+              "hits": 148,
+              "last_date": "2026-09-09",
+              "lift": 2.053166015877274,
+              "rows": 477
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.15497242821829246,
+              "conditional_rate": 0.336734693877551,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5259,
+              "excluded_rows": 453,
+              "first_date": "2003-03-03",
+              "hits": 132,
+              "last_date": "2026-09-09",
+              "lift": 2.1728684111681478,
+              "rows": 392
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.19782913165266106,
+              "conditional_rate": 0.38524590163934425,
+              "eligible_rows": 2856,
+              "first_date": "2003-03-03",
+              "hits": 94,
+              "last_date": "2014-12-05",
+              "lift": 1.9473668939503845,
+              "rows": 244
+            },
+            "second": {
+              "base_rate": 0.10504201680672269,
+              "conditional_rate": 0.2317596566523605,
+              "eligible_rows": 2856,
+              "first_date": "2014-12-08",
+              "hits": 54,
+              "last_date": "2026-09-09",
+              "lift": 2.206351931330472,
+              "rows": 233
+            }
+          }
+        },
+        "ungated_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.08246628131021194,
+              "conditional_rate": 0.136,
+              "eligible_rows": 2595,
+              "first_date": "2016-01-04",
+              "hits": 51,
+              "last_date": "2026-09-09",
+              "lift": 1.6491588785046731,
+              "rows": 375
+            },
+            "pre_2016": {
+              "base_rate": 0.2088546679499519,
+              "conditional_rate": 0.36764705882352944,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 125,
+              "last_date": "2015-12-31",
+              "lift": 1.760300894551369,
+              "rows": 340
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.15143557422969187,
+              "conditional_rate": 0.24615384615384617,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5712,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 176,
+              "last_date": "2026-09-09",
+              "lift": 1.625469097376612,
+              "rows": 715
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.12580522925350512,
+              "conditional_rate": 0.1567291311754685,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5278,
+              "excluded_rows": 434,
+              "first_date": "2003-03-03",
+              "hits": 92,
+              "last_date": "2026-09-09",
+              "lift": 1.2458077625664499,
+              "rows": 587
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.14189557940694925,
+              "conditional_rate": 0.23723723723723725,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5497,
+              "excluded_rows": 215,
+              "first_date": "2003-03-03",
+              "hits": 158,
+              "last_date": "2026-09-09",
+              "lift": 1.671914221914222,
+              "rows": 666
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.1498988412727607,
+              "conditional_rate": 0.24569640062597808,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5437,
+              "excluded_rows": 275,
+              "first_date": "2003-03-03",
+              "hits": 157,
+              "last_date": "2026-09-09",
+              "lift": 1.6390813867526908,
+              "rows": 639
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.15111906893464638,
+              "conditional_rate": 0.24615384615384617,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5585,
+              "excluded_rows": 127,
+              "first_date": "2003-03-03",
+              "hits": 176,
+              "last_date": "2026-09-09",
+              "lift": 1.6288734961720743,
+              "rows": 715
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.15497242821829246,
+              "conditional_rate": 0.2827324478178368,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5259,
+              "excluded_rows": 453,
+              "first_date": "2003-03-03",
+              "hits": 149,
+              "last_date": "2026-09-09",
+              "lift": 1.8244048381276117,
+              "rows": 527
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.19782913165266106,
+              "conditional_rate": 0.3720136518771331,
+              "eligible_rows": 2856,
+              "first_date": "2003-03-03",
+              "hits": 109,
+              "last_date": "2014-12-05",
+              "lift": 1.8804796278957383,
+              "rows": 293
+            },
+            "second": {
+              "base_rate": 0.10504201680672269,
+              "conditional_rate": 0.15876777251184834,
+              "eligible_rows": 2856,
+              "first_date": "2014-12-08",
+              "hits": 67,
+              "last_date": "2026-09-09",
+              "lift": 1.5114691943127962,
+              "rows": 422
+            }
+          }
+        }
+      },
+      "target": "5pct_10d",
+      "threshold": 0.05,
+      "ungated_elevated_plus": {
+        "base_rate": 0.15143557422969187,
+        "block_ci": [
+          1.080276867527182,
+          1.8817087559419516
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.22202001819836215,
+        "effective_n": {
+          "effective_n_ceiling": 20,
+          "episodes": 20,
+          "hit_episodes": 12,
+          "nonhit_episodes": 8,
+          "nonoverlap_ceiling": 571,
+          "rows": 1099
+        },
+        "episode_rate_ci": [
+          0.10810770009139575,
+          0.3776341294003353
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 244,
+        "lift": 1.4661021317329996,
+        "rows": 1099
+      },
+      "ungated_risk_off": {
+        "base_rate": 0.15143557422969187,
+        "block_ci": [
+          1.1395708891383556,
+          2.128819462444395
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.24615384615384617,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 11,
+          "nonhit_episodes": 7,
+          "nonoverlap_ceiling": 571,
+          "rows": 715
+        },
+        "episode_rate_ci": [
+          0.11467053081147043,
+          0.4037376308864645
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 176,
+        "lift": 1.625469097376612,
+        "rows": 715
+      }
+    },
+    "5pct_21d": {
+      "base_rate": 0.28924750043851954,
+      "baseline_comparison": {
+        "breadth_only": {
+          "average_precision": 0.3629544768929609,
+          "elevated_plus_lift": 1.4225130129371337,
+          "elevated_plus_rows": 1152,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.5726573863403202,
+          "risk_off_rows": 798,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5644940515565687,
+          "rows": 5701
+        },
+        "rates_only": {
+          "average_precision": 0.3219444357796982,
+          "elevated_plus_lift": 1.1057860722502457,
+          "elevated_plus_rows": 1038,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.2448448433945902,
+          "risk_off_rows": 586,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5217245547123298,
+          "rows": 5701
+        },
+        "trend_context": {
+          "average_precision": 0.3023768762829403,
+          "elevated_plus_lift": 1.0875445282912783,
+          "elevated_plus_rows": 2718,
+          "elevated_threshold": 0.5,
+          "risk_off_lift": 1.0875445282912783,
+          "risk_off_rows": 2718,
+          "risk_off_threshold": 0.5,
+          "roc_auc": 0.529361553294138,
+          "rows": 5701
+        },
+        "ungated_composite": {
+          "average_precision": 0.35693388636147183,
+          "elevated_plus_lift": 1.3423742216950223,
+          "elevated_plus_rows": 1092,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.413888053705412,
+          "risk_off_rows": 714,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5821836591263244,
+          "rows": 5701
+        }
+      },
+      "benchmark": "Shanghai Composite (000001.SS)",
+      "confirmatory": true,
+      "continuous_discrimination": {
+        "ap_over_base": 1.2340085422357496,
+        "average_precision": 0.35693388636147183,
+        "roc_auc": 0.5821836591263244
+      },
+      "elevated_plus": {
+        "base_rate": 0.28924750043851954,
+        "block_ci": [
+          1.2122362181170998,
+          1.9180421161903032
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.45211267605633804,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 12,
+          "nonhit_episodes": 6,
+          "nonoverlap_ceiling": 271,
+          "rows": 710
+        },
+        "episode_rate_ci": [
+          0.27645564856814125,
+          0.610462403318781
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 321,
+        "lift": 1.5630651098830706,
+        "rows": 710
+      },
+      "eligible_rows": 5701,
+      "first_eligible_date": "2003-03-03",
+      "horizon": 21,
+      "last_eligible_date": "2026-08-25",
+      "permutation": {
+        "risk_off": {
+          "invalid_reps": 0,
+          "observed": 1.6342028017999195,
+          "p_value": 0.009398120375924815,
+          "valid_reps": 5000
+        },
+        "ungated_risk_off": {
+          "invalid_reps": 0,
+          "observed": 1.413888053705412,
+          "p_value": 0.013197360527894421,
+          "valid_reps": 5000
+        }
+      },
+      "risk_off": {
+        "base_rate": 0.28924750043851954,
+        "block_ci": [
+          1.2429292405614034,
+          2.053291700172763
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.4726890756302521,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 10,
+          "nonhit_episodes": 8,
+          "nonoverlap_ceiling": 271,
+          "rows": 476
+        },
+        "episode_rate_ci": [
+          0.27011448054107995,
+          0.6302550007733154
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 225,
+        "lift": 1.6342028017999195,
+        "rows": 476
+      },
+      "stability": {
+        "emitted_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.19659442724458204,
+              "conditional_rate": 0.41081081081081083,
+              "eligible_rows": 2584,
+              "first_date": "2016-01-04",
+              "hits": 76,
+              "last_date": "2026-08-25",
+              "lift": 2.089636092785699,
+              "rows": 185
+            },
+            "pre_2016": {
+              "base_rate": 0.3660571061918511,
+              "conditional_rate": 0.5120274914089347,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 149,
+              "last_date": "2015-12-31",
+              "lift": 1.3987639708340487,
+              "rows": 291
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.28924750043851954,
+              "conditional_rate": 0.4726890756302521,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5701,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 225,
+              "last_date": "2026-08-25",
+              "lift": 1.6342028017999195,
+              "rows": 476
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.265220700152207,
+              "conditional_rate": 0.3643835616438356,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5256,
+              "excluded_rows": 445,
+              "first_date": "2003-03-03",
+              "hits": 133,
+              "last_date": "2026-08-25",
+              "lift": 1.3738880918220946,
+              "rows": 365
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.27872146118721464,
+              "conditional_rate": 0.46604215456674475,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5475,
+              "excluded_rows": 226,
+              "first_date": "2003-03-03",
+              "hits": 199,
+              "last_date": "2026-08-25",
+              "lift": 1.6720712950543428,
+              "rows": 427
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.2869806094182826,
+              "conditional_rate": 0.49875311720698257,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5415,
+              "excluded_rows": 286,
+              "first_date": "2003-03-03",
+              "hits": 200,
+              "last_date": "2026-08-25",
+              "lift": 1.7379331593795433,
+              "rows": 401
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.2890526694229732,
+              "conditional_rate": 0.4726890756302521,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5563,
+              "excluded_rows": 138,
+              "first_date": "2003-03-03",
+              "hits": 225,
+              "last_date": "2026-08-25",
+              "lift": 1.6353043082904803,
+              "rows": 476
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.2921519954172236,
+              "conditional_rate": 0.45268542199488493,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5237,
+              "excluded_rows": 464,
+              "first_date": "2003-03-03",
+              "hits": 177,
+              "last_date": "2026-08-25",
+              "lift": 1.549485983651773,
+              "rows": 391
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.35789473684210527,
+              "conditional_rate": 0.5122950819672131,
+              "eligible_rows": 2850,
+              "first_date": "2003-03-03",
+              "hits": 125,
+              "last_date": "2014-11-27",
+              "lift": 1.4314127290260366,
+              "rows": 244
+            },
+            "second": {
+              "base_rate": 0.22062434233602246,
+              "conditional_rate": 0.43103448275862066,
+              "eligible_rows": 2851,
+              "first_date": "2014-11-28",
+              "hits": 100,
+              "last_date": "2026-08-25",
+              "lift": 1.953703196096705,
+              "rows": 232
+            }
+          }
+        },
+        "ungated_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.19659442724458204,
+              "conditional_rate": 0.30213903743315507,
+              "eligible_rows": 2584,
+              "first_date": "2016-01-04",
+              "hits": 113,
+              "last_date": "2026-08-25",
+              "lift": 1.5368647100930566,
+              "rows": 374
+            },
+            "pre_2016": {
+              "base_rate": 0.3660571061918511,
+              "conditional_rate": 0.5264705882352941,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 179,
+              "last_date": "2015-12-31",
+              "lift": 1.4382198278084242,
+              "rows": 340
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.28924750043851954,
+              "conditional_rate": 0.40896358543417366,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5701,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 292,
+              "last_date": "2026-08-25",
+              "lift": 1.413888053705412,
+              "rows": 714
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.265220700152207,
+              "conditional_rate": 0.32081911262798635,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5256,
+              "excluded_rows": 445,
+              "first_date": "2003-03-03",
+              "hits": 188,
+              "last_date": "2026-08-25",
+              "lift": 1.2096307431654922,
+              "rows": 586
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.27872146118721464,
+              "conditional_rate": 0.4,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5475,
+              "excluded_rows": 226,
+              "first_date": "2003-03-03",
+              "hits": 266,
+              "last_date": "2026-08-25",
+              "lift": 1.4351245085190039,
+              "rows": 665
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.2869806094182826,
+              "conditional_rate": 0.4169278996865204,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5415,
+              "excluded_rows": 286,
+              "first_date": "2003-03-03",
+              "hits": 266,
+              "last_date": "2026-08-25",
+              "lift": 1.4528086079810216,
+              "rows": 638
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.2890526694229732,
+              "conditional_rate": 0.40896358543417366,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5563,
+              "excluded_rows": 138,
+              "first_date": "2003-03-03",
+              "hits": 292,
+              "last_date": "2026-08-25",
+              "lift": 1.4148410608024304,
+              "rows": 714
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.2921519954172236,
+              "conditional_rate": 0.42857142857142855,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5237,
+              "excluded_rows": 464,
+              "first_date": "2003-03-03",
+              "hits": 222,
+              "last_date": "2026-08-25",
+              "lift": 1.4669467787114845,
+              "rows": 518
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.35789473684210527,
+              "conditional_rate": 0.5290102389078498,
+              "eligible_rows": 2850,
+              "first_date": "2003-03-03",
+              "hits": 155,
+              "last_date": "2014-11-27",
+              "lift": 1.4781168440072274,
+              "rows": 293
+            },
+            "second": {
+              "base_rate": 0.22062434233602246,
+              "conditional_rate": 0.3254156769596199,
+              "eligible_rows": 2851,
+              "first_date": "2014-11-28",
+              "hits": 137,
+              "last_date": "2026-08-25",
+              "lift": 1.474976303675479,
+              "rows": 421
+            }
+          }
+        }
+      },
+      "target": "5pct_21d",
+      "threshold": 0.05,
+      "ungated_elevated_plus": {
+        "base_rate": 0.28924750043851954,
+        "block_ci": [
+          1.0877593289846657,
+          1.6077784785196196
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.3882783882783883,
+        "effective_n": {
+          "effective_n_ceiling": 20,
+          "episodes": 20,
+          "hit_episodes": 15,
+          "nonhit_episodes": 5,
+          "nonoverlap_ceiling": 271,
+          "rows": 1092
+        },
+        "episode_rate_ci": [
+          0.2590538758532128,
+          0.54954846933859
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 424,
+        "lift": 1.3423742216950223,
+        "rows": 1092
+      },
+      "ungated_risk_off": {
+        "base_rate": 0.28924750043851954,
+        "block_ci": [
+          1.1016956952096246,
+          1.7569295583597742
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.40896358543417366,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 13,
+          "nonhit_episodes": 5,
+          "nonoverlap_ceiling": 271,
+          "rows": 714
+        },
+        "episode_rate_ci": [
+          0.25058726406244136,
+          0.5680984918991814
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 292,
+        "lift": 1.413888053705412,
+        "rows": 714
+      }
+    },
+    "5pct_5d": {
+      "base_rate": 0.0710162672730453,
+      "baseline_comparison": {
+        "breadth_only": {
+          "average_precision": 0.11954362871475814,
+          "elevated_plus_lift": 1.8839449425005703,
+          "elevated_plus_rows": 1166,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 2.3176172868321805,
+          "risk_off_rows": 802,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5677054686202908,
+          "rows": 5717
+        },
+        "rates_only": {
+          "average_precision": 0.07659879940879766,
+          "elevated_plus_lift": 1.1475636308677601,
+          "elevated_plus_rows": 1043,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.2389620998057898,
+          "risk_off_rows": 591,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5235390717100766,
+          "rows": 5717
+        },
+        "trend_context": {
+          "average_precision": 0.07244327844205894,
+          "elevated_plus_lift": 1.0403872418477773,
+          "elevated_plus_rows": 2734,
+          "elevated_threshold": 0.5,
+          "risk_off_lift": 1.0403872418477773,
+          "risk_off_rows": 2734,
+          "risk_off_threshold": 0.5,
+          "roc_auc": 0.5103952851828114,
+          "rows": 5717
+        },
+        "ungated_composite": {
+          "average_precision": 0.09970987959231449,
+          "elevated_plus_lift": 1.5943479153280504,
+          "elevated_plus_rows": 1104,
+          "elevated_threshold": 0.83,
+          "risk_off_lift": 1.6232587575259991,
+          "risk_off_rows": 720,
+          "risk_off_threshold": 0.91,
+          "roc_auc": 0.5968289626604509,
+          "rows": 5717
+        }
+      },
+      "benchmark": "Shanghai Composite (000001.SS)",
+      "confirmatory": false,
+      "continuous_discrimination": {
+        "ap_over_base": 1.404042811894734,
+        "average_precision": 0.09970987959231449,
+        "roc_auc": 0.5968289626604509
+      },
+      "elevated_plus": {
+        "base_rate": 0.0710162672730453,
+        "block_ci": [
+          1.2529082541901737,
+          2.8662937295635467
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.14681440443213298,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 9,
+          "nonhit_episodes": 9,
+          "nonoverlap_ceiling": 1143,
+          "rows": 722
+        },
+        "episode_rate_ci": [
+          0.03563754901186811,
+          0.2665512613399092
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 106,
+        "lift": 2.067334852557892,
+        "rows": 722
+      },
+      "eligible_rows": 5717,
+      "first_eligible_date": "2003-03-03",
+      "horizon": 5,
+      "last_eligible_date": "2026-09-16",
+      "permutation": {
+        "risk_off": {
+          "invalid_reps": 0,
+          "observed": 2.1618563865666456,
+          "p_value": 0.007398520295940812,
+          "valid_reps": 5000
+        },
+        "ungated_risk_off": {
+          "invalid_reps": 0,
+          "observed": 1.6232587575259991,
+          "p_value": 0.036192761447710456,
+          "valid_reps": 5000
+        }
+      },
+      "risk_off": {
+        "base_rate": 0.0710162672730453,
+        "block_ci": [
+          1.387841420346738,
+          2.9851099759578705
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.15352697095435686,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 7,
+          "nonhit_episodes": 11,
+          "nonoverlap_ceiling": 1143,
+          "rows": 482
+        },
+        "episode_rate_ci": [
+          0.0383105203123629,
+          0.2644854834096108
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 74,
+        "lift": 2.1618563865666456,
+        "rows": 482
+      },
+      "stability": {
+        "emitted_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.03423076923076923,
+              "conditional_rate": 0.07329842931937172,
+              "eligible_rows": 2600,
+              "first_date": "2016-01-04",
+              "hits": 14,
+              "last_date": "2026-09-16",
+              "lift": 2.1413024295546794,
+              "rows": 191
+            },
+            "pre_2016": {
+              "base_rate": 0.1017003529034328,
+              "conditional_rate": 0.20618556701030927,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 60,
+              "last_date": "2015-12-31",
+              "lift": 2.0273830043253436,
+              "rows": 291
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.0710162672730453,
+              "conditional_rate": 0.15352697095435686,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5717,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 74,
+              "last_date": "2026-09-16",
+              "lift": 2.1618563865666456,
+              "rows": 482
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.05219364599092285,
+              "conditional_rate": 0.07547169811320754,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5288,
+              "excluded_rows": 429,
+              "first_date": "2003-03-03",
+              "hits": 28,
+              "last_date": "2026-09-16",
+              "lift": 1.4459939841400054,
+              "rows": 371
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.06337388777919012,
+              "conditional_rate": 0.14549653579676675,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5507,
+              "excluded_rows": 210,
+              "first_date": "2003-03-03",
+              "hits": 63,
+              "last_date": "2026-09-16",
+              "lift": 2.2958436178590103,
+              "rows": 433
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.07159904534606205,
+              "conditional_rate": 0.16461916461916462,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5447,
+              "excluded_rows": 270,
+              "first_date": "2003-03-03",
+              "hits": 67,
+              "last_date": "2026-09-16",
+              "lift": 2.299180999180999,
+              "rows": 407
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.07059874888293119,
+              "conditional_rate": 0.15352697095435686,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5595,
+              "excluded_rows": 122,
+              "first_date": "2003-03-03",
+              "hits": 74,
+              "last_date": "2026-09-16",
+              "lift": 2.174641525290194,
+              "rows": 482
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.07363826152970203,
+              "conditional_rate": 0.17380352644836272,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5269,
+              "excluded_rows": 448,
+              "first_date": "2003-03-03",
+              "hits": 69,
+              "last_date": "2026-09-16",
+              "lift": 2.3602339712794413,
+              "rows": 397
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.09202239328201539,
+              "conditional_rate": 0.20491803278688525,
+              "eligible_rows": 2858,
+              "first_date": "2003-03-03",
+              "hits": 50,
+              "last_date": "2014-12-09",
+              "lift": 2.2268279000187,
+              "rows": 244
+            },
+            "second": {
+              "base_rate": 0.050017488632388946,
+              "conditional_rate": 0.10084033613445378,
+              "eligible_rows": 2859,
+              "first_date": "2014-12-10",
+              "hits": 24,
+              "last_date": "2026-09-16",
+              "lift": 2.0161015455133104,
+              "rows": 238
+            }
+          }
+        },
+        "ungated_risk_off": {
+          "era": {
+            "post_2016": {
+              "base_rate": 0.03423076923076923,
+              "conditional_rate": 0.04473684210526316,
+              "eligible_rows": 2600,
+              "first_date": "2016-01-04",
+              "hits": 17,
+              "last_date": "2026-09-16",
+              "lift": 1.3069189828503844,
+              "rows": 380
+            },
+            "pre_2016": {
+              "base_rate": 0.1017003529034328,
+              "conditional_rate": 0.19411764705882353,
+              "eligible_rows": 3117,
+              "first_date": "2003-03-03",
+              "hits": 66,
+              "last_date": "2015-12-31",
+              "lift": 1.9087214696604193,
+              "rows": 340
+            }
+          },
+          "loco": [
+            {
+              "applicable": false,
+              "base_rate": 0.0710162672730453,
+              "conditional_rate": 0.11527777777777778,
+              "crisis": "asian_russia_ltcm",
+              "crisis_end": "1999-02-28",
+              "crisis_start": "1997-07-01",
+              "eligible_rows": 5717,
+              "excluded_rows": 0,
+              "first_date": "2003-03-03",
+              "hits": 83,
+              "last_date": "2026-09-16",
+              "lift": 1.6232587575259991,
+              "rows": 720
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.05219364599092285,
+              "conditional_rate": 0.05574324324324324,
+              "crisis": "global_financial_crisis",
+              "crisis_end": "2009-06-30",
+              "crisis_start": "2007-10-01",
+              "eligible_rows": 5288,
+              "excluded_rows": 429,
+              "first_date": "2003-03-03",
+              "hits": 33,
+              "last_date": "2026-09-16",
+              "lift": 1.0680082256169212,
+              "rows": 592
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.06337388777919012,
+              "conditional_rate": 0.10730253353204174,
+              "crisis": "china_equity_devaluation",
+              "crisis_end": "2016-03-31",
+              "crisis_start": "2015-06-01",
+              "eligible_rows": 5507,
+              "excluded_rows": 210,
+              "first_date": "2003-03-03",
+              "hits": 72,
+              "last_date": "2026-09-16",
+              "lift": 1.6931663385700684,
+              "rows": 671
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.07159904534606205,
+              "conditional_rate": 0.11801242236024845,
+              "crisis": "us_china_trade_war",
+              "crisis_end": "2019-01-31",
+              "crisis_start": "2018-01-01",
+              "eligible_rows": 5447,
+              "excluded_rows": 270,
+              "first_date": "2003-03-03",
+              "hits": 76,
+              "last_date": "2026-09-16",
+              "lift": 1.64824016563147,
+              "rows": 644
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.07059874888293119,
+              "conditional_rate": 0.11527777777777778,
+              "crisis": "covid_shock",
+              "crisis_end": "2020-06-30",
+              "crisis_start": "2020-01-01",
+              "eligible_rows": 5595,
+              "excluded_rows": 122,
+              "first_date": "2003-03-03",
+              "hits": 83,
+              "last_date": "2026-09-16",
+              "lift": 1.6328586497890296,
+              "rows": 720
+            },
+            {
+              "applicable": true,
+              "base_rate": 0.07363826152970203,
+              "conditional_rate": 0.14152700186219738,
+              "crisis": "china_property_regulatory_zero_covid",
+              "crisis_end": "2022-11-30",
+              "crisis_start": "2021-02-01",
+              "eligible_rows": 5269,
+              "excluded_rows": 448,
+              "first_date": "2003-03-03",
+              "hits": 76,
+              "last_date": "2026-09-16",
+              "lift": 1.9219220948760773,
+              "rows": 537
+            }
+          ],
+          "split_half": {
+            "first": {
+              "base_rate": 0.09202239328201539,
+              "conditional_rate": 0.19112627986348124,
+              "eligible_rows": 2858,
+              "first_date": "2003-03-03",
+              "hits": 56,
+              "last_date": "2014-12-09",
+              "lift": 2.076954022242697,
+              "rows": 293
+            },
+            "second": {
+              "base_rate": 0.050017488632388946,
+              "conditional_rate": 0.06323185011709602,
+              "eligible_rows": 2859,
+              "first_date": "2014-12-10",
+              "hits": 27,
+              "last_date": "2026-09-16",
+              "lift": 1.2641948215718708,
+              "rows": 427
+            }
+          }
+        }
+      },
+      "target": "5pct_5d",
+      "threshold": 0.05,
+      "ungated_elevated_plus": {
+        "base_rate": 0.0710162672730453,
+        "block_ci": [
+          1.0712825504613885,
+          2.136152412281922
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.11322463768115942,
+        "effective_n": {
+          "effective_n_ceiling": 20,
+          "episodes": 20,
+          "hit_episodes": 11,
+          "nonhit_episodes": 9,
+          "nonoverlap_ceiling": 1143,
+          "rows": 1104
+        },
+        "episode_rate_ci": [
+          0.0320107990513849,
+          0.22294205624128935
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 125,
+        "lift": 1.5943479153280504,
+        "rows": 1104
+      },
+      "ungated_risk_off": {
+        "base_rate": 0.0710162672730453,
+        "block_ci": [
+          1.0493713387477013,
+          2.2587449148734713
+        ],
+        "block_invalid_reps": 0,
+        "block_valid_reps": 5000,
+        "conditional_rate": 0.11527777777777778,
+        "effective_n": {
+          "effective_n_ceiling": 18,
+          "episodes": 18,
+          "hit_episodes": 9,
+          "nonhit_episodes": 9,
+          "nonoverlap_ceiling": 1143,
+          "rows": 720
+        },
+        "episode_rate_ci": [
+          0.03303194947524844,
+          0.2161196911196911
+        ],
+        "episode_valid_reps": 5000,
+        "hits": 83,
+        "lift": 1.6232587575259991,
+        "rows": 720
+      }
+    }
+  },
+  "what_must_not_be_redone": [
+    "Preregistration commit db5590accaa03f78396ca91b6874f04b9bcf4cf3 is immutable and must not be rewritten after outcome inspection.",
+    "Do not merge reconstructed historical evidence with the issued forward ledger.",
+    "Do not reinterpret the 98th-percentile intensity as a 98% drawdown probability.",
+    "Do not change production bands, probabilities, gate logic, can_force, UI, Market State policy, or consumers in this research PR.",
+    "Do not silently substitute FXI or label 510300.SS as the exact CSI300 cash index."
+  ]
+}
