@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-26",
+  "date": "2026-09-27",
   "regime": "mixed / no clear trend",
   "breadth": 0.15,
   "favored": [
@@ -9,7 +9,7 @@
     "equity_intl"
   ],
   "correlation": "diversified",
-  "asof": "2026-09-26",
+  "asof": "2026-09-27",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,

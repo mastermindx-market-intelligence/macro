@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
-  "as_of": "2026-09-26",
-  "generated_utc": "2026-09-26T20:08:56.651601+00:00",
+  "as_of": "2026-09-27",
+  "generated_utc": "2026-09-27T05:01:11.757609+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "Convergence is concentrated in AI infrastructure, semiconductors, and cybersecurity, but several signals mix fundamental activity with crowded sentiment. With no completed track-record observations, conviction remains modest; NVDA and AMAT show the cleanest non-extended alignment, while PLTR is too extended to chase.",
   "brain_present": true,
@@ -20,7 +20,7 @@
     "open": 26,
     "note": "No theses scored yet \u2014 the track record begins once the first check-by dates pass. Keep conviction modest until it does."
   },
-  "n_signals": 91,
+  "n_signals": 93,
   "n_broken": 33,
   "signals": [
     {
@@ -212,13 +212,12 @@
       "action": "WATCH",
       "direction": "long",
       "source": "brain",
-      "weighted_score": 1.9,
-      "convergence_score": 6,
+      "weighted_score": 2.05,
+      "convergence_score": 5,
       "channels": [
         "affiliation",
         "analyst_upgrade_cluster",
-        "github_momentum",
-        "gov_contract",
+        "gov_contract_accel",
         "retail_buzz",
         "stocktwits_bull"
       ],
@@ -418,6 +417,48 @@
       "clamped": null
     },
     {
+      "ticker": "GOOGL",
+      "signal_score": 48,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.45,
+      "convergence_score": 4,
+      "channels": [
+        "affiliation",
+        "app_demand",
+        "cnbc_pick",
+        "github_momentum"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -8.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -14.5,
+      "ret_20d": 1.0,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Nancy Pelosi",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Paul Pelosi",
+          "rel": "AFFILIATES_WITH",
+          "kind": "influencer"
+        }
+      ],
+      "n_affiliated_actors": 2,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "AMZN",
       "signal_score": 48,
       "conviction": "medium",
@@ -492,6 +533,42 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "COIN",
+      "signal_score": 45,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.15,
+      "convergence_score": 3,
+      "channels": [
+        "affiliation",
+        "stocktwits_bull",
+        "trump"
+      ],
+      "trump_linked": true,
+      "rs_vs_spy_60d": 18.8,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -49.6,
+      "ret_20d": 2.3,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Cathie Wood",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -671,41 +748,6 @@
       "clamped": null
     },
     {
-      "ticker": "COIN",
-      "signal_score": 40,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.0,
-      "convergence_score": 2,
-      "channels": [
-        "affiliation",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 18.8,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -49.6,
-      "ret_20d": 2.3,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Cathie Wood",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "QCOM",
       "signal_score": 40,
       "conviction": "medium",
@@ -736,47 +778,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "GOOGL",
-      "signal_score": 38,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.15,
-      "convergence_score": 3,
-      "channels": [
-        "affiliation",
-        "app_demand",
-        "cnbc_pick"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -8.5,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -14.5,
-      "ret_20d": 1.0,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Nancy Pelosi",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Paul Pelosi",
-          "rel": "AFFILIATES_WITH",
-          "kind": "influencer"
-        }
-      ],
-      "n_affiliated_actors": 2,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1190,6 +1191,36 @@
   ],
   "broken_signals": [
     {
+      "ticker": "BAH",
+      "signal_score": 57,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.6,
+      "convergence_score": 3,
+      "channels": [
+        "gov_contract_accel",
+        "special_situation",
+        "trump"
+      ],
+      "trump_linked": true,
+      "rs_vs_spy_60d": 18.8,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -27.8,
+      "ret_20d": -2.6,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "BA",
       "signal_score": 47,
       "conviction": "high",
@@ -1221,36 +1252,6 @@
         }
       ],
       "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "BAH",
-      "signal_score": 43,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.15,
-      "convergence_score": 3,
-      "channels": [
-        "gov_contract",
-        "special_situation",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 18.8,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -27.8,
-      "ret_20d": -2.6,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
