@@ -444,6 +444,7 @@
     slice_label:   ['Slice', '切片'],
     no_role:       ['No role recorded', '未记录角色'],
     not_mapped:    ['Not mapped', '未映射'],
+    not_stated:    ['Not stated', '未说明'],
     private_drawer_notice: ['Value and excerpt withheld — source rights held.', '数值与摘录已隐去 — 来源权利受限。']
   };
 
@@ -486,6 +487,27 @@
     return null;
   }
   function asArray(value) { return Array.isArray(value) ? value : []; }
+
+  // T1 source_record.limitations: five required strings, rendered in schema order.
+  // The labels are the page's own words (no lang); each value is owner prose
+  // (lang="en", item 10a) or, when absent, the page's "Not stated" word.
+  var LIMITATION_FIELDS = [
+    ['establishes',        'Establishes',        '能说明'],
+    ['does_not_establish', 'Does not establish', '不能说明'],
+    ['coverage',           'Coverage',           '覆盖范围'],
+    ['source_dependence',  'Depends on',         '依赖来源'],
+    ['expiry_trigger',     'Stops holding when', '失效条件']
+  ];
+  function limitationsHtml(lim) {
+    lim = lim && typeof lim === 'object' && !Array.isArray(lim) ? lim : {};
+    return '<ul class="fi-limitations">' + LIMITATION_FIELDS.map(function (f) {
+      var v = typeof lim[f[0]] === 'string' ? lim[f[0]].trim() : '';
+      return '<li data-limitation="' + f[0] + '"><span class="fi-limitation-label">' + esc(isZh() ? f[2] : f[1]) + '</span>' +
+        (v ? '<span class="fi-limitation-text" lang="en">' + esc(v) + '</span>'
+           : '<span class="fi-limitation-text fi-limitation-missing">' + esc(isZh() ? SURFACE.not_stated[1] : SURFACE.not_stated[0]) + '</span>') +
+        '</li>';
+    }).join('') + '</ul>';
+  }
 
   // ──────────────────────────────────────────────────────────────────────────
   // auth + fetchJson (verbatim biocatalyst.js pattern, raised to closure)
@@ -556,7 +578,8 @@
     else digits = 0;
     var formatted = Number(value).toFixed(digits);
     var pieces = [formatted, unit];
-    if (metric.currency) pieces.push(metric.currency);
+    // A unit that already is the currency is not repeated ("6.40 USD USD").
+    if (metric.currency && metric.currency !== unit) pieces.push(metric.currency);
     var body = pieces.join(' ');
     if (metric.period_start && metric.period_end) {
       body += ' (' + String(metric.period_start).slice(0, 10) + ' – ' + String(metric.period_end).slice(0, 10) + ')';
@@ -826,8 +849,11 @@
       var state$ = node.state || 'MISSING';
       var comparability = node.comparability_state;
       var evidence = asArray(node.evidence_refs).join(' ');
-      var planeWordEn = labelFor('plane_word', s.name)[0] || s.name;
-      var planeWordZh = labelFor('plane_word', s.name)[1] || planeWordEn;
+      // labelRow is the [en, zh] pair; labelFor would already be one string, and
+      // indexing that named the four buttons "O"/"E"/"V"/"P".
+      var planeRow = labelRow('plane_word', s.name) || [];
+      var planeWordEn = planeRow[0] || s.name;
+      var planeWordZh = planeRow[1] || planeWordEn;
       var rowHtml = '';
       rowHtml += '<li class="fi-rerating-step fi-node-' + s.name + '" data-active="' + (idx === activeStepIdx() ? 'true' : 'false') + '" data-state-marker="' + esc(state$) + '">';
       rowHtml += '<span class="fi-step-dot" aria-hidden="true"></span>';
@@ -1020,7 +1046,8 @@
           '</details>';
       }
       return '<div role="tabpanel" id="panel-' + esc(v.view_id) + '" class="fi-view-panel" data-view="' + esc(v.view_id) + '" aria-labelledby="tab-' + esc(v.view_id) + '"' + hidden + '>' +
-        '<svg class="fi-system-svg" role="img"' + ariaPair(v.name_en || v.view_id, v.name_zh || '') + '><title>' + esc(v.name_en || v.view_id) + '</title></svg>' +
+        // Seat T11 r3: no <svg> until T12 draws nodes into it — an SVG holding only
+        // <title> painted an empty 280px panel; the lists below carry the whole view.
         '<ul class="fi-slice-list">' + nodeHtml + '</ul>' +
         nodesDisclosure +
         '<details class="fi-system-edges" open><summary><span class="l-en">Edge list</span><span class="l-zh">边的步骤视图</span></summary>' +
@@ -1101,14 +1128,14 @@
           var incumbentCount = asArray(s.basket_state && s.basket_state.incumbent_basket_ids).length;
           return '<li class="fi-slice fi-panel2" data-state-slice="' + esc(ss) + '" data-state-marker="' + esc(ss) + '" data-basket-state="' + esc(bs) + '" data-slice-id="' + esc(s.slice_id) + '">' +
             '<span class="fi-slice-name">' + esc(isZh() ? (s.name_zh || s.name_en) : (s.name_en || s.name_zh)) + '</span>' +
-            '<div style="display:flex;gap:4px;flex-wrap:wrap">' +
+            '<div class="fi-slice-chips">' +
             chipHtml(labelFor('slice_state', ss), { classes: 'fi-slice-chip', stateSlice: ss, stateMarker: ss }) +
             chipHtml(labelFor('membership', bs), { classes: 'fi-membership-chip', stateMembership: bs, stateMarker: bs }) +
             chipHtml(labelFor('posture', posture), { classes: 'fi-posture-chip', statePosture: posture, stateMarker: posture }) +
             chipHtml(labelFor('price_basis_state', pbs), { classes: 'fi-price-basis-chip', stateBasis: pbs, stateMarker: pbs }) +
             chipHtml(labelFor('weighting_family', wf || ''), { classes: 'fi-weighting-chip', stateWeighting: wf || '', stateMarker: wf || '' }) +
             '</div>' +
-            '<span class="fi-slice-open">' + esc(isZh() ? (incumbentCount + ' 个参考篮子') : (incumbentCount + ' reference baskets')) + '</span>' +
+            '<span class="fi-slice-baskets">' + esc(isZh() ? (incumbentCount + ' 个参考篮子') : (incumbentCount + (incumbentCount === 1 ? ' reference basket' : ' reference baskets'))) + '</span>' +
             '</li>';
         }).join('') + '</ul>' +
         '</section>';
@@ -1256,7 +1283,7 @@
           var mState = match.state || '';
           return '<td class="fi-cell" data-state="' + esc(mState) + '" data-state-marker="' + esc(mState) + '">' +
             '<span' + enLang(match.mechanism) + '>' + esc(match.mechanism || (isZh() ? '尚未描述。' : 'No mechanism on file.')) + '</span>' +
-            '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">' +
+            '<div class="fi-macro-cell-chips">' +
             chipHtml(labelFor('lag', match.lag || 'UNKNOWN'), { stateMarker: match.lag || '' }) +
             chipHtml(labelFor('macro_state', mState), { classes: 'fi-macro-cell-state', stateKey: mState, stateMarker: mState }) +
             '</div></td>';
@@ -1433,16 +1460,25 @@
     function row(label, value, opts) {
       opts = opts || {};
       if (suppress && opts.sensitive) return;
+      // A field the record leaves empty says so in words, never a blank cell; the
+      // page's own word carries no lang (item 10b).
+      var body = opts.html != null ? opts.html : (value ? esc(value) : esc(isZh() ? SURFACE.not_stated[1] : SURFACE.not_stated[0]));
       rows.push('<dt>' + esc(label) + '</dt><dd' + (opts.identity ? ' class="fi-evidence-identity" data-identity="' + esc(opts.identity) + '"' : '') +
         (opts.rights ? ' class="fi-evidence-rights fi-chip" data-rights="' + esc(rights) + '" data-state-marker="' + esc(rights) + '"' : '') +
-        // F7a: only business_scope, the excerpt and limitations are payload prose.
-        (opts.prose && value ? ' lang="en"' : '') + '>' + esc(value) + '</dd>');
+        // F7a: business_scope, the excerpt and the locator are payload prose; the
+        // five limitations fields mark themselves inside limitationsHtml().
+        (opts.prose && value ? ' lang="en"' : '') + '>' + body + '</dd>');
     }
 
     row(isZh() ? '记录 ID' : 'Record ID', rec.record_id || '—');
     row(isZh() ? '来源' : 'Source', rec.source && rec.source.publisher ? (rec.source.publisher + ' / ' + (rec.source.source_family || '')) : '');
+    // Spec §A.8 suppression rule: publisher, source_family, locator and the five
+    // limitations fields show at EVERY rights state; only value/excerpt/digest hide.
+    row(isZh() ? '出处位置' : 'Locator', (rec.source && rec.source.locator) || '', { prose: true });
     row(isZh() ? '业务范围' : 'Business scope', rec.business_scope || '', { prose: true });
-    if (!suppress) row(isZh() ? '数值' : 'Value', rec.excerpt || (rec.metric && rec.metric.value) || '', { prose: !!rec.excerpt });
+    // A stated zero is a value; only null (schema: number|null) is "Not stated".
+    var metricValue = rec.metric && typeof rec.metric.value === 'number' ? String(rec.metric.value) : '';
+    if (!suppress) row(isZh() ? '数值' : 'Value', rec.excerpt || metricValue, { prose: !!rec.excerpt });
     row(isZh() ? '方法' : 'Methodology', rec.statement_mode ? labelFor('statement_mode', rec.statement_mode) : '');
     row(isZh() ? '观察时点' : 'Observed at', rec.source && rec.source.observed_at ? String(rec.source.observed_at).slice(0, 10) : '');
     row(isZh() ? '披露时点' : 'Published at', rec.source && rec.source.published_at ? String(rec.source.published_at).slice(0, 10) : '', { sensitive: false });
@@ -1450,7 +1486,9 @@
     row(isZh() ? '陈述方式' : 'Statement mode', rec.statement_mode ? labelFor('statement_mode', rec.statement_mode) : '');
     row(isZh() ? '身份状态' : 'Identity state', labelFor('identity_state', rec.identity_state || ''), { identity: rec.identity_state });
     row(isZh() ? '来源权利' : 'Rights', labelFor('rights_state', rights), { rights: true });
-    row(isZh() ? '限制' : 'Limitations', asArray(rec.limitations).join(' · '), { prose: true });
+    // T1 `limitations` is an OBJECT of five required strings (schema
+    // $defs/source_record); asArray() of it was always [] — a blank row.
+    row(isZh() ? '限制' : 'Limitations', '', { html: limitationsHtml(rec.limitations) });
     row(isZh() ? '修正' : 'Correction', rec.correction || '—');
     row(isZh() ? '证据引用' : 'Evidence ref', rec.evidence_ref || '');
 

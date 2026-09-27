@@ -848,7 +848,8 @@ def test_fallback_placeholders_never_render_inside_lang_en():
     # every remaining literal lang="en" is a comment, the helper, a query, or wraps a
     # value that is present by construction (a guarded retained_risk, a prose-flagged row)
     lines = [line.strip() for line in js.splitlines() if 'lang="en"' in line]
-    allowed = ("//", "function enLang(", "(cell.retained_risk ?", "(opts.prose && value ?")
+    allowed = ("//", "function enLang(", "(cell.retained_risk ?", "(opts.prose && value ?",
+               "(v ? '<span class=\"fi-limitation-text\" lang=\"en\">'")
     stray = [line for line in lines if not line.startswith(allowed) and "querySelector('[lang=\"en\"]')" not in line]
     assert not stray, stray
     for fallback in ("'尚未描述。'", "'尚无可观察陈述。'", "'尚无经济效应记录。'", "'尚无操作启示。'"):
@@ -856,11 +857,17 @@ def test_fallback_placeholders_never_render_inside_lang_en():
         assert 'lang="en">' not in js[js.rindex("\n", 0, start):start]
 
 
-def test_drawer_marks_only_scope_excerpt_and_limitations_as_english():
+def test_drawer_marks_only_payload_prose_as_english():
+    """Locator, business scope and the excerpt are the prose rows; the five
+    limitations mark themselves inside limitationsHtml(), since T1 makes
+    `limitations` an object (asArray() of it painted a blank row). The painted
+    behaviour is pinned in test_finance_intelligence_hydration.py."""
     js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "(rec.source && rec.source.locator) || '', { prose: true });" in js
     assert "rec.business_scope || '', { prose: true });" in js
-    assert "|| '', { prose: !!rec.excerpt });" in js
-    assert "asArray(rec.limitations).join(' · '), { prose: true });" in js
+    assert "rec.excerpt || metricValue, { prose: !!rec.excerpt });" in js
+    assert "{ html: limitationsHtml(rec.limitations) }" in js
+    assert "asArray(rec.limitations)" not in js
     assert js.count("{ prose:") == 3
 
 

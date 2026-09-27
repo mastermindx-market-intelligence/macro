@@ -294,6 +294,18 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-posture-chip[data-state-posture="CANDIDATE_READY_FOR_OWNER_REVIEW"] { background: var(--fi-chip-watch); }
 .fi-posture-chip[data-state-posture="ADMITTED"] { background: var(--fi-chip-observed); }
 .fi-slice-open { background: transparent; border: 1px solid var(--fi-line); border-radius: 6px; color: var(--fi-muted); cursor: pointer; font-size: var(--fs-sm); }
+/* Seat T11 r3 (atlas composition): a slice reads name + basket count on one line and its
+   chips on a full-width wrap row below. The shared `1fr auto` slice grid handed the chip
+   row's max-content to the auto column and collapsed the name (overflow-wrap: anywhere)
+   and the count to one character per line at every width. The count opens nothing, so it
+   is muted metadata, not a bordered control. */
+.fi-domain .fi-slice { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name count" "chips chips"; align-items: baseline; }
+.fi-domain .fi-slice-name { grid-area: name; }
+.fi-domain .fi-slice-baskets { grid-area: count; }
+.fi-domain .fi-slice-chips { grid-area: chips; }
+.fi-slice-chips, .fi-macro-cell-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.fi-macro-cell-chips { margin-top: 4px; }
+.fi-slice-baskets { font-size: var(--fs-micro); color: var(--fi-muted); white-space: nowrap; }
 .fi-atlas-gap { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; }
 
 /* exposure table */
@@ -336,6 +348,7 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-view-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 16px; }
 .fi-view-tab { background: var(--fi-panel); border: 1px solid var(--fi-line); color: var(--fi-text); padding: 4px 10px; border-radius: 999px; font: inherit; cursor: pointer; }
 .fi-view-tab[aria-selected="true"] { background: var(--fi-step-fill); border-color: var(--fi-link); }
+/* Held for T12, which draws the graph: T11 r3 renders no <svg> (it painted an empty panel). */
 .fi-system-svg { width: 100%; height: 280px; background: var(--fi-panel2); border-radius: 12px; border: 1px solid var(--fi-line); }
 .fi-system-edges { margin: 10px 0 0; }
 .fi-system-edge-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: var(--fs-sm); }
@@ -352,6 +365,10 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-evidence-fields > div { display: grid; grid-template-columns: 36% 64%; gap: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--fi-line); }
 .fi-evidence-fields dt { color: var(--fi-muted); font-weight: 600; }
 .fi-evidence-fields dd { margin: 0; color: var(--fi-text); word-break: break-word; }
+/* Seat T11 r3: the five T1 limitations fields — page label over owner prose (lang="en"). */
+.fi-limitations { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fi-limitation-label { display: block; font-size: var(--fs-micro); font-weight: 600; color: var(--fi-muted); }
+.fi-limitation-missing { color: var(--fi-muted); }
 .fi-evidence-private-notice { font-size: var(--fs-sm); color: var(--fi-muted); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel2); margin: 0 0 10px; }
 
 /* notice + provenance */
@@ -372,7 +389,9 @@ body.fi-page { background: var(--fi-canvas); }
 /* responsive */
 @media (min-width: 1200px) {
   .fi-shell { max-width: 1200px; }
-  .fi-domain-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* Seat T11 r3: auto-fit keeps the spec's 4-up at >=1200 without leaving one domain in a
+     quarter of the panel (repeat(4, 1fr) reserved three empty tracks). */
+  .fi-domain-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 }
 @media (min-width: 768px) and (max-width: 1199px) {
   .fi-rerating-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }

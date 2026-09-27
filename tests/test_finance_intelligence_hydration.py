@@ -8,10 +8,12 @@ contract safe at every state.
 """
 from __future__ import annotations
 
+import copy
 import json
 import re
 import shutil
 import subprocess
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -125,6 +127,7 @@ VALID_DOC = {
     "source_records": [
         {"record_id": "src.a",
          "source": {"publisher": "10-K", "source_family": "company_filing",
+                    "locator": "Item 7, net interest income table",
                     "observed_at": "2026-09-15",
                     "published_at": "2026-09-15",
                     "published_at_grain": "DAY"},
@@ -133,7 +136,13 @@ VALID_DOC = {
          "metric": {"value": 6.4, "unit": "USD"},
          "statement_mode": "REPORTED_FACT",
          "rights_state": "DIRECT_DISPLAY_OK",
-         "limitations": [],
+         # T1 schema: an OBJECT of five required strings ($defs/source_record).
+         # The old `[]` was schema-invalid and hid a drawer that always painted blank.
+         "limitations": {"establishes": "Reported net interest income for the year.",
+                         "does_not_establish": "Any forward margin path.",
+                         "coverage": "One issuer, one fiscal year.",
+                         "source_dependence": "The issuer's own filing.",
+                         "expiry_trigger": "The next annual filing."},
          "correction": None}
     ],
     "input_receipts": [
@@ -273,28 +282,31 @@ def test_200_with_malformed_json_is_integrity_block() -> None:
 
 @needs_node
 def test_drawer_focus_ownership_keeps_shell_and_nav_inert_when_open() -> None:
-    """Drawer open must setInert(<main>) + setInert(<nav.site-nav>) and trap focus."""
-    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    """Keyboard gate, driven not read (T11 r3 replaced a source-string check).
+    Pressing an evidence button opens the drawer, makes the page and nav
+    behind it inert and moves focus inside; Tab and Shift+Tab stay inside;
+    Escape closes it, lifts the inert state and returns focus to the button."""
+    trigger = '[data-fi-mount="what-changed-list"] .fi-evidence-trigger'
+    # One tick for the hashchange task the trigger queues, one for the drawer's
+    # requestAnimationFrame focus move.
+    press = [{"do": "press", "selector": trigger}, {"do": "tick"}, {"do": "tick"}]
+    out = _run({"routes": _route(VALID_DOC),
+                "actions": press + [{"do": "key", "key": "Tab"},
+                                    {"do": "key", "key": "Tab", "shiftKey": True}]})
+    root = _dom(out["second"])
+    drawer = root.one("aside", id="evidence-drawer")
+    assert not drawer.hidden and "is-open" in drawer.classes
+    for behind in (root.one("main"), root.one("nav")):
+        assert "inert" in behind.attrs and behind.attrs.get("aria-hidden") == "true", behind.tag
+    assert out["second"]["active"]["id"] == "fi-close-evidence", out["second"]["active"]
 
-    # setDrawer body — slice from setDrawer(open) up to the next top-level helper.
-    setdrawer_start = js.index("function setDrawer(open)")
-    next_fn = js.index("\n  function", setdrawer_start + 1)
-    body = js[setdrawer_start:next_fn]
-    assert "setInert(state.ui.shell, true)" in body
-    assert "setInert(state.ui.siteNav, true)" in body
-
-    # handleDrawerKeydown body — Escape closes the drawer; Tab cycles inside it.
-    kbd_start = js.index("function handleDrawerKeydown")
-    next_fn_kbd = js.index("\n  function", kbd_start + 1)
-    kbd_body = js[kbd_start:next_fn_kbd]
-    assert "'Escape'" in kbd_body
-    assert "setDrawer(false)" in kbd_body
-    assert "'Tab'" in kbd_body
-    assert "shiftKey" in kbd_body
-    # focusableInDrawer must return an array (Tab order iteration).
-    fid_start = js.index("function focusableInDrawer")
-    fid_body = js[fid_start:js.index("\n  function", fid_start + 1)]
-    assert "tabindex=\"-1\"" in fid_body or "tabindex=\\\"-1\\\"" in fid_body or "tabindex=" in fid_body
+    out = _run({"routes": _route(VALID_DOC), "actions": press + [{"do": "key", "key": "Escape"}]})
+    root = _dom(out["second"])
+    assert root.one("aside", id="evidence-drawer").hidden
+    for behind in (root.one("main"), root.one("nav")):
+        assert "inert" not in behind.attrs and "aria-hidden" not in behind.attrs, behind.tag
+    active = out["second"]["active"]
+    assert active["isPressed"] and active["connected"], active
 
 
 @needs_node
@@ -337,3 +349,538 @@ def test_hydrated_controls_are_named_in_the_page_language() -> None:
     assert en_chips == ["", ""], en_chips
     assert zh_chips == ["", ""], zh_chips
     assert not any("{" in label for label in zh_chips + en_chips), (zh_chips, en_chips)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# T11 round 3 (Opus review MAJOR-1): behaviour, not source spelling. The
+# harness serialises its live tree ("dom") and records every painter
+# innerHTML write ("htmlWrites"); the tests below parse both, so each one
+# fails on what a reader would see or hear, whatever the JS happens to say.
+# ──────────────────────────────────────────────────────────────────────────
+
+_VOID_TAGS = frozenset({"area", "base", "br", "col", "embed", "hr", "img",
+                        "input", "link", "meta", "source", "track", "wbr"})
+
+
+class _El:
+    """A parsed element: tag, attrs, parent and children (elements or text)."""
+
+    def __init__(self, tag: str, attrs: dict, parent: "_El | None") -> None:
+        self.tag, self.attrs, self.parent = tag, attrs, parent
+        self.children: list = []
+
+    @property
+    def classes(self) -> set:
+        return set((self.attrs.get("class") or "").split())
+
+    @property
+    def hidden(self) -> bool:
+        return "hidden" in self.attrs
+
+    def text(self) -> str:
+        return "".join(c if isinstance(c, str) else c.text() for c in self.children)
+
+    def spoken(self) -> str:
+        """Text a screen reader reads: aria-hidden subtrees are skipped."""
+        return "".join(c if isinstance(c, str) else
+                       ("" if c.attrs.get("aria-hidden") == "true" else c.spoken())
+                       for c in self.children)
+
+    def elements(self) -> list:
+        return [c for c in self.children if isinstance(c, _El)]
+
+    def walk(self):
+        for child in self.elements():
+            yield child
+            yield from child.walk()
+
+    def ancestors(self):
+        node = self.parent
+        while node is not None:
+            yield node
+            node = node.parent
+
+    def find(self, tag: str | None = None, cls: str | None = None, **attrs: str) -> list:
+        """Descendants by tag, class and exact attrs (data_view -> data-view)."""
+        wanted = {k.replace("_", "-"): v for k, v in attrs.items()}
+        return [el for el in self.walk()
+                if (tag is None or el.tag == tag)
+                and (cls is None or cls in el.classes)
+                and all(el.attrs.get(k) == v for k, v in wanted.items())]
+
+    def one(self, tag: str | None = None, cls: str | None = None, **attrs: str) -> "_El":
+        hits = self.find(tag, cls, **attrs)
+        assert len(hits) == 1, (tag, cls, attrs, len(hits))
+        return hits[0]
+
+    def previous_element(self) -> "_El | None":
+        siblings = self.parent.elements() if self.parent is not None else []
+        idx = siblings.index(self)
+        return siblings[idx - 1] if idx > 0 else None
+
+
+class _Tree(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.root = _El("#root", {}, None)
+        self._node = self.root
+        self.duplicate_attrs: list = []
+
+    def handle_starttag(self, tag: str, attrs: list) -> None:
+        names = [name for name, _ in attrs]
+        if len(names) != len(set(names)):
+            self.duplicate_attrs.append((tag, names))
+        el = _El(tag, dict(attrs), self._node)
+        self._node.children.append(el)
+        if tag not in _VOID_TAGS:
+            self._node = el
+
+    def handle_endtag(self, tag: str) -> None:
+        for node in (self._node, *self._node.ancestors()):
+            if node.tag == tag and node.parent is not None:
+                self._node = node.parent
+                return
+
+    def handle_data(self, data: str) -> None:
+        self._node.children.append(data)
+
+
+def _parse(markup: str) -> _Tree:
+    tree = _Tree()
+    tree.feed(markup)
+    tree.close()
+    return tree
+
+
+def _dom(snap: dict) -> _El:
+    return _parse(snap["dom"]).root
+
+
+def _route(doc: dict) -> dict:
+    return {"__default__": {"status": 200, "body": _json(doc),
+                            "contentType": "application/json"}}
+
+
+def _node(node_id: str, en: str, zh: str) -> dict:
+    return {"node_id": node_id, "label_en": en, "label_zh": zh,
+            "node_type": "INSTITUTION", "slice_ids": ["s.banks.americas"],
+            "expandable": False, "children_ids": []}
+
+
+def _two_view_doc() -> dict:
+    doc = copy.deepcopy(VALID_DOC)
+    doc["system_views"].append({
+        "view_id": "public_equity_economics", "name_en": "Equity economics",
+        "name_zh": "股权经济",
+        "nodes": [_node("n.issuer", "Issuer", "发行人"),
+                  _node("n.holder", "Holder", "持有人")],
+        "edges": [{"from": "n.holder", "to": "n.issuer",
+                   "relationship": "EARNS_FEE_FROM", "evidence_state": "INFERRED"}]})
+    return doc
+
+
+def _wide_doc(n: int) -> dict:
+    """n first-vertical slices, n company rows, n macro rows and n system nodes."""
+    doc = copy.deepcopy(VALID_DOC)
+    base = doc["slices"][0]
+    ids = [base["slice_id"]] + [f"s.banks.r{i:02d}" for i in range(1, n)]
+    doc["slices"] = [dict(copy.deepcopy(base), slice_id=sid,
+                          name_en=f"Banks {i}", name_zh=f"银行 {i}")
+                     for i, sid in enumerate(ids)]
+    doc["domains"][0]["slice_ids"] = ids
+    doc["coverage"].update(slices_total=n, slices_populated=n)
+    doc["coverage"]["first_vertical"]["slice_ids"] = ids
+    doc["macro_matrix"] = [dict(doc["macro_matrix"][0], slice_id=sid) for sid in ids]
+    cell = doc["company_exposures"][0]["cells"][0]
+    doc["company_exposures"] = [
+        {"row_id": f"r.{i}", "issuer_label": f"Issuer {i}",
+         "identity": {"state": "IDENTITY_VALIDATED"},
+         "cells": [dict(cell, slice_id=sid)]} for i, sid in enumerate(ids)]
+    doc["system_views"][0]["nodes"] = [_node(f"n.{i}", f"Node {i}", f"节点 {i}")
+                                       for i in range(n)]
+    return doc
+
+
+@needs_node
+def test_painted_markup_never_repeats_an_attribute() -> None:
+    """Item 1: a repeated class= keeps only the first, so the state chip lost
+    `fi-step-chip` and every rule keyed on it."""
+    snap = _run({"routes": _route(_wide_doc(11))})["first"]
+    assert snap["htmlWrites"], "the harness recorded no painter writes"
+    for markup in snap["htmlWrites"]:
+        tree = _parse(markup)
+        assert not tree.duplicate_attrs, (tree.duplicate_attrs, markup[:160])
+    chips = _dom(snap).find("span", "fi-step-chip")
+    assert len(chips) == 4 and all("fi-chip" in chip.classes for chip in chips)
+
+
+@needs_node
+def test_painters_write_no_inline_style() -> None:
+    """Design law: material decisions live in governed CSS. The atlas and macro
+    chip rows were the last style= writers (T11 r3). Genuinely data-dependent
+    geometry would need an explicit exemption here, not a quiet style=."""
+    snap = _run({"routes": _route(_wide_doc(11))})["first"]
+    for markup in snap["htmlWrites"]:
+        for el in _parse(markup).root.walk():
+            assert "style" not in el.attrs, (el.tag, el.attrs)
+
+
+@needs_node
+def test_state_chips_carry_the_state_their_rules_select() -> None:
+    """Item 2: the step chip's data-state is its plane's state, and the atlas
+    slice chip carries data-state-slice; those are the attributes the CSS
+    state rules select."""
+    root = _dom(_run({"routes": _route(VALID_DOC)})["first"])
+    steps = root.find("li", "fi-rerating-step")
+    assert [step.attrs.get("data-state-marker") for step in steps] == [
+        "OBSERVED", "OBSERVED", "VALUATION_ANCHOR_UNAVAILABLE", "PRICE_BASIS_UNQUALIFIED"]
+    for step in steps:
+        assert step.one("span", "fi-step-chip").attrs.get("data-state") == \
+            step.attrs["data-state-marker"]
+    chip = root.one("span", "fi-slice-chip")
+    assert chip.attrs.get("data-state-slice") == "PRICE_SURFACE_AVAILABLE"
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    assert '.fi-step-chip[data-state="OBSERVED"]' in css
+
+
+@needs_node
+@pytest.mark.parametrize("lang,prefix,words", [
+    ("en", "Open evidence: ", ["Operating", "Expectations", "Valuation", "Price"]),
+    ("zh", "打开证据：", ["经营", "市场预期", "估值", "价格"]),
+])
+def test_rerating_evidence_buttons_are_named_by_their_whole_plane_word(
+        lang: str, prefix: str, words: list) -> None:
+    """T11 r3: labelFor() already returns ONE string, so indexing it named the
+    four buttons "O", "E", "V", "P" (ZH: 打开证据：营). The name is the whole word."""
+    root = _dom(_run({"lang": lang, "routes": _route(VALID_DOC)})["first"])
+    buttons = root.one(data_fi_mount="rerating-steps").find("button")
+    assert [b.attrs.get("aria-label") for b in buttons] == [prefix + w for w in words]
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_system_edges_name_their_nodes_never_their_ids(lang: str) -> None:
+    """Item 3: an edge reads as words; an id missing from the view's nodes
+    reads "Unlabelled node", and no raw node id reaches the reader."""
+    root = _dom(_run({"lang": lang, "routes": _route(VALID_DOC)})["first"])
+    section = root.one("section", id="system-map")
+    statement = section.one("span", "fi-system-edge-statement").text()
+    if lang == "en":
+        assert statement == "Bank — lends → Unlabelled node"
+    else:
+        assert statement.startswith("银行 — ") and statement.endswith(" → 未标注节点"), statement
+    assert "n.bank" not in section.text() and "n.borrower" not in section.text()
+
+
+@needs_node
+def test_system_nodes_past_eight_fold_into_one_counted_disclosure() -> None:
+    """Item 3 (§C.10): 11 nodes paint 8 in the panel list and 3 behind one
+    "Show 3 more nodes" disclosure; 8 nodes paint no disclosure at all."""
+    panel = _dom(_run({"routes": _route(_wide_doc(11))})["first"]).one("div", "fi-view-panel")
+    first = [el for el in panel.elements() if el.tag == "ul"]
+    assert len(first) == 1 and len(first[0].find("li")) == 8
+    disc = panel.one("details", "fi-disc")
+    assert disc.one("summary").one("span", "l-en").text() == "Show 3 more nodes"
+    assert [li.attrs["data-node-id"] for li in disc.find("li")] == ["n.8", "n.9", "n.10"]
+    eight = _wide_doc(11)
+    eight["system_views"][0]["nodes"] = eight["system_views"][0]["nodes"][:8]
+    panel8 = _dom(_run({"routes": _route(eight)})["first"]).one("div", "fi-view-panel")
+    assert not panel8.find("details", "fi-disc")
+    first8 = [el for el in panel8.elements() if el.tag == "ul"]
+    assert len(first8) == 1 and len(first8[0].find("li")) == 8
+
+
+_UNNAMEABLE_TAGS = frozenset({"span", "div", "p", "strong", "em", "b", "i", "code",
+                              "sub", "sup", "del", "ins", "small"})
+_UNNAMEABLE_ROLES = frozenset({"generic", "presentation", "none", "paragraph", "caption",
+                               "code", "deletion", "emphasis", "insertion", "strong",
+                               "subscript", "superscript"})
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_every_named_element_has_a_role_that_can_carry_a_name(lang: str) -> None:
+    """Item 6: ARIA 1.2 prohibits naming generic and paragraph roles; a name on
+    a bare <span> or <div> is dropped by assistive tech. Every painted button
+    also speaks words, not just an arrow glyph."""
+    root = _dom(_run({"lang": lang, "routes": _route(_two_view_doc())})["first"])
+    named = [el for el in root.walk()
+             if "aria-label" in el.attrs or "aria-labelledby" in el.attrs]
+    assert named, "nothing on the hydrated page carries a name"
+    for el in named:
+        role = el.attrs.get("role")
+        if role:
+            assert role not in _UNNAMEABLE_ROLES, (el.tag, el.attrs)
+        else:
+            assert el.tag not in _UNNAMEABLE_TAGS, (el.tag, el.attrs)
+    buttons = root.one("main").find("button")
+    assert buttons
+    for button in buttons:
+        name = button.attrs.get("aria-label") or button.spoken()
+        assert re.search(r"[A-Za-z一-鿿]", name), button.attrs
+
+
+_LIVE_ROLES = frozenset({"status", "alert", "log", "marquee", "timer"})
+
+
+@needs_node
+def test_hydration_paints_no_live_region_and_the_page_owns_exactly_one() -> None:
+    """Item 7: a live region painted into rows would announce the dossier on
+    every repaint; the page's single polite region is the notice."""
+    out = _run({"routes": _route(_wide_doc(11)), "actions": [{"do": "lang", "lang": "zh"}]})
+    writes = out["second"]["htmlWrites"]
+    assert len(writes) > len(out["first"]["htmlWrites"]), "langchange repainted nothing"
+    for markup in writes:
+        for el in _parse(markup).root.walk():
+            assert "aria-live" not in el.attrs and el.attrs.get("role") not in _LIVE_ROLES, \
+                (el.tag, el.attrs)
+    page = _parse((TEMPLATES / "finance_intelligence.html.j2").read_text(encoding="utf-8")).root
+    live = [el for el in page.walk()
+            if "aria-live" in el.attrs or el.attrs.get("role") in _LIVE_ROLES]
+    assert len(live) == 1 and "fi-notice-live" in live[0].classes, \
+        [(el.tag, el.attrs) for el in live]
+
+
+@needs_node
+def test_langchange_returns_focus_to_the_same_view_tab_on_the_new_dom() -> None:
+    """Item 8: the repaint rebuilds the tabs, so focus must land on the NEW tab
+    for the reader's view (connected, selected, in the tab order), not stay
+    on the detached node and not reset to view 1."""
+    out = _run({"lang": "en", "routes": _route(_two_view_doc()),
+                "actions": [{"do": "clickTab", "index": 1}, {"do": "lang", "lang": "zh"}]})
+    active = out["second"]["active"]
+    assert active["tag"] == "button" and "fi-view-tab" in active["className"], active
+    assert active["dataView"] == "public_equity_economics", active
+    assert (active["tabindex"], active["ariaSelected"]) == ("0", "true"), active
+    assert active["connected"] and not active["isPriorFocus"], active
+    root = _dom(out["second"])
+    assert not root.one("div", "fi-view-panel", data_view="public_equity_economics").hidden
+    assert root.one("div", "fi-view-panel", data_view="contractual_flow").hidden
+
+
+@needs_node
+def test_langchange_leaves_focus_outside_the_tabs_where_it_was() -> None:
+    """Item 8: focus on the slice picker stays there across the repaint, and
+    the reader's chosen view stays selected."""
+    out = _run({"lang": "en", "routes": _route(_two_view_doc()),
+                "actions": [{"do": "clickTab", "index": 1},
+                            {"do": "focus", "selector": "#fi-slice-select"},
+                            {"do": "lang", "lang": "zh"}]})
+    active = out["second"]["active"]
+    assert active["tag"] == "select" and active["isPriorFocus"] and active["connected"], active
+    tab = _dom(out["second"]).one("button", "fi-view-tab", data_view="public_equity_economics")
+    assert tab.attrs.get("aria-selected") == "true"
+
+
+@needs_node
+def test_phone_cards_past_eight_fold_into_a_counted_disclosure() -> None:
+    """Item 9: 11 rows paint 8 phone cards plus a "See all 11" disclosure that
+    holds the other 3, with none dropped and none painted twice; 8 rows keep
+    the disclosure hidden."""
+    root = _dom(_run({"routes": _route(_wide_doc(11))})["first"])
+    for first, more, rest, card, words in (
+            ("exposure-cards", "exposure-cards-more", "exposure-cards-list",
+             "fi-exposure-card", "See all 11 companies"),
+            ("macro-cards", "macro-cards-more", "macro-cards-list",
+             "fi-macro-card", "See all 11 slices")):
+        shown = root.one(data_fi_mount=first).find("li", card)
+        folded = root.one(data_fi_mount=rest).find("li", card)
+        assert (len(shown), len(folded)) == (8, 3), first
+        names = [li.one("p", "fi-cell-role").text() for li in shown + folded]
+        assert len(set(names)) == 11, names
+        disc = root.one("details", data_fi_mount=more)
+        assert not disc.hidden and "fi-disc" in disc.classes
+        assert disc.one("summary").one("span", "l-en").text() == words
+    root8 = _dom(_run({"routes": _route(_wide_doc(8))})["first"])
+    for more in ("exposure-cards-more", "macro-cards-more"):
+        assert root8.one("details", data_fi_mount=more).hidden, more
+
+
+_PROSE = ("Earnings up, multiple down — visible on the chips above.",
+          "Re-rating reverses if net interest margin compresses.",
+          "Earnings up.", "Multiple down.",
+          "Capital ratio steady; net interest income up.",
+          "Higher policy rates lift net interest income.",
+          "Higher capital requirements reduce ROE.")
+
+
+def _in_english(el: _El) -> bool:
+    return any(node.attrs.get("lang") == "en" for node in (el, *el.ancestors()))
+
+
+def _assert_one_note_per_prose_section(root: _El) -> int:
+    notes_total = 0
+    for section in root.find("section", "fi-section"):
+        notes = section.find("p", "fi-srclang-note")
+        has_prose = any(el.attrs.get("lang") == "en" for el in section.walk())
+        assert len(notes) == (1 if has_prose else 0), (section.attrs.get("id"), len(notes))
+        for note in notes:
+            assert note.parent is section and note.classes == {"fi-srclang-note", "l-zh"}
+            assert "lang" not in note.attrs
+            head = note.previous_element()
+            assert head is not None and "fi-section-head" in head.classes, section.attrs.get("id")
+        notes_total += len(notes)
+    return notes_total
+
+
+@needs_node
+def test_zh_marks_payload_prose_english_and_notes_each_prose_section_once() -> None:
+    """Item 10: payload prose is English inside lang="en"; each section holding
+    it gets ONE page-language note right under its head, and two more
+    langchange repaints neither stack nor lose it."""
+    out = _run({"lang": "zh", "routes": _route(VALID_DOC),
+                "actions": [{"do": "langchange"}, {"do": "langchange"}]})
+    for snap in (out["first"], out["second"]):
+        root = _dom(snap)
+        for prose in _PROSE:
+            hosts = [el for el in root.walk()
+                     if any(isinstance(c, str) and prose in c for c in el.children)]
+            assert hosts and all(_in_english(h) for h in hosts), prose
+        assert _assert_one_note_per_prose_section(root) == 4
+
+
+@needs_node
+def test_a_placeholder_only_section_gets_no_note_and_en_gets_none() -> None:
+    """Item 10: page-language placeholders carry no lang, so a section whose
+    payload prose is empty holds no note; the EN page never shows the line."""
+    doc = copy.deepcopy(VALID_DOC)
+    doc["constraints"][0]["economic_effect"] = ""
+    doc["macro_matrix"][0]["mechanism"] = ""
+    root = _dom(_run({"lang": "zh", "routes": _route(doc)})["first"])
+    for sid in ("constraint-map", "macro-matrix"):
+        section = root.one("section", id=sid)
+        assert not [el for el in section.walk() if el.attrs.get("lang") == "en"], sid
+        assert not section.find("p", "fi-srclang-note"), sid
+    assert _assert_one_note_per_prose_section(root) == 2
+    en = _dom(_run({"lang": "en", "routes": _route(VALID_DOC)})["first"])
+    assert not en.find("p", "fi-srclang-note")
+
+
+_LIMITS = ("establishes", "does_not_establish", "coverage", "source_dependence",
+           "expiry_trigger")
+
+
+def _drawer(lang: str, record_patch: dict | None = None) -> _El:
+    doc = copy.deepcopy(VALID_DOC)
+    doc["source_records"][0].update(record_patch or {})
+    snap = _run({"lang": lang, "routes": _route(doc), "hash": "#evidence=src.a"})["first"]
+    drawer = _dom(snap).one("aside", id="evidence-drawer")
+    assert not drawer.hidden, "the #evidence= hash did not open the drawer"
+    return drawer
+
+
+def _drawer_field(drawer: _El, label: str) -> _El:
+    for pair in drawer.one("dl").elements():
+        dt, dd = pair.elements()
+        if dt.text() == label:
+            return dd
+    raise AssertionError(f"no drawer row {label!r}")
+
+
+def _limitation_items(drawer: _El) -> list:
+    return [el for el in drawer.walk() if "data-limitation" in el.attrs]
+
+
+@needs_node
+def test_drawer_paints_the_five_limitations_in_schema_order() -> None:
+    """MAJOR-2: `limitations` is an object of five strings (T1 schema); the
+    drawer paints each under its plain-word label, payload marked English,
+    plus the source locator."""
+    drawer = _drawer("en")
+    items = _limitation_items(drawer)
+    assert [li.attrs["data-limitation"] for li in items] == list(_LIMITS)
+    expected = VALID_DOC["source_records"][0]["limitations"]
+    labels = ("Establishes", "Does not establish", "Coverage", "Depends on",
+              "Stops holding when")
+    for li, key, label in zip(items, _LIMITS, labels):
+        assert li.one("span", "fi-limitation-label").text() == label
+        text = li.one("span", "fi-limitation-text")
+        assert text.text() == expected[key] and text.attrs.get("lang") == "en", key
+    locator = _drawer_field(drawer, "Locator")
+    assert locator.text() == "Item 7, net interest income table"
+    assert locator.attrs.get("lang") == "en"
+
+
+@needs_node
+@pytest.mark.parametrize("lang,label,words", [
+    ("en", "Coverage", "Not stated"),
+    ("zh", "覆盖范围", "未说明"),
+])
+def test_a_limitation_the_record_omits_says_so_in_page_words(
+        lang: str, label: str, words: str) -> None:
+    """A field the record leaves out says so in the reader's language, with no
+    lang="en" on the page's own words."""
+    limitations = dict(VALID_DOC["source_records"][0]["limitations"])
+    del limitations["coverage"]
+    items = _limitation_items(_drawer(lang, {"limitations": limitations}))
+    assert len(items) == 5
+    li = items[_LIMITS.index("coverage")]
+    assert li.one("span", "fi-limitation-label").text() == label
+    text = li.one("span", "fi-limitation-text")
+    assert text.text() == words and "lang" not in text.attrs
+    assert "fi-limitation-missing" in text.classes
+
+
+@needs_node
+@pytest.mark.parametrize("value,shown", [(0, "0"), (None, "Not stated")])
+def test_a_stated_zero_is_a_value_and_only_null_is_not_stated(value, shown) -> None:
+    """With no excerpt the Value row reads the metric: a stated 0 must print
+    as 0, never as the page's "Not stated" word; only a null value is absent."""
+    drawer = _drawer("en", {"excerpt": None, "metric": {"value": value, "unit": "USD"}})
+    assert _drawer_field(drawer, "Value").text() == shown
+
+
+@needs_node
+def test_a_unit_that_is_the_currency_is_not_repeated() -> None:
+    """Round 3: unit "USD" with currency "USD" printed "6.40 USD USD"; a unit
+    that is not the currency still carries it."""
+    period = " (2025-09-30 \u2013 2026-09-24)"
+    root = _dom(_run({"routes": _route(VALID_DOC)})["first"])
+    metrics = [m.text() for m in root.find("span", "fi-step-metric")]
+    assert "6.40 USD" + period in metrics, metrics
+    doc = copy.deepcopy(VALID_DOC)
+    doc["slices"][0]["rerating"]["operating"]["primary_metric"]["unit"] = "per share"
+    root = _dom(_run({"routes": _route(doc)})["first"])
+    metrics = [m.text() for m in root.find("span", "fi-step-metric")]
+    assert "6.40 per share USD" + period in metrics, metrics
+
+
+@needs_node
+@pytest.mark.parametrize("lang,ids,words", [
+    ("en", ["B.1"], "1 reference basket"),
+    ("en", ["B.1", "B.2"], "2 reference baskets"),
+    ("zh", ["B.1"], "1 个参考篮子"),
+])
+def test_the_atlas_counts_reference_baskets_in_words(lang, ids, words) -> None:
+    """Round 3: the count is muted metadata (it opens nothing), and one basket
+    is singular."""
+    doc = copy.deepcopy(VALID_DOC)
+    doc["slices"][0]["basket_state"]["incumbent_basket_ids"] = ids
+    root = _dom(_run({"lang": lang, "routes": _route(doc)})["first"])
+    counts = root.one("section", id="subtheme-atlas").find("span", "fi-slice-baskets")
+    assert [c.text() for c in counts] == [words]
+    assert not [c for c in counts if c.tag == "button" or "role" in c.attrs]
+
+
+@needs_node
+def test_system_views_paint_no_empty_svg_until_t12_draws_the_graph() -> None:
+    """Round 3: an <svg> holding only <title> painted an empty 280px panel.
+    Until T12 draws nodes into it, each view is its node and edge lists."""
+    system = _dom(_run({"routes": _route(_two_view_doc())})["first"]).one("section", id="system-map")
+    assert not [el for el in system.walk() if el.tag in ("svg", "title")]
+    panels = system.find("div", "fi-view-panel")
+    assert len(panels) == 2
+    for panel in panels:
+        assert panel.find("ul", "fi-slice-list") and panel.find("ol", "fi-system-edge-list")
+
+
+@needs_node
+def test_held_rights_hide_the_excerpt_but_keep_locator_and_limitations() -> None:
+    """Spec §A.8: publisher, family, locator and the five limitations show at
+    every rights state; only the value, excerpt and digest hide."""
+    drawer = _drawer("en", {"rights_state": "SOURCE_RIGHTS_HELD"})
+    assert "Net interest income up 6.4% YoY." not in drawer.text()
+    assert "Value" not in [dt.text() for dt in drawer.find("dt")]
+    assert _drawer_field(drawer, "Locator").text() == "Item 7, net interest income table"
+    assert len(_limitation_items(drawer)) == 5
+    assert not drawer.one(data_fi_mount="evidence-private-notice").hidden
