@@ -1,0 +1,397 @@
+{
+  "case_key": "empty_financial_success",
+  "expected_regression": "Industrial-only ready pane does not satisfy either full B witness",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T08",
+    "T11",
+    "T12"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "capacity",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_0868d663c4d6bbd251c09dbb3473e17d"
+      ],
+      [
+        "assertion",
+        "gmirca_56ee2e4726749d02ac6596fb7cd5e324"
+      ],
+      [
+        "assertion",
+        "gmirca_76dc26769eed0cf3bb3eaa7e43143482"
+      ],
+      [
+        "identity",
+        "identity-vintage-014"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_76dc26769eed0cf3bb3eaa7e43143482",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Industrial Conglomerate Xi",
+              "model": null,
+              "selector": "fac:xi-line-1",
+              "source_label": "first assembly line"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly module output",
+            "wafer_diameter_mm": null
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "the first line ran at capacity"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "any financial measure"
+          ],
+          "establishes": [
+            "first assembly line output"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "first assembly line"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_module_per_quarter",
+          "value": 12,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "industrial operations",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "assembly"
+        },
+        "source": {
+          "locator": "para-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-06-03T08:00:00Z",
+          "published_at": "2026-06-02",
+          "published_at_grain": "date",
+          "publisher": "Example Industrial Wire",
+          "retained_at": "2026-06-03T08:05:00Z",
+          "retention_ref": "retention:empty/xi-fac-xi-line-1",
+          "source_uri": "https://example.invalid/empty/xi-fac-xi-line-1"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Industrial Conglomerate Xi",
+          "source_platform_label": null,
+          "source_product_label": "first assembly line"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_56ee2e4726749d02ac6596fb7cd5e324",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Industrial Conglomerate Xi",
+              "model": null,
+              "selector": "fac:xi-line-2",
+              "source_label": "second assembly line"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly module output",
+            "wafer_diameter_mm": null
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "the second line ran below nameplate"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "any financial measure"
+          ],
+          "establishes": [
+            "second assembly line output"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "second assembly line"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_module_per_quarter",
+          "value": 9,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "industrial operations",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "assembly"
+        },
+        "source": {
+          "locator": "para-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-06-03T08:00:00Z",
+          "published_at": "2026-06-02",
+          "published_at_grain": "date",
+          "publisher": "Example Industrial Wire",
+          "retained_at": "2026-06-03T08:05:00Z",
+          "retention_ref": "retention:empty/xi-fac-xi-line-2",
+          "source_uri": "https://example.invalid/empty/xi-fac-xi-line-2"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Industrial Conglomerate Xi",
+          "source_platform_label": null,
+          "source_product_label": "second assembly line"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_0868d663c4d6bbd251c09dbb3473e17d",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Industrial Conglomerate Xi",
+              "model": null,
+              "selector": "fac:xi-line-3",
+              "source_label": "third assembly line"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly module output",
+            "wafer_diameter_mm": null
+          },
+          "relation": null,
+          "stage": "reported_output",
+          "stage_source_language": "the third line qualified"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "any financial measure"
+          ],
+          "establishes": [
+            "third assembly line output"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "third assembly line"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_module_per_quarter",
+          "value": 7,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "industrial operations",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "assembly"
+        },
+        "source": {
+          "locator": "para-1",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-06-03T08:00:00Z",
+          "published_at": "2026-06-02",
+          "published_at_grain": "date",
+          "publisher": "Example Industrial Wire",
+          "retained_at": "2026-06-03T08:05:00Z",
+          "retention_ref": "retention:empty/xi-fac-xi-line-3",
+          "source_uri": "https://example.invalid/empty/xi-fac-xi-line-3"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Industrial Conglomerate Xi",
+          "source_platform_label": null,
+          "source_product_label": "third assembly line"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_xi",
+        "source_business_label": "Synthetic Industrial Conglomerate Xi",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "industrial_views.capacity.status": "ready",
+    "economics.status": "unavailable",
+    "economics.reason": "management_sequence_missing",
+    "limitations_include": "witness_economics_missing"
+  }
+}

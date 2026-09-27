@@ -39,6 +39,7 @@ uniquely locatable, the profile emits a :class:`TypedAbsence` from the closed
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 import re
 from typing import Any, Callable, Mapping, Sequence
 
@@ -69,6 +70,18 @@ DHI_CIK = "0000882184"
 PHM_CIK = "0000822416"
 KBH_CIK = "0000795266"
 TOL_CIK = "0000794170"
+
+# Semiconductor witnesses (T05a).  CIKs verified 2026-09-24 against
+# data.sec.gov submissions JSON for the named registrant.
+TSM_CIK = "0001046179"  # Taiwan Semiconductor Manufacturing Company Limited
+ON_CIK = "0001097864"  # ON Semiconductor Corporation
+
+# TSM stays OUT OF FIF (``engine.fundamental_forensics.metric_registry``):
+# ALLOWED_FORMS is 10-K/10-K/A/10-Q/10-Q/A, ALLOWED_TAXONOMIES is us-gaap/dei,
+# ALLOWED_UNITS is USD/shares/ratio — TSM's IFRS/TWD/20-F combination is
+# none of those.  This sentinel is what a later surface renders — never an
+# inferred metric, never a widened registry constant.
+TSM_FIF_GAP = "ifrs_twd_20f_outside_fif_registry"
 
 HOMEBUILDER_TICKERS: tuple[str, ...] = ("DHI", "PHM", "KBH", "TOL")
 
@@ -123,6 +136,98 @@ def tol_issuer() -> IssuerIdentity:
         ),
         external_ids={"cik": TOL_CIK},
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Semiconductor witnesses (T05a).
+#
+# TSM — Taiwan Semiconductor Manufacturing Company Limited; CIK 0001046179;
+# foreign private issuer (Form 6-K results, annual report Form 20-F);
+# entityType "other"; fiscal year end 12-31; reports NT$ (TWD) with a USD
+# restatement; guidance is in USD with an explicit FX assumption.
+# Listing attested by the FY2025 20-F cover filed 2026-04-16 (accession
+# 0001628280-26-025362).  No TWSE "2330" alias is registered — the
+# estate never sourced that venue, so a listing cannot be asserted for it.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def tsm_issuer() -> IssuerIdentity:
+    """TSMC's SEC-attested identity as of the FY2025 20-F cover filing.
+
+    Listing ``valid_from = date(2026, 4, 16)`` is attested by the FY2025
+    20-F cover (accession 0001628280-26-025362, filed 2026-04-16).  No
+    earlier eligibility is asserted.
+    """
+    return IssuerIdentity(
+        company_id=company_id_for_cik(TSM_CIK),
+        display_name="Taiwan Semiconductor Manufacturing Company Limited",
+        fiscal_year_end_month=12,
+        reporting_currency="TWD",
+        listings=(
+            ListingAlias(
+                ticker="TSM",
+                mic="XNYS",
+                share_class="ADR",
+                trading_currency="USD",
+                is_primary=True,
+                valid_from=date(2026, 4, 16),
+            ),
+        ),
+        issuer_kind="foreign_private_issuer",
+        external_ids={
+            "cik": TSM_CIK,
+            "sec_entity_type": "other",
+            "annual_report_form": "20-F",
+            "results_form": "6-K",
+        },
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ON — ON Semiconductor Corporation; CIK 0001097864; domestic filer
+# (8-K/10-Q/10-K); entityType "operating"; fiscal year end 12-31 on a
+# 52/53-week calendar (Q1-2026 ended 2026-04-03, Q2-2026 ended 2026-07-03);
+# reports USD.  Listing attested by the Q1-2026 results 8-K filing date
+# 2026-05-04 (accession 0001140361-26-018868); the 10-K filing date is
+# not derivable offline.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def on_issuer() -> IssuerIdentity:
+    """onsemi's SEC-attested identity as of the Q1-2026 results 8-K filing.
+
+    Listing ``valid_from = date(2026, 5, 4)`` is attested by the Q1-2026
+    results 8-K filing date (accession 0001140361-26-018868, filed
+    2026-05-04).  The 10-K filing date is not derivable offline.
+    """
+    return IssuerIdentity(
+        company_id=company_id_for_cik(ON_CIK),
+        display_name="ON Semiconductor Corporation",
+        fiscal_year_end_month=12,
+        reporting_currency="USD",
+        listings=(
+            ListingAlias(
+                ticker="ON",
+                mic="XNAS",
+                share_class="common",
+                trading_currency="USD",
+                is_primary=True,
+                valid_from=date(2026, 5, 4),
+            ),
+        ),
+        issuer_kind="domestic_52_53_week",
+        external_ids={
+            "cik": ON_CIK,
+            "sec_entity_type": "operating",
+            "annual_report_form": "10-K",
+            "results_form": "8-K",
+            "fiscal_calendar": "52_53_week",
+        },
+    )
+
+
+_SEMICONDUCTOR_ISSUER_FACTORIES: dict[str, Callable[[], IssuerIdentity]] = {
+    "TSM": tsm_issuer,
+    "ON": on_issuer,
+}
 
 
 _HOMEBUILDER_ISSUER_FACTORIES: dict[str, Callable[[], IssuerIdentity]] = {
@@ -328,8 +433,15 @@ def _fact_present(
     document_id: str,
     bound: BoundRelease,
     receipt: SpanReceipt,
+    currency: str | None = None,
+    provenance: str | None = None,
 ) -> dict[str, Any]:
-    return {
+    # ``currency`` is additive: a profile whose guidance items carry a
+    # currency (TSM/ON) states the same closed token on its release facts so
+    # the T06 comparison law (guidance_history._classify_prior_vs_actual,
+    # None vs non-None is a mismatch) compares like with like. Homebuilder
+    # facts pass nothing and their payload is byte-identical.
+    payload = {
         "schema": "event_fact.v1",
         "fact_id": fact_id,
         "event_id": event_id,
@@ -340,16 +452,24 @@ def _fact_present(
         "basis": basis,
         "source_span": _release_span_payload(document_id=document_id, bound=bound, receipt=receipt),
     }
+    if currency is not None:
+        payload["currency"] = currency
+    if provenance is not None:
+        # Non-compared prose about WHERE the figure was read (the T06 law
+        # compares metric/unit/basis/currency/perimeter/definition only).
+        payload["provenance"] = provenance
+    return payload
 
 
-def _fact_absent(*, fact_id: str, event_id: str, metric: str, detail: str, document_id: str) -> dict[str, Any]:
+def _fact_absent(*, fact_id: str, event_id: str, metric: str, detail: str, document_id: str,
+                 reason: str = "no_span_addressable_evidence") -> dict[str, Any]:
     return {
         "schema": "event_fact.v1",
         "fact_id": fact_id,
         "event_id": event_id,
         "metric": metric,
         "typed_absence": _absence(
-            reason="no_span_addressable_evidence",
+            reason=reason,
             subject=metric,
             detail=detail,
             event_id=event_id,
@@ -1269,6 +1389,485 @@ def tol_profile() -> IssuerProfile:
     )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# TSM — Taiwan Semiconductor Manufacturing Company Limited (T05a witness).
+#
+# Two release facts, both receipted against the same synthetic look-alike
+# exhibit body (no real Exhibit 99.1 committed):
+#
+# * ``fact_revenue_twd`` — the NT$ net revenue figure.  No TWD unit exists
+#   in the existing unit vocabulary (``engine.earnings_release.figures
+#   ._UNIT_BY_SCALE`` is USD-prefixed), so per the docket this is emitted
+#   as a typed absence with detail
+#   ``reporting_currency_twd_not_in_unit_vocabulary`` rather than inventing
+#   a unit or converting (C4: zero arithmetic).
+#
+# * ``fact_revenue_usd`` — the USD-restated revenue, present with unit
+#   ``usd_billions`` receipted against the literal ``US$12.34 billion``; its
+#   closed tokens equal the guidance items' (metric ``revenue``, basis
+#   ``reported_ifrs``, currency ``USD``) and the reading location lives in a
+#   non-compared ``provenance`` note.
+#
+# extract_guidance reads the NEXT-quarter revenue range out of ``bound``
+# (the release body), emitting guidance_item.v1 dicts with explicit
+# ``currency`` ("USD"), ``basis`` ("reported_ifrs"), and ``fx_assumption``
+# (verbatim phrase from the release) — TSM reports USD guidance with an
+# explicit exchange-rate assumption.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── TSM / ON extraction: CLOSED HOUSE-STYLE GRAMMARS ─────────────────────────
+# Four independent review rounds showed that an open prose parser (sentence
+# windows, comparative markers, connectives, clause dating) has an unbounded
+# leak surface: every round found a new construction that put a valid receipt
+# on a WRONG binding.  The extractors below therefore bind ONLY to the issuer's
+# own fixed release templates, anchored on structure the issuer states
+# explicitly — the quarter-END DATE in TSMC's headline, the fiscal-quarter
+# COLUMN LABELS in onsemi's tables — and refuse everything else with a typed
+# absence.  A figure that is not stated in the template is not "found"; it is
+# absent.  Templates were read off the issuers' real EX-99.1 exhibits (TSMC
+# 6-K 0001046179-26-000199 / -000451, onsemi 8-K 0001140361-26-018868 /
+# -030989); the test fixtures are synthetic look-alikes of that structure.
+#
+# TSMC headline (block anchor; ordinal AND quarter-end date must both match):
+#   "… today announced consolidated revenue of NT$1,270.38 billion, net income
+#    of …, for the second quarter ended June 30, 2026."
+_TSM_HEADLINE_RE = re.compile(
+    r"today announced consolidated revenue of (NT\$[\d,]+(?:\.\d+)?\s+(?:billion|million))\b.*?"
+    r"\bfor the (first|second|third|fourth) quarter ended "
+    r"((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4})\b",
+    re.S,
+)
+# TSMC USD restatement (sentence-initial; ordinal must match the reported quarter):
+#   "In US dollars, second quarter revenue was $40.20 billion, which increased …"
+# The USD template carries an ordinal but no year: its year is inherited from the
+# headline gate (ordinal AND quarter-end date equal the reported period). A
+# prior-year recap written in this exact house form would be indistinguishable;
+# TSMC states prior years as percentages, and two matches are a typed absence.
+_TSM_USD_TEMPLATE_RE = re.compile(
+    r"In U\.?S\.? dollars, (first|second|third|fourth) quarter revenue was ((?:US)?\$\d+(?:\.\d+)?\s+billion)\b"
+)
+# TSMC guidance: a lead sentence naming the horizon, then bullets.
+#   "… management expects the overall performance for third quarter 2026 to be as follows:"
+#   "•Revenue is expected to be between US$44.6 billion and US$45.8 billion;"
+#   "And, based on the exchange rate assumption of 1 US dollar to 32 NT dollars,"
+_TSM_GUIDANCE_LEAD_RE = re.compile(
+    r"management expects the overall performance for (first|second|third|fourth) quarter (20\d{2}) to be as follows"
+)
+_TSM_GUIDANCE_REVENUE_RE = re.compile(
+    r"^\W{0,3}(Revenue is expected to be between US\$(\d+(?:\.\d+)?) billion and US\$(\d+(?:\.\d+)?) billion)\b"
+)
+_TSM_GUIDANCE_FX_RE = re.compile(r"based on the exchange rate assumption of (1 US dollar to \d+(?:\.\d+)? NT dollars)\b")
+_TSM_GUIDANCE_WINDOW_RE = re.compile(r"^\W{0,3}(?:Revenue|Gross|Operating|And,|based on)", re.I)
+_TSM_GUIDANCE_WINDOW_MAX_BLOCKS = 6
+_ORDINAL_QUARTERS = {"first": 1, "second": 2, "third": 3, "fourth": 4}
+_MONTH_DATE_RE = re.compile(
+    r"\b(January|February|March|April|May|June|July|August|September|October|November|December)"
+    r"\s+(\d{1,2}),?\s+(\d{4})\b")
+_MONTHS = {name: index for index, name in enumerate(
+    ("January", "February", "March", "April", "May", "June", "July", "August", "September",
+     "October", "November", "December"), start=1)}
+
+
+def _parse_month_date(text: str) -> date | None:
+    m = _MONTH_DATE_RE.search(text)
+    if m is None:
+        return None
+    try:
+        return date(int(m.group(3)), _MONTHS[m.group(1)], int(m.group(2)))
+    except ValueError:
+        return None
+
+
+def _reported(fiscal_period: Any) -> tuple[int, int, date] | None:
+    """(year, quarter, calendar_end) of the reported period, or None when the
+    caller did not say what was reported — nothing binds without it."""
+    year = getattr(fiscal_period, "year", None)
+    quarter = getattr(fiscal_period, "quarter", None)
+    end = getattr(fiscal_period, "calendar_end", None)
+    if year is None or quarter is None or not isinstance(end, date):
+        return None
+    return int(year), int(quarter), end
+
+
+def _sentence_initial(text: str, index: int) -> bool:
+    """The match starts a sentence: at the block start or right after ". "/"? "/"! "."""
+    return index == 0 or text[max(0, index - 2):index] in (". ", "? ", "! ")
+
+
+def _tsm_headline_anchors(blocks: Sequence[DisclosureBlock], reported: tuple[int, int, date]) -> list[tuple[DisclosureBlock, re.Match[str]]]:
+    """Blocks whose headline names the reported quarter by ordinal AND by its
+    exact quarter-end date. Anything else — another quarter, another year, a
+    date one day off — is not an anchor."""
+    _, quarter, end = reported
+    out: list[tuple[DisclosureBlock, re.Match[str]]] = []
+    for block in blocks:
+        for m in _TSM_HEADLINE_RE.finditer(block.text):
+            if _ORDINAL_QUARTERS[m.group(2).lower()] == quarter and _parse_month_date(m.group(3)) == end:
+                out.append((block, m))
+    return out
+
+
+def _tsm_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, **kwargs: Any) -> list[dict[str, Any]]:
+    fiscal_period = kwargs.get("fiscal_period")
+    period = _period_label(fiscal_period)
+    reported = _reported(fiscal_period)
+    blocks = bound.document.blocks
+
+    def twd_absent(detail: str) -> dict[str, Any]:
+        return _fact_absent(fact_id="fact_revenue_twd", event_id=event_id, metric="revenue",
+                            detail=detail, document_id=document_id)
+
+    def usd_absent(detail: str) -> dict[str, Any]:
+        return _fact_absent(fact_id="fact_revenue_usd", event_id=event_id, metric="revenue",
+                            detail=detail, document_id=document_id)
+
+    if reported is None:
+        return [twd_absent("no reported fiscal period to anchor the headline to"),
+                usd_absent("no reported fiscal period to anchor the headline to")]
+    anchors = _tsm_headline_anchors(blocks, reported)
+    if len(anchors) != 1:
+        detail = (f"{len(anchors)} headline blocks name the reported quarter ended "
+                  f"{reported[2].isoformat()}; exactly one is required")
+        return [twd_absent(detail), usd_absent(detail)]
+    anchor_block, headline = anchors[0]
+    facts: list[dict[str, Any]] = []
+
+    # (i) NT$ consolidated revenue — the literal is in the anchor headline; the
+    # unit vocabulary has no TWD scale, so a receipted literal is the typed
+    # ``missing_units`` state and an unreceiptable one is ``no_span_addressable_evidence``.
+    twd_receipt = _literal_receipt(
+        bound, search_start=anchor_block.source_span.char_start,
+        search_end=anchor_block.source_span.char_end, literal=headline.group(1),
+    )
+    if twd_receipt is None:
+        facts.append(twd_absent("NT$ consolidated revenue literal in the headline is not uniquely addressable"))
+    else:
+        facts.append(_fact_absent(
+            fact_id="fact_revenue_twd", event_id=event_id, metric="revenue", reason="missing_units",
+            detail=("reporting_currency_twd_not_in_unit_vocabulary: NT$ consolidated revenue literal is "
+                    "present and receipted in the Exhibit 99.1 headline but the existing unit vocabulary is "
+                    "USD-prefixed and no TWD scale exists to attach"),
+            document_id=document_id,
+        ))
+
+    # (ii) USD-restated revenue — exactly ONE sentence-initial template match
+    # with the reported ordinal anywhere in the exhibit. Two (e.g. a restated
+    # prior-year sentence in the same style) is an absence, never a pick.
+    candidates: list[tuple[DisclosureBlock, re.Match[str]]] = []
+    for block in blocks:
+        for m in _TSM_USD_TEMPLATE_RE.finditer(block.text):
+            if _ORDINAL_QUARTERS[m.group(1).lower()] == reported[1] and _sentence_initial(block.text, m.start()):
+                candidates.append((block, m))
+    if len(candidates) != 1:
+        facts.append(usd_absent(
+            f"{len(candidates)} 'In US dollars, <reported> quarter revenue was $X billion' template "
+            "sentences in Exhibit 99.1; exactly one is required"))
+        return facts
+    block, m = candidates[0]
+    literal = m.group(2)
+    usd_receipt = _literal_receipt(
+        bound, search_start=block.source_span.char_start,
+        search_end=block.source_span.char_end, literal=literal,
+    )
+    if usd_receipt is None:
+        facts.append(usd_absent("USD revenue template literal is not uniquely addressable in its block"))
+        return facts
+    value = float(re.search(r"\d+(?:\.\d+)?", literal).group(0))
+    # TSMC's USD-restated quarterly revenue ("In US dollars, … quarter revenue
+    # was …"). The definitional tokens are the SAME closed values the guidance
+    # extractor states (metric revenue, basis reported_ifrs, currency USD):
+    # TSMC guides in US dollars on the same reported basis, so the T06
+    # prior-vs-actual comparison is a genuine like-for-like, not a refusal
+    # manufactured by two spellings of one definition (live-EDGAR proof,
+    # 2026-09-24: metric_mismatch on the real Q1→Q2 sequence).
+    facts.append(_fact_present(
+        fact_id="fact_revenue_usd", event_id=event_id, metric="revenue",
+        value=value, unit="usd_billions", period=period,
+        basis="reported_ifrs", currency="USD",
+        provenance="TSMC USD-restated quarterly revenue, as stated in Exhibit 99.1 ('In US dollars, … quarter revenue was')",
+        document_id=document_id, bound=bound, receipt=usd_receipt,
+    ))
+    return facts
+
+
+def _tsm_guidance_window(blocks: Sequence[DisclosureBlock], lead_index: int) -> list[DisclosureBlock]:
+    """The bullet blocks that follow the guidance lead: consecutive blocks that
+    look like outlook bullets / the FX clause, at most a few. The window stops
+    at the first block that is neither."""
+    window: list[DisclosureBlock] = []
+    for block in blocks[lead_index + 1: lead_index + 1 + _TSM_GUIDANCE_WINDOW_MAX_BLOCKS]:
+        if not _TSM_GUIDANCE_WINDOW_RE.match(block.text.strip()):
+            break
+        window.append(block)
+    return window
+
+
+def _tsm_extract_guidance(
+    *,
+    bound: BoundRelease,
+    release_document_id: str,
+    event_id: str,
+    **_kwargs: Any,
+) -> list[dict[str, Any]]:
+    """TSM guidance from the issuer's fixed outlook template: ONE lead sentence
+    ("management expects the overall performance for <ordinal> quarter <year>
+    to be as follows") whose horizon is strictly after the reported period,
+    followed by bullets; the ONE revenue bullet ("Revenue is expected to be
+    between US$A billion and US$B billion") in that window is the item, and
+    the FX assumption is the verbatim "1 US dollar to N NT dollars" clause in
+    the same window (None when absent; two different clauses refuse).  No
+    lead, two leads, no/two revenue bullets, a range in prose, a horizon not
+    after the reported period, or no reported period → no item."""
+    reported = _reported(_kwargs.get("fiscal_period"))
+    if reported is None:
+        return []
+    blocks = bound.document.blocks
+    leads: list[tuple[int, str]] = []
+    for index, block in enumerate(blocks):
+        for m in _TSM_GUIDANCE_LEAD_RE.finditer(block.text):
+            horizon = (int(m.group(2)), _ORDINAL_QUARTERS[m.group(1).lower()])
+            if horizon > (reported[0], reported[1]):
+                leads.append((index, f"{horizon[0]}Q{horizon[1]}"))
+    if len(leads) != 1:
+        return []
+    lead_index, horizon = leads[0]
+    window = _tsm_guidance_window(blocks, lead_index)
+    ranges = [(block, m) for block in window for m in [_TSM_GUIDANCE_REVENUE_RE.match(block.text.strip())] if m]
+    if len(ranges) != 1:
+        return []
+    range_block, range_match = ranges[0]
+    range_receipt = _literal_receipt(
+        bound, search_start=range_block.source_span.char_start,
+        search_end=range_block.source_span.char_end, literal=range_match.group(1),
+    )
+    if range_receipt is None:
+        return []
+    fx_clauses = [(block, m) for block in window for m in _TSM_GUIDANCE_FX_RE.finditer(block.text)]
+    if len({m.group(1) for _, m in fx_clauses}) > 1:
+        return []
+    fx_assumption: str | None = None
+    if fx_clauses:
+        fx_block, fx_match = fx_clauses[0]
+        fx_receipt = _literal_receipt(
+            bound, search_start=fx_block.source_span.char_start,
+            search_end=fx_block.source_span.char_end, literal=fx_match.group(1),
+        )
+        if fx_receipt is None:
+            return []
+        fx_assumption = fx_match.group(1)
+    return [{
+        "schema": "guidance_item.v1",
+        "metric": "revenue",
+        "low": float(range_match.group(2)),
+        "high": float(range_match.group(3)),
+        "unit": "usd_billions",
+        "horizon": horizon,
+        "status": "introduced",
+        "currency": "USD",
+        "basis": "reported_ifrs",
+        "fx_assumption": fx_assumption,
+        "source_span": _release_span_payload(
+            document_id=release_document_id, bound=bound, receipt=range_receipt,
+        ),
+    }]
+
+
+def tsm_profile() -> IssuerProfile:
+    return IssuerProfile(
+        ticker="TSM",
+        extract_release_facts=_tsm_extract_release_facts,
+        extract_transcript_claims=lambda **_kwargs: [],
+        extract_guidance=_tsm_extract_guidance,
+    )
+
+
+# onsemi: label-bound tables.
+#   Summary table: a caption cell "(Revenue and Net Income in millions)", a label
+#   row carrying fiscal-quarter codes ("Q2 2026", "Q1 2026", "Q2 2025" under GAAP
+#   and again under Non-GAAP), and a "Revenue" row whose value sits in the SAME
+#   cell index as each reported label ("$" lives in its own cell).
+#   Outlook: a lead paragraph "… projected third quarter of 2026 GAAP and non-GAAP
+#   outlook." then a table whose header row has "Total onsemi GAAP" and whose
+#   "Revenue" row carries "$1,650 to $1,750 million" in that column.
+_ON_CAPTION_UNIT_RE = re.compile(r"\bin (millions|billions)\b", re.I)
+# Plain positive figure only. A parenthesised (negative) or otherwise decorated
+# cell is a typed absence, never a parsed value (review #5 nit 1).
+_ON_CELL_VALUE_RE = re.compile(r"^([\d,]+(?:\.\d+)?)$")
+_ON_OUTLOOK_LEAD_RE = re.compile(
+    r"projected (first|second|third|fourth) quarter of (20\d{2}) (?:GAAP and non-GAAP )?outlook", re.I)
+_ON_OUTLOOK_GAAP_HEADER = "total onsemi gaap"
+_ON_OUTLOOK_RANGE_RE = re.compile(r"^\$([\d,]+(?:\.\d+)?) to \$([\d,]+(?:\.\d+)?) (million|billion)$")
+_USD_UNIT_BY_WORD = {"million": "usd_millions", "billion": "usd_billions"}
+
+
+def _on_quarter_label(year: int, quarter: int) -> str:
+    return f"Q{quarter} {year}"
+
+
+def _on_summary_tables(blocks: Sequence[DisclosureBlock], label: str) -> list[DisclosureBlock]:
+    """TABLE blocks that carry BOTH the unit caption and the reported label."""
+    out: list[DisclosureBlock] = []
+    for block in blocks:
+        if block.kind is not BlockKind.TABLE or block.table is None:
+            continue
+        if _ON_CAPTION_UNIT_RE.search(block.text) is None:
+            continue
+        if any(cell.text.strip() == label for row in block.table.rows for cell in row):
+            out.append(block)
+    return out
+
+
+def _on_document_names_period_end(blocks: Sequence[DisclosureBlock], end: date) -> bool:
+    """Corroboration: some 'Quarters Ended' table dates a column with the
+    reported period end. The label binding is the fact's anchor; this only
+    refuses a document that never names the period it is said to report."""
+    for block in blocks:
+        if block.kind is BlockKind.TABLE and block.table is not None and "Quarters Ended" in block.text:
+            if any(_parse_month_date(cell.text) == end for row in block.table.rows[:4] for cell in row):
+                return True
+    return False
+
+
+def _on_extract_release_facts(*, bound: BoundRelease, document_id: str, event_id: str, **kwargs: Any) -> list[dict[str, Any]]:
+    fiscal_period = kwargs.get("fiscal_period")
+    period = _period_label(fiscal_period)
+    reported = _reported(fiscal_period)
+    blocks = bound.document.blocks
+
+    def absent(detail: str) -> list[dict[str, Any]]:
+        return [_fact_absent(fact_id="fact_revenue", event_id=event_id, metric="revenue",
+                             detail=detail, document_id=document_id)]
+
+    if reported is None:
+        return absent("no reported fiscal period to bind a quarter label to")
+    year, quarter, end = reported
+    label = _on_quarter_label(year, quarter)
+    if not _on_document_names_period_end(blocks, end):
+        return absent(f"no Quarters Ended table dates a column {end.isoformat()}")
+    tables = _on_summary_tables(blocks, label)
+    if len(tables) != 1:
+        return absent(f"{len(tables)} captioned summary tables carry the label {label!r}; exactly one is required")
+    table = tables[0].table
+    assert table is not None
+    unit_word = _ON_CAPTION_UNIT_RE.search(tables[0].text).group(1).lower()  # type: ignore[union-attr]
+    unit = _USD_UNIT_BY_WORD["million" if unit_word == "millions" else "billion"]
+    label_row = next(row for row in table.rows if any(cell.text.strip() == label for cell in row))
+    columns = [index for index, cell in enumerate(label_row) if cell.text.strip() == label]
+    revenue_rows = [row for row in table.rows if row and row[0].text.strip().lower() == "revenue"]
+    if len(revenue_rows) != 1:
+        return absent(f"{len(revenue_rows)} Revenue rows in the captioned summary table; exactly one is required")
+    row = revenue_rows[0]
+    cells = [row[index] for index in columns if index < len(row)]
+    if len(cells) != len(columns):
+        return absent("Revenue row is shorter than the label row")
+    parsed = [_ON_CELL_VALUE_RE.match(cell.text.strip()) for cell in cells]
+    if not parsed or any(m is None for m in parsed):
+        return absent(f"Revenue cells under {label!r} are not plain figures")
+    values = {m.group(1) for m in parsed if m is not None}
+    if len(values) != 1:
+        return absent(f"Revenue cells under {label!r} disagree ({', '.join(sorted(values))})")
+    cell = cells[0]
+    literal = cell.text.strip()
+    receipt = _literal_receipt(
+        bound, search_start=cell.source_span.char_start,
+        search_end=cell.source_span.char_end, literal=literal,
+    )
+    if receipt is None:
+        return absent("Revenue cell bound to the reported label is not receiptable")
+    # onsemi GAAP quarterly revenue from the Exhibit 99.1 summary table; the
+    # definitional tokens match the outlook table's (basis reported_gaap,
+    # currency USD) so the T06 comparison is like-for-like (live-EDGAR proof,
+    # 2026-09-24: basis_change on the real Q1→Q2 sequence came from a prose
+    # basis string on the fact, not from onsemi).
+    return [_fact_present(
+        fact_id="fact_revenue", event_id=event_id, metric="revenue",
+        value=float(parsed[0].group(1).replace(",", "")), unit=unit, period=period,
+        basis="reported_gaap", currency="USD",
+        provenance="onsemi GAAP quarterly revenue, as stated in the Exhibit 99.1 summary table",
+        document_id=document_id, bound=bound, receipt=receipt,
+    )]
+
+
+def _on_extract_guidance(
+    *,
+    bound: BoundRelease,
+    release_document_id: str,
+    event_id: str,
+    **_kwargs: Any,
+) -> list[dict[str, Any]]:
+    """ON guidance — the GAAP revenue range from the outlook table that follows
+    the ONE lead paragraph naming a horizon strictly after the reported period.
+    The column is chosen by the header label 'Total onsemi GAAP', never by
+    position; the cell must be exactly '$A to $B million|billion'.  No lead,
+    two leads, no table, no GAAP header, a malformed cell, a horizon not after
+    the reported period, or no reported period → no item."""
+    reported = _reported(_kwargs.get("fiscal_period"))
+    if reported is None:
+        return []
+    blocks = bound.document.blocks
+    leads: list[tuple[int, str]] = []
+    for index, block in enumerate(blocks):
+        if block.kind is BlockKind.TABLE:
+            continue
+        for m in _ON_OUTLOOK_LEAD_RE.finditer(block.text):
+            horizon = (int(m.group(2)), _ORDINAL_QUARTERS[m.group(1).lower()])
+            if horizon > (reported[0], reported[1]):
+                leads.append((index, f"{horizon[0]}Q{horizon[1]}"))
+    if len(leads) != 1:
+        return []
+    lead_index, horizon = leads[0]
+    table_block = next(
+        (b for b in blocks[lead_index + 1: lead_index + 3] if b.kind is BlockKind.TABLE and b.table is not None),
+        None,
+    )
+    if table_block is None or table_block.table is None:
+        return []
+    rows = table_block.table.rows
+    header = next((row for row in rows if any(c.text.strip().lower() == _ON_OUTLOOK_GAAP_HEADER for c in row)), None)
+    if header is None:
+        return []
+    columns = [i for i, c in enumerate(header) if c.text.strip().lower() == _ON_OUTLOOK_GAAP_HEADER]
+    if len(columns) != 1:
+        return []
+    revenue_rows = [row for row in rows if row and row[0].text.strip().lower() == "revenue"]
+    if len(revenue_rows) != 1 or columns[0] >= len(revenue_rows[0]):
+        return []
+    cell = revenue_rows[0][columns[0]]
+    m = _ON_OUTLOOK_RANGE_RE.match(cell.text.strip())
+    if m is None:
+        return []
+    receipt = _literal_receipt(
+        bound, search_start=cell.source_span.char_start,
+        search_end=cell.source_span.char_end, literal=cell.text.strip(),
+    )
+    if receipt is None:
+        return []
+    return [{
+        "schema": "guidance_item.v1",
+        "metric": "revenue",
+        "low": float(m.group(1).replace(",", "")),
+        "high": float(m.group(2).replace(",", "")),
+        "unit": _USD_UNIT_BY_WORD[m.group(3).lower()],
+        "horizon": horizon,
+        "status": "introduced",
+        "currency": "USD",
+        "basis": "reported_gaap",
+        "fx_assumption": None,
+        "source_span": _release_span_payload(
+            document_id=release_document_id, bound=bound, receipt=receipt,
+        ),
+    }]
+
+
+def on_profile() -> IssuerProfile:
+    return IssuerProfile(
+        ticker="ON",
+        extract_release_facts=_on_extract_release_facts,
+        extract_transcript_claims=lambda **_kwargs: [],
+        extract_guidance=_on_extract_guidance,
+    )
+
+
 _HOMEBUILDER_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
     "DHI": dhi_profile,
     "PHM": phm_profile,
@@ -1277,8 +1876,15 @@ _HOMEBUILDER_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
 }
 
 
+_SEMICONDUCTOR_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
+    "TSM": tsm_profile,
+    "ON": on_profile,
+}
+
+
 def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
-    """The registered :class:`IssuerIdentity` for one of the four homebuilders.
+    """The registered :class:`IssuerIdentity` for one of the four homebuilders,
+    or one of the T05a semiconductor witnesses (TSM/ON).
 
     ``None`` for AAPL (use :func:`event_workspace.apple_issuer` directly) and
     for any unknown ticker.  Acquisition needs the CIK and
@@ -1286,7 +1892,11 @@ def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
     from a discovered filing's ``report_date``, which is why this is exposed
     separately from :func:`profile_for_ticker`.
     """
-    factory = _HOMEBUILDER_ISSUER_FACTORIES.get(str(ticker or "").strip().upper())
+    normalized = str(ticker or "").strip().upper()
+    factory = _HOMEBUILDER_ISSUER_FACTORIES.get(normalized)
+    if factory is not None:
+        return factory()
+    factory = _SEMICONDUCTOR_ISSUER_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 
@@ -1296,11 +1906,17 @@ def profile_for_ticker(ticker: str) -> IssuerProfile | None:
     ``"AAPL"`` resolves to :func:`apple_profile`; unknown tickers (including
     LEN and NVR, deliberately not added this wave) resolve to ``None`` so a
     caller can fail closed rather than silently defaulting to Apple's profile.
+    The four homebuilders and the two T05a semiconductor witnesses (TSM/ON)
+    share the same fail-closed contract: an unknown ticker never silently
+    routes through Apple's profile.
     """
     normalized = str(ticker or "").strip().upper()
     if normalized == "AAPL":
         return apple_profile()
     factory = _HOMEBUILDER_PROFILE_FACTORIES.get(normalized)
+    if factory is not None:
+        return factory()
+    factory = _SEMICONDUCTOR_PROFILE_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 
@@ -1309,6 +1925,9 @@ __all__ = [
     "PHM_CIK",
     "KBH_CIK",
     "TOL_CIK",
+    "TSM_CIK",
+    "ON_CIK",
+    "TSM_FIF_GAP",
     "HOMEBUILDER_TICKERS",
     "IssuerProfile",
     "apple_profile",
@@ -1316,10 +1935,14 @@ __all__ = [
     "phm_issuer",
     "kbh_issuer",
     "tol_issuer",
+    "tsm_issuer",
+    "on_issuer",
     "dhi_profile",
     "phm_profile",
     "kbh_profile",
     "tol_profile",
+    "tsm_profile",
+    "on_profile",
     "issuer_for_ticker",
     "profile_for_ticker",
 ]

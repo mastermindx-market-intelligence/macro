@@ -46,6 +46,64 @@ logging.basicConfig(
 )
 log = logging.getLogger("build_state_of_themes")
 
+# Shared hook 2 (Sol #7780 issuecomment-5813801605): what a theme-research
+# mount renders is the registration's answer, read from the leaf module that
+# the basket-page builder also reads. The import is guarded because a sparse
+# checkout can omit engine/; without it the page renders with no mount, which
+# is the same silence as a theme nobody registered.
+try:
+    from engine.market_ontology.theme_research_mounts import (
+        MOUNTS as _RESEARCH_MOUNTS,
+        mount_context as _research_mount_context,
+    )
+except Exception:  # noqa: BLE001 — the page must build whatever the research layer does
+    # NOT just ImportError. This import first executes
+    # engine/market_ontology/__init__.py, which imports exposure_map, so the
+    # page is exposed to that whole package's import health — and a malformed
+    # registration raises ValueError from MountFacts.__post_init__ at import
+    # time. An independent review proved a ValueError here kills the entire
+    # page, not just the mount.
+    _RESEARCH_MOUNTS = None
+    _research_mount_context = None
+
+
+def _theme_research_mounts(themes: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """The mounts this page carries, in page order.
+
+    A vertical mounts on the Theme Tracker only where its anchor is ALREADY a
+    theme row on this page. The page never invents a row, a theme or a node to
+    carry a mount: a registered anchor with no row is logged once and mounts
+    nothing, and a row nobody registered mounts nothing. A duplicate row
+    mounts once — two sections would share one DOM id.
+
+    The research layer failing never fails the page build; that is what the
+    broad except is for, and it is why this returns a list rather than raising.
+    """
+    if _research_mount_context is None or _RESEARCH_MOUNTS is None:
+        log.warning("theme_research mounts unavailable (engine/ not in this checkout)")
+        return []
+    try:
+        row_ids = [row.get("theme_id") for row in themes]
+        mounts: list[dict[str, str]] = []
+        seen: set[str] = set()
+        for theme_id in row_ids:
+            if theme_id in seen:
+                continue
+            context = _research_mount_context(theme_id)
+            if context is not None:
+                seen.add(theme_id)
+                mounts.append(dict(context))
+        for anchor in _RESEARCH_MOUNTS:
+            if anchor not in row_ids:
+                log.info(
+                    "theme_research: registered anchor %s is not a theme on this page",
+                    anchor,
+                )
+        return mounts
+    except Exception as exc:  # noqa: BLE001 — the page builds in every failure mode
+        log.warning("theme_research mounts unavailable (%s)", exc)
+        return []
+
 # ---------------------------------------------------------------------------
 # Leg ordering and labels
 # ---------------------------------------------------------------------------
@@ -1372,6 +1430,7 @@ def compose(root: Path) -> dict[str, Any]:
     rp_payload = load_research_priority(root)
 
     return {
+        "theme_research_mounts": _theme_research_mounts(themes),
         "as_of": as_of,
         "n_themes": n_themes,
         "lanes": lanes,

@@ -111,7 +111,7 @@ TOL_REPORT_DATE = "2026-08-18"
 
 def test_production_registry_resolves_all_five_and_apple_is_unchanged() -> None:
     registry = production_registry()
-    assert len(registry) == 5
+    assert len(registry) == 7
     for ticker, cik in (("DHI", "882184"), ("PHM", "822416"), ("KBH", "795266"), ("TOL", "794170")):
         resolved = registry.resolve_ticker(ticker, asof=date(2026, 8, 1))
         assert resolved is not None
@@ -1282,9 +1282,15 @@ def test_refresh_is_fail_soft_per_homebuilder(tmp_path: Path, monkeypatch: pytes
         publish_generation=lambda out_dir, dry_run=False: 0,
     )
     assert rc == 0
-    # Every homebuilder failed (fake SEC only answers AAPL) -- ALL FOUR were
-    # attempted and ALL FOUR were skipped, without the flagship being blocked.
-    assert sorted(skipped) == sorted(HOMEBUILDER_TICKERS)
+    # Every ticker in the iterated set failed (fake SEC only answers AAPL)
+    # — ALL DISCOVERY_TICKERS were attempted and ALL DISCOVERY_TICKERS were
+    # skipped, without the flagship being blocked.  The iterated set is now
+    # ``DISCOVERY_TICKERS`` (= HOMEBUILDER_TICKERS ∪ {"TSM", "ON"} under
+    # operation gmi-semiconductors-fable-ceo-e2e-20260923-chairman-001
+    # T05b); the homebuilder tuple itself keeps its value/meaning
+    # (``HOMEBUILDER_TICKERS`` is unchanged; this assertion only widened
+    # to cover the superset that the loop now iterates).
+    assert sorted(skipped) == sorted(refresh_mod.DISCOVERY_TICKERS)
     manifest = jsonlib.loads((tmp_path / "event_workspaces" / "manifest.json").read_text())
     assert manifest["event_count"] == 1
     workspace = jsonlib.loads(

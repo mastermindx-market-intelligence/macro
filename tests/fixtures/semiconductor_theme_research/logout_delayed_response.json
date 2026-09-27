@@ -1,0 +1,9 @@
+{
+  "case_key": "logout_delayed_response",
+  "expected_regression": "Old response and finally handler cannot render/clear the new principal view",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T10"
+  ]
+}

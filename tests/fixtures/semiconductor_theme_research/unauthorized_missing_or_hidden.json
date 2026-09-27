@@ -1,0 +1,49 @@
+{
+  "case_key": "unauthorized_missing_or_hidden",
+  "expected_regression": "Identical permitted error shape; no private reader call/existence disclosure",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T09"
+  ],
+  "description": "T09 404 contract: unknown / out-of-scope / valid-but-unauthorized assertion_refs all map to the same not_available error body, byte-identical, with the private reader recorded at zero invocations for the anonymous case (so existence is never disclosed even when the private reader could have answered).",
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "composition",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": "gen_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "evidence_body_template": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "composition",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": "gen_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "assertion_ref": "<REPLACE>"
+  },
+  "assertion_refs": {
+    "unknown": "gmi-curation://ai_semiconductors/gmirca_0000000000000000000000000000aaaa",
+    "out_of_scope": "gmi-curation://ai_semiconductors/gmirca_11111111111111111111111111111111",
+    "valid_but_unauthorized": "gmi-curation://ai_semiconductors/gmirca_22222222222222222222222222222222"
+  },
+  "expected_404_body": {
+    "error": {"code": "not_available", "action": "none"}
+  },
+  "expected_404_status": 404,
+  "expected_private_headers": {
+    "cache-control": "private, no-store",
+    "vary": "Authorization",
+    "x-content-type-options": "nosniff",
+    "x-robots-tag": "noindex, noarchive"
+  },
+  "anonymous_reader_call_budget": 0
+}

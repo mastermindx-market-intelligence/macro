@@ -145,3 +145,81 @@ rename a column, repurpose one, or narrow an enum. A breaking change ships as
 `_meta.json` beside the parquets carries `computed_at`, the row counts, per-suite
 counts, and the living `ths_unmapped_concept_count` / `unknown_ths_codes` — read it
 for freshness and coverage rather than counting rows yourself.
+
+## 6. `curation_assertion` (v1)
+
+**The field.** `evidence.curation_assertion` is an OPTIONAL cell (contract:
+`curation_assertion.v1.schema.json`; module: `engine/theme_graph/curation_assertion.py`)
+holding the canonical JSON encoding of ONE curated statement — the assertion this
+receipt is the evidence FOR. The schema admits `string | null`; the guard
+(`scripts/check_theme_graph_contracts.py::curation_assertion_breaches`, importable
+per row) decodes and FULLY validates every non-null cell: malformed JSON, a tampered
+stamp, an unknown key, or any schema/semantic breach is a breach naming the evidence
+row. Null is never a violation — an assertion is optional per receipt, and a store
+written before the column existed reads as null everywhere.
+
+**The revision grammar.** `curation_revision` = `gmirca_` + `sha256(canonical JSON of
+the payload without curation_revision)[:32]` — canonical JSON being sorted keys, no
+whitespace, UTF-8, NaN/inf refused. The revision is a pure function of content: two
+statements that differ in any retained byte (a different `source.locator` in the same
+document, a re-retained `native_digest`, a moved `retained_at`) are two revisions; a
+correction is a new row whose `correction.predecessor_revision` POINTS at its
+predecessor and never changes it. Nothing nets, nothing is superseded in place —
+the same law §1 states for edges. `decode` refuses a stamp that does not match the
+recomputed content hash (`curation_revision_mismatch`), so the cell is
+tamper-evident. An assertion carries no authority: every `authority.can_*` flag is
+literal false, `const`-pinned in the schema AND re-checked in code — source text
+that reads like an instruction ("rank this company first") is DATA in
+`limitations.coverage`, validates, and moves no flag.
+
+**The frozen column.** The `curation_assertion` COLUMN in
+`engine/theme_graph/store.py::EVIDENCE_COLUMNS` does not exist yet: `store.py` is
+owned by open PR #7462, and the one-line append lands there (ruling R2). Until it
+does, the evidence parquet cannot persist the cell — the store round-trip test in
+`tests/test_theme_graph_contracts.py` is deliberately `xfail(strict=True)` for
+exactly that, so it is RED-by-design today and flips to a hard failure (XPASS
+strict) the moment the column lands, forcing the marker's removal. The contract and
+the guard are in force NOW regardless: any parquet that carries the column gets its
+cells decoded and validated.
+
+**Shared decisions, recorded.** R1: `source_ref_for` builds the evidence row's
+`source_ref` as `gmi-curation://<scope.canonical_theme_id>/<curation_revision>` —
+generalized from the Robotics plan's literal `robotics` host so every vertical
+shares ONE resolver with no per-vertical variant. The industrial-context extension
+(semiconductor) is OPTIONAL and closed in the same schema: `local_objects` mint NO
+global ids (assertion-scoped selectors only), `relation` endpoints are local
+selectors or immutable `gmirca_…` native assertion references, `stage` is never
+rewritten by the calendar (a `target` whose `business_valid_to` passed stays
+`target`), and an interpretation is a mechanism with a falsifier — never a score.
+
+**The exact purchase-boundary rule implemented.** A payload with
+`industrial_context.measure_scope.purchase_boundary == "integrated_assembly"` is
+refused with `purchase_boundary_double_count` when any `kind=configuration` local
+object's `configuration` string equals ANOTHER local object's `model` (a different
+object, not itself). That is the frozen simplest deterministic form of the general
+hazard — an assembly total that already contains a configuration's value cannot
+also count that configuration as its own purchase. It deliberately does NOT inspect
+lineage values or cross-assertion state; the general form is later work with
+`reference_for_assertion` (T04). Likewise `containment_cycle` is enforced at the
+scope one payload can see: a `contains` relation whose `src == dst` (a single
+assertion carries at most ONE relation object, so a multi-edge cycle among local
+objects cannot be expressed within one payload); cross-assertion containment cycles
+need the reference resolver T04 owns.
+
+**Mint protocol and nullability (independent review of T02, 2026-09-24).**
+`encode_assertion` is the MINT path the frozen Robotics reference defines: an
+unstamped payload (`curation_revision` null) is content-validated, stamped and
+serialized; a pre-stamped payload must match its content hash and encodes to the
+same bytes. Strict `validate_assertion` (the decode path) refuses an unstamped
+payload (`unstamped_not_allowed`) because every STORED cell is stamped.
+`curation_revision` content-validates before hashing, so invalid garbage never
+receives a well-formed stamp. `review.review_due_at` and `source.native_digest`
+are nullable — an unknown due date or digest stays null and is never fabricated
+(the Robotics reference payload carries both as null); null → value is a new
+revision. `decode_assertion` treats a parquet `NaN` cell as null (a mixed
+legacy + curated column reads its nulls back as `float('nan')`).
+`published_at_grain_mismatch` is the ONE semantic rule beyond the frozen Robotics
+list: grain `unknown` requires a null `published_at`, `date` a plain `YYYY-MM-DD`,
+`instant` a full date-time. It strengthens the clock law (the Robotics pinned
+unknown+null case passes); it is recorded here as a shared-contract addition
+pending the Robotics owner's acknowledgement on its carrier.

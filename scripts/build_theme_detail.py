@@ -21,6 +21,44 @@ from lib.pages import write_page
 
 log = logging.getLogger("build_theme_detail")
 
+# Shared hook 2 (Sol #7780 issuecomment-5813801605): which basket page mounts
+# theme research, and what that mount renders, is the registration's answer —
+# never a string typed into a template or into this builder. The import is
+# guarded because a sparse checkout can omit engine/; without it no page
+# mounts, which is the same silence as an unclaimed basket, and the build
+# still writes every page.
+try:
+    from engine.market_ontology.theme_research_mounts import mount_context_for_basket
+except Exception:  # noqa: BLE001 — the page must build whatever the research layer does
+    # NOT just ImportError. This import first executes
+    # engine/market_ontology/__init__.py, which imports exposure_map, so the
+    # page is exposed to that whole package's import health — and a malformed
+    # registration raises ValueError from MountFacts.__post_init__ at import
+    # time. An independent review proved a ValueError here kills the entire
+    # page, not just the mount.
+    mount_context_for_basket = None
+
+_MOUNT_WARNED = False
+
+
+def _theme_research_mount(basket_id: str, region: str) -> dict | None:
+    """The mount context for this page, or ``None`` to mount nothing.
+
+    US only: ``config/theme_crosswalk.yml`` maps US themes to US baskets, and
+    a same-named basket in another market is a different basket. A regional
+    page mounts nothing rather than borrowing another market's research.
+    """
+    global _MOUNT_WARNED
+    if region != "us":
+        return None
+    if mount_context_for_basket is None:
+        if not _MOUNT_WARNED:
+            _MOUNT_WARNED = True
+            log.warning("theme-research mounts unavailable (engine/ not in this checkout)")
+        return None
+    context = mount_context_for_basket(basket_id)
+    return None if context is None else dict(context)
+
 # region -> (per-stock conviction dir, output dir under site/, per-stock link base or "").
 # Paths are relative to the detail page (site/<out>/<id>.html). China & HK route to their
 # single-stock analyzers (china_lookup.html / hk_lookup.html), which load <dir>/<ticker>.json
@@ -283,6 +321,7 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
         }
         html = tmpl.render(detail_json=json.dumps(detail, separators=(",", ":"), default=str),
                            basket_name=b.get("name", bid), generated_utc=built,
+                           theme_research_mount=_theme_research_mount(bid, region),
                            back_href=detail["back"],
                            back_label_en=("Sector Intelligence" if region == "us"
                                           else "China Sector Intelligence" if region == "china"

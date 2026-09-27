@@ -70,6 +70,10 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine.theme_graph import identity, rights, store  # noqa: E402
+from engine.theme_graph.curation_assertion import (  # noqa: E402
+    CurationAssertionError,
+    decode_assertion,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("check_theme_graph_contracts")
@@ -329,6 +333,31 @@ def _check_schema(df: pd.DataFrame, schema_name: str, label: str) -> list[str]:
     return out
 
 
+def curation_assertion_breaches(evidence_id: str, value: object) -> list[str]:
+    """T02 — decode/validate ONE evidence row's ``curation_assertion`` cell.
+
+    Importable per-row so tests (and later waves) can call the exact check the
+    audit runs without building a whole store. Null/empty is never a violation —
+    an assertion is optional per receipt; a row source that lacks the column
+    entirely (today's parquet) reads as null. Everything else must decode AND
+    fully validate: malformed JSON, a tampered stamp, an unknown key or any
+    schema/semantic breach is one breach naming the evidence row.
+    """
+    if _is_null(value) or (isinstance(value, str) and not value.strip()):
+        return []
+    try:
+        from jsonschema import ValidationError  # noqa: PLC0415
+        catchable: tuple[type[BaseException], ...] = (
+            CurationAssertionError, json.JSONDecodeError, ValidationError)
+    except ImportError:  # pragma: no cover — CI installs it
+        catchable = (CurationAssertionError, json.JSONDecodeError)
+    try:
+        decode_assertion(value)
+    except catchable as exc:
+        return [f"evidence {evidence_id} curation_assertion invalid: {exc}"]
+    return []
+
+
 # ---------------------------------------------------------------------------
 # Audit
 # ---------------------------------------------------------------------------
@@ -373,6 +402,13 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
     breaches += _check_schema(nodes, "nodes", "nodes")
     breaches += _check_schema(edges, "edges", "edges")
     breaches += _check_schema(evidence, "evidence", "evidence")
+
+    # --- T02: curation_assertion cells decode, when present -------------------
+    # A row source without the column (today's parquet, pre-#7462) reads as null
+    # everywhere here, so the audit's verdict on the current store is unchanged.
+    for row in evidence.to_dict("records"):
+        breaches += curation_assertion_breaches(str(row.get("evidence_id")),
+                                                row.get("curation_assertion"))
 
     # --- company id grammar, full scan --------------------------------------
     if "kind" in nodes.columns and "node_id" in nodes.columns:

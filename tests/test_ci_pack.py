@@ -4140,6 +4140,10 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    # 2026-09-24 Semiconductor B (#7870): the twelve B suites on the merge gate;
+    # the transport suites import app.main, whose closure smears whole-tree
+    # scan roots onto all three packing probes (+1 job each) when inferred.
+    "semiconductor-b-boundary",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they

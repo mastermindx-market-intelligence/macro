@@ -1,0 +1,373 @@
+{
+  "case_key": "revoked_rights_warm",
+  "expected_regression": "Existing process denies after registry changes without new watcher/restart",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T03",
+    "T09"
+  ],
+  "description": "Two-step T09 contract: an entitled request reads a synthetic bundle whose every assertion's source_uri maps to a known rights family; the first call returns selected=N; the same process then rewrites the registry so that family is unresolved and re-issues the request — selected drops to zero and the generation changes, with no restart, no watcher, and no leaked family name.",
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "composition",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_5326ae79e9c9a0ecf4930381928e3094"
+      ],
+      [
+        "assertion",
+        "gmirca_8d8f91a81f3b6b413325e4fe8747d0e8"
+      ],
+      [
+        "assertion",
+        "gmirca_5db1573fcd240184f7246b3ad15fa8c4"
+      ],
+      [
+        "identity",
+        "identity-vintage-013"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "schema": "theme_graph.curation_assertion.v1",
+        "curation_revision": "gmirca_5326ae79e9c9a0ecf4930381928e3094",
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "statement_mode": "REPORTED_FACT",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "hbm packaging"
+        },
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Foundry Alpha",
+          "source_platform_label": null,
+          "source_product_label": "Alpha packaging campus"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Alpha packaging campus"
+        },
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Foundry Alpha",
+              "model": null,
+              "selector": "fac:alpha-pack",
+              "source_label": "Alpha packaging campus"
+            }
+          ],
+          "measure_scope": null,
+          "relation": null,
+          "stage": "reported_operation",
+          "stage_source_language": "the packaging campus operated through the quarter"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_module_per_quarter",
+          "value": 12,
+          "value_high": null
+        },
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [],
+          "establishes": [
+            "campus operation at the stated output"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "authority": {
+          "can_rank": false,
+          "can_gate": false,
+          "can_size": false,
+          "can_originate": false,
+          "can_open_entry": false
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        },
+        "source": {
+          "available_at": "2026-04-10T09:00:00Z",
+          "locator": "para-1",
+          "native_digest": null,
+          "observed_at": "2026-04-11T08:00:00Z",
+          "published_at": "2026-04-10",
+          "published_at_grain": "date",
+          "publisher": "Example Packaging Wire",
+          "retained_at": "2026-04-11T08:05:00Z",
+          "retention_ref": "retention:witness/alpha-campus-operation",
+          "source_uri": "data/baskets/synthetic/warm/alpha-campus-operation"
+        }
+      },
+      {
+        "schema": "theme_graph.curation_assertion.v1",
+        "curation_revision": "gmirca_8d8f91a81f3b6b413325e4fe8747d0e8",
+        "predicate": "REPORTED_DEPLOYMENT",
+        "statement_mode": "REPORTED_FACT",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "interposers"
+        },
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Packaging Partner Gamma",
+          "source_platform_label": null,
+          "source_product_label": "Gamma interposer"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Gamma interposer"
+        },
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "product",
+              "manufacturer": "Synthetic Packaging Partner Gamma",
+              "model": null,
+              "selector": "prd:gamma-interposer",
+              "source_label": "Gamma silicon interposer"
+            }
+          ],
+          "measure_scope": null,
+          "relation": null,
+          "stage": "reported_shipment",
+          "stage_source_language": "interposer shipments into the module programme"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_unit_per_quarter",
+          "value": 240,
+          "value_high": null
+        },
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [],
+          "establishes": [
+            "interposer supply into the module"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "authority": {
+          "can_rank": false,
+          "can_gate": false,
+          "can_size": false,
+          "can_originate": false,
+          "can_open_entry": false
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        },
+        "source": {
+          "available_at": "2026-04-17T09:00:00Z",
+          "locator": "para-3",
+          "native_digest": null,
+          "observed_at": "2026-04-18T08:00:00Z",
+          "published_at": "2026-04-17",
+          "published_at_grain": "date",
+          "publisher": "Example Packaging Wire",
+          "retained_at": "2026-04-18T08:05:00Z",
+          "retention_ref": "retention:witness/gamma-interposer-shipment",
+          "source_uri": "data/baskets/synthetic/warm/gamma-interposer-shipment"
+        }
+      },
+      {
+        "schema": "theme_graph.curation_assertion.v1",
+        "curation_revision": "gmirca_5db1573fcd240184f7246b3ad15fa8c4",
+        "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+        "statement_mode": "REPORTED_FACT",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q1",
+          "region": "TW",
+          "technology_facet": "substrate materials"
+        },
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Substrate Vendor Delta",
+          "source_platform_label": null,
+          "source_product_label": "Delta substrate grade"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "Delta substrate grade"
+        },
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "material",
+              "manufacturer": "Synthetic Substrate Vendor Delta",
+              "model": null,
+              "selector": "mat:delta-substrate",
+              "source_label": "qualified substrate grade"
+            }
+          ],
+          "measure_scope": null,
+          "relation": null,
+          "stage": "qualified",
+          "stage_source_language": "the substrate grade is qualified for volume supply"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "absolute",
+          "stock_flow": "flow",
+          "unit": null,
+          "value": null,
+          "value_high": null
+        },
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [],
+          "establishes": [
+            "substrate qualification into the module"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "authority": {
+          "can_rank": false,
+          "can_gate": false,
+          "can_size": false,
+          "can_originate": false,
+          "can_open_entry": false
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        },
+        "source": {
+          "available_at": "2026-03-06T09:00:00Z",
+          "locator": "para-2",
+          "native_digest": null,
+          "observed_at": "2026-03-07T08:00:00Z",
+          "published_at": "2026-03-06",
+          "published_at_grain": "date",
+          "publisher": "Example Materials Wire",
+          "retained_at": "2026-03-07T08:05:00Z",
+          "retention_ref": "retention:witness/delta-substrate-qualified",
+          "source_uri": "data/baskets/synthetic/warm/delta-substrate-qualified"
+        }
+      }
+    ],
+    "identity_results": [],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": []
+  },
+  "rights_family_used": "mastermind_curated",
+  "expected_first_selected": 3,
+  "expected_after_revocation_selected": 0,
+  "rights_registry_initial": {
+    "version": 1,
+    "updated": "2026-09-24",
+    "families": {
+      "mastermind_curated": {
+        "rights_class": "direct_display_ok",
+        "auth_class": "house",
+        "source_route": "synthetic/warm only — T09 fixture",
+        "review": {
+          "date": "2026-09-24",
+          "by": "t09-fixture",
+          "outcome": "fixture-only rights row"
+        },
+        "notes": "Synthetic-only row scoped to tests/fixtures; never alters shipped rights."
+      }
+    }
+  },
+  "rights_registry_revoked": {
+    "version": 1,
+    "updated": "2026-09-24",
+    "families": {
+      "mastermind_curated": {
+        "rights_class": "unresolved",
+        "auth_class": "house",
+        "source_route": "synthetic/warm only — T09 fixture",
+        "review": {
+          "date": "2026-09-24",
+          "by": "t09-fixture",
+          "outcome": "revoked mid-process for warm test"
+        },
+        "notes": "Same row rewritten to unresolved in the same process; the route must re-read the snapshot."
+      }
+    }
+  }
+}
