@@ -10,6 +10,7 @@ Canonical live/durable owners:
 - Target Paper page: `p-L-0`
 
 Files:
+- `FRESH_RYAN_BUSINESS_PROMPT.md` — paste-ready fresh-session instruction for the proven direct Paper carrier.
 - `DIRECT_PAPER_APPLICATION_HANDOFF.md` — exact fresh-session startup and native application order.
 - `SOURCE_PRESERVATION_AUDIT.md` — current-product capabilities the redesign must preserve without replacing the frozen analytical snapshot.
 - `PRODUCTION_ACCEPTANCE_MATRIX.md` — design-to-production proof matrix.
