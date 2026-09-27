@@ -353,3 +353,42 @@ Required adversarial release cases, not tests executed in this visual study:
 - keyboard/touch selection of an asset reproduces the same inspector values as pointer selection.
 
 Production readiness still requires these cases in existing canonical test/browser owners, real data, real route proof and user-task completion. The supporting preview does not satisfy those gates.
+
+
+### Asset Detail — intended Paper board 15 after write gate recovery
+
+Supporting preview: `crypto_deepening_asset-detail_r1.png` from the same `NOT_APPLIED_TO_PAPER` study.
+
+Job: when a user clicks a relative leader, explain exactly what the observation means, what corroborates it, what could weaken it, and what to review next—without converting research strength into an investment recommendation.
+
+The SOL example uses four explicit concepts:
+- **USD price** on its own scale;
+- **SOL/BTC price ratio** on its own scale and same selected dates;
+- **spot participation versus the asset's stated 30-day median** on its own scale;
+- **qualified liquidity** as a separate evidence status.
+
+Illustrative example values are SOL/BTC +26.0%, USD +18.4%, and spot participation 1.6× its own recent median. These are synthetic design values. The screen explicitly says the ratio answers whether SOL gained value versus Bitcoin; it does not say both rose in dollars or that relative strength predicts future return.
+
+The right rail is an evidence summary, not a recommendation score. Each observation has its own qualification status and inspection link. Under the chart, **What supports the observation** and **What could weaken it** are symmetrical. Counterevidence is a first-class product requirement, not a warning buried in provenance.
+
+Event Intelligence is linked as an existing owner. The example says two sourced events are present in the review window but does not predict direction. Production must show event source/time/status and avoid implying that an upcoming unlock, upgrade, governance action or macro release mechanically causes a price move.
+
+The bottom action row separates:
+- save the dated research review through the existing review owner;
+- optionally draft/follow meaningful changes through existing Alert Center capabilities.
+
+Opening the asset, chart, event or source must not implicitly save or subscribe.
+
+Asset Detail hardening cases:
+- SOL/USD fresh while SOL/BTC benchmark is stale;
+- benchmark changes from BTC to ETH/USD and the selected history no longer qualifies;
+- volume source excludes a major venue while liquidity source includes it;
+- token migration or redenomination creates a discontinuity inside the selected window;
+- source event date is revised after a saved review;
+- asset is delisted or identifier aliases change;
+- saved basis/window cannot be reproduced due lost entitlement or data rights;
+- user switches asset while an older inspector/source request is still returning;
+- relative price improves while spot participation weakens;
+- relative price and volume agree but liquidity qualification fails.
+
+Do not collapse those states into one strength score. Preserve the qualified observations, their limits and the selected comparison basis.

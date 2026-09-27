@@ -208,3 +208,8 @@ FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 DO_NOT_REDO: reviewed R2 boards 01–11; the corrected supporting previews; accepted P0A; current CI enrollment; existing chart/snapshot/alert owners. The Paper refusal is EFFECT_NONE, not unknown execution. No deployment, alert, review save, trade, worker or watcher started.
 Exact next action: after a relevant adapter/schema change is evidenced, re-read the current Paper catalog/inspect receipt and, if `accepted_for_write=true`, build intended boards 12–14 natively from the reviewed preview on p-R-0, screenshot-review them, update builder references, and release only our indicators. If Paper remains blocked, continue the independent Asset Detail design and source/test integration without claiming canvas completion.
+
+
+The independent Crypto-deepening study has one additional reviewed screen: `crypto_deepening_asset-detail_r1.png`. It defines intended Paper board 15 Asset Detail / SOL after the write gate recovers. The screen synchronizes SOL/USD, SOL/BTC and spot-participation panes on the same dates but separate scales; treats liquidity as separate evidence; gives supporting and weakening evidence equal visual weight; links existing Event Intelligence without predicting direction; and separates Save dated review from optional follow behavior. The values are synthetic design fixtures and no user action or model authority was created.
+
+The full intended native sequence after Paper write acceptance is now: 12 Market Pulse → 13 Asset Explorer → 14 Capital & Leverage → 15 Asset Detail / SOL. Do not mint new Paper IDs or claim these boards exist until the guarded adapter reports `accepted_for_write=true` and the native effects are screenshot-reviewed.
