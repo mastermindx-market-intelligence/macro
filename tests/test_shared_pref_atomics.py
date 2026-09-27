@@ -150,3 +150,63 @@ def test_the_deployed_artifact_matches_the_template_for_this_block(src: str, dep
     preference-sync block is copied verbatim, and any drift between them means one of the two was
     hand-edited instead of regenerated."""
     assert _save_pref_fn(src) == _save_pref_fn(deployed)
+
+
+# ---------------------------------------------------------------------------
+# Shared list-overlay mutation budget (same source + deployed theme.js pair)
+# ---------------------------------------------------------------------------
+
+
+def _list_overlay_region(text: str) -> str:
+    start = text.index("function initListOverlay()")
+    end = text.index("/* ---- row conditions popover", start)
+    return text[start:end]
+
+
+def test_list_overlay_filters_unrelated_body_mutations_before_rescanning(src: str, deployed: str) -> None:
+    """Unrelated sitewide DOM churn must stop before rAF + `.lst-wrap` scan."""
+    for name, text in (("templates/theme.js", src), ("site/theme.js", deployed)):
+        region = _list_overlay_region(text)
+        m = re.search(
+            r"new MutationObserver\(function \(([^)]*)\) \{(.*?)\n    \}\);",
+            region,
+            re.S,
+        )
+        assert m, f"{name}: list-overlay MutationObserver callback not found"
+        assert "records" in m.group(1), f"{name}: callback must inspect MutationRecords"
+        body = m.group(2)
+        assert "listMutationNeedsUpgrade(records)" in body, (
+            f"{name}: every body mutation still schedules a document-wide list rescan"
+        )
+        assert body.index("listMutationNeedsUpgrade(records)") < body.index("requestAnimationFrame")
+
+
+def test_list_overlay_filter_preserves_late_list_insertion_and_count_changes(src: str, deployed: str) -> None:
+    """Dynamic lists and row-count mutations still wake the existing controller."""
+    for name, text in (("templates/theme.js", src), ("site/theme.js", deployed)):
+        region = _list_overlay_region(text)
+        assert "function listMutationNeedsUpgrade(records)" in region
+        helper = region[region.index("function listMutationNeedsUpgrade(records)"):]
+        helper = helper[: helper.index("var mo = new MutationObserver")]
+        assert "target.closest('.lst-wrap')" in helper, (
+            f"{name}: row/count mutations inside an existing list would be missed"
+        )
+        assert "node.matches('.lst-wrap')" in helper, (
+            f"{name}: inserting a .lst-wrap node itself must wake the controller"
+        )
+        assert "node.querySelector('.lst-wrap')" in helper, (
+            f"{name}: inserting an ancestor containing a list must wake the controller"
+        )
+        assert "mo.observe(document.body, { childList: true, subtree: true })" in region
+
+
+def test_list_overlay_keeps_initial_upgrade_and_frame_coalescing(src: str, deployed: str) -> None:
+    """Filtering keeps first-load work and the existing one-pass-per-frame coalescing."""
+    for name, text in (("templates/theme.js", src), ("site/theme.js", deployed)):
+        region = _list_overlay_region(text)
+        observer = region.index("var mo = new MutationObserver")
+        assert region.rfind("upgrade();", 0, observer) >= 0, f"{name}: initial lists no longer upgrade"
+        body = region[observer:]
+        assert "if (mo.__raf) return;" in body
+        assert "mo.__raf = requestAnimationFrame" in body
+        assert "mo.__raf = 0; upgrade();" in body
