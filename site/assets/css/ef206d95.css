@@ -41,17 +41,16 @@
    mode), the cards are ruled rows, and colour has stopped being atmosphere —
    it now only ever means something.
 
-   Identity is carried by TYPE: headlines are set in a display serif and
-   everything else stays in the house sans. The serif is a SYSTEM stack, so it
-   costs no webfont, no render budget and nothing in the Caddyfile immutable
-   list — Iowan/Palatino ship on macOS, Georgia everywhere else. zh gets a CJK
-   serif, which is the same editorial register in Chinese news.
+   Identity is carried by hierarchy, weight and numeric discipline — the shared
+   product UI family owns headlines and controls in both languages. This keeps the
+   News surface inside the Mastermind design system instead of maintaining a
+   page-local editorial font language.
 
    The tokens below are also consumed by the Intelligence Desk, the Live Wire,
    the rail and the diagnostics drawer, so redefining them here carries those
    sections into the same language.                                          */
-.nxx{ --num:var(--font-mono,ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono","JetBrains Mono",Menlo,Consolas,monospace);
-  --nx-serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+.nxx{ --num:var(--font-mono);
+  --nx-serif:var(--font-ui);
   /* paper / ink — a hair off the app chrome so the reading column reads as a sheet */
   --nx-paper:color-mix(in srgb, var(--panel) 92%, var(--bg));
   /* Still real surfaces — the release cards, the rail, the Desk and the Wire all
@@ -70,7 +69,7 @@
   padding-bottom:8px; }
 .nxx .num{ font-family:var(--num); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
 .nxx a{ color:inherit; text-decoration:none; }
-html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","Source Han Serif SC",serif; }
+html[data-lang="zh"] .nxx{ --nx-serif:var(--font-ui); }
 
 /* The reading column is a SHEET on the app's ground, rather than a full-viewport
    fixed layer: same look, one less always-composited element, and the sheet edge
@@ -142,19 +141,31 @@ html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","
 
 /* ---- CONTROLS ---- */
 .nx-controls{ display:flex; gap:12px; align-items:center; margin-bottom:6px; flex-wrap:wrap;
-  padding-bottom:12px; border-bottom:2px solid var(--nx-rule); }
-.seg{ display:inline-flex; gap:2px; }
+  padding-bottom:12px; border-bottom:2px solid var(--nx-rule); scroll-margin-top:12px; }
+.seg{ display:inline-flex; gap:2px; flex-wrap:wrap; }
 .seg-btn{ appearance:none; border:0; background:transparent; color:var(--muted); font-family:inherit;
   font-size:12px; font-weight:700; letter-spacing:.04em; padding:6px 11px; border-radius:4px; cursor:pointer;
   transition:color .16s, background .16s; white-space:nowrap; }
+.seg-btn{ min-height:40px; }
 .seg-btn:hover{ color:var(--text); background:color-mix(in srgb,var(--text) 6%,transparent); }
 .seg-btn.on{ background:var(--text); color:var(--nx-paper); }
 .nx-search{ flex:1; min-width:170px; max-width:300px; position:relative; margin-left:auto; }
 .nx-search input{ width:100%; font-family:inherit; font-size:12.5px; color:var(--text); padding:7px 10px 7px 29px;
   border-radius:4px; background:transparent; border:1px solid var(--nx-hair); outline:none; transition:border-color .16s; }
+.nx-search input{ min-height:40px; }
 .nx-search input:focus{ border-color:var(--nx-rule); }
 .nx-search svg{ position:absolute; left:9px; top:50%; transform:translateY(-50%); opacity:.5; }
 .nx-count{ font-size:11px; color:var(--muted); font-family:var(--num); flex:0 0 auto; }
+.nx-filter-status{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-left:auto; }
+.nx-clear{ appearance:none; min-height:40px; padding:7px 10px; border:1px solid var(--nx-hair); border-radius:var(--r-ctl);
+  background:transparent; color:var(--muted); font:700 11px/1.2 var(--font-ui); cursor:pointer; }
+.nx-clear:hover{ color:var(--text); border-color:var(--nx-brd); }
+.nx-triage-jump{ display:none; min-height:40px; align-items:center; gap:6px; margin-top:8px; padding:6px 10px;
+  border:1px solid var(--nx-hair); border-radius:var(--r-ctl); color:var(--text); font-size:11.5px; font-weight:700; }
+.nx-triage-jump:hover{ border-color:var(--nx-rule); background:var(--nx-card2); }
+/* Gated/grid/flex children must not override native hidden state. */
+#nxIntel[hidden],#nxIntel [hidden],#nxWire[hidden],#nxWire [hidden]{display:none!important}
+#nxIntel[data-state="quiet"] .nxi-health{display:none}
 
 /* ---- FEED — a story list, not a stack of cards ---- */
 .nx-feed{ display:flex; flex-direction:column; }
@@ -170,7 +181,7 @@ html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","
 .nx-tk{ font-family:var(--num); font-size:10.5px; font-weight:700; color:var(--muted);
   border:1px solid var(--nx-hair); padding:0 5px; border-radius:3px; }
 a.nx-tk:hover{ color:var(--ink-link, var(--link)); border-color:currentColor; }
-.nx-more{ margin:20px auto 4px; display:block; }
+.nx-more{ margin:20px auto 4px; display:block; min-height:40px; }
 .nx-empty{ text-align:center; color:var(--muted); font-size:13px; padding:34px; }
 
 /* ---- the one label a story carries ----
@@ -290,9 +301,14 @@ html[data-theme="light"] #nxConsequence .nx-empty{ background:var(--panel); bord
 .nxi-toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:12px 16px 4px; }
 .nxi-filter{ appearance:none; border:1px solid var(--nx-hair); background:transparent; color:var(--muted);
   border-radius:100px; padding:5px 10px; font:600 11px/1.2 inherit; cursor:pointer; }
+.nxi-filter{ min-height:40px; }
 .nxi-filter:hover{ color:var(--text); border-color:var(--nx-brd); }
 .nxi-filter.on{ color:var(--text); background:color-mix(in srgb,var(--nxi-accent) 12%,transparent);
   border-color:color-mix(in srgb,var(--nxi-accent) 36%,transparent); }
+.nxi-result-count{ color:var(--muted); font:600 10.5px/1.2 var(--num); white-space:nowrap; }
+.nxi-clear{ appearance:none; min-height:40px; border:1px solid var(--nx-hair); background:transparent; color:var(--muted);
+  border-radius:var(--r-ctl); padding:6px 10px; font:700 10.5px/1.2 var(--font-ui); cursor:pointer; }
+.nxi-clear:hover{ color:var(--text); border-color:var(--nx-brd); }
 .nxi-toolbar-note{ margin-left:auto; color:var(--muted); font-size:10.5px; }
 .nxi-list{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:10px 16px 16px; }
 .nxi-story{ min-width:0; border:1px solid var(--nx-hair); border-radius:14px; overflow:hidden;
@@ -422,6 +438,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   border-top:1px solid var(--nx-hair); color:var(--muted); font-size:10.5px; }
 .nxi-showmore{ appearance:none; border:0; background:transparent; color:var(--nxi-accent);
   font:700 11px/1 inherit; cursor:pointer; }
+.nxi-showmore{ min-height:40px; border:1px solid var(--nx-hair); border-radius:var(--r-ctl); padding:7px 10px; }
 @media(max-width:760px){
   .nxi-head{ grid-template-columns:1fr; } .nxi-health{ min-width:0; }
   .nxi-list{ grid-template-columns:1fr; }
@@ -585,12 +602,152 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   .nx-head{ padding-top:4px; margin-bottom:18px; }
   .nx-lead-title{ overflow-wrap:anywhere; }
   .nx-story-title{ font-size:17px; }
-  .nx-controls{ gap:8px; }
-  .nx-search{ order:3; max-width:none; flex-basis:100%; margin-left:0; }
+  .nx-controls{ gap:8px; align-items:stretch; }
+  .nx-triage-jump{ display:inline-flex; }
+  .seg{ order:1; flex-basis:100%; width:100%; gap:4px; }
+  .seg-btn{ flex:0 1 auto; }
+  .nx-search{ order:2; max-width:none; flex-basis:100%; margin-left:0; }
+  .nx-filter-status{ order:3; flex-basis:100%; margin-left:0; justify-content:space-between; }
+  .nxi-toolbar{ align-items:stretch; }
+  .nxi-filter{ flex:1 1 auto; }
+  .nxi-result-count{ align-self:center; }
+  .nxi-toolbar-note{ flex-basis:100%; }
   .nx-pulse-sent{ margin-left:0; flex-basis:100%; }
 }
 /* Motion: there is none left to gate on this page. The aurora's 12s opacity loop
    and the lead card's 4s sentiment "breathe" were the only animations here, and
    both are gone — the strongest form of reduced-motion compliance is having
    nothing to disable. Any animation added back needs its own kill block. */
+/* ---- News Intelligence · Paper-converged production layer -----------------
+   Resting surfaces optimize for scan speed. Detail is disclosed by the story
+   brief dialog; no live payload prose is repeated on every row. */
+.nx-head{ padding:12px 0 16px; margin-bottom:18px; border-bottom:1px solid var(--nx-hair); }
+.nx-eyebrow{ letter-spacing:.12em; }
+.nx-title{ font-family:var(--font-ui); font-size:clamp(30px,4vw,40px); font-weight:800; letter-spacing:-.03em; margin:7px 0 4px; }
+.nx-updated{ margin-top:6px; }
+.nx-hero{ grid-template-columns:minmax(0,2.2fr) minmax(300px,1fr); gap:18px; margin-bottom:18px; padding-bottom:0; border-bottom:0; align-items:stretch; }
+.nx-lead,.nx-movers{ background:var(--nx-card); border:1px solid var(--nx-hair); border-radius:var(--r-panel,14px); box-shadow:var(--card-shadow); }
+.nx-lead{ padding:22px 24px; display:flex; flex-direction:column; justify-content:center; min-height:226px; }
+.nx-lead-eyebrow{ margin-bottom:14px; letter-spacing:.12em; }
+.nx-lead-eyebrow::after{ display:none; }
+.nx-lead-title{ font-family:var(--font-ui); font-size:clamp(25px,3vw,34px); font-weight:750; line-height:1.12; letter-spacing:-.025em; margin-bottom:16px; }
+.nx-movers{ padding:18px 18px 10px; }
+.nx-movers-hd{ padding-bottom:11px; margin-bottom:0; border-bottom:1px solid var(--nx-hair); letter-spacing:.12em; }
+.nx-mover{ display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; padding:14px 0; align-items:start; }
+.nx-rank-num{ color:var(--ink-link,var(--link)); font-size:11px; font-weight:800; padding-top:2px; }
+.nx-mover-copy{ min-width:0; }
+.nx-mover-title{ font-family:var(--font-ui); font-size:14px; font-weight:700; line-height:1.3; }
+.nx-mover-meta{ font-size:10px; margin-top:7px; }
+.nx-attention{ display:grid; grid-template-columns:118px minmax(0,1fr) auto; gap:18px; align-items:center; margin-bottom:18px; padding:13px 0 15px; border-bottom:1px solid var(--nx-hair); }
+.nx-attention-items{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; min-width:0; }
+.nx-attention .nx-heat{ display:flex; flex-direction:column; gap:7px; min-width:0; color:var(--text); font-weight:650; }
+.nx-attention .nx-heat + .nx-heat::before{ display:none; }
+.nx-heat-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; font-size:11px; }
+.nx-heat-top>span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nx-heat-top b{ flex:0 0 auto; font-family:var(--num); color:var(--muted); font-size:10px; }
+.nx-heat-bar{ display:block; width:100%; height:4px; border-radius:var(--r-pill,999px); background:var(--line); overflow:hidden; }
+.nx-heat-bar i{ display:block; width:var(--share); height:100%; border-radius:inherit; background:var(--link); opacity:.72; }
+.nx-attention .nx-pulse-sent{ margin-left:0; white-space:nowrap; }
+.nx-controls{ margin-bottom:14px; }
+.nx-depth{ margin:18px 0 24px; border:1px solid var(--nx-hair); border-radius:var(--r-panel,14px); background:var(--nx-card); overflow:hidden; }
+.nx-depth-summary{ list-style:none; cursor:pointer; min-height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 16px; color:var(--text); font-size:12px; font-weight:750; }
+.nx-depth-summary::-webkit-details-marker{ display:none; }
+.nx-depth-summary::after{ content:"+"; margin-left:auto; color:var(--muted); font:600 17px/1 var(--font-ui); }
+.nx-depth[open]>.nx-depth-summary::after{ content:"−"; }
+.nx-depth-summary:focus-visible{ outline:2px solid var(--info); outline-offset:-3px; }
+.nx-depth-meta{ margin-left:auto; color:var(--muted); font-size:10px; font-weight:600; }
+.nx-depth-body{ padding:0 16px 18px; border-top:1px solid var(--nx-hair); }
+.nx-depth .nx-controls{ padding-top:14px; }
+.nx-depth .nxw{ margin:0 0 14px; }
+.nx-depth .nx-feed{ margin-top:4px; }
+
+.nxi{ border-radius:var(--r-panel,14px); }
+.nxi-head{ padding:18px 20px 14px; }
+.nxi-title{ font-size:20px; }
+.nxi-metrics{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+.nxi-toolbar{ padding:12px 20px; border-bottom:1px solid var(--nx-hair); }
+.nxi-list{ display:flex; flex-direction:column; gap:0; padding:0 20px 8px; }
+.nxi-story{ min-width:0; border:0; border-bottom:1px solid var(--nx-hair); border-radius:0; background:transparent; overflow:visible; }
+.nxi-story:last-child{ border-bottom:0; }
+.nxi-story[data-stage="high_impact"]{ border-color:var(--nx-hair); }
+.nxi-open{ appearance:none; width:100%; display:grid; grid-template-columns:52px minmax(0,1fr) minmax(150px,220px) 105px; gap:16px; align-items:center; padding:16px 0; border:0; background:transparent; color:inherit; text-align:left; cursor:pointer; font:inherit; }
+.nxi-open:hover .nxi-headline{ text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
+.nxi-open:focus-visible{ outline:2px solid var(--info); outline-offset:5px; border-radius:var(--r-ctl,8px); }
+.nxi-rank{ display:flex; flex-direction:column; gap:6px; color:var(--ink-link,var(--link)); font:800 11px/1 var(--num); }
+.nxi-rank::after{ content:""; width:30px; height:3px; border-radius:var(--r-pill,999px); background:var(--link); opacity:.72; }
+.nxi-row-copy{ min-width:0; }
+.nxi-headline{ margin:0; font-size:15px; line-height:1.3; font-weight:700; letter-spacing:-.012em; }
+.nxi-row-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:7px; color:var(--muted); font-size:9.5px; }
+.nxi-row-context{ display:flex; flex-wrap:wrap; align-items:center; gap:5px; min-width:0; }
+.nxi-row-context .nxi-chip{ max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nxi-row-status{ justify-self:end; color:var(--muted); font-size:9px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.nxi-row-status.high_impact{ color:var(--ink-act,var(--act)); }
+.nxi-row-status.confirmed{ color:var(--ink-ok,var(--ok)); }
+.nxi-footer{ padding:11px 20px; }
+.nxi-footer>span{ color:var(--muted); font-size:10px; }
+
+.nxi-backdrop[hidden],.nxi-drawer[hidden]{ display:none!important; }
+.nxi-backdrop{ position:fixed; inset:0; z-index:13000; background:var(--bg); opacity:.66; }
+.nxi-drawer{ position:fixed; z-index:13010; right:0; top:0; bottom:0; width:min(560px,92vw); display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line); box-shadow:var(--popover-shadow); }
+.nxi-drawer-head{ display:flex; align-items:center; justify-content:space-between; min-height:62px; padding:14px 20px; border-bottom:1px solid var(--line); }
+.nxi-drawer-kicker{ color:var(--muted); font-size:10px; font-weight:750; letter-spacing:.12em; text-transform:uppercase; }
+.nxi-drawer-close{ appearance:none; width:36px; height:36px; display:grid; place-items:center; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); color:var(--text); font:500 20px/1 var(--font-ui); cursor:pointer; }
+.nxi-drawer-close:focus-visible{ outline:2px solid var(--info); outline-offset:2px; }
+.nxi-drawer-scroll{ overflow:auto; overscroll-behavior:contain; padding:22px 24px 32px; }
+.nxi-drawer-title{ margin:0; font-size:26px; line-height:1.16; letter-spacing:-.025em; }
+.nxi-drawer-meta{ display:flex; flex-wrap:wrap; gap:7px; align-items:center; margin:10px 0 18px; color:var(--muted); font-size:10px; }
+.nxi-drawer-section{ padding:16px 0; border-top:1px solid var(--line); }
+.nxi-drawer-section>h3{ margin:0 0 10px; color:var(--muted); font-size:9.5px; font-weight:750; letter-spacing:.11em; text-transform:uppercase; }
+.nxi-drawer-section p{ margin:0; color:var(--text); font-size:12px; line-height:1.5; }
+.nxi-drawer-section p+p{ margin-top:8px; color:var(--muted); }
+.nxi-drawer-market{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:var(--r-ctl,8px); background:var(--panel2); }
+.nxi-drawer-market span:first-child{ color:var(--muted); font-size:9px; font-weight:750; letter-spacing:.08em; text-transform:uppercase; }
+.nxi-drawer-market b{ font-family:var(--num); font-size:12px; }
+.nxi-drawer-assets{ display:flex; flex-wrap:wrap; gap:7px; }
+.nxi-drawer-assets a{ padding:6px 9px; border-radius:var(--r-ctl,8px); background:var(--panel2); border:1px solid var(--line); color:var(--ink-link,var(--link)); font:750 10px/1.2 var(--num); }
+.nxi-review-note{ margin-top:8px!important; color:var(--muted)!important; font-size:10px!important; }
+body.nxi-drawer-open{ overflow:hidden; }
+body.nxi-drawer-open #mmb-launch,
+body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!important; visibility:hidden!important; }
+
+@media(max-width:900px){
+  .nx-hero{ grid-template-columns:1fr; }
+  .nx-lead{ min-height:0; }
+  .nxi-open{ grid-template-columns:40px minmax(0,1fr) 90px; gap:10px; }
+  .nxi-rank{ grid-column:1; grid-row:1; }
+  .nxi-row-copy{ grid-column:2; grid-row:1; }
+  .nxi-row-status{ grid-column:3; grid-row:1; }
+  .nxi-row-context{ grid-column:2 / 4; grid-row:2; }
+}
+@media(max-width:560px){
+  .nx-title{ font-size:30px; }
+  .nx-hero{ gap:12px; }
+  .nx-lead{ padding:16px; }
+  .nx-lead-title{ font-size:22px; }
+  .nx-movers{ display:none; }
+  .nx-depth{ margin:14px 0 20px; }
+  .nx-depth-summary{ min-height:48px; padding:11px 13px; }
+  .nx-depth-body{ padding:0 12px 14px; }
+  .nx-attention{ display:block; padding:12px 0 14px; }
+  .nx-attention .nx-pulse-lbl{ display:block; margin-bottom:9px; }
+  .nx-attention-items{ display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+  .nx-attention-items::-webkit-scrollbar{ display:none; }
+  .nx-attention .nx-heat{ flex:0 0 112px; }
+  .nx-attention .nx-pulse-sent{ display:flex; margin-top:10px; }
+  .nxi-head{ padding:16px; }
+  .nxi-metrics{ grid-template-columns:repeat(2,1fr); }
+  .nxi-toolbar{ padding:10px 16px; overflow-x:auto; flex-wrap:nowrap; }
+  .nxi-filter{ flex:0 0 auto; }
+  .nxi-result-count{ margin-left:auto; }
+  .nxi-list{ padding:0 16px 8px; }
+  .nxi-open{ grid-template-columns:32px minmax(0,1fr); gap:8px 10px; padding:14px 0; }
+  .nxi-rank{ grid-column:1; grid-row:1; }
+  .nxi-row-copy{ grid-column:2; grid-row:1; }
+  .nxi-row-status{ grid-column:2; grid-row:2; justify-self:start; margin-top:0; font-size:9px; }
+  .nxi-row-context{ grid-column:2; grid-row:3; }
+  .nxi-drawer{ inset:0; width:100vw; max-width:100vw; min-width:0; box-sizing:border-box; border-left:0; }
+  .nxi-drawer-head{ width:100%; min-width:0; box-sizing:border-box; min-height:58px; padding:11px 18px; }
+  .nxi-drawer-scroll{ width:100%; min-width:0; box-sizing:border-box; padding:18px 18px 28px; overflow-x:hidden; }
+  .nxi-drawer-title{ font-size:23px; overflow-wrap:anywhere; }
+}
 
