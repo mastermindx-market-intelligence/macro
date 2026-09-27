@@ -171,3 +171,68 @@ The previously refused actions remain held: shared widget Stop consumer; origina
 Retain the preceding read-only multi-pane source: Terminal **4f8035a27c83f954d4d34c68a17b58d627ba7d6e**, Macro feature **58a6e59865b909086ced252198c986db3531b24d** and all prior DO_NOT_REDO work.
 
 Exact next chunk: consume a genuinely permitted recovery/return for one of the held core semantic actions if one exists; otherwise continue a path-disjoint feature that improves Copilot without expanding unsafe mutation authority. Final combined qualification remains owed. EFFECT_UNKNOWN: none. No worker/watcher/provider activation or automatic wake.
+
+
+## 2026-09-27 Extra High chunk — viewport-aware active rendered price window
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION after this handoff's containing commit, PR metadata and cumulative #7151 frontier are read back. MISSION_COMPLETE: false. Capability remains PARTIAL / BUILT_NOT_PROVEN / NOT_RELEASED. Chairman continues feature-first Extra High work in bounded chunks; local tests/typechecks/compilers/browser/model qualification remain deliberately deferred to the final combined pass and are not waived.
+
+Protected Mastermind pin: **b2e0b905bfac975766afda3cf65527897bc0e25a**. INDEX and required enrolled law blob identities remain the same compatible 1.0.1/bootstrap1 set already consumed. Source-only work did not invoke Executive runtime.
+
+### Exact published source
+
+Terminal #757 advanced on the same incumbent branch/worktree to **dbc5002d586f139fbda2debe0cb4ae2390246d83** (`feat(copilot): expose active rendered price window`). Original remote branch readback matched. The unrelated untracked `terminal/e2e/brain-targeted-readout.spec.ts` remains untouched/excluded at SHA256 **6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c**.
+
+Macro #8014 advanced on the same incumbent branch/worktree to **38beb6e84ebb221ebb9bade42d25169c6b50b63e** (`feat(copilot): qualify active rendered price window`). Original remote branch readback matched; Macro workspace was clean after publication.
+
+### Capability delta in source
+
+Before this chunk, Copilot had qualified native-indicator observations and exact latest/locked Data Window samples, but no bounded sequence of the active chart's raw rendered candles. `chart_digest` is a separate daily/weekly structural source and cannot establish what an intraday/replay screen is actually showing.
+
+The existing chart-state mirror now carries **`chart.price_window.v1`**:
+- source is the active ChartPanel's existing `ChartReadoutMeta.bars`, which is the accepted rendered bar set and is already replay-sliced; no new fetch, resample, bar store, indicator compute or signal plane;
+- at most **12** raw OHLCV bars are returned oldest→newest;
+- when paneSync has an actual active-pane calendar viewport, selection is `visible_tail`: only loaded bars inside that viewport are eligible. A viewport with no loaded overlap reports unavailable rather than substituting off-screen latest bars;
+- before the first viewport is available, selection is `loaded_tail`, ending exactly at the accepted rendered series tail;
+- every row carries exact source index/time/open/high/low/close/volume and `age_bars_from_loaded_end`;
+- replay context is carried as `basis.data_status = replay_slice`; the ordinary path says `loaded_chart_cache_not_live_attestation`;
+- newest bar closed status is explicitly **unknown**. This packet is raw source evidence, not a signal, forecast or probability.
+
+The existing state budget treats cross-pane comparison as the first optional packet and this active price window as the next optional packet. It can therefore be replaced by a fixed `chart_state_budget` unavailable receipt before established native/Data Window evidence or ACK identity is sacrificed. `mirror_coverage.omitted_fields` now structurally permits `price_window`.
+
+The Brain gateway adds a bounded qualifier with fixed server-owned semantics:
+- exact root origin/revision is required by `read_chart_state`;
+- packet symbol/timeframe must match the active chart;
+- replay/load status is an enum and survives sanitization;
+- source count/coverage arithmetic, 12-bar cap and oldest→newest declaration are checked;
+- source indices must be strictly consecutive/increasing; loaded-tail must end at the actual loaded source tail;
+- string bar times use the same YYYY-MM-DD axis semantics as Terminal `timeToMs`; numeric times remain epoch seconds;
+- times must be strictly increasing; visible-tail bars must lie within the declared viewport;
+- OHLC must be finite with high >= low; volume is nullable or finite/nonnegative;
+- client age annotations are ignored and recomputed server-side;
+- arbitrary client basis prose is discarded. Model-visible output fixes `predictive_validation:false`, `signal_authority:false`, `last_bar_closed:unknown`, and chart-loaded-not-independent-live freshness.
+
+Technician protocol advanced to **v9**. It tells the model that price-window bars are descriptive raw price evidence only, that visible-tail must not be replaced with off-screen bars, that replay_slice is history/replay rather than the current market, that omitted bars bound the claimable context, and that the newest candle cannot be called closed/confirmed without separate qualified evidence.
+
+### Related source-quality repair
+
+The previous mounted-pane implementation scheduled a mirror for any pane id passed to `noteViewport`. This chunk narrowed that behavior: only the active pane or a pane actually present in the incumbent `getPaneContextSnapshots` mounted-pane census can schedule a POST. A stale/stray id may update the local viewport cache but cannot create network churn or model evidence. No second mounted-pane owner was created.
+
+### Specifications / proof boundary
+
+Authored or extended, **NOT RUN**:
+- Terminal `terminal/lib/__tests__/chartPriceWindow.test.ts`: loaded tail, exact visible tail, no-overlap refusal, replay labeling, malformed/nonmonotone source refusal.
+- Terminal `terminal/lib/__tests__/useChartBusStateMirror.test.tsx`: real state-mirror integration from replay-safe rendered bars + active viewport.
+- Macro `tests/test_brain_price_window.py`: server age recompute/input immutability, visible-tail basis, replay preservation, index/time/OHLCV fail-closed cases, viewport containment, loaded-tail ending and real `read_chart_state` replacement.
+
+Only exact-head/remote fences, source/diff review, `git diff --check`, schema/budget parity, foreign-file hash preservation, path-scoped staging, non-force commits/pushes and exact branch readback support this publication. No test runner, TypeScript/Python compiler, browser/model/provider run, CI poll, merge, deployment or production config action was invoked.
+
+### Held lanes / next
+
+The separately held mutation/control actions remain untouched: shared widget Stop consumer; original-pane target freezing / legitimate-only revision adoption; selected-candle confirmation-filtered event projection; grouped-annotation inspection. The previous per-pane Data Window read remains held. This chunk did not retry or route around any refusal.
+
+DO_NOT_REDO the preceding mounted-pane and six-sample-native work: Terminal **4f8035a27c83f954d4d34c68a17b58d627ba7d6e** / **83ca35be96e0b1cfe5d8093ab2ee443c244d3f74**, Macro feature **58a6e59865b909086ced252198c986db3531b24d** / history **2a63f87f82e7e84961e6d926f100c389e2b95bfb**, plus all older accepted source.
+
+Exact next chunk: consume a genuinely permitted recovery/return for a held semantic action if one exists. Otherwise continue another path-disjoint Copilot capability that reuses incumbent read owners and does not widen unsafe mutation authority. Final combined native/price/multi-pane/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification remains owed, followed by normal #8005 → #8014 release gates.
+
+Own effects reconciled. EFFECT_UNKNOWN: none. No worker, watcher, provider activation, deployment or autonomous wake.
