@@ -1014,3 +1014,51 @@ def test_spine_comparison_phone_preview_has_a_real_phone_bound(specimen):
 def test_spine_comparison_value_headers_carry_machine_readable_dates(specimen):
     table = _spine_examples(specimen).split('id="spec-spine-values"', 1)[1].split('</table>', 1)[0]
     assert '<time datetime="2026-07-12">' in table and '<time datetime="2026-08-12">' in table
+
+
+# R11: historical evidence is not a next-event probability.
+def _specimen_rate_evidence(specimen):
+    m = re.search(r'<div class="panel" id="specimen-evidence-rate"[^>]*>(.*?)<!-- END RATE EVIDENCE -->', specimen, re.S)
+    assert m, "Keep one source-owned LENS open-state example"
+    return m.group(1)
+
+
+def test_evidence_rate_has_visible_fictional_and_historical_boundaries(specimen):
+    body = _specimen_rate_evidence(specimen)
+    assert 'Fictional study' in body and '虚构研究' in body
+    front = body.split('class="lens-pop-demo"')[0]
+    assert 'Small historical sample—not a forecast.' in front
+    assert '少量历史样本，不是预测。' in front
+    assert '约六成会消退' not in body
+
+
+def test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase(specimen):
+    body = _specimen_rate_evidence(specimen)
+    values = {k:int(v) for k,v in re.findall(r'data-spec-(total|faded|other)="(\d+)"', body)}
+    assert values == {'total':26, 'faded':16, 'other':10}
+    assert values['faded'] + values['other'] == values['total']
+    assert round(values['faded'] / values['total'] * 10) == 6
+    assert '16 of 26' in body and 'other 10' in body
+    assert 'within a day' in body and '2021–2026' in body
+
+
+def test_evidence_rate_static_trigger_does_not_pretend_runtime_works(specimen):
+    body = _specimen_rate_evidence(specimen)
+    nodes = _specimen_tab_nodes(body)
+    trigger = next(a for tag,a in nodes if a.get('id') == 'spec-lens-trigger')
+    assert trigger.get('type') == 'button' and 'disabled' in trigger
+    assert trigger.get('aria-describedby') == 'spec-lens-limit'
+    assert 'open-state example' in body and 'static' in body
+    assert not re.search(r'<script\b|onclick=|onfocus=', body)
+
+
+def test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt(specimen):
+    body = _specimen_rate_evidence(specimen)
+    assert 'data-tip-en=' in body and 'data-tip-zh=' in body
+    assert 'data-tip-rc-en=' in body and 'data-tip-rc-zh=' in body
+    assert body.count('class="lens-pop-demo"') == 1
+    assert 'not the next signal' in body and '不是下一次' in body
+    css = re.sub(r'\s+', '', _rule_body(specimen, r'#specimen-evidence-rate \.lens-pop-demo'))
+    assert 'position:static' in css and 'width:auto' in css
+    rc = re.sub(r'\s+', '', _rule_body(specimen, r'#specimen-evidence-rate \.rc'))
+    assert 'font-size:var(--fs-sm)' in rc

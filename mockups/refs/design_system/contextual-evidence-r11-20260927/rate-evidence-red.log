@@ -1,0 +1,36 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+______ test_evidence_rate_has_visible_fictional_and_historical_boundaries ______
+tests/test_design_system_foundations.py:1027: in test_evidence_rate_has_visible_fictional_and_historical_boundaries
+    body = _specimen_rate_evidence(specimen)
+tests/test_design_system_foundations.py:1022: in _specimen_rate_evidence
+    assert m, "Keep one source-owned LENS open-state example"
+E   AssertionError: Keep one source-owned LENS open-state example
+E   assert None
+______ test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase ______
+tests/test_design_system_foundations.py:1036: in test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase
+    body = _specimen_rate_evidence(specimen)
+tests/test_design_system_foundations.py:1022: in _specimen_rate_evidence
+    assert m, "Keep one source-owned LENS open-state example"
+E   AssertionError: Keep one source-owned LENS open-state example
+E   assert None
+_______ test_evidence_rate_static_trigger_does_not_pretend_runtime_works _______
+tests/test_design_system_foundations.py:1046: in test_evidence_rate_static_trigger_does_not_pretend_runtime_works
+    body = _specimen_rate_evidence(specimen)
+tests/test_design_system_foundations.py:1022: in _specimen_rate_evidence
+    assert m, "Keep one source-owned LENS open-state example"
+E   AssertionError: Keep one source-owned LENS open-state example
+E   assert None
+____ test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt ____
+tests/test_design_system_foundations.py:1056: in test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt
+    body = _specimen_rate_evidence(specimen)
+tests/test_design_system_foundations.py:1022: in _specimen_rate_evidence
+    assert m, "Keep one source-owned LENS open-state example"
+E   AssertionError: Keep one source-owned LENS open-state example
+E   assert None
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_has_visible_fictional_and_historical_boundaries
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_static_trigger_does_not_pretend_runtime_works
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt
+4 failed, 95 deselected in 0.18s

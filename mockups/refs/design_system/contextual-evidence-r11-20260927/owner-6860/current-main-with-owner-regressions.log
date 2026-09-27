@@ -1,0 +1,64 @@
+........FFFFFFFF............                                             [100%]
+=================================== FAILURES ===================================
+___ test_focusin_show_stamps_the_gesture_it_opened_under[templates/theme.js] ___
+tests/test_lens_nested_control_taps.py:163: in test_focusin_show_stamps_the_gesture_it_opened_under
+    assert "focusShowSeq = gestureSeq" in body, (
+E   AssertionError: templates/theme.js: focusin no longer stamps the gesture it opened under — the tap that opens the sheet will dismiss it via its own retargeted click
+E   assert 'focusShowSeq = gestureSeq' in '\n    var t = e.target && e.target.closest && e.target.closest(SEL);\n    if (!t) return;\n    // Tapping a nested co...ely show one. Keep this gate in step with show().\n    if (isSheet() && nestedCtrl(e.target, t)) return;\n    show(t);'
+_____ test_focusin_show_stamps_the_gesture_it_opened_under[site/theme.js] ______
+tests/test_lens_nested_control_taps.py:163: in test_focusin_show_stamps_the_gesture_it_opened_under
+    assert "focusShowSeq = gestureSeq" in body, (
+E   AssertionError: site/theme.js: focusin no longer stamps the gesture it opened under — the tap that opens the sheet will dismiss it via its own retargeted click
+E   assert 'focusShowSeq = gestureSeq' in '\n    var t = e.target && e.target.closest && e.target.closest(SEL);\n    if (!t) return;\n    // Tapping a nested co...ely show one. Keep this gate in step with show().\n    if (isSheet() && nestedCtrl(e.target, t)) return;\n    show(t);'
+_____ test_every_pointer_gesture_advances_the_sequence[templates/theme.js] _____
+tests/test_lens_nested_control_taps.py:184: in test_every_pointer_gesture_advances_the_sequence
+    assert re.search(
+E   AssertionError: templates/theme.js: no pointerdown listener advancing gestureSeq in the lens region
+E   assert None
+E    +  where None = <function search at 0x10493b9d0>("addEventListener\\('pointerdown',\\s*function\\s*\\(\\)\\s*\\{\\s*gestureSeq\\+\\+;?\\s*\\}", "var SEL = '[data-tip-en], .lens-q, .lens-term';\n  // A focusable control NESTED INSIDE a tip container owns its own ...    'aria-label',\n      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'\n    );\n  });\n")
+E    +    where <function search at 0x10493b9d0> = re.search
+_______ test_every_pointer_gesture_advances_the_sequence[site/theme.js] ________
+tests/test_lens_nested_control_taps.py:184: in test_every_pointer_gesture_advances_the_sequence
+    assert re.search(
+E   AssertionError: site/theme.js: no pointerdown listener advancing gestureSeq in the lens region
+E   assert None
+E    +  where None = <function search at 0x10493b9d0>("addEventListener\\('pointerdown',\\s*function\\s*\\(\\)\\s*\\{\\s*gestureSeq\\+\\+;?\\s*\\}", "var SEL = '[data-tip-en], .lens-q, .lens-term';\n  // A focusable control NESTED INSIDE a tip container owns its own ...    'aria-label',\n      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'\n    );\n  });\n")
+E    +    where <function search at 0x10493b9d0> = re.search
+__ test_gesture_guard_keys_on_pointer_reality_not_timing[templates/theme.js] ___
+tests/test_lens_nested_control_taps.py:196: in test_gesture_guard_keys_on_pointer_reality_not_timing
+    assert region.count("function gestureOpenedTip(") == 1, (
+E   AssertionError: templates/theme.js: gestureOpenedTip must be defined exactly once and shared
+E   assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x110028000>('function gestureOpenedTip(')
+E    +    where <built-in method count of str object at 0x110028000> = "var SEL = '[data-tip-en], .lens-q, .lens-term';\n  // A focusable control NESTED INSIDE a tip container owns its own ...    'aria-label',\n      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'\n    );\n  });\n".count
+_____ test_gesture_guard_keys_on_pointer_reality_not_timing[site/theme.js] _____
+tests/test_lens_nested_control_taps.py:196: in test_gesture_guard_keys_on_pointer_reality_not_timing
+    assert region.count("function gestureOpenedTip(") == 1, (
+E   AssertionError: site/theme.js: gestureOpenedTip must be defined exactly once and shared
+E   assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x130028000>('function gestureOpenedTip(')
+E    +    where <built-in method count of str object at 0x130028000> = "var SEL = '[data-tip-en], .lens-q, .lens-term';\n  // A focusable control NESTED INSIDE a tip container owns its own ...    'aria-label',\n      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'\n    );\n  });\n".count
+_ test_click_consults_the_gesture_guard_on_every_self_dismiss_path[templates/theme.js] _
+tests/test_lens_nested_control_taps.py:222: in test_click_consults_the_gesture_guard_on_every_self_dismiss_path
+    assert body.count("gestureOpenedTip(e)") >= 3, (
+E   AssertionError: templates/theme.js: expected the gesture guard on all three self-dismiss paths (body-retarget, touch toggle, desktop pin-toggle); found 0
+E   assert 0 >= 3
+E    +  where 0 = <built-in method count of str object at 0x12a8ffa00>('gestureOpenedTip(e)')
+E    +    where <built-in method count of str object at 0x12a8ffa00> = "\n    if (!e.target || !e.target.closest) return;\n    var _h = e.target.closest('span.help:not([data-tip-en])'); if ... show(t);\n      return;\n    }\n    // bare data-tip chips: desktop clicks pass through (hover already shows the tip)".count
+_ test_click_consults_the_gesture_guard_on_every_self_dismiss_path[site/theme.js] _
+tests/test_lens_nested_control_taps.py:222: in test_click_consults_the_gesture_guard_on_every_self_dismiss_path
+    assert body.count("gestureOpenedTip(e)") >= 3, (
+E   AssertionError: site/theme.js: expected the gesture guard on all three self-dismiss paths (body-retarget, touch toggle, desktop pin-toggle); found 0
+E   assert 0 >= 3
+E    +  where 0 = <built-in method count of str object at 0x10602ec00>('gestureOpenedTip(e)')
+E    +    where <built-in method count of str object at 0x10602ec00> = "\n    if (!e.target || !e.target.closest) return;\n    var _h = e.target.closest('span.help:not([data-tip-en])'); if ... show(t);\n      return;\n    }\n    // bare data-tip chips: desktop clicks pass through (hover already shows the tip)".count
+=========================== short test summary info ============================
+FAILED tests/test_lens_nested_control_taps.py::test_focusin_show_stamps_the_gesture_it_opened_under[templates/theme.js]
+FAILED tests/test_lens_nested_control_taps.py::test_focusin_show_stamps_the_gesture_it_opened_under[site/theme.js]
+FAILED tests/test_lens_nested_control_taps.py::test_every_pointer_gesture_advances_the_sequence[templates/theme.js]
+FAILED tests/test_lens_nested_control_taps.py::test_every_pointer_gesture_advances_the_sequence[site/theme.js]
+FAILED tests/test_lens_nested_control_taps.py::test_gesture_guard_keys_on_pointer_reality_not_timing[templates/theme.js]
+FAILED tests/test_lens_nested_control_taps.py::test_gesture_guard_keys_on_pointer_reality_not_timing[site/theme.js]
+FAILED tests/test_lens_nested_control_taps.py::test_click_consults_the_gesture_guard_on_every_self_dismiss_path[templates/theme.js]
+FAILED tests/test_lens_nested_control_taps.py::test_click_consults_the_gesture_guard_on_every_self_dismiss_path[site/theme.js]
+8 failed, 20 passed, 2 deselected in 0.08s

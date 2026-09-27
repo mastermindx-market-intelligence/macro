@@ -1,0 +1,9 @@
+F...                                                                     [100%]
+=================================== FAILURES ===================================
+______ test_evidence_rate_has_visible_fictional_and_historical_boundaries ______
+tests/test_design_system_foundations.py:1030: in test_evidence_rate_has_visible_fictional_and_historical_boundaries
+    assert 'Small historical sample—not a forecast.' in front
+E   assert 'Small historical sample—not a forecast.' in '\n      <div class="mx-sec"><h3 class="l-en">Evidence behind a rate · LENS</h3><h3 class="l-zh">比例背后的证据 · LENS</h3></...t"><span class="l-en">Next signal: 62% failure chance.</span><span class="l-zh">少量历史样本，不是预测。</span></p>\n        <div '
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_has_visible_fictional_and_historical_boundaries
+1 failed, 3 passed, 95 deselected in 0.04s

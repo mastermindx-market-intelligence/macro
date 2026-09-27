@@ -229,6 +229,15 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
 #spec-spine-values .tnum{ text-align:right; white-space:nowrap; }
 
 .wrap:not(.mockup-spine-390) #spec-spine-comparison [data-spec="ud-b1"] .mx-spine-row[data-null="1"] > .mx-spine-stance{ grid-column:4; }
+
+/* Open-state projection only; the actual LENS runtime stays in theme.js. */
+#specimen-evidence-rate .law{font-size:var(--fs-sm);color:var(--muted);margin:var(--sp-2) 0 var(--sp-4);}
+#specimen-evidence-rate .lens-demo{display:block;}
+#specimen-evidence-rate .lens-pop-demo{position:static;width:auto;box-sizing:border-box;margin-top:var(--sp-3);}
+#specimen-evidence-rate #spec-lens-limit{font-size:var(--fs-body);margin:var(--sp-2) 0;color:var(--text);}
+#specimen-evidence-rate .lens-pop-demo p{margin:var(--sp-2) 0;font-size:var(--fs-body);}
+#specimen-evidence-rate .rc{font-size:var(--fs-sm);font-family:var(--font-ui);line-height:1.5;}
+#specimen-evidence-rate .lens-trigger{min-height:var(--sp-8);}
 </style>
 </head>
 <body>
@@ -503,25 +512,26 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
       <p class="mockup-note l-zh">哪一种形态是规范：R4 网格阶梯——独立单元格、每格生命周期粗细顶条、终局格置于实时总和之外——是 B 型看板页的规范形态（C8 构图裁定，<code>n1_ladder_canonicity</code> 条），在 theme.css 中以 <code>.mx-ladder--board</code> 发布。上方的弹性条仍为通用示意；运营裁定的七格分割与双总数法则无法容纳于单总数条形控件。</p>
     </div>
 
-    <div class="panel" style="min-height:210px">
-      <div class="mx-sec"><h3 class="l-en">LENS receipt (Tier 2) — shown open</h3><h3 class="l-zh">LENS 凭据（第二层）— 展开示意</h3></div>
-      <div class="lens-demo">
-        <button class="gbtn gbtn-sm lens-trigger"
-          data-tip-en="6 in 10 of these faded within a day"
-          data-tip-zh="此类信号约六成一天内消退"
-          data-tip-rc-en="26 past cases · window 2021–2026 · display tier"
-          data-tip-rc-zh="历史26例 · 窗口2021–2026 · 展示层">
-          <span class="l-en">about 6 in 10 faded ?</span><span class="l-zh">约六成会消退 ?</span></button>
-        <div class="lens-pop-demo">
-          <div class="l-en">In 26 past cases, about 6 in 10 of these early signs faded within a day.</div>
-          <div class="l-zh">历史 26 次中，此类早期信号约六成在一天内消退。</div>
-          <div class="rc l-en">receipt: n=26 · window 2021–2026 · display tier</div>
-          <div class="rc l-zh">凭据：n=26 · 窗口 2021–2026 · 展示层</div>
+    <div class="panel" id="specimen-evidence-rate" tabindex="-1">
+      <div class="mx-sec"><h3 class="l-en">Evidence behind a rate · LENS</h3><h3 class="l-zh">比例背后的证据 · LENS</h3></div>
+      <p class="law"><span class="l-en">Fictional study · static open-state example. The button is not connected here.</span><span class="l-zh">虚构研究 · 静态展开示例。此处按钮未连接交互。</span></p>
+      <div class="lens-demo" data-spec-total="26" data-spec-faded="16" data-spec-other="10">
+        <button id="spec-lens-trigger" type="button" disabled class="gbtn gbtn-sm lens-trigger" aria-describedby="spec-lens-limit"
+          data-tip-en="In this fictional sample, 16 of 26 signals faded within a day. The other 10 did not. This historical frequency is not a forecast."
+          data-tip-zh="此虚构样本中，26次信号有16次在一天内消退，其余10次未消退。历史比例不是预测。"
+          data-tip-rc-en="26 scored examples · 2021–2026 · fictional"
+          data-tip-rc-zh="26个已评估示例 · 2021–2026年 · 虚构">
+          <span class="l-en">About 6 in 10 faded</span><span class="l-zh">约六成曾消退</span></button>
+        <p id="spec-lens-limit"><span class="l-en">Small historical sample—not a forecast.</span><span class="l-zh">少量历史样本，不是预测。</span></p>
+        <div class="lens-pop-demo" role="note" aria-labelledby="spec-lens-basis">
+          <b id="spec-lens-basis"><span class="l-en">16 of 26 faded within a day.</span><span class="l-zh">26次中，16次在一天内消退。</span></b>
+          <p><span class="l-en">The other 10 did not meet that definition.</span><span class="l-zh">其余10次不符合这一判定。</span></p>
+          <p><span class="l-en">This describes the sample, not the next signal’s chance of failure.</span><span class="l-zh">这是样本描述，不是下一次信号失败的概率。</span></p>
+          <div class="rc"><span class="l-en">26 scored examples · 2021–2026 · fictional</span><span class="l-zh">26个已评估示例 · 2021–2026年 · 虚构</span></div>
         </div>
       </div>
-      <p class="mockup-note l-en" style="margin-top:96px">The only popover. Production wires data-tip-en/zh (+ data-tip-rc-*) via theme.js; this instance is rendered open for the constitution. Receipts (n=, windows, study IDs) live HERE, never at rest.</p>
-      <p class="mockup-note l-zh" style="margin-top:8px">全站唯一浮层。生产环境由 theme.js 挂接 data-tip-en/zh（及 data-tip-rc-*）；本例为展示而常开。凭据（n=、窗口、研究编号）住在这里，绝不常驻页面。</p>
-    </div>
+      <p class="mockup-note"><span class="l-en">Reuse the existing theme.js LENS. Keep a material limitation beside the claim; place the precise basis in its explanation. This static design is not proof of hover, focus or touch behavior.</span><span class="l-zh">复用 theme.js 的既有 LENS。重要限制紧邻结论，准确依据放在解释中。静态设计不能证明悬停、焦点或触摸行为。</span></p>
+    </div><!-- END RATE EVIDENCE -->
 
     <div class="panel" id="specimen-task-tabs" tabindex="-1">
       <div class="mx-sec" id="specimen-tabs-title"><h3 class="l-en">Table (.mx-tbl) + Tabs (.mx-tabset)</h3><h3 class="l-zh">表格（.mx-tbl）+ 页签（.mx-tabset）</h3></div>
