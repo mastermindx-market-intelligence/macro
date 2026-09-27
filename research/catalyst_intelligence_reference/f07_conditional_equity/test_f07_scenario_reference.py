@@ -226,3 +226,13 @@ def test_zero_probability_is_valid_not_treated_as_missing():
 def test_claimed_calibration_cannot_unlock_ranking():
     p=packet();p['calibration_passed']=True
     with pytest.raises(ContractError,match='unknown_fields'):run(p)
+
+@pytest.mark.parametrize('weights', [(D('0.6'),D('0.4')), (1,0)])
+def test_accepted_numeric_probability_types_export_canonically(weights):
+    import json
+    p=packet()
+    for state,weight in zip(p['states'],weights):state['probability']=weight
+    r=run(p)
+    assert all(isinstance(s['probability'],str) for s in r['states'])
+    assert [D(s['probability']) for s in r['states']]==list(map(D,weights))
+    assert json.loads(json.dumps(r))==r
