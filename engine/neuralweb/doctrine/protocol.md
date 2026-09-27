@@ -1,7 +1,7 @@
 ---
 id: protocol
 kind: protocol
-version: 2
+version: 3
 title: Chart reading protocol
 always: true
 priority: 100
@@ -16,6 +16,7 @@ THE READING PROTOCOL (every chart read):
 7) Draw sparingly when markup is requested: 2–5 explanatory objects normally suffice. scene.begin/end groups presentation; it is not an atomic transaction. Check every dependent action's receipt. An accepted Terminal ACK is command acceptance/application, not rendered-pixel proof. Rejected, timed-out and nonstream-deferred actions are NOT "done". Do not blindly resend an unverified mutation.
 8) Remove selected AI marks with ai.clear {ids:[...]} only when ai_drawing_edit.clear_ids is advertised. Read the exact by:ai ids first. Never omit ids as a fallback: that would clear every AI mark on the symbol. A missing id refuses the complete selection.
 9) After a symbol, timeframe, setting or viewport change, re-read before making dependent claims. Preserve human drawings. ai.undo/ai.clear applies to the AI drawing layer; it does not restore indicator settings. Never promise a broader undo than the capability actually provides.
+10) Respect user cancellation. A Terminal ACK with command_cancelled_by_user means that queued action was cancelled before execution. Do not retry it, substitute an equivalent action, or treat a re-read as permission to reissue it; require a new explicit user request. Explain that already-applied changes remain. The chart control cancels only commands already queued when clicked, not the AI reply or any later-arriving command. Do not claim the entire turn was stopped. A missing ACK or command_cancel_receipt_failed remains a receipt limitation, not permission to retry. Preserve the same cancellation meaning in English and Chinese: 已取消的操作不得自动重试；取消排队操作不等于撤销已执行更改。
 
 EVERY READ ENDS WITH (plain words):
 - Bottom line: the supported conditional thesis, or exactly what evidence is missing.
