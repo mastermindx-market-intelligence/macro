@@ -785,6 +785,7 @@ def emit_crypto_cockpit_json(
     regime: dict,
     gate: dict,
     *,
+    decision: dict,
     price: float,
     change_24h_pct: float,
 ) -> None:
@@ -793,8 +794,9 @@ def emit_crypto_cockpit_json(
     This contract never re-scores BTC. It publishes the same final gated
     allocation, Master Signal, and named axis states used by vector.html.
     """
-    last = sig.iloc[-1]
-    allocation = last.get("alloc_optimal")
+    from engine import btc_decision
+
+    budget = btc_decision.project_budget(decision)
     payload = {
         "schema": "crypto.cockpit/v1",
         "contract_phase": "w0",
@@ -810,21 +812,19 @@ def emit_crypto_cockpit_json(
             "summary_en": master.get("headline_en", ""),
             "summary_zh": master.get("headline_zh", ""),
             "master_score": master.get("score"),
-            "exposure_pct": (
-                round(100 * float(allocation))
-                if allocation is not None and pd.notna(allocation)
-                else None
-            ),
+            "exposure_pct": budget["final_exposure_pct"],
             "gate_active": bool(gate.get("active")),
         },
+        "decision": budget,
         "axes": _cockpit_axis_rows(master, regime),
         "authority": {
-            "sizing_source": "signals.alloc_optimal",
+            "sizing_source": "btc.decision/v1.final.exposure_pct",
             "stance_source": "btc_master.synthesize",
             "axis_contract": "COCKPIT_AXIS_PRESENTATION",
             "no_new_arithmetic": True,
         },
         "future_consumers": [
+            "crypto.html:H5",
             "crypto.html:H6",
             "index.html:crypto-product-card",
             "neural-web:crypto-lens",
@@ -4995,8 +4995,8 @@ def main() -> int:
         log.error("risk/strategy chart json failed (%s)", e)
     try:  # E0 shared display contract — same process and as-of as vector.html
         emit_crypto_cockpit_json(
-            site, sig, master, regime, gate, price=close.iloc[-1],
-            change_24h_pct=chg24,
+            site, sig, master, regime, gate, decision=decision,
+            price=close.iloc[-1], change_24h_pct=chg24,
         )
     except Exception as e:  # noqa: BLE001
         log.error("crypto cockpit contract failed (%s)", e)

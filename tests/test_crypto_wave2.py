@@ -8,6 +8,7 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
 from collectors.crypto_misc import CryptoUniverseAdapter
+from engine.btc_decision import build_decision
 from engine.crypto_market_state import build_market_state
 from engine.crypto_universe import breadth_read, load_universe
 from scripts import build_crypto, build_vector
@@ -215,3 +216,155 @@ def test_committed_universe_has_snapshot_provenance():
     frame = pd.read_parquet(files[0])
     assert {"source", "symbol", "market_cap_rank", "current_price"} <= set(frame.columns)
     assert frame.iloc[-1]["source"] in {"CoinGecko", "CoinPaprika"}
+
+
+def _patch_h5_split_context(monkeypatch, index):
+    monkeypatch.setattr(
+        build_crypto.config,
+        "load",
+        lambda: {"vector": {"alt_cycle": {}}},
+    )
+    highs = pd.DataFrame({"high": [101.0, 111.0]}, index=index)
+    monkeypatch.setattr(
+        build_crypto.store,
+        "read",
+        lambda group, name: highs
+        if (group, name) == ("coinbase", "btc_daily")
+        else None,
+    )
+    monkeypatch.setattr(
+        build_crypto.btc_mtf,
+        "mtf_ladder",
+        lambda close, high: {"ladder": {"regime": "bull"}},
+    )
+    monkeypatch.setattr(
+        build_crypto,
+        "_series",
+        lambda *args, **kwargs: pd.Series([0.04, 0.05], index=index),
+    )
+    monkeypatch.setattr(
+        build_crypto.alt_cycle,
+        "ethbtc_signal",
+        lambda eth, close, cfg: {"level": 0.05},
+    )
+    monkeypatch.setattr(
+        build_crypto.alt_cycle,
+        "alt_season_score",
+        lambda ethbtc, dominance, cfg: (60, "Mixed"),
+    )
+    monkeypatch.setattr(
+        build_crypto.alt_cycle,
+        "alloc_grid",
+        lambda regime, bucket: {
+            "btc": 60,
+            "eth": 25,
+            "alts": 15,
+            "regime_key": "bull",
+        },
+    )
+
+
+def _decision_projection(exposure_pct, *, status="ok", integrity_ok=True, errors=None):
+    return {
+        "schema": "btc.decision/v1",
+        "status": status,
+        "as_of": "2026-07-29",
+        "integrity_ok": integrity_ok,
+        "final_exposure_pct": exposure_pct,
+        "errors": list(errors or []),
+    }
+
+
+def test_h5_total_budget_comes_from_canonical_decision_not_raw_signal(monkeypatch):
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    _patch_h5_split_context(monkeypatch, index)
+    signals = pd.DataFrame(
+        {
+            "close": [100.0, 110.0],
+            # Deliberately disagree with the canonical projection. H5 must not
+            # recover its total budget from this raw signal column.
+            "alloc_optimal": [1.0, 1.0],
+        },
+        index=index,
+    )
+
+    out = build_crypto._allocation(
+        signals,
+        {"btc_dominance": 58.0},
+        _decision_projection(40),
+    )
+
+    assert out["available"] is True
+    assert out["exposure"] == 40
+    assert out["btc"] == 24
+    assert out["eth"] == 10
+    assert out["alts"] == 6
+    assert out["cash"] == 60
+    assert out["authority_source"] == "btc.decision/v1.final.exposure_pct"
+
+
+def test_h5_valid_zero_budget_is_not_unavailable(monkeypatch):
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    _patch_h5_split_context(monkeypatch, index)
+    signals = pd.DataFrame(
+        {"close": [100.0, 110.0], "alloc_optimal": [0.9, 0.9]},
+        index=index,
+    )
+
+    out = build_crypto._allocation(
+        signals,
+        {"btc_dominance": 58.0},
+        _decision_projection(0),
+    )
+
+    assert out["available"] is True
+    assert out["exposure"] == 0
+    assert out["btc"] == 0
+    assert out["eth"] == 0
+    assert out["alts"] == 0
+    assert out["cash"] == 100
+
+
+def test_h5_invalid_decision_fails_closed_without_silent_cash():
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    signals = pd.DataFrame(
+        {"close": [100.0, 110.0], "alloc_optimal": [1.0, 1.0]},
+        index=index,
+    )
+
+    out = build_crypto._allocation(
+        signals,
+        {"btc_dominance": 58.0},
+        _decision_projection(
+            None,
+            status="unavailable",
+            integrity_ok=False,
+            errors=["RAW_FINAL_MISMATCH_WITHOUT_NAMED_OVERRIDE"],
+        ),
+    )
+
+    assert out["available"] is False
+    assert out["exposure"] is None
+    assert out["btc"] is None
+    assert out["eth"] is None
+    assert out["alts"] is None
+    assert out["cash"] is None
+    assert out["authority_error"] == "CANONICAL_DECISION_UNAVAILABLE"
+
+
+def test_h5_missing_cockpit_projection_is_unavailable_not_zero(tmp_path):
+    e0 = build_crypto._load_e0(tmp_path)
+
+    assert e0["hero"]["exposure_pct"] is None
+    assert e0["decision"]["schema"] == "btc.decision/v1"
+    assert e0["decision"]["status"] == "unavailable"
+    assert e0["decision"]["integrity_ok"] is False
+    assert e0["decision"]["final_exposure_pct"] is None
+
+
+def test_h5_build_has_explicit_fail_closed_guard():
+    source = (ROOT / "scripts" / "build_crypto.py").read_text(encoding="utf-8")
+
+    assert 'if not allocation.get("available"):' in source
+    assert "Crypto H5 budget unavailable" in source
+    assert 'latest["alloc_optimal"]' not in source

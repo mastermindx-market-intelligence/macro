@@ -18,7 +18,7 @@ from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine import alt_cycle, btc_mtf  # noqa: E402
+from engine import alt_cycle, btc_decision, btc_mtf  # noqa: E402
 from engine.btc_options import build_contract as build_btc_options, write_contract as write_btc_options  # noqa: E402
 from engine.crypto_market_state import build_market_state  # noqa: E402
 from engine.crypto_universe import breadth_read, load_universe  # noqa: E402
@@ -126,8 +126,17 @@ def _load_e0(site: Path) -> dict:
                 "stance_zh": "暂无",
                 "summary_en": "Bitcoin authority contract is awaiting its next build.",
                 "summary_zh": "比特币权威合约正在等待下一次构建。",
-                "exposure_pct": 0,
+                "exposure_pct": None,
                 "gate_active": False,
+            },
+            "decision": {
+                "schema": "btc.decision/v1",
+                "status": "unavailable",
+                "as_of": None,
+                "integrity_ok": False,
+                "final_exposure_pct": None,
+                "errors": ["COCKPIT_DECISION_UNAVAILABLE"],
+                "authority_source": "btc.decision/v1.final.exposure_pct",
             },
             "axes": [],
         }
@@ -174,21 +183,59 @@ def _enrich_universe(rows: list[dict]) -> list[dict]:
     return rows
 
 
-def _allocation(signals: pd.DataFrame, market: dict) -> dict:
+def _allocation_unavailable(reason: str, decision: dict | None = None) -> dict:
+    projection = decision if isinstance(decision, dict) else {}
+    return {
+        "available": False,
+        "btc": None,
+        "eth": None,
+        "alts": None,
+        "cash": None,
+        "exposure": None,
+        "season": "Unavailable",
+        "season_score": None,
+        "regime": "unavailable",
+        "ethbtc": None,
+        "authority_source": "btc.decision/v1.final.exposure_pct",
+        "authority_error": reason,
+        "decision_status": projection.get("status") or "unavailable",
+        "decision_as_of": projection.get("as_of"),
+        "decision_errors": list(projection.get("errors") or []),
+    }
+
+
+def _allocation(signals: pd.DataFrame, market: dict, decision: dict) -> dict:
+    """Split one canonical BTC DecisionState budget across crypto classes.
+
+    btc.decision/v1 owns the total budget. The class grid is display context
+    only and may split an available target, never originate or rescue one.
+    """
+    projection = decision if isinstance(decision, dict) else {}
+    exposure = projection.get("final_exposure_pct")
+    try:
+        exposure_num = float(exposure)
+    except (TypeError, ValueError, OverflowError):
+        exposure_num = None
+    canonical_ok = bool(
+        projection.get("schema") == "btc.decision/v1"
+        and projection.get("status") == "ok"
+        and projection.get("integrity_ok") is True
+        and exposure_num is not None
+        and pd.notna(exposure_num)
+        and 0.0 <= exposure_num <= 100.0
+    )
+    if not canonical_ok:
+        return _allocation_unavailable("CANONICAL_DECISION_UNAVAILABLE", projection)
+
+    alloc_pct = round(exposure_num)
     if signals is None or signals.empty or "close" not in signals.columns:
-        return {
-            "btc": 0,
-            "eth": 0,
-            "alts": 0,
-            "cash": 100,
-            "exposure": 0,
-            "season": "Unavailable",
-            "season_score": None,
-            "regime": "neutral",
-            "ethbtc": None,
-        }
+        return _allocation_unavailable("CLASS_SPLIT_INPUT_UNAVAILABLE", projection)
+
     cfg = config.load()["vector"]["alt_cycle"]
     close = pd.to_numeric(signals["close"], errors="coerce").dropna()
+    if close.empty:
+        return _allocation_unavailable("CLASS_SPLIT_INPUT_UNAVAILABLE", projection)
+
     btc_bars = store.read("coinbase", "btc_daily")
     high = (
         pd.to_numeric(btc_bars["high"], errors="coerce").reindex(close.index).ffill()
@@ -203,23 +250,19 @@ def _allocation(signals: pd.DataFrame, market: dict) -> dict:
         eb, market.get("btc_dominance"), cfg
     )
     grid = alt_cycle.alloc_grid(regime, bucket)
-
-    # Load-bearing parity with the retired allocation page: alloc_optimal sets
-    # the TOTAL crypto budget; the alt grid only splits that budget.
-    latest = signals.iloc[-1]
-    alloc_pct = (
-        round(100 * latest["alloc_optimal"])
-        if pd.notna(latest.get("alloc_optimal"))
-        else 0
-    )
     risk_assets = grid["btc"] + grid["eth"] + grid["alts"]
-    if risk_assets > 0 and alloc_pct > 0:
+    if risk_assets <= 0:
+        return _allocation_unavailable("CLASS_SPLIT_UNAVAILABLE", projection)
+
+    if alloc_pct > 0:
         btc_pct = round(alloc_pct * grid["btc"] / risk_assets)
         eth_pct = round(alloc_pct * grid["eth"] / risk_assets)
         alt_pct = alloc_pct - btc_pct - eth_pct
     else:
         btc_pct = eth_pct = alt_pct = 0
+
     return {
+        "available": True,
         "btc": btc_pct,
         "eth": eth_pct,
         "alts": alt_pct,
@@ -229,6 +272,11 @@ def _allocation(signals: pd.DataFrame, market: dict) -> dict:
         "season_score": score,
         "regime": grid["regime_key"],
         "ethbtc": round(eb["level"], 4) if eb and eb.get("level") is not None else None,
+        "authority_source": "btc.decision/v1.final.exposure_pct",
+        "authority_error": None,
+        "decision_status": "ok",
+        "decision_as_of": projection.get("as_of"),
+        "decision_errors": [],
     }
 
 
@@ -375,7 +423,18 @@ def build(site_dir: Path | None = None) -> Path:
     breadth = breadth_read(universe)
     breadth["state_zh"] = _state_zh(breadth["state"])
     signals = store.read("vector", "signals")
-    allocation = _allocation(signals, market)
+    master_context = {
+        "band": ((e0.get("hero") or {}).get("stance_en")),
+        "band_zh": ((e0.get("hero") or {}).get("stance_zh")),
+    }
+    decision_state = btc_decision.build_decision(signals, master_context)
+    decision_projection = btc_decision.project_budget(decision_state)
+    allocation = _allocation(signals, market, decision_projection)
+    if not allocation.get("available"):
+        raise RuntimeError(
+            "Crypto H5 budget unavailable: "
+            f"{allocation.get('authority_error') or 'UNKNOWN'}"
+        )
     asset_states = build_asset_states()
     options_contract = build_btc_options()
     write_btc_options(site, options_contract)
