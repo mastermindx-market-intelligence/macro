@@ -114,9 +114,36 @@ the composed payload, not a helper — row 19), and a clause may be pinned while
 obligation's OPERATIVE clause is not (row 15 clause 2). Rows whose subjects are wholly
 unlanded — the T05/T06/T07 route, client, mount and update families, and the T08 real-source
 journeys, which additionally need G2 before any live figure — remain `NOT_RUN` on that measured
-basis. Scope of what was and was NOT re-measured is recorded in the ledger's
-`scope_of_the_2026_09_27_subject_reaudit` key; do not read this table as a completed 40-row
-subject audit.
+basis. **COMPLETED the same day (wave 7).** The caveat that stood here — *"do not read this table as a completed 40-row subject audit"* — is withdrawn, because the audit it warned about is
+finished. Every one of the 40 rows now carries a SUBJECT-level measurement in
+`MGD_EXECUTION_STATUS.json`, and **no row explains its status by whether a task has landed.**
+Wave 7 measured the 14 rows wave 6 had left plus the 8 it had read without writing their
+evidence onto the rows:
+
+- **MOVED to `PARTIAL_BY_CONSTRUCTION` on delivered, green, controlled pins** — MGD-05 (the
+  `SLICE_ANCHORS` binding plus `slice_theme_mismatch`), MGD-24 (`time_mode` separates `latest`
+  from `system_replay`, and replay without a cutoff refuses), MGD-27 (a refresh pairing changed
+  quantities with stale causal text refuses), MGD-28 (`expected_generation_required` /
+  `generation_changed`), MGD-29 (`route_unbound` with `read_count == 0`, identical for entitled
+  and unentitled callers, **with a positive control that sets the counter to 3**), MGD-30
+  (`live_admission == 'refused'` across the whole parametrized casebook).
+- **Measured SUBJECT-ABSENT** — MGD-03/26/31/32/33/36/40: each obligation's own vocabulary
+  occurs ZERO times across the delivered module, binding, schema and all seven suites.
+- **Measured G2-GATED** — MGD-06/07/37/38: the unit is a real-source demonstration, which no
+  test this program may write could satisfy, because every case is synthetic and live admission
+  is refused by design. These are admission gates, not coverage gaps.
+- **Measured OPERATIVE-CLAUSE-BLOCKED** — MGD-02/13/14/25: a later clause is already
+  unviolatable (`ownership` 0 occurrences; `measure` copied verbatim; ordering by
+  `stable_subject_id` only, never by time) while the FIRST clause needs T02's unlanded
+  vocabulary. The unviolatable half must not be read as the row.
+
+Two deliberate NON-moves are recorded on their own rows so a later lane does not "fix" them:
+**MGD-35** stays `NOT_RUN` although the wiring that could violate it is absent, because the
+hazard is entirely future and the row's whole value to a T07 lane is that it is still owed;
+**MGD-38** stays `NOT_RUN` although half its vocabulary is delivered, because its unit is a
+demonstration and half a demonstration is none. Counts after wave 7:
+`COVERED_SUITE_GREEN 6 · DEFERRED_LAWFUL 1 · NOT_RUN 18 · PARTIAL_BY_CONSTRUCTION 12 ·
+SATISFIED_BY_ABSENCE_OF_CAPABILITY 3 = 40`, `UNPINNED 0`, rederived from rows.
 
 ## §6.4 The one unblocked pin this program could still write — DELIVERED 2026-09-27
 
