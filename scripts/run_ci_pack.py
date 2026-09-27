@@ -3123,6 +3123,69 @@ def _current_commit_sha(root: Path) -> str:
     return value
 
 
+_EXACT_TESTED_TREE_DEPTHS = (2, 8, 32, 128, 512, 2048)
+
+
+def _tested_tree_ancestry_ready(
+    root: Path,
+    git_env: Mapping[str, str],
+    tested_tree_sha: str,
+) -> bool:
+    """Return whether the tested tree exposes all ancestry current consumers need.
+
+    Pull-request runs execute a synthetic two-parent merge. The six current
+    fetch-depth-0 consumers need the merge parents to be visible and need a real
+    merge base between those parents so PR commit trailers and diff-scoped
+    guards can walk to the branch point. They do not need unrelated refs/tags or
+    history older than that merge base. Main/workflow-dispatch runs use a normal
+    zero/one-parent commit, where making the immediate parent visible is enough:
+    each consumer explicitly fetches its canonical base before its own guard.
+    """
+
+    raw = _git_cmd(root, git_env, "cat-file", "-p", tested_tree_sha)
+    if raw.returncode != 0:
+        return False
+    raw_parents = [
+        line.split()[1].lower()
+        for line in raw.stdout.splitlines()
+        if line.startswith("parent ") and len(line.split()) == 2
+    ]
+    if len(raw_parents) > 2 or any(
+        not re.fullmatch(r"[0-9a-f]{40}", parent) for parent in raw_parents
+    ):
+        return False
+
+    visible = _git_cmd(
+        root,
+        git_env,
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        tested_tree_sha,
+    )
+    if visible.returncode != 0:
+        return False
+    parts = visible.stdout.strip().lower().split()
+    if not parts or parts[0] != tested_tree_sha.lower():
+        return False
+    if parts[1:] != raw_parents:
+        return False
+
+    if len(raw_parents) < 2:
+        return True
+
+    merge_base = _git_cmd(
+        root,
+        git_env,
+        "merge-base",
+        raw_parents[0],
+        raw_parents[1],
+    )
+    value = merge_base.stdout.strip().lower()
+    return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -3133,10 +3196,17 @@ def _prepare_provided_actions(
 
     setup-python 3.12 and setup-node 20 are supplied by the pack job itself.
     The ordinary checkout is represented by the exact-tree reset. A manifest
-    checkout requesting fetch-depth 0 additionally receives every advertised
-    branch and tag with complete history, matching checkout@v4's closed input
-    contract. Exact-base replay points ``origin`` at its isolated base-only
-    remote, so this same operation can never substitute moving current main.
+    checkout requesting fetch-depth 0 first deepens only the authoritative
+    tested tree, in bounded steps, until the synthetic merge parents have a
+    usable merge base. That is the actual history contract of every current
+    fetch-depth-0 consumer: each fetches its canonical base itself, none reads
+    tags/unrelated remote refs, and self-mod-fence needs the PR-commit ancestry
+    only through the branch point.
+
+    If exact-tree ancestry cannot be established within the bounded ladder, or
+    any exact fetch fails, preserve the established all-branches -> main-only
+    -> 30-day recovery ladder. Exact-base replay points ``origin`` at its
+    isolated base-only remote, so the same fail-closed recovery remains intact.
     """
     contracts = _job_action_contract(job)
     if not any(
@@ -3151,6 +3221,53 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
+
+    git_env = _trusted_git_environment(root)
+    exact_fetch_failed = False
+    for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--no-tags",
+                    f"--depth={depth}",
+                    "origin",
+                    tested_tree_sha,
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            exact_fetch_failed = True
+            print(
+                "::warning title=run-ci-pack::exact tested-tree ancestry fetch failed "
+                f"at depth {depth}; retrying legacy all-branches deepen",
+                flush=True,
+            )
+            break
+
+        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+            return
+
+        if index + 1 < len(_EXACT_TESTED_TREE_DEPTHS):
+            print(
+                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
+                f"at depth {depth}; deepening to "
+                f"{_EXACT_TESTED_TREE_DEPTHS[index + 1]}",
+                flush=True,
+            )
+
+    if not exact_fetch_failed:
+        print(
+            "::warning title=run-ci-pack::exact tested-tree ancestry remained "
+            f"incomplete through depth {_EXACT_TESTED_TREE_DEPTHS[-1]}; "
+            "retrying legacy all-branches deepen",
+            flush=True,
+        )
+
     try:
         subprocess.run(
             [
@@ -3164,7 +3281,7 @@ def _prepare_provided_actions(
                 "+refs/heads/*:refs/remotes/origin/*",
             ],
             cwd=root,
-            env=_trusted_git_environment(root),
+            env=git_env,
             check=True,
         )
     except subprocess.CalledProcessError:
@@ -3193,7 +3310,7 @@ def _prepare_provided_actions(
                     "+refs/heads/main:refs/remotes/origin/main",
                 ],
                 cwd=root,
-                env=_trusted_git_environment(root),
+                env=git_env,
                 check=True,
             )
         except subprocess.CalledProcessError:
@@ -3223,7 +3340,7 @@ def _prepare_provided_actions(
                     "+refs/heads/main:refs/remotes/origin/main",
                 ],
                 cwd=root,
-                env=_trusted_git_environment(root),
+                env=git_env,
                 check=True,
             )
 

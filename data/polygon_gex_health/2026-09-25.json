@@ -38,6 +38,24 @@
         "lease_end_et": "2026-09-26T03:00:00-04:00",
         "write_kind": "first_write"
       }
+    },
+    {
+      "capture_instant": "2026-09-27T03:15:25.776842+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-09-25",
+        "lease_end_et": "2026-09-26T03:00:00-04:00",
+        "write_kind": "first_write"
+      }
     }
   ]
 }
