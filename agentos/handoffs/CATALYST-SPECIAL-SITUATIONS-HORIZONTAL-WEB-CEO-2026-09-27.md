@@ -303,3 +303,20 @@ Codex must begin with a **real promotion-path RED test**, not by implementing th
 construct an 8-K whose `llm_category=Going-Private` and `llm_role=none`, prove current
 `build_situations()` incorrectly emits a direct situation, then integrate the owner-adjudicated
 relationship seam. The MGLD/USCF source remains the first real-shaped acceptance fixture.
+
+### Fresh post-R2.1 validation receipt
+
+Exact remote branch head before this records-only receipt append:
+`38ee7bd78c6bfbe4c0c804ab90309d0728584f64`.
+
+Isolated `git archive FETCH_HEAD` validation on M2:
+- `python3 -m unittest -v tests/test_special_situations_horizontal_reference.py`:
+  **9 passed / 0 failed**.
+- `python3 scripts/agentos.py validate`:
+  **1306 records / 0 errors / 739 warnings**, process exit 0.
+- Retained Studio output receipt:
+  `94d71606-935d-4b1b-b8da-e7e70e747bb8`, source SHA256
+  `e35d80804b6b8ed108b03dbc40b3fd9ebc246fd425f0250329f44096739f6269`.
+
+This validates research/reference/Agent-OS structure only; production Special Situations behavior is
+still intentionally unchanged.
