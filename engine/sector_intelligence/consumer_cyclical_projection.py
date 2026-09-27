@@ -1281,6 +1281,46 @@ def _assert_document_matches_contract_shape(document: Mapping[str, Any]) -> None
         )
 
 
+def _assert_provenance_pointers_resolve(document: Mapping[str, Any]) -> None:
+    """Refuse a document whose provenance pointer names nothing that exists.
+
+    ``fact.native_ref`` and ``source_records[].record_id`` are the two ends
+    of ONE pointer, spelled in two places. The contract validates each end
+    in isolation, so both pass happily while the pointer dangles -- and a
+    dangling provenance pointer is the exact shape frozen-spec section 4a
+    forbids: a fact that appears source-bound while naming no source.
+
+    This is referential integrity WITHIN one emitted document, which is why
+    it belongs here and not in ``_fact_admission_failure`` -- that gate sees
+    one fact and structurally cannot see ``source_records``.
+
+    A ``null`` ``native_ref`` is left alone deliberately. It is the
+    contract's own "unknown" and DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-
+    EMPTINESS-GATE so_what (4) rules that tightening it would refuse
+    otherwise-complete facts to gain nothing. Absence is honest; a pointer
+    to a record that was never declared is not.
+    """
+
+    declared = {
+        record.get("record_id")
+        for record in document.get("source_records") or ()
+        if isinstance(record, Mapping)
+    }
+    orphans = sorted(
+        {
+            str(fact.get("native_ref"))
+            for fact in document.get("facts") or ()
+            if isinstance(fact, Mapping) and fact.get("native_ref") is not None
+        }
+        - declared
+    )
+    if orphans:
+        raise CaseShapeError(
+            "projection would emit facts whose native_ref resolves to no "
+            "declared source record: " + ", ".join(orphans)
+        )
+
+
 def _assert_no_forbidden_authority_keys(document: Mapping[str, Any]) -> None:
     """Walk the document and refuse any forbidden authority / scoring key.
 
@@ -1325,11 +1365,19 @@ def _compose_changes(
 
     Returns ``(ready_results_by_key, degraded_facts)``.
 
-    A fact whose ``value_text`` is unparseable, whose
-    ``native_admitted`` flag is False (research oracle — frozen-spec
-    section 7), or whose pair cannot be located against the
-    ``comparison_basis`` is recorded in ``degraded_facts`` and the
-    corresponding change result is suppressed.
+    A fact whose ``value_text`` is unparseable, or whose pair cannot be
+    located against the ``comparison_basis``, is recorded in
+    ``degraded_facts`` and the corresponding change result is suppressed.
+
+    ``native_admitted`` is NOT in that list and must not be added to it.
+    Frozen-spec section 4a makes it a PROVENANCE LABEL, never a suppression
+    gate -- see the comment at the pairing site below. Every real V1-CORE
+    fact carries ``native_admitted: False`` because PLNT's Q2 2026 exhibit
+    is retained nowhere, so gating here would make this module structurally
+    incapable of its own golden case. This docstring previously claimed the
+    suppression the code 20 lines below explicitly refuses, and cited
+    section 7 for it; a reader who trusted it would have "restored" a gate
+    that breaks the frozen oracle.
 
     The emitted result key is the fact key with a ``_change`` suffix
     (e.g. fact ``total_revenue`` -> result ``total_revenue_change``)
@@ -1706,6 +1754,7 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
 
     _assert_no_forbidden_authority_keys(document)
     _assert_document_matches_contract_shape(document)
+    _assert_provenance_pointers_resolve(document)
 
     return document
 
