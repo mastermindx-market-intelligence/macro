@@ -5,14 +5,52 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R30_FIF_COMPATIBILITY_PARTIAL_PATH_QUALIFIED
+research_stage: R31_WORKBENCH_REPAIR_PUBLISHED_INSTALL_BINDING_HELD
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
 
 # Basic Materials — minimum continuing frontier
 
-Updated through R30 on September 26, 2026 America/New_York. R29's canonical Workbench review receipt remains timestamped `2026-09-27T00:25:29Z`. This replaces the working frontier in place, not the research programme or implementation carriers. Full R28 evidence/frontier remains at this same path in commit `41776dacc083ff36ac6dc549720dbd05910f94d9`, blob `de4447ab8e18ba402374b486130e735724343306`; R27 is at `af738d5f06eafc7b6f9a59f334a1113c1f161673`. Rehydrate only material contradictions.
+Updated through R31 on September 26, 2026 America/New_York. R30 remains at commit `6108262e3cf4bc2eaaff7036f914978f2d91ff97`; R29's Workbench review receipt remains timestamped `2026-09-27T00:25:29Z`. This replaces the working frontier in place, not the research programme or implementation carriers. Full R28 evidence/frontier remains at this same path in commit `41776dacc083ff36ac6dc549720dbd05910f94d9`, blob `de4447ab8e18ba402374b486130e735724343306`; R27 is at `af738d5f06eafc7b6f9a59f334a1113c1f161673`. Rehydrate only material contradictions.
+
+## R31 material result — #988 repaired source published; installed C3 consumer still unbound
+
+This section supersedes only R30's statement that the #988 repair was unadopted. R30's FIF split remains controlling.
+
+### Source dependency advanced
+
+Mastermind #988 is now OPEN/DRAFT/unmerged at **`87a6831ce94d8fdc7eea85c3e1e1299ee8b98f20`**. Source-return comment `5851394740` records one ordinary non-force publication of the combined timing/reference repair on the existing PR branch. The module blob at that immutable head is **`b2ab6b254e978da0e4fa7b71ca77a0bf14576e2e`**, matching the R29 candidate bytes. Five effective paths are reported against protected source: the module plus the original, C4 timing, R28, and R29 edge test files. No replacement PR was created.
+
+The source owner reports 52/52 targeted tests on Python3.12.13 and 52/52 on Python3.14.7. GitHub exact-head CI run **36283555266** remains `IN_PROGRESS` at this checkpoint read, so no CI-success or release claim is made. Existing CHANGES_REQUESTED review `5328090802` binds the prior head; a new independent review of the combined semantic head is still required. `mastermindx-2` remains the requested reviewer. Because the combined head changes reviewed semantics, treat it as **FULL_REREVIEW_REQUIRED**, not review reuse.
+
+### Installed consumer remains the actual gate
+
+A fresh read of the installed native C3 `workspace_manifest` after #988 source publication still returns:
+- profile `attended_workbench_f0`, capability `BUILT_NOT_PROVEN`;
+- project `project:462c7801778825042098c4f813850fffacdd242501a04f08582eda7bf725d652`;
+- committed head `c5e1b86a0a9e46cef17096a45406f1e3067edeeb`;
+- allowed paths only `docs/WORKBENCH_ACTION_MCP.md` and `workbench_canary.txt`;
+- recipes only `canary_checksum` and `canary_refuse`;
+- no exposed attended target-list/context action and no Browser/visual authorization.
+
+Therefore **source repair != installed adoption**. The Materials consumer still cannot lawfully use Workbench to edit/read Macro product paths or execute the required browser review. Do not infer Macro custody from `mutation_allowed:true` on the canary profile.
+
+The existing #539 request comment **5850091253** was amended in place after this observation with the repaired #988 head and exact return request: consume the existing Workbench/Fleet target-context seam and return a positively qualified Macro target/context plus separate Browser/visual action, or the exact existing enrollment child/human-only ceremony. No duplicate issue, launcher, registry, canary widening or target plane was created.
+
+### FIF lane current owner truth
+
+Current Macro main is `90f9fcbe31fff9fe96bd293190372d1c773fab9c`. The canonical FIF workstream remains active under its existing owner, with FIF-3 `in_progress`; FIF-3A1/A2/A3 are accepted golden-fixture/query work, FIF-3A4R accepted architecture/not built, and the **production attested issuer service remains NOT_BUILT**. Code search at current main found no hidden generic/attested financial packet provider beyond the explicit unavailable production default and golden AAPL providers. R30's ruling therefore stands: do not create a Materials-specific provider or treat FIF as live issuer coverage.
+
+The historical FF/FIF Slack child used for prior records/recovery work is terminal. Its broader principal context does not self-originate a new FIF provider wave. No old watcher or carrier is reused by silence. Starting production issuer service or another issuer remains a distinct owner/commission decision.
+
+### Exact continuation
+
+1. **Workbench:** consume independent review + exact-head CI for #988, then the existing #539 owner's installed Macro target/context and separately authorized visual action. Only then execute R27 desktop/mobile × EN/ZH × light/dark browser/assistive review.
+2. **FIF:** do not start a sixth/golden issuer or a Materials provider from this consumer lane. Consume a separately authorized production-issuer-service wave when the existing FIF owner starts/returns it. Weyerhaeuser standard 10-K/10-Q facts are the Materials candidate once that service is real; source-specific/non-GAAP measures stay source-local.
+3. **Shared GMI / #7984:** preserve all existing holds and owner boundaries; no retry by mode switch.
+
+R31 effects are limited to: same existing #539 comment update plus this existing Materials checkpoint. No #988 source write, installed Workbench action, browser, Paper, FIF source, #7984, #7870, credential, source admission, rights, identity, CI workflow, merge, deployment or trade effect. **EFFECT_UNKNOWN: none observed.**
 
 ## R30 material result — split the financial path; do not force all Materials evidence through FIF
 
