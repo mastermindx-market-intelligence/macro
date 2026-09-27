@@ -1719,9 +1719,20 @@ def curated_exclusive_closure_findings(manifest_path: Path) -> dict[str, tuple[s
     Raises ``ValueError`` if a curated job derives no closure at all (curation
     cannot be checked) — the same hard-fail posture the test's own ``assert``
     took before this factoring, preserved so behavior does not change.
+
+    Infer only the declared curated jobs. Non-curated jobs cannot contribute a
+    finding to this function, so analyzing their transitive closures is pure
+    control-plane cost and dominated the always-on contract-delta gate.
     """
-    would_infer = inferred_as_if_not_exclusive(manifest_path)
-    declared = {job.job_id: job for job in load_legacy_jobs(manifest_path) if job.exclusive}
+    jobs = load_legacy_jobs(manifest_path)
+    declared_jobs = [job for job in jobs if job.exclusive]
+    if not declared_jobs:
+        return {}
+    inferred, _note = infer_job_scopes(
+        replace(job, exclusive=False) for job in declared_jobs
+    )
+    would_infer = {job.job_id: job for job in inferred}
+    declared = {job.job_id: job for job in declared_jobs}
     misses: dict[str, tuple[str, ...]] = {}
     for job_id, job in sorted(declared.items()):
         closure = [p for p in would_infer[job_id].paths if "*" not in p]

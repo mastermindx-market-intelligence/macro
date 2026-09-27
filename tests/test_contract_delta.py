@@ -36,6 +36,7 @@ import pytest
 import yaml
 
 from scripts import check_contract_delta as CCD
+from scripts import run_ci_pack as PACK
 from scripts.run_ci_pack import curated_exclusive_closure_findings as PACK_CLOSURE_FN
 from scripts.audit_unrun_tests import gated_unrun_suites as AUDIT_SUITES_FN
 import tests.test_ci_pack as test_ci_pack_module
@@ -160,6 +161,42 @@ def test_curated_exclusive_closure_findings_is_the_shared_implementation() -> No
 
 def test_gated_unrun_suites_is_the_shared_implementation() -> None:
     assert CCD.gated_unrun_suites is AUDIT_SUITES_FN
+
+
+def test_curated_closure_infers_only_declared_exclusive_jobs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The differential guard must not analyze non-curated jobs it discards."""
+    manifest = tmp_path / "legacy-jobs.yml"
+    manifest.write_text("jobs: {}\n", encoding="utf-8")
+    ordinary = PACK.LegacyJob(
+        job_id="ordinary", definition={"steps": []}, ordinal=0, weight=1
+    )
+    curated = PACK.LegacyJob(
+        job_id="curated",
+        definition={"steps": []},
+        ordinal=1,
+        weight=1,
+        paths=("engine/curated.py",),
+        exclusive=True,
+    )
+    observed: list[str] = []
+
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda _path: [ordinary, curated])
+
+    def infer_only(received):
+        jobs = list(received)
+        observed.extend(job.job_id for job in jobs)
+        return [
+            PACK.replace(job, paths=("engine/uncovered.py",)) for job in jobs
+        ], "fixture"
+
+    monkeypatch.setattr(PACK, "infer_job_scopes", infer_only)
+
+    assert PACK.curated_exclusive_closure_findings(manifest) == {
+        "curated": ("engine/uncovered.py",)
+    }
+    assert observed == ["curated"]
 
 
 def test_head_findings_binds_exact_tree_inventory(
