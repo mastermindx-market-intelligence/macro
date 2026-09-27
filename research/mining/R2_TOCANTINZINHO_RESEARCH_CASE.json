@@ -1,0 +1,486 @@
+{
+  "id": "research:Tocantinzinho:financing-R2",
+  "classification": "DISCLOSURE_GROUNDED_RESEARCH_NOT_PRODUCTION",
+  "native_security_id": null,
+  "native_asset_id": null,
+  "source_retention_admission": null,
+  "sources": [
+    {
+      "id": "financing_20220718",
+      "title": "GMIN financing announcement",
+      "date": "2022-07-18",
+      "url": "https://www.accesswire.com/708863/G-Mining-Ventures-Announces-US481-million-Financing-Package-for-Tocantinzinho-Gold-Project",
+      "scope": "Issuer summary; financing/capital-requirement prose read. Complete executed agreements NOT_READ. Figure1 not successfully inspected."
+    },
+    {
+      "id": "fnv_20220718",
+      "title": "Franco-Nevada counterparty financing disclosure",
+      "date": "2022-07-18",
+      "url": "https://www.prnewswire.com/news-releases/franco-nevada-announces-352-5-million-financing-package-with-g-mining-ventures-on-the-tocantinzinho-gold-project-301588038.html",
+      "scope": "Counterparty source; threshold, sequencing and package read. Same transaction, not independent evidence of investment performance."
+    },
+    {
+      "id": "fs_release_20220209",
+      "title": "Issuer feasibility-results release",
+      "date": "2022-02-09",
+      "url": "https://www.globenewswire.com/news-release/2022/02/09/2382323/0/en/g-mining-ventures-delivers-robust-new-feasibility-study-at-permitted-tocantinzinho-gold-project.html",
+      "scope": "Release read before the later exact detailed-report extraction refusal. Not a complete technical-report qualification. Report effective2021-12-10; release2022-02-09; no historic system possession."
+    },
+    {
+      "id": "acquisition_20210809",
+      "title": "Original acquisition announcement",
+      "date": "2021-08-09",
+      "url": "https://www.globenewswire.com/news-release/2021/08/09/2277325/0/en/G-Mining-Ventures-to-Acquire-Tocantinzinho-Gold-Project-From-Eldorado-Gold.html",
+      "scope": "Announcement of agreement, not the executed agreement or closing receipt."
+    },
+    {
+      "id": "exchange_close_20211027",
+      "title": "TSXV acquisition acceptance bulletin",
+      "date": "2021-10-27",
+      "url": "https://www.newswire.ca/news-releases/tsx-venture-exchange-stock-maintenance-bulletins-857627688.html",
+      "scope": "Exchange-described closing terms; only the GMIN section used."
+    },
+    {
+      "id": "equity_close_20220907",
+      "title": "Issuer second-tranche closing disclosure",
+      "date": "2022-09-07",
+      "url": "https://www.nasdaq.com/press-release/g-mining-ventures-closes-us$116-million-private-placement-financing-2022-09-07",
+      "scope": "Actual two tranche dates/counts/gross proceeds. Rounded holder percentages are not exact opening capitalization."
+    },
+    {
+      "id": "aif_20230428",
+      "title": "2022 Annual Information Form",
+      "date": "2023-04-28",
+      "url": "https://s21.q4cdn.com/753203377/files/doc_financials/2022/ar/ANNUAL-INFORMATION-FORM-2023.pdf",
+      "scope": "Corporate financing, capital and material-contract sections read. Document92pages, not read in full. Option table parsed; attempted p67 screenshot failed, so table-specific visual verification is absent. Do not backdate later-disclosed terms."
+    },
+    {
+      "id": "fnv_draw_20230403",
+      "title": "First stream draw",
+      "date": "2023-04-03",
+      "url": "https://www.prnewswire.com/news-releases/g-mining-ventures-completes-first-draw-on-250-million-gold-stream-from-franco-nevada-301787789.html",
+      "scope": "Separate later outcome/check, not evidence the stream was drawable in July2022."
+    },
+    {
+      "id": "loan_draw_20240130",
+      "title": "First term-loan draw",
+      "date": "2024-01-30",
+      "url": "https://www.prnewswire.com/news-releases/g-mining-ventures-completes-first-draw-on-75-million-term-loan-from-franco-nevada-302047134.html",
+      "scope": "Later outcome/check only, never a July2022 cash input."
+    }
+  ],
+  "source_clocks": {
+    "historical_system_possession": false,
+    "source_dates": "day_precision_unless_original_says_otherwise",
+    "actual_read_session": "2026-09-27",
+    "capture_is_not_historical_first_known": true
+  },
+  "cost_bridge": {
+    "inputs": {
+      "before_tax": "427",
+      "taxes_paid": "49",
+      "future_recoverable": "18",
+      "spent_to_cutoff": "21",
+      "currency": "USD_millions",
+      "spend_cutoff": "2022-06-30",
+      "source": "financing_20220718"
+    },
+    "result": {
+      "cash_initial": "476",
+      "economic_initial": "458",
+      "cash_remaining": "455",
+      "future_recoverable": "18"
+    }
+  },
+  "stream": {
+    "inputs": {
+      "life_recovered_oz": "1838000",
+      "initial_threshold_stream_oz": "300000",
+      "high_rate": ".125",
+      "low_rate": ".075",
+      "spot_payment_fraction": ".20",
+      "source_plan": "fs_release_20220209",
+      "source_terms": "fnv_20220718"
+    },
+    "assumptions": [
+      "All forecast recovered gold is treated as payable and delivered without lag; not executed-agreement interpretation.",
+      "Life-plan output includes reported preproduction gold. No growth beyond that forecast.",
+      "Constant illustrative gold price; undiscounted PRE-TAX revenue transfer, not after-tax NPV or equity value."
+    ],
+    "sensitivities": {
+      "1400": {
+        "stream_oz": "229750.000",
+        "operator_revenue": "2315880000.00000",
+        "net_revenue_transfer": "257320000.00000",
+        "remaining_threshold_oz": "70250.000",
+        "output_needed_for_first_stepdown_oz": "2.400E+6",
+        "lower_tier_used": false
+      },
+      "1600": {
+        "stream_oz": "229750.000",
+        "operator_revenue": "2646720000.00000",
+        "net_revenue_transfer": "294080000.00000",
+        "remaining_threshold_oz": "70250.000",
+        "output_needed_for_first_stepdown_oz": "2.400E+6",
+        "lower_tier_used": false
+      },
+      "1800": {
+        "stream_oz": "229750.000",
+        "operator_revenue": "2977560000.00000",
+        "net_revenue_transfer": "330840000.00000",
+        "remaining_threshold_oz": "70250.000",
+        "output_needed_for_first_stepdown_oz": "2.400E+6",
+        "lower_tier_used": false
+      },
+      "2000": {
+        "stream_oz": "229750.000",
+        "operator_revenue": "3308400000.00000",
+        "net_revenue_transfer": "367600000.00000",
+        "remaining_threshold_oz": "70250.000",
+        "output_needed_for_first_stepdown_oz": "2.400E+6",
+        "lower_tier_used": false
+      }
+    }
+  },
+  "acquisition": {
+    "source": "exchange_close_20211027",
+    "trigger": "contract-defined commercial production, actual calendar binding unresolved here",
+    "assumptions": [
+      "Discount rates are analyst sensitivities, not market observations or a calibrated cost of equity.",
+      "Paths assume payment on contractual anniversaries; earlier payment, notice conditions and failure recovery need executed terms."
+    ],
+    "sensitivities": {
+      "0": {
+        "normal": [
+          [
+            1,
+            "60"
+          ]
+        ],
+        "defer": [
+          [
+            1,
+            "30.0"
+          ],
+          [
+            2,
+            "35.0"
+          ]
+        ],
+        "one_year_extension_rate": "0.1666666666666666666666666667",
+        "pv_normal": "60",
+        "pv_defer": "65.0"
+      },
+      "0.05": {
+        "normal": [
+          [
+            1,
+            "60"
+          ]
+        ],
+        "defer": [
+          [
+            1,
+            "30.0"
+          ],
+          [
+            2,
+            "35.0"
+          ]
+        ],
+        "one_year_extension_rate": "0.1666666666666666666666666667",
+        "pv_normal": "57.14285714285714285714285714",
+        "pv_defer": "60.31746031746031746031746032"
+      },
+      "0.1": {
+        "normal": [
+          [
+            1,
+            "60"
+          ]
+        ],
+        "defer": [
+          [
+            1,
+            "30.0"
+          ],
+          [
+            2,
+            "35.0"
+          ]
+        ],
+        "one_year_extension_rate": "0.1666666666666666666666666667",
+        "pv_normal": "54.54545454545454545454545455",
+        "pv_defer": "56.19834710743801652892561983"
+      },
+      "0.2": {
+        "normal": [
+          [
+            1,
+            "60"
+          ]
+        ],
+        "defer": [
+          [
+            1,
+            "30.0"
+          ],
+          [
+            2,
+            "35.0"
+          ]
+        ],
+        "one_year_extension_rate": "0.1666666666666666666666666667",
+        "pv_normal": "50",
+        "pv_defer": "49.30555555555555555555555556"
+      }
+    }
+  },
+  "loan": {
+    "source": "financing_20220718",
+    "face_commitment": "75",
+    "currency": "USD_millions",
+    "actual_2022_draw": null,
+    "assumptions": [
+      "Full face draw at start of a hypothetical year; SOFR values are assumptions, NOT historical term fixings.",
+      "No intraperiod repayment/rate reset; OID withheld from proceeds. Capitalization election is assumed eligible.",
+      "A commercial-production announcement does not certify the loan-defined Completion condition."
+    ],
+    "scenarios": {
+      "0:False:False": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0575",
+        "interest": "4.3125",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "4.3125",
+        "closing_principal": "75"
+      },
+      "0:False:True": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0575",
+        "interest": "4.3125",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "0",
+        "closing_principal": "79.3125"
+      },
+      "0:True:False": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0475",
+        "interest": "3.5625",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "3.5625",
+        "closing_principal": "75"
+      },
+      "0:True:True": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0475",
+        "interest": "3.5625",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "0",
+        "closing_principal": "78.5625"
+      },
+      "0.03:False:False": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0875",
+        "interest": "6.5625",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "6.5625",
+        "closing_principal": "75"
+      },
+      "0.03:False:True": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0875",
+        "interest": "6.5625",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "0",
+        "closing_principal": "81.5625"
+      },
+      "0.03:True:False": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0775",
+        "interest": "5.8125",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "5.8125",
+        "closing_principal": "75"
+      },
+      "0.03:True:True": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0775",
+        "interest": "5.8125",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "0",
+        "closing_principal": "80.8125"
+      },
+      "0.05:False:False": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.1075",
+        "interest": "8.0625",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "8.0625",
+        "closing_principal": "75"
+      },
+      "0.05:False:True": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.1075",
+        "interest": "8.0625",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "0",
+        "closing_principal": "83.0625"
+      },
+      "0.05:True:False": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0975",
+        "interest": "7.3125",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "7.3125",
+        "closing_principal": "75"
+      },
+      "0.05:True:True": {
+        "new_cash": "73.50",
+        "original_issue_discount": "1.50",
+        "coupon": "0.0975",
+        "interest": "7.3125",
+        "standby_fee": "0.00",
+        "undrawn_face": "0",
+        "cash_interest_and_fees": "0",
+        "closing_principal": "82.3125"
+      }
+    },
+    "repayment": {
+      "installments": [
+        "5.625",
+        "5.625",
+        "5.625",
+        "5.625",
+        "5.625",
+        "5.625",
+        "5.625",
+        "5.625",
+        "5.625",
+        "5.625"
+      ],
+      "bullet": "18.750"
+    }
+  },
+  "funding_access": {
+    "source": "fnv_20220718",
+    "declared_conditions": {
+      "cost_to_complete_funded": null,
+      "permits": null,
+      "security": null,
+      "engineering_confirmation": null
+    },
+    "stream": {
+      "state": "NOT_ELIGIBLE",
+      "failed": [
+        "minimum_project_spend"
+      ],
+      "unknown": [
+        "cost_to_complete_funded",
+        "permits",
+        "security",
+        "engineering_confirmation"
+      ],
+      "cash_received": null
+    },
+    "loan": {
+      "state": "UNVERIFIED",
+      "failed": [],
+      "unknown": [
+        "cost_to_complete_funded",
+        "permits",
+        "security",
+        "engineering_confirmation",
+        "prior_stream_fully_drawn"
+      ],
+      "cash_received": null
+    },
+    "note": "Mechanism check against disclosed June30 spend only; not a July18 actual-account state or a lender determination."
+  },
+  "equity": {
+    "source": "equity_close_20220907",
+    "issue_price": "0.80",
+    "currency": "CAD",
+    "changes": [
+      {
+        "id": "tranche1",
+        "date": "2022-07-22",
+        "count": 160062500
+      },
+      {
+        "id": "tranche2",
+        "date": "2022-09-07",
+        "count": 29004265
+      }
+    ],
+    "opening_shares_at_20220718": null,
+    "complete_change_census": false,
+    "snapshot": {
+      "shares": null,
+      "known_issuance_delta": 189066765,
+      "included": [
+        "tranche1",
+        "tranche2"
+      ]
+    },
+    "gross_proceeds_exact_cad": "151253412.00",
+    "later_confirmation": {
+      "source": "aif_20230428",
+      "effective_date": "2022-12-31",
+      "basic_shares": 447517060,
+      "eligible_in_2022_information_set": false
+    },
+    "note": "Do not infer a prior exact denominator by subtracting these issues from the later annual total."
+  },
+  "investment": {
+    "state": "WITHHELD",
+    "unresolved": [
+      "native_security",
+      "dated_rights",
+      "technical_cashflows",
+      "tax_timing",
+      "funding_conditions",
+      "diluted_capital",
+      "common_valuation_date",
+      "market_reference",
+      "policy_permission"
+    ],
+    "equity_value": null,
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  },
+  "fixed_unavailable": {
+    "event_probability": null,
+    "equity_value": null,
+    "expected_return": null,
+    "reference_price": null,
+    "benchmark": null,
+    "transaction_costs": null,
+    "production_permission": false
+  }
+}
