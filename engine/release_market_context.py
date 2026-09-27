@@ -106,7 +106,8 @@ log = logging.getLogger(__name__)
 # ── constants ─────────────────────────────────────────────────────────────────
 _INLINE_HALF_WIDTH_SIGMA = 0.35   # ±σ band per MRI §3.4
 _TAIL_SIGMA_CAP = 4.0             # cap tail extension beyond ±4σ from benchmark
-_ERA_LABEL = "2021plus"           # exact string used in playbook_v1.json
+_ERA_LABEL = "2021plus"           # modern-era fallback cells in playbook_v1.json
+_REGIME_ERA_LABEL = "all"          # preregistered regime cells are pooled across eras
 _REGIME_MIN_N = 8                 # prefer regime cell only if n >= this
 
 # MRI-R33 STALE-ENRICH-1/2: TTL staleness gates for enrichment sources.
@@ -480,10 +481,11 @@ def get_reaction_sensitivity(
 ) -> dict | None:
     """Return h1 reaction-sensitivity chip from playbook_v1 for a release type.
 
-    Looks up 2021plus era, h1 horizon, hot and cold buckets, and returns mean
-    values for dgs10_bp and spy_pct. Prefers a regime-conditioned cell if the
-    current_regime matches an available cell with n >= 8; otherwise uses the
-    era-level (regime=null) cell.
+    Looks up h1 hot/cold reaction means for dgs10_bp and spy_pct. The
+    preregistered regime-conditioned table is pooled across eras (era="all"),
+    so a current-regime cell with n >= 8 is preferred when available; fields
+    without a qualified regime cell fall back to the 2021plus era-level
+    (regime=null) cell.
 
     Pure lookup — no regression, no positioning inputs (MRI-R17).
 
@@ -534,7 +536,7 @@ def get_reaction_sensitivity(
                     and c.get("bucket") == bucket
                     and c.get("outcome") == outcome
                     and c.get("horizon") == "h1"
-                    and c.get("era") == era
+                    and c.get("era") == _REGIME_ERA_LABEL
                     and c.get("regime") == regime
                     and (c.get("n") or 0) >= _REGIME_MIN_N
                 ]
@@ -554,6 +556,7 @@ def get_reaction_sensitivity(
 
         regime_cells_used = False
         fields: dict[str, float | None] = {}
+        evidence: dict[str, dict[str, Any] | None] = {}
 
         for bucket in ("hot", "cold"):
             for outcome_key, field_prefix in [
@@ -566,17 +569,40 @@ def get_reaction_sensitivity(
                 )
                 if cell is None:
                     fields[field_prefix] = None
+                    evidence[field_prefix] = None
                     continue
 
-                # Check if we're using a regime-conditioned cell
-                if cell.get("regime") is not None:
+                # Check if we're using a regime-conditioned cell.
+                is_regime = cell.get("regime") is not None
+                if is_regime:
                     regime_cells_used = True
 
                 mean_val = cell.get("mean")
                 fields[field_prefix] = round(float(mean_val), 4) if mean_val is not None else None
+                evidence[field_prefix] = {
+                    "n": int(cell.get("n") or 0),
+                    "mean": fields[field_prefix],
+                    "median": (
+                        round(float(cell["median"]), 4)
+                        if cell.get("median") is not None else None
+                    ),
+                    "ci_lo": (
+                        round(float(cell["ci_lo"]), 4)
+                        if cell.get("ci_lo") is not None else None
+                    ),
+                    "ci_hi": (
+                        round(float(cell["ci_hi"]), 4)
+                        if cell.get("ci_hi") is not None else None
+                    ),
+                    "era": cell.get("era"),
+                    "regime": cell.get("regime"),
+                    "revision_optimistic": bool(is_regime),
+                }
 
         note = (
-            "Historical means from playbook_v1 2021plus era; regime-conditioned cells used."
+            "Historical means from playbook_v1 pooled regime cells (era=all) where "
+            "available, with unmatched fields falling back to 2021plus era-level "
+            "cells; regime labels are revision_optimistic."
             if regime_cells_used
             else "Historical means from playbook_v1 2021plus era; regime=null cells."
         )
@@ -587,7 +613,11 @@ def get_reaction_sensitivity(
             "spy_h1_hot_pct": fields.get("spy_h1_hot"),
             "spy_h1_cold_pct": fields.get("spy_h1_cold"),
             "era_basis": _ERA_LABEL,
+            "regime_requested": current_regime,
+            "regime_basis": _REGIME_ERA_LABEL if regime_cells_used else None,
             "regime_cells_used": regime_cells_used,
+            "regime_labels_revision_optimistic": bool(regime_cells_used),
+            "evidence": evidence,
             "note": note,
         }
 
