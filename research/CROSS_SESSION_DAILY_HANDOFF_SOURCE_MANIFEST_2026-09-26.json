@@ -1,0 +1,307 @@
+{
+  "schema": "research.cross_session_daily_handoff_source_manifest.v1",
+  "generated_date": "2026-09-26",
+  "state": "SOURCE_ONLY_FREEZE / EXPLORATORY_ADVISORY / PRODUCTION_INERT / NO_TRADING_AUTHORITY",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "d843ea0a452db952cfe2490f911ffd0a56d87b43",
+    "source_census_blob": "bb7109a6c1b38f199d93efcd475e6d81bd5fa877",
+    "protected_master_pin": "763ec8f920177fdf48b18df1b8e37b61ab482ef0",
+    "skillpack_index_blob": "94d1af402598894372858793a5b1931019c5fa77"
+  },
+  "purpose": "Freeze a source-selected Hong Kong broad-market next-open daily-gap diagnostic before reading HSI outcomes. This is a bounded precursor to the separately preregistered first-5-minute cross-session endpoint, not a substitute for it.",
+  "contamination_accounting": {
+    "mainland_china_daily": "EXPOSED_IN_RECOVERY — Shanghai 000001.SS daily bars were inspected while reconciling data availability, so mainland daily gaps are not treated as a blind continuation slice.",
+    "hong_kong_daily": "NOT_INSPECTED_IN_THIS_CONTINUATION_AT_FREEZE — target selected from the pre-existing data-capability census, before HSI price bytes are read.",
+    "prospective_v2_holdout": "UNTOUCHED"
+  },
+  "source_screen": {
+    "parent_census_schema": "research.cross_session_source_timing_census_raw.v0",
+    "parent_coverage_status": "retrieval_incomplete",
+    "population_inference_allowed": false,
+    "rules": [
+      "timing_primary_eligible == true",
+      "outcome_context_exposed != true",
+      "previously_inspected != true",
+      "weekday in UTC",
+      "available_at >= 08:00 UTC (pre-registered advisory approximation only)"
+    ],
+    "note": "The parent source census is retrieval-incomplete, so this event set is development/advisory evidence only. Selection uses source metadata only and does not use Hong Kong price outcomes."
+  },
+  "target": {
+    "region": "hong_kong",
+    "series": "_HSI",
+    "role": "broad_hong_kong_cash_market_benchmark",
+    "data_owner": "incumbent collectors/hk_prices.py HkPriceAdapter Yahoo transport; canonical hk store persists close+volume, while this advisory may read transport-returned Open/Close in memory without persistence",
+    "calendar_basis": "observed daily bar dates only for this advisory diagnostic; no authoritative holiday/half-day claim",
+    "primary_advisory_endpoint": "previous observed cash close -> next observed HSI session open gap (bps)",
+    "secondary_endpoints": [
+      "previous observed close -> next observed session close (bps)",
+      "next observed open -> next observed session close (bps)"
+    ],
+    "intraday_first_5m_status": "SOURCE_GATE — unchanged; this daily diagnostic does not satisfy the preregistered primary first-5-minute endpoint",
+    "read_path": "no-persistence bounded yf.download(^HSI) through the same incumbent yfinance source family; no data/hk write, no new collector, no new regional data plane",
+    "price_basis": "match incumbent HkPriceAdapter transport setting auto_adjust=true; index-level diagnostic only"
+  },
+  "analysis_law": {
+    "directional_transform": {
+      "relief": "positive raw HSI return is directionally consistent",
+      "implementation_relief": "positive raw HSI return is directionally consistent",
+      "escalation": "negative raw HSI return is directionally consistent",
+      "implementation_escalation": "negative raw HSI return is directionally consistent",
+      "denial_or_breakdown": "descriptive only unless a direction is separately frozen",
+      "mixed_conflict": "descriptive only",
+      "neutral_process": "descriptive only"
+    },
+    "missingness": "If no previous and next observed HSI bars bracket the event, return DATA_GAP. Do not move the event clock or substitute another date.",
+    "confounding": "Competing material headlines between event and next HSI open must be carried as contamination; do not attribute the gap to the initiating event by default.",
+    "inference": "Descriptive development diagnostic only; no alpha, motive, ranking, alert, sizing, portfolio, or execution claim."
+  },
+  "events": [
+    {
+      "event_id": "2026-08-04-bessent-may-have-hormuz-deal-tomorrow",
+      "available_at": "2026-08-04T11:43:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "source_class": null,
+      "clock_quality": "exact_market_feed_utc",
+      "imported_from": "wave1",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-05-hormuz-agreement-approaching",
+      "available_at": "2026-08-05T19:54:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "source_class": null,
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave1",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-06-iran-oman-broad-framework",
+      "available_at": "2026-08-06T08:28:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "source_class": null,
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave1",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-06-oman-iran-reach-strait-agreement",
+      "available_at": "2026-08-06T19:53:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "source_class": null,
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave1",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-07-us-official-expects-hormuz-deal-soon",
+      "available_at": "2026-08-07T19:00:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "source_class": null,
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave1",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-21-oman-iran-navigation-talks",
+      "available_at": "2026-08-21T16:22:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "source_class": null,
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave1",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-09-16-iran-fm-peaceful-solution",
+      "available_at": "2026-09-16T09:39:00Z",
+      "direction": "relief",
+      "family": "us_iran_diplomatic_reengagement",
+      "source_class": null,
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave1",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-09-22-iran-could-open-hormuz-seven-days",
+      "available_at": "2026-09-22T09:14:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "source_class": null,
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave1_control",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-06-15-us-official-signed-mou-hormuz-open",
+      "available_at": "2026-06-15T15:36:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "source_class": "newsquawk_senior_us_official",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave2",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-06-17-trump-hormuz-open-next-day-or-two",
+      "available_at": "2026-06-17T10:47:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "source_class": "newsquawk_trump_quote",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave2",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-07-30-mediators-working-no-tangible-results",
+      "available_at": "2026-07-30T09:14:00Z",
+      "direction": "relief",
+      "family": "us_iran_ceasefire_mediation",
+      "source_class": "newsquawk_al_arabiya_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave2_control",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-07-14-centcom-additional-iran-strikes",
+      "available_at": "2026-07-14T19:30:00Z",
+      "direction": "escalation",
+      "family": "us_iran_hormuz_escalation",
+      "source_class": "newsquawk_centcom",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave3",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-14-iran-draft-restrict-hostile-transit",
+      "available_at": "2026-08-14T09:07:00Z",
+      "direction": "escalation",
+      "family": "iran_hormuz_restriction_rhetoric",
+      "source_class": "newsquawk_al_mayadeen_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave3",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-25-ria-unconfirmed-ceasefire-free-navigation",
+      "available_at": "2026-08-25T19:26:00Z",
+      "direction": "relief",
+      "family": "us_iran_ceasefire_rumor",
+      "source_class": "newsquawk_ria_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave3",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-26-hormuz-terms-and-revenue-conflict-cluster",
+      "available_at": "2026-08-26T11:27:00Z",
+      "direction": "mixed_conflict",
+      "family": "iran_oman_hormuz_navigation",
+      "source_class": "newsquawk_iran_irgc_cluster",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave3",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-31-trump-weighing-limited-iran-strikes",
+      "available_at": "2026-08-31T18:05:00Z",
+      "direction": "escalation",
+      "family": "us_iran_hormuz_escalation",
+      "source_class": "newsquawk_axios_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "wave3",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-07-20-mediators-float-10d-ceasefire",
+      "available_at": "2026-07-20T19:59:00Z",
+      "direction": "relief",
+      "family": "us_iran_ceasefire_mediation",
+      "source_class": "newsquawk_cnn_relay",
+      "clock_quality": "exact_page_publication_utc",
+      "imported_from": "web_retrieval_freeze0",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-07-21-trump-rejects-10d-ceasefire",
+      "available_at": "2026-07-21T12:16:00Z",
+      "direction": "denial_or_breakdown",
+      "family": "us_iran_ceasefire_mediation",
+      "source_class": "newsquawk_al_hadath_relay",
+      "clock_quality": "exact_page_publication_utc",
+      "imported_from": "web_retrieval_freeze0",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-25-white-house-no-talks-hormuz-open",
+      "available_at": "2026-08-25T14:04:00Z",
+      "direction": "mixed_conflict",
+      "family": "us_iran_hormuz_deescalation",
+      "source_class": "newsquawk_white_house_al_jazeera_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "web_retrieval_freeze0",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-08-31-irgc-no-oil-centcom-denial-cluster",
+      "available_at": "2026-08-31T12:57:00Z",
+      "direction": "mixed_conflict",
+      "family": "iran_hormuz_restriction_rhetoric",
+      "source_class": "newsquawk_irgc_centcom_cluster",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "web_retrieval_freeze0",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-09-02-irgc-two-tankers-mines",
+      "available_at": "2026-09-02T08:10:00Z",
+      "direction": "implementation_escalation",
+      "family": "iran_hormuz_shipping_attack",
+      "source_class": "newsquawk_irgc",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "web_retrieval_freeze0",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    },
+    {
+      "event_id": "2026-09-23-iran-reviewing-us-response",
+      "available_at": "2026-09-23T14:52:00Z",
+      "direction": "relief",
+      "family": "us_iran_diplomatic_reengagement",
+      "source_class": "newsquawk_reuters_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "imported_from": "web_retrieval_freeze0",
+      "outcome_context_exposed": false,
+      "previously_inspected": false
+    }
+  ]
+}
