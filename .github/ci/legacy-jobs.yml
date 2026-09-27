@@ -14228,6 +14228,60 @@ jobs:
       - name: B4 entry-policy calibration preregistration law (A1 amendment, six distinct cells, single primary endpoint)
         run: python -m pytest tests/test_b4_entry_policy_calibration_prereg.py -q
 
+  healthcare-fda-supply:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/test_foresight_cascade.py"
+      - "tests/test_fda_shortages_generation.py"
+      - "tests/test_fda_supply_probes.py"
+      - "tests/test_fda_supply_probes_t02r.py"
+      - "tests/test_fda_supply_probes_t02r2.py"
+      - "tests/test_fda_supply_probes_t01r.py"
+      - "tests/test_fda_supply_probes_t02r3.py"
+      - "tests/test_fda_supply_probes_final.py"
+      - "tests/test_fda_supply_probes_mixed.py"
+      - "collectors/fda_shortages.py"
+      - "engine/fda_scarcity.py"
+      - "engine/foresight_cascade.py"
+      - "scripts/build_foresight.py"
+      - "collectors/__init__.py"
+      - "templates/foresight.html.j2"
+      - "engine/__init__.py"
+      - "engine/altdata_confirmers.py"
+      - "engine/bottleneck.py"
+      - "engine/demand_capex.py"
+      - "engine/demand_chain.py"
+      - "engine/foresight_earliness.py"
+      - "engine/foresight_enb.py"
+      - "engine/foresight_health.py"
+      - "engine/foresight_score.py"
+      - "engine/foresight_sizing.py"
+      - "engine/glut_watch.py"
+      - "engine/guidance_gap.py"
+      - "engine/ledger_lane.py"
+      - "engine/news_flow.py"
+      - "engine/policy_calendar.py"
+      - "engine/theme_fingerprint.py"
+      - "engine/theme_revisions.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the FDA supply suites
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+      - name: FDA foresight cascade and qualified observation suites
+        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
+      - name: FDA supply acceptance probes
+        run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
+
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
@@ -17560,10 +17614,14 @@ jobs:
     # casebook, the closed delivery-input validator and the typed route_unbound client
     # (engine/market_ontology/mining_dependency_binding.py). Later Mining task PRs APPEND
     # their own suites and paths to this ONE block (never to a sibling sector's job).
-    # Gate-code pure: the suites import the standard library, jsonschema/pyyaml, the Mining
-    # modules and, through engine/market_ontology/__init__.py, exposure_map.py (stdlib-only);
-    # the shared-contract probe imports engine.theme_graph lazily and degrades to a typed
-    # refusal when it is absent. Every fixture is synthetic; no data/ or site/ input.
+    # T04a (this append): the per-sector composition module, the closed response schema,
+    # and the composition suite (engine/market_ontology/mining_theme_research.py,
+    # contracts/market_ontology/mining_theme_research.v1.schema.json,
+    # tests/test_mining_composition.py). Gate-code pure: the suites import the standard
+    # library, jsonschema/pyyaml, the Mining modules and, through
+    # engine/market_ontology/__init__.py, exposure_map.py (stdlib-only); the shared-contract
+    # probe imports engine.theme_graph lazily and degrades to a typed refusal when it is
+    # absent. Every fixture is synthetic; no data/ or site/ input.
     if: ${{ false }}
     gate: code
     scope: exclusive
@@ -17571,8 +17629,23 @@ jobs:
       - "tests/mining_casebook.py"
       - "tests/test_mining_shared_contract.py"
       - "tests/test_mining_shared_contract_probes.py"
+      - "tests/test_mining_composition.py"
+      - "tests/test_mining_composition_probes.py"
+      - "tests/test_mining_composition_probes_r2.py"
+      - "tests/test_mining_composition_probes_r3.py"
+      - "tests/test_mining_composition_truth_table.py"
+      - "research/mining/m1_integration_program/domain/MINING_DOMAIN_DEFINITIONS_M1_2026-09-24.md"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
       - "tests/fixtures/mining_economic_dossier/**"
       - "engine/market_ontology/mining_dependency_binding.py"
+      - "engine/market_ontology/mining_theme_research.py"
+      - "contracts/market_ontology/mining_theme_research.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/exposure_map.py"
       - "engine/theme_graph/__init__.py"
@@ -17589,6 +17662,8 @@ jobs:
         run: pip install pytest jsonschema pyyaml
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
+      - name: mining economic dossier — per-sector composition suite (T04a)
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash

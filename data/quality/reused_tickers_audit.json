@@ -760,13 +760,13 @@
   }
  ],
  "ledger_identity": {
-  "ledger": "/Users/chriswong/actions-runner-2/_work/macro/macro/data/signal_archive/track_record.parquet",
+  "ledger": "/Users/chriswong/actions-runner-4/_work/macro/macro/data/signal_archive/track_record.parquet",
   "declared_duplicates": [],
   "undeclared_candidates": [],
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 60455
+  "ledger_rows": 60464
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
