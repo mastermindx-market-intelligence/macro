@@ -45,6 +45,7 @@ class StreamObservation:
     security_id: str
     ticker_at_observation: str
     ticker_source: str
+    ticker_evidence: str
     published_at: datetime
     published_at_source: str
     observation_date: date
@@ -95,7 +96,7 @@ def _sidecar_ticker(value: object) -> tuple[str, str | None]:
     return "single", next(iter(tickers))
 
 
-def _strict_title_ticker(value: object) -> str | None:
+def _strict_title_ticker(value: object) -> tuple[str, str] | None:
     """Extract only an explicit leading Company Name (TICKER) source form.
 
     This deliberately refuses generic parenthetical-token matching. The subject
@@ -133,22 +134,23 @@ def _strict_title_ticker(value: object) -> str | None:
     )
     if not (single_brand or designator):
         return None
-    return match.group("ticker").upper()
+    return match.group("ticker").upper(), match.group(0).rstrip()
 
 
-def _observed_ticker(item: Mapping[str, Any]) -> tuple[str | None, str]:
+def _observed_ticker(item: Mapping[str, Any]) -> tuple[str | None, str, str]:
     state, sidecar = _sidecar_ticker(item.get("tickers"))
     if state in {"invalid", "multi"}:
-        return None, ABSTAIN_TICKER_CARDINALITY
+        return None, ABSTAIN_TICKER_CARDINALITY, ""
 
-    title_ticker = _strict_title_ticker(item.get("title"))
+    title_subject = _strict_title_ticker(item.get("title"))
+    title_ticker = title_subject[0] if title_subject is not None else None
     if sidecar is not None:
         if title_ticker is not None and title_ticker != sidecar:
-            return None, ABSTAIN_SUBJECT_CONFLICT
-        return sidecar, "sidecar_ticker"
-    if title_ticker is not None:
-        return title_ticker, "source_title_explicit_ticker"
-    return None, ABSTAIN_NO_EXACT_SECURITY_SUBJECT
+            return None, ABSTAIN_SUBJECT_CONFLICT, ""
+        return sidecar, "sidecar_ticker", sidecar
+    if title_subject is not None:
+        return title_subject[0], "source_title_explicit_ticker", title_subject[1]
+    return None, ABSTAIN_NO_EXACT_SECURITY_SUBJECT, ""
 
 
 def _published_at(value: object) -> tuple[datetime, date, str] | None:
@@ -199,7 +201,7 @@ def resolve_stream_observation(
     if not desk_key:
         return StreamResolution(ABSTAIN_MISSING_DESK)
 
-    ticker, ticker_source = _observed_ticker(item)
+    ticker, ticker_source, ticker_evidence = _observed_ticker(item)
     if ticker is None:
         return StreamResolution(ticker_source)
 
@@ -223,6 +225,7 @@ def resolve_stream_observation(
             security_id=security_id,
             ticker_at_observation=ticker,
             ticker_source=ticker_source,
+            ticker_evidence=ticker_evidence,
             published_at=published_at,
             published_at_source=published_at_source,
             observation_date=observation_date,
