@@ -3835,13 +3835,13 @@ ETF_GICS = {                       # SPDR sector fund -> GICS sector (residual-a
 }
 
 
-def build_alpha_data(site: Path) -> dict | None:
+def build_alpha_data(site: Path, *, asof=None) -> dict | None:
     """Compute the sector-neutral residual-momentum cross-section and write
     factordata/alpha.json (consumed by the sector pages + per-stock panels).
     Additive — any failure logs and skips. See research/RESIDUAL_ALPHA_MOMENTUM.md."""
     from engine.residual_alpha import compute_residual_alpha
     try:
-        alpha = compute_residual_alpha()
+        alpha = compute_residual_alpha(asof=asof)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("residual-alpha engine failed: %s", e)
         return None
@@ -5767,6 +5767,12 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
 
 
 def main() -> int:
+    from lib import nyse_calendar as _us_nyse_calendar  # noqa: PLC0415
+
+    _us_board_observed_at = datetime.now(timezone.utc)
+    _us_completed_session = _us_nyse_calendar.expected_last_session(
+        _us_board_observed_at
+    ).isoformat()
     site = config.ROOT / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
 
@@ -5809,7 +5815,7 @@ def main() -> int:
     sector_timing, notable = {}, []
     alpha_data = None
     try:
-        alpha_data = build_alpha_data(site)
+        alpha_data = build_alpha_data(site, asof=_us_completed_session)
         _tmark("alpha_data")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("alpha data failed: %s", e)
@@ -7583,7 +7589,7 @@ def main() -> int:
             log.warning("profile translation step failed (%s); blurbs stay English", e)
         _tmark("profile_translation")
         from scripts.build_stock_library import main as build_library
-        build_library()
+        build_library(now=_us_board_observed_at)
         _tmark("stock_library")
 
         # One-build-lag fix (us_stocks staleness banner): build_library() just wrote

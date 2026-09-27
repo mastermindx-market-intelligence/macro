@@ -375,3 +375,319 @@ partial tree — `live-quotes.yml`, `marketing-press-wire.yml`, `marketing-hot-t
 Standing rule regardless: **a green from a `site/`/`data/` guard in a sparse worktree
 means nothing** — run them after `python3 scripts/worktree_sparse.py full`, which is also
 what CI does.
+
+## §9. Only a POSITIVE completion signal authorizes reclaim (R9 — incident 2026-09-26)
+
+`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`.
+
+**The law.** Absence of a signal — an idle window, no process holding a cwd, a stale
+reflog — may NEVER authorize a destructive act on a shared worktree. Only a positive
+completion signal may.
+
+> ### CORRECTION 2026-09-27 — the signal is the MERGED PR, not `HEAD ⊆ origin/main`
+>
+> As first written, this section named **`HEAD` an ancestor of `origin/main`** as *the*
+> canonical signal. **That test is wrong for this repository and is corrected in place
+> here rather than superseded elsewhere.** This repo squash-merges every PR, and a squash
+> REWRITES the commit — so the branch tip of a cleanly merged PR is *not* an ancestor of
+> main. Measured on PR #8086: its squash commit `f9425697` IS an ancestor of
+> `origin/main` (`merge-base --is-ancestor` exit 0) while its branch tip `0a47bc1f` is NOT
+> (exit 1). An ancestry-only gate therefore fires for almost nothing except trees that
+> never committed at all, and it silently misfiles finished work as abandoned.
+>
+> **The corrected signal, in the order `scripts/worktree_gc.py` already applies it** — that
+> tool was right before this section was written, and this correction brings the prose back
+> in line with the code rather than the reverse:
+>
+> 1. `HEAD` an ancestor of `origin/main` (fast-forward / sits on main), **or**
+> 2. **a MERGED PR whose `headRefOid` equals this tree's `HEAD`** — the load-bearing case,
+>    and the one the original text omitted, **or**
+> 3. `HEAD` contained in `refs/remotes/origin/<branch>` with no open PR (pushed-and-safe).
+>
+> Unknown PR state fails CLOSED. The PRINCIPLE — only a positive signal, never an absence —
+> is unchanged and was never in doubt; only its implementation was wrong.
+>
+> **A detached HEAD can satisfy none of the three.** It has no branch, so it can carry no
+> PR and be contained in no remote ref, so this law structurally cannot reach it — see
+> "What this law cannot reach" below. That is a real gap, not a conservative default.
+
+**What it cost to learn.** On 2026-09-26 at 05:31 a host-local sparse sweep converted 59
+FULL worktrees, stripping `data/`, `site/`, `mockups/`, `verify_shots/` off disk on an
+"idle ≥ 24 h" gate. 34 were under the ungoverned mint root `/Volumes/Mastermind/worktrees/`
+— 12 named `sol-*`, 13 `review-*`/`pr*`. Essentially every ChatGPT-web session died in the
+early AM and most were unrecoverable: a web session hits a path that is suddenly absent,
+cannot diagnose it, wedges, and errors cascade. No commits were lost — omitted paths stay
+tracked in the index (verified: 62,071 `data/` + 19,511 `site/` + 6,573 `mockups/` + 445
+`verify_shots/` files still tracked, `git status` clean) — but the SESSIONS were, and those
+are the more expensive asset.
+
+**Why the obvious fix is the wrong one.** "Use 72 h instead" preserves the defect and only
+lowers its firing rate. Idleness means two incompatible things and a sweeper cannot tell
+them apart:
+
+| Session kind | Shell between tool calls | What 24 h of silence means |
+|---|---|---|
+| Claude Code / Codex / fabric lane | exits | genuinely dead |
+| **ChatGPT web conversation (Sol reviews)** | **no shell at all; resumes when its human replies** | **nothing whatsoever — no threshold is safe** |
+
+**Why the positive signal is also cheaper.** It arrives for free the moment a PR
+squash-merges. It needs no TTL, no polling and no `du`. And it collapses a step: a landed tree needs **no `refs/salvage/*` ref at
+all** — `origin/main` already references its commits, so durability is automatic rather
+than purchased (contrast §"salvage" for DETACHED trees, which remains necessary there).
+
+**THE SIGNAL PROTECTS THE WORK, NOT THE SESSION.** This is the correction that matters
+most, because getting it wrong reproduces the incident in a new form. "Landed" proves the
+BYTES are reproducible; it says nothing about whether someone is standing in the directory.
+Deleting a checkout destroys the working directory of anything attached to it exactly as
+thinning it did. So reclaim requires landed **and** nothing attached — and since a
+resumable web conversation is undetectable by construction (no process, no shell, no
+reflog: it lives in a browser tab), **roots that host web sessions must never be
+auto-reclaimed at all.** A live-process scan is there to REFUSE, never to grant.
+
+**Three enforcement points; none asks "is anyone still there".**
+
+1. **At birth — cheap by default.** Measured 2026-09-26: **359 of 380 trees born in 7 days
+   were already sparse (93%)**, ~0.45 GiB vs ~7.5 GiB full. The `WorktreeCreate` /
+   `SessionStart` hooks (§8) do this. The ChatGPT-web path drives raw shell and has no hook
+   surface — do not chase it with instructions; let point 2 absorb it.
+2. **At merge — reclaim the landed checkout.** Gate: any one of the three proofs in the
+   CORRECTION box above (ancestry **or** merged-PR-at-exact-head **or** pushed-with-no-open-PR)
+   **and** `git status --porcelain` empty **and** nothing attached. This is the only
+   mechanism that produces real outflow. It is also useless unless the tree sits under a
+   configured root — see "Why the armed sweeper freed almost nothing" below.
+3. **At a ceiling — a hard per-root population cap**, evicting landed-and-clean trees
+   oldest-first. This is what converts unbounded growth into a bounded steady state, and it
+   is the pattern GitHub enforces for Codespaces (org-level retention period + maximum idle
+   timeout) precisely because per-user discipline does not hold at fleet scale.
+
+**Sparsification is a one-time backlog drain, not a lever.** Re-measured with the corrected
+gate: **0.0 GiB** reclaimable across the 27 remaining FULL trees (20 carry local changes, 5
+are unlanded, 1 active, 1 in a web-session root). The reckless version looked valuable only
+because it was counting trees it had no right to touch.
+
+**Measured pool — RE-DERIVED 2026-09-27 (807 trees), correcting the 2026-09-26 census.**
+The first census applied the ancestry-only gate and reported **638 UNLANDED / "79% of
+worktrees never land their work", concluding that the bloat is unmerged WORK rather than
+uncollected garbage and that no sweeper could ever reach it. THAT CONCLUSION WAS WRONG**,
+and wrong in the direction that makes the problem look unfixable. Re-derived with PR state
+instead of SHA ancestry:
+
+| class | trees | what it actually is |
+|---|---|---|
+| **Detached HEAD — no branch at all** | **318** | cannot ship by construction; never meant to |
+| Open PR right now | 107 | in flight, correctly not landed |
+| **Merged PR** | **69** | landed — the ancestry gate misfiled these |
+| Closed PR | 7 | genuinely abandoned |
+| **No PR, inside the decidable window** | **60** | genuinely did work and never shipped |
+| No PR, older than 2026-09-10 | 43 | UNDECIDABLE — see the two horizons below |
+| Zero commits ahead of main | 154 | tree minted, nothing ever committed |
+| Squash detected by commit-subject match | 47 | landed |
+
+**Real abandonment is 60 confirmed — 67–110 counting the closed and the undecidable — i.e.
+8–14%, not 79%.** The fleet ships roughly **61 PRs/day against ~54 trees/day minted**: it
+*is* finishing. Nothing removes the tree afterward. It is uncollected garbage after all, and
+a completion-signal sweeper is exactly the right instrument.
+
+**Two measurement horizons, both of which bias toward calling work abandoned.** Quote
+neither number without them: the clone is **shallow at 2026-08-21**, so a squash that landed
+before that date cannot be matched by commit subject (10 of 604 affected); and a bulk
+`gh pr list --limit 1000` reaches only back to **PR #7046, 2026-09-10**, so a branch whose PR
+predates that window reads as "no PR" when it may well have merged (43 trees). Both push the
+count of "never shipped" UP, which is the safe direction for a storage policy and the unsafe
+direction for a claim about how the fleet behaves.
+
+**Why the armed sweeper freed almost nothing — the actual root cause.** `config/worktree_gc.json`
+has been `armed: true` since 2026-08-13 and its logic was already correct. It nevertheless
+freed **1.5 GiB out of a 308 GiB population**, and the reason is scope, not judgment:
+**580 of 807 registered trees (72%) sit OUTSIDE the configured `roots`**, and
+`scripts/worktree_gc.py` line ~682 refuses any target "outside configured roots". The tool
+classifies every registered tree (it reads `git worktree list` regardless of the list), so a
+correct `SAFE_MERGED` verdict is reached and then cannot be acted on — the config's own
+`_comment` predicted exactly this failure mode. The two absent roots:
+
+| root absent from `roots` | trees | note |
+|---|---|---|
+| `/Volumes/Mastermind/agent-workspaces` | **354** | **mandated** by the global SSD worktree-placement policy; `…/claude` alone measures **462 GiB** |
+| `/Volumes/Mastermind/worktrees` | **142** | the ungoverned mint root; hosts the web/Sol review trees |
+
+**The placement policy moved to the external SSD and the GC's scope never followed.** Adding
+those roots widens an armed deleter from 227 to 807 trees and is therefore an OPERATOR
+ratification act in its own right, exactly like flipping `armed` was — it must not be taken
+as a consequence of this correction.
+
+**A SECOND, larger scope defect: a blanket lock stamp that carries no operator intent.**
+A report-only run over the widened roots verdicted **364 trees / 305.2 GiB `LOCKED`** — which
+looks like legitimate operator parking and is not. `scripts/worktree_gc.py:501` short-circuits
+unconditionally:
+
+```python
+if wt.locked:
+    wt.verdict = "LOCKED"
+    wt.reasons.append(wt.lock_reason or "git worktree lock present")
+    return
+```
+
+so for a locked tree the tool never computes landedness, dirtiness, or live processes at all.
+Grouping those 364 by reason:
+
+| lock reason | trees | GiB |
+|---|---:|---:|
+| `mastermind-external-storage: removable volume protection` | **282** | **215.8** |
+| `initializing` | 3 | 5.8 |
+| genuine seat/operator text (e.g. "Active Sol China participation context; release PR7592 untouched") | 79 | 83.6 |
+
+The first string is stamped by the SSD worktree helper on **every** tree it mints, so it
+encodes zero information about the work — yet it exempts the entire external-SSD population
+from retention permanently. Joining that 285-tree pool back to the PR-state census and then
+running by hand the three checks the short-circuit skipped found **41 trees / 26.6 GiB that are
+clean, unoccupied and provably landed** (MERGED-PR or squash-matched), on top of the 60.8 GiB
+the same run already classified SAFE.
+
+Two implementation facts constrain any fix, and neither is a config flip:
+
+- `worktree_gc.py` has **no lock-reason config key**. Its whole surface is `roots`, `armed`,
+  `min_age_days`, `include_open_pr`, `include_orphans`, `max_delete_per_run`,
+  `delete_local_branches`, `pr_limit`. Honouring the 79 real locks while ignoring the two
+  content-free strings requires a code change plus a new opt-in key (default = today's
+  behaviour, honour every lock).
+- Deletion at line ~706 uses a single `git worktree remove --force`, which **refuses a locked
+  tree** (`fatal: cannot remove a locked working tree`). An explicit `git worktree unlock`
+  must precede removal — preferred over `-f -f`, because an unlock is a visible, auditable act
+  while a double force would also steamroll a lock added after the gate ran.
+
+Like the roots list, changing this is an OPERATOR ratification act, and it only pays off if the
+roots are widened too, since the belt at line ~682 still refuses those paths.
+
+**What this law cannot reach.** The 318 detached trees satisfy no proof in the CORRECTION box
+and never will: 150 are `mo-ext-rev-*` / `mo-ext-fix-*` external CLI labour lanes minted
+per-task by an orchestrator seat, whose output is collected and shipped from the SEAT's
+carrier branch. Their commits are *supposed* to stay unlanded. 191 of 192 such lanes are
+already born sparse, so this is ~0.45 GiB each rather than ~7.5 — a bounded but permanent
+leak that grows with orchestration volume. They need a **lane-exit receipt** (a positive
+"my output was consumed" signal written by the lane itself), not a merge. Until that exists
+they are correctly, and permanently, KEEP. `refs/salvage/*` (534 refs) still matters for this
+bucket — it decouples *preserving the commits* from *reclaiming the checkout* for ~40 bytes
+each — but it licenses nothing under an attached session.
+
+### STOCK vs FLOW — measured 2026-09-27, and the reason neither reclaim gate is the answer
+
+Headroom at the time of measurement: `/Volumes/Mastermind` **792 GiB free of 3,725 (79% used)**,
+which is **492 GiB above the 300 GiB `min_free_bytes` admission floor**; internal `/` has 332 GiB
+free. **No active incident** — worth stating, because every figure below is otherwise easy to read
+as urgent.
+
+**Stock side (deletion).** 51 trees / **37.7 GiB** safe, per the gates below. At the burn rate
+recorded in `~/.config/mastermind/worktree-storage.json` (**21.9 GiB/h**, measured 09-24→09-25
+over 27 h) that is **about 1.7 hours of runway.**
+
+**Footprint side (sparsify — reclaims bytes without deleting anything, because omitted paths stay
+tracked).** 711 registered trees hold **861.9 GiB**, mean 1.21 GiB. Only **73 trees are FULL**
+(≥3 GiB, i.e. `data/`/`site/`/`mockups/`/`verify_shots/` present) but they hold **409.5 GiB of
+excess** over a ~0.6 GiB sparse baseline — 11× the whole deletion pool. Tempting, and mostly
+untouchable:
+
+| verdict | class | trees | excess GiB | thinnable? |
+|---|---|---:|---:|---|
+| DIRTY | HUMAN | 12 | 75.9 | **no** — truncates uncommitted work AND wedges the conversation |
+| DIRTY | AGENT | 11 | 62.4 | **no** — a write into an omitted tree TRUNCATES the committed artifact |
+| LOCKED | AGENT | 12 | 55.8 | only if landed — needs the lock-stamp fix |
+| RECENT | HUMAN | 8 | 44.4 | no |
+| RECENT | AGENT | 7 | 39.1 | no — active work |
+| UNPUSHED | HUMAN | 5 | 29.7 | no |
+| LOCKED | HUMAN | 6 | 29.2 | no |
+| OPEN_PR | HUMAN | 4 | 22.2 | no |
+| LIVE_PROC | AGENT | 3 | 22.1 | no — occupied |
+| SAFE_* | HUMAN | 3 | 19.6 | no — human-driven |
+| SAFE_MERGED | AGENT | 1 | 5.6 | delete outright |
+| ORPHAN | AGENT | 1 | 3.5 | separate ratification |
+
+**~61 GiB of the 409.5 is touchable; 283 GiB is structurally untouchable** (dirty, unpushed, or
+human-driven). This CONFIRMS the earlier "a correctly-gated retrofit yields ~0.0 GiB" measurement
+rather than contradicting it: the excess is overwhelmingly held by trees that cannot be thinned
+safely, which is exactly why retrofit was a one-time backlog drain and never a lever.
+
+**So neither stock nor footprint is the answer. The flow is.** Mean size and FULL-rate by mint
+root:
+
+| mint root | trees | total | mean | FULL |
+|---|---:|---:|---:|---:|
+| `/Volumes/Mastermind/worktrees` (**ungoverned — no sparse hook**) | 139 | 283.4 GiB | **2.04 GiB** | **21%** |
+| `…/agent-workspaces/claude` (governed by the SSD helper) | 282 | 214.3 GiB | **0.76 GiB** | **3%** |
+| `macro-main/.claude/worktrees` (governed by `WorktreeCreate`) | 206 | 202.7 GiB | 0.98 GiB | 8% |
+| `…/agent-workspaces/tmp` (CI `contract-delta` scratch) | 9 | 43.1 GiB | **4.79 GiB** | **78%** |
+
+The governed roots work: 3% FULL, mean 0.76 GiB. The ungoverned mint root runs **7× the FULL rate
+and 2.7× the mean size**, and it is the same root that hosts the human-driven web trees — so it is
+simultaneously the biggest per-tree emitter and the one population no sweeper may touch. At 54
+trees/day that difference, not the 37.7 GiB of deletable stock, is what fills the volume.
+
+**Ranked by GiB/day of burn averted rather than GiB reclaimed once:**
+
+1. **Give `/Volumes/Mastermind/worktrees` a sparse mint path.** It is the only lever that compounds,
+   it deletes nothing, it touches nothing anyone is attached to, and it needs no ratification act —
+   closing the 2.04 → 0.76 GiB gap over 139 trees is ~180 GiB of footprint and a permanently lower
+   slope. The reason it has none today is that nothing owns that root (see below).
+2. **Sparse-or-TTL `…/agent-workspaces/tmp`.** 9 trees, 78% FULL, mean 4.79 GiB — machine-generated
+   `contract-delta` base checkouts, the worst per-tree offender on the host and the easiest to fix.
+3. The two reclaim gates below — 37.7 GiB, real but ~1.7 h of runway.
+
+### Open ratification gates as of 2026-09-27 — both are OPERATOR acts, neither is taken
+
+Measured inventory of what they unlock: `research/WORKTREE_RECLAIM_CANDIDATES_2026_09_27.md`
+(**51 trees / 37.7 GiB safe**, every row with its landed proof AND its attachment class). For
+contrast the armed sweeper at its shipped scope freed **1.5 GiB**.
+
+**`roots` cannot express the human-driven exclusion at volume granularity, and that is the
+first thing to get right.** `/Volumes/Mastermind/agent-workspaces` holds BOTH the agent-driven
+Claude seat lanes (`claude/<seat>/…`) and the ChatGPT-web family (`sol/`, `review/`, plus loose
+`*-sol` trees planted at its top level). Classifying the candidates by subtree:
+
+| scope | pool A (SAFE) | pool B (behind lock stamp) | class |
+|---|---:|---:|---|
+| `/Volumes/Mastermind/worktrees` | 22 trees / 43.8 GiB | — | **HUMAN — never auto-reclaim** |
+| `…/agent-workspaces/sol`, `/review`, loose `*-sol` | 9 trees / 5.8 GiB | — | **HUMAN — never auto-reclaim** |
+| `…/agent-workspaces/claude` | — | 41 trees / 26.6 GiB | AGENT |
+| `…/agent-workspaces/tmp` (CI scratch) | 2 trees / 6.8 GiB | — | AGENT |
+| internal roots already in `roots` | 8 trees / 4.3 GiB | — | AGENT |
+
+So **49.6 of pool A's 60.8 GiB is HUMAN-class**, and a valid landed proof on those rows is not
+permission: reclaim needs landed **and** nothing attached, and a ChatGPT web conversation's
+attachment is undetectable (no process, no shell, no reflog). Adding the two volume roots
+wholesale would point an **armed deleter** at exactly the population the 2026-09-26 incident
+killed — and that sweep only sparsified, where this one removes.
+
+| # | gate | exact change | blast radius | unlocks |
+|---|---|---|---|---|
+| 1 | widen `roots` — **to subtrees, not volumes** | add `/Volumes/Mastermind/agent-workspaces/claude` (the policy-mandated seat root) and optionally `…/agent-workspaces/tmp`. **Do NOT add `/Volumes/Mastermind/worktrees`, `…/agent-workspaces` itself, `…/sol` or `…/review`.** | scope grows by the agent-driven SSD lanes only; the web population stays out of reach of an armed deleter | 2 trees / 6.8 GiB on its own (`tmp`); it is the precondition for gate 2's 26.6 GiB |
+| 2 | stop treating a content-free lock as operator intent | CODE in `scripts/worktree_gc.py`: a new opt-in config key (default = today's behaviour, honour every lock) exempting only the two provably content-free reasons, **plus** `git worktree unlock` before the `remove --force` at line ~706 | touches `scripts/**`, the CI-authority inventory — a merged head there triggers the authority freeze, clearable only by a green `ci.yml` on a main descendant | 41 trees / 26.6 GiB, all under `…/agent-workspaces/claude`, and it ends the permanent exemption of the whole external-SSD population |
+
+**Gate 2 carries essentially all of the safe yield, and gate 1 is its precondition** — the belt
+at line ~682 still refuses a path outside `roots`, and every one of gate 2's 41 trees lives
+under `…/agent-workspaces/claude`. Gate 1 scoped correctly is worth only 6.8 GiB by itself.
+Neither is a consequence of the 2026-09-27 signal correction; do not infer authorization from it.
+
+**A third, cheaper fix is implied by the table above:** the GC has no notion of an attachment
+class, so today the only thing standing between an armed deleter and the web population is the
+`roots` list being accidentally narrow. That is not a safeguard, it is a coincidence. A
+`human_driven_roots` deny-list honoured ahead of every other verdict would make the protection
+explicit and survive a future well-meaning widening.
+
+A third item is **design work, not a gate**: the 318 detached lanes need a lane-exit receipt (a
+positive "my output was consumed" signal written by the lane itself). Nothing in this law can
+reach them until one exists.
+
+**No program in `config/mastermind_programs.yml` owns fleet worktree storage.** That is why
+this doc, `scripts/worktree_gc.py`, `config/worktree_gc.json`, the sparse hooks and the
+host-local `~/.local/lib/mastermind/storage-cleanup/**` have no accountable seat, and why the
+two gates above have sat open while the volume kept filling. Assigning an owner is a
+prerequisite for the per-root population cap in R6, not a separate nicety —
+a cap is a standing policy and a standing policy needs someone to hold it.
+
+**Why accumulation is the real problem.** ~810 worktrees registered; **54 minted per day
+sustained**, and approximately none removed. Two independent causes, and only the first is
+about sessions: sessions do not close their own worktrees and that is not fixable by
+instruction; and for 72% of them no sweeper is permitted to, because they sit outside the
+configured roots (above). Reporting an idle age, a live cwd, or a
+reflog epoch stays useful — for a human reading a report, or to narrow an action the
+positive signal has already authorized. It is never the authorization.
+

@@ -1,12 +1,12 @@
 {
   "schema": "ledger_heartbeat_state.v1",
-  "updated_utc": "2026-09-25T09:53:40Z",
+  "updated_utc": "2026-09-25T21:49:09Z",
   "last_check_date": "2026-09-25",
   "ledgers": {
     "data/opex_windows/forward_log.jsonl": {
       "asof": "2026-08-01",
       "last_check_date": "2026-09-25",
-      "stalled_since": "2026-09-23"
+      "stalled_since": null
     },
     "data/risk_radar/forward_log.jsonl": {
       "asof": "2026-09-24",
@@ -19,17 +19,17 @@
       "stalled_since": null
     },
     "data/mag7_regime/ledger.jsonl": {
-      "asof": "2026-09-23",
+      "asof": "2026-09-25",
       "last_check_date": "2026-09-25",
-      "stalled_since": "2026-09-23"
+      "stalled_since": null
     },
     "data/leadership_crack/forward_log.jsonl": {
-      "asof": "2026-09-23",
+      "asof": "2026-09-24",
       "last_check_date": "2026-09-25",
-      "stalled_since": "2026-09-24"
+      "stalled_since": null
     },
     "data/deterioration_cascade/forward_log.jsonl": {
-      "asof": "2026-09-24",
+      "asof": "2026-09-25",
       "last_check_date": "2026-09-25",
       "stalled_since": null
     },
@@ -39,9 +39,9 @@
       "stalled_since": null
     },
     "data/basket_turn/ledger.jsonl": {
-      "asof": "2026-09-23",
+      "asof": "2026-09-25",
       "last_check_date": "2026-09-25",
-      "stalled_since": "2026-09-23"
+      "stalled_since": null
     },
     "data/china_basket_turn/ledger.jsonl": {
       "asof": "2026-09-24",
@@ -49,9 +49,9 @@
       "stalled_since": null
     },
     "data/us_basket_turn/ledger.jsonl": {
-      "asof": "2026-09-23",
+      "asof": "2026-09-25",
       "last_check_date": "2026-09-25",
-      "stalled_since": "2026-09-23"
+      "stalled_since": null
     }
   }
 }

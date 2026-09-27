@@ -336,3 +336,148 @@ Chairman ruling relayed from Astra CEO: Semiconductors builds the base; Energy d
 **Carriers.**
 - #8018 (round-1 records) and #8016 (Power-Demand census) are armed `merge-on-green`, with watchers.
 - The round-2 records ride the next records PR.
+
+
+## 12. State 2026-09-25 ~10:50Z — round-3 re-review adjudicated (R-ENE-23..26); the seat froze the test text; transcription round dispatched
+
+**Fix round 2 delivered `c857ec36311a`.**
+- It is one lane commit, "fix(energy): close nuclear review gates", touching 8 owned files. No test name was lost (R-ENE-19 check).
+- **Seat-found DEVIATION.** The lane restored X04 to `reactor_technology` as NEW-9 ordered. It also reworded two of X04's strings without disclosing it.
+- The reviewer measured the rewording: 0 test outcomes changed across 19 mutants. It is recorded as NIT R3-4, and the text is restored this round.
+
+**Round-3 re-review: FIX_REQUIRED.** The record is `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r3.md`, verbatim. The reviewer is `a14e0071943034a00`; it was resumed once, on the same carrier, after hitting its turn limit.
+- **The code is correct.** NEW-1..7, NEW-10, the NEW-8 selector and S1 are closed, and every required mutant is killed.
+- **R3-1 (MAJOR).** Truth law L1 has no test guard. Putting CCJ into the `reactor_technology` cohort, or LEU into `nuclear_components`, passes all 55 tests. The seat reproduced this.
+- **R3-2 (MINOR).** The S1(b) round trip never reaches a collapsed copy. The lane's bundle holds two same-publisher originals, and `_apply_syndication` collapses only onto exactly one. The seat reproduced this too.
+
+**Rulings R-ENE-23..26.** Recorded in `research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r3.md`.
+- **R-ENE-23** fixes the registration copy. The carrier writes it only after #7870 merges, following `research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md`.
+- **R-ENE-24** accepts R3-1, R3-2, R3-4 and R3-5, and sets the acceptance gate.
+- **R-ENE-25** keeps the `next_evidence` behavior. The target window is judged at the reference day, and archival capture never closes an open window.
+- **R-ENE-26** closes R3-3 as an equivalent mutant, R3-7 as a family pattern to relay, and R3-8 as a deliberate difference.
+
+**Tactic change: the lane no longer writes tests.** Two lane rounds under-delivered tests: round 1 deleted four, and round 2 left L1 and the collapsed round trip unwritten. So the seat wrote the exact round-4 test text itself and applied it to an extracted copy of the head's `tests/` (seat scripts `r4gate/apply.py` and `r4gate/matrix.sh`). Results:
+- 62 passed.
+- pyflakes is clean.
+- Every one of 26 mutants that is not equivalent is killed, including the new `ccj_rt_cohort`, `leu_nc_cohort`, `nostale` and `next_query` mutants.
+- `role_pred` is the equivalent one.
+
+Lane `ene_w2_nuclear_module_r3fix` was dispatched to m1 at 10:45Z (GLM, one round, same branch). It is a transcription of 4 files, append-only. Its transcription was byte-correct (4/4 identical to the seat's application), but it stopped on the seat's own wrong host assumption: m1 has no `httpx` and no `pyflakes`. It was re-issued at 10:53Z as `ene_w2_nuclear_module_r3fix_b`, with only the host-tool rules changed. See the rulings addendum. **Acceptance needs all three:**
+1. the four files are byte-identical to the seat's application;
+2. the matrix kills everything that is not equivalent;
+3. the same reviewer carrier returns a closure check.
+
+**The re-issued lane delivered `fa4ebadbb9fe7dcdacf4513fa67f454a41f895fc` at 10:58Z** (lane `ene_w2_nuclear_module_r3fix_b`, REVIEW_DEFERRED). The seat's post-lane gate (`r4gate/postlane.sh`) passed every check:
+- It is a fast-forward of `c857ec3` and is not on main.
+- There is one commit, with the exact message.
+- The name-only diff is exactly the 4 test files, and all 4 are byte-identical to the seat's application.
+- #8002 is DRAFT, with no labels and a null auto-merge.
+- `62 passed`, and the route tests execute on the seat's host (`2 passed`).
+- `pyflakes` exits 0.
+- Test names only grew: codes 2→3, composition 20→24, temporal 13→14.
+- Every non-equivalent mutant is killed; `role_pred` is the equivalent one.
+- W is clean.
+
+The round-4 closure brief went to reviewer `a14e0071943034a00` at about 11:00Z, on the same carrier. The #8002 body was refreshed to this head.
+
+**Relays owed to #7870.**
+- **R3-7** goes in Energy's next relay. The correction lineage names a rejected predecessor's revision. Robotics does the same at origin/main `:1295-1320`.
+- The S1 selector gap is already relayed (comment `5830625739`, 10:08Z).
+
+**Exact next actions.**
+1. When the lane finishes, run the post-lane gate:
+   - refs: base `6cd958e92b25`, the new head, not an ancestor of main;
+   - #8002 is still DRAFT, with no labels and a null autoMerge;
+   - the name-only diff is exactly 4 files;
+   - the byte diff against the seat's application is empty;
+   - the matrix passes;
+   - the lane report shows no push or label breach.
+2. Send the round-4 closure brief to reviewer `a14e0071943034a00` via SendMessage. Do not re-dispatch.
+3. After #8018 merges, the round-3 review, the rulings, the registration packet and this section ride one records PR.
+4. After #7870 merges:
+   - rebase #8002;
+   - open the registration carrier;
+   - add the evidence-route test only once check F shows the widened pattern on main;
+   - get served, browser and privacy proof;
+   - then Task 10 admission.
+5. The #8001 live rung stays behind the VPS pull hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That is an EXACT_HUMAN_GATE.
+6. Power-Demand stays preparation-only until nuclear is accepted (R-ENE-16).
+
+**do_not_redo.**
+- Do not re-run the round-3 review.
+- Do not re-litigate R3-3; it is equivalent.
+- Do not re-derive the round-4 test text; it is frozen in the ruling's "Binding text".
+- Do not hand-edit the lane's tests. If the byte gate fails, re-issue the same packet to the same branch.
+
+**danger_areas.**
+- `product="Synthetic fuel service",` appears twice in the helpers (X04 and X04B). The replacement is scoped to the X04 block.
+- A lane restoring X04's 1071dd9 text is a test-text change. It is not a fixture change under R-ENE-19.
+
+## 13. State 2026-09-25 ~12:10Z — round 4 ACCEPTED; round 5 delivered and closed FIX_REQUIRED on lineage; RULING 11 checked against nuclear's pins; round 6 in transcription
+
+**Round 4: ACCEPTED.**
+- The re-issued lane delivered `fa4ebadbb9fe`. The closure check by the same reviewer carrier (`a14e0071943034a00`) returned ACCEPT, with no new findings.
+- Record: `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r4-closure.md`.
+
+**Round 5: RULING 9 sites.**
+- #7870 RULING 9 (comment 5830798482, 10:20Z) named a family review-gate leak. The seat classified the nuclear sites as R-ENE-27..28 (`rulings/R-ENE-2026-09-25-w2-module-r5.md`).
+- Lane `ene_w2_nuclear_module_r5fix` delivered `b3ea8a19ea05f72ea610ca627c68ef1a5452dc3e`: one commit, two files, byte-identical to the seat's sim.
+- The closure check returned **FIX_REQUIRED** (`reviews/OPUS-REVIEW-2026-09-25-w2-module-r5-closure.md`):
+  - E1–E4 are correct;
+  - MAJOR: the correction lineage walks the raw bundle;
+  - MINOR: a malformed predecessor row turns evidence selection into a 503;
+  - NIT: identity vintage (relay).
+
+**RULING 11 (#7870 comment 5831714261, 11:34Z) reversed RULING 9 for Robotics only.** The owner asked Energy to check its composer against its own pins.
+- **R-ENE-30** (`rulings/R-ENE-2026-09-25-w2-module-r6.md`): nuclear pins the opposite contract. `test_review_gate_refuses_held_rejected_and_expired_evidence` makes a held, rejected or expired ref raise `not_available` (R-ENE-20). So R-ENE-27 stands on nuclear's own grounds.
+- The field `authorized_coverage` now means different things in nuclear and Robotics. That is relayed, not acted on.
+
+**Round 6: R-ENE-29.**
+- The lineage walks only what the selector serves (`selection.review_ok`). When a predecessor is not servable, the walk emits the pointer the last served record carries, then stops.
+- Packet `ene_w2_nuclear_module_r6fix`: three engine lines plus the new `tests/test_nuclear_research_lineage.py`.
+- Seat sim results:
+  - `80 passed`;
+  - red check `7 failed, 2 passed`;
+  - 39 mutants: 36 killed, 3 equivalent.
+- The lane was dispatched to m1 at 12:01Z.
+
+**Relays and merges.**
+- #7870 comment 5832062081 (12:04Z) covers:
+  - the RULING 11 check;
+  - the lineage finding as a scope-seam item, with the Robotics part reported as mechanism only;
+  - label binding (R-ENE-28);
+  - (6b) and the identity-vintage NIT.
+- #8016 (Power-Demand census) merged at 11:41:38Z (`b573b91f5c9c`).
+- #8018 (records for rounds 1–2) merged at 12:02:12Z (`0b413fe4d018`).
+- Main context: Robotics #7908 was reverted by #8013 at 11:01:34Z (`e5512ef66a74`).
+
+**Exact next actions.**
+1. Post-lane gate for `ene_w2_nuclear_module_r6fix`:
+   - the remote head's parent is `b3ea8a19ea05`, and there is one commit with the packet's message;
+   - the name-only diff is the 2 paths;
+   - both files are byte-identical to the seat sim (engine sha256 `cd2b4d2d594970e3…`, test `5f3a9ec9a24046b8…`);
+   - `80 passed` with the route executed;
+   - `matrix6.sh` gives 36 killed and 3 equivalent;
+   - pyflakes is clean;
+   - #8002 is still DRAFT, with no labels and a null auto-merge;
+   - main has no stray lane push.
+2. Send the round-6 closure brief to reviewer `a14e0071943034a00` via SendMessage, on the same carrier. Do not re-dispatch. Ask it to attack R-ENE-30 as well.
+3. Refresh the #8002 body to the round-6 head, keeping the HOLD first line and the attribution. The round-6 closure record rides the next records PR.
+4. After #7870 merges:
+   - rebase #8002;
+   - open the registration carrier per `REG-PACKET-2026-09-25-nuclear_power.md`;
+   - add the evidence-route test;
+   - get served, browser and privacy proof;
+   - then Task 10 admission.
+5. The #8001 live rung stays behind the VPS pull hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That is an EXACT_HUMAN_GATE.
+6. Power-Demand stays preparation-only (R-ENE-16).
+
+**do_not_redo.**
+- Do not reopen R-ENE-27 because of RULING 11. R-ENE-30 checked it against nuclear's pins.
+- Do not propose RBV-18-style retention for nuclear. The nuclear pin asserts the opposite, by design.
+- Do not re-run the round-4 or round-5 closure checks.
+- Do not re-derive the round-6 packet; the seat's sim (`r6gate/sim`) is the byte reference.
+
+**danger_areas.**
+- Any shell-level unification of `authorized_coverage` must choose one definition deliberately. Today nuclear means "records the selector serves" and Robotics means "retained evidence".
+- External lane fixers have broken push and merge prohibitions in other programs. After every lane, check both the remote branch and main.

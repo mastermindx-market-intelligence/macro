@@ -476,7 +476,7 @@ NOTE = "see config/seasonality_universe.yml for the roster, not a read"
 # ci-trigger-closure: data — own-line marker, covers the statement below it
 TOUCHED_BY_A_PAST_COMMIT = [
     "config/causal_priors.yml",
-    "scripts/build_site.py",
+    "scripts/check_workflow_yaml.py",
 ]
 
 # The SAME shape one line down, unmarked. If the detector ever starts inferring
@@ -522,18 +522,18 @@ def _selftest() -> int:
         reads_unmarked = direct_reads(unmarked)
 
     for want in (
-        "engine/market_state.py",                                   # from-import
-        "lib/config.py",                                            # from-import
-        "research/prophet_us_audit/reclaim_veto_packet.py",         # Path segment join
+        "engine/market_state.py",                                   # from-import  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
+        "lib/config.py",                                            # from-import  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
+        "research/prophet_us_audit/reclaim_veto_packet.py",         # Path segment join  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
         "scripts/audit_unrun_tests.py",                             # bare literal
-        "collectors/fred.py",                                       # import_module()
+        "collectors/fred.py",                                       # import_module()  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
         # The unmarked twin of the marked list, and the unmarked sibling line of the
         # surgical mark. A list of path strings is NOT data by shape — only by an
         # author saying so — or `PRESS_MUST_RESTART`'s 15 real subjects (reached
         # through @pytest.mark.parametrize) would go dark with it.
         "config/marketing.yml",
-        "scripts/build_news.py",
-        "scripts/build_signal_quality.py",
+        "scripts/build_news.py",  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
+        "scripts/build_signal_quality.py",  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
     ):
         if want not in reads:
             failures.append(f"direct_reads missed {want}")
@@ -541,7 +541,10 @@ def _selftest() -> int:
     # The name-list-as-data shape (#4733), both spellings and both directions.
     for wrong, why in (
         ("config/causal_priors.yml", "own-line marker must excuse the list below it"),
-        ("scripts/build_site.py", "the marker covers the WHOLE marked statement"),
+        # Any file that exists works here. It was scripts/build_site.py until
+        # 2026-09-25; that name made the site builder a trigger for this guard's
+        # CI job (about six builder PRs a week) for an existence check alone.
+        ("scripts/check_workflow_yaml.py", "the marker covers the WHOLE marked statement"),
         ("config/press_sources.yml", "a same-line marker must excuse that entry"),
         ("research/DO_NOT_REBUILD.md", "a marker must excuse a __file__-rooted join"),
     ):
@@ -561,19 +564,19 @@ def _selftest() -> int:
     if any(r.endswith("__init__.py") for r in reads):
         failures.append("direct_reads returned a package marker")
     for wrong, why in (
-        ("config/brain.yml", "a tmp_path write is not a subject"),
-        ("config/evidence_clock.yml", "a synthetic `root` base is not the checkout"),
-        ("config/reflexes.yml", "a module docstring is prose, not a read"),
-        ("config/clinical_modalities.yml", "a function docstring is prose, not a read"),
-        ("config/trade_flow_codes.yml", "a comment is prose, not a read"),
-        ("config/seasonality_universe.yml", "a path inside a sentence is a pointer"),
+        ("config/brain.yml", "a tmp_path write is not a subject"),  # ci-trigger-closure: data — selftest fixture name, never opened
+        ("config/evidence_clock.yml", "a synthetic `root` base is not the checkout"),  # ci-trigger-closure: data — selftest fixture name, never opened
+        ("config/reflexes.yml", "a module docstring is prose, not a read"),  # ci-trigger-closure: data — selftest fixture name, never opened
+        ("config/clinical_modalities.yml", "a function docstring is prose, not a read"),  # ci-trigger-closure: data — selftest fixture name, never opened
+        ("config/trade_flow_codes.yml", "a comment is prose, not a read"),  # ci-trigger-closure: data — selftest fixture name, never opened
+        ("config/seasonality_universe.yml", "a path inside a sentence is a pointer"),  # ci-trigger-closure: data — selftest fixture name, never opened
     ):
         if wrong in reads:
             failures.append(f"direct_reads flagged {wrong}: {why}")
 
     # Glob semantics: the subtree form is what makes engine/** cover the incident.
     checks = (
-        ("engine/signal_quality.py", ["engine/**"], True),
+        ("engine/signal_quality.py", ["engine/**"], True),  # ci-trigger-closure: data — selftest fixture name, never opened
         ("engine/sub/deep.py", ["engine/**"], True),
         ("engineering/other.py", ["engine/**"], False),
         ("scripts/sub/x.py", ["scripts/*.py"], False),
@@ -590,9 +593,9 @@ def _selftest() -> int:
     # filter drops it and clear when the filter names it.  This is the incident in
     # miniature — the suite's own file stays matched throughout, which is exactly
     # why an any()-over-the-closure census calls it covered either way.
-    gate_with = ["tests/**", "engine/signal_quality.py"]
+    gate_with = ["tests/**", "engine/signal_quality.py"]  # ci-trigger-closure: data — selftest fixture name, never opened
     gate_without = ["tests/**"]
-    subject = "engine/signal_quality.py"
+    subject = "engine/signal_quality.py"  # ci-trigger-closure: data — selftest fixture name, never opened
     if matched(subject, gate_without):
         failures.append("seeded defect: subject must be UNREACHABLE without its entry")
     if not matched(subject, gate_with):
@@ -618,7 +621,7 @@ def _selftest() -> int:
     for rel in real_outside:
         if rel in step and rel not in named:
             failures.append(f"a run: step naming {rel} must resolve (scope is the tree)")
-    if "research/signal_engine/test_buyfilter.py" in named:
+    if "research/signal_engine/test_buyfilter.py" in named:  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
         failures.append(
             "research/signal_engine/test_buyfilter.py collects zero tests — a CLI "
             "instrument must not be gated as a suite"
