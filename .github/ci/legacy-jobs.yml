@@ -5447,6 +5447,13 @@ jobs:
         run: python -m pytest tests/test_transmission_chains.py -q
       - name: transmission chains — W4 distribution (publish subset + Cascade Monitor + NW lobes)
         run: python -m pytest tests/test_transmission_publish.py tests/test_transmission_cascade_monitor.py tests/test_transmission_chains_nw.py -q
+      # MO-J1A (PR #8052): the affected-company continuation — identity round-trip
+      # (VendorAliasTable.resolve → vendor_symbol_for at chain_state.asof) + per-channel
+      # projection. Pure unit (in-memory alias table, no data/). Lives beside the
+      # Cascade Monitor suite because the page it feeds is this job's subject; the
+      # matching ci.yml paths entry lists the engine + test file (#3357 both-halves rule).
+      - name: transmission chains — MO-J1A affected-company continuation (identity law + projection)
+        run: python -m pytest tests/test_transmission_company_continuation.py -q
       - name: transmission calibration — miner + regime split + merge + null honesty
         run: python -m pytest tests/test_transmission_calibration.py -q
       - name: transmission proposals — W5 Loop-C (pack + ingest + gate + Article 1/2)

@@ -115,6 +115,42 @@ def main() -> int:
         log.error("transmission chains subset failed: %s", e)
         chains = None
 
+    # MO-J1A — identity-safe affected-company continuation (TXI W4 cascade monitor).
+    # Load the Data OS vendor-alias artifact ONCE and project every non-dormant chain's
+    # blast-channel membership through the EXACT identity law in
+    # engine/transmission_company_continuation. Any failure → aliases=None path
+    # (companies render as unlinked membership + identity_unavailable, page never breaks).
+    if isinstance(chains, dict) and chains.get("chains"):
+        from datetime import date as _date
+        from engine.intelligence_workspace.entity import VENDOR_ALIASES, _records
+        from engine.transmission_company_continuation import enrich_display_chains
+        from lib.dataos.identity import VendorAliasTable
+        txi_asof = chains.get("asof")
+        # Decision date = chain_state.asof (never today()). A malformed as-of takes the
+        # aliases=None path (membership renders unlinked, page never breaks) — the parse
+        # itself must not be able to kill write_page.
+        decision_date: _date | None = None
+        try:
+            raw_asof = txi_asof if isinstance(txi_asof, str) and txi_asof else as_of
+            decision_date = _date.fromisoformat(str(raw_asof)[:10])
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("transmission company continuation (asof parse) failed: %s", e)
+        aliases: VendorAliasTable | None = None
+        if decision_date is not None:
+            try:
+                alias_rows = _records(config.ROOT / VENDOR_ALIASES)
+                aliases = VendorAliasTable.from_records(alias_rows)
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.error("transmission company continuation (alias load) failed: %s", e)
+        try:
+            chains = enrich_display_chains(chains, aliases, decision_date)
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("transmission company continuation (enrich) failed: %s", e)
+            try:
+                chains = enrich_display_chains(chains, None, decision_date)
+            except Exception:  # noqa: BLE001
+                pass
+
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     html = env.get_template("transmission.html.j2").render(
         C=C, as_of=as_of, built=built, span=span, tx=tx, gate=gate, yc=yc,
