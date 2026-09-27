@@ -73,7 +73,8 @@ evidence:
   - "AST walk of the same blob, parent-chain per call site: the `[identity resolution census]` notice at line 1044 is guarded ONLY by `if idres is not None` (856) nested in `if idres_path.exists()` (850). No content-dependent condition. The other five notice sites are content-guarded; 33 breach sites exist, including the state-to-ids biconditional at 960."
   - "The script's own selftest, lines 1229-1232: \"The identity-resolution CENSUS is a designed, always-on notice (7e - printed every run, never an incident), so it is the one notice a 'fully clean' store may still carry\", and line 1334 asserts `any(\"identity resolution census\" in x for x in n)` with the message \"the identity-resolution census must be printed every run\". Contract statement plus a pin that states it: design, not defect."
   - "data/theme_graph/identity_resolution.parquet is committed: 203378B at a0d7b054ff23 and 204044B at main, with a nonexistent sibling path as negative control. So the census notice fires on any materialised checkout and the marker line at 1099 is unreachable there."
-  - "docs/HOUSE_LAW_CI_GUARD_SUITE.md at main, row theme_graph.edge_contract: \"The nightly invocation is ADVISORY (rc 0 on a breach, one line-start warning annotation) because the graph is display-tier with all six authority booleans false, so a contract breach must not take the collect lane down. --strict is what CI runs.\" Consumers: legacy-jobs.yml/unrun-intl-libraries (pr_ci) and daily.yml/engine (scheduled)."
+  - "The advisory exit code is DESIGNED and documented: docs/HOUSE_LAW_CI_GUARD_SUITE.md at main, row theme_graph.edge_contract, says the nightly invocation is ADVISORY because the graph is display-tier with all six authority booleans false, so a breach must not take the collect lane down, and that \"--strict is what CI runs\". The same comment appears at the call site, scripts/ci/daily_engine_regional_desk_builders.sh:118-120, whose brun line passes NO --strict."
+  - "LANE MAP VERIFIED AGAINST THE WORKFLOWS, not the doc, because the doc row is stale on this point. The --strict invocation is real: .github/ci/legacy-jobs.yml:11456 runs `python -m scripts.check_theme_graph_contracts --strict` after --selftest at 11455. But that file is not under .github/workflows/ and its job unrun-intl-libraries carries `if: false` (11341) and `gate: data` (11342); its steps execute only through scripts/run_ci_pack.py, which filters `job.gate == gate` (run_ci_pack.py:1690). Sweeping all 99 workflow files with the read pipeline positively controlled: `--gate code` appears in ci.yml, selfhosted-ci-canary.yml and trusted-ci-executor.yml; `--gate data` appears in data-health.yml ONLY, whose triggers are schedule, workflow_run on daily, and workflow_dispatch - never pull_request. So NO pull-request lane runs this guard, the house-law row lane: pr_ci is stale, and a carrier PR receives no theme-graph contract verdict from CI at all."
   - "Notice class taxonomy read from the same blob: designed = `[licensing snapshots - designed]` (505), `[identity resolution census]` (1044); incident or indeterminate = store incomplete (375, untagged so it prints as `::notice title=theme graph indeterminate::`), `[capability side-car MISSING - half-finished build]` (843), `[identity resolution side-car MISSING - half-finished build]` (1053), `[capability promoted itself]` (835). Lines 1090-1091 state the intent: distinct titles per class so the designed notice cannot visually mask a half-finished build."
   - "Controls on the read: 21 occurrences of 'def ' (positive), 0 occurrences of a nonsense token (negative). The two blobs at 1e38d5c955dc and a0d7b054ff23 are byte-identical at 87600B, so reading both is one observation and not an independent confirmation."
   - "Macro PR #7780 comment 5852920768 (the exit-code measurement posted to the shared owner on the Sol coordination carrier, including this seat's own exposure; carrier verified by .issue_url, not by recall)"
@@ -90,10 +91,13 @@ decided_at: 2026-09-27
 
 This fixes what Gate C means for operation `gmi-robotics-fable-ceo-e2e-20260923-chairman-001`,
 and reports measured properties of a shared script. It does not redefine any other vertical's
-gate and changes no behaviour. A lane whose Gate C result comes from the CI invocation is
-already on the `--strict` path; a lane that records a bare exit code from a local run is not,
-and that distinction is the reason the measurement is recorded here rather than left on a PR
-comment thread.
+gate and changes no behaviour.
+
+It matters more than it first appeared, because **no pull-request lane runs this guard.** The
+`--strict` invocation is real but lives in a `gate: data` job, and the only `--gate data` caller is
+`data-health.yml`, which triggers on a schedule and on `daily` completing — never on
+`pull_request`. So a carrier PR gets no theme-graph contract verdict from CI, and this local
+predicate is not a supplement to a CI gate; for a PR it is the only Gate C there is.
 
 # Why the obvious fix is the wrong fix
 
