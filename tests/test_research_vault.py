@@ -3995,6 +3995,7 @@ def _w5_aliases():
         AliasRow("membership", "MSFT", "SEC:US-XNAS-MSFT", None, None),
         AliasRow("membership", "CRWD", "SEC:US-XNAS-CRWD", None, None),
         AliasRow("membership", "B", "SEC:US-XNYS-B", None, None),
+        AliasRow("membership", "TRIO", "SEC:US-XNAS-TRIO", None, None),
     ])
 
 
@@ -4262,4 +4263,28 @@ def test_w5_sidecar_and_explicit_title_subject_conflict_fails_closed():
     assert (
         resolve_stream_observation(report, _w5_aliases()).state
         == ABSTAIN_SUBJECT_CONFLICT
+    )
+
+
+def test_w5_title_subject_refuses_research_acronym_even_if_symbol_exists():
+    from engine.research_intelligence.longitudinal import (
+        ABSTAIN_NO_EXACT_SECURITY_SUBJECT,
+        resolve_stream_observation,
+    )
+
+    report = {
+        "id": "research-acronym",
+        "institution": "BlackRock",
+        "desk": "Innovation Strategy",
+        "tickers": [],
+        "title": "Transformational Innovation Opportunities (TRIO)",
+        "published_at": "2026-09-19T00:56:48Z",
+    }
+
+    # TRIO is deliberately mapped to a security in the test alias table. The title
+    # grammar must still reject a generic research-program name rather than let an
+    # accidental acronym collision become canonical subject identity.
+    assert (
+        resolve_stream_observation(report, _w5_aliases()).state
+        == ABSTAIN_NO_EXACT_SECURITY_SUBJECT
     )
