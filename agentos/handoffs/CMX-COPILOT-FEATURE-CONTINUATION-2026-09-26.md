@@ -122,3 +122,52 @@ The previously refused actions remain held and were not replayed through Extra H
 Next bounded chunk: first consume any genuinely permitted platform recovery or same-operation source return for one of those held semantic actions. If none exists, continue another path-disjoint product capability that materially improves Copilot without recreating control/identity/observation owners. Once feature construction ends, execute the combined native/multi-pane/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification, then normal #8005 → #8014 release gates. Green CI alone is not acceptance.
 
 Own effects in this chunk are reconciled. EFFECT_UNKNOWN: none. No child, watcher, provider activation or automatic wake was created.
+
+
+## 2026-09-27 Extra High chunk — six-sample native recent window
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION after containing commit and external readbacks. MISSION_COMPLETE: false. Capability remains PARTIAL / BUILT_NOT_PROVEN / NOT_RELEASED. Chairman continues Extra High for write-heavy progress with bounded turns; test/typecheck/compiler/browser/model qualification remains intentionally deferred to the final combined pass.
+
+Protected Mastermind pin for this chunk: `b2e0b905bfac975766afda3cf65527897bc0e25a`. INDEX and required enrolled law blob identities are unchanged from the previously consumed compatible 1.0.1/bootstrap1 set.
+
+### Exact published source
+
+Terminal #757 advanced to **83ca35be96e0b1cfe5d8093ab2ee443c244d3f74** (`feat(copilot): expose short native series history`) on the same incumbent branch/worktree. Exact original-branch readback matched. The independent untracked browser spec remains untouched at SHA256 **6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c**.
+
+Macro #8014 advanced to **2a63f87f82e7e84961e6d926f100c389e2b95bfb** (`feat(copilot): qualify short native series history`) on the same incumbent branch/worktree. Exact original-branch readback matched; workspace was clean after publication.
+
+### Capability delta in source
+
+The shared native observation projector previously selected only the newest **two** points from each returned native series. It now selects up to the newest **six** raw source samples per series, newest first. This is a richer observation window, not a new historical-data endpoint or a derived signal.
+
+Producer semantics:
+- same exact `SuiteRenderBundle` already used by renderer/headless research adapter;
+- each sample remains raw `{index,value,age_bars}`; null remains null, never backfilled;
+- per-series window is capped at six via `NATIVE_OBSERVATION_SERIES_SAMPLE_LIMIT`;
+- exact locked-bar `selected_sample` remains independent and may point outside the six-bar recent window;
+- live packet still has the existing 7168-byte cap; the compact/headless projector retains its existing byte owner. A larger row can cause the existing whole-row selector to omit more series, with coverage counts remaining authoritative.
+
+Brain qualification:
+- accepts 1–6 samples for backward compatibility with older 1–2 sample clients;
+- requires unique indices in strict decreasing/newest-first order;
+- rejects duplicate, reordered, out-of-range, nonfinite, or >6 sample windows;
+- recomputes `age_bars` from qualified indices instead of trusting client age prose;
+- publishes fixed basis `recent_series: up_to_6_newest_source_samples_per_returned_series`.
+
+Technician protocol advanced to **v8**. The model may describe only the short observed path represented by those raw samples (for example rising/falling/turning over those bars); it must not convert the six-bar window into a calibrated forecast, probability, or substitute for the requested longer horizon.
+
+### Authored specifications / proof boundary
+
+Existing Terminal native observation spec gained a six-sample newest-first/null-preservation case. Existing Macro native boundary spec gained six-sample acceptance and duplicate/reordered/>6 rejection cases. **Authored/modified, NOT RUN.**
+
+Only exact head/index fences, source diff review, `git diff --check`, sample-limit parity checks, path-scoped staging, commits, non-force pushes and exact branch readbacks occurred. No local test runner, TypeScript/Python compiler, browser/model/provider run, CI polling, merge, deployment or production config action.
+
+### Held lanes / next
+
+The exact-bar command idea was deliberately NOT implemented: source review showed a programmatic bar-selection mutation would inherit the separately held original-chart-target-freezing gap. Do not widen mutation surface until that semantic owner is resolved.
+
+The previously refused actions remain held: shared widget Stop consumer; original-pane target freezing / legitimate-only revision adoption; selected-candle confirmation-filtered native event projection; grouped-annotation inspection. A prior per-pane Data Window read remains held. No replay or alternate carrier.
+
+Retain the preceding read-only multi-pane source: Terminal **4f8035a27c83f954d4d34c68a17b58d627ba7d6e**, Macro feature **58a6e59865b909086ced252198c986db3531b24d** and all prior DO_NOT_REDO work.
+
+Exact next chunk: consume a genuinely permitted recovery/return for one of the held core semantic actions if one exists; otherwise continue a path-disjoint feature that improves Copilot without expanding unsafe mutation authority. Final combined qualification remains owed. EFFECT_UNKNOWN: none. No worker/watcher/provider activation or automatic wake.
