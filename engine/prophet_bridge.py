@@ -131,6 +131,7 @@ import pandas as pd
 from engine.government_revenue.federation import reviewed_award_change_context
 from engine.government_revenue.freshness import effective_freshness
 from engine.prophet_integrity import (
+    derive_t2_temporal_lineage, validate_temporal_lineage,
     RECONSTRUCTED_ORIGINATION_PREFIX,
     is_reconstructed,
 )
@@ -1016,6 +1017,7 @@ def _resolve_candidate_signal_dates(
     last = signal.get("last") if isinstance(signal.get("last"), Mapping) else {}
     source_marker_date = _normalise_iso_date(last.get("date")) if last else None
     errors: list[str] = []
+    temporal_lineage = None
 
     if tier not in ("T1", "T2", "T3"):
         errors.append(
@@ -1043,10 +1045,14 @@ def _resolve_candidate_signal_dates(
                 f"{observed_date!r}"
             )
         if event_date is not None and formation_date > event_date:
-            errors.append(
-                f"formation_date {formation_date!r} postdates tier_event_date "
-                f"{event_date!r}"
-            )
+            try:
+                temporal_lineage = derive_t2_temporal_lineage(
+                    candidate, formation_date=formation_date, price_basis_date=price_basis_date)
+            except ValueError as exc:
+                errors.append(
+                    f"formation_date {formation_date!r} postdates tier_event_date "
+                    f"{event_date!r}; {exc}"
+                )
         if tier == "T1" and last:
             marker_event = _normalise_iso_date(last.get("signal_date"))
             marker_confirmed = (
@@ -1091,6 +1097,7 @@ def _resolve_candidate_signal_dates(
         ),
         "signal_provisional": provisional,
         "source_marker_date": source_marker_date,
+        **({"temporal_lineage": temporal_lineage} if temporal_lineage is not None else {}),
     }, errors)
 
 
@@ -4694,6 +4701,8 @@ def originate_plans(
             "signal_date_basis": signal_dates["signal_date_basis"],
             "signal_provisional": signal_dates["signal_provisional"],
             "source_marker_date": signal_dates["source_marker_date"],
+            **({"temporal_lineage": signal_dates["temporal_lineage"]}
+               if "temporal_lineage" in signal_dates else {}),
             # price_basis_date/entry_date: the NYSE session whose close IS `entry`.
             # The horizon clock, outcome scan, management τ and option min-expiry all
             # read this via plan_clock_date().  It must never inherit a weekend run date.
@@ -4745,6 +4754,13 @@ def originate_plans(
         if earnings_annotation:
             plan["earnings_evidence_context"] = earnings_annotation
             plan.setdefault("context_engines", []).append("earnings_evidence_spine")
+
+        # Validate the same immutable relation the correction/ledger readers consume.
+        try:
+            validate_temporal_lineage(plan)
+        except ValueError as exc:
+            _record_failure(ticker=ticker, plan_id=plan_id, stage="clock_provenance", errors=[str(exc)])
+            continue
 
         # Validate
         from engine.options_structure import validate_trade_plan as _vtp  # noqa: PLC0415
