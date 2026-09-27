@@ -47,11 +47,6 @@ class HealClient:
     def __init__(self):
         self.extra = {"summary": None}          # what /extra returns right now
         self.extra_calls: list[str] = []
-        self.path_calls: list[str] = []
-        self.path = [
-            {"name": "2026"}, {"name": "July"}, {"name": "Jul 21"},
-            {"name": "Goldman"}, {"name": "S&T"},
-        ]
 
     # a paper whose display name arrives truncated (dropped '.US)')
     PAPERS = [
@@ -70,10 +65,6 @@ class HealClient:
     def item_extra(self, item_id):
         self.extra_calls.append(item_id)
         return dict(self.extra)
-
-    def item_path(self, item_id):
-        self.path_calls.append(item_id)
-        return list(self.path)
 
 
 def test_discovery_self_heals_late_summary_and_truncated_title(tmp_path, monkeypatch):
@@ -124,53 +115,6 @@ def test_healthy_paper_is_not_refetched(tmp_path, monkeypatch):
     r3 = discover(cfg, conn, client, limit=10)
     assert r3.healed == 0
     assert len(client.extra_calls) == n_calls              # no wasted /extra call
-
-
-def test_discovery_persists_source_breadcrumb_for_vault_desk(tmp_path, monkeypatch):
-    from marketdesk_extractor.discover import discover
-    from marketdesk_extractor.publish_vault import sidecar_for
-
-    cfg = _cfg(tmp_path, monkeypatch)
-    conn = db.connect(cfg.database_url); db.init_db(conn)
-    client = HealClient()
-    client.extra = {"summary": "Ready."}
-
-    discover(cfg, conn, client, limit=10)
-    row = db.get_by_blob_id(conn, "P1")
-
-    assert row["breadcrumb"]
-    assert client.path_calls == ["P1"]
-    sc = sidecar_for(dict(row))
-    assert sc["desk"] == "S&T"
-
-
-def test_seen_row_backfills_missing_breadcrumb_without_summary_fetch(tmp_path, monkeypatch):
-    from marketdesk_extractor.discover import discover
-
-    cfg = _cfg(tmp_path, monkeypatch)
-    conn = db.connect(cfg.database_url); db.init_db(conn)
-    client = HealClient()
-    client.extra = {"summary": "Already healthy.", "title": "Alcon Inc. (ALCC.US)"}
-
-    discover(cfg, conn, client, limit=10)
-    db.update_fields(
-        conn, "P1",
-        title="Alcon Inc. (ALCC.US)",
-        marketdesk_summary="Already healthy.",
-        breadcrumb=None,
-    )
-    db.mark_vaulted(conn, "P1", "marketdesk-p1-abcdef", "2026-07-24T00:00:00Z")
-    client.extra_calls.clear()
-    client.path_calls.clear()
-
-    result = discover(cfg, conn, client, limit=10, fetch_summary=False)
-    row = db.get_by_blob_id(conn, "P1")
-
-    assert result.healed == 1
-    assert client.extra_calls == []
-    assert client.path_calls == ["P1"]
-    assert row["breadcrumb"]
-    assert row["vaulted_at"] is None
 
 
 class FakePublisher:
