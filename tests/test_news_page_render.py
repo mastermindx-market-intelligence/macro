@@ -178,6 +178,20 @@ def _css_rule(html: str, selector: str) -> str:
     return "\n".join(matches)
 
 
+def test_legacy_headline_feed_and_live_wire_are_tier2_depth_not_resting_streams():
+    html = _render_full()
+    start = html.index('<details class="nx-depth" id="nxControls">')
+    end = html.index('</details>', start)
+    depth = html[start:end]
+    assert 'Full news tape' in depth
+    assert 'id="nxFeedControls"' in depth
+    assert 'id="nxWire"' in depth
+    assert 'id="nxFeed"' in depth
+    assert html.index('id="nxIntel"') < start
+    assert "disclosure.open=true" in html
+    assert "search.focus()" in html
+
+
 def test_attention_map_is_visual_and_mobile_queue_is_demoted():
     html = _render_full()
     assert 'class="nx-attention"' in html

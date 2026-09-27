@@ -715,6 +715,17 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 .nx-heat-bar i{ display:block; width:var(--share); height:100%; border-radius:inherit; background:var(--link); opacity:.72; }
 .nx-attention .nx-pulse-sent{ margin-left:0; white-space:nowrap; }
 .nx-controls{ margin-bottom:14px; }
+.nx-depth{ margin:18px 0 24px; border:1px solid var(--nx-hair); border-radius:var(--r-panel,14px); background:var(--nx-card); overflow:hidden; }
+.nx-depth-summary{ list-style:none; cursor:pointer; min-height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 16px; color:var(--text); font-size:12px; font-weight:750; }
+.nx-depth-summary::-webkit-details-marker{ display:none; }
+.nx-depth-summary::after{ content:"+"; margin-left:auto; color:var(--muted); font:600 17px/1 var(--font-ui); }
+.nx-depth[open]>.nx-depth-summary::after{ content:"−"; }
+.nx-depth-summary:focus-visible{ outline:2px solid var(--info); outline-offset:-3px; }
+.nx-depth-meta{ margin-left:auto; color:var(--muted); font-size:10px; font-weight:600; }
+.nx-depth-body{ padding:0 16px 18px; border-top:1px solid var(--nx-hair); }
+.nx-depth .nx-controls{ padding-top:14px; }
+.nx-depth .nxw{ margin:0 0 14px; }
+.nx-depth .nx-feed{ margin-top:4px; }
 
 .nxi{ border-radius:var(--r-panel,14px); }
 .nxi-head{ padding:18px 20px 14px; }
@@ -775,6 +786,9 @@ body.nxi-drawer-open{ overflow:hidden; }
   .nx-lead{ padding:16px; }
   .nx-lead-title{ font-size:22px; }
   .nx-movers{ display:none; }
+  .nx-depth{ margin:14px 0 20px; }
+  .nx-depth-summary{ min-height:48px; padding:11px 13px; }
+  .nx-depth-body{ padding:0 12px 14px; }
   .nx-attention{ display:block; padding:12px 0 14px; }
   .nx-attention .nx-pulse-lbl{ display:block; margin-bottom:9px; }
   .nx-attention-items{ display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
@@ -869,27 +883,6 @@ body.nxi-drawer-open{ overflow:hidden; }
 </div>
 {% endif %}
 
-{# ============================ CONTROLS + FEED ============================ #}
-{% if FEED %}
-<div class="nx-controls" id="nxControls">
-  <div class="seg" id="nxSeg" role="group" aria-label="Filter news by topic" data-label-en="Filter news by topic" data-label-zh="按主题筛选新闻">
-    <button type="button" class="seg-btn on" data-lane="all" aria-pressed="true">{{ t('All','全部') }}</button>
-    <button type="button" class="seg-btn" data-lane="markets" aria-pressed="false">{{ t('Markets','市场') }}</button>
-    <button type="button" class="seg-btn" data-lane="macro" aria-pressed="false">{{ t('Macro','宏观') }}</button>
-    <button type="button" class="seg-btn" data-lane="fed" aria-pressed="false">{{ t('Fed','美联储') }}</button>
-    <button type="button" class="seg-btn" data-lane="companies" aria-pressed="false">{{ t('Companies','公司') }}</button>
-  </div>
-  <div class="nx-search">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" data-label-en="Search news" data-label-zh="搜索新闻" placeholder="Search headlines, tickers…" aria-label="Search news">
-  </div>
-  <div class="nx-filter-status">
-    <span class="nx-count" id="nxCount" aria-live="polite"></span>
-    <button type="button" class="nx-clear" id="nxClear" hidden>{{ t('Clear filters','清除筛选') }}</button>
-  </div>
-</div>
-{% endif %}
-
 {# ==================== INTELLIGENCE DESK ====================
    Client-hydrated from the host-local story store. Resting state is scan-first:
    headline + evidence maturity + market context. Explanatory depth lives in the
@@ -927,6 +920,36 @@ body.nxi-drawer-open{ overflow:hidden; }
 
 </section>
 
+{# ==================== FULL NEWS TAPE · TIER-2 DEPTH ====================
+   The raw arrival wire and server-ranked headline list remain fully available,
+   but they no longer compete with the clustered Intelligence Desk at rest. #}
+<details class="nx-depth" id="nxControls">
+  <summary class="nx-depth-summary">
+    <span>{{ t('Full news tape','完整新闻流') }}</span>
+    <span class="nx-depth-meta">{% if FEED %}<span class="num">{{ FEED|length }}</span> {{ t('ranked headlines','条排序标题') }}{% else %}{{ t('quiet','暂无') }}{% endif %}</span>
+  </summary>
+  <div class="nx-depth-body">
+{# ============================ CONTROLS + FEED ============================ #}
+{% if FEED %}
+<div class="nx-controls" id="nxFeedControls">
+  <div class="seg" id="nxSeg" role="group" aria-label="Filter news by topic" data-label-en="Filter news by topic" data-label-zh="按主题筛选新闻">
+    <button type="button" class="seg-btn on" data-lane="all" aria-pressed="true">{{ t('All','全部') }}</button>
+    <button type="button" class="seg-btn" data-lane="markets" aria-pressed="false">{{ t('Markets','市场') }}</button>
+    <button type="button" class="seg-btn" data-lane="macro" aria-pressed="false">{{ t('Macro','宏观') }}</button>
+    <button type="button" class="seg-btn" data-lane="fed" aria-pressed="false">{{ t('Fed','美联储') }}</button>
+    <button type="button" class="seg-btn" data-lane="companies" aria-pressed="false">{{ t('Companies','公司') }}</button>
+  </div>
+  <div class="nx-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" data-label-en="Search news" data-label-zh="搜索新闻" placeholder="Search headlines, tickers…" aria-label="Search news">
+  </div>
+  <div class="nx-filter-status">
+    <span class="nx-count" id="nxCount" aria-live="polite"></span>
+    <button type="button" class="nx-clear" id="nxClear" hidden>{{ t('Clear filters','清除筛选') }}</button>
+  </div>
+</div>
+{% endif %}
+
 {# ==================== LIVE WIRE (B4b) ====================
    Client-hydrated from /live/wires.json (free_registered — see config/site_access.yml).
    Ships HIDDEN and stays hidden when the wire is not published at this deployment:
@@ -957,6 +980,39 @@ body.nxi-drawer-open{ overflow:hidden; }
     </div>
   </div>
 </section>
+
+{% if FEED %}
+<section class="nx-feed" id="nxFeed">
+  {% for h in FEED %}
+  {% set acc = 'var(--up)' if (h.event and h.event.direction=='bullish') or h.ai_sentiment=='pos' or h.sentiment=='pos' else ('var(--down)' if (h.event and h.event.direction=='bearish') or h.ai_sentiment=='neg' or h.sentiment=='neg' else 'var(--link)') %}
+  <article class="nx-story{{ ' hide' if loop.index0 >= 24 else '' }}" data-lane="{{ h.lane or 'markets' }}"
+           data-idx="{{ loop.index0 }}"
+           data-search="{{ ((h.title or '') ~ ' ' ~ (h.title_zh or '') ~ ' ' ~ (h.tickers|join(' ') if h.tickers else '') ~ ' ' ~ (h.source_name or h.source or h.domain or ''))|lower|e }}"
+           style="--acc:{{ acc }};">
+    <div class="nx-story-main">
+      <a class="nx-story-title" href="{{ h.url }}" target="_blank" rel="noopener">{{ t(h.title|e, (h.title_zh or h.title)|e) }}</a>
+      {#- ONE label per story. The event chip, the direction chip and the "✦ AI"
+          badge are demoted (hidden by .nx-chip.evt/.ai/.tier): five to nine
+          coloured objects around a headline is what made this list unreadable. -#}
+      <div class="nx-meta">
+        {{ themechip(h) }}
+        <span class="sep">·</span>
+        <span class="src">{{ h.source_name or h.source or h.domain }}</span>
+        <span class="sep">·</span><span class="rel-time" data-ts="{{ h.seendate }}"></span>
+        {% for tk in (h.tickers or [])[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+  <div class="nx-empty" id="nxEmpty" style="display:none;">{{ t('No stories match these filters. Use Clear filters above to recover the full ranked list.','没有新闻匹配当前筛选。使用上方“清除筛选”可恢复完整排序列表。') }}</div>
+</section>
+{% if FEED|length > 24 %}<button class="gbtn nx-more" id="nxMore">{{ t('Show more','显示更多') }} <span class="num">(+{{ FEED|length - 24 }})</span></button>{% endif %}
+{% else %}
+<div class="nx-empty">{{ t('The news tape is quiet right now — check back shortly.','新闻此刻较为平静——稍后再来。') }}</div>
+{% endif %}
+
+  </div>
+</details>
 
 {# F05/MO-PAID-017 consequence glance — News Feed entry point, not Market-Feed.
    Single-column wrapper (not nx-cols). Reuses existing .nx-rel cards.
@@ -1029,36 +1085,6 @@ body.nxi-drawer-open{ overflow:hidden; }
     </div>
     {% endif %}
 </section>
-
-{% if FEED %}
-<section class="nx-feed" id="nxFeed">
-  {% for h in FEED %}
-  {% set acc = 'var(--up)' if (h.event and h.event.direction=='bullish') or h.ai_sentiment=='pos' or h.sentiment=='pos' else ('var(--down)' if (h.event and h.event.direction=='bearish') or h.ai_sentiment=='neg' or h.sentiment=='neg' else 'var(--link)') %}
-  <article class="nx-story{{ ' hide' if loop.index0 >= 24 else '' }}" data-lane="{{ h.lane or 'markets' }}"
-           data-idx="{{ loop.index0 }}"
-           data-search="{{ ((h.title or '') ~ ' ' ~ (h.title_zh or '') ~ ' ' ~ (h.tickers|join(' ') if h.tickers else '') ~ ' ' ~ (h.source_name or h.source or h.domain or ''))|lower|e }}"
-           style="--acc:{{ acc }};">
-    <div class="nx-story-main">
-      <a class="nx-story-title" href="{{ h.url }}" target="_blank" rel="noopener">{{ t(h.title|e, (h.title_zh or h.title)|e) }}</a>
-      {#- ONE label per story. The event chip, the direction chip and the "✦ AI"
-          badge are demoted (hidden by .nx-chip.evt/.ai/.tier): five to nine
-          coloured objects around a headline is what made this list unreadable. -#}
-      <div class="nx-meta">
-        {{ themechip(h) }}
-        <span class="sep">·</span>
-        <span class="src">{{ h.source_name or h.source or h.domain }}</span>
-        <span class="sep">·</span><span class="rel-time" data-ts="{{ h.seendate }}"></span>
-        {% for tk in (h.tickers or [])[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
-      </div>
-    </div>
-  </article>
-  {% endfor %}
-  <div class="nx-empty" id="nxEmpty" style="display:none;">{{ t('No stories match these filters. Use Clear filters above to recover the full ranked list.','没有新闻匹配当前筛选。使用上方“清除筛选”可恢复完整排序列表。') }}</div>
-</section>
-{% if FEED|length > 24 %}<button class="gbtn nx-more" id="nxMore">{{ t('Show more','显示更多') }} <span class="num">(+{{ FEED|length - 24 }})</span></button>{% endif %}
-{% else %}
-<div class="nx-empty">{{ t('The news tape is quiet right now — check back shortly.','新闻此刻较为平静——稍后再来。') }}</div>
-{% endif %}
 
 {# ==================== RELEASES + RAIL ==================== #}
 <div class="nx-cols">
@@ -1213,7 +1239,14 @@ body.nxi-drawer-open{ overflow:hidden; }
     var seg=document.getElementById('nxSeg'), search=document.getElementById('nxSearch');
     var countEl=document.getElementById('nxCount'), emptyEl=document.getElementById('nxEmpty');
     var moreBtn=document.getElementById('nxMore'), clearBtn=document.getElementById('nxClear');
+    var disclosure=document.getElementById('nxControls'), triageJump=document.getElementById('nxTriageJump');
     var lane='all', q='', expanded=false, CAP=24;
+    if(triageJump && disclosure){
+      triageJump.addEventListener('click',function(){
+        disclosure.open=true;
+        setTimeout(function(){ if(search) search.focus(); },0);
+      });
+    }
     function apply(){
       var shown=0;
       stories.forEach(function(el){
