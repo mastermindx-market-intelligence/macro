@@ -137,7 +137,7 @@ def test_import_receipt_pins_provenance_and_non_goals() -> None:
     assert receipt["source_packet"]["sha256"] == EXPECTED_PACKET_SHA256
     assert receipt["source_packet"]["manifest"] == "RECOVERY_SHA256SUMS"
     assert receipt["source_packet"]["manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
-    assert receipt["import_commit"] == "31981dc66e9a37419b5b7a6aecfde28808785d03"
+    assert receipt["import_commit"] == "31981dc426f2e7fbb2b333f0fd73789f21deb8cd"
     assert receipt["current_release_receipt"] == "RELEASE_RECEIPT.json"
     assert receipt["source_packet"]["payload_count"] == EXPECTED_PAYLOAD_COUNT
     assert receipt["canonical_root"] == "collectors/marketdesk_extractor"
@@ -632,7 +632,7 @@ def test_release_receipt_preserves_recovery_anchor_and_current_manifest() -> Non
         "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
     )
     assert import_receipt["import_commit"] == (
-        "31981dc66e9a37419b5b7a6aecfde28808785d03"
+        "31981dc426f2e7fbb2b333f0fd73789f21deb8cd"
     )
     assert release_receipt["schema"] == "mastermind.marketdesk_extractor.release.v1"
     assert release_receipt["manifest"] == "SHA256SUMS"
