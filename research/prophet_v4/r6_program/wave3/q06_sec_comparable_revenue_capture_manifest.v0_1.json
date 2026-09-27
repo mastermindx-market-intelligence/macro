@@ -1,0 +1,135 @@
+{
+  "schema": "prophet.economic_evidence_capture_candidate.v0.1",
+  "operation_key": "prophet-economic-evidence-research-20260926-sol-001",
+  "hypothesis_id": "Q06-SCR-01/v0.1",
+  "state": "FIRST_SOURCE_UNIT_COMPLETE",
+  "authority": {
+    "rank": false,
+    "gate": false,
+    "signal": false,
+    "size": false,
+    "entry": false,
+    "execution": false,
+    "trade": false
+  },
+  "source_base": {
+    "mastermind_skillpack_commit": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+    "macro_commit": "b95cfc873a4de44e0f2fae15be30f777077a8151"
+  },
+  "case": {
+    "event_id": "evt_cik0000320193_2026q3_results",
+    "issuer": "Apple Inc.",
+    "cik": "0000320193",
+    "accession": "0000320193-26-000018",
+    "form": "8-K",
+    "fiscal_period": "FY2026 Q3",
+    "report_date": "2026-06-27",
+    "source_available_at": "2026-07-30T20:30:28Z",
+    "fixture_clock_conflict": "2026-07-30T16:30:00Z",
+    "original_source_sha256": "070abd6a9cdb7070e546d24ffcbc41c65450d939c6f88f189cb18ec711cf5fdb",
+    "current_source_sha256": "5cab65a7cba3d7f81dba0c6ac16687a13157678f9b78d4cc5ec64d44a698d5ad",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000018/a8-kex991q3202606272026.htm"
+  },
+  "feature": {
+    "feature_id": "comparable_quarterly_gaap_revenue_growth_pct",
+    "formula": "(current_total_net_sales / prior_year_total_net_sales - 1) * 100",
+    "current": {
+      "value": 109417.0,
+      "unit": "usd_millions",
+      "basis": "gaap",
+      "period": "three_months_ended_2026-06-27",
+      "span_start_byte": 19519,
+      "span_end_byte": 19526,
+      "text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7"
+    },
+    "prior": {
+      "value": 94036.0,
+      "unit": "usd_millions",
+      "basis": "gaap",
+      "period": "three_months_ended_2025-06-28",
+      "span_start_byte": 20003,
+      "span_end_byte": 20009,
+      "text_sha256": "2606ce5cfae97e1126fb0267bc90724fe830c01af1dc59e3d9dde6c1acea746c"
+    },
+    "value_pct": 16.356501765281383,
+    "materialized_by_current_d5": false,
+    "current_d5_state": "current revenue present; prior comparable typed absent"
+  },
+  "diagnostic_only_context": {
+    "field": "FY2026 Q4 revenue growth guidance",
+    "low_pct": 9.0,
+    "high_pct": 11.0,
+    "status": "introduced",
+    "source_family": "transcript",
+    "source_sha256": "a8ff5d03e875fef5604791edbf625186c447af049e6e02f55bb89c68c7cc9f9f",
+    "text_sha256": "52288830a4c55ada7d850d445fa57229272e35864bb8c95f91bfeb139eebe328",
+    "confirmatory_eligible": false,
+    "reason": "rp_public_primary_v1 rights are internal/context-only"
+  },
+  "production_chain": {
+    "read_at_utc": "2026-09-27T03:17:23.733408Z",
+    "base_url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/company_intelligence/event_workspaces",
+    "current_generation_id": "2db5fb7235184c40ba2e201c",
+    "current_marker_sha256": "fb53b63ee8f8a4dfd2335b2a43014c9ad5199e3962aa918a90b92504c6b30576",
+    "current_workspace_sha256": "ee65aec043f314e72dcdf7c739323ff6304e0ee93f6fbfca4ff73d6f32d8c5b0",
+    "current_workspace_bytes": 111562,
+    "current_observed_at": "2026-09-26T05:02:59Z",
+    "current_lifecycle_state": "corrected",
+    "manifest_hops_verified": 186,
+    "event_generations_seen": 186,
+    "distinct_source_revisions": 10,
+    "original_generation_id": "0da3b64d4d9c843f004cd558",
+    "original_workspace_sha256": "906d306102072a553da14c49e4842b7e876f3ce69ab693dab472426f48223acb",
+    "calibration_generation_id": "f709a0a6ec514282d5769e7d",
+    "calibration_manifest_sha256": "47abc17122d34f50a558e4908d30ba6ad8282901587d258e2b09e3463da67557",
+    "calibration_workspace_sha256": "dbd50e5c30e8a031f844e02362ffd53b25e3230e75eeef19bf3825543cb81197",
+    "semantic_field_stability": "selected revenue and transcript-guidance values/text hashes stable across all 10 distinct source revisions",
+    "revision_receipt_path": "research/prophet_v4/r6_program/wave3/q06_aapl_revision_chain_receipt.v1.json",
+    "scratch_full_receipt_sha256": "b9a9dc057429f3d3bf72b60953cce454c8a1ef58c2bfa356b726a4e26811f33b",
+    "revision_receipt_sha256": "3800cb3f6c6082ff3a05b825bd61a965115f6d1280a660aea188f2162bf34ef4",
+    "current_marker_schema": "event_workspace_manifest.v2",
+    "current_marker_generated_at": "2026-07-30T20:30:28Z"
+  },
+  "correction_classes": [
+    "SOURCE_BYTES_CHANGED_ECONOMIC_FIELDS_UNCHANGED",
+    "ECONOMIC_FIELDS_CHANGED",
+    "CLOCK_ONLY_CHANGE",
+    "UNESTIMABLE_LINEAGE"
+  ],
+  "evidence_class": {
+    "registered_value": null,
+    "basis": "D07_OPEN_PR_7856_UNMERGED",
+    "proposed_diagnostic_class": "PUBLIC_INFO_REPLAY",
+    "confirmatory_path": "PROSPECTIVE_ONLY"
+  },
+  "experiment": {
+    "registration_state": "NOT_REGISTERED",
+    "primary_horizon": "H42",
+    "supporting_horizons": [
+      "H21",
+      "H63"
+    ],
+    "supporting_horizon_rescue_authority": false,
+    "management_fixed_across_arms": true,
+    "protected_outcome_read": false,
+    "numerical_result": "UNCOMPUTED",
+    "trial_identity": null,
+    "environment_identity": null,
+    "input_snapshot_identity": null,
+    "output_hash": null,
+    "evaluation_owner": "Packet3 / #7288 / existing Evaluation and QLedger"
+  },
+  "market_readiness": {
+    "US": "exact exemplar; prospective confirmatory after event-population, field materialization and price-feed gates",
+    "CN": "prospective metadata/discovery only; official body/revision/rights plane missing",
+    "HK": "prospective metadata/display only; numeric body/revision/rights plane missing",
+    "CA": "not source-ready; licensed SEDAR+ DDS or equivalent first-party feed required"
+  },
+  "held": {
+    "cycle_pr_7868": "REQUEST_CHANGES; no run or workaround",
+    "cycle_pr_7871": "unaccepted producer; no data consumed",
+    "packet4_adapter_edits": false,
+    "paper_edits": false
+  },
+  "next_action": "independent source-method review; on acceptance Packet3 registers one prospective trial"
+}
