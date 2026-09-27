@@ -8,14 +8,15 @@ mission: 'Deliver Communications sector intelligence under Sol, retaining frozen
   not the Communications receiver.
 
   '
-state_before: PR8039 was clean and published at 606d701697231979c4b6849ed8854b877da5cd4f with the 391-test
-  accounting-explanation/domain component. The last identity attempt stopped at an unmaterialized lib
-  import, leaving actual owner-produced coverage unknown. Native/shared enrollment remained held.
+state_before: PR8039 was clean at records-only head 7d349933c1bd6c8e4bc3dff2629ee745facae566 with semantic
+  implementation 606d701697231979c4b6849ed8854b877da5cd4f and prior 391-test proof. Pinned artifacts had
+  established four-issuer/five-security identity coverage, but the production reader and real company-route
+  continuation were still unproven. Native/shared source enrollment remained held.
 changed:
 - path: agentos/handoffs/GMI-COMMUNICATIONS-RESEARCH-2026-09-23.md
-  what: Record actual pinned Data OS/GMI identity coverage and distinguish it from earnings-source enrollment.
-    Preserve product bytes/tests and carry the exact parent source-admission decision request, not another
-    validator cycle.
+  what: Record successful production identity-reader execution, canonical Terminal security routes and live
+    deployed data availability while preserving the exact source/shared owner boundary. Product bytes/tests
+    remain unchanged; no duplicate route, identity, watchlist or source owner is introduced.
 prs:
 - 7794
 - 8039
@@ -26,39 +27,68 @@ verified:
   result: Mastermind 4c6b206d3fb7fbc6d077faf61ae361bedf259925, compatible1.0.1/bootstrap1; governing blobs
     match prior reads. Product local/origin 606d701697231979c4b6849ed8854b877da5cd4f clean, push permission
     true. Shared 7870 and parent 7886 had no new returns at recovery; research remains eb0e4693862edb25a32d7f22013a301e87c97f57.
-- claim: The actual published identity artifacts already cover all four A1 issuers and five securities.
-  command: git show b3af2740b219ccc867a2cf10193e1e5ae1ff92ae:<the four exact paths below>; pandas.read_parquet(BytesIO(raw));
-    inspect five exact graph node IDs, unique maximal computed_at rows and master rows by returned security_id.
-  result: Five latest rows are RESOLVED at resolution_asof 2026-09-26 / computed_at 2026-09-26T18:13:16Z.
-    Four distinct issuer IDs, five security IDs. GOOG/GOOGL share ISS:US-XNAS-GOOG and CIK 0001652044
-    but have distinct securities. Source bytes were read in memory; no source allocator, runtime reader,
-    native data directory or source table changed.
+- claim: Existing identity owners now have both artifact and production-reader proof for all four A1 issuers.
+  command: >-
+    Prior pinned parquet characterization plus, after the Chairman's Extra High surface change,
+    engine.theme_graph.identity_resolution.resolve_graph_node_identity on META/GOOG/GOOGL/TTD/MGNI and
+    lib.dataos.identity.parse_listing_key on each returned listing_key from clean Macro checkout
+    90f9fcbe31fff9fe96bd293190372d1c773fab9c.
+  result: >-
+    All five live reader calls returned RESOLVED via master_inception_exact at resolution_asof 2026-09-26 /
+    computed_at 2026-09-26T18:13:16Z. Four issuer IDs and five securities are preserved; GOOG/GOOGL share
+    ISS:US-XNAS-GOOG but remain distinct securities/listings. Canonical listing codes are
+    META/GOOG/GOOGL/TTD/MGNI. No identifier, table or second reader was created.
 - claim: Published identity coverage does not establish current earnings-profile enrollment.
   command: Exact same-pin source read of event_workspace.py::production_registry and refresh_event_workspaces.py
     call/output arguments.
   result: The registry source returns AAPL/DHI/PHM/KBH/TOL only. Refresh calls production_registry and
     accepts --out-dir; no-file result under data/company_intelligence/event_workspaces cannot prove runtime/private-source
     absence. No request to execute the publisher was made.
-- claim: The narrowed integration decision is durable on the actual parent carrier.
-  command: 'GitHub.add_comment_to_issue #7886 then GitHub.fetch exact returned comment.'
-  result: '5851240098 read back. Original native/shared request stays #7870/5846455819 with qualification
-    #7870/5850001292. Parent is asked for accepted interfaces or reconciled scoped owner admission; no
-    pickup, acceptance, START, source transfer or Fable dispatch is claimed.'
+- claim: The integration decision and its route/source narrowing are durable on the actual parent carrier.
+  command: GitHub comments PR7886/5851240098 and PR7886/5851480846 with exact readback.
+  result: >-
+    Original request stays PR7870/5846455819 with qualification PR7870/5850001292. Amendment 5851480846
+    records that identity/company-route construction is reusable and the remaining owner work is
+    source-qualified Communications enrollment plus the fixed multi-issuer shared query/evidence entry.
+    Delivery is not acceptance, START, custody transfer or a Fable dispatch.
 - claim: The already-published product code and tests were not changed in this continuation.
   command: 'Exact pre-edit clean-tree check, final named-path hashes/diff against 606d701; existing prior
-    publication receipt #8039/5850979691.'
+    publication receipt PR8039/5850979691.'
   result: Historical product proof remains 391 focused passes at 606d701. No new product tests were added
     or executed to inflate that count. This continuation adds native-artifact observations and records
     only.
+- claim: Existing company navigation and deployed data are available for all five eligible securities without a new route.
+  command: >-
+    Terminal master 3cb7dbd8e89cd5d932fd07b2961ca79a0847d552 route/data-owner reads; live GETs of
+    /analysis?symbol=<SYM>&page=intelligence plus /data/<SYM>.intel.json and /data/<SYM>.fund.json for
+    META/GOOG/GOOGL/TTD/MGNI; parse every JSON identity.
+  result: >-
+    Every deep link, intel file and fund file returned HTTP 200. Intel bodies identify the requested ticker
+    under intel/v1; fund bodies identify it under mastermind.fund/v1 and asof 2026-09-26. The live fund files
+    already contain relevant consolidated Q2 figures but declare yfinance statement transport and lack the
+    A1-required immutable source refs/definition/precision/original-guidance receipts. This proves route/data
+    availability, not entitled A1/browser/source qualification.
+- claim: Existing watchlist ownership remains separate from research navigation.
+  command: Terminal master watchlist route/source tests plus anonymous live GET /api/watchlist.
+  result: >-
+    Terminal owns authenticated POST /api/watchlist with explicit add/remove/move semantics; Analysis
+    SymbolPicker intentionally supplies NO_WATCHLIST. Anonymous production GET returned 401
+    {"error":"unauthenticated"}. No watchlist mutation was attempted.
 - claim: Existing CI was consumed once at recovery, not rerun or bypassed.
-  command: GitHub Actions run metadata for 36280119979 and 36280119754.
-  result: At recovery, 606d701 CI 36280119979 was pending and fences 36280119754 succeeded. A later metadata-only
-    checkpoint has its own head; no automatic exact-head success inheritance or all-green release claim.
+  command: GitHub Actions run metadata for 36282551068 and 36282550822.
+  result: >-
+    At this continuation recovery, records head 7d349933 CI 36282551068 was in_progress and fences
+    36282550822 succeeded. No rerun/cancel/bypass or all-green inheritance is claimed.
 unverified:
-- claim: The production identity reader, historical replay or actual company/watchlist navigation is proven
-    for A1.
-  what_would_verify: Actual incumbent resolver and route execution with owner-qualified source/snapshot/rights
-    and browser evidence. Reading stored rows is not that proof.
+- claim: Entitled browser rendering and the deliberate authenticated watchlist write are proven for A1.
+  what_would_verify: >-
+    Integrated A1 deployment plus actual browser hydration for the owner-derived company route and an authorized
+    user/test watchlist action whose resulting write is independently read back. HTTP/data availability alone is
+    not this proof.
+- claim: Historical identity replay is proven.
+  what_would_verify: >-
+    An owner-qualified historical resolver path; current IssuerMaster/identity observations are explicitly
+    current-identity evidence and must not be back-projected.
 - claim: Financial/original-guidance inputs and fixed multi-company query/evidence entry are admitted.
   what_would_verify: Accepted exact owner path/SHA and native mapping or a reconciled scoped source admission
     from the integration owner, followed by actual positive/negative tests.
@@ -66,25 +96,32 @@ unverified:
   what_would_verify: All original source/security/shared-owner/user-workflow/refresh proofs; no fixture
     test count substitutes for them.
 unresolved:
-- Product remains fixture-tested BUILT_NOT_PROVEN and binding_state unbound; no new production feature
-  was written this turn.
-- Native source-profile enrollment and fixed multi-issuer shared query/evidence are separate owner amendments.
-  Existing identities must be consumed, not reminted.
-- Parent comment5851240098 is delivered/read back, not consumed or accepted. Current runtime/source-writer
-  lease was not adjudicated from stale PR metadata.
-- The issuer-evidence snapshot is 2026-08-18; a 2026-09-26 projection stamp does not newly observe it.
-  Literal master timestamp lacks a timezone; none was invented.
-- No source-rights, full publication-coherence, production/private-source absence or runtime deployment
-  claim follows from these Git artifacts.
+- Product remains fixture-tested BUILT_NOT_PROVEN and binding_state unbound; no product semantics changed
+  in this continuation.
+- Native identity and live company-route/data availability are no longer blockers. Actual source-profile
+  qualification and fixed multi-issuer shared query/evidence remain separate owner amendments.
+- Parent comments5851240098/5851480846 are delivered/read back, not consumed or accepted. PR7905 has a live
+  source writer on issuer_profiles.py; PR7870 owns overlapping Company Intelligence/shared paths. Neither
+  lease/custody fence is displaced.
+- Live fund.json carries useful consolidated figures but its observed yfinance transport lacks the exact
+  source refs/definitions/precision/original-guidance provenance A1 requires. Deployed intel/v1 does not
+  supply the company-specific A1 business metrics/evidence receipts.
+- Terminal picker inventory is narrower than the valid direct-route universe; A1 must use the canonical
+  owner-derived deep link, not require picker enrollment or guess an Alphabet primary class.
+- Authenticated browser/watchlist proof, source rights/private publication, full snapshot coherence and
+  shared-client delivery remain outstanding. The issuer-evidence snapshot is still 2026-08-18.
 next_actions:
-- 'On #7886 consume the decision on 5851240098: exact accepted shared/native interfaces or explicit scoped
-  owner admission after live/effect/source reconciliation. Keep the original request on #7870; no new
-  request or ghost-owner polling loop.'
-- 'Then bind the preserved #8039 component through those actual native/shared seams and execute source-to-evidence-to-company/watchlist/browser
-  proof. Preserve four issuer slots and five distinct securities including both Alphabet classes.'
-- Consume matching CI before any gated release. Do not rewrite validators, recreate the identity system,
-  rerun frozen research, or repeat this same snapshot characterization absent material artifact/source
-  changes.
+- 'On #7886 consume the decision on 5851240098 plus amendment5851480846: exact accepted source-profile and
+  fixed multi-issuer shared interfaces, or explicit scoped owner admission after live/effect/source
+  reconciliation. Keep the original #7870 request; do not post another equivalent ask.'
+- 'After admission, bind the preserved #8039 domain component to the existing identity reader, qualified
+  financial/original-guidance owner and common shared composer/evidence selector. Use
+  parse_listing_key(listing_key).code for Terminal navigation and preserve both Alphabet securities rather
+  than inventing a primary class.'
+- 'Then prove the integrated entitled browser journey and separately the authorized existing watchlist
+  write/readback. Consume matching exact-head CI before gated release.'
+- Do not rewrite validators, recreate identity/navigation/watchlist owners, rerun frozen research or repeat
+  this route/source characterization absent a material owner/artifact change.
 do_not_redo:
 - Preserve frozen Phase18, A1 plan revision2, proof companion revision2, frozen index revision4 and CRV-01
   through CRV-60.
@@ -98,8 +135,10 @@ do_not_redo:
   actions remain untouched.
 - Preserve product semantic head606d701 and its prior 391-test proof. This checkpoint changes only knowledge/continuity,
   not implementation.
-- At unchanged native artifact hashes, reuse the five-row/four-issuer identity observation and CIK evidence;
-  never promote it into native API or browser proof.
+- Reuse the successful production identity-reader result and canonical parse_listing_key route derivation
+  until those owner inputs materially change; do not remint or re-probe identity by another path.
+- Reuse the live five-security HTTP/data availability proof until Terminal route/data revisions materially
+  change. Do not treat it as browser hydration, source qualification or an authenticated watchlist write.
 danger_areas:
 - Author review remains non-independent; the retained inaccessible-review exception grants no source/security/shared-owner/production
   waiver.
@@ -118,13 +157,15 @@ danger_areas:
 
 ## Current outcome and boundary
 
-Before: local import setup failed before inspecting native identity coverage.
-Now: immutable owner-produced artifacts show all four issuers already resolved, with
-five distinct securities. The remaining integration question is earnings/native source
-profile enrollment plus shared multi-company transport, not new identity allocation.
-No product source or tests changed. The next unit crosses held shared/native source
-ownership; parent decision5851240098 is recorded, not accepted. This is the justified
-boundary, not completion and not an automatic wake.
+Before: pinned artifacts had shown four resolved issuers/five securities, but the production
+identity reader and actual company-route continuation were unproven.
+Now: the incumbent production identity reader resolves all five listing nodes; the canonical
+listing-key parser supplies META/GOOG/GOOGL/TTD/MGNI; and production Terminal serves all five
+company Intelligence deep links plus matching intel/fund payloads. The remaining integration
+question is source-qualified earnings/guidance enrollment plus shared multi-company transport,
+not identity allocation or a new company route. No product source/tests changed. Parent
+decision5851240098 plus amendment5851480846 are delivered, not accepted. This is a justified
+cross-owner boundary, not completion or an automatic wake.
 
 Sol retains Communications. Fable remains deferred. Operation
 `gmi-communications-a1-measures-20260926-sol-001`, parent
@@ -155,9 +196,10 @@ its absent timezone is preserved. No blanket cross-domain generation equality is
 | co:us:TTD | ISS:US-XNAS-TTD | SEC:US-XNAS-TTD | 0001671933 |
 | co:us:MGNI | ISS:US-XNAS-MGNI | SEC:US-XNAS-MGNI | 0001595974 |
 
-These are observations of existing owner rows, not inputs to a new runtime identity
-registry. No issuer/security ID was allocated or reconstructed from a ticker. The
-production adapter must still use the incumbent sanctioned resolver/reader.
+These identifiers were first observed from existing owner rows and are now also proven through
+the incumbent production reader on the canonical clean Macro checkout. No issuer/security ID was
+allocated or reconstructed from a ticker. The production adapter must keep using that sanctioned
+resolver/reader.
 
 | Exact input | Git blob | SHA-256 |
 |---|---|---|
@@ -166,15 +208,15 @@ production adapter must still use the incumbent sanctioned resolver/reader.
 | data/reference/security_master.parquet | b98990d9335b4680c284990e4f87a452fd340ad5 | ed45e4a4f9e17cc91da1a382ebeffbb1e73ae4d9fb2556036eb4efedb5b30158 |
 | data/reference/_receipt.json | bc005b715e84a610d398899eeae9589e8609de8b | d5dc4a04b61ee9e3c7f7384e01a4c137d510b93a1f1ff3cec86b6f5e5215d494 |
 
-Method: `git show <pin>:<exact path>` into memory, pandas parquet decoding, five
-exact node selections, unique maximum computed_at observations and master rows by
-returned security_id. This is artifact inspection, not a replacement implementation
-of the native resolver. No broad filesystem crawl, data-directory materialization,
-raw private-source read, alternate DATA_DIR or native table write. Only the five newest
-rows and their immutable input references are retained in this checkpoint.
-The selected securities match non-superseded master rows by their returned security IDs;
-issuer IDs/listing keys and literal master-generation/code fields agree with the stored
-receipt. These checks passed; they are not production API or cross-domain publication proof.
+Initial method: `git show <pin>:<exact path>` into memory, pandas parquet decoding, five
+exact node selections, unique maximum computed_at observations and master rows by returned
+security_id. Extra High then supplied a materially changed Studio surface: the previously refused
+read-only preflight was re-run once on clean Macro checkout 90f9fcbe31fff9fe96bd293190372d1c773fab9c
+and succeeded. `resolve_graph_node_identity` returned all five current rows above, and
+`parse_listing_key` returned ListingKey codes META/GOOG/GOOGL/TTD/MGNI. No broad filesystem
+crawl, raw private-source read, alternate DATA_DIR, native table write or second identity reader.
+Historical replay remains unproven because the current issuer-axis reader explicitly has no asof
+semantics.
 
 ## Two exact outstanding owner amendments
 
@@ -190,11 +232,17 @@ and accepts --out-dir. A zero-path result under one Git data prefix is not absen
 runtime data; no global/private filing coverage conclusion is drawn.
 
 Parent integration carrier is #7886 (`bcfe4e24e6282dc08cf5866698c53c76f50564be`),
-not the Semiconductor research carrier#7780. **Decision request #7886/5851240098**
-was posted and read back: return accepted source/ref/shared interface paths and SHAs,
-or explicit scoped implementation admission after current writer/live/effect fences
-are reconciled. Delivery is not parent consumption. No source writer was displaced.
-No Fable-based placement or background observer was requested.
+not Semiconductor research carrier#7780. Decision request #7886/5851240098 and route/source
+amendment #7886/5851480846 were both posted and read back. The amendment removes identity and
+company-route construction from the requested owner work and asks only for the exact
+source-qualified Communications profile/mapping plus fixed multi-issuer shared query/evidence
+entry. Delivery is not parent consumption or acceptance.
+
+Current source collision matters: #7905 has a live Claude cwd/process while touching
+`engine/company_intelligence/issuer_profiles.py`; #7870 owns overlapping Company Intelligence
+refresh/build/profile/shared-route files. #7905's private profile seam and #7870's explicit
+issuer/profile refresh injection are useful compatibility evidence, not accepted interfaces Sol
+may freeze against. No source writer was displaced and no Fable/background worker was requested.
 
 ## Preserve implementation, proof, and original mission
 
@@ -214,14 +262,29 @@ baseline `e29aaf035a1e56654429fc0cb89577c1963bd917`; A1 plan blob
 `d40e2cda3a7f80d7f9cb9377292e60cb125c7c73`; all CRV-01 through CRV-60.
 Do not credit the historical unpreserved59 tests. No research/plan reconsolidation.
 
-At recovery semantic-head CI36280119979 was pending; fences36280119754 succeeded.
-Before this checkpoint publication the same CI run was in_progress, not concluded.
-Do not infer all-green or apply those statuses to a new enclosing checkpoint head.
-Current release remains Draft/HOLD, no Ready/auto-merge/merge-on-green/merge/deploy.
-Native rights, exact financial/original-guidance mapping, identity API execution,
-private/snapshot coherence and real company/watchlist/browser/correction proofs remain.
+Live Terminal master 3cb7dbd8e89cd5d932fd07b2961ca79a0847d552 defines
+`/analysis?symbol=<ticker>&page=intelligence` as the Company Intelligence route.
+The route parser accepts a valid direct symbol independently of picker inventory; AnalysisWorkspace
+loads `/data/<SYM>.intel.json`, fund, bars and quote. Read-only production HTTP returned 200 for
+all five deep links and all ten intel/fund files. Every parsed JSON body identified the requested
+ticker. Fund payloads dated 2026-09-26 carry the relevant consolidated Q2 figures, but their
+observed statement source is yfinance and the inspected blocks lack A1's immutable source ref,
+definition/precision/original-guidance receipts. Intel payloads did not contain the required
+company-specific A1 facts. This is useful route/data proof, not source qualification.
 
-Next action: consume the precise parent admission/interface decision5851240098;
-then implement through the existing source/shared owners, not another unchanged
-validator or status cycle. Pro remains appropriate for that integration adjudication;
-no mode switch or autonomous wake is implied.
+The watchlist owner is separate: authenticated Terminal `POST /api/watchlist`; anonymous live
+GET returns 401 unauthenticated and Analysis SymbolPicker intentionally supplies NO_WATCHLIST.
+No mutation was attempted. One Playwright setup probe failed because the stale local Terminal
+checkout lacked that package; a changed headless-Chrome probe later timed out. Neither counts as
+browser proof and neither was retried.
+
+At this continuation recovery records-head CI36282551068 was in progress; fences36282550822
+succeeded. Do not infer all-green or apply those statuses to a later checkpoint head. Current
+release remains Draft/HOLD, no Ready/auto-merge/merge-on-green/merge/deploy. Native rights,
+exact financial/original-guidance mapping, private/snapshot coherence, integrated shared client,
+entitled browser hydration and authorized watchlist write/readback remain.
+
+Next action: consume the precise parent admission/interface decision5851240098 plus
+amendment5851480846; then implement through incumbent source/shared owners, not another
+validation/status cycle. Extra High recovered the production identity-reader action, but no mode
+label grants source custody or clears the external owner decision. No autonomous wake is implied.
