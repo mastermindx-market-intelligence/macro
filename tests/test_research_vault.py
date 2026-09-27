@@ -4219,6 +4219,7 @@ def test_w5_strict_title_subject_unlocks_empty_ticker_sidecar():
     assert result.observation.security_id == "SEC:US-XNAS-CRWD"
     assert result.observation.ticker_at_observation == "CRWD"
     assert result.observation.ticker_source == "source_title_explicit_ticker"
+    assert result.observation.ticker_evidence == "CrowdStrike (CRWD)"
 
 
 def test_w5_title_subject_refuses_late_parenthetical_macro_collision():
