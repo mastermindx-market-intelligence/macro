@@ -33,6 +33,7 @@ discoveries:
   - "DSC:A-DECLARED-BASIS-IS-A-LABEL-UNTIL-SOMETHING-READS-IT"
   - "DSC:AN-ENUMERATED-GUARD-IS-BLIND-OUTSIDE-ITS-ENUMERATION"
   - "DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT"
+  - "DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-DANGLES"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -273,11 +274,41 @@ next_action: >
   disagreement collapses the pair and declares.
   .
   Swept to date: 21 fact fields; 5 root scalars; basis binding; input_refs;
-  pair agreement. The honest unswept remainder is the explanation object,
-  source_records, and availability/state derivation. Anyone running that sweep
-  must first read DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-
-  AIMED-AT: two probes in this wave returned a vacuous green because the
-  mutation died at an earlier gate or was a no-op.
+  pair agreement; and as of wave 7 the native_ref -> source_records pointer.
+  Anyone running the remaining sweep must first read
+  DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT: two
+  probes in wave 6 returned a vacuous green because the mutation died at an
+  earlier gate or was a no-op.
+  .
+  CC-V1-PROVENANCE-POINTER (wave 7) is PR #8106. A fact could name a
+  source record absent from its own document's source_records ledger and be
+  emitted at availability "ready" with ZERO schema errors; separately,
+  native_ref carried no pattern while record_id was pinned to
+  ^src_[a-z0-9_]+$, so the two ends of one pointer had different grammars and
+  "SRC-NOT-LEGAL" was accepted. Repaired at document level because
+  _fact_admission_failure structurally cannot see source_records. 22 test
+  fixtures using an unsatisfiable hyphenated ref convention were swept. Also
+  corrected a FALSE _compose_changes docstring that claimed native_admitted:
+  False suppressed a result (citing section 7) while the code 20 lines below
+  refuses that gate citing 4a -- a reader who trusted it would have restored a
+  gate that breaks the golden oracle; now pinned by a test. 114 passed, both
+  cases oracle-exact at 0 schema errors, envelope sweep unchanged 17/4.
+  See DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-
+  DANGLES.
+  .
+  NOT a defect and DO NOT "fix" it: frozen-spec 4a's literal "native_ref is
+  null" is STALE, not violated. V1-CORE facts point at a source record whose
+  retention_state is not_retained -- strictly more honest than a bare null and
+  exactly the "source-coordinate-bound, not natively admitted" posture 4a
+  itself describes. Forcing null destroys information and breaks the oracle.
+  .
+  The honest unswept remainder is now the explanation object and
+  availability/state derivation. source_records itself is NOT unswept in the
+  passthrough sense first suspected: it is copied verbatim from the case but
+  _assert_document_matches_contract_shape runs full jsonschema validation over
+  the whole document, so every record is deeply checked against the 12
+  required fields of $defs/source_record. What was missing was only the
+  RELATION between it and native_ref, which wave 7 closed.
 ---
 
 ## Scope
