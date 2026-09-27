@@ -224,7 +224,13 @@ body.fi-page { background: var(--fi-canvas); }
 
 /* rerating stepper */
 .fi-slice-picker { margin: 12px 0 16px; display: flex; gap: 10px; align-items: center; font-size: var(--fs-sm); }
-.fi-slice-select { font: inherit; padding: 4px 8px; border-radius: 7px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); }
+/* A native select sizes to its longest option (a real slice name pair runs
+   ~440px) and a flex item never shrinks below that: at 390px the page
+   scrolled sideways. It shrinks and clips its closed label instead; the
+   field label keeps its width (CJK min-content is one glyph, so "切片"
+   wrapped a character per line once the select could shrink). */
+.fi-slice-picker > label { flex: none; }
+.fi-slice-select { font: inherit; padding: 4px 8px; border-radius: var(--r-ctl, 8px); border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); min-width: 0; max-width: 100%; text-overflow: ellipsis; }
 .fi-rerating-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 18px 0 0; padding: 0; list-style: none; position: relative; }
 .fi-rerating-step { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 6px; gap: 6px; }
 .fi-step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--fi-step-fill); border: 2px solid var(--fi-line); margin-bottom: 4px; }

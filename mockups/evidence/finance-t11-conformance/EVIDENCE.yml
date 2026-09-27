@@ -1,14 +1,21 @@
-# Finance T11 (#8009) connected-state evidence, round 3. The connected dossier has no production read URL
+# Finance T11 (#8009) connected-state evidence, round 3c. The connected dossier has no production read URL
 # (FI_READ_URL is empty on main), so this capture serves a scratch copy of the site whose
-# finance_intelligence.html differs from the committed page ONLY in data-fi-read-url="/fi.json",
-# fulfilled by the synthetic T11 probe fixture: the hydration suite's VALID_DOC widened in memory to
-# 11 slices, 11 exposures, 21 macro rows and 11 system-map nodes (issuers "Issuer N", slices "Probe
-# slice N"), with the coverage counts kept true to the widened slice list and source record src.a
-# carrying the five T1 limitations fields and a locator. finance_intelligence.css/.js are byte-identical
-# to this commit's site copies. Interaction cells: step_evidence_hover = a real pointer hover on
-# .fi-step-evidence; disc_summary_focus = real focus on a visible .fi-disc > summary. Both applied in all
-# 8 cells (24/24 captured). The evidence drawer (limitations, locator, keyboard round trip) has no
-# capture-tool state (hover/focus/class/attribute only); the hydration suite and the seat probe prove it.
+# finance_intelligence.html differs from the committed page ONLY in data-fi-read-url="/fi.json".
+# fi.json is CONTRACT-VALID: the T2 composer's own document (compose_finance_projection over the
+# projection suite's synthetic 8-slice inputs), widened in memory with schema-valid synthetic entries --
+# 9 more company rows (SYNA..SYNI) so that the document exercises EVERY value of the six company-exposure
+# state enums the contract admits -- identity state 3/3, company route 2/2, role 7/7, exposure basis 7/7,
+# exposure state 4/4, materiality 4/4 (the slice taxonomy is the composer's 8 synthetic slices of 52) --
+# 2 conflicts kept side
+# by side (UNRESOLVED_BY_DESIGN), 3 material changes (FRESH / AGING / SOURCE_STALE), 3 constraints,
+# 10 macro rows, and 5 more contractual-flow nodes (12 nodes, 9 edges) -- then re-validated with
+# validate_contract("finance_intelligence_read_model.v1") before capture; the build script refuses to
+# write a document the contract rejects. Coverage counts are kept true to the widened rows. Every value is
+# synthetic; nothing is copied from live research. finance_intelligence.css/.js are byte-identical to this
+# commit's site copies. Interaction cells: step_evidence_hover = a real pointer hover on .fi-step-evidence;
+# disc_summary_focus = real focus on a visible .fi-disc > summary. Both applied in all 8 cells (24/24 captured). The evidence drawer
+# (correction, methodology, value, limitations, locator, keyboard round trip) has no capture-tool state
+# (hover/focus/class/attribute only); the hydration suite proves it on the contract-valid document.
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/finance_intelligence.css

@@ -445,6 +445,7 @@
     no_role:       ['No role recorded', '未记录角色'],
     not_mapped:    ['Not mapped', '未映射'],
     not_stated:    ['Not stated', '未说明'],
+    no_correction: ['No correction on file', '无修正记录'],
     private_drawer_notice: ['Value and excerpt withheld — source rights held.', '数值与摘录已隐去 — 来源权利受限。']
   };
 
@@ -498,6 +499,18 @@
     ['source_dependence',  'Depends on',         '依赖来源'],
     ['expiry_trigger',     'Stops holding when', '失效条件']
   ];
+  // T1 `correction` is an OBJECT {predecessor_record_id, reason}, both nullable;
+  // the row printed it raw — "[object Object]" for every contract-valid record.
+  function correctionHtml(correction) {
+    var c = correction && typeof correction === 'object' ? correction : {};
+    var prev = c.predecessor_record_id;
+    var reason = c.reason;
+    if (!prev && !reason) return esc(copyPair(SURFACE.no_correction));
+    var parts = [];
+    if (prev) parts.push(esc((isZh() ? '取代记录 ' : 'Replaces record ') + prev));
+    if (reason) parts.push('<span' + enLang(reason) + '>' + esc(reason) + '</span>');
+    return parts.join(' — ');
+  }
   function limitationsHtml(lim) {
     lim = lim && typeof lim === 'object' && !Array.isArray(lim) ? lim : {};
     return '<ul class="fi-limitations">' + LIMITATION_FIELDS.map(function (f) {
@@ -564,7 +577,8 @@
   // ──────────────────────────────────────────────────────────────────────────
   // fmtMetric, fmtClock (D.0)
   // ──────────────────────────────────────────────────────────────────────────
-  function fmtMetric(metric) {
+  // exact: the drawer is the receipt — the stated number, never a rounding of it.
+  function fmtMetric(metric, exact) {
     if (!metric) return '';
     var value = metric.value;
     var unit = metric.unit;
@@ -576,7 +590,7 @@
     if (mc === 'RATIO' || mc === 'RATE') digits = 1;
     else if (mc === 'PER_SHARE') digits = 2;
     else digits = 0;
-    var formatted = Number(value).toFixed(digits);
+    var formatted = exact ? String(value) : Number(value).toFixed(digits);
     var pieces = [formatted, unit];
     // A unit that already is the currency is not repeated ("6.40 USD USD").
     if (metric.currency && metric.currency !== unit) pieces.push(metric.currency);
@@ -645,6 +659,7 @@
     if (opts.stateBasis) attrs.push('data-state-price-basis="' + esc(opts.stateBasis) + '"');
     if (opts.stateWeighting) attrs.push('data-state-weighting="' + esc(opts.stateWeighting) + '"');
     if (opts.stateIdentity) attrs.push('data-identity="' + esc(opts.stateIdentity) + '"');
+    if (opts.stateExposure) attrs.push('data-state-exposure="' + esc(opts.stateExposure) + '"');
     if (opts.stateConstraint) attrs.push('data-constraint="' + esc(opts.stateConstraint) + '"');
     if (opts.statePriceState) attrs.push('data-price-state="' + esc(opts.statePriceState) + '"');
     if (opts.stateValuationState) attrs.push('data-valuation-state="' + esc(opts.stateValuationState) + '"');
@@ -1156,6 +1171,17 @@
   // ──────────────────────────────────────────────────────────────────────────
   // Exposure table
   // ──────────────────────────────────────────────────────────────────────────
+  // Spec §B.5 / §D.8: an exposure cell names its exposure state in words. The
+  // basis says what a ratio was measured on; this chip says whether it was
+  // measured at all, so "not separately disclosed" is never only an attribute.
+  function exposureChip(cell) {
+    var expState = (cell && cell.exposure && cell.exposure.state) || '';
+    if (!expState) return '';
+    return chipHtml(labelFor('exposure_state', expState), { classes: 'fi-exposure-chip', stateExposure: expState, stateMarker: expState });
+  }
+  function identityChip(identity) {
+    return chipHtml(labelFor('identity_state', identity), { classes: 'fi-identity-chip', stateIdentity: identity, stateMarker: identity });
+  }
   function renderExposure() {
     var sliceIds = firstVerticalSliceIds();
     var exposures = asArray(state.doc && state.doc.company_exposures).slice().sort(function (a, b) {
@@ -1184,7 +1210,7 @@
         // Seat erratum (T11 round 2): a state chip, not an evidence trigger. The dossier's
         // company_exposures[].identity carries no evidence reference, so a trigger here
         // would open nothing, and a click-bound <span> can neither take focus nor a name.
-        chipHtml(labelFor('identity_state', identity), { classes: 'fi-identity-chip', stateIdentity: identity, stateMarker: identity }) +
+        identityChip(identity) +
         '</td>' +
         sliceIds.map(function (sid) {
           var cell = asArray(row.cells).filter(function (c) { return c.slice_id === sid; })[0];
@@ -1197,11 +1223,30 @@
             '<span class="fi-cell-role">' + esc(cell.role ? labelFor('role', cell.role) : copyPair(['No role recorded', '未记录角色'])) + '</span>' +
             '<span class="fi-cell-basis">' + esc(labelFor('basis', (cell.exposure && cell.exposure.basis) || '')) + '</span>' +
             '<span class="fi-cell-materiality">' + esc(labelFor('materiality', mat)) + '</span>' +
+            exposureChip(cell) +
             (cell.retained_risk ? '<span class="fi-cell-risk" lang="en">' + esc(cell.retained_risk) + '</span>' : '') +
             (cell.evidence_date ? '<span class="fi-cell-evidence-date">' + esc(cell.evidence_date) + '</span>' : '') +
             '</td>';
         }).join('') +
         '</tr>';
+    };
+    // At 390 px the card is the only exposure surface, so it carries what the
+    // table row carries: the identity chip, and one line per first-vertical
+    // cell in column order with its exposure-state chip. It used to take the
+    // first six cells of any vertical and no chip at all, so an unresolved
+    // identity or an undisclosed exposure read as a plain row on a phone.
+    var buildCard = function (row) {
+      var identity = (row.identity && row.identity.state) || 'IDENTITY_UNRESOLVED';
+      var lines = sliceIds.map(function (sid) {
+        return asArray(row.cells).filter(function (c) { return c.slice_id === sid; })[0];
+      }).filter(Boolean).map(function (cell) {
+        return '<p><strong>' + esc(sliceName(cell.slice_id, null) || cell.slice_id) + ':</strong> ' +
+          esc(labelFor('role', cell.role)) + ' · ' +
+          esc(labelFor('materiality', cell.materiality || 'UNMEASURED')) + ' ' + exposureChip(cell) + '</p>';
+      });
+      return '<li class="fi-exposure-card fi-panel2" data-row-id="' + esc(row.row_id || row.issuer_label) + '" data-state-identity="' + esc(identity) + '">' +
+        '<p class="fi-cell-role">' + esc(row.issuer_label || '—') + '</p>' + identityChip(identity) +
+        (lines.length ? lines.join('') : '<p>' + esc(copyPair(SURFACE.no_role)) + '</p>') + '</li>';
     };
     rows.innerHTML = first.map(buildRow).join('');
     if (state.ui.exposureRowsMore) state.ui.exposureRowsMore.innerHTML = more.map(buildRow).join('');
@@ -1223,14 +1268,7 @@
       if (first.length === 0) {
         cards.innerHTML = '';
       } else {
-        cards.innerHTML = first.map(function (row) {
-          return '<li class="fi-exposure-card fi-panel2" data-row-id="' + esc(row.row_id || row.issuer_label) + '">' +
-            '<p class="fi-cell-role">' + esc(row.issuer_label || '—') + '</p>' + asArray(row.cells).slice(0, 6).map(function (cell) {
-              return '<p><strong>' + esc(sliceName(cell.slice_id, null) || cell.slice_id) + ':</strong> ' +
-                esc(labelFor('role', cell.role)) + ' · ' +
-                esc(labelFor('materiality', cell.materiality || 'UNMEASURED')) + '</p>';
-            }).join('') + '</li>';
-        }).join('');
+        cards.innerHTML = first.map(buildCard).join('');
       }
     }
     if (state.ui.exposureCardsMore) {
@@ -1242,14 +1280,7 @@
         var sumExp = state.ui.exposureCardsMore.querySelector('summary');
         if (sumExp) sumExp.innerHTML = '<span class="l-en">See all ' + exposures.length + ' companies</span>' +
                                        '<span class="l-zh">查看全部 ' + exposures.length + ' 家</span>';
-        if (list) list.innerHTML = more.map(function (row) {
-          return '<li class="fi-exposure-card fi-panel2" data-row-id="' + esc(row.row_id || row.issuer_label) + '">' +
-            '<p class="fi-cell-role">' + esc(row.issuer_label || '—') + '</p>' + asArray(row.cells).slice(0, 6).map(function (cell) {
-              return '<p><strong>' + esc(sliceName(cell.slice_id, null) || cell.slice_id) + ':</strong> ' +
-                esc(labelFor('role', cell.role)) + ' · ' +
-                esc(labelFor('materiality', cell.materiality || 'UNMEASURED')) + '</p>';
-            }).join('') + '</li>';
-        }).join('');
+        if (list) list.innerHTML = more.map(buildCard).join('');
       }
     }
   }
@@ -1470,16 +1501,19 @@
         (opts.prose && value ? ' lang="en"' : '') + '>' + body + '</dd>');
     }
 
-    row(isZh() ? '记录 ID' : 'Record ID', rec.record_id || '—');
+    row(isZh() ? '记录 ID' : 'Record ID', rec.record_id || '');
     row(isZh() ? '来源' : 'Source', rec.source && rec.source.publisher ? (rec.source.publisher + ' / ' + (rec.source.source_family || '')) : '');
     // Spec §A.8 suppression rule: publisher, source_family, locator and the five
     // limitations fields show at EVERY rights state; only value/excerpt/digest hide.
     row(isZh() ? '出处位置' : 'Locator', (rec.source && rec.source.locator) || '', { prose: true });
     row(isZh() ? '业务范围' : 'Business scope', rec.business_scope || '', { prose: true });
     // A stated zero is a value; only null (schema: number|null) is "Not stated".
-    var metricValue = rec.metric && typeof rec.metric.value === 'number' ? String(rec.metric.value) : '';
+    // With no excerpt the number carries its unit, currency and period.
+    var metricValue = rec.metric && typeof rec.metric.value === 'number' ? fmtMetric(rec.metric, true) : '';
     if (!suppress) row(isZh() ? '数值' : 'Value', rec.excerpt || metricValue, { prose: !!rec.excerpt });
-    row(isZh() ? '方法' : 'Methodology', rec.statement_mode ? labelFor('statement_mode', rec.statement_mode) : '');
+    // How the value was obtained (metric.reported_derived_estimated); this row
+    // used to repeat the statement mode printed four rows below.
+    row(isZh() ? '方法' : 'Methodology', rec.metric && rec.metric.reported_derived_estimated ? labelFor('reported_derived_estimated', rec.metric.reported_derived_estimated) : '');
     row(isZh() ? '观察时点' : 'Observed at', rec.source && rec.source.observed_at ? String(rec.source.observed_at).slice(0, 10) : '');
     row(isZh() ? '披露时点' : 'Published at', rec.source && rec.source.published_at ? String(rec.source.published_at).slice(0, 10) : '', { sensitive: false });
     row(isZh() ? '披露粒度' : 'Published grain', rec.source && rec.source.published_at_grain ? labelFor('published_at_grain', rec.source.published_at_grain) : '');
@@ -1489,7 +1523,7 @@
     // T1 `limitations` is an OBJECT of five required strings (schema
     // $defs/source_record); asArray() of it was always [] — a blank row.
     row(isZh() ? '限制' : 'Limitations', '', { html: limitationsHtml(rec.limitations) });
-    row(isZh() ? '修正' : 'Correction', rec.correction || '—');
+    row(isZh() ? '修正' : 'Correction', '', { html: correctionHtml(rec.correction) });
     row(isZh() ? '证据引用' : 'Evidence ref', rec.evidence_ref || '');
 
     fields.innerHTML = rows.map(function (r) { return '<div>' + r + '</div>'; }).join('');

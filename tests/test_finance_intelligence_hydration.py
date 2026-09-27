@@ -13,6 +13,7 @@ import json
 import re
 import shutil
 import subprocess
+import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -27,6 +28,10 @@ needs_node = pytest.mark.skipif(not HAS_NODE, reason="node not on PATH")
 CONTRACT = "finance_intelligence_read_model.v1"
 AS_OF = "2026-09-24T12:00:00Z"
 
+# A PARTIAL harness document: the fields the painters read, not the whole T1
+# contract (validate_contract rejects it). Contract conformance is painted from
+# the T2 composer's own output in
+# test_a_contract_valid_read_model_paints_without_leaking_machine_values.
 VALID_DOC = {
     "contract_id": CONTRACT,
     "schema_version": "1.0.0",
@@ -170,13 +175,16 @@ def _json(payload: object) -> str:
 
 
 def _run(scenario: dict) -> dict:
-    scene_path = Path("/tmp/fi_hydration_scenario.json")
-    scene_path.write_text(_json(scenario), encoding="utf-8")
-    js_path = TEMPLATES / "finance_intelligence.js"
-    result = subprocess.run(
-        ["node", str(HARNESS), str(scene_path), str(js_path)],
-        capture_output=True, text=True, check=False,
-    )
+    # One scenario file per call: a fixed /tmp path is shared by every
+    # parallel worker and every checkout on the host.
+    with tempfile.TemporaryDirectory() as tmp:
+        scene_path = Path(tmp) / "scenario.json"
+        scene_path.write_text(_json(scenario), encoding="utf-8")
+        js_path = TEMPLATES / "finance_intelligence.js"
+        result = subprocess.run(
+            ["node", str(HARNESS), str(scene_path), str(js_path)],
+            capture_output=True, text=True, check=False,
+        )
     assert result.returncode == 0, result.stderr
     return json.loads(result.stdout)
 
@@ -822,10 +830,12 @@ def test_a_limitation_the_record_omits_says_so_in_page_words(
 
 
 @needs_node
-@pytest.mark.parametrize("value,shown", [(0, "0"), (None, "Not stated")])
+@pytest.mark.parametrize("value,shown", [(0, "0 USD"), (6.4, "6.4 USD"), (None, "Not stated")])
 def test_a_stated_zero_is_a_value_and_only_null_is_not_stated(value, shown) -> None:
     """With no excerpt the Value row reads the metric: a stated 0 must print
-    as 0, never as the page's "Not stated" word; only a null value is absent."""
+    as 0, never as the page's "Not stated" word; only a null value is absent.
+    The receipt prints the stated number exactly (the stepper rounds 6.4 to 6)
+    and names its unit — a bare number said nothing about what it counted."""
     drawer = _drawer("en", {"excerpt": None, "metric": {"value": value, "unit": "USD"}})
     assert _drawer_field(drawer, "Value").text() == shown
 
@@ -884,3 +894,327 @@ def test_held_rights_hide_the_excerpt_but_keep_locator_and_limitations() -> None
     assert _drawer_field(drawer, "Locator").text() == "Item 7, net interest income table"
     assert len(_limitation_items(drawer)) == 5
     assert not drawer.one(data_fi_mount="evidence-private-notice").hidden
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# Contract conformance — a document the T1 contract ACCEPTS, not VALID_DOC.
+# ──────────────────────────────────────────────────────────────────────────
+
+_LEAK = re.compile(r"\[object \w+\]|\bundefined\b|\bNaN\b|\bnull\b|Invalid Date")
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_a_contract_valid_read_model_paints_without_leaking_machine_values(lang) -> None:
+    """VALID_DOC is partial, so it never showed a painter reading a field of the
+    wrong shape: the drawer printed `correction`, a required object, as
+    "[object Object]". This paints what the real T2 composer emits from the
+    projection suite's synthetic inputs, once the contract validator accepts it,
+    with the drawer open on its first record."""
+    from engine.sector_intelligence.contracts import validate_contract
+    from engine.sector_intelligence.finance_projection import compose_finance_projection
+    from tests.test_finance_intelligence_projection import (
+        _default_8slice_inputs, _knowledge_cutoff, _today,
+    )
+
+    doc = compose_finance_projection(_default_8slice_inputs(), generated_at=_today(),
+                                     knowledge_cutoff=_knowledge_cutoff())
+    validate_contract(CONTRACT, doc)
+    record = doc["source_records"][0]
+    snap = _run({"lang": lang, "routes": _route(doc), "hash": "#evidence=" + record["record_id"]})["first"]
+    assert snap["noticeEn"] == "" and snap["noticeZh"] == ""
+    root = _dom(snap)
+    drawer = root.one("aside", id="evidence-drawer")
+    assert not drawer.hidden
+    assert not _LEAK.findall(root.text()), _LEAK.findall(root.text())
+    assert _drawer_field(drawer, "修正" if lang == "zh" else "Correction").text() == (
+        "无修正记录" if lang == "zh" else "No correction on file")
+
+
+@needs_node
+@pytest.mark.parametrize("lang,correction,words,english", [
+    ("en", {"predecessor_record_id": None, "reason": None}, "No correction on file", []),
+    ("zh", {"predecessor_record_id": None, "reason": None}, "无修正记录", []),
+    ("en", {"predecessor_record_id": "src.prev", "reason": "Restated after audit."},
+     "Replaces record src.prev — Restated after audit.", ["Restated after audit."]),
+    ("zh", {"predecessor_record_id": "src.prev", "reason": None}, "取代记录 src.prev", []),
+    ("zh", {"predecessor_record_id": None, "reason": "Restated after audit."},
+     "Restated after audit.", ["Restated after audit."]),
+])
+def test_a_correction_is_read_as_words_never_as_the_raw_object(lang, correction, words, english) -> None:
+    """Schema: `correction` is {predecessor_record_id, reason}, both nullable.
+    Only the reason is payload prose, so only it is marked English."""
+    dd = _drawer_field(_drawer(lang, {"correction": correction}), "修正" if lang == "zh" else "Correction")
+    assert dd.text() == words
+    assert [el.text() for el in dd.walk() if el.attrs.get("lang") == "en"] == english
+
+
+@needs_node
+def test_methodology_reads_how_the_value_was_obtained_not_the_statement_mode() -> None:
+    """Methodology printed the statement mode, the same words as the Statement
+    mode row; it reads metric.reported_derived_estimated."""
+    drawer = _drawer("en", {"metric": {"value": 6.4, "unit": "USD", "reported_derived_estimated": "DERIVED"},
+                            "statement_mode": "FORWARD_TARGET"})
+    assert _drawer_field(drawer, "Methodology").text() == "derived"
+    assert _drawer_field(drawer, "Statement mode").text() == "Forward target"
+
+
+# Every enum path in the T1 schema -> the FI_LABELS map that words it, or None
+# with the reason it is never painted as a word. A new enum path is red here
+# until someone decides which.
+_ENUM_WORDS = {
+    "outer_dossier_ref/state": "outer_dossier_state",
+    "coverage/first_vertical/state": "first_vertical_state",
+    "material_changes/freshness_state": "freshness",
+    "macro_matrix/driver": "driver",
+    "macro_matrix/lag": "lag",
+    "macro_matrix/state": "macro_state",
+    "constraints/constraint": "constraint",
+    "conflicts/label": "conflict_label",
+    "conflicts/left/plane": "plane_word",
+    "conflicts/right/plane": "plane_word",
+    "freshness/state": "freshness",
+    "input_receipts/owner": "receipt_owner",
+    "input_receipts/state": "receipt_state",
+    "degraded_sections/section": None,  # selects the section element; never printed
+    "degraded_sections/state": "degraded_section_state",
+    "$defs/domain_id": None,  # ids; the words are domains[].name_en/name_zh
+    "$defs/slice_id": None,  # ids; the words are slices[].name_en/name_zh
+    "$defs/view_id": None,  # ids; the words are system_views[].name_en/name_zh
+    "$defs/freshness_state": "freshness",
+    "$defs/clock/published_at_grain": "published_at_grain",
+    "$defs/metric/measurement_class": "measurement_class",
+    "$defs/metric/gross_net_basis": "gross_net_basis",
+    "$defs/metric/average_end": None,  # not painted
+    "$defs/metric/reported_derived_estimated": "reported_derived_estimated",
+    "$defs/plane_state": "plane_state",
+    "$defs/plane/state": "plane_state",
+    "$defs/plane/comparability_state": "comparability_state",
+    "$defs/expectations_plane/state": "plane_state",
+    "$defs/expectations_plane/comparability_state": "comparability_state",
+    "$defs/expectations_plane/history/state": "history_state",
+    "$defs/basket_state/posture": "posture",
+    "$defs/basket_state/incumbent_basket_ids": None,  # counted, never named
+    "$defs/basket_state/membership_state": "membership",
+    "$defs/basket_state/weighting_family": "weighting_family",
+    "$defs/basket_state/price_basis_state": "price_basis_state",
+    "$defs/indicator/direction": "indicator_direction",
+    "$defs/indicator/state": "indicator_state",
+    "$defs/valuation_anchor/primary_per_share_anchor": "per_share_anchor",
+    "$defs/valuation_anchor/primary_valuation_anchor": "valuation_multiple",
+    "$defs/valuation_anchor/horizon": "horizon",
+    "$defs/valuation_anchor/state": "valuation_anchor_state",
+    "$defs/falsifier/state": "falsifier_state",
+    "$defs/slice/slice_state": "slice_state",
+    "$defs/source/published_at_grain": "published_at_grain",
+    "$defs/source_record/observation/reported_derived_estimated": "reported_derived_estimated",
+    "$defs/source_record/identity_state": "identity_state",
+    "$defs/source_record/rights_state": "rights_state",
+    "$defs/source_record/statement_mode": "statement_mode",
+    "$defs/exposure/basis": "basis",
+    "$defs/exposure/state": "exposure_state",
+    "$defs/exposure_cell/role": "role",
+    "$defs/exposure_cell/materiality": "materiality",
+    "$defs/company_exposure/identity/state": "identity_state",
+    "$defs/company_exposure/company_route/state": "company_route_state",
+    "$defs/system_view/edges/evidence_state": "evidence_state",
+    "$defs/system_view/edges/relationship": "edge_relationship",
+}
+
+
+def _schema_enums() -> dict:
+    schema = json.loads((ROOT / "contracts/sector_intelligence"
+                         / f"{CONTRACT}.schema.json").read_text(encoding="utf-8"))
+    found: dict = {}
+
+    def walk(node, path):
+        if isinstance(node, dict):
+            if path and any(isinstance(v, str) for v in node.get("enum", [])):
+                found.setdefault("/".join(path), set()).update(
+                    v for v in node["enum"] if isinstance(v, str))
+            for key, value in node.items():
+                if key == "properties":
+                    for name, sub in value.items():
+                        walk(sub, path + [name])
+                elif key == "$defs":
+                    for name, sub in value.items():
+                        walk(sub, ["$defs", name])
+                elif isinstance(value, (dict, list)):
+                    walk(value, path)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item, path)
+
+    walk(schema, [])
+    return found
+
+
+def _fi_labels() -> dict:
+    src = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    start = src.index("  var FI_LABELS = {")
+    end = src.index("\n  };\n", start)
+    literal = src[src.index("{", start):end + len("\n  }")]
+    result = subprocess.run(
+        ["node", "-e", "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>"
+                       "process.stdout.write(JSON.stringify(eval('('+s+')'))))"],
+        input=literal, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    return json.loads(result.stdout)
+
+
+@needs_node
+def test_every_value_the_contract_admits_has_a_page_word_in_both_languages() -> None:
+    """Missing and machine states are rendered as words: no value a valid
+    document can carry may fall through to a fallback or print its token."""
+    enums = _schema_enums()
+    assert set(enums) == set(_ENUM_WORDS), sorted(set(enums) ^ set(_ENUM_WORDS))
+    labels = _fi_labels()
+    gaps = []
+    for path, values in enums.items():
+        words = _ENUM_WORDS[path]
+        if words is None:
+            continue
+        for value in sorted(values):
+            pair = labels.get(words, {}).get(value)
+            if not (isinstance(pair, list) and len(pair) == 2 and all(isinstance(w, str) and w.strip() for w in pair)):
+                gaps.append(f"{path}={value} ({words})")
+    assert not gaps, gaps
+    # Positive control: the walk reached the enums the drawer words.
+    assert {"REPORTED_FACT", "FORWARD_TARGET"} <= enums["$defs/source_record/statement_mode"]
+
+
+# Spec §D.8 and the identity-state words, as the page must paint them.
+_EXPOSURE_WORDS = {
+    "en": {"MEASURED": "Measured",
+           "EXPOSURE_NOT_SEPARATELY_DISCLOSED": "Exposure not separately disclosed",
+           "DIRECT_DIVERSIFIED": "Direct, diversified", "QUALITATIVE_ONLY": "Qualitative only"},
+    "zh": {"MEASURED": "已量化", "EXPOSURE_NOT_SEPARATELY_DISCLOSED": "敞口未单独披露",
+           "DIRECT_DIVERSIFIED": "直接，多元化", "QUALITATIVE_ONLY": "仅作定性"},
+}
+_IDENTITY_WORDS = {
+    "en": {"IDENTITY_VALIDATED": "Identity confirmed", "IDENTITY_UNRESOLVED": "Identity unresolved",
+           "RESEARCH_HINT_UNVALIDATED": "Research hint, not validated"},
+    "zh": {"IDENTITY_VALIDATED": "身份已确认", "IDENTITY_UNRESOLVED": "身份尚未确认",
+           "RESEARCH_HINT_UNVALIDATED": "研究线索，尚未确认"},
+}
+
+
+def _exposure_states_doc() -> dict:
+    """The T2 composer's document plus three synthetic rows, re-validated by the
+    contract: SYNP holds one cell in each of the eight first-vertical slices,
+    cycling all four exposure states; SYNQ's identity is unresolved and SYNR's
+    is an unvalidated research hint."""
+    from engine.sector_intelligence.contracts import validate_contract
+    from engine.sector_intelligence.finance_projection import compose_finance_projection
+    from tests.test_finance_intelligence_projection import (
+        _default_8slice_inputs, _knowledge_cutoff, _today,
+    )
+
+    doc = compose_finance_projection(_default_8slice_inputs(), generated_at=_today(),
+                                     knowledge_cutoff=_knowledge_cutoff())
+    base = next(r for r in doc["company_exposures"] if r["row_id"] == "row-SYN1")
+    exposures = {
+        "MEASURED": {"basis": "SEGMENT_REVENUE", "numerator": "Synthetic segment revenue",
+                     "denominator": "Synthetic total company revenue", "value": 0.5,
+                     "unit": "ratio of revenues"},
+        "EXPOSURE_NOT_SEPARATELY_DISCLOSED": {"basis": "NOT_SEPARATELY_DISCLOSED", "numerator": None,
+                                              "denominator": None, "value": None, "unit": None},
+        "DIRECT_DIVERSIFIED": {"basis": "AUC_A", "numerator": "Synthetic assets under custody",
+                               "denominator": "Synthetic total client assets", "value": 0.3,
+                               "unit": "ratio of assets"},
+        "QUALITATIVE_ONLY": {"basis": "QUALITATIVE", "numerator": None, "denominator": None,
+                             "value": None, "unit": None},
+    }
+
+    def cell(slice_id: str, state: str) -> dict:
+        out = copy.deepcopy(base["cells"][0])
+        out.update(slice_id=slice_id, evidence_refs=[f"src-{slice_id}-synthetic_research"],
+                   exposure=dict(exposures[state], state=state))
+        return out
+
+    def row(tag: str, identity: str, cells: list) -> dict:
+        out = copy.deepcopy(base)
+        out.update(row_id=f"row-{tag}", issuer_label=tag, ticker_hint=tag, cells=cells)
+        if identity == "IDENTITY_UNRESOLVED":
+            out["identity"] = {"state": identity, "company_node_id": None,
+                               "security_ref": None, "listing_note": None}
+            out["company_route"] = {"href": None, "state": "IDENTITY_UNRESOLVED"}
+        else:
+            out["identity"] = dict(out["identity"], state=identity,
+                                   company_node_id=f"company:synthetic-{tag.lower()}",
+                                   security_ref=f"security:{tag.lower()}")
+        return out
+
+    states = list(exposures)
+    first_vertical = doc["coverage"]["first_vertical"]["slice_ids"]
+    doc["company_exposures"] += [
+        row("SYNP", "IDENTITY_VALIDATED",
+            [cell(sid, states[i % 4]) for i, sid in enumerate(first_vertical)]),
+        row("SYNQ", "IDENTITY_UNRESOLVED", [cell("card_networks", "EXPOSURE_NOT_SEPARATELY_DISCLOSED")]),
+        row("SYNR", "RESEARCH_HINT_UNVALIDATED", [cell("market_reference_data", "QUALITATIVE_ONLY")]),
+    ]
+    doc["coverage"]["companies_with_records"] = len(doc["company_exposures"])
+    validate_contract(CONTRACT, doc)
+    return doc
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_every_exposure_cell_names_its_exposure_state_in_words(lang) -> None:
+    """Spec §B.5/§D.8: each exposure cell carries a chip naming its exposure
+    state. The page kept the state only in data-state-exposure, so a cell
+    whose exposure is not separately disclosed read like a measured one."""
+    section = _dom(_run({"lang": lang, "routes": _route(_exposure_states_doc())})["first"]).one(
+        "section", id="company-exposure")
+    words = _EXPOSURE_WORDS[lang]
+    painted = []
+    for td in section.find("td", "fi-cell"):
+        state = td.attrs.get("data-state-exposure")
+        chips = td.find("span", "fi-exposure-chip")
+        if not state:  # an absent slice column: "No role recorded", no state to name
+            assert not chips, td.text()
+            continue
+        assert len(chips) == 1, td.text()
+        assert chips[0].attrs.get("data-state-exposure") == state
+        assert "fi-chip" in chips[0].classes and chips[0].text() == words[state]
+        painted.append(state)
+    assert set(painted) == set(words), painted
+    card_chips = [chip for li in section.find("li", "fi-exposure-card")
+                  for chip in li.find("span", "fi-exposure-chip")]
+    assert sorted(chip.attrs["data-state-exposure"] for chip in card_chips) == sorted(painted)
+    assert all(chip.text() == words[chip.attrs["data-state-exposure"]] for chip in card_chips)
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_a_phone_card_names_its_identity_state(lang) -> None:
+    """At 390 px the card is the only exposure surface. It carried no identity
+    chip, so an unresolved identity or an unvalidated research hint read like
+    a confirmed company on a phone."""
+    section = _dom(_run({"lang": lang, "routes": _route(_exposure_states_doc())})["first"]).one(
+        "section", id="company-exposure")
+    words = _IDENTITY_WORDS[lang]
+    seen = set()
+    for li in section.find("li", "fi-exposure-card"):
+        identity = li.attrs.get("data-state-identity")
+        chip = li.one("span", "fi-identity-chip")
+        assert chip.attrs.get("data-identity") == identity and chip.text() == words[identity]
+        assert chip.tag == "span" and "fi-evidence-trigger" not in chip.classes
+        seen.add(identity)
+    assert seen == set(words), seen
+
+
+@needs_node
+def test_a_phone_card_lists_its_table_rows_cells_in_column_order() -> None:
+    """The card took the first six cells of any vertical: a company with a cell
+    in all eight first-vertical slices lost two on a phone, silently. It now
+    lists exactly the cells its table row shows, in column order."""
+    section = _dom(_run({"routes": _route(_exposure_states_doc())})["first"]).one(
+        "section", id="company-exposure")
+    heads = [th.text() for th in section.find("th", "fi-col-slice")]
+    heads = heads[:len(heads) // 2] if len(heads) > 8 else heads  # the fold repeats <thead>
+    tr = section.one("tr", data_row_id="row-SYNP")
+    card = section.one("li", "fi-exposure-card", data_row_id="row-SYNP")
+    lines = [p.one("strong").text().rstrip(":") for p in card.find("p") if p.find("strong")]
+    assert len(tr.find("span", "fi-exposure-chip")) == len(heads) == 8
+    assert lines == heads

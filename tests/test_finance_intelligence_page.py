@@ -901,3 +901,16 @@ def test_what_changed_rows_are_the_house_decision_row():
     rule = re.search(r"^\.fi-change-list \{([^}]*)\}", css, re.M)
     assert rule is not None
     assert "list-style: none" in rule.group(1) and "padding: 0" in rule.group(1)
+
+
+def test_the_slice_select_shrinks_inside_a_phone_row():
+    """A native select sizes to its longest option, and the spec's option text
+    is the "{name_en} / {name_zh}" pair: a real slice pair ran ~440px, and a
+    flex item never shrinks below its min-content, so at 390px the page
+    scrolled sideways (seen painting the T2 composer's contract-valid output)."""
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+    rule = re.search(r"^\.fi-slice-select \{([^}]*)\}", css, re.M)
+    assert rule is not None
+    assert "min-width: 0" in rule.group(1) and "max-width: 100%" in rule.group(1)
+    # ...and the field label does not shrink with it ("切片" wrapped per glyph).
+    assert re.search(r"^\.fi-slice-picker > label \{[^}]*flex: none", css, re.M)
