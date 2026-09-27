@@ -3,9 +3,10 @@
 
 Pure SSR, the `stage_analysis` page-builder pattern: load the committed context
 artifact, render one template, write through `lib.pages.write_page`. The page
-ships NO fetch, NO chart library and NO page JS of its own — the sparklines are
-inline SSR SVG and every Tier-2 card is a static LENS block — so there is no
-per-surface JSON to copy into `site/` and no lazy-load step.
+ships NO fetch and NO chart library — the sparklines are inline SSR SVG and
+every Tier-2 card is a static LENS block — so there is no per-surface JSON to
+copy into `site/` and no lazy-load step. The only page-own JS is the group cap
++ find-by-ticker filter (P1-6).
 
 Fail-open, and this builder NEVER raises: a missing, stale or malformed artifact
 renders the designed "warming up" null state (spec §4.6 `warm`), which is an
