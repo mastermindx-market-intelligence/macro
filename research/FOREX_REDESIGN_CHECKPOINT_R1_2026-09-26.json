@@ -176,7 +176,8 @@
     "Genuine shared-file custody release and current action permission before native edits; the R4 HTML is not a proven Paper payload.",
     "Current Forex template owner #7409 must be reconciled before implementation because it changes templates/forex.html.j2 and tests/test_build_forex_stance.py.",
     "Shared light-theme owner #7466 must be composed rather than overwritten for templates/site theme CSS/JS.",
-    "Actual existing FX view-model and latest.json source contract, freshness and licensing integration; no new data engine or score.",
+    "R4 production source contract is now mapped on main aff8b76c..., but implementation must repair FX-R4-SEM-01..04 and add a typed readiness/freshness block through the existing builder/view-model path.",
+    "Current template owner #7409 and shared theme owner #7466 must be reconciled/composed before production source mutation; no replacement lane.",
     "Actual existing watch/alert owner, authenticated persistence, failed/unknown-save reconciliation and exact event-return proof.",
     "Producer/documentation adjudication: CONTEXT is described as unweighted while some printed CONTEXT rows have nonzero weights; no UI reweighting performed.",
     "Served-path browser, accessibility and intended-user cold-reader comprehension evidence."
@@ -192,7 +193,7 @@
     "Do not let stale detail reuse a fresh stance or hide the age qualification."
   ],
   "boundary": "R4 glance-first/degraded-state design and qualification are preserved in a new immutable archive and this cumulative checkpoint; native integration is held by exact shared-file custody. Parent mission remains incomplete and no unattended execution is claimed.",
-  "next_action": "After genuine original-owner/canonical Paper custody release and current permission reconciliation, re-pin procedure and apply the smallest R4 overview/detail slice to existing boards: three-fact hero + composed attention panel + fixed-scale ranking + explicit stale qualification/stand-aside state. Inspect real native dark/light screenshots before adapting existing mobile/locale boards and finishing 1N0G-0.",
+  "next_action": "Paper lane: after genuine original-owner/canonical custody release and current permission reconciliation, apply the smallest R4 existing-board slice and inspect native dark/light screenshots. Production lane: once #7409/#7466 source custody is reconciled, start tests-first on FX-R4-SEM-01 (single 1m-vs-USD basis) and the R4 glance view-model; do not rewrite the engine/template wholesale.",
   "resume_surface": "A current Chairman-authorized Mastermind session reading this cumulative checkpoint, immutable R4 archive, latest #927 custody return, and current production source owners #7409/#7466.",
   "mode": {
     "user_reported_selected_mode": "Extra High",
@@ -219,5 +220,134 @@
       "entry_point_sha256": "37945958f318daa1d1658c1a3cf755a3da624f60034a1d249f3c1abc80a0f89c",
       "disposition": "IMMUTABLE_DO_NOT_OVERWRITE"
     }
-  ]
+  ],
+  "current_recovery": {
+    "procedure_repository": "mastermindx-market-intelligence/Mastermind",
+    "procedure_sha": "fda6ed3911cdda24eb63b2ccbe1b174121cf404f",
+    "procedure_parent": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+    "procedure_change_relevance": "Protected master advanced by Executive async-release-gate tests only; current INDEX/ACTIVE_EXECUTION/RECONCILE_STATE/Paper/authority procedures were fresh-read from the new exact commit before this source-mapping effect.",
+    "macro_main": "aff8b76cba6afa6ed03298a1814b059e317070a0",
+    "paper_hold_check": "No page-21 comment exists on Mastermind #927; latest consumed page-20 owner return remains the current hold evidence. No custody release was found.",
+    "mode": "MODIFYING_AVAILABLE for this evidence-only GitHub carrier; Paper content mutation remains held."
+  },
+  "production_port_map": {
+    "source_main": "aff8b76cba6afa6ed03298a1814b059e317070a0",
+    "files": {
+      "builder": "scripts/build_forex.py",
+      "template": "templates/forex.html.j2",
+      "dollar_engine": "engine/forex_dollar.py",
+      "alert_owner": "engine/forex_alerts.py",
+      "calibration": "reports/forex-calibration.md"
+    },
+    "existing_fields_to_reuse": {
+      "hero/dollar context": [
+        "dollar_vm(): regime, zone_en/zh, dollar_dir, roc(63d), risk_word, broad, dxy, dollar_day, hero_spark",
+        "_stance(): deterministic word/headline/sentence from dollar direction, active scenarios, flash/triple-red and transmission"
+      ],
+      "currency ranking": [
+        "forex_dollar.strength_meter().horizons[1m][].ccy",
+        "forex_dollar.strength_meter().horizons[1m][].vs_usd_pct",
+        "forex_dollar.strength_meter().default/order"
+      ],
+      "currency/pair detail": [
+        "pair_vm(): key,label,zh,base,quote_ccy,quote,chg,resid_chg,dollar_beta,structure_state,risk_index,shock_state,carry_diff,reer_gap,rate_diff_10y,cnh_basis,cnh_state,verdict,conviction",
+        "META: explicit assessed base currency and displayed quote identity"
+      ],
+      "attention/change digest": [
+        "fx_state.changes_today from existing forex_alerts rebuild/recent pipeline",
+        "timeline from _group_timeline(recent_events)",
+        "regime.scenarios and transmission rows"
+      ],
+      "latest.json": [
+        "asof/date, dollar_desk, transmission, strength, regime_radar, state_changes, stance, fx_state and additive pairs entries already exist"
+      ]
+    },
+    "required_repairs_before_ui_port": [
+      {
+        "id": "FX-R4-SEM-01",
+        "defect": "The current strength strip uses row.strength (excess versus average currency) for bar geometry while printing row.vs_usd_pct beside it.",
+        "required_change": "R4 comparison rows must use one declared baseline/horizon end-to-end. For the default board use 1-month vs USD for ordering, numeric label and zero-anchored bar geometry. Retain cross-sectional strength only as separate research context if desired.",
+        "owner": "Existing strength/view-model path; no new score or service."
+      },
+      {
+        "id": "FX-R4-SEM-02",
+        "defect": "Displayed market quote direction and assessed currency direction can require inversion, especially USD/JPY-style pairs.",
+        "required_change": "Export/render assessed_currency, display_pair, quote_orientation/invert, and signed base-vs-USD move explicitly. Never ask the frontend or user to infer whether pair-up means currency-up.",
+        "owner": "Existing META + pair_vm/latest.json contract."
+      },
+      {
+        "id": "FX-R4-SEM-03",
+        "defect": "Liquidity Tier-1 label and tooltip are not sourced from one semantic presentation state: supportive dollar liquidity currently renders 'Adding' even though the engine defines supportive as falling/draining net liquidity.",
+        "required_change": "Derive display label, explanation and signed change from one normalized liquidity state. Preserve the engine's canonical WALCL-RRP-TGA calculation and dollar framing; fix presentation semantics only.",
+        "owner": "Existing forex_dollar.liquidity -> dollar_desk -> template path."
+      },
+      {
+        "id": "FX-R4-SEM-04",
+        "defect": "The pair chip says 'Paid to hold' whenever carry_diff exists, including negative differentials.",
+        "required_change": "Replace with sided plain-language rate-gap copy such as 'Rates favor USD by 2.9 pp' / 'Rates favor JPY by …'. Keep exact sign and annualized unit in the receipt.",
+        "owner": "Existing pair_vm carry_diff + template."
+      },
+      {
+        "id": "FX-R4-DATA-01",
+        "defect": "The page exposes a page-level as-of and some component as-of values but no typed readiness/freshness object strong enough to drive R4 fresh/stale/partial/source-failed behavior.",
+        "required_change": "Extend the existing Forex view-model/latest artifact with a compact freshness/readiness block derived from existing source/result timestamps. It must distinguish fresh, stale, partial and failed/missing dependencies; preserve last trustworthy values and disable only dependent actions. Reuse existing freshness conventions; do not create a new service/registry.",
+        "owner": "Existing build_forex/view-model/latest.json path."
+      }
+    ],
+    "r4_minimum_vertical_slice": {
+      "builder_delta": [
+        "Compose one R4 glance view-model from existing data: leader, breadth, principal constraint, attention items, ranking rows, readiness.",
+        "Leader/breadth derive from strength.horizons[default] using vs_usd_pct only for the declared USD baseline.",
+        "Principal constraint is evidence, not trade authority; for a selected leader it can use existing signed carry_diff/rate context plus managed-market warning.",
+        "Attention items are presentation grouping over existing deterministic changes/regime states; no new event ledger or importance model."
+      ],
+      "template_delta": [
+        "Replace the current dollar-smile-first top hierarchy with R4 answer-first hero while retaining smile/method depth under disclosure/research.",
+        "Render three glance facts, one composed What matters next panel, and fixed-basis currency ranking.",
+        "On narrow widths put What matters next before the long ranking.",
+        "Pair detail starts with balanced evidence-for/evidence-against and explicit 'what changes this read'.",
+        "Stale detail must show age warning before evidence, use Stand aside/older-data stance, preserve last trustworthy values, and disable current-data watch preparation."
+      ],
+      "tests_first": [
+        "Fail if bar basis and displayed percentage differ.",
+        "Fail USDJPY inversion/orientation ambiguity.",
+        "Fail supportive/draining liquidity copy disagreement.",
+        "Fail negative carry_diff rendered as 'Paid to hold'.",
+        "Fail stale data retaining fresh stance or enabled current-data watch action.",
+        "Fail narrow layout where long ranking precedes investigation priorities.",
+        "Pin EN/ZH directional color semantics and signs."
+      ]
+    },
+    "current_collisions": {
+      "macro#7409": {
+        "head": "a6ba169c4fafd7aaf1d09e30aea49747b65e3c92",
+        "paths": [
+          "templates/forex.html.j2",
+          "tests/test_build_forex_stance.py"
+        ],
+        "note": "Tiny dark tooltip contrast repair, but it owns the exact Forex template path. Compose; do not overwrite."
+      },
+      "macro#7466": {
+        "paths": [
+          "templates/theme.css",
+          "templates/theme.js",
+          "site/theme.css",
+          "site/theme.js",
+          "lib/theme_materials.py",
+          "lib/site_assets.py"
+        ],
+        "note": "Shared light-theme/material owner. R4 must consume accepted theme behavior, not start a page-local theme fork."
+      },
+      "macro#7394": {
+        "state": "DRAFT/HOLD",
+        "note": "Shared design-system/specimen contract remains a separate owner; do not create a second component/design system."
+      }
+    },
+    "implementation_non_goals": [
+      "No new FX engine, aggregate USD score, event ledger, watcher plane, persistence store, theme system, routing system or design library.",
+      "No source-rights assumption from current availability.",
+      "No trade recommendation or promotion of historical cheapness into predictive support.",
+      "No production mutation until exact source-collision ownership is reconciled."
+    ]
+  }
 }
