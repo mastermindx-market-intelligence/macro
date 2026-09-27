@@ -45,11 +45,16 @@ changed:
       Measure the previously blocked HK semiconductor secondary endpoint on three development events;
       the broad-HK residual is mixed (one positive, two negative), strengthening the rejection of a
       semiconductor-specific handoff rather than rescuing it.
+  - path: scripts/research/capture_cross_session_transfer.py
+    what: >-
+      Harden source-state transitions so a later confirmation remains provenance on the existing
+      event: first-disclosure available_at, V1/V1.1 eligibility, measurement anchor, and clean-slice
+      membership cannot move, and no second event is minted by the amendment path.
   - path: agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md
     what: >-
       Repair the durable continuation record to the current AgentOS handoff schema, bind it to the
-      canonical WS:MARKET-OS owner, and update the exact CI failure classification without changing
-      the frozen research geometry or prospective protocol.
+      canonical WS:MARKET-OS owner, and carry the latest source-clock and two-candidate scientific
+      ruling without changing frozen prospective geometry.
 verified:
   - claim: >-
       Exact head 37e232528735709b68680ad48df802263b8c7746 failed fences because this handoff
@@ -102,19 +107,27 @@ verified:
     result: >-
       Equal-weight SMIC/Hua Hong close-to-09:35 residual versus 2800 was +101.70 bp, -104.52 bp,
       and -29.11 bp respectively; one positive and two negative. These rows are development-only.
+  - claim: >-
+      The prospective capture guard prevents a later source confirmation from manufacturing a new
+      event clock or changing admission-time cohort eligibility.
+    command: >-
+      python3 -m pytest -q tests/test_event_microstructure_replay.py
+    result: >-
+      Exact capture/replay suite at e815bdf4cb5454efb1ed50341ddca72452143909 passed 16/16;
+      the sparse exact-head verifier was removed after the run.
 unverified:
-  - "The current post-Tencent closeout head still requires exact-head hosted ci and fences before the carrier can be called green."
+  - "The current post-fairness/handoff head still requires exact-head hosted ci and fences before the carrier can be called fully green."
   - "Prospective cross-session transfer generalization on future events remains unproven."
   - "The QQQ-minus-SPY challenger has zero prospective observations at this amendment boundary."
   - "Prospective operational HK-intraday capture through Tencent's roughly five-session retention window remains unproven on a qualifying future event."
 unresolved:
-  - "Current PR head must regain exact-head ci + fences before the research carrier is considered green."
+  - "Current PR head must clear exact-head ci + fences after the source-clock/fairness closeout before the research carrier is considered fully green."
   - "The source census remains retrieval_incomplete, so timing-frequency population claims remain blocked."
   - "The prospective hypothesis remains concentrated in the 2026 Iran/Hormuz family and needs future-event evidence."
 next_actions:
-  - "Reconcile the final post-Tencent PR head and consume its exact-head ci/fences results; repair only new branch-owned failures."
+  - "Consume exact-head ci/fences for the current source-clock/fairness closeout; repair only new branch-owned failures."
   - "If exact-head checks clear, preserve PR #8012 as the DRAFT frozen development/prospective carrier and do no further development predictor search."
-  - "Admit the next qualifying future event only under the frozen V1 protocol and V1.1 amendment before reading its Hong Kong outcome; record both US candidate families and matched controls without tuning."
+  - "Admit the next qualifying future event only under frozen V1/V1.1 and checkpoint its source-first receipt before reading the HSI outcome; later confirmations remain amendments to that event and cannot move first disclosure, eligibility, or the clean slice. Record both US candidate families and frozen matched controls without tuning."
   - "If the secondary HK intraday endpoint is used prospectively, use only the frozen Terminal Tencent owner while the required session remains in its recent-window coverage; HSI next-open remains primary and source failure remains DATA_GAP."
 do_not_redo:
   - "Do not reopen or repurpose the existing Narrative Repricing V2 prospective holdout."
@@ -124,10 +137,12 @@ do_not_redo:
   - "Do not relabel the already-inspected mainland daily slice as blind evidence."
   - "Do not add another development predictor family, benchmark, time bucket, or threshold from the now-open HK intraday target outcomes."
   - "Do not retry the degraded AkShare/Eastmoney HK source in this research lane while the source state is unchanged; the frozen Tencent amendment is the current secondary-source path."
+  - "Do not treat V1.1 as a development winner from its higher raw hit rate; on common controls its event-minus-control uplift does not dominate V1, and its extra correctness is one development event."
 danger_areas:
   - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
   - "AkShare/Eastmoney remains degraded and is DO_NOT_RETRY in this research lane. Tencent recent-session capability is now proven through the existing Terminal owner; the three target development rows have been read and are permanently development-only, never prospective evidence."
   - "Mainland minute implementation exists but historical materialization/backfill belongs to the existing Data OS owner, not this PR."
+  - "A later authoritative confirmation of an already-public material claim is source-resolution provenance, not a new event; re-keying it to the later clock would contaminate prospective admission."
 prs: [8012]
 decisions: []
 discoveries: []
@@ -602,3 +617,87 @@ Ruling:
 5. If the secondary HK minute diagnostic is used, capture it from the existing Tencent owner while
    the relevant HK session is still in the roughly five-session window; absence becomes DATA_GAP.
 6. Publish failures/conflicts/missingness as faithfully as positive outcomes.
+
+## 2026-09-27 continuation addendum — source-clock hardening and two-candidate fairness
+
+### Source-confirmation clock law
+
+Protected Mastermind procedure was re-pinned at
+`4c6b206d3fb7fbc6d077faf61ae361bedf259925`; INDEX blob remains
+`94d1af402598894372858793a5b1931019c5fa77`.
+
+Commit `e815bdf4cb5454efb1ed50341ddca72452143909` hardens
+`scripts/research/capture_cross_session_transfer.py` with a source-state amendment contract:
+
+- later corroboration/confirmation remains the **same event**;
+- first-disclosure `available_at` is immutable;
+- the U.S. measurement anchor remains first disclosure;
+- V1 and V1.1 eligibility cannot change;
+- admission-time clean-primary membership cannot upgrade;
+- `independent_event=false` is explicit;
+- no HK outcome, QLedger, Chronicle, Market Memory, alert, product, or vendor store is written.
+
+Exact sparse-worktree verification at `e815bdf4...`:
+- `tests/test_event_microstructure_replay.py`: **16 passed**;
+- worktree cleanup: PASS.
+
+This closes the concrete leakage path where an already-public claim could otherwise be re-keyed to
+a later authoritative confirmation and falsely appear post-protocol.
+
+### Equal-coverage candidate fairness
+
+The frozen V1 and V1.1 candidates were compared on the identical matched-control rows where
+SPY, QQQ, SMH, and HSI were all available.
+
+All common controls (n=20):
+- V1 SMH-minus-QQQ agreement: **50.0%**
+- V1.1 QQQ-minus-SPY agreement: **60.0%**
+- event-minus-control uplift: **+25.0 pp V1** vs **+23.3 pp V1.1**
+
+Clean-parent common controls (n=13):
+- V1: **38.5%**
+- V1.1: **61.5%**
+- event-minus-control uplift: **+32.9 pp V1** vs **+24.2 pp V1.1**
+
+Therefore V1.1's higher raw event agreement does not translate into stronger matched-control uplift.
+
+### Candidate error overlap
+
+Across the 12 development events:
+- both candidates correct: **9**
+- V1-only correct: **0**
+- V1.1-only correct: **1**
+- both wrong: **2**
+- candidate-return correlation: **+0.705**
+
+Clean-primary:
+- both correct: **5**
+- V1-only: **0**
+- V1.1-only: **1**
+- both wrong: **1**
+- return correlation: **+0.632**
+
+The sole correctness disagreement was Aug 7: V1 -20.32 bp, V1.1 +2.33 bp, next HSI open
++53.43 bp. V1.1 rescued that one row.
+
+Ruling:
+- V1.1 is a broader competing representation, not independent evidence and not an accepted winner;
+- keep both frozen prospectively;
+- compare paired errors plus each family's own matched-control uplift on future observations;
+- do not add a third development family, optimized combination, threshold, or ensemble.
+
+### Current source window
+
+A bounded current-source check after the V1.1 freeze found no clean materially incremental event
+eligible for first prospective admission. Iran follow-up reporting that conditions were unchanged and
+a formal mediator response was still awaited is generic diplomatic continuation under the frozen
+exclusion law, not a new risk-channel event. This is a bounded source check, not a population
+no-event claim.
+
+Exact continuation:
+1. Consume current exact-head hosted fences + full CI.
+2. Keep PR #8012 DRAFT and research-only.
+3. On the first qualifying future event, checkpoint source admission before any HSI target read.
+4. Record both frozen U.S. families on the same event population; use matched controls exactly as frozen.
+5. Publish failures and DATA_GAP rows; no product/trading promotion before prospective review.
+

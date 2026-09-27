@@ -353,6 +353,46 @@ Interpretation:
 This is a candidate-fairness audit over the already-frozen two-family design, not a third model,
 threshold, benchmark, or promotion rule.
 
+
+## 4H. Candidate error-overlap audit
+
+Because V1.1 has a higher raw development hit rate, a paired audit asked whether it represents
+independent information or mostly the same event-conditioned state as V1.
+
+No new construction was introduced. On the same 12 development events:
+
+- both V1 and V1.1 correct: **9**
+- V1 correct / V1.1 wrong: **0**
+- V1 wrong / V1.1 correct: **1**
+- both wrong: **2**
+- return correlation between the two frozen candidates: **+0.705**
+
+On the seven clean-primary events:
+
+- both correct: **5**
+- V1-only correct: **0**
+- V1.1-only correct: **1**
+- both wrong: **1**
+- candidate return correlation: **+0.632**
+
+The sole development event where correctness differed was
+`2026-08-07-us-official-expects-hormuz-deal-soon`:
+- SMH-minus-QQQ = **-20.32 bp**
+- QQQ-minus-SPY = **+2.33 bp**
+- next HSI open gap = **+53.43 bp**
+- V1 missed; V1.1 agreed in sign.
+
+Interpretation:
+
+- V1.1's higher raw development hit rate is mostly overlap with V1 plus **one** additional correct event;
+- the two candidates are not independent evidence streams;
+- combined with the common-control audit, V1.1 is best treated as a broader competing
+  representation of the same event-conditioned state, not as a development-selected winner;
+- prospective review should report paired correctness overlap and each candidate's own
+  matched-control uplift, not compare headline hit rates in isolation.
+
+No significance test, fitted combination, ensemble, or winner rule is added by this audit.
+
 ## 5. Missingness
 
 Four pre-frozen matched controls remained missing under the exact-clock law:
