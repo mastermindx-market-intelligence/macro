@@ -49,10 +49,10 @@ verified:
     result: >
       66 passed,0 failures/errors,exit0:60 behavior plus6 artifact tests. Final
       pytest rerun again66 passed. Initial behaviors59 failed; first implementation
-     58 passed/1 handwritten variance-oracle error, resolved by independent
+      58 passed/1 handwritten variance-oracle error, resolved by independent
       Fraction arithmetic without algorithm/tolerance change. Added monotone-kernel
       case is verification, not a repaired product defect. Artifact preregister
-     5 passed/1 missing-source-register failure, then6 passed. Compilation and
+      5 passed/1 missing-source-register failure, then6 passed. Compilation and
       exact two-builder reproduction passed. No Macro/Agent OS/hosted CI claimed.
   - claim: "The archive and committed research bytes are preserved exactly."
     command: "ZIP CRC and all payload SHA256 checks; local Git-blob equality against native readbacks."
