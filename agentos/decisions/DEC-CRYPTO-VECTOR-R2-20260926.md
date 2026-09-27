@@ -218,3 +218,8 @@ The full intended native sequence after Paper write acceptance is now: 12 Market
 The supporting Crypto study now covers all four top-level Crypto research jobs plus one asset-detail workspace: Market Pulse, Asset Explorer, Capital & Leverage, Asset Detail / SOL, and Events. The reviewed Events preview explicitly separates before/during/after-event work, source/timing certainty and unknown price direction. It reuses Event Intelligence conceptually and creates no event/alert authority.
 
 Supporting visual hashes are recorded in the research contract. The intended Paper sequence after write-pin acceptance is now boards 12 Market Pulse, 13 Asset Explorer, 14 Capital & Leverage, 15 Asset Detail / SOL, 16 Events. No such native board IDs exist yet from this continuation.
+
+
+### Later CI status correction
+
+A later GitHub read shows source-candidate commit `228f74d30b345dc60408e7be91a5c4a0027af5fa` CI run `36290595014` finished `cancelled`; fences `36290594814` remained successful. Therefore the newly enrolled R2/Vector suites still have no passing exact-source CI receipt from that run. Current records/design head `f85848e430331e1bd55ccd7d2257c2e647ba2de6` had CI `36294877873` pending and fences `36294877729` in progress when inspected; those docs-head runs do not substitute for source-candidate behavioral proof. Do not state CI green.
