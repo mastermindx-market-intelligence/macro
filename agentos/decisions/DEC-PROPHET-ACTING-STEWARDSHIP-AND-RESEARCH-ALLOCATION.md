@@ -32,7 +32,7 @@ alternatives:
   - option: Run all proposed variants on every available model.
     why_not: Unregistered search, correlated reviews and hidden trials can create misleading evidence.
 evidence:
-  - Current live Chairman instruction: Fable unavailable due to session limits; parent Sol to continue and allocate research.
+  - "Current live Chairman instruction: Fable unavailable due to session limits; parent Sol to continue and allocate research."
   - "research/prophet_v4/r6_fable_meta_ceo_handoff/effective/RESEARCH_DOCKET.md at 8b9cee8b40fa9b009085fd114497f473a52a33da"
   - "agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave2-close.md at 8b9cee8b40fa9b009085fd114497f473a52a33da"
   - "research/prophet_v4/r6_program/rulings/R6-D10-01_SOURCE_CUSTODY_ADMISSION_2026-09-23.md at 8b9cee8b40fa9b009085fd114497f473a52a33da"
@@ -48,13 +48,10 @@ reversibility_detail: >
   ownership or financial authority. Any later principal return reconciles the
   current checkpoint and effects rather than replaying old commissions.
 decided_by: Sol Meta-CEO under current live Chairman continuation
- decided_at: 2026-09-26
+decided_at: 2026-09-26
 ---
 
 # Scope and explicit supersession
-
-The leading space on `decided_at` is not intended as a nested field; validation
-must treat all metadata keys as top-level before this draft record is accepted.
 
 Current live Chairman intent changes the acting programme decision/return duty
 that the older Fable-only delegation describes. It does not rewrite accepted
