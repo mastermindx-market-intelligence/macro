@@ -70,8 +70,6 @@ import os
 import re
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor
-from itertools import islice
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -80,6 +78,22 @@ try:
 except ImportError:  # pragma: no cover - environment guard
     print("::error title=agentos::PyYAML is required (pip install pyyaml)", flush=True)
     raise SystemExit(1)
+
+# PyYAML's C-backed SafeLoader preserves SafeLoader values while avoiding the
+# pure-Python scanner/parser cost on the ~1,100 Agent OS records. Malformed
+# YAML deliberately falls back through yaml.safe_load so the historical
+# diagnostic wording remains stable instead of changing with the C parser.
+_FAST_YAML_LOADER = getattr(yaml, "CSafeLoader", None)
+
+
+def _yaml_safe_load(text: str) -> Any:
+    if _FAST_YAML_LOADER is None:
+        return yaml.safe_load(text)
+    try:
+        return yaml.load(text, Loader=_FAST_YAML_LOADER)
+    except yaml.YAMLError:
+        return yaml.safe_load(text)
+
 
 _ROOT = Path(__file__).resolve().parent.parent
 # Pinned at module scope, before any in-repo import.  Run as `python3 scripts/agentos.py`,
@@ -189,7 +203,7 @@ def parse_record(path: Path) -> tuple[dict[str, Any], str]:
     if not match:
         raise ValueError("no YAML frontmatter block (expected a leading '---' fence)")
     try:
-        data = yaml.safe_load(match.group(1))
+        data = _yaml_safe_load(match.group(1))
     except yaml.YAMLError as exc:
         raise ValueError(f"malformed YAML frontmatter: {exc}") from exc
     if not isinstance(data, dict):
@@ -202,7 +216,7 @@ def _load_programs() -> set[str] | None:
     if not _PROGRAMS.exists():
         return None
     try:
-        doc = yaml.safe_load(_PROGRAMS.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_PROGRAMS.read_text(encoding="utf-8"))
     except (yaml.YAMLError, OSError):
         return None
     programs = doc.get("programs") if isinstance(doc, dict) else None
@@ -235,7 +249,7 @@ def _load_program_registry(path: Path = _PROGRAMS) -> dict[str, Any]:
     if not path.exists():
         return unavailable("program_registry_unavailable")
     try:
-        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(path.read_text(encoding="utf-8"))
     except UnicodeDecodeError:
         return unavailable("program_registry_malformed")
     except OSError:
@@ -622,26 +636,99 @@ def git_dates(path: Path) -> tuple[str | None, str | None]:
     return (first[-1] if first else None), (last[0] if last else None)
 
 
-_GIT_DATE_BATCH_SIZE = 4
+_GIT_DATE_PATH_BATCH_SIZE = 128
+
+
+def _git_history_dates(
+    paths: list[str], *, additions_only: bool,
+) -> list[tuple[str, str]] | None:
+    """Read path dates from one bounded local history walk.
+
+    git_dates remains the semantic oracle and fallback. This helper only folds
+    identical per-path git-log observations into one invocation-local query;
+    it adds no cache, new date policy, network call, or durable state.
+    """
+    if not paths:
+        return []
+    args = ["log", "-z", "--format=%x1e%as", "--name-only"]
+    if additions_only:
+        args.append("--diff-filter=A")
+    payload = _git(*args, "--", *paths)
+    if payload is None:
+        return None
+
+    admitted = set(paths)
+    current_date: str | None = None
+    rows: list[tuple[str, str]] = []
+    for raw in payload.split("\0"):
+        if not raw:
+            continue
+        if raw.startswith("\x1e"):
+            current_date = raw[1:].strip() or None
+            continue
+        # Pretty-print and --name-only are separated by exactly one newline.
+        rel = raw[1:] if raw.startswith("\n") else raw
+        if current_date is not None and rel in admitted:
+            rows.append((rel, current_date))
+    return rows
 
 
 def git_dates_batch(paths: Iterable[Path]) -> dict[Path, tuple[str | None, str | None]]:
-    """Read canonical per-path dates with a bounded, invocation-local I/O fan-out.
+    """Read canonical per-path dates with bounded batched local Git history.
 
-    Keep git_dates semantics, input order and None results unchanged. Submit only
-    one small batch at a time, and join every thread before return or failure.
-    There is no persisted cache, new history policy or cross-call executor.
+    Results retain git_dates semantics exactly: updated is the newest commit
+    touching the current path and created is the oldest true add for that path
+    (renames are not treated as adds). Inputs are consumed in bounded batches,
+    output keeps input order, and any batched Git observation failure falls back
+    to the existing per-path oracle for that batch.
     """
     iterator = iter(paths)
-    batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
-    if not batch:
-        return {}
     result: dict[Path, tuple[str | None, str | None]] = {}
-    with ThreadPoolExecutor(max_workers=_GIT_DATE_BATCH_SIZE,
-                            thread_name_prefix="agentos-git-dates") as executor:
-        while batch:
-            result.update(zip(batch, executor.map(git_dates, batch)))
-            batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+
+    while True:
+        batch: list[Path] = []
+        for _ in range(_GIT_DATE_PATH_BATCH_SIZE):
+            try:
+                batch.append(next(iterator))
+            except StopIteration:
+                break
+        if not batch:
+            break
+
+        rel_to_paths: dict[str, list[Path]] = {}
+        for path in batch:
+            try:
+                rel = path.resolve().relative_to(_ROOT).as_posix()
+            except ValueError:
+                result[path] = (None, None)
+                continue
+            rel_to_paths.setdefault(rel, []).append(path)
+
+        if not rel_to_paths:
+            continue
+
+        rels = list(rel_to_paths)
+        updated_rows = _git_history_dates(rels, additions_only=False)
+        created_rows = _git_history_dates(rels, additions_only=True)
+        if updated_rows is None or created_rows is None:
+            for path in batch:
+                if path not in result:
+                    result[path] = git_dates(path)
+            continue
+
+        updated: dict[str, str] = {}
+        for rel, date in updated_rows:
+            updated.setdefault(rel, date)
+        created: dict[str, str] = {}
+        for rel, date in created_rows:
+            # git log is newest-first; repeated assignment retains the oldest add.
+            created[rel] = date
+
+        for rel, originals in rel_to_paths.items():
+            dates = (created.get(rel), updated.get(rel))
+            for path in originals:
+                result[path] = dates
+
     return result
 
 
@@ -1437,7 +1524,7 @@ def load_p0(degraded: Degraded) -> dict[str, str] | None:
         text, ref = found
         source = f" (from {ref})"
     try:
-        doc = yaml.safe_load(text)
+        doc = _yaml_safe_load(text)
     except yaml.YAMLError as exc:
         degraded.add(
             f"{label}{source} unreadable ({exc.__class__.__name__}) — p0 ids unvalidated")
@@ -2811,7 +2898,7 @@ def _index_config() -> tuple[dict[str, dict[str, list[Any]]], str | None]:
     projects: dict[str, dict[str, list[Any]]] = {}
     error: str | None = None
     try:
-        doc = yaml.safe_load(_CONTEXT_INDEX_CONFIG.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_CONTEXT_INDEX_CONFIG.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         doc = None
         error = f"{_CONTEXT_INDEX_CONFIG_REL} unreadable ({exc.__class__.__name__})"
@@ -3233,7 +3320,7 @@ def _load_kill_rows(degraded: Degraded) -> dict[str, dict[str, Any]] | None:
         degraded.add(f"{_rel(_KILL_REGISTRY)} absent — DNR citations unresolved")
         return None
     try:
-        doc = yaml.safe_load(_KILL_REGISTRY.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_KILL_REGISTRY.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         degraded.add(
             f"{_rel(_KILL_REGISTRY)} unreadable ({exc.__class__.__name__}) — "
@@ -3257,7 +3344,7 @@ def _load_program_row(program: str, degraded: Degraded) -> dict[str, Any] | None
         degraded.add(f"{_PROGRAMS_REL} absent — program context omitted")
         return None
     try:
-        doc = yaml.safe_load(_PROGRAMS.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_PROGRAMS.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         degraded.add(
             f"{_PROGRAMS_REL} unreadable ({exc.__class__.__name__}) — program omitted"
