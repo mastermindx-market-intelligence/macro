@@ -14,6 +14,7 @@ from __future__ import annotations
 import copy
 import dataclasses
 import importlib
+import importlib.util
 import json
 import re
 import subprocess
@@ -104,6 +105,23 @@ def _bundle_with_run_context(*, assertions: tuple = (), omissions: tuple = (),
         native_refs=(*native_refs, _synthetic_run_context_ref()),
         omissions=omissions,
     )
+
+
+@pytest.fixture
+def shell_absent(monkeypatch: pytest.MonkeyPatch) -> Any:
+    """Arrange the absence of all four shared-shell modules, whatever the
+    carrier holds. ``None`` in ``sys.modules`` halts the import with a
+    ``ModuleNotFoundError`` whose ``.name`` IS the module, which is exactly
+    the absence ``_import_shell_module`` recognises.
+
+    Every test that pins the absent-shell contract uses this. Relying on
+    the checkout lacking #7870's modules turns those tests red on the day
+    the modules land, on whichever carrier runs the suite first (review F1).
+    """
+    reg = _import_reg()
+    for name in sorted(reg._SHELL_MODULE_NAMES):
+        monkeypatch.setitem(sys.modules, name, None)
+    return reg
 
 
 def _assertion(revision: str = "gmirca_" + ("a" * 32),
@@ -219,7 +237,7 @@ def test_shared_shell_registration_roundtrip_pinned_to_7870():
     reg.registration_entry_or_refusal()
 
 
-def test_roundtrip_exact_refusal_code_is_shared_shell_unavailable():
+def test_roundtrip_exact_refusal_code_is_shared_shell_unavailable(shell_absent):
     """B9: keep the exact-refusal-code assertion as a separate, plain
     test (no xfail marker) so the suite reports it cleanly when the
     shell stays absent, with no risk of the marker masking a regression."""
@@ -635,11 +653,19 @@ def test_generation_is_insensitive_to_run_context():
 # ---------------------------------------------------------------------------
 
 
-def _install_resolver_double(monkeypatch: pytest.MonkeyPatch, reg: Any, _ref: Any) -> None:
+def _passthrough_validator(payload: Any) -> dict:
+    """The shell's ``validate_assertion`` returns a deep-copied plain dict."""
+    return copy.deepcopy(dict(payload))
+
+
+def _install_resolver_double(monkeypatch: pytest.MonkeyPatch, reg: Any, _ref: Any,
+                             validator: Any = _passthrough_validator) -> None:
     """Install a fake ``engine.theme_graph.curation_assertion`` module that
-    exports the resolver symbol the adapter uses."""
+    exports the two symbols the adapter uses: the resolver and the shell's
+    validator."""
     fake = types.ModuleType("engine.theme_graph.curation_assertion")
     fake.source_ref_for = _ref  # callable
+    fake.validate_assertion = validator
     monkeypatch.setitem(sys.modules, "engine.theme_graph.curation_assertion", fake)
 
 
@@ -769,7 +795,7 @@ def test_select_evidence_assertions_present_with_resolver_absent_is_shared_shell
     assert str(excinfo.value) == "shared_shell_unavailable"
 
 
-def test_compose_assertions_present_with_resolver_absent_is_shared_shell_unavailable():
+def test_compose_assertions_present_with_resolver_absent_is_shared_shell_unavailable(shell_absent):
     """B3 (c): a non-empty ``assertions`` list with no resolver is the
     documented "the dossier could be wrong" case and the adapter must refuse
     ``shared_shell_unavailable`` rather than silently emit ``assertion_refs=[]``.
@@ -785,7 +811,7 @@ def test_compose_assertions_present_with_resolver_absent_is_shared_shell_unavail
     assert str(excinfo.value) == "shared_shell_unavailable"
 
 
-def test_select_evidence_resolver_absent_is_shared_shell_unavailable_even_without_assertions():
+def test_select_evidence_resolver_absent_is_shared_shell_unavailable_even_without_assertions(shell_absent):
     """R10: the route's own resolver-absent check fires BEFORE the walk; with
     or without assertions, an absent resolver raises ``shared_shell_unavailable``
     at the explicit defensive check (not via the bundle-walk fallback)."""
@@ -910,7 +936,7 @@ def test_select_evidence_non_string_revision_is_never_selectable(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_load_bundle_absent_binding_is_shared_shell_unavailable():
+def test_load_bundle_absent_binding_is_shared_shell_unavailable(shell_absent):
     """R5: with the binding module absent, ``load_bundle`` raises a
     :class:`FinanceRegistrationRefusal` whose ``.code`` is the bare
     ``shared_shell_unavailable`` — no whitespace in the code, mirroring
@@ -985,16 +1011,27 @@ def test_finance_registration_refusal_class_contract_holds_for_every_call_site()
     assert str(err) == err.code == "some_code"
 
     tree = ast.parse(Path(reg.__file__).read_text(encoding="utf-8"))
+    refusal_names = {"FinanceRegistrationRefusal", "_refuse"}
+    # The walk below reads CALLS of the two names, so any other use carries a
+    # code past it: an alias (``_R = FinanceRegistrationRefusal``), a
+    # bare-class ``raise``, the class handed to a factory. Every use must be
+    # the callee of a call (review F4).
+    callees = {id(n.func) for n in ast.walk(tree) if isinstance(n, ast.Call)}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id in refusal_names:
+            assert id(node) in callees, f"line {node.lineno}: {node.id} used other than as a callee"
+    refuse_def = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_refuse")
+    inside_refuse = {id(n) for n in ast.walk(refuse_def)}
     codes = []
     for node in ast.walk(tree):
         if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-                and node.func.id in {"FinanceRegistrationRefusal", "_refuse"}):
+                and node.func.id in refusal_names):
             continue
         site = f"line {node.lineno}: {ast.unparse(node)}"
         assert len(node.args) == 1 and not node.keywords, site
         arg = node.args[0]
-        if isinstance(arg, ast.Name) and arg.id == "code":
-            continue  # _refuse forwarding its own parameter
+        if isinstance(arg, ast.Name) and arg.id == "code" and id(node) in inside_refuse:
+            continue  # _refuse forwarding its own parameter; a variable anywhere else is no literal
         if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
             code = arg.value
         elif isinstance(arg, ast.JoinedStr):
@@ -1187,43 +1224,6 @@ def test_evidence_envelope_assertion_is_deep_copied_and_mutable(monkeypatch):
     assert "added" not in bundle_assertion["scope"]
 
 
-def test_evidence_envelope_source_records_filtered_to_selected_ref(monkeypatch):
-    """B4: the evidence envelope's ``source_records`` contains ONLY records
-    whose ``evidence_ref`` matches the selected ``assertion_ref``; other
-    refs are excluded."""
-    reg = _import_reg()
-    revision = "gmirca_" + ("a" * 32)
-    other_revision = "gmirca_" + ("9" * 32)
-    theme_id = "synthetic_theme"
-    assertion = _assertion(revision=revision, theme_id=theme_id)
-    # A bundle whose run-context entry carries extra source_records for
-    # another ref. Finance bundle input has no source_records path; we
-    # inject via the dossier composer by checking what arrived in
-    # envelope["dossier"]["source_records"] at compose time.
-    _install_resolver_double(monkeypatch, reg,
-                             lambda p: _ref_for(theme_id, p.get("curation_revision")))
-    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
-    bundle = _bundle_with_run_context(assertions=(assertion,))
-    full = reg.compose(query, bundle)
-    # The dossier's source_records (if any) MUST be a subset of the
-    # selected ref when the assertion ref intersects them.
-    dossier_records = full["dossier"].get("source_records", []) or []
-    selected_ref = _ref_for(theme_id, revision)
-    other_ref = _ref_for("synthetic_theme", other_revision)
-    query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
-                        expected_generation=full["generation"])
-    envelope = reg.select_evidence(query_full, bundle, selected_ref)
-    # The envelope's source_records must not contain a record whose
-    # evidence_ref is the other ref (when there is a dossier record for it).
-    for record in envelope["source_records"]:
-        assert record.get("evidence_ref") != other_ref
-    # And it MUST include any dossier record whose evidence_ref is the
-    # selected one — this is the inclusivity check (B4 inclusion half).
-    dossier_matching = [r for r in dossier_records if r.get("evidence_ref") == selected_ref]
-    envelope_matching = [r for r in envelope["source_records"] if r.get("evidence_ref") == selected_ref]
-    assert len(envelope_matching) == len(dossier_matching)
-
-
 def test_evidence_envelope_source_records_filter_to_selected_curation_revision_via_seam(monkeypatch):
     """R2 (seat ruling on the comparison key): the evidence envelope's
     ``source_records`` is filtered to entries whose ``evidence_ref`` equals
@@ -1322,33 +1322,6 @@ def test_limitations_run_context_only_bundle_has_no_unmapped_field_marker():
     :data:`_OWNER_BUNDLE_UNMAPPED_FIELDS`. The test asserts FULL EQUALITY
     of the limitations list (not ``all(... startswith)`` or ``issubset``)
     so any silent addition or removal fails."""
-    reg = _import_reg()
-    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
-    bundle = _bundle_with_run_context()
-    envelope = reg.compose(query, bundle)
-    expected = [
-        "owner_input_absent:basket_context",
-        "owner_input_absent:expectation_observations",
-        "owner_input_absent:financial_packets",
-        "owner_input_absent:identity_bindings",
-        "owner_input_absent:macro_context",
-        "owner_input_absent:market_observations",
-        "owner_input_absent:regime_breaks",
-        "owner_input_absent:rights_snapshot",
-        "owner_input_absent:sector_dossier",
-        "owner_input_absent:slice_catalog",
-        "owner_input_absent:source_records",
-        "owner_input_absent:theme_evidence",
-    ]
-    assert envelope["limitations"] == expected, envelope["limitations"]
-
-
-def test_limitations_emit_owner_input_absent_for_every_field():
-    """R9 (B5): with an empty-bundle shape the limitations list equals the
-    full expected list so any silent addition fails the test. The empty
-    bundle has the same shape as the run-context-only case (no omissions,
-    no foreign native refs, no populated unmapped fields) so the
-    expected list is identical."""
     reg = _import_reg()
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _bundle_with_run_context()
@@ -1676,9 +1649,9 @@ def test_omissions_whitespace_only_string_emits_unnamed_marker():
 def test_secret_strings_do_not_leak_into_any_envelope(monkeypatch):
     """Permanent privacy guard: bundle field values carrying SECRET_* strings
     (identity_results, event_workspaces, financial_packets,
-    interpretation_blocks) plus an extra ``private_note`` on the run
-    context must NEVER appear in the compose or evidence envelope
-    payloads."""
+    interpretation_blocks), an owner omission written as prose (review F5)
+    and an extra ``private_note`` on the run context must NEVER appear in
+    the compose or evidence envelope payloads."""
     reg = _import_reg()
     revision = "gmirca_" + ("a" * 32)
     theme_id = "synthetic_theme"
@@ -1691,6 +1664,7 @@ def test_secret_strings_do_not_leak_into_any_envelope(monkeypatch):
         event_workspaces=({"event_id": "SECRET_EVENT"},),
         financial_packets=({"metric": "SECRET_FIN"},),
         interpretation_blocks=({"interpretation_id": "SECRET_INTERP"},),
+        omissions=("SECRET_OMISSION client=ACME pos=+5MM",),
         native_refs=({
             "kind": "finance_run_context",
             "generated_at": "2026-09-25T07:48:00Z",
@@ -1715,3 +1689,177 @@ def test_secret_strings_do_not_leak_into_any_envelope(monkeypatch):
     evidence_blob = json.dumps(evidence_env, sort_keys=True, ensure_ascii=False,
                                separators=(",", ":"), default=str)
     assert "SECRET_" not in evidence_blob, evidence_blob
+
+
+# ---------------------------------------------------------------------------
+# 14. Round 3 -- the shell validator's copy (F2), omission names (F5), and
+#     refusal typing that never imports the sibling for a Finance code (F6)
+# ---------------------------------------------------------------------------
+
+
+def _closed_shape_validator(payload: Any) -> dict:
+    """Stands in for the shell's closed-schema validator: a deep copy holding
+    only the keys the synthetic assertion shape declares."""
+    declared = _assertion()
+    data = {k: copy.deepcopy(v) for k, v in dict(payload).items() if k in declared}
+    data["observation"] = {"value": copy.deepcopy(dict(payload)["observation"].get("value"))}
+    return data
+
+
+def _select_with_validator(monkeypatch: pytest.MonkeyPatch, reg: Any, assertion: dict,
+                           validator: Any) -> Any:
+    """Compose, then select the one synthetic assertion through a resolver
+    double whose shell validator is ``validator``."""
+    theme_id = assertion["scope"]["canonical_theme_id"]
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")),
+                             validator=validator)
+    bundle = _bundle_with_run_context(assertions=(assertion,))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+    query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                        expected_generation=reg.compose(query, bundle)["generation"])
+    return reg.select_evidence(query_full, bundle,
+                               _ref_for(theme_id, assertion["curation_revision"]))
+
+
+def test_evidence_embeds_the_shell_validators_copy_not_the_raw_bundle_entry(monkeypatch):
+    """F2: the envelope's ``assertion`` is an open object, so a raw copy
+    carried every key the owner bundle held. It now carries exactly what the
+    shell's ``validate_assertion`` returned for the matched entry."""
+    reg = _import_reg()
+    assertion = _assertion()
+    assertion["private_extra"] = "SECRET_ASSERTION_EXTRA"
+    assertion["observation"] = {"value": None, "private": "SECRET_NESTED"}
+    seen: list = []
+
+    def validator(payload):
+        seen.append(copy.deepcopy(payload))
+        return _closed_shape_validator(payload)
+
+    envelope = _select_with_validator(monkeypatch, reg, assertion, validator)
+    assert seen == [assertion]
+    assert envelope["assertion"] == _closed_shape_validator(assertion) == _assertion()
+    blob = json.dumps(envelope, sort_keys=True, ensure_ascii=False, default=str)
+    assert "SECRET_" not in blob, blob
+
+
+def test_evidence_refuses_an_assertion_the_shell_validator_rejects(monkeypatch):
+    """F2: an assertion the validator rejects is never selectable, as in the
+    shell's own selection. It shares the not-selected code, and the
+    validator's message (which can quote the offending key) never escapes,
+    not even as the refusal's chained context."""
+    reg = _import_reg()
+
+    def validator(_payload):
+        raise ValueError("schema_violation: 'SECRET_ASSERTION_EXTRA' was unexpected")
+
+    with pytest.raises(ValueError) as excinfo:
+        _select_with_validator(monkeypatch, reg, _assertion(), validator)
+    assert getattr(excinfo.value, "code", None) == "not_available"
+    assert str(excinfo.value) == "not_available"
+    assert excinfo.value.__context__ is None and excinfo.value.__cause__ is None
+
+
+def test_evidence_lets_a_broken_validator_fail_as_itself(monkeypatch):
+    """F2: only the validator's refusal type (a ``ValueError``) means
+    "invalid". Any other failure is a broken shell and propagates, so it can
+    never pass for an assertion that is merely not available."""
+    reg = _import_reg()
+
+    def validator(_payload):
+        raise KeyError("observation")
+
+    with pytest.raises(KeyError):
+        _select_with_validator(monkeypatch, reg, _assertion(), validator)
+
+
+@pytest.mark.parametrize("shape", ["attribute_absent", "not_callable"])
+def test_evidence_without_the_shell_validator_is_shared_shell_unavailable(monkeypatch, shape):
+    """F2: a resolver module with no callable ``validate_assertion`` cannot
+    serve evidence; the adapter refuses rather than embed a raw copy."""
+    reg = _import_reg()
+    theme_id = "synthetic_theme"
+    assertion = _assertion()
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")),
+                             validator=None)
+    if shape == "attribute_absent":
+        monkeypatch.delattr(sys.modules[reg._SHELL_RESOLVER_MODULE], "validate_assertion")
+    bundle = _bundle_with_run_context(assertions=(assertion,))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+    query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                        expected_generation=reg.compose(query, bundle)["generation"])
+    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+        reg.select_evidence(query_full, bundle, _ref_for(theme_id, assertion["curation_revision"]))
+    assert str(excinfo.value) == "shared_shell_unavailable"
+
+
+def test_an_owner_omission_reaches_the_envelope_only_as_a_machine_name():
+    """F5: omissions were emitted verbatim. A snake_case name passes; owner
+    prose, mixed case, an over-long name and any other shape collapse into one
+    ``owner_omission:unrecognized`` marker, and a blank stays ``unnamed``."""
+    reg = _import_reg()
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+    bundle = _bundle_with_run_context(omissions=(
+        "financial_packets",
+        "a" + "b" * 63,
+        "SECRET_OMISSION client=ACME pos=+5MM",
+        "Mixed_Case",
+        "a" + "b" * 64,
+        "trailing ",
+        "   ",
+    ))
+    envelope = reg.compose(query, bundle)
+    markers = [m for m in envelope["limitations"] if m.startswith("owner_omission:")]
+    assert markers == [
+        "owner_omission:a" + "b" * 63,
+        "owner_omission:financial_packets",
+        "owner_omission:unnamed",
+        "owner_omission:unrecognized",
+    ], markers
+    blob = json.dumps(envelope, sort_keys=True, ensure_ascii=False, default=str)
+    for leaked in ("SECRET", "ACME", "Mixed_Case", "b" * 64, "trailing"):
+        assert leaked not in blob, leaked
+
+
+class _FailingSiblingFinder:
+    """Fails the sibling module's import at import time, as a present but
+    broken shell would, and counts every attempt to import it."""
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.attempts = 0
+
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname != self.name:
+            return None
+        self.attempts += 1
+        return importlib.util.spec_from_loader(fullname, self)
+
+    def create_module(self, spec):
+        return None
+
+    def exec_module(self, module):
+        raise RuntimeError("sibling import-time failure")
+
+
+def test_a_finance_only_refusal_never_imports_the_sibling_module(monkeypatch):
+    """F6: ``_refuse`` imported the sibling module on every call, so an
+    import-time failure inside a present shell retyped every Finance refusal.
+    A Finance-only code no longer touches it; a shared code still consults
+    the shell, so a broken present shell surfaces as itself, never as an
+    absent one."""
+    reg = _import_reg()
+    finder = _FailingSiblingFinder(reg._SHELL_SIBLING_MODULE)
+    monkeypatch.delitem(sys.modules, reg._SHELL_SIBLING_MODULE, raising=False)
+    monkeypatch.setattr(sys, "meta_path", [finder, *sys.meta_path])
+    for code in ("finance_owner_loader_pending", "shared_shell_unavailable"):
+        assert code not in reg._SHELL_SHARED_REFUSAL_CODES
+        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+            reg._refuse(code)
+        assert str(excinfo.value) == code
+    assert finder.attempts == 0
+    # Positive control: the finder does intercept the sibling's import.
+    with pytest.raises(RuntimeError, match="sibling import-time failure"):
+        reg._refuse("not_available")
+    assert finder.attempts == 1

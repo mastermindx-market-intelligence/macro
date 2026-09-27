@@ -199,10 +199,15 @@ def _refuse(code: str) -> None:
     :class:`ResearchRefusal` resolves, raise it as the carrier-compatible
     type; otherwise raise the adapter's own typed refusal. The single site
     is the one place the registry can swap refs without re-architecting the
-    raise sites scattered through query, generation and composition."""
-    shell_type = _import_shell_research_refusal()
-    if shell_type is not None and code in _SHELL_SHARED_REFUSAL_CODES:
-        raise shell_type(code)
+    raise sites scattered through query, generation and composition.
+
+    The sibling module is imported only for a shared code: a Finance-only
+    code never touches it, so an import-time failure inside a present shell
+    can never retype a Finance refusal (review F6)."""
+    if code in _SHELL_SHARED_REFUSAL_CODES:
+        shell_type = _import_shell_research_refusal()
+        if shell_type is not None:
+            raise shell_type(code)
     raise FinanceRegistrationRefusal(code)
 
 
@@ -222,6 +227,27 @@ def _import_resolver():
     if not callable(resolver):
         return None
     return resolver
+
+
+def _import_validator():
+    """Lazily load ``validate_assertion`` from the curation_assertion module:
+    the shell's own validator, which returns a deep-copied plain dict of the
+    assertion and raises on any breach of its closed schema.
+
+    The evidence envelope embeds what this returns, never the raw bundle
+    entry, so the envelope carries exactly the shape the shell admits. The
+    shell's own evidence path embeds its validated copy the same way (review
+    F2: the envelope's ``assertion`` is an open object, so a raw copy would
+    carry any key the owner bundle held). ``None`` when the shell is absent
+    or exposes no callable validator.
+    """
+    module = _import_shell_module(_SHELL_RESOLVER_MODULE)
+    if module is None:
+        return None
+    validator = getattr(module, "validate_assertion", None)
+    if not callable(validator):
+        return None
+    return validator
 
 
 def _try_resolve_assertion(resolver, assertion: Mapping[str, Any]) -> str | None:
@@ -397,6 +423,14 @@ def _generation(request: Mapping[str, Any], bundle: Any) -> str:
 
 
 # Field-name list, in the projection's declaration order. Used for limitations.
+#: An owner omission reaches the public envelopes only as a machine name
+#: (``owner_omission:<name>``), the same snake_case shape as every other code
+#: this adapter emits. Anything else (owner prose, a position, a client
+#: name) collapses to the single ``owner_omission:unrecognized`` marker; a
+#: blank one stays ``owner_omission:unnamed`` (review F5).
+_OMISSION_NAME_RE = re.compile(r"[a-z][a-z0-9_]{0,63}")
+
+
 _OWNER_INPUT_FIELDS: tuple[str, ...] = (
     "sector_dossier",
     "theme_evidence",
@@ -522,16 +556,22 @@ def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
     bundle_value = getattr(bundle, "omissions", ()) or ()
     if bundle_value:
         unnamed_present = False
+        unrecognized_present = False
         for omission in bundle_value:
             # R8 (M7 amendment): a whitespace-only string (``.strip() == ""``)
             # is blank — it cannot carry an omission reason, so it collapses
             # to the single deduplicated ``owner_omission:unnamed`` marker.
             if isinstance(omission, str) and omission.strip():
-                limitations.add(f"owner_omission:{omission}")
+                if _OMISSION_NAME_RE.fullmatch(omission):
+                    limitations.add(f"owner_omission:{omission}")
+                else:
+                    unrecognized_present = True
             else:
                 unnamed_present = True
         if unnamed_present:
             limitations.add("owner_omission:unnamed")
+        if unrecognized_present:
+            limitations.add("owner_omission:unrecognized")
     for bundle_field in _OWNER_BUNDLE_UNMAPPED_FIELDS:
         value = getattr(bundle, bundle_field, None)
         if bundle_field == "native_refs":
@@ -661,7 +701,7 @@ def _validate_envelope(envelope: dict[str, Any]) -> None:
     recursive :func:`_interval_issues` pass — that single envelope
     validation is therefore sufficient and the legacy separate dossier
     re-validation is dropped (B8 seat ruling; see
-    ``tests/test_finance_research_registration.py::test_envelope_validation_rejects_late_knowledge_cutoff_in_nested_body``).
+    ``tests/test_finance_research_registration.py::test_envelope_validation_rejects_late_knowledge_cutoff_via_recursive_interval_walk``).
     """
     _registry().validate(SCHEMA_ID, envelope)
 
@@ -752,8 +792,8 @@ def _collect_source_records(
     ``gmi-curation://`` URI addressing form — so the comparison key here is
     the matched assertion's ``curation_revision``, not the
     ``assertion_ref`` URI. When no source record names that revision, the
-    list is EMPTY — never the full dossier's records. Comparison is
-    ``str(exc) == exc.code``-exact (no coercion).
+    list is EMPTY — never the full dossier's records. The comparison is
+    exact string equality (no coercion).
     """
     out: list[dict[str, Any]] = []
     for value in dossier.get("source_records", ()) or ():
@@ -798,11 +838,12 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
       we will not guess.
     * ``generation_changed`` — ``expected_generation`` mismatches. The
       check runs BEFORE the ``assertion_ref`` pattern check (R4).
-    * ``shared_shell_unavailable`` — the resolver or projection module is
-      absent (fixture-only: nothing to query against).
-    * ``not_available`` — the ref is not a well-formed ``assertion_ref`` or
-      no assertion in the bundle resolves to it AFTER the consumed-set
-      filter (B2).
+    * ``shared_shell_unavailable`` — the resolver, the shell's validator or
+      the projection module is absent (fixture-only: nothing to query
+      against).
+    * ``not_available`` — the ref is not a well-formed ``assertion_ref``, no
+      assertion in the bundle resolves to it AFTER the consumed-set filter
+      (B2), or the shell's validator rejects the one that does.
     * ``sealed_input_unavailable:run_context`` — see compose.
     """
     request = _validate_query(query)
@@ -817,7 +858,8 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
     dossier = _dossier(inputs, generated_at, knowledge_cutoff)
 
     resolver = _import_resolver()
-    if resolver is None:
+    validator = _import_validator()
+    if resolver is None or validator is None:
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
     consumed = _consumed_revision_set(dossier)
@@ -825,11 +867,24 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
     matched = _find_assertion_by_ref(resolver, assertions, assertion_ref, consumed)
     if matched is None:
         _refuse("not_available")
+    # The envelope embeds the shell validator's closed-schema copy, never the
+    # raw bundle entry (review F2). An assertion the validator rejects is
+    # never selectable (the shell's own selection drops it the same way), so
+    # it shares the not-selected code: no existence disclosure, no validator
+    # message. Only the validator's refusal type means "invalid" (the shell's
+    # ``CurationAssertionError`` is a ``ValueError``); any other failure is a
+    # broken shell and propagates, as in :func:`_import_shell_module`.
+    try:
+        validated = validator(dict(matched))
+    except ValueError:
+        validated = None
+    if not isinstance(validated, Mapping):
+        _refuse("not_available")
 
     source_records = _collect_source_records(dossier, matched["curation_revision"])
     limitations = _build_limitations(inputs, bundle)
     return _evidence_envelope(
-        request, gen, assertion_ref, matched, source_records, limitations
+        request, gen, assertion_ref, validated, source_records, limitations
     )
 
 
