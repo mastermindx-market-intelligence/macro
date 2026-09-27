@@ -66,13 +66,15 @@ log "[6/6] enable Caddy + fast pull-if-changed cron"
 systemctl enable caddy >/dev/null 2>&1 || true
 systemctl restart caddy
 install -m 0755 "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update
+install -m 0755 "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance
 # Track main within minutes: pull-if-changed every 3 min (cheap no-op when unchanged),
 # so render.yml's fast template renders AND the nightly data build reach the domain
 # quickly — instead of a once-a-night pull. `|| true`: on a box with no crontab yet,
 # `crontab -l`+`grep -v` both "fail" on empty input and would abort under
 # `set -e -o pipefail` before the echo — keep them harmless.
-{ crontab -l 2>/dev/null | grep -v 'macro-update' || true ; \
-  echo "*/3 * * * * /usr/local/bin/macro-update >> /var/log/macro-update.log 2>&1" ; } | crontab -
+{ crontab -l 2>/dev/null | grep -v 'macro-update' | grep -v 'macro-git-maintenance' || true ; \
+  echo "*/3 * * * * /usr/local/bin/macro-update >> /var/log/macro-update.log 2>&1" ; \
+  echo "23 6 * * * /usr/local/bin/macro-git-maintenance >> /var/log/macro-git-maintenance.log 2>&1" ; } | crontab -
 
 # Rotate the cron + Caddy logs so they can never fill the droplet disk.
 install -m 0644 "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps 2>/dev/null || true

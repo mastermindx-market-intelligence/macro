@@ -15,6 +15,13 @@ APP_DIR="/opt/macro"
 # rename. Skipping is free: the next cron tick picks up whatever this run got.
 exec 9>/var/lock/macro-update.lock
 flock -n 9 || exit 0
+
+# The live checkout is intentionally high-frequency and may receive many large
+# data/artifact commits. Never let a deploy fetch/reset consume the root
+# filesystem's emergency reserve. Cleanup is an explicit operator action; this
+# guard only fails closed before any updater mutation.
+"$APP_DIR/app/deploy/disk-headroom.sh"
+
 source "$APP_DIR/app/deploy/market-memory-options-unit-boundary.sh"
 source "$APP_DIR/app/deploy/market-memory-options-runtime-fence.sh"
 source "$APP_DIR/app/deploy/market-memory-options-dropin-migration.sh"
@@ -366,6 +373,35 @@ if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
 	else
 		echo "macro-update: refusing self-update — bash -n failed" >&2
 	fi
+fi
+
+# Keep the separately locked maintenance runner on a stable installed inode.
+# Its cron must never execute the repo copy while git reset can rewrite that
+# path in place. install preserves an already-running predecessor inode.
+if ! cmp -s "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance; then
+	if bash -n "$APP_DIR/app/deploy/git-maintenance.sh"; then
+		install -m 0755 "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance
+		RECONCILED=1
+		echo "macro-update: git maintenance runner updated from repo"
+	else
+		echo "macro-update: refusing git maintenance runner update — bash -n failed" >&2
+	fi
+fi
+
+# Existing hosts must acquire the maintenance schedule without a broad rerun of
+# setup.sh. Preserve every unrelated root cron entry, including an operator's
+# explicit hold on macro-update, and reconcile only this one source-owned line.
+MAINT_CRON='23 6 * * * /usr/local/bin/macro-git-maintenance >> /var/log/macro-git-maintenance.log 2>&1'
+if ! crontab -l 2>/dev/null | grep -Fxq "$MAINT_CRON"; then
+	{ crontab -l 2>/dev/null | grep -v 'macro-git-maintenance' || true; echo "$MAINT_CRON"; } | crontab -
+	RECONCILED=1
+	echo "macro-update: git maintenance cron reconciled"
+fi
+
+if ! cmp -s "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps; then
+	install -m 0644 "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps
+	RECONCILED=1
+	echo "macro-update: VPS logrotate policy reconciled"
 fi
 
 # Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
