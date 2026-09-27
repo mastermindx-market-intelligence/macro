@@ -41,6 +41,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# SCRATCH, reverted by the next commit (contract-delta demonstration, 2026-09-27):
+# the path literal below is a read of templates/index.html, which puts this job
+# on that packing probe (134 -> 135 jobs, over its ceiling), and the importorskip
+# names a module nothing in CI installs, which makes this a skip-only suite.
+import pytest
+
+SCRATCH_PROBE_READ = ROOT / "templates/index.html"
+pytest.importorskip("contract_delta_scratch_absent")
+
 # Same scan surface as the annotation guard: every directory whose modules are
 # importable production/pipeline code.  ``tests/`` is excluded on purpose.
 SCAN_DIRS = ("scripts", "engine", "collectors", "app", "admin", "lib", "tools", "research")
