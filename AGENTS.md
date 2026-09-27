@@ -207,6 +207,14 @@ only — a human/Opus reviewer owns visual taste.
   221.6 GiB are verdicted `LOCKED` on nothing but the SSD helper's content-free
   `removable volume protection` stamp, which short-circuits landedness entirely. Widening
   either is its own **operator ratification act**, exactly as flipping `armed` was.
+  **Widen `roots` by SUBTREE, never by volume.** `…/agent-workspaces` holds both the
+  agent-driven Claude seat lanes (`claude/<seat>/…`) and the ChatGPT-web family (`sol/`,
+  `review/`, loose `*-sol` trees); `/Volumes/Mastermind/worktrees` is entirely the web/Sol mint
+  root whose trees died on 09-26. Measured: **49.6 GiB across 31 of the 41 trees the report
+  verdicted SAFE is HUMAN-class**, and a valid landed proof there is NOT permission — reclaim
+  needs landed AND nothing attached, and a web conversation's attachment is undetectable.
+  Safe to arm: `…/agent-workspaces/claude`, `…/agent-workspaces/tmp`. **Never**
+  `/Volumes/Mastermind/worktrees`, `…/agent-workspaces` itself, `…/sol`, `…/review`.
   The genuinely unreachable remainder is DIRTY + UNPUSHED (~308 GiB of real work, whose commits
   `refs/salvage/*` preserves for ~40 bytes each) and the 318 detached lanes, which need a
   lane-exit receipt rather than a merge. The durable fix is still upstream of storage: how many

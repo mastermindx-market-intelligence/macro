@@ -572,17 +572,43 @@ each — but it licenses nothing under an attached session.
 ### Open ratification gates as of 2026-09-27 — both are OPERATOR acts, neither is taken
 
 Measured inventory of what they unlock: `research/WORKTREE_RECLAIM_CANDIDATES_2026_09_27.md`
-(**82 trees / 87.3 GiB**, every row with its landed proof). For contrast the armed sweeper at
-its shipped scope freed **1.5 GiB**.
+(**51 trees / 37.7 GiB safe**, every row with its landed proof AND its attachment class). For
+contrast the armed sweeper at its shipped scope freed **1.5 GiB**.
+
+**`roots` cannot express the human-driven exclusion at volume granularity, and that is the
+first thing to get right.** `/Volumes/Mastermind/agent-workspaces` holds BOTH the agent-driven
+Claude seat lanes (`claude/<seat>/…`) and the ChatGPT-web family (`sol/`, `review/`, plus loose
+`*-sol` trees planted at its top level). Classifying the candidates by subtree:
+
+| scope | pool A (SAFE) | pool B (behind lock stamp) | class |
+|---|---:|---:|---|
+| `/Volumes/Mastermind/worktrees` | 22 trees / 43.8 GiB | — | **HUMAN — never auto-reclaim** |
+| `…/agent-workspaces/sol`, `/review`, loose `*-sol` | 9 trees / 5.8 GiB | — | **HUMAN — never auto-reclaim** |
+| `…/agent-workspaces/claude` | — | 41 trees / 26.6 GiB | AGENT |
+| `…/agent-workspaces/tmp` (CI scratch) | 2 trees / 6.8 GiB | — | AGENT |
+| internal roots already in `roots` | 8 trees / 4.3 GiB | — | AGENT |
+
+So **49.6 of pool A's 60.8 GiB is HUMAN-class**, and a valid landed proof on those rows is not
+permission: reclaim needs landed **and** nothing attached, and a ChatGPT web conversation's
+attachment is undetectable (no process, no shell, no reflog). Adding the two volume roots
+wholesale would point an **armed deleter** at exactly the population the 2026-09-26 incident
+killed — and that sweep only sparsified, where this one removes.
 
 | # | gate | exact change | blast radius | unlocks |
 |---|---|---|---|---|
-| 1 | widen `roots` | add `/Volumes/Mastermind/agent-workspaces` and `/Volumes/Mastermind/worktrees` to `config/worktree_gc.json` `roots` | armed deleter goes from 227 → 807 trees in scope | 41 trees / 60.8 GiB |
-| 2 | stop treating a content-free lock as operator intent | CODE in `scripts/worktree_gc.py`: a new opt-in config key (default = today's behaviour, honour every lock) that exempts only the two provably content-free reasons, **plus** `git worktree unlock` before the `remove --force` at line ~706 | touches `scripts/**`, i.e. the CI-authority inventory — a merged head there triggers the authority freeze, clearable only by a green `ci.yml` on a main descendant | a further 41 trees / 26.6 GiB, and ends the permanent exemption of the whole external-SSD population |
+| 1 | widen `roots` — **to subtrees, not volumes** | add `/Volumes/Mastermind/agent-workspaces/claude` (the policy-mandated seat root) and optionally `…/agent-workspaces/tmp`. **Do NOT add `/Volumes/Mastermind/worktrees`, `…/agent-workspaces` itself, `…/sol` or `…/review`.** | scope grows by the agent-driven SSD lanes only; the web population stays out of reach of an armed deleter | 2 trees / 6.8 GiB on its own (`tmp`); it is the precondition for gate 2's 26.6 GiB |
+| 2 | stop treating a content-free lock as operator intent | CODE in `scripts/worktree_gc.py`: a new opt-in config key (default = today's behaviour, honour every lock) exempting only the two provably content-free reasons, **plus** `git worktree unlock` before the `remove --force` at line ~706 | touches `scripts/**`, the CI-authority inventory — a merged head there triggers the authority freeze, clearable only by a green `ci.yml` on a main descendant | 41 trees / 26.6 GiB, all under `…/agent-workspaces/claude`, and it ends the permanent exemption of the whole external-SSD population |
 
-Gate 2 is worthless without gate 1 (the roots belt at line ~682 still refuses those paths), and
-gate 1 delivers only its own 60.8 GiB without gate 2. Neither is a consequence of the
-2026-09-27 signal correction; do not infer authorization from it.
+**Gate 2 carries essentially all of the safe yield, and gate 1 is its precondition** — the belt
+at line ~682 still refuses a path outside `roots`, and every one of gate 2's 41 trees lives
+under `…/agent-workspaces/claude`. Gate 1 scoped correctly is worth only 6.8 GiB by itself.
+Neither is a consequence of the 2026-09-27 signal correction; do not infer authorization from it.
+
+**A third, cheaper fix is implied by the table above:** the GC has no notion of an attachment
+class, so today the only thing standing between an armed deleter and the web population is the
+`roots` list being accidentally narrow. That is not a safeguard, it is a coincidence. A
+`human_driven_roots` deny-list honoured ahead of every other verdict would make the protection
+explicit and survive a future well-meaning widening.
 
 A third item is **design work, not a gate**: the 318 detached lanes need a lane-exit receipt (a
 positive "my output was consumed" signal written by the lane itself). Nothing in this law can

@@ -2,21 +2,82 @@
 
 **Report only. Nothing has been deleted, sparsified, or modified.**
 `config/worktree_gc.json` is untouched; the run below used a scratch copy with
-`armed: false` and the two absent roots appended.
+`armed: false` and the two absent volume roots appended.
 
 Source: `scripts/worktree_gc.py --report` over 729 on-disk registered trees, joined to the
-807-tree PR-state census.
+807-tree PR-state census, then re-checked by hand for the signals the tool short-circuited past.
 
-## A. Verdicted SAFE by the repo's own sweeper — 41 trees, 60.8 GiB
+> ## READ THIS BEFORE USING ANY ROW AS AN ACTION
+>
+> A landed proof authorizes reclaiming the **bytes**. It does **not** license deleting a
+> checkout that a human-driven ChatGPT web conversation may still be attached to — attachment
+> there is undetectable by construction (no process, no shell, no reflog; it lives in a browser
+> tab), which is why `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` says those roots are **never**
+> auto-reclaimed. On 2026-09-26 a sweep that ignored this killed essentially every ChatGPT web
+> session on the host, and that sweep only *sparsified*; deletion is unrecoverable where
+> sparsification at least left the index intact.
+>
+> **Every row below therefore carries an attachment class, and `roots` cannot express it at
+> volume granularity.** `/Volumes/Mastermind/agent-workspaces` holds BOTH the agent-driven
+> Claude seat lanes (`claude/<seat>/…`) and the web family (`sol/`, `review/`, loose `*-sol`
+> trees), so the scope that is safe to arm is the **`claude` subtree**, never the volume.
 
-Unlocked, clean, unoccupied, no open PR, older than `min_age_days: 3`, and carrying one of the
-three positive landed proofs. These are reclaimable the moment the two roots are in scope.
+## Scope map — where the candidates actually live
+
+### Pool A (verdicted SAFE by the sweeper)
+
+| scope a `roots` entry would name | trees | GiB | class |
+|---|---:|---:|---|
+| `/Volumes/Mastermind/worktrees` | 22 | 43.79 | **HUMAN** |
+| `/Volumes/Mastermind/agent-workspaces/tmp` | 2 | 6.83 | **AGENT** |
+| `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees` | 7 | 3.72 | **AGENT** |
+| `/Volumes/Mastermind/agent-workspaces/<loose>` | 4 | 3.05 | **HUMAN** |
+| `/Volumes/Mastermind/agent-workspaces/sol` | 4 | 2.19 | **HUMAN** |
+| `/Users/chriswong/Documents/Cluade/macro-main/.codex-worktrees` | 1 | 0.61 | **AGENT** |
+| `/Volumes/Mastermind/agent-workspaces/review` | 1 | 0.55 | **HUMAN** |
+
+### Pool B (clean + landed, hidden behind a content-free lock stamp)
+
+| scope a `roots` entry would name | trees | GiB | class |
+|---|---:|---:|---|
+| `/Volumes/Mastermind/agent-workspaces/claude` | 41 | 26.57 | **AGENT** |
+
+**The consequence, stated plainly:** pool A's 60.8 GiB is **49.6 GiB HUMAN-class**
+across 31 trees and only **11.2 GiB AGENT-class** across
+10. Pool B is the inverse — **26.6 GiB AGENT-class** across
+41 trees, 0.0 GiB human. So *adding the two volume roots* points an
+armed deleter mostly at the population the law protects, while *fixing the lock stamp* reaches
+almost entirely agent-driven lanes.
+
+## A1 — AGENT class, verdicted SAFE: 10 trees, 11.2 GiB
+
+Unlocked, clean, unoccupied, no open PR, past `min_age_days: 3`, landed proof shown, and under
+an agent-driven scope. **This is the only part of pool A that is safe to arm.**
+
+| worktree | GiB | proof |
+|---|---:|---|
+| `tmp/contract-delta/contract-delta-base-tw14w7q8` | 6.25 | ancestor-of-origin/main |
+| `sol-mm-data-guard-hk-southbound-20260924-sparse` | 0.61 | PR #7914 merged at this exact head |
+| `darkpool-data-trust-20260924` | 0.60 | HEAD contained in origin/claude/darkpool-participation-trust-20260924; no open PR |
+| `us-sector-membership-reconcile-20260917-sol` | 0.59 | HEAD contained in origin/claude/us-sector-membership-reconcile-20260917-sol; no open PR |
+| `tmp/contract-delta/contract-delta-base-k550ubkj` | 0.59 | ancestor-of-origin/main |
+| `macro-touch-target-parity-20260919-r1` | 0.56 | PR #7500 merged at this exact head |
+| `sector-release-options-scope-20260924` | 0.51 | HEAD contained in origin/claude/sector-release-options-scope-20260924; no open PR |
+| `risk-radar-prospective-validation-readiness-20260924` | 0.49 | PR #7894 merged at this exact head |
+| `risk-radar-warning-duration-20260924` | 0.49 | ancestor-of-origin/main |
+| `risk-radar-prospective-identity-20260923` | 0.48 | PR #7808 merged at this exact head |
+
+## A2 — HUMAN class, verdicted SAFE but NOT reclaimable: 31 trees, 49.6 GiB
+
+Every one of these carries a valid landed proof. **None may be auto-reclaimed.** They are the
+`sol-*` / `review-*` / `pr*` web-review population, 22 of them under the same ungoverned mint
+root whose trees died on 2026-09-26. Listed so nobody re-derives them and mistakes the proof
+for permission.
 
 | worktree | GiB | proof |
 |---|---:|---|
 | `prophet-7018-baseline-repair-20260922` | 8.09 | HEAD contained in origin/sol/canada-opportunity-map-20260908; no open PR |
 | `pr7633-review-repair-824f6d` | 7.29 | ancestor-of-origin/main |
-| `tmp/contract-delta/contract-delta-base-tw14w7q8` | 6.25 | ancestor-of-origin/main |
 | `admin-revamp-20260921` | 6.00 | PR #7602 merged at this exact head |
 | `pr7633-independent-rereview-f7f1001` | 2.70 | ancestor-of-origin/main |
 | `prophet-turn-watch-row-evidence-v2-sol-20260916` | 1.91 | HEAD contained in origin/claude/prophet-turn-watch-row-evidence-v2-20260916; no open PR |
@@ -31,41 +92,29 @@ three positive landed proofs. These are reclaimable the moment the two roots are
 | `research-screener-theme-stamp-20260922-sol` | 1.36 | ancestor-of-origin/main |
 | `lane-f-review-a-c98d07` | 0.65 | ancestor-of-origin/main |
 | `lane-f-review-a-aaa693` | 0.65 | ancestor-of-origin/main |
-| `sol-mm-data-guard-hk-southbound-20260924-sparse` | 0.61 | PR #7914 merged at this exact head |
-| `darkpool-data-trust-20260924` | 0.60 | HEAD contained in origin/claude/darkpool-participation-trust-20260924; no open PR |
 | `prophet-four-market-recovery-sol-20260915` | 0.60 | PR #7180 merged at this exact head |
 | `theme7664-mainproof-49374` | 0.59 | ancestor-of-origin/main |
-| `us-sector-membership-reconcile-20260917-sol` | 0.59 | HEAD contained in origin/claude/us-sector-membership-reconcile-20260917-sol; no open PR |
 | `stsi1-sector-federation-technology-dossier-20260921-sol` | 0.59 | ancestor-of-origin/main |
 | `confluence-screener-rig-20260922` | 0.59 | ancestor-of-origin/main |
-| `tmp/contract-delta/contract-delta-base-k550ubkj` | 0.59 | ancestor-of-origin/main |
 | `pr7264-current-main-baseline-20260921-sol` | 0.58 | ancestor-of-origin/main |
 | `pr7264-main-baseline-c506-sol` | 0.58 | ancestor-of-origin/main |
-| `macro-touch-target-parity-20260919-r1` | 0.56 | PR #7500 merged at this exact head |
 | `review/gmi-d2c-postmerge-main-365655` | 0.55 | ancestor-of-origin/main |
 | `b2-base-inheritance-6ac3817e` | 0.55 | ancestor-of-origin/main |
 | `sol/china-heatmap-sentinel-20260919` | 0.55 | HEAD contained in origin/sol/china-heatmap-sentinel-20260919; no open PR |
 | `sol/push-retry-stale-rebase-r5-20260918` | 0.55 | ancestor-of-origin/main |
 | `sol-daily-engine-precode-recovery-20260915` | 0.55 | PR #7196 merged at this exact head |
-| `sol/ccr-h2-profile-search-health-provider-gate-closeout-20260914-sol-001` | 0.55 | HEAD contained in origin/sol/ccr-h2-profile-search-health-provider-gate-closeout-20260914; no op |
+| `sol/ccr-h2-profile-search-health-provider-gate-closeout-20260914-sol-001` | 0.55 | HEAD contained in origin/sol/ccr-h2-profile-search-health-provider-gate-closeout-20260914; n |
 | `sol/ai-updates-7101-current-main-22f6759-20260915` | 0.55 | ancestor-of-origin/main |
-| `sector-release-options-scope-20260924` | 0.51 | HEAD contained in origin/claude/sector-release-options-scope-20260924; no open PR |
-| `risk-radar-prospective-validation-readiness-20260924` | 0.49 | PR #7894 merged at this exact head |
-| `risk-radar-warning-duration-20260924` | 0.49 | ancestor-of-origin/main |
-| `risk-radar-prospective-identity-20260923` | 0.48 | PR #7808 merged at this exact head |
 | `us-pool-baseline-20260921` | 0.22 | ancestor-of-origin/main |
 | `family-b-b0-row-repair-20260916-sol` | 0.00 | ancestor-of-origin/main |
 
-## B. Clean + landed, but hidden behind a content-free lock stamp — 41 trees, 26.6 GiB
+## B1 — AGENT class, clean + landed, behind the lock stamp: 41 trees, 26.6 GiB
 
-The SSD worktree helper stamps `mastermind-external-storage: removable volume protection` on
-**every** tree it mints, and the GC treats any lock as an unconditional KEEP — so it never even
-computes landedness for these. Each row below was re-checked by hand for the three things the
-short-circuit skipped: dirty working tree (none), live process on the cwd (none), and a
-positive landed proof (shown).
-
-79 other locked trees carry real seat/operator text ("Active Sol China participation context;
-release PR7592 untouched") and are **not** in this list.
+The SSD helper stamps `mastermind-external-storage: removable volume protection` on every tree
+it mints, and `scripts/worktree_gc.py:501` treats any lock as an unconditional KEEP — so it
+never computes landedness here. Each row was re-checked by hand for the three skipped signals:
+dirty working tree (none), live process on the cwd (none), and a positive landed proof (shown).
+79 other locked trees carry real seat/operator text and are **not** in this list.
 
 | worktree | GiB | proof |
 |---|---:|---|
@@ -111,14 +160,21 @@ release PR7592 untouched") and are **not** in this list.
 | `claude/14851c4656838a3b/wave4-record-9318482e0c4a3192` | 0.54 | squash of this head is on origin/main |
 | `claude/14851c4656838a3b/mo-ext-fix-m_f08_b5_3_macro-705488cb1b609c2b` | 0.54 | squash of this head is on origin/main |
 
-## Totals
+## B2 — HUMAN class behind the lock stamp: 0 trees, 0.0 GiB
 
-| pool | trees | GiB |
-|---|---:|---:|
-| A — verdicted SAFE under widened roots | 41 | 60.8 |
-| B — clean+landed behind the lock stamp | 41 | 26.6 |
-| **combined** | **82** | **87.3** |
-| ORPHAN (separate `include_orphans` ratification) | 8 | 4.9 |
+| worktree | GiB | proof |
+|---|---:|---|
+| _(none)_ | | |
+
+## Totals, by what is actually actionable
+
+| pool | trees | GiB | arm? |
+|---|---:|---:|---|
+| A1 — AGENT, verdicted SAFE | 10 | 11.2 | yes, under an agent-scoped root |
+| B1 — AGENT, behind the lock stamp | 41 | 26.6 | yes, needs the lock-stamp code fix |
+| **safe subtotal** | **51** | **37.7** | |
+| A2 + B2 — HUMAN class | 31 | 49.6 | **no — never auto-reclaimed** |
+| ORPHAN (separate `include_orphans` ratification) | 8 | 4.9 | separate decision |
 
 For contrast, the armed sweeper at its shipped scope freed **1.5 GiB** of a 308 GiB population.
 
